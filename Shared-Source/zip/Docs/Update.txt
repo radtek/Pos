@@ -1,0 +1,112 @@
+Recent changes
+
+1.79.10.20
+  Bug fixes.
+  All versions use hash list
+
+1.79.10.10
+	Change to Rename, option to add file comment added
+	clear FullErrCode before dll operations
+	
+1.79.10.07
+  Change to Rename 
+  TZMRenameOpts = (htrDefault,  // does substring matches, will do all that apply
+		   htrOnce, 	// will only change each entry once
+		   htrFull);	// will only match the full name
+
+	int __fastcall TZBWorker::Rename(TList &RenameList, int DateTime, TZBRenameOpts How)
+
+1.79.10.01
+Compile with Rad2009
+  Only the main source have been updated - not the tools nor SFX
+
+1.79.08.1
+Bug correction: 
+	When Root dir for extraction had no write access an error was reported,
+	removed the test.
+
+1.79.08.1
+Bug correction: 
+     Path to source files corrected in all .bpk files
+     Compiler warnings W8012 and W8071
+     Package files for BDS 4.0 renamed
+    		
+1.79.08.00
+Bug correction: 
+        changing DateTime of an encrypted file no longer possible
+  Added to all demo's:
+		Manifest file for Windows XP and Windows Vista.
+		specific icon.
+		Version info in projects
+  Manifest files are added in the ZipBuilder tools 
+
+1.79.07.01
+Because of problems with Delphi 2007 and Windows Vista -
+ combined Design and Run-Time package
+ requires manual installation into the IDE
+ Some files moved
+ a few fixes
+
+1.79.06.06
+Added
+	Instructions and files to integrate help in BDS4 help
+
+1.79.06.05
+Fixed 
+	Problem with saving icon to stream, in BDS version the icon was always
+	save with 64K vcolors were the comonent expected 16 colors
+Added
+	install instructions and demos for Turbo C++ 2006 Explorer version
+	
+1.79.06.04
+Fixed
+	Buf in setFileName, could not be entered in ObjectInspector
+	 
+1.79.06.03
+Fixed
+	Bug in OpenEOC reported by JungHoon Noh
+
+1.79.06.02
+Fixed 
+	Compiles problems when compiled with NO_SPAN
+  Corrected sime typing erros in the BDS4_INST.TXT fle
+
+1.79.06.01
+Fixed
+	problem with OverwriteAll in CopyZippedFiles
+	problem with setting of HowToDelete and used in CopyZippedFiles
+	Dll no longer removes an empty archive.
+
+1.79.05.01
+Fixed
+  wrong file name with single part 'span'
+
+1.79.04.00
+Fixed
+	Vulnerabilty due to buffer overflow
+	Problem with AddStoreSuffixes in IDE
+Added BCB4 in Setup
+	
+1.79.03.01
+Fixed
+	Problem with AddStoreSuffixes in IDE
+	Problem with Setup did not replace dll in DLL folder
+	
+1.79.03.00
+Fixed
+	more problems with very large zip files
+	bug in ZBMsgStr
+	bug in dll for updating existing archive
+
+1.79.02.03
+Fixed
+  more problems with very large files (2 - 4G)
+  dll problems with very large files
+  
+1.79.01.02
+Fixed
+  problems with very large zip files
+Changed 
+  Setup name to reflect the version
+
+       

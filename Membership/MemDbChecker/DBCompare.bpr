@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="DBCompare.exe"/>
+    <OBJFILES value="DBCompare.obj Unit1.obj 
+      ..\..\MenuMate\MenuMate\Source\System\Core\MM_DBCore.obj 
+      ..\..\Shared-Source\tinyXML\tinyxmlparser.obj 
+      ..\..\Shared-Source\tinyXML\tinystr.obj 
+      ..\..\Shared-Source\tinyXML\tinyxml.obj 
+      ..\..\Shared-Source\tinyXML\tinyxmlerror.obj 
+      ..\..\MenuMate\MenuMate\Source\Version.obj"/>
+    <RESFILES value="DBCompare.res VersionRes.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) Unit1.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="vclx.lib bcbsmp.lib dbexpress.lib dbrtl.lib dsnap.lib cds.lib ibxpress.lib 
+      rtl.lib vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib ibxpress.lib cds.lib dsnap.lib dbrtl.lib dbexpress.lib 
+      bcbsmp.lib vclx.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi 
+      vcldbx.bpi ibxpress.bpi dsnap.bpi cds.bpi bdecds.bpi qrpt.bpi teeui.bpi 
+      teedb.bpi tee.bpi dss.bpi teeqr.bpi visualclx.bpi visualdbclx.bpi 
+      dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi vclie.bpi xmlrtl.bpi inet.bpi 
+      inetdbbde.bpi inetdbxpress.bpi inetdb.bpi nmfast.bpi webdsnap.bpi 
+      bcbie.bpi websnap.bpi soaprtl.bpi dclocx.bpi dbexpress.bpi dbxcds.bpi 
+      bcb2kaxserver.bpi madBasic_.bpi madDisAsm_.bpi madExcept_.bpi ZipPack.bpi 
+      TntLibR.bpi NumericEditPkg.bpi mapimail.bpi CPortLibCB6.bpi Indy60.bpi 
+      ButtonPack.bpi"/>
+    <PATHCPP value=".;..\..\MenuMate\MenuMate\Source\System\Core;..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="NO_WIN32_LEAN_AND_MEAN"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="DBCompare.cpp"/>
+    <INCLUDEPATH value="..\..\MenuMate\MenuMate\Source;&quot;..\..\MenuMate\Components BCB6\TouchButtons&quot;;..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\Projects;&quot;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker&quot;;$(BCB)\include;$(BCB)\include\vcl;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins;..\..\MenuMate\Version"/>
+    <LIBPATH value="..\..\MenuMate\MenuMate\Source;&quot;..\..\MenuMate\Components BCB6\TouchButtons&quot;;&quot;..\..\Shared-Source\tinyXML&quot;;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\source\indy\c6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madBasic\BCB6;$(BCB)\Projects;&quot;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker&quot;;..\source\indy\c6;$(BCB)\Projects\Lib;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\lib\obj;$(BCB)\lib;C:\Devs\madCollection\madExcept\..\Plugins"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\..\MenuMate\MenuMate\Source 
+      -I&quot;..\..\MenuMate\Components BCB6\TouchButtons&quot; 
+      -I..\..\Shared-Source\tinyXML -I..\..\MenuMate\MenuMate\Source\System\Core 
+      -I$(BCB)\Projects -I&quot;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker&quot; 
+      -I$(BCB)\include -I$(BCB)\include\vcl 
+      -IC:\Devs\madCollection\madBasic\BCB6 -IC:\Devs\madCollection\madDisAsm\BCB6 
+      -IC:\Devs\madCollection\madExcept\BCB6 
+      -IC:\Devs\madCollection\madExcept\..\Plugins -I..\..\MenuMate\Version 
+      -src_suffix cpp -DNO_WIN32_LEAN_AND_MEAN -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="DBCompare.res" FORMNAME="" UNITNAME="DBCompare.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DBCompare.cpp" FORMNAME="" UNITNAME="DBCompare" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Unit1.cpp" FORMNAME="frmMain" UNITNAME="Unit1" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\MenuMate\Source\System\Core\MM_DBCore.cpp" FORMNAME="" UNITNAME="MM_DBCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Shared-Source\tinyXML\tinyxml.h" FORMNAME="" UNITNAME="tinyxml.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Shared-Source\tinyXML\tinystr.h" FORMNAME="" UNITNAME="tinystr.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Shared-Source\tinyXML\tinyxmlparser.cpp" FORMNAME="" UNITNAME="tinyxmlparser.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Shared-Source\tinyXML\tinystr.cpp" FORMNAME="" UNITNAME="tinystr.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Shared-Source\tinyXML\tinyxml.cpp" FORMNAME="" UNITNAME="tinyxml.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Shared-Source\tinyXML\tinyxmlerror.cpp" FORMNAME="" UNITNAME="tinyxmlerror.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Version\VersionRes.h" FORMNAME="" UNITNAME="VersionRes.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VersionRes.rc" FORMNAME="" UNITNAME="VersionRes.rc" CONTAINERID="RCCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\MenuMate\Source\Version.h" FORMNAME="" UNITNAME="Version.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\MenuMate\Source\Version.cpp" FORMNAME="" UNITNAME="Version.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Excluded Packages]
+c:\devs\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+c:\program files\borland\cbuilder6\bin\dclClxIBXtras60.bpl=Borland InterBase Express Extras (Clx)
+c:\program files\borland\cbuilder6\Bin\dclIBXtras60.bpl=Borland InterBase Express Extras
+
+[HistoryLists\hlIncludePath]
+Count=6
+Item0=..\..\MenuMate\MenuMate\Source;..\..\MenuMate\Components BCB6\TouchButtons;..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\Projects;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker;$(BCB)\include;$(BCB)\include\vcl;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins;..\..\MenuMate\Version
+Item1=..\..\MenuMate\Components BCB6\TouchButtons;..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\Projects;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker;$(BCB)\include;$(BCB)\include\vcl;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins;..\..\MenuMate\Version
+Item2=..\..\MenuMate\Components BCB6\TouchButtons;..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\Projects;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker;$(BCB)\include;$(BCB)\include\vcl;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins;..\..\MenuMate\MenuMate\Version
+Item3=..\..\MenuMate\Components BCB6\TouchButtons;..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\Projects;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker;$(BCB)\include;$(BCB)\include\vcl;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins
+Item4=..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\Projects;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker;$(BCB)\include;$(BCB)\include\vcl;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins
+Item5=..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\Projects;C:\My Data\code\MenuMate-4.2\MenuMate\MenuMate\Source\System\Core;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker;$(BCB)\include;$(BCB)\include\vcl;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins
+
+[HistoryLists\hlLibraryPath]
+Count=4
+Item0=..\..\MenuMate\MenuMate\Source;..\..\MenuMate\Components BCB6\TouchButtons;..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\source\indy\c6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madBasic\BCB6;$(BCB)\Projects;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker;..\source\indy\c6;$(BCB)\Projects\Lib;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\lib\obj;$(BCB)\lib;C:\Devs\madCollection\madExcept\..\Plugins
+Item1=..\..\MenuMate\Components BCB6\TouchButtons;..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\source\indy\c6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madBasic\BCB6;$(BCB)\Projects;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker;..\source\indy\c6;$(BCB)\Projects\Lib;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\lib\obj;$(BCB)\lib;C:\Devs\madCollection\madExcept\..\Plugins
+Item2=..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\source\indy\c6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madBasic\BCB6;$(BCB)\Projects;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker;..\source\indy\c6;$(BCB)\Projects\Lib;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\lib\obj;$(BCB)\lib;C:\Devs\madCollection\madExcept\..\Plugins
+Item3=..\..\Shared-Source\tinyXML;..\..\MenuMate\MenuMate\Source\System\Core;$(BCB)\source\indy\c6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madBasic\BCB6;$(BCB)\Projects;C:\My Data\code\MenuMate-4.2\MenuMate\MenuMate\Source\System\Core;C:\My Data\code\MenuMate-4.2\Membership\MemDbChecker;..\source\indy\c6;$(BCB)\Projects\Lib;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\lib\obj;$(BCB)\lib;C:\Devs\madCollection\madExcept\..\Plugins
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=3
+Item0=NO_WIN32_LEAN_AND_MEAN
+Item1=_DEBUG;NO_WIN32_LEAN_AND_MEAN
+Item2=_DEBUG
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

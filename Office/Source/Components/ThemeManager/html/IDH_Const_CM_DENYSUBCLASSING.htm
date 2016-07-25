@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 //EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Time2HELP 1.0; Standard Template">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=utf8">
+<TITLE>CM_DENYSUBCLASSING Constant</TITLE>
+<Style>Body, TD {font-family: "Verdana"; font-size: 10pt};
+PRE {font-family: "Courier New"; font-size: 10pt; margin-top: 0; margin-bottom: 0}
+TR.odd {background-color: #F8F8F8};
+TR.even {background-color: #EEEEEE};
+Table.list {background-color: #FFFFFF};
+TD {vertical-align : top};
+TD.stripelight {background-image: url(images/StripeLight.gif);};
+TD.stripedark {background-image: url(images/StripeDark.gif);};
+</Style>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<BASEFONT NAME="Verdana" Size="2"><Table Border="0" Width="100%" BGColor="#FFFFFF"><TR><TD><Font Color="#000000F"><B>CM_DENYSUBCLASSING Global Constant</B></Font></TD></TR></Table>Component message to allow a control to exclude itself from subclassing.<P><B>Unit</B><Br><A HREF="IDH_Unit_ThemeMgr.htm">ThemeMgr</A><P><B>Declaration</B><Br><Font Face="Courier New">CM_DENYSUBCLASSING = CM_BASE + 2000;</Font><Font Face="Verdana"><P><B>Description</B><Br>Some controls may not want to be subclassed. Be it because they have their own special painting or be it that subclassing would simply made trouble. A control can exclude itself from subclassing by catching the CM_DENYSUBCLASSING event and return a value &lt;&gt; 0 in the message's Result record member.</Font><P><HR>
+<TABLE BORDER="0" WIDTH="100%" BGCOLOR="#404040" cellspacing=0><TR><TD class="stripelight">
+<Font Color=Black><Large>Copyright © 1999, 2002 <B>Mike Lischke</B></Large</Font>
+</TD></TR></Table>
+<Small><A HREF="http://www.lischke-online.de">http://www.lischke-online.de</A></Small>

@@ -1,0 +1,9 @@
+NAME; 7;
+NEAREST; 8;
+NEED; 11,2;
+NEEDS; 3;
+NEW; 11,2,8,5,4;
+NO; 11,7,6;
+NORMAL; 8;
+NOT; 11;
+NUMBER; 4;

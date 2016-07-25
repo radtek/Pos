@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="FileMate.Core.Xml.FileMateTargetDTO">
+    <Position X="10" Y="3.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAQAAQAAAAAAAAAACAAIAAAAAAIA=</HashCode>
+      <FileName>FileMateTargetDTO.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FileMate.Core.Xml.CopyOperationDTO">
+    <Position X="6" Y="1" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAIQAAABAABAAAAAIEQAQQAECACEAEJAAgAAgAAAA=</HashCode>
+      <FileName>CopyOperationDTO.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Targets" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="FileMate.Core.Xml.CopyGroupDTO">
+    <Position X="1.75" Y="1" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAAAACAAAAIAAAAAAAAA=</HashCode>
+      <FileName>CopyGroupDTO.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Operations" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="FileMate.Core.Xml.Helper">
+    <Position X="13.5" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>IAgAAAAAAAIBAAAAABAQBEAgACAAAAIBAABACBBQAEI=</HashCode>
+      <FileName>Helper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="FileMate.Core.Xml.RepositoryType">
+    <Position X="9.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAEEAAAA=</HashCode>
+      <FileName>Helper.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2014/08/15 08:31:01.937.cpp,C:\Code\Git\local menumate\Second Display\Server\MMOrderItemsManager.cpp=C:\Code\Git\local menumate\Second Display\Server\TCustomerDisplayManager.cpp</Transaction>
+    <Transaction>2014/08/15 08:31:01.937.h,C:\Code\Git\local menumate\Second Display\Server\MMOrderItemsManager.h=C:\Code\Git\local menumate\Second Display\Server\TCustomerDisplayManager.h</Transaction>
+    <Transaction>2014/08/15 08:37:10.437.cpp,C:\Code\Git\local menumate\Second Display\Server\TCustomerDisplayManager.cpp=C:\Code\Git\local menumate\Second Display\Server\MMCustomerDisplayManager.cpp</Transaction>
+    <Transaction>2014/08/15 08:37:10.437.h,C:\Code\Git\local menumate\Second Display\Server\TCustomerDisplayManager.h=C:\Code\Git\local menumate\Second Display\Server\MMCustomerDisplayManager.h</Transaction>
+  </Transactions>
+	<ProjectSortOrder AutoSort="0" SortType="0">
+    <File Path="IOrderItemsController.cpp"/>
+    <File Path="IOrderItemsController.cpp"/>
+    <File Path="IOrderItemsController.h"/>
+    <File Path="Main.cpp"/>
+    <File Path="Main.cpp"/>
+    <File Path="Main.dfm"/>
+    <File Path="Main.h"/>
+    <File Path="Menumate Second Display.cpp"/>
+    <File Path="Menumate Second Display.res"/>
+    <File Path="MMCustomerDisplayAdapter.cpp"/>
+    <File Path="MMCustomerDisplayAdapter.cpp"/>
+    <File Path="MMCustomerDisplayAdapter.h"/>
+    <File Path="SharedMemory\SharedMemory.cpp"/>
+    <File Path="SharedMemory\SharedMemory.cpp"/>
+    <File Path="SharedMemory\SharedMemory.h"/>
+    <File Path="MMCustomerDisplayManager.cpp"/>
+    <File Path="MMCustomerDisplayManager.cpp"/>
+    <File Path="MMCustomerDisplayManager.h"/>
+    <File Path="MMCustomerDisplayThread.cpp"/>
+    <File Path="MMCustomerDisplayThread.cpp"/>
+    <File Path="MMCustomerDisplayThread.h"/>
+    <File Path="..\..\Shared-Source\tinyXML\tinystr.cpp"/>
+    <File Path="..\..\Shared-Source\tinyXML\tinystr.h"/>
+    <File Path="..\..\Shared-Source\tinyXML\tinyxml.cpp"/>
+    <File Path="..\..\Shared-Source\tinyXML\tinyxml.h"/>
+    <File Path="..\..\Shared-Source\tinyXML\tinyxmlerror.cpp"/>
+    <File Path="..\..\Shared-Source\tinyXML\tinyxmlparser.cpp"/>
+  </ProjectSortOrder>
+</BorlandProject>

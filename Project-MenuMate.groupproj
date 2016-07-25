@@ -1,0 +1,132 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{3427734E-6AE0-4582-93EA-46642877F131}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="MenuMate\MenuMate\Source\MenuMate.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="MenuMate\Parser\Source\Parser.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="MenuMate\ChefMate\Source\ChefMate.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="MenuMate\Registration\Source\Register.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="MenuMate\JoinMate\source\JoinMate.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="MenuMate\DBTrim\Source\DBTrim.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="MenuMate\Kiosk\Kiosk.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="MenuMate\SyndCopy\SyndCopy.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="IBTools\Source\IBTools.cbproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="MenuMate">
+			<MSBuild Projects="MenuMate\MenuMate\Source\MenuMate.cbproj"/>
+		</Target>
+		<Target Name="MenuMate:Clean">
+			<MSBuild Targets="Clean" Projects="MenuMate\MenuMate\Source\MenuMate.cbproj"/>
+		</Target>
+		<Target Name="MenuMate:Make">
+			<MSBuild Targets="Make" Projects="MenuMate\MenuMate\Source\MenuMate.cbproj"/>
+		</Target>
+		<Target Name="Parser">
+			<MSBuild Projects="MenuMate\Parser\Source\Parser.cbproj"/>
+		</Target>
+		<Target Name="Parser:Clean">
+			<MSBuild Targets="Clean" Projects="MenuMate\Parser\Source\Parser.cbproj"/>
+		</Target>
+		<Target Name="Parser:Make">
+			<MSBuild Targets="Make" Projects="MenuMate\Parser\Source\Parser.cbproj"/>
+		</Target>
+		<Target Name="ChefMate">
+			<MSBuild Projects="MenuMate\ChefMate\Source\ChefMate.cbproj"/>
+		</Target>
+		<Target Name="ChefMate:Clean">
+			<MSBuild Targets="Clean" Projects="MenuMate\ChefMate\Source\ChefMate.cbproj"/>
+		</Target>
+		<Target Name="ChefMate:Make">
+			<MSBuild Targets="Make" Projects="MenuMate\ChefMate\Source\ChefMate.cbproj"/>
+		</Target>
+		<Target Name="Register">
+			<MSBuild Projects="MenuMate\Registration\Source\Register.cbproj"/>
+		</Target>
+		<Target Name="Register:Clean">
+			<MSBuild Targets="Clean" Projects="MenuMate\Registration\Source\Register.cbproj"/>
+		</Target>
+		<Target Name="Register:Make">
+			<MSBuild Targets="Make" Projects="MenuMate\Registration\Source\Register.cbproj"/>
+		</Target>
+		<Target Name="JoinMate">
+			<MSBuild Projects="MenuMate\JoinMate\source\JoinMate.cbproj"/>
+		</Target>
+		<Target Name="JoinMate:Clean">
+			<MSBuild Targets="Clean" Projects="MenuMate\JoinMate\source\JoinMate.cbproj"/>
+		</Target>
+		<Target Name="JoinMate:Make">
+			<MSBuild Targets="Make" Projects="MenuMate\JoinMate\source\JoinMate.cbproj"/>
+		</Target>
+		<Target Name="DBTrim">
+			<MSBuild Projects="MenuMate\DBTrim\Source\DBTrim.cbproj"/>
+		</Target>
+		<Target Name="DBTrim:Clean">
+			<MSBuild Targets="Clean" Projects="MenuMate\DBTrim\Source\DBTrim.cbproj"/>
+		</Target>
+		<Target Name="DBTrim:Make">
+			<MSBuild Targets="Make" Projects="MenuMate\DBTrim\Source\DBTrim.cbproj"/>
+		</Target>
+		<Target Name="Kiosk">
+			<MSBuild Projects="MenuMate\Kiosk\Kiosk.cbproj"/>
+		</Target>
+		<Target Name="Kiosk:Clean">
+			<MSBuild Targets="Clean" Projects="MenuMate\Kiosk\Kiosk.cbproj"/>
+		</Target>
+		<Target Name="Kiosk:Make">
+			<MSBuild Targets="Make" Projects="MenuMate\Kiosk\Kiosk.cbproj"/>
+		</Target>
+		<Target Name="SyndCopy">
+			<MSBuild Projects="MenuMate\SyndCopy\SyndCopy.cbproj"/>
+		</Target>
+		<Target Name="SyndCopy:Clean">
+			<MSBuild Targets="Clean" Projects="MenuMate\SyndCopy\SyndCopy.cbproj"/>
+		</Target>
+		<Target Name="SyndCopy:Make">
+			<MSBuild Targets="Make" Projects="MenuMate\SyndCopy\SyndCopy.cbproj"/>
+		</Target>
+		<Target Name="IBTools">
+			<MSBuild Projects="IBTools\Source\IBTools.cbproj"/>
+		</Target>
+		<Target Name="IBTools:Clean">
+			<MSBuild Targets="Clean" Projects="IBTools\Source\IBTools.cbproj"/>
+		</Target>
+		<Target Name="IBTools:Make">
+			<MSBuild Targets="Make" Projects="IBTools\Source\IBTools.cbproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="MenuMate;Parser;ChefMate;Register;JoinMate;DBTrim;Kiosk;SyndCopy;IBTools"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="MenuMate:Clean;Parser:Clean;ChefMate:Clean;Register:Clean;JoinMate:Clean;DBTrim:Clean;Kiosk:Clean;SyndCopy:Clean;IBTools:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="MenuMate:Make;Parser:Make;ChefMate:Make;Register:Make;JoinMate:Make;DBTrim:Make;Kiosk:Make;SyndCopy:Make;IBTools:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

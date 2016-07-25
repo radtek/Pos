@@ -1,0 +1,5 @@
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\MenumateServices Config Manager\obj\Debug\ResolveAssemblyReference.cache
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\Assemblies\MenumateServicesConfigManager.dll
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\Assemblies\MenumateServicesConfigManager.pdb
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\MenumateServices Config Manager\obj\Debug\MenumateServicesConfigManager.dll
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\MenumateServices Config Manager\obj\Debug\MenumateServicesConfigManager.pdb

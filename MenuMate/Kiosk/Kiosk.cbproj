@@ -1,0 +1,440 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{BA68BDA5-E8E7-4519-BEE0-61E5101BB2D8}</ProjectGuid>
+			<ProjectVersion>12.0</ProjectVersion>
+			<MainSource>Kiosk.cpp</MainSource>
+			<Config Condition="'$(Config)'==''">Release</Config>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+			<LinkPackageStatics>rtl.lib;vcl.lib;vclie.lib;xmlrtl.lib;vclactnband.lib;vclx.lib;bcbsmp.lib;bcbie.lib;dbrtl.lib;inet.lib;inetdb.lib;ibxpress.lib;dsnap.lib;vcldb.lib;IndyCore.lib;IndySystem.lib;CPortLibCB6.lib;soaprtl.lib</LinkPackageStatics>
+			<ILINK_Verbose>true</ILINK_Verbose>
+			<ProjectType>CppVCLApplication</ProjectType>
+			<Multithreaded>true</Multithreaded>
+			<PackageImports>vclx.bpi;vcl.bpi;dbrtl.bpi;Rave76VCL.bpi;bdertl.bpi;rtl.bpi;bcbie.bpi;vclactnband.bpi;xmlrtl.bpi;bcbsmp.bpi;vcldb.bpi;vcldbx.bpi;dsnap.bpi;dsnapcon.bpi;TeeUI.bpi;TeeDB.bpi;Tee.bpi;adortl.bpi;vclib.bpi;ibxpress.bpi;IndyCore.bpi;IndySystem.bpi;IndyProtocols.bpi;inet.bpi;intrawebdb_100_120.bpi;Intraweb_100_120.bpi;vclie.bpi;websnap.bpi;webdsnap.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;vclribbon.bpi;DbxCommonDriver.bpi;DbxClientDriver.bpi;DBXInterBaseDriver.bpi;DBXMySQLDriver.bpi;dbexpress.bpi;dbxcds.bpi;DPSEftpos.bpi;CadmusCronos.bpi;ENZEFT.bpi;PC_Eftpos_Ingenico_CSDEFT.bpi;Eft2000_Syncro.bpi;NumericEditPkg.bpi;CPortLibCB6.bpi</PackageImports>
+			<BCC_ExtendedErrorInfo>true</BCC_ExtendedErrorInfo>
+			<FinalOutputDir>..\..\Runtime\</FinalOutputDir>
+			<AllPackageLibs>rtl.lib;vcl.lib;vclie.lib;xmlrtl.lib;vclactnband.lib;vclx.lib;bcbsmp.lib;bcbie.lib;dbrtl.lib;inet.lib;inetdb.lib;ibxpress.lib;dsnap.lib;vcldb.lib;IndyCore.lib;IndySystem.lib;CPortLibCB6.lib;soaprtl.lib</AllPackageLibs>
+			<OutputExt>exe</OutputExt>
+			<DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
+			<Defines>NO_STRICT;NO_WIN32_LEAN_AND_MEAN;Kiosk;$(Defines)</Defines>
+			<IncludePath>..\..\Office\Source\TaxProfile\;..\MenuMate\Source\Micros\;$(BDS)\include\Indy10\;..\Registration\Source\;..\..\Shared-Source\Registry\;..\MenuMate\Source\SmartCards\;..\..\Shared-Source\System\Core\;..\..\Shared-Source\Touch Utils\;..\MenuMate\Source\IBLogs\;..\MenuMate\Source\;..\SimpleTCP\;..\..\Shared-Source\tinyXML\;..\..\Shared-Source\TZForm\;..\..\Shared-Source\System\;..\..\Shared-Source\Registry;..\SimpleTCP;..\..\Shared-Source\System;..\..\Shared-Source\Touch Utils;..\MenuMate\Source\Maintenance;..\MenuMate\Source\IBLogs;..\..\Shared-Source\TZForm;..\MenuMate\Source\SmartCards;..\..\Shared-Source\tinyXML;..\..\Shared-Source\System\Core;..\MenuMate\Source;..\Registration\Source;..\Kiosk;$(BDS)\include;$(BDS)\include\dinkumware;$(BDS)\include\vcl;..\MenuMate\Source\DeskTop;..\..\Shared-Source\Touch Utils;..\..\Shared-Source\TouchButtons;..\..\libs;..\Components BCB6\CPort264\Sources;..\..\Office\Source\TaxProfile;..\MenuMate\Source\BillCalculator;..\..\Shared-Source\Stock;..\MenuMate\Source\product-count-down;..\ChefMate\Source;..\MenuMate\Source\POS;..\..\Menumate;$(IncludePath)</IncludePath>
+			<ILINK_LibraryPath>..\..\Office\Source\TaxProfile\;..\MenuMate\Source\Micros\;$(BDS)\include\Indy10\;..\Registration\Source\;..\..\Shared-Source\Registry\;..\MenuMate\Source\SmartCards\;..\..\Shared-Source\System\Core\;..\..\Shared-Source\Touch Utils\;..\MenuMate\Source\IBLogs\;..\MenuMate\Source\;..\SimpleTCP\;..\..\Shared-Source\tinyXML\;..\..\Shared-Source\TZForm\;..\..\Shared-Source\System\;..\..\libs\;..\..\Shared-Source\Registry;..\SimpleTCP;..\..\Shared-Source\System;..\MenuMate\Source\Maintenance;..\..\Shared-Source\Touch Utils;..\MenuMate\Source\IBLogs;..\..\Shared-Source\TZForm;..\MenuMate\Source\SmartCards;..\..\Shared-Source\tinyXML;..\..\Shared-Source\System\Core;..\MenuMate\Source;..\Registration\Source;..\Kiosk;$(BDS)\lib\obj;..\..\Shared-Source\TouchButtons;..\..\libs;..\..\Office\Source\TaxProfile;..\MenuMate\Source\BillCalculator;..\..\Office\Source\Stock;..\MenuMate\Source\product-count-down;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<BCC_wpar>false</BCC_wpar>
+			<BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<IntermediateOutputDir>Debug_Build</IntermediateOutputDir>
+			<BCC_OptimizeForSpeed>false</BCC_OptimizeForSpeed>
+			<BCC_DisableOptimizations>true</BCC_DisableOptimizations>
+			<DCC_Optimize>false</DCC_Optimize>
+			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+			<Defines>_DEBUG;$(Defines)</Defines>
+			<BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
+			<ILINK_DisableIncrementalLinking>true</ILINK_DisableIncrementalLinking>
+			<BCC_UseRegisterVariables>None</BCC_UseRegisterVariables>
+			<DCC_Define>DEBUG</DCC_Define>
+			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
+			<TASM_DisplaySourceLines>true</TASM_DisplaySourceLines>
+			<BCC_StackFrames>true</BCC_StackFrames>
+			<ILINK_LibraryPath>$(BDS)\lib\debug;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+			<TASM_Debugging>Full</TASM_Debugging>
+			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<Defines>NDEBUG;$(Defines)</Defines>
+			<IntermediateOutputDir>Release_Build</IntermediateOutputDir>
+			<ILINK_LibraryPath>$(BDS)\lib\release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<TASM_Debugging>None</TASM_Debugging>
+		</PropertyGroup>
+		<ItemGroup>
+			<CppCompile Include="..\MenuMate\Source\MembershipEBetGUI.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipEBetGUI.h</DependentOn>
+				<BuildOrder>50</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\ManagerLocations.cpp">
+				<DependentOn>..\MenuMate\Source\ManagerLocations.h</DependentOn>
+				<BuildOrder>40</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\OpSys.cpp">
+				<DependentOn>..\MenuMate\Source\OpSys.h</DependentOn>
+				<BuildOrder>39</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\DevicePC.cpp">
+				<DependentOn>..\MenuMate\Source\DevicePC.h</DependentOn>
+				<BuildOrder>36</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\SystemEvents.cpp">
+				<DependentOn>..\MenuMate\Source\SystemEvents.h</DependentOn>
+				<BuildOrder>38</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\MembershipEBet.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipEBet.h</DependentOn>
+				<BuildOrder>51</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\Touch Utils\MMTouchNumpad.cpp">
+				<Form>frmTouchNumpad</Form>
+				<DependentOn>..\..\Shared-Source\Touch Utils\MMTouchNumpad.h</DependentOn>
+				<BuildOrder>52</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\EventsContact.cpp">
+				<DependentOn>..\MenuMate\Source\EventsContact.h</DependentOn>
+				<BuildOrder>31</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\MMContactInfo.cpp">
+				<DependentOn>..\MenuMate\Source\MMContactInfo.h</DependentOn>
+				<BuildOrder>57</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\MembershipEbetTCP.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipEbetTCP.h</DependentOn>
+				<BuildOrder>49</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\IBLogs\LogsString.cpp">
+				<DependentOn>..\MenuMate\Source\IBLogs\LogsString.h</DependentOn>
+				<BuildOrder>16</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\SmartCards\blowfish.cpp">
+				<BuildOrder>30</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Processing.cpp">
+				<Form>frmProcessing</Form>
+				<DependentOn>..\MenuMate\Source\Processing.h</DependentOn>
+				<BuildOrder>22</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\DeviceImage.cpp">
+				<DependentOn>..\MenuMate\Source\DeviceImage.h</DependentOn>
+				<BuildOrder>34</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\Registry\MMRegistry.cpp">
+				<DependentOn>..\..\Shared-Source\Registry\MMRegistry.h</DependentOn>
+				<BuildOrder>35</BuildOrder>
+			</CppCompile>
+			<None Include="..\MenuMate\Source\IBLogs\MMlogging.h">
+				<BuildOrder>17</BuildOrder>
+			</None>
+			<CppCompile Include="..\MenuMate\Source\ContactGroup.cpp">
+				<DependentOn>..\MenuMate\Source\ContactGroup.h</DependentOn>
+				<BuildOrder>61</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\DeviceDB.cpp">
+				<DependentOn>..\MenuMate\Source\DeviceDB.h</DependentOn>
+				<BuildOrder>33</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DeviceKiosk.cpp">
+				<DependentOn>DeviceKiosk.h</DependentOn>
+				<BuildOrder>32</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\MembershipExternalTCP.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipExternalTCP.h</DependentOn>
+				<BuildOrder>70</BuildOrder>
+			</CppCompile>
+			<None Include="ModelSupport_Kiosk\default.txvpck"/>
+			<CppCompile Include="Main.cpp">
+				<Form>frmMain</Form>
+				<DependentOn>Main.h</DependentOn>
+				<BuildOrder>2</BuildOrder>
+			</CppCompile>
+			<None Include="..\MenuMate\Source\IBLogs\logsdef.h">
+				<BuildOrder>17</BuildOrder>
+			</None>
+			<CppCompile Include="..\MenuMate\Source\MembershipExternal.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipExternal.h</DependentOn>
+				<BuildOrder>72</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\ThorlinkClient.cpp">
+				<DependentOn>..\MenuMate\Source\ThorlinkClient.h</DependentOn>
+				<BuildOrder>73</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\ThorlinkWSDL.cpp">
+				<DependentOn>..\MenuMate\Source\ThorlinkWSDL.h</DependentOn>
+				<BuildOrder>74</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Micros\MembershipExternalXML.cpp">
+				<DependentOn>..\MenuMate\Source\Micros\MembershipExternalXML.h</DependentOn>
+				<BuildOrder>69</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\DBTierLevel.cpp">
+				<DependentOn>..\MenuMate\Source\DBTierLevel.h</DependentOn>
+				<BuildOrder>71</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\Touch Utils\MMMessageBox.cpp">
+				<Form>frmMessageBox</Form>
+				<DependentOn>..\..\Shared-Source\Touch Utils\MMMessageBox.h</DependentOn>
+				<BuildOrder>27</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\PrinterPhysical.cpp">
+				<DependentOn>..\MenuMate\Source\PrinterPhysical.h</DependentOn>
+				<BuildOrder>46</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="..\..\libs\TouchButtonsR.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>18</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="..\MenuMate\Source\WindowsPrinters.cpp">
+				<DependentOn>..\MenuMate\Source\WindowsPrinters.h</DependentOn>
+				<BuildOrder>47</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Access.cpp">
+				<DependentOn>..\MenuMate\Source\Access.h</DependentOn>
+				<BuildOrder>60</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\DBContacts.cpp">
+				<DependentOn>..\MenuMate\Source\DBContacts.h</DependentOn>
+				<BuildOrder>58</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\MembershipExternalGUI.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipExternalGUI.h</DependentOn>
+				<BuildOrder>71</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\SystemConfig.cpp">
+				<Form>frmSystemConfig</Form>
+				<DependentOn>..\MenuMate\Source\SystemConfig.h</DependentOn>
+				<BuildOrder>14</BuildOrder>
+			</CppCompile>
+			<None Include="ModelSupport_Kiosk\Database\default.txvpck"/>
+			<CppCompile Include="..\MenuMate\Source\PointsTransaction.cpp">
+				<DependentOn>..\MenuMate\Source\PointsTransaction.h</DependentOn>
+				<BuildOrder>29</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\PointsRulesSetUtils.cpp">
+				<DependentOn>..\MenuMate\Source\PointsRulesSetUtils.h</DependentOn>
+				<BuildOrder>28</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\GlobalSettings.cpp">
+				<BuildOrder>60</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxmlerror.cpp">
+				<BuildOrder>13</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\MembershipERS.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipERS.h</DependentOn>
+				<BuildOrder>21</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxmlparser.cpp">
+				<BuildOrder>10</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\ContactPoints.cpp">
+				<DependentOn>..\MenuMate\Source\ContactPoints.h</DependentOn>
+				<BuildOrder>26</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Membership.cpp">
+				<DependentOn>..\MenuMate\Source\Membership.h</DependentOn>
+				<BuildOrder>20</BuildOrder>
+			</CppCompile>
+			<None Include="..\MenuMate\Source\PrinterDefs.h">
+				<BuildOrder>46</BuildOrder>
+			</None>
+			<CppCompile Include="Kiosk.cpp">
+				<BuildOrder>0</BuildOrder>
+			</CppCompile>
+			<ResFiles Include="Kiosk.res">
+				<BuildOrder>1</BuildOrder>
+			</ResFiles>
+			<None Include="..\Registration\Source\RegMods.h">
+				<BuildOrder>20</BuildOrder>
+			</None>
+			<CppCompile Include="..\MenuMate\Source\ManagerMembership.cpp">
+				<DependentOn>..\MenuMate\Source\ManagerMembership.h</DependentOn>
+				<BuildOrder>6</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\DeviceStatusBase.cpp">
+				<DependentOn>..\MenuMate\Source\DeviceStatusBase.h</DependentOn>
+				<BuildOrder>37</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\ManagerVariable.cpp">
+				<DependentOn>..\MenuMate\Source\ManagerVariable.h</DependentOn>
+				<BuildOrder>25</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinystr.cpp">
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxml.cpp">
+				<BuildOrder>12</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\Touch Utils\MMTouchKeyboard.cpp">
+				<Form>frmTouchKeyboard</Form>
+				<DependentOn>..\..\Shared-Source\Touch Utils\MMTouchKeyboard.h</DependentOn>
+				<BuildOrder>26</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\SimpleTCP\Stream.cpp">
+				<DependentOn>..\SimpleTCP\Stream.h</DependentOn>
+				<BuildOrder>24</BuildOrder>
+			</CppCompile>
+			<ResourceCompile Include="..\MenuMate\Source\html.rc">
+				<Form>html.res</Form>
+				<BuildOrder>62</BuildOrder>
+			</ResourceCompile>
+			<CppCompile Include="..\..\Shared-Source\System\DB_Utilities.cpp">
+				<DependentOn>..\..\Shared-Source\System\DB_Utilities.h</DependentOn>
+				<BuildOrder>19</BuildOrder>
+			</CppCompile>
+			<None Include="..\GLProtocal\src\google\protobuf\descriptor.h">
+				<BuildOrder>74</BuildOrder>
+			</None>
+			<CppCompile Include="..\MenuMate\Source\PrintFormat.cpp">
+				<DependentOn>..\MenuMate\Source\PrintFormat.h</DependentOn>
+				<BuildOrder>41</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Printout.cpp">
+				<DependentOn>..\MenuMate\Source\Printout.h</DependentOn>
+				<BuildOrder>45</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Contact.cpp">
+				<DependentOn>..\MenuMate\Source\Contact.h</DependentOn>
+				<BuildOrder>23</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\rounding.cpp">
+				<DependentOn>..\MenuMate\Source\rounding.h</DependentOn>
+				<BuildOrder>53</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\TZForm\ZForm.cpp">
+				<DependentOn>..\..\Shared-Source\TZForm\ZForm.h</DependentOn>
+				<BuildOrder>15</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Request.cpp">
+				<DependentOn>..\MenuMate\Source\Request.h</DependentOn>
+				<BuildOrder>43</BuildOrder>
+			</CppCompile>
+			<None Include="ModelSupport_Kiosk\default.txaPackage"/>
+			<None Include="..\MenuMate\Source\Enum.h">
+				<BuildOrder>7</BuildOrder>
+			</None>
+			<CppCompile Include="..\MenuMate\Source\PrintInfo.cpp">
+				<DependentOn>..\MenuMate\Source\PrintInfo.h</DependentOn>
+				<BuildOrder>48</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\PointsType.cpp">
+				<DependentOn>..\MenuMate\Source\PointsType.h</DependentOn>
+				<BuildOrder>69</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\System\Core\MM_DBCore.cpp">
+				<DependentOn>..\..\Shared-Source\System\Core\MM_DBCore.h</DependentOn>
+				<BuildOrder>27</BuildOrder>
+			</CppCompile>
+			<None Include="..\GLProtocal\src\google\protobuf\io\coded_stream.h">
+				<BuildOrder>70</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\Office\Source\TaxProfile\TaxProfile.cpp">
+				<DependentOn>..\..\Office\Source\TaxProfile\TaxProfile.h</DependentOn>
+				<BuildOrder>70</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\MembershipEbetData.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipEbetData.h</DependentOn>
+				<BuildOrder>48</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\MembershipThorlink.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipThorlink.h</DependentOn>
+				<BuildOrder>72</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\MMSettings.cpp">
+				<DependentOn>..\MenuMate\Source\MMSettings.h</DependentOn>
+				<BuildOrder>48</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\ManagerThorVoucher.cpp">
+				<DependentOn>..\MenuMate\Source\ManagerThorVoucher.h</DependentOn>
+				<BuildOrder>75</BuildOrder>
+			</CppCompile>
+			<FormResources Include="..\..\Shared-Source\Touch Utils\MMTouchNumpad.dfm"/>
+			<FormResources Include="..\MenuMate\Source\Processing.dfm"/>
+			<FormResources Include="Main.dfm"/>
+			<FormResources Include="..\..\Shared-Source\Touch Utils\MMMessageBox.dfm"/>
+			<FormResources Include="..\MenuMate\Source\SystemConfig.dfm"/>
+			<FormResources Include="..\..\Shared-Source\Touch Utils\MMTouchKeyboard.dfm"/>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>CPlusPlusBuilder.Personality.12</Borland.Personality>
+			<Borland.ProjectType>CppVCLApplication</Borland.ProjectType>
+			<BorlandProject>
+				<CPlusPlusBuilder.Personality>
+					<Source>
+						<Source Name="MainSource">Kiosk.cpp</Source>
+					</Source>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">5129</VersionInfo>
+						<VersionInfo Name="CodePage">1252</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<Debugging>
+						<Debugging Name="DebugSourceDirs"/>
+					</Debugging>
+					<Parameters>
+						<Parameters Name="RunParams"/>
+						<Parameters Name="Launcher"/>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="DebugCWD"/>
+						<Parameters Name="HostApplication"/>
+						<Parameters Name="RemoteHost"/>
+						<Parameters Name="RemotePath"/>
+						<Parameters Name="RemoteParams"/>
+						<Parameters Name="RemoteLauncher"/>
+						<Parameters Name="UseRemoteLauncher">False</Parameters>
+						<Parameters Name="RemoteCWD"/>
+						<Parameters Name="RemoteDebug">False</Parameters>
+						<Parameters Name="Debug Symbols Search Path"/>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<Excluded_Packages>
+						<Excluded_Packages Name="C:\Code\4.12.2\4.12.2\Shared-Source\zip\CBuilder\..\..\..\libs\ZBldr179C10.bpl">File C:\Code\4.12.2\4.12.2\Shared-Source\zip\CBuilder\..\..\..\libs\ZBldr179C10.bpl not found</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k120.bpl">CodeGear C++Builder Office 2000 Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp120.bpl">CodeGear C++Builder Office XP Servers Package</Excluded_Packages>
+					</Excluded_Packages>
+					<ProjectProperties>
+						<ProjectProperties Name="AutoShowDeps">True</ProjectProperties>
+						<ProjectProperties Name="ManagePaths">True</ProjectProperties>
+						<ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+					</ProjectProperties>
+				</CPlusPlusBuilder.Personality>
+				<ModelSupport>False</ModelSupport>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+	</Project>

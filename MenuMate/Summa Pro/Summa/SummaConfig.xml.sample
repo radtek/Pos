@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<SummaConfig version="1.00">
+	<SummaSiteIdMap>
+		<SummaIdMapEntry siteId="99" summaSiteId="31000" />
+	</SummaSiteIdMap>
+	
+	<SummaSettings ListenPort="4444" OutputFilePath="c:\program files\menumate\summa\upload" />
+	
+	<FileMate>
+		<CopyGroup>
+			<CopyOperation name="summa" deleteSource="true" calledFromExternal="true">
+				<source url="c:\program files\menumate\summa\upload" name="summaSource" />
+				<targets>
+					<target url="ftp://ftp.summa.co.nz/" name="summaBITarget">
+						<credentials username="menumate" password="aceking21" />
+					</target>
+					<target url="c:\program files\menumate\summa\archive\{date}\" name="summaTarget" />
+				</targets>
+				<schedule>5m</schedule>
+				<pattern>*.zip</pattern>
+			</CopyOperation>
+		</CopyGroup>
+	</FileMate>
+</SummaConfig>

@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" />
+  <xs:element name="OpenWebOrder">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OpenWebOrderResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="OpenWebOrderResult" nillable="true" type="q1:DTO_WebOrderResponse" />
+        <xs:element minOccurs="0" name="outHandle" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CommitOrder">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inOrderHandle" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CommitOrderResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="CommitOrderResult" nillable="true" type="q2:DTO_WebOrderResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveIncompleteOrderHeaderSection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inOrderHandle" nillable="true" type="xs:string" />
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="inOrderHeaderSection" nillable="true" type="q3:DTO_WebOrderHeader" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveIncompleteOrderHeaderSectionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="SaveIncompleteOrderHeaderSectionResult" nillable="true" type="q4:DTO_WebOrderResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveIncompleteOrderFromSection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inOrderHandle" nillable="true" type="xs:string" />
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="inOrderFromSection" nillable="true" type="q5:DTO_WebOrderFrom" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveIncompleteOrderFromSectionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="SaveIncompleteOrderFromSectionResult" nillable="true" type="q6:DTO_WebOrderResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveIncompleteOrderAccountSection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inOrderHandle" nillable="true" type="xs:string" />
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="intOrderAccountSection" nillable="true" type="q7:DTO_WebOrderAccount" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveIncompleteOrderAccountSectionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="SaveIncompleteOrderAccountSectionResult" nillable="true" type="q8:DTO_WebOrderResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RetrieveIncompleteOrderHeaderSection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inOrderHandle" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RetrieveIncompleteOrderHeaderSectionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="RetrieveIncompleteOrderHeaderSectionResult" nillable="true" type="q9:DTO_WebOrderResponse" />
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="outHeaderSection" nillable="true" type="q10:DTO_WebOrderHeader" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RetrieveIncompleteOrderFromSection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inOrderHandle" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RetrieveIncompleteOrderFromSectionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="RetrieveIncompleteOrderFromSectionResult" nillable="true" type="q11:DTO_WebOrderResponse" />
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="outFromSection" nillable="true" type="q12:DTO_WebOrderFrom" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RetrieveIncompleteOrderAccountSection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inOrderHandle" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RetrieveIncompleteOrderAccountSectionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="RetrieveIncompleteOrderAccountSectionResult" nillable="true" type="q13:DTO_WebOrderResponse" />
+        <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="outAccountSection" nillable="true" type="q14:DTO_WebOrderAccount" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCommittedWebOrderStatus">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSiteName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="inStoreName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="inOrderHandle" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCommittedWebOrderStatusResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="GetCommittedWebOrderStatusResult" nillable="true" type="q15:DTO_WebOrderResponse" />
+        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" minOccurs="0" name="outStatus" type="q16:WebOrderStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

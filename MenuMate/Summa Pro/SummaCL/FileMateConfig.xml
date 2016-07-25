@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<FileMate>
+  <CopyGroup>
+    <CopyOperation name="summa" deleteSource="true" calledFromExternal="true">
+      <source url="c:\program files\menumate\summa\upload\" name="summaSource" />
+      <targets>
+        <target url="ftp://ftp.summa.co.nz/" name="summaBITarget">
+          <credentials username="menumate" password="aceking21" />
+        </target>
+        <target url="c:\program files\menumate\summa\archive\{date}\" name="summaTarget" />
+      </targets>
+      <schedule>5m</schedule>
+      <pattern>*.zip</pattern>
+    </CopyOperation>
+  </CopyGroup>
+</FileMate>

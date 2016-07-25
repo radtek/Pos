@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\..\..\Libraries\TntLibD.bpl"/>
+    <OBJFILES value="..\..\..\..\Obj\TntLibD.obj ..\..\..\..\Obj\TntComCtrls_Design.obj 
+      ..\..\..\..\Obj\TntDBGrids_Design.obj 
+      ..\..\..\..\Obj\TntDesignEditors_Design.obj 
+      ..\..\..\..\Obj\TntForms_Design.obj ..\..\..\..\Obj\TntMenus_Design.obj 
+      ..\..\..\..\Obj\TntUnicodeVcl_Register.obj 
+      ..\..\..\..\Obj\TntStrEdit_Design.obj 
+      ..\..\..\..\Obj\TntActions_Design.obj ..\..\..\..\Obj\TntBandActn.obj"/>
+    <RESFILES value="TntLibD.res ..\Design\TntComCtrls.dcr ..\Design\TntDBCtrls.dcr 
+      ..\Design\TntStdCtrls.dcr ..\Design\TntActnList.dcr ..\Design\TntMenus.dcr 
+      ..\Design\TntExtCtrls.dcr ..\Design\TntForms.dcr ..\Design\TntGrids.dcr 
+      ..\design\TntButtons.dcr ..\design\TntDialogs.dcr ..\design\TntExtDlgs.dcr"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) ..\Design\TntStrEdit_Design.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="bcb2kaxserver.lib indy.lib dbxcds.lib soaprtl.lib nmfast.lib dbexpress.lib 
+      inetdbxpress.lib inetdb.lib inetdbbde.lib inet.lib xmlrtl.lib 
+      visualdbclx.lib ibxpress.lib     
+      bdecds.lib cds.lib dsnap.lib vcldbx.lib bdertl.lib qrpt.lib adortl.lib"/>
+    <SPARELIBS value="rtl.lib vcldb.lib dbrtl.lib adortl.lib qrpt.lib bdertl.lib vcldbx.lib 
+      dsnap.lib cds.lib bdecds.lib     
+      ibxpress.lib visualdbclx.lib xmlrtl.lib inet.lib inetdbbde.lib inetdb.lib 
+      inetdbxpress.lib dbexpress.lib nmfast.lib bcbie.lib soaprtl.lib dbxcds.lib 
+      indy.lib bcb2kaxserver.lib"/>
+    <PACKAGES value="rtl.bpi TntLibR.bpi designide.bpi vcl.bpi dcldb.bpi designdgm.bpi vclx.bpi 
+      dclstd.bpi vcldb.bpi dbrtl.bpi dclact.bpi bcbie.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;..\Design;..\Design;..\Design;..\Design;..\Design;..\Design;..\Design;..\Design;.."/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value=""/>
+    <SYSDEFINES value="_RTLDLL;NO_STRICT;USEPACKAGES"/>
+    <MAINSOURCE value="TntLibD.cpp"/>
+    <INCLUDEPATH value="..\;..;$(BCB)\include;$(BCB)\include\vcl;..\Design"/>
+    <LIBPATH value="..\;..;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects\lib;..\Design;..\..\..\..\Libraries"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\. -I.. -I$(BCB)\include -I$(BCB)\include\vcl -I..\Design -src_suffix 
+      cpp -boa"/>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -6 -b- -k- -vi -c -tWM"/>
+    <PFLAGS value="-N2..\..\..\..\Obj -N0..\..\..\..\Obj -$Y- -$L- -$D- -$A8 -v -JPHNE -M 
+      -LUdclstd"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-l..\..\..\..\Libraries -I..\..\..\..\Obj -D&quot;Tnt Unicode VCL - Design&quot; -aa 
+      -Tpp -Gpd -x -Gn -Gl -Gi"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0pkg32.obj $(PACKAGES) Memmgr.Lib sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mti.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="TntLibD.res" FORMNAME="" UNITNAME="TntLibD.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TntLibD.cpp" FORMNAME="" UNITNAME="TntLibD" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntComCtrls_Design.pas" FORMNAME="" UNITNAME="TntComCtrls_Design" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntDBGrids_Design.pas" FORMNAME="" UNITNAME="TntDBGrids_Design" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntDesignEditors_Design.pas" FORMNAME="" UNITNAME="TntDesignEditors_Design" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntForms_Design.pas" FORMNAME="" UNITNAME="TntForms_Design" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntMenus_Design.pas" FORMNAME="" UNITNAME="TntMenus_Design" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntUnicodeVcl_Register.pas" FORMNAME="" UNITNAME="TntUnicodeVcl_Register" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntComCtrls.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntDBCtrls.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntStdCtrls.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntActnList.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntMenus.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntExtCtrls.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntForms.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntGrids.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntStrEdit_Design.pas" FORMNAME="TntStrEditDlg" UNITNAME="TntStrEdit_Design" CONTAINERID="PascalCompiler" DESIGNCLASS="TTntForm" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\TntLibR.bpi" FORMNAME="" UNITNAME="TntLibR" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\designide.bpi" FORMNAME="" UNITNAME="designide" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\dcldb.bpi" FORMNAME="" UNITNAME="dcldb" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\designdgm.bpi" FORMNAME="" UNITNAME="designdgm" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\vclx.bpi" FORMNAME="" UNITNAME="vclx" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\dclstd.bpi" FORMNAME="" UNITNAME="dclstd" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\vcldb.bpi" FORMNAME="" UNITNAME="vcldb" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\dbrtl.bpi" FORMNAME="" UNITNAME="dbrtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Design\TntActions_Design.pas" FORMNAME="" UNITNAME="TntActions_Design" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\dclact.bpi" FORMNAME="" UNITNAME="dclact" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\design\TntButtons.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\design\TntDialogs.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\design\TntExtDlgs.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\bcbie.bpi" FORMNAME="" UNITNAME="bcbie" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\TntBandActn.pas" FORMNAME="" UNITNAME="TntBandActn" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+
+[Excluded Packages]
+C:\Documents and Settings\sk\Desktop\Code\5.4\Office\Libraries\TntLibD.bpl=Tnt Unicode VCL - Design
+
+[HistoryLists\hlIncludePath]
+Count=5
+Item0=..\;..;$(BCB)\include;$(BCB)\include\vcl;..\Design
+Item1=..\;$(BCB)\include;$(BCB)\include\vcl;..;..\Design
+Item2=$(BCB)\include;$(BCB)\include\vcl;..;..\Design
+Item3=$(BCB)\include;$(BCB)\include\vcl;.\Design;..\VT
+Item4=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=6
+Item0=..\;..;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects\lib;..\Design;..\..\..\..\Libraries
+Item1=..\;..;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects\lib;..\Design
+Item2=..\;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects\lib;..;..\Design
+Item3=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects\lib;..;..\Design
+Item4=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects\lib;.\Design;..\VT
+Item5=$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlIntOutputDir]
+Count=3
+Item0=..\..\..\..\Obj
+Item1=.
+Item2=obj
+
+[HistoryLists\hlFinalOutputDir]
+Count=2
+Item0=..\..\..\..\Libraries\
+Item1=..\..\..\..\Libraries
+
+[HistoryLists\hIBPIOutputDir]
+Count=2
+Item0=..\..\..\..\Libraries
+Item1=..\..\..\..\Libraries\
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Linker]
+LibPrefix=
+LibSuffix=
+LibVersion=
+  </IDEOPTIONS>
+</PROJECT>

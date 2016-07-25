@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FileMate>
+  <CopyGroup>
+
+    <CopyOperation name="head office"
+                   deleteSource="true"
+                   calledFromExternal="false"
+                   >
+
+      <source url="c:\source\" />
+
+      <targets>
+        <target url="ftp://ftp.menumate.com/tmp/test1/site1/menus/">
+          <credentials username="menumate" password="menumate40" />
+        </target>
+        <target url="ftp://ftp.menumate.com/tmp/test1/site2/menus/">
+          <credentials username="menumate" password="menumate40" />
+        </target>
+      </targets>
+
+      <schedule>5m</schedule>
+
+      <pattern>food.csv</pattern>
+
+    </CopyOperation>
+
+    <CopyOperation name="napier food"
+                  deleteSource="true"
+                  calledFromExternal="false"
+                   >
+
+      <source url="c:\source\" />
+
+      <targets>
+        <target url="ftp://ftp.menumate.com/tmp/test1/napier/menus/">
+          <credentials username="menumate" password="menumate40" />
+        </target>
+      </targets>
+
+      <schedule>5m</schedule>
+
+      <pattern>napier-food.csv</pattern>
+
+    </CopyOperation>
+
+  </CopyGroup>
+</FileMate>

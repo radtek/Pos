@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2007/01/15 18:01:07.640.cpp,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Unit1.cpp=F:\TurboCProjects\CDemo2\uViewZip.cpp</Transaction>
+    <Transaction>2007/01/15 18:01:07.640.h,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Unit1.h=F:\TurboCProjects\CDemo2\uViewZip.h</Transaction>
+    <Transaction>2007/01/15 18:01:07.640.dfm,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Unit1.dfm=F:\TurboCProjects\CDemo2\uViewZip.dfm</Transaction>
+    <Transaction>2007/01/15 18:01:17.171.bdsproj,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Project1.bdsproj=F:\TurboCProjects\CDemo2\ViewZip.bdsproj</Transaction>
+  </Transactions>
+</BorlandProject>

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ServiceLoader>
+  <Services>
+    <Service id="1" name="PosIntegration" load="NO"   asWebService="YES"/>
+    <Service id="2" name="Reservation"    load="NO"   asWebService="YES"/>
+    <Service id="3" name="EFTPOS"         load="NO"   asWebService="YES"/>
+    <Service id="4" name="Xero"             load="YES"  asWebService="NO"/>
+    <Service id="5" name="WebMate"      load="YES"  asWebService="YES"/>
+    <Service id="8" name="ClippIntegration"      load="YES"  asWebService="YES"/>
+  </Services>
+</ServiceLoader>

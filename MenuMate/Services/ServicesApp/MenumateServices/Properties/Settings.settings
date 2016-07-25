@@ -1,0 +1,45 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MenumateServices.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="XeroIntegrationConfigFilename" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">XeroIntegration.xml</Value>
+    </Setting>
+    <Setting Name="XeroAppID" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="ServiceConfigFilename" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">ServiceLoaderConfig.xml</Value>
+    </Setting>
+    <Setting Name="DatabaseLocation" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C:\Program Files\MenuMate</Value>
+    </Setting>
+    <Setting Name="DatabaseName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Menumate.FDB</Value>
+    </Setting>
+    <Setting Name="DatabaseIPAddress" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">localhost</Value>
+    </Setting>
+    <Setting Name="MenumateLocation" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C:\Program Files\MenuMate</Value>
+    </Setting>
+    <Setting Name="MenumateName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">menumate.exe</Value>
+    </Setting>
+    <Setting Name="SalesforceCredentialsFilename" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">SalesforceCredentials.info</Value>
+    </Setting>
+    <Setting Name="WebOrderURL" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Webmate\WebOrders</Value>
+    </Setting>
+    <Setting Name="ChefmateDatabaseName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">ChefMate.fdb</Value>
+    </Setting>
+    <Setting Name="ChefmateDatabaseLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files\MenuMate</Value>
+    </Setting>
+    <Setting Name="ChefmateDatabaseIPAddress" Type="System.String" Scope="User">
+      <Value Profile="(Default)">localhost</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

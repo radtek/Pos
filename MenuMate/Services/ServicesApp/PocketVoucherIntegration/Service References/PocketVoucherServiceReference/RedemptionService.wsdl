@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://pocketvouchers.com/services2010/08" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="RedemptionService" targetNamespace="http://pocketvouchers.com/services2010/08" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="BasicHttpBinding_IRedemptionServiceV1_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <sp:TransportBinding xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:TransportToken>
+              <wsp:Policy>
+                <sp:HttpsToken RequireClientCertificate="false" />
+              </wsp:Policy>
+            </sp:TransportToken>
+            <sp:AlgorithmSuite>
+              <wsp:Policy>
+                <sp:Basic256 />
+              </wsp:Policy>
+            </sp:AlgorithmSuite>
+            <sp:Layout>
+              <wsp:Policy>
+                <sp:Lax />
+              </wsp:Policy>
+            </sp:Layout>
+            <sp:IncludeTimestamp />
+          </wsp:Policy>
+        </sp:TransportBinding>
+        <sp:SignedSupportingTokens xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy>
+            <sp:UsernameToken sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+              <wsp:Policy>
+                <sp:WssUsernameToken10 />
+              </wsp:Policy>
+            </sp:UsernameToken>
+          </wsp:Policy>
+        </sp:SignedSupportingTokens>
+        <sp:Wss10 xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+          <wsp:Policy />
+        </sp:Wss10>
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://pocketvouchers.com/services2010/08/Imports">
+      <xsd:import schemaLocation="https://services.host.pocketvouchers.com/Redemption.svc?xsd=xsd0" namespace="http://pocketvouchers.com/services2010/08" />
+      <xsd:import schemaLocation="https://services.host.pocketvouchers.com/Redemption.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="https://services.host.pocketvouchers.com/Redemption.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/PocketVouchers.Services.Voucher.Redemption" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IRedemptionServiceV1_Redeem_InputMessage">
+    <wsdl:part name="parameters" element="tns:Redeem" />
+  </wsdl:message>
+  <wsdl:message name="IRedemptionServiceV1_Redeem_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RedeemResponse" />
+  </wsdl:message>
+  <wsdl:message name="IRedemptionServiceV1_RedeemWithTransactionAmount_InputMessage">
+    <wsdl:part name="parameters" element="tns:RedeemWithTransactionAmount" />
+  </wsdl:message>
+  <wsdl:message name="IRedemptionServiceV1_RedeemWithTransactionAmount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RedeemWithTransactionAmountResponse" />
+  </wsdl:message>
+  <wsdl:message name="IRedemptionServiceV1_RedeemWithVoucherAmount_InputMessage">
+    <wsdl:part name="parameters" element="tns:RedeemWithVoucherAmount" />
+  </wsdl:message>
+  <wsdl:message name="IRedemptionServiceV1_RedeemWithVoucherAmount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RedeemWithVoucherAmountResponse" />
+  </wsdl:message>
+  <wsdl:message name="IRedemptionServiceV1_RedeemWithVoucherAmountTransactionAmount_InputMessage">
+    <wsdl:part name="parameters" element="tns:RedeemWithVoucherAmountTransactionAmount" />
+  </wsdl:message>
+  <wsdl:message name="IRedemptionServiceV1_RedeemWithVoucherAmountTransactionAmount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RedeemWithVoucherAmountTransactionAmountResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IRedemptionServiceV1">
+    <wsdl:operation name="Redeem">
+      <wsdl:input wsaw:Action="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/Redeem" message="tns:IRedemptionServiceV1_Redeem_InputMessage" />
+      <wsdl:output wsaw:Action="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/RedeemResponse" message="tns:IRedemptionServiceV1_Redeem_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RedeemWithTransactionAmount">
+      <wsdl:input wsaw:Action="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/RedeemWithTransactionAmount" message="tns:IRedemptionServiceV1_RedeemWithTransactionAmount_InputMessage" />
+      <wsdl:output wsaw:Action="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/RedeemWithTransactionAmountResponse" message="tns:IRedemptionServiceV1_RedeemWithTransactionAmount_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RedeemWithVoucherAmount">
+      <wsdl:input wsaw:Action="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/RedeemWithVoucherAmount" message="tns:IRedemptionServiceV1_RedeemWithVoucherAmount_InputMessage" />
+      <wsdl:output wsaw:Action="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/RedeemWithVoucherAmountResponse" message="tns:IRedemptionServiceV1_RedeemWithVoucherAmount_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RedeemWithVoucherAmountTransactionAmount">
+      <wsdl:input wsaw:Action="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/RedeemWithVoucherAmountTransactionAmount" message="tns:IRedemptionServiceV1_RedeemWithVoucherAmountTransactionAmount_InputMessage" />
+      <wsdl:output wsaw:Action="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/RedeemWithVoucherAmountTransactionAmountResponse" message="tns:IRedemptionServiceV1_RedeemWithVoucherAmountTransactionAmount_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IRedemptionServiceV1" type="tns:IRedemptionServiceV1">
+    <wsp:PolicyReference URI="#BasicHttpBinding_IRedemptionServiceV1_policy" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Redeem">
+      <soap:operation soapAction="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/Redeem" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RedeemWithTransactionAmount">
+      <soap:operation soapAction="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/RedeemWithTransactionAmount" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RedeemWithVoucherAmount">
+      <soap:operation soapAction="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/RedeemWithVoucherAmount" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RedeemWithVoucherAmountTransactionAmount">
+      <soap:operation soapAction="http://pocketvouchers.com/services2010/08/IRedemptionServiceV1/RedeemWithVoucherAmountTransactionAmount" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="RedemptionService">
+    <wsdl:port name="BasicHttpBinding_IRedemptionServiceV1" binding="tns:BasicHttpBinding_IRedemptionServiceV1">
+      <soap:address location="https://services.host.pocketvouchers.com/Redemption.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

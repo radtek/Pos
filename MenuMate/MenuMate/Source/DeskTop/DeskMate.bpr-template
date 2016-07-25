@@ -1,0 +1,304 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\..\..\Runtime\DeskMate.exe"/>
+    <OBJFILES value="..\..\deskobj\DeskMate.obj ..\..\deskobj\DeskMain.obj 
+      ..\..\deskobj\LanManager.obj ..\..\deskobj\VerticalSelect.obj 
+      ..\..\deskobj\MMMessageBox.obj ..\..\deskobj\ftp.obj 
+      ..\..\deskobj\OnlineManager.obj ..\..\deskobj\MMTouchKeyboard.obj 
+      ..\..\deskobj\MMRegistry.obj ..\..\deskobj\SimpleTCP.obj 
+      ..\..\deskobj\NetMessageLogs.obj ..\..\deskobj\Stream.obj 
+      ..\..\deskobj\NetManager.obj ..\..\deskobj\Manager.obj 
+      ..\..\deskobj\SystemConfigDeskMate.obj ..\..\deskobj\MM_DBCore.obj 
+      ..\..\deskobj\ZForm.obj ..\..\deskobj\ReportDisplay.obj 
+      ..\..\deskobj\tinystr.obj ..\..\deskobj\tinyxml.obj 
+      ..\..\deskobj\tinyxmlerror.obj ..\..\deskobj\tinyxmlparser.obj 
+      ..\..\deskobj\NetManagerClient.obj ..\..\deskobj\NetMessageKillProc.obj 
+      ..\..\deskobj\Processing.obj ..\..\deskobj\EventsContact.obj 
+      ..\..\deskobj\ThemeManager.obj ..\..\deskobj\MMTouchNumpad.obj"/>
+    <RESFILES value="DeskMate.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) DeskMain.dfm VerticalSelect.dfm 
+      &quot;..\..\..\Touch Utils\MMMessageBox.dfm&quot; ..\..\..\LogsMate\Source\ftp.dfm 
+      &quot;..\..\..\Touch Utils\MMTouchKeyboard.dfm&quot; SystemConfigDeskMate.dfm 
+      ..\ReportDisplay.dfm ..\Processing.dfm &quot;..\..\..\Touch Utils\MMTouchNumpad.dfm&quot;"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="bcbie.lib vclie.lib dbexpress.lib dsnap.lib cds.lib inet.lib 
+      ButtonPack.lib Indy60.lib ibxpress.lib vcljpg.lib nmfast.lib bcbsmp.lib 
+      vclsmp.lib vclx.lib qrpt.lib   bdertl.lib vcldb.lib 
+      dbrtl.lib vcl.lib rtl.lib"/>
+    <SPARELIBS value="rtl.lib vcl.lib dbrtl.lib vcldb.lib bdertl.lib   qrpt.lib 
+      vclx.lib vclsmp.lib bcbsmp.lib nmfast.lib vcljpg.lib ibxpress.lib 
+      Indy60.lib ButtonPack.lib inet.lib cds.lib dsnap.lib dbexpress.lib 
+      vclie.lib bcbie.lib"/>
+    <PACKAGES value="vclx.bpi rtl.bpi vcl.bpi dbrtl.bpi vcldb.bpi bdertl.bpi vcldbx.bpi 
+      dclocx.bpi vclsmp.bpi ibsmp.bpi bcbsmp.bpi"/>
+    <PATHCPP value=".;&quot;..\..\..\Touch Utils&quot;;..\..\..\LogsMate\Source;..;..\Security;..\IBLogs;..\..\..\SimpleTCP;..\System\Core;..\..\..\..\Shared-Source\TZForm;..\..\..\Registration\Source;..\..\..\..\Shared-Source\tinyXML;..\SmartCards"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="_WINSOCKAPI_;NO_WIN32_LEAN_AND_MEAN;DeskMate"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="DeskMate.cpp"/>
+    <INCLUDEPATH value="..\SmartCards;..\;..\..\..\..\Shared-Source\tinyXML;..\..\..\Registration\Source;..;..\..\..\..\Shared-Source\TZForm;..\System\Core;..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;&quot;..\..\..\Components BCB6\TouchButtons&quot;;..\..\..\LogsMate\Source;&quot;..\..\..\Touch Utils&quot;;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;&quot;..\..\..\Components BCB6\Touch\Button&quot;;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins;&quot;..\..\..\Components BCB6\CPort264\Sources&quot;"/>
+    <LIBPATH value="&quot;..\..\..\Components BCB6\Touch\Button&quot;;..\SmartCards;..\;&quot;..\..\..\..\Shared-Source\tinyXML&quot;;..\..\..\Registration\Source;..;&quot;..\..\..\..\Shared-Source\TZForm&quot;;..\System\Core;..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..\..\..\LogsMate\Source;&quot;..\..\..\Touch Utils&quot;;$(BCB)\Source\Indy\C6;&quot;..\..\..\Components BCB6\TouchButtons&quot;;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins"/>
+    <WARNINGS value="-w-par -w-8027 -w-8026"/>
+    <WARNOPTSTR value=""/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\SmartCards -I..\. -I.. -I..\..\..\..\Shared-Source\tinyXML 
+      -I..\..\..\Registration\Source -I..\..\..\..\Shared-Source\TZForm 
+      -I..\System\Core -I..\..\..\SimpleTCP -I..\POS -I..\IBLogs -I..\Security 
+      -I&quot;..\..\..\Components BCB6\TouchButtons&quot; -I..\..\..\LogsMate\Source 
+      -I&quot;..\..\..\Touch Utils&quot; -I$(BCB)\include -I$(BCB)\Projects 
+      -I$(BCB)\include\vcl -I$(BCB)\Imports -I$(BCB)\Source\Indy\C6 
+      -I&quot;..\..\..\Components BCB6\Touch\Button&quot; -I$(BCB)\Mad\madBasic\BCB6 
+      -I$(BCB)\Mad\madDisAsm\BCB6 -I$(BCB)\Mad\madExcept\BCB6 
+      -I$(BCB)\Mad\madExcept\..\Plugins -src_suffix cpp -D_WINSOCKAPI_ 
+      -DNO_WIN32_LEAN_AND_MEAN -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Q -Vx -Ve -xp -Tkh30000 -X- -a8 -b- -k- -vi 
+      -c -tW -tWM"/>
+    <PFLAGS value="-N2..\..\deskobj -N0..\..\deskobj -$Y- -$L- -$D- -$A8 -v -M -JPHNE"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-I..\..\deskobj -D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="DeskMate.cpp" FORMNAME="" UNITNAME="DeskMate" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DeskMate.res" FORMNAME="" UNITNAME="DeskMate" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DeskMain.cpp" FORMNAME="frmMain" UNITNAME="DeskMain" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="LanManager.cpp" FORMNAME="" UNITNAME="LanManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VerticalSelect.cpp" FORMNAME="frmVerticalSelect" UNITNAME="VerticalSelect" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\Touch Utils\MMMessageBox.cpp" FORMNAME="frmMessageBox" UNITNAME="MMMessageBox" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\LogsMate\Source\ftp.cpp" FORMNAME="frmFTP" UNITNAME="ftp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="OnlineManager.cpp" FORMNAME="" UNITNAME="OnlineManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\Touch Utils\MMTouchKeyboard.cpp" FORMNAME="frmTouchKeyboard" UNITNAME="MMTouchKeyboard" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\MMRegistry.cpp" FORMNAME="" UNITNAME="MMRegistry" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\SimpleTCP\SimpleTCP.cpp" FORMNAME="" UNITNAME="SimpleTCP" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\LogsMate\Source\NetMessageLogs.cpp" FORMNAME="" UNITNAME="NetMessageLogs" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\SimpleTCP\Stream.cpp" FORMNAME="" UNITNAME="Stream" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\NetManager.cpp" FORMNAME="" UNITNAME="NetManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Manager.cpp" FORMNAME="" UNITNAME="Manager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SystemConfigDeskMate.cpp" FORMNAME="frmSystemConfig" UNITNAME="SystemConfigDeskMate" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\System\Core\MM_DBCore.cpp" FORMNAME="" UNITNAME="MM_DBCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\..\Shared-Source\TZForm\ZForm.cpp" FORMNAME="" UNITNAME="ZForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ReportDisplay.cpp" FORMNAME="frmReportDisplay" UNITNAME="ReportDisplay" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\..\Shared-Source\tinyXML\tinystr.cpp" FORMNAME="" UNITNAME="tinystr.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\..\Shared-Source\tinyXML\tinyxml.cpp" FORMNAME="" UNITNAME="tinyxml.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\..\Shared-Source\tinyXML\tinyxmlerror.cpp" FORMNAME="" UNITNAME="tinyxmlerror.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\..\Shared-Source\tinyXML\tinyxmlparser.cpp" FORMNAME="" UNITNAME="tinyxmlparser.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\NetManagerClient.cpp" FORMNAME="" UNITNAME="NetManagerClient" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\NetMessageKillProc.cpp" FORMNAME="" UNITNAME="NetMessageKillProc" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Processing.cpp" FORMNAME="frmProcessing" UNITNAME="Processing" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\EventsContact.cpp" FORMNAME="" UNITNAME="EventsContact" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ThemeManager.cpp" FORMNAME="" UNITNAME="ThemeManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\Touch Utils\MMTouchNumpad.cpp" FORMNAME="frmTouchNumpad" UNITNAME="MMTouchNumpad" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=2
+MinorVer=7
+Release=1
+Build=23
+Debug=0
+PreRelease=1
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=IQWorks Ltd
+FileDescription=MenuMate P.O.S
+FileVersion=2.7.1.23
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=MenuMate
+ProductVersion=2.7.1.23
+Comments=
+
+[Excluded Packages]
+d:\development\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+c:\program files\borland\cbuilder6\bin\dclClxIBXtras60.bpl=Borland InterBase Express Extras (Clx)
+c:\program files\borland\cbuilder6\Bin\dclIBXtras60.bpl=Borland InterBase Express Extras
+
+[HistoryLists\hlIncludePath]
+Count=30
+Item0=..\;..\System\Core;..;..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..\..\..\Components BCB6\TouchButtons;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\Touch\Button
+Item1=..\System\Core;..\;..;..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..\..\..\Components BCB6\TouchButtons;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\Touch\Button
+Item2=..\;..;..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..\..\..\Components BCB6\TouchButtons;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\Touch\Button
+Item3=..\;..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..;..\..\..\Components BCB6\TouchButtons;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\Touch\Button
+Item4=..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..\;..;..\..\..\Components BCB6\TouchButtons;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\Touch\Button
+Item5=..\;..;..\..\..\Components BCB6\TouchButtons;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\Touch\Button
+Item6=..\;..\..\..\Components BCB6\TouchButtons;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\Touch\Button
+Item7=..\..\..\Components BCB6\TouchButtons;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\Touch\Button
+Item8=..\..\..\Components BCB6\TouchButtons;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;C:\Code\MenuMate Beta\Components BCB6\Touch\Button
+Item9=..\..\..\Components BCB6\TouchButtons;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;C:\Code\MenuMate Beta\Components BCB6\TouchButtons;C:\Code\MenuMate Beta\Components BCB6\Touch\Button
+Item10=..\..\..\Touch Utils;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6;C:\Code\MenuMate Beta\Components BCB6\TouchButtons;C:\Code\MenuMate Beta\Components BCB6\Touch\Button
+Item11=..\..\..\Touch Utils;C:\Code\MenuMate Beta\Components BCB6\TouchButtons;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6
+Item12=..\..\..\Touch Utils;..\..\..\Components BCB6\TouchButtons;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6
+Item13=..\..\..\Components BCB6\TouchButtons;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;$(BCB)\Source\Indy\C6
+Item14=..\..\..\Components BCB6\TouchButtons;Desktop;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports
+Item15=Desktop;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports
+Item16=Desktop;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;
+Item17=$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;D:\components\browsefolders\
+Item18=Desktop;D:\CBuilder5\Projects\IBLogs\;D:\components\browsefolders\;D:\Components\7vclb451\;D:\CBuilder5\Projects\POS\;D:\CBuilder5\Projects\Security\;D:\CBuilder5\Projects\Recover\;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;D:\bcbcomponents\Touch\Button\;D:\bcbcomponents\Touch\Checkbox\;D:\bcbcomponents\Touch\RadioButton\;E:\Zip\
+Item19=IBLogs;..\..\components\browsefolders;..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;D:\bcbcomponents\Touch\Button\;D:\bcbcomponents\Touch\Checkbox\;D:\bcbcomponents\Touch\RadioButton\;E:\Zip\
+Item20=..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;D:\bcbcomponents\Touch\Button\;D:\bcbcomponents\Touch\Checkbox\;D:\bcbcomponents\Touch\RadioButton\;E:\Zip\
+Item21=..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;D:\bcbcomponents\Touch\Button\;D:\bcbcomponents\Touch\Checkbox\;D:\bcbcomponents\Touch\RadioButton\;E:\Zip
+Item22=..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;D:\bcbcomponents\Touch\Button\;D:\bcbcomponents\Touch\Checkbox\;D:\bcbcomponents\Touch\RadioButton\
+Item23=..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\..\bcbcomponents\Touch\Button;..\..\..\bcbcomponents\Touch\Checkbox;..\..\..\bcbcomponents\Touch\RadioButton
+Item24=..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;D:\bcbcomponents\Touch\Button;D:\bcbcomponents\Touch\Checkbox;D:\bcbcomponents\Touch\RadioButton
+Item25=D:\bcbcomponents\Touch\Button;..\..\Components\Touch\Radiobutton;..\..\Components\Touch\Checkbox;..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports
+Item26=..\..\Components\Touch\Button;..\..\Components\Touch\Radiobutton;..\..\Components\Touch\Checkbox;..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports
+Item27=D:\Code\Components\Touch\Button;D:\Code\Components\Touch\Radiobutton;D:\Code\Components\Touch\Checkbox;D:\Code\Components\7vclb451;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports
+Item28=..\..\..\bcbcomponents\touch\radiobutton;..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox;..\..\..\7vclb451;..\..\..\BCBComponents\BrowseFolders;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports
+Item29=C:\Program Files\Borland\CBuilder4\Projects\;..\..\..\bcbcomponents\touch\radiobutton;POS;Security;Recover;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\..\7vclb451;..\..\..\BCBComponents\BrowseFolders;..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox
+
+[HistoryLists\hlLibraryPath]
+Count=30
+Item0=..\;..\System\Core;..;..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item1=..\System\Core;..\;..;..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item2=..\;..;..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item3=..\;..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item4=..\..\..\SimpleTCP;..\POS;..\IBLogs;..\Security;..\;..;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item5=..\;..;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item6=..\;..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item7=..\..\..\LogsMate\Source;..\..\..\Touch Utils;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item8=..\..\..\Touch Utils;$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item9=$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item10=$(BCB)\Source\Indy\C6;..\..\..\Components BCB6\TouchButtons;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;Desktop
+Item11=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;Desktop
+Item12=Desktop;D:\CBuilder5\Projects\IBLogs\;D:\components\browsefolders\;D:\Components\7vclb451\;D:\CBuilder5\Projects\POS\;D:\CBuilder5\Projects\Security\;D:\CBuilder5\Projects\Recover\;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;D:\bcbcomponents\Touch\Checkbox\;D:\bcbcomponents\Touch\Button\;D:\bcbcomponents\Touch\RadioButton\;E:\Zip\
+Item13=IBLogs;..\..\components\browsefolders;..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;D:\bcbcomponents\Touch\Checkbox\;D:\bcbcomponents\Touch\Button\;D:\bcbcomponents\Touch\RadioButton\;E:\Zip\
+Item14=..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;D:\bcbcomponents\Touch\Checkbox\;D:\bcbcomponents\Touch\Button\;D:\bcbcomponents\Touch\RadioButton\;E:\Zip\
+Item15=..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;D:\bcbcomponents\Touch\Checkbox\;D:\bcbcomponents\Touch\Button\;D:\bcbcomponents\Touch\RadioButton\;E:\Zip
+Item16=..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;D:\bcbcomponents\Touch\Checkbox\;D:\bcbcomponents\Touch\Button\;D:\bcbcomponents\Touch\RadioButton\
+Item17=..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\..\bcbcomponents\Touch\Checkbox;..\..\..\bcbcomponents\Touch\Button;..\..\..\bcbcomponents\Touch\RadioButton
+Item18=..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;D:\bcbcomponents\Touch\Checkbox;D:\bcbcomponents\Touch\Button;D:\bcbcomponents\Touch\RadioButton
+Item19=..\..\Components\Touch\Button;..\..\Components\Touch\Checkbox;..\..\Components\Touch\RadioButton;..\..\Components\7vclb451;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item20=D:\Code\Components\Touch\Button;D:\Code\Components\Touch\Checkbox;D:\Code\Components\Touch\RadioButton;D:\Code\Components\7vclb451;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item21=..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox;..\..\..\bcbcomponents\touch\radiobutton;..\..\..\BCBComponents\BrowseFolders;..\..\..\7vclb451;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports
+Item22=C:\Program Files\Borland\CBuilder4\Projects\;..\..\..\bcbcomponents\touch\radiobutton;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\..\7vclb451;..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox;..\..\..\BCBComponents\BrowseFolders
+Item23=C:\Program Files\Borland\CBuilder4\Projects;..\..\..\bcbcomponents\touch\radiobutton;C:\Program Files\Borland\CBuilder4\Projects\;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\..\7vclb451;..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox;..\..\..\BCBComponents\BrowseFolders
+Item24=..\..\..\bcbcomponents\touch\radiobutton;C:\Program Files\Borland\CBuilder4\Projects\;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\..\7vclb451;..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox;..\..\..\BCBComponents\BrowseFolders
+Item25=C:\Program Files\Borland\CBuilder4\Projects\;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\..\7vclb451;..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox;..\..\..\BCBComponents\BrowseFolders
+Item26=C:\Program Files\Borland\CBuilder4\Projects;C:\Program Files\Borland\CBuilder4\Projects\;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\..\7vclb451;..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox;..\..\..\BCBComponents\BrowseFolders
+Item27=C:\Program Files\Borland\CBuilder4\Projects;POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;C:\Program Files\Borland\CBuilder4\Projects\;..\..\..\7vclb451;..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox;..\..\..\BCBComponents\BrowseFolders
+Item28=POS;Security;Recover;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;C:\Program Files\Borland\CBuilder4\Projects\;..\..\..\7vclb451;..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox;..\..\..\BCBComponents\BrowseFolders
+Item29=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;POS;Security;Recover;C:\Program Files\Borland\CBuilder4\Projects\;..\..\..\7vclb451;..\..\..\bcbcomponents\touch\button;..\..\..\BCBComponents\Touch\Checkbox;..\..\..\BCBComponents\BrowseFolders
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=7
+Item0=_WINSOCKAPI_;NO_WIN32_LEAN_AND_MEAN
+Item1=_WINSOCKAPI_
+Item2=_WINSOCKAPI_;_DEBUG
+Item3=_DEBUG
+Item4=USEPACKAGES
+Item5=_RTLDLL
+Item6=_RTLDLL;USEPACKAGES
+
+[HistoryLists\hlIntOutputDir]
+Count=8
+Item0=..\..\deskobj
+Item1=..\deskobj
+Item2=D:\Code\MenuMateDev\deskobj
+Item3=D:\CBuilder5\obj\
+Item4=..\obj
+Item5=d:\code\menumate\obj
+Item6=Obj
+Item7=D:\Code\Source\MenuMate\Obj
+
+[HistoryLists\hlRunParameters]
+Count=4
+Item0=+verify +archive
+Item1=+verify -archive
+Item2=-verify -archive
+Item3=+verify
+
+[HistoryLists\hlFinalOutputDir]
+Count=30
+Item0=..\..\..\Execs\
+Item1=..\..\..\Execs
+Item2=C:\Program Files\MenuMate\
+Item3=C:\Program Files\MenuMate
+Item4=..\Exec\
+Item5=D:\Code\MenuMateDev\Exec
+Item6=D:\Code\MenuMate\Exec
+Item7=\\Tier\DEMOMENUMATE\
+Item8=\\Tier\DEMOMENUMATE
+Item9=..\ExecItem1=D:\Code\MenuMate\Exec
+Item10=
+Item11=..\ExecItem1=D:\Code\MenuMate\Exec
+Item12=
+Item13=..\ExecItem1=D:\Code\MenuMate\Exec
+Item14=
+Item15=..\ExecItem1=D:\Code\MenuMate\Exec
+Item16=
+Item17=..\ExecItem1=D:\Code\MenuMate\Exec
+Item18=
+Item19=D:\Code\Exec
+Item20=..\ExecItem1=D:\Code\MenuMate\Exec
+Item21=
+Item22=..\ExecItem1=D:\Code\MenuMate\Exec
+Item23=
+Item24=..\ExecItem1=D:\Code\MenuMate\Exec
+Item25=
+Item26=..\ExecItem1=D:\Code\MenuMate\Exec
+Item27=
+Item28=..\ExecItem1=D:\Code\MenuMate\Exec
+Item29=
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

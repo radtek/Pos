@@ -1,0 +1,90 @@
+object frmMessage: TfrmMessage
+  Tag = 1024
+  Left = 393
+  Top = 88
+  BorderIcons = []
+  BorderStyle = bsDialog
+  Caption = 'Options'
+  ClientHeight = 590
+  ClientWidth = 206
+  Color = clBlack
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  Scaled = False
+  OnClose = FormClose
+  OnResize = FormResize
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object pnlCourses: TPanel
+    Left = 8
+    Top = 8
+    Width = 190
+    Height = 577
+    Color = 14342874
+    ParentBackground = False
+    TabOrder = 0
+    OnResize = pnlCoursesResize
+    object sbMessages: TScrollBox
+      Left = 1
+      Top = 1
+      Width = 188
+      Height = 497
+      HorzScrollBar.Visible = False
+      VertScrollBar.ButtonSize = 1
+      VertScrollBar.Color = clSilver
+      VertScrollBar.ParentColor = False
+      VertScrollBar.Smooth = True
+      VertScrollBar.Size = 1
+      VertScrollBar.Style = ssFlat
+      Align = alTop
+      BorderStyle = bsNone
+      Color = 14342874
+      Ctl3D = False
+      ParentColor = False
+      ParentCtl3D = False
+      TabOrder = 0
+    end
+    object btnMsgUp: TTouchBtn
+      Left = 8
+      Top = 512
+      Width = 65
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = '/\'
+      ButtonColor = clWhite
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseDown = btnMsgUpMouseDown
+    end
+    object btnMsgDown: TTouchBtn
+      Left = 112
+      Top = 512
+      Width = 65
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = '\/'
+      ButtonColor = clWhite
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseDown = btnMsgDownMouseDown
+    end
+  end
+end

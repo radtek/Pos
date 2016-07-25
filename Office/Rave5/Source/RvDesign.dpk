@@ -1,0 +1,47 @@
+{*************************************************************************}
+{ Rave Reports version 5.1                                                }
+{ Copyright (c), 1995-2002, Nevrona Designs, all rights reserved          }
+{*************************************************************************}
+package RvDesign;
+
+{$DESCRIPTION 'Rave Design-time Library'}
+{$IMPLICITBUILD OFF}
+{$DESIGNONLY}
+{$LIBSUFFIX '50'}
+
+requires
+  VCL,
+  VCLX,
+  RvCore,
+  RvStandard,
+  RvReport,
+  RvEngine,
+  RvGraphics,
+  RvBarcode;
+
+contains
+  RvDesignReg,
+  RvPEAnch,
+  RvPEData,
+  RvPEDTxt,
+  RvPEMemo,
+  RvPEPLst,
+  RvPEProj,
+  RvPEStrL,
+  RvPESys,
+  RvPEDBAuth,
+  RvPEBand,
+  RvPERLoc,
+  RvPEDMS,
+  RvPECalc,
+  RvPEImg,
+  RvPEMail,
+  RvPEQuery,
+  RvPERpt,
+  RvPDData,
+  RvPDEvnt,
+//RvWzExpert,
+  RvWzSimp,
+  RvWzMD;
+
+end.

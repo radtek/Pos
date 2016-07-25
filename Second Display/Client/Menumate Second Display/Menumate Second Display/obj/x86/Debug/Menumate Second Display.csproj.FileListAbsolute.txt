@@ -1,0 +1,86 @@
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.MainForm.resources
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.Properties.Resources.resources
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\Menumate Second Display.exe
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\Menumate Second Display.pdb
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMChangingImageController.dll
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMChangingImageManager.dll
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMExtensions.dll
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMOrderItemsController.dll
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\OrderItemsManager.dll
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\XMLManager.dll
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMChangingImageController.pdb
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMChangingImageManager.pdb
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMExtensions.pdb
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\OrderItemsManager.pdb
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.exe
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.pdb
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\Menumate Second Display.exe
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\Menumate Second Display.pdb
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMChangingImageController.dll
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMChangingImageManager.dll
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMExtensions.dll
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMOrderItemsController.dll
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\OrderItemsManager.dll
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\XMLManager.dll
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\SharedMemory.dll
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMChangingImageController.pdb
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMChangingImageManager.pdb
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMExtensions.pdb
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMOrderItemsController.pdb
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\OrderItemsManager.pdb
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\SharedMemory.pdb
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.MainForm.resources
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.Properties.Resources.resources
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.exe
+C:\Code\Git\local menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.pdb
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\SharedMemory.dll
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\MMOrderItemsController.pdb
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Menumate Second Display\bin\Debug\SharedMemory.pdb
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Ready for Distribution\Menumate Second Display.exe
+C:\Code\GIT\remoteMenumate\Second Display\Client\Menumate Second Display\Ready for Distribution\Menumate Second Display.pdb
+C:\Code\GIT\remoteMenumate\Runtime\Customer Display\Menumate Second Display.exe
+C:\Code\GIT\remoteMenumate\Runtime\Customer Display\Menumate Second Display.pdb
+C:\Code\Git\local menumate\Runtime\Customer Display\Menumate Second Display.exe
+C:\Code\Git\local menumate\Runtime\Customer Display\Menumate Second Display.pdb
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.exe
+C:\Code\Git\local menumate sprint\Runtime\Customer Display\Menumate Second Display.exe
+C:\Code\Git\local menumate sprint\Runtime\Customer Display\Menumate Second Display.pdb
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.MainForm.resources
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.Properties.Resources.resources
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.pdb
+C:\Code\Git\local menumate V6\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.exe
+C:\Code\Git\local menumate V6\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.pdb
+C:\Code\Git\local menumate V6\Runtime\Customer Display\Menumate Second Display.exe
+C:\Code\Git\local menumate V6\Runtime\Customer Display\Menumate Second Display.pdb
+C:\Code\Git\local menumate V6\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Code\Git\local menumate V6\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.MainForm.resources
+C:\Code\Git\local menumate V6\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.Properties.Resources.resources
+C:\Code\Git\local menumate V6\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Code\Git\local menumate V6\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.exe
+C:\Code\MenumateSourceCode\Menumate\Runtime\Customer Display\Menumate Second Display.exe
+C:\Code\MenumateSourceCode\Menumate\Runtime\Customer Display\Menumate Second Display.pdb
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.MainForm.resources
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.Properties.Resources.resources
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.pdb
+C:\work\Menumate\Runtime\Customer Display\Menumate Second Display.exe
+C:\work\Menumate\Runtime\Customer Display\Menumate Second Display.pdb
+C:\work\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\work\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.MainForm.resources
+C:\work\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate_Second_Display.Properties.Resources.resources
+C:\work\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\work\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\work\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.exe
+C:\work\Menumate\Second Display\Client\Menumate Second Display\Menumate Second Display\obj\x86\Debug\Menumate Second Display.pdb

@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 //EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Time2HELP 1.0; Standard Template">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=utf8">
+<TITLE>TThemeServices.DrawElement Method</TITLE>
+<Style>Body, TD {font-family: "Verdana"; font-size: 10pt};
+PRE {font-family: "Courier New"; font-size: 10pt; margin-top: 0; margin-bottom: 0}
+TR.odd {background-color: #F8F8F8};
+TR.even {background-color: #EEEEEE};
+Table.list {background-color: #FFFFFF};
+TD {vertical-align : top};
+TD.stripelight {background-image: url(images/StripeLight.gif);};
+TD.stripedark {background-image: url(images/StripeDark.gif);};
+</Style>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<BASEFONT NAME="Verdana" Size="2"><Table Border="0" Width="100%" BGColor="#FFFFFF"><TR><TD><Font Color="#000000F"><B>DrawElement method</B></Font></TD></TR></Table>Draws a certain themed element.<P><B>Applies to</B><Br><A HREF="IDH_Class_TThemeServices.htm">TThemeServices</A><P><B>Declaration</B><Br><Font Face="Courier New"><B>procedure</B> DrawElement(DC: HDC; Details: <A HREF="IDH_Type_TThemedElementDetails.htm">TThemedElementDetails</A>; <B>const</B> R: TRect; ClipRect: PRect = <B>nil</B>);</Font><P><B>Description</B><Br />This method is responsible to draw the element given by <B>Details</B>. <B>DC</B> is the target where on which to paint. <B>Details</B> describes what to draw and can be filled by <A HREF="IDH_TThemeServices_GetElementDetails.htm">GetElementDetails</A>. <B>R</B> determines the area in the target where to draw the element. Note that the way how the element is drawn is determined by the theme. It can be stretched to fit, centered without stretching, or it can be tiled. The class has no control over the way, however. <B>ClipRect</B> is optional and limits painting to the given coordinates.</P><P><HR>
+<TABLE BORDER="0" WIDTH="100%" BGCOLOR="#404040" cellspacing=0><TR><TD class="stripelight">
+<Font Color=Black><Large>Copyright © 1999, 2002 <B>Mike Lischke</B></Large</Font>
+</TD></TR></Table>
+<Small><A HREF="http://www.lischke-online.de">http://www.lischke-online.de</A></Small>

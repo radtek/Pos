@@ -1,0 +1,3 @@
+1. Install openssl-0.9.8h-1-setup.exe
+2. After successful installation, open path C:\Program Files (x86)\GnuWin32\bin (64 bit OS) --OR-- C:\Program Files\GnuWin32\bin (32 bit OS)
+3. Find these libeay32.dll and libssl32.dll in bin folder. Copy these two dlls from path- C:\Program Files (x86)\GnuWin32\bin and paste into path - C:\Windows.

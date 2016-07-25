@@ -1,0 +1,23 @@
+{*************************************************************************}
+{ Rave Reports version 5.1                                                }
+{ Copyright (c), 1995-2002, Nevrona Designs, all rights reserved          }
+{*************************************************************************}
+package RvReport;
+
+{$DESCRIPTION 'Rave Report Components'}
+{$IMPLICITBUILD OFF}
+{$RUNONLY}
+{$LIBSUFFIX '50'}
+
+{$R RvCsData.res}
+{$R RvCsRpt.res}
+
+requires
+  RvCore,
+  RvStandard;
+
+contains
+  RvCsData,
+  RvCsRpt;
+
+end.

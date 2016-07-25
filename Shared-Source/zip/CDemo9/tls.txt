@@ -1,0 +1,251 @@
+
+                 Multi-threaded DLLs
+
+NOTE: This discussion is limited to the architecture used by
+the Delphi Zip DLLs. This paper does NOT apply to all types
+of DLLs. COM/DCOM DLLs have a more sophisticated model.
+
+I am intentionally being very redundant here. I often say 
+the same thing several different ways. I do this in order
+to ensure that you understand the material. This is a
+confusing subject!
+
+-    -    -    -    -    -    -   -   -   -   -   -   -
+
+A "regular DLL" does not create any threads on it's own.
+It is just a module that services requests made by an
+application program. That application program might have
+several threads of execution, so in that case each thread
+might want to call a DLL function independantly.
+
+A DLL normally allocates memory for it's local variables
+within the process space of the program who called it (your
+Delphi or BCB program). If several processes use the DLL
+at the same time, each process uses it's own memory and
+there is no conflict. As far as different processes are
+concerned the DLLs are fully reentrant.
+
+The DLL does not allocate any memory until you call a 
+function that needs to have some memory. For example, the
+functions to actually zip or unzip files need to allocate
+memory when they are called. After the function is done
+processing they free their memory and return to the caller.
+
+We won't have any problems as long as only one thread uses
+the DLL at a time. A non-multi-threaded program is said
+to have one thread only - the main processing thread.
+So, if application programs don't try to call DLL functions
+from more than 1 thread we won't have any problems and
+the rest of this paper isn't needed!
+
+A "multi-threaded" program has more than one thread of
+execution, but all threads operate within one process.
+Since there's only one process, that means all memory used
+by all the threads comes from one pool for that process.
+It's not a problem to take memory from the same pool as
+long as each thread doesn't attempt to use memory allocated
+for a different thread.
+
+Now, if a multi-threaded Delphi (or BCB) program wants to
+use the DLL from more than one thread at a time we have
+to allocate memory separately for each thread. They can 
+not use the same memory at the same time or we could have
+serious trouble!
+
+The "trick" in our case is to make sure each thread has it's
+own memory block.  It sounds easy!  But the real problem
+is "where do we store the memory pointer for a particular
+thread?".  We can't store it in a global variable because
+all threads would end up using the same memory block
+(which would cause data corruption).
+
+Microsoft has provided us with a set of functions that 
+support a table that can be used to track all memory
+allocations for individual threads.
+
+This type of memory is called "Thread Local Storage"(TLS),
+and the Windows functions that support this concept usually
+begin with the 3 letters "Tls" (there are exceptions to
+every rule).
+
+Each process can have one TLS table to keep track of storage
+allocations that are unique to specific threads within
+that process. 
+
+When the DLL is loaded, the "main" thread makes a call to
+TlsAlloc to set up the TLS table for the process. There is
+a global integer used to identify the TLS table after it has
+been allocated. I think of this as being a pointer to the TLS
+table, but Microsoft doesn't like to call it a pointer - they
+call it a "TLS Index". Note that there is only one index
+value used by all threads - the index just locates the table,
+not a specific entry.
+
+Be careful about the terminology here - Microsoft usually
+calls the TLS table an "index". In my view the "index" is
+just used to locate the table. After all, the index is just 
+a DWORD integer value!  Anytime you use "win32.hlp" to get
+info on TLS functions, you won't see the word "table" - they
+always call it an "index".
+
+TLS tables are typically allocated once during DLL init-
+ialization. The table is allocated on a per-process basis, 
+so this only happens once when the DLL is loaded.
+
+Once the TLS table is allocated, each thread of the process
+can use the it to hold a pointer to it's own memory block.
+First, when each thread calls a zip or unzip function, it 
+allocates it's own block of memory, then it saves the memory
+block pointer in the TLS table by making a call to
+TlsSetValue. 
+
+IMPORTANT! Our DLL code never needs to do a table lookup to
+find an entry for a specific thread. Windows will do that
+lookup for us because Windows knows which thread is currently
+running. Although we can probably get an identifier to tell
+us which thread is running, we don't have to go to that much
+trouble because Windows will always fetch us the pointer for
+whichever thread is now running.
+
+After a thread has saved a pointer to it's own memory with
+TlsSetValue, it can call TlsGetValue later to retrieve that
+stored value. 
+
+Now I'll explain the details of how these TLS tables are
+created and used.
+
+When a DLL is loaded it can have a function named DllMain
+(Borland uses DllEntryPoint) that gets called to initialize
+various memory stuctures. When Windows calls this function
+it passes a special flag to indicate what type of init-
+ialization needs to be done.  One of the flags tells it
+that the process is being initialized, and another flag is
+used to signal when a thread is being initialized. In our
+case we are only taking action when the process initialization
+occurs, and when the process is later detached.
+
+As it turns out we don't have to take action when each thread
+is initialized because the Delphi Zip DLLs are stateless
+(stateless as it pertains to threads). We don't have to save
+any thread-unique state information accross different calls to
+the DLL. We only want to use thread-unique memory while a DLL
+function is executing. Once a DLL function call is done we
+free the memory block for that thread.
+
+There is one process-unique value we have to store accross
+calls to the DLL - the index to the TLS table. This index is
+needed every time any thread wants to save or retrieve a
+thread-specific memory pointer.
+
+This is how the TLS table is allocated in the Borland C++
+code. This does not allocate a memory block - just a table
+to contain pointers to blocks that will be allocated later:
+
+int WINAPI DllEntryPoint( HINSTANCE hinst, 
+                          unsigned long reason,
+                          void * ) {
+  switch ( reason ) {
+    case DLL_PROCESS_ATTACH:	// Allocate a index.
+      if ( (TgbIndex = TlsAlloc()) == 0xFFFFFFFF )
+         return 0;
+      break;
+
+    case DLL_PROCESS_DETACH:
+	ReleaseGlobalPointer();
+	TlsFree( TgbIndex );	// Release the index.
+  }
+  return 1; // good exit code
+}
+
+"TgbIndex" is a global variable that saves the index used to
+locate the TLS table.  This is the only state information
+that is saved accross calls to the DLL.
+
+Note that each process has it's own TLS table, and it's own
+copy of the "TgbIndex". But the threads within each process
+share the same table and index.
+
+Memory is allocated for a specific thread later when a call
+is made to zip or unzip files. 
+
+When the zip or unzip functions are called, this function
+is used to either allocate memory, or to return a pointer to
+the memory that was already allocated for that thread:
+
+/*
+ * Get the thread global data area, if not present create one 
+ * first.
+ */
+struct Globals *GetGlobalPointer( void ) {
+  struct Globals *pG = TlsGetValue( TgbIndex );
+
+  if ( !pG ) {
+    if ( GetLastError() != NO_ERROR )
+      _cexit();
+
+    // We did not have a data area, we'll have to create it first.
+    pG = (struct Globals *)MALLOC( sizeof( struct Globals ) );
+
+    if ( pG && !TlsSetValue( TgbIndex, pG ) ) {
+	FREE( pG );
+	_cexit();
+    }
+  }
+  return pG;
+}
+
+This is a little hard to read for non-C programmers. The
+function call to TlsGetValue is used to retrieve a pointer
+to memory that has already been allocated to this thread.
+Yes, this nasty C code is calling a function in the same
+line of code that is declaring a pointer - C's known for
+that sort of thing. It's decaring the pointer and giving
+it an initial value by calling TlsGetValue.
+
+If it returns NULL, then MALLOC will allocate a block of
+memory for this thread and TlsSetValue inserts the new 
+pointer into the TLS table. Future calls to TlsGetValue
+made by this same thread will return the pointer we just
+saved in the TLS table.
+
+So, every time the DLL code wants to access a value in
+it's own thread-unique memory, it just calls GetGlobalPointer.
+The first call will set up the memory block and return a
+pointer to it, and each call after that just returns a
+pointer to it. When the DLL function is done and it's
+ready to return to Windows it calls ReleaseGlobalPointer
+to free it's thread-unique memory block and it takes the
+memory pointer out of the TLS table.
+
+In summary, we can allow multiple application program threads
+to make independent calls to the DLLs. We use Thread Local
+Storage to ensure that each thread has it's own unique block
+of memory. 
+
+If we don't use Thread Local Storage, then everything still
+works fine as long as only one thread of each program uses
+the DLL at a time.  I think 99.99% of application programs 
+do not need to call the DLL from different threads at the
+same time.
+
+
+Eric Engler
+April 12, 2002
+
+UPDATE: I wanted to point out some Windows limitations.
+In Win 9x and NT4 you only get 64 table locations. That
+means you can only call TlsAlloc from 64 threads. This is
+not a big problem, but you need to know about it. In my 
+early research on this subject I found a web site that said
+there was a reliability problem in TlsAlloc - but now I 
+know it's not a reliability problem, it's just a limitation.
+Windows 2000 gives you 1088 table locations.
+
+Also, we can't use the alternate method of supporting
+thread local storage. This alternative method of decaring
+a memory pointer with "_declspec(thread)" is much easier
+than the method presented here, but it has a serious 
+limitation - it can't be used from dynamically loaded DLLs.
+Of course, our Delphi Zip DLLs are dynamically loaded!
+
+

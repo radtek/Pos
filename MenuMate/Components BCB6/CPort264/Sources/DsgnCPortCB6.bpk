@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="DsgnCPortCB6.bpl"/>
+    <OBJFILES value="DsgnCPortCB6.obj CPortReg.obj CPortAbout.obj"/>
+    <RESFILES value="DsgnCPortCB6.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) CPortAbout.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value="rtl.lib vcl.lib"/>
+    <PACKAGES value="CportLibCB6.bpi rtl.bpi vcl.bpi designide.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value=""/>
+    <SYSDEFINES value="_RTLDLL;NO_STRICT;USEPACKAGES"/>
+    <MAINSOURCE value="DsgnCPortCB6.cpp"/>
+    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\toolsapi"/>
+    <LIBPATH value="$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\toolsapi"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I$(BCB)\include -I$(BCB)\include\vcl -I$(BCB)\source\toolsapi -src_suffix 
+      cpp -boa"/>
+    <CFLAG1 value="-O2 -H=c:\PROGRA~1\borland\CBUILD~1\lib\vcl60.csm -Hc -Vx -Ve -X- -pr -a4 
+      -b- -k- -vi -c -tWM"/>
+    <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M -LUdesignide -LUdclstd"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;ComPort Library&quot; -aa -Tpp -Gpd -x -Gn -Gl -Gi"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0pkg32.obj $(PACKAGES) Memmgr.Lib sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mti.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="DsgnCPortCB6.cpp" FORMNAME="" UNITNAME="DsgnCPortCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DsgnCPortCB6.res" FORMNAME="" UNITNAME="DsgnCPortCB6" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CportLibCB6.bpi" FORMNAME="" UNITNAME="CportLibCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CPortReg.pas" FORMNAME="" UNITNAME="CPortReg" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CPortAbout.pas" FORMNAME="AboutBox" UNITNAME="Cportabout" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="designide.bpi" FORMNAME="" UNITNAME="designide" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1033
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Excluded Packages]
+D:\Development\CBuilder6\Bin\dclstd60.bpl=Borland Standard Components
+D:\Development\CBuilder6\Bin\dbx60.bpl=Borland SQL Explorer UI Package
+d:\development\cbuilder6\Bin\dclqrt60.bpl=QuickReport Components
+d:\development\cbuilder6\Bin\DCLNMF60.bpl=NetMasters Fastnet Tools
+d:\development\cbuilder6\Bin\dclindy60.bpl=Internet Direct (Indy) for D6 Property and Component Editors
+d:\development\cbuilder6\Bin\idefilters60.bpl=IDE Filter for CPP32
+d:\development\cbuilder6\Bin\dcl31w60.bpl=Delphi 1.0 Compatibility Components
+d:\development\cbuilder6\Bin\dclocx60.bpl=Borland Sample Imported ActiveX Controls
+D:\Development\CBuilder6\Bin\dclbde60.bpl=Borland BDE DB Components
+D:\Development\CBuilder6\Bin\dcldb60.bpl=Borland Database Components
+d:\development\cbuilder6\Bin\DCLIB60.bpl=InterBase Data Access Components
+d:\development\cbuilder6\Bin\dclwebsnap60.bpl=Borland WebSnap Components
+D:\Development\CBuilder6\Bin\dclwbm60.bpl=Borland InternetExpress Components
+D:\Development\CBuilder6\Bin\dclnet60.bpl=Borland Internet Components
+d:\development\cbuilder6\Bin\DBWEBXPRT.BPL=Borland Web Wizard Package
+d:\development\cbuilder6\Bin\dclsoap60.bpl=Borland SOAP Components
+d:\development\cbuilder6\Bin\dclbcbsmp60.bpl=Borland Sample Controls Design Time Package
+D:\Development\CBuilder6\Bin\dclmid60.bpl=Borland MyBase DataAccess Components
+d:\development\cbuilder6\Bin\dclmlwiz60.bpl=Borland Markup Language Wizards
+d:\development\cbuilder6\Bin\dcldbxcds60.bpl=Borland Local DBX ClientDataset Components
+D:\Development\CBuilder6\Bin\dclcds60.bpl=Borland Base Cached ClientDataset Component
+D:\Development\CBuilder6\Bin\dcldbx60.bpl=Borland dbExpress Components
+d:\development\cbuilder6\Bin\dclbdecds60.bpl=Borland Local BDE ClientDataset Components
+d:\development\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+d:\development\cbuilder6\Bin\dclsmpedit60.bpl=Borland Editor Script Enhancements
+d:\development\cbuilder6\Bin\dclemacsedit60.bpl=Borland Editor Emacs Enhancements
+d:\development\cbuilder6\Bin\dcldss60.bpl=Borland Decision Cube Components
+D:\Development\CBuilder6\Bin\dcltee60.bpl=TeeChart Components
+d:\development\cbuilder6\Bin\dclmcn60.bpl=Borland DataSnap Connection Components
+d:\development\cbuilder6\Bin\applet60.bpl=Borland Control Panel Applet Package
+D:\Development\CBuilder6\Bin\dclclxstd60.bpl=Borland CLX Standard Components
+d:\development\cbuilder6\Bin\dclclxdb60.bpl=Borland CLX Database Components
+d:\development\cbuilder6\Bin\bcbie60.bpl=Borland C++Builder Internet Explorer 5 Components Package
+d:\development\cbuilder6\Bin\bcb2kaxserver60.bpl=Borland C++Builder COM Server Components Sample Package
+d:\development\cbuilder6\Bin\dclado60.bpl=Borland ADO DB Components
+d:\development\cbuilder6\Bin\dclact60.bpl=Borland ActionBar Components
+d:\development\cbuilder6\Projects\Bpl\RASPack.bpl=RASPack
+d:\development\cbuilder6\Projects\Bpl\ZipPak.bpl=ZipPak
+d:\development\cbuilder6\Projects\Bpl\ButtonPack.bpl=ButtonPack
+d:\development\cbuilder6\Bin\dcltqr60.bpl=TeeChart for QuickReport Components
+d:\development\cbuilder6\Projects\Bpl\DsgnCPortCB6.bpl=ComPort Library
+d:\development\cbuilder6\Projects\Bpl\mapimail.bpl=mapimail
+
+[HistoryLists\hlIncludePath]
+Count=2
+Item0=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\source\toolsapi
+Item1=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=5
+Item0=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\toolsapi
+Item1=$(BCB)\Projects\Lib;;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\toolsapi
+Item2=$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\toolsapi
+Item3=;;;;;;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\source\toolsapi
+Item4=;;;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Linker]
+LibPrefix=
+LibSuffix=
+LibVersion=
+  </IDEOPTIONS>
+</PROJECT>

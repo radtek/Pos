@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 //EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Time2HELP 1.0; Standard Template">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=utf8">
+<TITLE>TThemeServices.DrawParentBackground Method</TITLE>
+<Style>Body, TD {font-family: "Verdana"; font-size: 10pt};
+PRE {font-family: "Courier New"; font-size: 10pt; margin-top: 0; margin-bottom: 0}
+TR.odd {background-color: #F8F8F8};
+TR.even {background-color: #EEEEEE};
+Table.list {background-color: #FFFFFF};
+TD {vertical-align : top};
+TD.stripelight {background-image: url(images/StripeLight.gif);};
+TD.stripedark {background-image: url(images/StripeDark.gif);};
+</Style>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<BASEFONT NAME="Verdana" Size="2"><Table Border="0" Width="100%" BGColor="#FFFFFF"><TR><TD><Font Color="#000000F"><B>DrawParentBackground method</B></Font></TD></TR></Table>Used by partially transparent or alpha-blended child controls to draw the part of their parent that they appear in front of.<P><B>Applies to</B><Br><A HREF="IDH_Class_TThemeServices.htm">TThemeServices</A><P><B>Declaration</B><Br><Font Face="Courier New"><B>procedure</B> DrawParentBackground(Window: HWND; Target: HDC; Details: <A HREF="IDH_Type_PThemedElementDetails.htm">PThemedElementDetails</A>; OnlyIfTransparent: Boolean; Bounds: PRect = <B>nil</B>);</Font><P><B>Description</B><Br /><B>Window</B> is the handle of the child control. <B>Target</B> is the place where to paint the parent's background to. <B>Details</B> is optional and only used if <B>OnlyIfTransparent</B> is true, which tells the method to check first if there are any transparent or alpha-blended parts in the theme element before causing the parent window to draw. <B>Bounds</B> is also optional and defines the area to be drawn (<I>in child coordinates</I>).</P><P><HR>
+<TABLE BORDER="0" WIDTH="100%" BGCOLOR="#404040" cellspacing=0><TR><TD class="stripelight">
+<Font Color=Black><Large>Copyright © 1999, 2002 <B>Mike Lischke</B></Large</Font>
+</TD></TR></Table>
+<Small><A HREF="http://www.lischke-online.de">http://www.lischke-online.de</A></Small>

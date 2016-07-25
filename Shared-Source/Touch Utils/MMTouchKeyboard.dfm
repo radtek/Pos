@@ -1,0 +1,209 @@
+object frmTouchKeyboard: TfrmTouchKeyboard
+  Tag = 1024
+  Left = 1024
+  Top = 0
+  BorderIcons = []
+  BorderStyle = bsDialog
+  BorderWidth = 6
+  ClientHeight = 628
+  ClientWidth = 882
+  Color = clBlack
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -17
+  Font.Name = 'Comic Sans MS'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  Scaled = False
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnResize = FormResize
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 24
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 882
+    Height = 281
+    Align = alTop
+    BevelOuter = bvNone
+    Color = clBlack
+    ParentBackground = False
+    TabOrder = 0
+    object Panel2: TPanel
+      Left = 0
+      Top = 0
+      Width = 716
+      Height = 276
+      Align = alClient
+      BorderWidth = 8
+      Color = 14342874
+      Ctl3D = True
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentBackground = False
+      ParentCtl3D = False
+      ParentFont = False
+      TabOrder = 0
+      object lbeCaption: TLabel
+        Left = 9
+        Top = 9
+        Width = 698
+        Height = 64
+        Align = alTop
+        Alignment = taCenter
+        AutoSize = False
+        Caption = 'Enter Some Text'
+        Color = 2200566
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -32
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentColor = False
+        ParentFont = False
+        Transparent = False
+        Layout = tlCenter
+        ExplicitWidth = 827
+      end
+      object memText: TMemo
+        Left = 9
+        Top = 73
+        Width = 698
+        Height = 194
+        Align = alClient
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 0
+        OnKeyDown = memTextKeyUp
+      end
+    end
+    object Panel16: TPanel
+      Left = 721
+      Top = 0
+      Width = 161
+      Height = 276
+      Align = alRight
+      BevelOuter = bvNone
+      BorderWidth = 5
+      Color = 14342874
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentBackground = False
+      ParentFont = False
+      TabOrder = 1
+      object TouchBtn1: TTouchBtn
+        Left = 5
+        Top = 5
+        Width = 151
+        Align = alTop
+        ParentColor = True
+        Caption = 'Ok'
+        ButtonColor = 18944
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = btnDoneClick
+      end
+      object TouchBtn2: TTouchBtn
+        Left = 5
+        Top = 89
+        Width = 151
+        ParentColor = True
+        Caption = 'Clear'
+        ButtonColor = 6052441
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = ClearClick
+      end
+      object TouchBtn3: TTouchBtn
+        Left = 5
+        Top = 214
+        Width = 151
+        Align = alBottom
+        ParentColor = True
+        Caption = 'Cancel'
+        ButtonColor = 2200566
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = CancelClick
+      end
+    end
+    object Panel3: TPanel
+      Left = 0
+      Top = 276
+      Width = 882
+      Height = 5
+      Align = alBottom
+      BevelOuter = bvNone
+      Color = clBlack
+      TabOrder = 2
+    end
+    object Panel4: TPanel
+      Left = 716
+      Top = 0
+      Width = 5
+      Height = 276
+      Align = alRight
+      BevelOuter = bvNone
+      Color = clBlack
+      TabOrder = 3
+    end
+  end
+  object Panel21: TPanel
+    Left = 0
+    Top = 622
+    Width = 882
+    Height = 6
+    Align = alBottom
+    BevelOuter = bvNone
+    Color = clBlack
+    ParentBackground = False
+    TabOrder = 1
+  end
+  object pnlKeyboard: TPanel
+    Left = 0
+    Top = 281
+    Width = 882
+    Height = 341
+    Align = alClient
+    BorderWidth = 5
+    Color = 14342874
+    ParentBackground = False
+    TabOrder = 2
+    object TouchKeyboard: TMMTouchKeyboard
+      Left = 6
+      Top = 6
+      Width = 870
+      Height = 329
+      Align = alClient
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Comic Sans MS'
+      Font.Style = []
+      Color = 14342874
+      ParentFont = False
+      GridBorderWidth = 8
+      ButtonGapWidth = 2
+      ButtonGapHeight = 2
+      ButtonColor = 6052441
+      OnClick = TouchKeyboardClick
+    end
+  end
+end

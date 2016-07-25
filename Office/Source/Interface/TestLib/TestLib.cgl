@@ -1,0 +1,60 @@
+Functions called:
+ SysReallocMem (1 times)
+ SysFreeMem (505 times)
+ SysGetMem (513 times)
+ realloc (1 times)
+ memcpy (1 times)
+ delete (39 times)
+ delete[] (2 times)
+ free (26 times)
+ new[] (14 times)
+ new (53 times)
+ calloc (5 times)
+ malloc (20 times)
+Resource types used:
+ object array (14 allocs, 13 max)
+ object (53 allocs, 38 max)
+ memory block (539 allocs, 417 max)
+Modules used:
+ 00320000 01/30/2003 07:04:00 C:\PROGRA~1\Borland\CBUILD~1\Bin\STLPMT45.DLL
+ 00400000 02/21/2006 10:06:20 C:\Code\Office\Office
+ 4.0.0\Source\Interface\TestLib\TestLib.exe
+ 01190000 01/31/2000 07:00:00
+ C:\PROGRA~1\Borland\REMOTE~1\6.1\Bin\BORLNDMM.DLL
+ 0CD00000 02/02/2002 03:00:00 C:\PROGRA~1\Borland\CBUILD~1\Bin\CG32.DLL
+ 32600000 01/30/2003 07:04:00 C:\PROGRA~1\Borland\CBUILD~1\Bin\CC3260MT.DLL
+ 40000000 01/30/2003 07:04:00 C:\WINDOWS\system32\rtl60.bpl
+ 400B0000 02/02/2002 03:00:00 C:\WINDOWS\system32\vcl60.bpl
+ 402D0000 02/02/2002 03:00:00 C:\WINDOWS\system32\dsnap60.bpl
+ 40310000 02/02/2002 03:00:00 C:\WINDOWS\system32\dbrtl60.bpl
+ 40760000 06/29/2003 21:50:22 C:\WINDOWS\system32\ibxpress62.bpl
+ 40850000 02/02/2002 03:00:00 C:\WINDOWS\system32\cds60.bpl
+ 5AD70000 08/04/2004 00:56:48 C:\WINDOWS\system32\uxtheme.dll
+ 5D090000 08/04/2004 00:56:42 C:\WINDOWS\system32\comctl32.dll
+ 629C0000 08/04/2004 00:56:44 C:\WINDOWS\system32\LPK.DLL
+ 71AA0000 08/04/2004 00:56:48 C:\WINDOWS\system32\WS2HELP.dll
+ 71AB0000 08/04/2004 00:56:48 C:\WINDOWS\system32\WS2_32.dll
+ 71AD0000 08/04/2004 00:56:48 C:\WINDOWS\system32\wsock32.dll
+ 71B20000 08/04/2004 00:56:44 C:\WINDOWS\system32\mpr.dll
+ 73000000 08/04/2004 00:56:58 C:\WINDOWS\system32\winspool.drv
+ 74D30000 08/18/2001 22:00:00 C:\WINDOWS\system32\oledlg.dll
+ 74D90000 08/04/2004 00:56:48 C:\WINDOWS\system32\USP10.dll
+ 755C0000 08/04/2004 00:56:14 C:\WINDOWS\system32\msctfime.ime
+ 76390000 08/04/2004 00:56:44 C:\WINDOWS\system32\IMM32.DLL
+ 763B0000 08/04/2004 00:56:42 C:\WINDOWS\system32\comdlg32.dll
+ 77120000 08/04/2004 00:56:46 C:\WINDOWS\system32\oleaut32.dll
+ 773D0000 08/04/2004 00:57:02
+ C:\WINDOWS\WinSxS\x86_Microsoft.Windows.Common-Controls_6595b64144ccf1df_6.0.
+2600.2180_x-ww_a84f1ff9\comctl32.dll
+ 774E0000 07/26/2005 17:39:48 C:\WINDOWS\system32\ole32.dll
+ 77C00000 08/04/2004 00:56:48 C:\WINDOWS\system32\version.dll
+ 77C10000 08/04/2004 00:56:44 C:\WINDOWS\system32\msvcrt.dll
+ 77D40000 03/03/2005 07:09:30 C:\WINDOWS\system32\user32.dll
+ 77DD0000 08/04/2004 00:56:42 C:\WINDOWS\system32\advapi32.dll
+ 77E70000 08/04/2004 00:56:46 C:\WINDOWS\system32\RPCRT4.dll
+ 77F10000 12/29/2005 15:54:36 C:\WINDOWS\system32\GDI32.dll
+ 77F60000 10/21/2005 16:39:30 C:\WINDOWS\system32\SHLWAPI.dll
+ 7C800000 08/04/2004 00:56:44 C:\WINDOWS\system32\kernel32.dll
+ 7C900000 08/04/2004 00:56:38 C:\WINDOWS\system32\ntdll.dll
+ 7C9C0000 09/23/2005 16:05:30 C:\WINDOWS\system32\SHELL32.dll
+==========================================

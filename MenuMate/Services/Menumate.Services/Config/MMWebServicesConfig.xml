@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<MenumateWebServices>
+	<WebServices>
+		<WebService id="1" name="PosIntegration" load="YES" />
+		<WebService id="2" name="Reservation" load="NO" />
+	</WebServices>
+</MenumateWebServices>

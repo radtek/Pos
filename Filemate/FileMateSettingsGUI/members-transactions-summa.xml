@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Transaction id="421826-0001">
+    <XMLVersion Version="1.0" />
+    <ProductVersion Product="MenuMate" Version="4.14" />
+    <Terminal TerminalId="1" TerminalName="TEST1" Location="Twisted Hop" SiteID="-1" />
+    <Sender id="14" XmlID="752" Name="zAdmin" PayrollID="0" Initials="ZAD" />
+    <Destination Name="Unknown" To="Unknown" Folio="Unknown" />
+    <Receipt ReceiptNumber="421826" TransactionType="Purchase" Date="03/05/2010" Time="11:52:30" TotalPayment="5.25" TotalProduct="5.25" TotalDiscount="0.00" TotalSurcharges="-2.25">
+        <Member XmlID="513" id="0" Name="1 Amy" MemNumber="417" SiteID="-1" KnownAs="1 Amy" LastMod="20091022100930" LastVisit="20100503115229" />
+        <Payment id="" Name="Cash" Code="" Total="5.25" Pay="5.25" CashOut="0.00" Surcharge="0.00" />
+        <Product id="" Menu="Food" Course="All Day Bar" Item="Crusty hot bread" Size="Default" Qty="1.00" ServingCourse="Mains" Code="" Member="513">
+            <PriceChanges>
+                <PriceChange Name="staff 30%" Discription="staff 30%" id="0" XmlID="22" Reason="" Type="0" Mode="1" Priority="0" Source="1" AppearanceOrder="0" Menu="" Percent="30.00" Amount="0.00" Rounding="0.01" Total="-2.25" />
+            </PriceChanges>
+            <Metrics Date="03/05/2010" Time="11:52:29" GroupName="Food" CategoryName="All day" />
+            <Pricing OrderType="0" HappyHour="0" Total="5.25" AdjustmentTotal="-2.25" PriceLevel0="7.50" PriceLevel1="7.50" PointsRedeemed="0.00" PointsPercent="0.00" PointsEarned="0.00" />
+            <Source TableNo="0" SeatNo="0" RoomNo="0" TabName="Sale" Pax="0" />
+        </Product>
+    </Receipt>
+</Transaction>

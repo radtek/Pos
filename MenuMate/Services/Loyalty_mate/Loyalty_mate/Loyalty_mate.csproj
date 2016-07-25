@@ -1,0 +1,327 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{000B77C6-470D-4B0B-AF23-183E927E89C3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Loyalty_mate</RootNamespace>
+    <AssemblyName>Loyalty_mate</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\ServicesApp\Ready for Distribution\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\ServicesApp\Ready for Distribution\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FirebirdSql.Data.FirebirdClient">
+      <HintPath>..\..\..\..\Assemblies\3rdParty\Firebird\32\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="XMLManager">
+      <HintPath>..\..\ServicesApp\Assemblies\XMLManager.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cloud\Constants\Grant_type.cs" />
+    <Compile Include="Cloud\Constants\Request_addresses.cs" />
+    <Compile Include="Cloud\Exceptions\Activation_token_not_found_exception.cs" />
+    <Compile Include="Cloud\Exceptions\API_down_exception.cs" />
+    <Compile Include="Cloud\Exceptions\API_request_inaccessible_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Invalid_tier_details_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Operation_timed_out_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Invalid_request_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Exception.cs" />
+    <Compile Include="Cloud\Exceptions\Invalid_access_token_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Invalid_member_details_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Member_already_exists_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Member_doesnt_exist_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Member_operation_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Tier_already_exists_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Tier_doesnt_exist_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Tier_operation_exception.cs" />
+    <Compile Include="Cloud\Exceptions\Unknown_API_response_exception.cs" />
+    <Compile Include="Cloud\Loyalty_mate_service.cs" />
+    <Compile Include="Cloud\Salesforce\Salesforce_credential_provider.cs" />
+    <Compile Include="Cloud\Types\Account.cs" />
+    <Compile Include="Cloud\Types\PointsInfo.cs" />
+    <Compile Include="Cloud\Types\Requests\Delete_Tier_Request.cs" />
+    <Compile Include="Cloud\Types\Error.cs" />
+    <Compile Include="Cloud\Types\Requests\Get_member_by_code.cs" />
+    <Compile Include="Cloud\Types\Requests\Get_Points_Detail_Request.cs" />
+    <Compile Include="Cloud\Types\Requests\Get_tier_details_request.cs" />
+    <Compile Include="Cloud\Types\Member.cs" />
+    <Compile Include="Cloud\Types\MiscInfo.cs" />
+    <Compile Include="Cloud\Types\Profile.cs" />
+    <Compile Include="Cloud\Types\Requests\ActivationTokens\Get_member_id_by_activation_token_request.cs" />
+    <Compile Include="Cloud\Types\Requests\Authenticated_request.cs" />
+    <Compile Include="Cloud\Types\Requests\Authenticate_request.cs" />
+    <Compile Include="Cloud\Types\Requests\Create_member_request.cs" />
+    <Compile Include="Cloud\Types\Requests\Create_Tier_Request.cs" />
+    <Compile Include="Cloud\Types\Requests\Delete_member_request.cs" />
+    <Compile Include="Cloud\Types\Requests\Get_all_member_details_request.cs" />
+    <Compile Include="Cloud\Types\Requests\Get_member_details_request.cs" />
+    <Compile Include="Cloud\Types\MemberActivationInfo.cs" />
+    <Compile Include="Cloud\Types\Requests\Request.cs" />
+    <Compile Include="Cloud\Types\Requests\Update_Tier_Request.cs" />
+    <Compile Include="Cloud\Types\Tier.cs" />
+    <Compile Include="Cloud\Types\Transaction.cs" />
+    <Compile Include="Cloud\Types\Requests\Transactions\Post_transaction_request.cs" />
+    <Compile Include="Cloud\Types\Requests\Update_member_request.cs" />
+    <Compile Include="Cloud\Types\Token.cs" />
+    <Compile Include="Interfaces\I_Credential_provider.cs" />
+    <Compile Include="Interfaces\I_Loyalty_mate_service.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Types\Credentials.cs" />
+    <Compile Include="Types\SalesforceCredentials.cs" />
+    <Compile Include="Utilities\Collections\Dictionary.cs" />
+    <Compile Include="Utilities\DB\LoyaltyMateDBConnection.cs" />
+    <Compile Include="Utilities\Hash\Hash.cs" />
+    <Compile Include="Utilities\JSON\Converters\MemberProfileConverter.cs" />
+    <Compile Include="Utilities\JSON\Exceptions\Invalid_JSON_exception.cs" />
+    <Compile Include="Utilities\JSON\JSON.cs" />
+    <Compile Include="Utilities\OS\Exceptions\Registry\Key_doesnt_exist_exception.cs" />
+    <Compile Include="Utilities\OS\Exceptions\Registry\Modifying_read_only_key_exception.cs" />
+    <Compile Include="Utilities\OS\Exceptions\Registry\Nested_registry_path_given.cs" />
+    <Compile Include="Utilities\OS\Exceptions\Registry\Registry_exception.cs" />
+    <Compile Include="Utilities\OS\Exceptions\Registry\Unexpected_value_type_exception.cs" />
+    <Compile Include="Utilities\OS\Exceptions\Registry\Value_doesnt_exist_exception.cs" />
+    <Compile Include="Utilities\OS\Registry.cs" />
+    <Compile Include="Utilities\URI\Authority.cs" />
+    <Compile Include="Utilities\URI\Path.cs" />
+    <Compile Include="Utilities\URI\Query.cs" />
+    <Compile Include="Utilities\URI\URI_builder.cs" />
+    <Compile Include="Web References\SalesforceServiceRef\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\Member\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="LoyaltyMateCredentials.info">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Salesforce.wsdl" />
+    <None Include="Web References\SalesforceServiceRef\DeleteResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeAppMenuItem.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeApprovalLayout.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeAvailableQuickActionResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeCompactLayout.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeCompactLayoutsResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeDataCategoryGroupResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeDataCategoryGroupStructureResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeFlexiPageResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeGlobalResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeGlobalTheme.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeLayoutResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeQuickActionResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeSearchLayoutResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeSearchScopeOrderResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeSObjectResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeSoftphoneLayoutResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeSoqlListView.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeTab.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeTabSetResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\DescribeThemeItem.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\EmptyRecycleBinResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\ExecuteListViewResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\GetDeletedResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\GetServerTimestampResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\GetUpdatedResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\GetUserInfoResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\InvalidateSessionsResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\KnowledgeSettings.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\LeadConvertResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\LoginResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\MergeResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\PerformQuickActionResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\ProcessResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\QueryResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\QuickActionTemplateResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\ResetPasswordResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\Salesforce.wsdl" />
+    <None Include="Web References\SalesforceServiceRef\SaveResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\SearchResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\SendEmailResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\SetPasswordResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\sObject.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\UndeleteResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\SalesforceServiceRef\UpsertResult.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="C:\Code\Git\MenumateGit-Local\MenuMate\Services\Loyalty_mate\Loyalty_mate\Salesforce.wsdl">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\SalesforceServiceRef\</RelPath>
+      <UpdateFromURL>C:\Code\Git\MenumateGit-Local\MenuMate\Services\Loyalty_mate\Loyalty_mate\Salesforce.wsdl</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>Loyalty_mate_SalesforceServiceRef_SforceService</CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ServicesApp\MenumateUtils\MenumateUtils.csproj">
+      <Project>{37B0F64A-677E-4AD0-8C04-252BF7A5D3AE}</Project>
+      <Name>MenumateUtils</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

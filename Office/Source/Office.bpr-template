@@ -1,0 +1,470 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\Runtime\Office.exe"/>
+    <OBJFILES value="..\Obj\Office.obj ..\Obj\CSV.obj ..\Obj\Setup.obj ..\Obj\Backup.obj 
+      ..\Obj\MMData.obj ..\Obj\Dialog.obj ..\Obj\MenuEdit.obj ..\Obj\Main.obj 
+      ..\Obj\MMRegistry.obj ..\Obj\Preview.obj ..\Obj\Users.obj 
+      ..\Obj\AddUser.obj ..\Obj\Login.obj ..\Obj\SelectMenu.obj 
+      ..\Obj\ViewTrans.obj ..\Obj\AddStock.obj ..\Obj\PurchaseOrder.obj 
+      ..\Obj\StockData.obj ..\Obj\Stocktake.obj ..\Obj\StocktakeProfiles.obj 
+      ..\Obj\SelectDate.obj ..\Obj\StockMain.obj ..\Obj\SelectStockItem.obj 
+      ..\Obj\SelectPurchaseOrder.obj ..\Obj\ReceiveOrder.obj ..\Obj\Invoices.obj 
+      ..\Obj\ReceiveStockItem.obj ..\Obj\SelectSupplier.obj ..\Obj\Stock.obj 
+      ..\Obj\Suppliers.obj ..\Obj\PurchaseOrders.obj ..\Obj\SelectCompany.obj 
+      ..\Obj\Connections.obj ..\Obj\Version.obj ..\Obj\GetBarcode.obj 
+      ..\Obj\ErrorWarningSettings.obj ..\Obj\SelectCategory.obj 
+      ..\Obj\Reports.obj ..\Obj\SelectLocation.obj ..\Obj\AddSupplierUnit.obj 
+      ..\Obj\CreateProfile.obj ..\Obj\Splash.obj ..\Obj\Utilities.obj 
+      ..\Obj\Administration.obj ..\Obj\TransferMulti.obj ..\Obj\AddContact.obj 
+      ..\Obj\DebtorInvoices.obj ..\Obj\AddDebtor.obj ..\Obj\SelectDebtor.obj 
+      ..\Obj\Debtors.obj ..\Obj\DebtorsMain.obj ..\Obj\ReceiveInvoice.obj 
+      ..\Obj\MYOBPurchasesExport.obj ..\Obj\SetupPurchaseOrders.obj 
+      ..\Obj\AddStockCategoryGroup.obj ..\Obj\Registration.obj 
+      ..\Obj\AddDebtorCompany.obj ..\Obj\SetupLocations.obj 
+      ..\Obj\SelectMenuItem.obj ..\Obj\StockReportData.obj 
+      ..\Obj\MMReportData.obj ..\Obj\CreateOrders.obj ..\Obj\MD5Checksum.obj 
+      ..\Obj\Barcodereader.obj ..\Obj\UpdateCategories.obj 
+      ..\Obj\BetaAgreement.obj ..\Obj\MM_Menu.obj ..\Obj\MM_Math.obj 
+      ..\Obj\MM_StockTransactions.obj ..\Obj\MM_DBCore.obj 
+      ..\Obj\MM_StockCore.obj ..\Obj\MM_PurchaseOrders.obj 
+      ..\Obj\SelectSupplierStockItem.obj ..\Obj\MM_BrowseDirectory.obj 
+      ..\Obj\StocktakeVarianceParameters.obj ..\Obj\SelectTransferLocations.obj 
+      ..\Obj\PreviewData.obj ..\Obj\AddSupplierBarcode.obj 
+      ..\Obj\SelectStocktake.obj ..\Obj\Excel.obj ..\Obj\LocationRename.obj 
+      ..\Obj\MM_CSV.obj ..\Obj\Manager.obj ..\Obj\VariableManager.obj 
+      ..\Obj\ChangeLog.obj ..\Obj\TimeClock.obj ..\Obj\Worker.obj 
+      ..\Obj\TimeSpan.obj ..\Obj\WorkDay.obj ..\Obj\Date.obj 
+      ..\Obj\WorkPeriod.obj ..\Obj\ExcelPayroll.obj ..\Obj\MYOBPayroll.obj 
+      ..\Obj\FileBasedPayroll.obj ..\Obj\AcePayroll.obj ..\Obj\TimeClockForm.obj 
+      ..\Obj\ExportForm.obj ..\Obj\AccountsExportForm.obj ..\Obj\Accounts.obj 
+      ..\Obj\MYOBInvoiceExporter.obj ..\Obj\MYOBAccountExporter.obj 
+      ..\Obj\Customer.obj ..\Obj\EditAccountCustomerForm.obj 
+      ..\Obj\CashupForm.obj ..\Obj\DateRangePicker.obj ..\Obj\ZedCollection.obj 
+      ..\Obj\Zed.obj ..\Obj\ISink.obj ..\Obj\Payment.obj ..\Obj\SendEmail.obj 
+      ..\Obj\tinystr.obj ..\Obj\tinyxml.obj ..\Obj\tinyxmlerror.obj 
+      ..\Obj\tinyxmlparser.obj ..\Obj\Helpers.obj 
+      ..\Obj\SyncMenuToRecipeForm.obj ..\Obj\BarcodeSyncFormController.obj 
+      ..\Obj\IBarcodeSyncForm.obj ..\Obj\IBarcodeSyncFormController.obj 
+      ..\Obj\BackgroundWorker.obj ..\Obj\BarcodeService.obj 
+      ..\Obj\CourseItemPricesController.obj ..\Obj\CourseItemPricesForm.obj 
+      ..\Obj\ICourseItemPricesController.obj ..\Obj\ICourseItemPricesForm.obj 
+      ..\Obj\SqlViewer.obj ..\Obj\AuthenticationService.obj 
+      ..\Obj\Permission.obj ..\Obj\Role.obj ..\Obj\ConfigureRolesForm.obj 
+      ..\Obj\ConfigureRolesFormController.obj ..\Obj\CreateRecipe.obj 
+      ..\Obj\WriteOffStock.obj ..\Obj\DeleteRecipe.obj ..\Obj\RecipeBox.obj 
+      ..\Obj\UseRecipe.obj ..\Obj\EditRecipe.obj ..\Obj\web_order.obj 
+      ..\Obj\processingWeborder.obj ..\Obj\XeroIntegration.obj 
+      ..\Obj\XeroInvoiceBuilder.obj ..\Obj\RemoteHostManager.obj 
+      ..\Obj\FolderManager.obj ..\Obj\ServiceManager.obj 
+      ..\Obj\XeroServiceManager.obj"/>
+    <RESFILES value="Components\ZipBuilder\LangRes\ZipMsgUS.res Office.res ..\Obj\Office.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) Setup.dfm Backup.dfm MMData.dfm Dialog.dfm MenuEdit.dfm 
+      Main.dfm Preview.dfm Users.dfm AddUser.dfm Login.dfm SelectMenu.dfm 
+      Stock\ViewTrans.dfm Stock\AddStock.dfm Stock\PurchaseOrder.dfm 
+      Stock\StockData.dfm Stock\Stocktake.dfm Stock\StocktakeProfiles.dfm 
+      Stock\SelectDate.dfm Stock\StockMain.dfm Stock\SelectStockItem.dfm 
+      Stock\SelectPurchaseOrder.dfm Stock\ReceiveOrder.dfm Stock\Invoices.dfm 
+      Stock\ReceiveStockItem.dfm Stock\SelectSupplier.dfm Stock\Stock.dfm 
+      Stock\Suppliers.dfm Stock\PurchaseOrders.dfm SelectCompany.dfm 
+      GetBarcode.dfm ErrorWarningSettings.dfm SelectCategory.dfm 
+      Reports\Reports.dfm Stock\SelectLocation.dfm Stock\AddSupplierUnit.dfm 
+      Stock\CreateProfile.dfm Splash.dfm Utilities.dfm Administration.dfm 
+      Stock\TransferMulti.dfm Stock\AddContact.dfm Debtors\DebtorInvoices.dfm 
+      Debtors\AddDebtor.dfm Debtors\SelectDebtor.dfm Debtors\Debtors.dfm 
+      Debtors\DebtorsMain.dfm Stock\ReceiveInvoice.dfm 
+      Stock\MYOBPurchasesExport.dfm Stock\SetupPurchaseOrders.dfm 
+      Stock\AddStockCategoryGroup.dfm Debtors\AddDebtorCompany.dfm 
+      SetupLocations.dfm SelectMenuItem.dfm Reports\StockReportData.dfm 
+      Reports\MMReportData.dfm Stock\CreateOrders.dfm UpdateCategories.dfm 
+      BetaAgreement.dfm Stock\SelectSupplierStockItem.dfm 
+      Stock\StocktakeVarianceParameters.dfm Stock\SelectTransferLocations.dfm 
+      PreviewData.dfm Stock\AddSupplierBarcode.dfm Stock\SelectStocktake.dfm 
+      Reports\Excel.dfm Stock\LocationRename.dfm TimeClock\TimeClockForm.dfm 
+      ExportForm.dfm Accounts\AccountsExportForm.dfm 
+      Accounts\EditAccountCustomerForm.dfm Cashup\CashupForm.dfm 
+      BarcodeSync\SyncMenuToRecipeForm.dfm MenuEditor\CourseItemPricesForm.dfm 
+      SqlViewer.dfm Security\ConfigureRolesForm.dfm CreateRecipe.dfm 
+      Stock\WriteOffStock.dfm DeleteRecipe.dfm RecipeBox.dfm UseRecipe.dfm 
+      EditRecipe.dfm processingWeborder.dfm"/>
+    <LIBFILES value="&quot;C:\Program Files\borland\CBuilder6\Lib\Psdk\iphlpapi.lib&quot;"/>
+    <LIBRARIES value="PNGBuilder.lib inet.lib Indy.lib ButtonPack.lib CPortLibCB6.lib 
+      P164_R61.lib dbxcds.lib dclocx.lib soaprtl.lib dsnapcon.lib dsnapcrba.lib 
+      visualdbclx.lib dss.lib qrpt.lib bdecds.lib vcldbx.lib adortl.lib 
+      bcb2kaxserver.lib VirtualTreesBCB6D.lib bcbie.lib ComboTree.lib 
+      ThemeManagerBCB6.lib VirtualTreesBCB6.lib inetdbxpress.lib inetdbbde.lib 
+      Rave50CLX.lib TntLibR.lib NumericEditPkg.lib Rave50VCL.lib dbexpress.lib 
+      dsnap.lib cds.lib ibxpress.lib Button.lib nmfast.lib ZipPack.lib vclx.lib 
+      bcbsmp.lib bdertl.lib vcldb.lib dbrtl.lib vcl.lib rtl.lib"/>
+    <SPARELIBS value="rtl.lib vcl.lib dbrtl.lib vcldb.lib bdertl.lib bcbsmp.lib vclx.lib 
+      ZipPack.lib nmfast.lib Button.lib ibxpress.lib cds.lib dsnap.lib 
+      dbexpress.lib Rave50VCL.lib NumericEditPkg.lib TntLibR.lib Rave50CLX.lib 
+      inetdbbde.lib inetdbxpress.lib VirtualTreesBCB6.lib ThemeManagerBCB6.lib 
+      ComboTree.lib bcbie.lib VirtualTreesBCB6D.lib bcb2kaxserver.lib adortl.lib 
+      vcldbx.lib bdecds.lib qrpt.lib dss.lib visualdbclx.lib dsnapcrba.lib 
+      dsnapcon.lib soaprtl.lib dclocx.lib dbxcds.lib P164_R61.lib 
+      CPortLibCB6.lib ButtonPack.lib Indy.lib inet.lib PNGBuilder.lib"/>
+    <PACKAGES value="rtl.bpi vcl.bpi vclx.bpi dbrtl.bpi vcldb.bpi RASPack.bpi bdertl.bpi 
+      ibxpress.bpi dbexpress.bpi VirtualTreesBCB6.bpi ThemeManagerBCB6.bpi 
+      bcbsmp.bpi TntLibR.bpi Rave50CLX.bpi Rave50VCL.bpi dsnap.bpi ZipPack.bpi 
+      ButtonPack.bpi ComboTree.bpi NumericEditPkg.bpi PinPadCtrl.bpi 
+      PNGBuilder.bpi VirtualTreesBCB6D.bpi"/>
+    <PATHCPP value=".;Stock;Reports;Debtors;Registration;Barcode;System;System\Core;VariableManager;TimeClock;Accounts;Cashup;TinyXml;BarcodeSync;Utils;MenuEditor;Security"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="NO_WIN32_LEAN_AND_MEAN;Office;_DEBUG"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="Office.cpp"/>
+    <INCLUDEPATH value="..\..\Shared-Source;Utils;Security;MenuEditor;BarcodeSync;TinyXml;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl;Registration;Stock;Debtors;Reports;Barcode;..\Rave5\C6;Components\pngimage;components\touchbuttons;Components\OPartner\source;Components\ThemeManager;Components\VirtualTreeview;Components\ZipBuilder\VCL;Components\TNTUnicodeControls;Components\NumericEdit;Components\Touch\Button;Components\CPort264\Sources;."/>
+    <LIBPATH value="Components\NumericEdit;..\Obj;Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\Libraries;Components\CPort264\Sources;Components\VirtualTreeview\Packages;Components\ZipBuilder\VCL;Components\ZipBuilder\Langres;..\Rave5\C6"/>
+    <WARNINGS value="-w-par -w-8027 -w-8026"/>
+    <WARNOPTSTR value=""/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-IUtils -ISecurity -IMenuEditor -IBarcodeSync -ITinyXml -ICashup 
+      -IAccounts -ITimeClock -IVariableManager -ISystem\Core -ISystem 
+      -I$(BCB)\Projects -I$(BCB)\include -I$(BCB)\include\vcl -IRegistration 
+      -IStock -IDebtors -IReports -IBarcode -I..\Rave5\C6 -IComponents\pngimage 
+      -Icomponents\touchbuttons -IComponents\OPartner\source 
+      -IComponents\ThemeManager -IComponents\VirtualTreeview 
+      -IComponents\ZipBuilder\VCL -IComponents\TNTUnicodeControls 
+      -IComponents\NumericEdit -IComponents\Touch\Button 
+      -IComponents\CPort264\Sources -I. -src_suffix cpp -DNO_WIN32_LEAN_AND_MEAN 
+      -DOffice -D_DEBUG -boa"/>
+    <CFLAG1 value="-Od -H=$(BCB)\Lib\vcl60.csm -Hc -Q -w- -Vx -Ve -xp -X- -r- -a8 -5 -b- -k 
+      -y -v -vi- -c -tW -tWM"/>
+    <PFLAGS value="-N2..\Obj -N0..\Obj -$Y+ -$W -$O- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zi"/>
+    <LFLAGS value="-I..\Obj -D&quot;&quot; -Rr -S:0x135000 -Sc:0x128000 -aa -Tpe -x -Gn -v"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="Office.cpp" FORMNAME="" UNITNAME="Office" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="menu_key_generator.cpp" UNITNAME="menu_key_generator" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Shared-Source\LoadMenu.cpp" UNITNAME="LoadMenu" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Shared-Source\SaveMenu.cpp" UNITNAME="SaveMenu" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CSV.cpp" FORMNAME="" UNITNAME="CSV" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Setup.cpp" FORMNAME="frmSetup" UNITNAME="Setup" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Backup.cpp" FORMNAME="frmBackup" UNITNAME="Backup" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MMData.cpp" FORMNAME="dmMMData" UNITNAME="MMData" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Dialog.cpp" FORMNAME="frmMenuLoad" UNITNAME="Dialog" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MenuEdit.cpp" FORMNAME="frmMenuEdit" UNITNAME="MenuEdit" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Main.cpp" FORMNAME="frmMain" UNITNAME="Main" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MMRegistry.cpp" FORMNAME="" UNITNAME="MMRegistry" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Preview.cpp" FORMNAME="frmPreview" UNITNAME="Preview" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+     <FILE FILENAME="Users.cpp" FORMNAME="frmUsers" UNITNAME="Users" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="AddUser.cpp" FORMNAME="frmAddUser" UNITNAME="AddUser" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Login.cpp" FORMNAME="frmLogin" UNITNAME="Login" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SelectMenu.cpp" FORMNAME="frmSelectMenu" UNITNAME="SelectMenu" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\ViewTrans.cpp" FORMNAME="frmViewTrans" UNITNAME="ViewTrans" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\AddStock.cpp" FORMNAME="frmAddStock" UNITNAME="AddStock" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\PurchaseOrder.cpp" FORMNAME="frmPurchaseOrder" UNITNAME="PurchaseOrder" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\StockData.cpp" FORMNAME="dmStockData" UNITNAME="StockData" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\Stocktake.cpp" FORMNAME="frmStocktake" UNITNAME="Stocktake" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\StocktakeProfiles.cpp" FORMNAME="frmStocktakeProfiles" UNITNAME="StocktakeProfiles" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\SelectDate.cpp" FORMNAME="frmSelectDate" UNITNAME="SelectDate" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\StockMain.cpp" FORMNAME="frmStockMain" UNITNAME="StockMain" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\SelectStockItem.cpp" FORMNAME="frmSelectStockItem" UNITNAME="SelectStockItem" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\SelectPurchaseOrder.cpp" FORMNAME="frmSelectPurchaseOrder" UNITNAME="SelectPurchaseOrder" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\ReceiveOrder.cpp" FORMNAME="frmReceiveOrder" UNITNAME="ReceiveOrder" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\Invoices.cpp" FORMNAME="frmInvoices" UNITNAME="Invoices" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\ReceiveStockItem.cpp" FORMNAME="frmReceiveStockItem" UNITNAME="ReceiveStockItem" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\SelectSupplier.cpp" FORMNAME="frmSelectSupplier" UNITNAME="SelectSupplier" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\Stock.cpp" FORMNAME="frmStock" UNITNAME="Stock" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\Suppliers.cpp" FORMNAME="frmSuppliers" UNITNAME="Suppliers" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\PurchaseOrders.cpp" FORMNAME="frmPurchaseOrders" UNITNAME="PurchaseOrders" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SelectCompany.cpp" FORMNAME="frmSelectCompany" UNITNAME="SelectCompany" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Connections.cpp" FORMNAME="" UNITNAME="Connections" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Version.cpp" FORMNAME="" UNITNAME="Version" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="GetBarcode.cpp" FORMNAME="frmGetBarcode" UNITNAME="GetBarcode" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ErrorWarningSettings.cpp" FORMNAME="frmErrorWarningSettings" UNITNAME="ErrorWarningSettings" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SelectCategory.cpp" FORMNAME="frmSelectCategory" UNITNAME="SelectCategory" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Reports\Reports.cpp" FORMNAME="frmReports" UNITNAME="Reports" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\SelectLocation.cpp" FORMNAME="frmSelectLocation" UNITNAME="SelectLocation" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\AddSupplierUnit.cpp" FORMNAME="frmAddSupplierUnit" UNITNAME="AddSupplierUnit" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\CreateProfile.cpp" FORMNAME="frmCreateProfile" UNITNAME="CreateProfile" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Splash.cpp" FORMNAME="frmSplash" UNITNAME="Splash" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Utilities.cpp" FORMNAME="dmUtilities" UNITNAME="Utilities" CONTAINERID="CCompiler" DESIGNCLASS="TDataModule" LOCALCOMMAND=""/>
+      <FILE FILENAME="Administration.cpp" FORMNAME="frmAdministration" UNITNAME="Administration" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="C:\Program Files\borland\CBuilder6\Lib\Psdk\iphlpapi.lib" FORMNAME="" UNITNAME="iphlpapi.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\TransferMulti.cpp" FORMNAME="frmTransferMulti" UNITNAME="TransferMulti" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\AddContact.cpp" FORMNAME="frmAddContact" UNITNAME="AddContact" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Debtors\DebtorInvoices.cpp" FORMNAME="frmDebtorInvoices" UNITNAME="DebtorInvoices" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Debtors\AddDebtor.cpp" FORMNAME="frmAddDebtor" UNITNAME="AddDebtor" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Debtors\SelectDebtor.cpp" FORMNAME="frmSelectDebtor" UNITNAME="SelectDebtor" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Debtors\Debtors.cpp" FORMNAME="frmDebtors" UNITNAME="Debtors" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Debtors\DebtorsMain.cpp" FORMNAME="frmDebtorsMain" UNITNAME="DebtorsMain" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\ReceiveInvoice.cpp" FORMNAME="frmReceiveInvoice" UNITNAME="ReceiveInvoice" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\MYOBPurchasesExport.cpp" FORMNAME="frmMYOBPurchasesExport" UNITNAME="MYOBPurchasesExport" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\SetupPurchaseOrders.cpp" FORMNAME="frmSetupPurchaseOrders" UNITNAME="SetupPurchaseOrders" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\AddStockCategoryGroup.cpp" FORMNAME="frmAddStockCategoryGroup" UNITNAME="AddStockCategoryGroup" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Registration\Registration.cpp" FORMNAME="" UNITNAME="Registration" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Debtors\AddDebtorCompany.cpp" FORMNAME="frmAddDebtorCompany" UNITNAME="AddDebtorCompany" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SetupLocations.cpp" FORMNAME="frmSetupLocations" UNITNAME="SetupLocations" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SelectMenuItem.cpp" FORMNAME="frmSelectMenuItem" UNITNAME="SelectMenuItem" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Reports\StockReportData.cpp" FORMNAME="dmStockReportData" UNITNAME="StockReportData" CONTAINERID="CCompiler" DESIGNCLASS="TDataModule" LOCALCOMMAND=""/>
+      <FILE FILENAME="Reports\MMReportData.cpp" FORMNAME="dmMMReportData" UNITNAME="MMReportData" CONTAINERID="CCompiler" DESIGNCLASS="TDataModule" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\CreateOrders.cpp" FORMNAME="frmCreateOrders" UNITNAME="CreateOrders" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Registration\MD5Checksum.cpp" FORMNAME="" UNITNAME="MD5Checksum" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Barcode\Barcodereader.cpp" FORMNAME="" UNITNAME="Barcodereader" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="UpdateCategories.cpp" FORMNAME="frmUpdateCategories" UNITNAME="UpdateCategories" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="BetaAgreement.cpp" FORMNAME="frmBetaAgreement" UNITNAME="BetaAgreement" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="System\MM_Menu.cpp" FORMNAME="" UNITNAME="MM_Menu" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="System\Core\MM_Math.cpp" FORMNAME="" UNITNAME="MM_Math" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="System\MM_StockTransactions.cpp" FORMNAME="" UNITNAME="MM_StockTransactions" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="System\Core\MM_DBCore.cpp" FORMNAME="" UNITNAME="MM_DBCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="System\Core\MM_StockCore.cpp" FORMNAME="" UNITNAME="MM_StockCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="System\MM_PurchaseOrders.cpp" FORMNAME="" UNITNAME="MM_PurchaseOrders" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\SelectSupplierStockItem.cpp" FORMNAME="frmSelectSupplierStockItem" UNITNAME="SelectSupplierStockItem" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="System\MM_BrowseDirectory.cpp" FORMNAME="" UNITNAME="MM_BrowseDirectory" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\StocktakeVarianceParameters.cpp" FORMNAME="frmVarianceParams" UNITNAME="StocktakeVarianceParameters" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\SelectTransferLocations.cpp" FORMNAME="frmSelectTransferLocations" UNITNAME="SelectTransferLocations" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PreviewData.cpp" FORMNAME="frmPreviewData" UNITNAME="PreviewData" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\AddSupplierBarcode.cpp" FORMNAME="frmAddSupplierBarcode" UNITNAME="AddSupplierBarcode" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\SelectStocktake.cpp" FORMNAME="frmSelectStocktake" UNITNAME="SelectStocktake" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Reports\Excel.cpp" FORMNAME="frmExcel" UNITNAME="Excel" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\LocationRename.cpp" FORMNAME="frmUpdateLocations" UNITNAME="LocationRename" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MM_CSV.cpp" FORMNAME="" UNITNAME="MM_CSV" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VariableManager\Manager.cpp" FORMNAME="" UNITNAME="Manager.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VariableManager\VariableManager.cpp" FORMNAME="" UNITNAME="VariableManager.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ChangeLog.cpp" FORMNAME="" UNITNAME="ChangeLog" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\TimeClock.cpp" FORMNAME="" UNITNAME="TimeClock" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\Worker.cpp" FORMNAME="" UNITNAME="Worker" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\TimeSpan.cpp" FORMNAME="" UNITNAME="TimeSpan" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\WorkDay.cpp" FORMNAME="" UNITNAME="WorkDay" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\Date.cpp" FORMNAME="" UNITNAME="Date" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\WorkPeriod.cpp" FORMNAME="" UNITNAME="WorkPeriod" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\ExcelPayroll.cpp" FORMNAME="" UNITNAME="ExcelPayroll" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\MYOBPayroll.cpp" FORMNAME="" UNITNAME="MYOBPayroll" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\FileBasedPayroll.cpp" FORMNAME="" UNITNAME="FileBasedPayroll" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\AcePayroll.cpp" FORMNAME="" UNITNAME="AcePayroll" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TimeClock\TimeClockForm.cpp" FORMNAME="frmTimeClockExport" UNITNAME="TimeClockForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Components\ZipBuilder\LangRes\ZipMsgUS.res" FORMNAME="" UNITNAME="ZipMsgUS.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ExportForm.cpp" FORMNAME="frmExport" UNITNAME="ExportForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Accounts\AccountsExportForm.cpp" FORMNAME="frmAccountsExport" UNITNAME="AccountsExportForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Accounts\Accounts.cpp" FORMNAME="" UNITNAME="Accounts" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Accounts\MYOBInvoiceExporter.cpp" FORMNAME="" UNITNAME="MYOBInvoiceExporter" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Accounts\MYOBAccountExporter.cpp" FORMNAME="" UNITNAME="MYOBAccountExporter" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Accounts\Customer.cpp" FORMNAME="" UNITNAME="Customer" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Accounts\EditAccountCustomerForm.cpp" FORMNAME="frmEditAccountCustomer" UNITNAME="EditAccountCustomerForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Cashup\CashupForm.cpp" FORMNAME="frmCashup" UNITNAME="CashupForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DateRangePicker.cpp" FORMNAME="" UNITNAME="DateRangePicker" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Cashup\ZedCollection.cpp" FORMNAME="" UNITNAME="ZedCollection" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Cashup\Zed.cpp" FORMNAME="" UNITNAME="Zed" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Cashup\ISink.cpp" FORMNAME="" UNITNAME="ISink" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Cashup\Payment.cpp" FORMNAME="" UNITNAME="Payment" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SendEmail.cpp" FORMNAME="" UNITNAME="SendEmail" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TinyXml\tinystr.cpp" FORMNAME="" UNITNAME="tinystr" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TinyXml\tinyxml.cpp" FORMNAME="" UNITNAME="tinyxml" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TinyXml\tinyxmlerror.cpp" FORMNAME="" UNITNAME="tinyxmlerror" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TinyXml\tinyxmlparser.cpp" FORMNAME="" UNITNAME="tinyxmlparser" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Helpers.cpp" FORMNAME="" UNITNAME="Helpers" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="BarcodeSync\SyncMenuToRecipeForm.cpp" FORMNAME="BarcodeSyncForm" UNITNAME="SyncMenuToRecipeForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="BarcodeSync\BarcodeSyncFormController.cpp" FORMNAME="" UNITNAME="BarcodeSyncFormController" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="BarcodeSync\IBarcodeSyncForm.cpp" FORMNAME="" UNITNAME="IBarcodeSyncForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="BarcodeSync\IBarcodeSyncFormController.cpp" FORMNAME="" UNITNAME="IBarcodeSyncFormController" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Utils\BackgroundWorker.cpp" FORMNAME="" UNITNAME="BackgroundWorker" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="BarcodeSync\BarcodeService.cpp" FORMNAME="" UNITNAME="BarcodeService" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MenuEditor\CourseItemPricesController.cpp" FORMNAME="" UNITNAME="CourseItemPricesController.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MenuEditor\CourseItemPricesForm.cpp" FORMNAME="frmCourseItemPrices" UNITNAME="CourseItemPricesForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MenuEditor\ICourseItemPricesController.cpp" FORMNAME="" UNITNAME="ICourseItemPricesController.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MenuEditor\ICourseItemPricesForm.cpp" FORMNAME="" UNITNAME="ICourseItemPricesForm.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SqlViewer.cpp" FORMNAME="SqlView" UNITNAME="SqlViewer" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Security\AuthenticationService.cpp" FORMNAME="" UNITNAME="AuthenticationService" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Security\Permission.cpp" FORMNAME="" UNITNAME="Permission" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Security\Role.cpp" FORMNAME="" UNITNAME="Role" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Security\ConfigureRolesForm.cpp" FORMNAME="frmConfigureRoles" UNITNAME="ConfigureRolesForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Security\ConfigureRolesFormController.cpp" FORMNAME="" UNITNAME="ConfigureRolesFormController" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Office.res" FORMNAME="" UNITNAME="Office.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Office.rc" FORMNAME="" UNITNAME="Office.rc" CONTAINERID="RCCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CreateRecipe.cpp" FORMNAME="frmCreateRecipe" UNITNAME="CreateRecipe" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Stock\WriteOffStock.cpp" FORMNAME="frmWriteOffStock" UNITNAME="WriteOffStock" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DeleteRecipe.cpp" FORMNAME="frmDeleteRecipe" UNITNAME="DeleteRecipe" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="RecipeBox.cpp" FORMNAME="frmRecipeBox" UNITNAME="RecipeBox" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="UseRecipe.cpp" FORMNAME="frmUseRecipe" UNITNAME="UseRecipe" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EditRecipe.cpp" FORMNAME="frmEditRecipe" UNITNAME="EditRecipe" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="web_order.cpp" FORMNAME="" UNITNAME="web_order" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="processingWeborder.cpp" FORMNAME="frmProcessingWeborder" UNITNAME="processingWeborder" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="XeroIntegration.cpp" FORMNAME="" UNITNAME="XeroIntegration" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="XeroInvoiceBuilder.cpp" FORMNAME="" UNITNAME="XeroInvoiceBuilder" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="RemoteHostManager.cpp" FORMNAME="" UNITNAME="RemoteHostManager.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="FolderManager.cpp" FORMNAME="" UNITNAME="FolderManager.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ServiceManager.cpp" FORMNAME="" UNITNAME="ServiceManager.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="XeroServiceManager.cpp" FORMNAME="" UNITNAME="XeroServiceManager.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=5
+MinorVer=3
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=Menumate
+FileDescription=
+FileVersion=5.3.0.0
+InternalName=MenuMate Office
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=Office.exe
+ProductName=MenuMate
+ProductVersion=4.14.1.0
+Comments=
+
+[Excluded Packages]
+C:\PROGRA~1\Borland\CBUILD~1\Projects\Bpl\TntLibR.bpl=Tnt Unicode VCL - Runtime
+D:\Code\5.Hold and Send + Forced Options\Office\Libraries\Rave50CLXBEX60.bpl=Rave Reports 5.0 Run-Time Package (CLX)
+D:\Code\5.Hold and Send + Forced Options\Office\Libraries\Rave50VCLBEX60.bpl=Rave Reports 5.0 Run-Time Package (VCL)
+D:\Code\5.Hold and Send + Forced Options\Office\Libraries\P164_R61.bpl=TurboPower OfficePartner 1.64 Run-time package - VCL61
+
+[HistoryLists\hlIncludePath]
+Count=8
+Item0=Utils;Security;MenuEditor;BarcodeSync;TinyXml;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl;Registration;Stock;Debtors;Reports;Barcode;..\Rave5\C6;Components\pngimage;components\touchbuttons;Components\OPartner\source;Components\ThemeManager;Components\VirtualTreeview;Components\ZipBuilder\VCL;Components\TNTUnicodeControls;Components\NumericEdit;Components\Touch\Button;Components\CPort264\Sources;.
+Item1=Utils;Security;MenuEditor;BarcodeSync;TinyXml;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl;Registration;Stock;Debtors;Reports;Barcode;..\Rave5\C6;Components\pngimage;components\touchbuttons;Components\OPartner\source;Components\ThemeManager;Components\VirtualTreeview;Components\ZipBuilder\VCL;Components\TNTUnicodeControls;Components\NumericEdit;Components\Touch\Button;Components\CPort264\Sources
+Item2=Utils;Security;MenuEditor;BarcodeSync;TinyXml;Cashup;Accounts;..\components\pngimage;..\components\touchbuttons;TimeClock;VariableManager;..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl;Registration;Stock;Debtors;Reports;Barcode;..\Rave5\C6;..\Components\VTV\ThemeManager;..\Components\VTV\VirtualTreeview;..\Components\ZipBuilder\VCL;..\Components\TNTUnicodeControls;..\Components\NumericEdit;..\Components\Touch\Button;..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item3=Utils;Security;MenuEditor;BarcodeSync;TinyXml;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl;Registration;Stock;Debtors;Reports;Barcode;..\..\..\Rave5\C6;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\TNTUnicodeControls;..\..\..\Components\NumericEdit;..\..\..\Components\Touch\Button;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item4=MenuEditor;BarcodeSync;TinyXml;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl;Registration;Stock;Debtors;Reports;Barcode;..\..\..\Rave5\C6;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\TNTUnicodeControls;..\..\..\Components\NumericEdit;..\..\..\Components\Touch\Button;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item5=BarcodeSync;TinyXml;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl;Registration;Stock;Debtors;Reports;Barcode;..\..\..\Rave5\C6;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\TNTUnicodeControls;..\..\..\Components\NumericEdit;..\..\..\Components\Touch\Button;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item6=TinyXml;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl;Registration;Stock;Debtors;Reports;Barcode;..\..\..\Rave5\C6;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\TNTUnicodeControls;..\..\..\Components\NumericEdit;..\..\..\Components\Touch\Button;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item7=Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl;Registration;Stock;Debtors;Reports;Barcode;..\..\..\Rave5\C6;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\TNTUnicodeControls;..\..\..\Components\NumericEdit;..\..\..\Components\Touch\Button;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+
+[HistoryLists\hlLibraryPath]
+Count=18
+Item0=Components\NumericEdit;..\Obj;Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\Libraries;Components\CPort264\Sources;Components\VirtualTreeview\Packages;Components\ZipBuilder\VCL;Components\ZipBuilder\Langres;..\Rave5\C6
+Item1=..\Obj;Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\Libraries;Components\CPort264\Sources;Components\VirtualTreeview\Packages;Components\NumericEdit;Components\ZipBuilder\VCL;Components\ZipBuilder\Langres;..\Rave5\C6
+Item2=Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\Libraries;..\Obj;Components\CPort264\Sources;Components\VirtualTreeview\Packages;Components\NumericEdit;Components\ZipBuilder\VCL;Components\ZipBuilder\Langres;..\Rave5\C6
+Item3=Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\Libraries;..\Obj;Components\CPort264\Sources;Components\VirtualTreeview\Packages;Components\NumericEdit;Components\ZipBuilder\VCL;Components\ZipBuilder\Langres;..\Rave\C6
+Item4=Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\Libraries;..\Obj;Components\CPort264\Sources
+Item5=Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\Libraries;..\Obj
+Item6=Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\Libraries
+Item7=Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;TimeClock;VariableManager;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode
+Item8=Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;..\components\pngimage;..\components\touchbuttons;TimeClock;VariableManager;..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\Rave5;..\Rave5\C6;..\Components\Touch\Button;..\Components\ZipBuilder\VCL;..\Components\NumericEdit;..\Components\VTV\ThemeManager;..\Components\VTV\VirtualTreeview;..\Components\VTV\VirtualTreeview\Packages;..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins;..\Components\ZipBuilder\LangRes
+Item9=Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\indy\c6;Cashup;Accounts;..\components\pngimage;..\components\touchbuttons;TimeClock;VariableManager;..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\Rave5;..\Rave5\C6;..\Components\Touch\Button;..\Components\ZipBuilder\VCL;..\Components\NumericEdit;..\Components\VTV\ThemeManager;..\Components\VTV\VirtualTreeview;..\Components\VTV\VirtualTreeview\Packages;..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item10=Utils;Security;MenuEditor;BarcodeSync;TinyXml;..\..\..\indy\c6;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\..\..\Rave5;..\..\..\Rave5\C6;..\..\..\Components\Touch\Button;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\NumericEdit;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\VTV\VirtualTreeview\Packages;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item11=MenuEditor;BarcodeSync;TinyXml;..\..\..\indy\c6;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\..\..\Rave5;..\..\..\Rave5\C6;..\..\..\Components\Touch\Button;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\NumericEdit;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\VTV\VirtualTreeview\Packages;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item12=MenuEditor;BarcodeSync;TinyXml;..\..\..\indy\c6;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\..\..\Rave5;..\..\..\Rave5\C6;..\..\..\Components\Touch\Button;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\NumericEdit;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\VTV\VirtualTreeview\Packages;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;D:\Code\Menumate\Office\trunk\Source\MenuEditor;C:\Program Files\madCollection\madExcept\..\Plugins
+Item13=BarcodeSync;TinyXml;..\..\..\indy\c6;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\..\..\Rave5;..\..\..\Rave5\C6;..\..\..\Components\Touch\Button;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\NumericEdit;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\VTV\VirtualTreeview\Packages;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;D:\Code\Menumate\Office\trunk\Source\MenuEditor
+Item14=BarcodeSync;TinyXml;..\..\..\indy\c6;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\..\..\Rave5;..\..\..\Rave5\C6;..\..\..\Components\Touch\Button;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\NumericEdit;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\VTV\VirtualTreeview\Packages;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item15=TinyXml;..\..\..\indy\c6;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\..\..\Rave5;..\..\..\Rave5\C6;..\..\..\Components\Touch\Button;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\NumericEdit;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\VTV\VirtualTreeview\Packages;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item16=..\..\..\indy\c6;Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\..\..\Rave5;..\..\..\Rave5\C6;..\..\..\Components\Touch\Button;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\NumericEdit;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\VTV\VirtualTreeview\Packages;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item17=Cashup;Accounts;..\..\..\components\pngimage;..\..\..\components\touchbuttons;TimeClock;VariableManager;..\..\..\Components\OPartner\source;System\Core;System;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib;$(BCB)\lib\release;$(BCB)\lib\obj;Registration;Debtors;Reports;Stock;Barcode;..\..\..\Rave5;..\..\..\Rave5\C6;..\..\..\Components\Touch\Button;..\..\..\Components\ZipBuilder\VCL;..\..\..\Components\NumericEdit;..\..\..\Components\VTV\ThemeManager;..\..\..\Components\VTV\VirtualTreeview;..\..\..\Components\VTV\VirtualTreeview\Packages;..\..\..\Components\CPort264\Sources;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+
+[HistoryLists\hlDebugSourcePath]
+Count=8
+Item0=$(BCB)\Include\Vcl\;Components\VTV\VirtualTreeview\;Components\NumericEdit;D:\Code\Menumate\Components\TouchButtons\;D:\Code\Menumate\Components\VTV\VirtualTreeview\;D:\Code\Office\Components\TNTUnicodeControls\
+Item1=$(BCB)\Include\Vcl\;Components\VTV\VirtualTreeview\;Components\NumericEdit;D:\Code\Menumate\Components\TouchButtons\;D:\Code\Menumate\Components\VTV\VirtualTreeview\
+Item2=$(BCB)\Include\Vcl\;Components\VTV\VirtualTreeview\;Components\NumericEdit
+Item3=$(BCB)\Include\Vcl\;C:\Code\Office\Office 3.3.0\Source\Components\VTV\VirtualTreeview\
+Item4=$(BCB)\Include\Vcl\
+Item5=c:\program files\borland\cbuilder6\source\vcl;C:\Program Files\Borland\CBuilder6\Include\Vcl\
+Item6=c:\program files\borland\cbuilder5\source\vcl;C:\Program Files\Borland\CBuilder5\Include\Vcl\
+Item7=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=18
+Item0=NO_WIN32_LEAN_AND_MEAN;Office;_DEBUG
+Item1=NO_WIN32_LEAN_AND_MEAN;Office
+Item2=NO_WIN32_LEAN_AND_MEAN;Office;madExcept
+Item3=NO_WIN32_LEAN_AND_MEAN;Office;madExcept;_DEBUG
+Item4=NO_WIN32_LEAN_AND_MEAN;Office;DEVELOPER;BETA;_DEBUG
+Item5=NO_WIN32_LEAN_AND_MEAN;Office;DEVELOPER;BETA
+Item6=NO_WIN32_LEAN_AND_MEAN;Office;DEVELOPER;_DEBUG;BETA
+Item7=NO_WIN32_LEAN_AND_MEAN;Office;DEVELOPER;_DEBUG
+Item8=NO_WIN32_LEAN_AND_MEAN;Office;_DEBUG;DEVELOPER;BETA
+Item9=NO_WIN32_LEAN_AND_MEAN;Office;_DEBUG;DEVELOPER
+Item10=NO_WIN32_LEAN_AND_MEAN;Office;_DEBUG;BETA
+Item11=NO_WIN32_LEAN_AND_MEAN;Office;_DEBUG;ALPHA
+Item12=NO_WIN32_LEAN_AND_MEAN;_DEBUG;OFFICE
+Item13=NO_WIN32_LEAN_AND_MEAN;_DEBUG
+Item14=NO_WIN32_LEAN_AND_MEAN
+Item15=NO_WIN32_LEAN_AND_MEAN ;_DEBUG
+Item16=_DEBUG
+Item17=_DEBUG;NO_WIN32_LEAN_AND_MEAN
+
+[HistoryLists\hlIntOutputDir]
+Count=6
+Item0=..\Obj
+Item1=..\Obj\
+Item2=D:\Code\Office 3.3.0\Obj
+Item3=D:\Code\Office 3.2.0\Obj
+Item4=D:\Code\Office 3.1.0\Obj
+Item5=D:\Code\Office\Obj
+
+[HistoryLists\hlFinalOutputDir]
+Count=20
+Item0=..\..\Runtime\
+Item1=..\..\Runtime
+Item2=..\Exec\
+Item3=D:\Code\Office 3.3.0\Exec\
+Item4=D:\Code\Office 3.2.0\Exec\
+Item5=D:\Code\Office 3.1.0\Exec\
+Item6=D:\Code\Office 3.1.0\Exec
+Item7=D:\Code\Office\Exec
+Item8=..\execItem1=..\exec
+Item9=
+Item10=..\execItem1=..\execItem1=d:\code\office\exec
+Item11=
+Item12=
+Item13=..\execItem1=..\execItem1=d:\code\office\exec
+Item14=
+Item15=
+Item16=Item1=d:\code\office\exec
+Item17=
+Item18=..\execItem1=d:\code\office\exec
+Item19=
+
+[Debugging]
+DebugSourceDirs=$(BCB)\Include\Vcl\;Components\VTV\VirtualTreeview\;Components\NumericEdit;D:\Code\Menumate\Components\TouchButtons\;D:\Code\Menumate\Components\VTV\VirtualTreeview\;D:\Code\Office\Components\TNTUnicodeControls\
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=1
+LinkDebugVcl=1
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" />
+  <xs:element name="SetSalesforceAuthInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="info" nillable="true" type="q1:DTO_SalesforceAuthInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetSalesforceAuthInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="SetSalesforceAuthInfoResult" nillable="true" type="q2:DTO_LoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateMember">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="inSiteID" type="xs:int" />
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="inInfo" nillable="true" type="q3:DTO_MemberInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateMemberResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="CreateMemberResult" nillable="true" type="q4:DTO_LoyaltyMemberResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateMember">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="inSiteID" type="xs:int" />
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="inInfo" nillable="true" type="q5:DTO_MemberInfo" />
+        <xs:element minOccurs="0" name="inForceCreate" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateMemberResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="UpdateMemberResult" nillable="true" type="q6:DTO_LoyaltyMemberResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteMember">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="inSiteID" type="xs:int" />
+        <xs:element minOccurs="0" name="inUUID" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteMemberResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="DeleteMemberResult" nillable="true" type="q7:DTO_LoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMember">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="inSiteID" type="xs:int" />
+        <xs:element minOccurs="0" name="inUUID" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="GetMemberResult" nillable="true" type="q8:DTO_LoyaltyMemberResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="inSiteID" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="GetMemberListResult" nillable="true" type="q9:DTO_LoyaltyMemberListResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PostTransaction">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="inSiteID" type="xs:int" />
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="transaction" nillable="true" type="q10:DTO_TransactionInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PostTransactionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="PostTransactionResult" nillable="true" type="q11:DTO_LoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberIdByActivationCode">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="inSideID" type="xs:int" />
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="activationInfo" nillable="true" type="q12:DTO_MemberActivationInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMemberIdByActivationCodeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" minOccurs="0" name="GetMemberIdByActivationCodeResult" nillable="true" type="q13:DTO_LoyaltyMemberActivationResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

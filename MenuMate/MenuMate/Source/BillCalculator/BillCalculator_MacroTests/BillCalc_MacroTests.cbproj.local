@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2014/05/26 16:07:11.701.cbproj,C:\Code\Git\MenumateGit-LocalMirror\BillCalculator\BillCalculator_MacroTests\BillCalc_MacroTests.cbproj=C:\Code\Git\MenumateGit-LocalMirror\BillCalculator\BillCalculator_MacroTests\BillCalc_MacroTests.cbproj</Transaction>
+    <Transaction>2014/05/26 16:26:15.594.cpp,C:\Code\Git\MenumateGit-LocalMirror\BillCalculator\BillCalculator_MacroTests\Unit1.cpp=C:\Code\Git\MenumateGit-LocalMirror\BillCalculator\BillCalculator_MacroTests\MMBillCalculator_SUT.cpp</Transaction>
+    <Transaction>2014/05/26 16:26:15.594.h,C:\Code\Git\MenumateGit-LocalMirror\BillCalculator\BillCalculator_MacroTests\Unit1.h=C:\Code\Git\MenumateGit-LocalMirror\BillCalculator\BillCalculator_MacroTests\MMBillCalculator_SUT.h</Transaction>
+    <Transaction>2014/05/26 16:28:12.362.cpp,C:\Code\Git\MenumateGit-LocalMirror\BillCalculator\BillCalculator_MacroTests\MMBillCalculator_SUT.cpp=</Transaction>
+    <Transaction>2014/05/26 16:42:22.077.cpp,C:\Code\Git\MenumateGit-LocalMirror\BillCalculator\BillCalculator_MacroTests\MMBillCalculator_Tester.cpp=</Transaction>
+  </Transactions>
+</BorlandProject>

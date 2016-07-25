@@ -1,0 +1,5 @@
+HAS; 2,7,6;
+HAVE; 11,7,3;
+HELP; 11;
+HOSPITALITY; 2;
+HOW; 4,8;

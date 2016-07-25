@@ -1,0 +1,55 @@
+﻿<Window x:Class="Safemate.Configurator.SafemateConfigurationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Safemate Configuration v__MM_VERSION__" Name="wndSafemateConfiguration" WindowStartupLocation="CenterScreen" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" d:DesignWidth="1189" d:DesignHeight="470" ResizeMode="CanMinimize" SnapsToDevicePixels="True" MinWidth="1061" Width="1061" Height="470" MinHeight="470">
+        <Canvas Name="cvsSettingContainer" IsManipulationEnabled="True" Width="1044">
+                <GroupBox Canvas.Left="12" Canvas.Top="40" Header="Error Notifications" Height="344" Name="EmailNotificationSettings" Width="504">
+                        <Grid>
+                                <Label Content="Sending address" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="lblSendingFrom" VerticalAlignment="Top" />
+                                <Label Content="SMTP Server" Height="28" HorizontalAlignment="Left" HorizontalContentAlignment="Right" Margin="6,46,0,0" Name="lblSmtpServer" VerticalAlignment="Top" Width="97" />
+                                <Label Content="Port" Height="28" HorizontalAlignment="Right" Margin="0,46,101,0" Name="lblSmtpPort" VerticalAlignment="Top" />
+                                <Label Content="Username" Height="28" HorizontalAlignment="Left" HorizontalContentAlignment="Right" Margin="6,97,0,0" Name="lblSmtpUsername" VerticalAlignment="Top" Width="97" />
+                                <Label Content="Password" Height="28" HorizontalAlignment="Left" HorizontalContentAlignment="Right" Margin="6,131,0,0" Name="lblSmtpPassword" VerticalAlignment="Top" Width="97" />
+                                <TextBox Height="23" HorizontalAlignment="Right" Margin="0,11,7,0" Name="tbSendingFrom" VerticalAlignment="Top" Width="376" />
+                                <TextBox Height="23" HorizontalAlignment="Right" Margin="0,48,6,0" Name="tbSmtpPort" VerticalAlignment="Top" Width="88" />
+                                <TextBox Height="23" HorizontalAlignment="Left" Margin="109,48,0,0" Name="tbSmtpServer" VerticalAlignment="Top" Width="244" />
+                                <TextBox Height="23" HorizontalAlignment="Left" Margin="109,133,0,0" Name="tbSmtpPassword" VerticalAlignment="Top" Width="376" />
+                                <TextBox Height="23" HorizontalAlignment="Right" Margin="0,99,6,0" Name="tbSmtpUsername" VerticalAlignment="Top" Width="376" />
+                                <CheckBox Content="Authenticate with SSL" Height="16" HorizontalAlignment="Left" Margin="109,77,0,0" Name="chbUseSsl" VerticalAlignment="Top" Width="161" />
+                                <Label Content="Recipients" Height="28" HorizontalAlignment="Left" Margin="6,165,0,0" Name="lblRecipients" VerticalAlignment="Top" />
+                                <ListBox Height="94" HorizontalAlignment="Left" Margin="6,221,0,0" Name="lbRecipients" VerticalAlignment="Top" Width="369" SelectionChanged="lbRecipients_SelectionChanged" />
+                                <TextBox Height="23" HorizontalAlignment="Left" Margin="6,192,0,0" Name="tbRecipientAddress" VerticalAlignment="Top" Width="369" TextChanged="tbRecipientAddress_TextChanged" />
+                                <Button Content="_Add Recipient" Height="23" HorizontalAlignment="Left" Margin="381,192,0,0" Name="btnAddRecipient" VerticalAlignment="Top" Width="104" Click="btnAddRecipient_Click" IsEnabled="False" />
+                                <Button Content="_Remove Recipient" Height="23" HorizontalAlignment="Left" Margin="381,221,0,0" Name="btnRemoveRecipient" VerticalAlignment="Top" Width="104" Click="btnRemoveRecipient_Click" IsEnabled="False" />
+            </Grid>
+                </GroupBox>
+                <GroupBox Canvas.Left="516" Canvas.Top="40" Header="Backup" Height="344" Name="BackupSettings" Width="518">
+                        <Canvas Name="cvsBackupSettingsContainer">
+                                <Label Canvas.Left="6" Canvas.Top="6" Content="Source path" Height="28" Name="lblSourcePath" Width="120" />
+                                <Label Canvas.Left="6" Canvas.Top="69" Content="Backup interval" Height="29" Name="lblUpdateInterval" VerticalContentAlignment="Center" Width="102" />
+                                <Label Canvas.Left="6" Canvas.Top="133" Content="Targets" Height="28" Name="lblTargets" />
+                                <TextBox Canvas.Left="6" Canvas.Top="40" Height="23" Name="tbSourcePath" Width="384" />
+                                <Button Canvas.Left="396" Canvas.Top="40" Content="_Select source" Height="23" Name="btnSelectSource" Width="104" Click="btnSelectSource_Click" />
+                                <ComboBox Canvas.Left="6" Canvas.Top="104" Height="23" Name="cbIntervalUnit" Width="150">
+                                        <ComboBoxItem Content="Every N days" />
+                                        <ComboBoxItem Content="Every N hours" />
+                                        <ComboBoxItem Content="Every N minutes" />
+                                        <ComboBoxItem Content="Every N months" />
+                                        <ComboBoxItem Content="Every N weeks" />
+                                </ComboBox>
+                                <TextBox Canvas.Left="162" Canvas.Top="104" Height="23" Name="tbInterval" Width="87" />
+                                <ListBox Canvas.Left="6" Canvas.Top="167" Height="148" Name="lbTargets" Width="384" SelectionChanged="lbTargets_SelectionChanged" MouseDoubleClick="lbTargets_MouseDoubleClick" />
+                                <Button Canvas.Left="396" Canvas.Top="167" Content="A_dd local target" Height="23" Name="btnAddLocalTarget" Width="104" Click="btnAddLocalTarget_Click" />
+                                <Button Canvas.Left="396" Canvas.Top="196" Content="Add _FTP target" Height="23" Name="btnAddFtpTarget" Width="104" Click="btnAddFtpTarget_Click" />
+                                <Button Canvas.Left="396" Canvas.Top="225" Content="_Edit target" Height="23" Name="btnEditTarget" Width="104" Click="btnEditTarget_Click" IsEnabled="False" />
+                                <Button Canvas.Left="396" Canvas.Top="256" Content="Re_move target" Height="23" Name="btnRemoveTarget" Width="104" Click="btnRemoveTarget_Click" IsEnabled="False" />
+                        </Canvas>
+                </GroupBox>
+                <Label Canvas.Left="12" Canvas.Top="12" Content="Registered to placeholder" Height="28" Name="lblRegisteredTo" FontWeight="SemiBold" />
+                <Label Canvas.Left="12" Canvas.Top="390" Content="Status placeholder" FontWeight="SemiBold" Height="28" Name="lblServiceStatus" Width="125" HorizontalContentAlignment="Center" />
+                <Button Canvas.Left="143" Canvas.Top="391" Content="Start service" Height="23" Name="btnToggleService" Width="75" IsEnabled="True" />
+                <Button Canvas.Left="224" Canvas.Top="391" Content="Stop service" Height="23" Name="btnStopService" Width="75" IsEnabled="False" />
+        <Button Canvas.Left="305" Canvas.Top="391" Content="Save settings" Height="23" Name="btnSaveSettings" Width="104" Click="btnSaveSettings_Click" />
+        <Image Height="39" Name="imgMenumateBranding" Stretch="Fill" Width="269" Source="/Safemate.Configurator;component/menumate_logo.png" Canvas.Left="775" Canvas.Top="390" />
+    </Canvas>
+</Window>

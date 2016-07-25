@@ -1,0 +1,322 @@
+module RvData;
+
+definition
+
+import
+  SysFunc,
+  RvClass;
+
+type
+  TDate = TDateTime;
+  TTime = TDateTime;
+
+  TRaveDataField = class(TRaveComponent)
+  protected
+    function GetDescription: TRaveMemoString;
+    function SetDescription(Value: TRaveMemoString);
+    function GetFieldName: string;
+    function SetFieldName(Value: string);
+    function GetFullName: string;
+    function SetFullName(Value: string);
+    function GetNullText: string;
+    function SetNullText(Value: string);
+    function GetSize: integer;
+    function SetSize(Value: integer);
+  public
+    function DataType: TRPDataType;
+    function AsString: string;
+    function AsBoolean: boolean;
+    function AsInteger: integer;
+    function AsFloat: extended;
+    function AsCurrency: currency;
+    function AsDateTime: TDateTime;
+    function AsDate: TDate;
+    function AsTime: TTime;
+    function AsBlob: pointer;
+    function DataSize: integer;
+    function IsNull: boolean;
+    property Description: TRaveMemoString read GetDescription write SetDescription;
+    property FieldName: string read GetFieldName write SetFieldName;
+    property FullName: string read GetFullName write SetFullName;
+    property NullText: string read GetNullText write SetNullText;
+    property Size: integer read GetSize write SetSize;
+  end TRaveDataField;
+
+  TRaveFormattedField = class(TRaveDataField)
+  protected
+    function GetDisplayFormat: string;
+    function SetDisplayFormat(Value: string);
+  public
+    property DisplayFormat: string read GetDisplayFormat write SetDisplayFormat;
+  end TRaveFormattedField;
+
+  TRaveStringField = class(TRaveDataField)
+  end TRaveStringField;
+
+  TRaveBooleanField = class(TRaveDataField)
+  protected
+    function GetTextTrue: string;
+    function SetTextTrue(Value: string);
+    function GetTextFalse: string;
+    function SetTextFalse(Value: string);
+  public
+    property TextTrue: string read GetTextTrue write SetTextTrue;
+    property TextFalse: string read GetTextFalse write SetTextFalse;
+  end TRaveBooleanField;
+
+  TRaveIntegerField = class(TRaveFormattedField)
+  end TRaveIntegerField;
+
+  TRaveFloatField = class(TRaveFormattedField)
+  end TRaveFloatField;
+
+  TRaveCurrencyField = class(TRaveFormattedField)
+  end TRaveCurrencyField;
+
+  TRaveBCDField = class(TRaveCurrencyField)
+  end TRaveBCDField;
+
+  TRaveDateTimeField = class(TRaveFormattedField)
+  end TRaveDateTimeField;
+
+  TRaveDateField = class(TRaveDateTimeField)
+  end TRaveDateField;
+
+  TRaveTimeField = class(TRaveDateTimeField)
+  end TRaveTimeField;
+
+  TRaveBlobField = class(TRaveDataField)
+  end TRaveBlobField;
+
+  TRaveMemoField = class(TRaveBlobField)
+  end TRaveMemoField;
+
+  TRaveGraphicField = class(TRaveBlobField)
+  end TRaveGraphicField;
+
+  TRaveBaseDataView = class(TRaveDataObject)
+  public
+    function First;
+    function Next;
+    function GetCurrentRow;
+    function EOF: boolean;
+    function CheckRowsLeft(ReqRows: integer): boolean;
+    function FieldByName(FieldName: string): TRaveDataField;
+    function Peek(Amount: integer);
+    function Unpeek;
+    function Empty: boolean;
+    function Saving: boolean;
+  end TRaveBaseDataView;
+
+  TRaveDataView = class(TRaveBaseDataView)
+  protected
+    function GetActive: boolean;
+    function SetActive(Value: boolean);
+    function GetConnectionName: string;
+    function SetConnectionName(Value: string);
+  public
+    property Active: boolean read GetActive write SetActive;
+    property ConnectionName: string read GetConnectionName write SetConnectionName;
+  end TRaveDataView;
+
+  TRaveDBAuth = class
+  protected
+    function GetDatasource: string;
+    function SetDatasource(Value: string);
+    function GetOptions: string;
+    function SetOptions(Value: string);
+    function GetPassword: string;
+    function SetPassword(Value: string);
+    function GetUsername: string;
+    function SetUsername(Value: string);
+  public
+    property Datasource: string read GetDatasource write SetDatasource;
+    property Options: string read GetOptions write SetOptions;
+    property Password: string read GetPassword write SetPassword;
+    property Username: string read GetUsername write SetUsername;
+  end TRaveDBAuth;
+
+  TRaveDatabase = class(TRaveDataObject)
+  protected
+    function GetAuthDesign: TRaveDBAuth;
+    function GetAuthRun: TRaveDBAuth;
+    function GetLinkPoolSize: integer;
+    function SetLinkPoolSize(Value: integer);
+    function GetLinkType: string;
+    function SetLinkType(Value: string);
+  public
+    property AuthDesign: TRaveDBAuth read GetAuthDesign;
+    property AuthRun: TRaveDBAuth read GetAuthRun;
+    property LinkPoolSize: integer read GetLinkPoolSize write SetLinkPoolSize;
+    property LinkType: string read GetLinkType write SetLinkType;
+  end TRaveDataBase;
+
+  TRaveDriverDataView = class(TRaveBaseDataView)
+  protected
+    function GetDatabase: TRaveDatabase;
+    function SetDatabase(Value: TRaveDatabase);
+    function GetQuery: string;
+    function SetQuery(Value: string);
+  public
+    property Database: TRaveDatabase read GetDatabase write SetDatabase;
+    property Query: string read GetQuery write SetQuery;
+  //property QueryParams: TStrings read FQueryParams write SetQueryParams;
+  end TRaveDriverDataView;
+
+  TRaveBaseSecurity = class(TRaveDataObject)
+  public
+    function IsValidUser(AUserName: string; APassword: string): boolean;
+  end TRaveBaseSecurity;
+
+  TRaveSimpleSecurity = class(TRaveBaseSecurity)
+  protected
+    function SetCaseMatters(Value: boolean);
+    function GetCaseMatters: boolean;
+  public
+  //property UserList: TStrings read FUserList write SetUserList;
+    property CaseMatters: boolean read GetCaseMatters write SetCaseMatters;
+  end TRaveSimpleSecurity;
+
+  TRaveLookupSecurity = class(TRaveBaseSecurity)
+  protected
+    function SetDataView(Value: TRaveBaseDataView);
+    function GetDataView: TRaveBaseDataView;
+    function SetUserField(Value: TRaveFieldName);
+    function GetUserField: TRaveFieldName;
+    function SetPasswordField(Value: TRaveFieldName);
+    function GetPasswordField: TRaveFieldName;
+  public
+    property DataView: TRaveBaseDataView read GetDataView write SetDataView;
+    property UserField: TRaveFieldName read GetUserField write SetPasswordField;
+    property PasswordField: TRaveFieldName read GetPasswordField write SetPasswordField;
+  end TRaveLookupSecurity;
+
+{
+  function ProcessDataStr(DefaultDataView: TRaveDataView;
+                          Value: string): string;
+  function CreateDataCon(RPConnection: TRPCustomConnection): TRaveDataConnection;
+  function CreateDataView(DataCon: TRaveDataConnection): TRaveDataView;
+  function CreateFieldName(DataViewName: string;
+                           FieldName: string): string;
+  procedure CreateFields(DataView: TRaveDataView;
+                         DeletedFields: TStringList;
+                         ReplacedFields: TStringList;
+                         DoCreate: boolean);
+  function PerformLookup(LookupDataView: TRaveDataView;
+                         LookupValue: string;
+                         LookupValueField: TRaveDataField;
+                         LookupField: TRaveFieldName;
+                         LookupDisplay: TRaveFieldName;
+                         LookupInvalid: string): string;
+  procedure DataViewFirst(DataView: TRaveDataView;
+                          DetailKey: TRaveFieldName;
+                          MasterDataView: TRaveDataView;
+                          MasterKey: TRaveFieldName;
+                          SortKey: string);
+}
+
+implementation
+
+// TRaveDataField
+
+  function TRaveDataField.GetDescription: TRaveMemoString; external;
+  function TRaveDataField.SetDescription(Value: TRaveMemoString); external;
+  function TRaveDataField.GetFieldName: string; external;
+  function TRaveDataField.SetFieldName(Value: string); external;
+  function TRaveDataField.GetFullName: string; external;
+  function TRaveDataField.SetFullName(Value: string); external;
+  function TRaveDataField.GetNullText: string; external;
+  function TRaveDataField.SetNullText(Value: string); external;
+  function TRaveDataField.GetSize: integer; external;
+  function TRaveDataField.SetSize(Value: integer); external;
+  function TRaveDataField.DataType: TRPDataType; external;
+  function TRaveDataField.AsString: string; external;
+  function TRaveDataField.AsBoolean: boolean; external;
+  function TRaveDataField.AsInteger: integer; external;
+  function TRaveDataField.AsFloat: extended; external;
+  function TRaveDataField.AsCurrency: currency; external;
+  function TRaveDataField.AsDateTime: TDateTime; external;
+  function TRaveDataField.AsDate: TDate; external;
+  function TRaveDataField.AsTime: TTime; external;
+  function TRaveDataField.AsBlob: pointer; external;
+  function TRaveDataField.DataSize: integer; external;
+  function TRaveDataField.IsNull: boolean; external;
+
+// TRaveFormattedField
+
+  function TRaveFormattedField.GetDisplayFormat: string; external;
+  function TRaveFormattedField.SetDisplayFormat(Value: string); external;
+
+// TRaveBooleanField
+
+  function TRaveBooleanField.GetTextTrue: string; external;
+  function TRaveBooleanField.SetTextTrue(Value: string); external;
+  function TRaveBooleanField.GetTextFalse: string; external;
+  function TRaveBooleanField.SetTextFalse(Value: string); external;
+
+// TRaveBaseDataView
+
+  function TRaveBaseDataView.First; external;
+  function TRaveBaseDataView.Next; external;
+  function TRaveBaseDataView.GetCurrentRow; external;
+  function TRaveBaseDataView.EOF: boolean; external;
+  function TRaveBaseDataView.CheckRowsLeft(ReqRows: integer): boolean; external;
+  function TRaveBaseDataView.FieldByName(FieldName: string): TRaveDataField; external;
+  function TRaveBaseDataView.Peek(Amount: integer); external;
+  function TRaveBaseDataView.Unpeek; external;
+  function TRaveBaseDataView.Empty: boolean; external;
+  function TRaveBaseDataView.Saving: boolean; external;
+
+// TRaveDataView
+
+  function TRaveDataView.GetActive: boolean; external;
+  function TRaveDataView.SetActive(Value: boolean); external;
+  function TRaveDataView.GetConnectionName: string; external;
+  function TRaveDataView.SetConnectionName(Value: string); external;
+
+// TRaveDBAuth
+
+  function TRaveDBAuth.GetDatasource: string; external;
+  function TRaveDBAuth.SetDatasource(Value: string); external;
+  function TRaveDBAuth.GetOptions: string; external;
+  function TRaveDBAuth.SetOptions(Value: string); external;
+  function TRaveDBAuth.GetPassword: string; external;
+  function TRaveDBAuth.SetPassword(Value: string); external;
+  function TRaveDBAuth.GetUsername: string; external;
+  function TRaveDBAuth.SetUsername(Value: string); external;
+
+// TRaveDatabase
+
+  function TRaveDatabase.GetAuthDesign: TRaveDBAuth; external;
+  function TRaveDatabase.GetAuthRun: TRaveDBAuth; external;
+  function TRaveDatabase.GetLinkPoolSize: integer; external;
+  function TRaveDatabase.SetLinkPoolSize(Value: integer); external;
+  function TRaveDatabase.GetLinkType: string; external;
+  function TRaveDatabase.SetLinkType(Value: string); external;
+
+// TRaveDriverDataView
+
+  function TRaveDriverDataView.GetDatabase: TRaveDatabase; external;
+  function TRaveDriverDataView.SetDatabase(Value: TRaveDatabase); external;
+  function TRaveDriverDataView.GetQuery: string; external;
+  function TRaveDriverDataView.SetQuery(Value: string); external;
+
+// TRaveBaseSecurity
+
+  function TRaveBaseSecurity.IsValidUser(AUserName: string; APassword: string): boolean; external;
+
+// TRaveSimpleSecurity
+
+  function TRaveSimpleSecurity.SetCaseMatters(Value: boolean); external;
+  function TRaveSimpleSecurity.GetCaseMatters: boolean; external;
+
+// TRaveLookupSecurity
+
+  function TRaveLookupSecurity.SetDataView(Value: TRaveBaseDataView); external;
+  function TRaveLookupSecurity.GetDataView: TRaveBaseDataView; external;
+  function TRaveLookupSecurity.SetUserField(Value: TRaveFieldName); external;
+  function TRaveLookupSecurity.GetUserField: TRaveFieldName; external;
+  function TRaveLookupSecurity.SetPasswordField(Value: TRaveFieldName); external;
+  function TRaveLookupSecurity.GetPasswordField: TRaveFieldName; external;
+
+end RvData;

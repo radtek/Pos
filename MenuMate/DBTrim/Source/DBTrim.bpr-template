@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\..\Runtime\DBTrim.exe"/>
+    <OBJFILES value="..\obj\DBTrim.obj ..\obj\Main.obj ..\obj\TrimUtil.obj 
+      ..\obj\MMRegistry.obj ..\obj\MM_DBCore.obj"/>
+    <RESFILES value="DBTrim.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) Main.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="bcbie.lib vclie.lib dbexpress.lib dbrtl.lib dsnap.lib cds.lib ibxpress.lib 
+      ButtonPack.lib vclx.lib bcbsmp.lib rtl.lib vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib bcbsmp.lib vclx.lib ButtonPack.lib ibxpress.lib cds.lib 
+      dsnap.lib dbrtl.lib dbexpress.lib vclie.lib bcbie.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi 
+      vcldbx.bpi ibxpress.bpi dsnap.bpi cds.bpi bdecds.bpi qrpt.bpi teeui.bpi 
+      teedb.bpi tee.bpi dss.bpi teeqr.bpi visualclx.bpi visualdbclx.bpi 
+      dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi vclie.bpi xmlrtl.bpi inet.bpi 
+      inetdbbde.bpi inetdbxpress.bpi inetdb.bpi nmfast.bpi webdsnap.bpi 
+      bcbie.bpi websnap.bpi soaprtl.bpi dclocx.bpi dbexpress.bpi dbxcds.bpi 
+      bcb2kaxserver.bpi ButtonPack.bpi TntLibR.bpi NumericEditPkg.bpi 
+      CPortLibCB6.bpi"/>
+    <PATHCPP value=".;..\..\MenuMate\Source;..\..\MenuMate\Source\System\Core"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="NO_WIN32_LEAN_AND_MEAN"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="DBTrim.cpp"/>
+    <INCLUDEPATH value="&quot;..\..\Components BCB6\TouchButtons&quot;;..\..\MenuMate\Source\System\Core;..\..\MenuMate\Source;&quot;..\..\Touch Utils&quot;;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;&quot;..\..\..\MenuMate\Components BCB6\Touch\Button&quot;;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins"/>
+    <LIBPATH value="&quot;..\..\Components BCB6\TouchButtons&quot;;..\..\MenuMate\Source\System\Core;..\..\MenuMate\Source;&quot;..\..\Touch Utils&quot;;$(BCB)\source\indy\c6;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I&quot;..\..\Components BCB6\TouchButtons&quot; -I..\..\MenuMate\Source\System\Core 
+      -I..\..\MenuMate\Source -I&quot;..\..\Touch Utils&quot; -I$(BCB)\Projects 
+      -I$(BCB)\include -I$(BCB)\include\vcl -I$(BCB)\Source\Indy\C6 
+      -I&quot;..\..\..\MenuMate\Components BCB6\Touch\Button&quot; 
+      -I$(BCB)\Mad\madBasic\BCB6 -I$(BCB)\Mad\madDisAsm\BCB6 
+      -I$(BCB)\Mad\madExcept\BCB6 -I$(BCB)\Mad\madExcept\..\Plugins -src_suffix 
+      cpp -DNO_WIN32_LEAN_AND_MEAN -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-N2..\obj -N0..\obj -$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-I..\obj -D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="DBTrim.res" FORMNAME="" UNITNAME="DBTrim.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DBTrim.cpp" FORMNAME="" UNITNAME="DBTrim" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Main.cpp" FORMNAME="frmMain" UNITNAME="Main" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DBTrim.cpp" FORMNAME="" UNITNAME="DBTrim" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TrimUtil.cpp" FORMNAME="" UNITNAME="TrimUtil" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\MMRegistry.cpp" FORMNAME="" UNITNAME="MMRegistry" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\System\Core\MM_DBCore.cpp" FORMNAME="" UNITNAME="MM_DBCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Excluded Packages]
+c:\development\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+c:\program files\borland\cbuilder6\bin\dclClxIBXtras60.bpl=Borland InterBase Express Extras (Clx)
+c:\program files\borland\cbuilder6\Bin\dclIBXtras60.bpl=Borland InterBase Express Extras
+[HistoryLists\hlIncludePath]
+Count=7
+Item0=..\..\MenuMate\Source\System\Core;..\..\MenuMate\Source;..\..\Touch Utils;$(BCB)\Projects;..\..\Components BCB6\TouchButtons;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6
+Item1=..\..\MenuMate\Source\System\Core;..\..\MenuMate\Source;..\..\Touch Utils;$(BCB)\Projects;..\..\Components BCB6\TouchButtons;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;$(BCB)\Source\Indy\C6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item2=..\..\MenuMate\Source\System\Core;..\..\MenuMate\Source;..\..\Touch Utils;$(BCB)\Projects;C:\My Data\code\4.2\MenuMate\DBTrim\Source;..\..\..\MenuMate\Components BCB6\TouchButtons;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;$(BCB)\Source\Indy\C6;C:\Program Files\madCollection\madExcept\..\Plugins;..\..\..\MenuMate\Components BCB6\Touch\Button
+Item3=..\..\MenuMate\Source;..\..\Touch Utils;$(BCB)\Projects;C:\My Data\code\4.2\MenuMate\DBTrim\Source;..\..\..\MenuMate\Components BCB6\TouchButtons;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;$(BCB)\Source\Indy\C6;C:\Program Files\madCollection\madExcept\..\Plugins;..\..\..\MenuMate\Components BCB6\Touch\Button
+Item4=..\..\MenuMate\Source;..\..\Touch Utils;$(BCB)\Projects;C:\My Data\code\4.2\MenuMate\DBTrim\Source;..\..\..\MenuMate\Components BCB6\TouchButtons;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;$(BCB)\Source\Indy\C6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item5=$(BCB)\Projects;C:\My Data\code\4.2\MenuMate\DBTrim\Source;..\..\..\MenuMate\Components BCB6\TouchButtons;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;$(BCB)\Source\Indy\C6
+Item6=$(BCB)\Projects;C:\My Data\code\4.2\MenuMate\DBTrim\Source;C:\My Data\code\4.2\MenuMate\Components BCB6\TouchButtons;$(BCB)\include;$(BCB)\include\vcl;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+
+[HistoryLists\hlLibraryPath]
+Count=5
+Item0=..\..\Components BCB6\TouchButtons;..\..\MenuMate\Source\System\Core;..\..\MenuMate\Source;..\..\Touch Utils;$(BCB)\source\indy\c6;$(BCB)\Projects;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item1=..\..\MenuMate\Source\System\Core;..\..\MenuMate\Source;..\..\Touch Utils;$(BCB)\source\indy\c6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madBasic\BCB6;$(BCB)\Projects;C:\My Data\code\4.2\MenuMate\DBTrim\Source;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\Projects\Lib;C:\My Data\code\4.2\MenuMate\Components BCB6\TouchButtons;$(BCB)\lib\obj;$(BCB)\lib;C:\Program Files\madCollection\madExcept\..\Plugins
+Item2=..\..\MenuMate\Source;..\..\Touch Utils;$(BCB)\source\indy\c6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madBasic\BCB6;$(BCB)\Projects;C:\My Data\code\4.2\MenuMate\DBTrim\Source;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\Projects\Lib;C:\My Data\code\4.2\MenuMate\Components BCB6\TouchButtons;$(BCB)\lib\obj;$(BCB)\lib;C:\Program Files\madCollection\madExcept\..\Plugins
+Item3=$(BCB)\source\indy\c6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madBasic\BCB6;$(BCB)\Projects;C:\My Data\code\4.2\MenuMate\DBTrim\Source;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\Projects\Lib;C:\My Data\code\4.2\MenuMate\Components BCB6\TouchButtons;$(BCB)\lib\obj;$(BCB)\lib
+Item4=$(BCB)\source\indy\c6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madBasic\BCB6;$(BCB)\Projects;C:\My Data\code\4.2\MenuMate\DBTrim\Source;..\source\indy\c6;..\..\..\madCollection\madExcept\BCB6;..\..\..\madCollection\madDisAsm\BCB6;..\..\..\madCollection\madBasic\BCB6;$(BCB)\Projects\Lib;C:\My Data\code\4.2\MenuMate\Components BCB6\TouchButtons;$(BCB)\lib\obj;$(BCB)\lib;C:\Program Files\madCollection\madExcept\..\Plugins
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=3
+Item0=NO_WIN32_LEAN_AND_MEAN
+Item1=_DEBUG;NO_WIN32_LEAN_AND_MEAN
+Item2=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=1
+Item0=..\obj
+
+[HistoryLists\hlFinalOutputDir]
+Count=1
+Item0=..\..\..\Runtime\
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>

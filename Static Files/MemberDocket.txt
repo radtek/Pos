@@ -1,0 +1,12 @@
+?DH??DW?Member Docket
+%DATETIME%
+Receipt %RECEIPT%
+%POS% %USER% 
+?DL?
+?DH??DW?%TITLE% %NAME%
+?DH??DW?%ALIAS%
+?DH??DW?%NUMBER%
+?DL?
+Member receives 1 docket per %VALUE% spent.
+?DL?
+Thank you for your Patronage.

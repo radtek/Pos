@@ -1,0 +1,202 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\..\Runtime\Register.exe"/>
+    <OBJFILES value="..\obj\Register.obj ..\obj\main.obj ..\obj\EnterKey.obj 
+      ..\obj\Registration.obj ..\obj\MMRegistry.obj ..\obj\MD5Checksum.obj 
+      ..\obj\MM_DBCore.obj"/>
+    <RESFILES value="Register.res ..\obj\VersionRes.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) main.dfm EnterKey.dfm"/>
+    <LIBFILES value="$(BCB)\Lib\Psdk\iphlpapi.lib"/>
+    <LIBRARIES value="vcldb.lib mapimail.lib dbexpress.lib dsnap.lib cds.lib ibxpress.lib 
+      dbrtl.lib vclx.lib rtl.lib vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib vclx.lib dbrtl.lib ibxpress.lib cds.lib dsnap.lib 
+      dbexpress.lib mapimail.lib vcldb.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi vcldb.bpi vclx.bpi ibxpress.bpi dclocx.bpi"/>
+    <PATHCPP value=".;..\..\MenuMate\Source\System\Core"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="MMRegistration;NO_WIN32_LEAN_AND_MEAN"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="Register.cpp"/>
+    <INCLUDEPATH value="..;&quot;..\..\Components BCB6\mapimail&quot;;$(BCB)\include;$(BCB)\include\vcl;..\..\Version;..\..\MenuMate\Source\System\Core"/>
+    <LIBPATH value="..\..\MenuMate\Source\System\Core;..;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I.. -I&quot;..\..\Components BCB6\mapimail&quot; -I$(BCB)\include 
+      -I$(BCB)\include\vcl -I..\..\Version -I..\..\MenuMate\Source\System\Core 
+      -src_suffix cpp -DMMRegistration -DNO_WIN32_LEAN_AND_MEAN -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-N2..\obj -N0..\obj -$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-I..\obj -D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="Register.cpp" FORMNAME="" UNITNAME="Register" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="main.cpp" FORMNAME="frmMain" UNITNAME="Main" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Register.res" FORMNAME="" UNITNAME="" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EnterKey.cpp" FORMNAME="frmEnterKey" UNITNAME="EnterKey" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Registration.cpp" FORMNAME="" UNITNAME="Registration" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MMRegistry.cpp" FORMNAME="" UNITNAME="MMRegistry" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MD5Checksum.cpp" FORMNAME="" UNITNAME="MD5Checksum" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="$(BCB)\Lib\Psdk\iphlpapi.lib" FORMNAME="" UNITNAME="iphlpapi.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VersionRes.rc" FORMNAME="" UNITNAME="VersionRes.rc" CONTAINERID="RCCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Version\VersionRes.h" FORMNAME="" UNITNAME="VersionRes.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\System\Core\MM_DBCore.cpp" FORMNAME="" UNITNAME="MM_DBCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=3
+MinorVer=3
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=IQWorks Ltd
+FileDescription=IQWorks Registration Program
+FileVersion=3.3.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=3.3.0.0
+Comments=
+
+[Excluded Packages]
+d:\development\cbuilder6\Projects\Bpl\DsgnCPortCB6.bpl=ComPort Library
+d:\development\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+c:\program files\borland\cbuilder6\bin\dclClxIBXtras60.bpl=Borland InterBase Express Extras (Clx)
+c:\program files\borland\cbuilder6\Bin\dclIBXtras60.bpl=Borland InterBase Express Extras
+
+[HistoryLists\hlIncludePath]
+Count=18
+Item0=..;..\..\Components BCB6\mapimail;$(BCB)\include;$(BCB)\include\vcl;..\..\Version;..\..\MenuMate\Source\System\Core
+Item1=..;..\..\Components BCB6\mapimail;$(BCB)\include;$(BCB)\include\vcl;..\..\Version
+Item2=..;..\..\Components BCB6\mapimail;$(BCB)\include;$(BCB)\include\vcl
+Item3=..;..\..\..\Components BCB6\mapimail;$(BCB)\include;$(BCB)\include\vcl
+Item4=..;..\Components BCB6\VirtualTreeView\ThemeManager\CBuilder;..\Office 2.4.0.3\Source;D:\Code\Components BCB6\mapimail;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView2\Source\VSTEdit;D:\Code\Components BCB6\VirtualTreeView\ThemeManager\Source
+Item5=..\;..\Components BCB6\VirtualTreeView\ThemeManager\CBuilder;..;..\Office 2.4.0.3\Source;D:\Code\Components BCB6\mapimail;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView2\Source\VSTEdit;D:\Code\Components BCB6\VirtualTreeView\ThemeManager\Source
+Item6=..\;..;..\Office 2.4.0.3\Source;D:\Code\Components BCB6\mapimail;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView2\Source\VSTEdit;D:\Code\Components BCB6\VirtualTreeView\ThemeManager\Source
+Item7=..\;..\Office 2.4.0.3\Source;D:\Code\Components BCB6\mapimail;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView2\Source\VSTEdit;D:\Code\Components BCB6\VirtualTreeView\ThemeManager\Source
+Item8=..\Office 2.4.0.3\Source;D:\Code\Components BCB6\mapimail;D:\Code\Office 2.4.0.3\Source;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView2\Source\VSTEdit;D:\Code\Components BCB6\VirtualTreeView\ThemeManager\Source
+Item9=..\Office 2.4.0.3\Source;..\;..;D:\Code\Components BCB6\mapimail;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\Office 2.4.0.3\Source;$(BCB)\include;$(BCB)\include\vcl
+Item10=..\;..;D:\Code\Components BCB6\mapimail;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\Office 2.4.0.3\Source;$(BCB)\include;$(BCB)\include\vcl
+Item11=..\;..;D:\Code\Components BCB6\mapimail;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\include;$(BCB)\include\vcl
+Item12=..\;..;..\..\..\components bcb6\mapimail;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\include;$(BCB)\include\vcl
+Item13=..\;..\..\..\components bcb6\mapimail;..;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\include;$(BCB)\include\vcl
+Item14=..\..\..\components bcb6\mapimail;..\;..;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\include;$(BCB)\include\vcl
+Item15=..\;..;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\include;$(BCB)\include\vcl
+Item16=..\;..\MD5;..;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\include;$(BCB)\include\vcl
+Item17=..\MD5;..\;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=14
+Item0=..\..\MenuMate\Source\System\Core;..;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item1=..;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item2=..;..\Components BCB6\VirtualTreeView\ThemeManager\CBuilder;..\Office 2.4.0.3\Source;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView
+Item3=..\;..\Components BCB6\VirtualTreeView\ThemeManager\CBuilder;..;..\Office 2.4.0.3\Source;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView
+Item4=..\Office 2.4.0.3\Source;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\VirtualTreeView\VirtualTreeView
+Item5=..\;..;..\Office 2.4.0.3\Source;..\..\..\components bcb6\mapimail;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item6=..\;..\Office 2.4.0.3\Source;..;..\..\..\components bcb6\mapimail;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item7=..\Office 2.4.0.3\Source;..\;..;..\..\..\components bcb6\mapimail;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item8=..\;..;..\..\..\components bcb6\mapimail;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item9=..\;..\..\..\components bcb6\mapimail;..;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item10=..\..\..\components bcb6\mapimail;..\;..;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item11=..\;..;..\MD5;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item12=..\;..\MD5;..;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item13=..\MD5;..\;D:\Development\CBuilder6\Bin;D:\Code\MenuMate_2_3\Source\Registration;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=9
+Item0=MMRegistration;NO_WIN32_LEAN_AND_MEAN
+Item1=MMRegistration;NO_WIN32_LEAN_AND_MEAN;_DEBUG
+Item2=MMRegistration;_DEBUG;NO_WIN32_LEAN_AND_MEAN
+Item3=MMRegistration;_DEBUG
+Item4=MMRegistration
+Item5=_DEBUG;MMRegistration
+Item6=_DEBUG,MMRegistration
+Item7=_DEBUG,Registration
+Item8=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=4
+Item0=..\Obj
+Item1=D:\Code\MenuMate\Registration\Obj
+Item2=D:\Code\Registration\Obj
+Item3=D:\Code\Registration\Exec
+
+[HistoryLists\hlFinalOutputDir]
+Count=10
+Item0=..\..\Execs\
+Item1=D:\Code\MenuMateV3.3\Registration\Exec\
+Item2=D:\Code\MenuMateV3.3\Registration\Exec
+Item3=..\..\Execs
+Item4=C:\Program Files\MenuMate\
+Item5=C:\Program Files\MenuMate
+Item6=D:\Code\MenuMate\Registration\Exec\
+Item7=D:\Code\MenuMate\Registration\Exec
+Item8=D:\Code\Registration\Exec\
+Item9=D:\Code\Registration\Exec
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

@@ -1,0 +1,1217 @@
+<?xml version="1.0" ?>
+<Tables>
+    <Table Name="BACKUP_LOG">
+        <Fields>
+            <Field Name="BACKUP" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="NAME" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="DATE_TIME" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="LOG" Type="261" Scale="0" Length="8" Precision="0" />
+            <Field Name="SUCCESS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="TYPE" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="MAN_AUTO" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PCNAME" Type="37" Scale="0" Length="50" Precision="0" />
+            <Field Name="NOTIFIED" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY7                   " TableName="BACKUP_LOG                     " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="BACKUP                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="CARD_DETAIL">
+        <Fields>
+            <Field Name="CARD_DETAIL_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="CARD_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="FIELD_NAME" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="HORIZONTAL" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="VERTICAL" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="ROTATION" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="STYLE" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="PROPORTION" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="SIZE" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="GRAPHIC_MODE" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="TEXT_POSITION" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CARD_TEXT" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="SIZE_REDUCE" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="TEXT_LENGTH" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="MULTI_GAP" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="EXPORT_LINES" Type="7" Scale="0" Length="2" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY8                   " TableName="CARD_DETAIL                    " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="CARD_DETAIL_ID                 " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="CARD_MASTER">
+        <Fields>
+            <Field Name="CARD_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="CARD_NAME" Type="37" Scale="0" Length="25" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY9                   " TableName="CARD_MASTER                    " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="CARD_ID                        " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="CARD_MEMBERS">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="NUMBER_CARDS" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="CARD_TYPE" Type="7" Scale="0" Length="2" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY10                  " TableName="CARD_MEMBERS                   " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MEMBER                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="CLUBS">
+        <Fields>
+            <Field Name="CLUB_ID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="60" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="DESC_INDEX                     " TableName="CLUBS                          " Unique="0" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="DESCRIPTION                    " />
+                </IndexFields>
+            </Index>
+            <Index Name="RDB$PRIMARY11                  " TableName="CLUBS                          " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="CLUB_ID                        " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="EVENTS">
+        <Fields>
+            <Field Name="EVENT" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="BONUS_POINTS" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="CUST_DISPLAY" Type="37" Scale="0" Length="30" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY12                  " TableName="EVENTS                         " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="EVENT                          " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="EXPORT_AREV">
+        <Fields>
+            <Field Name="EXPORT_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="EXPORT_DATE" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="EXPORTED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="IN_TRANS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="POINTS_USED" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="RESET_POINTS" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY13                  " TableName="EXPORT_AREV                    " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="EXPORT_ID                      " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="GROUPS">
+        <Fields>
+            <Field Name="GROUPS" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="VIP_POINTS" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="CARD_DESC" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="PRINT_ON_CARD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="IN_REPORT" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY14                  " TableName="GROUPS                         " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="GROUPS                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="IMPORT_AREV">
+        <Fields>
+            <Field Name="TYPE" Type="37" Scale="0" Length="10" Precision="0" />
+            <Field Name="INVOICE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="POINTS" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="TENDER" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="TENDER_NAME" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="VALUE" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="PAID_BY" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SUBS" Type="7" Scale="0" Length="2" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="IMPORT_POINTS">
+        <Fields>
+            <Field Name="MEMBER" Type="37" Scale="0" Length="22" Precision="0" />
+            <Field Name="POINTS_AVAILABLE" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="TOTAL_REDEEMED" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="TOTAL_EARNT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="PRE_PAID_CREDIT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="BONUS_CREDIT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="EARNT_CREDIT" Type="27" Scale="0" Length="8" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="INVOICE">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MAILING_LIST_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SPARE_VARCHAR_50" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="FULL_NAME" Type="37" Scale="0" Length="50" Precision="0" />
+            <Field Name="EXPIRES" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="AMOUNT" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="AMOUNT_PAID" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="AMOUNT_DUE" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="FEE" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="DISCOUNT" Type="8" Scale="-3" Length="4" Precision="6" />
+            <Field Name="INVOICE_NUMBER" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="DISCOUNTABLE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SPONSORSHIP" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SUB_PAID" Type="7" Scale="0" Length="2" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="KIOSK">
+        <Fields>
+            <Field Name="KIOSK_ID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="MESSAGE" Type="37" Scale="0" Length="80" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY2                   " TableName="KIOSK                          " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="KIOSK_ID                       " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="KIOSK_DRAWS">
+        <Fields>
+            <Field Name="KIOSK_ID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="KIOSK_DESC" Type="37" Scale="0" Length="25" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="KIOSK_HISTORY">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="KIOSK_ID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="DATE_TIME" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="DRAWN" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PRIZE" Type="37" Scale="0" Length="25" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="LETTERS">
+        <Fields>
+            <Field Name="NAME" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="LETTER" Type="261" Scale="0" Length="8" Precision="0" />
+            <Field Name="PROTECT" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY15                  " TableName="LETTERS                        " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="NAME                           " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="LOTS">
+        <Fields>
+            <Field Name="LOT_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="LOT_TYPE" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY16                  " TableName="LOTS                           " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="LOT_ID                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="LUCKY_MEMBER">
+        <Fields>
+            <Field Name="LUCKY_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY17                  " TableName="LUCKY_MEMBER                   " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="LUCKY_ID                       " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="MAIL_CODES">
+        <Fields>
+            <Field Name="MAIL_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="30" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY18                  " TableName="MAIL_CODES                     " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MAIL_CODE                      " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="MEMBERS">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="KNOWN_AS" Type="37" Scale="0" Length="27" Precision="0" />
+            <Field Name="MALE_FEMALE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DATE_OF_BIRTH" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="LUCKY_DATE" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="ADDRESS" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="ADDRESS1" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="MAILING_LIST" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="MAILING_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MAILING_LIST_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="NEWSLETTER" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="EMAIL" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="HOME_PHONE" Type="37" Scale="0" Length="35" Precision="0" />
+            <Field Name="WORK_PHONE" Type="37" Scale="0" Length="16" Precision="0" />
+            <Field Name="CELL_PHONE" Type="37" Scale="0" Length="16" Precision="0" />
+            <Field Name="FAX_NUMBER" Type="37" Scale="0" Length="16" Precision="0" />
+            <Field Name="PROPOSER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SECONDER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="JOINED" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="JOINING_FEE" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="SUB_PAID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="RECEIPT" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="APPROVED" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="EXPIRES" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="TRANS_FROM" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="PAYMENT_DISC" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="SECTION_PAID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="ALLOW_CREDIT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CREDIT_LIMIT" Type="8" Scale="-3" Length="4" Precision="8" />
+            <Field Name="BONUS_CREDIT" Type="27" Scale="0" Length="8" Precision="8" />
+            <Field Name="EARNT_CREDIT" Type="27" Scale="0" Length="8" Precision="8" />
+            <Field Name="PRE_PAID_CREDIT" Type="27" Scale="0" Length="8" Precision="8" />
+            <Field Name="EARN_POINTS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="TOTAL_EARNT" Type="27" Scale="0" Length="8" Precision="8" />
+            <Field Name="TOTAL_REDEEMED" Type="27" Scale="0" Length="8" Precision="8" />
+            <Field Name="PRODUCT_PURCHASE" Type="16" Scale="-3" Length="8" Precision="10" />
+            <Field Name="AMOUNT_DONATED" Type="8" Scale="-3" Length="4" Precision="8" />
+            <Field Name="PRICE_LEVEL" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="VIP_PAY_ONLY" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CARD_TYPE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="GL_ACCOUNT" Type="37" Scale="0" Length="15" Precision="0" />
+            <Field Name="DISCOUNT" Type="8" Scale="-3" Length="4" Precision="6" />
+            <Field Name="INCL_EOD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="POSITIONS" Type="37" Scale="0" Length="27" Precision="0" />
+            <Field Name="CHARGE_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DECEASED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SENIOR" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="FOUNDATION" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DONATED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="REFUNDED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DEBENTURE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SAVED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DAIRY_NOTES" Type="261" Scale="0" Length="8" Precision="0" />
+            <Field Name="EDIT_DATE" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="TITLE" Type="14" Scale="0" Length="6" Precision="0" />
+            <Field Name="INITIALS" Type="37" Scale="0" Length="8" Precision="0" />
+            <Field Name="FIRST_NAME" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="SURNAME" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="FULL_NAME" Type="37" Scale="0" Length="45" Precision="0" />
+            <Field Name="IS_ACTIVE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="ANALYSE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="INACTIVE_DATE" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="DISTRICT" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="PAY" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="CITY" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="COUNTRY" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="SUB_PAYMENT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="BARCODE_NUMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SWIPE_CARD_NUMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="CARD_LAST_USED" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="AUTO_PAYMENT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="RECEIVE_EMAIL" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="RESIDENTIAL" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="COMPANY" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="OCCUPATION" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="INVOICE_NUMBER" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="BOAT_LISTING" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="TIME" Type="13" Scale="0" Length="4" Precision="0" />
+            <Field Name="PAYMENT_PERIOD" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="PRINT_CARD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PRINT_RECEIPT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="NUMBER_CARDS" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="CLUBS" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SPARE_CHAR" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="ASSOCIATION" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="REASON" Type="37" Scale="0" Length="37" Precision="0" />
+            <Field Name="SPARE_VARCHAR_50" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="PAYMENT_DAY" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="FAX_WORK" Type="37" Scale="0" Length="14" Precision="0" />
+            <Field Name="STREET_ADDRESS" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="STREET_DISTRICT" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="STREET_ADDRESS1" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="STREET_CITY" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="STREET_COUNTRY" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="POINTS_AVAILABLE" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="SWIPE_CARD" Type="37" Scale="0" Length="128" Precision="0" />
+            <Field Name="VISITS" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="LAST_VISIT" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="DONATION" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="DONATION_MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PREV_POINTS_AVAILABLE" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="TOTAL_VISITS" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PROPOSER_NAME" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="SECONDER_NAME" Type="37" Scale="0" Length="40" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY19                  " TableName="MEMBERS                        " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MEMBER                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="MEMBERS_DEF">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="KNOWN_AS" Type="37" Scale="0" Length="27" Precision="0" />
+            <Field Name="MALE_FEMALE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DATE_OF_BIRTH" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="LUCKY_DATE" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="ADDRESS" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="ADDRESS1" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="MAILING_LIST" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="MAILING_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MAILING_LIST_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="NEWSLETTER" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="EMAIL" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="HOME_PHONE" Type="14" Scale="0" Length="14" Precision="0" />
+            <Field Name="WORK_PHONE" Type="37" Scale="0" Length="16" Precision="0" />
+            <Field Name="CELL_PHONE" Type="37" Scale="0" Length="16" Precision="0" />
+            <Field Name="FAX_NUMBER" Type="37" Scale="0" Length="16" Precision="0" />
+            <Field Name="PROPOSER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SECONDER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="JOINED" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="JOINING_FEE" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="SUB_PAID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="RECEIPT" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="APPROVED" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="EXPIRES" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="TRANS_FROM" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="PAYMENT_DISC" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="SECTION_PAID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="ALLOW_CREDIT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CREDIT_LIMIT" Type="8" Scale="-3" Length="4" Precision="8" />
+            <Field Name="BONUS_CREDIT" Type="27" Scale="0" Length="8" Precision="8" />
+            <Field Name="EARNT_CREDIT" Type="27" Scale="0" Length="8" Precision="8" />
+            <Field Name="PRE_PAID_CREDIT" Type="27" Scale="0" Length="8" Precision="8" />
+            <Field Name="EARN_POINTS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="TOTAL_EARNT" Type="27" Scale="0" Length="8" Precision="8" />
+            <Field Name="TOTAL_REDEEMED" Type="27" Scale="0" Length="8" Precision="8" />
+            <Field Name="PRODUCT_PURCHASE" Type="16" Scale="-3" Length="8" Precision="10" />
+            <Field Name="AMOUNT_DONATED" Type="8" Scale="-3" Length="4" Precision="8" />
+            <Field Name="PRICE_LEVEL" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="VIP_PAY_ONLY" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CARD_TYPE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="GL_ACCOUNT" Type="37" Scale="0" Length="15" Precision="0" />
+            <Field Name="DISCOUNT" Type="8" Scale="-3" Length="4" Precision="6" />
+            <Field Name="INCL_EOD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="POSITIONS" Type="37" Scale="0" Length="27" Precision="0" />
+            <Field Name="CHARGE_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DECEASED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SENIOR" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="FOUNDATION" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DONATED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="REFUNDED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DEBENTURE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SAVED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DAIRY_NOTES" Type="261" Scale="0" Length="8" Precision="0" />
+            <Field Name="EDIT_DATE" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="TITLE" Type="14" Scale="0" Length="6" Precision="0" />
+            <Field Name="INITIALS" Type="37" Scale="0" Length="8" Precision="0" />
+            <Field Name="FIRST_NAME" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="SURNAME" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="FULL_NAME" Type="37" Scale="0" Length="45" Precision="0" />
+            <Field Name="IS_ACTIVE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="ANALYSE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="INACTIVE_DATE" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="DISTRICT" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="PAY" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="CITY" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="COUNTRY" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="SUB_PAYMENT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="BARCODE_NUMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SWIPE_CARD_NUMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="CARD_LAST_USED" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="AUTO_PAYMENT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="RECEIVE_EMAIL" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="RESIDENTIAL" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="COMPANY" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="OCCUPATION" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="INVOICE_NUMBER" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="BOAT_LISTING" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="TIME" Type="13" Scale="0" Length="4" Precision="0" />
+            <Field Name="PAYMENT_PERIOD" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="PRINT_CARD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PRINT_RECEIPT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="NUMBER_CARDS" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="CLUBS" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SPARE_CHAR" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="ASSOCIATION" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="REASON" Type="37" Scale="0" Length="37" Precision="0" />
+            <Field Name="SPARE_VARCHAR_50" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="PAYMENT_DAY" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="FAX_WORK" Type="37" Scale="0" Length="14" Precision="0" />
+            <Field Name="STREET_ADDRESS" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="STREET_DISTRICT" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="STREET_ADDRESS1" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="STREET_CITY" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="STREET_COUNTRY" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="POINTS_AVAILABLE" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="SWIPE_CARD" Type="37" Scale="0" Length="128" Precision="0" />
+            <Field Name="VISITS" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="LAST_VISIT" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="DONATION" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="DONATION_MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PREV_POINTS_AVAILABLE" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="TOTAL_VISITS" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PROPOSER_NAME" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="SECONDER_NAME" Type="37" Scale="0" Length="40" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY20                  " TableName="MEMBERS_DEF                    " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MEMBER                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="MEMBERS_DISCOUNTS">
+        <Fields>
+            <Field Name="MEMBER_DISCOUNTS_KEY" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DISCOUNT_KEY" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY42                  " TableName="MEMBERS_DISCOUNTS              " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="DISCOUNT_KEY                   " />
+                    <Field Name="MEMBER                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="MEMBERS_POINTS">
+        <Fields>
+            <Field Name="MEMBERS_POINTS_KEY" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="EARNED" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="REDEEMED" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="ADJUSTMENT_TYPE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="POINTS_TYPE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="TIME_STAMP" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="INVOICE_NUMBER" Type="37" Scale="0" Length="50" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY6                   " TableName="MEMBERS_POINTS                 " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MEMBERS_POINTS_KEY             " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="MENUMATE_POINTS">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="POINTS_DIFFERENCE" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="POINTS_AVAILABLE" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="THE_DATE" Type="12" Scale="0" Length="4" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="MISC">
+        <Fields>
+            <Field Name="MISC" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="MEMBER_EXPIRY" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="MEMBER_PRE_EXPIRY" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="KEEP_INACTIVE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SUBS_ROLL" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="LUCKY_ROLL" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="REVOLVE_DAYS" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="NAME_FIELDS" Type="37" Scale="0" Length="45" Precision="0" />
+            <Field Name="M_BACKUP_ENABLED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="M_BACKUP_DIR" Type="37" Scale="0" Length="50" Precision="0" />
+            <Field Name="M_BACKUP_PCNAME" Type="37" Scale="0" Length="50" Precision="0" />
+            <Field Name="M_BACKUP_DATE" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="M_BACKUP_TYPE" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="A_BACKUP_ENABLED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="A_BACKUP_DIR" Type="37" Scale="0" Length="50" Precision="0" />
+            <Field Name="A_BACKUP_PCNAME" Type="37" Scale="0" Length="50" Precision="0" />
+            <Field Name="A_BACKUP_DATE" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="A_BACKUP_TIME" Type="13" Scale="0" Length="4" Precision="0" />
+            <Field Name="A_BACKUP_TYPE" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="A_BACKUP_FILE_NAMES" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="A_BACKUP_KEEP_DAYS" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="MSG" Type="37" Scale="0" Length="200" Precision="0" />
+            <Field Name="AREV_IMPORT_FILE_PATH" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="CONTROLLER" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="CAPITALS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PAYMENT_CARD" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="PAYMENT_RECEIPT" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="DEFAULT_CARDID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="SECTION_REVOLVE_DAYS" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="EXPORT_TIMER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DISCOUNT_3" Type="8" Scale="-3" Length="4" Precision="6" />
+            <Field Name="ANNUAL_CARD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DISABLE_SERVICES" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PAYMENT_GRIDS" Type="14" Scale="0" Length="3" Precision="0" />
+            <Field Name="CONFIRM_PAYMENT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CARD_ENCODE_MEMBER" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PART_PAY_ADVANCE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="POS_PAY_CARD_REQD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="BOTTOM_LINE_FEED" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="TOP_LINE_FEED" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="CHECKED_FIELDS" Type="37" Scale="0" Length="45" Precision="0" />
+            <Field Name="DEFAULT_NUMBER" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="PAY_BEFORE_EXPIRES" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CARD_DEFAULT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="RECEIPT_DEFAULT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="EXPORT_SUBS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="POINTS_PASSWORD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="NUMBER_COLUMNS" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="COLUMN_SPACE" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="LEFT_MARGIN" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="RIGHT_MARGIN" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="TOP_MARGIN" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="BOTTOM_MARGIN" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="BAND_HEIGHT" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="FONT_SIZE" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="PRINT_MEMBER_PAYMENT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="KIOSK_MSG" Type="261" Scale="0" Length="8" Precision="0" />
+            <Field Name="AREV_FILE_PATH" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="MENUMATE_INSTALLED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PHM_INSTALLED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PHM_PATH" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="PHM_CONTROLLER" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="TRIGGER_INSTALLED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SWIPE_TEXT" Type="37" Scale="0" Length="62" Precision="0" />
+            <Field Name="ON_INSERT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="MONDAY_PRINT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="TUESDAY_PRINT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="WEDNESDAY_PRINT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="THURSDAY_PRINT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="FRIDAY_PRINT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SATURDAY_PRINT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SUNDAY_PRINT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="BIRTHDAY_TEXT" Type="37" Scale="0" Length="35" Precision="0" />
+            <Field Name="LUCKY_DRAW_TEXT" Type="37" Scale="0" Length="35" Precision="0" />
+            <Field Name="KIOSK_MEMBER_START" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="KIOSK_MEMBER_LENGHT" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="BIRTHDAY_PRINT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="VISIT_MSG" Type="37" Scale="0" Length="70" Precision="0" />
+            <Field Name="BIRTHDAY_MSG" Type="37" Scale="0" Length="70" Precision="0" />
+            <Field Name="LUCKY_DRAW_MSG" Type="37" Scale="0" Length="70" Precision="0" />
+            <Field Name="MONDAY_END_TIME" Type="13" Scale="0" Length="4" Precision="0" />
+            <Field Name="TUESDAY_END_TIME" Type="13" Scale="0" Length="4" Precision="0" />
+            <Field Name="WEDNESDAY_END_TIME" Type="13" Scale="0" Length="4" Precision="0" />
+            <Field Name="THURSDAY_END_TIME" Type="13" Scale="0" Length="4" Precision="0" />
+            <Field Name="FRIDAY_END_TIME" Type="13" Scale="0" Length="4" Precision="0" />
+            <Field Name="SATURDAY_END_TIME" Type="13" Scale="0" Length="4" Precision="0" />
+            <Field Name="SUNDAY_END_TIME" Type="13" Scale="0" Length="4" Precision="0" />
+            <Field Name="KNOWN_AS_DEFAULTED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PARENT_CODE_ADDRESS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="GROUP_DELETE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="MENUMATE_POINTS_DATE" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="KIOSK_DRAW_DATE" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="KIOSK_SUCCESS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="KIOSK_ERROR_MSG" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="KIOSK_DRAWS" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="PRINT_RECEIPT_AS_TEXT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SWIPE_LENGTH" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="POINTS_AS_DOLLARS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SHOW_DICE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CHECK_EXPIRES" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="VIP_CREDIT_NAME" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="KIOSK_TIMER" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="CHECK_SUBS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CHECK_GROUPS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="MAX_SUB" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="MAX_GROUP" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="MIN_SUB" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="MIN_GROUP" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="CLEAR_INTERESTS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DISCOUNTS_INSTALLED" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY21                  " TableName="MISC                           " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MISC                           " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="M_EVENTS">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="EVENT" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DATES" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="DATE_LAST" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="EDIT_DATE" Type="35" Scale="0" Length="8" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$FOREIGN44                  " TableName="M_EVENTS                       " Unique="0" ForeignKey="RDB$PRIMARY12                  " ForeignTable="EVENTS                         ">
+                <IndexFields>
+                    <Field Name="EVENT                          " />
+                </IndexFields>
+            </Index>
+            <Index Name="RDB$PRIMARY22                  " TableName="M_EVENTS                       " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="EVENT                          " />
+                    <Field Name="MEMBER                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="M_GROUPS">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="GROUPS" Type="7" Scale="0" Length="2" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY23                  " TableName="M_GROUPS                       " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="GROUPS                         " />
+                    <Field Name="MEMBER                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="M_INTERESTS">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SECTION" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="COMMENTS" Type="37" Scale="0" Length="100" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY24                  " TableName="M_INTERESTS                    " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MEMBER                         " />
+                    <Field Name="SECTION                        " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="M_NUMBERS">
+        <Fields>
+            <Field Name="NUMBER_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="NEXT_MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY25                  " TableName="M_NUMBERS                      " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="NUMBER_ID                      " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="M_PHOTOS">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PHOTO" Type="261" Scale="0" Length="8" Precision="0" />
+            <Field Name="DRAWN" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY26                  " TableName="M_PHOTOS                       " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MEMBER                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="M_ROLLOVER">
+        <Fields>
+            <Field Name="ROLL_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="KEEP_EXPIRES_CURRENT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MAILING_LIST_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SURNAME" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="FIRST_NAME" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="FULL_NAME" Type="37" Scale="0" Length="45" Precision="0" />
+            <Field Name="ADDRESS" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="DISTRICT" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="ADDRESS1" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="CITY" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="COUNTRY" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="HOME_PHONE" Type="37" Scale="0" Length="35" Precision="0" />
+            <Field Name="EXPIRES" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="SUB_PAID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="IS_ACTIVE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="NEWSLETTER" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="ANALYSE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="ACCEPT" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY27                  " TableName="M_ROLLOVER                     " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="ROLL_ID                        " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="M_SECTIONS">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SECTION" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="EXPIRES" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="PAID" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="RECEIPT" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SPONSORSHIP" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="EDIT_DATE" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="AMOUNT" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="AMOUNT_PAID" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="SELECTED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PAY" Type="8" Scale="-2" Length="4" Precision="8" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$FOREIGN45                  " TableName="M_SECTIONS                     " Unique="0" ForeignKey="RDB$PRIMARY37                  " ForeignTable="SECTIONS                       ">
+                <IndexFields>
+                    <Field Name="SECTION                        " />
+                </IndexFields>
+            </Index>
+            <Index Name="RDB$PRIMARY28                  " TableName="M_SECTIONS                     " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MEMBER                         " />
+                    <Field Name="SECTION                        " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="M_SUBS">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SUBSCRIPTION" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="AMOUNT_PAID" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="AMOUNT" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="PAID" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="EDIT_DATE" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="RECEIPT" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PAY" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="INVOICED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PRINT_CARD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PRINT_RECEIPT" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$FOREIGN46                  " TableName="M_SUBS                         " Unique="0" ForeignKey="RDB$PRIMARY38                  " ForeignTable="SUBSCRIPTIONS                  ">
+                <IndexFields>
+                    <Field Name="SUBSCRIPTION                   " />
+                </IndexFields>
+            </Index>
+            <Index Name="RDB$PRIMARY29                  " TableName="M_SUBS                         " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MEMBER                         " />
+                    <Field Name="SUBSCRIPTION                   " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="PAYMENTS">
+        <Fields>
+            <Field Name="PAYMENT" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PAY_AMOUNT" Type="16" Scale="-2" Length="8" Precision="10" />
+            <Field Name="POINTS_USED" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="PAID_BY" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DISCOUNT" Type="8" Scale="-3" Length="4" Precision="6" />
+            <Field Name="EDIT_DATE" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="ROUNDING" Type="8" Scale="-3" Length="4" Precision="6" />
+            <Field Name="PAY_CREDIT" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="FULL_NAME" Type="37" Scale="0" Length="42" Precision="0" />
+            <Field Name="INVOICE_NUMBER" Type="37" Scale="0" Length="20" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY30                  " TableName="PAYMENTS                       " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="PAYMENT                        " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="PAYMENTS_DET">
+        <Fields>
+            <Field Name="PAYMENT_DET" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PAYMENT" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="EXPIRES" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="SPONSORSHIP" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="AMOUNT" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="AMOUNT_PAID" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="PAY_FULL" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="PAY_TYPE" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PAY_DATE" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="FULL_NAME" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="PAID_BY" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="INVOICE_NUMBER" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="DISC" Type="8" Scale="-3" Length="4" Precision="6" />
+            <Field Name="CODE" Type="8" Scale="0" Length="4" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$FOREIGN47                  " TableName="PAYMENTS_DET                   " Unique="0" ForeignKey="RDB$PRIMARY30                  " ForeignTable="PAYMENTS                       ">
+                <IndexFields>
+                    <Field Name="PAYMENT                        " />
+                </IndexFields>
+            </Index>
+            <Index Name="RDB$PRIMARY31                  " TableName="PAYMENTS_DET                   " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="PAYMENT_DET                    " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="PAYMENTS_TEND">
+        <Fields>
+            <Field Name="PAYMENT_TEND" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PAYMENT" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="TENDER_TYPE" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="DETAILS" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="AMOUNT" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="EX_RATE" Type="8" Scale="-3" Length="4" Precision="8" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$FOREIGN48                  " TableName="PAYMENTS_TEND                  " Unique="0" ForeignKey="RDB$PRIMARY30                  " ForeignTable="PAYMENTS                       ">
+                <IndexFields>
+                    <Field Name="PAYMENT                        " />
+                </IndexFields>
+            </Index>
+            <Index Name="RDB$PRIMARY32                  " TableName="PAYMENTS_TEND                  " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="PAYMENT_TEND                   " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="PHM_LOG">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="POINTS" Type="37" Scale="0" Length="15" Precision="0" />
+            <Field Name="DATE_TIME" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="COMMENT" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="BOOKING" Type="8" Scale="0" Length="4" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="POINTS_AUDIT">
+        <Fields>
+            <Field Name="POINTS_AUDIT_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="LOCATION" Type="37" Scale="0" Length="25" Precision="0" />
+            <Field Name="EDIT_DATE" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="POINTS_EARNT" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="POINTS_SPENT" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="BONUS_POINTS" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="VIP_CREDIT" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="ADJUSTED_POINTS" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="BIRTHDAY_POINTS" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="LUCKY_POINTS" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="SUBS_POINTS" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="DELETED_POINTS" Type="16" Scale="-4" Length="8" Precision="15" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY5                   " TableName="POINTS_AUDIT                   " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="POINTS_AUDIT_ID                " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="POINTS_LOG">
+        <Fields>
+            <Field Name="POINTS_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="USER_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="PROCESS" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="REASON" Type="37" Scale="0" Length="35" Precision="0" />
+            <Field Name="BEF_TOTAL_EARNT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="BEF_TOTAL_REDEEMED" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="BEF_EARNT_CREDIT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="BEF_BONUS_CREDIT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="BEF_PRE_PAID_CREDIT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="TOTAL_EARNT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="TOTAL_REDEEMED" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="EARNT_CREDIT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="BONUS_CREDIT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="PRE_PAID_CREDIT" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="POINTS_VALUE" Type="10" Scale="0" Length="4" Precision="0" />
+            <Field Name="EDIT_DATE" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="BEF_POINTS_AVAILABLE" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="POINTS_AVAILABLE" Type="27" Scale="0" Length="8" Precision="0" />
+            <Field Name="FULL_NAME" Type="37" Scale="0" Length="35" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY1                   " TableName="POINTS_LOG                     " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="POINTS_ID                      " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="POINTS_SPLIT">
+        <Fields>
+            <Field Name="POINTS_SPLIT_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DATE_TIME" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="POINTS" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="DONATION_MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DONATION_POINTS" Type="16" Scale="-4" Length="8" Precision="15" />
+            <Field Name="FROM_APP" Type="37" Scale="0" Length="2" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="PRCSS_LOG">
+        <Fields>
+            <Field Name="PRCSSLOGSEQ" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="USER_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SUCCESS" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="MSG" Type="37" Scale="0" Length="100" Precision="0" />
+            <Field Name="EDIT_DATE" Type="35" Scale="0" Length="8" Precision="0" />
+            <Field Name="PROCESS" Type="7" Scale="0" Length="2" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY33                  " TableName="PRCSS_LOG                      " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="PRCSSLOGSEQ                    " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="PREF_DETAIL">
+        <Fields>
+            <Field Name="HEADING_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DETAIL_DESC" Type="37" Scale="0" Length="62" Precision="0" />
+            <Field Name="DETAIL_TYPE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DISPLAY_DETAIL" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="FIELD_DESC" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="DETAIL_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="LINE_NUMBER" Type="7" Scale="0" Length="2" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="PREF_HEADING">
+        <Fields>
+            <Field Name="HEADING_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="HEADING_DESC" Type="37" Scale="0" Length="62" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY3                   " TableName="PREF_HEADING                   " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="HEADING_ID                     " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="PREF_MEMBERS">
+        <Fields>
+            <Field Name="MEMBER" Type="8" Scale="0" Length="4" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY4                   " TableName="PREF_MEMBERS                   " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="MEMBER                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="PREF_SUB_HEADING">
+        <Fields>
+            <Field Name="HEADING_ID" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SUB_HEADING_DESC" Type="37" Scale="0" Length="62" Precision="0" />
+            <Field Name="DISPLAY_HEADING" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SUB_HEADING_ID" Type="8" Scale="0" Length="4" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="PRINTERS">
+        <Fields>
+            <Field Name="PRINTER_ID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="PRINTER_NAME" Type="37" Scale="0" Length="50" Precision="0" />
+            <Field Name="PRINTER_INDEX" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="COMM_PORT" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="PC_NAME" Type="37" Scale="0" Length="50" Precision="0" />
+            <Field Name="EMULATION" Type="7" Scale="0" Length="2" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY34                  " TableName="PRINTERS                       " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="PRINTER_ID                     " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="QUERIES">
+        <Fields>
+            <Field Name="QUERIES_ID" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="NAME" Type="37" Scale="0" Length="35" Precision="0" />
+            <Field Name="COMMENTS" Type="37" Scale="0" Length="120" Precision="0" />
+            <Field Name="SQL" Type="261" Scale="0" Length="8" Precision="0" />
+            <Field Name="CALLER_ID" Type="7" Scale="0" Length="2" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY35                  " TableName="QUERIES                        " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="QUERIES_ID                     " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="SCREENS">
+        <Fields>
+            <Field Name="SCREEN_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SCREEN_DESC" Type="37" Scale="0" Length="40" Precision="0" />
+            <Field Name="DEF_ACCESS" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY36                  " TableName="SCREENS                        " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="SCREEN_CODE                    " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="SECTIONS">
+        <Fields>
+            <Field Name="SECTION" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="FEE" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="SAVED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="EXPIRES" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="DAY_PAYMENTS" Type="14" Scale="0" Length="10" Precision="0" />
+            <Field Name="GL_ACCOUNT" Type="37" Scale="0" Length="15" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="LAST_ROLL" Type="12" Scale="0" Length="4" Precision="0" />
+            <Field Name="PRINT_ON_CARD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CARD_DESC" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="SPARE_SMALLINT" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="SPARE_CHAR" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DONATION" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="MIN_FEE" Type="8" Scale="-2" Length="4" Precision="6" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY37                  " TableName="SECTIONS                       " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="SECTION                        " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="SITE">
+        <Fields>
+            <Field Name="COMP_NAME" Type="37" Scale="0" Length="80" Precision="0" />
+            <Field Name="ADDRESS1" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="ADDRESS2" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="ADDRESS3" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="POSTCODE" Type="14" Scale="0" Length="8" Precision="0" />
+            <Field Name="PHONE" Type="14" Scale="0" Length="20" Precision="0" />
+            <Field Name="GST_NO" Type="14" Scale="0" Length="10" Precision="0" />
+            <Field Name="GST_RATE" Type="10" Scale="0" Length="4" Precision="0" />
+            <Field Name="SITE_LICENSE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="MEMBER_LICENSE" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="POS_LICENSE" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="HELP_DESK" Type="14" Scale="0" Length="20" Precision="0" />
+            <Field Name="FAX" Type="14" Scale="0" Length="20" Precision="0" />
+        </Fields>
+        <Indexes />
+    </Table>
+    <Table Name="SUBSCRIPTIONS">
+        <Fields>
+            <Field Name="SUBSCRIPTION" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="DESCRIPTION" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="POINTS_SPENT" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="CUST_DISPLAY" Type="37" Scale="0" Length="30" Precision="0" />
+            <Field Name="FEE" Type="8" Scale="-2" Length="4" Precision="8" />
+            <Field Name="SAVED" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="KEEP_EXPIRES_CURRENT" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="GL_ACCOUNT" Type="37" Scale="0" Length="15" Precision="0" />
+            <Field Name="PRO_RATA" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="DISCOUNTABLE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="PRINT_ON_CARD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="CARD_DESC" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="SPARE_CHAR" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="SPARE_SMALLINT" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="SUB_GROUPS" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="CODE" Type="14" Scale="0" Length="6" Precision="0" />
+            <Field Name="AP_PREMIUM" Type="8" Scale="-2" Length="4" Precision="6" />
+            <Field Name="ON_INVOICE" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="TERM" Type="7" Scale="0" Length="2" Precision="0" />
+            <Field Name="EXPIRES_CARD" Type="14" Scale="0" Length="1" Precision="0" />
+            <Field Name="EXPIRES_DESC" Type="37" Scale="0" Length="20" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY38                  " TableName="SUBSCRIPTIONS                  " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="SUBSCRIPTION                   " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="TENDERS">
+        <Fields>
+            <Field Name="TENDER" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="TENDER_TYPE" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="EX_RATE" Type="8" Scale="-3" Length="4" Precision="8" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY39                  " TableName="TENDERS                        " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="TENDER                         " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="USER_SEC">
+        <Fields>
+            <Field Name="USER_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="SCREEN_CODE" Type="8" Scale="0" Length="4" Precision="0" />
+            <Field Name="HAS_ACCESS" Type="14" Scale="0" Length="1" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY40                  " TableName="USER_SEC                       " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="SCREEN_CODE                    " />
+                    <Field Name="USER_CODE                      " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+    <Table Name="VERSIONS">
+        <Fields>
+            <Field Name="PC_NAME" Type="37" Scale="0" Length="60" Precision="0" />
+            <Field Name="INSTALL_DIR" Type="37" Scale="0" Length="100" Precision="0" />
+            <Field Name="VERSION" Type="37" Scale="0" Length="10" Precision="0" />
+            <Field Name="SHARE_NAME" Type="37" Scale="0" Length="20" Precision="0" />
+            <Field Name="PROGRAM" Type="37" Scale="0" Length="12" Precision="0" />
+        </Fields>
+        <Indexes>
+            <Index Name="RDB$PRIMARY41                  " TableName="VERSIONS                       " Unique="1" ForeignKey="" ForeignTable="">
+                <IndexFields>
+                    <Field Name="PC_NAME                        " />
+                </IndexFields>
+            </Index>
+        </Indexes>
+    </Table>
+</Tables>

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Texts defaultLanguage="english">
+  <Languages>
+    <Language name="english">
+      <Title text="Floor Plan Editor"/>
+      <SaveEditor text="Save Editor?"/>
+      <SubmitLocationAttr text="Submit current location&apos;'s attributes"/>
+      <SubmitTableAttr text="Submit current table&apos;s attributes"/>
+    </Language>
+  </Languages> 
+</Texts>

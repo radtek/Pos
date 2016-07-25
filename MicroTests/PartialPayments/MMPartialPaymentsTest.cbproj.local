@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2014/09/16 16:29:37.737.cbproj,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MMPartialPaymentsTest.cbproj=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MMPartialPaymentsTest.cbproj</Transaction>
+    <Transaction>2014/09/16 16:31:43.267.cpp,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\Unit1.cpp=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\PercentagePartialPayment.cpp</Transaction>
+    <Transaction>2014/09/16 16:31:43.267.h,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\Unit1.h=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\PercentagePartialPayment.h</Transaction>
+    <Transaction>2014/09/16 16:52:30.394.cpp,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\PercentagePartialPayment.cpp=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\Item.cpp</Transaction>
+    <Transaction>2014/09/16 16:52:30.394.h,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\PercentagePartialPayment.h=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\Item.h</Transaction>
+    <Transaction>2014/09/16 16:54:22.865.cpp,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\Item.cpp=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItem.cpp</Transaction>
+    <Transaction>2014/09/16 16:54:22.865.h,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\Item.h=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItem.h</Transaction>
+    <Transaction>2014/09/16 16:58:39.201.cpp,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\Unit1.cpp=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItemSettings.cpp</Transaction>
+    <Transaction>2014/09/16 16:58:39.201.h,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\Unit1.h=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItemSettings.h</Transaction>
+    <Transaction>2014/09/16 17:01:54.539.cpp,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItemSettings.cpp=</Transaction>
+    <Transaction>2014/09/16 17:20:42.025.cpp,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\Unit1.cpp=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItemListCalculator.cpp</Transaction>
+    <Transaction>2014/09/16 17:20:42.025.h,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\Unit1.h=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItemListCalculator.h</Transaction>
+    <Transaction>2014/09/16 17:20:53.121.cpp,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItemListCalculator.cpp=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItemListManager.cpp</Transaction>
+    <Transaction>2014/09/16 17:20:53.121.h,C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItemListCalculator.h=C:\Code\Git\MenumateGit-LocalMirror\MicroTests\PartialPayments\MenuItemListManager.h</Transaction>
+  </Transactions>
+	<ProjectSortOrder AutoSort="0" SortType="0">
+    <File Path="MMPartialPaymentsTest.cpp"/>
+    <File Path="MenuItem.cpp"/>
+    <File Path="MenuItem.cpp"/>
+    <File Path="MenuItem.h"/>
+    <File Path="TestPartialPayments.cpp"/>
+    <File Path="TestPartialPayments.cpp"/>
+    <File Path="TestPartialPayments.h"/>
+    <File Path="..\..\MenuMate\MenuMate\Source\BillCalculator\IBillCalculator.cpp"/>
+    <File Path="..\..\MenuMate\MenuMate\Source\BillCalculator\IBillCalculator.cpp"/>
+    <File Path="..\..\MenuMate\MenuMate\Source\BillCalculator\IBillCalculator.h"/>
+    <File Path="..\..\MenuMate\MenuMate\Source\BillCalculator\MMBillCalculator.cpp"/>
+    <File Path="..\..\MenuMate\MenuMate\Source\BillCalculator\MMBillCalculator.cpp"/>
+    <File Path="..\..\MenuMate\MenuMate\Source\BillCalculator\MMBillCalculator.h"/>
+    <File Path="MenuItemListManager.cpp"/>
+    <File Path="MenuItemListManager.cpp"/>
+    <File Path="MenuItemListManager.h"/>
+  </ProjectSortOrder>
+</BorlandProject>

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2007/02/16 17:09:02.140.cpp,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Unit1.cpp=F:\TurboCProjects\CDemo10\Main.cpp</Transaction>
+    <Transaction>2007/02/16 17:09:02.140.h,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Unit1.h=F:\TurboCProjects\CDemo10\Main.h</Transaction>
+    <Transaction>2007/02/16 17:09:02.140.dfm,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Unit1.dfm=F:\TurboCProjects\CDemo10\Main.dfm</Transaction>
+    <Transaction>2007/02/16 17:09:11.125.bdsproj,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Project1.bdsproj=F:\TurboCProjects\CDemo10\Demo1.bdsproj</Transaction>
+    <Transaction>2007/02/16 17:09:46.843.bdsproj,F:\TurboCProjects\CDemo10\Demo1.bdsproj=F:\TurboCProjects\CDemo10\Demo10.bdsproj</Transaction>
+  </Transactions>
+</BorlandProject>

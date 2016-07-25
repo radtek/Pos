@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\..\Runtime\Parser.exe"/>
+    <OBJFILES value="..\obj\Parser.obj ..\obj\main.obj ..\obj\MMRegistry.obj ..\obj\Version.obj 
+      ..\obj\ManagerTimeClock.obj ..\obj\MM_DBCore.obj"/>
+    <RESFILES value="Parser.res ..\obj\VersionRes.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) main.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="vclx.lib bcbsmp.lib ButtonPack.lib dbexpress.lib dsnap.lib cds.lib 
+      ibxpress.lib dbrtl.lib rtl.lib vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib dbrtl.lib ibxpress.lib cds.lib dsnap.lib dbexpress.lib 
+      ButtonPack.lib bcbsmp.lib vclx.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi 
+      vcldbx.bpi ibxpress.bpi dsnap.bpi cds.bpi bdecds.bpi qrpt.bpi teeui.bpi 
+      teedb.bpi tee.bpi dss.bpi teeqr.bpi visualclx.bpi visualdbclx.bpi 
+      dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi vclie.bpi xmlrtl.bpi inet.bpi 
+      inetdbbde.bpi inetdbxpress.bpi inetdb.bpi nmfast.bpi webdsnap.bpi 
+      bcbie.bpi websnap.bpi soaprtl.bpi dclocx.bpi dbexpress.bpi dbxcds.bpi 
+      indy.bpi bcb2kaxserver.bpi Button.bpi ZipPack.bpi CrystalPack.bpi 
+      CrystalViewerPack.bpi"/>
+    <PATHCPP value=".;&quot;..\..\Data Access&quot;;..\..\MenuMate\Source;..\..\MenuMate\Source;..\..\MenuMate\Source\System\Core"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="NO_WIN32_LEAN_AND_MEAN"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="Parser.cpp"/>
+    <INCLUDEPATH value="&quot;..\..\Data Access&quot;;..\..\MenuMate\Source;..\..\MenuMate\Source\System\Core;&quot;..\..\Components BCB6\TouchButtons&quot;;..\..\Version;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins"/>
+    <LIBPATH value="..\..\MenuMate\Source;&quot;..\..\Data Access&quot;;&quot;..\..\Components BCB6\TouchButtons&quot;;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;..\..\MenuMate\Source\System\Core;$(BCB)\Mad\madExcept\..\Plugins"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-src_suffix cpp -DNO_WIN32_LEAN_AND_MEAN -I&quot;..\..\Data Access&quot; 
+      -I..\..\MenuMate\Source -I..\..\MenuMate\Source\System\Core 
+      -I&quot;..\..\Components BCB6\TouchButtons&quot; -I..\..\Version -I$(BCB)\include 
+      -I$(BCB)\include\vcl -I$(BCB)\Mad\madBasic\BCB6 
+      -I$(BCB)\Mad\madDisAsm\BCB6 -I$(BCB)\Mad\madExcept\BCB6 
+      -I$(BCB)\Mad\madExcept\..\Plugins -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -y -v -vi -c -tW 
+      -tWM"/>
+    <PFLAGS value="-N2..\obj -N0..\obj -$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-I..\obj -D&quot;&quot; -aa -Tpe -x -Gn -v"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="Parser.res" FORMNAME="" UNITNAME="Parser.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Parser.cpp" FORMNAME="" UNITNAME="Parser" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="main.cpp" FORMNAME="frmMain" UNITNAME="main" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Data Access\MMRegistry.cpp" FORMNAME="" UNITNAME="MMRegistry" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VersionRes.rc" FORMNAME="" UNITNAME="VersionRes.rc" CONTAINERID="RCCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Version\VersionRes.h" FORMNAME="" UNITNAME="VersionRes.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\Version.cpp" FORMNAME="" UNITNAME="Version" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\ManagerTimeClock.cpp" FORMNAME="" UNITNAME="ManagerTimeClock" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\System\Core\MM_DBCore.cpp" FORMNAME="" UNITNAME="MM_DBCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=3
+MinorVer=3
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=3.3.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=3.3.0.0
+Comments=
+
+[Excluded Packages]
+d:\development\cbuilder6\Projects\Bpl\DsgnCPortCB6.bpl=ComPort Library
+d:\development\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+c:\program files\borland\cbuilder6\bin\dclClxIBXtras60.bpl=Borland InterBase Express Extras (Clx)
+c:\program files\borland\cbuilder6\Bin\dclIBXtras60.bpl=Borland InterBase Express Extras
+
+[HistoryLists\hlIncludePath]
+Count=9
+Item0=..\..\MenuMate\Source;..\..\Data Access;$(BCB)\include;$(BCB)\include\vcl;..\..\Components BCB6\Touch\Button;..\..\Version
+Item1=..\..\Data Access;$(BCB)\include;$(BCB)\include\vcl;..\..\Components BCB6\Touch\Button;..\..\Version
+Item2=..\..\Data Access;$(BCB)\include;$(BCB)\include\vcl;..\..\Components BCB6\Touch\Button
+Item3=..\..\Data Access;..;..\Touch Utils;$(BCB)\include;$(BCB)\include\vcl;..\..\Components BCB6\Touch\Button
+Item4=..;..\Touch Utils;$(BCB)\include;$(BCB)\include\vcl;..\..\Components BCB6\Touch\Button
+Item5=..;D:\Code\MenuMate\Touch Utils;D:\Development\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\Touch\Button
+Item6=..;D:\Code\MenuMate\Touch Utils;D:\Development\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl
+Item7=..;..\components bcb6\touch\button;D:\Development\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl
+Item8=..\Version 19 Updater;..;Version 19 Updater;..\..\components bcb6\touch\button;D:\Development\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=6
+Item0=..\..\MenuMate\Source;..\..\Data Access;..\..\Components BCB6\Touch\Button;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item1=..\..\Data Access;..\..\Components BCB6\Touch\Button;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item2=..\..\Data Access;..;..\..\Components BCB6\Touch\Button;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item3=..;..\..\Components BCB6\Touch\Button;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item4=..;D:\Code\Components BCB6\Touch\Button;D:\Development\CBuilder6\Projects;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item5=..\Version 19 Updater;..;Version 19 Updater;..\..\components bcb6\touch\button;D:\Development\CBuilder6\Projects;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=2
+Item0=..\obj
+Item1=obj
+
+[HistoryLists\hlFinalOutputDir]
+Count=4
+Item0=..\..\Execs\
+Item1=..\..\Execs
+Item2=C:\Program Files\MenuMate\
+Item3=C:\Program Files\MenuMate
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

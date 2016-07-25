@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\..\Runtime\VersionBuilder.exe"/>
+    <OBJFILES value="..\obj\main.obj"/>
+    <RESFILES value="VersionBuilder.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="dbexpress.lib dbrtl.lib dsnap.lib cds.lib ibxpress.lib vclx.lib 
+      ButtonPack.lib Indy60.lib rtl.lib vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib Indy60.lib ButtonPack.lib vclx.lib ibxpress.lib cds.lib 
+      dsnap.lib dbrtl.lib dbexpress.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi 
+      vcldbx.bpi ibxpress.bpi dsnap.bpi cds.bpi bdecds.bpi qrpt.bpi teeui.bpi 
+      teedb.bpi tee.bpi dss.bpi teeqr.bpi visualclx.bpi visualdbclx.bpi 
+      dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi vclie.bpi xmlrtl.bpi inet.bpi 
+      inetdbbde.bpi inetdbxpress.bpi inetdb.bpi nmfast.bpi webdsnap.bpi 
+      bcbie.bpi websnap.bpi soaprtl.bpi dclocx.bpi dbexpress.bpi dbxcds.bpi 
+      bcb2kaxserver.bpi RASPack.bpi Indy60.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="_DEBUG"/>
+    <SYSDEFINES value="NO_STRICT;_NO_VCL"/>
+    <MAINSOURCE value="VersionBuilder.bpf"/>
+    <INCLUDEPATH value="&quot;..\..\Data Access&quot;;..\..\ChefMate\Source;..\..\MenuMate\Source;&quot;..\..\Touch Utils&quot;;&quot;..\..\Components BCB6\Touch\Button&quot;;&quot;..\..\Components BCB6\zip\VCL&quot;;D:\Code\MenuMateV3.3\ImptMate;$(BCB)\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins"/>
+    <LIBPATH value="..\..\ChefMate\Source;&quot;..\Data Access&quot;;..\MenuMate\Source;..\..\MenuMate\Source;&quot;..\Touch Utils&quot;;D:\Code\MenuMateV3.3\ImptMate;$(BCB)\Source\Indy\C6;$(BCB)\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;&quot;..\..\Data Access&quot;;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-src_suffix cpp -D_DEBUG -I&quot;..\..\Data Access&quot; -I..\..\ChefMate\Source 
+      -I..\..\MenuMate\Source -I&quot;..\..\Touch Utils&quot; 
+      -I&quot;..\..\Components BCB6\Touch\Button&quot; -I&quot;..\..\Components BCB6\zip\VCL&quot; 
+      -ID:\Code\MenuMateV3.3\ImptMate -I$(BCB)\Bin -IC:\Temp -I$(BCB)\include 
+      -I$(BCB)\include\vcl -I$(BCB)\Source\Indy\C6 -I$(BCB)\Mad\madBasic\BCB6 
+      -I$(BCB)\Mad\madDisAsm\BCB6 -I$(BCB)\Mad\madExcept\BCB6 
+      -I$(BCB)\Mad\madExcept\..\Plugins -boa"/>
+    <CFLAG1 value="-vGc -vGt -vGd -Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k 
+      -y -v -vi- -tWC -tWM -c"/>
+    <PFLAGS value="-N2..\obj -N0..\obj -$Y+ -$W -$O- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zi"/>
+    <LFLAGS value="-I..\obj -D&quot;&quot; -ap -Tpe -x -Gn -v"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0x32.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="cg32.lib $(LIBFILES) $(LIBRARIES) import32.lib cw32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="VersionBuilder.res" FORMNAME="" UNITNAME="VersionBuilder.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VersionBuilder.bpf" FORMNAME="" UNITNAME="VersionBuilder" CONTAINERID="BPF" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="main.cpp" FORMNAME="" UNITNAME="main" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Excluded Packages]
+d:\development\cbuilder6\Projects\Bpl\syncro.bpl=syncro
+d:\development\cbuilder6\Projects\Bpl\Ingenico.bpl=Ingenico Eftpos
+d:\development\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+c:\program files\borland\cbuilder6\bin\dclClxIBXtras60.bpl=Borland InterBase Express Extras (Clx)
+c:\program files\borland\cbuilder6\Bin\dclIBXtras60.bpl=Borland InterBase Express Extras
+
+[HistoryLists\hlIncludePath]
+Count=17
+Item0=..\..\Data Access;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+Item1=..\Data Access;..\MenuMate\Source;..\..\Data Access;..\..\MenuMate\Source;..\Touch Utils;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;.
+Item2=..\..\Data Access;..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\MenuMate\Source;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;.
+Item3=..\Data Access;..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\MenuMate\Source;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;.
+Item4=..\..\Data Access;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\MenuMate\Source;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;.
+Item5=..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\MenuMate\Source;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;D:\Code\MenuMateV3.3\Components BCB6\zip\VCL;..\Data Access
+Item6=..\..\Data Access;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\MenuMate\Source;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;D:\Code\MenuMateV3.3\Components BCB6\zip\VCL;..\Data Access
+Item7=..\Data Access;..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;D:\Code\MenuMateV3.3\Components BCB6\zip\VCL
+Item8=..\..\Data Access;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;D:\Code\MenuMateV3.3\Components BCB6\zip\VCL
+Item9=..\Data Access;..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+Item10=..\..\Data Access;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+Item11=..\Data Access;..\MenuMate\Source;..\Touch Utils;..\..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+Item12=..\Data Access;..\MenuMate\Source;..\Touch Utils;..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+Item13=D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+Item14=D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+Item15=$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+Item16=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=7
+Item0=..\..\ChefMate\Source;..\Data Access;..\MenuMate\Source;..\..\MenuMate\Source;..\Touch Utils;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access
+Item1=..\MenuMate\Source;..\Touch Utils;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\Data Access
+Item2=D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\Data Access
+Item3=..\Data Access;..\MenuMate\Source;..\Touch Utils;..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item4=D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item5=D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item6=$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=2
+Item0=..\obj
+Item1=D:\Code\MenuMateV3.3\ImptMate\obj
+
+[HistoryLists\hlFinalOutputDir]
+Count=3
+Item0=..\..\..\Runtime\
+Item1=..\exec\
+Item2=..\exec
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=1
+LinkCGLIB=1
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

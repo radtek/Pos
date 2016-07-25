@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\..\Runtime\ImptMate.exe"/>
+    <OBJFILES value="..\obj\ImptMate.obj ..\obj\main.obj ..\obj\IBLogs.obj ..\obj\Contact.obj 
+      ..\obj\Invoice.obj ..\obj\Tabs.obj ..\obj\VariableManager.obj 
+      ..\obj\SimpleTCP.obj ..\obj\NetMessageLogs.obj ..\obj\Stream.obj 
+      ..\obj\MMRegistry.obj ..\obj\Manager.obj ..\obj\Login.obj 
+      ..\obj\NetManager.obj ..\obj\MMMessageBox.obj 
+      ..\obj\NetMessageTabChanged.obj ..\obj\NetMessageSeatName.obj 
+      ..\obj\SystemConfigLite.obj ..\obj\MMTouchNumpad.obj 
+      ..\obj\MMTouchKeyboard.obj"/>
+    <RESFILES value=""/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) main.dfm ..\..\MenuMate\Source\Security\Login.dfm 
+      &quot;..\..\Touch Utils\MMMessageBox.dfm&quot; 
+      ..\..\ChefMate\Source\SystemConfigLite.dfm 
+      &quot;..\..\Touch Utils\MMTouchNumpad.dfm&quot; &quot;..\..\Touch Utils\MMTouchKeyboard.dfm&quot;"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="bcbsmp.lib CPortLibCB6.lib bdertl.lib dbexpress.lib dbrtl.lib dsnap.lib 
+      cds.lib ibxpress.lib vclx.lib ButtonPack.lib Indy60.lib rtl.lib vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib Indy60.lib ButtonPack.lib vclx.lib ibxpress.lib cds.lib 
+      dsnap.lib dbrtl.lib dbexpress.lib bdertl.lib CPortLibCB6.lib bcbsmp.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi adortl.bpi vcldb.bpi vclx.bpi bdertl.bpi 
+      vcldbx.bpi ibxpress.bpi dsnap.bpi cds.bpi bdecds.bpi qrpt.bpi teeui.bpi 
+      teedb.bpi tee.bpi dss.bpi teeqr.bpi visualclx.bpi visualdbclx.bpi 
+      dsnapcrba.bpi dsnapcon.bpi bcbsmp.bpi vclie.bpi xmlrtl.bpi inet.bpi 
+      inetdbbde.bpi inetdbxpress.bpi inetdb.bpi nmfast.bpi webdsnap.bpi 
+      bcbie.bpi websnap.bpi soaprtl.bpi dclocx.bpi dbexpress.bpi dbxcds.bpi 
+      bcb2kaxserver.bpi RASPack.bpi Indy60.bpi"/>
+    <PATHCPP value=".;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source;..\..\MenuMate\Source;..\..\MenuMate\Source;..\..\MenuMate\Source;..\..\SimpleTCP;..\..\LogsMate\Source;..\..\SimpleTCP;..\..\MenuMate\Source;..\..\MenuMate\Source;..\..\MenuMate\Source\Security;..\..\MenuMate\Source;&quot;..\..\Touch Utils&quot;;..\..\MenuMate\Source;..\..\MenuMate\Source;..\..\ChefMate\Source;&quot;..\..\Touch Utils&quot;;&quot;..\..\Touch Utils&quot;"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="ImptMate"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="ImptMate.cpp"/>
+    <INCLUDEPATH value="..\..\ChefMate\Source;..\..\Version;..\..\SimpleTCP;&quot;..\..\Data Access&quot;;&quot;..\..\Touch Utils&quot;;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;&quot;..\..\Components BCB6\CPort264\Sources&quot;;&quot;..\..\Components BCB6\Touch\Button&quot;;&quot;..\..\Components BCB6\Touch\Checkbox&quot;;&quot;..\..\Components BCB6\zip\VCL&quot;;..\..\Registration\Source;..\..\LogsMate\Source;&quot;..\..\Components BCB6\tntunicodecontrols&quot;"/>
+    <LIBPATH value="..\..\ChefMate\Source;..\..\MenuMate\Source\Security;..\..\MenuMate\Source;&quot;..\..\Touch Utils&quot;;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\LogsMate\Source;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;&quot;..\..\Data Access&quot;;..\..\SimpleTCP;&quot;..\..\Components BCB6\CPort264\Sources&quot;"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\..\ChefMate\Source -I..\..\Version -I..\..\SimpleTCP 
+      -I&quot;..\..\Data Access&quot; -I&quot;..\..\Touch Utils&quot; 
+      -I..\..\MenuMate\Source\Security -I..\..\MenuMate\Source\POS 
+      -I..\..\MenuMate\Source\IBLogs -I..\..\MenuMate\Source\Comms 
+      -I..\..\MenuMate\Source -I$(BCB)\include -I$(BCB)\include\vcl 
+      -I$(BCB)\Source\Indy\C6 -I&quot;..\..\Components BCB6\CPort264\Sources&quot; 
+      -I&quot;..\..\Components BCB6\Touch\Button&quot; 
+      -I&quot;..\..\Components BCB6\Touch\Checkbox&quot; -I&quot;..\..\Components BCB6\zip\VCL&quot; 
+      -I..\..\Registration\Source -I..\..\LogsMate\Source 
+      -I&quot;..\..\Components BCB6\tntunicodecontrols&quot; -src_suffix cpp -DImptMate -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-N2..\obj -N0..\obj -$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-I..\obj -D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="ImptMate.cpp" FORMNAME="" UNITNAME="ImptMate" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="main.cpp" FORMNAME="frmMain" UNITNAME="main" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\IBLogs\IBLogs.cpp" FORMNAME="" UNITNAME="IBLogs" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\Contact.cpp" FORMNAME="" UNITNAME="Contact" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\Invoice.cpp" FORMNAME="" UNITNAME="Invoice" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\Tabs.cpp" FORMNAME="" UNITNAME="Tabs" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\VariableManager.cpp" FORMNAME="" UNITNAME="VariableManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\SimpleTCP\SimpleTCP.cpp" FORMNAME="" UNITNAME="SimpleTCP" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\LogsMate\Source\NetMessageLogs.cpp" FORMNAME="" UNITNAME="NetMessageLogs" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\SimpleTCP\Stream.cpp" FORMNAME="" UNITNAME="Stream" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\MMRegistry.cpp" FORMNAME="" UNITNAME="MMRegistry" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\Manager.cpp" FORMNAME="" UNITNAME="Manager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\Security\Login.cpp" FORMNAME="frmLogin" UNITNAME="Login" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\NetManager.cpp" FORMNAME="" UNITNAME="NetManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Touch Utils\MMMessageBox.cpp" FORMNAME="frmMessageBox" UNITNAME="MMMessageBox" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\NetMessageTabChanged.cpp" FORMNAME="" UNITNAME="NetMessageTabChanged" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\MenuMate\Source\NetMessageSeatName.cpp" FORMNAME="" UNITNAME="NetMessageSeatName" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\ChefMate\Source\SystemConfigLite.cpp" FORMNAME="frmSystemConfig" UNITNAME="SystemConfigLite" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Touch Utils\MMTouchNumpad.cpp" FORMNAME="frmTouchNumpad" UNITNAME="MMTouchNumpad" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Touch Utils\MMTouchKeyboard.cpp" FORMNAME="frmTouchKeyboard" UNITNAME="MMTouchKeyboard" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Excluded Packages]
+d:\development\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+c:\program files\borland\cbuilder6\bin\dclClxIBXtras60.bpl=Borland InterBase Express Extras (Clx)
+c:\program files\borland\cbuilder6\Bin\dclIBXtras60.bpl=Borland InterBase Express Extras
+
+[HistoryLists\hlIncludePath]
+Count=30
+Item0=..\..\ChefMate\Source;..\..\Version;..\..\SimpleTCP;..\..\Data Access;..\..\Touch Utils;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\Touch\Checkbox;..\..\Components BCB6\zip\VCL;..\..\Registration\Source;..\..\LogsMate\Source;..\..\Components BCB6\tntunicodecontrols
+Item1=..\..\ChefMate\Source;..\..\Version;..\..\SimpleTCP;..\..\Data Access;..\..\Touch Utils;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\Touch\Checkbox;..\..\Components BCB6\zip\VCL;..\..\Registration\Source;..\..\LogsMate\Source
+Item2=.;..\..\ChefMate\Source;..\..\Version;..\..\SimpleTCP;..\..\Data Access;..\..\Touch Utils;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\Touch\Checkbox;..\..\Components BCB6\zip\VCL;..\..\Registration\Source;..\..\LogsMate\Source
+Item3=.;..\..\Version;..\..\SimpleTCP;..\..\Data Access;..\..\Touch Utils;..\..\ChefMate\Source;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\Touch\Checkbox;..\..\Components BCB6\zip\VCL;..\..\Registration\Source;..\..\LogsMate\Source
+Item4=.;..\..\Version;..\..\SimpleTCP;..\..\Data Access;..\..\Touch Utils;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\Touch\Checkbox;..\..\Components BCB6\zip\VCL;..\..\Registration\Source;..\..\ChefMate\Source;..\..\LogsMate\Source
+Item5=.;..\..\Version;..\..\SimpleTCP;..\..\Data Access;..\..\Touch Utils;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\Touch\Checkbox;..\..\Components BCB6\zip\VCL;..\..\Registration\Source;..\..\ChefMate\Source
+Item6=.;..\..\Version;..\..\SimpleTCP;..\..\Data Access;..\..\Touch Utils;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\Touch\Checkbox;..\..\Components BCB6\zip\VCL;..\..\Registration\Source
+Item7=.;..\..\Version;..\..\SimpleTCP;..\..\Data Access;..\..\Touch Utils;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\Touch\Checkbox;..\..\Components BCB6\zip\VCL
+Item8=.;..\..\Version;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;..\..\Data Access;..\..\ChefMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;D:\Code\MenuMate Alpha\Components BCB6\Touch\Checkbox;..\..\Components BCB6\zip\VCL;..\..\LogsMate\Source;$(BCB)\include;$(BCB)\include\vcl;..\..\SimpleTCP;..\..\Registration\Source;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources
+Item9=..\..\Version;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source\Comms;..\..\MenuMate\Source;..\..\Data Access;..\..\ChefMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;D:\Code\MenuMate Alpha\Components BCB6\Touch\Checkbox;..\..\Components BCB6\zip\VCL;..\..\LogsMate\Source;$(BCB)\include;$(BCB)\include\vcl;..\..\SimpleTCP;..\..\Registration\Source;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources
+Item10=..\..\Version;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source;..\..\Data Access;..\..\ChefMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;..\..\LogsMate\Source;$(BCB)\include;$(BCB)\include\vcl;..\..\SimpleTCP;..\..\Registration\Source;$(BCB)\Source\Indy\C6;..\..\Components BCB6\CPort264\Sources
+Item11=..\..\Version;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\MenuMate\Source;..\..\Data Access;..\..\ChefMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;..\..\LogsMate\Source;$(BCB)\include;$(BCB)\include\vcl;..\..\SimpleTCP;..\..\Registration\Source;$(BCB)\Source\Indy\C6
+Item12=..\..\Version;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\Data Access;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;..\..\LogsMate\Source;$(BCB)\include;$(BCB)\include\vcl;..\..\SimpleTCP;..\..\Registration\Source;$(BCB)\Source\Indy\C6
+Item13=..\..\LogsMate\Source;..\..\Version;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\Data Access;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;$(BCB)\include;$(BCB)\include\vcl;..\..\SimpleTCP;..\..\Registration\Source;$(BCB)\Source\Indy\C6
+Item14=..\..\Version;..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\Data Access;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;$(BCB)\include;$(BCB)\include\vcl;..\..\SimpleTCP;..\..\Registration\Source;$(BCB)\Source\Indy\C6
+Item15=..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\Data Access;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;$(BCB)\include;$(BCB)\include\vcl;..\..\SimpleTCP;..\..\Registration\Source;$(BCB)\Source\Indy\C6
+Item16=..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\Data Access;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;$(BCB)\include;$(BCB)\include\vcl;..\..\SimpleTCP;..\..\Registration\Source
+Item17=..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\Data Access;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;$(BCB)\include;$(BCB)\include\vcl;..\..\SimpleTCP
+Item18=..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\Data Access;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;$(BCB)\include;$(BCB)\include\vcl
+Item19=..\..\MenuMate\Source\Security;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\Data Access;..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+Item20=..\..\Data Access;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+Item21=..\Data Access;..\MenuMate\Source;..\..\Data Access;..\..\MenuMate\Source;..\Touch Utils;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;.
+Item22=..\..\Data Access;..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\MenuMate\Source;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;.
+Item23=..\Data Access;..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\MenuMate\Source;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;.
+Item24=..\..\Data Access;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\MenuMate\Source;..\..\Components BCB6\zip\VCL;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;.
+Item25=..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\MenuMate\Source;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;D:\Code\MenuMateV3.3\Components BCB6\zip\VCL;..\Data Access
+Item26=..\..\Data Access;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;..\..\MenuMate\Source;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;D:\Code\MenuMateV3.3\Components BCB6\zip\VCL;..\Data Access
+Item27=..\Data Access;..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;D:\Code\MenuMateV3.3\Components BCB6\zip\VCL
+Item28=..\..\Data Access;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6;D:\Code\MenuMateV3.3\Components BCB6\zip\VCL
+Item29=..\Data Access;..\MenuMate\Source;..\Touch Utils;..\..\Data Access;..\..\MenuMate\Source;..\..\Touch Utils;..\..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Source\Indy\C6
+
+[HistoryLists\hlLibraryPath]
+Count=16
+Item0=..\..\ChefMate\Source;..\..\MenuMate\Source\Security;..\..\MenuMate\Source;..\..\Touch Utils;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\LogsMate\Source;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access;..\..\SimpleTCP;..\..\Components BCB6\CPort264\Sources
+Item1=..\..\ChefMate\Source;..\..\MenuMate\Source\Security;..\..\MenuMate\Source;..\..\Touch Utils;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\LogsMate\Source;$(BCB)\Source\Indy\C6;$(BCB)\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access;..\..\SimpleTCP;..\..\Components BCB6\CPort264\Sources
+Item2=..\..\MenuMate\Source\Security;..\..\MenuMate\Source;..\..\Touch Utils;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\ChefMate\Source;..\..\LogsMate\Source;$(BCB)\Source\Indy\C6;$(BCB)\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access;..\..\SimpleTCP;..\..\Components BCB6\CPort264\Sources
+Item3=..\..\MenuMate\Source\Security;..\..\MenuMate\Source;..\..\Touch Utils;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\ChefMate\Source;..\..\LogsMate\Source;$(BCB)\Source\Indy\C6;$(BCB)\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access;..\..\SimpleTCP
+Item4=..\..\MenuMate\Source\Security;..\..\Touch Utils;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\ChefMate\Source;..\..\MenuMate\Source;..\..\LogsMate\Source;$(BCB)\Source\Indy\C6;$(BCB)\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access;..\..\SimpleTCP
+Item5=..\..\LogsMate\Source;..\..\MenuMate\Source\Security;..\..\Touch Utils;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\ChefMate\Source;..\..\MenuMate\Source;D:\Code\MenuMateV3.3\ImptMate;$(BCB)\Source\Indy\C6;$(BCB)\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access;..\..\SimpleTCP
+Item6=..\..\MenuMate\Source\Security;..\..\Touch Utils;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\ChefMate\Source;..\..\MenuMate\Source;D:\Code\MenuMateV3.3\ImptMate;$(BCB)\Source\Indy\C6;$(BCB)\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access;..\..\SimpleTCP
+Item7=..\..\MenuMate\Source\Security;..\..\Touch Utils;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\ChefMate\Source;..\..\MenuMate\Source;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access;..\..\SimpleTCP
+Item8=..\..\MenuMate\Source\Security;..\..\Touch Utils;..\..\MenuMate\Source\POS;..\..\MenuMate\Source\IBLogs;..\..\ChefMate\Source;..\Data Access;..\MenuMate\Source;..\..\MenuMate\Source;..\Touch Utils;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access
+Item9=..\..\ChefMate\Source;..\Data Access;..\MenuMate\Source;..\..\MenuMate\Source;..\Touch Utils;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Data Access
+Item10=..\MenuMate\Source;..\Touch Utils;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\Data Access
+Item11=D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\Data Access
+Item12=..\Data Access;..\MenuMate\Source;..\Touch Utils;..\Components BCB6\Touch\Button;D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item13=D:\Code\MenuMateV3.3\ImptMate;D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item14=D:\Development\CBuilder6\Source\Indy\C6;D:\Development\CBuilder6\Bin;C:\Temp;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item15=$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=3
+Item0=ImptMate
+Item1=_DEBUG
+Item2=MenuMate
+
+[HistoryLists\hlIntOutputDir]
+Count=2
+Item0=..\obj
+Item1=D:\Code\MenuMateV3.3\ImptMate\obj
+
+[HistoryLists\hlFinalOutputDir]
+Count=3
+Item0=..\..\Execs\
+Item1=D:\Code\MenuMateV3.3\Execs\
+Item2=D:\Code\MenuMateV3.3\Execs
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

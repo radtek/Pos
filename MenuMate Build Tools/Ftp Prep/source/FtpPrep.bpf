@@ -1,0 +1,8 @@
+#pragma link "madExcept"
+#pragma link "madLinkDisAsm"
+#pragma link "madListHardware"
+#pragma link "madListProcesses"
+#pragma link "madListModules"
+This file is used by the project manager only and should be treated like the project file
+
+main 

@@ -1,0 +1,84 @@
+{*************************************************************************}
+{ Rave Reports version 5.1                                                }
+{ Copyright (c), 1995-2002, Nevrona Designs, all rights reserved          }
+{*************************************************************************}
+package Rave50CLX;
+
+{$DESCRIPTION 'Rave Reports 5.0 Run-Time Package (CLX)'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+  {$IFDEF VER140}
+    {$LIBSUFFIX 'BEX60'}
+{$ENDIF}
+  {$IFDEF VER150}
+    {$LIBSUFFIX 'BEX70'}
+  {$ENDIF}
+  {$IFDEF VER160}
+    {$LIBSUFFIX 'BEX80'}
+  {$ENDIF}
+  {$IFDEF VER170}
+    {$LIBSUFFIX 'BEX90'}
+  {$ENDIF}
+
+requires
+  visualclx,
+  dbx;
+
+contains
+  QRpDefine,
+  QRpDevice,
+  QRpFont,
+  QRvDefine,
+  QRpBase,
+  QRpFiler,
+  QRpSystem,
+  QRpMemo,
+  QRpBars,
+  QRpDBUtil,
+  QRpFormPreview,
+  QRpFormStatus,
+  QRpFormSetup,
+  QRpRPTF,
+  QRpRender,
+  QRpRenderCanvas,
+  QRpRenderPreview,
+  QRpRenderPrinter,
+  QRpRenderHTML,
+  QRpRenderPDF,
+  QRpRenderRTF,
+  QRpRenderText,
+  QRpMBCS,
+  QRpCon,
+  QRpConDS,
+  QRpConBDE,
+  QRpRave,
+  QRvUtil,
+  QRvClass,
+  QRvData,
+  QRvDataField,
+  QRvDatabase,
+  QRvDirectDataView,
+  QRvDataLink,
+  QRvDLBase,
+  QRvDLCommon,
+  QRvDriverDataView,
+  QRvLEModule,
+  QRvLERun,
+  QRvLEDebug,
+  QRvLEExpr,
+  QRvLECode,
+  QRvLEID,
+  QRvLEType,
+  QRvLEUtil,
+  QRvLEDefine,
+  QRvLESystem,
+  QRvLDCompiler,
+  QRvProj,
+  QRvSecurity,
+  QRvCmHuff,
+  QRvCsStd,
+  QRvCsDraw,
+  QRvCsRpt,
+  QRvCsData,
+  QRvCsBars;
+end.

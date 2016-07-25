@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 //EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Time2HELP 1.0; Standard Template">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=utf8">
+<TITLE>TThemeOption</TITLE>
+<Style>Body, TD {font-family: "Verdana"; font-size: 10pt};
+PRE {font-family: "Courier New"; font-size: 10pt; margin-top: 0; margin-bottom: 0}
+TR.odd {background-color: #F8F8F8};
+TR.even {background-color: #EEEEEE};
+Table.list {background-color: #FFFFFF};
+TD {vertical-align : top};
+TD.stripelight {background-image: url(images/StripeLight.gif);};
+TD.stripedark {background-image: url(images/StripeDark.gif);};
+</Style>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<BASEFONT NAME="Verdana" Size="2"><Table Border="0" Width="100%" BGColor="#FFFFFF"><TR><TD><Font Color="#000000F"><B>TThemeOption Type</B></Font></TD></TR></Table><P><B>Unit</B><Br><A HREF="IDH_Unit_ThemeMgr.htm">ThemeMgr</A><P><B>Declaration</B><Br><PRE>TThemeOption = (
+    toAllowNonClientArea,    <Font Color="#0000DD">// Specifies that the nonclient areas of application windows will have visual styles applied.</Font>
+    toAllowControls,         <Font Color="#0000DD">// Specifies that the controls used in an application will have visual styles applied.</Font>
+    toAllowWebContent,       <Font Color="#0000DD">// Specifies that Web content displayed in an application will have visual styles applied.</Font>
+
+    toSubclassAnimate,       <Font Color="#0000DD">// Enables subclassing of TAnimate controls (themed painting does not correctly work).</Font>
+    toSubclassButtons,       <Font Color="#0000DD">// Enables subclassing of button controls (also checkbox, radio button).</Font>
+    toSubclassCheckListbox,  <Font Color="#0000DD">// Enables subclassing of TCheckListBox.</Font>
+    toSubclassDBLookup,      <Font Color="#0000DD">// Enables subclassing of TDBLookupControl. Only used in TThemeManagerDB.</Font>
+    toSubclassFrame,         <Font Color="#0000DD">// Enables subclassing of frames (only available in Delphi 5 or higher).</Font>
+    toSubclassGroupBox,      <Font Color="#0000DD">// Enables subclassing of group box controls.</Font>
+    toSubclassListView,      <Font Color="#0000DD">// Enables subclassing of listview controls (including report mode bug fix).</Font>
+    toSubclassPanel,         <Font Color="#0000DD">// Enables subclassing of panels.</Font>
+    toSubclassTabSheet,      <Font Color="#0000DD">// Enables subclassing of tab sheet controls.</Font>
+    toSubclassSpeedButtons,  <Font Color="#0000DD">// Enables subclassing of speed button controls.</Font>
+    toSubclassStatusBar,     <Font Color="#0000DD">// Enables subclassing of status bar controls.</Font>
+    toSubclassTrackBar,      <Font Color="#0000DD">// Enables subclassing of track bar controls (slight paint problems, though).</Font>
+    toSubclassWinControl,    <Font Color="#0000DD">// Enables subclassing of all window controls not belonging to any of the other classes.</Font>
+
+    toResetMouseCapture,     <Font Color="#0000DD">// If set then TToolButtons get their csCaptureMouse flag removed to properly show</Font>
+                             <Font Color="#0000DD">// their pressed state.</Font>
+    toSetTransparency,       <Font Color="#0000DD">// If set then TCustomLabel and TToolBar controls are automatically set to transparent.</Font>
+    toAlternateTabSheetDraw  <Font Color="#0000DD">// If set then use alternate drawing for TTabSheet body.</Font>
+  );</PRE><P><HR>
+<TABLE BORDER="0" WIDTH="100%" BGCOLOR="#404040" cellspacing=0><TR><TD class="stripelight">
+<Font Color=Black><Large>Copyright © 1999, 2002 <B>Mike Lischke</B></Large</Font>
+</TD></TR></Table>
+<Small><A HREF="http://www.lischke-online.de">http://www.lischke-online.de</A></Small>

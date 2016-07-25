@@ -1,0 +1,82 @@
+
+        How to Make a New Resource File for Another Language
+        ----------------------------------------------------
+
+In the zip project, we use resource files to hold the 
+error messages that can be generated.  This lets us support 
+other languages without much trouble.
+
+For now, these are the languages that were supported for earlier versions.
+In version 1.78 some messages were added that are not yet translated 
+into these languages.
+
+For Version 1.78 the English version of the messages is build-in
+when compiled with the USE_ALLZIPSTRINGS.
+
+The message that are new for version 1.78 are collected in a separate
+file 'ZipNew178.rc'
+ 
+   ZipMsgBR.res - Brazilian (Portuguese)
+*   ZipMsgCT.res - Catalan
+   ZipMsgDK.res - Danish
+*  ZipMsgNL.res - Dutch
+   ZipMsgFI.rc  - Finnish
+   ZipMsgFR.rc  - French
+   ZipMsgDE.res - German
+   ZipMsgHU.res - Hungarian
+   ZipMsgNO.res - Norwegian
+   ZipMsgPT.res - Polish
+   ZipMsgSW.rc  - Swedish
+*   ZipMsgS1.rc  - Spanish
+   ZipMsgSL.res - Slovenian
+*  (ZipMsgUS.res - US / English) is no longer needed is build-in.
+
+  ZipMsgCN.res - Chinese [ GB(K) - commonly used in China and Singapore for
+                            simplified Chinese writing.]
+   ZipMsgCZ.res - Czech
+   ZipMsgGR.res - Greek
+   ZipMsgIT.res - Italian
+   ZipMsgJP.res - Japanese
+   ZipMsgMY.res - Malaysia
+   ZipMsgRO.rc  - Romanian
+   ZipMsgRU.res - Russian
+   ZipMsgYU.res - Serbian (Yugoslavia)
+   ZipMsgTW.res - Taiwanese [Big5 - commonly used in Taiwan and Hong Kong for
+                             traditional Chinese writing.]
+
+*) These files are complete
+
+
+We would like YOU to help us by porting the error messages
+from English into another language that we don't support yet.
+
+The files ZipMsg.h holds the resource Id numbers, and ZipMsgUS.rc
+holds the source for the English text (error/warning) messages.
+
+ZipNew178.rc holds the source in English for message that are new
+in version 1.78
+
+To make a resource file for a new language, follow these
+steps:
+1) To prevent double work it is a smart thing to ask if the
+   translation hasn't been made yet. Sometimes the translation
+   is already made but not yet present on the web site or
+   included in the DelZip package.
+
+2) Select a 2 letter code for your language
+   example: "DE" for German (Deutch)
+
+3) Create a new source file for your messages:
+   COPY ZipMsgUS.rc ZipMsgDE.rc
+
+4) Edit your new file - translate the text to your language
+   NOTEPAD ZipMsgDE.RC
+
+8) E-mail me your new .RC! Tell me the full name of the new language, 
+   and your full name and e-mail address.
+   I will refer to your name and address in the help file unless
+   you tell me not to.
+
+  
+Roger Aelbrecht
+Roger.Aelbrecht@tiscali.be

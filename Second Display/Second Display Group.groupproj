@@ -1,0 +1,36 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{58CF0220-045E-403F-BCBC-BB753D0B1968}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="Second Display Test\SecondDisplayTest.cbproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="SecondDisplayTest">
+			<MSBuild Projects="Second Display Test\SecondDisplayTest.cbproj"/>
+		</Target>
+		<Target Name="SecondDisplayTest:Clean">
+			<MSBuild Targets="Clean" Projects="Second Display Test\SecondDisplayTest.cbproj"/>
+		</Target>
+		<Target Name="SecondDisplayTest:Make">
+			<MSBuild Targets="Make" Projects="Second Display Test\SecondDisplayTest.cbproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="SecondDisplayTest"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="SecondDisplayTest:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="SecondDisplayTest:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

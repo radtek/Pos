@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="C:\Code\IBTools\Exe\IBTools.exe"/>
+    <OBJFILES value="..\Obj\IBTools.obj ..\Obj\Main.obj ..\Obj\MM_DBCore.obj"/>
+    <RESFILES value="IBTools.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) Main.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="vclx.lib bcbsmp.lib dbexpress.lib dbrtl.lib dsnap.lib cds.lib ibxpress.lib 
+      ZipPack.lib rtl.lib vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib ZipPack.lib ibxpress.lib cds.lib dsnap.lib dbrtl.lib 
+      dbexpress.lib bcbsmp.lib vclx.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi dbrtl.bpi vcldb.bpi vclx.bpi ibxpress.bpi dclocx.bpi 
+      Indy60.bpi"/>
+    <PATHCPP value=".;..\..\Shared"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="NO_WIN32_LEAN_AND_MEAN"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="IBTools.cpp"/>
+    <INCLUDEPATH value="..\..\components\touchbuttons;..\..\Shared;..\..\components\zipbuilder\vcl;$(BCB)\Projects;C:\Code\IBTools\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Indy\C6;&quot;C:\Program Files\madCollection\madBasic\BCB6&quot;;&quot;C:\Program Files\madCollection\madDisAsm\BCB6&quot;;&quot;C:\Program Files\madCollection\madExcept\BCB6&quot;;&quot;C:\Program Files\madCollection\madExcept\..\Plugins&quot;"/>
+    <LIBPATH value="..\..\components\touchbuttons;..\..\Shared;$(BCB)\projects\lib;..\..\components\zipbuilder\vcl;$(BCB)\Projects;C:\Code\IBTools\Source;$(BCB)\Indy\C6;$(BCB)\lib\debug;$(BCB)\lib\obj;$(BCB)\lib;&quot;C:\Program Files\madCollection\madBasic\BCB6&quot;;&quot;C:\Program Files\madCollection\madDisAsm\BCB6&quot;;&quot;C:\Program Files\madCollection\madExcept\BCB6&quot;;&quot;C:\Program Files\madCollection\madExcept\..\Plugins&quot;"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\..\components\touchbuttons -I..\..\Shared 
+      -I..\..\components\zipbuilder\vcl -I$(BCB)\Projects 
+      -IC:\Code\IBTools\Source -I$(BCB)\include -I$(BCB)\include\vcl 
+      -I$(BCB)\Indy\C6 -I&quot;C:\Program Files\madCollection\madBasic\BCB6&quot; 
+      -I&quot;C:\Program Files\madCollection\madDisAsm\BCB6&quot; 
+      -I&quot;C:\Program Files\madCollection\madExcept\BCB6&quot; 
+      -I&quot;C:\Program Files\madCollection\madExcept\..\Plugins&quot; -src_suffix cpp 
+      -DNO_WIN32_LEAN_AND_MEAN -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-N2C:\Code\IBTools\Obj -N0C:\Code\IBTools\Obj -$Y- -$L- -$D- -$A8 -v 
+      -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-IC:\Code\IBTools\Obj -D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="IBTools.res" FORMNAME="" UNITNAME="IBTools.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IBTools.cpp" FORMNAME="" UNITNAME="IBTools" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Main.cpp" FORMNAME="IBTools" UNITNAME="Main" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Shared\MM_DBCore.cpp" FORMNAME="" UNITNAME="MM_DBCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=4
+MinorVer=1
+Release=0
+Build=1
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=4.1.0.1
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=5
+Item0=..\..\components\touchbuttons;..\..\Shared;..\..\components\zipbuilder\vcl;$(BCB)\Projects;C:\Code\IBTools\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Indy\C6;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item1=..\..\Shared;..\..\components\zipbuilder\vcl;$(BCB)\Projects;C:\Code\IBTools\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Indy\C6;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item2=..\..\components\zipbuilder\vcl;$(BCB)\Projects;C:\Code\IBTools\Source;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Indy\C6;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item3=$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Indy\C6
+Item4=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=4
+Item0=..\..\components\touchbuttons;..\..\Shared;$(BCB)\projects\lib;..\..\components\zipbuilder\vcl;$(BCB)\Projects;C:\Code\IBTools\Source;$(BCB)\Indy\C6;$(BCB)\lib\debug;$(BCB)\lib\obj;$(BCB)\lib;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item1=..\..\Shared;$(BCB)\projects\lib;..\..\components\zipbuilder\vcl;$(BCB)\Projects;C:\Code\IBTools\Source;$(BCB)\Indy\C6;$(BCB)\lib\debug;$(BCB)\lib\obj;$(BCB)\lib;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item2=$(BCB)\projects\lib;..\..\components\zipbuilder\vcl;$(BCB)\Projects;C:\Code\IBTools\Source;$(BCB)\Indy\C6;$(BCB)\lib\debug;$(BCB)\lib\obj;$(BCB)\lib;C:\Program Files\madCollection\madBasic\BCB6;C:\Program Files\madCollection\madDisAsm\BCB6;C:\Program Files\madCollection\madExcept\BCB6;C:\Program Files\madCollection\madExcept\..\Plugins
+Item3=$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=3
+Item0=NO_WIN32_LEAN_AND_MEAN
+Item1=_DEBUG;NO_WIN32_LEAN_AND_MEAN
+Item2=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=1
+Item0=C:\Code\IBTools\Obj
+
+[HistoryLists\hlFinalOutputDir]
+Count=1
+Item0=C:\Code\IBTools\Exe
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=C:\Code\IBTools\Source\small_stock.ib
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>

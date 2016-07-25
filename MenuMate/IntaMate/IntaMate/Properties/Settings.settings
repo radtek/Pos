@@ -1,0 +1,36 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="IntaMate.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="RoomNumberLength" Type="System.Decimal" Scope="User">
+      <Value Profile="(Default)">4</Value>
+    </Setting>
+    <Setting Name="PMSPassThough" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ComPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">COM1</Value>
+    </Setting>
+    <Setting Name="IOInterfaceType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">proto_Stub</Value>
+    </Setting>
+    <Setting Name="InterfaceAPI" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Stub</Value>
+    </Setting>
+    <Setting Name="IPAddress" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Localhost</Value>
+    </Setting>
+    <Setting Name="Port" Type="System.String" Scope="User">
+      <Value Profile="(Default)">4010</Value>
+    </Setting>
+    <Setting Name="ListenPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">4455</Value>
+    </Setting>
+    <Setting Name="ReadTimeOut" Type="System.String" Scope="User">
+      <Value Profile="(Default)">30000</Value>
+    </Setting>
+    <Setting Name="InterfaceMsgType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">msgNone</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

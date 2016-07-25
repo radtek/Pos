@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="WebMateTests.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DatabaseLocation" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C:\Code\Menumate Branches\Dev Branch\MenuMate\Services\ServicesApp\WebMateTests\TestDB</Value>
+    </Setting>
+    <Setting Name="DatabaseName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Menumate.FDB</Value>
+    </Setting>
+    <Setting Name="DatabaseIPAddress" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">localhost</Value>
+    </Setting>
+    <Setting Name="MenumateLocation" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C:\Code\Development\Runtime</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,456 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9F15DF10-CB0C-4A65-AEDC-58D2E85007E4}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MenumateServices</RootNamespace>
+    <AssemblyName>MenumateServices</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Ready for Distribution\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Ready for Distribution\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>MenumateServices.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Ready for Distribution\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\Ready for Distribution\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Ready for Distribution\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\Ready for Distribution\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FirebirdSql.Data.FirebirdClient">
+      <HintPath>..\..\..\..\Assemblies\3rdParty\Firebird\32\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Json.Net\Net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\..\Program Files\NLog\.NET Framework 4.0\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Smartpay.Eftpos.PaymentProvider, Version=1.1.0.1, Culture=neutral, PublicKeyToken=6421a0710c7c2733, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Assemblies\SmartLink\Smartpay.Eftpos.PaymentProvider.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SplitButton">
+      <HintPath>..\Assemblies\ThorLink\SplitButton.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Threading.Tasks">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\net40\System.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Thorlink.Net, Version=2.5.2.4, Culture=neutral, PublicKeyToken=3b97748316e2ab3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Assemblies\ThorLink\Thorlink.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="XMLManager">
+      <HintPath>..\Assemblies\XMLManager.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DTO\SalesForce\SalesForceCredentialFactory.cs" />
+    <Compile Include="DTO\Thorlink\DTO_TPurchaseInfo.cs" />
+    <Compile Include="DTO\Thorlink\DTO_TenderList.cs" />
+    <Compile Include="DTO\Thorlink\DTO_TenderDetails.cs" />
+    <Compile Include="DTO\Thorlink\DTO_ItemDetails.cs" />
+    <Compile Include="DTO\Thorlink\DTO_VoucherDetails.cs" />
+    <Compile Include="DTO\Thorlink\DTO_ThorAuth.cs" />
+    <Compile Include="DTO\Thorlink\DTO_ThorlinkInquiry.cs" />
+    <Compile Include="DTO\Thorlink\DTO_TMemberInfo.cs" />
+    <Compile Include="DTO\Thorlink\DTO_RefundDetails.cs" />
+    <Compile Include="Internal Classes\ThorlinkInternal\ThorAuthCheck.cs" />
+    <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkMember.cs" />
+    <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkPurchase.cs" />
+    <Compile Include="MenumateRunners\PocketVoucherServiceRunner.cs" />
+    <Compile Include="MenumateRunners\SalesForceIntegrationServiceRunner.cs" />
+    <Compile Include="MenumateRunners\ThorlinkServiceRunner.cs" />
+    <Compile Include="MenumateServicePocketVoucher.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServicePocketVoucher.Designer.cs">
+      <DependentUpon>MenumateServicePocketVoucher.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MenumateServiceSalesForce.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceSalesForce.Designer.cs">
+      <DependentUpon>MenumateServiceSalesForce.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MenumateServiceThorlink.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceThorlink.Designer.cs">
+      <DependentUpon>MenumateServiceThorlink.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DTO\Clipp\ClippErrorDetail.cs" />
+    <Compile Include="DTO\Clipp\ClippTabDetail.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyTierListResponse.cs" />
+    <Compile Include="MenumateServiceClippIntegration.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceClippIntegration.Designer.cs">
+      <DependentUpon>MenumateServiceClippIntegration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DTO\ChefMate\DTO_ChefMateTerminalNamesResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateFullOrderResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateFullOrder.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateBooleanResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateDataTableResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateDateTimeResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateIntegerListResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateModelKeysResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateOrder.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderGroup.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderGroupResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemOption.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItem.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemOptionResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemSide.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderItemSideResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateOrderResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateStringResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateTerminal.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefMateIntegerResponse.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefmateTerminalName.cs" />
+    <Compile Include="DTO\ChefMate\DTO_ChefmateTerminalNameType.cs" />
+    <Compile Include="DTO\Clipp\ClippMessage.cs" />
+    <Compile Include="DTO\Clipp\ClippMessageDetail.cs" />
+    <Compile Include="DTO\Clipp\ClippTabDetailRequest.cs" />
+    <Compile Include="DTO\Clipp\Discount.cs" />
+    <Compile Include="DTO\Clipp\Item.cs" />
+    <Compile Include="DTO\Clipp\MessageType.cs" />
+    <Compile Include="DTO\Clipp\Payment.cs" />
+    <Compile Include="DTO\Clipp\PaymentDetailRequest.cs" />
+    <Compile Include="DTO\Clipp\PaymentDetailResponse.cs" />
+    <Compile Include="DTO\Clipp\Sundry.cs" />
+    <Compile Include="DTO\DTODevice.cs" />
+    <Compile Include="DTO\DTOFactory.cs" />
+    <Compile Include="DTO\DTOPrompt.cs" />
+    <Compile Include="DTO\DTOResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyPointsInfoResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyTierResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyMemberListResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyMemberResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\MemberInfo.cs" />
+    <Compile Include="DTO\LoyaltyMate\PointsInfo.cs" />
+    <Compile Include="DTO\MMServiceResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\TierLevelInfo.cs" />
+    <Compile Include="DTO\LoyaltyMate\TransactionInfo.cs" />
+    <Compile Include="DTO\SmartLink\DTO_SmartLinkTransactionResponse.cs" />
+    <Compile Include="DTO\WebMate\DTO_BaseItem.cs" />
+    <Compile Include="DTO\WebMate\DTO_BaseWebOrderItem.cs" />
+    <Compile Include="DTO\WebMate\DTO_WebOrderAccount.cs" />
+    <Compile Include="DTO\WebMate\DTO_WebOrderDelivery.cs" />
+    <Compile Include="DTO\WebMate\DTO_WebOrderFrom.cs" />
+    <Compile Include="DTO\WebMate\DTO_WebOrderHeader.cs" />
+    <Compile Include="DTO\WebMate\DTO_WebOrderItem.cs" />
+    <Compile Include="DTO\WebMate\DTO_WebOrderItemOption.cs" />
+    <Compile Include="DTO\WebMate\DTO_WebOrderItemSide.cs" />
+    <Compile Include="DTO\WebMate\DTO_WebOrderPayments.cs" />
+    <Compile Include="DTO\WebMate\DTO_WebOrderResponse.cs" />
+    <Compile Include="DTO\WebMate\DTO_WebOrderStatus.cs" />
+    <Compile Include="Internal Classes\LoyaltyMate\LoyaltyMember.cs" />
+    <Compile Include="Internal Classes\LoyaltyMate\LoyaltyResponsive.cs" />
+    <Compile Include="Internal Classes\LoyaltyMate\LoyaltyTier.cs" />
+    <Compile Include="Internal Classes\WebMate\DBClasses.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrder.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderDBAccessEventArgs.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderDBAccessProcess.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderCommit.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderDB.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderDBManager.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderDBConnection.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderDBQueries.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderException.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderFileSupplier.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderProcessor.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderResponsive.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderURLManager.cs" />
+    <Compile Include="Internal Classes\WebMate\WebOrderXMLManager.cs" />
+    <Compile Include="MenumateRunners\ChefmateRunner.cs" />
+    <Compile Include="MenumateRunners\ClippIntegrationServiceRunner.cs" />
+    <Compile Include="MenumateRunners\IMenumateRunner.cs" />
+    <Compile Include="MenumateRunners\LoyaltymateRunner.cs" />
+    <Compile Include="MenumateRunners\MenumateRunner.cs" />
+    <Compile Include="MenumateRunners\MenumateWebServiceRunner.cs" />
+    <Compile Include="MenumateRunners\SmartLinkRunner.cs" />
+    <Compile Include="MenumateRunners\WebmateRunner.cs" />
+    <Compile Include="MenumateRunners\XeroIntegrationRunner.cs" />
+    <Compile Include="MenumateServiceLoyaltyMate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceLoyaltyMate.Designer.cs">
+      <DependentUpon>MenumateServiceLoyaltyMate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MenumateServiceSmartLink.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceSmartLink.Designer.cs">
+      <DependentUpon>MenumateServiceSmartLink.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MenumateServiceWebMate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceWebMate.Designer.cs">
+      <DependentUpon>MenumateServiceWebMate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MenumateServiceXero.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceXero.Designer.cs">
+      <DependentUpon>MenumateServiceXero.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MenumateServiceChefMate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceChefMate.Designer.cs">
+      <DependentUpon>MenumateServiceChefMate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="Tools\FileSupplier.cs" />
+    <Compile Include="Tools\MenumateServiceLoader.cs" />
+    <Compile Include="Tools\MenumateServicesIdentifier.cs" />
+    <Compile Include="Tools\ServiceInfo.cs" />
+    <Compile Include="Tools\ServiceLogger.cs" />
+    <Compile Include="Tools\ServiceNameManager.cs" />
+    <Compile Include="WCFServices\IPocketVoucherWebService.cs" />
+    <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
+    <Compile Include="WCFServices\PocketVoucherWebService.cs" />
+    <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
+    <Compile Include="WCFServices\WCFServiceThorlink.cs" />
+    <Compile Include="WCFServices\ClippIntergrationWebService.cs" />
+    <Compile Include="WCFServices\DTO_ChefMateTerminalNamesResponse.cs" />
+    <Compile Include="WCFServices\IClippIntergrationWebService.cs" />
+    <Compile Include="WCFServices\IWCFServiceThorlink.cs" />
+    <Compile Include="WCFServices\IWCFServiceChefMate.cs" />
+    <Compile Include="WCFServices\IWCFServiceEFTPOS.cs" />
+    <Compile Include="WCFServices\IWCFServiceLoyaltyMate.cs" />
+    <Compile Include="WCFServices\IWCFServiceSmartLink.cs" />
+    <Compile Include="WCFServices\IWCFServiceWebMate.cs" />
+    <Compile Include="WCFServices\WCFServiceChefMate.cs" />
+    <Compile Include="WCFServices\WCFServiceEFTPOS.cs" />
+    <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />
+    <Compile Include="WCFServices\WCFServiceSmartLink.cs" />
+    <Compile Include="WCFServices\WCFServiceWebMate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="publickey.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="public_privatekey.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ServiceLoaderConfig.xml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Loyaltymate\Loyaltymate.csproj">
+      <Project>{5926EAF0-F930-4522-8EDE-E27F76E109C7}</Project>
+      <Name>Loyaltymate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MenumateServices Utilities\Menumate Services Utilities.csproj">
+      <Project>{41206D29-D830-4F9E-B831-BBF6133EB532}</Project>
+      <Name>Menumate Services Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MenumateUtils\MenumateUtils.csproj">
+      <Project>{37B0F64A-677E-4AD0-8C04-252BF7A5D3AE}</Project>
+      <Name>MenumateUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PocketVoucherIntegration\PocketVoucherIntegration.csproj">
+      <Project>{FDC94DD6-180E-4E83-9D28-091BDDFC13DE}</Project>
+      <Name>PocketVoucherIntegration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SalesForceCommunication\SalesForceCommunication.csproj">
+      <Project>{FD3662F2-D048-4ECA-86C6-A44611DE5B4B}</Project>
+      <Name>SalesForceCommunication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XeroIntegration\XeroIntegration.csproj">
+      <Project>{46E2DEBD-F1B9-41D1-BEEA-F1D903302B86}</Project>
+      <Name>XeroIntegration</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MenumateServiceChefMate.resx">
+      <DependentUpon>MenumateServiceChefMate.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MenumateServiceXero.resx">
+      <DependentUpon>MenumateServiceXero.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

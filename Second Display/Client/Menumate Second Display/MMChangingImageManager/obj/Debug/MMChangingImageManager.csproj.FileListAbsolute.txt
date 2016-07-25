@@ -1,0 +1,21 @@
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageManager.dll
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageManager.pdb
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageController.dll
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageController.pdb
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\obj\Debug\ResolveAssemblyReference.cache
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\obj\Debug\MMChangingImageManager.dll
+C:\Code\MenumateSourceCode\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\obj\Debug\MMChangingImageManager.pdb
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageManager.dll
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageManager.pdb
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageController.dll
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageController.pdb
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\MMChangingImageManager\obj\Debug\ResolveAssemblyReference.cache
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\MMChangingImageManager\obj\Debug\MMChangingImageManager.dll
+C:\Code\Git\local menumate sprint\Second Display\Client\Menumate Second Display\MMChangingImageManager\obj\Debug\MMChangingImageManager.pdb
+C:\work\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageManager.dll
+C:\work\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageManager.pdb
+C:\work\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageController.dll
+C:\work\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\bin\Debug\MMChangingImageController.pdb
+C:\work\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\obj\Debug\ResolveAssemblyReference.cache
+C:\work\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\obj\Debug\MMChangingImageManager.dll
+C:\work\Menumate\Second Display\Client\Menumate Second Display\MMChangingImageManager\obj\Debug\MMChangingImageManager.pdb

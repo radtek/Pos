@@ -1,0 +1,77 @@
+# ZSummaryReports.txt
+#
+# This file should only be adjusted by MenuMate Staff or under their guidance.
+# All lines starting with a # are ignored.
+#
+# This file allows you to create user defined summary report blocks as part of the Z or X reports.
+#
+# It uses the following general format: "Operand [Name] Options"
+#
+# e.g 
+# "+[EFTPOS]"," +[Cash]" 
+# would add the total EFTPOS & Cash sales to the "Transaction Summary Totals" on the Zed.
+# 
+# Valid Operands are: <> [] # $ {} + - / * 
+# <>		Used to set the Report Title, or to set the name for a Payment type. Text must be inside <>.
+# [] 		Specifiy the Payment Type by name. Text must be inside <>. Not case sensitive.
+# #		Generate a Subtotal for this summary report for all items above since the last subtotal. eg "#<Subtotal>"
+# $		Generate a Grand Total for this summary report for all items above
+# {Value} 	Overrides the amount (if any) with the amount entered. eg "+{10.00}<Surcharge>" Do NOT include a $ sign
+# + - / * 	Add, Subtract, Divide and Multiply with the running total for this section. eg. "+[Group 1]" "-[Group 2]"
+#	
+# Each line defines a new Transaction Summary block with its own Total.
+#
+# The entire block description with all its [Operand][Name] pairs must be on a single line.
+#
+# If you leave off the +-/* in a field the system will ignore that field unless it also has <> text 
+# in it in which case it will just add the text.
+#
+# If the first field contains <> then the text bewteen the <> sets the Report Title for that summary.
+# If any other field contains <> then the text sets the Payment name for that field.
+#
+# eg "<My Special Totals>"," +[Group 1] <Tax Free Group>"," +[Group 2] <Other Group>"," -[Group 3]"
+#
+# Yes you need the quotes!
+#
+#
+#
+# There are some system defined "Names" as follows:
+# [Initial Float]
+# [Float Adjustments]
+# [Change]
+# [Cash]
+# [Credit]
+# [Group <Transaction Group Number>] e.g [Group 0]
+# [Vouchers Sold]
+# [Vouchers Redeemed]
+# [Voucher Movement]
+# [Points Sold]
+# [Points Redeemed]
+# [Points Movement]
+# [Tabs Credit Sold]
+# [Tabs Credit Redeemed]
+# [Tabs Credit Movement]
+#
+# You can also use names that have been defined as payment types:
+# [Payment Name]    e.g [Cheque] or [Visa] or [Rooms]
+#
+# Or you can create compound types:
+# [Payment Name + " Cash Out"]    which becomes   [Eftpos Cash Out].
+# 
+# 
+# 
+# Examples...
+# "+[Group 0]"," +[Group 1]"," +[Group 2]"     Displays Group 0, Group 1, and Group 2 on successive lines
+#
+# If you wanted to add in Points Redeemed....
+# "+[Group 0]"," +[Group 1]"," +[Group 2]","+[Points Redeemed]"
+#
+# Warning: You can double dip with this format as follows:
+# "+[Group 0]","+[Points Redeemed]","+[Points Sold]"   This would be inaccurate as the money received 
+#                                                for the points sold has already been added into Group 0.
+#
+#
+#"<EFTPOS Reconciliation>","+[Eftpos]","+[Eftpos Cash Out]","#<EFTPOS total>"
+#
+#"<Summary Report>","+[Group 0]","+[Group 1]","#<Sub total>","+[Points Redeemed]","$<Summary Report Total>"
+

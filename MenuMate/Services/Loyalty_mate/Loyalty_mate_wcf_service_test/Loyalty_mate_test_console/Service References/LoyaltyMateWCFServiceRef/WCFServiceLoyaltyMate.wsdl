@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="WCFServiceLoyaltyMate" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" />
+      <xsd:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IWCFServiceLoyaltyMate_SetSalesforceAuthInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetSalesforceAuthInfo" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_SetSalesforceAuthInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetSalesforceAuthInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_CreateMember_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateMember" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_CreateMember_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateMemberResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_UpdateMember_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateMember" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_UpdateMember_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateMemberResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_DeleteMember_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteMember" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_DeleteMember_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteMemberResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_GetMember_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMember" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_GetMember_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMemberResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_GetMemberList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMemberList" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_GetMemberList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMemberListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_PostTransaction_InputMessage">
+    <wsdl:part name="parameters" element="tns:PostTransaction" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_PostTransaction_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PostTransactionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_GetMemberIdByActivationCode_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMemberIdByActivationCode" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceLoyaltyMate_GetMemberIdByActivationCode_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMemberIdByActivationCodeResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IWCFServiceLoyaltyMate">
+    <wsdl:operation name="SetSalesforceAuthInfo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/SetSalesforceAuthInfo" message="tns:IWCFServiceLoyaltyMate_SetSalesforceAuthInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/SetSalesforceAuthInfoResponse" message="tns:IWCFServiceLoyaltyMate_SetSalesforceAuthInfo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateMember">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/CreateMember" message="tns:IWCFServiceLoyaltyMate_CreateMember_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/CreateMemberResponse" message="tns:IWCFServiceLoyaltyMate_CreateMember_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateMember">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/UpdateMember" message="tns:IWCFServiceLoyaltyMate_UpdateMember_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/UpdateMemberResponse" message="tns:IWCFServiceLoyaltyMate_UpdateMember_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteMember">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/DeleteMember" message="tns:IWCFServiceLoyaltyMate_DeleteMember_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/DeleteMemberResponse" message="tns:IWCFServiceLoyaltyMate_DeleteMember_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMember">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/GetMember" message="tns:IWCFServiceLoyaltyMate_GetMember_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/GetMemberResponse" message="tns:IWCFServiceLoyaltyMate_GetMember_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMemberList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/GetMemberList" message="tns:IWCFServiceLoyaltyMate_GetMemberList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/GetMemberListResponse" message="tns:IWCFServiceLoyaltyMate_GetMemberList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="PostTransaction">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/PostTransaction" message="tns:IWCFServiceLoyaltyMate_PostTransaction_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/PostTransactionResponse" message="tns:IWCFServiceLoyaltyMate_PostTransaction_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMemberIdByActivationCode">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/GetMemberIdByActivationCode" message="tns:IWCFServiceLoyaltyMate_GetMemberIdByActivationCode_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceLoyaltyMate/GetMemberIdByActivationCodeResponse" message="tns:IWCFServiceLoyaltyMate_GetMemberIdByActivationCode_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="basicHttpBinding_ServiceLoyaltyMate" type="tns:IWCFServiceLoyaltyMate">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SetSalesforceAuthInfo">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceLoyaltyMate/SetSalesforceAuthInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateMember">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceLoyaltyMate/CreateMember" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateMember">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceLoyaltyMate/UpdateMember" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteMember">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceLoyaltyMate/DeleteMember" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMember">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceLoyaltyMate/GetMember" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMemberList">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceLoyaltyMate/GetMemberList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PostTransaction">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceLoyaltyMate/PostTransaction" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMemberIdByActivationCode">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceLoyaltyMate/GetMemberIdByActivationCode" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WCFServiceLoyaltyMate">
+    <wsdl:port name="basicHttpBinding_ServiceLoyaltyMate" binding="tns:basicHttpBinding_ServiceLoyaltyMate">
+      <soap:address location="http://localhost:8734/MenumateServices/LoyaltyMate/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

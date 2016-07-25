@@ -1,0 +1,290 @@
+ZipBuilder, for Borland C++ Builder version 3, 4, 5 and 6
+Version 1.79
+Original  by Chris Vleghert
+Latest adaptations by Roger Aelbrecht, Zipbuilder@drehoeksw.net
+
+TZipBuilder is a translation of TZipMaster from Delphi to C++. 
+Its functional identical in every way possible but it has been coded 
+in C++ to make it easier for C++ users to understand and modify.
+
+I am going to use the term "BCB" to mean "Borland C++ Builder".
+----------------------------------------------------------------------
+
+Before You Start
+----------------
+If you have an version of ZipMaster.pas installed in C++, you 
+don't have to remove it, since this component has a different name.
+
+If you have a previous version of TZipBuilder installed it is best 
+to remove it completely before starting this installation.
+To remove the previous packages remove all source and package files
+from the directory where you installed it.
+Remove the .bpl .bpi and .lib files of the old package
+Remove all entries for the package in the registry under key
+HKCU\Software\Borland\CBuilder\6.0\Kwon Packages
+
+You need to copy the redistributable modules to your desired
+directory on your development computer.  
+
+NOTE
+----
+For the ZBSFXxx.BIN and ZBSFXxx.RES files needed to make self-extracting
+archives download the separate ZBSFXBinRes__ package
+ZBSFXxx.BIN files are used directly in the program.
+The ZBSFXxx.RES files are needed for inclusion in a resource file.
+
+Compiler Conditionals
+----------------------
+
+Compiler conditionals allow you to build a smaller version of TZipBuilder. 
+This means that certain options are left out, making the final product 
+smaller.
+
+There are seven conditionals:
+
+USE_COMPRESSED_STRINGS: Define if you use the compressed default strings,
+					if undefined the regular strings are used
+					
+KEEP_BACKWARD: Define if you want to keep the old properties and methods
+					(used for	the dual dll) 
+
+STATIC_LOAD_DELZIP_DLL: Define if you want to statically bind the dll to 
+					your application, You have to include DelZip179.lib into your 
+					application and make sure that it can find the DelZip179.dll
+					The best way to make sure it can find the dll is to place the 
+					dll in the same folder as you application executable.
+
+ALLOW_2G : Define if you want to use files with size larger than 2GB.
+					When this option is set the OnPogressEvent and 
+					OnTotalProgressEvent signatures are no longer backward compatible. 
+					Type __int64 is used.
+
+NO_SPAN : if this options is defined (or set) then the possibility of 
+					spanning the archive over several disks (floppy disks) is no
+					longer available.
+					
+NO_SFX  : if this options is defined (or set) then the possibility of 
+          creating "self-extracting" archives is no longer build in 
+          into the component, other components can still be used to 
+          have the same result.
+          
+NO_STREAM : if this option is defined (or set) then the possibility of
+         Zipping, unzipping data in streams is no longer provided.
+         
+Any combination of these conditionals is allowed.
+Defining the conditionals can be done by using the tool ZBConfig or by 
+directly editing the file CondDefines.h:
+Un-comment ( = remove the '//' at the start of the lines) the lines with 
+the #define statements to make them defined or comment ( add '//' at the
+start of the lines) to make then undefined      
+
+
+Languages
+---------
+From version 1.79 it is possible to have the messages in the required 
+languages included into a resource file and include this file into your 
+application. The strings for the languages have to be included in the
+resource in a compressed ( LZ77 compress) format.
+The English version is always available and does not need to be in the
+resources.
+
+To create a resource that holds the required languages in the correct
+compressed format a tool ZipResMaker is made available.
+This tool can create a resource that contains the DLL, the SFX *.bin's
+in the required languages and the strings in the required languages.
+For more detailed info see the Help file and the Help file that comes
+with the ZipResMaker tool. 
+
+If you want to use a language that is not included in the resource file 
+or if you don't want to you use the resource file option you can link a
+language resource file into your project. 
+The language resource files are of type ZipMsgNL.rc and all language 
+resources are grouped in the directory LangRes
+
+Installation of TZipBuilder
+---------------------------
+To get going quickly and correctly, please follow these instructions.  
+Read them over once before starting.  If you don't understand a step, 
+get help before you start the install!
+
+1.  You HAVE TO install this component on a computer that has BCB6.
+		
+2.  If you used the 'installer' version the files required to support the VCL
+		are in the folder were the files are copied.
+		If you use complete manual installation then these files are in the root
+		of this package
+
+   You can install the component two ways:
+    	- using the included package files
+    	- starting from a new package 
+
+3.  Install the component using the included package files:
+
+		a) If you intend to set the compiler options in the CondDefines.h
+    	file, this is a good time to do.
+      Open BCB and select File|Close All to make sure nothing is 
+      disturbing the package installation process
+      
+		b) The existing package will use the folder $(BCB)\Projects\obj6  
+		   to store the .obj files during the build process. Create this folder  
+		   if it doesn't exist. 	
+		   Choose Component|Install Component... from the menu
+
+    c) Select the Tab 'Into Existing Package' and fill in:
+       At 'Unit file name':    Browse and Select ZipBuilder.cpp 
+       At 'Package file name': Browse and Select ZBldr179C6.bpk from the
+        											 \CBuilder directory	
+       At 'Description':   TZipBuilder 1.79 (or anything else you like)
+       Select OK
+       
+ 		d) Click the 'Compile' button, the compilation will start.
+    	 
+    e) Now Click the 'Install' button     
+       Now you should get a message:
+       Package ...\ZBldr179C6.bpl has been installed.
+       The following new components have been registered: TZipBuilder
+    
+    f) To finish choose from the main menu:
+       File|Save all
+       File|Close all
+
+
+4.  Install with a new package:
+  
+    a) If you intend to set the compiler options in the CondDefines.h
+    	file, this is a good time to do.
+      Open BCB and select File|Close All to make sure nothing is 
+      disturbing the package installation process
+       
+    b) Choose Component|Install Component... from the menu
+
+    c) Select the Tab 'Into New Package' and fill in:
+       At 'Unit file name':    Browse and Select ZipBuilder.cpp 
+       At 'Package file name': ZBldr179C6
+       At 'Description':   TZipBuilder runtime (or anything else you like)
+       Select OK
+
+    d) You will be asked to confirm building the package;
+      Answer NO on the confirm build question.
+      
+    e) Locate the dialog window with caption 'Package - ZBldr179C6.bpl'
+       On my system I have to minimise the editor window to see this window.
+       Select 'Add'. In the Add Dialog select 'Add Unit' and 
+       Browse and Select each of the following files:
+        - EZipBuilder.cpp
+        - ZBCompat.cpp
+        - ZBCore.cpp
+        - ZBDBind.cpp
+        - ZBDlg.cpp
+        - ZBHash.cpp
+        - ZBMsgStr.cpp
+        - ZBSBind.cpp
+        - ZBWrkr.cpp
+        - ZipExtrLZ77.cpp
+        - ZipProg.cpp
+        - ZipUtils.cpp
+       
+       TIP: In the dialog that comes up when you select Add Unit, you can select 
+       multiple files at once with the normal methods for selecting multiple
+       files e.g. hold down the 'Ctrl' key and click on all wanted files.      
+       
+       Then Click OK twice and all selected files will be included in the 
+       package
+       
+    f) If you intend to build the component with the internal sfx then proceed 
+       with the next file else skip to item g)
+       Select 'Add'. In the Add Dialog select 'Add Unit' and 
+       Browse and Select ZipIntSfx.cpp
+       
+    g) If you have chosen to set compiler conditionals in via the project
+       options now you can do it else proceed with point h)
+       Select 'Options' and choose the tab 'Directories/Conditionals'
+       In the section Conditionals click the button marked with '...'
+       In the lower small edit field of the new dialog type the condition
+       you want, example NO_SFX, and click Add.
+       Repeat typing and adding until all conditions are in the project
+       then click OK and again OK    
+      
+    h) Click the 'Options' button and in the 'Description' page make sure
+    	 in the 'Usage options' "runtime only" is checked.
+    	 While in the Options go to the 'Directories/Conditionals' page
+    	 In 'Intermediate output': set $(BCB)\Projects\obj6   => Create if doesn't exist 	
+    	 In 'Finale Output' : set $(BCB)\Projects\Bpl
+    	 In 'BPI/LIB output': set $(BCB)\Projects\Lib
+    	 Click OK to close the Options box
+    	   
+    	 Click the 'Compile' button, the compilation will start.
+    
+    f) Now Click the 'Install' button     
+       Now you should get a message:
+       Package ...\ZBldr179C6.bpl has been installed.
+       The following new components have been registered: TZipBuilder
+    
+    k) To finish choose from the main menu:
+       File|Save all
+         Save the file (ZBldr179C6.bpk) in ..\CBuilder\
+       File|Close all
+
+If you want to know more about installing packages:
+  Look for 'Packages' in the CBuilder help system.
+  i.e. Creating and Installing component packages.
+
+
+                       C++ BUILDER HELP
+
+See the 'ZipHelp.hlp' file in the Help subdirectory.
+
+
+                       C++ BUILDER DEMO's
+Installation
+------------
+1.  The CDemox directory has a number of sub directories one for BCB5,
+    one for BCB6 specific files, etc. The files that are
+    common to all environments are in the CDemoX directory.
+    To install a demo you HAVE to COPY the files from the sub
+    directory BCB6 to the CDemoX directory. Sometimes you will
+    be asked to overwrite an existing file this is NOT an error
+    and you should confirm the question.
+    
+
+2.  Important:
+    You must set the include and library path in your project,
+    not only for the demo's but also for new projects.
+    This can be accomplished by choosing from the menu:
+    Project|Options... and then the tab Directories/conditionals.
+
+
+                    DESCRIPTION OF DEMO PROJECTS
+
+    Demo1 is a native C++ Builder port of the Delphi Zip Demo 1.
+    This is a very complete File Manager type of program that lets
+    you create archives, view archives, extract files, etc.  It can
+    also turn .zip files into .exe files (and vice-versa).
+
+
+                  Deployment of Your Programs
+                  ---------------------------
+
+From version 1.79 there are two options for the distribution of the
+required dll and sfx files.
+
+Option 1:
+	You should have your install procedures put these
+	files into the WINDOWS SYSTEM directory (which is named differently
+	on some systems - especially WinNT systems).  If that isn't 
+	possible, then you should put them into the same directory as 
+	your .EXE program that uses them.
+	
+Option 2:
+	Include the dll and all or some of the required sfx *.bin's into
+	a resource file that can be included into your application.
+	See also the information under languages
+
+Of course, there are no distribution fees for the DLL, or
+any other part of the package.  This whole package is 
+freeware, but does have some minor distribution restrictions
+(mainly that you can't profit from the ZIP DLL, and you need
+to document where users can get source code). Please see 
+README.TXT and LICENSE.TXT for these restrictions.
+    
+

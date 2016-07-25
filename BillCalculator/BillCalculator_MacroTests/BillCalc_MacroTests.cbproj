@@ -1,0 +1,209 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{BED68D64-DB68-49BA-A1D9-DD143538DED0}</ProjectGuid>
+			<ProjectVersion>12.0</ProjectVersion>
+			<ProjectType>CppVCLApplication</ProjectType>
+			<MainSource>BillCalc_MacroTests.cpp</MainSource>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>
+			<UsePackages>true</UsePackages>
+			<DynamicRTL>true</DynamicRTL>
+			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
+			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
+			<OutputExt>exe</OutputExt>
+			<DCC_Define>_DEBUG;DUNIT_GUI;$(DCC_Define)</DCC_Define>
+			<DCC_UnitSearchPath>$(BDS)\Source\DUnit\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<ProjectType>CppVCLApplication</ProjectType>
+			<PackageImports>vclx.bpi;vcl.bpi;rtl.bpi;vclimg.bpi;vclie.bpi;xmlrtl.bpi;inet.bpi;inetdbbde.bpi;inetdbxpress.bpi;soaprtl.bpi;dbrtl.bpi;dsnap.bpi;IndyCore.bpi;IndySystem.bpi;IndyProtocols.bpi;NumericEditPkg.bpi;vclactnband.bpi;bcbsmp.bpi;DPSEftpos.bpi;Eft2000_Syncro.bpi;PC_Eftpos_Ingenico_CSDEFT.bpi;vclib.bpi;ibxpress.bpi;vcldb.bpi;CPortLibCB6.bpi;bdertl.bpi;Rave77VCL.bpi;intrawebdb_100_140.bpi;Intraweb_100_140.bpi;vcltouch.bpi</PackageImports>
+			<Multithreaded>true</Multithreaded>
+			<DCC_DcuOutput>.</DCC_DcuOutput>
+			<AllPackageLibs>rtl.lib;vcl.lib</AllPackageLibs>
+			<ILINK_LibraryPath>PriceInclServiceCharge\;..\..\MenuMate\MenuMate\Source\;..\..\MenuMate\MenuMate\Source\BillCalculator\;..\;$(BDS)\source\dUnit\src;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<IncludePath>PriceInclServiceCharge\;..\..\MenuMate\MenuMate\Source\;..\..\MenuMate\MenuMate\Source\BillCalculator\;..\;$(CG_BOOST_ROOT)\boost\tr1\tr1;$(BDS)\include;$(BDS)\include\dinkumware;$(BDS)\include\vcl;$(CG_BOOST_ROOT);$(IncludePath)</IncludePath>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+			<Defines>_DEBUG;$(Defines)</Defines>
+			<IntermediateOutputDir>Debug</IntermediateOutputDir>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<Defines>NDEBUG;$(Defines)</Defines>
+			<IntermediateOutputDir>Release</IntermediateOutputDir>
+		</PropertyGroup>
+		<ItemGroup>
+			<CppCompile Include="TestMMBillCalculator_BugFixes.cpp">
+				<DependentOn>TestMMBillCalculator_BugFixes.h</DependentOn>
+				<BuildOrder>6</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\MenuMate\Source\rounding.cpp">
+				<DependentOn>..\..\MenuMate\MenuMate\Source\rounding.h</DependentOn>
+				<BuildOrder>5</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="TestMMBillCalculator_Phillipines.cpp">
+				<DependentOn>TestMMBillCalculator_Phillipines.h</DependentOn>
+				<BuildOrder>3</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\MenuMate\Source\BillCalculator\MMBillCalculator.cpp">
+				<DependentOn>..\..\MenuMate\MenuMate\Source\BillCalculator\MMBillCalculator.h</DependentOn>
+				<BuildOrder>2</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="TestMMBillCalculator_India.cpp">
+				<DependentOn>TestMMBillCalculator_India.h</DependentOn>
+				<BuildOrder>10</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="BillCalc_MacroTests.cpp">
+				<BuildOrder>0</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PriceInclServiceCharge\PriceInclServiceCharge_SCD.cpp">
+				<DependentOn>PriceInclServiceCharge\PriceInclServiceCharge_SCD.h</DependentOn>
+				<BuildOrder>12</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\MenuMate\Source\BillCalculator\IBillCalculator.cpp">
+				<DependentOn>..\..\MenuMate\MenuMate\Source\BillCalculator\IBillCalculator.h</DependentOn>
+				<BuildOrder>3</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="TestMMBillCalculator_Indonesia.cpp">
+				<DependentOn>TestMMBillCalculator_Indonesia.h</DependentOn>
+				<BuildOrder>4</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="TestMMBillCalculator_Base.cpp">
+				<DependentOn>TestMMBillCalculator_Base.h</DependentOn>
+				<BuildOrder>9</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PriceInclServiceCharge\PriceInclServiceCharge_Generic.cpp">
+				<DependentOn>PriceInclServiceCharge\PriceInclServiceCharge_Generic.h</DependentOn>
+				<BuildOrder>13</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PriceInclServiceCharge\PriceInclServiceCharge_TaxRemoval_SCD.cpp">
+				<DependentOn>PriceInclServiceCharge\PriceInclServiceCharge_TaxRemoval_SCD.h</DependentOn>
+				<BuildOrder>16</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PriceInclServiceCharge\PriceInclServiceCharge_TaxRemoval.cpp">
+				<DependentOn>PriceInclServiceCharge\PriceInclServiceCharge_TaxRemoval.h</DependentOn>
+				<BuildOrder>15</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="TestRounding.cpp">
+				<DependentOn>TestRounding.h</DependentOn>
+				<BuildOrder>7</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PriceInclServiceCharge\PriceInclServiceCharge_TaxRemoval_PWD.cpp">
+				<DependentOn>PriceInclServiceCharge\PriceInclServiceCharge_TaxRemoval_PWD.h</DependentOn>
+				<BuildOrder>17</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PriceInclServiceCharge\PriceInclServiceCharge_PWD.cpp">
+				<DependentOn>PriceInclServiceCharge\PriceInclServiceCharge_PWD.h</DependentOn>
+				<BuildOrder>14</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PriceInclServiceCharge\PriceInclServiceCharge_ServiceChargeRemoval_SCD.cpp">
+				<DependentOn>PriceInclServiceCharge\PriceInclServiceCharge_ServiceChargeRemoval_SCD.h</DependentOn>
+				<BuildOrder>16</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PriceInclServiceCharge\PriceInclServiceCharge_ServiceChargeRemoval.cpp">
+				<DependentOn>PriceInclServiceCharge\PriceInclServiceCharge_ServiceChargeRemoval.h</DependentOn>
+				<BuildOrder>17</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PriceInclServiceCharge\PriceInclServiceCharge_ServiceChargeRemoval_PWD.cpp">
+				<DependentOn>PriceInclServiceCharge\PriceInclServiceCharge_ServiceChargeRemoval_PWD.h</DependentOn>
+				<BuildOrder>18</BuildOrder>
+			</CppCompile>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>CPlusPlusBuilder.Personality.12</Borland.Personality>
+			<Borland.ProjectType>CppVCLApplication</Borland.ProjectType>
+			<BorlandProject>
+				<CPlusPlusBuilder.Personality>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1033</VersionInfo>
+						<VersionInfo Name="CodePage">1252</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<Debugging>
+						<Debugging Name="DebugSourceDirs"/>
+					</Debugging>
+					<Parameters>
+						<Parameters Name="RunParams"/>
+						<Parameters Name="Launcher"/>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="DebugCWD"/>
+						<Parameters Name="HostApplication"/>
+						<Parameters Name="RemoteHost"/>
+						<Parameters Name="RemotePath"/>
+						<Parameters Name="RemoteParams"/>
+						<Parameters Name="RemoteLauncher"/>
+						<Parameters Name="UseRemoteLauncher">False</Parameters>
+						<Parameters Name="RemoteCWD"/>
+						<Parameters Name="RemoteDebug">False</Parameters>
+						<Parameters Name="Debug Symbols Search Path"/>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<Excluded_Packages/>
+					<ProjectProperties>
+						<ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
+						<ProjectProperties Name="ManagePaths">True</ProjectProperties>
+						<ProjectProperties Name="VerifyPackages">False</ProjectProperties>
+					</ProjectProperties>
+					<Source>
+						<Source Name="MainSource">BillCalc_MacroTests.cpp</Source>
+					</Source>
+					<Folders>
+						<Folder Masks="*.*" Path="C:\Code\Git\MenumateGit-Local\BillCalculator\BillCalculator_MacroTests\PriceInclServiceCharge" ShowSubdirectories="false"/>
+					</Folders>
+				</CPlusPlusBuilder.Personality>
+				<UnitTesting>
+					<TestFramework>DUnit / C++ Win32</TestFramework>
+					<TestRunner>GUI</TestRunner>
+				</UnitTesting>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+	</Project>

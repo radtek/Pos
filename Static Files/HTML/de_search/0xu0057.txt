@@ -1,0 +1,9 @@
+WANT; 8,5,4;
+WHAT; 11;
+WHEN; 3,11,9,8;
+WHO; 11;
+WILL; 11,7,6,2;
+WITH; 5,4;
+WORK; 4;
+WOULD; 8;
+WWW; 1;

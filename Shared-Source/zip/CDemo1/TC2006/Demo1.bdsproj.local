@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2007/01/08 17:39:16.453.bdsproj,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Project1.bdsproj=E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Demo1.bdsproj</Transaction>
+    <Transaction>2007/01/08 17:39:29.359.cpp,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Unit1.cpp=E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Main.cpp</Transaction>
+    <Transaction>2007/01/08 17:39:29.359.h,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Unit1.h=E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Main.h</Transaction>
+    <Transaction>2007/01/08 17:39:29.375.dfm,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Unit1.dfm=E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Main.dfm</Transaction>
+    <Transaction>2007/01/08 17:39:48.234.cpp,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Main.cpp=F:\TurboCProjects\CDemo1\Main.cpp</Transaction>
+    <Transaction>2007/01/08 17:39:48.234.h,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Main.h=F:\TurboCProjects\CDemo1\Main.h</Transaction>
+    <Transaction>2007/01/08 17:39:48.234.dfm,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Main.dfm=F:\TurboCProjects\CDemo1\Main.dfm</Transaction>
+    <Transaction>2007/01/08 17:39:50.546.bdsproj,E:\Documents and Settings\Roger\Mijn documenten\Borland Studio Projects\Demo1.bdsproj=F:\TurboCProjects\CDemo1\Demo1.bdsproj</Transaction>
+    <Transaction>2007/01/08 17:40:44.671.cpp,F:\TurboCProjects\CDemo1\Unit1.cpp=F:\TurboCProjects\CDemo1\ExtractFiles.cpp</Transaction>
+    <Transaction>2007/01/08 17:40:44.671.h,F:\TurboCProjects\CDemo1\Unit1.h=F:\TurboCProjects\CDemo1\ExtractFiles.h</Transaction>
+    <Transaction>2007/01/08 17:40:44.671.dfm,F:\TurboCProjects\CDemo1\Unit1.dfm=F:\TurboCProjects\CDemo1\ExtractFiles.dfm</Transaction>
+    <Transaction>2007/01/08 17:41:53.593.cpp,F:\TurboCProjects\CDemo1\Unit2.cpp=F:\TurboCProjects\CDemo1\Message.cpp</Transaction>
+    <Transaction>2007/01/08 17:41:53.593.h,F:\TurboCProjects\CDemo1\Unit2.h=F:\TurboCProjects\CDemo1\Message.h</Transaction>
+    <Transaction>2007/01/08 17:41:53.593.dfm,F:\TurboCProjects\CDemo1\Unit2.dfm=F:\TurboCProjects\CDemo1\Message.dfm</Transaction>
+    <Transaction>2007/01/08 17:43:37.125.cpp,F:\TurboCProjects\CDemo1\Unit3.cpp=F:\TurboCProjects\CDemo1\SFX.cpp</Transaction>
+    <Transaction>2007/01/08 17:43:37.125.h,F:\TurboCProjects\CDemo1\Unit3.h=F:\TurboCProjects\CDemo1\SFX.h</Transaction>
+    <Transaction>2007/01/08 17:43:37.125.dfm,F:\TurboCProjects\CDemo1\Unit3.dfm=F:\TurboCProjects\CDemo1\SFX.dfm</Transaction>
+    <Transaction>2007/01/08 17:44:41.687.cpp,F:\TurboCProjects\CDemo1\Unit3.cpp=F:\TurboCProjects\CDemo1\Rename.cpp</Transaction>
+    <Transaction>2007/01/08 17:44:41.687.h,F:\TurboCProjects\CDemo1\Unit3.h=F:\TurboCProjects\CDemo1\Rename.h</Transaction>
+    <Transaction>2007/01/08 17:44:41.687.dfm,F:\TurboCProjects\CDemo1\Unit3.dfm=F:\TurboCProjects\CDemo1\Rename.dfm</Transaction>
+    <Transaction>2007/01/08 17:46:34.656.cpp,F:\TurboCProjects\CDemo1\Unit3.cpp=F:\TurboCProjects\CDemo1\AddFiles.cpp</Transaction>
+    <Transaction>2007/01/08 17:46:34.656.h,F:\TurboCProjects\CDemo1\Unit3.h=F:\TurboCProjects\CDemo1\AddFiles.h</Transaction>
+    <Transaction>2007/01/08 17:46:34.656.dfm,F:\TurboCProjects\CDemo1\Unit3.dfm=F:\TurboCProjects\CDemo1\AddFiles.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

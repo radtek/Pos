@@ -1,0 +1,1046 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{C156C63E-FE5A-403F-BEEC-41133E5BC602}</ProjectGuid>
+			<ProjectType>CppVCLApplication</ProjectType>
+			<MainSource>PalmMate.cpp</MainSource>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+			<ProjectVersion>12.0</ProjectVersion>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<BCC_MonitorInlinePtrAccess>true</BCC_MonitorInlinePtrAccess>
+			<BCC_MonitorGlobalAndStackData>true</BCC_MonitorGlobalAndStackData>
+			<BCC_MonitorThis>true</BCC_MonitorThis>
+			<IncludePath>..\..\..\;..\..\;..\Test\;..\..\..\..\..\5.Printing\MenuMate\MenuMate\Source\;..\..\..\..\Shared-Source\tinyXML\;..\..\..\..\Shared-Source\Stock\;..\IBLogs\;..\..\..\Registration\Source\;..\..\..\..\Shared-Source\System\;..\..\..\..\Shared-Source\TZForm\;..\..\..\SimpleTCP\;..\SmartCards\;..\Comms\;..\..\..\Components BCB6\porttalk\;..\Security\;..\..\..\Version\;..\..\..\..\Shared-Source\Registry\;..\DeskTop\;..\;..\..\..\ChefMate\Source\;..\Maintenance\;..\..\..\..\Shared-Source\Touch Utils\;..\..\..\..\Shared-Source\System\Core\;..\..\..\..\Shared-Source\TouchButtons;..\..\..\Components BCB6\CPort264\Sources;..\Pos;$(IncludePath)</IncludePath>
+			<ILINK_LibraryPath>..\..\..\;..\..\;..\Test\;..\..\..\..\..\5.Printing\MenuMate\MenuMate\Source\;..\..\..\..\Shared-Source\tinyXML\;..\..\..\..\Shared-Source\Stock\;..\IBLogs\;..\..\..\Registration\Source\;..\..\..\..\Shared-Source\System\;..\..\..\..\Shared-Source\TZForm\;..\..\..\SimpleTCP\;..\SmartCards\;..\Comms\;..\..\..\Components BCB6\porttalk\;..\Security\;..\..\..\..\libs\;..\..\..\Version\;..\..\..\..\Shared-Source\Registry\;..\DeskTop\;..\;..\..\..\ChefMate\Source\;..\Maintenance\;..\..\..\..\Shared-Source\Touch Utils\;..\..\..\..\Shared-Source\System\Core\;..\..\..\Components BCB6\CPort264\Sources;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<Defines>DB_NET_Logging;$(Defines)</Defines>
+			<ShowGeneralMessages>true</ShowGeneralMessages>
+			<LinkPackageStatics>rtl.lib;vcl.lib;bcbsmp.lib;vclx.lib;bdertl.lib;dbrtl.lib;vcldb.lib;ibxpress.lib;dsnap.lib;dsnapcon.lib;dbexpress.lib;CportLibCB6.lib;vcldbx.lib;dbxcds.lib;bcbie.lib;adortl.lib;inetdbbde.lib;inetdbxpress.lib;soaprtl.lib;vclie.lib;xmlrtl.lib;vclactnband.lib;IndyCore.lib;IndySystem.lib;IndyProtocols.lib;vclimg.lib</LinkPackageStatics>
+			<PackageImports>rtl.bpi;vcl.bpi;vclx.bpi;bcbsmp.bpi;dbrtl.bpi;vcldb.bpi;ibsmp.bpi;bdertl.bpi;ibxpress.bpi;DCLUSR.bpi;indycore.bpi;indysystem.bpi;CPortLibCB6.bpi;vclactnband.bpi;xmlrtl.bpi</PackageImports>
+			<TASM_Defines>PalmMate NO_WIN32_LEAN_AND_MEAN _WINSOCKAPI_;$(TASM_Defines)</TASM_Defines>
+			<BRCC_Defines>PalmMate;NO_WIN32_LEAN_AND_MEAN;_WINSOCKAPI_;$(BRCC_Defines)</BRCC_Defines>
+			<DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
+			<DCC_UnitSearchPath>.\;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<ILINK_AppType>Windows</ILINK_AppType>
+			<BCC_PCHCache>true</BCC_PCHCache>
+			<BRCC_IncludePath>..\;..\DeskTop;..\..\..\..\Shared-Source\tinyXML;..\;..\SmartCards;..\..\..\..\Shared-Source\TZForm;..;..\System;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\CPort264\Sources;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;..\..\..\Components BCB6\pngimage;$(BDS)\Bin;$(BDS)\Imports;$(BDS)\include;$(BDS)\include\vcl;..\..\..\Components BCB6\porttalk;$(BDS)\include\dinkumware;$(BRCC_IncludePath)</BRCC_IncludePath>
+			<BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
+			<DCC_IncludePath>.\;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_IncludePath)</DCC_IncludePath>
+			<TASM_IncludePath>..\;..\DeskTop;..\..\..\..\Shared-Source\tinyXML;..\;..\SmartCards;..\..\..\..\Shared-Source\TZForm;..;..\System;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\CPort264\Sources;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;..\..\..\Components BCB6\pngimage;$(BDS)\Bin;$(BDS)\Imports;$(BDS)\include;$(BDS)\include\vcl;..\..\..\Components BCB6\porttalk;$(BDS)\include\dinkumware;$(TASM_IncludePath)</TASM_IncludePath>
+			<BCC_IncludePath>$(BDS)\Bin;$(BDS)\Imports;$(BDS)\include;$(BDS)\include\vcl;$(BDS)\include\dinkumware;..\..\..\..\Shared-Source\System;$(BCC_IncludePath)</BCC_IncludePath>
+			<BCC_Defines>NO_STRICT;PalmMate;NO_WIN32_LEAN_AND_MEAN;_WINSOCKAPI_;$(BCC_Defines)</BCC_Defines>
+			<AllPackageLibs>rtl.lib;vcl.lib;bcbsmp.lib;vclx.lib;bdertl.lib;dbrtl.lib;vcldb.lib;ibxpress.lib;dsnap.lib;dsnapcon.lib;dsnap.lib;dbexpress.lib;CportLibCB6.lib;vcldbx.lib;dbxcds.lib;dsnapcon.lib;bcbie.lib;adortl.lib;inetdbbde.lib;inetdbxpress.lib;soaprtl.lib;vclie.lib;xmlrtl.lib;vclactnband.lib;IndyCore.lib;IndySystem.lib;IndyProtocols.lib;vclimg.lib</AllPackageLibs>
+			<BCC_GenerateMultithreaded>true</BCC_GenerateMultithreaded>
+			<FinalOutputDir>..\..\..\..\Runtime\</FinalOutputDir>
+			<TASM_Debugging>None</TASM_Debugging>
+			<TASM_AdditionalSwitches> /w2</TASM_AdditionalSwitches>
+			<Multithreaded>true</Multithreaded>
+			<BCC_UserSuppliedOptions> -Q -Vx -Ve</BCC_UserSuppliedOptions>
+			<BCC_GenerateWindowsApp>true</BCC_GenerateWindowsApp>
+			<OutputExt>exe</OutputExt>
+			<DCC_AdditionalSwitches> -M</DCC_AdditionalSwitches>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<BCC_AllCodeguardOptions>true</BCC_AllCodeguardOptions>
+			<DCC_DcuOutput>Debug_Build</DCC_DcuOutput>
+			<BCC_OutputDir>Debug_Build</BCC_OutputDir>
+			<BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
+			<BCC_UserSuppliedOptions> -Q -Vx -Ve -k</BCC_UserSuppliedOptions>
+			<ILINK_LibraryPath>$(BDS)\lib\debug;$(ILINK_LibraryPath);$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<DCC_Define>DEBUG;$(DCC_Define);$(DCC_Define)</DCC_Define>
+			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
+			<IntermediateOutputDir>Debug_Build</IntermediateOutputDir>
+			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+			<TASM_DisplaySourceLines>true</TASM_DisplaySourceLines>
+			<ILINK_DisableIncrementalLinking>true</ILINK_DisableIncrementalLinking>
+			<BCC_DisableOptimizations>true</BCC_DisableOptimizations>
+			<TASM_Debugging>Full</TASM_Debugging>
+			<DCC_AdditionalSwitches> -M -V</DCC_AdditionalSwitches>
+			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
+			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+			<BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<BCC_OutputDir>Release_Build</BCC_OutputDir>
+			<DCC_DcuOutput>Release_Build</DCC_DcuOutput>
+			<BCC_Defines>NDEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
+			<IntermediateOutputDir>Release_Build</IntermediateOutputDir>
+			<BCC_UserSuppliedOptions> -Q -Vx -Ve -r</BCC_UserSuppliedOptions>
+			<DCC_AdditionalSwitches> -M -$O+</DCC_AdditionalSwitches>
+			<ILINK_LibraryPath>$(BDS)\lib\release;$(ILINK_LibraryPath);$(ILINK_LibraryPath)</ILINK_LibraryPath>
+		</PropertyGroup>
+		<ItemGroup>
+			<CppCompile Include="..\..\..\ChefMate\Source\NetMessageChefMate.cpp">
+				<BuildOrder>25</BuildOrder>
+				<DependentOn>..\..\..\ChefMate\Source\NetMessageChefMate.h</DependentOn>
+				<BuildOrder>194</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\SimpleTCP\Stream.cpp">
+				<BuildOrder>87</BuildOrder>
+				<DependentOn>..\..\..\SimpleTCP\Stream.h</DependentOn>
+				<BuildOrder>143</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Maintenance\HappyHourSettings.cpp">
+				<BuildOrder>19</BuildOrder>
+				<Form>frmHappyHourSettings</Form>
+				<DependentOn>..\Maintenance\HappyHourSettings.h</DependentOn>
+				<BuildOrder>185</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Palm.cpp">
+				<BuildOrder>69</BuildOrder>
+				<DependentOn>Palm.h</DependentOn>
+				<BuildOrder>17</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\TZForm\ZForm.cpp">
+				<DependentOn>..\..\..\..\Shared-Source\TZForm\ZForm.h</DependentOn>
+				<BuildOrder>106</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PalmSetup.cpp">
+				<BuildOrder>68</BuildOrder>
+				<Form>frmPalmSetup</Form>
+				<DependentOn>PalmSetup.h</DependentOn>
+				<BuildOrder>14</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Weight.cpp">
+				<BuildOrder>296</BuildOrder>
+				<DependentOn>..\Weight.h</DependentOn>
+				<BuildOrder>27</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Printing.cpp">
+				<BuildOrder>77</BuildOrder>
+				<DependentOn>..\Printing.h</DependentOn>
+				<BuildOrder>23</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DBTables.cpp">
+				<BuildOrder>82</BuildOrder>
+				<DependentOn>..\DBTables.h</DependentOn>
+				<BuildOrder>137</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="palmmain.cpp">
+				<BuildOrder>71</BuildOrder>
+				<Form>frmMain</Form>
+				<DependentOn>palmmain.h</DependentOn>
+				<BuildOrder>5</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\PrintInfo.cpp">
+				<BuildOrder>5</BuildOrder>
+				<DependentOn>..\PrintInfo.h</DependentOn>
+				<BuildOrder>212</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Locations.cpp">
+				<BuildOrder>80</BuildOrder>
+				<Form>frmLocations</Form>
+				<DependentOn>..\Locations.h</DependentOn>
+				<BuildOrder>63</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\SmartCards\blowfish.cpp">
+				<BuildOrder>50</BuildOrder>
+				<BuildOrder>269</BuildOrder>
+			</CppCompile>
+			<ResourceCompile Include="VersionRes.rc">
+				<Form>VersionRes.res</Form>
+				<BuildOrder>110</BuildOrder>
+			</ResourceCompile>
+			<CppCompile Include="..\PrintingSections.cpp">
+				<BuildOrder>4</BuildOrder>
+				<DependentOn>..\PrintingSections.h</DependentOn>
+				<BuildOrder>209</BuildOrder>
+			</CppCompile>
+			<None Include="..\Enum.h">
+				<BuildOrder>71</BuildOrder>
+				<BuildOrder>66</BuildOrder>
+			</None>
+			<CppCompile Include="..\Version.cpp">
+				<BuildOrder>77</BuildOrder>
+				<DependentOn>..\Version.h</DependentOn>
+				<BuildOrder>62</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\NetMessageMenuChanged.cpp">
+				<BuildOrder>88</BuildOrder>
+				<DependentOn>..\NetMessageMenuChanged.h</DependentOn>
+				<BuildOrder>155</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ManagerNet.cpp">
+				<BuildOrder>89</BuildOrder>
+				<DependentOn>..\ManagerNet.h</DependentOn>
+				<BuildOrder>158</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\PrintFormat.cpp">
+				<BuildOrder>65</BuildOrder>
+				<DependentOn>..\PrintFormat.h</DependentOn>
+				<BuildOrder>64</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Registration\Source\MD5Checksum.cpp">
+				<BuildOrder>107</BuildOrder>
+				<BuildOrder>104</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\NetMessageMenuAltered.cpp">
+				<BuildOrder>93</BuildOrder>
+				<DependentOn>..\NetMessageMenuAltered.h</DependentOn>
+				<BuildOrder>152</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Manager.cpp">
+				<BuildOrder>85</BuildOrder>
+				<DependentOn>..\Manager.h</DependentOn>
+				<BuildOrder>128</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\Touch Utils\MMTouchNumpad.cpp">
+				<Form>frmTouchNumpad</Form>
+				<DependentOn>..\..\..\..\Shared-Source\Touch Utils\MMTouchNumpad.h</DependentOn>
+				<BuildOrder>103</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Unicode.cpp">
+				<BuildOrder>21</BuildOrder>
+				<DependentOn>..\Unicode.h</DependentOn>
+				<BuildOrder>200</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\CSV.cpp">
+				<BuildOrder>98</BuildOrder>
+				<DependentOn>..\CSV.h</DependentOn>
+				<BuildOrder>89</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\Touch Utils\MMMessageBox.cpp">
+				<Form>frmMessageBox</Form>
+				<DependentOn>..\..\..\..\Shared-Source\Touch Utils\MMMessageBox.h</DependentOn>
+				<BuildOrder>104</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\CrcTable.c">
+				<BuildOrder>78</BuildOrder>
+				<BuildOrder>26</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bluetooth.cpp">
+				<BuildOrder>97</BuildOrder>
+				<DependentOn>bluetooth.h</DependentOn>
+				<BuildOrder>86</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ManagerPhysicalPrinter.cpp">
+				<BuildOrder>22</BuildOrder>
+				<DependentOn>..\ManagerPhysicalPrinter.h</DependentOn>
+				<BuildOrder>203</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Requests.cpp">
+				<BuildOrder>79</BuildOrder>
+				<DependentOn>..\Requests.h</DependentOn>
+				<BuildOrder>29</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\Version\VersionRes.h">
+				<BuildOrder>92</BuildOrder>
+				<BuildOrder>149</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\..\Shared-Source\System\DB_Utilities.cpp">
+				<DependentOn>..\..\..\..\Shared-Source\System\DB_Utilities.h</DependentOn>
+				<BuildOrder>109</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Invoice.cpp">
+				<BuildOrder>119</BuildOrder>
+				<DependentOn>..\Invoice.h</DependentOn>
+				<BuildOrder>102</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DBOrder.cpp">
+				<BuildOrder>83</BuildOrder>
+				<DependentOn>..\DBOrder.h</DependentOn>
+				<BuildOrder>140</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ManagerStock.cpp">
+				<BuildOrder>84</BuildOrder>
+				<DependentOn>..\ManagerStock.h</DependentOn>
+				<BuildOrder>125</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Contact.cpp">
+				<BuildOrder>113</BuildOrder>
+				<DependentOn>..\Contact.h</DependentOn>
+				<BuildOrder>106</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MMContactInfo.cpp">
+				<BuildOrder>125</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Comms\Comms.cpp">
+				<BuildOrder>110</BuildOrder>
+				<DependentOn>..\Comms\Comms.h</DependentOn>
+				<BuildOrder>105</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PalmRegistration.cpp">
+				<BuildOrder>67</BuildOrder>
+				<Form>frmPalmRegistration</Form>
+				<DependentOn>PalmRegistration.h</DependentOn>
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MMSettings.cpp">
+				<DependentOn>..\MMSettings.h</DependentOn>
+				<BuildOrder>127</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DebugManager.cpp">
+				<BuildOrder>179</BuildOrder>
+				<DependentOn>DebugManager.h</DependentOn>
+				<BuildOrder>14</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Rooms.cpp">
+				<BuildOrder>99</BuildOrder>
+				<DependentOn>..\Rooms.h</DependentOn>
+				<BuildOrder>92</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\System\Core\MM_DBCore.cpp">
+				<DependentOn>..\..\..\..\Shared-Source\System\Core\MM_DBCore.h</DependentOn>
+				<BuildOrder>107</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DBTab.cpp">
+				<BuildOrder>116</BuildOrder>
+				<DependentOn>..\DBTab.h</DependentOn>
+				<BuildOrder>101</BuildOrder>
+			</CppCompile>
+			<None Include="..\StockInterface.h">
+				<BuildOrder>26</BuildOrder>
+				<BuildOrder>245</BuildOrder>
+			</None>
+			<ResFiles Include="PalmMate.res">
+				<BuildOrder>110</BuildOrder>
+			</ResFiles>
+			<CppCompile Include="..\..\..\..\Shared-Source\Registry\MMRegistry.cpp">
+				<DependentOn>..\..\..\..\Shared-Source\Registry\MMRegistry.h</DependentOn>
+				<BuildOrder>126</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ItemOption.cpp">
+				<DependentOn>..\ItemOption.h</DependentOn>
+				<BuildOrder>157</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ListCourse.cpp">
+				<DependentOn>..\ListCourse.h</DependentOn>
+				<BuildOrder>124</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\SimpleTCP\SimpleTCP.cpp">
+				<BuildOrder>95</BuildOrder>
+				<DependentOn>..\..\..\SimpleTCP\SimpleTCP.h</DependentOn>
+				<BuildOrder>94</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\WeightedPrice.cpp">
+				<BuildOrder>299</BuildOrder>
+				<DependentOn>..\WeightedPrice.h</DependentOn>
+				<BuildOrder>28</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ItemSize.cpp">
+				<DependentOn>..\ItemSize.h</DependentOn>
+				<BuildOrder>159</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\PointsTransactions.cpp">
+				<BuildOrder>302</BuildOrder>
+				<DependentOn>..\PointsTransactions.h</DependentOn>
+				<BuildOrder>29</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\DBThirdPartyCodes.cpp">
+				<DependentOn>..\..\DBThirdPartyCodes.h</DependentOn>
+				<BuildOrder>162</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\pause.cpp">
+				<BuildOrder>76</BuildOrder>
+				<Form>frmPause</Form>
+				<DependentOn>..\pause.h</DependentOn>
+				<BuildOrder>38</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\WindowsPrinters.cpp">
+				<BuildOrder>221</BuildOrder>
+				<DependentOn>..\WindowsPrinters.h</DependentOn>
+				<BuildOrder>2</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ServingCourse.cpp">
+				<DependentOn>..\ServingCourse.h</DependentOn>
+				<BuildOrder>158</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\GUIScale.cpp">
+				<BuildOrder>161</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DeskTop\VerticalSelect.cpp">
+				<BuildOrder>30</BuildOrder>
+				<Form>frmVerticalSelect</Form>
+				<DependentOn>..\DeskTop\VerticalSelect.h</DependentOn>
+				<BuildOrder>287</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ItemRecipe.cpp">
+				<BuildOrder>126</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\NetMessageMsg.cpp">
+				<BuildOrder>170</BuildOrder>
+				<DependentOn>..\NetMessageMsg.h</DependentOn>
+				<BuildOrder>17</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ManagerChitNumber.cpp">
+				<BuildOrder>34</BuildOrder>
+				<DependentOn>..\ManagerChitNumber.h</DependentOn>
+				<BuildOrder>317</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\CardSwipe.cpp">
+				<BuildOrder>31</BuildOrder>
+				<Form>frmCardSwipe</Form>
+				<DependentOn>..\CardSwipe.h</DependentOn>
+				<BuildOrder>290</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\NetMessageTabChanged.cpp">
+				<BuildOrder>176</BuildOrder>
+				<DependentOn>..\NetMessageTabChanged.h</DependentOn>
+				<BuildOrder>13</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\IBLogs\LogsDB.cpp">
+				<BuildOrder>58</BuildOrder>
+				<Form>LogsIB</Form>
+				<DesignClass>TDataModule</DesignClass>
+				<DependentOn>..\IBLogs\LogsDB.h</DependentOn>
+				<BuildOrder>44</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\Stock\MM_StockTransactions.cpp">
+				<DependentOn>..\..\..\..\Shared-Source\Stock\MM_StockTransactions.h</DependentOn>
+				<BuildOrder>108</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ThemeManager.cpp">
+				<BuildOrder>49</BuildOrder>
+				<DependentOn>..\ThemeManager.h</DependentOn>
+				<BuildOrder>284</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\Stock\MM_StockCore.cpp">
+				<DependentOn>..\..\..\..\Shared-Source\Stock\MM_StockCore.h</DependentOn>
+				<BuildOrder>107</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.cpp">
+				<Form>frmTouchKeyboard</Form>
+				<DependentOn>..\..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.h</DependentOn>
+				<BuildOrder>105</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PalmMenus.cpp">
+				<BuildOrder>74</BuildOrder>
+				<DependentOn>PalmMenus.h</DependentOn>
+				<BuildOrder>61</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\PointsTransaction.cpp">
+				<DependentOn>..\PointsTransaction.h</DependentOn>
+				<BuildOrder>120</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\ChefMate\Source\KitchenMod.cpp">
+				<BuildOrder>20</BuildOrder>
+				<DependentOn>..\..\..\ChefMate\Source\KitchenMod.h</DependentOn>
+				<BuildOrder>197</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="..\..\..\..\libs\TouchButtonsR.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>123</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="..\rounding.cpp">
+				<DependentOn>..\rounding.h</DependentOn>
+				<BuildOrder>127</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Debugfrm.cpp">
+				<BuildOrder>182</BuildOrder>
+				<Form>frmDebug</Form>
+				<DependentOn>Debugfrm.h</DependentOn>
+				<BuildOrder>15</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ManagerVariable.cpp">
+				<BuildOrder>81</BuildOrder>
+				<DependentOn>..\ManagerVariable.h</DependentOn>
+				<BuildOrder>134</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\Stock\StockInterface.cpp">
+				<DependentOn>..\..\..\..\Shared-Source\Stock\StockInterface.h</DependentOn>
+				<BuildOrder>106</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\VirtualPrinterManager.cpp">
+				<BuildOrder>3</BuildOrder>
+				<DependentOn>..\VirtualPrinterManager.h</DependentOn>
+				<BuildOrder>206</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DevicePC.cpp">
+				<DependentOn>..\DevicePC.h</DependentOn>
+				<BuildOrder>115</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\NetMessageInfoSync.cpp">
+				<BuildOrder>167</BuildOrder>
+				<DependentOn>..\NetMessageInfoSync.h</DependentOn>
+				<BuildOrder>16</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\tinyXML\tinyxml.cpp">
+				<BuildOrder>47</BuildOrder>
+				<BuildOrder>278</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ContactStaff.cpp">
+				<BuildOrder>9</BuildOrder>
+				<DependentOn>..\ContactStaff.h</DependentOn>
+				<BuildOrder>242</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\PointsRulesSet.cpp">
+				<BuildOrder>37</BuildOrder>
+				<DependentOn>..\PointsRulesSet.h</DependentOn>
+				<BuildOrder>308</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ManagerDiscount.cpp">
+				<BuildOrder>36</BuildOrder>
+				<DependentOn>..\ManagerDiscount.h</DependentOn>
+				<BuildOrder>323</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\NetMessageHappyHour.cpp">
+				<BuildOrder>53</BuildOrder>
+				<DependentOn>..\NetMessageHappyHour.h</DependentOn>
+				<BuildOrder>164</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\tinyXML\tinyxmlparser.cpp">
+				<BuildOrder>51</BuildOrder>
+				<BuildOrder>272</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\OrderUtils.cpp">
+				<BuildOrder>35</BuildOrder>
+				<DependentOn>..\OrderUtils.h</DependentOn>
+				<BuildOrder>320</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\SystemEvents.cpp">
+				<BuildOrder>46</BuildOrder>
+				<DependentOn>..\SystemEvents.h</DependentOn>
+				<BuildOrder>266</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DbMod.cpp">
+				<BuildOrder>68</BuildOrder>
+				<Form>frmDBMod</Form>
+				<DependentOn>..\DbMod.h</DependentOn>
+				<BuildOrder>65</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ManagerPatron.cpp">
+				<BuildOrder>233</BuildOrder>
+				<DependentOn>..\ManagerPatron.h</DependentOn>
+				<BuildOrder>12</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Money.cpp">
+				<BuildOrder>23</BuildOrder>
+				<DependentOn>..\Money.h</DependentOn>
+				<BuildOrder>188</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Item.cpp">
+				<DependentOn>..\Item.h</DependentOn>
+				<BuildOrder>144</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ListSecurityRefContainer.cpp">
+				<DependentOn>..\ListSecurityRefContainer.h</DependentOn>
+				<BuildOrder>117</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Processing.cpp">
+				<BuildOrder>57</BuildOrder>
+				<Form>frmProcessing</Form>
+				<DependentOn>..\Processing.h</DependentOn>
+				<BuildOrder>41</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\tinyXML\tinystr.cpp">
+				<BuildOrder>52</BuildOrder>
+				<BuildOrder>275</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\PointsRulesSetUtils.cpp">
+				<BuildOrder>33</BuildOrder>
+				<DependentOn>..\PointsRulesSetUtils.h</DependentOn>
+				<BuildOrder>305</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ErrorPrinter.cpp">
+				<DependentOn>..\ErrorPrinter.h</DependentOn>
+				<BuildOrder>127</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DeviceStatusBase.cpp">
+				<DependentOn>..\DeviceStatusBase.h</DependentOn>
+				<BuildOrder>112</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Discount.cpp">
+				<BuildOrder>39</BuildOrder>
+				<DependentOn>..\Discount.h</DependentOn>
+				<BuildOrder>314</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Security\Login.cpp">
+				<Form>frmLogin</Form>
+				<DependentOn>..\Security\Login.h</DependentOn>
+				<BuildOrder>56</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\System\MM_Menu.cpp">
+				<DependentOn>..\..\..\..\Shared-Source\System\MM_Menu.h</DependentOn>
+				<BuildOrder>107</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DeviceStatusPalm.cpp">
+				<DependentOn>..\DeviceStatusPalm.h</DependentOn>
+				<BuildOrder>111</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MMdata.cpp">
+				<BuildOrder>75</BuildOrder>
+				<Form>frmData</Form>
+				<DependentOn>..\MMdata.h</DependentOn>
+				<BuildOrder>35</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\NetMessageSeatName.cpp">
+				<BuildOrder>18</BuildOrder>
+				<DependentOn>..\NetMessageSeatName.h</DependentOn>
+				<BuildOrder>173</BuildOrder>
+			</CppCompile>
+			<None Include="PalmMate.todo">
+				<BuildOrder>-1</BuildOrder>
+				<BuildOrder>47</BuildOrder>
+			</None>
+			<CppCompile Include="..\DocketManager.cpp">
+				<BuildOrder>6</BuildOrder>
+				<DependentOn>..\DocketManager.h</DependentOn>
+				<BuildOrder>224</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PalmMate.cpp">
+				<BuildOrder>70</BuildOrder>
+				<BuildOrder>2</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Registration\Source\Registration.cpp">
+				<BuildOrder>98</BuildOrder>
+				<DependentOn>..\..\..\Registration\Source\Registration.h</DependentOn>
+				<BuildOrder>95</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\SecurityReference.cpp">
+				<DependentOn>..\SecurityReference.h</DependentOn>
+				<BuildOrder>122</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MMPrice.cpp">
+				<DependentOn>..\MMPrice.h</DependentOn>
+				<BuildOrder>127</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DeviceDB.cpp">
+				<DependentOn>..\DeviceDB.h</DependentOn>
+				<BuildOrder>113</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Components BCB6\porttalk\Porttalk.cpp">
+				<BuildOrder>45</BuildOrder>
+				<DependentOn>..\..\..\Components BCB6\porttalk\Porttalk.h</DependentOn>
+				<BuildOrder>254</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Printouts.cpp">
+				<DependentOn>..\Printouts.h</DependentOn>
+				<BuildOrder>126</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\OpSys.cpp">
+				<DependentOn>..\OpSys.h</DependentOn>
+				<BuildOrder>119</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ManagerLocations.cpp">
+				<DependentOn>..\ManagerLocations.h</DependentOn>
+				<BuildOrder>116</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DeviceImage.cpp">
+				<DependentOn>..\DeviceImage.h</DependentOn>
+				<BuildOrder>114</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ReqPrintJob.cpp">
+				<DependentOn>..\ReqPrintJob.h</DependentOn>
+				<BuildOrder>118</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Printout.cpp">
+				<DependentOn>..\Printout.h</DependentOn>
+				<BuildOrder>125</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MMUtilFunc.cpp">
+				<DependentOn>..\MMUtilFunc.h</DependentOn>
+				<BuildOrder>123</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ItemMinor.cpp">
+				<DependentOn>..\ItemMinor.h</DependentOn>
+				<BuildOrder>145</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ItemComplete.cpp">
+				<DependentOn>..\ItemComplete.h</DependentOn>
+				<BuildOrder>134</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\DBSecurity.cpp">
+				<DependentOn>..\..\DBSecurity.h</DependentOn>
+				<BuildOrder>140</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ItemCompleteSub.cpp">
+				<DependentOn>..\ItemCompleteSub.h</DependentOn>
+				<BuildOrder>135</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ContactPoints.cpp">
+				<BuildOrder>32</BuildOrder>
+				<DependentOn>..\ContactPoints.h</DependentOn>
+				<BuildOrder>293</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\NetMessageKillProc.cpp">
+				<BuildOrder>40</BuildOrder>
+				<DependentOn>..\NetMessageKillProc.h</DependentOn>
+				<BuildOrder>257</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ChitNumber.cpp">
+				<DependentOn>..\ChitNumber.h</DependentOn>
+				<BuildOrder>141</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DeviceRealControl.cpp">
+				<BuildOrder>127</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\PrinterPhysical.cpp">
+				<DependentOn>..\PrinterPhysical.h</DependentOn>
+				<BuildOrder>124</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Request.cpp">
+				<DependentOn>..\Request.h</DependentOn>
+				<BuildOrder>123</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="SelectActiveMenus.cpp">
+				<BuildOrder>8</BuildOrder>
+				<Form>frmSelectActiveMenus</Form>
+				<DependentOn>SelectActiveMenus.h</DependentOn>
+				<BuildOrder>72</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\SplitMoney.cpp">
+				<BuildOrder>129</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DevicePalm.cpp">
+				<DependentOn>..\DevicePalm.h</DependentOn>
+				<BuildOrder>122</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\..\Shared-Source\tinyXML\tinyxmlerror.cpp">
+				<BuildOrder>48</BuildOrder>
+				<BuildOrder>281</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ListMenuContainer.cpp">
+				<DependentOn>..\ListMenuContainer.h</DependentOn>
+				<BuildOrder>128</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ManagerMenus.cpp">
+				<DependentOn>..\ManagerMenus.h</DependentOn>
+				<BuildOrder>129</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\SystemConfig.cpp">
+				<BuildOrder>83</BuildOrder>
+				<Form>frmSystemConfig</Form>
+				<DependentOn>..\SystemConfig.h</DependentOn>
+				<BuildOrder>80</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\EventsContact.cpp">
+				<BuildOrder>42</BuildOrder>
+				<DependentOn>..\EventsContact.h</DependentOn>
+				<BuildOrder>263</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ListMenu.cpp">
+				<DependentOn>..\ListMenu.h</DependentOn>
+				<BuildOrder>130</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ItemMinorComplete.cpp">
+				<DependentOn>..\ItemMinorComplete.h</DependentOn>
+				<BuildOrder>133</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ContactMemberApplied.cpp">
+				<DependentOn>..\ContactMemberApplied.h</DependentOn>
+				<BuildOrder>154</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DBRooms.cpp">
+				<DependentOn>..\DBRooms.h</DependentOn>
+				<BuildOrder>136</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\GlobalSettings.cpp">
+				<DependentOn>..\GlobalSettings.h</DependentOn>
+				<BuildOrder>132</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ListSideContainer.cpp">
+				<DependentOn>..\ListSideContainer.h</DependentOn>
+				<BuildOrder>131</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ListCategoryContainer.cpp">
+				<DependentOn>..\ListCategoryContainer.h</DependentOn>
+				<BuildOrder>147</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ListRecipeContainer.cpp">
+				<DependentOn>..\ListRecipeContainer.h</DependentOn>
+				<BuildOrder>146</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ListSizeContainer.cpp">
+				<DependentOn>..\ListSizeContainer.h</DependentOn>
+				<BuildOrder>143</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ItemSide.cpp">
+				<DependentOn>..\ItemSide.h</DependentOn>
+				<BuildOrder>150</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DBMenu.cpp">
+				<BuildOrder>139</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\SecurityPort.cpp">
+				<DependentOn>..\SecurityPort.h</DependentOn>
+				<BuildOrder>142</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ListOptionContainer.cpp">
+				<DependentOn>..\ListOptionContainer.h</DependentOn>
+				<BuildOrder>151</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ListSubOrderContainer.cpp">
+				<DependentOn>..\ListSubOrderContainer.h</DependentOn>
+				<BuildOrder>148</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Payment.cpp">
+				<DependentOn>..\Payment.h</DependentOn>
+				<BuildOrder>155</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\ProcessSecurityQueries.cpp">
+				<BuildOrder>127</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DBContacts.cpp">
+				<DependentOn>..\DBContacts.h</DependentOn>
+				<BuildOrder>137</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\Access.cpp">
+				<DependentOn>..\Access.h</DependentOn>
+				<BuildOrder>156</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DBWebUtil.cpp">
+				<DependentOn>..\DBWebUtil.h</DependentOn>
+				<BuildOrder>153</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\DBGroups.cpp">
+				<DependentOn>..\DBGroups.h</DependentOn>
+				<BuildOrder>138</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\PSectionInstruction.cpp">
+				<DependentOn>..\PSectionInstruction.h</DependentOn>
+				<BuildOrder>149</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ItemSizeCategory.cpp">
+				<DependentOn>..\ItemSizeCategory.h</DependentOn>
+				<BuildOrder>152</BuildOrder>
+			</CppCompile>
+			<None Include="ModelSupport_PalmMate\default.txaPackage"/>
+			<CppCompile Include="..\TaxManagement.cpp">
+				<BuildOrder>163</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\PaymentTransaction.cpp">
+				<BuildOrder>128</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\ItemsCompleteCompressed.cpp">
+				<DependentOn>..\ItemsCompleteCompressed.h</DependentOn>
+				<BuildOrder>161</BuildOrder>
+			</CppCompile>
+			<FormResources Include="..\Maintenance\HappyHourSettings.dfm"/>
+			<FormResources Include="PalmSetup.dfm"/>
+			<FormResources Include="palmmain.dfm"/>
+			<FormResources Include="..\Locations.dfm"/>
+			<FormResources Include="..\..\..\..\Shared-Source\Touch Utils\MMTouchNumpad.dfm"/>
+			<FormResources Include="..\..\..\..\Shared-Source\Touch Utils\MMMessageBox.dfm"/>
+			<FormResources Include="PalmRegistration.dfm"/>
+			<FormResources Include="..\pause.dfm"/>
+			<FormResources Include="..\DeskTop\VerticalSelect.dfm"/>
+			<FormResources Include="..\CardSwipe.dfm"/>
+			<FormResources Include="..\IBLogs\LogsDB.dfm"/>
+			<FormResources Include="..\..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.dfm"/>
+			<FormResources Include="Debugfrm.dfm"/>
+			<FormResources Include="..\DbMod.dfm"/>
+			<FormResources Include="..\Processing.dfm"/>
+			<FormResources Include="..\Security\Login.dfm"/>
+			<FormResources Include="..\MMdata.dfm"/>
+			<FormResources Include="SelectActiveMenus.dfm"/>
+			<FormResources Include="..\SystemConfig.dfm"/>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>CPlusPlusBuilder.Personality.12</Borland.Personality>
+			<Borland.ProjectType>CppVCLApplication</Borland.ProjectType>
+			<BorlandProject>
+				<CPlusPlusBuilder.Personality>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">True</VersionInfo>
+						<VersionInfo Name="MajorVer">5</VersionInfo>
+						<VersionInfo Name="MinorVer">1</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">21</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">5129</VersionInfo>
+						<VersionInfo Name="CodePage">1252</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName">MenuMate Ltd</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription">PalmMate</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">5.1.0.21</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName">PalmMate</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">5.1.0.1</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<ExcludedPackages>
+						<ExcludedPackages Name="d:\development\cbuilder6\Projects\Bpl\syncro.bpl">syncro</ExcludedPackages>
+						<ExcludedPackages Name="d:\development\cbuilder6\Projects\Bpl\Ingenico.bpl">Ingenico Eftpos</ExcludedPackages>
+						<ExcludedPackages Name="d:\development\cbuilder6\Bin\dclite60.bpl">Borland Integrated Translation Environment</ExcludedPackages>
+						<ExcludedPackages Name="c:\program files\borland\cbuilder6\bin\dclClxIBXtras60.bpl">Borland InterBase Express Extras (Clx)</ExcludedPackages>
+						<ExcludedPackages Name="c:\program files\borland\cbuilder6\Bin\dclIBXtras60.bpl">Borland InterBase Express Extras</ExcludedPackages>
+					</ExcludedPackages>
+					<HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Count">30</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item0">..\;..;..\..\..\Touch Utils;..\System\Core;..\System;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;..\..\..\Components BCB6\TouchButtons;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;$(BCB)\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item1">..\;..;..\..\..\Touch Utils;..\System\Core;..\System;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6;$(BCB)\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item2">..\;..;..\..\..\Touch Utils;..\System\Core;..\System;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item3">..\;..\..\..\Touch Utils;..;..\System\Core;..\System;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item4">..\..\..\Touch Utils;..\;..;..\System\Core;..\System;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item5">..\;..;..\System\Core;..\System;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item6">..\;..\System\Core;..\System;..;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item7">..\System\Core;..\System;..\;..;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item8">..\;..;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item9">..;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item10">..\;..;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;..\..\..\ChefMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item11">..\;..;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item12">..\Maintenance;..\;..;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item13">..\;..;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item14">..\..\..\LogsMate\Source;..\;..;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item15">..\;..;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item16">..\;..;..\Comms;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\Components BCB6\zip\VCL;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item17">..\;..;..\Comms;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item18">..\;..\Comms;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Indy\C6</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item19">..\;..;D:\Development\CBuilder6\Source\Indy\C6;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;$(BCB)\Bin;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\Checkbox;..\..\..\..\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;..\..\..\..\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item20">..\;D:\Development\CBuilder6\Source\Indy\C6;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;$(BCB)\Bin;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\Checkbox;..\..\..\..\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;..\..\..\..\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item21">D:\Development\CBuilder6\Source\Indy\C6;..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;$(BCB)\Bin;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\Checkbox;..\..\..\..\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;..\..\..\..\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item22">..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;$(BCB)\Bin;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\Checkbox;..\..\..\..\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;..\..\..\..\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item23">..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\MD5;$(BCB)\Bin;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;..\..\..\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item24">..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\MD5;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item25">..\;..\Comms;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\MD5;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item26">..\Comms;..\;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\MD5;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item27">..\;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\MD5;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item28">..\;..\..\..\Registration\Source;..\..\..\SimpleTCP;..;..\MD5;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item29">..\..\..\Registration\Source;..\..\..\SimpleTCP;..\;..;..\MD5;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlIncludePath>
+					</HistoryLists_hlIncludePath>
+					<HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Count">30</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item0">..\;..;..\..\..\Touch Utils;..\System\Core;..\System;..\..\..\ChefMate\Source;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;..\..\..\Components BCB6\TouchButtons;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL;$(BCB)\indy\c6</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item1">..\;..;..\..\..\Touch Utils;..\System\Core;..\System;..\..\..\ChefMate\Source;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL;$(BCB)\indy\c6</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item2">..\;..;..\..\..\Touch Utils;..\System\Core;..\System;..\..\..\ChefMate\Source;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item3">..\;..\..\..\Touch Utils;..;..\System\Core;..\System;..\..\..\ChefMate\Source;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item4">..\..\..\Touch Utils;..\;..;..\System\Core;..\System;..\..\..\ChefMate\Source;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item5">..\;..;..\System\Core;..\System;..\..\..\ChefMate\Source;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item6">..\;..\System\Core;..\System;..;..\..\..\ChefMate\Source;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item7">..\System\Core;..\System;..\;..;..\..\..\ChefMate\Source;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item8">..\;..;..\..\..\ChefMate\Source;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item9">..\;..\..\..\ChefMate\Source;..;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item10">..\..\..\ChefMate\Source;..;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item11">..\..\..\ChefMate\Source;..\;..;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item12">..\;..;..\Maintenance;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item13">..\;..\Maintenance;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item14">..\Maintenance;..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item15">..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;..\..\..\LogsMate\Source;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item16">..\..\..\LogsMate\Source;..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item17">..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6;..\..\..\Components BCB6\zip\VCL</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item18">..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item19">..;..\;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Bin;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\indy\c6</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item20">..\;..;d:\development\cbuilder6\source\indy\c6;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;$(BCB)\Bin;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\checkbox;..\..\..\..\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\..\Components BCB6\CPort264\Sources</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item21">..\;d:\development\cbuilder6\source\indy\c6;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;$(BCB)\Bin;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\checkbox;..\..\..\..\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\..\Components BCB6\CPort264\Sources</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item22">d:\development\cbuilder6\source\indy\c6;..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;$(BCB)\Bin;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\checkbox;..\..\..\..\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\..\Components BCB6\CPort264\Sources</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item23">..\;..;..\Comms;..\..\..\Registration\Source;..\..\..\SimpleTCP;$(BCB)\Bin;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\checkbox;..\..\..\..\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\..\Components BCB6\CPort264\Sources</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item24">..\;..;..\Comms;..\MD5;..\..\..\Registration\Source;..\..\..\SimpleTCP;$(BCB)\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\Components BCB6\CPort264\Sources</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item25">..\;..;..\Comms;..\MD5;..\..\..\Registration\Source;..\..\..\SimpleTCP;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item26">..\;..\Comms;..;..\MD5;..\..\..\Registration\Source;..\..\..\SimpleTCP;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item27">..\Comms;..\;..;..\MD5;..\..\..\Registration\Source;..\..\..\SimpleTCP;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item28">..\;..;..\MD5;..\..\..\Registration\Source;..\..\..\SimpleTCP;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlLibraryPath>
+						<HistoryLists_hlLibraryPath Name="Item29">..\;..\MD5;..\..\..\Registration\Source;..\..\..\SimpleTCP;..;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources</HistoryLists_hlLibraryPath>
+					</HistoryLists_hlLibraryPath>
+					<HistoryLists_hlDebugSourcePath>
+						<HistoryLists_hlDebugSourcePath Name="Count">1</HistoryLists_hlDebugSourcePath>
+						<HistoryLists_hlDebugSourcePath Name="Item0">$(BCB)\source\vcl</HistoryLists_hlDebugSourcePath>
+					</HistoryLists_hlDebugSourcePath>
+					<HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Count">10</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item0">PalmMate;NO_WIN32_LEAN_AND_MEAN;_WINSOCKAPI_</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item1">PalmMate;NO_WIN32_LEAN_AND_MEAN;_WINSOCKAPI_;_DEBUG</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item2">PalmMate;NO_WIN32_LEAN_AND_MEAN</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item3">PalmMate;NO_WIN32_LEAN_AND_MEAN;_DEBUG</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item4">PalmMate;_DEBUG;NO_WIN32_LEAN_AND_MEAN</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item5">PalmMate;_DEBUG</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item6">PalmMate</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item7">ChefMate</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item8">_DEBUG;PalmMate</HistoryLists_hlConditionals>
+						<HistoryLists_hlConditionals Name="Item9">_DEBUG</HistoryLists_hlConditionals>
+					</HistoryLists_hlConditionals>
+					<HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Count">7</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item0">..\..\PalmBlueToothObj</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item1">..\..\pmobj</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item2">..\pmobj</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item3">D:\Code\MenuMateInst\pmobj</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item4">obj</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item5">..\obj</HistoryLists_hlIntOutputDir>
+						<HistoryLists_hlIntOutputDir Name="Item6">D:\Code\PalmMate\obj</HistoryLists_hlIntOutputDir>
+					</HistoryLists_hlIntOutputDir>
+					<HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Count">10</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item0">..\..\..\Execs\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item1">..\..\..\Execs</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item2">C:\Program Files\MenuMate\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item3">C:\Program Files\MenuMate</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item4">..\Exec\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item5">D:\Code\MenuMateDev\Exec</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item6">D:\Code\MenuMateInst\Exec</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item7">D:\Code\PalmMate\Exec</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item8">..\..\MenuMate\Exec\</HistoryLists_hlFinalOutputDir>
+						<HistoryLists_hlFinalOutputDir Name="Item9">D:\Code\MenuMate\Exec</HistoryLists_hlFinalOutputDir>
+					</HistoryLists_hlFinalOutputDir>
+					<Debugging>
+						<Debugging Name="DebugSourceDirs">$(BCB)\source\vcl</Debugging>
+					</Debugging>
+					<Parameters>
+						<Parameters Name="RunParams"/>
+						<Parameters Name="Launcher"/>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="DebugCWD"/>
+						<Parameters Name="HostApplication"/>
+						<Parameters Name="RemoteHost"/>
+						<Parameters Name="RemotePath"/>
+						<Parameters Name="RemoteLauncher"/>
+						<Parameters Name="RemoteCWD"/>
+						<Parameters Name="RemoteDebug">False</Parameters>
+						<Parameters Name="RemoteParams"/>
+						<Parameters Name="UseRemoteLauncher">False</Parameters>
+						<Parameters Name="Debug Symbols Search Path"/>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<Compiler>
+						<Compiler Name="ShowInfoMsgs">0</Compiler>
+						<Compiler Name="LinkDebugVcl">0</Compiler>
+						<Compiler Name="LinkCGLIB">0</Compiler>
+					</Compiler>
+					<CORBA>
+						<CORBA Name="AddServerUnit">1</CORBA>
+						<CORBA Name="AddClientUnit">1</CORBA>
+						<CORBA Name="PrecompiledHeaders">1</CORBA>
+					</CORBA>
+					<ProjectProperties>
+						<ProjectProperties Name="AutoShowDeps">True</ProjectProperties>
+						<ProjectProperties Name="ManagePaths">True</ProjectProperties>
+						<ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+					</ProjectProperties>
+					<Source>
+						<Source Name="MainSource">PalmMate.cpp</Source>
+					</Source>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k140.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp140.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
+				</CPlusPlusBuilder.Personality>
+				<ModelSupport>True</ModelSupport>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+	</Project>

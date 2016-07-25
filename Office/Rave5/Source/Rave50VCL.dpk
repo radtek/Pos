@@ -1,0 +1,118 @@
+{*************************************************************************}
+{ Rave Reports version 5.1                                                }
+{ Copyright (c), 1995-2002, Nevrona Designs, all rights reserved          }
+{*************************************************************************}
+package
+{$IFDEF VER120}
+  Rave50VCLBEX40
+{$ELSE}{$IFDEF VER125}
+  Rave50VCLBEX40
+{$ELSE}{$IFDEF VER130}
+  Rave50VCLBEX50
+{$ELSE}
+  Rave50VCL
+{$ENDIF}{$ENDIF}{$ENDIF};
+
+{$DESCRIPTION 'Rave Reports 5.0 Run-Time Package (VCL)'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+{$IFDEF VER140}
+  {$LIBSUFFIX 'BEX60'}
+{$ENDIF}
+{$IFDEF VER150}
+  {$LIBSUFFIX 'BEX70'}
+{$ENDIF}
+{$IFDEF VER160}
+  {$LIBSUFFIX 'BEX80'}
+{$ENDIF}
+{$IFDEF VER170}
+  {$LIBSUFFIX 'BEX90'}
+{$ENDIF}
+
+requires
+{$IFDEF VER120}
+  VCL40, VCLDB40, VCLJPG40;
+{$ELSE}{$IFDEF VER125}
+  VCL40, VCLDB40, VCLJPG40;
+{$ELSE}{$IFDEF VER130}
+  VCL50, VCLDB50, VCLBDE50, VCLJPG50;
+{$ELSE}
+  VCL, VCLJPG, DBRTL, BDERTL;
+{$ENDIF}{$ENDIF}{$ENDIF}
+
+contains
+  RpDefine,
+  RpDevice,
+  RpFont,
+  RpBase,
+  RpFiler,
+  RpSystem,
+  RpMemo,
+  RpBars,
+  RpDBUtil,
+  RpFormPreview,
+  RpFormStatus,
+  RpFormSetup,
+  RpRPTF,
+  RpCon,
+  RpConDS,
+  RpConBDE,
+  RpRender,
+  RpRenderCanvas,
+  RpRenderPreview,
+  RpRenderPrinter,
+  RpRenderHTML,
+  RpRenderPDF,
+  RpRenderRTF,
+  RpRenderText,
+  RpMBCS,
+  RpRave,
+// Archived units
+
+  RpDBTabl,
+  RpHTFilr,
+  RpLabel,
+  Rprinter,
+  Rpreview,
+  RpFPrint,
+  RpRTFilr,
+  RpCanvas,
+  RpSect,
+  RpShell,
+  RpTable,
+  RpTXFilr,
+  RpRender_HTML,
+  RPRender_PDF,
+  RvDefine,
+  RvUtil,
+  RvClass,
+  RvData,
+  RvDataField,
+  RvDatabase,
+  RvDirectDataView,
+  RvDataLink,
+  RvDLBase,
+  RvDLCommon,
+  RvDriverDataView,
+  RvLEModule,
+  RvLERun,
+  RvLEDebug,
+  RvLEExpr,
+  RvLECode,
+  RvLEID,
+  RvLEType,
+  RvLEUtil,
+  RvLEDefine,
+  RvLESystem,
+  RvLDCompiler,
+  RvProj,
+  RvSecurity,
+  RvCmHuff,
+  RvCsStd,
+  RvCsBars,
+  RvCsDraw,
+  RvCsRpt,
+  RvCsData;
+
+end.

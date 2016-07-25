@@ -1,0 +1,29 @@
+{*************************************************************************}
+{ Rave Reports version 5.1                                                }
+{ Copyright (c), 1995-2002, Nevrona Designs, all rights reserved          }
+{*************************************************************************}
+package dclRave;
+
+{$DESCRIPTION 'Rave Reports BEX 5.0 Package'}
+{$IMPLICITBUILD OFF}
+{$DESIGNONLY}
+
+requires
+{$IFDEF VER120}
+  VCL40, VCLDB40, VCLX40, Rave50VCLBEX40;
+{$ELSE}{$IFDEF VER125}
+  VCL40, VCLDB40, VCLX40, Rave50VCLBEX40;
+{$ELSE}{$IFDEF VER130}
+  VCL50, VCLDB50, VCLX50, Rave50VCLBEX50;
+{$ELSE}
+  VCL, DesignIDE, VCLX, VCLJPG, DBRTL, BDERTL, Rave50VCL, Rave50CLX;
+{$ENDIF}{$ENDIF}{$ENDIF}
+
+contains
+  RpAddFrm,
+  RpCEdFrm,
+  RpSecFrm,
+  RpExeFrm,
+  RaveReg;
+
+end.

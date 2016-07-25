@@ -1,0 +1,110 @@
+﻿<Window x:Class="Chefmate.UI.KeyBoards.TextKeyBoard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStartupLocation="CenterScreen" WindowStyle="None"
+        BorderBrush="Gray" BorderThickness="3" Height="500"
+         Width="858" ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="280"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Content="{Binding HeaderText}" Style="{StaticResource NumpadHeaderLable}" VerticalAlignment="Stretch"></Label>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".80*"/>
+                <ColumnDefinition Width=".20*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" Name="KeyboardTextBox" BorderThickness="1" Margin="2,0,0,0" BorderBrush="Gray" FontSize="15" FontWeight="Bold"/>
+            <StackPanel Grid.Column="1">
+                <Button Name="EnterButton" Style="{StaticResource CommandButtonStyle}" Command="{Binding ButtonPressCommand}" CommandParameter="Ok">Ok</Button>
+                <Button Name="CancelButton" Style="{StaticResource CommandButtonStyle}" Command="{Binding ButtonPressCommand}" CommandParameter="Cancel">Cancel</Button>
+                <Button Name="ClearButton" Style="{StaticResource CommandButtonStyle}" Command="{Binding ButtonPressCommand}" CommandParameter="Clear">Clear</Button>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".20*"/>
+                <RowDefinition Height=".20*"/>
+                <RowDefinition Height=".20*"/>
+                <RowDefinition Height=".20*"/>
+                <RowDefinition Height=".20*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+                <ItemsControl ItemsSource="{Binding FirstRowCharacters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"></WrapPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding}" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ButtonPressCommand }"
+                                    CommandParameter="{Binding}" Style="{StaticResource TextKeyboardButtonStyle}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Width="144" Command="{Binding ButtonPressCommand}" CommandParameter="Back" Style="{StaticResource TextKeyboardButtonStyle}">Backspace</Button>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" >
+                <Button Width="144" Command="{Binding ButtonPressCommand}" CommandParameter="Tab" Style="{StaticResource TextKeyboardButtonStyle}">Tab</Button>
+                <ItemsControl  ItemsSource="{Binding SecondRowCharacters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding}" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ButtonPressCommand }"
+                                    CommandParameter="{Binding}" Style="{StaticResource TextKeyboardButtonStyle}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                <Button Width="124" Command="{Binding ButtonPressCommand}" CommandParameter="Caps" Style="{StaticResource TextKeyboardButtonStyle}">Caps Lock</Button>
+                <ItemsControl  ItemsSource="{Binding ThirdRowCharacters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding}" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ButtonPressCommand }"
+                                    CommandParameter="{Binding}" Style="{StaticResource TextKeyboardButtonStyle}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Width="124" Command="{Binding ButtonPressCommand}" CommandParameter="Enter" Style="{StaticResource TextKeyboardButtonStyle}">Enter</Button>
+            </StackPanel>
+            <StackPanel Grid.Row="3" Orientation="Horizontal">
+                <Button Width="151" Command="{Binding ButtonPressCommand}" CommandParameter="Shift" Style="{StaticResource TextKeyboardButtonStyle}">Shift</Button>
+                <ItemsControl ItemsSource="{Binding FourthRowCharacters}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding}" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ButtonPressCommand }"
+                                    CommandParameter="{Binding}" Style="{StaticResource TextKeyboardButtonStyle}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Width="151" Command="{Binding ButtonPressCommand}" CommandParameter="Shit" Style="{StaticResource TextKeyboardButtonStyle}">Shift</Button>
+            </StackPanel>
+            <Button Grid.Row="4" Style="{StaticResource KeypadSpaceButtonStyle}" Command="{Binding ButtonPressCommand}" CommandParameter="Space">Space</Button>
+        </Grid>
+    </Grid>
+</Window>

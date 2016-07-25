@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Loyalty_mate.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DatabaseLocation" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C:\Program Files\MenuMate</Value>
+    </Setting>
+    <Setting Name="DatabaseName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Menumate.FDB</Value>
+    </Setting>
+    <Setting Name="DatabaseIPAddress" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">localhost</Value>
+    </Setting>
+    <Setting Name="Loyalty_mate_SalesforceServiceRef_SforceService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">https://login.salesforce.com/services/Soap/c/32.0/0DFR00000004GaD</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

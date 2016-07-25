@@ -1,0 +1,658 @@
+module RvBase;
+
+definition
+
+import
+  SysFunc,
+  RvClass;
+
+type
+  TBaseReport = class
+  protected
+    function GetCurrentPage: integer;
+    function GetTextFieldWidth: double;
+    function SetTextFieldWidth(Value: double);
+    function GetIgnoreRPTF: boolean;
+    function SetIgnoreRPTF(Value: boolean);
+    function GetCursorXPos: integer;
+    function GetCursorYPos: integer;
+    function GetXPos: double;
+    function SetXPos(Value: double);
+    function GetYPos: double;
+    function SetYPos(Value: double);
+    function GetRelativePage: integer;
+    function GetPageNumOffset: integer;
+    function SetPageNumOffset(Value: integer);
+    function GetPageInvalid: boolean;
+    function GetOutputInvalid: boolean;
+    function GetXDPI: integer;
+    function GetYDPI: integer;
+    function GetLineNum: integer;
+    function SetLineNum(Value: integer);
+    function GetColumnNum: integer;
+    function SetColumnNum(Value: integer);
+    function GetColumns: integer;
+    function GetColumnStart: double;
+    function GetColumnEnd: double;
+    function GetColumnWidth: double;
+    function GetLeftWaste: double;
+    function GetRightWaste: double;
+    function GetTopWaste: double;
+    function GetBottomWaste: double;
+    function GetSectionLeft: double;
+    function SetSectionLeft(Value: double);
+    function GetSectionTop: double;
+    function SetSectionTop(Value: double);
+    function GetSectionBottom: double;
+    function SetSectionBottom(Value: double);
+    function GetSectionRight: double;
+    function SetSectionRight(Value: double);
+    function GetPageHeight: double;
+    function GetPageWidth: double;
+    function GetBold: boolean;
+    function SetBold(Value: boolean);
+    function GetUnderline: boolean;
+    function SetUnderline(Value: boolean);
+    function GetItalic: boolean;
+    function SetItalic(Value: boolean);
+    function GetStrikeout: boolean;
+    function SetStrikeout(Value: boolean);
+    function GetSuperscript: boolean;
+    function SetSuperscript(Value: boolean);
+    function GetSubscript: boolean;
+    function SetSubscript(Value: boolean);
+    function GetFontRotation: integer;
+    function SetFontRotation(Value: integer);
+    function GetFontColor: TColor;
+    function SetFontColor(Value: TColor);
+    function GetFontName: string;
+    function SetFontName(Value: string);
+    function GetFontSize: double;
+    function SetFontSize(Value: double);
+    function GetFontPitch: TFontPitch;
+    function SetFontPitch(Value: TFontPitch);
+    function GetFontCharset: byte;
+    function SetFontCharset(Value: byte);
+    function GetFontAlign: TFontAlign;
+    function SetFontAlign(Value: TFontAlign);
+    function GetLineTop: double;
+    function SetLineTop(Value: double);
+    function GetLineMiddle: double;
+    function SetLineMiddle(Value: double);
+    function GetLineBottom: double;
+    function SetLineBottom(Value: double);
+    function GetFontTop: double;
+    function SetFontTop(Value: double);
+    function GetFontBaseline: double;
+    function SetFontBaseline(Value: double);
+    function GetFontBottom: double;
+    function SetFontBottom(Value: double);
+    function GetTabJustify: TTabJustify;
+    function SetTabJustify(Value: TTabJustify);
+    function GetTransparentBitmaps: boolean;
+    function SetTransparentBitmaps(Value: boolean);
+    function GetParaJustify: TTabJustify;
+    function SetParaJustify(Value: TTabJustify);
+    function GetNoBufferLine: boolean;
+    function SetNoBufferLine(Value: boolean);
+    function GetNoNTColorFix: boolean;
+    function SetNoNTColorFix(Value: boolean);
+    function GetUseDrawText: boolean;
+    function SetUseDrawText(Value: boolean);
+    function GetCurrentPass: integer;
+    function SetCurrentPass(Value: integer);
+    function GetTotalPasses: integer;
+    function SetTotalPasses(Value: integer);
+    function GetFixedTabWidth: double;
+    function SetFixedTabWidth(Value: double);
+
+    function GetPrinterIndex: integer;
+    function SetPrinterIndex(Value: integer);
+    function GetDeviceName: string;
+    function GetDriverName: string;
+    function GetPort: string;
+    function GetAborted: boolean;
+    function GetPrinting: boolean;
+    function GetOriginX: double;
+    function SetOriginX(Value: double);
+    function GetOriginY: double;
+    function SetOriginY(Value: double);
+
+    function GetBKColor: TColor;
+    function SetBKColor(Value: TColor);
+    function GetLineHeight: double;
+    function SetLineHeight(Value: double);
+    function GetAscentHeight: double;
+    function GetDescentHeight: double;
+    function GetFontHeight: double;
+    function SetFontHeight(Value: double);
+    function GetFontWidth: double;
+    function SetFontWidth(Value: double);
+    function GetOutputName: string;
+    function SetOutputName(Value: string);
+    function GetNoPrinterPageHeight: double;
+    function SetNoPrinterPageHeight(Value: double);
+    function GetNoPrinterPageWidth: double;
+    function SetNoPrinterPageWidth(Value: double);
+
+  // Properties - potential published
+    function GetFirstPage: integer;
+    function SetFirstPage(Value: integer);
+    function GetLastPage: integer;
+    function SetLastPage(Value: integer);
+    function GetSelection: TFormatString;
+    function SetSelection(Value: TFormatString);
+    function GetStatusFormat: TFormatString;
+    function SetStatusFormat(Value: TFormatString);
+    function GetLineHeightMethod: TLineHeightMethod;
+    function SetLineHeightMethod(Value: TLineHeightMethod);
+    function GetLinesPerInch: integer;
+    function SetLinesPerInch(Value: integer);
+    function GetUnits: TPrintUnits;
+    function SetUnits(Value: TPrintUnits);
+    function GetUnitsFactor: double;
+    function SetUnitsFactor(Value: double);
+    function GetMarginLeft: double;
+    function SetMarginLeft(Value: double);
+    function GetMarginRight: double;
+    function SetMarginRight(Value: double);
+    function GetMarginTop: double;
+    function SetMarginTop(Value: double);
+    function GetMarginBottom: double;
+    function SetMarginBottom(Value: double);
+    function GetTabShade: integer;
+    function SetTabShade(Value: integer);
+    function GetTabColor: TColor;
+    function SetTabColor(Value: TColor);
+    function GetBoxLineColor: TColor;
+    function SetBoxLineColor(Value: TColor);
+    function GetTitle: TTitleString;
+    function SetTitle(Value: TTitleString);
+    function GetTextBKMode: TBKMode;
+    function SetTextBKMode(Value: TBKMode);
+    function GetCopies: integer;
+    function SetCopies(Value: integer);
+    function GetOrientation: TOrientation;
+    function SetOrientation(Value: TOrientation);
+    function GetScaleX: double;
+    function SetScaleX(Value: double);
+    function GetScaleY: double;
+    function SetScaleY(Value: double);
+
+  public
+    function Arc(X1,Y1,X2,Y2,X3,Y3,X4,Y4: double);
+    function Chord(X1,Y1,X2,Y2,X3,Y3,X4,Y4: double);
+    function Ellipse(X1,Y1,X2,Y2: double);
+    function LineTo(X,Y: double);
+    function MoveTo(X,Y: double);
+    function Pie(X1,Y1,X2,Y2,X3,Y3,X4,Y4: double);
+    function Rectangle(X1,Y1,X2,Y2: double);
+    function RoundRect(X1,Y1,X2,Y2,X3,Y3: double);
+
+    function SetBrush(NewColor: TColor; NewStyle: TBrushStyle);
+    function SetFont(NewName: string; NewSize: double);
+    function SetPen(NewColor: TColor; NewStyle: TPenStyle; NewWidth: integer; NewMode: TPenMode);
+
+    function CR;
+    function LF;
+    function CRLF;
+    function NewLine;
+    function SoftLine;
+    function GotoXY(NewXPos: double; NewYPos: double);
+    function Home;
+    function LinesLeft: integer;
+    function ColumnLinesLeft: integer;
+
+    function PrintJustify(Text: string; Pos: double; Justify: TPrintJustify; Margin: double; Width: double);
+    function Print(Text: string);
+    function PrintCenter(Text: string; Pos: double);
+    function PrintHeader(Text: string; Justify: TPrintJustify);
+    function PrintFooter(Text: string; Justify: TPrintJustify);
+    function PrintLeft(Text: string; Pos: double);
+    function PrintBlock(Text: string; Pos: double; Width: double);
+    function Println(Text: string);
+    function PrintRight(Text: string; Pos: double);
+    function PrintXY(X,Y: double; Text: string);
+    function PrintCharJustify(Text: string; Ch: char; Pos: double);
+    function PrintTab(Text: string);
+
+    function AllowPreviewOnly;
+    function AllowPrinterOnly;
+    function AllowAll;
+
+    function ResetLineHeight;
+    function AdjustLine;
+    function NewColumn;
+    function GotoHeader;
+    function GotoFooter;
+    function SetTopOfPage;
+    function PopPos: boolean;
+    function PushPos: boolean;
+    function RestorePos(Index: integer): boolean;
+    function SavePos(Index: integer): boolean;
+    function PopTabs: boolean;
+    function PushTabs: boolean;
+    function RestoreTabs(Index: integer): boolean;
+    function SaveTabs(Index: integer): boolean;
+    function PopFont: boolean;
+    function PushFont: boolean;
+    function RestoreFont(Index: integer): boolean;
+    function SaveFont(Index: integer): boolean;
+
+  // Columns Methods
+    function SetColumns(NewColumns: integer; Between: double);
+    function SetColumnWidth(Width: double; Between: double);
+    function ClearColumns;
+
+  // Tab methods
+    function SetTab(NewPos: double; NewJustify: TPrintJustify; NewWidth: double; NewMargin: double; NewLines: byte; NewShade: byte);
+    function ClearTabs;
+    function ClearAllTabs;
+    function ResetTabs;
+    function Tab(LeftWidth: integer; RightWidth: integer; TopWidth: integer; BottomWidth: integer; ShadeOverride: integer);
+    function TabStart(Index: integer): double;
+    function TabEnd(Index: integer): double;
+    function TabWidth(Index: integer): double;
+    function FinishTabBox(Width: integer);
+
+  // Misc methods
+    function TextWidth(Text: string): double;
+
+  // Memo methods
+//    function MemoLines(MemoBuf: TBaseMemoBuf): longint;
+//    function GetMemoLine(MemoBuf: TBaseMemoBuf; var Eol: boolean): string;
+//    function PrintMemo(MemoBuf: TBaseMemoBuf; Lines: longint; PrintTabs: boolean);
+
+  // Report Text Printing Methods
+    function TruncateText(Value: string; Width: double): string;
+    function Macro(MacroID: TMacroID): string;
+    function PIVar(VarName: string): string;
+    function SetPIVar(VarName: string; VarValue: string);
+    function NewPage;
+
+  // Properties
+    property CurrentPage: integer read GetCurrentPage;
+    property TextFieldWidth: double read GetTextFieldWidth write SetTextFieldWidth;
+    property IgnoreRPTF: boolean read GetIgnoreRPTF write SetIgnoreRPTF;
+    property CursorXPos: integer read GetCursorXPos;
+    property CursorYPos: integer read GetCursorYPos;
+    property XPos: double read GetXPos write SetXPos;
+    property YPos: double read GetYPos write SetYPos;
+    property RelativePage: integer read GetRelativePage;
+    property PageNumOffset: integer read GetPageNumOffset write SetPageNumOffset;
+    property PageInvalid: boolean read GetPageInvalid;
+    property OutputInvalid: boolean read GetOutputInvalid;
+    property XDPI: integer read GetXDPI;
+    property YDPI: integer read GetYDPI;
+    property LineNum: integer read GetLineNum write SetLineNum;
+    property ColumnNum: integer read GetColumnNum write SetColumnNum;
+    property Columns: integer read GetColumns;
+    property ColumnStart: double read GetColumnStart;
+    property ColumnEnd: double read GetColumnEnd;
+    property ColumnWidth: double read GetColumnWidth;
+    property LeftWaste: double read GetLeftWaste;
+    property RightWaste: double read GetRightWaste;
+    property TopWaste: double read GetTopWaste;
+    property BottomWaste: double read GetBottomWaste;
+    property SectionLeft: double read GetSectionLeft write SetSectionLeft;
+    property SectionRight: double read GetSectionRight write SetSectionRight;
+    property SectionTop: double read GetSectionTop write SetSectionTop;
+    property SectionBottom: double read GetSectionBottom write SetSectionBottom;
+    property PageHeight: double read GetPageHeight;
+    property PageWidth: double read GetPageWidth;
+    property Bold: boolean read GetBold write SetBold;
+    property Underline: boolean read GetUnderline write SetUnderline;
+    property Italic: boolean read GetItalic write SetItalic;
+    property Strikeout: boolean read GetStrikeout write SetStrikeout;
+    property Superscript: boolean read GetSuperscript write SetSuperscript;
+    property Subscript: boolean read GetSubscript write SetSubscript;
+    property FontRotation: integer read GetFontRotation write SetFontRotation;
+    property FontColor: TColor read GetFontColor write SetFontColor;
+    property FontName: string read GetFontName write SetFontName;
+    property FontSize: double read GetFontSize write SetFontSize;
+    property FontPitch: TFontPitch read GetFontPitch write SetFontPitch;
+    property FontCharset: byte read GetFontCharset write SetFontCharset;
+    property FontAlign: TFontAlign read GetFontAlign write SetFontAlign;
+    property LineTop: double read GetLineTop write SetLineTop;
+    property LineMiddle: double read GetLineMiddle write SetLineMiddle;
+    property LineBottom: double read GetLineBottom write SetLineBottom;
+    property FontTop: double read GetFontTop write SetFontTop;
+    property FontBaseline: double read GetFontBaseline write SetFontBaseline;
+    property FontBottom: double read GetFontBottom write SetFontBottom;
+    property TabJustify: TTabJustify read GetTabJustify write SetTabJustify;
+    property TransparentBitmaps: boolean read GetTransparentBitmaps write SetTransparentBitmaps;
+    property ParaJustify: TTabJustify read GetParaJustify write SetParaJustify;
+    property NoBufferLine: boolean read GetNoBufferLine write SetNoBufferLine;
+    property NoNTColorFix: boolean read GetNoNTColorFix write SetNoNTColorFix;
+    property UseDrawText: boolean read GetUseDrawText write SetUseDrawText;
+    property CurrentPass: integer read GetCurrentPass write SetCurrentPass;
+    property TotalPasses: integer read GetTotalPasses write SetTotalPasses;
+    property FixedTabWidth: double read GetFixedTabWidth write SetFixedTabWidth;
+
+    property PrinterIndex: integer read GetPrinterIndex write SetPrinterIndex;
+    property DeviceName: string read GetDeviceName;
+    property DriverName: string read GetDriverName;
+    property Port: string read GetPort;
+    property Aborted: boolean read GetAborted;
+    property Printing: boolean read GetPrinting;
+    property OriginX: double read GetOriginX write SetOriginX;
+    property OriginY: double read GetOriginY write SetOriginY;
+    property BKColor: TColor read GetBKColor write SetBKColor;
+    property LineHeight: double read GetLineHeight write SetLineHeight;
+    property AscentHeight: double read GetAscentHeight;
+    property DescentHeight: double read GetDescentHeight;
+    property FontHeight: double read GetFontHeight write SetFontHeight;
+    property FontWidth: double read GetFontWidth write SetFontWidth;
+    property OutputName: string read GetOutputName write SetOutputName;
+    property NoPrinterPageHeight: double read GetNoPrinterPageHeight write SetNoPrinterPageHeight;
+    property NoPrinterPageWidth: double read GetNoPrinterPageWidth write SetNoPrinterPageWidth;
+
+  // Properties - potential published
+    property FirstPage: integer read GetFirstPage write SetFirstPage;
+    property LastPage: integer read GetLastPage write SetLastPage;
+    property Selection: TFormatString read GetSelection write SetSelection;
+    property StatusFormat: TFormatString read GetStatusFormat write SetStatusFormat;
+    property LineHeightMethod: TLineHeightMethod read GetLineHeightMethod write SetLineHeightMethod;
+    property LinesPerInch: integer read GetLinesPerInch write SetLinesPerInch;
+    property Units: TPrintUnits read GetUnits write SetUnits;
+    property UnitsFactor: double read GetUnitsFactor write SetUnitsFactor;
+    property MarginLeft: double read GetMarginLeft write SetMarginLeft;
+    property MarginRight: double read GetMarginRight write SetMarginRight;
+    property MarginTop: double read GetMarginTop write SetMarginTop;
+    property MarginBottom: double read GetMarginBottom write SetMarginBottom;
+    property TabShade: integer read GetTabShade write SetTabShade;
+    property TabColor: TColor read GetTabColor write SetTabColor;
+    property BoxLineColor: TColor read GetBoxLineColor write SetBoxLineColor;
+    property Title: TTitleString read GetTitle write SetTitle;
+    property TextBKMode: TBKMode read GetTextBKMode write SetTextBKMode;
+    property Copies: integer read GetCopies write SetCopies;
+    property Orientation: TOrientation read GetOrientation write SetOrientation;
+    property ScaleX: double read GetScaleX write SetScaleX;
+    property ScaleY: double read GetScaleY write SetScaleY;
+  end TBaseReport;
+
+implementation
+
+// TBaseReport
+
+  function TBaseReport.CR; external;
+  function TBaseReport.LF; external;
+  function TBaseReport.CRLF; external;
+  function TBaseReport.NewLine; external;
+  function TBaseReport.SoftLine; external;
+  function TBaseReport.GotoXY(NewXPos: double; NewYPos: double); external;
+  function TBaseReport.Home; external;
+  function TBaseReport.LinesLeft: integer; external;
+  function TBaseReport.ColumnLinesLeft: integer; external;
+  function TBaseReport.PrintJustify(Text: string; Pos: double; Justify: TPrintJustify; Margin: double; Width: double); external;
+  function TBaseReport.Print(Text: string); external;
+  function TBaseReport.PrintCenter(Text: string; Pos: double); external;
+  function TBaseReport.PrintHeader(Text: string; Justify: TPrintJustify); external;
+  function TBaseReport.PrintFooter(Text: string; Justify: TPrintJustify); external;
+  function TBaseReport.PrintLeft(Text: string; Pos: double); external;
+  function TBaseReport.PrintBlock(Text: string; Pos: double; Width: double); external;
+  function TBaseReport.Println(Text: string); external;
+  function TBaseReport.PrintRight(Text: string; Pos: double); external;
+  function TBaseReport.PrintXY(X,Y: double; Text: string); external;
+  function TBaseReport.PrintCharJustify(Text: string; Ch: char; Pos: double); external;
+  function TBaseReport.PrintTab(Text: string); external;
+
+  function TBaseReport.Arc(X1,Y1,X2,Y2,X3,Y3,X4,Y4: double); external;
+  function TBaseReport.Chord(X1,Y1,X2,Y2,X3,Y3,X4,Y4: double); external;
+  function TBaseReport.Ellipse(X1,Y1,X2,Y2: double); external;
+  function TBaseReport.LineTo(X,Y: double); external;
+  function TBaseReport.MoveTo(X,Y: double); external;
+  function TBaseReport.Pie(X1,Y1,X2,Y2,X3,Y3,X4,Y4: double); external;
+  function TBaseReport.Rectangle(X1,Y1,X2,Y2: double); external;
+  function TBaseReport.RoundRect(X1,Y1,X2,Y2,X3,Y3: double); external;
+
+  function TBaseReport.SetBrush(NewColor: TColor; NewStyle: TBrushStyle); external; // RaveSelf.SetBrush(NewColor,NewStyle,nil);
+  function TBaseReport.SetFont(NewName: string; NewSize: double); external;
+  function TBaseReport.SetPen(NewColor: TColor; NewStyle: TPenStyle; NewWidth: integer; NewMode: TPenMode); external;
+
+  function TBaseReport.AllowPreviewOnly; external;
+  function TBaseReport.AllowPrinterOnly; external;
+  function TBaseReport.AllowAll; external;
+
+  function TBaseReport.ResetLineHeight; external;
+  function TBaseReport.AdjustLine; external;
+  function TBaseReport.NewColumn; external;
+  function TBaseReport.GotoHeader; external;
+  function TBaseReport.GotoFooter; external;
+  function TBaseReport.SetTopOfPage; external;
+  function TBaseReport.PopPos: boolean; external;
+  function TBaseReport.PushPos: boolean; external;
+  function TBaseReport.RestorePos(Index: integer): boolean; external;
+  function TBaseReport.SavePos(Index: integer): boolean; external;
+  function TBaseReport.PopTabs: boolean; external;
+  function TBaseReport.PushTabs: boolean; external;
+  function TBaseReport.RestoreTabs(Index: integer): boolean; external;
+  function TBaseReport.SaveTabs(Index: integer): boolean; external;
+  function TBaseReport.PopFont: boolean; external;
+  function TBaseReport.PushFont: boolean; external;
+  function TBaseReport.RestoreFont(Index: integer): boolean; external;
+  function TBaseReport.SaveFont(Index: integer): boolean; external;
+
+  // Columns Methods
+  function TBaseReport.SetColumns(NewColumns: integer; Between: double); external;
+  function TBaseReport.SetColumnWidth(Width: double; Between: double); external;
+  function TBaseReport.ClearColumns; external;
+
+  // Tab methods
+  function TBaseReport.SetTab(NewPos: double; NewJustify: TPrintJustify; NewWidth: double; NewMargin: double; NewLines: byte; NewShade: byte); external;
+  function TBaseReport.ClearTabs; external;
+  function TBaseReport.ClearAllTabs; external;
+  function TBaseReport.ResetTabs; external;
+  function TBaseReport.Tab(LeftWidth: integer; RightWidth: integer; TopWidth: integer; BottomWidth: integer; ShadeOverride: integer); external;
+  function TBaseReport.TabStart(Index: integer): double; external;
+  function TBaseReport.TabEnd(Index: integer): double; external;
+  function TBaseReport.TabWidth(Index: integer): double; external;
+  function TBaseReport.FinishTabBox(Width: integer); external;
+
+  // Misc methods
+  function TBaseReport.TextWidth(Text: string): double; external;
+
+  // Memo methods
+//  function TBaseReport.MemoLines(MemoBuf: TBaseMemoBuf): longint; external;
+//  function TBaseReport.GetMemoLine(MemoBuf: TBaseMemoBuf; var Eol: boolean): string; external;
+//  function TBaseReport.PrintMemo(MemoBuf: TBaseMemoBuf; Lines: longint; PrintTabs: boolean); external;
+
+  // Report Text Printing Methods
+  function TBaseReport.TruncateText(Value: string; Width: double): string; external;
+  function TBaseReport.Macro(MacroID: TMacroID): string; external;
+  function TBaseReport.PIVar(VarName: string): string; external;
+  function TBaseReport.SetPIVar(VarName: string; VarValue: string); external;
+
+  function TBaseReport.GetCurrentPage: integer; external;
+  function TBaseReport.GetTextFieldWidth: double; external;
+  function TBaseReport.SetTextFieldWidth(Value: double); external;
+  function TBaseReport.GetIgnoreRPTF: boolean; external;
+  function TBaseReport.SetIgnoreRPTF(Value: boolean); external;
+  function TBaseReport.GetCursorXPos: integer; external;
+  function TBaseReport.GetCursorYPos: integer; external;
+  function TBaseReport.GetXPos: double; external;
+  function TBaseReport.SetXPos(Value: double); external;
+  function TBaseReport.GetYPos: double; external;
+  function TBaseReport.SetYPos(Value: double); external;
+  function TBaseReport.GetRelativePage: integer; external;
+  function TBaseReport.GetPageNumOffset: integer; external;
+  function TBaseReport.SetPageNumOffset(Value: integer); external;
+  function TBaseReport.GetPageInvalid: boolean; external;
+  function TBaseReport.GetOutputInvalid: boolean; external;
+  function TBaseReport.GetXDPI: integer; external;
+  function TBaseReport.GetYDPI: integer; external;
+  function TBaseReport.GetLineNum: integer; external;
+  function TBaseReport.SetLineNum(Value: integer); external;
+  function TBaseReport.GetColumnNum: integer; external;
+  function TBaseReport.SetColumnNum(Value: integer); external;
+  function TBaseReport.GetColumns: integer; external;
+  function TBaseReport.GetColumnStart: double; external;
+  function TBaseReport.GetColumnEnd: double; external;
+  function TBaseReport.GetColumnWidth: double; external;
+  function TBaseReport.GetLeftWaste: double; external;
+  function TBaseReport.GetRightWaste: double; external;
+  function TBaseReport.GetTopWaste: double; external;
+  function TBaseReport.GetBottomWaste: double; external;
+  function TBaseReport.GetSectionLeft: double; external;
+  function TBaseReport.SetSectionLeft(Value: double); external;
+  function TBaseReport.GetSectionTop: double; external;
+  function TBaseReport.SetSectionTop(Value: double); external;
+  function TBaseReport.GetSectionBottom: double; external;
+  function TBaseReport.SetSectionBottom(Value: double); external;
+  function TBaseReport.GetSectionRight: double; external;
+  function TBaseReport.SetSectionRight(Value: double); external;
+  function TBaseReport.GetPageHeight: double; external;
+  function TBaseReport.GetPageWidth: double; external;
+  function TBaseReport.GetBold: boolean; external;
+  function TBaseReport.SetBold(Value: boolean); external;
+  function TBaseReport.GetItalic: boolean; external;
+  function TBaseReport.SetItalic(Value: boolean); external;
+  function TBaseReport.GetStrikeout: boolean; external;
+  function TBaseReport.SetStrikeout(Value: boolean); external;
+  function TBaseReport.GetSuperscript: boolean; external;
+  function TBaseReport.SetSuperscript(Value: boolean); external;
+  function TBaseReport.GetSubscript: boolean; external;
+  function TBaseReport.SetSubscript(Value: boolean); external;
+  function TBaseReport.GetFontRotation: integer; external;
+  function TBaseReport.SetFontRotation(Value: integer); external;
+  function TBaseReport.GetFontColor: TColor; external;
+  function TBaseReport.SetFontColor(Value: TColor); external;
+  function TBaseReport.GetFontName: string; external;
+  function TBaseReport.SetFontName(Value: string); external;
+  function TBaseReport.GetFontSize: double; external;
+  function TBaseReport.SetFontSize(Value: double); external;
+  function TBaseReport.GetFontPitch: TFontPitch; external;
+  function TBaseReport.SetFontPitch(Value: TFontPitch); external;
+  function TBaseReport.GetFontCharset: byte; external;
+  function TBaseReport.SetFontCharset(Value: byte); external;
+  function TBaseReport.GetFontAlign: TFontAlign; external;
+  function TBaseReport.SetFontAlign(Value: TFontAlign); external;
+  function TBaseReport.GetLineTop: double; external;
+  function TBaseReport.SetLineTop(Value: double); external;
+  function TBaseReport.GetLineMiddle: double; external;
+  function TBaseReport.SetLineMiddle(Value: double); external;
+  function TBaseReport.GetLineBottom: double; external;
+  function TBaseReport.SetLineBottom(Value: double); external;
+  function TBaseReport.GetFontTop: double; external;
+  function TBaseReport.SetFontTop(Value: double); external;
+  function TBaseReport.GetFontBaseline: double; external;
+  function TBaseReport.SetFontBaseline(Value: double); external;
+  function TBaseReport.GetFontBottom: double; external;
+  function TBaseReport.SetFontBottom(Value: double); external;
+  function TBaseReport.GetTabJustify: TTabJustify; external;
+  function TBaseReport.SetTabJustify(Value: TTabJustify); external;
+  function TBaseReport.GetTransparentBitmaps: boolean; external;
+  function TBaseReport.SetTransparentBitmaps(Value: boolean); external;
+  function TBaseReport.GetParaJustify: TTabJustify; external;
+  function TBaseReport.SetParaJustify(Value: TTabJustify); external;
+  function TBaseReport.GetNoBufferLine: boolean; external;
+  function TBaseReport.SetNoBufferLine(Value: boolean); external;
+  function TBaseReport.GetNoNTColorFix: boolean; external;
+  function TBaseReport.SetNoNTColorFix(Value: boolean); external;
+  function TBaseReport.GetUseDrawText: boolean; external;
+  function TBaseReport.SetUseDrawText(Value: boolean); external;
+  function TBaseReport.GetCurrentPass: integer; external;
+  function TBaseReport.SetCurrentPass(Value: integer); external;
+  function TBaseReport.GetTotalPasses: integer; external;
+  function TBaseReport.SetTotalPasses(Value: integer); external;
+  function TBaseReport.GetFixedTabWidth: double; external;
+  function TBaseReport.SetFixedTabWidth(Value: double); external;
+
+  function TBaseReport.GetPrinterIndex: integer; external;
+  function TBaseReport.SetPrinterIndex(Value: integer); external;
+  function TBaseReport.GetDeviceName: string; external;
+  function TBaseReport.GetDriverName: string; external;
+  function TBaseReport.GetPort: string; external;
+  function TBaseReport.GetAborted: boolean; external;
+  function TBaseReport.GetPrinting: boolean; external;
+  function TBaseReport.GetOriginX: double; external;
+  function TBaseReport.SetOriginX(Value: double); external;
+  function TBaseReport.GetOriginY: double; external;
+  function TBaseReport.SetOriginY(Value: double); external;
+  function TBaseReport.GetBKColor: TColor; external;
+  function TBaseReport.SetBKColor(Value: TColor); external;
+  function TBaseReport.GetLineHeight: double; external;
+  function TBaseReport.SetLineHeight(Value: double); external;
+  function TBaseReport.GetAscentHeight: double; external;
+  function TBaseReport.GetDescentHeight: double; external;
+  function TBaseReport.GetFontHeight: double; external;
+  function TBaseReport.SetFontHeight(Value: double); external;
+  function TBaseReport.GetFontWidth: double; external;
+  function TBaseReport.SetFontWidth(Value: double); external;
+  function TBaseReport.GetOutputName: string; external;
+  function TBaseReport.SetOutputName(Value: string); external;
+  function TBaseReport.GetNoPrinterPageHeight: double; external;
+  function TBaseReport.SetNoPrinterPageHeight(Value: double); external;
+  function TBaseReport.GetNoPrinterPageWidth: double; external;
+  function TBaseReport.SetNoPrinterPageWidth(Value: double); external;
+
+// Properties - potential published
+  function TBaseReport.GetFirstPage: integer; external;
+  function TBaseReport.SetFirstPage(Value: integer); external;
+  function TBaseReport.GetLastPage: integer; external;
+  function TBaseReport.SetLastPage(Value: integer); external;
+  function TBaseReport.GetSelection: TFormatString; external;
+  function TBaseReport.SetSelection(Value: TFormatString); external;
+  function TBaseReport.GetStatusFormat: TFormatString; external;
+  function TBaseReport.SetStatusFormat(Value: TFormatString); external;
+  function TBaseReport.GetLineHeightMethod: TLineHeightMethod; external;
+  function TBaseReport.SetLineHeightMethod(Value: TLineHeightMethod); external;
+  function TBaseReport.GetLinesPerInch: integer; external;
+  function TBaseReport.SetLinesPerInch(Value: integer); external;
+  function TBaseReport.GetUnits: TPrintUnits; external;
+  function TBaseReport.SetUnits(Value: TPrintUnits); external;
+  function TBaseReport.GetUnitsFactor: double; external;
+  function TBaseReport.SetUnitsFactor(Value: double); external;
+  function TBaseReport.GetMarginLeft: double; external;
+  function TBaseReport.SetMarginLeft(Value: double); external;
+  function TBaseReport.GetMarginRight: double; external;
+  function TBaseReport.SetMarginRight(Value: double); external;
+  function TBaseReport.GetMarginTop: double; external;
+  function TBaseReport.SetMarginTop(Value: double); external;
+  function TBaseReport.GetMarginBottom: double; external;
+  function TBaseReport.SetMarginBottom(Value: double); external;
+  function TBaseReport.GetTabShade: integer; external;
+  function TBaseReport.SetTabShade(Value: integer); external;
+  function TBaseReport.GetTabColor: TColor; external;
+  function TBaseReport.SetTabColor(Value: TColor); external;
+  function TBaseReport.GetBoxLineColor: TColor; external;
+  function TBaseReport.SetBoxLineColor(Value: TColor); external;
+  function TBaseReport.GetTitle: TTitleString; external;
+  function TBaseReport.SetTitle(Value: TTitleString); external;
+  function TBaseReport.GetTextBKMode: TBKMode; external;
+  function TBaseReport.SetTextBKMode(Value: TBKMode); external;
+  function TBaseReport.GetCopies: integer; external;
+  function TBaseReport.SetCopies(Value: integer); external;
+  function TBaseReport.GetOrientation: TOrientation; external;
+  function TBaseReport.SetOrientation(Value: TOrientation); external;
+  function TBaseReport.GetScaleX: double; external;
+  function TBaseReport.SetScaleX(Value: double); external;
+  function TBaseReport.GetScaleY: double; external;
+  function TBaseReport.SetScaleY(Value: double); external;
+
+var
+  PageSettingsUsed: array[1..10] of boolean;
+
+  function TBaseReport.NewPage;
+  var
+    I1: integer;
+    Index: integer;
+  begin
+  //for I1 := 1 to 10 do
+  //  if PageSettingsUsed[I1] then
+  //    PageSettingsUsed[I1] := true;
+  //    Index := I1;
+  //    Break;
+  //  end if;
+  //end for;
+    Index := 10;
+    SaveTabs(Index);
+    SaveFont(Index);
+    Suspend;
+    RestoreTabs(Index);
+    RestoreFont(Index);
+    Home;
+  //PageSettingsUsed[Index] := false;
+  end;
+
+end RvBase;

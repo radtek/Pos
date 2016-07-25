@@ -1,0 +1,9 @@
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\MenumateServices Config Manager\bin\Debug\MenumateServices Config Manager.dll
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\MenumateServices Config Manager\bin\Debug\MenumateServices Config Manager.pdb
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\MenumateServices Config Manager\bin\Debug\WinOSInfo.dll
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\MenumateServices Config Manager\bin\Debug\XMLManager.dll
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\MenumateServices Config Manager\obj\Debug\ResolveAssemblyReference.cache
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\MenumateServices Config Manager\obj\Debug\MenumateServices Config Manager.dll
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\MenumateServices Config Manager\obj\Debug\MenumateServices Config Manager.pdb
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\Assemblies\MenumateServices Config Manager.dll
+C:\Code\Git\local menumate\MenuMate\Services\ServicesApp\Assemblies\MenumateServices Config Manager.pdb

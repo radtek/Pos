@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<FileMate>
+	<CopyGroup>
+    <CopyOperation name="summa" deleteSource="false" calledFromExternal="false">
+      <source url="c:\source\" />
+      <targets>
+				<target url="c:\target\{date}">
+				</target>
+			</targets>
+      <schedule>0m</schedule>
+      <pattern>*.dat</pattern>
+    </CopyOperation>
+	</CopyGroup>
+</FileMate>

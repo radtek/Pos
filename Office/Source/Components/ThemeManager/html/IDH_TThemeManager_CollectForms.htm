@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 //EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Time2HELP 1.0; Standard Template">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=utf8">
+<TITLE>TThemeManager.CollectForms Method</TITLE>
+<Style>Body, TD {font-family: "Verdana"; font-size: 10pt};
+PRE {font-family: "Courier New"; font-size: 10pt; margin-top: 0; margin-bottom: 0}
+TR.odd {background-color: #F8F8F8};
+TR.even {background-color: #EEEEEE};
+Table.list {background-color: #FFFFFF};
+TD {vertical-align : top};
+TD.stripelight {background-image: url(images/StripeLight.gif);};
+TD.stripedark {background-image: url(images/StripeDark.gif);};
+</Style>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<BASEFONT NAME="Verdana" Size="2"><Table Border="0" Width="100%" BGColor="#FFFFFF"><TR><TD><Font Color="#000000F"><B>CollectForms method</B></Font></TD></TR></Table>Initiates subclassing for all child controls of the given Form, which are handled by the theme manager.<P><B>Applies to</B><Br><A HREF="IDH_Class_TThemeManager.htm">TThemeManager</A><P><B>Declaration</B><Br><Font Face="Courier New"><B>procedure</B> CollectForms(Form: TCustomForm = <B>nil</B>);</Font><P><B>Description</B><Br />This method is usually called by the theme manager itself but can also be used by the application if necessary (e.g. for forms in DLLs). The code takes care not to add a control twice and uses <A HREF="IDH_TThemeManager_CollectControls.htm">CollectControls</A> to do the actual collection. If <B>Form</B> is assigned then only child controls of the given form are iterated, otherwise all forms in the application are searched.</P><table BGCOLOR="#000000" BORDER="0" WIDTH="100%" style="margin-top: 10;">
+  <tr><td><font color="#FFFFFF"><b>Note</b></font></td></tr>
+</table>
+<table BGCOLOR="#DDDDDD" CellSpacing="0" Width="100%" Border="0" style="margin-bottom: 10;">
+  <tr><td>Since there can be more than one theme manager in the application it is important to ensure that only one does the actual window subclassing. This manager is the socalled main manager and only for this one instance is subclassing enabled. Hence if you call CollectForms (or CollectControls) of others than the main manager instance then nothing will happen. If the main manager is freed then another theme manager instance (if there is one) will automatically take over the main manager part.</td></tr>
+</table><P><HR>
+<TABLE BORDER="0" WIDTH="100%" BGCOLOR="#404040" cellspacing=0><TR><TD class="stripelight">
+<Font Color=Black><Large>Copyright © 1999, 2002 <B>Mike Lischke</B></Large</Font>
+</TD></TR></Table>
+<Small><A HREF="http://www.lischke-online.de">http://www.lischke-online.de</A></Small>

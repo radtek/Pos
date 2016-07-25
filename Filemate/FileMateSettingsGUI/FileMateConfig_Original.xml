@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<FileMate>
+  <CopyGroup>
+    
+    <CopyOperation name="summa" deleteSource="true" calledFromExternal="true">
+      <source url="C:\Program Files (x86)\MenuMate\summa\" />
+      <targets>
+        <target url="ftp://ftp.summa.co.nz/">
+          <credentials username="menumate" password="menumate40" />
+        </target>
+        <target url="C:\Program Files (x86)\MenuMate\summa\archive\{date}\" />
+      </targets>
+      <schedule>5m</schedule>
+      <pattern>*.txt</pattern>
+    </CopyOperation>
+
+    <CopyOperation name="menu download" deleteSource="false" calledFromExternal="false" enabled="true">
+
+      <source url="ftp://ftp.menumate.com/tmp/test1">
+        <credentials username="menumate" password="menumate40" />
+      </source>
+
+      <targets>
+        <target url="D:\Nadun\Development\Temp\FileMate\ftpToFolder" name="myTemp" />
+      </targets>
+      <schedule>1m</schedule>
+      <pattern>*.csv</pattern>
+    </CopyOperation>
+
+    <CopyOperation name="members download" deleteSource="true" calledFromExternal="false">
+
+      <source url="ftp://ftp.menumate.com/tmp/test1/">
+        <credentials username="menumate" password="menumate40" />
+      </source>
+
+      <targets>
+        <target url="c:\program files\memumate\import" />
+      </targets>
+      <schedule>30m</schedule>
+      <pattern>members.csv</pattern>
+    </CopyOperation>
+    
+  </CopyGroup>
+</FileMate>

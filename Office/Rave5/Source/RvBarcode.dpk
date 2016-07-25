@@ -1,0 +1,20 @@
+{*************************************************************************}
+{ Rave Reports version 5.1                                                }
+{ Copyright (c), 1995-2002, Nevrona Designs, all rights reserved          }
+{*************************************************************************}
+package RvBarcode;
+
+{$DESCRIPTION 'Rave Barcode Components'}
+{$IMPLICITBUILD OFF}
+{$RUNONLY}
+{$LIBSUFFIX '50'}
+
+{$R RvCsBars.res}
+
+requires
+  RvCore;
+
+contains
+  RvCsBars;
+
+end.

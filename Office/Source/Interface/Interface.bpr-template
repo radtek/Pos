@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="&quot;C:\Code\Office\Office 4.0.0\Exec\Interface.lib&quot;"/>
+    <OBJFILES value="..\..\InterfaceObj\StockInterface.obj 
+      ..\..\InterfaceObj\MM_StockTransactions.obj 
+      ..\..\InterfaceObj\MM_StockCore.obj"/>
+    <RESFILES value=""/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value=""/>
+    <PACKAGES value=""/>
+    <PATHCPP value=".;..\System;..\System\Core"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <LINKER value="TLib"/>
+    <USERDEFINES value="BUILDING_LIB;NO_WIN32_LEAN_AND_MEAN"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="Interface.bpf"/>
+    <INCLUDEPATH value="..\System;..\System\Core;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..\System;..\System\Core;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+    <LISTFILE value=""/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\System -I..\System\Core -I$(BCB)\include -I$(BCB)\include\vcl 
+      -src_suffix cpp -DBUILDING_LIB -DNO_WIN32_LEAN_AND_MEAN -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-N2&quot;C:\Code\Office\Office 4.0.0\InterfaceObj&quot; 
+      -N0&quot;C:\Code\Office\Office 4.0.0\InterfaceObj&quot; -$Y- -$L- -$D- -$A8 -v 
+      -JPHNE -M"/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-l&quot;C:\Code\Office\Office 4.0.0\Exec&quot; /P32 /0"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="$(OBJFILES)"/>
+    <ALLLIB value="cg32.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="Interface.bpf" FORMNAME="" UNITNAME="Interface" CONTAINERID="BPF" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="StockInterface.cpp" FORMNAME="" UNITNAME="StockInterface" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\System\MM_StockTransactions.cpp" FORMNAME="" UNITNAME="MM_StockTransactions" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\System\Core\MM_StockCore.cpp" FORMNAME="" UNITNAME="MM_StockCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=3
+Item0=..\System;..\System\Core;$(BCB)\include;$(BCB)\include\vcl
+Item1=..\System;C:\Program Files\Borland\CBuilder6\Projects;..\System\Core;$(BCB)\include;$(BCB)\include\vcl
+Item2=..\System\Core;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=3
+Item0=..\System;..\System\Core;$(BCB)\lib\obj;$(BCB)\lib
+Item1=..\System;C:\Program Files\Borland\CBuilder6\Projects;..\System\Core;$(BCB)\lib\obj;$(BCB)\lib
+Item2=..\System\Core;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=4
+Item0=BUILDING_LIB;NO_WIN32_LEAN_AND_MEAN
+Item1=BUILDING_LIB;NO_WIN32_LEAN_AND_MEAN;_DEBUG
+Item2=BUILDING_LIB
+Item3=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=3
+Item0=C:\Code\Office\Office 4.0.0\InterfaceObj
+Item1=C:\Code\Office\Office 4.0.0\Source\Interface
+Item2=C:\Code\Office\Office 3.3.0\Source\Interface
+
+[HistoryLists\hlFinalOutputDir]
+Count=5
+Item0=C:\Code\Office\Office 4.0.0\Exec\
+Item1=C:\Code\Office\Office 4.0.0\Exec
+Item2=C:\Code\Office\Office 4.0.0\Source\Interface\
+Item3=C:\Code\Office\Office 3.3.0\Source\Interface\
+Item4=C:\Code\Office\Office 3.3.0\Source\Interface
+
+[HistoryLists\hIBPIOutputDir]
+Count=3
+Item0=C:\Code\Office\Office 4.0.0\Exec
+Item1=C:\Code\Office\Office 4.0.0\Source\Interface
+Item2=C:\Code\Office\Office 3.3.0\Source\Interface
+
+[HistoryLists\hlTlibPageSize]
+Count=3
+Item0=0x0020
+Item1=0x0040
+Item2=0x0010
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>

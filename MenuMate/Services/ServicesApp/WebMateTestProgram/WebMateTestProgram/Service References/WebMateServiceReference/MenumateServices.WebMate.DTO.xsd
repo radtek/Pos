@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:complexType name="DTO_WebOrderResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Response" type="tns:ResponseCode" />
+      <xs:element minOccurs="0" name="Succesful" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_WebOrderResponse" nillable="true" type="tns:DTO_WebOrderResponse" />
+  <xs:simpleType name="ResponseCode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Successful" />
+      <xs:enumeration value="MenumateIsOffLine" />
+      <xs:enumeration value="FailedToOpenOrder" />
+      <xs:enumeration value="FailedToCommitOrder" />
+      <xs:enumeration value="FailedToCreateOrderHeaderSection" />
+      <xs:enumeration value="FailedToCreateOrderFromSection" />
+      <xs:enumeration value="FailedToCreateOrderAccountSection" />
+      <xs:enumeration value="FailedToCreateOrderPaymentSection" />
+      <xs:enumeration value="FailedToCreateOrderCommentsSection" />
+      <xs:enumeration value="FailedToCreateOrderItemSection" />
+      <xs:enumeration value="FailedToCreateOrderItem" />
+      <xs:enumeration value="FailedToCreateOrderItemSide" />
+      <xs:enumeration value="FailedToCreateOrderItemOption" />
+      <xs:enumeration value="FailedToRetrieveOrderHeaderSection" />
+      <xs:enumeration value="FailedToRetrieveOrderFromSection" />
+      <xs:enumeration value="FailedToRetrieveOrderAccountSection" />
+      <xs:enumeration value="OrderGUIDDuplicate" />
+      <xs:enumeration value="OrderEmpty" />
+      <xs:enumeration value="FailedToGetCommittedOrderStatus" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ResponseCode" nillable="true" type="tns:ResponseCode" />
+  <xs:complexType name="DTO_WebOrderHeader">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ExpectedDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="GUID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OrderDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="OrderTotal" type="xs:decimal" />
+      <xs:element minOccurs="0" name="Respond" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Scheduled" type="xs:unsignedShort" />
+      <xs:element minOccurs="0" name="StoreName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_WebOrderHeader" nillable="true" type="tns:DTO_WebOrderHeader" />
+  <xs:complexType name="DTO_WebOrderFrom">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="SiteID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SiteName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_WebOrderFrom" nillable="true" type="tns:DTO_WebOrderFrom" />
+  <xs:complexType name="DTO_WebOrderAccount">
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="Comments" nillable="true" type="q1:ArrayOfstring" />
+      <xs:element minOccurs="0" name="Covers" type="xs:unsignedInt" />
+      <xs:element minOccurs="0" name="Delivery" nillable="true" type="tns:DTO_WebOrderDelivery" />
+      <xs:element minOccurs="0" name="MemberNumber" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OrderItems" nillable="true" type="tns:ArrayOfDTO_WebOrderItem" />
+      <xs:element minOccurs="0" name="Payments" nillable="true" type="tns:DTO_WebOrderPayments" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_WebOrderAccount" nillable="true" type="tns:DTO_WebOrderAccount" />
+  <xs:complexType name="DTO_WebOrderDelivery">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="City" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Country" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Note" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Phone" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Recipient" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="StreetName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="StreetNo" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Suburb" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_WebOrderDelivery" nillable="true" type="tns:DTO_WebOrderDelivery" />
+  <xs:complexType name="ArrayOfDTO_WebOrderItem">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DTO_WebOrderItem" nillable="true" type="tns:DTO_WebOrderItem" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDTO_WebOrderItem" nillable="true" type="tns:ArrayOfDTO_WebOrderItem" />
+  <xs:complexType name="DTO_WebOrderItem">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DTO_BaseWebOrderItem">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ItemOptions" nillable="true" type="tns:ArrayOfDTO_WebOrderItemOption" />
+          <xs:element minOccurs="0" name="ItemSides" nillable="true" type="tns:ArrayOfDTO_WebOrderItemSide" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DTO_WebOrderItem" nillable="true" type="tns:DTO_WebOrderItem" />
+  <xs:complexType name="DTO_BaseWebOrderItem">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DTO_BaseItem">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="BasePrice" type="xs:decimal" />
+          <xs:element minOccurs="0" name="DiscountID" type="xs:unsignedInt" />
+          <xs:element minOccurs="0" name="Qty" type="xs:float" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DTO_BaseWebOrderItem" nillable="true" type="tns:DTO_BaseWebOrderItem" />
+  <xs:complexType name="DTO_BaseItem">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="UID" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_BaseItem" nillable="true" type="tns:DTO_BaseItem" />
+  <xs:complexType name="DTO_WebOrderItemOption">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DTO_BaseWebOrderItem">
+        <xs:sequence />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DTO_WebOrderItemOption" nillable="true" type="tns:DTO_WebOrderItemOption" />
+  <xs:complexType name="DTO_WebOrderItemSide">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:DTO_BaseWebOrderItem">
+        <xs:sequence />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DTO_WebOrderItemSide" nillable="true" type="tns:DTO_WebOrderItemSide" />
+  <xs:complexType name="ArrayOfDTO_WebOrderItemOption">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DTO_WebOrderItemOption" nillable="true" type="tns:DTO_WebOrderItemOption" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDTO_WebOrderItemOption" nillable="true" type="tns:ArrayOfDTO_WebOrderItemOption" />
+  <xs:complexType name="ArrayOfDTO_WebOrderItemSide">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DTO_WebOrderItemSide" nillable="true" type="tns:DTO_WebOrderItemSide" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDTO_WebOrderItemSide" nillable="true" type="tns:ArrayOfDTO_WebOrderItemSide" />
+  <xs:complexType name="DTO_WebOrderPayments">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="PaymentRequired" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_WebOrderPayments" nillable="true" type="tns:DTO_WebOrderPayments" />
+  <xs:simpleType name="WebOrderStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Unknown" />
+      <xs:enumeration value="Committed" />
+      <xs:enumeration value="NotAccepted" />
+      <xs:enumeration value="Accepted" />
+      <xs:enumeration value="Incomplete" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="WebOrderStatus" nillable="true" type="tns:WebOrderStatus" />
+</xs:schema>

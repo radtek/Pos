@@ -1,0 +1,572 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\..\Runtime\MenuMate.exe"/>
+    <OBJFILES value="..\obj\MenuMate.obj ..\obj\Analysis.obj ..\obj\Cal.obj ..\obj\Data.obj 
+      ..\obj\Maintain.obj ..\obj\Main.obj ..\obj\CrcTable.obj ..\obj\Setup.obj 
+      ..\obj\Printing.obj ..\obj\DbMod.obj ..\obj\Login.obj ..\obj\TimeClock.obj 
+      ..\obj\BillGroup.obj ..\obj\GetMoney.obj ..\obj\MenuManager.obj 
+      ..\obj\Paytype.obj ..\obj\PosMain.obj ..\obj\SelectDish.obj 
+      ..\obj\SelectTable.obj ..\obj\Transfer.obj ..\obj\AddTab.obj 
+      ..\obj\CardSwipe.obj ..\obj\MMRegistry.obj ..\obj\SelectReceipt.obj 
+      ..\obj\PrintFormat.obj ..\obj\SelectGlass.obj ..\obj\PatronCount.obj 
+      ..\obj\Processing.obj ..\obj\ConfirmOrd.obj ..\obj\SplitPayment.obj 
+      ..\obj\Requests.obj ..\obj\Secure.obj ..\obj\SelectActiveMenus.obj 
+      ..\obj\POS.obj ..\obj\CommonMenus.obj ..\obj\Message.obj 
+      ..\obj\NewPaymentType.obj ..\obj\Payments.obj ..\obj\UserMaintenance.obj 
+      ..\obj\EditCustomer.obj ..\obj\GeneralMaintenance.obj 
+      ..\obj\HappyHourSettings.obj ..\obj\MessageMaintenance.obj 
+      ..\obj\NewUser.obj ..\obj\PrinterMaintenance.obj 
+      ..\obj\PaymentMaintenance.obj ..\obj\Version.obj ..\obj\Locations.obj 
+      ..\obj\SystemConfig.obj ..\obj\TransferItems.obj ..\obj\SelectZed.obj 
+      ..\obj\CSV.obj ..\obj\Rooms.obj ..\obj\SimpleTCP.obj ..\obj\Stream.obj 
+      ..\obj\SaleTimes.obj ..\obj\Registration.obj ..\obj\MD5Checksum.obj 
+      ..\obj\TabManager.obj ..\obj\Tabs.obj ..\obj\Contact.obj ..\obj\Comms.obj 
+      ..\obj\Invoice.obj ..\obj\OrderStorage.obj ..\obj\ParkedSales.obj 
+      ..\obj\SelectCurrentMenu.obj ..\obj\KitchenMod.obj ..\obj\Orders.obj 
+      ..\obj\Discounts.obj ..\obj\DiscountManager.obj ..\obj\DiscountEditor.obj 
+      ..\obj\Eftpos.obj ..\obj\EftPosDialogs.obj ..\obj\EftChequeVerify.obj 
+      ..\obj\RunManager.obj ..\obj\Manager.obj ..\obj\MessageManager.obj 
+      ..\obj\StockManager.obj ..\obj\VariableManager.obj 
+      ..\obj\FreebieManager.obj ..\obj\TableManager.obj ..\obj\EftposANZ.obj 
+      ..\obj\EftposSyncro.obj ..\obj\ForcedOptions.obj ..\obj\ForcedSides.obj 
+      ..\obj\DropDown.obj ..\obj\Barcodereader.obj ..\obj\NetMessageMsg.obj 
+      ..\obj\NetMessageLogs.obj ..\obj\NetMessageMenuAltered.obj 
+      ..\obj\NetMessageMenuChanged.obj ..\obj\NetMessageSeatName.obj 
+      ..\obj\NetMessageTabChanged.obj ..\obj\NetMessageHappyHour.obj 
+      ..\obj\NetMessageInfoSync.obj ..\obj\NetMessageChefMate.obj 
+      ..\obj\NetManager.obj ..\obj\ReceiptManager.obj ..\obj\IBLogs.obj 
+      ..\obj\ThirdPartyManager.obj ..\obj\SelectRoom.obj ..\obj\DropDownVar.obj 
+      ..\obj\EftposIngenico.obj ..\obj\Money.obj ..\obj\SelectMember.obj 
+      ..\obj\widestrings.obj ..\obj\SelectPhoenixRoom.obj ..\obj\PHSTCPIP.obj 
+      ..\obj\PhoenixHotelSystem.obj ..\obj\PHSConfiguration.obj 
+      ..\obj\Events.obj ..\obj\PrintingSections.obj 
+      ..\obj\VirtualPrintersInterface.obj ..\obj\VirtualPrinterManager.obj 
+      ..\obj\ManagerPhysicalPrinter.obj ..\obj\Unicode.obj 
+      ..\obj\PSectionInstructionEdit.obj ..\obj\PrinterRedirect.obj 
+      ..\obj\PrintInfo.obj ..\obj\WindowsPrinters.obj ..\obj\EftposCadmus.obj 
+      ..\obj\ReferenceManager.obj ..\obj\MMTouchKeyboard.obj 
+      ..\obj\Transaction.obj ..\obj\DocketManager.obj 
+      ..\obj\SelectKitchenDocket.obj ..\obj\MMMessageBox.obj 
+      ..\obj\MMTouchNumpad.obj ..\obj\ShowPrintout.obj 
+      ..\obj\PrinterControlPanel.obj ..\obj\Devices.obj ..\obj\MembershipERS.obj 
+      ..\obj\Membership.obj ..\obj\ContactStaff.obj ..\obj\MM_Menu.obj 
+      ..\obj\MM_DBCore.obj ..\obj\VerticalSelect.obj ..\obj\EftposIceLink.obj 
+      ..\obj\ReportDisplay.obj ..\obj\Modules.obj ..\obj\PatronManager.obj 
+      ..\obj\ZForm.obj ..\obj\NetMessageKillProc.obj 
+      ..\obj\GraphicPrinterSettings.obj ..\obj\SerialConfig.obj 
+      ..\obj\Porttalk.obj ..\obj\SmartCardAPI.obj ..\obj\SmartCardConfigGUI.obj 
+      ..\obj\EventsContact.obj ..\obj\MembershipManager.obj 
+      ..\obj\MMDeviceSys.obj ..\obj\blowfish.obj ..\obj\EftposDPS.obj 
+      ..\obj\DPSEFTXLib_OCX.obj ..\obj\ManagerTimeClock.obj 
+      ..\obj\ThemeManager.obj ..\obj\tinyxmlparser.obj ..\obj\tinystr.obj 
+      ..\obj\tinyxml.obj ..\obj\tinyxmlerror.obj ..\obj\ContactPoints.obj 
+      ..\obj\ManagerWebDispatch.obj ..\obj\ManagerReports.obj 
+      ..\obj\ManagerFloat.obj ..\obj\ReportDisplayNav.obj ..\obj\Scales.obj 
+      ..\obj\ScaleControler.obj ..\obj\ScaleModel.obj ..\obj\WeighScale.obj 
+      ..\obj\Weight.obj ..\obj\PoleDisplay.obj ..\obj\WeightScaleConverter.obj 
+      ..\obj\WeightedPrice.obj ..\obj\EftposSyncroPinPadCTRL.obj 
+      ..\obj\ProcessingController.obj ..\obj\EftposCadmusCronos.obj 
+      ..\obj\CronosWrapper.obj ..\obj\IntamateXML.obj ..\obj\IntaMateManager.obj 
+      ..\obj\IntaMateTransport.obj ..\obj\IntaMateConfiguration.obj 
+      ..\obj\ManagerSyndCode.obj ..\obj\ListManager.obj ..\obj\SyndCodeGui.obj 
+      ..\obj\SyndCodeController.obj ..\obj\SmartCardVer3API.obj 
+      ..\obj\SmartCardVer2API.obj ..\obj\SmartCardVer0API.obj 
+      ..\obj\SmartCardVer1API.obj ..\obj\SmartCardGUID.obj 
+      ..\obj\SmartCardBlock.obj ..\obj\PointsRulesSet.obj 
+      ..\obj\PointsRulesSetUtils.obj ..\obj\MenuItems.obj ..\obj\GUIDiscount.obj 
+      ..\obj\Discount.obj ..\obj\DiscountTimes.obj ..\obj\OrderUtils.obj 
+      ..\obj\ChitNumberController.obj ..\obj\ManagerChitNumber.obj 
+      ..\obj\ChitNumberGui.obj ..\obj\BlindBalanceController.obj 
+      ..\obj\PointsTransactions.obj ..\obj\POS_XMLTransaction.obj 
+      ..\obj\StockInterface.obj ..\obj\MM_StockCore.obj 
+      ..\obj\MM_StockTransactions.obj ..\obj\ManagerPocketVoucher.obj 
+      ..\obj\PocketMateXML.obj ..\obj\PocketVoucher.obj 
+      ..\obj\PocketVoucherTransport.obj ..\obj\SelectDiscounts.obj"/>
+    <RESFILES value="MenuMate.res brush.res ..\obj\VersionRes.res ..\obj\html.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) Analysis.dfm Data.dfm Maintain.dfm Main.dfm Setup.dfm 
+      DbMod.dfm Security\Login.dfm Security\TimeClock.dfm POS\BillGroup.dfm 
+      POS\GetMoney.dfm POS\MenuManager.dfm POS\Paytype.dfm POS\PosMain.dfm 
+      POS\SelectDish.dfm POS\SelectTable.dfm POS\Transfer.dfm POS\AddTab.dfm 
+      CardSwipe.dfm POS\SelectReceipt.dfm POS\SelectGlass.dfm 
+      POS\PatronCount.dfm Processing.dfm POS\ConfirmOrd.dfm POS\SplitPayment.dfm 
+      Security\Secure.dfm POS\SelectActiveMenus.dfm POS\Message.dfm 
+      NewPaymentType.dfm Maintenance\UserMaintenance.dfm 
+      Maintenance\EditCustomer.dfm Maintenance\GeneralMaintenance.dfm 
+      Maintenance\HappyHourSettings.dfm Maintenance\MessageMaintenance.dfm 
+      Maintenance\NewUser.dfm Maintenance\PrinterMaintenance.dfm 
+      Maintenance\PaymentMaintenance.dfm Locations.dfm SystemConfig.dfm 
+      POS\TransferItems.dfm POS\SelectZed.dfm TabManager.dfm ParkedSales.dfm 
+      POS\SelectCurrentMenu.dfm Discounts.dfm DiscountEditor.dfm 
+      EftPosDialogs.dfm EftChequeVerify.dfm POS\ForcedOptions.dfm 
+      POS\ForcedSides.dfm DropDown.dfm POS\SelectRoom.dfm DropDownVar.dfm 
+      POS\SelectMember.dfm POS\SelectPhoenixRoom.dfm PHSConfiguration.dfm 
+      VirtualPrintersInterface.dfm PSectionInstructionEdit.dfm 
+      PrinterRedirect.dfm &quot;..\..\Touch Utils\MMTouchKeyboard.dfm&quot; 
+      POS\SelectKitchenDocket.dfm &quot;..\..\Touch Utils\MMMessageBox.dfm&quot; 
+      &quot;..\..\Touch Utils\MMTouchNumpad.dfm&quot; POS\ShowPrintout.dfm 
+      Maintenance\PrinterControlPanel.dfm DeskTop\VerticalSelect.dfm 
+      ReportDisplay.dfm Comms\SerialConfig.dfm SmartCards\SmartCardConfigGUI.dfm 
+      ReportDisplayNav.dfm POS\Scales.dfm IntaMateConfiguration.dfm 
+      ListManager.dfm SyndCodeGui.dfm POS\GUIDiscount.dfm DiscountTimes.dfm 
+      ChitNumberGui.dfm PocketVoucher.dfm SelectDiscounts.dfm"/>
+    <LIBFILES value="$(BCB)\Lib\Psdk\iphlpapi.lib
+      SmartCards\casmcard.lib &quot;..\..\Components BCB6\Eftpos\DPSEftpos.lib&quot;"/>
+    <LIBRARIES value="PCEFTPOS.lib CadmusCronos.lib PinPadCtrl.lib inetdb.lib inet.lib 
+      pngbuilder.lib DPSEftpos.lib madBasic_.lib madDisAsm_.lib madExcept_.lib 
+      vclie.lib Ingenico.lib TntLibR.lib ENZEFT.lib ETF2000.lib soaprtl.lib 
+      inetdbxpress.lib inetdbbde.lib ZipPack.lib  dss.lib  
+      mapimail.lib dclocx.lib adortl.lib bcb2kaxserver.lib bcbie.lib 
+      visualdbclx.lib dsnapcon.lib dsnapcrba.lib bdecds.lib dbxcds.lib 
+      vcldbx.lib Indy60.lib CPortLibCB6.lib ButtonPack.lib visualclx.lib 
+      dbexpress.lib dsnap.lib cds.lib ibxpress.lib vcljpg.lib nmfast.lib 
+      bcbsmp.lib vclsmp.lib vclx.lib qrpt.lib   bdertl.lib 
+      vcldb.lib dbrtl.lib vcl.lib rtl.lib"/>
+    <SPARELIBS value="rtl.lib vcl.lib dbrtl.lib vcldb.lib bdertl.lib   qrpt.lib 
+      vclx.lib vclsmp.lib bcbsmp.lib nmfast.lib vcljpg.lib ibxpress.lib cds.lib 
+      dsnap.lib dbexpress.lib visualclx.lib ButtonPack.lib CPortLibCB6.lib 
+      Indy60.lib vcldbx.lib dbxcds.lib bdecds.lib dsnapcrba.lib dsnapcon.lib 
+      visualdbclx.lib bcbie.lib bcb2kaxserver.lib adortl.lib dclocx.lib 
+      mapimail.lib  dss.lib  ZipPack.lib inetdbbde.lib 
+      inetdbxpress.lib soaprtl.lib ETF2000.lib ENZEFT.lib TntLibR.lib 
+      Ingenico.lib vclie.lib madExcept_.lib madDisAsm_.lib madBasic_.lib 
+      DPSEftpos.lib pngbuilder.lib inet.lib inetdb.lib PinPadCtrl.lib 
+      CadmusCronos.lib PCEFTPOS.lib"/>
+    <PACKAGES value="vclx.bpi rtl.bpi vcl.bpi dbrtl.bpi vcldb.bpi bdertl.bpi vcldbx.bpi 
+      dclocx.bpi vclsmp.bpi bcbsmp.bpi"/>
+    <PATHCPP value=".;Security;POS;Maintenance;..\..\SimpleTCP;..\..\Registration\Source;Comms;..\..\ChefMate\Source;..\..\LogsMate\Source;IBLogs;&quot;..\..\Touch Utils&quot;;System;System\Core;DeskTop;..\..\..\Shared-Source\TZForm;&quot;..\..\Components BCB6\porttalk&quot;;SmartCards;&quot;..\..\Components BCB6\Eftpos&quot;;..\..\..\Shared-Source\tinyXML;..\..\Stock"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="MenuMate;_WINSOCKAPI_;NO_WIN32_LEAN_AND_MEAN"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="MenuMate.cpp"/>
+    <INCLUDEPATH value="&quot;..\..\components bcb6\pngimage&quot;;..\..\..\Shared-Source\tinyXML;SmartCards;..\..\..\Shared-Source\TZForm;DeskTop;System\Core;System;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;&quot;..\..\components bcb6\touch\button&quot;;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;&quot;..\..\components bcb6\touch\Checkbox&quot;;&quot;..\..\components bcb6\touch\RadioButton&quot;;&quot;..\..\components bcb6\Zip\vcl&quot;;&quot;..\..\components bcb6\CPort264\Sources&quot;;&quot;..\..\Components BCB6\tntunicodecontrols&quot;;&quot;..\..\Components BCB6\TouchButtons&quot;;&quot;..\..\Components BCB6\Eftpos&quot;;&quot;..\..\Touch Utils&quot;;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins;&quot;..\..\Components BCB6\porttalk&quot;;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins;&quot;C:\Program Files\madCollection\madBasic\BCB6&quot;;&quot;C:\Program Files\madCollection\madDisAsm\BCB6&quot;;&quot;C:\Program Files\madCollection\madExcept\BCB6&quot;;&quot;C:\Program Files\madCollection\madExcept\..\Plugins&quot;;&quot;C:\Program Files\madCollection\madKernel\BCB6&quot;;&quot;C:\Program Files\madCollection\madSecurity\BCB6&quot;;&quot;C:\Program Files\madCollection\madShell\BCB6&quot;;..\..\Stock;&quot;..\..\components bcb6\PinPadControl&quot;"/>
+    <LIBPATH value="..\..\Stock;&quot;..\..\..\..\MneuMateOffice\Office\Office 4.8\Source\System\Core&quot;;&quot;..\..\..\..\MneuMateOffice\Office\Office 4.8\Source\System&quot;;&quot;..\..\..\..\MneuMateOffice\Office\Office 4.8\Source\Interface&quot;;&quot;..\..\components bcb6\pngimage&quot;;&quot;..\..\..\Shared-Source\tinyXML&quot;;SmartCards;&quot;..\..\Components BCB6\porttalk&quot;;&quot;..\..\..\Shared-Source\TZForm&quot;;&quot;..\..\Components BCB6\TouchButtons&quot;;DeskTop;System\Core;System;C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;&quot;..\..\components bcb6\touch\Checkbox&quot;;&quot;..\..\components bcb6\touch\RadioButton&quot;;&quot;..\..\components bcb6\Zip\vcl&quot;;&quot;..\..\components bcb6\CPort264\Sources&quot;;&quot;..\..\components bcb6\touch\button&quot;;&quot;..\..\Components BCB6\tntunicodecontrols&quot;;&quot;..\..\Components BCB6\Eftpos&quot;;&quot;..\..\Touch Utils&quot;;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins;C:\Devs\madCollection\madBasic\BCB6;C:\Devs\madCollection\madDisAsm\BCB6;C:\Devs\madCollection\madExcept\BCB6;C:\Devs\madCollection\madExcept\..\Plugins;&quot;C:\Program Files\madCollection\madBasic\BCB6&quot;;&quot;C:\Program Files\madCollection\madDisAsm\BCB6&quot;;&quot;C:\Program Files\madCollection\madExcept\BCB6&quot;;&quot;C:\Program Files\madCollection\madExcept\..\Plugins&quot;;&quot;C:\Program Files\madCollection\madKernel\BCB6&quot;;&quot;C:\Program Files\madCollection\madSecurity\BCB6&quot;;&quot;C:\Program Files\madCollection\madShell\BCB6&quot;;&quot;..\..\components bcb6\PinPadControl&quot;"/>
+    <WARNINGS value="-w-par -w-8027 -w-8026"/>
+    <WARNOPTSTR value=""/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I&quot;..\..\components bcb6\pngimage&quot; -I..\..\..\Shared-Source\tinyXML 
+      -ISmartCards -I..\..\..\Shared-Source\TZForm -IDeskTop -ISystem\Core 
+      -ISystem -I..\..\LogsMate\Source -I..\..\Version -I..\..\ChefMate\Source 
+      -IComms -I..\..\Registration\Source -I..\..\ChefMate -I..\..\SimpleTCP 
+      -I&quot;..\..\components bcb6\touch\button&quot; -IMaintenance -IIBLogs -IPOS 
+      -ISecurity -I$(BCB)\Source\Indy\C6 -I$(BCB)\indy\c6 -I$(BCB)\Bin 
+      -I$(BCB)\include -I$(BCB)\Projects -I$(BCB)\include\vcl -I$(BCB)\Imports 
+      -I&quot;..\..\components bcb6\touch\Checkbox&quot; 
+      -I&quot;..\..\components bcb6\touch\RadioButton&quot; 
+      -I&quot;..\..\components bcb6\Zip\vcl&quot; 
+      -I&quot;..\..\components bcb6\CPort264\Sources&quot; 
+      -I&quot;..\..\Components BCB6\tntunicodecontrols&quot; 
+      -I&quot;..\..\Components BCB6\TouchButtons&quot; -I&quot;..\..\Components BCB6\Eftpos&quot; 
+      -I&quot;..\..\Touch Utils&quot;
+      -I..\..\Stock
+      -I&quot;..\..\Components BCB6\porttalk&quot; 
+      -I&quot;..\..\components bcb6\PinPadControl&quot; -src_suffix cpp -DMenuMate 
+      -D_WINSOCKAPI_ -DNO_WIN32_LEAN_AND_MEAN -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Q -Vx -Ve -xp -Tkh30000 -X- -a8 -5 -b- -k- 
+      -vi -c -tW -tWM"/>
+    <PFLAGS value="-N2..\obj -N0..\obj -$Y- -$L- -$D- -$A8 -v -M -JPHNE"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn /z /x /n /c"/>
+    <LFLAGS value="-I..\obj -D&quot;&quot; -S:0x600000 -Sc:0x4000 -aa -Tpe -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="MenuMate.cpp" FORMNAME="" UNITNAME="MenuMate" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MenuMate.res" FORMNAME="" UNITNAME="MenuMate.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="brush.res" FORMNAME="" UNITNAME="brush" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Analysis.cpp" FORMNAME="frmAnalysis" UNITNAME="Analysis" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Cal.cpp" FORMNAME="" UNITNAME="Cal" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Data.cpp" FORMNAME="frmData" UNITNAME="data" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Maintain.cpp" FORMNAME="frmMaintain" UNITNAME="Maintain" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Main.cpp" FORMNAME="frmMain" UNITNAME="Main" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CrcTable.c" FORMNAME="" UNITNAME="CrcTable" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Setup.cpp" FORMNAME="frmSetup" UNITNAME="Setup" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Printing.cpp" FORMNAME="" UNITNAME="Printing" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Enum.h" FORMNAME="" UNITNAME="enum" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DbMod.cpp" FORMNAME="frmDBMod" UNITNAME="DbMod" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Security\Login.cpp" FORMNAME="frmLogin" UNITNAME="Login" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Security\TimeClock.cpp" FORMNAME="frmTimeClock" UNITNAME="TimeClock" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\BillGroup.cpp" FORMNAME="frmBillGroup" UNITNAME="BillGroup" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\GetMoney.cpp" FORMNAME="frmControlTransaction" UNITNAME="GetMoney" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\MenuManager.cpp" FORMNAME="frmMenuManager" UNITNAME="MenuManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\Paytype.cpp" FORMNAME="frmPaymentType" UNITNAME="Paytype" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\PosMain.cpp" FORMNAME="frmPOSMain" UNITNAME="PosMain" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectDish.cpp" FORMNAME="frmSelectDish" UNITNAME="SelectDish" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectTable.cpp" FORMNAME="frmSelectTable" UNITNAME="SelectTable" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\Transfer.cpp" FORMNAME="frmTransfer" UNITNAME="Transfer" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\AddTab.cpp" FORMNAME="frmAddTab" UNITNAME="AddTab" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CardSwipe.cpp" FORMNAME="frmCardSwipe" UNITNAME="CardSwipe" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MMRegistry.cpp" FORMNAME="" UNITNAME="MMRegistry" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectReceipt.cpp" FORMNAME="frmSelectReceipt" UNITNAME="SelectReceipt" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PrintFormat.cpp" FORMNAME="" UNITNAME="PrintFormat" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectGlass.cpp" FORMNAME="frmSelectGlass" UNITNAME="SelectGlass" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\PatronCount.cpp" FORMNAME="frmPatronCount" UNITNAME="PatronCount" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Processing.cpp" FORMNAME="frmProcessing" UNITNAME="Processing" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\ConfirmOrd.cpp" FORMNAME="frmConfirmOrder" UNITNAME="ConfirmOrd" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SplitPayment.cpp" FORMNAME="frmSplitPayment" UNITNAME="SplitPayment" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Requests.cpp" FORMNAME="" UNITNAME="Requests" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Security\Secure.cpp" FORMNAME="frmSecurity" UNITNAME="Secure" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectActiveMenus.cpp" FORMNAME="frmSelectActiveMenus" UNITNAME="SelectActiveMenus" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS.cpp" FORMNAME="" UNITNAME="POS" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommonMenus.cpp" FORMNAME="" UNITNAME="CommonMenus" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IBData\MMCreateDB.sql" FORMNAME="" UNITNAME="MMCreateDB" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IBData\MMUpdateDB.sql" FORMNAME="" UNITNAME="MMUpdateDB" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\Message.cpp" FORMNAME="frmMessage" UNITNAME="Message" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NewPaymentType.cpp" FORMNAME="frmNewPaymentType" UNITNAME="NewPaymentType" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Payments.cpp" FORMNAME="" UNITNAME="Payments" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Maintenance\UserMaintenance.cpp" FORMNAME="frmUserMaintenance" UNITNAME="UserMaintenance" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Maintenance\EditCustomer.cpp" FORMNAME="frmEditCustomer" UNITNAME="EditCustomer" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Maintenance\GeneralMaintenance.cpp" FORMNAME="frmGeneralMaintenance" UNITNAME="GeneralMaintenance" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Maintenance\HappyHourSettings.cpp" FORMNAME="frmHappyHourSettings" UNITNAME="HappyHourSettings" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Maintenance\MessageMaintenance.cpp" FORMNAME="frmMessageMaintenance" UNITNAME="MessageMaintenance" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Maintenance\NewUser.cpp" FORMNAME="frmNewUser" UNITNAME="NewUser" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Maintenance\PrinterMaintenance.cpp" FORMNAME="frmPrinterMaintenance" UNITNAME="PrinterMaintenance" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Maintenance\PaymentMaintenance.cpp" FORMNAME="frmPaymentMaintenance" UNITNAME="PaymentMaintenance" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Version.cpp" FORMNAME="" UNITNAME="Version" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Locations.cpp" FORMNAME="frmLocations" UNITNAME="Locations" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SystemConfig.cpp" FORMNAME="frmSystemConfig" UNITNAME="SystemConfig" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\TransferItems.cpp" FORMNAME="frmTransferItem" UNITNAME="TransferItems" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectZed.cpp" FORMNAME="frmSelectZed" UNITNAME="SelectZed" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CSV.cpp" FORMNAME="" UNITNAME="CSV" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Rooms.cpp" FORMNAME="" UNITNAME="Rooms" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\SimpleTCP\SimpleTCP.cpp" FORMNAME="" UNITNAME="SimpleTCP" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\SimpleTCP\Stream.cpp" FORMNAME="" UNITNAME="Stream" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SaleTimes.cpp" FORMNAME="" UNITNAME="SaleTimes" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Registration\Source\Registration.cpp" FORMNAME="" UNITNAME="Registration" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Registration\Source\MD5Checksum.cpp" FORMNAME="" UNITNAME="MD5Checksum" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TabManager.cpp" FORMNAME="frmTabManager" UNITNAME="TabManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Tabs.cpp" FORMNAME="" UNITNAME="Tabs" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Contact.cpp" FORMNAME="" UNITNAME="Contact" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Comms\Comms.cpp" FORMNAME="" UNITNAME="Comms" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Invoice.cpp" FORMNAME="" UNITNAME="Invoice" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="OrderStorage.cpp" FORMNAME="" UNITNAME="OrderStorage" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ParkedSales.cpp" FORMNAME="frmParkedSales" UNITNAME="ParkedSales" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectCurrentMenu.cpp" FORMNAME="frmSelectCurrentMenu" UNITNAME="SelectCurrentMenu" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\ChefMate\Source\KitchenMod.cpp" FORMNAME="" UNITNAME="KitchenMod" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="$(BCB)\Lib\Psdk\iphlpapi.lib" FORMNAME="" UNITNAME="iphlpapi.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Orders.cpp" FORMNAME="" UNITNAME="Orders" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Discounts.cpp" FORMNAME="frmDiscounts" UNITNAME="Discounts" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DiscountManager.cpp" FORMNAME="" UNITNAME="DiscountManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DiscountEditor.cpp" FORMNAME="frmDiscountEdit" UNITNAME="DiscountEditor" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Eftpos.cpp" FORMNAME="" UNITNAME="Eftpos" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EftPosDialogs.cpp" FORMNAME="frmEftPos" UNITNAME="EftPosDialogs" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EftChequeVerify.cpp" FORMNAME="frmChequeVerfiy" UNITNAME="EftChequeVerify" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="RunManager.cpp" FORMNAME="" UNITNAME="RunManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Manager.cpp" FORMNAME="" UNITNAME="Manager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MessageManager.cpp" FORMNAME="" UNITNAME="MessageManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="StockManager.cpp" FORMNAME="" UNITNAME="StockManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VariableManager.cpp" FORMNAME="" UNITNAME="VariableManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="FreebieManager.cpp" FORMNAME="" UNITNAME="FreebieManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="TableManager.cpp" FORMNAME="" UNITNAME="TableManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EftposANZ.cpp" FORMNAME="" UNITNAME="EftposANZ" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EftposSyncro.cpp" FORMNAME="" UNITNAME="EftposSyncro" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\ForcedOptions.cpp" FORMNAME="frmSelectForcedOptions" UNITNAME="ForcedOptions" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\ForcedSides.cpp" FORMNAME="frmSelectForcedSides" UNITNAME="ForcedSides" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DropDown.cpp" FORMNAME="frmDropDownFunc" UNITNAME="DropDown" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Barcodereader.cpp" FORMNAME="" UNITNAME="Barcodereader" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VersionRes.rc" FORMNAME="" UNITNAME="VersionRes.rc" CONTAINERID="RCCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Version\VersionRes.h" FORMNAME="" UNITNAME="VersionRes.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NetMessageMsg.cpp" FORMNAME="" UNITNAME="NetMessageMsg" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\LogsMate\Source\NetMessageLogs.cpp" FORMNAME="" UNITNAME="NetMessageLogs" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NetMessageMenuAltered.cpp" FORMNAME="" UNITNAME="NetMessageMenuAltered" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NetMessageMenuChanged.cpp" FORMNAME="" UNITNAME="NetMessageMenuChanged" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NetMessageSeatName.cpp" FORMNAME="" UNITNAME="NetMessageSeatName" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NetMessageTabChanged.cpp" FORMNAME="" UNITNAME="NetMessageTabChanged" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NetMessageHappyHour.cpp" FORMNAME="" UNITNAME="NetMessageHappyHour" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NetMessageInfoSync.cpp" FORMNAME="" UNITNAME="NetMessageInfoSync" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\ChefMate\Source\NetMessageChefMate.cpp" FORMNAME="" UNITNAME="NetMessageChefMate" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NetManager.cpp" FORMNAME="" UNITNAME="NetManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ReceiptManager.cpp" FORMNAME="" UNITNAME="ReceiptManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IBLogs\IBLogs.cpp" FORMNAME="" UNITNAME="IBLogs" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ThirdPartyManager.cpp" FORMNAME="" UNITNAME="ThirdPartyManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectRoom.cpp" FORMNAME="frmSelectRoom" UNITNAME="SelectRoom" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DropDownVar.cpp" FORMNAME="frmDropDownVar" UNITNAME="DropDownVar" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EftposIngenico.cpp" FORMNAME="" UNITNAME="EftposIngenico" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Money.cpp" FORMNAME="" UNITNAME="Money" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="StockInterface.h" FORMNAME="" UNITNAME="StockInterface.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectMember.cpp" FORMNAME="frmSelectMember" UNITNAME="SelectMember" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="widestrings.cpp" FORMNAME="" UNITNAME="widestrings" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectPhoenixRoom.cpp" FORMNAME="frmPhoenixRoom" UNITNAME="SelectPhoenixRoom" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PHSTCPIP.cpp" FORMNAME="" UNITNAME="PHSTCPIP.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PhoenixHotelSystem.cpp" FORMNAME="" UNITNAME="PhoenixHotelSystem.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PHSConfiguration.cpp" FORMNAME="frmPHSConfiguration" UNITNAME="PHSConfiguration" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Events.cpp" FORMNAME="" UNITNAME="Events" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PrintingSections.cpp" FORMNAME="" UNITNAME="PrintingSections" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VirtualPrintersInterface.cpp" FORMNAME="frmVirtualPrintersInterface" UNITNAME="VirtualPrintersInterface" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VirtualPrinterManager.cpp" FORMNAME="" UNITNAME="VirtualPrinterManager.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ManagerPhysicalPrinter.cpp" FORMNAME="" UNITNAME="ManagerPhysicalPrinter" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Unicode.cpp" FORMNAME="" UNITNAME="Unicode" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PSectionInstructionEdit.cpp" FORMNAME="frmPSectionInstructionEdit" UNITNAME="PSectionInstructionEdit" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PrinterRedirect.cpp" FORMNAME="frmPrinterRedirect" UNITNAME="PrinterRedirect" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PrintInfo.cpp" FORMNAME="" UNITNAME="PrintInfo" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="WindowsPrinters.cpp" FORMNAME="" UNITNAME="WindowsPrinters" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EftposCadmus.cpp" FORMNAME="" UNITNAME="EftposCadmus" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ReferenceManager.cpp" FORMNAME="" UNITNAME="ReferenceManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Touch Utils\MMTouchKeyboard.cpp" FORMNAME="frmTouchKeyboard" UNITNAME="MMTouchKeyboard" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Transaction.cpp" FORMNAME="" UNITNAME="Transaction" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DocketManager.cpp" FORMNAME="" UNITNAME="DocketManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\SelectKitchenDocket.cpp" FORMNAME="frmSelectKitchenDocket" UNITNAME="SelectKitchenDocket" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Touch Utils\MMMessageBox.cpp" FORMNAME="frmMessageBox" UNITNAME="MMMessageBox" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Touch Utils\MMTouchNumpad.cpp" FORMNAME="frmTouchNumpad" UNITNAME="MMTouchNumpad" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\ShowPrintout.cpp" FORMNAME="frmShowPrintout" UNITNAME="ShowPrintout" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Maintenance\PrinterControlPanel.cpp" FORMNAME="frmPrinterControlPanel" UNITNAME="PrinterControlPanel" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Devices.cpp" FORMNAME="" UNITNAME="Devices" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MembershipERS.cpp" FORMNAME="" UNITNAME="MembershipERS" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Membership.cpp" FORMNAME="" UNITNAME="Membership" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ContactStaff.cpp" FORMNAME="" UNITNAME="ContactStaff" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="System\MM_Menu.cpp" FORMNAME="" UNITNAME="MM_Menu" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="System\Core\MM_DBCore.cpp" FORMNAME="" UNITNAME="MM_DBCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DeskTop\VerticalSelect.cpp" FORMNAME="frmVerticalSelect" UNITNAME="VerticalSelect" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EftposIceLink.cpp" FORMNAME="" UNITNAME="EftposIceLink" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="html.rc" FORMNAME="" UNITNAME="html.rc" CONTAINERID="RCCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="html\StockOnHandTop.html" FORMNAME="" UNITNAME="StockOnHandTop" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="html\StockOnHandBottom.html" FORMNAME="" UNITNAME="StockOnHandBottom" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="StringTableRes.h" FORMNAME="" UNITNAME="StringTableRes.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ReportDisplay.cpp" FORMNAME="frmReportDisplay" UNITNAME="ReportDisplay" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Modules.cpp" FORMNAME="" UNITNAME="Modules" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PatronManager.cpp" FORMNAME="" UNITNAME="PatronManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\Shared-Source\TZForm\ZForm.cpp" FORMNAME="" UNITNAME="ZForm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NetMessageKillProc.cpp" FORMNAME="" UNITNAME="NetMessageKillProc" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="GraphicPrinterSettings.cpp" FORMNAME="" UNITNAME="GraphicPrinterSettings" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Comms\SerialConfig.cpp" FORMNAME="frmSerialConfig" UNITNAME="SerialConfig" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Components BCB6\porttalk\Porttalk.cpp" FORMNAME="" UNITNAME="Porttalk" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SmartCards\SmartCardAPI.cpp" FORMNAME="" UNITNAME="SmartCardAPI" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SmartCards\casmcard.lib" FORMNAME="" UNITNAME="casmcard.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SmartCards\SmartCardConfigGUI.cpp" FORMNAME="frmSmartCardConfiguration" UNITNAME="SmartCardConfigGUI" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EventsContact.cpp" FORMNAME="" UNITNAME="EventsContact" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MembershipManager.cpp" FORMNAME="" UNITNAME="MembershipManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MMDeviceSys.cpp" FORMNAME="" UNITNAME="MMDeviceSys" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CRCTABLE.H" FORMNAME="" UNITNAME="CRCTABLE.H" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SmartCards\blowfish.cpp" FORMNAME="" UNITNAME="blowfish" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EftposDPS.cpp" FORMNAME="" UNITNAME="EftposDPS" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Components BCB6\Eftpos\DPSEFTXLib_OCX.cpp" FORMNAME="" UNITNAME="DPSEFTXLib_OCX" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Components BCB6\Eftpos\DPSEftpos.lib" FORMNAME="" UNITNAME="DPSEftpos.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ManagerTimeClock.cpp" FORMNAME="" UNITNAME="ManagerTimeClock" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ThemeManager.cpp" FORMNAME="" UNITNAME="ThemeManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\Shared-Source\tinyXML\tinyxmlparser.cpp" FORMNAME="" UNITNAME="tinyxmlparser.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\Shared-Source\tinyXML\tinystr.cpp" FORMNAME="" UNITNAME="tinystr.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\Shared-Source\tinyXML\tinyxml.cpp" FORMNAME="" UNITNAME="tinyxml.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\Shared-Source\tinyXML\tinyxmlerror.cpp" FORMNAME="" UNITNAME="tinyxmlerror.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ContactPoints.cpp" FORMNAME="" UNITNAME="ContactPoints" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ManagerWebDispatch.cpp" FORMNAME="" UNITNAME="ManagerWebDispatch" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ManagerReports.cpp" FORMNAME="" UNITNAME="ManagerReports" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ManagerFloat.cpp" FORMNAME="" UNITNAME="ManagerFloat" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ReportDisplayNav.cpp" FORMNAME="frmReportDisplayNav" UNITNAME="ReportDisplayNav" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\Scales.cpp" FORMNAME="frmScales" UNITNAME="Scales" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ScaleControler.cpp" FORMNAME="" UNITNAME="ScaleControler" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ScaleModel.cpp" FORMNAME="" UNITNAME="ScaleModel" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="WeighScale.cpp" FORMNAME="" UNITNAME="WeighScale" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Weight.cpp" FORMNAME="" UNITNAME="Weight" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PoleDisplay.cpp" FORMNAME="" UNITNAME="PoleDisplay" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="WeightScaleConverter.cpp" FORMNAME="" UNITNAME="WeightScaleConverter" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="WeightedPrice.cpp" FORMNAME="" UNITNAME="WeightedPrice" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EftposSyncroPinPadCTRL.cpp" FORMNAME="" UNITNAME="EftposSyncroPinPadCTRL" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ProcessingController.cpp" FORMNAME="" UNITNAME="ProcessingController" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="EftposCadmusCronos.cpp" FORMNAME="" UNITNAME="EftposCadmusCronos" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Components BCB6\Eftpos\CronosWrapper.cpp" FORMNAME="" UNITNAME="CronosWrapper" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IntamateXML.cpp" FORMNAME="" UNITNAME="IntamateXML" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IntaMateManager.cpp" FORMNAME="" UNITNAME="IntaMateManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IntaMateTransport.cpp" FORMNAME="" UNITNAME="IntaMateTransport" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IntaMateConfiguration.cpp" FORMNAME="frmIntaMateConfiguration" UNITNAME="IntaMateConfiguration" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ManagerSyndCode.cpp" FORMNAME="" UNITNAME="ManagerSyndCode" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ListManager.cpp" FORMNAME="frmListManager" UNITNAME="ListManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SyndCodeGui.cpp" FORMNAME="frmSyndCodeGui" UNITNAME="SyndCodeGui" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SyndCodeController.cpp" FORMNAME="" UNITNAME="SyndCodeController" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SmartCards\SmartCardVer3API.cpp" FORMNAME="" UNITNAME="SmartCardVer3API" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SmartCards\SmartCardVer2API.cpp" FORMNAME="" UNITNAME="SmartCardVer2API" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SmartCards\SmartCardVer0API.cpp" FORMNAME="" UNITNAME="SmartCardVer0API" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SmartCards\SmartCardVer1API.cpp" FORMNAME="" UNITNAME="SmartCardVer1API" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SmartCards\SmartCardGUID.cpp" FORMNAME="" UNITNAME="SmartCardGUID" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SmartCards\SmartCardBlock.cpp" FORMNAME="" UNITNAME="SmartCardBlock" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PointsRulesSet.cpp" FORMNAME="" UNITNAME="PointsRulesSet" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PointsRulesSetUtils.cpp" FORMNAME="" UNITNAME="PointsRulesSetUtils" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MenuItems.cpp" FORMNAME="" UNITNAME="MenuItems" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS\GUIDiscount.cpp" FORMNAME="frmDiscount" UNITNAME="GUIDiscount" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Discount.cpp" FORMNAME="" UNITNAME="Discount" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DiscountTimes.cpp" FORMNAME="frmDiscountTimes" UNITNAME="DiscountTimes" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="OrderUtils.cpp" FORMNAME="" UNITNAME="OrderUtils" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ChitNumberController.cpp" FORMNAME="" UNITNAME="ChitNumberController" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ManagerChitNumber.cpp" FORMNAME="" UNITNAME="ManagerChitNumber" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ChitNumberGui.cpp" FORMNAME="frmChitNumberGui" UNITNAME="ChitNumberGui" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="BlindBalanceController.cpp" FORMNAME="" UNITNAME="BlindBalanceController" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PointsTransactions.cpp" FORMNAME="" UNITNAME="PointsTransactions" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="POS_XMLTransaction.cpp" FORMNAME="" UNITNAME="POS_XMLTransaction" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Stock\StockInterface.cpp" FORMNAME="" UNITNAME="StockInterface.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Stock\MM_StockCore.cpp" FORMNAME="" UNITNAME="MM_StockCore.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Stock\MM_StockTransactions.cpp" FORMNAME="" UNITNAME="MM_StockTransactions.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SelectDiscounts.cpp" FORMNAME="frmSelectDiscounts" UNITNAME="SelectDiscounts" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=3
+MinorVer=3
+Release=0
+Build=0
+Debug=0
+PreRelease=1
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=IQWorks Ltd.
+FileDescription=MenuMate Point Of Sale
+FileVersion=3.3.0.0
+InternalName=MenuMate
+LegalCopyright=IQWorks Ltd.
+LegalTrademarks=MenuMate
+OriginalFilename=MenuMate.exe
+ProductName=MenuMate
+ProductVersion=3.3.0.0
+Comments=
+
+[Excluded Packages]
+d:\development\cbuilder6\Projects\Bpl\syncro.bpl=syncro
+d:\development\cbuilder6\Projects\Bpl\Ingenico.bpl=Ingenico Eftpos
+d:\development\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+c:\program files\borland\cbuilder6\bin\dclClxIBXtras60.bpl=Borland InterBase Express Extras (Clx)
+c:\program files\borland\cbuilder6\Bin\dclIBXtras60.bpl=Borland InterBase Express Extras
+
+[HistoryLists\hlIncludePath]
+Count=30
+Item0=DeskTop;System\Core;System;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Components BCB6\Eftpos;..\..\Touch Utils;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins
+Item1=DeskTop;System\Core;System;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Components BCB6\Eftpos;..\..\Touch Utils;D:\Development\Mad\madBasic\BCB6;D:\Development\Mad\madDisAsm\BCB6;D:\Development\Mad\madExcept\BCB6;D:\Development\Mad\madExcept\..\Plugins;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins
+Item2=DeskTop;System\Core;System;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Components BCB6\Eftpos;..\..\Touch Utils;D:\Development\Mad\madBasic\BCB6;D:\Development\Mad\madDisAsm\BCB6;D:\Development\Mad\madExcept\BCB6;D:\Development\Mad\madExcept\..\Plugins
+Item3=DeskTop;System\Core;System;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Components BCB6\Eftpos;..\..\Touch Utils
+Item4=DeskTop;System\Core;System;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\Eftpos;..\..\Touch Utils
+Item5=..\..\Components BCB6\TouchButtons;DeskTop;System\Core;System;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Touch Utils
+Item6=DeskTop;System\Core;System;C:\Temp;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Touch Utils
+Item7=System\Core;System;C:\Temp;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Touch Utils
+Item8=C:\Temp;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Touch Utils
+Item9=C:\Temp;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Touch Utils;..\..\Components\TouchButtons
+Item10=C:\Temp;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Touch Utils;D:\Development\Profiler
+Item11=..\..\Touch Utils;C:\Temp;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons
+Item12=..\..\Touch Utils;C:\Temp;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols
+Item13=C:\Temp;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\indy\c6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols
+Item14=C:\Temp;..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols
+Item15=..\..\LogsMate\Source;..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols
+Item16=..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols
+Item17=..\..\Version;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources
+Item18=..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources
+Item19=..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources
+Item20=..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources;Palm
+Item21=Palm;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources
+Item22=..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources;..\..\Kitchen Mate
+Item23=..\..\ChefMate\Source;..\..\Kitchen Mate;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources
+Item24=..\..\Kitchen Mate;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;$(BCB)\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources
+Item25=..\..\Kitchen Mate;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;D:\Development\CBuilder6\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources
+Item26=Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;D:\Development\CBuilder6\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources
+Item27=Comms;..\..\Registration\Source;..\..\Kitchen Mate;..\..\SimpleTCP;..\..\..\components bcb6\touch\button;Maintenance;IBLogs;POS;Security;D:\Development\CBuilder6\Source\Indy\C6;$(BCB)\Bin;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\..\components bcb6\touch\Checkbox;..\..\..\components bcb6\touch\RadioButton;..\..\..\components bcb6\Zip BCB6;..\..\..\components bcb6\CPort264\Sources
+Item28=Comms;..\..\Registration\Source;..\..\Kitchen Mate;..\..\SimpleTCP;..\..\..\components bcb6\touch\button;$(BCB)\Bin;Maintenance;IBLogs;POS;Security;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\..\components bcb6\touch\Checkbox;..\..\..\components bcb6\touch\RadioButton;..\..\..\components bcb6\Zip BCB6;..\..\..\components bcb6\CPort264\Sources;D:\Development\CBuilder6\Source\Indy\C6
+Item29=Comms;..\..\Registration\Source;..\..\Kitchen Mate;..\..\SimpleTCP;..\..\..\components bcb6\touch\button;$(BCB)\Bin;Maintenance;IBLogs;POS;Security;$(BCB)\include;$(BCB)\Projects;$(BCB)\include\vcl;$(BCB)\Imports;..\..\..\components bcb6\touch\Checkbox;..\..\..\components bcb6\touch\RadioButton;..\..\..\components bcb6\Zip BCB6;..\..\..\components bcb6\CPort264\Sources
+
+[HistoryLists\hlLibraryPath]
+Count=23
+Item0=..\..\Components BCB6\TouchButtons;DeskTop;System\Core;System;C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\Eftpos;..\..\Touch Utils;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins
+Item1=..\..\Components BCB6\TouchButtons;DeskTop;System\Core;System;C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\Eftpos;..\..\Touch Utils;D:\Development\Mad\madBasic\BCB6;D:\Development\Mad\madDisAsm\BCB6;D:\Development\Mad\madExcept\BCB6;D:\Development\Mad\madExcept\..\Plugins;$(BCB)\Mad\madBasic\BCB6;$(BCB)\Mad\madDisAsm\BCB6;$(BCB)\Mad\madExcept\BCB6;$(BCB)\Mad\madExcept\..\Plugins
+Item2=..\..\Components BCB6\TouchButtons;DeskTop;System\Core;System;C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\Eftpos;..\..\Touch Utils;D:\Development\Mad\madBasic\BCB6;D:\Development\Mad\madDisAsm\BCB6;D:\Development\Mad\madExcept\BCB6;D:\Development\Mad\madExcept\..\Plugins
+Item3=..\..\Components BCB6\TouchButtons;DeskTop;System\Core;System;C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\Eftpos;..\..\Touch Utils
+Item4=..\..\Components BCB6\TouchButtons;DeskTop;System\Core;System;C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols;..\..\Touch Utils
+Item5=DeskTop;System\Core;System;C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Touch Utils
+Item6=System\Core;System;C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Touch Utils
+Item7=C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Touch Utils
+Item8=C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons;..\..\Touch Utils;D:\Development\Profiler
+Item9=..\..\Touch Utils;C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\TouchButtons
+Item10=..\..\Touch Utils;C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols
+Item11=C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols
+Item12=C:\Temp;..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols
+Item13=..\..\LogsMate\Source;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols
+Item14=..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;..\..\Components BCB6\tntunicodecontrols
+Item15=..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip\vcl;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button
+Item16=..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button
+Item17=..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button;Palm
+Item18=Palm;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button
+Item19=..\..\ChefMate\Source;..\..\Kitchen Mate;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button
+Item20=..\..\Kitchen Mate;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button
+Item21=Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BCB)\Bin;$(BCB)\source\indy\c6;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\components bcb6\touch\Checkbox;..\..\components bcb6\touch\RadioButton;..\..\components bcb6\Zip;..\..\components bcb6\CPort264\Sources;..\..\components bcb6\touch\button
+Item22=d:\development\cbuilder6\source\indy\c6;Comms;..\..\Registration\Source;..\..\Kitchen Mate;..\..\SimpleTCP;$(BCB)\Bin;Maintenance;IBLogs;POS;Security;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects;$(BCB)\Imports;..\..\..\components bcb6\touch\Checkbox;..\..\..\components bcb6\touch\RadioButton;..\..\..\components bcb6\Zip BCB6;..\..\..\components bcb6\CPort264\Sources;..\..\..\components bcb6\touch\button
+
+[HistoryLists\hlDebugSourcePath]
+Count=4
+Item0=D:\Development\CBuilder6\Source;D:\Code\MenuMate beta\Components BCB6\Touch\Button\
+Item1=D:\Development\CBuilder6\Source;D:\Code\MenuMate Alpha\Components BCB6\Touch\Button\;D:\Code\MenuMate beta\Components BCB6\Touch\Button\
+Item2=D:\Development\CBuilder6\Source;D:\Code\MenuMate Alpha\Components BCB6\Touch\Button\
+Item3=D:\Development\CBuilder6\Source
+
+[HistoryLists\hlConditionals]
+Count=13
+Item0=MenuMate;_WINSOCKAPI_;NO_WIN32_LEAN_AND_MEAN;madExcept
+Item1=MenuMate;_WINSOCKAPI_;NO_WIN32_LEAN_AND_MEAN;_DEBUG
+Item2=MenuMate;_WINSOCKAPI_;NO_WIN32_LEAN_AND_MEAN;_DEBUG;madExcept
+Item3=MenuMate;_WINSOCKAPI_;NO_WIN32_LEAN_AND_MEAN
+Item4=MenuMate;_WINSOCKAPI_;_DEBUG;NO_WIN32_LEAN_AND_MEAN
+Item5=MenuMate;_WINSOCKAPI_;_DEBUG
+Item6=MenuMate;_WINSOCKAPI_
+Item7=MenuMate
+Item8=MenuMate;_DEBUG
+Item9=MenuMate;_DEBUG;
+Item10=MenuMate;_DEBUG;_WINSOCKAPI_;WinSockHPP
+Item11=MenuMate;_DEBUG;_WINSOCKAPI_
+Item12=MenuMate;_DEBUG;_WINSOCK2API_
+
+[HistoryLists\hlIntOutputDir]
+Count=1
+Item0=..\obj
+
+[HistoryLists\hlFinalOutputDir]
+Count=3
+Item0=..\..\Execs\
+Item1=..\..\Execs
+Item2=C:\Program Files\MenuMate\
+
+[Debugging]
+DebugSourceDirs=D:\Development\CBuilder6\Source;D:\Code\MenuMate beta\Components BCB6\Touch\Button\
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=C:\Program Files\MenuMate\MenuMate.exe
+RemoteHost=QA
+RemotePath=C:\Program Files\MenuMate\MenuMate.exe
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

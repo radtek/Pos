@@ -1,0 +1,22 @@
+I have included a modified compilers.inc and StrEditD4.
+
+I had to changed Lines 109.. from
+
+  {$ifdef DELPHI_6_UP}
+    resourcestring
+      sVTHeaderCategoryName = 'Header';
+      sVTPaintingCategoryName = 'Custom painting';
+      sVTIncremenalCategoryName = 'Incremental search';
+  {$endif}
+
+to:
+
+  {$ifdef COMPILER_6_UP}
+    resourcestring
+      sVTHeaderCategoryName = 'Header';
+      sVTPaintingCategoryName = 'Custom painting';
+      sVTIncremenalCategoryName = 'Incremental search';
+  {$endif}
+
+
+Also I moved VirtualTrees.dcr from \packages up to the main directory, BCB didn't want to pick up the images for the palette otherwise.

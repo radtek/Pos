@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XeroIntegration>
+  <OAuth>
+    <CredentialsList appInUse="2">
+      <Credentials appID="1" organisation="Demo Company"         name="Xero Integration" appType="private" consumerKey="3EOY3XOFQAXX5AJZTTXCAT5OWBKPVD" consumerSecret="HFVKKQOJHHEBTVN8HLIRPQWAF64OS4" pfxFileName="public_privatekey.pfx" password="2012menumatexeroapril" APIEndpointURL="https://api.xero.com/api.xro/2.0/"  />
+      <Credentials appID="2" organisation="Menumate POS Testing" name="Xero Integration" appType="private" consumerKey="KIIBWHESMZFEQFVICIH8OAZFINHOK2" consumerSecret="I6DKGOPDGWXQRVU4CV77K6KTJCE5PF" pfxFileName="public_privatekey.pfx" password="2012menumatexeroapril" APIEndpointURL="https://api.xero.com/api.xro/2.0/"  />
+    </CredentialsList>
+  </OAuth>
+</XeroIntegration>

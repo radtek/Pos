@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\..\Execs\PalmMateIR.exe"/>
+    <OBJFILES value="..\..\PalmIRObj\PalmMateIR.obj ..\..\PalmIRObj\palmmain.obj 
+      ..\..\PalmIRObj\PrinterConfig.obj ..\..\PalmIRObj\SelectActiveMenus.obj 
+      ..\..\PalmIRObj\PalmRegistration.obj ..\..\PalmIRObj\PalmSetup.obj 
+      ..\..\PalmIRObj\Palm.obj ..\..\PalmIRObj\Comms.obj 
+      ..\..\PalmIRObj\DataLink.obj ..\..\PalmIRObj\PalmMenus.obj 
+      ..\..\PalmIRObj\Port.obj ..\..\PalmIRObj\Printing.obj 
+      ..\..\PalmIRObj\CrcTable.obj ..\..\PalmIRObj\Requests.obj 
+      ..\..\PalmIRObj\CommonMenus.obj ..\..\PalmIRObj\Data.obj 
+      ..\..\PalmIRObj\pause.obj ..\..\PalmIRObj\Processing.obj 
+      ..\..\PalmIRObj\MMMessageBox.obj ..\..\PalmIRObj\TCP.obj 
+      ..\..\PalmIRObj\TouchKeyboard.obj ..\..\PalmIRObj\IBLogs.obj 
+      ..\..\PalmIRObj\Login.obj ..\..\PalmIRObj\Secure.obj 
+      ..\..\PalmIRObj\PrintFormat.obj ..\..\PalmIRObj\DbMod.obj 
+      ..\..\PalmIRObj\Version.obj ..\..\PalmIRObj\Payments.obj 
+      ..\..\PalmIRObj\Locations.obj ..\..\PalmIRObj\SystemConfig.obj 
+      ..\..\PalmIRObj\SimpleTCP.obj ..\..\PalmIRObj\Registration.obj 
+      ..\..\PalmIRObj\MMRegistry.obj ..\..\PalmIRObj\CSV.obj 
+      ..\..\PalmIRObj\MD5Checksum.obj ..\..\PalmIRObj\Rooms.obj 
+      ..\..\PalmIRObj\Contact.obj ..\..\PalmIRObj\Tabs.obj 
+      ..\..\PalmIRObj\Invoice.obj ..\..\PalmIRObj\Eftpos.obj 
+      ..\..\PalmIRObj\EftPosDialogs.obj ..\..\PalmIRObj\StockManager.obj 
+      ..\..\PalmIRObj\Unicode.obj ..\..\PalmIRObj\Connect.obj 
+      ..\..\PalmIRObj\VariableManager.obj ..\..\PalmIRObj\Manager.obj 
+      ..\..\PalmIRObj\TableManager.obj ..\..\PalmIRObj\Orders.obj 
+      ..\..\PalmIRObj\NetMessageMenuAltered.obj 
+      ..\..\PalmIRObj\NetMessageMenuChanged.obj ..\..\PalmIRObj\NetManager.obj"/>
+    <RESFILES value="PalmMateIR.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) palmmain.dfm PrinterConfig.dfm SelectActiveMenus.dfm 
+      PalmRegistration.dfm PalmSetup.dfm ..\Data.dfm ..\pause.dfm 
+      ..\Processing.dfm ..\POS\MMMessageBox.dfm ..\TCP.dfm 
+      ..\POS\TouchKeyboard.dfm ..\IBLogs\IBLogs.dfm ..\Security\Login.dfm 
+      ..\Security\Secure.dfm ..\DbMod.dfm ..\Locations.dfm ..\SystemConfig.dfm 
+      ..\EftPosDialogs.dfm"/>
+    <LIBFILES value="d:\development\cbuilder6\Lib\Psdk\iphlpapi.lib"/>
+    <LIBRARIES value="soaprtl.lib inetdbxpress.lib inetdbbde.lib  dss.lib  
+        mapimail.lib dclocx.lib qrpt.lib adortl.lib 
+      bcb2kaxserver.lib bcbie.lib visualdbclx.lib dsnapcon.lib dsnapcrba.lib 
+      bdecds.lib dbxcds.lib vcldbx.lib ZipPack.lib IQEftPos.lib Indy60.lib 
+      CportLibCB6.lib ButtonPack.lib dbexpress.lib dsnap.lib cds.lib nmfast.lib 
+      ibxpress.lib vcldb.lib dbrtl.lib bdertl.lib vclx.lib bcbsmp.lib vcl.lib 
+      rtl.lib"/>
+    <SPARELIBS value="rtl.lib vcl.lib bcbsmp.lib vclx.lib bdertl.lib dbrtl.lib vcldb.lib 
+      ibxpress.lib nmfast.lib cds.lib dsnap.lib dbexpress.lib ButtonPack.lib 
+      CportLibCB6.lib Indy60.lib IQEftPos.lib ZipPack.lib vcldbx.lib dbxcds.lib 
+      bdecds.lib dsnapcrba.lib dsnapcon.lib visualdbclx.lib bcbie.lib 
+      bcb2kaxserver.lib adortl.lib qrpt.lib dclocx.lib mapimail.lib  
+        dss.lib  inetdbbde.lib inetdbxpress.lib 
+      soaprtl.lib"/>
+    <PACKAGES value="rtl.bpi vcl.bpi vclx.bpi bcbsmp.bpi dbrtl.bpi vcldb.bpi ibsmp.bpi 
+      bdertl.bpi ibxpress.bpi nmfast.bpi dclocx.bpi DCLUSR.bpi indy.bpi 
+      visualclx.bpi visualdbclx.bpi"/>
+    <PATHCPP value=".;..;..;..;..;..;..;..;..\POS;..;..\POS;..\IBLogs;..\Security;..\Security;..;..;..;..;..;..;..\..\..\SimpleTCP;..\..\..\Registration\Source;..;..;..\..\..\Registration\Source;..;..;..;..;..;..;..;..;..;..;..;..;..;..;.."/>
+    <PATHPAS value=".;.."/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="PalmMate;IR_Palm;_DEBUG"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="PalmMateIR.cpp"/>
+    <INCLUDEPATH value="..\;..;..\Security;..\IBLogs;..\POS;..\..\..\SimpleTCP;..\..\..\Registration\Source;&quot;..\..\..\Components BCB6\Touch\Checkbox&quot;;&quot;..\..\..\Components BCB6\Touch\button&quot;;&quot;..\..\..\Components BCB6\CPort264\Sources&quot;;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Bin;$(BCB)\Source\Indy\C6"/>
+    <LIBPATH value="..\;..;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;&quot;..\..\..\Components BCB6\Touch\checkbox&quot;;&quot;..\..\..\Components BCB6\Touch\button&quot;;&quot;..\..\..\Components BCB6\CPort264\Sources&quot;;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Bin;$(BCB)\Source\Indy\C6"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\. -I.. -I..\Security -I..\IBLogs -I..\POS -I..\..\..\SimpleTCP 
+      -I..\..\..\Registration\Source -I&quot;..\..\..\Components BCB6\Touch\Checkbox&quot; 
+      -I&quot;..\..\..\Components BCB6\Touch\button&quot; 
+      -I&quot;..\..\..\Components BCB6\CPort264\Sources&quot; -I$(BCB)\Projects 
+      -I$(BCB)\Imports -I$(BCB)\include -I$(BCB)\include\vcl -I$(BCB)\Bin 
+      -I$(BCB)\Source\Indy\C6 -src_suffix cpp -DPalmMate -DIR_Palm -D_DEBUG -boa"/>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -c 
+      -tW -tWM"/>
+    <PFLAGS value="-N2..\..\PalmIRObj -N0..\..\PalmIRObj -$Y+ -$W -$O- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zi"/>
+    <LFLAGS value="-I..\..\PalmIRObj -D&quot;&quot; -aa -Tpe -x -Gn -v"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="PalmMateIR.cpp" FORMNAME="" UNITNAME="PalmMateIR" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="palmmain.cpp" FORMNAME="frmMain" UNITNAME="palmmain" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PrinterConfig.cpp" FORMNAME="frmPrinterConfiguration" UNITNAME="PrinterConfig" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SelectActiveMenus.cpp" FORMNAME="frmSelectActiveMenus" UNITNAME="SelectActiveMenus" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PalmRegistration.cpp" FORMNAME="frmPalmRegistration" UNITNAME="PalmRegistration" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PalmSetup.cpp" FORMNAME="frmPalmSetup" UNITNAME="PalmSetup" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Palm.cpp" FORMNAME="" UNITNAME="Palm" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Comms.cpp" FORMNAME="" UNITNAME="Comms" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DataLink.cpp" FORMNAME="" UNITNAME="DataLink" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PalmMateIR.res" FORMNAME="" UNITNAME="PalmMateIR.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PalmMateIR.res" FORMNAME="" UNITNAME="PalmMateIR.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="PalmMenus.cpp" FORMNAME="" UNITNAME="PalmMenus" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Port.cpp" FORMNAME="" UNITNAME="Port" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Printing.cpp" FORMNAME="" UNITNAME="Printing" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\CrcTable.c" FORMNAME="" UNITNAME="CrcTable" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Requests.cpp" FORMNAME="" UNITNAME="Requests" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\CommonMenus.cpp" FORMNAME="" UNITNAME="CommonMenus" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Data.cpp" FORMNAME="frmData" UNITNAME="Data" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\pause.cpp" FORMNAME="frmPause" UNITNAME="pause" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Processing.cpp" FORMNAME="frmProcessing" UNITNAME="Processing" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\POS\MMMessageBox.cpp" FORMNAME="frmMessageBox" UNITNAME="MMMessageBox" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\TCP.cpp" FORMNAME="frmTCP" UNITNAME="TCP" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\POS\TouchKeyboard.cpp" FORMNAME="frmTouchKeyboard" UNITNAME="TouchKeyboard" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\IBLogs\IBLogs.cpp" FORMNAME="LogsIB" UNITNAME="IBLogs" CONTAINERID="CCompiler" DESIGNCLASS="TDataModule" LOCALCOMMAND=""/>
+      <FILE FILENAME="PalmMateIR.todo" FORMNAME="" UNITNAME="PalmMateIR" CONTAINERID="ToDo" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\IBData\MMCreateDB.sql" FORMNAME="" UNITNAME="MMCreateDB" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\IBData\MMUpdateDB.sql" FORMNAME="" UNITNAME="MMUpdateDB" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Security\Login.cpp" FORMNAME="frmLogin" UNITNAME="Login" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Security\Secure.cpp" FORMNAME="frmSecurity" UNITNAME="Secure" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\PrintFormat.cpp" FORMNAME="" UNITNAME="PrintFormat" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\DbMod.cpp" FORMNAME="frmDBMod" UNITNAME="DbMod" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Enum.h" FORMNAME="" UNITNAME="Enum.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Version.cpp" FORMNAME="" UNITNAME="Version" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Payments.cpp" FORMNAME="" UNITNAME="Payments" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Locations.cpp" FORMNAME="frmLocations" UNITNAME="Locations" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\SystemConfig.cpp" FORMNAME="frmSystemConfig" UNITNAME="SystemConfig" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\SimpleTCP\SimpleTCP.cpp" FORMNAME="" UNITNAME="SimpleTCP" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\Registration\Source\Registration.cpp" FORMNAME="" UNITNAME="Registration" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\MMRegistry.cpp" FORMNAME="" UNITNAME="MMRegistry" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="d:\development\cbuilder6\Lib\Psdk\iphlpapi.lib" FORMNAME="" UNITNAME="iphlpapi.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\CSV.cpp" FORMNAME="" UNITNAME="CSV" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\..\Registration\Source\MD5Checksum.cpp" FORMNAME="" UNITNAME="MD5Checksum" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Rooms.cpp" FORMNAME="" UNITNAME="Rooms" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Contact.cpp" FORMNAME="" UNITNAME="Contact" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Tabs.cpp" FORMNAME="" UNITNAME="Tabs" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Invoice.cpp" FORMNAME="" UNITNAME="Invoice" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Eftpos.cpp" FORMNAME="" UNITNAME="Eftpos" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\EftPosDialogs.cpp" FORMNAME="frmEftPos" UNITNAME="EftPosDialogs" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\StockManager.cpp" FORMNAME="" UNITNAME="StockManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Unicode.pas" FORMNAME="" UNITNAME="Unicode" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Connect.cpp" FORMNAME="" UNITNAME="Connect" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\VariableManager.cpp" FORMNAME="" UNITNAME="VariableManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Manager.cpp" FORMNAME="" UNITNAME="Manager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\TableManager.cpp" FORMNAME="" UNITNAME="TableManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Orders.cpp" FORMNAME="" UNITNAME="Orders" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\NetMessageMenuAltered.cpp" FORMNAME="" UNITNAME="NetMessageMenuAltered" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\NetMessageMenuChanged.cpp" FORMNAME="" UNITNAME="NetMessageMenuChanged" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\NetManager.cpp" FORMNAME="" UNITNAME="NetManager" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=3
+MinorVer=3
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=IQWorks Ltd
+FileDescription=PalmMate
+FileVersion=3.3.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=PalmMate
+ProductVersion=3.3.0.0
+Comments=
+
+[Excluded Packages]
+d:\development\cbuilder6\Projects\Bpl\DsgnCPortCB6.bpl=ComPort Library
+d:\development\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+
+[HistoryLists\hlIncludePath]
+Count=30
+Item0=..\;..;..\Security;..\IBLogs;..\POS;..\..\..\SimpleTCP;..\..\..\Registration\Source;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Bin;$(BCB)\Source\Indy\C6
+Item1=..\;..;..\Security;..\IBLogs;..\POS;..\..\..\SimpleTCP;..\..\..\Registration\Source;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Bin
+Item2=..;..\;..\Security;..\IBLogs;..\POS;..\..\..\SimpleTCP;..\..\..\Registration\Source;..\..\..\Components BCB6\Touch\Checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Bin
+Item3=..\;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\Checkbox;..\..\..\..\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Bin;..\..\..\..\Components BCB6\CPort264\Sources
+Item4=..\;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\Checkbox;..\..\..\..\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Bin
+Item5=..\;..;..\MD5;..\StockControl;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin
+Item6=..\;..\MD5;..\StockControl;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin
+Item7=..\;..\MD5;..\StockControl;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox&quot;&quot;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin
+Item8=..\;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin;..
+Item9=..\MD5;..\StockControl;..\;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin;..
+Item10=..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin;..\
+Item11=..\StockControl;..\;..;.;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin;..\MD5
+Item12=..\;.;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin;..\MD5
+Item13=..\MD5;..\StockControl;..\;.;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin
+Item14=.;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin
+Item15=.;..;..\;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Development\CBuilder6\Bin
+Item16=..\MD5;..\StockControl;..\;..\..\..\Registration\Source;..\..\..\SimpleTCP;..;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl
+Item17=..\..\..\Registration\Source;..\..\..\SimpleTCP;..\;..;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl
+Item18=..\..\..\Registration\Source;..\..\..\SimpleTCP;..\;..;..\MD5;D:\Development\CBuilder6\Bin;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources
+Item19=..\;..;..\MD5;D:\Development\CBuilder6\Bin;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources
+Item20=..\;..\MD5;..;D:\Development\CBuilder6\Bin;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources
+Item21=..\MD5;..\;..;D:\Development\CBuilder6\Bin;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources
+Item22=..\;..;D:\Development\CBuilder6\Bin;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources
+Item23=..\;D:\Development\CBuilder6\Bin;..;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources
+Item24=D:\Development\CBuilder6\Bin;..\;..;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\Components BCB6\CPort264\Sources
+Item25=D:\Development\CBuilder6\Bin;..\;..;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;SimpleTCP
+Item26=..\;..;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;SimpleTCP
+Item27=..\;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;..;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;SimpleTCP
+Item28=..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;..\;D:\Code\Components BCB6\Touch\Checkbox;D:\Code\Components BCB6\Touch\\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;D:\Code\MenuMate\Source;SimpleTCP
+Item29=..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;..\;..\..\components bcb6\touch\checkbox;..\..\components bcb6\touch\button;Palm;Security;StockControl;POS;IBLogs;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\include;$(BCB)\include\vcl;SimpleTCP;D:\Code\MenuMate\Source
+
+[HistoryLists\hlLibraryPath]
+Count=30
+Item0=..\;..;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Bin;$(BCB)\Source\Indy\C6
+Item1=..\;..;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Bin
+Item2=..;..\;..\Security;..\IBLogs;..\POS;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;..\..\..\Components BCB6\CPort264\Sources;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Bin
+Item3=..\;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\checkbox;..\..\..\..\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Bin;..\..\..\..\Components BCB6\CPort264\Sources
+Item4=..\;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\..\Components BCB6\Touch\checkbox;..\..\..\..\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Bin
+Item5=..\;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\..\..\Components BCB6\Touch\checkbox;..\..\..\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Bin
+Item6=..\;..;..\MD5;..\StockControl;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Development\CBuilder6\Bin
+Item7=..\;..\MD5;..\StockControl;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Development\CBuilder6\Bin
+Item8=..\MD5;..\StockControl;..\;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Development\CBuilder6\Bin;..
+Item9=..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Development\CBuilder6\Bin;..\
+Item10=..\;..\MD5;..\StockControl;..;.;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Development\CBuilder6\Bin
+Item11=..\MD5;..\StockControl;..\;.;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Development\CBuilder6\Bin
+Item12=.;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Development\CBuilder6\Bin
+Item13=..\MD5;..\StockControl;..\;.;..;..\..\..\Registration\Source;..\..\..\SimpleTCP;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item14=.;..;..\;..\..\..\Registration\Source;..\..\..\SimpleTCP;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item15=..\MD5;..\StockControl;..\;..\..\..\Registration\Source;..\..\..\SimpleTCP;..;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item16=..\..\..\Registration\Source;..\..\..\SimpleTCP;..\;..;D:\Development\CBuilder6\Bin;..\Security;..\IBLogs;..\POS;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item17=..\..\..\Registration\Source;..\..\..\SimpleTCP;..\;..;..\MD5;D:\Development\CBuilder6\Bin;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources
+Item18=..\;..;..\MD5;D:\Development\CBuilder6\Bin;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources
+Item19=..\;..\MD5;..;D:\Development\CBuilder6\Bin;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources
+Item20=..\MD5;..\;..;D:\Development\CBuilder6\Bin;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources
+Item21=..\;..;D:\Development\CBuilder6\Bin;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources
+Item22=..\;D:\Development\CBuilder6\Bin;..;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources
+Item23=D:\Development\CBuilder6\Bin;..\;..;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Code\Components BCB6\CPort264\Sources
+Item24=D:\Development\CBuilder6\Bin;..\;..;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item25=..\;..;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item26=..\;..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;..;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item27=..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;..\;D:\Code\Components BCB6\Touch\checkbox;D:\Code\Components BCB6\Touch\button;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item28=..\SimpleTCP;..\Security;..\IBLogs;..\POS;..\StockControl;..\;..\Source;..\..\components bcb6\touch\checkbox;..\..\components bcb6\touch\button;SimpleTCP;Palm;Security;StockControl;POS;IBLogs;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Components\Zip\Vcl;..\..\Components\versinfo
+Item29=..\..\components bcb6\touch\checkbox;..\..\components bcb6\touch\button;SimpleTCP;Palm;Security;StockControl;POS;IBLogs;$(BCB)\Projects;$(BCB)\Imports;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\Components\Zip\Vcl;..\..\Components\versinfo
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=6
+Item0=PalmMate;IR_Palm;_DEBUG
+Item1=PalmMate;IR_Palm
+Item2=PalmMate;_DEBUG
+Item3=PalmMate
+Item4=_DEBUG;PalmMate
+Item5=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=7
+Item0=..\..\PalmIRObj
+Item1=..\..\pmobj
+Item2=..\pmobj
+Item3=D:\Code\MenuMateInst\pmobj
+Item4=obj
+Item5=..\obj
+Item6=D:\Code\PalmMate\obj
+
+[HistoryLists\hlFinalOutputDir]
+Count=10
+Item0=..\..\..\Execs\
+Item1=..\..\..\Execs
+Item2=C:\Program Files\MenuMate\
+Item3=C:\Program Files\MenuMate
+Item4=..\Exec\
+Item5=D:\Code\MenuMateDev\Exec
+Item6=D:\Code\MenuMateInst\Exec
+Item7=D:\Code\PalmMate\Exec
+Item8=..\..\MenuMate\Exec\
+Item9=D:\Code\MenuMate\Exec
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

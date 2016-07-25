@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<Config>
+	<OAuth>
+		<Credentials name="Xero Integration" ConsumerKey="QIROP1NLAJST7CI7PUCFUDVLMFDLEX" ConsumerSecret="WCV4XER65R3CYYZKF4PYCN4SCRL0MY" pfxFileName="public_privatekey.pfx" password="2012menumatexeroapril" APIEndpointUR="https://api.xero.com/api.xro/2.0/"  />
+	</OAuth>
+</Config>

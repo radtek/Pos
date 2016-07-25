@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<SummaSettings ListenPort="4444" FtpUri="ftp://ftp.summa.co.nz" FtpUsername="menumate" FtpPassword="aceking21" UploadHr="04" UploadMin="00" 
+OutputFilePath="c:\program files\menumate\summa\" />

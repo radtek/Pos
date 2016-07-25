@@ -1,0 +1,313 @@
+The following is a list of all releases of Rave 5.1 as well as the bugs that
+were fixed and the features that were added in each release.
+
+5.1.2 - 7/25/03
+---------------
+
+=======
+Changes
+=======
+
+- Changed NDR structure to support reports with greater than 32767 pages.
+  As always, Rave 5.1.2 will be backwards compatible with NDRs created with
+  previous versions of Rave.
+
+- Changed TDLBaseResultSet.EOF function to Eof to prevent C++Builder conflicts.
+
+- Changed Event Editor compile status label to show errors in red for easier
+	reading.
+
+=====
+Fixes
+=====
+
+- Fixed problem in DataLink drivers where invalid SQL would not report a proper
+  error and would sometimes lock up the Rave visual report designer.
+
+- Fixed bug in Event Editor where event source would be cleared for current event
+	when switching to page view mode.
+
+- Fixed bug where RPDev.OutputFile property was not being cleared after a print
+	job.
+
+- Fixed a problem where in certain instances the text position after center and
+  left justified text was not being calculated correctly for non-inch based units.
+
+- Fixed a problem with CLX based text width calculations.
+
+- Fixed a problem where setting the OutputFile/OutputFileName properties would
+	not generate native printer file output.
+
+- Fixed a problem where a region placed in a section would only print one page.
+
+
+5.1.1 - 7/04/03
+---------------
+
+=========
+Additions
+=========
+
+- Added "Test Connection" buttons to database configuration dialogs
+
+- Added command and connection timeout parameters to the ADO datalink driver
+
+- Added SQLRole and read committed settings to the Interbase Express datalink
+	driver
+
+- Added new scripting demo project in the Demos\Scripting folder and updated
+	the scripting documentation
+
+- Added the Data Viewer project designer to allow the viewing of data of a
+	DataView from within the Rave report designer
+
+- Added a page view mode to the Event Editor to view all events defined for any
+	component on the current page
+
+- Added the ability to delete events within the Event Editor
+
+- Added a new band component expert that allows for easier creation of header,
+	footer and detail bands.  To activate, right click on any band and select
+	the "Create" menu
+
+- Added the display of the component name that the mouse is currently hovering
+	over to the status bar in the Rave designer
+
+- Added new Language Pack option to the Rave installer to allow the
+	installation of French, German or Japanese help files and Rave report
+	designer interfaces
+
+- Added the DisableDataSource property the the dataset data connection
+	components.  When set to false, the DisableControls/EnableControls will
+	not be called in the Open and Restore operations and then the MasterSource
+	relationships and other data source related features will then function.
+	Note that having visual controls connected to the dataset could drastically
+	slow down report speed if this property is set to false.
+
+- Added the RestoreDataSet property to the dataset data connection components.
+	When set to false, the data cursor and filter properties will not be saved or
+	restored.
+
+- Added code based printing support to the scripting libraries.  Please see the
+	scripting demo project for several examples.
+
+- Added the Visible property to most Rave visual components
+
+- Added the OnPrint event to the RaveSection component to allow for code based
+	printing within a visually designed report
+
+- Added With statement support to the scripting language
+
+=======
+Changes
+=======
+
+- Improved event compilation so that it will auto-recompile upon report
+	execution if changes had been made since the last compile
+
+- Updated DataLink drivers and DataLink specification to version 2.0 for
+	simpler and more robust datalink driver definitions
+
+- Changed About Box so that it now displays both the build number and the
+	version
+
+- Changed the developer version of the Rave report designer (Rave.exe) so that
+	Delphi does not need to be running to execute (BEX version).  Note that this
+	does not change the licensing of the Rave report designer and the developer
+	version (Rave.exe) is still not distributable.  For end user report design
+	capability please refer the the End User Designer License option.
+
+- Changed the Rave installer so that it defaults to the last location that Rave
+	was installed to
+
+- Changed the Rave installer so that the proper redistributable files are
+	available in the Rave5\Redist folder (more files were added)
+
+- Changed GUID field types from blob to string
+
+- Changed processing of Report.CurrentPage and Report.RelativePage report
+	variables so that they can now be used in calculations or referenced in
+	DataMirrorSection field values
+
+=====
+Fixes
+=====
+
+- Fixed a problem with the installer and C++Builder 4 and 5 not registering the
+	proper files
+
+- Fixed language pack issues on several items within the Rave designer
+	interface
+
+- Fixed button state problems on the designer and font toolbars
+
+- Fixed datalink driver error reporting within the Rave IDE
+
+- Fixed the multi-drop component feature (Shift-component button click)
+
+- Fixed an invalid include reference in the datalink source files.
+
+- Fixed problems with the C++Builder compilation process and some .hpp and .obj
+  files that weren't being created properly (RpTChart and DataLink source)
+
+- Fixed encoding on Code 128 barcodes with Optimize = false
+
+- Fixed a C++Builder conflict with the ResetPrinter method
+
+- Fixed a problem in TRpPrinterDevice.SetPaperSize where the result would not
+  always be correct
+
+- Fixed a problem with block justification and metric units
+
+- Fixed a problem with the default preview form and initial form state that
+  would cause problems when trying to set the initial form size
+
+- Fixed a problem in TMemoBuf that would sometimes not detect end of buffer
+  conditions
+
+- Fixed a problem in the rendering system that would sometimes cause offset of
+  positions in the output
+
+- Fixed a problem in the rendering system for custom paper size support
+
+- Fixed minor font and output problems in the PDF render
+
+- Added pattern fill support to the PDF render
+
+- Added MBCS (Chinese, Japanese, Korean) support to the PDF render
+
+- Fixed a memory leak in the preview render component
+
+- Fixed problems with paper size, duplex, copies and collate settings would
+  sometimes not load properly with the printer render component
+
+- Fixed problems with page size, image height and orientation in RTF render
+
+- Added MBCS (Chinese, Japanese, Korean) support to the RTF render
+
+- Fixed a memory leak in the TRvSystem component when using the memory stream
+  mode
+
+- Fixed a problem with changes in page size (orientation, paper size) and
+  adjusting child controls to match
+
+- Fixed the OnBeforePrint/OnAfterPrint scripting events not being called for
+  some components
+
+- Fixed a problem with using DataMirrorSection components in 0 height bands
+
+- Fixed a scripting compilation problem with For loops
+
+- Fixed a problem with projects using event scripting with same named
+	components across multiple pages
+
+- Fixed a memory leak that occured in projects that used event scripting
+
+- Fixed problems with locating compiler errors in the event editor
+
+- Fixed a problem with DataLink driver location when running the Rave Reporting
+	Server as a service
+
+
+5.1.0 - 2/17/03
+---------------
+- Fixed problems with BarCode character processing which would cause problems
+  for non-standard characters
+
+- Undefined CreateFont to prevent C++Builder name collision
+
+- Fixed an AV that would occur when an invalid printer was selected
+
+- Fixed some orientation problems with certain render devices
+
+- Fixed a problem with block justified text not being positioned correctly
+
+- Fixed a font problem with TextRect's on printer and preview
+
+- Changed image filename generation in HTML rendering
+
+- Fixed some symbol font issues with PDF rendering
+
+- Fixed some problems with Orientation and other settings when jobs were sent
+to the printer in some rare cases
+
+- Added RTF tag to force page mode in RTF render
+
+- Made several changes and updates to the DataLink driver system
+
+- Created the initial version of the DataLink driver specification (see
+  Rave5\Docs folder).  Please	see the Rave Addons page (Help | Rave Addons in
+  the Rave Designer) for additional 3rd party drivers	that are being posted
+	(initially Advantage, Interbase Express and IBObjects).
+
+- Made many fixes, changes and updates to the scripting system.  Detailed
+	documentation and additional enhancements will be coming in the near future
+	but a quick reference is currently available in the Rave5\Docs folder.
+
+
+5.0.8 - 11/25/02
+----------------
+- Added code to support XP style themes
+
+- Changed EOL identifiers to Eol to prevent conflict in C++Builder
+
+- Fixed a problem that would sometimes cause the buttons to be disabled on the
+	standard preview.
+
+- Fixed some rendering problems for commands such as BKMode, FrameRect,
+	FloodFill, BrushCopy, CopyRect and DrawFocusRect.  Note that most printer
+	drivers will not support these commands even with these fixes.
+
+- Fixed problems with AllowPreviewOnly and AllowPrinterOnly
+
+- Fixed a problem with Paper Bin selection in rendering
+
+- Fixed a problem in rendering where underlined spaces were not printing
+	correctly on all rendering option combinations
+
+- Fixed a problem with rendering and user defined macros
+
+- Fixed a problem for TRaveDriverDataView.QueryParams not working correctly
+
+- Fixed a problem with the page designer not working properly in the end user
+	designer (selection pips were not updating)
+
+- Fixed a problem with blank buttons on the project toolbar in the end user
+	designer
+
+- Fixed a problem with component icons not showing up in RavePack.dll (end user
+	designer) and addon components in the Rave designer
+
+
+5.0.7 - 10/24/02
+----------------
+- Added OnDecodeImage event to render components to support PrintImage and
+  PrintImageRect methods
+
+- Fixed problem in string processing that would cause double printing of words
+  in certain situations
+
+- Fixed problems in stream processing that would cause errors when printing
+  multiple reports in a row
+
+- Fixed a problem with bitmap sizing in RTF rendering
+
+- Fixed a problem with the default preview form using 100% CPU during
+  non-modal mode
+
+- Fixed a problem with non-blob data types (such as TBytesField) in data
+  connection and datalinks
+
+- Fixed a problem with PolyLine and Polygon methods not printing and
+  previewing correctly
+
+- Fixed a problem with the installer not including all of the required
+  packages for Rave.exe
+
+- Fixed a problem in the installer that was not working with paths
+  that included spaces
+
+
+5.0.6 - 10/15/02
+----------------
+Initial Rave 5.0 BEX release.

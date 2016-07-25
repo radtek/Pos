@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<SummaSettings  ListenPort="4444" 
+                  OutputFilePath="c:\program files (x86)\menumate\summa\" />

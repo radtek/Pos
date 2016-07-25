@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Product Id="*" Name="FileMate" Language="1033" Version="1.0.0.0" Manufacturer="Menumate" UpgradeCode="6abab246-2234-4b05-9f5d-aceb4ff8f1f8">
+		<Package Manufacturer="Menumate" InstallerVersion="200" Compressed="yes" InstallPrivileges="elevated" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<Media EmbedCab="yes" Cabinet="FileMate.cab" Id="1" />
+    
+		<Feature Id="ProductFeature" Title="InstallFileMate" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+
+    <Icon Id="Settings.ico" SourceFile="settings.ico"/>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+        <Directory Id="Menumate" Name="Menumate">
+				  <Directory Id="INSTALLFOLDER" Name="FileMate">
+            <!--<util:PermissionEx User="Users" GenericAll="yes" />-->
+          </Directory>
+        </Directory>
+			</Directory>
+      <Directory Id="DesktopFolder" Name="Desktop" />
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			<Component Id="EditorUI" Guid="3121c5e4-dc32-4bc4-a3b5-61fb2e83072d">
+        <File Id="FileMateSettingsGUI" Name="FileMateSettings.exe" Source="$(var.FileMateSettingsGUI.TargetPath)">
+          <Shortcut Id="SettingsEditorShortcut" WorkingDirectory="INSTALLFOLDER" Icon="Settings.ico" Name="FileMate Configuration" Directory="DesktopFolder" Advertise="yes" />
+        </File>
+        <!--<File Id="FileMateConfig" Name="FileMateConfig.xml" Source="../../Runtime/FileMateConfig.xml" />-->
+      </Component>
+      <Component Id="FileMateSVC.exe">
+        <File Id="FileMateSVC.exe" Name="FileMateSVC.exe" Source="$(var.FileMateSvc.TargetPath)" KeyPath="yes" />        
+        <ServiceInstall Id="FileMateSVC.exe" Type="ownProcess" Vital="yes" Name="FileMateSvc.exe" DisplayName="FileMate" Description="This is filemate service"
+                         Start="auto" Account="LocalSystem" ErrorControl="normal" Interactive="no">
+        </ServiceInstall>
+        <ServiceControl Id="FileMateSVC.exe" Start="install" Stop="both" Remove="uninstall" Name="FileMateSvc.exe" Wait="no" />
+      </Component>
+      <Component Id="NLog" Guid="44a38e18-b77a-488a-a130-c755f2971fe4">
+        <File Id="NLog.dll" Name="NLog.dll" Source="../../Runtime/Summa Pro/NLog.dll" />
+        <File Id="NLog.config" Name="NLog.config" Source="../../Runtime/Summa Pro/NLog.config" />
+      </Component>
+      <Component Id="Libraries" Guid="9002be13-4d65-40e8-81ba-c57679555dd0">
+        <File Id="FileMate.Core.dll" Name="FileMate.Core.dll" Source="../../Runtime/Summa Pro/FileMate.Core.dll" />
+        <File Id="FileMate.Core.Xml.dll" Name="FileMate.Core.Xml.dll" Source="../../Runtime/Summa Pro/FileMate.Core.Xml.dll" />
+      </Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>

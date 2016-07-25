@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FileMate>
+  <CopyGroup>
+
+    <CopyOperation name="summa" deleteSource="true" calledFromExternal="false">
+
+      <source url="c:\source\" />
+
+      <targets>
+        <target url="b:\bogus-target\">
+
+        </target>
+      </targets>
+
+      <schedule>0m</schedule>
+
+      <pattern>*.dat</pattern>
+
+    </CopyOperation>
+
+  </CopyGroup>
+</FileMate>

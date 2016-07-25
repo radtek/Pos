@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<POSOrder handle="0001c9e7-51c9-4c86-8620-5c2daca206b5">
+   <ServingCourses>
+       <ServingCourse name="Entree">
+	      <Items>
+		     <Item name="Miso Soup" qty="1" price="5.00" discounted="false"/>
+			 <Item name="Chicken Wings" qty="1" price="12.00" discounted="false">
+			   <Options>
+			      <Option name="Sour Cream" added="true"/>
+			   </Options>
+			 </Item>
+			 <Item name="Garlic Bread" qty="1" price="7.00" discounted="false">
+			   <Options>
+			      <Option name="Olive Oil" added="true"/>
+			   </Options>
+			   <Sides>
+			      <Side name="Peanut Butter" qty="1" price="1.00" discounted="false"/>
+			   </Sides>
+			 </Item>
+			 <Item name="Large Potato Wedges" qty="1" price="6.00" discounted="false">
+			   <Options>
+			      <Option name="Spicy" added="true"/>
+			   </Options>
+			   <Sides>
+			      <Side name="Peanut Butter" qty="1" price="1.00" discounted="false"/>
+				  <Side name="Sour Cream" qty="1" price="1.00" discounted="false"/>
+				  <Side name="Tomato Ketchup" qty="1" price="1.00" discounted="false"/>
+			   </Sides>
+			 </Item>
+		  </Items>
+	   </ServingCourse>
+       <ServingCourse name="Main">
+	      <Items>
+		     <Item name="Cheese Burguer" qty="1" price="10.00" discounted="false">
+			   <Options>
+			      <Option name="Extra Mustard" added="true"/>			      
+			   </Options>
+			   <Sides>
+			      <Side name="Potato Chips" qty="1" price="1.00" discounted="false"/>
+				  <Side name="Sour Cream" qty="1" price="1.00" discounted="false"/>
+			   </Sides>
+			 </Item>
+			 <Item name="Hawaiian Pizza" qty="1" price="12.00" discounted="false">
+			   <Options>
+			      <Option name="Extra Cheese" added="true"/>
+			   </Options>
+			 </Item>
+			 <Item name="Greek salad" qty="1" price="7.00" discounted="false">
+			   <Options>
+			      <Option name="Balsamic Vinagre" added="false"/>
+			   </Options>
+			   <Sides>
+			      <Side name="Sour Cream" qty="1" price="1.00" discounted="false"/>
+			   </Sides>
+			 </Item>
+			 <Item name="Large Steak Sandwich" qty="1" price="12.00" discounted="false">
+			   <Options>
+			      <Option name="Medium rare" added="true"/>
+			   </Options>
+			   <Sides>
+			      <Side name="Tomato and Lettuce salad" qty="1" price="1.00" discounted="false"/>
+				  <Side name="Sour Cream" qty="1" price="1.00" discounted="false"/>
+			   </Sides>
+			 </Item>
+		     <Item name="Fillet Mignon" qty="1" price="18.00" discounted="false">
+			   <Options>
+			      <Option name="Medium Rare" added="true"/>			      
+			   </Options>
+			   <Sides>
+			      <Side name="Potato Chips" qty="1" price="1.00" discounted="false"/>
+				  <Side name="Sour Cream" qty="1" price="1.00" discounted="false"/>
+			   </Sides>
+			 </Item>
+		  </Items>
+	   </ServingCourse>
+       <ServingCourse name="Dessert">
+	      <Items>
+			 <Item name="Creeme Brulee" qty="1" price="7.00" discounted="false">
+			   <Options>
+			      <Option name="Extra Caramel" added="true"/>
+			   </Options>
+			   <Sides>
+			      <Side name="Chocolate Ice Cream" qty="1" price="2.00" discounted="false"/>
+			   </Sides>
+			 </Item>
+			 <Item name="3 scoop chocolate ice cream" qty="1" price="7.00" discounted="false">
+			   <Options>
+			      <Option name="Extra Caramel" added="true"/>
+			   </Options>
+			   <Sides>
+			      <Side name="Lemmon Biscuit" qty="1" price="2.00" discounted="false"/>
+			   </Sides>
+			 </Item>
+			 <Item name="Tiramisu" qty="1" price="7.00" discounted="false">
+			   <Options>
+			      <Option name="Extra Caramel" added="true"/>
+			   </Options>
+			   <Sides>
+			      <Side name="Lemmon Biscuit" qty="1" price="2.00" discounted="false"/>
+			   </Sides>
+			 </Item>
+		  </Items>
+	   </ServingCourse>
+   </ServingCourses>
+    <Totals>
+	  <TotalDisCount name="Total Discount" value="12.00"/>
+ 	  <Total name="Total " value="60.00"/>
+	  <Change name="Change " value="40.00"/>
+	  <TotalServiceCharge name="Service Charge" value="2.00" visible="true"/>
+	  <TotalTax name="Tax" value="6.00" visible="true"/>
+   </Totals>
+</POSOrder>

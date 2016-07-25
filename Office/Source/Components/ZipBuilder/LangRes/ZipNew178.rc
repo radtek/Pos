@@ -1,0 +1,33 @@
+#include "ZipMsg.h"
+
+STRINGTABLE {
+
+GE_Except,         "Exception in Event handler "
+GE_Unknown,        " Unknown error %d"         
+
+LI_FileTooBig,     "File larger than 4GB"
+LI_MethodUnknown,  "Compression method not known"
+
+ZB_Yes   "&Yes"
+ZB_No   "&No"
+ZB_OK   "&OK"
+ZB_Cancel   "&Cancel"
+ZB_Abort    "&Abort"
+ZB_Retry   "&Retry"
+ZB_Ignore   "&Ignore"
+ZB_CancelAll   "CancelAll"
+ZB_NoToAll   "NoToAll"
+ZB_YesToAll   "YesToAll"
+//  ZB_Help   "Help"
+
+
+DS_UnknownError,   "Unknown Error"
+DS_NoRenamePart,   "Last part left as : %s"
+
+PR_Joining          "*Joining split zip file"
+PR_Splitting        "*Splitting zip file"
+
+}
+
+
+

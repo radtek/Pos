@@ -1,0 +1,160 @@
+ZipBuilder, for Borland Turbo C++ 2006 Explorer version
+Version 1.79
+Original  by Chris Vleghert
+Latest adaptations by Roger Aelbrecht, Zipbuilder@drehoeksw.net
+
+These instructions are for Turbo C++ 2006 'Explorer' version only. 
+If you use the 'Pro' version use the instructions in "Inst-BDS4.txt"
+
+The Explorer version does not allow to add any 3rd party components to 
+the IDE, but this does not mean you cannot use TZipBuilder with it.
+
+How do we use it:
+
+One: 
+---
+build the packages as instructed in "Inst-BDS4.txt" it will all work except
+for the last part :
+
+	right click Project Manager - ZBldr179C10.bpl
+  	-> Install
+  	
+ If you click install you will get a message from Turbo C++ telling you  
+ that you cannot install 3 rd party packages.
+ 
+ Meanwhile you created the packages we need.
+ 
+Two:
+---- 
+Open the application were you want to use ZipBuilder. 
+In your 'main' source files, just below #pragma package(smart_init)
+
+Add a line 
+#pragma link "ZBldr179C10.bpi"
+
+this will make sure that the ZipBuilder package is linked with your project.
+
+Go to the form constructor and add
+
+ZipBuilder1 = new TZipBuilder(this);
+
+Three:
+------ 
+Open your 'main' header file and add
+#include "ZipBuilder.h" to your include files
+
+Then in the form class go to the 'private:' section and add
+
+TZipBuilder* ZipBuilder1;
+
+Off course any other name can be used. 
+
+Four:
+----- 
+
+If you want to use a event handler for any of the events, you need to add 
+them manually in both the 'main' CPP and header files and connect them to the 
+ZipBuilder package by adding something like
+ZipBuilder1->OnProgressDetails = ZipBuilder1ProgressDetails;
+in the constructor of the form.
+
+Five:
+-----
+If you have build the packages in the default directory TC2006 will find them,
+otherwise you have to make sure that the compiler/linker knows the path
+
+You need to instruct TC2006 were it can find the ZipBuilder.h file there are 
+two options for it.
+
+1- Use the global search path (preferred):
+	 In TC2006 open 'Options' , select 'Environment Options', then 'C++ Options' 
+	 and then 'Paths and Directories' In the right hand part of the dialog click
+	 the '...' (Browse) button under 'Search path', In the Directories dialog that
+	 is opened now click the Browse (...) button again and browse to 
+	 ZipBuilder directory now Click the 'Add' button to add this path to
+	 the list and click 2X OK.
+	 
+	 The path to the ZipBuilder sources is now available for all your projects
+	 
+ 2- Use the project search path
+ 	In TC2006 open 'Project Options' and select 'Paths and Defines' then click the
+ 	Edit' button next to 'Include search path' in the dialog that is opened now
+ 	click the browse (...) button and browse to the ZipBuilder directory 
+ 	now Click the 'Add' button to add this path to the list and click 2X OK.
+
+                       C++ BUILDER DEMO's
+Installation
+------------
+1.  The CDemo directory has a number of sub directories one for BCB6,
+    one for Turbo C++ 2006 specific files, etc. The files that are
+    common to all environments are in the CDemoX directory.
+    To install a demo you HAVE to COPY the files from the sub
+    directory TC2006 to the CDemoX directory. Sometimes you will
+    be asked to overwrite an existing file this is NOT an error
+    and you should confirm the question.
+    
+2.  Important:
+    You must set the include and library path in your project,
+    not only for the demo's but also for new projects.
+    How to do this is explain above under 'five' options 1 and 2
+
+                    DESCRIPTION OF DEMO PROJECTS
+
+    Demo1 is a native C++ Builder port of the Delphi Zip Demo 1.
+    This is a very complete File Manager type of program that lets
+    you create archives, view archives, extract files, etc.  It can
+    also turn .zip files into .exe files (and vice-versa).
+
+
+                  Deployment of Your Programs
+                  ---------------------------
+
+From version 1.79 there are two options for the distribution of the
+required dll and sfx files.
+
+Option 1:
+	You should have your install procedures put these
+	files into the WINDOWS SYSTEM directory (which is named differently
+	on some systems - especially WinNT systems).  If that isn't 
+	possible, then you should put them into the same directory as 
+	your .EXE program that uses them.
+	
+Option 2:
+	Include the dll and all or some of the required sfx *.bin's into
+	a resource file that can be included into your application.
+	See also the information under languages
+
+Of course, there are no distribution fees for the DLL, or
+any other part of the package.  This whole package is 
+freeware, but does have some minor distribution restrictions
+(mainly that you can't profit from the ZIP DLL, and you need
+to document where users can get source code).Please see 
+README.TXT and LICENSE.TXT for these restrictions.
+
+
+TZIPBUILDER HELP
+================
+To have the help files available we offer two solutions:
+
+1- Use the ziphelp.chm:
+	Copy the ziphelp.chm file to any folder of your choice 
+	(we suggest using "..Program Files\DrehoekSW\ZipBuilder\Help")
+	Double click the file and it will be opened in the 
+	'Microsoft HTML Help Executable'
+	
+2- Integrate the Ziphelp into the BDS4 help namespace used by Turbo C++ 2006
+	To integrate the ziphelp file we suggest you use H2Reg.exe:
+	- Copy all the .Hx? files in the help folder to any folder of your choice 
+	 (we suggest using "..Program Files\DrehoekSW\ZipBuilder\Help")
+	- Copy the file H2reg.ini to the same folder
+	- Copy the H2Reg.exe executable to the same folder. You can find H2Reg.exe in 
+		'..Program Files\Borland\BDS\4.0\Help\ThirdParty'
+	 	Or you can download it form 
+	 	'http://www.helpware.net/mshelp2/h2reg.htm'
+	- Open a command window and sets its working directory to the help folder
+	- Type the command 
+	  H2reg -r
+	  A little window will report that the registration is executed.
+	- When you open your BDS4 C++ personality and start Help it will show a
+	 	message box that the changes you requested will be executed. when that is
+	 	finished ziphelp is integrated into BDS4 help  

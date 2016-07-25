@@ -1,0 +1,18 @@
+Functions called:
+ fflush (4 times)
+ free (7 times)
+ SysReallocMem (1 times)
+ memset (2 times)
+ SysFreeMem (149 times)
+ SysGetMem (149 times)
+ calloc (1 times)
+ strlen (101 times)
+ realloc (1 times)
+ strdup (1 times)
+ malloc (4 times)
+ memcpy (4 times)
+Resource types used:
+ memory block (156 allocs, 125 max)
+Modules used:
+ 00400000 01/12/2006 10:01:46 C:\Code\4.12.2\VersionBuilder.exe
+==========================================

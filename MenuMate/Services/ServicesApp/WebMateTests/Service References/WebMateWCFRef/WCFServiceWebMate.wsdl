@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="WCFServiceWebMate" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://localhost:8733/MenumateServices/WebMate/?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://localhost:8733/MenumateServices/WebMate/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:8733/MenumateServices/WebMate/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.WebMate.DTO" />
+      <xsd:import schemaLocation="http://localhost:8733/MenumateServices/WebMate/?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IWCFServiceWebMate_OpenWebOrder_InputMessage">
+    <wsdl:part name="parameters" element="tns:OpenWebOrder" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_OpenWebOrder_OutputMessage">
+    <wsdl:part name="parameters" element="tns:OpenWebOrderResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_CommitOrder_InputMessage">
+    <wsdl:part name="parameters" element="tns:CommitOrder" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_CommitOrder_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CommitOrderResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_SaveIncompleteOrderHeaderSection_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveIncompleteOrderHeaderSection" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_SaveIncompleteOrderHeaderSection_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveIncompleteOrderHeaderSectionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_SaveIncompleteOrderFromSection_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveIncompleteOrderFromSection" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_SaveIncompleteOrderFromSection_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveIncompleteOrderFromSectionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_SaveIncompleteOrderAccountSection_InputMessage">
+    <wsdl:part name="parameters" element="tns:SaveIncompleteOrderAccountSection" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_SaveIncompleteOrderAccountSection_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SaveIncompleteOrderAccountSectionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_RetrieveIncompleteOrderHeaderSection_InputMessage">
+    <wsdl:part name="parameters" element="tns:RetrieveIncompleteOrderHeaderSection" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_RetrieveIncompleteOrderHeaderSection_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RetrieveIncompleteOrderHeaderSectionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_RetrieveIncompleteOrderFromSection_InputMessage">
+    <wsdl:part name="parameters" element="tns:RetrieveIncompleteOrderFromSection" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_RetrieveIncompleteOrderFromSection_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RetrieveIncompleteOrderFromSectionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_RetrieveIncompleteOrderAccountSection_InputMessage">
+    <wsdl:part name="parameters" element="tns:RetrieveIncompleteOrderAccountSection" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_RetrieveIncompleteOrderAccountSection_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RetrieveIncompleteOrderAccountSectionResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_GetCommittedWebOrderStatus_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCommittedWebOrderStatus" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceWebMate_GetCommittedWebOrderStatus_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCommittedWebOrderStatusResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IWCFServiceWebMate">
+    <wsdl:operation name="OpenWebOrder">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceWebMate/OpenWebOrder" message="tns:IWCFServiceWebMate_OpenWebOrder_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceWebMate/OpenWebOrderResponse" message="tns:IWCFServiceWebMate_OpenWebOrder_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CommitOrder">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceWebMate/CommitOrder" message="tns:IWCFServiceWebMate_CommitOrder_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceWebMate/CommitOrderResponse" message="tns:IWCFServiceWebMate_CommitOrder_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveIncompleteOrderHeaderSection">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceWebMate/SaveIncompleteOrderHeaderSection" message="tns:IWCFServiceWebMate_SaveIncompleteOrderHeaderSection_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceWebMate/SaveIncompleteOrderHeaderSectionResponse" message="tns:IWCFServiceWebMate_SaveIncompleteOrderHeaderSection_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveIncompleteOrderFromSection">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceWebMate/SaveIncompleteOrderFromSection" message="tns:IWCFServiceWebMate_SaveIncompleteOrderFromSection_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceWebMate/SaveIncompleteOrderFromSectionResponse" message="tns:IWCFServiceWebMate_SaveIncompleteOrderFromSection_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveIncompleteOrderAccountSection">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceWebMate/SaveIncompleteOrderAccountSection" message="tns:IWCFServiceWebMate_SaveIncompleteOrderAccountSection_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceWebMate/SaveIncompleteOrderAccountSectionResponse" message="tns:IWCFServiceWebMate_SaveIncompleteOrderAccountSection_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveIncompleteOrderHeaderSection">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceWebMate/RetrieveIncompleteOrderHeaderSection" message="tns:IWCFServiceWebMate_RetrieveIncompleteOrderHeaderSection_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceWebMate/RetrieveIncompleteOrderHeaderSectionResponse" message="tns:IWCFServiceWebMate_RetrieveIncompleteOrderHeaderSection_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveIncompleteOrderFromSection">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceWebMate/RetrieveIncompleteOrderFromSection" message="tns:IWCFServiceWebMate_RetrieveIncompleteOrderFromSection_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceWebMate/RetrieveIncompleteOrderFromSectionResponse" message="tns:IWCFServiceWebMate_RetrieveIncompleteOrderFromSection_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveIncompleteOrderAccountSection">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceWebMate/RetrieveIncompleteOrderAccountSection" message="tns:IWCFServiceWebMate_RetrieveIncompleteOrderAccountSection_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceWebMate/RetrieveIncompleteOrderAccountSectionResponse" message="tns:IWCFServiceWebMate_RetrieveIncompleteOrderAccountSection_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCommittedWebOrderStatus">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceWebMate/GetCommittedWebOrderStatus" message="tns:IWCFServiceWebMate_GetCommittedWebOrderStatus_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceWebMate/GetCommittedWebOrderStatusResponse" message="tns:IWCFServiceWebMate_GetCommittedWebOrderStatus_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="basicHttpBinding_ServiceWebMate" type="tns:IWCFServiceWebMate">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="OpenWebOrder">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceWebMate/OpenWebOrder" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CommitOrder">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceWebMate/CommitOrder" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveIncompleteOrderHeaderSection">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceWebMate/SaveIncompleteOrderHeaderSection" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveIncompleteOrderFromSection">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceWebMate/SaveIncompleteOrderFromSection" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveIncompleteOrderAccountSection">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceWebMate/SaveIncompleteOrderAccountSection" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveIncompleteOrderHeaderSection">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceWebMate/RetrieveIncompleteOrderHeaderSection" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveIncompleteOrderFromSection">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceWebMate/RetrieveIncompleteOrderFromSection" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveIncompleteOrderAccountSection">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceWebMate/RetrieveIncompleteOrderAccountSection" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCommittedWebOrderStatus">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceWebMate/GetCommittedWebOrderStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WCFServiceWebMate">
+    <wsdl:port name="basicHttpBinding_ServiceWebMate" binding="tns:basicHttpBinding_ServiceWebMate">
+      <soap:address location="http://localhost:8733/MenumateServices/WebMate/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

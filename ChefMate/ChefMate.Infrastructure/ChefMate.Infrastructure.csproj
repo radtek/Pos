@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C04C16E4-CD6C-45D4-908E-29AB23587F64}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Chefmate.Infrastructure</RootNamespace>
+    <AssemblyName>Chefmate.Infrastructure</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Distribution\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Distribution\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="XMLManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Library\Xml\XMLManager.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Builder\Builder.cs" />
+    <Compile Include="Builder\FileSystemInitializer.cs" />
+    <Compile Include="Builder\DatabaseOrderBuilder.cs" />
+    <Compile Include="Builder\FileOrderBuilder.cs" />
+    <Compile Include="Controller\OutputController.cs" />
+    <Compile Include="MessageBox\CustomMessageBox.xaml.cs">
+      <DependentUpon>CustomMessageBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Output\DocketLayout.cs" />
+    <Compile Include="Output\EpsonPrinter.cs" />
+    <Compile Include="Output\IPrinter.cs" />
+    <Compile Include="Output\PrinterFactory.cs" />
+    <Compile Include="Output\PrinterFormatter.cs" />
+    <Compile Include="Output\PrinterInstruction.cs" />
+    <Compile Include="Output\RawPrinterHelper.cs" />
+    <Compile Include="Utility\ChefmateInitializer.cs" />
+    <Compile Include="Controller\ChefmateController.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\ChefmateUtility.cs" />
+    <Compile Include="Utility\SoundManager.cs" />
+    <Compile Include="Terminal\ChefmateTerminal.cs" />
+    <Compile Include="Utility\VersionChecker.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Chefmate.Communication\Chefmate.Communication.csproj">
+      <Project>{D6BAFBDB-7B53-458E-A8BF-C01E1908414E}</Project>
+      <Name>Chefmate.Communication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Chefmate.Core\Chefmate.Core.csproj">
+      <Project>{CBF56B14-CACA-4E82-A105-4E0E46F4B157}</Project>
+      <Name>Chefmate.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Chefmate.Database\Chefmate.Database.csproj">
+      <Project>{BD6E66A8-2661-4D88-8156-2AB8A661FD4F}</Project>
+      <Name>Chefmate.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Chefmate.Logger\Chefmate.Logger.csproj">
+      <Project>{DBB5F4AA-09CB-4030-B67D-22ECEB054A14}</Project>
+      <Name>Chefmate.Logger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Chefmate.SoundPlayer\Chefmate.SoundPlayer.csproj">
+      <Project>{fa02eefd-6f29-417e-ab33-6e59a539fec7}</Project>
+      <Name>Chefmate.SoundPlayer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Page Include="MessageBox\CustomMessageBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

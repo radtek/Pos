@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE HelpTOC>
+<HelpTOC
+   DTDVersion="1.0"
+   Id="1.0"
+   FileVersion="1.79.10.11"
+   LangId="1033"
+   Font=""
+   FontSize="8"
+   Charset="0"
+   ParentNodeIcon="Book"
+   IconFile=""
+   PluginStyle="flat" 
+   PluginTitle="">
+   <HelpTOCNode NodeType="TOC" Url="ziphelp"/>
+</HelpTOC>

@@ -1,0 +1,65 @@
+ /* ViewZip.rc
+    machine generated
+    by CreateZBBuild (c)
+    Do NOT edit
+
+    ViewZip.rc - resource script
+    TZipBuilder VCL by Chris Vleghert and Eric W. Engler
+    Version 1.79
+
+    Copyright © 2009 Roger Aelbrecht
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License (licence.txt) for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    contact: ZipBuilder AT drehoeksw DOT net
+    DelphiZip maillist subscribe at 
+                http://www.geocities.com/SiliconValley/Orchard/8607/
+    updates: http://www.drehoeksw.net
+             http://www.bcbzip.net
+
+      last modified 19 mei 2009 17:00
+---------------------------------------------------------------------------*/
+
+MAINICON ICON "Cdemo2.ico"
+
+
+1 VERSIONINFO
+FILEVERSION 1,79,10,20
+PRODUCTVERSION 1,79,10,20
+FILEOS 0x4
+FILETYPE 0x1
+{
+BLOCK "StringFileInfo"
+{
+  BLOCK "040904E4"
+  {
+    VALUE "CompanyName", "DrehoekSW\0"
+    VALUE "FileDescription", "ZipBuilder Demo\0"
+    VALUE "FileVersion", "1.79.10.20\0"
+    VALUE "InternalName", "Demo2\0"
+    VALUE "LegalCopyright", "Copyright © 2009 Roger Aelbrecht\0"
+    VALUE "LegalTrademarks", "\0"
+    VALUE "OriginalFilename", "ViewZip\0"
+    VALUE "ProductName", "ZipBuilder.ViewZip\0"
+    VALUE "ProductVersion", "1.79.10.20\0"
+    VALUE "Comments", "Demonstration only\0"
+ }
+}
+
+BLOCK "VarFileInfo"
+{
+  VALUE "Translation", 0x0409 0x04E4
+}
+}

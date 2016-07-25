@@ -1,0 +1,370 @@
+﻿<Window x:Class="Chefmate.UI.Views.SettingView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:converter="clr-namespace:Chefmate.UI.Converters"
+        xmlns:Enums ="clr-namespace:Chefmate.Core.Enums;assembly=Chefmate.Core"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" WindowState="Maximized"  Icon="../Images/C_Transparent.ico"
+        ResizeMode="NoResize" BorderThickness="3" BorderBrush="Gray" WindowStyle="None" Background="White">
+    <Window.Resources>
+        <ResourceDictionary>
+            <converter:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
+            <converter:VolumeStringConverters x:Key="VolumeStringConverters"/>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0">
+            <TabItem Header="Database">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height=".50*"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=".7*"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0"></Label>
+                        <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="0" Content="Database Settings"></Label>
+                        <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                            <Grid >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">Database Ip Address :</Label>
+                                <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource FormTextBox}" Text="{Binding CurrentSettings.DbIpAddress}">
+                                    <TextBox.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{Binding Path=DatabaseAddressPreviewMouseUpCommand}"/>
+                                    </TextBox.InputBindings>
+                                </TextBox> 
+                                <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Database Path :</Label>
+                                <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormTextBox}" IsReadOnly="True"
+                                         Text="{Binding CurrentSettings.DbPath}">
+                                    <TextBox.InputBindings>
+                                        <MouseBinding MouseAction="LeftClick" Command="{Binding Path=DatabasePathPreviewMouseUpCommand}"/>
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                                <Button Grid.Row="2" Grid.Column="1" Margin="10" Width="150" HorizontalAlignment="Left"
+                                        Command="{Binding TestConnectionCommand}" >Test Connection</Button>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Display">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=".33*"/>
+                        <ColumnDefinition Width=".33*"/>
+                        <ColumnDefinition Width=".33*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="0"></Label>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="1"></Label>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="2"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="0" Content="Course Display"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="1" Content="Order Info Display"/>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="2" Content="Auto Hide"></Label>
+                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                        <StackPanel Orientation="Vertical">
+                            <RadioButton GroupName="CourseDisplay" Content="Course" IsChecked="{Binding Path=CurrentSettings.GroupType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:GroupType.Course}}"/>
+                            <RadioButton GroupName="CourseDisplay" Content="Serving Course" IsChecked="{Binding Path=CurrentSettings.GroupType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:GroupType.ServingCourse}}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource MarginalGroupBorder}">
+                        <StackPanel Orientation="Vertical">
+                            <RadioButton GroupName="OrderInfoDisplay" Content="Chit Number" IsChecked="{Binding Path=CurrentSettings.OrderInfoDisplay, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderInfoDisplay.ChitNumber}}"/>
+                            <RadioButton GroupName="OrderInfoDisplay" Content="Table/Tab Name" IsChecked="{Binding Path=CurrentSettings.OrderInfoDisplay, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderInfoDisplay.TableTabName}}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource MarginalGroupBorder}">
+                        <CheckBox Content="Complete Groups" IsChecked="{Binding Path=CurrentSettings.AutoHide}"></CheckBox>
+                    </Border>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="0"></Label>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="1"></Label>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="2"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="0" Content="Warning Times(In Minutes)"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="1" Content="Display Functions"/>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="2" Content="Display Message"></Label>
+                    <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition  />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">First Warning Time :</Label>
+                            <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource FormTextBox}" Text="{Binding CurrentSettings.FirstWarningTime}">
+                                <TextBox.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding Path=FirstWarningPreviewMouseUpCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Second Warning Time :</Label>
+                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormTextBox}" Text="{Binding CurrentSettings.SecondWarningTime}">
+                                <TextBox.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding Path=SecondWarningPreviewMouseUpCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </Grid>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="1" Style="{StaticResource MarginalGroupBorder}">
+                        <CheckBox Content="Bump Only" IsChecked="{Binding CurrentSettings.BumpOnly}"></CheckBox>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="2" Style="{StaticResource MarginalGroupBorder}">
+                        <StackPanel Orientation="Vertical">
+                            <CheckBox Content="Display confirmation message on refunds" Margin="10,10,0,0" IsChecked="{Binding CurrentSettings.ConfirmOnRefund}"></CheckBox>
+                            <CheckBox Content="Display confirmation message on transfers" Margin="10,5,0,0" IsChecked="{Binding CurrentSettings.ConfirmOnTransfer}"></CheckBox>
+                        </StackPanel>
+                    </Border>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="6" Grid.Column="0"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="7" Grid.Column="0" Content="Layout (Restart Required)"></Label>
+                    <Border Grid.Row="8" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                        <StackPanel>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByFour}}">2 x 4</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByFive}}">2 x 5 (Wide Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoBySix}}">2 x 6 (Wide Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoBySeven}}">2 x 7 (Wide Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByTen}}">2 x 10 (Big Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByEleven}}">2 x 11 (Big Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByTwelve}}">2 x 12 (Big Screen)</RadioButton>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Terminal">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=".50*"/>
+                        <ColumnDefinition Width=".50*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="0"></Label>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="1"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="0" Content="Terminal Type"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="1" Content="Terminal"/>
+                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                        <StackPanel Orientation="Vertical">
+                            <RadioButton GroupName="TerminalType" Content="Kitchen" IsChecked="{Binding Path=CurrentSettings.TerminalType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:TerminalType.Kitchen}}"/>
+                            <RadioButton GroupName="TerminalType" Content="Runner" IsChecked="{Binding Path=CurrentSettings.TerminalType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:TerminalType.Runner}}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource MarginalGroupBorder}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">Terminal IpAddress :</Label>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CurrentSettings.TerminalIpAddress}" Style="{StaticResource FormTextBox}">
+                                <TextBox.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding Path=TerminalAddressPreviewMouseUpCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Display Name :</Label>
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CurrentSettings.DisplayName}" Style="{StaticResource FormTextBox}">
+                                <TextBox.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding Path=TerminalNamePreviewMouseUpCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Output">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=".33*"/>
+                        <ColumnDefinition Width=".33*"/>
+                        <ColumnDefinition Width=".33*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="0"></Label>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="1"></Label>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="2"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="0" Content="Output Time"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="1" Content="Output Scope"/>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="2" Content="Output"></Label>
+                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                        <StackPanel Orientation="Vertical">
+                            <RadioButton GroupName="OutputTime" Content="Immediately" IsChecked="{Binding Path=CurrentSettings.OutputTime, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OutputTime.Immediately}}"/>
+                            <RadioButton GroupName="OutputTime" Content="Order Bumped" IsChecked="{Binding Path=CurrentSettings.OutputTime, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OutputTime.OrderBumped}}"/>
+                            <RadioButton GroupName="OutputTime" Content="Course Bumped" IsChecked="{Binding Path=CurrentSettings.OutputTime, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OutputTime.GroupBumped}}"/>
+                            <RadioButton GroupName="OutputTime" Content="Item Bumped" IsChecked="{Binding Path=CurrentSettings.OutputTime, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OutputTime.ItemBumped}}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource MarginalGroupBorder}">
+                        <StackPanel Orientation="Vertical" IsEnabled="False">
+                            <RadioButton GroupName="OutputScope" Content="Order" IsChecked="{Binding Path=CurrentSettings.OutputScope, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OutputScope.Order}}"/>
+                            <RadioButton GroupName="OutputScope" Content="Course" IsChecked="{Binding Path=CurrentSettings.OutputScope, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OutputScope.Group }}"/>
+                            <RadioButton GroupName="OutputScope" Content="Item" IsChecked="{Binding Path=CurrentSettings.OutputScope, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OutputScope.Item}}"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource MarginalGroupBorder}">
+                        <ComboBox ItemsSource="{Binding Terminals}" DisplayMemberPath="DisplayName" SelectedValue="{Binding SelectedTerminal}" MinWidth="150"
+                                  VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+                    </Border>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="0"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="0" Content="Keypad Operation"></Label>
+                    <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                        <StackPanel Orientation="Vertical">
+                            <RadioButton GroupName="KeypadOperation" Content="Bump By Location" IsChecked="{Binding Path=CurrentSettings.KeypadOperation, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:KeypadOperation.BumpByLocation}}"/>
+                            <RadioButton GroupName="KeypadOperation" Content="Bump By Table/Chit" IsChecked="{Binding Path=CurrentSettings.KeypadOperation, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:KeypadOperation.BumpByTableChitNumber}}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Sound">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=".50*"/>
+                        <ColumnDefinition Width=".50*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="0"></Label>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="1"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="0" Content="From Menumate"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="1" Content="From Chefmate"/>
+                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                        <Grid Grid.Row="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width=".50*"/>
+                                <ColumnDefinition Width=".50*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">New Order</Label>
+                            <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Style="{StaticResource SoundButtonStyle}"
+                                    Command="{Binding TestSoundCommand}" CommandParameter="{Binding ElementName=NewOrderCombobox,Path=SelectedValue}">Test Sound</Button>
+                            <ComboBox x:Name="NewOrderCombobox" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource SoundComboBox}"
+                                  ItemsSource="{Binding SoundList}" SelectedValue="{Binding CurrentSettings.NewOrderMmSound}"/>
+                            <Label Grid.Row="2" Grid.Column="0" Style="{StaticResource FormLabel}">Cancel Notice</Label>
+                            <Button Grid.Row="2" Grid.Column="1" Margin="0,5,5,0" Style="{StaticResource SoundButtonStyle}"
+                                    Command="{Binding TestSoundCommand}" CommandParameter="{Binding ElementName=CancelNotice,Path=SelectedValue}">Test Sound</Button>
+                            <ComboBox x:Name="CancelNotice" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource SoundComboBox}"
+                                  ItemsSource="{Binding SoundList}" SelectedValue="{Binding CurrentSettings.CancelNoticeMmSound}"/>
+                            <Label Grid.Row="4" Grid.Column="0" Style="{StaticResource FormLabel}">Refund Notice</Label>
+                            <Button Grid.Row="4" Grid.Column="1" Margin="0,5,5,0" Style="{StaticResource SoundButtonStyle}"
+                                    Command="{Binding TestSoundCommand}" CommandParameter="{Binding ElementName=RefundNotice,Path=SelectedValue}">Test Sound</Button>
+                            <ComboBox x:Name="RefundNotice" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource SoundComboBox}" 
+                                  ItemsSource="{Binding SoundList}" SelectedValue="{Binding CurrentSettings.RefundNoticeMmSound}"/>
+                            <Label Grid.Row="6" Grid.Column="0" Style="{StaticResource FormLabel}">Transfer Notice</Label>
+                            <Button Grid.Row="6" Grid.Column="1" Margin="0,5,5,0" Style="{StaticResource SoundButtonStyle}"
+                                    Command="{Binding TestSoundCommand}" CommandParameter="{Binding ElementName=TransferNotice,Path=SelectedValue}">Test Sound</Button>
+                            <ComboBox x:Name="TransferNotice" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource SoundComboBox}" 
+                                  ItemsSource="{Binding SoundList}" SelectedValue="{Binding CurrentSettings.TransferNoticeMmSound}"/>
+                        </Grid>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource MarginalGroupBorder}">
+                        <Grid VerticalAlignment="Top">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width=".50*"/>
+                                <ColumnDefinition Width=".50*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">Order Arrived</Label>
+                            <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Style="{StaticResource SoundButtonStyle}"
+                                    Command="{Binding TestSoundCommand}" CommandParameter="{Binding ElementName=OrderArrived,Path=SelectedValue}">Test Sound</Button>
+                            <ComboBox x:Name="OrderArrived" Style="{StaticResource SoundComboBox}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                                      ItemsSource="{Binding SoundList}" SelectedValue="{Binding CurrentSettings.OrderArrivedCmSound}"/>
+                            <Label Grid.Row="2" Grid.Column="0" Style="{StaticResource FormLabel}">Transfer Order</Label>
+                            <Button Grid.Row="2" Grid.Column="1" Margin="0,5,5,0" Style="{StaticResource SoundButtonStyle}"
+                                    Command="{Binding TestSoundCommand}" CommandParameter="{Binding ElementName=TransferOrder,Path=SelectedValue}">Test Sound</Button>
+                            <ComboBox x:Name="TransferOrder" Style="{StaticResource SoundComboBox}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" 
+                                      ItemsSource="{Binding SoundList}" SelectedValue="{Binding CurrentSettings.TransferOrderCmSound}"/>
+                        </Grid>
+                    </Border>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="0"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="0" Content="Volume Control"></Label>
+                    <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                        <StackPanel Grid.Row="2">
+                            <Slider Name="VolumeSlider" Minimum="0" Maximum="100" Value="{Binding SliderValue}" Margin="5"></Slider>
+                            <Label HorizontalContentAlignment="Center" Style="{StaticResource FormLabel}"
+                                   Content="{Binding ElementName=VolumeSlider, Path=Value,Converter={StaticResource VolumeStringConverters}}"></Label>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Style="{StaticResource ErrorLabelStyle}" Content="{Binding ValidationError}" VerticalAlignment="Center"
+                   FontSize="15" FontWeight="Bold"></Label>
+            <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Background="White">
+                <Button  Margin="10" Command="{Binding SaveCommand}" Height="40" Width="100" HorizontalAlignment="Right">Save</Button>
+                <Button Margin="10" Command="{Binding CloseCommand}" Height="40" Width="100">Cancel</Button>
+            </StackPanel>
+
+        </Grid>
+
+    </Grid>
+
+</Window>

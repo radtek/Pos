@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!-- Uses Little India Merivale's "Beverage" and "Food" menus. -->
+<ORDER GUID="ddb9919c-ac7c-4df7-8a8f-eb88b5d3c129"
+       STORE_NAME="Zerospace"
+       RESPOND="TRUE"
+       ORDER_DATE="2012-03-06 08:43:00"
+       EXPECTED_DATE="2012-03-06 09:00:00"
+       SCHEDULED="0"
+       ORDER_TOTAL="">
+	<FROM ID="ZSI">
+		<NAME>Zerospace</NAME>
+	</FROM>
+
+	<MEMBER>
+		<MEMBER_NUMBER>3140</MEMBER_NUMBER>
+	</MEMBER>
+
+	<ACCOUNT COVERS="1" NAME="ABDAT Adil">
+		<ACCOUNTIDENT>
+            <!-- It's a web-order -->
+			<TYPE>4</TYPE>
+		</ACCOUNTIDENT>
+
+        <!-- Chicken Korma, Mild as a plus option. -->
+		<PRODUCT GUID="b99d015b-e7d4-4a08-a2b7-1d349d7cffb0">
+            <PRICELEVEL>0</PRICELEVEL>
+            <PRODUCT_PLU>131120</PRODUCT_PLU>
+            <SERVINGCOURSE>Mains</SERVINGCOURSE>
+            <QTY>1</QTY>
+
+            <!-- Add Mild spices because I'm a wimp :P. -->
+            <OPTION REMOVE="TRUE">
+                <Key>5</Key>
+                <Name>Mild</Name>
+            </OPTION>
+
+            <!-- A Diet Coke as a side to deal with the spices! -->
+		    <PRODUCT GUID="bfcdea9f-8f4d-4bdf-aba8-e182b67e08df">
+                <PRICELEVEL>0</PRICELEVEL>
+                <PRODUCT_PLU>65634</PRODUCT_PLU>
+                <SERVINGCOURSE>Beverages</SERVINGCOURSE>
+                <QTY>1</QTY>
+            </PRODUCT>
+		</PRODUCT>
+	</ACCOUNT>
+</ORDER>

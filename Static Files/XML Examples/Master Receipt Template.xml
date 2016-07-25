@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RECEIPT>
+	<ACCOUNTIDENT>
+		<TYPE>0</TYPE>
+		<TABLE>1</TABLE>
+		<SEAT>1</SEAT>
+		<ROOM>1</ROOM>
+		<STAFF>1</STAFF>
+		<WEBID>1</WEBID>
+		<TAB>1</TAB>				
+		<MEMBER>1</MEMBER>			
+	</ACCOUNTIDENT>
+</RECEIPT>

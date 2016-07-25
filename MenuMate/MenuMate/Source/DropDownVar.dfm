@@ -1,0 +1,106 @@
+object frmDropDownVar: TfrmDropDownVar
+  Tag = 1024
+  Left = 483
+  Top = 55
+  BorderIcons = []
+  BorderStyle = bsDialog
+  BorderWidth = 5
+  Caption = 'Select'
+  ClientHeight = 582
+  ClientWidth = 201
+  Color = clBlack
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = True
+  Position = poScreenCenter
+  OnClose = FormClose
+  OnDestroy = FormDestroy
+  OnResize = FormResize
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object pnlCourses: TPanel
+    Left = 0
+    Top = 0
+    Width = 201
+    Height = 582
+    Align = alClient
+    Color = 10011108
+    TabOrder = 0
+    object sbMessages: TScrollBox
+      Left = 1
+      Top = 1
+      Width = 199
+      Height = 503
+      HorzScrollBar.Visible = False
+      VertScrollBar.ButtonSize = 1
+      VertScrollBar.Color = clSilver
+      VertScrollBar.ParentColor = False
+      VertScrollBar.Smooth = True
+      VertScrollBar.Size = 1
+      VertScrollBar.Style = ssFlat
+      Align = alClient
+      BorderStyle = bsNone
+      Color = 14342874
+      Ctl3D = False
+      ParentColor = False
+      ParentCtl3D = False
+      TabOrder = 0
+    end
+    object Panel1: TPanel
+      Left = 1
+      Top = 504
+      Width = 199
+      Height = 77
+      Align = alBottom
+      Color = 14342874
+      ParentBackground = False
+      TabOrder = 1
+      object btnMsgUp: TTouchBtn
+        Left = 1
+        Top = 1
+        Width = 94
+        Height = 75
+        Align = alLeft
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -17
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        ParentColor = True
+        ButtonColor = 6052441
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        ArrowType = atUp
+        OnMouseClick = btnMsgUpMouseClick
+        OnAutoRepeat = btnMsgUpMouseClick
+      end
+      object btnMsgDown: TTouchBtn
+        Left = 104
+        Top = 1
+        Width = 94
+        Height = 75
+        Align = alRight
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -17
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        ParentColor = True
+        ButtonColor = 6052441
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        ArrowType = atDown
+        OnMouseClick = btnMsgDownMouseClick
+        OnAutoRepeat = btnMsgDownMouseClick
+      end
+    end
+  end
+end

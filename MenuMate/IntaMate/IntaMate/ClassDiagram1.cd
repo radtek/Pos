@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="IntaMate.PMS_Fidelio" Collapsed="true">
+    <Position X="9.25" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAABIBAAABBAAAACgIAAAQAAAAAgAAABAAAAAAA=</HashCode>
+      <FileName>Fidelio.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.frmMain" Collapsed="true">
+    <Position X="12" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAMBAAAACAEAJoOAAGBEBGKAhaIIBEQAGAoUgYIABA=</HashCode>
+      <FileName>Form1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PMS_Stub" Collapsed="true">
+    <Position X="11.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAABIBAAABBCAAACgIAAAQAAAAAgAAABAAAAAAA=</HashCode>
+      <FileName>Interface_Stub.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.IO_RS232" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAACAAAAAAAgABQAAEAAAAAAAAGAAAA=</HashCode>
+      <FileName>IO.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="IntaMate.IO_TCPIP" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAACAAAgAAAiAAQAAEAAAAAABAGCAAA=</HashCode>
+      <FileName>IO.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="IntaMate.IO_Stub" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAACAAAAAAAgAAQAAEAAAAAAAAGAAAA=</HashCode>
+      <FileName>IO.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="IntaMate.PMSMessage" Collapsed="true">
+    <Position X="2.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAJAAIAAAACAJAAcEAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>IPMSMessage.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="IntaMate.PMS_Micros" Collapsed="true">
+    <Position X="13.75" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAEAABIBAAABBAABACgIAoAQAAAEAgAAABAAAAAAA=</HashCode>
+      <FileName>MicrosServer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PhoenixPacketBase" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAQgAAAAAAAAAEIAAAAAAAEAAAAAAAoAAAAAAAAAA=</HashCode>
+      <FileName>PhoenixPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PhoenixPacketNAK" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAgAAAAEAAAAA=</HashCode>
+      <FileName>PhoenixPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PhoenixPacketBaseResponse" Collapsed="true">
+    <Position X="4" Y="1.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAEAAAABAAABAAAAAAAAAAAAAAAAAAAEAAAABAAA=</HashCode>
+      <FileName>PhoenixPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PMSRoomStatus" Collapsed="true">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAgAgAAIAIAAAAACAAAgAgAAgAAIAA=</HashCode>
+      <FileName>PhoenixPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PMSRoomStatusResponse" Collapsed="true">
+    <Position X="0.5" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAmAAwAIgAIAAAAAAAAgAAAAAAAAAE=</HashCode>
+      <FileName>PhoenixPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PhoenixPacketChargeToRoom" Collapsed="true">
+    <Position X="9.25" Y="1.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgABAAAAAABQAiAgAAIAAAACAESQAJpEgAAiECIAA=</HashCode>
+      <FileName>PhoenixPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PMSRoomChargeResponse" Collapsed="true">
+    <Position X="8.25" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAmAAAAIgAAAAAEAAAAhAAAAAAAAAA=</HashCode>
+      <FileName>PhoenixPacket.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PhoenixProcessor" Collapsed="true">
+    <Position X="19" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAACAgQAAAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>PhoenixProcessor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PMSFactory" Collapsed="true">
+    <Position X="12" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>PMSFactory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PMS" Collapsed="true">
+    <Position X="11.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAABJNQAABBCAABCgIAAgQAAAEAAAAAhAAAACAA=</HashCode>
+      <FileName>PMSInterface.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="IntaMate.PMSMessageFidelio">
+    <Position X="1.5" Y="5.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAIAAAAAAAAABAAUAAAAAAAAAAAAAAAAIAAAAQ=</HashCode>
+      <FileName>PMSMessageFidelio.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PMSMessageFidelioAccCharge">
+    <Position X="0.5" Y="10.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>gQAFAAAAAAgAQAUAEIAAAAAAQAAAAAQBAAAIQAIAAIA=</HashCode>
+      <FileName>PMSMessageFidelio.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PMSMessageFidelioInquiry">
+    <Position X="4.75" Y="10" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>PMSMessageFidelio.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PMSMessageMicros" Collapsed="true">
+    <Position X="6" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAABAAUAAAAAAAAAAAAAAAAIAAAAQ=</HashCode>
+      <FileName>PMSMessageMicros.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PMSMessageMicrosAccCharge" Collapsed="true">
+    <Position X="5.75" Y="7.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>gQAAAAAAAAAAAAQAAIAAAAAAAAAAAAQBAAAAQAIAAAA=</HashCode>
+      <FileName>PMSMessageMicros.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.Program" Collapsed="true">
+    <Position X="13.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.ProtocolUtility" Collapsed="true">
+    <Position X="15.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAIABAAAAQBAAAAAAAAAgAAAAAAAAAAAAAAAIgA=</HashCode>
+      <FileName>ProtocolUtility.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.RoomData" Collapsed="true">
+    <Position X="19" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQQAAAAAIABAAAAAIAEAICIAAAAQAQAAAAEAAjEAAAA=</HashCode>
+      <FileName>RoomData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.Summa" BaseTypeListCollapsed="true">
+    <Position X="5.75" Y="12.75" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAECAAAAAABAAAIAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>Summa.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="IntaMate.SummaTransactionCommon">
+    <Position X="8.25" Y="14.75" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>CAAIMAAAAAAAAgAAAAAAAAAAABAAAAAQAAAEAAQAIAA=</HashCode>
+      <FileName>SummaCommon.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.TCPServer" Collapsed="true">
+    <Position X="17.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAACAAAAECABAAABAAAAAAAAggIAAAEAAAAAA=</HashCode>
+      <FileName>TCPServer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.TransactionCSV" BaseTypeListCollapsed="true">
+    <Position X="0.5" Y="20" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TransactionCSV.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.TransactionDetailCSV" BaseTypeListCollapsed="true">
+    <Position X="4" Y="20" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TransactionDetailCSV.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.XMLProcessor">
+    <Position X="10.75" Y="11.75" Width="5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAACAgAAAAAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>XMLProcessor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.Properties.Resources" Collapsed="true">
+    <Position X="17.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.Properties.Settings" Collapsed="true">
+    <Position X="12" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAEIAAAIAAAiBABCAAAAAAAAAACCAg=</HashCode>
+      <FileName>Settings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.CsvMulti">
+    <Position X="0.5" Y="16.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>CIAAAQAABAgAABAAFAEAAAAAQAAAAAAAAABAAAAAAAg=</HashCode>
+      <FileName>CsvMulti.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.TransactionPaymentMethodsCSV">
+    <Position X="7.5" Y="20" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TransactionPaymentMethodsCSV.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.PaymentMethodTypesCSV">
+    <Position X="11.25" Y="20" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PaymentMethodTypesCSV.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.GroupsCSV">
+    <Position X="15" Y="20" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GroupsCSV.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IntaMate.CustomersCSV" Collapsed="true">
+    <Position X="20.5" Y="16" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CustomersCSV.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="IntaMate.I_IO_Interface" Collapsed="true">
+    <Position X="12" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAgAAQAAEAAAAAAAAGAAAA=</HashCode>
+      <FileName>IO.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="IntaMate.IPMSInterface" Collapsed="true">
+    <Position X="15.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAABAAAAAgIAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>IPMSInterface.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="IntaMate.IPMSMessage" Collapsed="true">
+    <Position X="17.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IPMSMessage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="IntaMate.IPOSMessage">
+    <Position X="9" Y="9.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IPOSMessage.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="IntaMate.e_IOType" Collapsed="true">
+    <Position X="12" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PMSInterface.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Arial" Size="9.75" />
+</ClassDiagram>

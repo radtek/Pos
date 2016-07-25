@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/PocketVouchers.Services.Voucher.Redemption" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/PocketVouchers.Services.Voucher.Redemption" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="RedeemResult">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Undefined" />
+      <xs:enumeration value="Success" />
+      <xs:enumeration value="Error" />
+      <xs:enumeration value="VoucherCodeFormatInvalid" />
+      <xs:enumeration value="VoucherAmountTooSmall" />
+      <xs:enumeration value="VoucherAmountTooLarge" />
+      <xs:enumeration value="TransactionAmountTooSmall" />
+      <xs:enumeration value="TransactionAmountTooLarge" />
+      <xs:enumeration value="MerchantIdFormatInvalid" />
+      <xs:enumeration value="MerchantReferenceFormatInvalid" />
+      <xs:enumeration value="TerminalIdFormatInvalid" />
+      <xs:enumeration value="MerchantIdUserNameMismatch" />
+      <xs:enumeration value="MerchantIdUnknown" />
+      <xs:enumeration value="MerchantDeactivated" />
+      <xs:enumeration value="MerchantIdTerminalIdCombinationUnknown" />
+      <xs:enumeration value="TerminalDeactivated" />
+      <xs:enumeration value="ConsumerDeactivated" />
+      <xs:enumeration value="VoucherBatchDeactivated" />
+      <xs:enumeration value="VoucherProviderDeactivated" />
+      <xs:enumeration value="MerchantTimezonePeriodNotConfigured" />
+      <xs:enumeration value="MerchantTransactionLimitExceeded" />
+      <xs:enumeration value="VoucherUnknown" />
+      <xs:enumeration value="VoucherNotAllocatedToConsumer" />
+      <xs:enumeration value="VoucherRedemptionOperationNotSupportedForVoucherType" />
+      <xs:enumeration value="MerchantNotAMemberOfAnActiveMerchantGroupThatCanRedeemThisVoucher" />
+      <xs:enumeration value="VoucherRedemptionNotStarted" />
+      <xs:enumeration value="VoucherRedemptionFinished" />
+      <xs:enumeration value="VoucherExpired" />
+      <xs:enumeration value="VoucherRedemptionNotEnabledForDayOfWeek" />
+      <xs:enumeration value="VoucherInsufficientBalance" />
+      <xs:enumeration value="VoucherInsufficientBalanceAvailable" />
+      <xs:enumeration value="RedemptionCodeBatchExhausted" />
+      <xs:enumeration value="RedemptionMessageFormatInvalid" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="RedeemResult" nillable="true" type="tns:RedeemResult" />
+</xs:schema>

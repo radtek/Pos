@@ -1,0 +1,237 @@
+ZipBuilder, for Borland C++ Builder version 3, 4, 5 and 6
+Version 1.78
+Original  by Chris Vleghert, cvleghrt@worldonline.nl
+Latest adaptations by Roger Aelbrecht, Roger.Aelbrecht@tiscali.be
+
+TZipBuilder is a translation and extended version of TZipMaster
+from Delphi to C++. Its functional identical in every way possible.
+but it has been coded in C++ to make it easier for C++ users to
+understand and modify.
+
+I am going to use the term "BCB" to mean "Borland C++ Builder".
+----------------------------------------------------------------------
+
+Before You Start
+----------------
+If you have an version of ZipMaster.pas installed in C++, you 
+don't have to remove it, since this component has a different name.
+
+You need to copy the redistributable modules to your desired
+directory on your development computer.  
+
+Copy \dll\*.DLL to your Windows System directory.
+Copy \sfx\*.BIN to your Windows System directory.
+
+
+Compiler Options
+----------------
+
+From version v1.70 there are compiler options that allow you to build
+a smaller version of TZipBuilder. This means that certain options are
+left out, making the final product smaller.
+
+There are six options:
+
+ALLOW_2G : Define if you want to use files with size larger than 2GB.
+					When this option is set the OnPogressEvent and 
+					OnTotalProgressEvent signatures are no longer backward compatible. 
+					Type __int64 is used.
+
+USE_ALLZIPSTRINGS : if this option is defined ALL messages in English are
+          included in the resource, if you intend to always include 
+          translated message you can make this undefined so less messages
+          will be included in your program
+
+NO_SPAN : if this options is defined (or set) then the possibility of 
+					spanning the archive over several disks (floppy disks) is no
+					longer available.
+					
+NO_SFX  : if this options is defined (or set) then the possibility of 
+          creating "self-extracting" archives is no longer build in 
+          into the component, other components can still be used to 
+          have the same result.
+          
+NO_STREAM : if this option is defined (or set) then the possibility of
+         Zipping, unzipping data in streams is no longer provided.
+
+INTERNAL_SFX : if this option is defined (or set) the old sfx code inside
+				the component is included. Setting this option will un define 
+				the option NO_SFX. This option is defined as default in ZipBuidler.h
+        See also remark on internal sfx below
+         
+Any combination of these options is allowed.
+Defining the options can be done by using the file CondDefines.h:
+Un-comment ( = remove the '//' at the start of the lines) the lines with 
+the #define statements to make them defined or comment ( add '//' at the
+start of the lines) tho make then undefined      
+
+REMARK on INTERNAL SFX  
+  
+The use of the internal sfx code is not recommended. We strongly recommend the
+use of an external package such as : 
+- "TZipBuilderSFX" a plug-in for TZipBuilder that can be found at my web pages 
+  http://home.tiscali.be/driehoeksw				
+- "ZipSFX" a Delphi package that works for both ZipMaster and ZipBuilder and
+  can be found at http://www.mirkes.de/en/delphi/dzsfx.php
+
+Installation
+------------
+To get going quickly and correctly, please follow these instructions.  
+Read them over once before starting.  If you don't understand a step, 
+get help before you start the install!
+
+
+1.  You HAVE TO install this package on a computer that has BCB.
+    
+2.  The files required to support the VCL are located in the
+    VCL subdirectory.  You have two choices for how to proceed
+    (option A is recommended):
+
+      A) add the directory C:\...    \VCL to your VCL search path
+         (C:\.. being the directory where you copied all files.)
+                             or     
+      B) copy the files in \VCL to another directory already
+         in your VCL search path
+
+    If you want to use option A, the instructions for this are
+    included below.  If you want option B, then please copy those
+    files now.
+  
+
+3.  Install the VCL in C++ Builder:
+
+    This procedure will install the VCL into the IDE.  After
+    this, you will be able to see it on the "ZipComponents" tab.
+
+    a) Choose Component|Install Component... from the menu
+
+    b) Select the Tab 'Into New Package' and fill in:
+       At 'Unit file name':    Browse and Select ZipBuilder.cpp from the
+                               directory where you installed it.
+       At 'Package file name': ZipPack
+       At 'Description':       Free BCB Zip Package (or anything else you like)
+       Select Ok
+
+    c) You will be asked to confirm building the package; Answer: NO
+
+    d) Choose Component|Install Component... from the menu
+
+    e) Select the Tab 'Into existing package' (if not already there) and fill in:
+       At 'Unit file name':    Browse and Select 'EZipBuilder.cpp' from the
+                               directory where you installed it.
+       At 'Package file name': Should still be 'ZipPack'
+       Select Ok 
+       Repeat step e) for each of the following files:
+       - ZipBase.cpp
+       - ZipDlg.cpp
+       - ZipLdr.cpp
+       - ZipProg.cpp
+       - ZipStrs.cpp
+       - ZipUtils.cpp
+       - ZipWrkr.cpp 
+       
+ 		f) If you intend to build the component with the internal sfx then proceed 
+       with the next file else skip to item h)
+       Answer NO on the confirm build question.
+       Choose Component|Install Component... from the menu
+
+    g) Select the Tab 'Into existing package' (if not already there) and fill in:
+       At 'Unit file name':    Browse and Select 'BuildIntSfx.cpp' from the
+                               directory where you installed it.
+       At 'Package file name': Should still be 'ZipPack'
+       Select Ok
+
+    h) Answer YES on the confirm build question.
+
+    i) Save the file (ZipPack.bpk) in the 'Lib' sub directory of CBuilder.
+
+    j) When compilation is ready:
+       Choose Menu|File|Save all
+       Choose Menu|File|Close all
+
+   At this stage all the necessary library files are present and you
+   only need the IDE to know about them.
+
+   k) Choose Menu|Component|Install Packages...
+       Select Add, goto the Lib subdirectory and select ZipPack.bpl
+       Select Ok.
+
+   Now the new component 'ZipBuilder' should be visible
+   under the (new) component tab of the IDE.
+
+   l) If you want the use run time libraries at some time in your
+       project(s) then you will have to copy ZipPack.bpl into a
+       directory which is in the PATH of your computer.
+       (i.e. Windows\System or the Bin directory of CBuilder.)
+
+If you want to know more about installing packages:
+  Look for 'Packages' in the CBuilder help system.
+  i.e. Creating a Package and Installing component packages.
+
+
+                       C++ BUILDER HELP
+
+See the 'ZipHelp.hlp' file in the Help subdirectory.
+
+
+                       C++ BUILDER DEMO's
+Installation
+------------
+1.  The CDemo directory has sub directories one for BCB3, one for
+    BCB4 specific files and so on. The files that are common
+    to all environments are in the CDemoX directory.
+    To install a demo you have to copy the files from the sub
+    directory BCB3 to the CDemoX directory. Sometimes you will
+    be asked to overwrite an existing file this is NOT an error
+    and you should confirm the question.
+
+2.  Important:
+    a) You must set the include and library path in your project,
+       not only for the demo's but also for new projects.
+       This can be accomplished by choosing from the menu:
+       Project|Options... and then the tab Directories/conditionals.
+
+    b) If want to use another language than English then
+       the ZipBuilder component uses a language resource file. 
+       This file must be linked into your project. (i.e. in your 
+       project source file.)
+       This file must contain a statement like:
+          USERC( "..\ZipMsgNL.rc" );
+       Where ..\ is the path to this resource file.
+       All language resources are grouped in the directory LangRes
+
+
+                    DESCRIPTION OF DEMO PROJECTS
+
+    Demo1 is a native C++ Builder port of the Delphi Zip Demo 1.
+    This is a very complete File Manager type of program that lets
+    you create archives, view archives, extract files, etc.  It can
+    also turn .zip files into .exe files (and vice-versa).
+
+
+                  Deployment of Your Programs
+
+Any program you write using this package will require the two 
+DLLs: ZIPDLL.DLL and UNZDLL.DLL to be present on each user's
+hard disk.  You should have your install procedures put these
+files into the WINDOWS SYSTEM directory (which is named differently
+on some systems - especially WinNT systems).  If that isn't 
+possible, then you should put them into the same directory as 
+your .EXE program that uses them.
+
+Also, the ZIPSFX.BIN module must be installed into the same
+directory as the DLLs.  This module is only needed if your
+application program needs to make .EXE archives.
+
+IMPORTANT: Any .EXE archives you make with this package do
+NOT need any supporting files on the end-user's computer!
+This is very handy!
+
+Of course, there are no distribution fees for the DLLs, or
+any other part of the package.  This whole package is 
+freeware, but does have some minor distribution restrictions
+(mainly that you can't profit from the ZIP DLLs, and you need
+to document where users can get source code). Please see 
+README.TXT and LICENSE in the help for these restrictions.
+    
+

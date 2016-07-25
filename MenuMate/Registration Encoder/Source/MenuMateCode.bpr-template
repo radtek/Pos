@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="..\..\..\Runtime\MenuMateCode.exe"/>
+    <OBJFILES value="..\obj\MenuMateCode.obj ..\obj\main.obj ..\obj\Password.obj 
+      ..\obj\MD5Checksum.obj"/>
+    <RESFILES value="MenuMateCode.res ..\obj\VersionRes.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) main.dfm Password.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="dbexpress.lib dsnap.lib cds.lib ibxpress.lib bdertl.lib vcldb.lib 
+      dbrtl.lib vcl.lib rtl.lib"/>
+    <SPARELIBS value="rtl.lib vcl.lib dbrtl.lib vcldb.lib bdertl.lib ibxpress.lib cds.lib 
+      dsnap.lib dbexpress.lib"/>
+    <PACKAGES value="vclx.bpi rtl.bpi vcl.bpi dbrtl.bpi vcldb.bpi bdertl.bpi vcldbx.bpi 
+      bcbsmp.bpi dclocx.bpi qrpt.bpi teeui.bpi teedb.bpi tee.bpi ibsmp.bpi 
+      nmfast.bpi inetdb.bpi inet.bpi"/>
+    <PATHCPP value=".;..\..\Registration\Source"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value=""/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="MenuMateCode.cpp"/>
+    <INCLUDEPATH value="..\..\Registration\Source;$(BCB)\include;$(BCB)\include\vcl;..\Registration\Source;..\..\Version"/>
+    <LIBPATH value="..\..\Registration\Source;$(BCB)\lib\obj;$(BCB)\lib;..\Registration\Source"/>
+    <WARNINGS value="-w-par -w-8027 -w-8026"/>
+    <WARNOPTSTR value=""/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\..\Registration\Source -I$(BCB)\include -I$(BCB)\include\vcl 
+      -I..\Registration\Source -I..\..\Version -src_suffix cpp -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -Tkh30000 -X- -a8 -b- -k- -vi -c 
+      -tW -tWM"/>
+    <PFLAGS value="-N2..\obj -N0..\obj -$Y- -$L- -$D- -$A8 -v -M -JPHNE"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-I..\obj -D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="MenuMateCode.cpp" FORMNAME="" UNITNAME="MenuMateCode" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="MenuMateCode.res" FORMNAME="" UNITNAME="MenuMateCode.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="main.cpp" FORMNAME="frmMain" UNITNAME="Main" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Password.cpp" FORMNAME="frmPassword" UNITNAME="Password" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Registration\Source\MD5Checksum.cpp" FORMNAME="" UNITNAME="MD5Checksum" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VersionRes.rc" FORMNAME="" UNITNAME="VersionRes.rc" CONTAINERID="RCCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\Version\VersionRes.h" FORMNAME="" UNITNAME="VersionRes.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=2
+MinorVer=7
+Release=1
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=5129
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=2.7.1.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=2.7.1.0
+Comments=
+
+[Excluded Packages]
+d:\development\cbuilder6\Projects\Bpl\DsgnCPortCB6.bpl=ComPort Library
+d:\development\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+
+[HistoryLists\hlIncludePath]
+Count=7
+Item0=..\..\Registration\Source;$(BCB)\include;$(BCB)\include\vcl;..\Registration\Source;..\..\Version
+Item1=..\..\Registration\Source;$(BCB)\include;$(BCB)\include\vcl;..\Registration\Source
+Item2=$(BCB)\include;$(BCB)\include\vcl;..\Registration\Source
+Item3=..\Registration\Source;..\Office 2.4.0.3\Source;MD5;$(BCB)\include;$(BCB)\include\vcl
+Item4=..\Office 2.4.0.3\Source;MD5;$(BCB)\include;$(BCB)\include\vcl
+Item5=MD5;$(BCB)\include;$(BCB)\include\vcl
+Item6=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=6
+Item0=..\..\Registration\Source;$(BCB)\lib\obj;$(BCB)\lib;..\Registration\Source
+Item1=$(BCB)\lib\obj;$(BCB)\lib;..\Registration\Source
+Item2=..\Registration\Source;..\Office 2.4.0.3\Source;MD5;..\..\cbuilder3\lib\release;$(BCB)\lib\obj;$(BCB)\lib
+Item3=..\Office 2.4.0.3\Source;MD5;..\..\cbuilder3\lib\release;$(BCB)\lib\obj;$(BCB)\lib
+Item4=MD5;..\..\cbuilder3\lib\release;$(BCB)\lib\obj;$(BCB)\lib
+Item5=..\..\cbuilder3\lib\release;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=2
+Item0=_DEBUG
+Item1=_RTLDLL;USEPACKAGES
+
+[HistoryLists\hlIntOutputDir]
+Count=1
+Item0=..\obj
+
+[HistoryLists\hlFinalOutputDir]
+Count=2
+Item0=..\..\Execs\
+Item1=..\..\Execs
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<CALLAWAY>
+	<ACCOUNT NAME="Guest 1" KEY="1" COVERS="1" TYPE="Tables">
+		<ACCOUNTIDENT>
+			<TYPE>0</TYPE>
+			<TABLE>1</TABLE>
+			<SEAT>1</SEAT>
+			<ROOM>1</ROOM>
+			<WEBID>1</WEBID>
+			<TAB>1</TAB>				
+			<MEMBER>1</MEMBER>			
+		</ACCOUNTIDENT>
+		<SERVINGCOURSE KEY="5" NAME="Beverages" />
+		<SERVINGCOURSE KEY="6" NAME="Food" />
+	</ACCOUNT>
+</CALLAWAY>

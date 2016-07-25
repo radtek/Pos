@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A042D1E1-A137-4786-B929-9C2AA8DDF1F3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SummaCL</RootNamespace>
+    <AssemblyName>SummaCL</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Assemblies\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Runtime\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\Runtime\Summa Pro\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>..\..\..\Assemblies\Summa Pro\32\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Ionic.Zip">
+      <HintPath>..\..\..\Assemblies\3rdParty\Ionic\32\Ionic.Zip.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Assemblies\3rdParty\Nlog\32\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CSV\CsvMulti.cs" />
+    <Compile Include="CSV\CustomersCSV.cs" />
+    <Compile Include="CSV\DepartmentsCSV.cs" />
+    <Compile Include="CSV\DepartmentTotalsCSV.cs" />
+    <Compile Include="CSV\DoorAccessCSV.cs" />
+    <Compile Include="CSV\FixedListCSV.cs" />
+    <Compile Include="CSV\FixedListPatrons.cs" />
+    <Compile Include="CSV\FixedListTotals.cs" />
+    <Compile Include="CSV\FreeListCSV.cs" />
+    <Compile Include="CSV\FreeListTotalsCSV.cs" />
+    <Compile Include="CSV\GroupsCSV.cs" />
+    <Compile Include="CSV\GroupTotalsCSV.cs" />
+    <Compile Include="CSV\HourlySalesCSV.cs" />
+    <Compile Include="CSV\OperatorsCSV.cs" />
+    <Compile Include="CSV\OperatorTotalsCSV.cs" />
+    <Compile Include="CSV\PatronTotals.cs" />
+    <Compile Include="CSV\PaymentMethodTotalsCSV.cs" />
+    <Compile Include="CSV\PaymentMethodTypesCSV.cs" />
+    <Compile Include="CSV\ProductsCSV.cs" />
+    <Compile Include="CSV\ProductTotalsCSV.cs" />
+    <Compile Include="CSV\RosterCSV.cs" />
+    <Compile Include="CSV\SummaGroupsCSV.cs" />
+    <Compile Include="CSV\TransactionCSV.cs" />
+    <Compile Include="CSV\TransactionDetailCSV.cs" />
+    <Compile Include="CSV\TransactionPaymentMethodsCSV.cs" />
+    <Compile Include="CSV\VersionCsv.cs" />
+    <Compile Include="Message\IPOSMessage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Singletons\SummaCL.Singletons.cs" />
+    <Compile Include="SummaCL.cs" />
+    <Compile Include="Summa\Summa.cs" />
+    <Compile Include="Summa\SummaCommon.cs" />
+    <Compile Include="Summa\SummaException.cs" />
+    <Compile Include="XML\XMLProcessor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Filemate\FileMate.Core.Xml\FileMate.Core.Xml.csproj">
+      <Project>{54EA6B96-7699-4AB6-AA28-EC20A16D5FE7}</Project>
+      <Name>FileMate.Core.Xml</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Filemate\FileMate.Core\FileMate.Core.csproj">
+      <Project>{EB9957C1-281F-4ADC-851F-F711124690CE}</Project>
+      <Name>FileMate.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LogFileManager\LogFileManager.csproj">
+      <Project>{0D87F640-CBCE-42C1-820A-1F0CFE5BE304}</Project>
+      <Name>LogFileManager</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ConfigFileManager\ConfigFileManager.csproj">
+      <Project>{59C56475-4CC9-4AC2-B605-EEFFD92A0A01}</Project>
+      <Name>ConfigFileManager</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

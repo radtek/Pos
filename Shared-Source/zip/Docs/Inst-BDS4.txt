@@ -1,0 +1,229 @@
+ZipBuilder, for Borland C++ Builder
+Version 1.79
+Original  by Chris Vleghert
+Latest adaptations by Roger Aelbrecht, Zipbuilder@drehoeksw.net
+
+TZipBuilder is a translation of TZipMaster from Delphi to C++. 
+Its functional identical in every way possible but it has been coded 
+in C++ to make it easier for C++ users to understand and modify.
+----------------------------------------------------------------------
+
+Before You Start
+----------------
+If you have an version of ZipMaster.pas installed in C++, you 
+don't have to remove it, since this component has a different name.
+
+If you have a previous version of TZipBuilder installed it is best 
+to remove it completely before starting this installation.
+To remove the previous packages remove all source and package files
+from the directory where you installed it.
+Remove the .bpl .bpi and .lib files of the old package
+Remove all entries for the package in the registry under key
+HKCU\Software\Borland\BDS\4.0
+
+You need to copy the redistributable modules to your desired
+directory on your development computer.  
+If you used the installer version of the package the all files will be installed
+in a folder ..\Program Files\DrehoekSW\ZipBuilder\  
+
+NOTE
+----
+For the ZBSFXxx.BIN and ZBSFXxx.RES files needed to make self-extracting
+archives download the separate ZBSFXBinRes__ package
+ZBSFXxx.BIN files are used directly in the program.
+The ZBSFXxx.RES files are needed for inclusion in a resource file.
+	
+
+Compiler Conditionals
+----------------------
+
+Compiler conditionals allow you to build a smaller version of TZipBuilder. 
+This means that certain options are left out, making the final product 
+smaller.
+
+There are seven conditionals:
+
+USE_COMPRESSED_STRINGS: Define if you use the compressed default strings,
+					if undefined the regular strings are used
+					
+KEEP_BACKWARD: Define if you want to keep the old properties and methods
+					(used for	the dual dll) 
+
+STATIC_LOAD_DELZIP_DLL: Define if you want to statically bind the dll to 
+					your application, You have to include DelZip179.lib into your 
+					application and make sure that it can find the DelZip179.dll
+					The best way to make sure it can find the dll is to place the 
+					dll in the same folder as you application executable.
+
+ALLOW_2G : Define if you want to use files with size larger than 2GB.
+					When this option is set the OnPogressEvent and 
+					OnTotalProgressEvent signatures are no longer backward compatible. 
+					Type __int64 is used.
+
+NO_SPAN : if this options is defined (or set) then the possibility of 
+					spanning the archive over several disks (floppy disks) is no
+					longer available.
+					
+NO_SFX  : if this options is defined (or set) then the possibility of 
+          creating "self-extracting" archives is no longer build in 
+          into the component, other components can still be used to 
+          have the same result.
+          
+NO_STREAM : if this option is defined (or set) then the possibility of
+         Zipping, unzipping data in streams is no longer provided.
+         
+Any combination of these conditionals is allowed.
+Defining the conditionals can be done by using the tool ZBConfig or by 
+directly editing the file CondDefines.h:
+Un-comment ( = remove the '//' at the start of the lines) the lines with 
+the #define statements to make them defined or comment ( add '//' at the
+start of the lines) to make then undefined      
+
+
+Languages
+---------
+From version 1.79 it is possible to have the messages in the required 
+languages included into a resource file and include this file into your 
+application. The strings for the languages have to be included in the
+resource in a compressed ( LZ77 compress) format.
+The English version is always available and does not need to be in the
+resources.
+
+To create a resource that holds the required languages in the correct
+compressed format a tool ZipResMaker is made available.
+This tool can create a resource that contains the DLL's, the SFX *.bin's
+in the required languages and the strings in the required languages.
+For more detailed info see the Help file and the Help file that comes
+with the ZipResMaker tool. 
+
+
+If you want to use a language that is not included in the resource file 
+or if you don't want to you use the resource file option you can link a
+language resource file into your project. 
+The language resource files are of type ZipMsgNL.rc and all language 
+resources are grouped in the directory LangRes
+
+Installation of TZipBuilder
+---------------------------
+To get going quickly and correctly, please follow these instructions.  
+Read them over once before starting.  If you don't understand a step, 
+get help before you start the install!
+
+ You can install the component two ways:
+    	- using the included package files
+    	- starting from a new package 
+
+1.  Install the component using the included package files:
+	 Open BDS4 and select File|Close All to make sure nothing is 
+      disturbing the package installation process
+      
+	 Then select File|OpenProject and browse to the ..\ZipBuilder\CBuilder 
+	 directory or any other directory you have copied the files from the package.
+	 Open ZBldr179C10.bdsgroup now you should have the package open with all the needed 
+	 files in the contains section of the Project Manager	
+
+	right click Project Manager - ZBldr179C10.bpl
+  	-> Build
+
+	right click Project Manager - ZBldr179C10.bpl
+  	-> Install
+
+	// With a bit of luck it will say it installed
+
+
+2. Or you can start working with a new package:
+
+new -> Package C++
+right click Project Manager - Package1.bpl
+  -> SaveAs -> ZBldr179C10.bdsproj in the ..\CBuilder\ 
+[
+  Contains
+    ZBldr179C10.cpp
+    ZBldr179C10.res
+]
+
+right click Project Manager - ZBldr179C10.bpl
+  -> Options
+    -> Linker (ilink32) -> Package Options -> Design + Runtime package
+       + generate .lib files
+       
+right click Project Manager - ZBldr179C10.bpl
+  -> Add ->
+[
+  EZipBuilder.cpp
+  ZBCompat.cpp
+  ZBCore.cpp
+  ZBDBind.cpp
+  ZBDlg.cpp
+  ZBHash.cpp
+  ZBMsgStr.cpp
+  ZBSBind.cpp
+  ZBWrkr.cpp
+  ZipBuilder.cpp
+  ZipExtrLZ77.cpp
+  ZipIntSFX.cpp
+  ZipProj.cpp
+  ZipUtils.cpp
+]
+
+[
+  Contains
+    ZBldr179C10.cpp
+    ZBldr179C10.res
+    ..
+      
+          EZipBuilder.cpp
+          ZBCompat.cpp
+          ZBCore.cpp
+          ZBDBind.cpp
+          ZBDlg.cpp
+          ZBMsgStr.cpp
+          ZBSBind.cpp
+          ZBWrkr.cpp
+          ZipBuilder.cpp
+          ZipExtrLZ77.cpp
+          ZipIntSFX.cpp
+          ZipProj.cpp
+          ZipUtils.cpp
+]
+
+right click Program Manager - ProjectGroup1
+  -> SaveAs  ZBldr179C10.bdsgroup
+
+right click Project Manager - ZBldr179C10.bpl
+  -> Build
+
+right click Project Manager - ZBldr179C10.bpl
+  -> Install
+
+// With a bit of luck it will say it installed
+
+---
+
+
+TZIPBUILDER HELP
+================
+To have the help files available we offer two solutions:
+
+1- Use the ziphelp.chm:
+	Copy the ziphelp.chm file to any folder of your choice 
+	(we suggest using "..Program Files\DrehoekSW\ZipBuilder\Help")
+	Double click the file and it will be opened in the 
+	'Microsoft HTML Help Executable'
+	
+2- Integrate the Ziphelp into the BDS4 help namespace.
+	To integrate the ziphelp file we suggest you use H2Reg.exe:
+	- Copy all the .Hx? files in the help folder to any folder of your choice 
+	 (we suggest using "..Program Files\DrehoekSW\ZipBuilder\Help")
+	- Copy the file H2reg.ini to the same folder
+	- Copy the H2Reg.exe executable to the same folder. You can find H2Reg.exe in 
+		'..Program Files\Borland\BDS\4.0\Help\ThirdParty'
+	 	Or you can download it form 
+	 	'http://www.helpware.net/mshelp2/h2reg.htm'
+	- Open a command window and sets its working directory to the help folder
+	- Type the command 
+	  H2reg -r
+	  A little window will report that the registration is executed.
+	- When you open your BDS4 C++ personality and start Help it will show a
+	 	message box that the changes you requested will be executed. When that is
+	 	finished ziphelp is integrated into BDS4 help 

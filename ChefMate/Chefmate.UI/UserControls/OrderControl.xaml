@@ -1,0 +1,162 @@
+﻿<UserControl x:Class="Chefmate.UI.UserControls.OrderControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:userControls="clr-namespace:Chefmate.UI.UserControls"
+             xmlns:converters="clr-namespace:Chefmate.UI.Converters"
+             xmlns:enums="clr-namespace:Chefmate.Core.Enums;assembly=Chefmate.Core"
+             BorderBrush="Black" BorderThickness="1">
+    <UserControl.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:OptionSignConverter x:Key="OptionSignConverter"/>
+        <converters:ItemStatusToColorConverter x:Key="ItemStatusToColorConverter"/>
+        <converters:GroupStatusToColorConverter x:Key="GroupStatusToColorConverter"/>
+        <converters:OrderStatusToColorConverter x:Key="OrderStatusToColorConverter"/>
+        <Style TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="50"/>
+        </Style>
+        <Style x:Key="CourseLable" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="20"></Setter>
+            <Setter Property="FontWeight" Value="Bold"></Setter>
+        </Style>
+        <Style x:Key="ItemLable" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="20"></Setter>
+            <Setter Property="Text" Value="{Binding Name}"></Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ItemStatus}" Value="{x:Static enums:ItemStatus.Bumped}">
+                    <Setter Property="TextBlock.TextDecorations" Value="StrikeThrough"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+
+        </Style>
+        <Style x:Key="SideLable" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="20"></Setter>
+            <Setter Property="Text" Value="{Binding Name}"></Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ItemStatus}" Value="{x:Static enums:ItemStatus.Bumped}">
+                    <Setter Property="TextBlock.TextDecorations" Value="StrikeThrough"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+
+        </Style>
+        <Style x:Key="OptionLable" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="20"></Setter>
+            <Setter Property="Text" Value="{Binding Name}"></Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ItemStatus}" Value="{x:Static enums:ItemStatus.Bumped}">
+                    <Setter Property="TextBlock.TextDecorations" Value="StrikeThrough"></Setter>
+                </DataTrigger>
+            </Style.Triggers>
+
+        </Style>
+        <Style x:Key="OrderHeaderLable" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="15"></Setter>
+            <Setter Property="FontWeight" Value="Bold"></Setter>
+            <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
+            <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".20*"/>
+            <RowDefinition Height=".70*"/>
+            <RowDefinition Height=".10*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".25*"/>
+                <ColumnDefinition Width=".25*"/>
+                <ColumnDefinition Width=".25*"/>
+                <ColumnDefinition Width=".25*"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" BorderThickness="1" BorderBrush="Black">
+                <Label Style="{StaticResource OrderHeaderLable}" Content="{Binding TableTabName}"/>
+            </Border>
+            <Border Grid.Column="1" BorderThickness="1" BorderBrush="Black">
+                <Label Style="{StaticResource OrderHeaderLable}" Content="{Binding ServerName}"/>
+            </Border>
+            <Border Grid.Column="2" BorderThickness="1" BorderBrush="Black">
+                <Label  Style="{StaticResource OrderHeaderLable}" Content="{Binding PartyName}"/>
+            </Border>
+            <Border Grid.Column="3" BorderThickness="1" BorderBrush="Black">
+                <userControls:PopupButton Order="{Binding BindsDirectlyToSource=True}" ItemType="1"
+                                         Background="{Binding OrderStatus, Converter={StaticResource OrderStatusToColorConverter}}"/>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="1" Background="{Binding ChefmateOrder.OrderColor}">
+            <ItemsControl ItemsSource="{Binding ChefmateOrder.ServingCourseGroups}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height=".20*"/>
+                                <RowDefinition Height=".80*"/>
+                            </Grid.RowDefinitions>
+                            <Grid  Grid.Row="0" Background="PaleGreen">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width=".75*"/>
+                                    <ColumnDefinition Width=".25*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Style="{StaticResource CourseLable}" Content="{Binding GroupName}"/>
+                                <userControls:PopupButton Grid.Column="1" Group="{Binding BindsDirectlyToSource=True}" ItemType="2"
+                                                        Background="{Binding GroupStatus,Converter={StaticResource GroupStatusToColorConverter}}"/>
+                            </Grid>
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding Items}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid  Visibility="{Binding IsVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width=".75*"/>
+                                                <ColumnDefinition Width=".25*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource ItemLable}"/>
+                                            <userControls:PopupButton Grid.Row="0" Grid.Column="1" ItemType="3"
+                                                                              Item="{Binding BindsDirectlyToSource=True}"
+                                                                              Background="{Binding ItemStatus,Converter={StaticResource ItemStatusToColorConverter}}"/>
+                                            <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                                                              ItemsSource="{Binding Sides}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Label Margin="10,0,0,0" Content=">" FontWeight="Bold"/>
+                                                            <TextBlock Style="{StaticResource SideLable}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+
+                                            </ItemsControl>
+                                            <ItemsControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                                              ItemsSource="{Binding Options}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Label Margin="10,0,0,0" FontWeight="Bold" 
+                                                                                       Content="{Binding IsPlus, Converter={StaticResource OptionSignConverter}}"/>
+                                                            <TextBlock Style="{StaticResource OptionLable}"/>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+        <Button Grid.Row="2" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=PopUpCommand }"
+                                    CommandParameter="{Binding BindsDirectlyToSource=True}">
+            <Image Source="../Images/Down.ico"></Image>
+        </Button>
+    </Grid>
+</UserControl>

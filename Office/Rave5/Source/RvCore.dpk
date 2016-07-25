@@ -1,0 +1,62 @@
+{*************************************************************************}
+{ Rave Reports version 5.1                                                }
+{ Copyright (c), 1995-2002, Nevrona Designs, all rights reserved          }
+{*************************************************************************}
+package RvCore;
+
+{$DESCRIPTION 'Rave Class Library'}
+{$IMPLICITBUILD OFF}
+{$RUNONLY}
+{$LIBSUFFIX '50'}
+
+{$R RvClass.res}
+{$R RvProj.res}
+{$R RvData.res}
+
+requires
+  VCL,
+  VCLJPG,
+  VCLDB;
+
+contains
+  RpDefine,
+  RpFont,
+  RpDevice,
+  RpBase,
+  RpFiler,
+  RpSystem,
+  RpMemo,
+  RpBars,
+  RpFormPreview,
+  RpFormStatus,
+  RpFormSetup,
+  RpRPTF,
+  RpCon,
+  RpRender,
+  RpRenderCanvas,
+  RpRenderPreview,
+  RpRenderPrinter,
+  RpRenderHTML,
+  RpRenderPDF,
+  RpRenderText,
+  RpRenderRTF,
+  RvDefine,
+  RvUtil,
+  RvClass,
+  RvData,
+  RvDatabase,
+  RvDataField,
+  RvDirectDataView,
+  RvDriverDataView,
+  RvDLBase,
+  RvDLCommon,
+  RpMBCS,
+  RvDataLink,
+  RvSecurity,
+  RvProj,
+  RvTool,
+  RvToolUtil,
+  RvToolEvents,
+  RvCmHuff;
+
+end.

@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="XeroIntegration.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="XeroIntegrationConfigFilename" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">XeroIntegration.xml</Value>
+    </Setting>
+    <Setting Name="XeroIntegrationCacheFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Xero Integration\Cache</Value>
+    </Setting>
+    <Setting Name="XeroIntegrationFailedFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Xero Integration\Failed</Value>
+    </Setting>
+    <Setting Name="XeroIntegrationSuccessfulFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Xero Integration\Successful</Value>
+    </Setting>
+    <Setting Name="XeroIntegrationRetryFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Xero Integration\Retry</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

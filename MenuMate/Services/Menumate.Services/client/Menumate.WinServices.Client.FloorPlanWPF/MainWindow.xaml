@@ -1,0 +1,16 @@
+﻿<Window x:Class="Menumate.WinServices.Client.FloorPlanWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="245*" />
+            <RowDefinition Height="66*" />
+        </Grid.RowDefinitions>
+        <StackPanel Height="100" HorizontalAlignment="Left" Margin="10,10,0,0" Name="stackPanel1" VerticalAlignment="Top" Width="423" Background="#7C6B829D" UseLayoutRounding="True" Orientation="Horizontal" AllowDrop="True" OpacityMask="Black">
+            <StackPanel.BindingGroup>
+                <BindingGroup />
+            </StackPanel.BindingGroup>
+        </StackPanel>
+    </Grid>
+</Window>

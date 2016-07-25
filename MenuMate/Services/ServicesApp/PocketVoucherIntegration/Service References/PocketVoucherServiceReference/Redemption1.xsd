@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://pocketvouchers.com/services2010/08" elementFormDefault="qualified" targetNamespace="http://pocketvouchers.com/services2010/08" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="https://services.host.pocketvouchers.com/Redemption.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/PocketVouchers.Services.Voucher.Redemption" />
+  <xs:element name="Redeem">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="voucherCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="merchantId" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="merchantReference" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="terminalId" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RedeemResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/PocketVouchers.Services.Voucher.Redemption" minOccurs="0" name="RedeemResult" type="q1:RedeemResult" />
+        <xs:element minOccurs="0" name="redemptionReference" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="messageText" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RedeemWithTransactionAmount">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="voucherCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transactionAmount" type="xs:decimal" />
+        <xs:element minOccurs="0" name="merchantId" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="merchantReference" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="terminalId" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RedeemWithTransactionAmountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/PocketVouchers.Services.Voucher.Redemption" minOccurs="0" name="RedeemWithTransactionAmountResult" type="q2:RedeemResult" />
+        <xs:element minOccurs="0" name="redemptionReference" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="messageText" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RedeemWithVoucherAmount">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="voucherCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="voucherAmount" type="xs:decimal" />
+        <xs:element minOccurs="0" name="merchantId" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="merchantReference" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="terminalId" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RedeemWithVoucherAmountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/PocketVouchers.Services.Voucher.Redemption" minOccurs="0" name="RedeemWithVoucherAmountResult" type="q3:RedeemResult" />
+        <xs:element minOccurs="0" name="redemptionReference" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="messageText" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RedeemWithVoucherAmountTransactionAmount">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="voucherCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="voucherAmount" type="xs:decimal" />
+        <xs:element minOccurs="0" name="transactionAmount" type="xs:decimal" />
+        <xs:element minOccurs="0" name="merchantId" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="merchantReference" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="terminalId" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RedeemWithVoucherAmountTransactionAmountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/PocketVouchers.Services.Voucher.Redemption" minOccurs="0" name="RedeemWithVoucherAmountTransactionAmountResult" type="q4:RedeemResult" />
+        <xs:element minOccurs="0" name="redemptionReference" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="messageText" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

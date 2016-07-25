@@ -1,0 +1,19 @@
+{*************************************************************************}
+{ Rave Reports version 5.1                                                }
+{ Copyright (c), 1995-2002, Nevrona Designs, all rights reserved          }
+{*************************************************************************}
+package RvCompiler;
+
+{$DESCRIPTION 'Rave Delphi Syntax Compiler'}
+{$IMPLICITBUILD OFF}
+{$RUNONLY}
+{$LIBSUFFIX '50'}
+
+requires
+  RvCore,
+  RvEngine;
+
+contains
+  RvLDCompiler;
+
+end.

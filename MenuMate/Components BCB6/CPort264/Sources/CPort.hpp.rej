@@ -1,0 +1,53 @@
+***************
+*** 677,701 ****
+  	__property int Code = {read=FCode, write=FCode, nodefault};
+  public:
+  	#pragma option push -w-inl
+  	/* Exception.CreateFmt */ inline __fastcall EComPort(const AnsiString Msg, const System::TVarRec * Args, const int Args_Size) : Sysutils::Exception(Msg, Args, Args_Size) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+! 	/* Exception.CreateRes */ inline __fastcall EComPort(int Ident)/* overload */ : Sysutils::Exception(Ident) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+  	/* Exception.CreateResFmt */ inline __fastcall EComPort(int Ident, const System::TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::Exception(Ident, Args, Args_Size) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+  	/* Exception.CreateHelp */ inline __fastcall EComPort(const AnsiString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+  	/* Exception.CreateFmtHelp */ inline __fastcall EComPort(const AnsiString Msg, const System::TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::Exception(Msg, Args, Args_Size, AHelpContext) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+! 	/* Exception.CreateResHelp */ inline __fastcall EComPort(int Ident, int AHelpContext)/* overload */ : Sysutils::Exception(Ident, AHelpContext) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+  	/* Exception.CreateResFmtHelp */ inline __fastcall EComPort(System::PResStringRec ResStringRec, const System::TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::Exception(ResStringRec, Args, Args_Size, AHelpContext) { }
+  	#pragma option pop
+  	
+  public:
+--- 677,701 ----
+  	__property int Code = {read=FCode, write=FCode, nodefault};
+  public:
+  	#pragma option push -w-inl
+  	/* Exception.CreateFmt */ inline __fastcall EComPort(const AnsiString Msg, const System::TVarRec * Args, const int Args_Size) : Sysutils::Exception(Msg, Args, Args_Size) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+! //	/* Exception.CreateRes */ inline __fastcall EComPort(int Ident)/* overload */ : Sysutils::Exception(Ident) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+  	/* Exception.CreateResFmt */ inline __fastcall EComPort(int Ident, const System::TVarRec * Args, const int Args_Size)/* overload */ : Sysutils::Exception(Ident, Args, Args_Size) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+  	/* Exception.CreateHelp */ inline __fastcall EComPort(const AnsiString Msg, int AHelpContext) : Sysutils::Exception(Msg, AHelpContext) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+  	/* Exception.CreateFmtHelp */ inline __fastcall EComPort(const AnsiString Msg, const System::TVarRec * Args, const int Args_Size, int AHelpContext) : Sysutils::Exception(Msg, Args, Args_Size, AHelpContext) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+! //	/* Exception.CreateResHelp */ inline __fastcall EComPort(int Ident, int AHelpContext)/* overload */ : Sysutils::Exception(Ident, AHelpContext) { }
+  	#pragma option pop
+  	#pragma option push -w-inl
+  	/* Exception.CreateResFmtHelp */ inline __fastcall EComPort(System::PResStringRec ResStringRec, const System::TVarRec * Args, const int Args_Size, int AHelpContext)/* overload */ : Sysutils::Exception(ResStringRec, Args, Args_Size, AHelpContext) { }
+  	#pragma option pop
+  	
+  public:

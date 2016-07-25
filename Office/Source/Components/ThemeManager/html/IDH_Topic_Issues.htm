@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 //EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Time2HELP 1.0; Standard Template">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=utf8">
+<TITLE>Known issues</TITLE>
+<Style>Body, TD {font-family: "Verdana"; font-size: 10pt};
+PRE {font-family: "Courier New"; font-size: 10pt; margin-top: 0; margin-bottom: 0}
+TR.odd {background-color: #F8F8F8};
+TR.even {background-color: #EEEEEE};
+Table.list {background-color: #FFFFFF};
+TD {vertical-align : top};
+TD.stripelight {background-image: url(images/StripeLight.gif);};
+TD.stripedark {background-image: url(images/StripeDark.gif);};
+</Style>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<BASEFONT NAME="Verdana" Size="2"><Style Type="text/css"> p.initial:first-letter {font-size:36pt; font-weight:bold} </Style><!--TABLE BORDER="0" WIDTH="100%" BGCOLOR="#FFFF00"><TR><TD-->
+<TABLE BORDER="0" WIDTH="100%" BGCOLOR="#D2D0BD" cellspacing=0><TR><TD class="stripelight"><Font Size="6"><B>Known issues</B></Font></TD></TR></Table><HR><P Class="initial">The theme manager cannot fix everything. Particularly controls which are fully drawn by the VCL remain as they are (exception: TSpeedButton), because the paint code would have to be copied out from the VCL source code for modification, which is not allowed.</P><UL><LI>TAnimate, The TAnimate control does not behave as documented. Regardless of what is done in WM_CTLCOLORSTATIC the control always seems to erase its background, making it so impossible to simulate a transparent background. Custom draw is not supported for TAnimate so this option is also not available.</LI><LI>TPageControl does no longer support tab styles other than tsTabs. Additionally, the default themes for Windows XP do not draw tabs correctly if they are not at top of the page control.</LI><LI>TToolButton with tbsDropDown style does not trigger its Click event when csCaptureMouse is removed from the control style. Hence tool buttons with that style are taken out from the automatic adjustment. This in turn makes them however showing wrongly when pressed. No fix known yet.</LI><LI>When embedding controls into TStatusBar (e.g. a progress bar) then the embedded window may move unpredictable when resizing the status bar. The reason is the WVR_REDRAW result value in the WM_NCCALCSIZE handler.</LI></UL>The following controls are VCL only and need full rework for themed painting or are not intended to work with themes:<UL><LI>TCustomGrid (and all descentants like database grids). The border of grids is however painted in themed fashion.</LI><LI>TBevel</LI><LI>TControlBar</LI><LI>TMediaPlayer</LI><LI>Action bars and related stuff</LI></UL>Other controls:<UL><LI>TPageScroller, The page scroller control is not subclassed. It is not clear to me how it must look because it is nowhere used in Windows XP (at least I did not find any usage).</LI></UL>Third party and special controls:<UL><LI>I have not considered additional controls like QuickReports, TeeChart and so on.</LI></UL><P><HR>
+<TABLE BORDER="0" WIDTH="100%" BGCOLOR="#404040" cellspacing=0><TR><TD class="stripelight">
+<Font Color=Black><Large>Copyright © 1999, 2002 <B>Mike Lischke</B></Large</Font>
+</TD></TR></Table>
+<Small><A HREF="http://www.lischke-online.de">http://www.lischke-online.de</A></Small>

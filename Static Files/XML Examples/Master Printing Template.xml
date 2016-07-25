@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PRINTJOB NAME="Guest 2" DEVICENAME="DROID1" DEVICEGUID="123-345-456-234" TRANSNO="a8cd5329-8554-4ff1-aa60-3ccf91ff99fa" STARTTIME="22/12/2011 15:28:55">
+	<OrderGUID>36780915-a777-4146-bb36-5879ac1d309d</OrderGUID>
+	<OrderGUID>fd69cba3-4874-4e03-b474-01beda01f50f</OrderGUID>
+	<OrderGUID>42932abc-8519-401a-a08d-c287ad08743b</OrderGUID>
+	<OrderGUID>5cd6f527-4b44-4786-baa2-4cf4d44c620a</OrderGUID>
+	<OrderGUID>334e8a29-ace1-4406-bac0-a1d2f6c37b84</OrderGUID>
+	<OrderGUID>9afb7f76-c344-4a4a-bb8c-05cfd480833e</OrderGUID>
+	<OrderGUID>f7026763-3b2e-4576-8684-f305a0d90727</OrderGUID>
+	<OrderGUID>a19c59c1-b6b3-4229-b83f-78a3f9276ea1</OrderGUID>
+	<OrderGUID>f1027eac-c083-4258-b5b6-7c683e0b5408</OrderGUID>
+	<OrderGUID>78b4149e-0c06-41ae-a44d-13d46a7a3c10</OrderGUID>
+	<OrderGUID>6bd34ccc-0acd-418d-8d52-a7732fb730a4</OrderGUID>
+	<OrderGUID>d4672e9c-b1ec-4917-b29f-ca3d25ad0ea5</OrderGUID>
+</PRINTJOB>

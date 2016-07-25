@@ -1,0 +1,11 @@
+1; GSTMate From Menumate; GST Upgrade for New Zealand.htm;
+2; Introduction; Introduction.htm;
+3; When to Run GSTMate?; When to Run GSTMate.htm;
+4; How does GSTMate Work?; module_3.htm;
+5; Running GSTMate; module_4.htm;
+6; Step 1: Choose the Company; module_4_1.htm;
+7; Step 2: Backup System; module_4_2.htm;
+8; Step 3: Set GST Rate and Price Increase; module_4_3.htm;
+9; Step 4: Update System; module_4_4.htm;
+10; Step 5: Exit; module_4_5.htm;
+11; Frequently Asked Questions; module_5.htm;

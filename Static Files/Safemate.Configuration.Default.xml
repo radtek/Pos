@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<SafemateConfiguration>
+	<Account name="Some Company's Account" />
+	<CrmEngine type="Salesforce"
+	           password="menumate1202" username="dev@menumate.com" />
+	<ConfigurationCheckInterval>480</ConfigurationCheckInterval>
+	<CopyGroup>
+		<CopyOperation calledFromExternal="false"
+		               deleteSource="true" name="Menumate">
+			<emailErrorNotification>
+				<recipient>ahost@somedomain.com</recipient>
+				<recipient>bhost@somedomain.com</recipient>
+				<recipient>chost@somedomain.com</recipient>
+				<Sender address="tech@somedomain.com"
+				        password="bar" port="25"
+				        server="mail.somedomain.com"
+				        username="tech"
+				        useSsl="true" />
+			</emailErrorNotification>
+			<pattern>*.zip</pattern>
+			<schedule>6h</schedule>
+			<source url="C:\Program Files\Menumate\Safemate\Cache\Ready for transit" />
+			<targets>
+				<target name="Menumate Backup Store"
+			                url="ftp://foo.bar.com/">
+					<credentials password="baz"
+					             username="boo" />
+				</target>
+				<target name="Some other backup store"
+			                url="ftp://backup.somedomain.com/">
+					<credentials password="jib"
+					             username="jab" />
+				</target>
+				<target name="A backup location on disk"
+			                url="C:\Backups\" />
+			</targets>
+		</CopyOperation>
+	</CopyGroup>
+</SafemateConfiguration>
+

@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 //EN">
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Time2HELP 1.0; Standard Template">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=utf8">
+<TITLE>Installation</TITLE>
+<Style>Body, TD {font-family: "Verdana"; font-size: 10pt};
+PRE {font-family: "Courier New"; font-size: 10pt; margin-top: 0; margin-bottom: 0}
+TR.odd {background-color: #F8F8F8};
+TR.even {background-color: #EEEEEE};
+Table.list {background-color: #FFFFFF};
+TD {vertical-align : top};
+TD.stripelight {background-image: url(images/StripeLight.gif);};
+TD.stripedark {background-image: url(images/StripeDark.gif);};
+</Style>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<BASEFONT NAME="Verdana" Size="2"><Style Type="text/css"> p.initial:first-letter {font-size:36pt; font-weight:bold} </Style><!--TABLE BORDER="0" WIDTH="100%" BGCOLOR="#FFFF00"><TR><TD-->
+<TABLE BORDER="0" WIDTH="100%" BGCOLOR="#D2D0BD" cellspacing=0><TR><TD class="stripelight"><Font Size="6"><B>Installation</B></Font></TD></TR></Table><HR><P Class="initial">Windows XP Theme Manager comes with the following files:</P><UL><LI>Compilers.inc - Include file necessary to know under which Delphi or BCB version the software is currently being compiled.</LI><LI>ThemeSrv.pas - Contains the TThemeServices class.</LI><LI>ThemeMgr.pas - Contains the TThemeManager component.</LI><LI>ThemeMgrDB.pas - Contains the TThemeManagerDB component.</LI><LI>ThemeManager.dcr - Contains the component images for TThemeManager and TThemeManagerDB.</LI><LI>TmSchema.pas - Interface unit for the theme DLL.</LI><LI>UxTheme.pas - Interface unit for the theme DLL.</LI><LI>WinXP.res - Resource file containing the theme manifest.</LI></UL>Additionally, there are some header files for Borland C++ Builder. These are only necessary if you don't have the latest SDK.<UL><LI>schemadef.h</LI><LI>Tmschema.h</LI><LI>Uxtheme.h</LI></UL>These are the steps to install Windows XP Theme Manager into Delphi 4-6 and Borland C++ Builder:<OL><LI>Before you start installation of the new files make a copy of or move the old files to a different directory. Make sure the source folder is empty afterwards!</LI><LI>Copy the files from the distribution into your Themes folder.</LI><LI>Install the package ThemeManager.dpk for Delphi 6 or ThemeManager5.dpk for Delphi 5 into your IDE. Sorry, I don't own Delphi 4 so I could not make a package file for this version. Create one yourself and if you want to help others then send your file to me.</LI></OL>Marco Loos kindly sent me a small list of steps for installing Windows XP Theme Manager in BCB 4 and 5 (I think BCB 6 is very similar here):<OL><LI>Create a new package (File|New|Package</LI><LI>Add all Theme Manager *.pas files to this package. ThemeMgrDB.pas is optional and only necessary for database controls.</LI><LI>Save the package.</LI><LI>Compile and install the package.</LI><LI>Now either you include the <B>Theme Manager</B> and <B>Theme Manager\BCB</B> path to the include and library path of each project that uses Theme Manager or you copy the Theme Manager *.hpp as well as the three *.h files from the BCB sub path and WinXP.res to your library path.</LI></OL>As you can see this is not very different from the Delphi installation. For Delphi 4 however some special considerations are needed (thanks to Michael Forshaw for helping out here):<OL><LI>Once you have created the package (e.g. ThemeManager.dpk), do <B>not</B> try to compile it - just save it.</LI><LI>Create a new "Project Group" (e.g. called "ThemeManager.bpg") and <B>add</B> the package (ThemeManager.dpk) into that group. Save.</LI><LI>Within the project group, double-click the "ThemeManager" package to open it. Now, from the "Project" menu, select "Build ThemeManager". It should compile successfully. Do <B>not</B> use the "Compile" button in the package window because it will crash every time - always use the menu option.</LI><LI>Close all projects and install the package using "Install Packages" from the "Component" menu.</LI></OL><table BGCOLOR="#000000" BORDER="0" WIDTH="100%" style="margin-top: 10;">
+  <tr><td><font color="#FFFFFF"><b>Note</b></font></td></tr>
+</table>
+<table BGCOLOR="#DDDDDD" CellSpacing="0" Width="100%" Border="0" style="margin-bottom: 10;">
+  <tr><td>Previous users of Windows XP Theme Manager will notice changes in the file naming as well as the installation procedure. These changes were due to the conflicts with other controls, which use the manager. Additionally, Virtual Treeview (also from Delphi Gems) could not be installed at the same time as the themes manager. These problems are now solved.<Br /><Br />The Win32API from Marcel van Brakel is no longer used nor necessary for Windows XP Theme Manager. There are only two header files necessary and they differ slightly from those of the Win32API package. The files are TmSchema.pas and UxTheme.pas and the best bet is to leave them local to the theme manager (as they are in the distribution).</td></tr>
+</table><P><HR>
+<TABLE BORDER="0" WIDTH="100%" BGCOLOR="#404040" cellspacing=0><TR><TD class="stripelight">
+<Font Color=Black><Large>Copyright © 1999, 2002 <B>Mike Lischke</B></Large</Font>
+</TD></TR></Table>
+<Small><A HREF="http://www.lischke-online.de">http://www.lischke-online.de</A></Small>

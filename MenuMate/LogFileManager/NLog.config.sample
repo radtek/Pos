@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      autoReload="true"
+      throwExceptions="true"
+      internalLogFile="Nlog.log">
+
+  <targets async="true">
+    <target name="file" xsi:type="File" fileName="${basedir}/logs/${logger}.log"
+            layout="${date}|${level:uppercase=true}|${callsite:classname=true:fileName=false}|${message}|${exception:format=ToString}"/>
+    
+    <target xsi:type="FormControl" name="LogBoxControl" controlName="LogBox" formName="MainForm" append="true"
+           layout="${longdate}|${level:uppercase=true}|${callsite:classname=false:fileName=false}|${message}|${exception:format=tostring}${newline}" />
+
+    <target xsi:type="File" name="IntaMateDetailLog" fileName="${basedir}/IntaMateDetial.log"
+        deleteOldFileOnStartup="true" archiveAboveSize="1000000" archiveEvery="Day" archiveNumbering="Rolling"
+        layout="${newline} ${longdate} ${level} | ${message} ${newline} ${stacktrace}" />
+
+  </targets>
+
+  <rules>
+    <logger name="*" minlevel="Trace" writeTo="file"/>
+  </rules>
+</nlog>

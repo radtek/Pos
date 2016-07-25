@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BD6E66A8-2661-4D88-8156-2AB8A661FD4F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Chefmate.Database</RootNamespace>
+    <AssemblyName>Chefmate.Database</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Distribution\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Distribution\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FirebirdSql.Data.FirebirdClient, Version=4.10.0.0, Culture=neutral, PublicKeyToken=3750abcc3150b00c, processorArchitecture=MSIL">
+      <HintPath>..\packages\FirebirdSql.Data.FirebirdClient.4.10.0.0\lib\net40-client\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DatabaseCore.cs" />
+    <Compile Include="DbModels\DbGroup.cs" />
+    <Compile Include="DbModels\DbItem.cs" />
+    <Compile Include="DbModels\DbOption.cs" />
+    <Compile Include="DbModels\DbOrder.cs" />
+    <Compile Include="DbModels\DbOrderGroup.cs" />
+    <Compile Include="DbModels\DbOrderItem.cs" />
+    <Compile Include="DbModels\DbOrderItemOption.cs" />
+    <Compile Include="DbModels\DbOrderItemSide.cs" />
+    <Compile Include="DbModels\DbSettings.cs" />
+    <Compile Include="DbModels\DbSide.cs" />
+    <Compile Include="DbModels\DbTerminal.cs" />
+    <Compile Include="DbModels\DbVersion.cs" />
+    <Compile Include="Model\QueryParameter.cs" />
+    <Compile Include="Parser\ChefmateParser.cs" />
+    <Compile Include="Parser\ChefmateParserVersion1_0.cs" />
+    <Compile Include="Parser\ParserFactory.cs" />
+    <Compile Include="Parser\VersionParser.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Chefmate.Core\Chefmate.Core.csproj">
+      <Project>{CBF56B14-CACA-4E82-A105-4E0E46F4B157}</Project>
+      <Name>Chefmate.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Chefmate.Logger\Chefmate.Logger.csproj">
+      <Project>{DBB5F4AA-09CB-4030-B67D-22ECEB054A14}</Project>
+      <Name>Chefmate.Logger</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

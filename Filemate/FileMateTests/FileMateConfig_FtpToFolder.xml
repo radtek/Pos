@@ -1,0 +1,15 @@
+﻿<?xml version="1.0"?>
+<FileMate>
+  <CopyGroup>
+    <CopyOperation name="menu download" deleteSource="false" calledFromExternal="false" enabled="true">
+      <source url="ftp://ftp.menumate.com/temp/test1/" name="source...">
+        <credentials username="menumate" password="menumate40" />
+      </source>
+      <targets>
+        <target url="D:\Nadun\Development\Temp\FileMate\ftpToFolder\" name="a .." />
+      </targets>
+      <schedule>1m</schedule>
+      <pattern>men.txt</pattern>
+    </CopyOperation>
+  </CopyGroup>
+</FileMate>

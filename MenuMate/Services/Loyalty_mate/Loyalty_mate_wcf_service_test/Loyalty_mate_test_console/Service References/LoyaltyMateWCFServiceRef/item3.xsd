@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" />
+  <xs:complexType name="DTO_SalesforceAuthInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Password" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Token" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Username" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_SalesforceAuthInfo" nillable="true" type="tns:DTO_SalesforceAuthInfo" />
+  <xs:complexType name="DTO_LoyaltyResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q1="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" base="q1:DTO_MMServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ResponseCode" type="tns:LoyaltyResponseCode" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DTO_LoyaltyResponse" nillable="true" type="tns:DTO_LoyaltyResponse" />
+  <xs:simpleType name="LoyaltyResponseCode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Successful" />
+      <xs:enumeration value="SaveSalesforceAuthFailed" />
+      <xs:enumeration value="SalesforceAuthFailed" />
+      <xs:enumeration value="TrineoAuthFailed" />
+      <xs:enumeration value="CreateMemberFailed" />
+      <xs:enumeration value="UpdateMemberFailed" />
+      <xs:enumeration value="MemberDoesNotExistInTheCloud" />
+      <xs:enumeration value="DeleteMemberFailed" />
+      <xs:enumeration value="GetMemberFailed" />
+      <xs:enumeration value="MemberAlreadyExistsInTheCloud" />
+      <xs:enumeration value="PostTransactionFailed" />
+      <xs:enumeration value="GetMemberByActivationCodeFailed" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="LoyaltyResponseCode" nillable="true" type="tns:LoyaltyResponseCode" />
+  <xs:complexType name="DTO_MemberInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Activated" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ActivationToken" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CellPhone" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DateOfBirth" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="EMailAddress" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="EarnedPoints" type="xs:double" />
+      <xs:element minOccurs="0" name="LoadedPoints" type="xs:double" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UUID" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_MemberInfo" nillable="true" type="tns:DTO_MemberInfo" />
+  <xs:complexType name="DTO_LoyaltyMemberResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q2="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" base="q2:DTO_MMServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="MemberInfo" nillable="true" type="tns:DTO_MemberInfo" />
+          <xs:element minOccurs="0" name="ResponseCode" type="tns:LoyaltyResponseCode" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DTO_LoyaltyMemberResponse" nillable="true" type="tns:DTO_LoyaltyMemberResponse" />
+  <xs:complexType name="DTO_LoyaltyMemberListResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q3="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" base="q3:DTO_MMServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="MemberList" nillable="true" type="tns:ArrayOfDTO_MemberInfo" />
+          <xs:element minOccurs="0" name="ResponseCode" type="tns:LoyaltyResponseCode" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DTO_LoyaltyMemberListResponse" nillable="true" type="tns:DTO_LoyaltyMemberListResponse" />
+  <xs:complexType name="ArrayOfDTO_MemberInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DTO_MemberInfo" nillable="true" type="tns:DTO_MemberInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDTO_MemberInfo" nillable="true" type="tns:ArrayOfDTO_MemberInfo" />
+  <xs:complexType name="DTO_TransactionInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="EarnedPoints" type="xs:double" />
+      <xs:element minOccurs="0" name="EarnedPointsDelta" type="xs:double" />
+      <xs:element minOccurs="0" name="LoadedPoints" type="xs:double" />
+      <xs:element minOccurs="0" name="LoadedPointsDelta" type="xs:double" />
+      <xs:element minOccurs="0" name="OccurredAt" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="UUID" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_TransactionInfo" nillable="true" type="tns:DTO_TransactionInfo" />
+  <xs:complexType name="DTO_MemberActivationInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ActivationCode" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CreatedDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="Expired" type="xs:boolean" />
+      <xs:element minOccurs="0" name="UUID" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DTO_MemberActivationInfo" nillable="true" type="tns:DTO_MemberActivationInfo" />
+  <xs:complexType name="DTO_LoyaltyMemberActivationResponse">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q4="http://schemas.datacontract.org/2004/07/MenumateServices.DTO" base="q4:DTO_MMServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ActivationInfo" nillable="true" type="tns:DTO_MemberActivationInfo" />
+          <xs:element minOccurs="0" name="ResponseCode" type="tns:LoyaltyResponseCode" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DTO_LoyaltyMemberActivationResponse" nillable="true" type="tns:DTO_LoyaltyMemberActivationResponse" />
+</xs:schema>

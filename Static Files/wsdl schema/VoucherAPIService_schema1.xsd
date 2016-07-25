@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://voucher.menumate.com/" xmlns:tns="http://voucher.menumate.com/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="AuthToken" type="tns:AuthToken"/>
+
+  <xs:element name="AuthTokenResponse" type="tns:AuthTokenResponse"/>
+
+  <xs:element name="CreditVoucher" type="tns:CreditVoucher"/>
+
+  <xs:element name="CreditVoucherResponse" type="tns:CreditVoucherResponse"/>
+
+  <xs:element name="RedeemVoucher" type="tns:RedeemVoucher"/>
+
+  <xs:element name="RedeemVoucherResponse" type="tns:RedeemVoucherResponse"/>
+
+  <xs:complexType name="AuthToken">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg1" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AuthTokenResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CreditVoucher">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg1" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg2" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg3" type="xs:decimal" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CreditVoucherResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:voucherResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="voucherResponse">
+    <xs:sequence>
+      <xs:element name="Status" type="xs:int"/>
+      <xs:element name="Msg" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RedeemVoucher">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg1" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg2" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg3" type="xs:decimal" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RedeemVoucherResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:voucherResponse" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

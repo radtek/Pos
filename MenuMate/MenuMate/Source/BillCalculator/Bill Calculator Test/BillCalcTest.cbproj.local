@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2014/03/09 19:23:54.852.cpp,C:\software\code\Bill Calculator\Bill Calculator Test\Unit1.cpp=C:\software\code\Bill Calculator\Bill Calculator Test\BillCalcResultDoc.cpp</Transaction>
+    <Transaction>2014/03/09 19:23:54.860.h,C:\software\code\Bill Calculator\Bill Calculator Test\Unit1.h=C:\software\code\Bill Calculator\Bill Calculator Test\BillCalcResultDoc.h</Transaction>
+    <Transaction>2014/03/09 19:27:18.573.cpp,C:\software\code\Bill Calculator\Bill Calculator Test\BillCalcResultDoc.cpp=C:\software\code\Bill Calculator\Bill Calculator Test\MMBillCalcResultDoc.cpp</Transaction>
+    <Transaction>2014/03/09 19:27:18.573.h,C:\software\code\Bill Calculator\Bill Calculator Test\BillCalcResultDoc.h=C:\software\code\Bill Calculator\Bill Calculator Test\MMBillCalcResultDoc.h</Transaction>
+  </Transactions>
+</BorlandProject>

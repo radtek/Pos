@@ -1,0 +1,99 @@
+object frmSelectForcedOptions: TfrmSelectForcedOptions
+  Tag = 1024
+  Left = 132
+  Top = 77
+  BorderIcons = []
+  BorderStyle = bsDialog
+  Caption = 'Options'
+  ClientHeight = 513
+  ClientWidth = 689
+  Color = clBlack
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  Scaled = False
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnResize = FormResize
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object pnlCondiments: TPanel
+    Left = 5
+    Top = 5
+    Width = 557
+    Height = 500
+    Color = 10011108
+    TabOrder = 0
+    object sbOptions: TScrollBox
+      Left = 1
+      Top = 1
+      Width = 555
+      Height = 498
+      HorzScrollBar.Visible = False
+      VertScrollBar.ButtonSize = 1
+      VertScrollBar.Color = clSilver
+      VertScrollBar.ParentColor = False
+      VertScrollBar.Smooth = True
+      VertScrollBar.Size = 1
+      VertScrollBar.Style = ssFlat
+      Align = alClient
+      BorderStyle = bsNone
+      Color = 14342874
+      Ctl3D = False
+      ParentColor = False
+      ParentCtl3D = False
+      TabOrder = 0
+    end
+  end
+  object pnlSide: TPanel
+    Left = 568
+    Top = 5
+    Width = 113
+    Height = 500
+    Color = 14342874
+    ParentBackground = False
+    TabOrder = 1
+    object btnMsgUp: TTouchBtn
+      Left = 8
+      Top = 360
+      Width = 97
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = '/\'
+      ButtonColor = clWhite
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnMsgUpClick
+    end
+    object btnMsgDown: TTouchBtn
+      Left = 8
+      Top = 432
+      Width = 97
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlack
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = '\/'
+      ButtonColor = clWhite
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnMsgDownClick
+    end
+  end
+end

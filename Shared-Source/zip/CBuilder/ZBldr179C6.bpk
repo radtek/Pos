@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="&quot;$(BCB)\Projects\Bpl\ZBldr179C6.bpl&quot;"/>
+    <OBJFILES value="obj6\Zbldr179C6.obj obj6\EZipBuilder.obj
+        obj6\ZBCompat.obj obj6\ZBCore.obj obj6\ZBDBind.obj obj6\ZBDlg.obj
+        obj6\ZBHash.obj obj6\ZBMsgStr.obj obj6\ZBSBind.obj obj6\ZBWrkr.obj
+        obj6\ZipBuilder.obj obj6\ZipExtrLZ77.obj obj6\ZipIntSFX.obj
+        obj6\ZipProg.obj obj6\ZipUtils.obj"/>
+    <RESFILES value="ZBldr179C6.res ..\ZipBuilder.dcr"/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value="rtl.lib vcl.lib vclx.lib"/>
+    <PACKAGES value="rtl.bpi vcl.bpi vclx.bpi"/>
+    <PATHCPP value=".;.."/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="_DEBUG"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="ZBldr179C6.cpp"/>
+    <INCLUDEPATH value="..\;..;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="obj6\;..\;$(BCB)\Projects\Lib;..;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -4 -b- -k -y -v -vi- 
+      -c -tWM"/>
+    <PFLAGS value="-N2obj6 -N0obj6 -$YD -$W -$O- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zd"/>
+    <LFLAGS value="-D&quot;ZipBuilder 1.79.10  beta&quot; -aa -Tpp -x -Gn -Gl -Gi -v"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0pkg32.obj $(PACKAGES) Memmgr.Lib sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="ZBldr179C6.res" FORMNAME="" UNITNAME="ZBldr179C6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ZBldr179C6.cpp" FORMNAME="" UNITNAME="ZBldr179C6.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\EZipBuilder.cpp" FORMNAME="" UNITNAME="EZipBuilder" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZBCompat.cpp" FORMNAME="" UNITNAME="ZBCompat" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZBCore.cpp" FORMNAME="" UNITNAME="ZBCore" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZBDBind.cpp" FORMNAME="" UNITNAME="ZBDBind" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZBDlg.cpp" FORMNAME="" UNITNAME="ZBDlg" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZBHash.cpp" FORMNAME="" UNITNAME="ZBHash" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZBMsgStr.cpp" FORMNAME="" UNITNAME="ZBMsgStr" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZBSBind.cpp" FORMNAME="" UNITNAME="ZBSBind" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZBWrkr.cpp" FORMNAME="" UNITNAME="ZBWrkr" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZipBuilder.cpp" FORMNAME="" UNITNAME="ZipBuilder" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZipExtrLZ77.cpp" FORMNAME="" UNITNAME="ZipExtrLZ77" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZipIntSFX.cpp" FORMNAME="" UNITNAME="ZipIntSFX" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZipProg.cpp" FORMNAME="" UNITNAME="ZipProg" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZipUtils.cpp" FORMNAME="" UNITNAME="ZipUtils" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ZipBuilder.dcr" FORMNAME="" UNITNAME="" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="vclx.bpi" FORMNAME="" UNITNAME="vclx" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=1
+MinorVer=79
+Release=10
+Build=20
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1033
+CodePage=1252
+[Version Info Keys]
+CompanyName=DrehoekSW
+FileDescription=TZipbuilder
+FileVersion=1.79.10.20
+InternalName=
+LegalCopyright=©2009 Roger Aelbrecht
+LegalTrademarks=
+OriginalFilename=
+ProductName=TZipBuilder
+ProductVersion=1.79.10.20
+Comments=
+[Excluded Packages]
+[HistoryLists\hlIncludePath]
+Count=1
+Item0=..\;$(BCB)\include;$(BCB)\include\vcl
+[HistoryLists\hlLibraryPath]
+Count=1
+Item0=$(BCB)\Projects\Lib;..\;$(BCB)\lib\obj;$(BCB)\lib
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+[Linker]
+LibPrefix=
+LibSuffix=
+LibVersion=
+  </IDEOPTIONS>
+</PROJECT>

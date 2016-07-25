@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="VersDemo.exe"/>
+    <OBJFILES value="VersDemo.obj Main.obj"/>
+    <RESFILES value="VersDemo.res DemoManifest.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) Main.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value="rtl.lib vcl.lib vclx.lib ZBldr179C6.lib"/>
+    <PACKAGES value="vcl.bpi vclx.bpi rtl.bpi ZBldr179C6.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value=""/>
+    <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
+    <MAINSOURCE value="VersDemo.cpp"/>
+    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;&quot;E:\Program Files\DrehoekSW\ZipBuilder&quot;"/>
+    <LIBPATH value="$(BCB)\lib\release;$(BCB)\Bin;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w8092 -w8091 -w8090 -w8089 -w8087 -wprc -wuse -wucp -wstv -wstu -wsig 
+      -wpin -w-pck -wnod -wdef -wcln -wbbf -wasm -wamp -wamb"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I$(BCB)\include -I$(BCB)\include\vcl 
+      -I&quot;E:\Program Files\DrehoekSW\ZipBuilder&quot; -src_suffix cpp -boa"/>
+    <CFLAG1 value="-O2 -Vx -Ve -X- -a1 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj $(PACKAGES) Memmgr.Lib sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mti.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="VersDemo.cpp" FORMNAME="" UNITNAME="VersDemo" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="VersDemo.res" FORMNAME="" UNITNAME="VersDemo" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Main.cpp" FORMNAME="MainForm" UNITNAME="Main" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DemoManifest.rc" FORMNAME="" UNITNAME="DemoManifest.rc" CONTAINERID="RCCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=1
+MinorVer=79
+Release=8
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1033
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=DrehoekSW
+FileDescription=ZipBuilder demo
+FileVersion=1.79.8.0
+InternalName=Demo8
+LegalCopyright=Copyright © 2007, Roger Aelbrecht
+LegalTrademarks=
+OriginalFilename=VersDemo
+ProductName=ZipBuilder.VersDemo
+ProductVersion=1.79.8.0
+Comments=Demonstration only
+
+[Excluded Packages]
+e:\program files\borland\cbuilder6\Bin\idefilters60.bpl=IDE Filter for CPP32
+e:\program files\borland\cbuilder6\Bin\dclbcbsmp60.bpl=Borland Sample Controls Design Time Package
+e:\program files\borland\cbuilder6\Bin\dclact60.bpl=Borland ActionBar Components
+E:\Program Files\Borland\CBuilder6\Bin\dbx60.bpl=Borland SQL Explorer UI Package
+e:\program files\borland\cbuilder6\Bin\dclqrt60.bpl=QuickReport Components
+e:\program files\borland\cbuilder6\Bin\dclmlwiz60.bpl=Borland Markup Language Wizards
+e:\program files\borland\cbuilder6\Bin\DCLNMF60.bpl=NetMasters Fastnet Tools
+e:\program files\borland\cbuilder6\Bin\dclocx60.bpl=Borland Sample Imported ActiveX Controls
+e:\program files\borland\cbuilder6\Bin\dclindy60.bpl=Internet Direct (Indy) for D6 Property and Component Editors
+e:\program files\borland\cbuilder6\Bin\dclado60.bpl=Borland ADO DB Components
+E:\Program Files\Borland\CBuilder6\Bin\dcldb60.bpl=Borland Database Components
+e:\program files\borland\cbuilder6\Bin\dclbde60.bpl=Borland BDE DB Components
+e:\program files\borland\cbuilder6\Bin\DCLIB60.bpl=InterBase Data Access Components
+e:\program files\borland\cbuilder6\Bin\dclcds60.bpl=Borland Base Cached ClientDataset Component
+E:\Program Files\Borland\CBuilder6\Bin\dclmid60.bpl=Borland MyBase DataAccess Components
+e:\program files\borland\cbuilder6\Bin\dclbdecds60.bpl=Borland Local BDE ClientDataset Components
+e:\program files\borland\cbuilder6\Bin\dcltee60.bpl=TeeChart Components
+e:\program files\borland\cbuilder6\Bin\dcldss60.bpl=Borland Decision Cube Components
+e:\program files\borland\cbuilder6\Bin\dcltqr60.bpl=TeeChart for QuickReport Components
+e:\program files\borland\cbuilder6\Bin\dclclxdb60.bpl=Borland CLX Database Components
+E:\Program Files\Borland\CBuilder6\Bin\dclclxstd60.bpl=Borland CLX Standard Components
+e:\program files\borland\cbuilder6\Bin\dclmcn60.bpl=Borland DataSnap Connection Components
+e:\program files\borland\cbuilder6\Bin\dclsmpedit60.bpl=Borland Editor Script Enhancements
+e:\program files\borland\cbuilder6\Bin\applet60.bpl=Borland Control Panel Applet Package
+e:\program files\borland\cbuilder6\Bin\dclemacsedit60.bpl=Borland Editor Emacs Enhancements
+e:\program files\borland\cbuilder6\Bin\dclnet60.bpl=Borland Internet Components
+e:\program files\borland\cbuilder6\Bin\dclwbm60.bpl=Borland InternetExpress Components
+e:\program files\borland\cbuilder6\Bin\bcbie60.bpl=Borland C++Builder Internet Explorer 5 Components Package
+e:\program files\borland\cbuilder6\Bin\dclwebsnap60.bpl=Borland WebSnap Components
+e:\program files\borland\cbuilder6\Bin\dclsoap60.bpl=Borland SOAP Components
+e:\program files\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+e:\program files\borland\cbuilder6\Bin\dcldbx60.bpl=Borland dbExpress Components
+e:\program files\borland\cbuilder6\Bin\dcldbxcds60.bpl=Borland Local DBX ClientDataset Components
+e:\program files\borland\cbuilder6\Bin\bcb2kaxserver60.bpl=Borland C++Builder COM Server Components Sample Package
+e:\program files\borland\cbuilder6\Bin\DBWEBXPRT.BPL=Borland Web Wizard Package
+
+[HistoryLists\hlIncludePath]
+Count=17
+Item0=$(BCB)\include;$(BCB)\include\vcl;E:\Program Files\DrehoekSW\ZipBuilder
+Item1=$(BCB)\include;$(BCB)\include\vcl;E:\Program Files\DrehoekSW\ZipBuilder\Source
+Item2=$(BCB)\components\zipbuilder;$(BCB)\include;$(BCB)\include\vcl
+Item3=$(BCB)\cmpts;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\include\atl
+Item4=$(BCB)\cmpts;E:\ZIPDownloads\ZipBuilderSFX2\VCL\;E:\ZIPDownloads\ZipBuilderSFX\;E:\ZIPDownloads\ZipBuilderSFX\vcl\;E:\ZIPDownloads\ZipBuilder\VCL\;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\include\atl
+Item5=..\ZipBuilderSFX2\VCL;..\ZipBuilderSFX;..\ZipBuilderSFX\vcl;..\ZipBuilder\VCL;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\include\atl
+Item6=..\ZipBuilderSFX;..\ZipBuilderSFX\vcl;..\ZipBuilder\VCL;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\include\atl
+Item7=..\ZipBuilderSFX;..\ZipBuilderSFX\vcl;..\ZipBuilder\VCL;D:\Program Files\Borland\CBuilder5\Bin\;$(BCB)\include;$(BCB)\include\vcl;D:\Program Files\Borland\CBuilder5\Source\ZipComponents\VCL\;$(BCB)\include\atl
+Item8=..\ZipBuilderSFX\vcl;..\ZipBuilder\VCL;D:\Program Files\Borland\CBuilder5\Bin\;$(BCB)\include;$(BCB)\include\vcl;D:\Program Files\Borland\CBuilder5\Source\ZipComponents\VCL\;$(BCB)\include\atl
+Item9=..\ZipBuilderSFX;..\SFX Component\vcl;..\ZipBuilder\VCL;D:\Program Files\Borland\CBuilder5\Bin\;$(BCB)\include;$(BCB)\include\vcl;D:\Program Files\Borland\CBuilder5\Source\ZipComponents\VCL\;$(BCB)\include\atl
+Item10=..\ZipBuilder\VCL;D:\Program Files\Borland\CBuilder5\Bin\;$(BCB)\include;$(BCB)\include\vcl;D:\Program Files\Borland\CBuilder5\Source\ZipComponents\VCL\;$(BCB)\include\atl
+Item11=D:\Program Files\Borland\CBuilder5\Bin\;$(BCB)\include;$(BCB)\include\vcl;D:\Program Files\Borland\CBuilder5\Source\ZipComponents\VCL\;$(BCB)\include\atl
+Item12=D:\Program Files\Borland\CBuilder5\Bin;$(BCB)\include;$(BCB)\include\vcl;D:\Program Files\Borland\CBuilder5\Source\ZipComponents\VCL\;$(BCB)\include\atl
+Item13=$(BCB)\include;$(BCB)\include\vcl;..\Source\ZipComponents\VCL;$(BCB)\include\atl
+Item14=$(BCB)\include;$(BCB)\include\vcl;D:\Program Files\Borland\CBuilder5\Source\ZipComponents\VCL\
+Item15=$(BCB)\include;$(BCB)\include\vcl;D:\Program Files\Borland\CBuilder5\Source\ZipComponents\VCL
+Item16=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=14
+Item0=$(BCB)\lib\release;$(BCB)\Bin;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item1=$(BCB)\lib\release;$(BCB)\cmpts;$(BCB)\Bin;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item2=$(BCB)\cmpts;$(BCB)\Bin;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item3=$(BCB)\cmpts;E:\ZIPDownloads\ZipBuilderSFX2\VCL\;E:\ZIPDownloads\ZipBuilderSFX\;E:\ZIPDownloads\ZipBuilderSFX\vcl\;E:\ZIPDownloads\ZipBuilder\VCL\;$(BCB)\Bin;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item4=..\ZipBuilderSFX2\VCL;..\ZipBuilderSFX;..\ZipBuilderSFX\vcl;..\ZipBuilder\VCL;$(BCB)\Bin;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item5=..\ZipBuilderSFX;..\ZipBuilderSFX\vcl;..\ZipBuilder\VCL;$(BCB)\Bin;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item6=..\ZipBuilderSFX;..\ZipBuilderSFX\vcl;..\ZipBuilder\VCL;$(BCB)\Bin\;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item7=..\ZipBuilderSFX;..\ZipBuilderSFX\vcl;..\ZipBuilder\VCL;D:\Program Files\Borland\CBuilder5\Bin\;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item8=..\ZipBuilderSFX\vcl;..\ZipBuilder\VCL;D:\Program Files\Borland\CBuilder5\Bin\;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item9=..\ZipBuilderSFX;..\SFX Component\vcl;..\ZipBuilder\VCL;D:\Program Files\Borland\CBuilder5\Bin\;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item10=..\ZipBuilder\VCL;D:\Program Files\Borland\CBuilder5\Bin\;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item11=D:\Program Files\Borland\CBuilder5\Bin\;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item12=D:\Program Files\Borland\CBuilder5\Bin;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item13=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=2
+Item0=E:\ZIPDownloads\VerSave\TmpBuild\
+Item1=TmpBuild
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

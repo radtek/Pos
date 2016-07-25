@@ -1,0 +1,184 @@
+object frmSelectPaymentTypeAndValue: TfrmSelectPaymentTypeAndValue
+  Tag = 1024
+  Left = 571
+  Top = 329
+  AutoSize = True
+  BorderIcons = []
+  BorderStyle = bsDialog
+  Caption = 'Enter a price adjustment'
+  ClientHeight = 428
+  ClientWidth = 465
+  Color = clBlack
+  Ctl3D = False
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 465
+    Height = 428
+    BevelOuter = bvNone
+    BorderWidth = 6
+    ParentColor = True
+    TabOrder = 0
+    object Panel2: TPanel
+      Left = 6
+      Top = 6
+      Width = 453
+      Height = 416
+      Align = alClient
+      BevelOuter = bvNone
+      Color = clBlack
+      Ctl3D = True
+      ParentBackground = False
+      ParentCtl3D = False
+      TabOrder = 0
+      object pnlOptions: TPanel
+        Left = 311
+        Top = 0
+        Width = 142
+        Height = 416
+        Align = alClient
+        BevelOuter = bvNone
+        BorderWidth = 5
+        Color = 14342874
+        Ctl3D = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -17
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentBackground = False
+        ParentCtl3D = False
+        ParentFont = False
+        TabOrder = 0
+        object btnOk: TTouchBtn
+          Left = 6
+          Top = 16
+          Width = 129
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -17
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentColor = True
+          Caption = 'Ok'
+          ButtonColor = 18944
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
+          LatchingProperties = [lkLatchColor, lkStayDown]
+          OnMouseClick = btnOkMouseClick
+        end
+        object btnCancel: TTouchBtn
+          Left = 6
+          Top = 352
+          Width = 129
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -17
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentColor = True
+          Caption = 'Cancel'
+          ButtonColor = 2200566
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
+          LatchingProperties = [lkLatchColor, lkStayDown]
+          OnMouseClick = btnCancelMouseClick
+        end
+        object btnPaymentType: TTouchBtn
+          Left = 6
+          Top = 96
+          Width = 129
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -17
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentColor = True
+          Caption = 'Payment Type'
+          ButtonColor = 6052441
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
+          LatchingProperties = [lkLatchColor, lkStayDown]
+          OnMouseClick = btnPaymentTypeMouseClick
+        end
+      end
+      object Panel3: TPanel
+        Left = 0
+        Top = 0
+        Width = 305
+        Height = 416
+        Align = alLeft
+        BevelInner = bvRaised
+        BevelOuter = bvNone
+        Color = 14342874
+        Ctl3D = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -17
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentBackground = False
+        ParentCtl3D = False
+        ParentFont = False
+        TabOrder = 1
+        object QtyDisplay: TNumpadDisplay
+          Left = 12
+          Top = 30
+          Width = 283
+          Height = 65
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -37
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Color = 14342874
+          ParentFont = False
+        end
+        object TouchNumpad1: TTouchNumpad
+          Left = 12
+          Top = 120
+          Width = 283
+          Height = 257
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -21
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          Color = 14342874
+          ParentFont = False
+          BorderStyle = bsNone
+          GridBorderWidth = 0
+          ButtonGapWidth = 2
+          ButtonGapHeight = 2
+          ButtonColor = 6052441
+          CustomKey = True
+          CustomKeyCaption = '00'
+          NumpadDisplay = QtyDisplay
+        end
+      end
+      object Panel4: TPanel
+        Left = 305
+        Top = 0
+        Width = 6
+        Height = 416
+        Align = alLeft
+        BevelOuter = bvNone
+        Color = clBlack
+        TabOrder = 2
+      end
+    end
+  end
+end

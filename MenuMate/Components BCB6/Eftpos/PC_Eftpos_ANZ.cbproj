@@ -1,0 +1,187 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{50754BF6-0878-4EDF-984E-EF4CA022FE6C}</ProjectGuid>
+			<MainSource>PC_Eftpos_ANZ.cpp</MainSource>
+			<ProjectVersion>12.0</ProjectVersion>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<BPILibOutputDir>..\..\..\libs\</BPILibOutputDir>
+			<DesignOnlyPackage>false</DesignOnlyPackage>
+			<DCC_Description>PC Eftpos ANZ</DCC_Description>
+			<Multithreaded>true</Multithreaded>
+			<ProjectType>CppPackage</ProjectType>
+			<ILINK_GenerateLibFile>true</ILINK_GenerateLibFile>
+			<ILINK_GenerateImportLibrary>true</ILINK_GenerateImportLibrary>
+			<OutputExt>bpl</OutputExt>
+			<BCC_MonitorInlinePtrAccess>true</BCC_MonitorInlinePtrAccess>
+			<BCC_MonitorGlobalAndStackData>true</BCC_MonitorGlobalAndStackData>
+			<BCC_MonitorThis>true</BCC_MonitorThis>
+			<IncludePath>..\..\..\..\..\5.Printing\MenuMate\MenuMate\Source\;..\..\..\..\Shared-Source\tinyXML\;..\..\..\..\Shared-Source\Stock\;..\IBLogs\;..\..\..\Registration\Source\;..\..\..\..\Shared-Source\System\;..\..\..\..\Shared-Source\TZForm\;..\..\..\SimpleTCP\;..\SmartCards\;..\Comms\;..\..\..\Components BCB6\porttalk\;..\Security\;..\..\..\Version\;..\..\..\..\Shared-Source\Registry\;..\DeskTop\;..\;..\..\..\ChefMate\Source\;..\Maintenance\;..\..\..\..\Shared-Source\Touch Utils\;..\..\..\..\Shared-Source\System\Core\;..\..\..\..\Shared-Source\TouchButtons;..\..\..\Components BCB6\CPort264\Sources;..\Pos;$(IncludePath)</IncludePath>
+			<ILINK_LibraryPath>..\..\..\..\..\5.Printing\MenuMate\MenuMate\Source\;..\..\..\..\Shared-Source\tinyXML\;..\..\..\..\Shared-Source\Stock\;..\IBLogs\;..\..\..\Registration\Source\;..\..\..\..\Shared-Source\System\;..\..\..\..\Shared-Source\TZForm\;..\..\..\SimpleTCP\;..\SmartCards\;..\Comms\;..\..\..\Components BCB6\porttalk\;..\Security\;..\..\..\..\libs\;..\..\..\Version\;..\..\..\..\Shared-Source\Registry\;..\DeskTop\;..\;..\..\..\ChefMate\Source\;..\Maintenance\;..\..\..\..\Shared-Source\Touch Utils\;..\..\..\..\Shared-Source\System\Core\;..\..\..\Components BCB6\CPort264\Sources;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<Defines>DB_NET_Logging;$(Defines)</Defines>
+			<ShowGeneralMessages>true</ShowGeneralMessages>
+			<TASM_Defines>PalmMate NO_WIN32_LEAN_AND_MEAN _WINSOCKAPI_;$(TASM_Defines)</TASM_Defines>
+			<BRCC_Defines>PalmMate;NO_WIN32_LEAN_AND_MEAN;_WINSOCKAPI_;$(BRCC_Defines)</BRCC_Defines>
+			<DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
+			<DCC_UnitSearchPath>.\;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<BCC_PCHCache>true</BCC_PCHCache>
+			<BRCC_IncludePath>..\;..\DeskTop;..\..\..\..\Shared-Source\tinyXML;..\;..\SmartCards;..\..\..\..\Shared-Source\TZForm;..;..\System;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\CPort264\Sources;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;..\..\..\Components BCB6\pngimage;$(BDS)\Bin;$(BDS)\Imports;$(BDS)\include;$(BDS)\include\vcl;..\..\..\Components BCB6\porttalk;$(BDS)\include\dinkumware;$(BRCC_IncludePath)</BRCC_IncludePath>
+			<BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
+			<DCC_IncludePath>.\;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_IncludePath)</DCC_IncludePath>
+			<TASM_IncludePath>..\;..\DeskTop;..\..\..\..\Shared-Source\tinyXML;..\;..\SmartCards;..\..\..\..\Shared-Source\TZForm;..;..\System;..\..\..\Version;..\Comms;..\Security;..\IBLogs;..\POS;..\Maintenance;..\..\..\Registration\Source;..\..\..\SimpleTCP;..\..\..\Components BCB6\CPort264\Sources;..\..\..\ChefMate\Source;..\..\..\Components BCB6\tntunicodecontrols;..\..\..\Components BCB6\pngimage;$(BDS)\Bin;$(BDS)\Imports;$(BDS)\include;$(BDS)\include\vcl;..\..\..\Components BCB6\porttalk;$(BDS)\include\dinkumware;$(TASM_IncludePath)</TASM_IncludePath>
+			<BCC_IncludePath>$(BDS)\Bin;$(BDS)\Imports;$(BDS)\include;$(BDS)\include\vcl;$(BDS)\include\dinkumware;..\..\..\..\Shared-Source\System;$(BCC_IncludePath)</BCC_IncludePath>
+			<BCC_Defines>NO_STRICT;PalmMate;NO_WIN32_LEAN_AND_MEAN;_WINSOCKAPI_;$(BCC_Defines)</BCC_Defines>
+			<FinalOutputDir>..\..\..\..\Runtime\</FinalOutputDir>
+			<TASM_Debugging>None</TASM_Debugging>
+			<TASM_AdditionalSwitches> /w2</TASM_AdditionalSwitches>
+			<BCC_UserSuppliedOptions> -Q -Vx -Ve</BCC_UserSuppliedOptions>
+			<DCC_AdditionalSwitches> -M</DCC_AdditionalSwitches>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
+			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
+			<BCC_EnableCodePaging>0</BCC_EnableCodePaging>
+			<DCC_DcuOutput>Debug_Build</DCC_DcuOutput>
+			<BCC_OutputDir>Debug_Build</BCC_OutputDir>
+			<BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
+			<BCC_UserSuppliedOptions> -Q -Vx -Ve -r</BCC_UserSuppliedOptions>
+			<ILINK_LibraryPath>$(BDS)\lib\debug;$(ILINK_LibraryPath);$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<DCC_Define>DEBUG;$(DCC_Define);$(DCC_Define)</DCC_Define>
+			<IntermediateOutputDir>Debug_Build</IntermediateOutputDir>
+			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+			<TASM_DisplaySourceLines>true</TASM_DisplaySourceLines>
+			<ILINK_DisableIncrementalLinking>true</ILINK_DisableIncrementalLinking>
+			<BCC_DisableOptimizations>true</BCC_DisableOptimizations>
+			<TASM_Debugging>Full</TASM_Debugging>
+			<DCC_AdditionalSwitches> -M -V</DCC_AdditionalSwitches>
+			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+			<BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<BCC_OutputDir>Release_Build</BCC_OutputDir>
+			<DCC_DcuOutput>Release_Build</DCC_DcuOutput>
+			<BCC_Defines>NDEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
+			<IntermediateOutputDir>Release_Build</IntermediateOutputDir>
+			<BCC_UserSuppliedOptions> -Q -Vx -Ve -r</BCC_UserSuppliedOptions>
+			<DCC_AdditionalSwitches> -M -$O+</DCC_AdditionalSwitches>
+			<ILINK_LibraryPath>$(BDS)\lib\release;$(ILINK_LibraryPath);$(ILINK_LibraryPath)</ILINK_LibraryPath>
+		</PropertyGroup>
+		<ItemGroup>
+			<CppCompile Include="ENZEFTLib_TLB.cpp">
+				<DependentOn>ENZEFTLib_TLB.h</DependentOn>
+				<BuildOrder>3</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ENZEFTLib_OCX.cpp">
+				<DependentOn>ENZEFTLib_OCX.h</DependentOn>
+				<BuildOrder>4</BuildOrder>
+			</CppCompile>
+			<PackageImport Include="vcl.bpi">
+				<BuildOrder>5</BuildOrder>
+			</PackageImport>
+			<CppCompile Include="PC_Eftpos_ANZ.cpp">
+				<BuildOrder>0</BuildOrder>
+			</CppCompile>
+			<PackageImport Include="rtl.bpi">
+				<BuildOrder>1</BuildOrder>
+			</PackageImport>
+			<ResFiles Include="PC_Eftpos_ANZ.res">
+				<BuildOrder>2</BuildOrder>
+			</ResFiles>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
+		<ProjectExtensions>
+			<Borland.Personality>CPlusPlusBuilder.Personality.12</Borland.Personality>
+			<Borland.ProjectType>CppPackage</Borland.ProjectType>
+			<BorlandProject>
+				<CPlusPlusBuilder.Personality>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">True</VersionInfo>
+						<VersionInfo Name="MajorVer">5</VersionInfo>
+						<VersionInfo Name="MinorVer">1</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">7</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">5129</VersionInfo>
+						<VersionInfo Name="CodePage">1252</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName">MenuMate Ltd</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription">PalmMate</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">5.1.0.7</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName">PalmMate</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">5.1.0.1</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<Debugging>
+						<Debugging Name="DebugSourceDirs">$(BCB)\source\vcl</Debugging>
+					</Debugging>
+					<Parameters>
+						<Parameters Name="RunParams"/>
+						<Parameters Name="Launcher"/>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="DebugCWD"/>
+						<Parameters Name="HostApplication"/>
+						<Parameters Name="RemoteHost"/>
+						<Parameters Name="RemotePath"/>
+						<Parameters Name="RemoteParams"/>
+						<Parameters Name="RemoteLauncher"/>
+						<Parameters Name="UseRemoteLauncher">False</Parameters>
+						<Parameters Name="RemoteCWD"/>
+						<Parameters Name="RemoteDebug">False</Parameters>
+						<Parameters Name="Debug Symbols Search Path"/>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k140.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp140.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+					</Excluded_Packages>
+					<ProjectProperties>
+						<ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
+						<ProjectProperties Name="ManagePaths">True</ProjectProperties>
+						<ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+					</ProjectProperties>
+					<Source>
+						<Source Name="MainSource">PC_Eftpos_ANZ.cpp</Source>
+					</Source>
+				</CPlusPlusBuilder.Personality>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+	</Project>

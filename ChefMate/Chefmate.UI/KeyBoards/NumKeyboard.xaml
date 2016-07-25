@@ -1,0 +1,60 @@
+﻿<Window x:Class="Chefmate.UI.KeyBoards.NumKeyboard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" WindowStartupLocation="CenterScreen" WindowStyle="None"
+        BorderBrush="Gray" BorderThickness="3" Width="250" Height="350"
+          ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".75*"/>
+            <ColumnDefinition Width=".25*"/>
+        </Grid.ColumnDefinitions>
+        <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Content="Numpad" Style="{StaticResource NumpadHeaderLable}"/>
+        <TextBox Grid.Row="1" Grid.Column="0" Name="KeyboardTextBox" BorderThickness="1" Height="50" VerticalAlignment="Top"
+                 Margin="5,5,5,0" BorderBrush="Gray" FontSize="15" FontWeight="Bold" PreviewTextInput="KeyboardTextBox_OnPreviewTextInput"/>
+        <StackPanel Grid.Row="1" Grid.Column="1" Grid.RowSpan="2">
+            <Button Name="EnterButton" Style="{StaticResource CommandButtonStyle}" Command="{Binding ButtonPressCommand}" CommandParameter="Ok">Ok</Button>
+            <Button Name="CancelButton" Style="{StaticResource CommandButtonStyle}" Command="{Binding ButtonPressCommand}" CommandParameter="Cancel">Cancel</Button>
+            <Button Name="ClearButton" Style="{StaticResource CommandButtonStyle}" Command="{Binding ButtonPressCommand}" CommandParameter="Clear">Clear</Button>
+        </StackPanel>
+        <Grid Grid.Row="2" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Button Content="1" Command="{Binding ButtonPressCommand}" CommandParameter="1" Style="{StaticResource NumpadButtonStyle}"/>
+                <Button Content="2" Command="{Binding ButtonPressCommand}" CommandParameter="2" Style="{StaticResource NumpadButtonStyle}"/>
+                <Button Content="3" Command="{Binding ButtonPressCommand}" CommandParameter="3" Style="{StaticResource NumpadButtonStyle}"/>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <Button Content="4" Command="{Binding ButtonPressCommand}" CommandParameter="4" Style="{StaticResource NumpadButtonStyle}"/>
+                <Button Content="5" Command="{Binding ButtonPressCommand}" CommandParameter="5" Style="{StaticResource NumpadButtonStyle}"/>
+                <Button Content="6" Command="{Binding ButtonPressCommand}" CommandParameter="6" Style="{StaticResource NumpadButtonStyle}"/>
+            </StackPanel>
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                <Button Content="7" Command="{Binding ButtonPressCommand}" CommandParameter="7" Style="{StaticResource NumpadButtonStyle}"/>
+                <Button Content="8" Command="{Binding ButtonPressCommand}" CommandParameter="8" Style="{StaticResource NumpadButtonStyle}"/>
+                <Button Content="9" Command="{Binding ButtonPressCommand}" CommandParameter="9" Style="{StaticResource NumpadButtonStyle}"/>
+            </StackPanel>
+            <StackPanel Grid.Row="3" Orientation="Horizontal">
+                <Button Content="0" Command="{Binding ButtonPressCommand}" CommandParameter="0" Style="{StaticResource NumpadButtonStyle}"/>
+                <Button Name="DecimalButton" Content="." Command="{Binding ButtonPressCommand}" CommandParameter="." Style="{StaticResource NumpadButtonStyle}"/>
+                <Button Content="Back" Command="{Binding ButtonPressCommand}" CommandParameter="Back" Style="{StaticResource NumpadButtonStyle}"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
