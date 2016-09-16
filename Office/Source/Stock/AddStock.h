@@ -293,7 +293,7 @@ __published:	// IDE-managed Components
     void __fastcall dbeAveCostChange(TObject *Sender);
     void __fastcall dbeAssessedValueChange(TObject *Sender);
     void __fastcall dbeAssessedValueKeyPress(TObject *Sender, char &Key);
-    void __fastcall dbeConversionFactorKeyPress(TObject *Sender,
+	void __fastcall dbeConversionFactorKeyPress(TObject *Sender,
           char &Key);
     void __fastcall dbeConversionFactorChange(TObject *Sender);
  //  void __fastcall dbeLatestCostChange(TObject *Sender);

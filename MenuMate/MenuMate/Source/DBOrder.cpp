@@ -4495,7 +4495,7 @@ bool TDBOrder::IsItemUsingPCD(Database::TDBTransaction &DBTransaction, int itemK
 		IBInternalQuery->ParamByName("SIZE_NAME")->AsString = sizeName;
 		IBInternalQuery->ExecQuery();
 
-        if( IBInternalQuery->FieldByName("AVAILABLE_QUANTITY")->AsDouble > 0)
+        if( IBInternalQuery->FieldByName("AVAILABLE_QUANTITY")->AsInteger > 0)
         {
              return true;
         }
@@ -4689,11 +4689,11 @@ void TDBOrder::UpdateTabNameInOrder(Database::TDBTransaction &DBTransaction,long
 
 }
 
-double TDBOrder::CheckItemAvailability(Database::TDBTransaction &DBTransaction, int itemKey, AnsiString sizeName)
+int TDBOrder::CheckItemAvailability(Database::TDBTransaction &DBTransaction, int itemKey, AnsiString sizeName)
 {
 	try
 	{
-        double itm_qty;
+        int itm_qty;
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
 		IBInternalQuery->Close();
@@ -4706,7 +4706,7 @@ double TDBOrder::CheckItemAvailability(Database::TDBTransaction &DBTransaction, 
 
         if(!IBInternalQuery->Eof)
         {
-            itm_qty = IBInternalQuery->FieldByName("AVAILABLE_QUANTITY")->AsDouble;
+            itm_qty = IBInternalQuery->FieldByName("AVAILABLE_QUANTITY")->AsInteger;
         }
         /*if( IBInternalQuery->FieldByName("AVAILABLE_QUANTITY")->AsInteger > 0)
         {

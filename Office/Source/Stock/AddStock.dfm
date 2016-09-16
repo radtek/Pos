@@ -27,9 +27,9 @@ object frmAddStock: TfrmAddStock
     Width = 473
     Height = 393
     Hint = 'The sales unit refers to the measure deducted by sales.'
-    ActivePage = tsItemDetails
+    ActivePage = tsLocations
     MultiLine = True
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object tsItemDetails: TTabSheet

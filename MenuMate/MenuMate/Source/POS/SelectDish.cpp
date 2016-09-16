@@ -8784,16 +8784,12 @@ void TfrmSelectDish::ResetPOS()
       {
          tbtnCashSale->Caption = "Cash Sale Disabled";
          tbtnCashSale->Enabled = false;
-         tbtnDollar1->Enabled = false;
-         tbtnDollar2->Enabled = false;
-         tbtnDollar3->Enabled = false;
-         tbtnDollar4->Enabled = false;
-         tbtnDollar5->Enabled = false;
-    }
-    CustPhone = "";
-    CustName = "";
-    CustAddress = "";
-    RefreshMenu();
+      }
+      CustPhone = "";
+      CustName = "";
+      CustAddress = "";
+
+  RefreshMenu();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()
@@ -13458,7 +13454,7 @@ void TfrmSelectDish::ManageDiscounts()
 		TItemMinorComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
 		for(std::vector<TDiscount>::iterator ptrDiscount = Item->Discounts.begin(); ptrDiscount != Item->Discounts.end(); ++ptrDiscount)
         {
-            if(ptrDiscount->Source != dsMMMembership && ptrDiscount->Mode != DiscModeDeal && ptrDiscount->Mode != DiscModeCombo &&
+             if(ptrDiscount->Source != dsMMMembership && ptrDiscount->Mode != DiscModeDeal && ptrDiscount->Mode != DiscModeCombo &&
                ptrDiscount->Source != dsMMLocationReward && ptrDiscount->Source != dsMMMembershipReward)
             {
                if(DiscountMap[ptrDiscount->DiscountKey] == NULL)

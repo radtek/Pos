@@ -1217,7 +1217,7 @@ void TfrmPurchaseOrder::PopulateStockWithCategory(AnsiString Location)
 			"Left Join PurchaseStock On PurchaseStock.Code = Stock.Code And PurchaseStock.Location = StockLocation.Location "
 			"where StockCategory.Deleted='F' and STOCK.STOCK_KEY is not null and "
 			"StockCategory.Stock_Category =:Stock_Category "
-            " and STOCK.DELETED = 'F' "
+			" and STOCK.DELETED = 'F' "
 			"and SUPPLIERSTOCK.SUPPLIER_KEY=:SUPPLIER_KEY "  + LocationCondition +
 			"group by "
 			"1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,20,21  "
@@ -1306,7 +1306,7 @@ void TfrmPurchaseOrder::PopulateStockWithOutCategory(AnsiString Location)
 	"left join STOCKLOCATION on STOCK.STOCK_KEY = STOCKLOCATION.STOCK_KEY "
 	"Left Join PurchaseStock On PurchaseStock.Code = Stock.Code And PurchaseStock.Location = StockLocation.Location "
 	"where StockCategory.Deleted='F' and STOCK.STOCK_KEY is not null "
-    "and STOCK.DELETED = 'F' "
+	"and STOCK.DELETED = 'F' "
 	"and SUPPLIERSTOCK.SUPPLIER_KEY=:SUPPLIER_KEY "  + LocationCondition +
 	"group by "
 	"1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,20,21  " ;

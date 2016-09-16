@@ -1086,10 +1086,6 @@ void __fastcall TfrmReceiveInvoice::btnOkClick(TObject *Sender)
 	CommitInvoice();
     if(IsPrintReport)
     {
-         if(CurrentConnection.AutoPrintReceiveTransferAudit)
-         {
-             PrintReceiveInvoice();
-         }
     	if (Transaction->InTransaction)
 					Transaction->Commit();
     }
@@ -1741,7 +1737,7 @@ void __fastcall TfrmReceiveInvoice::dbcbLocationChange(TObject *Sender)
 		qrLocationUpdate->ParamByName("SUPPLIER_KEY")->AsInteger = SupplierKey;
 		qrLocationUpdate->ParamByName("LOCATION")->AsString = NodeData->Location;
         qrLocationUpdate->ParamByName("QTY")->AsString = GetSupplierUnitSize(NodeData->StockKey, NodeData->SupplierKey, NodeData->SupplierUnit);
-        qrLocationUpdate->ParamByName("STOCK_KEY")->AsInteger = NodeData->StockKey;
+		qrLocationUpdate->ParamByName("STOCK_KEY")->AsInteger = NodeData->StockKey;
 		qrLocationUpdate->Open();
 		qrLocationUpdate->First();
 
@@ -1772,10 +1768,27 @@ void __fastcall TfrmReceiveInvoice::btnPrintCommitInvoiceClick(TObject *Sender)
         qrBatchKey->SQL->Text = "Select Gen_id(Gen_Stocktrans_Batch_Key, 1) From rdb$database";
         qrBatchKey->Open();
         }      */
-         if(IsPrintReport || CurrentConnection.AutoPrintReceiveTransferAudit)
+         if(IsPrintReport)
          {
-             PrintReceiveInvoice();
-         }
+            if (dmStockReportData->StockTrans->DefaultDatabase->Connected && !dmStockReportData->StockTrans->InTransaction)
+            {
+             dmStockReportData->StockTrans->StartTransaction();
+            }
+             dmStockReportData->SetupSupplierPurchasesRuntime(ReceiptNumber, SupplierName, InvoiceReference);;
+            if (frmReports->rvStock->SelectReport("repSupplierPurchaseStock", false))
+            {
+            
+                frmReports->rvStock->SetParam("CURRENTUSER", frmLogin->CurrentUser.UserID +" at  "+ Now());
+                frmReports->rvStock->SetParam("CompanyName", CurrentConnection.CompanyName);
+
+
+             frmReports->rvStock->Execute();
+            }
+            if (dmStockReportData->StockTrans->DefaultDatabase->Connected)
+            {
+             dmStockReportData->StockTrans->Commit();
+            }
+        }
 
         	if (Transaction->InTransaction)
 					Transaction->Commit();
@@ -2501,24 +2514,3 @@ bool TfrmReceiveInvoice::CheckInvoiceQtyAndPrice()
 
 //---------------------------------------------------------------------------
 
-void TfrmReceiveInvoice::PrintReceiveInvoice()
-{
-    if (dmStockReportData->StockTrans->DefaultDatabase->Connected && !dmStockReportData->StockTrans->InTransaction)
-    {
-     dmStockReportData->StockTrans->StartTransaction();
-    }
-     dmStockReportData->SetupSupplierPurchasesRuntime(ReceiptNumber, SupplierName, InvoiceReference);;
-    if (frmReports->rvStock->SelectReport("repSupplierPurchaseStock", false))
-    {
-
-        frmReports->rvStock->SetParam("CURRENTUSER", frmLogin->CurrentUser.UserID +" at  "+ Now());
-        frmReports->rvStock->SetParam("CompanyName", CurrentConnection.CompanyName);
-
-
-     frmReports->rvStock->Execute();
-    }
-    if (dmStockReportData->StockTrans->DefaultDatabase->Connected)
-    {
-     dmStockReportData->StockTrans->Commit();
-    }
-}

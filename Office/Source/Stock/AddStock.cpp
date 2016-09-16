@@ -1117,7 +1117,7 @@ bool TfrmAddStock::PostData()
 	}
 	if (dtSuppliersStock->State == dsEdit || dtSuppliersStock->State == dsInsert)
 	{
-        if(dbgSuppliers->DataSource->DataSet->RecordCount == 0)
+		if(dbgSuppliers->DataSource->DataSet->RecordCount == 0)
         {
 			Application->MessageBox("You must add a supplier.", "Error", MB_ICONERROR + MB_OK);
 			return false;           
@@ -1651,7 +1651,7 @@ void __fastcall TfrmAddStock::btnAddSupplierClick(TObject *Sender)
 {
 	if (dtSuppliersStock->State == dsEdit || dtSuppliersStock->State == dsInsert)
 	{
-        if(dbgSuppliers->DataSource->DataSet->RecordCount > 0)
+		 if(dbgSuppliers->DataSource->DataSet->RecordCount > 0)
         {
 		    dtSuppliersStock->Post();
         }
@@ -2854,5 +2854,4 @@ void __fastcall TfrmAddStock::dbeConversionFactorChange(TObject *Sender)
 {
    CheckNegativeValue(dbeConversionFactor);
 }
-//---------------------------------------------------------------------------
-
+//-----------------------------------------------------------------------

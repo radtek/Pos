@@ -1066,7 +1066,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         DataType = ftUnknown
         Name = 'QTY'
         ParamType = ptUnknown
-      end
+	  end
       item
         DataType = ftUnknown
         Name = 'STOCK_KEY'

@@ -214,8 +214,7 @@ private:	// User declarations
     void UpdateSupplierUnitCost(int order_key, TInvoiceItemNodeData *NodeData);
     void UpdateUnitqty(TInvoiceItemNodeData *NodeData);
     double GetStockTakeUnitSize(int stock_key, int supplier_key);
-    bool CheckInvoiceQtyAndPrice();
-    void PrintReceiveInvoice();    
+    bool CheckInvoiceQtyAndPrice();    
 
 public:		// User declarations
 	__fastcall TfrmReceiveInvoice(TComponent* Owner);

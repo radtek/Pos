@@ -140,7 +140,7 @@ public:
     static Currency GetPriceForPoints(Database::TDBTransaction &DBTransaction,TItemComplete *Order);
     static void UpdateOrderTableDlinkingWithClipp(Database::TDBTransaction &dbTransaction,long SourceKey);
     static void UpdateTabNameInOrder(Database::TDBTransaction &DBTransaction,long SourceKey, UnicodeString clipTabName,bool isTabSelected);
-    static double CheckItemAvailability(Database::TDBTransaction &DBTransaction, int itemKey, AnsiString sizeName);
+    static int CheckItemAvailability(Database::TDBTransaction &DBTransaction, int itemKey, AnsiString sizeName);
 };
 //---------------------------------------------------------------------------
 #endif
