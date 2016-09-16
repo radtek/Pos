@@ -43,7 +43,8 @@ void TfrmMemberCreation::DisplayCustomerDataFromPointers()
 {
      lbeEmail->Caption = CustomerInfoPointers[0];
      lbeName->Caption = CustomerInfoPointers[1];
-     lbeContactPhone->Caption = CustomerInfoPointers[2];
+     lbeLastName->Caption = CustomerInfoPointers[2];
+     lbeContactPhone->Caption = CustomerInfoPointers[3];
 
 }
 //---------------------------------------------------------------------------
@@ -69,10 +70,14 @@ void __fastcall TfrmMemberCreation::EditCustomerBasicDetails(TObject *Sender)
             frmTouchKeyboard->KeyboardText = Info.EMail;
             break;
         case 1:
-            Caption = "Enter Name";
+            Caption = "Enter First Name";
             frmTouchKeyboard->KeyboardText = Info.Name;
             break;
         case 2:
+        Caption = "Enter Last Name";
+        frmTouchKeyboard->KeyboardText = Info.Surname;
+        break;
+        case 3:
             Caption = "Enter phone Number";
             frmTouchKeyboard->KeyboardText = Info.Phone;
             break;
@@ -82,61 +87,70 @@ void __fastcall TfrmMemberCreation::EditCustomerBasicDetails(TObject *Sender)
     frmTouchKeyboard->Caption = Caption;
     if (frmTouchKeyboard->ShowModal() == mrOk)
     {
-         	 CustomerInfoPointers[btn->Tag] =  frmTouchKeyboard->KeyboardText;
-                 Info.EMail=  CustomerInfoPointers[0];
-                 Info.Name=  CustomerInfoPointers[1];
-                 Info.Phone =  CustomerInfoPointers[2];
+         CustomerInfoPointers[btn->Tag] =  frmTouchKeyboard->KeyboardText;
+         Info.EMail=  CustomerInfoPointers[0];
+         Info.Name=  CustomerInfoPointers[1];
+         Info.Surname = CustomerInfoPointers[2];
+         Info.Phone =  CustomerInfoPointers[3];
 		 DisplayCustomerDataFromPointers();
 	}
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
 {
-
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     IBInternalQuery->Close();
     IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL='" + Info.EMail + "'";
     IBInternalQuery->ExecQuery();
+    DBTransaction.Commit();
     int	emailcount = IBInternalQuery->Fields[0]->AsInteger;
 
-
- if (TGlobalSettings::Instance().LoyaltyMateEnabled
-			&& Info.CloudUUID != TLoyaltyMateUtilities::GetLoyaltyMateDisabledCloudUUID()
-			&& !Info.ValidEmail())
-   {
+    if (TGlobalSettings::Instance().LoyaltyMateEnabled &&
+        Info.CloudUUID != TLoyaltyMateUtilities::GetLoyaltyMateDisabledCloudUUID()  &&
+       !Info.ValidEmail())
+    {
       MessageBox("You must enter a valid Email.", "Error", MB_OK + MB_ICONERROR);
-   }
-   else if(emailcount > 0)
-   {
+    }
+    else if(emailcount > 0)
+    {
         MessageBox("Member already exists!!!", "Error", MB_OK + MB_ICONERROR);
     }
-   else
-   {
-	  try
-	  {
+    else if(Info.Name == NULL || Info.Name.Trim() == "")
+    {
+       MessageBox("You must enter first name.", "Error", MB_ICONERROR);
+    }
+    else if(Info.Surname == NULL || Info.Surname.Trim() == "")
+    {
+       MessageBox("You must enter last name.", "Error", MB_ICONERROR);
+    }
+    else if(Info.Phone != "" && Info.Phone != NULL && Info.Phone.Length() < 5)
+    {
+       MessageBox("Phone number should be greater than 4 digits.", "Invalid Moble Number", MB_ICONERROR);
+    }
+    else
+    {
+      try
+      {
+        Info.LastModified = Now();
+        Info.MemberType=1;
+        ModalResult = mrOk;
+        if (Info.SiteID == 0)
+         {
+            Info.SiteID = TGlobalSettings::Instance().SiteID;
+         }
 
-
-		Info.LastModified = Now();
-		Info.MemberType=1;
-                ModalResult = mrOk;
-                 if (Info.SiteID == 0)
-		 {
-			Info.SiteID = TGlobalSettings::Instance().SiteID;
-		 }
-
-	  }
-	  catch(Exception & Err)
-	  {
-		 TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
-		 MessageBox("Unable to Save Contact Information\r" + Err.Message, "Error", MB_OK + MB_ICONERROR);
-	  }
-   }
+      }
+      catch(Exception & Err)
+      {
+         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+         MessageBox("Unable to Save Contact Information\r" + Err.Message, "Error", MB_OK + MB_ICONERROR);
+      }
+    }
 
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMemberCreation::FormShow(TObject *Sender)
 {
   //FormResize(NULL);
@@ -150,9 +164,8 @@ void __fastcall TfrmMemberCreation::FormShow(TObject *Sender)
    }
   DrawContactDetail();
 }
-
 //---------------------------------------------------------------------------
-   void __fastcall TfrmMemberCreation::FormResize(TObject *Sender)
+void __fastcall TfrmMemberCreation::FormResize(TObject *Sender)
 {
    if (Tag != Screen->Width)
    {
@@ -170,8 +183,6 @@ void __fastcall TfrmMemberCreation::TouchBtn1MouseClick(TObject *Sender)
   ModalResult = mrCancel;
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmMemberCreation::TouchBtn2MouseClick(TObject *Sender)
 {
    TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl );
@@ -211,9 +222,6 @@ void __fastcall TfrmMemberCreation::TouchBtn2MouseClick(TObject *Sender)
 
 }
 //---------------------------------------------------------------------------
-
-
-
 void __fastcall TfrmMemberCreation::tbtnDayMouseClick(TObject *Sender)
 {
  std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
@@ -231,7 +239,6 @@ void __fastcall TfrmMemberCreation::tbtnDayMouseClick(TObject *Sender)
    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMemberCreation::tbtnMonthMouseClick(TObject *Sender)
 {
 std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
@@ -248,7 +255,6 @@ std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouc
    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMemberCreation::tbtnYearMouseClick(TObject *Sender)
 {
  std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
@@ -265,7 +271,6 @@ void __fastcall TfrmMemberCreation::tbtnYearMouseClick(TObject *Sender)
    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMemberCreation::tbtnClearBirthdayMouseClick(TObject *Sender)
 {
  Info.DateOfBirth = 0;
@@ -274,7 +279,6 @@ void __fastcall TfrmMemberCreation::tbtnClearBirthdayMouseClick(TObject *Sender)
    tbtnDay->Caption = "30";
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMemberCreation::tbtnSetBirthdayMouseClick(TObject *Sender)
 {
 TDateTime Birthday;
@@ -291,23 +295,21 @@ TDateTime Birthday;
 void TfrmMemberCreation::DrawContactDetail()
 {
 
-    SetupCustomerInfoPointers();
-    DisplayCustomerDataFromPointers();
+   SetupCustomerInfoPointers();
+   DisplayCustomerDataFromPointers();
    tbtnYear->Caption = IntToStr(YearOf(Info.DateOfBirth));
    tbtnMonth->Caption = IntToStr(MonthOf(Info.DateOfBirth));
    tbtnDay->Caption = IntToStr(DayOf(Info.DateOfBirth));
 }
-
 //---------------------------------------------------------------------------
-
 void TfrmMemberCreation::SetupCustomerInfoPointers()
 {
     CustomerInfoPointers[0] = Info.EMail;
     CustomerInfoPointers[1] = Info.Name;
-    CustomerInfoPointers[2] = Info.Phone;
+    CustomerInfoPointers[1] = Info.Surname;
+    CustomerInfoPointers[3] = Info.Phone;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMemberCreation::btnActivateLoyaltyMateMouseClick(TObject *Sender)
 
 {

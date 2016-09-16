@@ -14,7 +14,6 @@ namespace Chefmate.Infrastructure.Utility
             IPAddress outIpAddress;
             bool regXmatch = false;
             bool result = IPAddress.TryParse(ipAddress, out outIpAddress);
-
             Match match = Regex.Match(ipAddress, @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}");
             if (match.Success)
             {
@@ -22,7 +21,7 @@ namespace Chefmate.Infrastructure.Utility
             }
             return result && regXmatch;
         }
-   
+
         public static bool TestConnection(string ipAddress, string dbpath)
         {
             return DatabaseCore.Instance.TestConnection(ipAddress, dbpath);

@@ -93,6 +93,11 @@ __published:	// IDE-managed Components
 	void __fastcall qrStockAfterScroll(TDataSet *DataSet);
 	void __fastcall dbluSupplierCloseUp(TObject *Sender);
 	void __fastcall qrSupplierAfterScroll(TDataSet *DataSet);
+    void __fastcall neCost1KeyPress(TObject *Sender, char &Key);
+    void __fastcall neCost2KeyPress(TObject *Sender, char &Key);
+    void __fastcall neCost3KeyPress(TObject *Sender, char &Key);
+    void __fastcall neCost4KeyPress(TObject *Sender, char &Key);
+    void __fastcall neQtyKeyPress(TObject *Sender, char &Key);
 
 protected:
 private:	// User declarations

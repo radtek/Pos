@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using Chefmate.Database.Model;
 using Chefmate.Logger;
 using FirebirdSql.Data.FirebirdClient;
@@ -155,15 +156,38 @@ namespace ChefMate.Database
             }
         }
 
+        public bool IsRecorExist(string query)
+        {
+            try
+            {
+                OpenConnection();
+                var command = CreateCommand(query);
+                return command.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                ChefmateLogger.Instance.LogError("ExecuteNonQuery : ", ex.Message);
+                return false;
+            }
+            finally
+            {
+                CloseConnection();
+            }
+        }
+
         #endregion
 
         #region Database
+
         public void CreateDatabase(string dataSource, string dbPath)
         {
-            var connectionString = BuildConnectionString(dataSource, dbPath);
-            FbConnection.CreateDatabase(connectionString);
+            if (!File.Exists(dbPath))
+            {
+                var connectionString = BuildConnectionString(dataSource, dbPath);
+                FbConnection.CreateDatabase(connectionString);
+            }
         }
-        public bool InitializeDatabae(string databaseAddress, string databasePath)
+        public bool InitializeDatabase(string databaseAddress, string databasePath)
         {
             try
             {
@@ -266,6 +290,11 @@ namespace ChefMate.Database
         public string BuildSelectAllQuery(string tableName, string whereCondition = "")
         {
             return "SELECT * FROM " + tableName + " " + whereCondition;
+        }
+
+        public string BuildRecordCountQuery(string tableName, string whereCondition = "")
+        {
+            return "SELECT count(*) FROM " + tableName + " " + whereCondition;
         }
 
         #endregion

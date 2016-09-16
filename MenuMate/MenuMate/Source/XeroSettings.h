@@ -13,6 +13,12 @@
 #include "ZForm.h"
 
 //---------------------------------------------------------------------------
+enum AccountingType
+{
+    eAccountingXero,
+    eAccountingMYOB
+};
+
 class TfrmXeroSettings : public TZForm
 {
 __published:	// IDE-managed Components
@@ -77,15 +83,15 @@ private:	// User declarations
 	UnicodeString CheckUserName( UnicodeString inUserName );
 	UnicodeString CheckPassword( UnicodeString inPassword );
 
-	UnicodeString readXeroMachineName();
-	UnicodeString readXeroFolderPath();
-	UnicodeString readXeroUserName();
-	UnicodeString readXeroPassword();
+	UnicodeString readAccountingMachineName();
+	UnicodeString readAccountingFolderPath();
+	UnicodeString readAccountingUserName();
+	UnicodeString readAccountingPassword();
 
-	void writeXeroMachineName( UnicodeString inName  );
-	void writeXeroFolderPath(  UnicodeString inPath  );
-	void writeXeroUserName(    UnicodeString inName  );
-	void writeXeroPassword(    UnicodeString inPassw );
+	void writeAccountingMachineName( UnicodeString inName  );
+	void writeAccountingFolderPath(  UnicodeString inPath  );
+	void writeAccountingUserName(    UnicodeString inName  );
+	void writeAccountingPassword(    UnicodeString inPassw );
 
 	void InitSettings();
 	void RefreshSettings();
@@ -95,16 +101,17 @@ private:	// User declarations
 	void RefreshEdit( bool inLocal, TEdit* inEdit, UnicodeString inLocalText, UnicodeString &inRemoteText );
 
 	bool EditText( UnicodeString inCaption, UnicodeString &inText );
+    void CustomiseForMYOB();
 
 public:		// User declarations
 	__fastcall TfrmXeroSettings(TComponent* Owner);
 
-	__property UnicodeString XeroMachineName  = { read = readXeroMachineName, write = writeXeroMachineName };
-	__property UnicodeString XeroFolderPath   = { read = readXeroFolderPath,  write = writeXeroFolderPath  };
-	__property UnicodeString XeroUserName     = { read = readXeroUserName,    write = writeXeroUserName    };
-	__property UnicodeString XeroPassword     = { read = readXeroPassword,    write = writeXeroPassword    };
+	__property UnicodeString AccountingMachineName  = { read = readAccountingMachineName, write = writeAccountingMachineName };
+	__property UnicodeString AccountingFolderPath   = { read = readAccountingFolderPath,  write = writeAccountingFolderPath  };
+	__property UnicodeString AccountingUserName     = { read = readAccountingUserName,    write = writeAccountingUserName    };
+	__property UnicodeString AccountingPassword     = { read = readAccountingPassword,    write = writeAccountingPassword    };
 
-	void SetAndValidate( AnsiString inMachineName, AnsiString inFolderPath, AnsiString inUserName, AnsiString inPassword );
+	void SetAndValidate( AnsiString inMachineName, AnsiString inFolderPath, AnsiString inUserName, AnsiString inPassword , AccountingType accountingType );
 	void Validate();
     bool AwaitingPayment;
 };

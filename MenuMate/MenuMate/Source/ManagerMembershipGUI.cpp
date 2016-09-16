@@ -21,7 +21,7 @@
 // ---------------------------------------------------------------------------
 #include "MembershipERSGUI.h"
 #include "MembershipGUI.h"
-#include "quick_member_setup.h"
+
 
 
 
@@ -80,9 +80,12 @@ bool TManagerMembershipGUI::GetMembershipDetailsFromGUI(Database::TDBTransaction
         }
         else
         {
+            std::vector<eDiscountFilter> discountFilter;
+            discountFilter.push_back(exclude_member_exempt);
+            discountFilter.push_back(exclude_combos);
             std::auto_ptr<TfrmEditCustomer> add_member_screen(TfrmEditCustomer::Create(Screen->ActiveForm));
             add_member_screen->Editing = false;
-            ManagerDiscount->GetDiscountList(tr, add_member_screen->DiscountList.get(), exclude_combos);
+            ManagerDiscount->GetDiscountList(tr, add_member_screen->DiscountList.get(), discountFilter);
             add_member_screen->Info = contact_info;
 			AnsiString str = "";
 			if(contact_info.ProxStr.Length() != 0)
@@ -141,10 +144,7 @@ bool TManagerMembershipGUI::AddGiftCard(Database::TDBTransaction &tr,TMMContactI
 TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarcodeCard,const bool triggered_by_preloaded_card)
 {
    AnsiString cardCode = Info.MemberCode;
-   MembershipSystem->CurrentYearPoints = 0;
-   MembershipSystem->PreviousYearPoints = 0;
-   MembershipSystem->AvailableBDPoint = 0;
-   MembershipSystem->AvailableFVPoint = 0;
+   MembershipSystem->ResetPoints();
    TModalResult Result = mrCancel;
    if (MembershipSystem->ReadOnlyInterface)
    {
@@ -167,7 +167,7 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
 		   {
                Info.ActivationDate = Now();
                Info.MemberCode = cardCode;
-			   ManagerDiscount->DiscountKeyToID(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
+			   ManagerDiscount->DiscountKeyToCode(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
 			   // Update Member & Assign Member Number.
 			   MembershipSystem->SetContactDetails(DBTransaction, Info.ContactKey, Info);
 			   // Ensure the member is written into the DB prior to updating the
@@ -181,7 +181,7 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                    // calling the protected method from MembershipManagerSmartCards
 
                     TSyndCode syndicateCode;
-                    if(IsBarcodeCard)
+                    if(IsBarcodeCard || !ManagerSmartCards->CardOk)
                      {
                         TManagerSyndCode managerSyndCode;
                         DBTransaction.StartTransaction();
@@ -203,7 +203,7 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                    SaveContactInfoAddedToSmartCard(Info, true);
                    if(TGlobalSettings::Instance().LoyaltyMateEnabled && Info.Points.getPointsBalance() != 0)
                    {
-                          SavePointsTransactionsToSmartCard(Info.Points, true);
+                       SavePointsTransactionsToSmartCard(Info.Points,"",true);
                    }
                 }
 
@@ -296,9 +296,12 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
                             Info.TabEnabled = true;
                         }
 
+                       std::vector<eDiscountFilter> discountFilter;
+                       discountFilter.push_back(exclude_member_exempt);
+                       discountFilter.push_back(exclude_combos);
                        std::auto_ptr < TfrmEditCustomer >
 					   frmEditCustomer(TfrmEditCustomer::Create(Screen->ActiveForm));
-					   ManagerDiscount->GetDiscountList( DBTransaction, frmEditCustomer->DiscountList.get(), exclude_combos);
+					   ManagerDiscount->GetDiscountList( DBTransaction, frmEditCustomer->DiscountList.get(), discountFilter);
                        frmEditCustomer->Editing = true;
                        frmEditCustomer->Info = Info;
                        frmEditCustomer->MemberType = Info.MemberType;
@@ -320,7 +323,7 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
                                 }
                         }
 
-                        ManagerDiscount->DiscountKeyToID(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
+                        ManagerDiscount->DiscountKeyToCode(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
 
 
                         /* Even though we have a parent transaction for all the updates, we need a seperate transaction for this setContactdetails method

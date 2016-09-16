@@ -388,8 +388,7 @@ void TfrmSelectMember::RefreshDisplay()
 	TDeviceRealTerminal &ref_drtrm = TDeviceRealTerminal::Instance();
 
 	TIBSQL *members_to_list;
-	TContactType memsys_ctype =
-		ref_drtrm.ManagerMembership->MembershipSystem->ContactType;
+	TContactType memsys_ctype = ref_drtrm.ManagerMembership->MembershipSystem->ContactType;
 	unsigned int sel_mbr = 0;
 	Database::TDBTransaction trans(ref_drtrm.DBControl);
 

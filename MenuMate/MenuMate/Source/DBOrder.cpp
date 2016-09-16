@@ -66,8 +66,7 @@ __int64 TDBOrder::SplitOrder(Database::TDBTransaction &DBTransaction,__int64 Ord
 	int itemPatronCount 	 = Order->PatronCount();
 
 	OrderImage->SplitOrder(WaysToSplit);
-
-    Order->RunBillCalculator();
+    OrderImage->RunBillCalculator();
 
     for (int i = 0; i < OrderImage->SubOrders->Count ; i++)
     {
@@ -112,6 +111,61 @@ __int64 TDBOrder::SplitOrder(Database::TDBTransaction &DBTransaction,__int64 Ord
 	return SplitCount;
 }
 
+__int64 TDBOrder::SplitOrderToQuantity(Database::TDBTransaction &DBTransaction,__int64 OrderKey, double quantityToSplit)
+{
+	TItemComplete* Order = new TItemComplete();
+	Order->OrderKey  = OrderKey;
+	GetOrderIncludingSidesFromOrderKey(DBTransaction,Order);
+	Order->ItemOrderedFrom = TDeviceRealTerminal::Instance().Menus->FetchItemByKey(Order->OriginalItemKey);
+    double quantity = Order->GetQty();
+    if(quantityToSplit >= quantity)
+       return 1;
+
+	TItemComplete* OrderImage = new TItemComplete();
+	OrderImage->OrderKey 		= OrderKey;
+	GetOrderIncludingSidesFromOrderKey(DBTransaction,OrderImage);
+	OrderImage->ItemOrderedFrom = TDeviceRealTerminal::Instance().Menus->FetchItemByKey(OrderImage->OriginalItemKey);
+
+	double tempPatronCount = (Order->PatronCount() * quantityToSplit)  / quantity;
+	int splitItemPatronCount = (int)tempPatronCount ;//+ (tempPatronCount % 1 != 0);
+    splitItemPatronCount += (tempPatronCount - splitItemPatronCount) > 0 ? 1 : 0;
+	int itemPatronCount 	 = Order->PatronCount() - splitItemPatronCount;
+
+	OrderImage->SplitOrder(quantityToSplit);
+    OrderImage->RunBillCalculator();
+
+    for (int i = 0; i < OrderImage->SubOrders->Count ; i++)
+    {
+        TItemCompleteSub *SubOrder = (TItemCompleteSub *)OrderImage->SubOrders->Items[i];
+        SubOrder->RunBillCalculator();
+    }
+    Order->SetQtyCustom(quantity - quantityToSplit);
+	Order->Cost -= OrderImage->Cost;
+	Order->Redeemed -= OrderImage->Redeemed;
+    Order->PatronCount(itemPatronCount, false);
+
+    OrderImage->TransNo	= GetNextTransNumber(DBTransaction);
+    OrderImage->PatronCount(0, false);
+    if (itemPatronCount > splitItemPatronCount)
+    {
+        OrderImage->PatronCount(splitItemPatronCount, false);
+    }
+    SetOrder(DBTransaction, OrderImage);
+    TDBSecurity::ProcessSecurity(DBTransaction,OrderImage->Security);
+    for (int i = 0; i < OrderImage->SubOrders->Count; i++)
+    {
+        TItemCompleteSub *SubOrder = OrderImage->SubOrders->SubOrderGet(i);
+        if(SubOrder)
+        {
+            TDBSecurity::ProcessSecurity(DBTransaction,SubOrder->Security);
+        }
+    }
+    Order->RunBillCalculator();
+    UpdateOrder(DBTransaction, Order);
+    delete Order;
+    delete OrderImage;
+	return 2;
+}
 
 void TDBOrder::CloneOrders(Database::TDBTransaction &DBTransaction,TList *SourceOrders, TList *DestOrders)
 {
@@ -185,8 +239,7 @@ int __fastcall SortByFinalPrice(void *Item1,void *Item2)
 	}
 }
 
-void
-TDBOrder::UpdateOrdersForPartialPayment(
+void TDBOrder::UpdateOrdersForPartialPayment(
 Database::TDBTransaction &DBTransaction,
 TList * SourceOrders,
 TList * PayableOrders,
@@ -237,8 +290,7 @@ Currency RequestedTotal)
 	}
 }
 
-void
-TDBOrder::CloneOrdersSplitPaymentDifference(
+void TDBOrder::CloneOrdersSplitPaymentDifference(
 Database::TDBTransaction &DBTransaction,
 TList * const SourceOrders,
 TList * const DestOrders,
@@ -268,9 +320,7 @@ const Currency &RequestedTotal)
 	}
 }
 
-
-void
-TDBOrder::CloneOrdersPartialPaymentDifference(
+void TDBOrder::CloneOrdersPartialPaymentDifference(
 Database::TDBTransaction &DBTransaction,
 TList * const SourceOrders,
 TList * const DestOrders,
@@ -456,9 +506,7 @@ void TDBOrder::GetOrdersToValuesOfFromTabs(Database::TDBTransaction &DBTransacti
 	}
 	GetOrdersFromOrderKeys(DBTransaction,Orders, OrderLocalKeysToBeRomoved);
 }
-
 //---------------------------------------------------------------------------
-
 __int64 TDBOrder::GetNextTransNumber(Database::TDBTransaction &DBTransaction)
 {
 	int key = 0;
@@ -477,9 +525,7 @@ __int64 TDBOrder::GetNextTransNumber(Database::TDBTransaction &DBTransaction)
 	}
 	return key;
 }
-
 //------------------------------------------------------------------------------
-
 __int64 TDBOrder::GetNextSetMenuGroupNumber(Database::TDBTransaction &DBTransaction)
 {
 	int SetMenuGroupNumber = 0;
@@ -498,7 +544,6 @@ __int64 TDBOrder::GetNextSetMenuGroupNumber(Database::TDBTransaction &DBTransact
 	}
 	return SetMenuGroupNumber;
 }
-
 //---------------------------------------------------------------------------
 bool TDBOrder::CheckTransferCredit(Database::TDBTransaction &DBTransaction,TList *Orders, int TabDestKey)
 {
@@ -525,7 +570,6 @@ bool TDBOrder::CheckTransferCredit(Database::TDBTransaction &DBTransaction,TList
 	}
 	return ReturnVal;
 }
-
 //TDeviceRealTerminal::Instance().User.ContactKey;
 void TDBOrder::TransferOrders(Database::TDBTransaction &DBTransaction,TList *Orders, int TabDestKey, int UserKey, int TabSourceKey, bool isTransactionCommit)
 {
@@ -783,7 +827,6 @@ void TDBOrder::TransferOrders(Database::TDBTransaction &DBTransaction,TList *Ord
 		throw;
 	}
 }
-
 //---------------------------------------------------------------------------
 void TDBOrder::CancelOrder(Database::TDBTransaction &DBTransaction,TList *OrderObjects)
 {
@@ -857,7 +900,6 @@ void TDBOrder::CancelOrder(Database::TDBTransaction &DBTransaction,TItemComplete
 		throw;
 	}
 }
-
 //---------------------------------------------------------------------------
 void __fastcall TDBOrder::ProcessOrders(Database::TDBTransaction &DBTransaction,TList *OrderObjects)
 {
@@ -881,8 +923,6 @@ void __fastcall TDBOrder::ProcessOrders(Database::TDBTransaction &DBTransaction,
 	}
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall  TDBOrder::ProcessOrder(Database::TDBTransaction &DBTransaction,TItemComplete *Order)
 {
 	try
@@ -1196,9 +1236,9 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			IBInternalQuery->ParamByName("DISCOUNT_REASON")->AsString = Order->DiscountReason.SubString(1,40);
 			IBInternalQuery->ParamByName("REDEEMED")->AsFloat = 0;
 
-			IBInternalQuery->ParamByName("ITEM_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(Order->ItemKitchenName);
-			IBInternalQuery->ParamByName("SIZE_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(Order->SizeKitchenName);
-			IBInternalQuery->ParamByName("COURSE_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(Order->CourseKitchenName);
+			IBInternalQuery->ParamByName("ITEM_KITCHEN_NAME")->AsString = Order->ItemKitchenName;
+			IBInternalQuery->ParamByName("SIZE_KITCHEN_NAME")->AsString = Order->SizeKitchenName;
+			IBInternalQuery->ParamByName("COURSE_KITCHEN_NAME")->AsString = Order->CourseKitchenName;
 
 			IBInternalQuery->ParamByName("POINTS_PERCENT")->AsFloat = Order->PointsPercent;
 			IBInternalQuery->ParamByName("CATEGORY_KEY")->AsInteger = PrimaryArcCatkey;
@@ -1577,9 +1617,9 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				IBInternalQuery->ParamByName("REDEEMED")->AsFloat = 0;
 				IBInternalQuery->ParamByName("POINTS_PERCENT")->AsFloat = CurrentSubOrder->PointsPercent;
 
-		 		IBInternalQuery->ParamByName("ITEM_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(CurrentSubOrder->ItemKitchenName);
-				IBInternalQuery->ParamByName("SIZE_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(CurrentSubOrder->SizeKitchenName);
-				IBInternalQuery->ParamByName("COURSE_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(CurrentSubOrder->CourseKitchenName);
+		 		IBInternalQuery->ParamByName("ITEM_KITCHEN_NAME")->AsString = CurrentSubOrder->ItemKitchenName;
+				IBInternalQuery->ParamByName("SIZE_KITCHEN_NAME")->AsString = CurrentSubOrder->SizeKitchenName;
+				IBInternalQuery->ParamByName("COURSE_KITCHEN_NAME")->AsString = CurrentSubOrder->CourseKitchenName;
 
 				IBInternalQuery->ParamByName("CATEGORY_KEY")->AsInteger = SubPrimaryArcCatkey;
 				IBInternalQuery->ParamByName("THIRDPARTYCODES_KEY")->AsInteger = CurrentSubOrder->ThirdPartyKey;
@@ -1844,7 +1884,7 @@ void TDBOrder::SetOrderDiscounts(Database::TDBTransaction &DBTransaction,TItemMi
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
 
-		for (std::vector<TDiscount>::const_iterator ptrDiscounts = Order->DiscountsBegin();ptrDiscounts != Order->DiscountsEnd(); std::advance(ptrDiscounts,1))
+		for (std::vector<TDiscount>::const_iterator ptrDiscounts = Order->Discounts.begin();ptrDiscounts != Order->Discounts.end(); std::advance(ptrDiscounts,1))
 		{
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ORDERDISCOUNTS, 1) FROM RDB$DATABASE";
@@ -1905,7 +1945,7 @@ void TDBOrder::SetOrderDiscounts(Database::TDBTransaction &DBTransaction,TItemMi
 			IBInternalQuery->ParamByName("SOURCE")->AsInteger = ptrDiscounts->Source;
 			IBInternalQuery->ParamByName("APPEARANCE_ORDER")->AsInteger = ptrDiscounts->AppearanceOrder;
 			IBInternalQuery->ParamByName("PRIORITY")->AsInteger = ptrDiscounts->Priority;
-			IBInternalQuery->ParamByName("DISCOUNT_ID")->AsInteger = ptrDiscounts->ID;
+			IBInternalQuery->ParamByName("DISCOUNT_ID")->AsString = ptrDiscounts->DiscountCode;
 			IBInternalQuery->ParamByName("MEMBERS_ONLY")->AsString = (ptrDiscounts->MembersOnly == true) ? "T" : "F";
 			IBInternalQuery->ParamByName("MEMBERS_EXEMPT")->AsString = (ptrDiscounts->MembersExempt == true) ? "T" : "F";
             IBInternalQuery->ParamByName("ISTHOR_DISCOUNT")->AsString = (ptrDiscounts->IsThorBill == true) ? "T" : "F";
@@ -2317,36 +2357,24 @@ void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,int Ta
 	}
 }
 
-void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,int TabKey, std::map<__int64,TPnMOrder> &Orders, bool SelectingItems)
+double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTransaction,int TabKey, std::map<__int64,TPnMOrder> &Orders, bool SelectingItems)
 {
+    double accumulatedQuantity = 0;
 	try
 	{
+
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Clear();
 		IBInternalQuery->SQL->Text =
-		"SELECT "
-		"ORDER_KEY,"
-		"ORDER_TYPE,"
-		"ITEM_NAME,"
-		"SIZE_NAME,"
-		"MENU_NAME,"
-		"PRICE,"
-		"DISCOUNT,"
-		"QTY,"
-		"SIDE_ORDER_KEY,"
-		"TIME_STAMP,"
-		"ITEM_ID,"
-		"TIME_KEY,"
-		"PATRON_COUNT "
-		"FROM "
-		"ORDERS "
-		"WHERE "
-		"TAB_KEY = :TAB_KEY "
-		"ORDER BY "
-		"ITEM_NAME,"
-		"SIZE_NAME";
+        "SELECT a.ORDER_KEY,a.ORDER_TYPE,a.ITEM_NAME,a.SIZE_NAME,a.MENU_NAME,a.PRICE,a.DISCOUNT,a.QTY, "
+        " a.SIDE_ORDER_KEY,a.TIME_STAMP, a.ITEM_ID,	a.TIME_KEY,a.PATRON_COUNT,b.WEIGHTED_SIZE "
+        " FROM ORDERS a inner join SIZES b  "
+        " on a.SIZE_NAME = b.SIZE_NAME  "
+        " WHERE a.TAB_KEY = :TAB_KEY "
+        " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14  "
+        " ORDER BY a.ITEM_NAME,a.SIZE_NAME,a.Price,a.QTY ";
 		IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = TabKey;
 		IBInternalQuery->ExecQuery();
 		std::set<__int64> ValidOrderKeys;
@@ -2363,7 +2391,7 @@ void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,int Ta
 			Order.GroupNumber = IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger;
 			Order.TimeStamp	  = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
 			Order.TimeKey     = IBInternalQuery->FieldByName("TIME_KEY")->AsInteger;
-
+            Order.IsWeighted  = IBInternalQuery->FieldByName("WEIGHTED_SIZE")->AsString == "T";
 			if(!SelectingItems || SCDChecker.ItemSelectionCheck(DBTransaction, Order.Key, ValidOrderKeys))
 			{
 				if(Order.GroupNumber != 0)
@@ -2397,7 +2425,13 @@ void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,int Ta
                     Order.IsSide = false;
                 }
                 Orders[Order.Key] = Order;
-                ValidOrderKeys.insert(Order.Key);
+                if(ValidOrderKeys.size() == 0)
+                  ValidOrderKeys.insert(Order.Key);
+
+                if (!Order.IsWeighted	&& Order.Qty > 1)
+                {
+                    accumulatedQuantity += Order.Qty;
+                }
             }
 		}
 
@@ -2415,6 +2449,7 @@ void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,int Ta
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+    return accumulatedQuantity;
 }
 
 void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,std::set<__int64> &OrderKeys, std::map<__int64,TPnMOrder> &Orders)
@@ -2511,7 +2546,6 @@ void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,std::s
 	}
 }
 
-
 void TDBOrder::LoadPickNMixOrder(Database::TDBTransaction &DBTransaction,int OrderKey,TPnMOrder *Order)
 {
 	try
@@ -2564,9 +2598,7 @@ void TDBOrder::LoadPickNMixOrder(Database::TDBTransaction &DBTransaction,int Ord
 		throw;
 	}
 }
-
 //------------------------------------------------------------------------------
-
 void TDBOrder::GetOrdersIncludingSidesFromOrderKeys(Database::TDBTransaction &DBTransaction,TList *Orders, std::set<__int64> OrderKeys, bool isItemTransfer)
 {
 	// Leave the Trans State the way we found it.
@@ -2588,7 +2620,6 @@ void TDBOrder::GetOrdersIncludingSidesFromOrderKeys(Database::TDBTransaction &DB
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
 }
-
 //------------------------------------------------------------------------------
 void TDBOrder::GetMemberKeysFromOrderKeys(Database::TDBTransaction &DBTransaction,std::set<__int64> &MemberKeys, std::set<__int64> OrderKeys)
 {
@@ -2892,7 +2923,6 @@ void TDBOrder::GetOrdersFromOrderKeys(Database::TDBTransaction &DBTransaction,TL
 		throw;
 	}
 }
-
 //------------------------------------------------------------------------------
 void  TDBOrder::GetTabKeysFromOrders(TList *Orders, std::set<__int64> &TabKeys)
 {
@@ -2914,9 +2944,7 @@ void  TDBOrder::GetTabKeysFromOrders(TList *Orders, std::set<__int64> &TabKeys)
 		throw;
 	}
 }
-
 //------------------------------------------------------------------------------
-
 void TDBOrder::GetOrderFromOrderKey(Database::TDBTransaction &DBTransaction,TItemComplete *Order)
 {
 	try
@@ -3008,7 +3036,6 @@ void TDBOrder::GetOrderFromOrderKey(Database::TDBTransaction &DBTransaction,TIte
 		throw;
 	}
 }
-
 //------------------------------------------------------------------------------
 void TDBOrder::GetOrderIncludingSidesFromOrderKey(Database::TDBTransaction &DBTransaction,TItemComplete *Order, bool isItemTransfer)
 {
@@ -3117,8 +3144,6 @@ void TDBOrder::GetOrderIncludingSidesFromOrderKey(Database::TDBTransaction &DBTr
 	}
 }
 //------------------------------------------------------------------------------
-
-
 void TDBOrder::LoadOrderSide(Database::TDBTransaction &DBTransaction,TListSubOrderContainer *SubOrders,TIBSQL *SubOrdersTable)
 {
 	try
@@ -3135,9 +3160,9 @@ void TDBOrder::LoadOrderSide(Database::TDBTransaction &DBTransaction,TListSubOrd
 		CurrentSubOrder->Size = SubOrdersTable->FieldByName("SIZE_NAME")->AsString;
 		CurrentSubOrder->Item = SubOrdersTable->FieldByName("ITEM_NAME")->AsString;
 
-		CurrentSubOrder->CourseKitchenName	= UTF8ToUnicodeString((AnsiString)SubOrdersTable->FieldByName("COURSE_KITCHEN_NAME")->AsString);
-		CurrentSubOrder->ItemKitchenName  	= UTF8ToUnicodeString((AnsiString)SubOrdersTable->FieldByName("ITEM_KITCHEN_NAME")->AsString);
-		CurrentSubOrder->SizeKitchenName	= UTF8ToUnicodeString((AnsiString)SubOrdersTable->FieldByName("SIZE_KITCHEN_NAME")->AsString);
+		CurrentSubOrder->CourseKitchenName	= SubOrdersTable->FieldByName("COURSE_KITCHEN_NAME")->AsString;
+		CurrentSubOrder->ItemKitchenName  	= SubOrdersTable->FieldByName("ITEM_KITCHEN_NAME")->AsString;
+		CurrentSubOrder->SizeKitchenName	= SubOrdersTable->FieldByName("SIZE_KITCHEN_NAME")->AsString;
 
 		CurrentSubOrder->Item_ID = SubOrdersTable->FieldByName("ITEM_ID")->AsInteger;
 		CurrentSubOrder->ItemKey = SubOrdersTable->FieldByName("ITEM_KEY")->AsInteger;
@@ -3373,8 +3398,6 @@ void TDBOrder::GetOrderKeys(Database::TDBTransaction &DBTransaction,int TabKey,s
 	}
 }
 
-
-
 void TDBOrder::SetSecurityRef(Database::TDBTransaction &DBTransaction,int OrderKey,int OldRef,int SecurityRef)
 {
 	try
@@ -3399,7 +3422,6 @@ void TDBOrder::SetSecurityRef(Database::TDBTransaction &DBTransaction,int OrderK
 		throw;
 	}
 }
-
 //---------------------------------------------------------------------------
 int TDBOrder::GetCategoryGroup(Database::TDBTransaction &DBTransaction,UnicodeString CategoryGroup)
 {
@@ -3425,7 +3447,6 @@ int TDBOrder::GetCategoryGroup(Database::TDBTransaction &DBTransaction,UnicodeSt
 	}
 	return CatGroupkey;
 }
-
 //---------------------------------------------------------------------------
 UnicodeString TDBOrder::GetCategoryGroup(Database::TDBTransaction &DBTransaction,int CategoryGroupKey)
 {
@@ -3475,7 +3496,6 @@ int TDBOrder::GetCategoriesCategoryGroup(Database::TDBTransaction &DBTransaction
 	}
 	return CatGroupkey;
 }
-
 
 int TDBOrder::GetOrCreateCategoryGroup(Database::TDBTransaction &DBTransaction,UnicodeString CategoryGroup)
 {
@@ -3572,9 +3592,7 @@ int TDBOrder::SetCategoryToGroup(Database::TDBTransaction &DBTransaction,int Cat
 	}
 	return CategoryGroupKey;
 }
-
 //---------------------------------------------------------------------------
-
 int TDBOrder::SetArchiveCategory(Database::TDBTransaction &DBTransaction,UnicodeString Category)
 {
 	int ArcCatkey = 0;
@@ -3619,7 +3637,6 @@ int TDBOrder::SetArchiveCategory(Database::TDBTransaction &DBTransaction,Unicode
 	}
 	return ArcCatkey;
 }
-
 //---------------------------------------------------------------------------
 void TDBOrder::SetArchiveCategoryGroupEnabled(Database::TDBTransaction &DBTransaction,int CategoryGroupKey, bool Enabled)
 {
@@ -3649,9 +3666,7 @@ void TDBOrder::SetArchiveCategoryGroupEnabled(Database::TDBTransaction &DBTransa
 		throw;
 	}
 }
-
 //---------------------------------------------------------------------------
-
 void TDBOrder::SetArchiveCategoryEnabled(Database::TDBTransaction &DBTransaction,int CategoryKey, bool Enabled)
 {
 	if (CategoryKey == 0) return;
@@ -3680,9 +3695,7 @@ void TDBOrder::SetArchiveCategoryEnabled(Database::TDBTransaction &DBTransaction
 		throw;
 	}
 }
-
 //---------------------------------------------------------------------------
-
 int TDBOrder::GetArchiveCategory(Database::TDBTransaction &DBTransaction,UnicodeString Category)
 {
 	int RetVal = 0;
@@ -3708,7 +3721,6 @@ int TDBOrder::GetArchiveCategory(Database::TDBTransaction &DBTransaction,Unicode
 	}
 	return RetVal;
 }
-
 //---------------------------------------------------------------------------
 UnicodeString TDBOrder::GetArchiveCategory(Database::TDBTransaction &DBTransaction,int CategoryKey)
 {
@@ -3810,7 +3822,6 @@ bool TDBOrder::GetCategoryGroupEnabled(Database::TDBTransaction &DBTransaction,i
 	}
 	return RetVal;
 }
-
 
 bool TDBOrder::DeleteOrder(Database::TDBTransaction &DBTransaction,__int64 OrderKey)
 {
@@ -3935,12 +3946,12 @@ void TDBOrder::LoadOrder(Database::TDBTransaction &DBTransaction,TIBSQL *OrderTa
 		OrderTable->FieldByName("patron_count")->AsCurrency,
 		false);
 
-		Order->Course							= UTF8ToUnicodeString((AnsiString)OrderTable->FieldByName("COURSE_NAME")->AsString);
+		Order->Course							= OrderTable->FieldByName("COURSE_NAME")->AsString;
 		Order->Item								= OrderTable->FieldByName("ITEM_NAME")->AsString;
 
-		Order->CourseKitchenName				= UTF8ToUnicodeString((AnsiString)OrderTable->FieldByName("COURSE_KITCHEN_NAME")->AsString);
-		Order->ItemKitchenName  				= UTF8ToUnicodeString((AnsiString)OrderTable->FieldByName("ITEM_KITCHEN_NAME")->AsString);
-		Order->SizeKitchenName					= UTF8ToUnicodeString((AnsiString)OrderTable->FieldByName("SIZE_KITCHEN_NAME")->AsString);
+		Order->CourseKitchenName				= OrderTable->FieldByName("COURSE_KITCHEN_NAME")->AsString;
+		Order->ItemKitchenName  				= OrderTable->FieldByName("ITEM_KITCHEN_NAME")->AsString;
+		Order->SizeKitchenName					= OrderTable->FieldByName("SIZE_KITCHEN_NAME")->AsString;
 
 		Order->MasterContainer					= OrderTable->FieldByName("MASTER_CONTAINER")->AsString;
 		Order->SetMenuMask						= OrderTable->FieldByName("SETMENU_MASK")->AsInteger;
@@ -3995,51 +4006,32 @@ void TDBOrder::LoadOrder(Database::TDBTransaction &DBTransaction,TIBSQL *OrderTa
 		Order->CancelledBillCalcResult.TotalDiscount = OrderTable->FieldByName("CANCEL_TOTAL_DISCOUNT")->AsCurrency;
         Order->DelayedInvoiceNumber = OrderTable->FieldByName("DELAYED_INVOICE_NUMBER")->AsString;
         Order->isManuallyEnteredWeight = (OrderTable->FieldByName("IS_MANUALLY_ENTERED_WEIGHT")->AsString == "T")?1:0;
-        Order->ItemPriceForPoints = GetPriceForPoints(DBTransaction,Order);
+        Order->ItemPriceForPointsOriginal = GetPriceForPoints(DBTransaction,Order);
+        Order->ItemPriceForPoints = Order->ItemPriceForPointsOriginal;
  	}
 }
 
 bool TDBOrder::GetCanBePaidWithPoints(Database::TDBTransaction &DBTransaction,TItemComplete *Order)
 {
-	bool RetVal = false;
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	if(Order->PLU != 0)
-	{
-		IBInternalQuery->Close();
-		IBInternalQuery->ParamCheck = true;
-		IBInternalQuery->SQL->Text =
-		"SELECT "
-		"CAN_BE_PAID_FOR_USING_POINTS "
-		"FROM "
-		"ITEMSIZE "
-		"WHERE "
-		"PLU = :PLU";
-		IBInternalQuery->ParamByName("PLU")->AsInteger = Order->PLU ;
-		IBInternalQuery->ExecQuery();
-		if(!IBInternalQuery->Eof)
-		{
-			RetVal = IBInternalQuery->FieldByName("CAN_BE_PAID_FOR_USING_POINTS")->AsInteger != 0;
-		}
-	}
-	else
-	{
-		IBInternalQuery->Close();
-		IBInternalQuery->ParamCheck = true;
-		IBInternalQuery->SQL->Text =
-		"SELECT "
-		"CAN_BE_PAID_FOR_USING_POINTS "
-		"FROM "
-		"ITEMSIZE "
-		"WHERE "
-		"ITEM_KEY = :ITEM_KEY AND SIZE_NAME = :SIZE_NAME";
-		IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = Order->ItemKey ;
-		IBInternalQuery->ParamByName("SIZE_NAME")->AsString = Order->Size ;
-		IBInternalQuery->ExecQuery();
-		if(!IBInternalQuery->Eof)
-		{
-			RetVal = IBInternalQuery->FieldByName("CAN_BE_PAID_FOR_USING_POINTS")->AsInteger != 0;
-		}
-	}
+    bool RetVal = false;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->ParamCheck = true;
+    IBInternalQuery->SQL->Text =
+    "SELECT "
+    "CAN_BE_PAID_FOR_USING_POINTS "
+    "FROM "
+    "ITEMSIZE "
+    "WHERE ITEM_KEY = :ITEM_KEY AND "
+    "SIZE_NAME = :SIZE_NAME";
+    IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = Order->ItemKey ;
+    IBInternalQuery->ParamByName("SIZE_NAME")->AsString = Order->Size ;
+    IBInternalQuery->ExecQuery();
+    if(!IBInternalQuery->Eof)
+    {
+        RetVal = IBInternalQuery->FieldByName("CAN_BE_PAID_FOR_USING_POINTS")->AsInteger != 0;
+    }
+
     return RetVal;
 }
 
@@ -4055,7 +4047,6 @@ void TDBOrder::LoadOrderPrinting(TIBSQL *OrderTable,TItemComplete *Order)
 		Order->FontInfo.Height					= (OrderTable->FieldByName("ITEM_PRINT_DOUBLE_HEIGHT")->AsString == "T") ? fsDoubleSize : fsNormalSize;
 	}
 }
-
 
 void TDBOrder::LoadOrderSecurity(Database::TDBTransaction &DBTransaction,TListSecurityRefContainer *Security)
 {
@@ -4098,7 +4089,7 @@ void TDBOrder::LoadOrderDiscounts(Database::TDBTransaction &DBTransaction,TItemM
 		// Check For Dupliacte Ref and Events
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
-		"SELECT * FROM ORDERDISCOUNTS WHERE ORDER_KEY = :ORDER_KEY";
+		"SELECT * FROM ORDERDISCOUNTS WHERE ORDER_KEY = :ORDER_KEY Order by ORDERDISCOUNTS_KEY";
 		IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = Order->OrderKey;
 		IBInternalQuery->ExecQuery();
 		for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
@@ -4108,7 +4099,7 @@ void TDBOrder::LoadOrderDiscounts(Database::TDBTransaction &DBTransaction,TItemM
 			Discount.Name = IBInternalQuery->FieldByName("NAME")->AsString;
 			Discount.Description = IBInternalQuery->FieldByName("DESCRIPTION")->AsString;
 			Discount.DiscountKey = IBInternalQuery->FieldByName("DISCOUNT_KEY")->AsInteger;
-			Discount.ID = IBInternalQuery->FieldByName("DISCOUNT_ID")->AsInteger;
+			Discount.DiscountCode = IBInternalQuery->FieldByName("DISCOUNT_ID")->AsString;
 			Discount.Priority = IBInternalQuery->FieldByName("PRIORITY")->AsInteger;
 			Discount.AppearanceOrder = IBInternalQuery->FieldByName("APPEARANCE_ORDER")->AsInteger;
 			Discount.PercentAmount = IBInternalQuery->FieldByName("PERCENTAGE")->AsFloat;
@@ -4129,8 +4120,8 @@ void TDBOrder::LoadOrderDiscounts(Database::TDBTransaction &DBTransaction,TItemM
                     TManagerDiscount::GetDiscountCategories(DBTransaction,Discount.DiscountKey,Discount);
                 }
 
-                    TManagerDiscount::PopulateDiscountGroupPerType( Discount.DiscountKey, Discount );
-			        Order->DiscountAdd(Discount);
+            TManagerDiscount::PopulateDiscountGroupPerType( Discount.DiscountKey, Discount );
+			Order->DiscountAdd(Discount);
 
         }
 	}
@@ -4181,7 +4172,7 @@ void TDBOrder::LoadOrderOptions(TIBSQL *OptionsTable,TListOptionContainer *Optio
 		Option->OptionKey		= OptionsTable->FieldByName("ORDEROPTION_KEY")->AsInteger;
 		Option->OptionID 		= (unsigned short)OptionsTable->FieldByName("OPTION_ID")->AsInteger;
 		Option->Name 			= OptionsTable->FieldByName("OPTION_NAME")->AsString;
-		Option->KitchenName 	=  UTF8ToUnicodeString((AnsiString)OptionsTable->FieldByName("OPTION_KITCHEN_NAME")->AsString);
+		Option->KitchenName 	=  OptionsTable->FieldByName("OPTION_KITCHEN_NAME")->AsString;
 		if(Option->KitchenName == UnicodeString(""))
 		{
 			Option->KitchenName = Option->Name;
@@ -4265,8 +4256,8 @@ void TDBOrder::LoadOrderReceipe(TIBSQL *RecipeTable,TListRecipeContainer *Recipe
 void TDBOrder::LoadOrderServingCourse(TIBSQL *ServeringCourseTable, TServingCourse &ServingCourse)
 {
 	ServingCourse.ServingCourseKey = ServeringCourseTable->FieldByName("SERVINGCOURSES_KEY")->AsInteger;
-	ServingCourse.Name = UTF8ToUnicodeString((AnsiString)ServeringCourseTable->FieldByName("SERVINGCOURSE_NAME")->AsString);
-	ServingCourse.KitchenName =  UTF8ToUnicodeString((AnsiString)ServeringCourseTable->FieldByName("SERVINGCOURSE_KITCHEN_NAME")->AsString);
+	ServingCourse.Name = ServeringCourseTable->FieldByName("SERVINGCOURSE_NAME")->AsString;
+	ServingCourse.KitchenName = ServeringCourseTable->FieldByName("SERVINGCOURSE_KITCHEN_NAME")->AsString;
 	if(ServingCourse.KitchenName == UnicodeString(""))
 	{
 		ServingCourse.KitchenName = ServingCourse.Name;
@@ -4302,7 +4293,6 @@ void TDBOrder::GetCategoryList(Database::TDBTransaction &DBTransaction,TStringLi
 	}
 }
 //---------------------------------------------------------------------------
-
 Currency TDBOrder::LoadCreditFromOrders(Database::TDBTransaction &DBTransaction,TList *Orders)
 {
 	Currency RetVal = 0;
@@ -4505,7 +4495,7 @@ bool TDBOrder::IsItemUsingPCD(Database::TDBTransaction &DBTransaction, int itemK
 		IBInternalQuery->ParamByName("SIZE_NAME")->AsString = sizeName;
 		IBInternalQuery->ExecQuery();
 
-        if( IBInternalQuery->FieldByName("AVAILABLE_QUANTITY")->AsInteger > 0)
+        if( IBInternalQuery->FieldByName("AVAILABLE_QUANTITY")->AsDouble > 0)
         {
              return true;
         }
@@ -4604,48 +4594,26 @@ void TDBOrder::UpdateOrderTableForWebOrders(Database::TDBTransaction &DBTransact
 
 Currency TDBOrder::GetPriceForPoints(Database::TDBTransaction &DBTransaction,TItemComplete *Order)
 {
-	Currency RetVal = 0;
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	if(Order->PLU != 0)
-	{
-		IBInternalQuery->Close();
-		IBInternalQuery->ParamCheck = true;
-		IBInternalQuery->SQL->Text =
-		"SELECT "
-		"PRICE_FOR_POINTS "
-		"FROM "
-		"ITEMSIZE "
-		"WHERE "
-		"PLU = :PLU";
-		IBInternalQuery->ParamByName("PLU")->AsInteger = Order->PLU ;
-		IBInternalQuery->ExecQuery();
-		if(!IBInternalQuery->Eof)
-		{
-			RetVal = IBInternalQuery->FieldByName("PRICE_FOR_POINTS")->AsCurrency;
-		}
-	}
-	else
-	{
-		IBInternalQuery->Close();
-		IBInternalQuery->ParamCheck = true;
-		IBInternalQuery->SQL->Text =
-		"SELECT "
-		"PRICE_FOR_POINTS "
-		"FROM "
-		"ITEMSIZE "
-		"WHERE "
-		"ITEM_KEY = :ITEM_KEY AND SIZE_NAME = :SIZE_NAME";
-		IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = Order->ItemKey ;
-		IBInternalQuery->ParamByName("SIZE_NAME")->AsString = Order->Size ;
-		IBInternalQuery->ExecQuery();
-		if(!IBInternalQuery->Eof)
-		{
-			RetVal = IBInternalQuery->FieldByName("PRICE_FOR_POINTS")->AsCurrency;
-		}
-	}
+    Currency RetVal = 0;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->ParamCheck = true;
+    IBInternalQuery->SQL->Text =
+    "SELECT "
+    "PRICE_FOR_POINTS "
+    "FROM "
+    "ITEMSIZE "
+    "WHERE ITEM_KEY = :ITEM_KEY AND "
+    "SIZE_NAME = :SIZE_NAME";
+    IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = Order->ItemKey ;
+    IBInternalQuery->ParamByName("SIZE_NAME")->AsString = Order->Size ;
+    IBInternalQuery->ExecQuery();
+    if(!IBInternalQuery->Eof)
+    {
+        RetVal = IBInternalQuery->FieldByName("PRICE_FOR_POINTS")->AsCurrency;
+    }
     return RetVal;
 }
-
 ////---------------------------------------------------------------------------
 void TDBOrder::UpdateOrderTableDlinkingWithClipp(Database::TDBTransaction &dbTransaction,long SourceKey)
 {
@@ -4682,7 +4650,6 @@ void TDBOrder::UpdateOrderTableDlinkingWithClipp(Database::TDBTransaction &dbTra
 
 }
 ///-------------------------------------------------------------------------------------
-
 void TDBOrder::UpdateTabNameInOrder(Database::TDBTransaction &DBTransaction,long SourceKey, UnicodeString clipTabName,bool isTabSelected)
 {
   TIBSQL *IBUpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -4722,11 +4689,11 @@ void TDBOrder::UpdateTabNameInOrder(Database::TDBTransaction &DBTransaction,long
 
 }
 
-int TDBOrder::CheckItemAvailability(Database::TDBTransaction &DBTransaction, int itemKey, AnsiString sizeName)
+double TDBOrder::CheckItemAvailability(Database::TDBTransaction &DBTransaction, int itemKey, AnsiString sizeName)
 {
 	try
 	{
-        int itm_qty;
+        double itm_qty;
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
 		IBInternalQuery->Close();
@@ -4739,7 +4706,7 @@ int TDBOrder::CheckItemAvailability(Database::TDBTransaction &DBTransaction, int
 
         if(!IBInternalQuery->Eof)
         {
-            itm_qty = IBInternalQuery->FieldByName("AVAILABLE_QUANTITY")->AsInteger;
+            itm_qty = IBInternalQuery->FieldByName("AVAILABLE_QUANTITY")->AsDouble;
         }
         /*if( IBInternalQuery->FieldByName("AVAILABLE_QUANTITY")->AsInteger > 0)
         {

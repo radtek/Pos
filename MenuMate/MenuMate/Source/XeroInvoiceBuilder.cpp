@@ -137,19 +137,6 @@ bool TXeroInvoiceBuilder::CreateXeroInvoice( TPaymentTransaction& inPaymentTrans
     // with quantity as total
     MakeVectorForItems(FXeroInvoice,inPaymentTransaction);
 
-//  for( int i = 0; i < inPaymentTransaction.Orders->Count; i++ )
-//	{
-//        TItemComplete *Order = ( TItemComplete* )inPaymentTransaction.Orders->Items[i];
-//
-//        AddItemToXeroInvoice( FXeroInvoice, Order );
-//       	for( int j = 0; j < Order->SubOrders->Count; j++ )
-//		{
-//			TItemCompleteSub *SubOrderImage = Order->SubOrders->SubOrderGet(j);
-//			AddItemToXeroInvoice( FXeroInvoice, ( TItemMinorComplete * )SubOrderImage );
-//
-//		}
-//	}
-
 	return FXeroInvoice->InvoiceItemCount > 0;
 }
 //---------------------------------------------------------------------------

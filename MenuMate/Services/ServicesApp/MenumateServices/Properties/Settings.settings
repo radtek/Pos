@@ -2,10 +2,10 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MenumateServices.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="XeroIntegrationConfigFilename" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">XeroIntegration.xml</Value>
+    <Setting Name="AccountingIntegrationConfigFilename" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">AccountingIntegration.xml</Value>
     </Setting>
-    <Setting Name="XeroAppID" Type="System.String" Scope="Application">
+    <Setting Name="AccountingAppID" Type="System.String" Scope="Application">
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="ServiceConfigFilename" Type="System.String" Scope="Application">

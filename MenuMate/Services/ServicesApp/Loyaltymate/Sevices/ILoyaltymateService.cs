@@ -5,18 +5,17 @@ namespace Loyaltymate.Sevices
 {
     public interface ILoyaltymateService
     {
-        bool PostTransaction(PointsTransactionViewModel pointsTransaction, string syndicateCode, string uniqueId);
-        MemberViewModel SaveMember(MemberViewModel member, string syndicateCode);
-        MemberViewModel GetMemberByUniqueId(string uniqueId, string syndicateCode);
-        MemberViewModel GetMemberByCardCode(string cardCode, string syndicateCode);
-        MemberViewModel GetMemberByEmail(string inMemberEmail, string inSyndicateCode);
-        IEnumerable<MemberViewModel> GetAllMember(string syndicateCode);
-        bool DeleteMember(string uniqueId, string syndicateCode);
-        TierLevelViewModel SaveTierLevel(TierLevelViewModel tierLevel, string syndicateCode);
-        IEnumerable<TierLevelViewModel> GetAllTierLevels(string syndicateCode);
-        TierLevelViewModel GetTierLevel(long tierId, string syndicateCode);
-        bool DeleteTierLevel(long tierId, string syndicateCode);
-        PointQuery GetPointsInRange(PointQuery pointQuery, string syndicateCode);
+        ApiMemberViewModel SaveMember(ApiMemberViewModel member, string syndicateCode);
+        ApiMemberViewModel GetMemberByUniqueId(ApiRequestViewModel requestViewModel, string syndicateCode);
+        ApiMemberViewModel GetMemberByCardCode(ApiRequestViewModel requestViewModel, string syndicateCode);
+        ApiMemberViewModel GetMemberByEmail(ApiRequestViewModel requestViewModel, string inSyndicateCode);
         bool UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode);
+        bool PostTransaction(PointsTransactionViewModel pointsTransaction, string syndicateCode);
+        bool PostInvoiceTransaction(ApiMemberInvoiceTransactionViewModel invoiceTransaction, string syndicateCode);
+        ApiCompanyViewModel GetCompanyDetail(string inSyndicateCode);
+        double GetGiftCardBalance(string inSyndicateCode, ApiRequestViewModel requestViewModel);
+        ApiPocketVoucherViewModel GetPocketVoucherDetail(string inSyndicateCode, ApiRequestViewModel requestViewModel);
+        List<ApiProcessingResult> PostVoucherTransactions(string inSyndicateCode, ApiVouchersUsageViewModel voucherTransaction);
+        bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction);
     }
 }

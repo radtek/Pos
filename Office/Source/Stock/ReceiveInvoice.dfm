@@ -1041,7 +1041,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
       'inner join STOCKLOCATION loc on loc.STOCK_KEY=a.STOCK_KEY'
       
         'where a.SUPPLIER_KEY=:SUPPLIER_KEY and loc.LOCATION=:LOCATION an' +
-        'd QTY = :QTY'
+        'd QTY = :QTY and  a.STOCK_KEY = :STOCK_KEY'
       'group by'
       
         ' a.SUPPLIER_STOCK_KEY, a.SUPPLIER_KEY, a.STOCK_KEY, a.SUPPLIER_U' +
@@ -1065,6 +1065,11 @@ object frmReceiveInvoice: TfrmReceiveInvoice
       item
         DataType = ftUnknown
         Name = 'QTY'
+        ParamType = ptUnknown
+      end
+      item
+        DataType = ftUnknown
+        Name = 'STOCK_KEY'
         ParamType = ptUnknown
       end>
   end

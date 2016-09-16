@@ -96,9 +96,9 @@
     <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\XeroIntegration\XeroIntegration.csproj">
+    <ProjectReference Include="..\XeroIntegration\AccountingIntegration.csproj">
       <Project>{46E2DEBD-F1B9-41D1-BEEA-F1D903302B86}</Project>
-      <Name>XeroIntegration</Name>
+      <Name>AccountingIntegration</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

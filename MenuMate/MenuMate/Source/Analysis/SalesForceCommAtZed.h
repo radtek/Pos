@@ -22,10 +22,11 @@ class TSalesForceCommAtZed
     public:
          TSalesForceCommAtZed();
          ~TSalesForceCommAtZed();
+         void PVCommunication(AnsiString CompanyName);
+         void SalesForceCommunication(AnsiString CompanyName);
+    private:
          bool CheckPocketVoucherPaymentType(Database::TDBTransaction &DBTransaction,AnsiString CompanyName);
          void CreatePVAsPaymentType(Database::TDBTransaction &DBTransaction);
-         void PVCommunication(Database::TDBTransaction &DBTransaction,AnsiString CompanyName);
-         void SalesForceCommunication(AnsiString CompanyName);
          void EnableOrDisablePV(AnsiString CompanyName);
          bool IsXeroActivated(Database::TDBTransaction &DBTransaction1);
          bool IsWebMateActivated(Database::TDBTransaction &DBTransaction1);

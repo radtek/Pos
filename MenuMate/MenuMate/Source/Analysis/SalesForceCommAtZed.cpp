@@ -13,31 +13,34 @@
 
 #pragma package(smart_init)
 using namespace StockInterface;
+
 TSalesForceCommAtZed::TSalesForceCommAtZed()
 {
 }
+
 TSalesForceCommAtZed::~TSalesForceCommAtZed()
 {
 }
-void TSalesForceCommAtZed::PVCommunication(Database::TDBTransaction &DBTransaction,AnsiString CompanyName)
+
+void TSalesForceCommAtZed::PVCommunication(AnsiString CompanyName)
 {
-    TMMProcessingState State(Screen->ActiveForm, "Processing End of Day", "Please Wait");
-    TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
     try
     {
         bool voucherCreated = CheckPocketVoucherPaymentType(DBTransaction,CompanyName);
         EnableOrDisablePV(CompanyName);
+        DBTransaction.Commit();
     }
     catch(Exception &E)
     {
+        DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
     }
-    TDeviceRealTerminal::Instance().ProcessingController.Pop();
 }
+
 void TSalesForceCommAtZed::SalesForceCommunication(AnsiString CompanyName)
 {
-    TMMProcessingState State(Screen->ActiveForm, "Processing End of Day ", "Please Wait");
-    TDeviceRealTerminal::Instance().ProcessingController.Push(State);
     try
     {
         FindingValuesOfFields(CompanyName);
@@ -46,8 +49,8 @@ void TSalesForceCommAtZed::SalesForceCommunication(AnsiString CompanyName)
     {
     	TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
     }
-    TDeviceRealTerminal::Instance().ProcessingController.Pop();
 }
+
 bool TSalesForceCommAtZed::CheckPocketVoucherPaymentType(Database::TDBTransaction &DBTransaction,AnsiString CompanyName)
 {
     bool pvCreated = false;
@@ -103,37 +106,44 @@ bool TSalesForceCommAtZed::CheckPocketVoucherPaymentType(Database::TDBTransactio
             }
 
         }
-        DBTransaction.Commit();
         return pvCreated;
     }
 	catch(Exception &E)
 	{
-        DBTransaction.Rollback();
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
 }
+
 void TSalesForceCommAtZed::UpdatePVPaymentType(Database::TDBTransaction &DBTransaction , AnsiString name)
 {
-     int Properties = 0;
-     Properties |= ePayTypePocketVoucher;
-     Properties |= ePayTypeDispPVMsg;
-     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-     IBInternalQuery->Close();
-     IBInternalQuery->SQL->Text = "UPDATE PAYMENTTYPES SET PROPERTIES = :PROPERTIES, "
-         "VOUCHER_MERCHANT_ID = :VOUCHER_MERCHANT_ID, VOUCHER_URL = :VOUCHER_URL, "
-         "VOUCHER_USER = :VOUCHER_USER, VOUCHER_PASS = :VOUCHER_PASS, DISPLAY_ORDER = :DISPLAY_ORDER "
-         "WHERE "
-         "PAYMENT_NAME	= :PAYMENT_NAME";
-     IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
-     IBInternalQuery->ParamByName("VOUCHER_MERCHANT_ID")->AsString = MerchantId;
-     IBInternalQuery->ParamByName("VOUCHER_USER")->AsString = Username;
-     IBInternalQuery->ParamByName("VOUCHER_PASS")->AsString = Password;
-     IBInternalQuery->ParamByName("VOUCHER_URL")->AsString = Url;
-     IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = name;
-     IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsString = 99;
-     IBInternalQuery->ExecQuery();
+    try
+    {
+        int Properties = 0;
+        Properties |= ePayTypePocketVoucher;
+        Properties |= ePayTypeDispPVMsg;
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE PAYMENTTYPES SET PROPERTIES = :PROPERTIES, "
+        "VOUCHER_MERCHANT_ID = :VOUCHER_MERCHANT_ID, VOUCHER_URL = :VOUCHER_URL, "
+        "VOUCHER_USER = :VOUCHER_USER, VOUCHER_PASS = :VOUCHER_PASS, DISPLAY_ORDER = :DISPLAY_ORDER "
+        "WHERE "
+        "PAYMENT_NAME	= :PAYMENT_NAME";
+        IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+        IBInternalQuery->ParamByName("VOUCHER_MERCHANT_ID")->AsString = MerchantId;
+        IBInternalQuery->ParamByName("VOUCHER_USER")->AsString = Username;
+        IBInternalQuery->ParamByName("VOUCHER_PASS")->AsString = Password;
+        IBInternalQuery->ParamByName("VOUCHER_URL")->AsString = Url;
+        IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = name;
+        IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsString = 99;
+        IBInternalQuery->ExecQuery();
+    }
+   catch(Exception &E)
+	{
+		throw;
+	}
 }
+
 void TSalesForceCommAtZed::CreatePVAsPaymentType(Database::TDBTransaction &DBTransaction)
 {
         int a = 0;
@@ -182,11 +192,15 @@ void TSalesForceCommAtZed::CreatePVAsPaymentType(Database::TDBTransaction &DBTra
            TDeviceRealTerminal::Instance().PocketVouchers->URL = Url;
         }
 }
+
 void TSalesForceCommAtZed::EnableOrDisablePV(AnsiString CompanyName)
 {
+    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction1.StartTransaction();
+    try
+    {
         bool pocketVoucherExists = false;
-        Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction1.StartTransaction();
+
         std::vector<TPayment> Payments;
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction1,Payments);
         for(std::vector<TPayment>::iterator i = Payments.begin() ; i != Payments.end() ; ++i)
@@ -210,54 +224,53 @@ void TSalesForceCommAtZed::EnableOrDisablePV(AnsiString CompanyName)
            }
         }
         DBTransaction1.Commit();
+    }
+    catch(Exception &E)
+    {
+       DBTransaction1.Rollback();
+       throw;
+    }
 }
+
 void TSalesForceCommAtZed::FindingValuesOfFields(AnsiString accountName)
 {
     Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction1.StartTransaction();
-    // First Get all values of required fields for all the Pos if it is the case of multiple
-    // Pos connected to single database
-    SalesForceFields sfFields;
-    sfFields.AccountName = accountName;
-    sfFields.Xero = IsXeroActivated(DBTransaction1) ;
-    sfFields.WebMate = IsWebMateActivated(DBTransaction1);
-    sfFields.Mobi2Go = sfFields.WebMate;
-    sfFields.Thorlink = IsThorActivated(DBTransaction1);
-    sfFields.VersionNumber = GetversionNumber(DBTransaction1);
-    sfFields.PalmMate = IsPalmMateActivated(DBTransaction1);
-    sfFields.ChefMate = IsChefMateActivated(DBTransaction1);
-    sfFields.Loyalty = IsLoyaltyActivated(DBTransaction1);
-    sfFields.Stock = IsStockActivated(DBTransaction1);
-    DBTransaction1.Commit();
+    try
+    {
+        // First Get all values of required fields for all the Pos if it is the case of multiple
+        // Pos connected to single database
+        SalesForceFields sfFields;
+        sfFields.AccountName = accountName;
+        sfFields.Xero = IsXeroActivated(DBTransaction1) ;
+        sfFields.WebMate = IsWebMateActivated(DBTransaction1);
+        sfFields.Mobi2Go = sfFields.WebMate;
+        sfFields.Thorlink = IsThorActivated(DBTransaction1);
+        sfFields.VersionNumber = GetversionNumber(DBTransaction1);
+        sfFields.PalmMate = IsPalmMateActivated(DBTransaction1);
+        sfFields.ChefMate = IsChefMateActivated(DBTransaction1);
+        sfFields.Loyalty = IsLoyaltyActivated(DBTransaction1);
+        sfFields.Stock = IsStockActivated(DBTransaction1);
+        DBTransaction1.Commit();
 
-    std::auto_ptr<TSalesForceInterface> sfInterface (new TSalesForceInterface());
-    sfInterface->UpdateSalesForceFields(sfFields);
+        std::auto_ptr<TSalesForceInterface> sfInterface (new TSalesForceInterface());
+        sfInterface->UpdateSalesForceFields(sfFields);
+    }
+    catch(Exception &E)
+    {
+      DBTransaction1.Rollback();
+      throw;
+    }
 }
+
 bool TSalesForceCommAtZed::IsXeroActivated(Database::TDBTransaction &DBTransaction1)
 {
         bool isActivated = false;
-        TIBSQL *IBInternalQuery = DBTransaction1.Query(DBTransaction1.AddQuery());
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-                            " SELECT "
-                            " VARSPROFILE_KEY ,"
-                            " VARCHAR_VAL "
-                            " FROM "
-                            "  VARSPROFILE "
-                            " WHERE "
-                            " VARIABLES_KEY  = :VARIABLES_KEY ";
-        IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 7034;
-        IBInternalQuery->ExecQuery();
-        AnsiString path = IBInternalQuery->FieldByName("VARCHAR_VAL")->AsString;
-		if(IBInternalQuery->RecordCount > 0)
-		{
-            if(path.Length() != 0)
-            {
-                isActivated = true;
-            }
-		}
+        if(TGlobalSettings::Instance().IsXeroEnabled || TGlobalSettings::Instance().IsMYOBEnabled)
+            isActivated = true;
         return isActivated;
 }
+
 bool TSalesForceCommAtZed::IsWebMateActivated(Database::TDBTransaction &DBTransaction1)
 {
         bool isActivated = false;
@@ -279,6 +292,7 @@ bool TSalesForceCommAtZed::IsWebMateActivated(Database::TDBTransaction &DBTransa
 		}
         return isActivated;
 }
+
 bool TSalesForceCommAtZed::IsThorActivated(Database::TDBTransaction &DBTransaction1)
 {
         bool isActivated = false;
@@ -300,6 +314,7 @@ bool TSalesForceCommAtZed::IsThorActivated(Database::TDBTransaction &DBTransacti
 		}
         return isActivated;
 }
+
 bool TSalesForceCommAtZed::IsStockActivated(Database::TDBTransaction &DBTransaction1)
 {
         bool isActivated = false;
@@ -348,10 +363,12 @@ bool TSalesForceCommAtZed::IsStockActivated(Database::TDBTransaction &DBTransact
         }
         return isActivated;
 }
+
 UnicodeString TSalesForceCommAtZed::GetversionNumber(Database::TDBTransaction &DBTransaction1)
 {
         return GetFileVersion();
 }
+
 bool TSalesForceCommAtZed::IsPalmMateActivated(Database::TDBTransaction &DBTransaction1)
 {
         bool isActivated = false;
@@ -372,6 +389,7 @@ bool TSalesForceCommAtZed::IsPalmMateActivated(Database::TDBTransaction &DBTrans
 		}
         return isActivated;
 }
+
 bool TSalesForceCommAtZed::IsChefMateActivated(Database::TDBTransaction &DBTransaction1)
 {
         bool isActivated = false;
@@ -392,6 +410,7 @@ bool TSalesForceCommAtZed::IsChefMateActivated(Database::TDBTransaction &DBTrans
 		}
         return isActivated;
 }
+
 bool TSalesForceCommAtZed::IsLoyaltyActivated(Database::TDBTransaction &DBTransaction1)
 {
         bool isActivated = false;

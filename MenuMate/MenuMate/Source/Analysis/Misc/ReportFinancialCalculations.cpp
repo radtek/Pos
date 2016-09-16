@@ -223,13 +223,13 @@ void ReportFinancialCalculations::GetBilledSalesDetail(Database::TDBTransaction 
             {
                     IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
                     " SUM ((DAYARCHIVE.PRICE * DAYARCHIVE.QTY))  TOTAL,"
-                     " SUM ((DAYARCHIVE.BASE_PRICE * DAYARCHIVE.QTY)+(DAYARCHIVE.DISCOUNT_WITHOUT_TAX)) RAWTOTAL,";
+                     " SUM ((abs(DAYARCHIVE.BASE_PRICE) * DAYARCHIVE.QTY)+(DAYARCHIVE.DISCOUNT_WITHOUT_TAX)) RAWTOTAL,";
             }
             else
             {
                     IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
                     " SUM ((DAYARCHIVE.PRICE * DAYARCHIVE.QTY)-(DAYARCHIVE.DISCOUNT))  TOTAL,"
-                    " SUM (DAYARCHIVE.BASE_PRICE * DAYARCHIVE.QTY) RAWTOTAL,";
+                    " SUM (abs(DAYARCHIVE.BASE_PRICE) * DAYARCHIVE.QTY) RAWTOTAL,";
             }
              IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
 

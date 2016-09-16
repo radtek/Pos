@@ -178,6 +178,7 @@ __published:	// IDE-managed Components
     void __fastcall btnPrintCommitInvoiceClick(TObject *Sender);
     void __fastcall btnSaveClick(TObject *Sender);
     void __fastcall btnCommitPackingSlipClick(TObject *Sender);
+    //void __fastcall neCostKeyPress(TObject *Sender, char &Key);
 
 private:	// User declarations
 
@@ -212,7 +213,9 @@ private:	// User declarations
     void UpdateNodeQty(TInvoiceItemNodeData *NodeData, double QtyToReceive, double newSupplierUnitSize);
     void UpdateSupplierUnitCost(int order_key, TInvoiceItemNodeData *NodeData);
     void UpdateUnitqty(TInvoiceItemNodeData *NodeData);
-    double GetStockTakeUnitSize(int stock_key, int supplier_key);    
+    double GetStockTakeUnitSize(int stock_key, int supplier_key);
+    bool CheckInvoiceQtyAndPrice();
+    void PrintReceiveInvoice();    
 
 public:		// User declarations
 	__fastcall TfrmReceiveInvoice(TComponent* Owner);

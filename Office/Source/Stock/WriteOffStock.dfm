@@ -289,6 +289,7 @@ object frmWriteOffStock: TfrmWriteOffStock
           ParentFont = False
           TabOrder = 1
           OnChange = QuantityOnChange
+          OnKeyPress = neQtyKeyPress
           DecimalPlaces = 4
         end
         object Edit1: TEdit

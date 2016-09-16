@@ -15,7 +15,7 @@ using namespace Menu;
 //---------------------------------------------------------------------------
 //	NameAndKey
 //---------------------------------------------------------------------------
-TNameAndKey::TNameAndKey( __int32 inKey, AnsiString inName )
+TNameAndKey::TNameAndKey( __int32 inKey, WideString inName )
 {
     Name = inName;
     Key  = inKey;
@@ -172,19 +172,14 @@ bool TMenuLoadDB::GetAvailableSizes(TSizesInfo *SizesInfo)
 
             SizeInfo.Key		     	= sqlAvailableSizes->FieldByName("Sizes_Key")->AsInteger;
 
-			SizeInfo.Size_Name			= UTF8Decode( sqlAvailableSizes->FieldByName("Size_Name")->AsString );
-			SizeInfo.Size_Kitchen_Name	= UTF8Decode(sqlAvailableSizes->FieldByName("Size_Kitchen_Name")->AsString);
+			SizeInfo.Size_Name			= sqlAvailableSizes->FieldByName("Size_Name")->AsString; 
+			SizeInfo.Size_Kitchen_Name	= sqlAvailableSizes->FieldByName("Size_Kitchen_Name")->AsString;
 
-            SizeInfo.Size_Handheld_Name =
-              UTF8Decode(
-                sqlAvailableSizes->FieldByName("Handheld_Name")->AsString);
-            SizeInfo.Size_Receipt_Name =
-              UTF8Decode(
-                sqlAvailableSizes->FieldByName("Receipt_Name")->AsString);
-
-			SizeInfo.Weighed				= sqlAvailableSizes->FieldByName("Weighted_Size")->AsString=="T";
-			SizeInfo.Size_ID				= sqlAvailableSizes->FieldByName("Size_ID")->AsInteger;
-			SizeInfo.PalmID				= PalmSizeID++;
+            SizeInfo.Size_Handheld_Name = sqlAvailableSizes->FieldByName("Handheld_Name")->AsString;
+            SizeInfo.Size_Receipt_Name = sqlAvailableSizes->FieldByName("Receipt_Name")->AsString;
+			SizeInfo.Weighed		   = sqlAvailableSizes->FieldByName("Weighted_Size")->AsString=="T";
+			SizeInfo.Size_ID		   = sqlAvailableSizes->FieldByName("Size_ID")->AsInteger;
+			SizeInfo.PalmID			   = PalmSizeID++;
 
 			SizesInfo->Sizes.push_back(SizeInfo);
 		}
@@ -238,15 +233,15 @@ void TMenuLoadDB::LoadServingCourses(TServingCoursesInfo *ServingCoursesInfo, bo
 		Found = false;
 		for (unsigned i=0; i<ServingCoursesInfo->ServingCourses.size(); i++)
 		{
-			if (UTF8Decode(sqlAvailableServingCourses->FieldByName("ServingCourse_Name")->AsString) == ServingCoursesInfo->ServingCourses[i].ServingCourse_Name)
+			if (sqlAvailableServingCourses->FieldByName("ServingCourse_Name")->AsString == ServingCoursesInfo->ServingCourses[i].ServingCourse_Name)
 				Found = true;
 		}
 		if (!Found)
 		{
 			TServingCourseInfo ServingCourseInfo;
 			ServingCourseInfo.Key				         = sqlAvailableServingCourses->FieldByName("ServingCourses_Key")->AsInteger;
-			ServingCourseInfo.ServingCourse_Name		 = UTF8Decode(sqlAvailableServingCourses->FieldByName("ServingCourse_Name")->AsString);
-			ServingCourseInfo.ServingCourse_Kitchen_Name = UTF8Decode(sqlAvailableServingCourses->FieldByName("ServingCourse_Kitchen_Name")->AsString);
+			ServingCourseInfo.ServingCourse_Name		 = sqlAvailableServingCourses->FieldByName("ServingCourse_Name")->AsString;
+			ServingCourseInfo.ServingCourse_Kitchen_Name = sqlAvailableServingCourses->FieldByName("ServingCourse_Kitchen_Name")->AsString;
 			ServingCourseInfo.Colour					 = (TColor)sqlAvailableServingCourses->FieldByName("Colour")->AsInteger;
 			ServingCourseInfo.Enabled					 = Enabled; //sqlAvailableServingCourses->FieldByName("Deleted")->AsString == "T";
 			ServingCourseInfo.Deleted 					 = false;
@@ -282,7 +277,7 @@ bool TMenuLoadDB::GetAvailableCategories(TCategoriesInfo *CategoriesInfo)
 				TCategoryGroupInfo CategoryGroupInfo;
 
                 CategoryGroupInfo.Key                 = sqlAvailableCategories->FieldByName("CategoryGroups_Key")->AsInteger;
-                CategoryGroupInfo.Category_Group_Name = UTF8Decode( sqlAvailableCategories->FieldByName("Category_Group_Name")->AsString );
+                CategoryGroupInfo.Category_Group_Name = sqlAvailableCategories->FieldByName("Category_Group_Name")->AsString;
 
 				TCategoryInfo category;
 				category.Key = sqlAvailableCategories->FieldByName("Category_Key")->AsInteger;
@@ -383,14 +378,14 @@ bool TMenuLoadDB::GetNextCourse(Menu::TCourseInfo *CourseInfo)
 			fLastItem		= -1;
 			fLastItemSize	= -1;
 			CourseInfo->Key				     = sqlMenu->FieldByName("Course_Key")->AsInteger;
-			CourseInfo->Course_Name		     = UTF8Decode( sqlMenu->FieldByName("Course_Name")->AsString );
-			CourseInfo->Course_Kitchen_Name	 = UTF8Decode(sqlMenu->FieldByName("Course_Kitchen_Name")->AsString);
-			CourseInfo->Course_Handheld_Name = UTF8Decode( sqlMenu->FieldByName("Course_Handheld_Name")->AsString );
-			CourseInfo->Course_Receipt_Name  = UTF8Decode( sqlMenu->FieldByName("Course_Receipt_Name")->AsString );
+			CourseInfo->Course_Name		     = sqlMenu->FieldByName("Course_Name")->AsString;
+			CourseInfo->Course_Kitchen_Name	 = sqlMenu->FieldByName("Course_Kitchen_Name")->AsString;
+			CourseInfo->Course_Handheld_Name = sqlMenu->FieldByName("Course_Handheld_Name")->AsString;
+			CourseInfo->Course_Receipt_Name  = sqlMenu->FieldByName("Course_Receipt_Name")->AsString;
 			CourseInfo->View_Location		 = static_cast<TLocation>(sqlMenu->FieldByName("View_Location")->AsInteger);
 			CourseInfo->Course_ID			 = sqlMenu->FieldByName("Course_ID")->AsInteger;
             CourseInfo->ServingCourse_Key	 = sqlMenu->FieldByName("ServingCourses_Key")->AsInteger;
-			CourseInfo->ServingCourse_Name	 = UTF8Decode( sqlMenu->FieldByName("ServingCourse_Name")->AsString );
+			CourseInfo->ServingCourse_Name	 = sqlMenu->FieldByName("ServingCourse_Name")->AsString;
 			CourseInfo->No_Default_Serving_Course = dmUtilities->StrToBoolean(sqlMenu->FieldByName("No_Default_Serving_Course")->AsString);
 			if (CourseInfo->View_Location & lcPalm)
 			{
@@ -411,8 +406,8 @@ bool TMenuLoadDB::GetNextCourse(Menu::TCourseInfo *CourseInfo)
 
                CourseOptionInfo.Key		         = sqlCourseOptions->FieldByName("Options_Key")->AsInteger;
 
-               CourseOptionInfo.Option_Name		 = UTF8Decode(sqlCourseOptions->FieldByName("Option_Name")->AsString);
-               CourseOptionInfo.Option_Kitchen_Name = UTF8Decode(sqlCourseOptions->FieldByName("Option_Kitchen_Name")->AsString);
+               CourseOptionInfo.Option_Name		 = sqlCourseOptions->FieldByName("Option_Name")->AsString;
+               CourseOptionInfo.Option_Kitchen_Name = sqlCourseOptions->FieldByName("Option_Kitchen_Name")->AsString;
                CourseOptionInfo.Option_ID			 = sqlCourseOptions->FieldByName("Option_ID")->AsInteger;
                CourseOptionInfo.Forced_Mask		 = sqlCourseOptions->FieldByName("Forced_Mask")->AsInteger;
                CourseOptionInfo.Flags				 = sqlCourseOptions->FieldByName("Flags")->AsInteger;
@@ -429,8 +424,8 @@ bool TMenuLoadDB::GetNextCourse(Menu::TCourseInfo *CourseInfo)
                CourseOptionInfo.Print_Double_Width	 = (sqlCourseOptions->FieldByName("Print_Double_Width")->AsString == "T");
                CourseOptionInfo.Print_Double_Height = (sqlCourseOptions->FieldByName("Print_Double_Height")->AsString == "T");
 
-               CourseOptionInfo.Option_Handheld_Name = UTF8Decode(sqlCourseOptions->FieldByName("Option_Handheld_Name")->AsString);
-               CourseOptionInfo.Option_Receipt_Name = UTF8Decode(sqlCourseOptions->FieldByName("Option_Receipt_Name")->AsString);
+               CourseOptionInfo.Option_Handheld_Name = sqlCourseOptions->FieldByName("Option_Handheld_Name")->AsString;
+               CourseOptionInfo.Option_Receipt_Name = sqlCourseOptions->FieldByName("Option_Receipt_Name")->AsString;
 
                CourseInfo->Options.push_back(CourseOptionInfo);
 
@@ -460,12 +455,12 @@ bool TMenuLoadDB::GetNextItem(Menu::TItemInfo *ItemInfo)
 				fLastItemSize	= -1;
 
 				ItemInfo->Key			     = sqlMenu->FieldByName("Item_Key")->AsInteger;
-				ItemInfo->Item_Name		     = UTF8Decode(sqlMenu->FieldByName("Item_Name")->AsString);
+				ItemInfo->Item_Name		     = sqlMenu->FieldByName("Item_Name")->AsString;
 
-				ItemInfo->Item_Kitchen_Name	 = UTF8Decode(sqlMenu->FieldByName("Item_Kitchen_Name")->AsString );
+				ItemInfo->Item_Kitchen_Name	 = sqlMenu->FieldByName("Item_Kitchen_Name")->AsString;
 
-                ItemInfo->Item_Handheld_Name = UTF8Decode( sqlMenu->FieldByName("Item_Handheld_Name")->AsString );
-                ItemInfo->Item_Receipt_Name  = UTF8Decode( sqlMenu->FieldByName("Item_Receipt_Name")->AsString );
+                ItemInfo->Item_Handheld_Name = sqlMenu->FieldByName("Item_Handheld_Name")->AsString;
+                ItemInfo->Item_Receipt_Name  = sqlMenu->FieldByName("Item_Receipt_Name")->AsString;
 
 				ItemInfo->Button_Colour			= TColor(sqlMenu->FieldByName("Button_Colour")->AsInteger);
 				ItemInfo->Exclusively_As_Side	= (sqlMenu->FieldByName("Exclusively_As_Side")->AsString == "T");
@@ -502,7 +497,7 @@ bool TMenuLoadDB::GetNextItem(Menu::TItemInfo *ItemInfo)
 						ItemSideInfo.Master_Item_Key = sqlItemSides->FieldByName("Master_Item_Key")->AsInteger;
 						ItemSideInfo.Course_Name	 = sqlItemSides->FieldByName("Course_Name")->AsString;
 						//ItemSideInfo.IOO			 = sqlItemSides->FieldByName("IOO")->AsInteger;
-						ItemSideInfo.Item_Name		 = UTF8Decode(sqlItemSides->FieldByName("Item_Name")->AsString);
+						ItemSideInfo.Item_Name		 = sqlItemSides->FieldByName("Item_Name")->AsString;
 						ItemSideInfo.Group_Number	 = sqlItemSides->FieldByName("Group_Number")->AsInteger;
 						ItemSideInfo.Max_Select		 = sqlItemSides->FieldByName("Max_Select")->AsInteger;
 						ItemSideInfo.Allow_Skip		 = (sqlItemSides->FieldByName("Allow_Skip")->AsString=="T");
@@ -518,7 +513,7 @@ bool TMenuLoadDB::GetNextItem(Menu::TItemInfo *ItemInfo)
 	}
 	return Success;
 }
-//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------          fdsgdfhgdfghf
 bool TMenuLoadDB::GetNextItemSize(Menu::TItemSizeInfo *ItemSizeInfo)
 {
 	bool Success = false;
@@ -537,18 +532,16 @@ bool TMenuLoadDB::GetNextItemSize(Menu::TItemSizeInfo *ItemSizeInfo)
 				ItemSizeInfo->Key			     = sqlMenu->FieldByName("ItemSize_Key")->AsInteger;
 				ItemSizeInfo->Size_Key         = sqlMenu->FieldByName("ItemSize_SizeKey")->AsInteger;
 				ItemSizeInfo->Size_ID			 = sqlMenu->FieldByName("Size_ID")->AsInteger;
-				ItemSizeInfo->Size_Name			 = UTF8Decode( sqlMenu->FieldByName("Size_Name")->AsString );
-				ItemSizeInfo->Size_Kitchen_Name	 = UTF8Decode(sqlMenu->FieldByName("Size_Kitchen_Name")->AsString);
+				ItemSizeInfo->Size_Name			 = sqlMenu->FieldByName("Size_Name")->AsString; 
+				ItemSizeInfo->Size_Kitchen_Name	 = sqlMenu->FieldByName("Size_Kitchen_Name")->AsString;
 
-			   ItemSizeInfo->Size_Handheld_Name =
-               UTF8Decode( sqlMenu->FieldByName("ItemSize_Handheld_Name")->AsString);
+			   ItemSizeInfo->Size_Handheld_Name = sqlMenu->FieldByName("ItemSize_Handheld_Name")->AsString;
 
-			   ItemSizeInfo->Size_Receipt_Name =
-               UTF8Decode( sqlMenu->FieldByName("ItemSize_Receipt_Name")->AsString);
+			   ItemSizeInfo->Size_Receipt_Name =  sqlMenu->FieldByName("ItemSize_Receipt_Name")->AsString;
 
 				ItemSizeInfo->Free					= ( sqlMenu->FieldByName("Free")->AsString == "T" );
 				ItemSizeInfo->Price				    = sqlMenu->FieldByName("Price")->AsCurrency;
-				ItemSizeInfo->MaxRetailPrice				    = sqlMenu->FieldByName("MAXRETAILPRICE")->AsCurrency;
+				ItemSizeInfo->MaxRetailPrice		= sqlMenu->FieldByName("MAXRETAILPRICE")->AsCurrency;
 				ItemSizeInfo->Special_Price			= sqlMenu->FieldByName("Special_Price")->AsCurrency;
 				ItemSizeInfo->GST_Percent			= sqlMenu->FieldByName("GST_Percent")->AsDouble;
 				ItemSizeInfo->Cost					= sqlMenu->FieldByName("Cost")->AsCurrency;
@@ -569,22 +562,14 @@ bool TMenuLoadDB::GetNextItemSize(Menu::TItemSizeInfo *ItemSizeInfo)
 				ItemSizeInfo->Third_Party_Code		= sqlMenu->FieldByName("Third_Party_Code")->AsString;
 				ItemSizeInfo->ThirdPartyCodes_Key	= sqlMenu->FieldByName("ThirdPartyCodes_Key")->AsInteger;
 
-            ItemSizeInfo->CanBePaidForUsingPoints =
-              sqlMenu->FieldByName("can_be_paid_for_using_points")->AsInteger;
+            ItemSizeInfo->CanBePaidForUsingPoints = sqlMenu->FieldByName("can_be_paid_for_using_points")->AsInteger;
 
-            ItemSizeInfo->AvailableQuantity =
-              sqlMenu->FieldByName("available_quantity")->AsFloat;
-            ItemSizeInfo->DefaultQuantity =
-              sqlMenu->FieldByName("default_quantity")->AsFloat;
-            ItemSizeInfo->WarningQuantity =
-              sqlMenu->FieldByName("warning_quantity")->AsFloat;
-            ItemSizeInfo->DisableWhenCountReachesZero =
-              sqlMenu->FieldByName(
-                "disable_when_count_reaches_zero")->AsInteger;
+            ItemSizeInfo->AvailableQuantity = sqlMenu->FieldByName("available_quantity")->AsFloat;
+            ItemSizeInfo->DefaultQuantity = sqlMenu->FieldByName("default_quantity")->AsFloat;
+            ItemSizeInfo->WarningQuantity = sqlMenu->FieldByName("warning_quantity")->AsFloat;
+            ItemSizeInfo->DisableWhenCountReachesZero = sqlMenu->FieldByName("disable_when_count_reaches_zero")->AsInteger;
 
-            ItemSizeInfo->DefaultPatronCount =
-              sqlMenu->FieldByName(
-                "default_patron_count")->AsInteger;
+            ItemSizeInfo->DefaultPatronCount = sqlMenu->FieldByName("default_patron_count")->AsInteger;
 
             ItemSizeInfo->PLU = sqlMenu->FieldByName("PLU")->AsInteger;
             ItemSizeInfo->PriceForPoints = sqlMenu->FieldByName("PRICE_FOR_POINTS")->AsInteger;
@@ -686,7 +671,7 @@ bool TMenuLoadDB::GetForcedItemOptionKeysWithGroupNumber( unsigned int inGroupNu
     {
 		if( ( sqlOptions->FieldByName( "flags" )->AsInteger & 0x0F ) == inGroupNumber )
 		{
-            TItemOptionInfo foption( UTF8Decode(sqlOptions->FieldByName( "option_name" )->AsString),
+            TItemOptionInfo foption( sqlOptions->FieldByName( "option_name" )->AsString,
                                      sqlOptions->FieldByName( "foption_key" )->AsInteger,
                                      inItemKey,
                                      sqlOptions->FieldByName( "option_key"  )->AsInteger );

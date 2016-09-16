@@ -1,9 +1,12 @@
 ﻿<Window x:Class="Chefmate.UI.Views.ChefmateParserView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" WindowStyle="None" ResizeMode="NoResize"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:Chefmate.UI.Converters"
+        WindowStyle="None" ResizeMode="NoResize"
         BorderThickness="3" BorderBrush="Gray" WindowStartupLocation="CenterScreen" Icon="../Images/C_Transparent.ico">
     <Window.Resources>
         <ResourceDictionary>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
@@ -26,7 +29,7 @@
             </ItemsControl>
         </Border>
         <StackPanel Grid.Row="2"  Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button  Margin="20,10,20,10" Command="{Binding ParserCommand}">Parse</Button>
+            <Button  Margin="20,10,20,10" Command="{Binding ParserCommand}" Visibility="{Binding IsParseVisible, Converter={StaticResource BooleanToVisibilityConverter}}">Parse</Button>
             <Button  Margin="20,10,20,10" Command="{Binding CloseCommand}">Close</Button>
 
         </StackPanel>

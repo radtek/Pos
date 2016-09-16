@@ -101,6 +101,7 @@ __published:	// IDE-managed Components
    void __fastcall btnCancelClick(TObject *Sender);
    void __fastcall btnCommitClick(TObject *Sender);
         void __fastcall btnImportClick(TObject *Sender);
+    void __fastcall neStockNumericEditKeyPress(TObject *Sender, char &Key);
 private:	// User declarations
   void AddDataToList();
   void LoadUnits(int StockKey);
@@ -109,6 +110,7 @@ private:	// User declarations
   void UpdateStockData(TSupplierItemNodeData* StockInfo);
   void AddSupplierStock(TSupplierItemNodeData* NodeData);
   bool GetStockDetail(TSupplierItemNodeData* NodeData);
+  bool CheckNegativeCostOrQty();  
 public:		// User declarations
    __fastcall TfrmUpdateSupplierCosts(TComponent* Owner);
    	int ContactKey;

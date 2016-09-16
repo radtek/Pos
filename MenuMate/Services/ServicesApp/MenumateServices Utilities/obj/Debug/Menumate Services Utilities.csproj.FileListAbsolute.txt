@@ -44,11 +44,6 @@ C:\Code\MenumateSourceCode\Menumate\MenuMate\Services\ServicesApp\Ready for Dist
 C:\Code\MenumateSourceCode\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\ResolveAssemblyReference.cache
 C:\Code\MenumateSourceCode\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.dll
 C:\Code\MenumateSourceCode\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.pdb
-C:\work\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate Services Utilities.dll
-C:\work\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate Services Utilities.pdb
-C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\ResolveAssemblyReference.cache
-C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.dll
-C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.pdb
 C:\Menumate_Testing_Code\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate Services Utilities.dll
 C:\Menumate_Testing_Code\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate Services Utilities.pdb
 C:\Menumate_Testing_Code\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\ResolveAssemblyReference.cache
@@ -59,3 +54,8 @@ C:\Code\MenumateSourceCode\working\Menumate\MenuMate\Services\ServicesApp\Ready 
 C:\Code\MenumateSourceCode\working\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\ResolveAssemblyReference.cache
 C:\Code\MenumateSourceCode\working\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.dll
 C:\Code\MenumateSourceCode\working\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.pdb
+C:\work\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate Services Utilities.dll
+C:\work\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate Services Utilities.pdb
+C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\ResolveAssemblyReference.cache
+C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.dll
+C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.pdb

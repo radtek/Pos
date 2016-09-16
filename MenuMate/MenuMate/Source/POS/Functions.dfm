@@ -298,6 +298,25 @@ object frmFunctions: TfrmFunctions
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnAssignBarcodeMouseClick
     end
+    object btnSync: TTouchBtn
+      Left = 328
+      Top = 329
+      Width = 145
+      Height = 65
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Sync'
+      ButtonColor = 6052441
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnSyncMouseClick
+    end
   end
   object Panel1: TPanel
     Left = 493

@@ -14,6 +14,7 @@
 #include "MallExportAlphalandManager.h"
 #include "MallExportMegaworldManager.h"
 #include "MallExportShangrilaManager.h"
+#include "MallExportFederalLandManager.h"
 //---------------------------------------------------------------------------
 
 __fastcall TMallExportFactory::TMallExportFactory()
@@ -49,8 +50,11 @@ TMallExportIMallManager *TMallExportFactory::CreateManager()
         case SHANGRILAMALL:
             IMallManager = new TMallExportShangrilaManager();
             break;
-             case DLFMALL:
-             break;
+        case DLFMALL:
+            break;
+        case FEDERALLANDMALL:
+            IMallManager = new TMallExportFederalLandManager();
+            break;
 
         default:
             break;

@@ -206,7 +206,7 @@ object frmDiscountEdit: TfrmDiscountEdit
       Font.Style = []
       ParentFont = False
       ParentColor = True
-      Caption = 'Discount ID'
+      Caption = 'Discount Code'
       ButtonColor = 6052441
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace

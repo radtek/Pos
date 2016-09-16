@@ -12,9 +12,37 @@ namespace Chefmate.Core.Model
         private string _orderNumberText;
         private string _timerDisplayText;
         private bool _isBlinkingEnable;
-        private int _isTransferredItem;
+        private bool _isOriginalItem;
         private string _sourceTabTableText;
-        
+        private bool _isHeaderVisible;
+        private bool _isSourceTableExist;
+        public DisplayAttributes()
+        {
+            IsHeaderVisible = true;
+            _isOriginalItem = true;
+        }
+        public DisplayAttributes(DisplayAttributes inDisplayAttributes) : this()
+        {
+            IsHeaderVisible = inDisplayAttributes.IsHeaderVisible;
+            ExecutePopUp = inDisplayAttributes.ExecutePopUp;
+            IsBlinkingEnable = inDisplayAttributes.ExecutePopUp;
+            TimerDisplayText = inDisplayAttributes.TimerDisplayText;
+            PatronDisplayText = inDisplayAttributes.PatronDisplayText;
+            TabtableText = inDisplayAttributes.TabtableText;
+            OrderNumberText = inDisplayAttributes.OrderNumberText;
+            BackGroundColor = inDisplayAttributes.BackGroundColor;
+            IsOriginalItem = inDisplayAttributes.IsOriginalItem;
+            SourceTabTableText = inDisplayAttributes.SourceTabTableText;
+        }
+        public bool IsHeaderVisible
+        {
+            get { return _isHeaderVisible; }
+            set
+            {
+                _isHeaderVisible = value;
+                OnPropertyChanged("IsHeaderVisible");
+            }
+        }
         public bool ExecutePopUp
         {
             get { return _executePopUp; }
@@ -78,30 +106,42 @@ namespace Chefmate.Core.Model
                 OnPropertyChanged("BackGroundColor");
             }
         }
-        public int IsTransferredItem
+        public bool IsOriginalItem
         {
-            get 
-            { 
-                return _isTransferredItem; 
+            get
+            {
+                return _isOriginalItem;
             }
-            set 
-            { 
-                _isTransferredItem = value;
-                OnPropertyChanged("IsTransferredItem");
+            set
+            {
+                _isOriginalItem = value;
+                OnPropertyChanged("IsOriginalItem");
             }
         }
         public string SourceTabTableText
         {
-            get 
+            get
             {
-                return _sourceTabTableText; 
+                return _sourceTabTableText;
             }
-            set 
+            set
             {
                 _sourceTabTableText = value;
                 OnPropertyChanged("SourceTabTableText");
+                IsSourceTableExist = !string.IsNullOrWhiteSpace(value);
             }
         }
-        
+        public bool IsSourceTableExist
+        {
+            get
+            {
+                return _isSourceTableExist;
+            }
+            set
+            {
+                _isSourceTableExist = value;
+                OnPropertyChanged("IsSourceTableExist");
+            }
+        }
     }
 }

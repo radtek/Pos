@@ -15,7 +15,7 @@ using NLog;
 
 #endregion
 
-namespace XeroIntegration
+namespace AccountingIntegration
 {
     class ServiceLogger
     {

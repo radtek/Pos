@@ -7,6 +7,7 @@
 #include <Classes.hpp>
 #include <set>
 #include <vector>
+#include "Discount.h"
 
 #include "EnumChit.h"
 
@@ -88,5 +89,6 @@ class TChitNumber
    bool SaveMemberAddress;
    bool OnlinePickupOrder;
    bool OnlineDeliveryOrder;
+   std::vector<TDiscount> DiscountList;
 };
 #endif

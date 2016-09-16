@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xero.Api.Core.Model;
-using XeroIntegration.Model;
-using XeroIntegration.Utility;
-using System.Xml;
-using Xero.Api.Core.Model.Status;
 using Xero.Api.Core.Model.Types;
+using Xero.Api.Core.Model.Status;
+using System.Xml;
+using AccountingIntegration.Xero;
 
-namespace XeroIntegration.Tools
+namespace AccountingIntegration.Tools
 {
     public class XeroInvoiceController
     {
@@ -90,27 +89,27 @@ namespace XeroIntegration.Tools
             switch (inStatus)
             {
                 case "DRAFT":
-                    status = Xero.Api.Core.Model.Status.InvoiceStatus.Draft;
+                    status = InvoiceStatus.Draft;
                     break;
 
                 case "SUBMITTED":
-                    status = Xero.Api.Core.Model.Status.InvoiceStatus.Submitted;
+                    status = InvoiceStatus.Submitted;
                     break;
 
                 case "DELETED":
-                    status = Xero.Api.Core.Model.Status.InvoiceStatus.Deleted;
+                    status = InvoiceStatus.Deleted;
                     break;
 
                 case "AUTHORISED":
-                    status = Xero.Api.Core.Model.Status.InvoiceStatus.Authorised;
+                    status = InvoiceStatus.Authorised;
                     break;
 
                 case "PAID":
-                    status = Xero.Api.Core.Model.Status.InvoiceStatus.Paid;
+                    status = InvoiceStatus.Paid;
                     break;
 
                 case "VOIDED":
-                    status = Xero.Api.Core.Model.Status.InvoiceStatus.Voided;
+                    status = InvoiceStatus.Voided;
                     break;
             }
             return status;

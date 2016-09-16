@@ -30,6 +30,11 @@ enum TDiscountType
 	dtFixed, dtPromptDescription, dtPromptAmount, dtPromptDescriptionAmount
 };
 
+enum TProductPriority
+{
+	ppNone, ppCheapest, ppHighest
+};
+
 /* I have had to move the system Discount to 100, Discount that appear after the system discount
 are not remvoed by the standard xxxxx.Clear() type calls. Currently discounts of type dsMMSystem are not used*/
 enum TDiscountSource
@@ -49,7 +54,7 @@ public:
 
 	TDiscountMode Mode;
 	TDiscountType Type;
-	BYTE ID;
+	UnicodeString DiscountCode;
 	TDiscountSource Source;
 	Currency ComboAmount;
 	Currency Rounding;
@@ -69,25 +74,21 @@ public:
     bool IsClipp;
     int MaxItemAffected;
     int MinItemRequired;
-
+    bool IsCloudDiscount;
 	Currency MaximumValue;
+    int DailyUsageAllowedPerMember;
+    TProductPriority ProductPriority;
+
 
     std::set<int> CategoryFilterKeys;
-
     std::vector<TDiscountGroup> DiscountGroupList;
-
 	void Clear();
 	Currency setAmount(Currency amount);
-
 	TDiscount();
 	UnicodeString GetDescription()const;
-
     __property Currency Amount = {read=amount, write=setAmount};
-
 	Currency DiscountValue(Currency value_to_be_discounted, OrderStatus OrderType) const;
-
 	bool ContainsCatKey(TListCategoryContainer *Categories) const;
-
     bool IsSeniorCitizensDiscount();
     bool IsPersonWithDisabilityDiscount();
     bool IsComplimentaryDiscount();

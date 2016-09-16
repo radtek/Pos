@@ -236,91 +236,91 @@ class TImportMenu
         // Insert_InDB functions insert new objects in th DB.
         // Insert_InDBWithKey functions are not used so far!!!!.
         //::::::::::::::::::::::::::::::::::::::::::::::
-		__int32 InsertMenuInDB( AnsiString inMenuName, Menu::TMenuType inMenuType,
+		__int32 InsertMenuInDB( WideString inMenuName, Menu::TMenuType inMenuType,
 								bool inAvailableOnPalm, Database::TDBTransaction *inDBTransaction );
-		   void InsertMenuInDBWithKey( __int32 inKey, AnsiString inMenuName, Menu::TMenuType inMenuType,
+		   void InsertMenuInDBWithKey( __int32 inKey, WideString inMenuName, Menu::TMenuType inMenuType,
 								bool inAvailableOnPalm, Database::TDBTransaction *inDBTransaction );
 
-		__int32 InsertSizeInDB( __int32 inMenuKey, AnsiString inSizeName, __int32 inSizeID,
-								__int32 inPalmSizeID, __int32 inSAO, AnsiString inKitchenName,
-								bool inWeighed, AnsiString inHandheldName, AnsiString inReceiptName,
+		__int32 InsertSizeInDB( __int32 inMenuKey, WideString inSizeName, __int32 inSizeID,
+								__int32 inPalmSizeID, __int32 inSAO, WideString inKitchenName,
+								bool inWeighed, WideString inHandheldName, WideString inReceiptName,
 								Database::TDBTransaction *inDBTransaction );
- 		   void InsertSizeInDBWithKey( __int32 inKey, __int32 inMenuKey, AnsiString inSizeName, __int32 inSizeID,
-                                       __int32 inPalmSizeID, __int32 inSAO, AnsiString inKitchenName,
-                                       bool inWeighed, AnsiString inHandheldName, AnsiString inReceiptName,
+ 		   void InsertSizeInDBWithKey( __int32 inKey, __int32 inMenuKey, WideString inSizeName, __int32 inSizeID,
+                                       __int32 inPalmSizeID, __int32 inSAO, WideString inKitchenName,
+                                       bool inWeighed, WideString inHandheldName, WideString inReceiptName,
                                        Database::TDBTransaction *inDBTransaction );
 
-		__int32 InsertCategoryGroupInDB( AnsiString inDescription, bool inDeleted,
+		__int32 InsertCategoryGroupInDB( WideString inDescription, bool inDeleted,
 										Database::TDBTransaction *inDBTransaction );
-		   void InsertCategoryGroupInDBWithKey( __int32 inKey, AnsiString inDescription, bool inDeleted,
+		   void InsertCategoryGroupInDBWithKey( __int32 inKey, WideString inDescription, bool inDeleted,
 										Database::TDBTransaction *inDBTransaction );
 
-		__int32 InsertCategoryInDB( AnsiString inCategory,AnsiString inGLCode, bool inVisible, __int32 inCGroupKey,
+		__int32 InsertCategoryInDB( WideString inCategory,WideString inGLCode, bool inVisible, __int32 inCGroupKey,
 		                            __int32 inCOO, Database::TDBTransaction *inDBTransaction );
-		   void InsertCategoryInDBWithKey( __int32 inKey, AnsiString inCategory,AnsiString inGLCode, bool inVisible, __int32 inCGroupKey,
+		   void InsertCategoryInDBWithKey( __int32 inKey, WideString inCategory,WideString inGLCode, bool inVisible, __int32 inCGroupKey,
 		                            __int32 inCOO, Database::TDBTransaction *inDBTransaction );
 
-		__int32 InsertServingCourseInDB( AnsiString inDescription, AnsiString inKitchenName,
+		__int32 InsertServingCourseInDB( WideString inDescription, WideString inKitchenName,
 										bool inSCDeleted, bool inSelectable, TColor inColor,
 										__int32 inDisplayOrder, Database::TDBTransaction *inDBTransaction );
-		   void InsertServingCourseInDBWithKey( __int32 inKey, AnsiString inDescription, AnsiString inKitchenName,
+		   void InsertServingCourseInDBWithKey( __int32 inKey, WideString inDescription, WideString inKitchenName,
 										bool inSCDeleted, bool inSelectable, TColor inColor,
 										__int32 inDisplayOrder, Database::TDBTransaction *inDBTransaction );
 
 		__int32 InsertMenu_SCInDB( __int32 inMenuKey, __int32 inKey, Database::TDBTransaction *inDBTransaction );
 
-		__int32 InsertThirdPartyCodeInDB( AnsiString inCode, AnsiString inDescription,
+		__int32 InsertThirdPartyCodeInDB( WideString inCode, WideString inDescription,
 										bool inVisible, __int32 inCodeType,
 										Database::TDBTransaction *inDBTransaction );
         void UpdateThirdPartyCodeInDBWithKey(
                                 __int32    inKey,
-                                AnsiString inCode,
-                                AnsiString inDescription,
+                                WideString inCode,
+                                WideString inDescription,
                                 bool       inVisible,
                                 __int32    inCodeType,
                                 Database::TDBTransaction *inDBTransaction );
-       void InsertThirdPartyCodeInDBWithKey( __int32 inKey, AnsiString inCode, AnsiString inDescription,
+       void InsertThirdPartyCodeInDBWithKey( __int32 inKey, WideString inCode, WideString inDescription,
                                     bool inVisible, __int32 inCodeType,
                                     Database::TDBTransaction *inDBTransaction );
 
-		__int32 InsertCourseInDB( __int32 inMenuKey, AnsiString inDescription, AnsiString inKitchenName,
-								  AnsiString inHandheldName, AnsiString inReceiptName, __int32 inLocation,
-								  bool inEnabled, __int32 inServingCourseKey, AnsiString inServiceCourse,
+		__int32 InsertCourseInDB( __int32 inMenuKey, WideString inDescription, WideString inKitchenName,
+								  WideString inHandheldName, WideString inReceiptName, __int32 inLocation,
+								  bool inEnabled, __int32 inServingCourseKey, WideString inServiceCourse,
 								  bool inNoDefaultServingCourse, __int32 inCAO,
 								  Database::TDBTransaction *inDBTransaction );
-		   void InsertCourseInDBWithKey( __int32 inKey, __int32 inMenuKey, AnsiString inDescription, AnsiString inKitchenName,
-								  AnsiString inHandheldName, AnsiString inReceiptName, __int32 inLocation,
-								  bool inEnabled, __int32 inServingCourseKey, AnsiString inServiceCourse,
+		   void InsertCourseInDBWithKey( __int32 inKey, __int32 inMenuKey, WideString inDescription, WideString inKitchenName,
+								  WideString inHandheldName, WideString inReceiptName, __int32 inLocation,
+								  bool inEnabled, __int32 inServingCourseKey, WideString inServiceCourse,
 								  bool inNoDefaultServingCourse, __int32 inCAO,
 								  Database::TDBTransaction *inDBTransaction );
 
-		__int32 InsertOptionInDB( __int32 inCourseKey, AnsiString inDescription, AnsiString inKitchenName,
-								  AnsiString inHandheldName, AnsiString inReceiptName,
+		__int32 InsertOptionInDB( __int32 inCourseKey, WideString inDescription, WideString inKitchenName,
+								  WideString inHandheldName, WideString inReceiptName,
 								  __int32 inCondimentsMask, __int32 inFlags, bool inEnabled, bool inPrintUnderlined,
 								  bool inPrintBold, __int32 inPrintColor, __int32 inPrintFont,
 								  bool inPrintDoubleWidth, bool inPrintDoubleHeight, __int32 inOptionOrder,
 								  Database::TDBTransaction *inDBTransaction );
-		   void InsertOptionInDBWithKey( __int32 inKey, __int32 inCourseKey, AnsiString inDescription, AnsiString inKitchenName,
-								  AnsiString inHandheldName, AnsiString inReceiptName,
+		   void InsertOptionInDBWithKey( __int32 inKey, __int32 inCourseKey, WideString inDescription, WideString inKitchenName,
+								  WideString inHandheldName, WideString inReceiptName,
 								  __int32 inCondimentsMask, __int32 inFlags, bool inEnabled, bool inPrintUnderlined,
 								  bool inPrintBold, __int32 inPrintColor, __int32 inPrintFont,
 								  bool inPrintDoubleWidth, bool inPrintDoubleHeight, __int32 inOptionOrder,
 								  Database::TDBTransaction *inDBTransaction );
 
-		__int32 InsertItemInDB( __int32 inCourseKey, AnsiString inDescription,
-								AnsiString inKitchenName, TColor inButtonColor, bool inDisplaySizes,
+		__int32 InsertItemInDB( __int32 inCourseKey, WideString inDescription,
+								WideString inKitchenName, TColor inButtonColor, bool inDisplaySizes,
 								bool inEnabled, bool inItemOnlySide,
 								bool inPrintUnderlined, bool inPrintBold, TColor inPrintColor,
 								__int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight,
 								__int32 inIAO,
-								Database::TDBTransaction *inDBTransaction, AnsiString inHandheldName );
-		   void InsertItemInDBWithKey( __int32 inKey, __int32 inCourseKey, AnsiString inDescription,
-								AnsiString inKitchenName, TColor inButtonColor, bool inDisplaySizes,
+								Database::TDBTransaction *inDBTransaction, WideString inHandheldName );
+		   void InsertItemInDBWithKey( __int32 inKey, __int32 inCourseKey, WideString inDescription,
+								WideString inKitchenName, TColor inButtonColor, bool inDisplaySizes,
 								bool inEnabled, bool inItemOnlySide,
 								bool inPrintUnderlined, bool inPrintBold, TColor inPrintColor,
 								__int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight,
 								__int32 inIAO,
-								Database::TDBTransaction *inDBTransaction, AnsiString inHandheldName );
+								Database::TDBTransaction *inDBTransaction, WideString inHandheldName );
 
 		__int32 InsertForcedSideInDB( __int32 inMasterItemKey, __int32 inItemKey, __int32 inIOO,
 									  __int32 inGroupNumber, __int32 inMaxSelect, bool inSideGroupSkip,
@@ -341,7 +341,7 @@ class TImportMenu
 						__int32    inSizeID,
 						__int32    inPalmItemID,
 						__int32    inPalmSizeID,
-						AnsiString inSizeName,
+						WideString inSizeName,
 						Currency   inPrice,
                         Currency   inMaxRetailPrice,
 						Currency   inSpecialPrice,
@@ -350,13 +350,13 @@ class TImportMenu
 						bool       inFree,
 						bool       inAvailableAsStandard,
 						bool       inNoRecipe,
-						AnsiString inBarcode,
+						WideString inBarcode,
 						__int32    inSetMenuMask,
 						bool       inEnabled,
 						double     inGSTPercent,
 						double     inCostGSTPercent,
 						double     inPointsPercent,
-						AnsiString inSizeKitchenName,
+						WideString inSizeKitchenName,
 						__int32    inThirdPartyCodeKey,
 						double     inMemberPurchaseDiscount,
 						double     inLocationPurchaseDiscount,
@@ -364,8 +364,8 @@ class TImportMenu
 						__int32    inLocationPurchaseCount,
 						__int32    inCategoryKey,
 						double     inTareWeight,
-						AnsiString inHandheldName,
-						AnsiString inReceiptName,
+						WideString inHandheldName,
+						WideString inReceiptName,
 						__int32    inPLU,
 						Currency   inAvailableQuantity,
 						Currency   inDefaultQuantity,
@@ -384,7 +384,7 @@ class TImportMenu
 						__int32    inSizeID,
 						__int32    inPalmItemID,
 						__int32    inPalmSizeID,
-						AnsiString inSizeName,
+						WideString inSizeName,
 						Currency   inPrice,
                         Currency   inMaxRetailPrice,
 						Currency   inSpecialPrice,
@@ -393,13 +393,13 @@ class TImportMenu
 						bool       inFree,
 						bool       inAvailableAsStandard,
 						bool       inNoRecipe,
-						AnsiString inBarcode,
+						WideString inBarcode,
 						__int32    inSetMenuMask,
 						bool       inEnabled,
 						double     inGSTPercent,
 						double     inCostGSTPercent,
 						double     inPointsPercent,
-						AnsiString inSizeKitchenName,
+						WideString inSizeKitchenName,
 						__int32    inThirdPartyCodeKey,
 						double     inMemberPurchaseDiscount,
 						double     inLocationPurchaseDiscount,
@@ -407,8 +407,8 @@ class TImportMenu
 						__int32    inLocationPurchaseCount,
 						__int32    inCategoryKey,
 						double     inTareWeight,
-						AnsiString inHandheldName,
-						AnsiString inReceiptName,
+						WideString inHandheldName,
+						WideString inReceiptName,
 						__int32    inPLU,
 						Currency   inAvailableQuantity,
 						Currency   inDefaultQuantity,
@@ -422,11 +422,11 @@ class TImportMenu
 		__int32 InsertBCategoryInDB( __int32 inItemSizeKey, __int32 inCategoryKey,
 									Database::TDBTransaction *inDBTransaction );
 
-		__int32 InsertItemSizeReceipeInDB( __int32 inItemSizeKey, AnsiString inStockCode,
-										   double inQuantity, AnsiString inLocation,
+		__int32 InsertItemSizeReceipeInDB( __int32 inItemSizeKey, WideString inStockCode,
+										   double inQuantity, WideString inLocation,
 										   Database::TDBTransaction *inDBTransaction  );
-		   void InsertItemSizeReceipeInDBWithKey( __int32 inKey, __int32 inItemSizeKey, AnsiString inStockCode,
-										   double inQuantity, AnsiString inLocation,
+		   void InsertItemSizeReceipeInDBWithKey( __int32 inKey, __int32 inItemSizeKey, WideString inStockCode,
+										   double inQuantity, WideString inLocation,
 										   Database::TDBTransaction *inDBTransaction  );
 
 		__int32 InsertItemSizeTaxProfileInDB( __int32 inItemSizeKey, __int32 inTaxProfileKey,
@@ -443,33 +443,33 @@ class TImportMenu
 		// Update_InDB functions update objects in the DB.
 		bool UpdateMenuInDB( __int32 inKey, AnsiString inMenuName, Menu::TMenuType inMenuType,
 							bool inAvailableOnPalm, Database::TDBTransaction *inDBTransaction );
-		bool UpdateSizeInDB( __int32 inKey, __int32 inMenuKey, AnsiString inDescription,
-							 AnsiString inKitchenName, AnsiString inHandheldName,
-							 AnsiString inReceiptName, bool inWeighted, __int32 inSizeID,
+		bool UpdateSizeInDB( __int32 inKey, __int32 inMenuKey, WideString inDescription,
+							 WideString inKitchenName, WideString inHandheldName,
+							 WideString inReceiptName, bool inWeighted, __int32 inSizeID,
 							 __int32 inPalmID, Database::TDBTransaction* inDBTransaction );
-		bool UpdateCategoryGroupInDB( __int32 inKey, AnsiString inDescription,
+		bool UpdateCategoryGroupInDB( __int32 inKey, WideString inDescription,
 									  bool inCGDeleted, Database::TDBTransaction *inDBTransaction );
-		__int32 UpdateCategoryInDB( __int32 inKey, AnsiString inDescription,AnsiString inGLCode, bool inDeleted,
+		__int32 UpdateCategoryInDB( __int32 inKey, WideString inDescription,WideString inGLCode, bool inDeleted,
 									__int32 inCGroupKey, Database::TDBTransaction *inDBTransaction );
-		__int32 UpdateServingCourseInDB( __int32 inKey, AnsiString inDescription, AnsiString inKitchenName,
+		__int32 UpdateServingCourseInDB( __int32 inKey, WideString inDescription, WideString inKitchenName,
 										 bool inSCDeleted, bool inSelectable,
 										 TColor inColor, __int32 inDisplayOrder, Database::TDBTransaction *inDBTransaction );
 
-		__int32 UpdateThirdPartyCodeInDB( AnsiString inCode, AnsiString inDescription,
+		__int32 UpdateThirdPartyCodeInDB( WideString inCode, WideString inDescription,
 										  bool inVisible, __int32 inCodeType,
 										  Database::TDBTransaction* inDBTransaction );
-		__int32 UpdateCourseInDB( __int32 inCourseKey, __int32 inMenuKey, AnsiString inDescription,
-								  AnsiString inKitchenName, AnsiString inHandheldName, AnsiString inReceiptName,
+		__int32 UpdateCourseInDB( __int32 inCourseKey, __int32 inMenuKey, WideString inDescription,
+								  WideString inKitchenName, WideString inHandheldName, WideString inReceiptName,
 								  __int32 inLocation, bool inEnabled, __int32 inServingCourseKey,
 								  bool inNoDefaultServingCourse, Database::TDBTransaction* inDBTransaction );
-		__int32 UpdateOptionInDB( __int32 inOptionKey, __int32 inCourseKey, AnsiString inDescription,
-								  AnsiString inKitchenName, AnsiString inHandheldName, AnsiString inReceiptName,
+		__int32 UpdateOptionInDB( __int32 inOptionKey, __int32 inCourseKey, WideString inDescription,
+								  WideString inKitchenName, WideString inHandheldName, WideString inReceiptName,
 								  __int32 inCondimentsMask, bool inFlags, bool inEnabled, bool inPrintUnderlined,
 								  bool inPrintBold, __int32 inPrintColor, __int32 inPrintFont,
 								  bool inPrintDoubleWidth, bool inPrintDoubleHeight,
 								  Database::TDBTransaction* inDBTransaction );
-		__int32 UpdateItemInDB( __int32 inItemKey, __int32 inCourseKey, AnsiString inDescription,
-								AnsiString inKitchenName, __int32 inButtonColor, bool inDisplaySizes,
+		__int32 UpdateItemInDB( __int32 inItemKey, __int32 inCourseKey, WideString inDescription,
+								WideString inKitchenName, __int32 inButtonColor, bool inDisplaySizes,
 								bool inEnabled, bool inItemOnlySide, bool inPrintUnderlined,
 								bool inPrintBold, __int32 inPrintColor, __int32 inPrintFont,
 								bool inPrintDoubleWidth, bool inPrintDoubleHeight,
@@ -489,20 +489,20 @@ class TImportMenu
 						__int32    inSizeID,
 						__int32    inPalmItemID,
 						__int32    inPalmSizeID,
-						AnsiString inSizeName,
+						WideString inSizeName,
 						Currency   inPrice,
 						Currency   inSpecialPrice,
 						Currency   inCost,
 						bool       inFree,
 						bool       inAvailableAsStandard,
 						bool       inNoRecipe,
-						AnsiString inBarcode,
+						WideString inBarcode,
 						__int32    inSetMenuMask,
 						bool       inEnabled,
 						double     inGSTPercent,
 						double     inCostGSTPercent,
 						double     inPointsPercent,
-						AnsiString inSizeKitchenName,
+						WideString inSizeKitchenName,
 						__int32    inThirdPartyCodeKey,
 						double     inMemberPurchaseDiscount,
 						double     inLocationPurchaseDiscount,
@@ -510,8 +510,8 @@ class TImportMenu
 						__int32    inLocationPurchaseCount,
 						__int32    inCategoryKey,
 						double     inTareWeight,
-						AnsiString inHandheldName,
-						AnsiString inReceiptName,
+						WideString inHandheldName,
+						WideString inReceiptName,
 						__int32    inPLU,
 						/* ASEAN */ /* bool inTaxExempt, */
 						/* ASEAN */ /* bool inHasServiceCharge, */
@@ -524,7 +524,7 @@ class TImportMenu
 						Database::TDBTransaction *inDBTransaction );
 
 		__int32 UpdateItemSizeReceipeInDB( __int32 inReceipeKey, __int32 inItemSizeKey,
-										   AnsiString inStockCode, double inQuantity, AnsiString inLocation,
+										   WideString inStockCode, double inQuantity, WideString inLocation,
 										   Database::TDBTransaction* inDBTransaction );
 
 		//::::::::::::::::::::::::::::
@@ -616,10 +616,10 @@ class TImportMenu
 
         bool ThirdPartyCodeExists(
                 Database::TDBTransaction *inDBTransaction,
-                AnsiString inCode );
+                WideString inCode );
         __int32 GetTPCKey(
                     Database::TDBTransaction *inDBTransaction,
-                    AnsiString inCode );
+                    WideString inCode );
 
         //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         // Removes existing thirdparty codes related to items in the current menu

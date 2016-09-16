@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
 
-namespace XeroIntegration.Utility
+namespace AccountingIntegration.Utility
 {
     public class XeroHelper
     {

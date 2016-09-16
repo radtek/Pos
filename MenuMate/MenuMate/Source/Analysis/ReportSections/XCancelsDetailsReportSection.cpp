@@ -45,7 +45,8 @@ void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut)
                             "HAPPY_HOUR HAPPYHOUR, "
                             "CONTACTS.NAME, "
                             "SECURITY.NOTE, "
-                            "SECURITY.TIME_STAMP "
+                            "SECURITY.TIME_STAMP, "
+                            "QTY "
                         "from "
                             "DAYARCHIVE "
                             "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =DAYARCHIVE.SECURITY_REF "
@@ -66,7 +67,8 @@ void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut)
                             "HAPPYHOUR, "
                             "CONTACTS.NAME, "
                             "SECURITY.NOTE, "
-                            "SECURITY.TIME_STAMP "
+                            "SECURITY.TIME_STAMP, "
+                            "QTY "
                         "from "
                             "ORDERS  "
                             "LEFT JOIN SECURITY ON ORDERS.SECURITY_REF =SECURITY.SECURITY_REF "
@@ -92,8 +94,8 @@ void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut)
             Index = _cancelsServerList->AddObject(cancelsQuery->FieldByName("NAME")->AsString, ItemsList);
             TCurrencyTotal *Item = new TCurrencyTotal;
             Item->Total = (cancelsQuery->FieldByName("HAPPYHOUR")->AsString == "T")
-                            ? -cancelsQuery->FieldByName("PRICE_LEVEL1")->AsCurrency
-                            : -cancelsQuery->FieldByName("PRICE_LEVEL0")->AsCurrency;
+                            ? -(cancelsQuery->FieldByName("PRICE_LEVEL1")->AsCurrency * cancelsQuery->FieldByName("QTY")->AsDouble)
+                            : -(cancelsQuery->FieldByName("PRICE_LEVEL0")->AsCurrency * cancelsQuery->FieldByName("QTY")->AsDouble);
 
             Item->Note = cancelsQuery->FieldByName("NOTE")->AsString;
             Item->TimeStamp = cancelsQuery->FieldByName("TIME_STAMP")->AsString;
@@ -105,8 +107,8 @@ void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut)
         {
             TCurrencyTotal *Item = new TCurrencyTotal;
             Item->Total = (cancelsQuery->FieldByName("HAPPYHOUR")->AsString == "T")
-                            ? -cancelsQuery->FieldByName("PRICE_LEVEL1")->AsCurrency
-                            : -cancelsQuery->FieldByName("PRICE_LEVEL0")->AsCurrency;
+                            ? -(cancelsQuery->FieldByName("PRICE_LEVEL1")->AsCurrency * cancelsQuery->FieldByName("QTY")->AsDouble)
+                            : -(cancelsQuery->FieldByName("PRICE_LEVEL0")->AsCurrency * cancelsQuery->FieldByName("QTY")->AsDouble);
 
             Item->Note = cancelsQuery->FieldByName("NOTE")->AsString;
             Item->TimeStamp = cancelsQuery->FieldByName("TIME_STAMP")->AsString;

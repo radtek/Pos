@@ -95,6 +95,7 @@
     <Compile Include="Converters\EnumToBoolConverter.cs" />
     <Compile Include="Converters\OrderStatusToColorConverter.cs" />
     <Compile Include="Converters\OptionSignConverter.cs" />
+    <Compile Include="Converters\RecallValueConverter.cs" />
     <Compile Include="Converters\VolumeStringConverters.cs" />
     <Compile Include="KeyBoards\NumKeyboard.xaml.cs">
       <DependentUpon>NumKeyboard.xaml</DependentUpon>
@@ -104,6 +105,9 @@
     </Compile>
     <Compile Include="KeyBoards\KeyboardController.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="UserControls\OrderControl.xaml.cs">
+      <DependentUpon>OrderControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\PopupButton.xaml.cs">
       <DependentUpon>PopupButton.xaml</DependentUpon>
     </Compile>
@@ -143,6 +147,10 @@
     <Page Include="Themes\MenumateTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\OrderControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\PopupButton.xaml">
       <SubType>Designer</SubType>

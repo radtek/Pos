@@ -6,9 +6,10 @@
 #include <i_item_manager.hh>
 #include <i_menu_manager.hh>
 #include <item_management_booter.hh>
-
+#include "ManagerCloudSync.h"
 #include <FileCtrl.hpp>
 #include <Memory>
+#include "MMRegistry.h"
 #include "Analysis.h"
 #include "enum.h"
 #include "enumPoints.h"
@@ -42,7 +43,9 @@
 #include "MallExportUpdateAdaptor.h"
 #include "MallExportHourlyUpdate.h"
 #include "MallExportTransactionUpdate.h"
+#include "MallExportOtherDetailsUpdate.h"
 
+#include "MYOBInvoiceBuilder.h"
 #include "DeviceRealTerminal.h"
 #include "DBTables.h"
 #include "DBThirdPartyCodes.h"
@@ -114,8 +117,7 @@ using SfIntegration::Sf_svc_iface_params;
 
 int ResetKey; //MM 4579
 
-bool
-TfrmAnalysis::are_any_tables_or_tabs_outstanding()
+bool TfrmAnalysis::are_any_tables_or_tabs_outstanding()
 const
 {
 	Database::TDBTransaction tr(
@@ -137,8 +139,7 @@ const
 	return n_open_tabs > 0;
 }
 
-void
-TfrmAnalysis::print_chit_statistics(TPrintout &po)
+void TfrmAnalysis::print_chit_statistics(TPrintout &po)
 {
 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 
@@ -285,8 +286,7 @@ void __fastcall TfrmAnalysis::FormDestroy(TObject *Sender)
 	delete ZedToArchive;
 }
 // ---------------------------------------------------------------------------
-void
-TfrmAnalysis::DefaultItemQuantities(
+void TfrmAnalysis::DefaultItemQuantities(
 Database::TDBTransaction &tr)
 {
 	item_management::i_menu_manager &mm =
@@ -339,8 +339,7 @@ TDateTime TfrmAnalysis::GetPrevZedTime(Database::TDBTransaction &DBTransaction)
 	return PrevZedTime;
 }
 
-void
-TfrmAnalysis::print_weborder_statistics(Database::TDBTransaction &tr,
+void TfrmAnalysis::print_weborder_statistics(Database::TDBTransaction &tr,
 TPrintFormat &pfmt)
 {
 
@@ -2144,8 +2143,6 @@ void TfrmAnalysis::PrintConsumption(Database::TDBTransaction &DBTransaction)
 		throw;
 	}
 }
-
-// ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembership *Membership, UnicodeString DeviceName)
 {
@@ -2760,9 +2757,7 @@ void TfrmAnalysis::AdjustStock(Database::TDBTransaction &DBTransaction, StockInt
 		throw;
 	}
 }
-
 // ---------------------------------------------------------------------------
-
 void TfrmAnalysis::GetCosts(Database::TDBTransaction &DBTransaction, StockInterface::TStockInterface &StockInterface)
 {
 	try
@@ -2795,8 +2790,7 @@ void TfrmAnalysis::GetCosts(Database::TDBTransaction &DBTransaction, StockInterf
 	}
 }
 // ---------------------------------------------------------------------------
-void __fastcall
-TfrmAnalysis::TableTabSummaryReport()
+void __fastcall TfrmAnalysis::TableTabSummaryReport()
 {
 	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
 
@@ -2851,7 +2845,6 @@ TReportSource reportSource)
 
 	return loginResult;
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnReportsClick(void)
 {
@@ -3046,9 +3039,7 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 
 	return printOut;
 }
-
 // ------------------------------------------------------------------------------
-
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
     // call to new class to get orders of DC and bill them off by storing
@@ -3103,14 +3094,19 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 		Processing->Message = "Please Wait...";
 		Processing->Show();
 
-
         std::vector<TXeroInvoiceDetail> XeroInvoiceDetails;
-        if(TGlobalSettings::Instance().PostZToAccountingSystem)
-          XeroInvoiceDetails = CalculateAccountingSystemData();
-		DBTransaction.StartTransaction();
-
+        std::vector<TMYOBInvoiceDetail> MYOBInvoiceDetails;
+        if(TGlobalSettings::Instance().PostZToAccountingSystem && TGlobalSettings::Instance().IsXeroEnabled)
+        {
+          XeroInvoiceDetails = CalculateAccountingSystemData(DBTransaction);
+        }
+        else if(TGlobalSettings::Instance().PostZToAccountingSystem && TGlobalSettings::Instance().IsMYOBEnabled)
+        {
+          MYOBInvoiceDetails = CalculateMYOBData(DBTransaction);
+        }
         UnicodeString DeviceName = GetTerminalName();
 
+        bool CompleteZed;
 
 		try
 		{
@@ -3146,9 +3142,6 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 				PaxCount = PaxCountController.Get();
 			}
 
-			TTransactionInfo TransactionInfo;
-			bool CompleteZed;
-
 			GroupTotalsXML->Clear();
 			CategoriesTotalsXML->Clear();
 			PaymentTotalsXML->Clear();
@@ -3158,15 +3151,13 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 			StaffTotalsXML->Clear();
 			HourlyTotalsXML->Clear();
 
-			DBTransaction.StartTransaction();
-
+            TTransactionInfo TransactionInfo;
             TTransactionInfoProcessor::Instance().RemoveEntryFromMap(DeviceName);
             TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(DBTransaction, DeviceName);
 
-			DBTransaction.StartTransaction();
             Processing->Close();
             //Processing->Refresh(); // add to refresh...
-			Processing->Message = "Printing...";
+			Processing->Message = "Processing...";
 			Processing->Show();
 
 			DataCalculationUtilities* dataCalculationUtilities;
@@ -3176,8 +3167,6 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 			ZedReport* zedReport = reportManager.GetZedReport(&TGlobalSettings::Instance(), &DBTransaction);
 
             CompleteZed = zedReport->DisplayAndPrint(ZedToArchive);
-
-
 
 			// Mall Export added variabnle
 			ZedCompleted =  CompleteZed;
@@ -3247,9 +3236,6 @@ Zed:
 						IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
 						ZedToArchive->Position = 0;
 
-
-
-
 						IBInternalQuery->ParamByName("REPORT")->LoadFromStream( FormattedZed(ZedToArchive));
 						IBInternalQuery->ParamByName("SECURITY_REF")->AsInteger = CurrentSecurityRef;
                         IBInternalQuery->ParamByName("EMAIL_STATUS")->AsInteger = EMAIL_STATUS;
@@ -3258,7 +3244,7 @@ Zed:
 						UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
 						UpdatePrinterReadingsDatabase(DBTransaction, Zedkey, PrinterReading);
 						if (TGlobalSettings::Instance().EnablePaxCount)
-						UpdatePaxCountDatabase(DBTransaction, Zedkey, PaxCount);
+					     	UpdatePaxCountDatabase(DBTransaction, Zedkey, PaxCount);
                         _key = Zedkey;
                         UpdateCancelItemsTable();
                         ///changes here for staff hour...
@@ -3302,38 +3288,29 @@ Zed:
 				}
 				PatronCountXML->Clear();
 
-                /*Once user has opted out to complete the ZED , POS needs to
-                 commnunicate with SalesForce and do the needful
-                 Call to new class for communicating with SlaesForce and updation
-                 at time of Zed    */
-                 Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-                 DBTransaction1.StartTransaction();
-                 AnsiString CompanyName = GetCompanyName(DBTransaction1);
-                 std::auto_ptr<TSalesForceCommAtZed> sfComm(new TSalesForceCommAtZed());
-                 sfComm->PVCommunication(DBTransaction1,CompanyName);
-                 DBTransaction1.Commit();
-                 sfComm->SalesForceCommunication(CompanyName);
-                 //---SalesForce Communication Ends------//
+                Processing->Message = "Processing End Of Day...";
+                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction1.StartTransaction();
+                AnsiString CompanyName = GetCompanyName(DBTransaction1);
+                DBTransaction1.Commit();
+                std::auto_ptr<TSalesForceCommAtZed> sfComm(new TSalesForceCommAtZed());
+                sfComm->PVCommunication(CompanyName);
+                sfComm->SalesForceCommunication(CompanyName);
 
-				if ((frmSelectDish->ParkedSales->GetCount(DBTransaction) > 0) && (MessageBox("There are currently parked sales. Do you wish to remove them?",
-								"Clear all parked sales.", MB_YESNO + MB_ICONQUESTION) == IDYES))
+				if ((frmSelectDish->ParkedSales->GetCount(DBTransaction) > 0) &&
+                    (MessageBox("There are currently parked sales. Do you wish to remove them?", "Clear all parked sales.", MB_YESNO + MB_ICONQUESTION) == IDYES))
 				{
 					frmSelectDish->ClearAllParkedSales(DBTransaction);
 				}
 
                 Processing->Close();
-                //Processing->Refresh();
 				Processing->Message = "Updating Clock...";
 				Processing->Show();
 
 				TDeviceRealTerminal::Instance().UpdateClockSyncInfo();
                 Processing->Close();
-                //Processing->Refresh();
 				Processing->Message = "Updating Archives...";
 				Processing->Show();
-
-
-
 
 				if(TGlobalSettings::Instance().EnableDepositBagNum)
 				{
@@ -3346,9 +3323,9 @@ Zed:
 					}
 				}
 				else
-                 UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), DeviceName);
+                UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), DeviceName);
+
                 Processing->Close();
-                //Processing->Refresh();
 				Processing->Message = "Archiving Report...";
 				Processing->Show();
                 Processing->Close();
@@ -3369,15 +3346,15 @@ Zed:
 				DBStockTransaction.Commit();
 			}
             Processing->Close();
-            //Processing->Refresh();
 			Processing->Message = "Committing Data...";
 			Processing->Show();
 
-			UpdateTerminalEarnings(DBTransaction, TotalEarnings);
-
-			Currency AccumulatedZedTotal = dataCalculationUtilities->GetAccumulatedZedTotal(DBTransaction);
-			UpdateTerminalAccumulatedZed(DBTransaction, AccumulatedZedTotal);
-
+            if(!zedReport->SkipZedProcess)
+            {
+                UpdateTerminalEarnings(DBTransaction, TotalEarnings);
+                Currency AccumulatedZedTotal = dataCalculationUtilities->GetAccumulatedZedTotal(DBTransaction);
+                UpdateTerminalAccumulatedZed(DBTransaction, AccumulatedZedTotal);
+            }
 			if (CompleteZed)
 			   DefaultItemQuantities(DBTransaction);
 
@@ -3385,6 +3362,10 @@ Zed:
             if(TGlobalSettings::Instance().PostZToAccountingSystem && CompleteZed && XeroInvoiceDetails.size() > 0 )
              {
                  CreateXeroInvoiceAndSend(XeroInvoiceDetails);
+             }
+            else if(TGlobalSettings::Instance().PostZToAccountingSystem && CompleteZed && MYOBInvoiceDetails.size() > 0 )
+             {
+                 CreateMYOBInvoiceAndSend(MYOBInvoiceDetails);
              }
 			if(TDeviceRealTerminal::Instance().IMManager->Registered && CompleteZed)
 			{
@@ -3426,82 +3407,83 @@ Zed:
                 }
                 if(resetPoint)
                 {
-                    TResetPoints check;
                     Processing->Message = "Resetting Points";
                     Processing->Refresh();
-
-                    //DBStockTransaction.StartTransaction();
                     Database::TDBTransaction DBTransactionResetPoints(TDeviceRealTerminal::Instance().DBControl);
-                    //UnicodeString DeviceName = GetTerminalName();
                     DBTransactionResetPoints.StartTransaction();
-                    //TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(DBTransactionResetPoints, DeviceName);
-                    //DBTransactionResetPoints.Commit();
-                    //DBTransactionResetPoints.StartTransaction();
-                    TIBSQL *IBInternalQuery1 = DBTransactionResetPoints.Query(DBTransactionResetPoints.AddQuery());
-                    IBInternalQuery1->SQL->Text="select count(a.CONTACTS_KEY) from resetpoints a ";
-                    IBInternalQuery1->ExecQuery();
-                    ResetKey= IBInternalQuery1->FieldByName("COUNT")->AsInteger;
-                    IBInternalQuery1->Close();
-                    IBInternalQuery1->SQL->Text="select distinct a.CONTACTS_KEY from pointstransactions a ";
-                    IBInternalQuery1->ExecQuery();
-
-                    for (; !IBInternalQuery1->Eof; IBInternalQuery1->Next())
+                    try
                     {
-                        if(TGlobalSettings::Instance().PointPurchased)
-                        {
-                            if(TGlobalSettings::Instance().PointEarned)
-                            {
-                                if(TGlobalSettings::Instance().PointRedeem)
-                                {
-                                    check = All;
+                        TResetPoints check;
+                        TIBSQL *IBInternalQuery1 = DBTransactionResetPoints.Query(DBTransactionResetPoints.AddQuery());
+                        IBInternalQuery1->SQL->Text="select count(a.CONTACTS_KEY) from resetpoints a ";
+                        IBInternalQuery1->ExecQuery();
+                        ResetKey= IBInternalQuery1->FieldByName("COUNT")->AsInteger;
+                        IBInternalQuery1->Close();
+                        IBInternalQuery1->SQL->Text="select distinct a.CONTACTS_KEY from pointstransactions a ";
+                        IBInternalQuery1->ExecQuery();
 
+                        for (; !IBInternalQuery1->Eof; IBInternalQuery1->Next())
+                        {
+                            if(TGlobalSettings::Instance().PointPurchased)
+                            {
+                                if(TGlobalSettings::Instance().PointEarned)
+                                {
+                                    if(TGlobalSettings::Instance().PointRedeem)
+                                    {
+                                        check = All;
+
+                                    }
+                                    else
+                                    {
+                                        check =PurchaseEarn;
+                                    }
                                 }
                                 else
                                 {
-                                    check =PurchaseEarn;
+                                     if(TGlobalSettings::Instance().PointRedeem)
+                                    {
+                                        check = PurchaseRedeem;
+                                    }
+                                    else
+                                    {
+                                        check = Purchase;
+                                    }
                                 }
                             }
                             else
                             {
-                                 if(TGlobalSettings::Instance().PointRedeem)
+                                if(TGlobalSettings::Instance().PointEarned)
                                 {
-                                    check = PurchaseRedeem;
+                                    if(TGlobalSettings::Instance().PointRedeem)
+                                    {
+                                        check = EarnRedeem;
+                                    }
+                                    else
+                                    {
+                                        check = Earn;
+                                    }
                                 }
                                 else
                                 {
-                                    check = Purchase;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if(TGlobalSettings::Instance().PointEarned)
-                            {
-                                if(TGlobalSettings::Instance().PointRedeem)
-                                {
-                                    check = EarnRedeem;
-                                }
-                                else
-                                {
-                                    check = Earn;
-                                }
-                            }
-                            else
-                            {
-                                 if(TGlobalSettings::Instance().PointRedeem)
-                                {
-                                    check = Redeem;
+                                   if(TGlobalSettings::Instance().PointRedeem)
+                                    {
+                                        check = Redeem;
+
+                                    }
 
                                 }
-
+                            }
+                            if(TGlobalSettings::Instance().PointRedeem || TGlobalSettings::Instance().PointEarned || TGlobalSettings::Instance().PointPurchased)
+                            {
+                                ResetPoint(DBTransactionResetPoints, IBInternalQuery1->FieldByName("CONTACTS_KEY")->AsInteger,check);
                             }
                         }
-                        if(TGlobalSettings::Instance().PointRedeem || TGlobalSettings::Instance().PointEarned || TGlobalSettings::Instance().PointPurchased)
-                        {
-                            ResetPoint(DBTransactionResetPoints, IBInternalQuery1->FieldByName("CONTACTS_KEY")->AsInteger,check);
-                        }
+                        DBTransactionResetPoints.Commit();
                     }
-                    DBTransactionResetPoints.Commit();
+                    catch(Exception &E)
+                    {
+                       DBTransactionResetPoints.Rollback();
+                    }
                 }
                 if(TGlobalSettings::Instance().EmailZedReports)
                 {
@@ -3535,7 +3517,7 @@ Zed:
 			if(CompleteZed)
 			{
                 // For Mall Export
-                if(TGlobalSettings::Instance().MallIndex != 0&&TGlobalSettings::Instance().MallIndex != 9)
+                if(TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9)
                 {
                     std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
                     MEM->IMallManager->ZExport();
@@ -3549,50 +3531,46 @@ Zed:
                 TMallExportUpdateAdaptor exportUpdateAdaptor;
                 TMallExportHourlyUpdate exportHourlyUpdate;
                 TMallExportTransactionUpdate exportTransactionUpdate;
+                TMallExportOtherDetailsUpdate exportOtherDetailsUpdate;
                 exportUpdateAdaptor.ResetExportTables();
                 exportHourlyUpdate.ResetHourlyExportTablesOnZed();
                 exportTransactionUpdate.ResetTransactionExportTablesOnZed();
+                exportOtherDetailsUpdate.ResetOtherDetailsExportTablesOnZed();
             }
 
             //
       }
-		catch(Exception & E)
-		{
-
-			DBTransaction.Rollback();
-			if (UpdateingStock)
-			{
-				Database::TDBTransaction TransCloseStock(TDeviceRealTerminal::Instance().DBControl);
-				TransCloseStock.StartTransaction();
-				UpdateStockComplete(TransCloseStock);
-				TransCloseStock.Commit();
-			}
-			TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-			TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
-
-
-           MessageBox("Till not closed at this time. \r"
-           "Please write down and report the following message to your service provider. \r\r " + E.Message, "Error",
-           MB_OK + MB_ICONERROR);
-
-
-		}
-
-
-        /**********************DLF MALL START****************************************/
-        if(TGlobalSettings::Instance().MallIndex == DLFMALL )
+      catch(Exception & E)
+      {
+        DBTransaction.Rollback();
+        if (UpdateingStock)
+        {
+            Database::TDBTransaction TransCloseStock(TDeviceRealTerminal::Instance().DBControl);
+            TransCloseStock.StartTransaction();
+            UpdateStockComplete(TransCloseStock);
+            TransCloseStock.Commit();
+        }
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+        MessageBox("Till not closed at this time. \r"
+       "Please write down and report the following message to your service provider. \r\r " + E.Message, "Error",
+        MB_OK + MB_ICONERROR);
+      }
+      if(CompleteZed)
+        {
+            SyncCompanyDetails();
+        }
+      if(TGlobalSettings::Instance().MallIndex == DLFMALL )
         {
             CompleteDLFMallExport();
             TGlobalSettings::Instance().DLFMallFileName ="";
             SaveCompValueinDBStrUnique(vmDLFMallFileName, TGlobalSettings::Instance().DLFMallFileName); // See Function Description
         }
-        /**********************DLF MALL END****************************************/
-     	frmSecurity->LogOut();
+            /**********************DLF MALL END****************************************/
+        frmSecurity->LogOut();
         Processing->Close();
 	}
 }
-
-
  /***********************DLF MALL START*********************************/
  void TfrmAnalysis::SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName)
 {    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -3657,11 +3635,7 @@ Zed:
             const char * userPassword = UserPassword.t_str();
             FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount);
 }
-
-
-
 //---------------------------------------------------------------------------
-
 // This method is used to send the file from the local directory to the FTP server
 // provided by the client
 void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
@@ -3717,14 +3691,10 @@ void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
     }
 }
 //---------------------------------------------------------------------------
- /***********************DLF MALL END*********************************/
-    /*************************************************************************************/
-
-std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData()
+/***********************DLF MALL END*********************************/
+std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Database::TDBTransaction &DBTransaction)
 {
     std::vector<TXeroInvoiceDetail> XeroInvoiceDetails;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
     TDateTime preZTime = GetPrevZedTime(DBTransaction);
     TDateTime currentDate = Now();
     TDateTime nextDay = IncDay(GetMinDayArchiveTime(DBTransaction, preZTime),1);
@@ -3746,17 +3716,11 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData()
 
     if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
     {
-        terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";  // add terminal filter for xero invoice.
+        terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";
     }
-
-	IBInternalQuery->SQL->Text = " SELECT  b.PAY_TYPE,cast( Sum(b.SUBTOTAL) as numeric(17,4)) Amount,c.GL_CODE  From DAYARCBILL a "
-                                 " Left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-                                 " Left join PAYMENTTYPES c on b.PAY_TYPE = c.PAYMENT_NAME "
-                                 " where b.CHARGED_TO_XERO <> 'T' "
-                                 " and b.PAY_TYPE <> 'Credit' "
-                                 " and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  "
-                                  + terminalNamePredicate +
-                                 " group by b.PAY_TYPE,c.GL_CODE ";
+    AnsiString paymentDetails = "";
+    GetPaymentDetails(paymentDetails, terminalNamePredicate);
+	IBInternalQuery->SQL->Text = paymentDetails;
 
     IBInternalQueryTotal->SQL->Text =   "Select e.CATEGORY,e.GL_CODE,e.PRICE,f.TAX from "
                                         "( "
@@ -3952,8 +3916,309 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData()
          nextDay =  IncDay(nextDay,1);
        }
     }
-    DBTransaction.Commit();
     return XeroInvoiceDetails;
+}
+void TfrmAnalysis::GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiString terminalNamePredicate)
+{
+    AnsiString fetchCategory =
+     " Select c.CATEGORY, Sum(a.PRICE * a.QTY) PRICE,Sum(a.BASE_PRICE * a.QTY) BASEPRICE, Sum(a.DISCOUNT ) DISCOUNT ,c.GL_CODE "
+     " from  DAYARCHIVE a "
+     " left join ARCCATEGORIES c on a.CATEGORY_KEY = c.CATEGORY_KEY "
+     " where a.ARCBILL_KEY in (Select distinct a.ARCBILL_KEY from DAYARCBILL a left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+     " where b.NOTE <> 'Total Change.' and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " + terminalNamePredicate + " ) " ;
+
+     AnsiString nonZeroTaxFilter =
+     " and a.ARCHIVE_KEY in (Select distinct Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE <> 0 group by Archive_Key) " ;
+     AnsiString ZeroTaxFilter =
+     " and a.ARCHIVE_KEY in (Select distinct Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE = 0 group by Archive_Key) " ;
+     AnsiString groupBy =
+     " group by c.CATEGORY ,c.GL_CODE ";
+
+     Tax = fetchCategory + nonZeroTaxFilter + groupBy;
+     zeroTax = fetchCategory + ZeroTaxFilter + groupBy;
+}
+void TfrmAnalysis::GetPaymentDetails(AnsiString &paymentDetails, AnsiString terminalNamePredicate)
+{
+    AnsiString paymentDetailsPrimitive =
+         " SELECT  b.PAY_TYPE,cast( Sum(b.SUBTOTAL) as numeric(17,4)) Amount,c.GL_CODE  From DAYARCBILL a "
+         " Left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+         " Left join PAYMENTTYPES c on b.PAY_TYPE = c.PAYMENT_NAME "
+         " where "
+         " b.PAY_TYPE <> 'Credit' "
+         " and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " ;
+
+    AnsiString optionalXero = " and b.CHARGED_TO_XERO <> 'T'" ;
+    AnsiString paymentDetailsFinal = ""
+          + terminalNamePredicate +
+         " group by b.PAY_TYPE,c.GL_CODE ";
+    if(TGlobalSettings::Instance().IsXeroEnabled)
+      paymentDetails = paymentDetailsPrimitive + optionalXero + paymentDetailsFinal;
+    else if(TGlobalSettings::Instance().IsMYOBEnabled)
+      paymentDetails = paymentDetailsPrimitive + paymentDetailsFinal;
+}
+//-------------------------------------------------------------------------------
+AnsiString TfrmAnalysis::GetMYOBJobCode(Database::TDBTransaction &DBTransaction)
+{
+    UnicodeString text = "";
+    UnicodeString key = "Software\\IQWorks\\MenuMate\\Office\\"+GetCompanyName(DBTransaction)+"\\MYOB";
+    RegistryRead(key, "MYOBJobCode", text);
+    return text;
+}
+//------------------------------------------------------------------------------
+void TfrmAnalysis::CalculateNextday(TDateTime &nextDay)
+{
+    if(TGlobalSettings::Instance().EndOfDay > 0)
+    {
+       nextDay =   RecodeTime(nextDay,TGlobalSettings::Instance().EndOfDay,0,0,0);
+    }
+    else
+    {
+       nextDay =   RecodeTime(nextDay,23,59,59,999);
+    }
+}
+std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTransaction &DBTransaction)
+{
+    try
+    {
+        std::vector<TMYOBInvoiceDetail> MYOBInvoiceDetails;
+        AnsiString jobCode = GetMYOBJobCode(DBTransaction);
+        TDateTime preZTime = GetPrevZedTime(DBTransaction);
+        TDateTime currentDate = Now();
+        TDateTime nextDay = IncDay(GetMinDayArchiveTime(DBTransaction, preZTime),1);
+        AnsiString CompanyName = GetCompanyName(DBTransaction);
+        AnsiString TerminalName = GetTerminalName();
+        AnsiString terminalNamePredicate = "";
+        CalculateNextday(nextDay);
+        TIBSQL *IBInternalQueryTabRefundCredit = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBInternalQueryTax = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBInternalQueryZeroTax = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBInternalQueryGenerator = DBTransaction.Query(DBTransaction.AddQuery());
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+        {
+            terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";  // add terminal filter for xero invoice.
+        }
+        AnsiString categoriesWithTax = "";
+        AnsiString categoriesWithoutTax = "";
+        GetQueriesForMYOB(categoriesWithTax,categoriesWithoutTax,terminalNamePredicate);
+
+        IBInternalQueryTax->SQL->Text = categoriesWithTax;
+        IBInternalQueryZeroTax->SQL->Text = categoriesWithoutTax;
+        AnsiString paymentDetails = "";
+        GetPaymentDetails(paymentDetails, terminalNamePredicate);
+        IBInternalQuery->SQL->Text = paymentDetails;
+
+       bool canContinue = true;
+       IBInternalQueryGenerator->SQL->Text = "SELECT GEN_ID(GEN_MYOBINVOICE_NUMBER, 1) FROM RDB$DATABASE ";
+       IBInternalQueryGenerator->Close();
+       IBInternalQueryGenerator->ExecQuery();
+       int val = IBInternalQueryGenerator->Fields[0]->AsInteger;
+       while(canContinue)
+        {
+          double TabCreditReceived = 0;
+          double TabRefundReceived = 0;
+          double catTotal = 0;
+          double payTotal = 0;
+          double floatAmount = 0;
+          double PurchasedPoints = 0;
+          double PurchasedVoucher = 0;
+          UnicodeString AccountCode = "";
+
+          TMYOBInvoiceDetail MYOBInvoiceDetail;
+          IBInternalQueryTax->Close();
+          IBInternalQueryZeroTax->Close();
+          IBInternalQueryTabRefundCredit->Close();
+          IBInternalQuery->Close();
+
+          IBInternalQueryTax->ParamByName("STARTTIME")->AsDateTime = preZTime;
+          IBInternalQueryTax->ParamByName("ENDTIME")->AsDateTime = nextDay;
+          IBInternalQueryZeroTax->ParamByName("STARTTIME")->AsDateTime = preZTime;
+          IBInternalQueryZeroTax->ParamByName("ENDTIME")->AsDateTime = nextDay;
+          IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = preZTime;
+          IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = nextDay;
+          if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+          {
+             IBInternalQueryTax->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
+             IBInternalQueryZeroTax->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
+             IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TerminalName; // add terminal param..
+          }
+          IBInternalQueryTax->ExecQuery();
+          IBInternalQueryZeroTax->ExecQuery();
+
+          for (; !IBInternalQueryTax->Eof; )
+          {
+              AnsiString categoryName = IBInternalQueryTax->FieldByName("CATEGORY")->AsString;
+              AnsiString glCode = IBInternalQueryTax->FieldByName("GL_CODE")->AsString;;
+              AnsiString taxStatus = "NonZeroTax";
+              double price = 0.0;
+              catTotal += IBInternalQueryTax->FieldByName("PRICE")->AsFloat;
+              double discount = 0.0;
+              price = RoundTo(IBInternalQueryTax->FieldByName("PRICE")->AsFloat, -2);
+              discount = RoundTo(IBInternalQueryTax->FieldByName("DISCOUNT")->AsFloat, -2);
+              if(TGlobalSettings::Instance().ReCalculateTaxPostDiscount)
+              {
+                  AddMYOBInvoiceItem(MYOBInvoiceDetail,glCode.Trim(),categoryName,price,0.0,jobCode,taxStatus);
+              }
+              else
+              {
+                  double actualDiscount = 0.0;
+                  actualDiscount = discount;
+                  if(actualDiscount > 0.0)
+                  {
+                    actualDiscount = actualDiscount * -1;
+                  }
+                  AddMYOBInvoiceItem(MYOBInvoiceDetail,glCode.Trim(),categoryName,(price-actualDiscount),0.0,jobCode,taxStatus);
+                  if(actualDiscount != 0.0)
+                  {
+                     if(actualDiscount < 0.0)
+                     {
+                        actualDiscount = actualDiscount * -1;
+                     }
+                     AddMYOBInvoiceItem(MYOBInvoiceDetail,glCode.Trim(),"Discount without Tax",-actualDiscount,0.0,jobCode,"ZeroTax");
+                  }
+              }
+              IBInternalQueryTax->Next();
+          }
+
+          for (; !IBInternalQueryZeroTax->Eof; )
+          {
+              AnsiString categoryName = IBInternalQueryZeroTax->FieldByName("CATEGORY")->AsString;
+              AnsiString glCode = IBInternalQueryZeroTax->FieldByName("GL_CODE")->AsString;
+              AnsiString taxStatus = "ZeroTax";
+              double taxRate = 0.0;
+              double price = 0.0;
+              double discount = 0.0;
+
+              price = RoundTo(IBInternalQueryZeroTax->FieldByName("PRICE")->AsFloat, -2);
+              catTotal += price;
+              AddMYOBInvoiceItem(MYOBInvoiceDetail,glCode.Trim(),categoryName,price,0.0,jobCode,taxStatus);
+              IBInternalQueryZeroTax->Next();
+          }
+
+          AnsiString tabCreditRefundGlCode   = "";
+          AnsiString tabCreditReceivedGLCode = "";
+          if(TGlobalSettings::Instance().TabDepositCreditRefundedGLCode != NULL || TGlobalSettings::Instance().TabDepositCreditRefundedGLCode != "")
+          {
+                tabCreditRefundGlCode = TGlobalSettings::Instance().TabDepositCreditRefundedGLCode;
+          }
+          if(TGlobalSettings::Instance().TabDepositCreditReceivedGLCode != NULL || TGlobalSettings::Instance().TabDepositCreditReceivedGLCode != "")
+          {
+                tabCreditReceivedGLCode = TGlobalSettings::Instance().TabDepositCreditReceivedGLCode;
+          }
+          GetTabCreditReceivedRefunded(DBTransaction, TabCreditReceived, TabRefundReceived, preZTime, nextDay);
+
+          TabCreditReceived = RoundTo(TabCreditReceived, -4);
+          TabRefundReceived = RoundTo(TabRefundReceived, -4);
+
+          if(RoundTo((TabRefundReceived),-2)!= 0.00)
+          {
+            catTotal -= TabRefundReceived;
+            AddMYOBInvoiceItem(MYOBInvoiceDetail,tabCreditRefundGlCode,"Tab Deposit/Credit  Refunded", -1 * RoundTo((TabRefundReceived),-2),0.0,jobCode,"ZeroTax");
+         }
+          if(RoundTo((TabCreditReceived),-2) != 0.00)
+          {
+             catTotal -= TabCreditReceived;
+             AddMYOBInvoiceItem(MYOBInvoiceDetail,tabCreditReceivedGLCode,"Tab Deposit/Credit Received", -1 * RoundTo((TabCreditReceived),-2),0.0,jobCode,"ZeroTax");
+          }
+
+          GetPointsAndVoucherData(DBTransaction,PurchasedPoints,PurchasedVoucher,preZTime,nextDay);
+          if(RoundTo((PurchasedPoints),-2) != 0.00)
+           {
+              catTotal += PurchasedPoints;
+              AnsiString accountCode = jobCode;
+              AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().PointsPurchasedGLCode,"Points Purchased", RoundTo((PurchasedPoints),-2),0.0,accountCode,"ZeroTax");
+           }
+          if(RoundTo((PurchasedVoucher),-2) != 0.00)
+           {
+              catTotal += PurchasedVoucher;
+              AnsiString accountCode = jobCode;
+              AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().VoucherPurchasedGLCode,"Voucher Purchased", RoundTo((PurchasedVoucher),-2),0.0,accountCode,"ZeroTax");
+           }
+
+           bool addFloatAdjustmentToPayments = false;
+           bool addEachPaymentNode = true;
+          // get the final float amount (Float Deposit - float withdrwal)
+           GetFloatAmounts(DBTransaction, floatAmount);
+           AnsiString cashGlCode= GetCashGlCode(DBTransaction);
+           floatAmount = RoundTo(floatAmount, -2);
+           catTotal = RoundTo(catTotal, -2);
+
+           if(RoundTo((floatAmount),-2)  != 0.00)
+           {
+               if(floatAmount<0)
+                   AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Float WithDraw", RoundTo((floatAmount),-2),0.0, jobCode, "ZeroTax");
+               else
+                   AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Float Deposit", RoundTo((floatAmount),-2),0.0, jobCode, "ZeroTax");
+
+               AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Float Adjustment",-1 * RoundTo((floatAmount),-2),0.0, jobCode, "ZeroTax");
+            }
+         IBInternalQuery->ExecQuery();
+         for (; !IBInternalQuery->Eof; )
+          {
+              AnsiString AccountCode = cashGlCode;
+              double amountValue = 0.0;
+              if(IBInternalQuery->FieldByName("GL_CODE")->AsString != NULL && IBInternalQuery->FieldByName("GL_CODE")->AsString != "")
+                AccountCode = IBInternalQuery->FieldByName("GL_CODE")->AsString;
+              if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Points")
+              {
+                 AccountCode = TGlobalSettings::Instance().PointsSpentGLCode;
+              }
+              if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString != "Cash")
+              {
+                amountValue = -RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2);
+              }
+              else
+              {
+                 amountValue = RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2);
+              }
+              payTotal += RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2);
+
+              if(!addFloatAdjustmentToPayments && addEachPaymentNode)
+              {
+                 AddMYOBInvoiceItem(MYOBInvoiceDetail,AccountCode,IBInternalQuery->FieldByName("PAY_TYPE")->AsString, amountValue ,0.0,jobCode,"ZeroTax");
+              }
+              IBInternalQuery->Next();
+          }
+         if(addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment)
+           AddMYOBInvoiceItem(MYOBInvoiceDetail,cashGlCode,"Cash", ( payTotal + floatAmount) ,0.0,jobCode,"ZeroTax");
+
+          if(RoundTo((catTotal - payTotal), -2))
+           {
+              AnsiString accountCode = jobCode;
+              AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().RoundingGLCode,"ROUNDING",-1 * RoundTo((catTotal - payTotal), -2),0.0,jobCode,"ZeroTax");
+           }
+           AnsiString daystr = preZTime.FormatString("ddmmyy") + " " + Now().FormatString("HHMMss") ;
+           AnsiString refName = TGlobalSettings::Instance().EnableDepositBagNum ? CompanyName : TerminalName ;
+
+           MYOBInvoiceDetail.InvoiceReference = refName +" Sales";
+           MYOBInvoiceDetail.InvoiceNumber = val;
+           MYOBInvoiceDetail.InvoiceDate = preZTime;
+           MYOBInvoiceDetail.CustomerName = CompanyName;
+           MYOBInvoiceDetail.JobCode = jobCode;
+
+           if(MYOBInvoiceDetail.MYOBCategoryDetails.size() > 0)
+           {
+             MYOBInvoiceDetails.push_back(MYOBInvoiceDetail);
+           }
+
+          if(double(nextDay) >= double(currentDate))
+           {
+             canContinue = false;
+           }
+          else
+           {
+             preZTime = nextDay;
+             nextDay =  IncDay(nextDay,1);
+           }
+        }
+         return MYOBInvoiceDetails;
+    }
+    catch(Exception& ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ex.Message);
+    }
+
 }
 
 void TfrmAnalysis::AddInvoiceItem(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiString Description,double unitAmount,AnsiString AccountCode,
@@ -3968,6 +4233,8 @@ void TfrmAnalysis::AddInvoiceItem(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiStri
     XeroInvoiceDetail.XeroCategoryDetails.push_back(XeroCategoryDetail);
 }
 
+
+
 void TfrmAnalysis::AddInvoicePayment(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiString Description,double unitAmount,AnsiString AccountCode,
                   double taxAmount)
 {
@@ -3979,6 +4246,16 @@ void TfrmAnalysis::AddInvoicePayment(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiS
     XeroInvoiceDetail.XeroPayTypeDetails.push_back(XeroPayTypeDetail);
 }
 
+void TfrmAnalysis::AddMYOBInvoiceItem(TMYOBInvoiceDetail &MYOBInvoiceDetail,AnsiString glCode,AnsiString Description,double unitAmount,double taxAmount,AnsiString AccountCode,AnsiString taxStatus)
+{
+    TMYOBCategoryDetail MYOBCategoryDetail;
+    MYOBCategoryDetail.Description = Description;
+    MYOBCategoryDetail.GLCode = glCode;
+    MYOBCategoryDetail.Amount = unitAmount;
+    MYOBCategoryDetail.TaxAmount = taxAmount;
+    MYOBCategoryDetail.TaxStatus = taxStatus;
+    MYOBInvoiceDetail.MYOBCategoryDetails.push_back(MYOBCategoryDetail);
+}
 void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransaction,double &PurchasedPoints, double &PurchasedVoucher,
                                  TDateTime startTime,TDateTime endTime)
 {
@@ -4025,7 +4302,6 @@ void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransacti
         }
 }
 
-
 AnsiString TfrmAnalysis::GetCompanyName(Database::TDBTransaction &DBTransaction)
 {
     AnsiString CompanyName = "";
@@ -4051,8 +4327,18 @@ void TfrmAnalysis::CreateXeroInvoiceAndSend(std::vector<TXeroInvoiceDetail>  &Xe
                 SendInvoiceToXero( TXeroInvoiceBuilder::Instance().XeroInvoice );
             }
      }
+}
 
-
+void TfrmAnalysis::CreateMYOBInvoiceAndSend(std::vector<TMYOBInvoiceDetail>  &TMYOBInvoiceDetails)
+{
+   for (std::vector<TMYOBInvoiceDetail>::iterator it = TMYOBInvoiceDetails.begin() ;
+          it != TMYOBInvoiceDetails.end(); ++it)
+     {
+        if( TMYOBInvoiceBuilder::Instance().BuildMYOBInvoice( *it ) )
+            {
+                SendInvoiceToMYOB( TMYOBInvoiceBuilder::Instance().MYOBInvoice );
+            }
+     }
 }
 //------------------------------------------------------------------------------
 bool TfrmAnalysis::SendInvoiceToXero( TXeroInvoice* inXeroInvoice )
@@ -4061,6 +4347,11 @@ bool TfrmAnalysis::SendInvoiceToXero( TXeroInvoice* inXeroInvoice )
    return result;
 }
 
+bool TfrmAnalysis::SendInvoiceToMYOB( TMYOBInvoice* inMYOBInvoice )
+{
+   bool result =  TMYOBIntegration::Instance().SendInvoice( inMYOBInvoice );
+   return result;
+}
 // ---------------------------------------------------------------------------
 bool TfrmAnalysis::GetBlindBalences(Database::TDBTransaction &DBTransaction, TBlindBalances &Balance, AnsiString &DepositBagID, AnsiString DeviceName)
 {
@@ -4076,9 +4367,6 @@ bool TfrmAnalysis::GetBlindBalences(Database::TDBTransaction &DBTransaction, TBl
 
 
 }
-
-// ---------------------------------------------------------------------------
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::FormShow(TObject *Sender)
 {
@@ -4141,14 +4429,11 @@ void __fastcall TfrmAnalysis::FormShow(TObject *Sender)
     CheckCANCELITEMS_KEY = false;
 
 }
-
 // ---------------------------------------------------------------------------
-
 UnicodeString TfrmAnalysis::GetTerminalName()
 {
 	return TDeviceRealTerminal::Instance().ID.Name;
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnReprintZClick(void)
 {
@@ -4168,7 +4453,6 @@ void __fastcall TfrmAnalysis::btnReprintZClick(void)
 	}
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmAnalysis::tbSetFloatClick(void)
 {
 	try
@@ -4206,7 +4490,6 @@ void __fastcall TfrmAnalysis::tbSetFloatClick(void)
 	}
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmAnalysis::btnAlterFloatClick(void)
 {
 	try
@@ -4246,7 +4529,6 @@ void __fastcall TfrmAnalysis::btnAlterFloatClick(void)
 	}
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 {
 	try
@@ -4730,7 +5012,6 @@ void __fastcall TfrmAnalysis::FormResize(TObject *Sender)
 
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TfrmAnalysis::btnUpdateStockClick(void)
 {
 	try
@@ -4782,7 +5063,6 @@ void __fastcall TfrmAnalysis::btnUpdateStockClick(void)
 	}
 
 }
-
 // ---------------------------------------------------------------------------
 bool TfrmAnalysis::UpdateStockAllowed(Database::TDBTransaction &DBTransaction)
 {
@@ -6534,31 +6814,26 @@ TShiftState Shift, TGridButton *GridButton)
 
 }
 //---------------------------------------------------------------------------
-
 UnicodeString TfrmAnalysis::FormatMMReportCurrency( double inValue, bool inShowCurrencySymbol )
 {
 	return inShowCurrencySymbol ? FormatFloat( "0.00", inValue ) : FormatFloat( "0.00", inValue );
 }
 // ---------------------------------------------------------------------------
-
 UnicodeString TfrmAnalysis::FormatMMReportPoints( double inValue )
 {
 	return FormatFloat( "0.00", inValue );
 }
 // ---------------------------------------------------------------------------
-
 UnicodeString TfrmAnalysis::FormatMMReportRedeemCredit( double inValue, bool inShowCurrencySymbol )
 {
 	return inShowCurrencySymbol ? FormatFloat( "(-) 0.00", inValue ) : FormatFloat( "(-) 0.00", inValue );
 }
 // ---------------------------------------------------------------------------
-
 UnicodeString TfrmAnalysis::FormatMMReportRedeemPoints( double inValue )
 {
 	return FormatFloat( "(-) 0.00", inValue );
 }
 // ---------------------------------------------------------------------------
-
 // This function is for printing all necessary information in the Zed Report
 void TfrmAnalysis::PrintAccumulatedZed(TPrintout &po, const Currency &todays_earnings, Currency &EODValue)
 {
@@ -6599,7 +6874,6 @@ void TfrmAnalysis::PrintAccumulatedZed(TPrintout &po, const Currency &todays_ear
 	EODValue = closing;
 }
 // ---------------------------------------------------------------------------
-
 // This function is for printing all necessary information for tax summary in the Zed Report
 void TfrmAnalysis::PrintTaxSummary(TPrintout &po, const Currency &todays_earnings)
 {
@@ -6641,7 +6915,6 @@ void TfrmAnalysis::PrintTaxSummary(TPrintout &po, const Currency &todays_earning
 	pf.AddLine();
 }
 // ---------------------------------------------------------------------------
-
 // This function is for printing all necessary information for servie charge in Zed Report
 void TfrmAnalysis::PrintServiceChargeSummary(TPrintout &po)
 {
@@ -6671,7 +6944,6 @@ void TfrmAnalysis::PrintServiceChargeSummary(TPrintout &po)
 	}
 }
 // ---------------------------------------------------------------------------
-
 // This function is for setting up the format to be printed on Zed Report
 TPrintFormat &TfrmAnalysis::SetupCommonPrintZedFormat(TPrintFormat &pf)
 {
@@ -6688,7 +6960,6 @@ TPrintFormat &TfrmAnalysis::SetupCommonPrintZedFormat(TPrintFormat &pf)
 	return pf;
 }
 // ---------------------------------------------------------------------------
-
 // This function is for retrieving the previous Accumulating Total fron the database
 Currency TfrmAnalysis::GetSiteAccumulatedZed()
 {
@@ -6713,7 +6984,6 @@ Currency TfrmAnalysis::GetSiteAccumulatedZed()
 	return accumulated_total;
 }
 // ---------------------------------------------------------------------------
-
 // This function is for updating the DB for a new Accumulated Totals
 void TfrmAnalysis::UpdateTerminalAccumulatedZed(Database::TDBTransaction &tr, Currency accumulated_total)
 {
@@ -6724,7 +6994,6 @@ void TfrmAnalysis::UpdateTerminalAccumulatedZed(Database::TDBTransaction &tr, Cu
 	qr->Close();
 }
 // ---------------------------------------------------------------------------
-
 // This function is for updating the table ZEDS column TERMINAL_EARNINGS for a new Daily earnings
 void TfrmAnalysis::UpdateTerminalEarnings(Database::TDBTransaction &tr, Currency terminal_earnings)
 {
@@ -6735,7 +7004,6 @@ void TfrmAnalysis::UpdateTerminalEarnings(Database::TDBTransaction &tr, Currency
 	qr->Close();
 }
 // ---------------------------------------------------------------------------
-
 Currency TfrmAnalysis::GetTotalSalesTax()
 {
 	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
@@ -6755,7 +7023,6 @@ Currency TfrmAnalysis::GetTotalSalesTax()
 	return salestax;
 }
 // ---------------------------------------------------------------------------
-
 Currency TfrmAnalysis::GetTaxExemptSales()
 {
 	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
@@ -6813,7 +7080,6 @@ Currency TfrmAnalysis::GetTaxExemptSales()
 	return TaxExemptTotal;
 }
 // ---------------------------------------------------------------------------
-
 int TfrmAnalysis::GetBeginningInvoiceNumber()
 {
 	Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -6838,7 +7104,6 @@ int TfrmAnalysis::GetBeginningInvoiceNumber()
 	return beginInvoiceNum;
 }
 // ---------------------------------------------------------------------------
-
 int TfrmAnalysis::GetEndingInvoiceNumber()
 {
 
@@ -6867,7 +7132,6 @@ int TfrmAnalysis::GetEndingInvoiceNumber()
 	return endInvoiceNum;
 }
 // ---------------------------------------------------------------------------
-
 Currency TfrmAnalysis::GetLocalTax()
 {
 	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
@@ -6887,7 +7151,6 @@ Currency TfrmAnalysis::GetLocalTax()
 	return localtax;
 }
 // ---------------------------------------------------------------------------
-
 Currency TfrmAnalysis::GetServiceCharge()
 {
 	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
@@ -6907,7 +7170,6 @@ Currency TfrmAnalysis::GetServiceCharge()
 	return servicecharge;
 }
 // ---------------------------------------------------------------------------
-
 Currency TfrmAnalysis::GetServiceChargeTax()
 {
 	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
@@ -6927,7 +7189,6 @@ Currency TfrmAnalysis::GetServiceChargeTax()
 	return servicechargetax;
 }
 // ---------------------------------------------------------------------------
-
 Currency TfrmAnalysis::GetDiscountsAndSurcharges()
 {
 	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
@@ -6952,7 +7213,6 @@ Currency TfrmAnalysis::GetDiscountsAndSurcharges()
 	return discountsandsurcharges;
 }
 // ---------------------------------------------------------------------------
-
 // This function is for saving the integer global variable
 void TfrmAnalysis::SaveVariable(vmVariables vmVar, int CompName)
 {
@@ -7842,14 +8102,17 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBInternalQuery2 = DBTransaction.Query(DBTransaction.AddQuery());
+		TIBSQL *IBInternalQuery3 = DBTransaction.Query(DBTransaction.AddQuery());
 
 		TIBSQL *IBMallExport = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBMallExportHourly = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBMallExportTransaction = DBTransaction.Query(DBTransaction.AddQuery());
+		TIBSQL *IBMallExportOtherDetails = DBTransaction.Query(DBTransaction.AddQuery());
 
 		TIBSQL *IBArcMallExport = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBArcMallExportHourly = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBArcMallExportTransaction = DBTransaction.Query(DBTransaction.AddQuery());
+		TIBSQL *IBArcMallExportOtherDetails = DBTransaction.Query(DBTransaction.AddQuery());
 
         UnicodeString MALLCODE = "";
         UnicodeString TENANT_NAME = "";
@@ -7954,6 +8217,7 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
         Currency SALESTYPE_GROCERIES = 0;
         Currency SALESTYPE_MEDICINES = 0;
         Currency SALESTYPE_OTHERS = 0;
+        UnicodeString MINUTE_VALUE = "";
 
 		try
 		{
@@ -8460,13 +8724,14 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
                 "ARCMALLEXPORTHOURLY.VAT_SALES, ARCMALLEXPORTHOURLY.TOTALDISCOUNT, ARCMALLEXPORTHOURLY.SCHARGE_AMOUNT, "
                 "ARCMALLEXPORTHOURLY.REFUND_COUNT, ARCMALLEXPORTHOURLY.REFUND_AMOUNT, ARCMALLEXPORTHOURLY.VOID_COUNT, "
                 "ARCMALLEXPORTHOURLY.VOID_AMOUNT, ARCMALLEXPORTHOURLY.SCDISCOUNT_AMOUNT, ARCMALLEXPORTHOURLY.MALLCODE, "
-                "ARCMALLEXPORTHOURLY.PATRON_COUNT ) "
+                "ARCMALLEXPORTHOURLY.PATRON_COUNT, ARCMALLEXPORTHOURLY.MINUTE_VALUE, ARCMALLEXPORTHOURLY.SCDISCOUNT_COUNT ) "
 		    	"VALUES "
                 "( "
                 ":AME_HOURLY_KEY, "
                 ":TERMINAL_NAME, :TENANT_NAME, :DATE_VALUE, :TIME_VALUE, :AMOUNT_VALUE, :TRANSACTION_COUNT, "
                 ":VAT_SALES, :TOTALDISCOUNT, :SCHARGE_AMOUNT, :REFUND_COUNT, :REFUND_AMOUNT, "
-                ":VOID_COUNT, :VOID_AMOUNT, :SCDISCOUNT_AMOUNT, :MALLCODE, :PATRON_COUNT );";
+                ":VOID_COUNT, :VOID_AMOUNT, :SCDISCOUNT_AMOUNT, :MALLCODE, :PATRON_COUNT, "
+                ":MINUTE_VALUE, :SCDISCOUNT_COUNT );";
 
 				for (int i = 1; i < IBMallExportHourly->FieldCount; i++)
 				{
@@ -8627,6 +8892,58 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
                 IBArcMallExportTransaction->ExecQuery();
                 IBMallExportTransaction->Next();
             }
+
+            // For ARCMALLEXPORTOTHERDETAILS
+			IBMallExportOtherDetails->Close();
+			IBMallExportOtherDetails->SQL->Text = "select * from MALLEXPORTOTHERDETAILS";
+
+			IBMallExportOtherDetails->ExecQuery();
+			while(!IBMallExportOtherDetails->Eof)
+			{
+                IBInternalQuery3->Close();
+				IBInternalQuery3->SQL->Text = "SELECT GEN_ID(GEN_AMEOD_OD_KEY, 1) FROM RDB$DATABASE";
+				IBInternalQuery3->ExecQuery();
+				int ArcMallOtherKey = IBInternalQuery3->Fields[0]->AsInteger;
+
+                TIBSQL *IBArcMallExportOtherDetails = DBTransaction.Query(DBTransaction.AddQuery());
+	    		IBArcMallExportOtherDetails->SQL->Text = "INSERT INTO ARCMALLEXPORTOTHERDETAILS "
+                "( "
+                "ARCMALLEXPORTOTHERDETAILS.AMEOD_OD_KEY, "
+                "ARCMALLEXPORTOTHERDETAILS.DATE_VALUE, ARCMALLEXPORTOTHERDETAILS.TENANT_NAME, ARCMALLEXPORTOTHERDETAILS.DISCOUNT_TYPE, "
+                "ARCMALLEXPORTOTHERDETAILS.DISCOUNT_PERC, ARCMALLEXPORTOTHERDETAILS.DISCOUNT_AMOUNT, ARCMALLEXPORTOTHERDETAILS.TRANSACTION_CODE, "
+                "ARCMALLEXPORTOTHERDETAILS.REFUND_CANCEL_REASON, ARCMALLEXPORTOTHERDETAILS.REFUND_CANCEL_AMOUNT, ARCMALLEXPORTOTHERDETAILS.REFUND_CANCEL_TABKEY, "
+                "ARCMALLEXPORTOTHERDETAILS.TRANSACTION_COUNT, ARCMALLEXPORTOTHERDETAILS.FINEDINECUST_COUNT, ARCMALLEXPORTOTHERDETAILS.SCDISCOUNT_COUNT, "
+                "ARCMALLEXPORTOTHERDETAILS.PAYMENT_CODE, ARCMALLEXPORTOTHERDETAILS.PAYMENT_CODE_DESC, ARCMALLEXPORTOTHERDETAILS.PAYMENT_CLASS, "
+                "ARCMALLEXPORTOTHERDETAILS.PAYMENT_CLASS_DESC, ARCMALLEXPORTOTHERDETAILS.PAYMENT_AMOUNT ) "
+		    	"VALUES "
+                "( "
+                ":AMEOD_OD_KEY, "
+                ":DATE_VALUE, :TENANT_NAME, :DISCOUNT_TYPE, :DISCOUNT_PERC, :DISCOUNT_AMOUNT, :TRANSACTION_CODE, "
+                ":REFUND_CANCEL_REASON, :REFUND_CANCEL_AMOUNT, :REFUND_CANCEL_TABKEY, :TRANSACTION_COUNT, :FINEDINECUST_COUNT, "
+                ":SCDISCOUNT_COUNT, :PAYMENT_CODE, :PAYMENT_CODE_DESC, :PAYMENT_CLASS, :PAYMENT_CLASS_DESC, "
+                ":PAYMENT_AMOUNT );";
+
+                IBArcMallExportOtherDetails->ParamByName("AMEOD_OD_KEY")->AsInteger = ArcMallOtherKey;
+                IBArcMallExportOtherDetails->ParamByName("DATE_VALUE")->AsDateTime = IBMallExportOtherDetails->FieldByName("DATE_VALUE")->AsDateTime;
+                IBArcMallExportOtherDetails->ParamByName("TENANT_NAME")->AsString = IBMallExportOtherDetails->FieldByName("TENANT_NAME")->AsString;
+                IBArcMallExportOtherDetails->ParamByName("DISCOUNT_TYPE")->AsString = IBMallExportOtherDetails->FieldByName("DISCOUNT_TYPE")->AsString;
+                IBArcMallExportOtherDetails->ParamByName("DISCOUNT_PERC")->AsCurrency = IBMallExportOtherDetails->FieldByName("DISCOUNT_PERC")->AsCurrency;
+                IBArcMallExportOtherDetails->ParamByName("DISCOUNT_AMOUNT")->AsCurrency = IBMallExportOtherDetails->FieldByName("DISCOUNT_AMOUNT")->AsCurrency;
+                IBArcMallExportOtherDetails->ParamByName("TRANSACTION_CODE")->AsString = IBMallExportOtherDetails->FieldByName("TRANSACTION_CODE")->AsString;
+                IBArcMallExportOtherDetails->ParamByName("REFUND_CANCEL_REASON")->AsString = IBMallExportOtherDetails->FieldByName("REFUND_CANCEL_REASON")->AsString;
+                IBArcMallExportOtherDetails->ParamByName("REFUND_CANCEL_AMOUNT")->AsCurrency = IBMallExportOtherDetails->FieldByName("REFUND_CANCEL_AMOUNT")->AsCurrency;
+                IBArcMallExportOtherDetails->ParamByName("REFUND_CANCEL_TABKEY")->AsInteger = IBMallExportOtherDetails->FieldByName("REFUND_CANCEL_TABKEY")->AsInteger;
+                IBArcMallExportOtherDetails->ParamByName("TRANSACTION_COUNT")->AsInteger = IBMallExportOtherDetails->FieldByName("TRANSACTION_COUNT")->AsInteger;
+                IBArcMallExportOtherDetails->ParamByName("FINEDINECUST_COUNT")->AsInteger = IBMallExportOtherDetails->FieldByName("FINEDINECUST_COUNT")->AsInteger;
+                IBArcMallExportOtherDetails->ParamByName("SCDISCOUNT_COUNT")->AsInteger = IBMallExportOtherDetails->FieldByName("SCDISCOUNT_COUNT")->AsInteger;
+                IBArcMallExportOtherDetails->ParamByName("PAYMENT_CODE")->AsString = IBMallExportOtherDetails->FieldByName("PAYMENT_CODE")->AsString;
+                IBArcMallExportOtherDetails->ParamByName("PAYMENT_CODE_DESC")->AsString = IBMallExportOtherDetails->FieldByName("PAYMENT_CODE_DESC")->AsString;
+                IBArcMallExportOtherDetails->ParamByName("PAYMENT_CLASS")->AsString = IBMallExportOtherDetails->FieldByName("PAYMENT_CLASS")->AsString;
+                IBArcMallExportOtherDetails->ParamByName("PAYMENT_CLASS_DESC")->AsString = IBMallExportOtherDetails->FieldByName("PAYMENT_CLASS_DESC")->AsString;
+                IBArcMallExportOtherDetails->ParamByName("PAYMENT_AMOUNT")->AsCurrency = IBMallExportOtherDetails->FieldByName("PAYMENT_AMOUNT")->AsCurrency;
+                IBArcMallExportOtherDetails->ExecQuery();
+                IBMallExportOtherDetails->Next();
+            }
 		}
     	catch(Exception & E)
 	    {
@@ -8643,7 +8960,6 @@ void TfrmAnalysis::UpdateArcMallExport(Database::TDBTransaction &DBTransaction)
 	}
 }
 //---------------------------------------------------------------------------
-
 void TfrmAnalysis::MallExportReadFromDB(UnicodeString DataQuery, std::map<UnicodeString, UnicodeString> &DataRead)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -8669,7 +8985,6 @@ void TfrmAnalysis::MallExportReadFromDB(UnicodeString DataQuery, std::map<Unicod
     DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-
 UnicodeString TfrmAnalysis::MallExportCheckValue(UnicodeString StringValue, int IntegerValue,
                                                      Currency CurrencyValue, TDateTime TimeStampValue, TIBSQL* query)
 {
@@ -8768,8 +9083,6 @@ void TfrmAnalysis::UpdateZedStaffHoursEnable(Database::TDBTransaction &DBTransac
 	}
 }
 
-
-
 TMemoryStream* TfrmAnalysis::FormattedZed(TMemoryStream *ZedToArchive)
 {
 
@@ -8803,7 +9116,6 @@ TMemoryStream* TfrmAnalysis::FormattedZed(TMemoryStream *ZedToArchive)
 
 
 }
-
 //------------------------------------------------------------------------------------------------------
 void TfrmAnalysis::GetTabCreditReceivedRefunded(Database::TDBTransaction &DBTransaction,double &TabCreditReceived, double &TabRefundReceived,
                                  TDateTime startTime,TDateTime endTime)
@@ -8844,7 +9156,6 @@ void TfrmAnalysis::GetTabCreditReceivedRefunded(Database::TDBTransaction &DBTran
        }
 
 }
-
 //------------------------------------------------------------------------------------------------------
 void TfrmAnalysis::GetFloatAmounts(Database::TDBTransaction &DBTransaction,double &floatAmount)
 {
@@ -8881,7 +9192,6 @@ void TfrmAnalysis::GetFloatAmounts(Database::TDBTransaction &DBTransaction,doubl
 
 }
 
-
 AnsiString TfrmAnalysis::GetCashGlCode(Database::TDBTransaction &DBTransaction)
 {
    AnsiString CashGlcode;
@@ -8895,7 +9205,7 @@ AnsiString TfrmAnalysis::GetCashGlCode(Database::TDBTransaction &DBTransaction)
    if(IBInternalQuery->RecordCount > 0)
    {
        CashGlcode = IBInternalQuery->FieldByName("GL_CODE")->AsString;
-      if(CashGlcode == "" || CashGlcode == NULL )
+      if((CashGlcode == "" || CashGlcode == NULL) && TGlobalSettings::Instance().IsXeroEnabled)
        {
          CashGlcode="200";
 
@@ -8930,4 +9240,13 @@ TDateTime TfrmAnalysis::GetMinDayArchiveTime(Database::TDBTransaction &DBTransac
        _dayArchivetime = PrevZedTime;
     }
 	return _dayArchivetime;
+}
+
+void TfrmAnalysis::SyncCompanyDetails()
+{
+   if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+         {
+           TManagerCloudSync ManagerCloudSync;
+           ManagerCloudSync.SyncCompanyDetails();
+         }
 }

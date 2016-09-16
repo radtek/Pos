@@ -1766,7 +1766,7 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 			"Extract (Month From Archive.Time_Stamp) Order_Month, "
 			"Extract (Year From Archive.Time_Stamp) Order_Year, "
 			"Cast(Sum(Archive.Qty * Archive.Price ) +   Sum(Archive.Discount) as Numeric(17,4)) Price,"
-			"Sum((Archive.Qty * Archive.BASE_PRICE) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) As PriceExc,"						//sales excl
+			"Sum((Archive.Qty * abs(Archive.BASE_PRICE)) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) As PriceExc,"						//sales excl
 			"Cast(Sum(abs(Archive.Cost) * Archive.Qty) as Numeric(17,4)) Cost "
 		"From "
 			"Security Left Join Archive on "
@@ -1854,7 +1854,7 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 			"Extract (Year From DayArchive.Time_Stamp) Order_Year, "
 
 			"Cast(Sum((DayArchive.Qty * DAYARCHIVE.PRICE) ) +   Sum(DAYArchive.DISCOUNT) as Numeric(17,4)) Price,"				//sales excl
-			"Sum((DayArchive.Qty * DAYARCHIVE.BASE_PRICE ) ) +   Sum(DAYArchive.DISCOUNT_WITHOUT_TAX) as PriceExc,"
+			"Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) +   Sum(DAYArchive.DISCOUNT_WITHOUT_TAX) as PriceExc,"
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost "
 		"From "
 			"Security Left Join DayArchive on "
@@ -1900,7 +1900,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Size_Name,"
             "SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price )+ Sum(Archive.Discount) as Numeric(17,4)) Price,"
-			"Cast(Sum((Archive.Qty * Archive.BASE_PRICE ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl
+			"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE) ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl
 			"Cast(Sum(abs(Archive.Cost)* Archive.Qty) as Numeric(17,4)) Cost "
 		"From "
 			"Security Left Join Archive on "
@@ -1948,7 +1948,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Size_Name,"
 			"SUM (DayArchive.QTY) Item_Count,"
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount) as Numeric(17,4)) Price,"
-			"Cast(Sum((DayArchive.Qty * DAYARCHIVE.BASE_PRICE ) ) +   Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"   //salex excl
+			"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) +   Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"   //salex excl
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost "
 		"From "
 			"Security Left Join DayArchive on "
@@ -2077,7 +2077,7 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
 			"Archive.Size_Name,"
 		  	"Sum(Archive.Qty) Item_Count,"
   			"Cast(Sum(Archive.Qty * Archive.Price ) +  Sum(Archive.Discount) as Numeric(17,4)) Price,"
-			"Cast(Sum((Archive.Qty * Archive.BASE_PRICE ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl
+			"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE) ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl
 			"Cast(Sum(abs(Archive.Cost) * Archive.Qty) as Numeric(17,4)) Cost "
 		"From "
 			"Security Left Join Archive on "
@@ -2124,7 +2124,7 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
 			"DayArchive.Size_Name,"
 		  	"Sum(DayArchive.Qty) Item_Count,"
    			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount) as Numeric(17,4)) Price,"
-			"Cast(Sum((DayArchive.Qty * DAYARCHIVE.BASE_PRICE  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"   //salex excl
+			"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"   //salex excl
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost "
 		"From "
 			"Security Left Join DayArchive on "
@@ -2376,7 +2376,7 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			"Archive.Size_Name, "
            " SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price  ) +  Sum(Archive.Discount) as Numeric(17,4)) Price,"
-         "Cast(Sum((Archive.Qty * Archive.BASE_PRICE ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc, "       //sales excl   //chng
+         "Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE) ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc, "       //sales excl   //chng
 			"Cast(Sum(Archive.Qty * abs(Archive.Cost)) as Numeric(17,4)) Cost "
 		"From "
 			"Security Left Join Archive on "
@@ -2420,7 +2420,7 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			"DayArchive.Size_Name, "
             "SUM (DayArchive.QTY) Item_Count, "
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount) as Numeric(17,4)) Price,"
-         "Cast(Sum((DayArchive.Qty * DAYARCHIVE.BASE_PRICE  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl chng
+         "Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"     //sales excl chng
 			"Cast(Sum(DayArchive.Qty * abs(DayArchive.Cost)) as Numeric(17,4)) Cost "
 		"From "
 			"Security Left Join DayArchive on "
@@ -2534,7 +2534,7 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Size_Name,"
 			"SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price  ) +  Sum(Archive.Discount) as Numeric(17,4)) Price,"
-					"Cast(Sum((Archive.Qty * Archive.BASE_PRICE) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		//sales excl
+					"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		//sales excl
 	"Cast(Sum(Archive.Qty * abs(Archive.Cost)) as Numeric(17,4)) Cost "
 		"From "
 			"Security Left Join Archive on "
@@ -2580,7 +2580,7 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Size_Name,"
 			"SUM (DayArchive.QTY) Item_Count, "
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount)as Numeric(17,4)) Price,"
-					"Cast(Sum((DayArchive.Qty * DAYARCHIVE.BASE_PRICE ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"	   //sales excl
+					"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"	   //sales excl
 			"Cast(Sum(abs(DayArchive.Cost) * DayArchive.Qty) as Numeric(17,4)) Cost "
 		"From "
 			"Security Left Join DayArchive on "
@@ -2762,7 +2762,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"Archive.Size_Name,"
 			"SUM (Archive.QTY) Item_Count, "
 			"Cast(Sum(Archive.Qty * Archive.Price  ) +  Sum(Archive.Discount) as Numeric(17,4)) Price,"
-				"Cast(Sum((Archive.Qty * Archive.BASE_PRICE  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		   //sales excl
+				"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)  ) ) +  Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		   //sales excl
 			"Cast(Sum(Archive.Qty * abs(Archive.Cost)) as Numeric(17,4)) Cost,"
 			"ThirdPartyCodes.Code "
 		"From "
@@ -2813,7 +2813,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"DayArchive.Size_Name,"
 			"SUM (DayArchive.QTY) Item_Count, "
 			"Cast(Sum(DayArchive.Qty * DayArchive.Price ) + Sum(DayArchive.Discount) as Numeric(17,4)) Price,"
-				"Cast(Sum((DayArchive.Qty * DAYARCHIVE.BASE_PRICE  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"			//sales excl
+				"Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"			//sales excl
 			"Cast(Sum(DayArchive.Qty * abs(DayArchive.Cost)) as Numeric(17,4)) Cost,"
 			"ThirdPartyCodes.Code "
 		"From "
@@ -3430,7 +3430,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 
 		 	"Archive.Qty Item_Count,"
 			"Cast((Archive.Qty * Archive.Price )+ (Archive.Discount) as Numeric(17,4)) Price,"
-         "Cast(((Archive.Qty * Archive.BASE_PRICE ) ) + (Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,  "	 //sales excl
+         "Cast(((Archive.Qty * abs(Archive.BASE_PRICE) ) ) + (Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,  "	 //sales excl
 
 			"Cast((abs(Archive.Cost) * Archive.Qty) as Numeric(17,4)) Cost ,"
             	"Cast(Null As VarChar(50)) Code "
@@ -3486,7 +3486,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 			"(Extract (Hour From DayArchive.TIME_STAMP) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
 		  	"DayArchive.Qty Item_Count,"
 			"Cast((DayArchive.Qty * DayArchive.Price ) + (DayArchive.Discount)   as Numeric(17,4)) Price,"
- "Cast(((DayArchive.Qty * DAYARCHIVE.BASE_PRICE   ) ) + (DayArchive.DISCOUNT_WITHOUT_TAX)  as Numeric(17,4)) PriceExc,  "		//sales excl
+ "Cast(((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE)   ) ) + (DayArchive.DISCOUNT_WITHOUT_TAX)  as Numeric(17,4)) PriceExc,  "		//sales excl
 			"Cast((abs(DayArchive.Qty) * DayArchive.Cost) as Numeric(17,4)) Cost , "
             	"Cast(Null As VarChar(50)) Code "
 		"From "
@@ -3645,7 +3645,7 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 			"(Extract (Hour From Archive.TIME_STAMP_BILLED) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
 
 
-"Cast(Sum((Archive.Qty * Archive.BASE_PRICE  ) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"		//sales excl
+"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)  ) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"		//sales excl
 			"max(Patron_Count) Patron_Count,"
 			"SUM (Archive.QTY)  SalesQty "		   //sales Item count
 
@@ -3749,7 +3749,7 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From DAYARCHIVE.TIME_STAMP_BILLED) / 30) * 30 * 60) + "
 			"(Extract (Hour From DAYARCHIVE.TIME_STAMP_BILLED) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
-           "Cast(Sum((DayArchive.Qty * DAYARCHIVE.BASE_PRICE ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"	  //sales excl
+           "Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"	  //sales excl
 
 			"max(Patron_Count) Patron_Count, "
 			"SUM (DayArchive.QTY)  SalesQty "
@@ -3959,13 +3959,12 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
 	qrChronological->Close();
 	qrChronological->SQL->Text =
 		"Select "
-			"Security.Time_Stamp, "
+			"ARCHIVE.Time_Stamp, "
 			"Extract(Day From Security.Time_Stamp) Item_Day, "
 			"Extract(Second From Security.Time_Stamp) Item_Second, "
 			"Cast(Archive.Item_Name as VarChar(50)) Item_Name, "
 			"Archive.Qty, "
-			"Archive.Size_Name, "
-			//"Archive.Price , "
+			"Archive.Size_Name, " 
 		" cast(cast(Archive.Qty * Archive.BASE_PRICE as numeric(17, 4)) +COALESCE(ARCHIVE.DISCOUNT_WITHOUT_TAX,0) + COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0) as numeric(17, 4)) as Price, "
 
 			"Archive.Table_Number, "
@@ -3999,8 +3998,8 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
 
 		 "ARCHIVE.PRICE<>0 and "
-			"Security.Time_Stamp >= :StartTime and "
-			"Security.Time_Stamp < :EndTime and "
+			"ARCHIVE.Time_Stamp >= :StartTime and "
+			"ARCHIVE.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
 	if (Tables->Count)
 	{
@@ -4021,15 +4020,14 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
 		"Union All "
 
 		"Select "
-			"Security.Time_Stamp,"
+			"DAYARCHIVE.Time_Stamp,"
 			"Extract(Day From Security.Time_Stamp) Item_Day,"
 			"Extract(Second From Security.Time_Stamp) Item_Second,"
 			"Cast(DayArchive.Item_Name as VarChar(50)) Item_Name,"
 			"DayArchive.Qty,"
 			"DayArchive.Size_Name,"
-			"cast(cast(DayArchive.Qty * DAYARCHIVE.BASE_PRICE  as numeric(17, 4)) +DayArchive.DISCOUNT_WITHOUT_TAX+ AOT.VAT + AOT.ServiceCharge + AOT.OtherServiceCharge as numeric(17, 4)) as Price,  "		 //sales Incl
-          
-		 //	"DayArchive.Price," cww
+			"cast(cast(DayArchive.Qty * DAYARCHIVE.BASE_PRICE  as numeric(17, 4)) +coalesce(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ coalesce(AOT.VAT,0) + coalesce(AOT.ServiceCharge,0) + coalesce(AOT.OtherServiceCharge,0) as numeric(17, 4)) as Price,  "		 //sales Incl
+
 			"DayArchive.Table_Number,"
 			"Cast(DayArchive.Tab_Name as VarChar(32)) Tab_Name,"
 			"Security.From_Val User_Name,"
@@ -4061,8 +4059,8 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
 
 		 "DAYARCHIVE.PRICE<>0 and "
-			"Security.Time_Stamp >= :StartTime and "
-			"Security.Time_Stamp < :EndTime and "
+			"DAYARCHIVE.Time_Stamp >= :StartTime and "
+			"DAYARCHIVE.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
 	if (Tables->Count)
 	{
@@ -4084,14 +4082,16 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
 		"Union All "
 
 		"Select "
-			"Security.Time_Stamp, "
+			"Orders.Time_Stamp, "
 			"Extract(Day From Security.Time_Stamp) Item_Day, "
 			"Extract(Second From Security.Time_Stamp) Item_Second, "
 			"Cast(Orders.Item_Name as VarChar(50)) Item_Name, "
 			"Orders.Qty, "
 			"Orders.Size_Name, "
-			//"Orders.Price, "
-			"cast(Orders.Qty * Orders.ZED_PRICE + Orders.DISCOUNT_WITHOUT_TAX as numeric(17, 4)) as Price, "
+             "Cast((( CAST(Orders.QTY *  Orders.BASE_PRICE as Numeric(17,4)) ) +(  (  cast(( (Orders.Qty * Orders.BASE_PRICE+ COALESCE( Orders.DISCOUNT_WITHOUT_TAX,0)))*COALESCE( AOT.VAT,0)/100 as         numeric(17, 4))  ) )+( cast(( (Orders.Qty * Orders.BASE_PRICE+ COALESCE( Orders.DISCOUNT_WITHOUT_TAX,0)))*COALESCE( AOT.ServiceCharge,0)/100 as numeric(17, 4)) ) + "
+            "(cast((((Orders.Qty *        Orders.BASE_PRICE+ COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0)))*COALESCE(AOT.ServiceCharge,0)/100)*COALESCE(STAX.ServiceChargeTax,0)/100 as numeric(17, 4)))+  "
+            "  ( COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0)) "
+            "  ) as Numeric(17,4)) Price   ,           "
 			"Orders.Table_Number, "
 			"Cast(Orders.Tab_Name as VarChar(32)) Tab_Name, "
 			"Security.From_Val User_Name, "
@@ -4100,9 +4100,28 @@ void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime,
 		"From "
 			"Security Inner Join Orders on "
 			"Security.Security_Ref = Orders.Security_Ref "
+            "left join                                                                                                     "
+"				(SELECT                                                                                        "
+"                cast(1 as int) keyvalue   ,                                                                   "
+"						  TAXPROFILE.ORDER_KEY,                                                                "
+"					  	MIN(CASE WHEN TAXPROFILE.TYPE = 0 THEN TAXPROFILE.TAX_RATE END) AS VAT,                "
+"					  	MIN(CASE WHEN TAXPROFILE.TYPE = 2 THEN TAXPROFILE.TAX_RATE END) AS ServiceCharge,      "
+"					  	MIN(CASE WHEN TAXPROFILE.TYPE = 3 THEN TAXPROFILE.TAX_RATE END) AS OtherServiceCharge  "
+"				 FROM (SELECT                                                                                  "
+"                            TFO.ORDER_KEY,  TAXPROFILES.TYPE,                                                 "
+"                            Cast(Sum(COALESCE(TAXPROFILES.RATE,0) ) as Numeric(17,4)) TAX_RATE                "
+"                            FROM TAXPROFILES_ORDERS TFO                                                       "
+"                            left join TAXPROFILES on TAXPROFILES.PROFILE_KEY=TFO.PROFILE_KEY                  "
+"                            group by TFO.ORDER_KEY,TAXPROFILES.TYPE                                           "
+"                            )  TAXPROFILE                                                                     "
+"					  	GROUP BY TAXPROFILE.ORDER_KEY                                                          "
+"				) AOT on AOT.ORDER_KEY=Orders.ORDER_KEY                                                        "
+"                 left join (SELECT      cast(1 as int) keyvalue   ,                                           "
+" MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8007 THEN VARSPROFILE.NUMERIC_VAL END) AS ServiceChargeTax      FROM VARSPROFILE    ) STAX on STAX.keyvalue=AOT.keyvalue "
+
 		"Where "
-			"Security.Time_Stamp >= :StartTime and "
-			"Security.Time_Stamp < :EndTime and "
+			"Orders.Time_Stamp >= :StartTime and "
+			"Orders.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
 	if (Tables->Count)
 	{
@@ -6509,8 +6528,8 @@ void TdmMMReportData::SetupCredits(TDateTime StartTime, TDateTime EndTime, TStri
 			"Cast(Archive.Item_Name As Varchar(50)) Item_Name,"
 		 //	"cast(Archive.Qty * Archive.Price + Archive.Discount as numeric(17, 4)) Price,"
 		 //	"cast(Archive.Price * Archive.Qty + Archive.Discount as numeric(17, 4)) Total_Price,"
- " Cast((Archive.QTY * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.Discount,0)) as Numeric(17,4)) Total_Price, "
-    " Cast((Archive.QTY * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.Discount,0)) as Numeric(17,4)) Price, "
+ " Cast((Archive.QTY * Archive.BASE_PRICE +COALESCE(abs(AOT.VAT),0)+COALESCE(abs(AOT.ServiceCharge),0) + COALESCE(abs(AOT.OtherServiceCharge),0) + COALESCE(abs(AOT.ProfitTax),0) + COALESCE(abs(AOT.LocalTax),0)  - COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Total_Price, "
+    " Cast((Archive.QTY * Archive.BASE_PRICE +COALESCE(abs(AOT.VAT),0)+COALESCE(abs(AOT.ServiceCharge),0) + COALESCE(abs(AOT.OtherServiceCharge),0) + COALESCE(abs(AOT.ProfitTax),0) + COALESCE(abs(AOT.LocalTax),0)  - COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Price, "
 
 			"Extract(Day From Archive.TIME_STAMP_BILLED) Credit_Day,"
 			"Extract(Month From Archive.TIME_STAMP_BILLED) Credit_Month,"
@@ -6533,7 +6552,9 @@ void TdmMMReportData::SetupCredits(TDateTime StartTime, TDateTime EndTime, TStri
 						"ARCORDERTAXES.ARCHIVE_KEY,  "
 						"MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS VAT, "
 						"MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
-						"MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge "
+						"MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge, "
+                        "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 5 THEN ARCORDERTAXES.TAX_VALUE END) AS ProfitTax, "
+                        "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 4 THEN ARCORDERTAXES.TAX_VALUE END) AS LocalTax "
 				  "FROM (SELECT  a.ARCHIVE_KEY,a.TAX_TYPE, "
 						"Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
 						"FROM ARCORDERTAXES a "
@@ -6561,8 +6582,8 @@ void TdmMMReportData::SetupCredits(TDateTime StartTime, TDateTime EndTime, TStri
 			"Cast(DayArchive.Item_Name As Varchar(50)) Item_Name,"
 		 //	"cast(DayArchive.Price * DayArchive.Qty + DayArchive.Discount as numeric(17, 4)) Price,"
 		 //	"cast(DayArchive.Price * DayArchive.Qty + DayArchive.Discount as numeric(17, 4)) Total_Price,"
-    " Cast((DayArchive.QTY * DAYARCHIVE.BASE_PRICE  + COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(DayArchive.Discount,0)) as Numeric(17,4)) Price, "
-      " Cast((DayArchive.QTY * DAYARCHIVE.BASE_PRICE  + COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(DayArchive.Discount,0)) as Numeric(17,4)) Total_Price, "
+    " Cast((DayArchive.QTY * DAYARCHIVE.BASE_PRICE  + COALESCE(abs(AOT.VAT),0)+COALESCE( abs(AOT.ServiceCharge),0) + COALESCE( abs(AOT.OtherServiceCharge),0) + COALESCE(abs(AOT.ProfitTax),0) + COALESCE(abs(AOT.LocalTax),0)   - COALESCE((DayArchive.DISCOUNT_WITHOUT_TAX),0)) as Numeric(17,4)) Price, "
+      " Cast((DayArchive.QTY * DAYARCHIVE.BASE_PRICE  + COALESCE(abs(AOT.VAT),0)+COALESCE(abs(AOT.ServiceCharge),0) + COALESCE( abs(AOT.OtherServiceCharge),0) + COALESCE(abs(AOT.ProfitTax),0) + COALESCE(abs(AOT.LocalTax),0) - COALESCE((DayArchive.DISCOUNT_WITHOUT_TAX),0)) as Numeric(17,4)) Total_Price, "
 
 			"Extract(Day From DayArchive.TIME_STAMP_BILLED) Credit_Day,"
 			"Extract(Month From DayArchive.TIME_STAMP_BILLED) Credit_Month,"
@@ -6584,7 +6605,9 @@ void TdmMMReportData::SetupCredits(TDateTime StartTime, TDateTime EndTime, TStri
 						"DAYARCORDERTAXES.ARCHIVE_KEY,  "
 						"MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 0 THEN DAYARCORDERTAXES.TAX_VALUE END) AS VAT, "
 						"MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 2 THEN DAYARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
-						"MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 3 THEN DAYARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge "
+						"MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 3 THEN DAYARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge, "
+                        "MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 5 THEN DAYARCORDERTAXES.TAX_VALUE END) AS ProfitTax, "
+                        "MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 4 THEN DAYARCORDERTAXES.TAX_VALUE END) AS LocalTax "
 				  "FROM (SELECT  a.ARCHIVE_KEY,a.TAX_TYPE, "
 						"Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
 						"FROM DAYARCORDERTAXES a "
@@ -11973,7 +11996,7 @@ void TdmMMReportData::SetupSalesSummaryC(TDateTime StartTime, TDateTime EndTime,
     // Total Gross (Revenue + Service Charge + Local Tax + Discounts + Total Refund)
     "COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) + "
 
-    "COALESCE((SELECT SUM(TOTALDISCOUNT) FROM (SELECT ABS(CASE WHEN NAME = 'Directors' OR NAME = 'Food Wastage' OR NAME = 'Bar Wastage' THEN SUM(TOTALDISCOUNTPRICE) ELSE SUM(TOTALDISCOUNTCOST) END) TOTALDISCOUNT FROM "
+    "COALESCE((SELECT SUM(TOTALDISCOUNT) FROM (SELECT ABS(CASE WHEN NAME = 'Directors' OR NAME = 'Food Wastage' OR NAME = 'Bar Wastage' OR NAME = 'Food Panda' THEN SUM(TOTALDISCOUNTPRICE) ELSE SUM(TOTALDISCOUNTCOST) END) TOTALDISCOUNT FROM "
 
     "(SELECT DISCOUNT_GROUPS.DISCOUNTGROUP_NAME, DISCOUNTS.NAME, SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) TOTALDISCOUNTPRICE, SUM(ARCHIVE.COST) TOTALDISCOUNTCOST, "
     "COUNT(DISCOUNTS.NAME) TOTALDISCOUNTCOUNT, ARCHIVE.ARCBILL_KEY, ARCHIVE.ORDER_LOCATION "
@@ -12057,7 +12080,7 @@ void TdmMMReportData::SetupSalesSummaryC(TDateTime StartTime, TDateTime EndTime,
     "WHERE SECURITY.SECURITY_EVENT = 'Credit' AND ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime), 0) * -1) AS TOTALREFUNDSQTY, "
 
     // Total FOC (Free of Charge) Discount
-    "COALESCE((SELECT SUM(TOTALDISCOUNT) FROM (SELECT ABS(CASE WHEN NAME = 'Directors' OR NAME = 'Food Wastage' OR NAME = 'Bar Wastage' THEN SUM(TOTALDISCOUNTPRICE) ELSE SUM(TOTALDISCOUNTCOST) END) TOTALDISCOUNT FROM "
+    "COALESCE((SELECT SUM(TOTALDISCOUNT) FROM (SELECT ABS(CASE WHEN NAME = 'Directors' OR NAME = 'Food Wastage' OR NAME = 'Bar Wastage' OR NAME = 'Food Panda' THEN SUM(TOTALDISCOUNTPRICE) ELSE SUM(TOTALDISCOUNTCOST) END) TOTALDISCOUNT FROM "
 
     "(SELECT DISCOUNT_GROUPS.DISCOUNTGROUP_NAME, DISCOUNTS.NAME, SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) TOTALDISCOUNTPRICE, SUM(ARCHIVE.COST) TOTALDISCOUNTCOST, "
     "COUNT(DISCOUNTS.NAME) TOTALDISCOUNTCOUNT, ARCHIVE.ARCBILL_KEY, ARCHIVE.ORDER_LOCATION "
@@ -12096,7 +12119,7 @@ void TdmMMReportData::SetupSalesSummaryC(TDateTime StartTime, TDateTime EndTime,
     "ARCHIVE.TIME_STAMP_BILLED >= :StartTime and  ARCHIVE.TIME_STAMP_BILLED < :EndTime)),0) AS TOTALNORMALDISCOUNT, "
 
     // Total Discount
-    "COALESCE((SELECT SUM(TOTALDISCOUNT) FROM (SELECT ABS(CASE WHEN NAME = 'Directors' OR NAME = 'Food Wastage' OR NAME = 'Bar Wastage' THEN SUM(TOTALDISCOUNTPRICE) ELSE SUM(TOTALDISCOUNTCOST) END) TOTALDISCOUNT FROM "
+    "COALESCE((SELECT SUM(TOTALDISCOUNT) FROM (SELECT ABS(CASE WHEN NAME = 'Directors' OR NAME = 'Food Wastage' OR NAME = 'Bar Wastage' OR NAME = 'Food Panda' THEN SUM(TOTALDISCOUNTPRICE) ELSE SUM(TOTALDISCOUNTCOST) END) TOTALDISCOUNT FROM "
 
     "(SELECT DISCOUNT_GROUPS.DISCOUNTGROUP_NAME, DISCOUNTS.NAME, SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) TOTALDISCOUNTPRICE, SUM(ARCHIVE.COST) TOTALDISCOUNTCOST, "
     "COUNT(DISCOUNTS.NAME) TOTALDISCOUNTCOUNT, ARCHIVE.ARCBILL_KEY, ARCHIVE.ORDER_LOCATION "
@@ -12414,82 +12437,96 @@ void TdmMMReportData::SetupSalesSummaryC(TDateTime StartTime, TDateTime EndTime,
     }
 
     qrSalesCountByDayPart->SQL->Text = qrSalesCountByDayPart->SQL->Text +
-    // Total Patron Count every Breakfast (5am to 11am)
-    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 5 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 11 "
+    // Total Patron Count every Breakfast (5am to 11am) / As of 04/26/2016 it is now LUNCH (5am to 2:59pm)
+    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 5 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 15 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS BREAKFASTCOUNT, "
 
-    // Total Amount every Breakfast (5am to 11am)
-    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 5 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 11 "
+    // Total Amount every Breakfast (5am to 11am) / As of 04/26/2016 it is now LUNCH (5am to 2:59pm)
+    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 5 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 15 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 5 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 11 AND "
-    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) "
+    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 5 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 15 AND "
+    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
+    "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 5 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 15 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
     "AS BREAKFASTAMOUNT, "
 
-    // Total Patron Count every Lunch (11am to 3pm)
-    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 11 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 15 "
+    // Total Patron Count every Lunch (11am to 3pm) / As of 04/26/2016 it is now SNACK (3pm to 5:59pm)
+    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 15 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 18 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS LUNCHCOUNT, "
 
-    // Total Amount every Lunch (11am to 3pm)
-    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 11 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 15 "
-    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
-    "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 11 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 15 AND "
-    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) "
-    "AS LUNCHAMOUNT, "
-
-    // Total Patron Count every Merienda(Snacks) (3pm to 6pm)
-    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 15 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 18 "
-    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS MERIENDACOUNT, "
-
-    // Total Amount every Merienda(Snacks) (3pm to 6pm)
+    // Total Amount every Lunch (11am to 3pm) / As of 04/26/2016 it is now SNACK (3pm to 5:59pm)
     "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 15 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 18 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
     "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 15 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 18 AND "
-    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) "
-    "AS MERIENDAAMOUNT, "
+    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
+    "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 15 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 18 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
+    "AS LUNCHAMOUNT, "
 
-    // Total Patron Count every Dinner (6pm to 9pm)
+    // Total Patron Count every Merienda(Snacks) (3pm to 6pm) / As of 04/26/2016 it is now DINNER (6pm to 8:59pm)
     "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 18 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 21 "
-    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS DINNERCOUNT, "
+    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS MERIENDACOUNT, "
 
-    // Total Amount every Dinner (6pm to 9pm)
+    // Total Amount every Merienda(Snacks) (3pm to 6pm) / As of 04/26/2016 it is now DINNER (6pm to 8:59pm)
     "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 18 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 21 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
     "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 18 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 21 AND "
-    "ARCHIVE.TIME_STAMP >= :StartTime AND ARCHIVE.TIME_STAMP < :EndTime),0)) "
-    "AS DINNERAMOUNT, "
+    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
+    "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 18 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 21 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
+    "AS MERIENDAAMOUNT, "
 
-    // Total Patron Count every After Dinner (9pm to 12am)
+    // Total Patron Count every Dinner (6pm to 9pm) / As of 04/26/2016 it is now AFTER DINNER (9pm to 11:59pm)
     "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 21 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) <= 23 "
-    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS AFTERDINNERCOUNT, "
+    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS DINNERCOUNT, "
 
-    // Total Amount every After Dinner (9pm to 12am)
+    // Total Amount every Dinner (6pm to 9pm) / As of 04/26/2016 it is now AFTER DINNER (9pm to 11:59pm)
     "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 21 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) <= 23 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
     "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 21 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) <= 23 AND "
-    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) "
-    "AS AFTERDINNERAMOUNT, "
+    "ARCHIVE.TIME_STAMP >= :StartTime AND ARCHIVE.TIME_STAMP < :EndTime),0)) - "
+    "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 21 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 23 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
+    "AS DINNERAMOUNT, "
 
-    // Total Patron Count every Late (12am onwards)
-    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 5 "
-    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS LATECOUNT, "
+    // Total Patron Count every After Dinner (9pm to 12am) / As of 04/26/2016 it is now LATE EVENING (12am to 12:59am)
+    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 1 "
+    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS AFTERDINNERCOUNT, "
 
-    // Total Amount every Late (12am onwards)
-    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 5 "
+    // Total Amount every After Dinner (9pm to 12am) As of 04/26/2016 it is now LATE EVENING (12am to 12:59am)
+    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 1 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 5 AND "
-    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) "
+    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 1 AND "
+    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
+    "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 1 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
+    "AS AFTERDINNERAMOUNT, "
+
+    // Total Patron Count every Late (12am onwards) / As of 04/26/2016 it is now AFTER HOURS (1am to 4:59am)
+    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 1 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 5 "
+    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS LATECOUNT, "
+
+    // Total Amount every Late (12am onwards) / As of 04/26/2016 it is now AFTER HOURS (1am to 4:59am)
+    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 1 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 5 "
+    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
+    "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
+    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 1 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 5 AND "
+    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
+    "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 1 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 5 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
     "AS LATEDINNERAMOUNT, "
 
     // Total Amount for All Hours (Breakfast, Lunch, Merienda, Dinner)
     "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) "
+    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
+    "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+    "WHERE ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
     "AS TOTALCHECKCOUNT, "
 
     // Total Patron Count
@@ -12635,7 +12672,7 @@ void TdmMMReportData::SetupSalesSummaryC(TDateTime StartTime, TDateTime EndTime,
 
     qrDiscountTotalComplimentary->SQL->Text = qrDiscountTotalComplimentary->SQL->Text +
     "ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME DISCOUNTGROUP_NAME, ARCORDERDISCOUNTS.NAME, "
-    "ABS(CASE WHEN ARCORDERDISCOUNTS.NAME = 'Directors' OR ARCORDERDISCOUNTS.NAME = 'Food Wastage' OR ARCORDERDISCOUNTS.NAME = 'Bar Wastage' THEN SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) ELSE SUM(ARCHIVE.COST) END) TOTALDISCOUNT, "
+    "ABS(CASE WHEN ARCORDERDISCOUNTS.NAME = 'Directors' OR ARCORDERDISCOUNTS.NAME = 'Food Wastage' OR ARCORDERDISCOUNTS.NAME = 'Bar Wastage' OR ARCORDERDISCOUNTS.NAME = 'Food Panda' THEN SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) ELSE SUM(ARCHIVE.COST) END) TOTALDISCOUNT, "
     "COUNT(ARCHIVE.DISCOUNT_REASON) TOTALDISCOUNTCOUNT "
     "FROM ARCORDERDISCOUNTS LEFT JOIN ARCHIVE ON ARCORDERDISCOUNTS.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
     "LEFT JOIN ARCBILL ON ARCHIVE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
@@ -12782,7 +12819,7 @@ void TdmMMReportData::SetupSalesSummaryC(TDateTime StartTime, TDateTime EndTime,
     "ARCHIVE.MENU_NAME AS MENU_NAME, SUM(ARCHIVE.QTY) AS QTYPERMENU, "
 
     "CAST(SUM(ARCHIVE.PRICE * (ARCHIVE.QTY - CASE WHEN ARCHIVE.QTY < 0 THEN ARCHIVE.QTY ELSE 0 END)) AS NUMERIC(17,4)) + SUM(CASE WHEN ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary' THEN "
-    "ABS(CASE WHEN ARCORDERDISCOUNTS.NAME = 'Directors' OR ARCORDERDISCOUNTS.NAME = 'Food Wastage' OR ARCORDERDISCOUNTS.NAME = 'Bar Wastage' THEN ARCHIVE.DISCOUNT ELSE ARCHIVE.COST END) "
+    "ABS(CASE WHEN ARCORDERDISCOUNTS.NAME = 'Directors' OR ARCORDERDISCOUNTS.NAME = 'Food Wastage' OR ARCORDERDISCOUNTS.NAME = 'Bar Wastage' OR ARCORDERDISCOUNTS.NAME = 'Food Panda' THEN ARCHIVE.DISCOUNT ELSE ARCHIVE.COST END) "
     "ELSE ABS(ARCHIVE.DISCOUNT) END) - "
     "CAST(SUM(COALESCE(T.TAX,0)) AS NUMERIC(17,4)) - "
     "CAST(SUM(COALESCE(T.SERVICECHARGE,0)) AS NUMERIC(17,4)) - "
@@ -12846,7 +12883,7 @@ void TdmMMReportData::SetupSalesSummaryC(TDateTime StartTime, TDateTime EndTime,
     qrSalesDiscountTotalLocation->SQL->Text = qrSalesDiscountTotalLocation->SQL->Text +
     "ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME DISCOUNTGROUP_NAME, ARCORDERDISCOUNTS.NAME, "
     "ABS(CASE WHEN ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary' THEN "
-    "ABS(CASE WHEN ARCORDERDISCOUNTS.NAME = 'Directors' OR ARCORDERDISCOUNTS.NAME = 'Food Wastage' OR ARCORDERDISCOUNTS.NAME = 'Bar Wastage' THEN SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) ELSE SUM(ARCHIVE.COST) END) ELSE "
+    "ABS(CASE WHEN ARCORDERDISCOUNTS.NAME = 'Directors' OR ARCORDERDISCOUNTS.NAME = 'Food Wastage' OR ARCORDERDISCOUNTS.NAME = 'Bar Wastage' OR ARCORDERDISCOUNTS.NAME = 'Food Panda' THEN SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) ELSE SUM(ARCHIVE.COST) END) ELSE "
     "SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) END) TOTALDISCOUNT, "
     "COUNT(ARCHIVE.DISCOUNT_REASON) TOTALDISCOUNTCOUNT "
     "FROM ARCORDERDISCOUNTS LEFT JOIN ARCHIVE ON ARCORDERDISCOUNTS.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "

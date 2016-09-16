@@ -191,6 +191,7 @@ protected:
      bool sessionStartedAlready;
      bool skipPaymentFormDeletion;
      bool CheckForCard(TPaymentTransaction &PaymentTransaction);
+     bool ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction);
      bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
      bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
 };

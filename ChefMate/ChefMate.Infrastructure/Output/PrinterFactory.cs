@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Printing;
 
 namespace Chefmate.Infrastructure.Output
 {
@@ -36,8 +37,13 @@ namespace Chefmate.Infrastructure.Output
 
         private string getPrinterName()
         {
-            //return "\\\\Test2\\ReceiptPrinter";
-            return "ChefMatePrinter";
+            foreach (string printer in PrinterSettings.InstalledPrinters)
+            {
+                if (printer.Equals("ChefMatePrinter", StringComparison.InvariantCultureIgnoreCase))
+                    return printer;
+            }
+            var settings = new PrinterSettings();
+            return settings.PrinterName;
         }
     }
 }

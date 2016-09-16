@@ -663,11 +663,11 @@ HITEM TXMLOrderSmartManager::AddItem(
 								TCMHostname inHostname,
 								__int32     inDBKey,
 								__int32     inOrderItemDBKey,
-								AnsiString  inName,
-								AnsiString  inKitchenName,
+                              AnsiString    inName,
+							  AnsiString    inKitchenName,
 								__int32     inServingCourseKey,
 								__int32     inCourseKey,
-							  UnicodeString inNote )
+							  AnsiString    inNote )
 {
 	HITEM result = 0;
   	try
@@ -676,7 +676,7 @@ HITEM TXMLOrderSmartManager::AddItem(
 										inOrderDocHandle,
 										inHostname );
 
-		result = xmlOrderDoc->AddItem( inDBKey,
+       	result = xmlOrderDoc->AddItem( inDBKey,
 									   inOrderItemDBKey,
 									   inName,
 									   inKitchenName,

@@ -33,7 +33,7 @@ namespace ChefMate.Communication.Receiver
         }
         protected string SaveStream(MemoryStream inStream)
         {
-            StreamReader reader = new StreamReader(inStream);
+            StreamReader reader = new StreamReader(inStream, System.Text.Encoding.Default);
 
             inStream.Position = 0;
             string dataString = reader.ReadToEnd();

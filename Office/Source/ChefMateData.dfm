@@ -1,7 +1,7 @@
 object dmChefMateData: TdmChefMateData
   OldCreateOrder = False
   Left = 360
-  Top = 54
+  Top = 60
   Height = 476
   Width = 524
   object ilTreeImages: TImageList

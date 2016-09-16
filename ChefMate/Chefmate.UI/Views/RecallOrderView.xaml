@@ -100,7 +100,7 @@
         </ScrollViewer>
         <ScrollViewer Name="ItemsScrollBar" Grid.Row="1" Grid.Column="1" Margin="5,0,5,0"
                       HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
-            <DataGrid  ItemsSource="{Binding SelectedOrder.Items}" Width="{Binding ElementName=ItemsScrollBar, Path=ActualWidth}" >
+            <DataGrid  ItemsSource="{Binding SelectedOrderItems}" Width="{Binding ElementName=ItemsScrollBar, Path=ActualWidth}" >
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Serving Course" Width=".33*">
                         <DataGridTemplateColumn.CellTemplate>
@@ -128,6 +128,7 @@
         </ScrollViewer>
         <Label Grid.Row="2" Grid.Column="0" Style="{StaticResource FormLabel}" Foreground="Red" Content="{Binding StatusText}"></Label>
         <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Margin="5" Command="{Binding LoadCommand}" IsEnabled="{Binding CanLoadMoreOrders}">Load More</Button>
             <Button Margin="5" Command="{Binding RecallCommand}">Recall</Button>
             <Button Margin="5" Command="{Binding CloseCommand}">Cancel</Button>
         </StackPanel>

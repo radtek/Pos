@@ -36,7 +36,7 @@ namespace MenumateServices
         {
             switch (inID)
             {
-                case MenumateServicesIdentifier.XeroIntegration: return "MenumateServiceXero";
+                case MenumateServicesIdentifier.AccountingIntegration: return "MenumateServiceAccounting";
 
                 case MenumateServicesIdentifier.Reservations: return "MenumateServiceReservations";
                 case MenumateServicesIdentifier.WebMate: return "MenumateServiceWebMate";
@@ -63,7 +63,7 @@ namespace MenumateServices
         {
             switch (inID)
             {
-                case MenumateServicesIdentifier.XeroIntegration: return "Menumate Xero Integration";
+                case MenumateServicesIdentifier.AccountingIntegration: return "Menumate Accounting Integration";
                 case MenumateServicesIdentifier.SmartLink: return "Menumate SmartLink";
                 case MenumateServicesIdentifier.WebMate: return "Menumate WebMate";
                 case MenumateServicesIdentifier.LoyaltyMate: return "Menumate LoyaltyMate";
@@ -91,7 +91,7 @@ namespace MenumateServices
         {
             switch (inID)
             {
-                case MenumateServicesIdentifier.XeroIntegration: return "Menumate Interface to Xero server";
+                case MenumateServicesIdentifier.AccountingIntegration: return "Menumate Interface to Accounting server";
 
                 case MenumateServicesIdentifier.WebMate: return "Menumate WebMate server";
                 case MenumateServicesIdentifier.LoyaltyMate: return "Menumate LoyaltyMate server";

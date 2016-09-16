@@ -50,33 +50,103 @@ namespace NS_LoyaltyMateWSDL {
 // ************************************************************************ //
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:boolean         - "http://www.w3.org/2001/XMLSchema"[Gbl]
-// !:double          - "http://www.w3.org/2001/XMLSchema"[Gbl]
-// !:dateTime        - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:int             - "http://www.w3.org/2001/XMLSchema"[Gbl]
+// !:dateTime        - "http://www.w3.org/2001/XMLSchema"[Gbl]
+// !:decimal         - "http://www.w3.org/2001/XMLSchema"[Gbl]
+// !:double          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:long            - "http://www.w3.org/2001/XMLSchema"[Gbl]
 
 class SOAP_REMOTABLE_CLASS MMServiceResponse;
 class SOAP_REMOTABLE_CLASS MMServiceResponse2;
 class SOAP_REMOTABLE_CLASS MemberInfo;
+class SOAP_REMOTABLE_CLASS VoucherInfo;
 class SOAP_REMOTABLE_CLASS LoyaltyMemberResponse;
+class SOAP_REMOTABLE_CLASS RequestInfo;
 class SOAP_REMOTABLE_CLASS LoyaltyResponse;
-class SOAP_REMOTABLE_CLASS LoyaltyMemberListResponse;
 class SOAP_REMOTABLE_CLASS TransactionInfo;
+class SOAP_REMOTABLE_CLASS LoyaltyCompanyResponse;
+class SOAP_REMOTABLE_CLASS CompanyInfo;
+class SOAP_REMOTABLE_CLASS DiscountInfo;
 class SOAP_REMOTABLE_CLASS TierLevelInfo;
-class SOAP_REMOTABLE_CLASS LoyaltyTierResponse;
-class SOAP_REMOTABLE_CLASS LoyaltyTierListResponse;
-class SOAP_REMOTABLE_CLASS PointsInfo;
-class SOAP_REMOTABLE_CLASS LoyaltyPointsInfoResponse;
+class SOAP_REMOTABLE_CLASS LoyaltyGiftCardResponse;
+class SOAP_REMOTABLE_CLASS LoyaltyVoucherResponse;
+class SOAP_REMOTABLE_CLASS VoucherTransactionInfo;
+class SOAP_REMOTABLE_CLASS DiscountUsageInfo;
+class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo;
 class SOAP_REMOTABLE_CLASS MemberInfo2;
+class SOAP_REMOTABLE_CLASS VoucherInfo2;
 class SOAP_REMOTABLE_CLASS LoyaltyMemberResponse2;
+class SOAP_REMOTABLE_CLASS RequestInfo2;
 class SOAP_REMOTABLE_CLASS LoyaltyResponse2;
-class SOAP_REMOTABLE_CLASS LoyaltyMemberListResponse2;
 class SOAP_REMOTABLE_CLASS TransactionInfo2;
+class SOAP_REMOTABLE_CLASS LoyaltyCompanyResponse2;
+class SOAP_REMOTABLE_CLASS CompanyInfo2;
+class SOAP_REMOTABLE_CLASS DiscountInfo2;
 class SOAP_REMOTABLE_CLASS TierLevelInfo2;
-class SOAP_REMOTABLE_CLASS LoyaltyTierResponse2;
-class SOAP_REMOTABLE_CLASS LoyaltyTierListResponse2;
-class SOAP_REMOTABLE_CLASS PointsInfo2;
-class SOAP_REMOTABLE_CLASS LoyaltyPointsInfoResponse2;
+class SOAP_REMOTABLE_CLASS LoyaltyGiftCardResponse2;
+class SOAP_REMOTABLE_CLASS LoyaltyVoucherResponse2;
+class SOAP_REMOTABLE_CLASS VoucherTransactionInfo2;
+class SOAP_REMOTABLE_CLASS DiscountUsageInfo2;
+class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo2;
+
+enum class DiscountType   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
+{
+  Percent,
+  Dollar,
+  Combo,
+  ItemMode,
+  SetPrice
+};
+
+class DiscountType_TypeInfoHolder : public TObject {
+  DiscountType __instanceType;
+public:
+__published:
+  __property DiscountType __propType = { read=__instanceType };
+};
+
+enum class DisplayOption   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
+{
+  FixedDescriptionAndAmount,
+  PromptForDescription,
+  PromptForAmount,
+  PromptForDescriptionAndAmount
+};
+
+class DisplayOption_TypeInfoHolder : public TObject {
+  DisplayOption __instanceType;
+public:
+__published:
+  __property DisplayOption __propType = { read=__instanceType };
+};
+
+enum class ImplicationType   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
+{
+  Discount,
+  Surcharge,
+  Point
+};
+
+class ImplicationType_TypeInfoHolder : public TObject {
+  ImplicationType __instanceType;
+public:
+__published:
+  __property ImplicationType __propType = { read=__instanceType };
+};
+
+enum class ProductPriority   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
+{
+  LowestPriceFirst,
+  HighestPriceFirst,
+  NotApllicable
+};
+
+class ProductPriority_TypeInfoHolder : public TObject {
+  ProductPriority __instanceType;
+public:
+__published:
+  __property ProductPriority __propType = { read=__instanceType };
+};
 
 enum class LoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblSmpl] */
 {
@@ -87,10 +157,13 @@ enum class LoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/Men
   DeleteMemberFailed,
   GetMemberFailed,
   PostTransactionFailed,
-  CreateTierFailed,
-  UpdateTierFailed,
-  DeleteTierFailed,
-  MemberNotExist
+  MemberNotExist,
+  CompanySyncFailed,
+  InvalidGiftVoucher,
+  InvalidPocketVoucher,
+  TransactionFailed,
+  GetGiftCardFailed,
+  GetPocketVoucherFailed
 };
 
 class LoyaltyResponseCode_TypeInfoHolder : public TObject {
@@ -112,8 +185,8 @@ private:
   bool            FDescription_Specified;
   UnicodeString   FMessage;
   bool            FMessage_Specified;
-  bool            FSuccesful;
-  bool            FSuccesful_Specified;
+  bool            FSuccessful;
+  bool            FSuccessful_Specified;
   void __fastcall SetDescription(int Index, UnicodeString _prop_val)
   {  FDescription = _prop_val; FDescription_Specified = true;  }
   bool __fastcall Description_Specified(int Index)
@@ -122,14 +195,14 @@ private:
   {  FMessage = _prop_val; FMessage_Specified = true;  }
   bool __fastcall Message_Specified(int Index)
   {  return FMessage_Specified;  }
-  void __fastcall SetSuccesful(int Index, bool _prop_val)
-  {  FSuccesful = _prop_val; FSuccesful_Specified = true;  }
-  bool __fastcall Succesful_Specified(int Index)
-  {  return FSuccesful_Specified;  }
+  void __fastcall SetSuccessful(int Index, bool _prop_val)
+  {  FSuccessful = _prop_val; FSuccessful_Specified = true;  }
+  bool __fastcall Successful_Specified(int Index)
+  {  return FSuccessful_Specified;  }
 __published:
   __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
   __property UnicodeString    Message = { index=(IS_OPTN|IS_NLBL), read=FMessage, write=SetMessage, stored = Message_Specified };
-  __property bool        Succesful = { index=(IS_OPTN), read=FSuccesful, write=SetSuccesful, stored = Succesful_Specified };
+  __property bool       Successful = { index=(IS_OPTN), read=FSuccessful, write=SetSuccessful, stored = Successful_Specified };
 };
 
 
@@ -145,6 +218,7 @@ __published:
 };
 
 
+typedef DynamicArray<VoucherInfo*> ArrayOfVoucherInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
 
 
 // ************************************************************************ //
@@ -199,6 +273,8 @@ private:
   bool            FMemberCardCode_Specified;
   int             FMemberType;
   bool            FMemberType_Specified;
+  ArrayOfVoucherInfo FMemberVouchers;
+  bool            FMemberVouchers_Specified;
   UnicodeString   FMembershipNumber;
   bool            FMembershipNumber_Specified;
   UnicodeString   FMiddleName;
@@ -315,6 +391,10 @@ private:
   {  FMemberType = _prop_val; FMemberType_Specified = true;  }
   bool __fastcall MemberType_Specified(int Index)
   {  return FMemberType_Specified;  }
+  void __fastcall SetMemberVouchers(int Index, ArrayOfVoucherInfo _prop_val)
+  {  FMemberVouchers = _prop_val; FMemberVouchers_Specified = true;  }
+  bool __fastcall MemberVouchers_Specified(int Index)
+  {  return FMemberVouchers_Specified;  }
   void __fastcall SetMembershipNumber(int Index, UnicodeString _prop_val)
   {  FMembershipNumber = _prop_val; FMembershipNumber_Specified = true;  }
   bool __fastcall MembershipNumber_Specified(int Index)
@@ -390,6 +470,7 @@ __published:
   __property double     LoadedPoints = { index=(IS_OPTN), read=FLoadedPoints, write=SetLoadedPoints, stored = LoadedPoints_Specified };
   __property UnicodeString MemberCardCode = { index=(IS_OPTN|IS_NLBL), read=FMemberCardCode, write=SetMemberCardCode, stored = MemberCardCode_Specified };
   __property int        MemberType = { index=(IS_OPTN), read=FMemberType, write=SetMemberType, stored = MemberType_Specified };
+  __property ArrayOfVoucherInfo MemberVouchers = { index=(IS_OPTN|IS_NLBL), read=FMemberVouchers, write=SetMemberVouchers, stored = MemberVouchers_Specified };
   __property UnicodeString MembershipNumber = { index=(IS_OPTN|IS_NLBL), read=FMembershipNumber, write=SetMembershipNumber, stored = MembershipNumber_Specified };
   __property UnicodeString MiddleName = { index=(IS_OPTN|IS_NLBL), read=FMiddleName, write=SetMiddleName, stored = MiddleName_Specified };
   __property UnicodeString     Mobile = { index=(IS_OPTN|IS_NLBL), read=FMobile, write=SetMobile, stored = Mobile_Specified };
@@ -402,6 +483,39 @@ __published:
   __property UnicodeString   UniqueId = { index=(IS_OPTN|IS_NLBL), read=FUniqueId, write=SetUniqueId, stored = UniqueId_Specified };
   __property TXSDateTime* YearStartDate = { index=(IS_OPTN|IS_NLBL), read=FYearStartDate, write=SetYearStartDate, stored = YearStartDate_Specified };
   __property UnicodeString    ZipCode = { index=(IS_OPTN|IS_NLBL), read=FZipCode, write=SetZipCode, stored = ZipCode_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : VoucherInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class VoucherInfo : public TRemotable {
+private:
+  UnicodeString   FDiscountCode;
+  bool            FDiscountCode_Specified;
+  int             FNumberOfUsesRemaining;
+  bool            FNumberOfUsesRemaining_Specified;
+  UnicodeString   FVoucherName;
+  bool            FVoucherName_Specified;
+  void __fastcall SetDiscountCode(int Index, UnicodeString _prop_val)
+  {  FDiscountCode = _prop_val; FDiscountCode_Specified = true;  }
+  bool __fastcall DiscountCode_Specified(int Index)
+  {  return FDiscountCode_Specified;  }
+  void __fastcall SetNumberOfUsesRemaining(int Index, int _prop_val)
+  {  FNumberOfUsesRemaining = _prop_val; FNumberOfUsesRemaining_Specified = true;  }
+  bool __fastcall NumberOfUsesRemaining_Specified(int Index)
+  {  return FNumberOfUsesRemaining_Specified;  }
+  void __fastcall SetVoucherName(int Index, UnicodeString _prop_val)
+  {  FVoucherName = _prop_val; FVoucherName_Specified = true;  }
+  bool __fastcall VoucherName_Specified(int Index)
+  {  return FVoucherName_Specified;  }
+__published:
+  __property UnicodeString DiscountCode = { index=(IS_OPTN|IS_NLBL), read=FDiscountCode, write=SetDiscountCode, stored = DiscountCode_Specified };
+  __property int        NumberOfUsesRemaining = { index=(IS_OPTN), read=FNumberOfUsesRemaining, write=SetNumberOfUsesRemaining, stored = NumberOfUsesRemaining_Specified };
+  __property UnicodeString VoucherName = { index=(IS_OPTN|IS_NLBL), read=FVoucherName, write=SetVoucherName, stored = VoucherName_Specified };
 };
 
 
@@ -437,6 +551,35 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : RequestInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class RequestInfo : public TRemotable {
+private:
+  UnicodeString   FRequestKey;
+  bool            FRequestKey_Specified;
+  TXSDateTime*    FRequestTime;
+  bool            FRequestTime_Specified;
+  void __fastcall SetRequestKey(int Index, UnicodeString _prop_val)
+  {  FRequestKey = _prop_val; FRequestKey_Specified = true;  }
+  bool __fastcall RequestKey_Specified(int Index)
+  {  return FRequestKey_Specified;  }
+  void __fastcall SetRequestTime(int Index, TXSDateTime* _prop_val)
+  {  FRequestTime = _prop_val; FRequestTime_Specified = true;  }
+  bool __fastcall RequestTime_Specified(int Index)
+  {  return FRequestTime_Specified;  }
+
+public:
+  __fastcall ~RequestInfo();
+__published:
+  __property UnicodeString RequestKey = { index=(IS_OPTN|IS_NLBL), read=FRequestKey, write=SetRequestKey, stored = RequestKey_Specified };
+  __property TXSDateTime* RequestTime = { index=(IS_OPTN), read=FRequestTime, write=SetRequestTime, stored = RequestTime_Specified };
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : LoyaltyResponse, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
@@ -453,36 +596,6 @@ __published:
 };
 
 
-typedef DynamicArray<MemberInfo*> ArrayOfMemberInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
-
-
-// ************************************************************************ //
-// XML       : LoyaltyMemberListResponse, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
-// ************************************************************************ //
-class LoyaltyMemberListResponse : public MMServiceResponse {
-private:
-  ArrayOfMemberInfo FMemberList;
-  bool            FMemberList_Specified;
-  LoyaltyResponseCode FResponseCode;
-  bool            FResponseCode_Specified;
-  void __fastcall SetMemberList(int Index, ArrayOfMemberInfo _prop_val)
-  {  FMemberList = _prop_val; FMemberList_Specified = true;  }
-  bool __fastcall MemberList_Specified(int Index)
-  {  return FMemberList_Specified;  }
-  void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
-  {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
-  bool __fastcall ResponseCode_Specified(int Index)
-  {  return FResponseCode_Specified;  }
-
-public:
-  __fastcall ~LoyaltyMemberListResponse();
-__published:
-  __property ArrayOfMemberInfo MemberList = { index=(IS_OPTN|IS_NLBL), read=FMemberList, write=SetMemberList, stored = MemberList_Specified };
-  __property LoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
-};
-
-
 
 
 // ************************************************************************ //
@@ -491,6 +604,8 @@ __published:
 // ************************************************************************ //
 class TransactionInfo : public TRemotable {
 private:
+  UnicodeString   FInvoiceNumber;
+  bool            FInvoiceNumber_Specified;
   double          FPointsDelta;
   bool            FPointsDelta_Specified;
   int             FPointsType;
@@ -501,6 +616,10 @@ private:
   bool            FTransactionDate_Specified;
   UnicodeString   FUniqueId;
   bool            FUniqueId_Specified;
+  void __fastcall SetInvoiceNumber(int Index, UnicodeString _prop_val)
+  {  FInvoiceNumber = _prop_val; FInvoiceNumber_Specified = true;  }
+  bool __fastcall InvoiceNumber_Specified(int Index)
+  {  return FInvoiceNumber_Specified;  }
   void __fastcall SetPointsDelta(int Index, double _prop_val)
   {  FPointsDelta = _prop_val; FPointsDelta_Specified = true;  }
   bool __fastcall PointsDelta_Specified(int Index)
@@ -525,11 +644,248 @@ private:
 public:
   __fastcall ~TransactionInfo();
 __published:
+  __property UnicodeString InvoiceNumber = { index=(IS_OPTN|IS_NLBL), read=FInvoiceNumber, write=SetInvoiceNumber, stored = InvoiceNumber_Specified };
   __property double     PointsDelta = { index=(IS_OPTN), read=FPointsDelta, write=SetPointsDelta, stored = PointsDelta_Specified };
   __property int        PointsType = { index=(IS_OPTN), read=FPointsType, write=SetPointsType, stored = PointsType_Specified };
   __property __int64      SiteCode = { index=(IS_OPTN), read=FSiteCode, write=SetSiteCode, stored = SiteCode_Specified };
   __property TXSDateTime* TransactionDate = { index=(IS_OPTN), read=FTransactionDate, write=SetTransactionDate, stored = TransactionDate_Specified };
   __property UnicodeString   UniqueId = { index=(IS_OPTN|IS_NLBL), read=FUniqueId, write=SetUniqueId, stored = UniqueId_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : LoyaltyCompanyResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class LoyaltyCompanyResponse : public MMServiceResponse {
+private:
+  CompanyInfo*    FCompanyInfo;
+  bool            FCompanyInfo_Specified;
+  LoyaltyResponseCode FResponseCode;
+  bool            FResponseCode_Specified;
+  void __fastcall SetCompanyInfo(int Index, CompanyInfo* _prop_val)
+  {  FCompanyInfo = _prop_val; FCompanyInfo_Specified = true;  }
+  bool __fastcall CompanyInfo_Specified(int Index)
+  {  return FCompanyInfo_Specified;  }
+  void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
+  {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
+  bool __fastcall ResponseCode_Specified(int Index)
+  {  return FResponseCode_Specified;  }
+
+public:
+  __fastcall ~LoyaltyCompanyResponse();
+__published:
+  __property CompanyInfo* CompanyInfo = { index=(IS_OPTN|IS_NLBL), read=FCompanyInfo, write=SetCompanyInfo, stored = CompanyInfo_Specified };
+  __property LoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
+};
+
+
+typedef DynamicArray<DiscountInfo*> ArrayOfDiscountInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+typedef DynamicArray<TierLevelInfo*> ArrayOfTierLevelInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : CompanyInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class CompanyInfo : public TRemotable {
+private:
+  ArrayOfDiscountInfo FDiscounts;
+  bool            FDiscounts_Specified;
+  bool            FHasGiftCardsAvailable;
+  bool            FHasGiftCardsAvailable_Specified;
+  bool            FHasPocketVouchersAvailable;
+  bool            FHasPocketVouchersAvailable_Specified;
+  ArrayOfTierLevelInfo FTierLevels;
+  bool            FTierLevels_Specified;
+  void __fastcall SetDiscounts(int Index, ArrayOfDiscountInfo _prop_val)
+  {  FDiscounts = _prop_val; FDiscounts_Specified = true;  }
+  bool __fastcall Discounts_Specified(int Index)
+  {  return FDiscounts_Specified;  }
+  void __fastcall SetHasGiftCardsAvailable(int Index, bool _prop_val)
+  {  FHasGiftCardsAvailable = _prop_val; FHasGiftCardsAvailable_Specified = true;  }
+  bool __fastcall HasGiftCardsAvailable_Specified(int Index)
+  {  return FHasGiftCardsAvailable_Specified;  }
+  void __fastcall SetHasPocketVouchersAvailable(int Index, bool _prop_val)
+  {  FHasPocketVouchersAvailable = _prop_val; FHasPocketVouchersAvailable_Specified = true;  }
+  bool __fastcall HasPocketVouchersAvailable_Specified(int Index)
+  {  return FHasPocketVouchersAvailable_Specified;  }
+  void __fastcall SetTierLevels(int Index, ArrayOfTierLevelInfo _prop_val)
+  {  FTierLevels = _prop_val; FTierLevels_Specified = true;  }
+  bool __fastcall TierLevels_Specified(int Index)
+  {  return FTierLevels_Specified;  }
+
+public:
+  __fastcall ~CompanyInfo();
+__published:
+  __property ArrayOfDiscountInfo  Discounts = { index=(IS_OPTN|IS_NLBL), read=FDiscounts, write=SetDiscounts, stored = Discounts_Specified };
+  __property bool       HasGiftCardsAvailable = { index=(IS_OPTN), read=FHasGiftCardsAvailable, write=SetHasGiftCardsAvailable, stored = HasGiftCardsAvailable_Specified };
+  __property bool       HasPocketVouchersAvailable = { index=(IS_OPTN), read=FHasPocketVouchersAvailable, write=SetHasPocketVouchersAvailable, stored = HasPocketVouchersAvailable_Specified };
+  __property ArrayOfTierLevelInfo TierLevels = { index=(IS_OPTN|IS_NLBL), read=FTierLevels, write=SetTierLevels, stored = TierLevels_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : DiscountInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class DiscountInfo : public TRemotable {
+private:
+  int             FAppearanceOrder;
+  bool            FAppearanceOrder_Specified;
+  UnicodeString   FCode;
+  bool            FCode_Specified;
+  int             FDailyUsageAllowedPerMember;
+  bool            FDailyUsageAllowedPerMember_Specified;
+  UnicodeString   FDescription;
+  bool            FDescription_Specified;
+  int             FDiscountGroup;
+  bool            FDiscountGroup_Specified;
+  __int64         FDiscountId;
+  bool            FDiscountId_Specified;
+  DiscountType    FDiscountType;
+  bool            FDiscountType_Specified;
+  DisplayOption   FDisplayAs;
+  bool            FDisplayAs_Specified;
+  ImplicationType FImplicationType;
+  bool            FImplicationType_Specified;
+  bool            FIsActive;
+  bool            FIsActive_Specified;
+  bool            FIsCategoryFilterApplicable;
+  bool            FIsCategoryFilterApplicable_Specified;
+  bool            FIsMemberExemptDiscount;
+  bool            FIsMemberExemptDiscount_Specified;
+  bool            FIsMembersOnlyDiscount;
+  bool            FIsMembersOnlyDiscount_Specified;
+  int             FMaximumNumberOfItemsAllowed;
+  bool            FMaximumNumberOfItemsAllowed_Specified;
+  TXSDecimal*     FMaximumValue;
+  bool            FMaximumValue_Specified;
+  int             FMinimumNumberOfItemsAllowed;
+  bool            FMinimumNumberOfItemsAllowed_Specified;
+  UnicodeString   FName;
+  bool            FName_Specified;
+  int             FPriorityOrder;
+  bool            FPriorityOrder_Specified;
+  ProductPriority FProductPriority;
+  bool            FProductPriority_Specified;
+  TXSDecimal*     FRoundToDecimalPlaces;
+  bool            FRoundToDecimalPlaces_Specified;
+  TXSDecimal*     FValue;
+  bool            FValue_Specified;
+  void __fastcall SetAppearanceOrder(int Index, int _prop_val)
+  {  FAppearanceOrder = _prop_val; FAppearanceOrder_Specified = true;  }
+  bool __fastcall AppearanceOrder_Specified(int Index)
+  {  return FAppearanceOrder_Specified;  }
+  void __fastcall SetCode(int Index, UnicodeString _prop_val)
+  {  FCode = _prop_val; FCode_Specified = true;  }
+  bool __fastcall Code_Specified(int Index)
+  {  return FCode_Specified;  }
+  void __fastcall SetDailyUsageAllowedPerMember(int Index, int _prop_val)
+  {  FDailyUsageAllowedPerMember = _prop_val; FDailyUsageAllowedPerMember_Specified = true;  }
+  bool __fastcall DailyUsageAllowedPerMember_Specified(int Index)
+  {  return FDailyUsageAllowedPerMember_Specified;  }
+  void __fastcall SetDescription(int Index, UnicodeString _prop_val)
+  {  FDescription = _prop_val; FDescription_Specified = true;  }
+  bool __fastcall Description_Specified(int Index)
+  {  return FDescription_Specified;  }
+  void __fastcall SetDiscountGroup(int Index, int _prop_val)
+  {  FDiscountGroup = _prop_val; FDiscountGroup_Specified = true;  }
+  bool __fastcall DiscountGroup_Specified(int Index)
+  {  return FDiscountGroup_Specified;  }
+  void __fastcall SetDiscountId(int Index, __int64 _prop_val)
+  {  FDiscountId = _prop_val; FDiscountId_Specified = true;  }
+  bool __fastcall DiscountId_Specified(int Index)
+  {  return FDiscountId_Specified;  }
+  void __fastcall SetDiscountType(int Index, DiscountType _prop_val)
+  {  FDiscountType = _prop_val; FDiscountType_Specified = true;  }
+  bool __fastcall DiscountType_Specified(int Index)
+  {  return FDiscountType_Specified;  }
+  void __fastcall SetDisplayAs(int Index, DisplayOption _prop_val)
+  {  FDisplayAs = _prop_val; FDisplayAs_Specified = true;  }
+  bool __fastcall DisplayAs_Specified(int Index)
+  {  return FDisplayAs_Specified;  }
+  void __fastcall SetImplicationType(int Index, ImplicationType _prop_val)
+  {  FImplicationType = _prop_val; FImplicationType_Specified = true;  }
+  bool __fastcall ImplicationType_Specified(int Index)
+  {  return FImplicationType_Specified;  }
+  void __fastcall SetIsActive(int Index, bool _prop_val)
+  {  FIsActive = _prop_val; FIsActive_Specified = true;  }
+  bool __fastcall IsActive_Specified(int Index)
+  {  return FIsActive_Specified;  }
+  void __fastcall SetIsCategoryFilterApplicable(int Index, bool _prop_val)
+  {  FIsCategoryFilterApplicable = _prop_val; FIsCategoryFilterApplicable_Specified = true;  }
+  bool __fastcall IsCategoryFilterApplicable_Specified(int Index)
+  {  return FIsCategoryFilterApplicable_Specified;  }
+  void __fastcall SetIsMemberExemptDiscount(int Index, bool _prop_val)
+  {  FIsMemberExemptDiscount = _prop_val; FIsMemberExemptDiscount_Specified = true;  }
+  bool __fastcall IsMemberExemptDiscount_Specified(int Index)
+  {  return FIsMemberExemptDiscount_Specified;  }
+  void __fastcall SetIsMembersOnlyDiscount(int Index, bool _prop_val)
+  {  FIsMembersOnlyDiscount = _prop_val; FIsMembersOnlyDiscount_Specified = true;  }
+  bool __fastcall IsMembersOnlyDiscount_Specified(int Index)
+  {  return FIsMembersOnlyDiscount_Specified;  }
+  void __fastcall SetMaximumNumberOfItemsAllowed(int Index, int _prop_val)
+  {  FMaximumNumberOfItemsAllowed = _prop_val; FMaximumNumberOfItemsAllowed_Specified = true;  }
+  bool __fastcall MaximumNumberOfItemsAllowed_Specified(int Index)
+  {  return FMaximumNumberOfItemsAllowed_Specified;  }
+  void __fastcall SetMaximumValue(int Index, TXSDecimal* _prop_val)
+  {  FMaximumValue = _prop_val; FMaximumValue_Specified = true;  }
+  bool __fastcall MaximumValue_Specified(int Index)
+  {  return FMaximumValue_Specified;  }
+  void __fastcall SetMinimumNumberOfItemsAllowed(int Index, int _prop_val)
+  {  FMinimumNumberOfItemsAllowed = _prop_val; FMinimumNumberOfItemsAllowed_Specified = true;  }
+  bool __fastcall MinimumNumberOfItemsAllowed_Specified(int Index)
+  {  return FMinimumNumberOfItemsAllowed_Specified;  }
+  void __fastcall SetName(int Index, UnicodeString _prop_val)
+  {  FName = _prop_val; FName_Specified = true;  }
+  bool __fastcall Name_Specified(int Index)
+  {  return FName_Specified;  }
+  void __fastcall SetPriorityOrder(int Index, int _prop_val)
+  {  FPriorityOrder = _prop_val; FPriorityOrder_Specified = true;  }
+  bool __fastcall PriorityOrder_Specified(int Index)
+  {  return FPriorityOrder_Specified;  }
+  void __fastcall SetProductPriority(int Index, ProductPriority _prop_val)
+  {  FProductPriority = _prop_val; FProductPriority_Specified = true;  }
+  bool __fastcall ProductPriority_Specified(int Index)
+  {  return FProductPriority_Specified;  }
+  void __fastcall SetRoundToDecimalPlaces(int Index, TXSDecimal* _prop_val)
+  {  FRoundToDecimalPlaces = _prop_val; FRoundToDecimalPlaces_Specified = true;  }
+  bool __fastcall RoundToDecimalPlaces_Specified(int Index)
+  {  return FRoundToDecimalPlaces_Specified;  }
+  void __fastcall SetValue(int Index, TXSDecimal* _prop_val)
+  {  FValue = _prop_val; FValue_Specified = true;  }
+  bool __fastcall Value_Specified(int Index)
+  {  return FValue_Specified;  }
+
+public:
+  __fastcall ~DiscountInfo();
+__published:
+  __property int        AppearanceOrder = { index=(IS_OPTN|IS_NLBL), read=FAppearanceOrder, write=SetAppearanceOrder, stored = AppearanceOrder_Specified };
+  __property UnicodeString       Code = { index=(IS_OPTN|IS_NLBL), read=FCode, write=SetCode, stored = Code_Specified };
+  __property int        DailyUsageAllowedPerMember = { index=(IS_OPTN), read=FDailyUsageAllowedPerMember, write=SetDailyUsageAllowedPerMember, stored = DailyUsageAllowedPerMember_Specified };
+  __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
+  __property int        DiscountGroup = { index=(IS_OPTN), read=FDiscountGroup, write=SetDiscountGroup, stored = DiscountGroup_Specified };
+  __property __int64    DiscountId = { index=(IS_OPTN), read=FDiscountId, write=SetDiscountId, stored = DiscountId_Specified };
+  __property DiscountType DiscountType = { index=(IS_OPTN), read=FDiscountType, write=SetDiscountType, stored = DiscountType_Specified };
+  __property DisplayOption  DisplayAs = { index=(IS_OPTN), read=FDisplayAs, write=SetDisplayAs, stored = DisplayAs_Specified };
+  __property ImplicationType ImplicationType = { index=(IS_OPTN), read=FImplicationType, write=SetImplicationType, stored = ImplicationType_Specified };
+  __property bool         IsActive = { index=(IS_OPTN), read=FIsActive, write=SetIsActive, stored = IsActive_Specified };
+  __property bool       IsCategoryFilterApplicable = { index=(IS_OPTN), read=FIsCategoryFilterApplicable, write=SetIsCategoryFilterApplicable, stored = IsCategoryFilterApplicable_Specified };
+  __property bool       IsMemberExemptDiscount = { index=(IS_OPTN), read=FIsMemberExemptDiscount, write=SetIsMemberExemptDiscount, stored = IsMemberExemptDiscount_Specified };
+  __property bool       IsMembersOnlyDiscount = { index=(IS_OPTN), read=FIsMembersOnlyDiscount, write=SetIsMembersOnlyDiscount, stored = IsMembersOnlyDiscount_Specified };
+  __property int        MaximumNumberOfItemsAllowed = { index=(IS_OPTN), read=FMaximumNumberOfItemsAllowed, write=SetMaximumNumberOfItemsAllowed, stored = MaximumNumberOfItemsAllowed_Specified };
+  __property TXSDecimal* MaximumValue = { index=(IS_OPTN), read=FMaximumValue, write=SetMaximumValue, stored = MaximumValue_Specified };
+  __property int        MinimumNumberOfItemsAllowed = { index=(IS_OPTN), read=FMinimumNumberOfItemsAllowed, write=SetMinimumNumberOfItemsAllowed, stored = MinimumNumberOfItemsAllowed_Specified };
+  __property UnicodeString       Name = { index=(IS_OPTN|IS_NLBL), read=FName, write=SetName, stored = Name_Specified };
+  __property int        PriorityOrder = { index=(IS_OPTN|IS_NLBL), read=FPriorityOrder, write=SetPriorityOrder, stored = PriorityOrder_Specified };
+  __property ProductPriority ProductPriority = { index=(IS_OPTN), read=FProductPriority, write=SetProductPriority, stored = ProductPriority_Specified };
+  __property TXSDecimal* RoundToDecimalPlaces = { index=(IS_OPTN), read=FRoundToDecimalPlaces, write=SetRoundToDecimalPlaces, stored = RoundToDecimalPlaces_Specified };
+  __property TXSDecimal*      Value = { index=(IS_OPTN), read=FValue, write=SetValue, stored = Value_Specified };
 };
 
 
@@ -632,138 +988,238 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : LoyaltyTierResponse, global, <complexType>
+// XML       : LoyaltyGiftCardResponse, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class LoyaltyTierResponse : public MMServiceResponse {
+class LoyaltyGiftCardResponse : public MMServiceResponse {
 private:
+  double          FGiftCardBalance;
+  bool            FGiftCardBalance_Specified;
   LoyaltyResponseCode FResponseCode;
   bool            FResponseCode_Specified;
-  TierLevelInfo*  FTierInfo;
-  bool            FTierInfo_Specified;
+  void __fastcall SetGiftCardBalance(int Index, double _prop_val)
+  {  FGiftCardBalance = _prop_val; FGiftCardBalance_Specified = true;  }
+  bool __fastcall GiftCardBalance_Specified(int Index)
+  {  return FGiftCardBalance_Specified;  }
   void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
   {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
   bool __fastcall ResponseCode_Specified(int Index)
   {  return FResponseCode_Specified;  }
-  void __fastcall SetTierInfo(int Index, TierLevelInfo* _prop_val)
-  {  FTierInfo = _prop_val; FTierInfo_Specified = true;  }
-  bool __fastcall TierInfo_Specified(int Index)
-  {  return FTierInfo_Specified;  }
-
-public:
-  __fastcall ~LoyaltyTierResponse();
 __published:
+  __property double     GiftCardBalance = { index=(IS_OPTN), read=FGiftCardBalance, write=SetGiftCardBalance, stored = GiftCardBalance_Specified };
   __property LoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
-  __property TierLevelInfo*   TierInfo = { index=(IS_OPTN|IS_NLBL), read=FTierInfo, write=SetTierInfo, stored = TierInfo_Specified };
-};
-
-
-typedef DynamicArray<TierLevelInfo*> ArrayOfTierLevelInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
-
-
-// ************************************************************************ //
-// XML       : LoyaltyTierListResponse, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
-// ************************************************************************ //
-class LoyaltyTierListResponse : public MMServiceResponse {
-private:
-  LoyaltyResponseCode FResponseCode;
-  bool            FResponseCode_Specified;
-  ArrayOfTierLevelInfo FTierLevelList;
-  bool            FTierLevelList_Specified;
-  void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
-  {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
-  bool __fastcall ResponseCode_Specified(int Index)
-  {  return FResponseCode_Specified;  }
-  void __fastcall SetTierLevelList(int Index, ArrayOfTierLevelInfo _prop_val)
-  {  FTierLevelList = _prop_val; FTierLevelList_Specified = true;  }
-  bool __fastcall TierLevelList_Specified(int Index)
-  {  return FTierLevelList_Specified;  }
-
-public:
-  __fastcall ~LoyaltyTierListResponse();
-__published:
-  __property LoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
-  __property ArrayOfTierLevelInfo TierLevelList = { index=(IS_OPTN|IS_NLBL), read=FTierLevelList, write=SetTierLevelList, stored = TierLevelList_Specified };
 };
 
 
 
 
 // ************************************************************************ //
-// XML       : PointsInfo, global, <complexType>
+// XML       : LoyaltyVoucherResponse, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class PointsInfo : public TRemotable {
+class LoyaltyVoucherResponse : public MMServiceResponse {
 private:
-  double          FBalance;
-  bool            FBalance_Specified;
-  TXSDateTime*    FEndDate;
-  bool            FEndDate_Specified;
-  int             FPointsType;
-  bool            FPointsType_Specified;
-  TXSDateTime*    FStartDate;
-  bool            FStartDate_Specified;
-  UnicodeString   FUniqueId;
-  bool            FUniqueId_Specified;
-  void __fastcall SetBalance(int Index, double _prop_val)
-  {  FBalance = _prop_val; FBalance_Specified = true;  }
-  bool __fastcall Balance_Specified(int Index)
-  {  return FBalance_Specified;  }
-  void __fastcall SetEndDate(int Index, TXSDateTime* _prop_val)
-  {  FEndDate = _prop_val; FEndDate_Specified = true;  }
-  bool __fastcall EndDate_Specified(int Index)
-  {  return FEndDate_Specified;  }
-  void __fastcall SetPointsType(int Index, int _prop_val)
-  {  FPointsType = _prop_val; FPointsType_Specified = true;  }
-  bool __fastcall PointsType_Specified(int Index)
-  {  return FPointsType_Specified;  }
-  void __fastcall SetStartDate(int Index, TXSDateTime* _prop_val)
-  {  FStartDate = _prop_val; FStartDate_Specified = true;  }
-  bool __fastcall StartDate_Specified(int Index)
-  {  return FStartDate_Specified;  }
-  void __fastcall SetUniqueId(int Index, UnicodeString _prop_val)
-  {  FUniqueId = _prop_val; FUniqueId_Specified = true;  }
-  bool __fastcall UniqueId_Specified(int Index)
-  {  return FUniqueId_Specified;  }
+  LoyaltyResponseCode FResponseCode;
+  bool            FResponseCode_Specified;
+  VoucherInfo*    FVoucherInfo;
+  bool            FVoucherInfo_Specified;
+  void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
+  {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
+  bool __fastcall ResponseCode_Specified(int Index)
+  {  return FResponseCode_Specified;  }
+  void __fastcall SetVoucherInfo(int Index, VoucherInfo* _prop_val)
+  {  FVoucherInfo = _prop_val; FVoucherInfo_Specified = true;  }
+  bool __fastcall VoucherInfo_Specified(int Index)
+  {  return FVoucherInfo_Specified;  }
 
 public:
-  __fastcall ~PointsInfo();
+  __fastcall ~LoyaltyVoucherResponse();
 __published:
-  __property double        Balance = { index=(IS_OPTN), read=FBalance, write=SetBalance, stored = Balance_Specified };
-  __property TXSDateTime*    EndDate = { index=(IS_OPTN), read=FEndDate, write=SetEndDate, stored = EndDate_Specified };
-  __property int        PointsType = { index=(IS_OPTN), read=FPointsType, write=SetPointsType, stored = PointsType_Specified };
-  __property TXSDateTime*  StartDate = { index=(IS_OPTN), read=FStartDate, write=SetStartDate, stored = StartDate_Specified };
-  __property UnicodeString   UniqueId = { index=(IS_OPTN|IS_NLBL), read=FUniqueId, write=SetUniqueId, stored = UniqueId_Specified };
+  __property LoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
+  __property VoucherInfo* VoucherInfo = { index=(IS_OPTN|IS_NLBL), read=FVoucherInfo, write=SetVoucherInfo, stored = VoucherInfo_Specified };
+};
+
+
+typedef DynamicArray<DiscountUsageInfo*> ArrayOfDiscountUsageInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblCplx] */
+
+
+// ************************************************************************ //
+// XML       : VoucherTransactionInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class VoucherTransactionInfo : public TRemotable {
+private:
+  ArrayOfDiscountUsageInfo FDiscountUsages;
+  bool            FDiscountUsages_Specified;
+  UnicodeString   FGiftCardNumber;
+  bool            FGiftCardNumber_Specified;
+  UnicodeString   FInvoiceNumber;
+  bool            FInvoiceNumber_Specified;
+  UnicodeString   FMemberUniqueId;
+  bool            FMemberUniqueId_Specified;
+  double          FMemberVoucherDiscountAmount;
+  bool            FMemberVoucherDiscountAmount_Specified;
+  double          FPocketVoucherDiscountAmount;
+  bool            FPocketVoucherDiscountAmount_Specified;
+  UnicodeString   FPocketVoucherNumber;
+  bool            FPocketVoucherNumber_Specified;
+  double          FPointsRedeemed;
+  bool            FPointsRedeemed_Specified;
+  __int64         FSiteCode;
+  bool            FSiteCode_Specified;
+  double          FTotalSaleAmount;
+  bool            FTotalSaleAmount_Specified;
+  TXSDateTime*    FTransactionDate;
+  bool            FTransactionDate_Specified;
+  UnicodeString   FTransactionReferenceNumber;
+  bool            FTransactionReferenceNumber_Specified;
+  UnicodeString   FVoucherName;
+  bool            FVoucherName_Specified;
+  void __fastcall SetDiscountUsages(int Index, ArrayOfDiscountUsageInfo _prop_val)
+  {  FDiscountUsages = _prop_val; FDiscountUsages_Specified = true;  }
+  bool __fastcall DiscountUsages_Specified(int Index)
+  {  return FDiscountUsages_Specified;  }
+  void __fastcall SetGiftCardNumber(int Index, UnicodeString _prop_val)
+  {  FGiftCardNumber = _prop_val; FGiftCardNumber_Specified = true;  }
+  bool __fastcall GiftCardNumber_Specified(int Index)
+  {  return FGiftCardNumber_Specified;  }
+  void __fastcall SetInvoiceNumber(int Index, UnicodeString _prop_val)
+  {  FInvoiceNumber = _prop_val; FInvoiceNumber_Specified = true;  }
+  bool __fastcall InvoiceNumber_Specified(int Index)
+  {  return FInvoiceNumber_Specified;  }
+  void __fastcall SetMemberUniqueId(int Index, UnicodeString _prop_val)
+  {  FMemberUniqueId = _prop_val; FMemberUniqueId_Specified = true;  }
+  bool __fastcall MemberUniqueId_Specified(int Index)
+  {  return FMemberUniqueId_Specified;  }
+  void __fastcall SetMemberVoucherDiscountAmount(int Index, double _prop_val)
+  {  FMemberVoucherDiscountAmount = _prop_val; FMemberVoucherDiscountAmount_Specified = true;  }
+  bool __fastcall MemberVoucherDiscountAmount_Specified(int Index)
+  {  return FMemberVoucherDiscountAmount_Specified;  }
+  void __fastcall SetPocketVoucherDiscountAmount(int Index, double _prop_val)
+  {  FPocketVoucherDiscountAmount = _prop_val; FPocketVoucherDiscountAmount_Specified = true;  }
+  bool __fastcall PocketVoucherDiscountAmount_Specified(int Index)
+  {  return FPocketVoucherDiscountAmount_Specified;  }
+  void __fastcall SetPocketVoucherNumber(int Index, UnicodeString _prop_val)
+  {  FPocketVoucherNumber = _prop_val; FPocketVoucherNumber_Specified = true;  }
+  bool __fastcall PocketVoucherNumber_Specified(int Index)
+  {  return FPocketVoucherNumber_Specified;  }
+  void __fastcall SetPointsRedeemed(int Index, double _prop_val)
+  {  FPointsRedeemed = _prop_val; FPointsRedeemed_Specified = true;  }
+  bool __fastcall PointsRedeemed_Specified(int Index)
+  {  return FPointsRedeemed_Specified;  }
+  void __fastcall SetSiteCode(int Index, __int64 _prop_val)
+  {  FSiteCode = _prop_val; FSiteCode_Specified = true;  }
+  bool __fastcall SiteCode_Specified(int Index)
+  {  return FSiteCode_Specified;  }
+  void __fastcall SetTotalSaleAmount(int Index, double _prop_val)
+  {  FTotalSaleAmount = _prop_val; FTotalSaleAmount_Specified = true;  }
+  bool __fastcall TotalSaleAmount_Specified(int Index)
+  {  return FTotalSaleAmount_Specified;  }
+  void __fastcall SetTransactionDate(int Index, TXSDateTime* _prop_val)
+  {  FTransactionDate = _prop_val; FTransactionDate_Specified = true;  }
+  bool __fastcall TransactionDate_Specified(int Index)
+  {  return FTransactionDate_Specified;  }
+  void __fastcall SetTransactionReferenceNumber(int Index, UnicodeString _prop_val)
+  {  FTransactionReferenceNumber = _prop_val; FTransactionReferenceNumber_Specified = true;  }
+  bool __fastcall TransactionReferenceNumber_Specified(int Index)
+  {  return FTransactionReferenceNumber_Specified;  }
+  void __fastcall SetVoucherName(int Index, UnicodeString _prop_val)
+  {  FVoucherName = _prop_val; FVoucherName_Specified = true;  }
+  bool __fastcall VoucherName_Specified(int Index)
+  {  return FVoucherName_Specified;  }
+
+public:
+  __fastcall ~VoucherTransactionInfo();
+__published:
+  __property ArrayOfDiscountUsageInfo DiscountUsages = { index=(IS_OPTN|IS_NLBL), read=FDiscountUsages, write=SetDiscountUsages, stored = DiscountUsages_Specified };
+  __property UnicodeString GiftCardNumber = { index=(IS_OPTN|IS_NLBL), read=FGiftCardNumber, write=SetGiftCardNumber, stored = GiftCardNumber_Specified };
+  __property UnicodeString InvoiceNumber = { index=(IS_OPTN|IS_NLBL), read=FInvoiceNumber, write=SetInvoiceNumber, stored = InvoiceNumber_Specified };
+  __property UnicodeString MemberUniqueId = { index=(IS_OPTN|IS_NLBL), read=FMemberUniqueId, write=SetMemberUniqueId, stored = MemberUniqueId_Specified };
+  __property double     MemberVoucherDiscountAmount = { index=(IS_OPTN), read=FMemberVoucherDiscountAmount, write=SetMemberVoucherDiscountAmount, stored = MemberVoucherDiscountAmount_Specified };
+  __property double     PocketVoucherDiscountAmount = { index=(IS_OPTN), read=FPocketVoucherDiscountAmount, write=SetPocketVoucherDiscountAmount, stored = PocketVoucherDiscountAmount_Specified };
+  __property UnicodeString PocketVoucherNumber = { index=(IS_OPTN|IS_NLBL), read=FPocketVoucherNumber, write=SetPocketVoucherNumber, stored = PocketVoucherNumber_Specified };
+  __property double     PointsRedeemed = { index=(IS_OPTN), read=FPointsRedeemed, write=SetPointsRedeemed, stored = PointsRedeemed_Specified };
+  __property __int64      SiteCode = { index=(IS_OPTN), read=FSiteCode, write=SetSiteCode, stored = SiteCode_Specified };
+  __property double     TotalSaleAmount = { index=(IS_OPTN), read=FTotalSaleAmount, write=SetTotalSaleAmount, stored = TotalSaleAmount_Specified };
+  __property TXSDateTime* TransactionDate = { index=(IS_OPTN), read=FTransactionDate, write=SetTransactionDate, stored = TransactionDate_Specified };
+  __property UnicodeString TransactionReferenceNumber = { index=(IS_OPTN|IS_NLBL), read=FTransactionReferenceNumber, write=SetTransactionReferenceNumber, stored = TransactionReferenceNumber_Specified };
+  __property UnicodeString VoucherName = { index=(IS_OPTN|IS_NLBL), read=FVoucherName, write=SetVoucherName, stored = VoucherName_Specified };
 };
 
 
 
 
 // ************************************************************************ //
-// XML       : LoyaltyPointsInfoResponse, global, <complexType>
+// XML       : DiscountUsageInfo, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class LoyaltyPointsInfoResponse : public MMServiceResponse {
+class DiscountUsageInfo : public TRemotable {
 private:
-  PointsInfo*     FPointsInfo;
-  bool            FPointsInfo_Specified;
-  LoyaltyResponseCode FResponseCode;
-  bool            FResponseCode_Specified;
-  void __fastcall SetPointsInfo(int Index, PointsInfo* _prop_val)
-  {  FPointsInfo = _prop_val; FPointsInfo_Specified = true;  }
-  bool __fastcall PointsInfo_Specified(int Index)
-  {  return FPointsInfo_Specified;  }
-  void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
-  {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
-  bool __fastcall ResponseCode_Specified(int Index)
-  {  return FResponseCode_Specified;  }
+  double          FDiscountAmount;
+  bool            FDiscountAmount_Specified;
+  UnicodeString   FDiscountCode;
+  bool            FDiscountCode_Specified;
+  void __fastcall SetDiscountAmount(int Index, double _prop_val)
+  {  FDiscountAmount = _prop_val; FDiscountAmount_Specified = true;  }
+  bool __fastcall DiscountAmount_Specified(int Index)
+  {  return FDiscountAmount_Specified;  }
+  void __fastcall SetDiscountCode(int Index, UnicodeString _prop_val)
+  {  FDiscountCode = _prop_val; FDiscountCode_Specified = true;  }
+  bool __fastcall DiscountCode_Specified(int Index)
+  {  return FDiscountCode_Specified;  }
+__published:
+  __property double     DiscountAmount = { index=(IS_OPTN), read=FDiscountAmount, write=SetDiscountAmount, stored = DiscountAmount_Specified };
+  __property UnicodeString DiscountCode = { index=(IS_OPTN|IS_NLBL), read=FDiscountCode, write=SetDiscountCode, stored = DiscountCode_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ReleasedVoucherInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class ReleasedVoucherInfo : public TRemotable {
+private:
+  ArrayOfDiscountUsageInfo FDiscountCodes;
+  bool            FDiscountCodes_Specified;
+  UnicodeString   FGiftCardNumber;
+  bool            FGiftCardNumber_Specified;
+  UnicodeString   FPocketVoucherNumber;
+  bool            FPocketVoucherNumber_Specified;
+  UnicodeString   FTransactionReferenceNumber;
+  bool            FTransactionReferenceNumber_Specified;
+  UnicodeString   FVoucherName;
+  bool            FVoucherName_Specified;
+  void __fastcall SetDiscountCodes(int Index, ArrayOfDiscountUsageInfo _prop_val)
+  {  FDiscountCodes = _prop_val; FDiscountCodes_Specified = true;  }
+  bool __fastcall DiscountCodes_Specified(int Index)
+  {  return FDiscountCodes_Specified;  }
+  void __fastcall SetGiftCardNumber(int Index, UnicodeString _prop_val)
+  {  FGiftCardNumber = _prop_val; FGiftCardNumber_Specified = true;  }
+  bool __fastcall GiftCardNumber_Specified(int Index)
+  {  return FGiftCardNumber_Specified;  }
+  void __fastcall SetPocketVoucherNumber(int Index, UnicodeString _prop_val)
+  {  FPocketVoucherNumber = _prop_val; FPocketVoucherNumber_Specified = true;  }
+  bool __fastcall PocketVoucherNumber_Specified(int Index)
+  {  return FPocketVoucherNumber_Specified;  }
+  void __fastcall SetTransactionReferenceNumber(int Index, UnicodeString _prop_val)
+  {  FTransactionReferenceNumber = _prop_val; FTransactionReferenceNumber_Specified = true;  }
+  bool __fastcall TransactionReferenceNumber_Specified(int Index)
+  {  return FTransactionReferenceNumber_Specified;  }
+  void __fastcall SetVoucherName(int Index, UnicodeString _prop_val)
+  {  FVoucherName = _prop_val; FVoucherName_Specified = true;  }
+  bool __fastcall VoucherName_Specified(int Index)
+  {  return FVoucherName_Specified;  }
 
 public:
-  __fastcall ~LoyaltyPointsInfoResponse();
+  __fastcall ~ReleasedVoucherInfo();
 __published:
-  __property PointsInfo* PointsInfo = { index=(IS_OPTN|IS_NLBL), read=FPointsInfo, write=SetPointsInfo, stored = PointsInfo_Specified };
-  __property LoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
+  __property ArrayOfDiscountUsageInfo DiscountCodes = { index=(IS_OPTN|IS_NLBL), read=FDiscountCodes, write=SetDiscountCodes, stored = DiscountCodes_Specified };
+  __property UnicodeString GiftCardNumber = { index=(IS_OPTN|IS_NLBL), read=FGiftCardNumber, write=SetGiftCardNumber, stored = GiftCardNumber_Specified };
+  __property UnicodeString PocketVoucherNumber = { index=(IS_OPTN|IS_NLBL), read=FPocketVoucherNumber, write=SetPocketVoucherNumber, stored = PocketVoucherNumber_Specified };
+  __property UnicodeString TransactionReferenceNumber = { index=(IS_OPTN|IS_NLBL), read=FTransactionReferenceNumber, write=SetTransactionReferenceNumber, stored = TransactionReferenceNumber_Specified };
+  __property UnicodeString VoucherName = { index=(IS_OPTN|IS_NLBL), read=FVoucherName, write=SetVoucherName, stored = VoucherName_Specified };
 };
 
 
@@ -774,6 +1230,18 @@ __published:
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
 class MemberInfo2 : public MemberInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : VoucherInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class VoucherInfo2 : public VoucherInfo {
 private:
 __published:
 };
@@ -794,10 +1262,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : LoyaltyResponse, global, <element>
+// XML       : RequestInfo, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class LoyaltyResponse2 : public LoyaltyResponse {
+class RequestInfo2 : public RequestInfo {
 private:
 __published:
 };
@@ -806,10 +1274,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : LoyaltyMemberListResponse, global, <element>
+// XML       : LoyaltyResponse, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class LoyaltyMemberListResponse2 : public LoyaltyMemberListResponse {
+class LoyaltyResponse2 : public LoyaltyResponse {
 private:
 __published:
 };
@@ -830,6 +1298,42 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : LoyaltyCompanyResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class LoyaltyCompanyResponse2 : public LoyaltyCompanyResponse {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : CompanyInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class CompanyInfo2 : public CompanyInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : DiscountInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class DiscountInfo2 : public DiscountInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : TierLevelInfo, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
@@ -842,10 +1346,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : LoyaltyTierResponse, global, <element>
+// XML       : LoyaltyGiftCardResponse, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class LoyaltyTierResponse2 : public LoyaltyTierResponse {
+class LoyaltyGiftCardResponse2 : public LoyaltyGiftCardResponse {
 private:
 __published:
 };
@@ -854,10 +1358,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : LoyaltyTierListResponse, global, <element>
+// XML       : LoyaltyVoucherResponse, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class LoyaltyTierListResponse2 : public LoyaltyTierListResponse {
+class LoyaltyVoucherResponse2 : public LoyaltyVoucherResponse {
 private:
 __published:
 };
@@ -866,10 +1370,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : PointsInfo, global, <element>
+// XML       : VoucherTransactionInfo, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class PointsInfo2 : public PointsInfo {
+class VoucherTransactionInfo2 : public VoucherTransactionInfo {
 private:
 __published:
 };
@@ -878,10 +1382,22 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : LoyaltyPointsInfoResponse, global, <element>
+// XML       : DiscountUsageInfo, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
-class LoyaltyPointsInfoResponse2 : public LoyaltyPointsInfoResponse {
+class DiscountUsageInfo2 : public DiscountUsageInfo {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ReleasedVoucherInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class ReleasedVoucherInfo2 : public ReleasedVoucherInfo {
 private:
 __published:
 };
@@ -902,18 +1418,16 @@ __interface INTERFACE_UUID("{57F4745D-2B20-3175-961E-BD77B1A09506}") IWCFService
 {
 public:
   virtual LoyaltyMemberResponse* SaveMember(const UnicodeString inSyndicateCode, const MemberInfo* inInfo) = 0;
-  virtual LoyaltyResponse* DeleteMember(const UnicodeString inSyndicateCode, const UnicodeString inUniqueId) = 0;
-  virtual LoyaltyMemberResponse* GetMemberByUniqueId(const UnicodeString inSyndicateCode, const UnicodeString inUniqueId) = 0;
-  virtual LoyaltyMemberResponse* GetMemberByCardCode(const UnicodeString inSyndicateCode, const UnicodeString inMemberCode) = 0;
-  virtual LoyaltyMemberResponse* GetMemberByEmail(const UnicodeString inSyndicateCode, const UnicodeString inMemberEmail) = 0;
-  virtual LoyaltyMemberListResponse* GetMemberList(const UnicodeString inSyndicateCode) = 0;
-  virtual LoyaltyResponse* PostTransaction(const UnicodeString inSyndicateCode, const TransactionInfo* transaction) = 0;
-  virtual LoyaltyTierResponse* SaveTierLevel(const UnicodeString inSyndicateCode, const TierLevelInfo* inInfo) = 0;
-  virtual LoyaltyResponse* DeleteTierLevel(const UnicodeString inSyndicateCode, const int tierLevelId) = 0;
-  virtual LoyaltyTierResponse* GetTierLevel(const UnicodeString inSyndicateCode, const int tierId) = 0;
-  virtual LoyaltyTierListResponse* GetAllTierLevel(const UnicodeString inSyndicateCode) = 0;
-  virtual LoyaltyPointsInfoResponse* GetPointsInRange(const UnicodeString inSyndicateCode, const PointsInfo* inInfo) = 0;
+  virtual LoyaltyMemberResponse* GetMemberByUniqueId(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
+  virtual LoyaltyMemberResponse* GetMemberByCardCode(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
+  virtual LoyaltyMemberResponse* GetMemberByEmail(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
   virtual LoyaltyResponse* UpdateMemberCardCode(const UnicodeString inSyndicateCode, const UnicodeString uniqueId, const UnicodeString memberCardCode) = 0;
+  virtual LoyaltyResponse* PostTransaction(const UnicodeString inSyndicateCode, const TransactionInfo* transaction) = 0;
+  virtual LoyaltyCompanyResponse* GetCompanyInformation(const UnicodeString inSyndicateCode) = 0;
+  virtual LoyaltyGiftCardResponse* GetGiftCardBalance(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
+  virtual LoyaltyVoucherResponse* GetPocketVoucherDetail(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
+  virtual LoyaltyResponse* ProcessVoucherTransaction(const UnicodeString inSyndicateCode, const VoucherTransactionInfo* transaction) = 0;
+  virtual LoyaltyResponse* ReleaseVouchers(const UnicodeString inSyndicateCode, const ReleasedVoucherInfo* releasedVoucherInfo) = 0;
 };
 typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;
 

@@ -26,9 +26,11 @@ __published:	// IDE-managed Components
     TTouchBtn *btnOk;
     TTouchBtn *TouchBtn1;
     TTouchBtn *btnEmail;
+    TTouchBtn *btnLastName;
     TLabel *lbeEmail;
     TTouchBtn *btnContactPhone;
     TLabel *lbeContactPhone;
+    TLabel *lbeLastName;
     TTouchBtn *TouchBtn2;
     TLabel *lbeName;
     TGroupBox *GroupBox1;
@@ -44,6 +46,7 @@ __published:	// IDE-managed Components
     TGroupBox *gbLoyaltyMateActivation;
     TLabel *lbeLoyaltyMateActive;
     TTouchBtn *btnActivateLoyaltyMate;
+    TLabel *lbeHeader;
     void __fastcall EditCustomerBasicDetails(TObject *Sender);
     void __fastcall btnOkMouseClick(TObject *Sender);
     void __fastcall FormShow(TObject *Sender);
@@ -61,7 +64,7 @@ __published:	// IDE-managed Components
     void getMemberDetailsFromActivationEmail();
     void toggleActivateAccountButton();
 private:	// User declarations
-        UnicodeString CustomerInfoPointers[3];
+        UnicodeString CustomerInfoPointers[4];
         TMMContactInfo &Info;
 public:		// User declarations
         __fastcall TfrmMemberCreation(TComponent* Owner, TMMContactInfo &info);

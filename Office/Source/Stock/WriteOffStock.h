@@ -73,6 +73,7 @@ __published:	// IDE-managed Components
     void __fastcall btnokOnClick(TObject *Sender);
     void __fastcall btncancelOnClick(TObject *Sender);
     void __fastcall btnAddItemOnClick(TObject *Sender);
+    void __fastcall neQtyKeyPress(TObject *Sender, char &Key);
 private:	// User declarations
     void CostDisplayChange(void);
     void UpdateStockLocation(int StockKey);

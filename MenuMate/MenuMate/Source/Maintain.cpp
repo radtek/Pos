@@ -3473,6 +3473,7 @@ void __fastcall TfrmMaintain::TouchBtnClipInterfaceMouseClick(TObject *Sender)
 void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
 {
     std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
     TVerticalSelection Item;
     Item.Title = "Cancel";
     Item.Properties["Color"] = IntToStr(clMaroon);
@@ -3495,6 +3496,14 @@ void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
     Item2.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     SelectionForm->Items.push_back(Item2);
 
+    TVerticalSelection Item3;
+    Item3.Title = "MYOB";
+    Item3.Properties["Action"] = IntToStr(3);
+    Item3.Properties["Color"] = IntToStr(clNavy);
+    Item3.CloseSelection = true;
+    Item3.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
+    SelectionForm->Items.push_back(Item3);
+
     SelectionForm->ShowModal();
     TVerticalSelection SelectedItem;
     if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -3512,6 +3521,11 @@ void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
                    XeroSettings();
                    break;
                 }
+			case 3 :
+				{
+                   MYOBSettings();
+                   break;
+                }
            }
     }
 }
@@ -3522,49 +3536,108 @@ void TfrmMaintain::InitXeroIntegrationConfig()
 	XeroFolderPath  = TGlobalSettings::Instance().XeroFolderPath;
 	XeroUserName    = TGlobalSettings::Instance().XeroUserName;
 	XeroPassword    = TGlobalSettings::Instance().XeroPassword;
+	MYOBMachineName = TGlobalSettings::Instance().MYOBMachineName;
+	MYOBFolderPath  = TGlobalSettings::Instance().MYOBFolderPath;
+	MYOBUserName    = TGlobalSettings::Instance().MYOBUserName;
+	MYOBPassword    = TGlobalSettings::Instance().MYOBPassword;
 }
 //---------------------------------------------------------------------------
 void TfrmMaintain::XeroSettings()
 {
 	std::auto_ptr<TfrmXeroSettings> frmXeroSettings(TfrmXeroSettings::Create<TfrmXeroSettings>(this));
-	frmXeroSettings->SetAndValidate( XeroMachineName, XeroFolderPath, XeroUserName, XeroPassword );
+	frmXeroSettings->SetAndValidate( XeroMachineName, XeroFolderPath, XeroUserName, XeroPassword,eAccountingXero );
 	if(frmXeroSettings->ShowModal() == mrOk )
 	{
-		XeroMachineName = frmXeroSettings->XeroMachineName;
-		XeroFolderPath  = frmXeroSettings->XeroFolderPath;
-		XeroUserName    = frmXeroSettings->XeroUserName;
-		XeroPassword    = frmXeroSettings->XeroPassword;
+		XeroMachineName = frmXeroSettings->AccountingMachineName;
+		XeroFolderPath  = frmXeroSettings->AccountingFolderPath;
+		XeroUserName    = frmXeroSettings->AccountingUserName;
+		XeroPassword    = frmXeroSettings->AccountingPassword;
         _awaitingPaymentInXero =  frmXeroSettings->AwaitingPayment;
-        SaveXeroConfig();
+        SaveAccountingConfig(eAccountingXero);
 	}
 }
 //---------------------------------------------------------------------------
-void TfrmMaintain::SaveXeroConfig()
+void TfrmMaintain::MYOBSettings()
+{
+	std::auto_ptr<TfrmXeroSettings> frmXeroSettings(TfrmXeroSettings::Create<TfrmXeroSettings>(this));
+	frmXeroSettings->SetAndValidate( MYOBMachineName, MYOBFolderPath, MYOBUserName, MYOBPassword, eAccountingMYOB);
+	if(frmXeroSettings->ShowModal() == mrOk )
+	{
+		MYOBMachineName = frmXeroSettings->AccountingMachineName;
+		MYOBFolderPath  = frmXeroSettings->AccountingFolderPath;
+		MYOBUserName    = frmXeroSettings->AccountingUserName;
+		MYOBPassword    = frmXeroSettings->AccountingPassword;
+        _awaitingPaymentInXero =  frmXeroSettings->AwaitingPayment;
+        SaveAccountingConfig(eAccountingMYOB);
+	}
+}
+//---------------------------------------------------------------------------
+void TfrmMaintain::SaveAccountingConfig(AccountingType accountingType)
 {
 	try
 	{
-		TFolderManager::Instance().SetAndValidate( XeroMachineName, XeroFolderPath, XeroUserName, XeroPassword );
+        if( accountingType != eAccountingMYOB )
+		    TFolderManager::Instance().SetAndValidate( XeroMachineName, XeroFolderPath, XeroUserName, XeroPassword );
+        else
+            TFolderManager::Instance().SetAndValidate( MYOBMachineName, MYOBFolderPath, MYOBUserName, MYOBPassword );
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
 
 		if( TFolderManager::Instance().LastError == fmNO_ERROR )
 		{
-			TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmXeroMachineName, TFolderManager::Instance().HostName );
-			TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmXeroFolderPath,  TFolderManager::Instance().FolderName );
-			TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmXeroUserName,    TFolderManager::Instance().UserName );
-			TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmXeroPassword,    TFolderManager::Instance().Password );
-            TGlobalSettings::Instance().AwaitingPaymentInXero    = _awaitingPaymentInXero;
-            TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAwaitingPaymentInXero, TGlobalSettings::Instance().AwaitingPaymentInXero);
-			TGlobalSettings::Instance().XeroMachineName = TFolderManager::Instance().HostName;
-			TGlobalSettings::Instance().XeroFolderPath  = TFolderManager::Instance().FolderName;
-			TGlobalSettings::Instance().XeroUserName    = TFolderManager::Instance().UserName;
-			TGlobalSettings::Instance().XeroPassword    = TFolderManager::Instance().Password;
+            if(accountingType == eAccountingXero)
+            {
+                TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmXeroMachineName, TFolderManager::Instance().HostName );
+                TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmXeroFolderPath,  TFolderManager::Instance().FolderName );
+                TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmXeroUserName,    TFolderManager::Instance().UserName );
+                TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmXeroPassword,    TFolderManager::Instance().Password );
+                TGlobalSettings::Instance().AwaitingPaymentInXero    = _awaitingPaymentInXero;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAwaitingPaymentInXero, TGlobalSettings::Instance().AwaitingPaymentInXero);
+                TGlobalSettings::Instance().XeroMachineName = TFolderManager::Instance().HostName;
+                TGlobalSettings::Instance().XeroFolderPath  = TFolderManager::Instance().FolderName;
+                TGlobalSettings::Instance().XeroUserName    = TFolderManager::Instance().UserName;
+                TGlobalSettings::Instance().XeroPassword    = TFolderManager::Instance().Password;
+                TGlobalSettings::Instance().IsXeroEnabled = true;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsXeroEnabled, TGlobalSettings::Instance().IsXeroEnabled);
+                TGlobalSettings::Instance().IsMYOBEnabled = false;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsMYOBEnabled);
+            }
+            else if(accountingType == eAccountingMYOB)
+            {
+                TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmMYOBMachineName, TFolderManager::Instance().HostName );
+                TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmMYOBFolderPath,  TFolderManager::Instance().FolderName );
+                TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmMYOBUserName,    TFolderManager::Instance().UserName );
+                TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmMYOBPassword,    TFolderManager::Instance().Password );
+                TGlobalSettings::Instance().AwaitingPaymentInXero    = _awaitingPaymentInXero;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAwaitingPaymentInXero, TGlobalSettings::Instance().AwaitingPaymentInXero);
+                TGlobalSettings::Instance().MYOBMachineName = TFolderManager::Instance().HostName;
+                TGlobalSettings::Instance().MYOBFolderPath  = TFolderManager::Instance().FolderName;
+                TGlobalSettings::Instance().MYOBUserName    = TFolderManager::Instance().UserName;
+                TGlobalSettings::Instance().MYOBPassword    = TFolderManager::Instance().Password;
+                TGlobalSettings::Instance().IsMYOBEnabled = true;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsMYOBEnabled);
+                TGlobalSettings::Instance().IsXeroEnabled = false;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsXeroEnabled, TGlobalSettings::Instance().IsXeroEnabled);
+                TMYOBIntegration::Instance().MYOBMachineName = TGlobalSettings::Instance().MYOBMachineName;
+                TMYOBIntegration::Instance().MYOBFolderPath  = TGlobalSettings::Instance().MYOBFolderPath;
+                TMYOBIntegration::Instance().MYOBUserName    = TGlobalSettings::Instance().MYOBUserName;
+                TMYOBIntegration::Instance().MYOBPassword    = TGlobalSettings::Instance().MYOBPassword;
+            }
 		}
 		else
 		{
             TFolderManager::Instance().FolderName = "";
             TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmXeroFolderPath, TFolderManager::Instance().FolderName );
-			MessageBox("Failed to save Xero Integration configuration. " + TFolderManager::Instance().LastErrorMsg, "Error", MB_OK);
+            if(accountingType == eAccountingXero)
+            {
+                TGlobalSettings::Instance().IsXeroEnabled = false;
+    			MessageBox("Failed to save Xero Integration configuration. " + TFolderManager::Instance().LastErrorMsg, "Error", MB_OK);
+            }
+            else
+            {
+                TGlobalSettings::Instance().IsMYOBEnabled = false;
+                MessageBox("Failed to save MYOB Integration configuration. " + TFolderManager::Instance().LastErrorMsg, "Error", MB_OK);
+            }
         }
 		DBTransaction.Commit();
 	}

@@ -17,6 +17,8 @@ XPatronAverageDetailsReportSection::~XPatronAverageDetailsReportSection()
 
 void XPatronAverageDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+   if(!printOut->BlindBalanceUsed)
+      return;
    PrintPatronStatistics(printOut);
    PrintChitStatistics(printOut);
 }

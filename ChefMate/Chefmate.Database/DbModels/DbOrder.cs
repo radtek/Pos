@@ -42,7 +42,7 @@ namespace Chefmate.Database.DbModels
                 DbOrderGroup.AddOrderGroups(order.ServingCourseGroups);
                 DbOrderGroup.AddOrderGroups(order.CourseGroups);
                 if (addItems)
-                    DbOrderItem.AddOrderItems(order.Items, terminalKey);
+                    DbOrderItem.AddOrderItems(order.Items, terminalKey, order.OrderKey);
             }
 
         }
@@ -57,14 +57,26 @@ namespace Chefmate.Database.DbModels
             }
             return totalOrders;
         }
-        public static ObservableCollection<Order> GetBumpedOrders()
+        public static ObservableCollection<Order> GetBumpedOrders(int skipCount, int orderCount, ref bool canLoadMore)
         {
             var totalOrders = new ObservableCollection<Order>();
             var orderKeys = GetBumpedOrderKeys();
-            foreach (var orderKey in orderKeys)
+            int endIndex = 0;
+            if (orderKeys.Count > (skipCount + orderCount))
             {
-                if (orderKey > 0)
-                    totalOrders.Add(GetOrder(orderKey, 0, true));
+                endIndex = skipCount + orderCount;
+                canLoadMore = true;
+            }
+            else
+            {
+                endIndex = orderKeys.Count;
+                canLoadMore = false;
+            }
+
+            for (int i = skipCount; i < endIndex; i++)
+            {
+                if (orderKeys[i] > 0)
+                    totalOrders.Add(GetOrder(orderKeys[i]));
             }
             return totalOrders;
         }
@@ -239,6 +251,7 @@ namespace Chefmate.Database.DbModels
         }
         private static void FilterItem(Order order, Item item)
         {
+            item.OrderKey = order.OrderKey;
             bool servingCourseFound = false;
             bool courseFound = false;
             var servingCourse = order.ServingCourseGroups.FirstOrDefault(s => s.OrderGroupKey == item.ServingCourseKey);

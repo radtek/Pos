@@ -28,122 +28,134 @@ class TfrmPaymentType : public TZForm
 
 	friend TZForm;
 __published:	// IDE-managed Components
-	TTimer *Timer1;
-   TPanel *Panel2;
-   TPanel *Panel5;
-   TPanel *Panel12;
-   TPanel *Panel7;
-   TTouchBtn *btnPrelim;
-   TPanel *Panel9;
-   TLabel *lbeMembership;
-   TMemo *Memo1;
-   TTouchGrid *tgPayments;
-	TPanel *Panel25;
-	TPanel *Panel6;
-	TPanel *Panel4;
-	TPanel *Panel1;
-	TLabel *Label2;
-	TLabel *Label1;
-	TLabel *lbeDiscountSurcharge;
-	TStaticText *stChange;
-	TStaticText *stBalance;
-	TStaticText *stDiscount;
-	TPanel *Panel3;
-	TTouchNumpad *tnWorkingAmount;
-	TNumpadDisplay *ndWorkingAmount;
-	TPanel *Panel8;
-	TTouchBtn *tbCredit;
-	TTouchBtn *tbPatronCount;
-	TTouchBtn *tbtnDiscountSurcharge;
-	TTouchBtn *tbtnRemoveTaxes;
-	TTouchBtn *btnReceiptUp;
-	TTouchBtn *btnReceiptDown;
-	TTouchBtn *btnCancel;
-   void __fastcall FormShow(TObject *Sender);
-	void __fastcall FormResize(TObject *Sender);
-	void __fastcall btnPrelimClick(TObject *Sender);
-	void __fastcall pnlCancelClick(TObject *Sender);
-	void __fastcall stDoneClick(TObject *Sender);
-   void __fastcall FormCreate(TObject *Sender);
-	void __fastcall btnReceiptUpMouseDown(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y);
-	void __fastcall btnReceiptUpMouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y);
-	void __fastcall btnReceiptDownMouseDown(TObject *Sender,
-          TMouseButton Button, TShiftState Shift, int X, int Y);
-	void __fastcall btnReceiptDownMouseUp(TObject *Sender,
-          TMouseButton Button, TShiftState Shift, int X, int Y);
-	void __fastcall Timer1Timer(TObject *Sender);
-	void __fastcall lbeCLRMouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y);
-	void __fastcall lbeDiscountClick(TObject *Sender);
-	void __fastcall lbeRemoveTaxClick(TObject *Sender);
-	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
-	void __fastcall tbPatronCountClick(TObject *Sender);
-	void __fastcall tbCreditClick(TObject *Sender);
-	void __fastcall tnWorkingAmountClick(TObject *Sender, TNumpadKey Key);
-   void __fastcall tgPaymentsMouseClick(TObject *Sender,
-          TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
+    TTimer *Timer1;
+    TPanel *Panel2;
+    TPanel *Panel5;
+    TPanel *Panel12;
+    TPanel *Panel7;
+    TTouchBtn *btnPrelim;
+    TPanel *Panel9;
+    TLabel *lbeMembership;
+    TMemo *Memo1;
+    TTouchGrid *tgPayments;
+    TPanel *Panel25;
+    TPanel *Panel6;
+    TPanel *Panel4;
+    TPanel *Panel1;
+    TLabel *Label2;
+    TLabel *Label1;
+    TLabel *lbeDiscountSurcharge;
+    TStaticText *stChange;
+    TStaticText *stBalance;
+    TStaticText *stDiscount;
+    TPanel *Panel3;
+    TTouchNumpad *tnWorkingAmount;
+    TNumpadDisplay *ndWorkingAmount;
+    TPanel *Panel8;
+    TTouchBtn *tbCredit;
+    TTouchBtn *tbPatronCount;
+    TTouchBtn *tbtnDiscountSurcharge;
+    TTouchBtn *tbtnRemoveTaxes;
+    TTouchBtn *btnReceiptUp;
+    TTouchBtn *btnReceiptDown;
+    TTouchBtn *btnCancel;
+    void __fastcall FormShow(TObject *Sender);
+    void __fastcall FormResize(TObject *Sender);
+    void __fastcall btnPrelimClick(TObject *Sender);
+    void __fastcall pnlCancelClick(TObject *Sender);
+    void __fastcall stDoneClick(TObject *Sender);
+    void __fastcall FormCreate(TObject *Sender);
+    void __fastcall btnReceiptUpMouseDown(TObject *Sender, TMouseButton Button,
+    TShiftState Shift, int X, int Y);
+    void __fastcall btnReceiptUpMouseUp(TObject *Sender, TMouseButton Button,
+    TShiftState Shift, int X, int Y);
+    void __fastcall btnReceiptDownMouseDown(TObject *Sender,
+    TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall btnReceiptDownMouseUp(TObject *Sender,
+    TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall Timer1Timer(TObject *Sender);
+    void __fastcall lbeCLRMouseUp(TObject *Sender, TMouseButton Button,
+    TShiftState Shift, int X, int Y);
+    void __fastcall lbeDiscountClick(TObject *Sender);
+    void __fastcall lbeRemoveTaxClick(TObject *Sender);
+    void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+    void __fastcall tbPatronCountClick(TObject *Sender);
+    void __fastcall tbCreditClick(TObject *Sender);
+    void __fastcall tnWorkingAmountClick(TObject *Sender, TNumpadKey Key);
+    void __fastcall tgPaymentsMouseClick(TObject *Sender,
+    TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
 
 private:	// User declarations
 
-	static TForm *WinOwner;
+    static TForm *WinOwner;
     bool isRefundButtonVisible;
     bool isRefundInProgress;
     bool index_Thor;
     bool IsWrkPayAmountChanged;
     bool IsVoucher;
-	void __fastcall CreateParams(Controls::TCreateParams &params);
+    void __fastcall CreateParams(Controls::TCreateParams &params);
     void HideInvisibleRows();
-
-   void __fastcall BtnPayment(TPayment *Payment);
-   void __fastcall BtnPaymentAlt(TPayment *Payment);
+    void __fastcall BtnPayment(TPayment *Payment);
+    void __fastcall BtnPaymentAlt(TPayment *Payment);
     void RemoveTaxes(TStringList* removedTaxes);
     void GetOrderTaxes(TStringList* taxList);
     void GetRemovedTaxes(TStringList* removedTaxes);
     void PopulateReceipt(TReqPrintJob *Receipt);
-	void ShowReceipt();
-	Currency wrkPayAmount;
-	void DisableOtherElectronicPayments(TPayment *inPayment);
-	void DisableCashOutElectronicPayments();
-	void EnableCashOutElectronicPayments();
-	bool NoElectronicPayments();
-	void GetPaymentNote(TPayment * Payment);
-	void ShowPaymentTotals(bool MembersDiscount = false);
-	void __fastcall ApplyDiscount(int DiscountKey,int ContactKey,TDiscountSource DiscountSource = dsMMUser);
-	void RemoveMembershipDiscounts();
-	// For scrolling the receipt
-	TWinControl *ScrollingControl;
-	TControl *ButtonClicked;
-	bool ScrollUp;
-	void Reset();
-        Currency GetAvailableRedeemPoints(TPaymentTransaction PointsTransaction);
-	Currency PointsKnapsack(TList *Orders, Currency AvailablePoints, Currency StepSize = MIN_CURRENCY_VALUE);
-        void  ProcessPointPayment(TPayment *Payment);
-        Currency GetTotalWeightInOrder(TList *Orders);
-        Currency CalculatePointsForWeight(TList *Orders);
-        void CalculateRedeemedPoints(TList *Orders,TRedeemPointsInformation *RedeemPointsInformation,
-                                     Currency MaxAmountToRedeem, bool isPaybyWeight);
-        void CalculatePointsWeighedItem(TItemComplete *Order,TTierLevel *TierLevel,TRedeemPointsInformation *RedeemPointsInformation,
-                                         Currency MaxAmountToRedeem);
-        void CalculatePointsNonWeighedItem(TItemComplete *Order,TTierLevel *TierLevel,TRedeemPointsInformation *RedeemPointsInformation,
-                        Currency MaxAmountToRedeem);
-        void CalculatePoints(Currency Qty, Currency Cost,TTierLevel *TierLevel, Currency MaxValue,
-                TRedeemPointsInformation *RedeemPointsInformation,bool IsWeighted);
-        Currency GetPointsForPrice(Currency value, Currency Cost,TTierLevel *TierLevel);
-        Currency CalculateWeightForPoints(Currency Points);
+    void ShowReceipt();
+    Currency wrkPayAmount;
+    void DisableOtherElectronicPayments(TPayment *inPayment);
+    void DisableCashOutElectronicPayments();
+    void EnableCashOutElectronicPayments();
+    bool NoElectronicPayments();
+    void GetPaymentNote(TPayment * Payment);
+    void ShowPaymentTotals(bool MembersDiscount = false);
+    void __fastcall ApplyDiscount(int DiscountKey,int ContactKey,TDiscountSource DiscountSource = dsMMUser);
+    void RemoveMembershipDiscounts();
+    // For scrolling the receipt
+    TWinControl *ScrollingControl;
+    TControl *ButtonClicked;
+    bool ScrollUp;
+    void Reset();
+    Currency GetAvailableRedeemPoints(TPaymentTransaction PointsTransaction);
+    Currency PointsKnapsack(TList *Orders, Currency AvailablePoints, Currency StepSize = MIN_CURRENCY_VALUE);
+    void  ProcessPointPayment(TPayment *Payment);
+    Currency GetTotalWeightInOrder(TList *Orders);
+    Currency CalculatePointsForWeight(TList *Orders);
+    void CalculateRedeemedPoints(TList *Orders,TRedeemPointsInformation *RedeemPointsInformation,
+    Currency MaxAmountToRedeem, bool isPaybyWeight,bool isGiftCardPayment = false);
+    void CalculatePointsWeighedItem(TItemComplete *Order,TTierLevel *TierLevel,TRedeemPointsInformation *RedeemPointsInformation,
+    Currency MaxAmountToRedeem);
+    void CalculatePointsNonWeighedItem(TItemComplete *Order,TTierLevel *TierLevel,TRedeemPointsInformation *RedeemPointsInformation,
+    Currency MaxAmountToRedeem);
+    void CalculatePoints(Currency Qty, Currency Cost,TTierLevel *TierLevel, Currency MaxValue,
+    TRedeemPointsInformation *RedeemPointsInformation,bool IsWeighted);
+    Currency GetPointsForPrice(Currency value, Currency Cost,TTierLevel *TierLevel);
+    Currency CalculateWeightForPoints(Currency Points);
 
     void disableButtonIfPermissionNotAllowed(
-                            Database::TDBTransaction &DBTransaction,
-                            TGridButton *button,
-                            TMMContactInfo &userInfo,
-                            SecurityCheck Permission );
-    bool IsAllTabItemSelected();
+                                            Database::TDBTransaction &DBTransaction,
+                                            TGridButton *button,
+                                            TMMContactInfo &userInfo,
+                                            SecurityCheck Permission );
+                                            bool IsAllTabItemSelected();
     int purchaseButtonIndex;
     void CopyPaymentColor(int rowIndex);
     bool AllowRefund;
     bool ProcessMemberPointOnItemBasis(TPayment *Payment,Currency selectedPoints,Currency selectedPointsValue);
     void ApplyMemberPointsDiscount(Currency selectedPoints,Currency selectedPointsValue,bool includeAll = false);
+    bool CheckDiscountPointsPaytype;
+    int PrintCancelEvent;
+    AnsiString memberNumber;
+    void ShowFormToSelectItems(TPayment *Payment);
+    bool CheckItemHasPoints();
+    bool CheckOnlinePaidOrNot();
+    void ShowWebOrderMembersPayment();
+    void ProcessCreditPayment(TPayment *Payment);
+    void ProcessNormalPayment(TPayment *Payment);
+    void ProcessLoyaltyVoucher(TPayment *Payment);
+    void ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TPayment *Payment);
+    void ProcessLoyaltyPocketVoucher(AnsiString voucherCode,TPayment *Payment);
+    void GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);
@@ -156,33 +168,22 @@ protected:
 public:		// User declarations
 __fastcall TfrmPaymentType(TComponent* Owner,TPaymentTransaction &inCurrentTransaction);
 
-	bool Recovering;
-      int RedeamedPoints;
-	bool SplitPayment;
-	std::vector<TPatronType> PreCreditPatronCount;
-	bool SecurePaymentAccess(TPayment * Payment);
-	void EnableElectronicPayments();
-	TModalResult Execute();
-	bool QueryPatronCount;
-
-	static TfrmPaymentType *Create(TForm* Owner,TPaymentTransaction &inCurrentTransaction);
-
-   void OnSmartCardInserted(TSystemEvents *Sender);
-   void OnSmartCardRemoved(TSystemEvents *Sender);   
-   void ApplyMembership(TMMContactInfo &Member);
-   void ApplyAccount(TMMContactInfo &Member);
-   void ClearAccount();
-   void RemoveMembership();
-   void ProcessThorVouchers();
-
-private:
-  bool CheckDiscountPointsPaytype;
-  int PrintCancelEvent;
-  AnsiString memberNumber;
-  void ShowFormToSelectItems(TPayment *Payment);
-  bool CheckItemHasPoints();
-  bool CheckOnlinePaidOrNot();
-  void ShowWebOrderMembersPayment();
+    bool Recovering;
+    int RedeamedPoints;
+    bool SplitPayment;
+    std::vector<TPatronType> PreCreditPatronCount;
+    bool SecurePaymentAccess(TPayment * Payment);
+    void EnableElectronicPayments();
+    TModalResult Execute();
+    bool QueryPatronCount;
+    static TfrmPaymentType *Create(TForm* Owner,TPaymentTransaction &inCurrentTransaction);
+    void OnSmartCardInserted(TSystemEvents *Sender);
+    void OnSmartCardRemoved(TSystemEvents *Sender);
+    void ApplyMembership(TMMContactInfo &Member);
+    void ApplyAccount(TMMContactInfo &Member);
+    void ClearAccount();
+    void RemoveMembership();
+    void ProcessThorVouchers();
   bool IsMemberSelected;
   bool ThorMemberIsUnregistered();
 };

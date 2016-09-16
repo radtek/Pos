@@ -1,6 +1,7 @@
 ﻿using System;
 using MenumateServices.DTO.LoyaltyMate;
 using MenumateServices.LoyaltyMate;
+using MenumateServices.Internal_Classes.LoyaltyMate;
 
 namespace MenumateServices.WCFServices
 {
@@ -13,29 +14,24 @@ namespace MenumateServices.WCFServices
             return LoyaltyMember.Instance.SaveMember(inSyndicateCode, inInfo);
         }
 
-        public LoyaltyResponse DeleteMember(string inSyndicateCode, string inUniqueId)
+        public LoyaltyMemberResponse GetMemberByUniqueId(string inSyndicateCode, RequestInfo requestInfo)
         {
-            return LoyaltyMember.Instance.DeleteMember(inSyndicateCode, inUniqueId);
+            return LoyaltyMember.Instance.GetMemberByUniqueCode(inSyndicateCode, requestInfo);
         }
 
-        public LoyaltyMemberResponse GetMemberByUniqueId(string inSyndicateCode, string inUniqueId)
+        public LoyaltyMemberResponse GetMemberByCardCode(string inSyndicateCode, RequestInfo requestInfo)
         {
-            return LoyaltyMember.Instance.GetMemberByUniqueCode(inSyndicateCode, inUniqueId);
+            return LoyaltyMember.Instance.GetByCardCode(inSyndicateCode, requestInfo);
         }
 
-        public LoyaltyMemberResponse GetMemberByCardCode(string inSyndicateCode, string inMemberCode)
+        public LoyaltyMemberResponse GetMemberByEmail(string inSyndicateCode, RequestInfo requestInfo)
         {
-            return LoyaltyMember.Instance.GetByCardCode(inSyndicateCode, inMemberCode);
+            return LoyaltyMember.Instance.GetByEmail(inSyndicateCode, requestInfo);
         }
 
-        public LoyaltyMemberResponse GetMemberByEmail(string inSyndicateCode, string inMemberEmail)
+        public LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode)
         {
-            return LoyaltyMember.Instance.GetByEmail(inSyndicateCode, inMemberEmail);
-        }
-
-        public LoyaltyMemberListResponse GetMemberList(string inSyndicateCode)
-        {
-            return LoyaltyMember.Instance.GetMemberList(inSyndicateCode);
+            return LoyaltyMember.Instance.UpdateMemberCardCode(inSyndicateCode, uniqueId, memberCardCode);
         }
 
         public LoyaltyResponse PostTransaction(string inSyndicateCode, TransactionInfo transaction)
@@ -43,34 +39,29 @@ namespace MenumateServices.WCFServices
             return LoyaltyMember.Instance.PostTransaction(inSyndicateCode, transaction);
         }
 
-        public LoyaltyTierResponse SaveTierLevel(string inSyndicateCode, TierLevelInfo inInfo)
+        public LoyaltyCompanyResponse GetCompanyInformation(string inSyndicateCode)
         {
-            return LoyaltyTier.Instance.SaveTierLevel(inSyndicateCode, inInfo);
+            return LoyaltyCompany.Instance.GetCompanyInformation(inSyndicateCode);
         }
 
-        public LoyaltyResponse DeleteTierLevel(string inSyndicateCode, int tierLevelId)
+        public LoyaltyGiftCardResponse GetGiftCardBalance(string inSyndicateCode, RequestInfo requestInfo)
         {
-            return LoyaltyTier.Instance.Delete(inSyndicateCode, tierLevelId);
+            return LoyaltyVoucher.Instance.GetGiftCardBalance(inSyndicateCode, requestInfo);
         }
 
-        public LoyaltyTierResponse GetTierLevel(string inSyndicateCode, int tierId)
+        public LoyaltyVoucherResponse GetPocketVoucherDetail(string inSyndicateCode, RequestInfo requestInfo)
         {
-            return LoyaltyTier.Instance.GetTierLevel(inSyndicateCode, tierId);
+            return LoyaltyVoucher.Instance.GetPocketVoucherDetail(inSyndicateCode, requestInfo);
         }
 
-        public LoyaltyTierListResponse GetAllTierLevel(string inSyndicateCode)
+        public LoyaltyResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
         {
-            return LoyaltyTier.Instance.GetAllTierLevel(inSyndicateCode);
+            return LoyaltyVoucher.Instance.ProcessVoucherTransaction(inSyndicateCode, transaction);
         }
 
-        public LoyaltyPointsInfoResponse GetPointsInRange(string inSyndicateCode, PointsInfo inInfo)
+        public LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo)
         {
-            return LoyaltyMember.Instance.GetPointsInRange(inSyndicateCode, inInfo);
-        }
-
-        public LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode)
-        {
-            return LoyaltyMember.Instance.UpdateMemberCardCode(inSyndicateCode, uniqueId, memberCardCode);
+            return LoyaltyVoucher.Instance.ReleaseVouchers(inSyndicateCode, releasedVoucherInfo);
         }
 
     }

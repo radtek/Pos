@@ -82,6 +82,8 @@ __published:	// IDE-managed Components
           TColumnIndex OldColumn, TColumnIndex NewColumn, bool &Allowed);
     void __fastcall RemoveItemOnClick(TObject *Sender);
     void __fastcall NumericEdit1Change(TObject *Sender);
+    void __fastcall NumericEdit1KeyPress(TObject *Sender, char &Key);
+    void __fastcall NumericEdit2KeyPress(TObject *Sender, char &Key);
 private:	// User declarations
     AnsiString RecipeName;
     int RecipeID;

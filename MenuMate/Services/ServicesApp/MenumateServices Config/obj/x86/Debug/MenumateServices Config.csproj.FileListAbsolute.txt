@@ -60,15 +60,6 @@ C:\Code\MenumateSourceCode\Menumate\MenuMate\Services\ServicesApp\MenumateServic
 C:\Code\MenumateSourceCode\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\GenerateResource.write.1.tlog
 C:\Code\MenumateSourceCode\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.exe
 C:\Code\MenumateSourceCode\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.pdb
-C:\work\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\MenumateServices Config.exe
-C:\work\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\MenumateServices Config.pdb
-C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices.Config.MainForm.resources
-C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices_Config.Properties.Resources.resources
-C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\GenerateResource.read.1.tlog
-C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\GenerateResource.write.1.tlog
-C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.exe
-C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.pdb
 C:\Projects\MenuMate\SourceCode\MenuMate\Services\ServicesApp\Ready for Distribution\MenumateServices Config.exe
 C:\Projects\MenuMate\SourceCode\MenuMate\Services\ServicesApp\Ready for Distribution\MenumateServices Config.pdb
 C:\Projects\MenuMate\SourceCode\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\ResolveAssemblyReference.cache
@@ -96,3 +87,12 @@ C:\Code\MenumateSourceCode\working\Menumate\MenuMate\Services\ServicesApp\Menuma
 C:\Code\MenumateSourceCode\working\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\GenerateResource.write.1.tlog
 C:\Code\MenumateSourceCode\working\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.exe
 C:\Code\MenumateSourceCode\working\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.pdb
+C:\work\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\MenumateServices Config.exe
+C:\work\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\MenumateServices Config.pdb
+C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices.Config.MainForm.resources
+C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices_Config.Properties.Resources.resources
+C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.exe
+C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.pdb

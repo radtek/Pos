@@ -3,7 +3,6 @@
 
 #include "BaseReportSection.h"
 #include "MM_DBCore.h"
-#include "GlobalSettings.h"
 #include "Printout.h"
 #include "ReportUtilities.h"
 

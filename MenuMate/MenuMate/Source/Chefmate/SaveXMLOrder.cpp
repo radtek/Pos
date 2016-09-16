@@ -473,11 +473,11 @@ HCOURSE TSaveXMLOrder::AddCourse( __int32    inDBKey,
 // Adds a Item to an Order
 HITEM TSaveXMLOrder::AddItem( __int32    inDBKey,
 							  __int32    inOrderItemDBKey,
-							  AnsiString inName,
-							  AnsiString inKitchenName,
+                           AnsiString    inName,
+						   AnsiString    inKitchenName,
 							  __int32    inServingCourseKey,
 							  __int32    inCourseKey,
-							  AnsiString inNote )
+                           AnsiString    inNote )
 {
 	HITEM result = 0;
 
@@ -488,10 +488,9 @@ HITEM TSaveXMLOrder::AddItem( __int32    inDBKey,
 		TiXmlElement *itemElem;
 
 		//::::::::::::::::::::::::::::
-
 		addElement( _itemsElem, "Item",               itemElem );
 		setNodeAttr( itemElem,  "key",                IntToStr( inDBKey ) );
-		setNodeAttr( itemElem,  "name",               inName );
+		setNodeAttr( itemElem,  "name",               inName  );
 		setNodeAttr( itemElem,  "kitchenName",        inKitchenName );
 		setNodeAttr( itemElem,  "orderItemKey",       IntToStr( inOrderItemDBKey ) );
 		setNodeAttr( itemElem,  "servingCourseDBKey", IntToStr( inServingCourseKey ) );
@@ -907,7 +906,7 @@ TiXmlDocument* TSaveXMLOrder::createXMLOrderDoc()
 	//::::::::::::::::::::::::::::::
 
     // add declaration
-	TiXmlDeclaration *decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
+	TiXmlDeclaration *decl = new TiXmlDeclaration(_T("1.0"), _T("ANSI_CHARSET"), _T("")); //new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
 	result->LinkEndChild( decl );
 
     //::::::::::::::::::::::::::::::
@@ -932,6 +931,8 @@ void TSaveXMLOrder::addElement( TiXmlElement* inParentElem, AnsiString inName, T
 
 void TSaveXMLOrder::setNodeAttr( TiXmlElement* inElem, AnsiString inAttrName, AnsiString inAttrValue )
 {
+    //MessageBox( inAttrName, "attribute name", MB_OK + MB_ICONWARNING);
+    //MessageBox( inAttrValue, "value", MB_OK + MB_ICONWARNING);
     inElem->SetAttribute( inAttrName.c_str(), inAttrValue.c_str() );
 }
 //----------------------------------------------------------------------------
@@ -1073,7 +1074,7 @@ OERROR TSaveXMLOrder::sendOrderToCheftMate(
 		{
 			std::auto_ptr<TTcpStreamSender> streamSender(
 												new TTcpStreamSender(
-													( AnsiString )*cmIT,
+													( UnicodeString )*cmIT,
 													TTcpStreamSenderSettings::Instance().IPPort ) );
 
 			streamSender->Send( inXMLOrderDoc );

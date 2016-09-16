@@ -7,13 +7,13 @@
 #include "GlobalSettings.h"
 #include "rounding.h"
 #include "SelectDish.h"
+#include "OrderUtils.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
 
 extern int OptionsCompare(TListOptionContainer * Options1, TListOptionContainer * Options2);
 extern int __fastcall SubOrdersCompare(TListSubOrderContainer * List1, TListSubOrderContainer * List2);
-
 
 int __fastcall OrderListSortFunc(void *Item1,void *Item2)
 {
@@ -139,80 +139,6 @@ int __fastcall OrderListSortFunc(void *Item1,void *Item2)
 	}
 }
 //---------------------------------------------------------------------------
-
-bool seperateNmiPriceBarcodedItem( TItemMinorComplete* CurrentItem )
-{
-	bool result = false;
-
-	result = TGlobalSettings::Instance().EnableNmiDisplay
-				&& CurrentItem->IsPriceBarcodedItem;
-
-	return result;
-}
-//---------------------------------------------------------------------------
-
-bool soloitem(TItemComplete *CurrentItem)
-{
-	if((CurrentItem->OrderType != NormalOrder)
-		|| (CurrentItem->SetMenuMaster)
-		|| (CurrentItem->SubOrders->Count != 0)
-		|| (CurrentItem->WeightedPrice.WeightedItem == true)
-		|| ( seperateNmiPriceBarcodedItem(CurrentItem)))	// checking to seperate nmi price barcode items
-	{
-		return true;
-	}
-	return false;
-}
-//---------------------------------------------------------------------------
-bool soloitem(TItemMinorComplete *CurrentItem)
-{
-	if((CurrentItem->SetMenuMaster)
-		|| (CurrentItem->SubOrders->Count != 0)
-		|| (CurrentItem->WeightedPrice.WeightedItem == true)
-		|| ( seperateNmiPriceBarcodedItem(CurrentItem)))   // checking to seperate nmi price barcode items
-	{
-		return true;
-	}
-	return false;
-}
-//---------------------------------------------------------------------------
-
-bool match(TItemComplete *PrevItem,TItemComplete *CurrentItem )
-{
-   if((CurrentItem->Item != PrevItem->Item) ||
-      (PrevItem->Note != CurrentItem->Note) ||
-      (PrevItem->Size != CurrentItem->Size) ||
-      (PrevItem->TotalPriceAdjustment() != CurrentItem->TotalPriceAdjustment()) ||
-      (PrevItem->SetMenu != CurrentItem->SetMenu) ||
-		(PrevItem->SetMenuGroup != CurrentItem->SetMenuGroup) ||
-      (PrevItem->ServingCourse.ServingCourseKey != CurrentItem->ServingCourse.ServingCourseKey) ||
-      (CurrentItem->Item_ID != PrevItem->Item_ID) ||
-      (!CurrentItem->OptionsSelected->Compare(PrevItem->OptionsSelected)) ||
-      (!CurrentItem->SubOrders->Compare(PrevItem->SubOrders))
-      ) //
-   {  // Match Failed
-		return false;
-	}
-	return true;
-
-}
-
-//---------------------------------------------------------------------------
-bool match(TItemMinorComplete *PrevItem,TItemMinorComplete *CurrentItem )
-{
-   if((CurrentItem->Item != PrevItem->Item) ||
-      (PrevItem->Size != CurrentItem->Size) ||
-      (PrevItem->TotalPriceAdjustment() != CurrentItem->TotalPriceAdjustment()) ||
-      (!CurrentItem->SubOrders->Compare(PrevItem->SubOrders))
-      ) //
-   {  // Match Failed
-		return false;
-	}
-	return true;
-}
-//---------------------------------------------------------------------------
-
-
 void __fastcall TContainerOrders::Compress()
 {
 	while(fCompressedItemsList->Count != 0)
@@ -230,26 +156,25 @@ void __fastcall TContainerOrders::Compress()
 		ItemParentRedirect->ParentRedirector = ItemParentRedirect;
 		ItemParentRedirect->ItemType << itMembershipDisplay;
 		ItemParentRedirect->ItemObject = NULL;
-    if((TGlobalSettings::Instance().MembershipType==MembershipTypeThor) && (TGlobalSettings::Instance().IsThorlinkSelected))
-    {
-       CompressedItem->Display->AddObject(AppliedMembership.Name, ItemParentRedirect);
-    }
-    else
-    {
-       CompressedItem->Display->AddObject(AppliedMembership.Name +" "+ AppliedMembership.Surname +" (" + AppliedMembership.MembershipNumber + ")" , ItemParentRedirect);
-    }
+
+        if((TGlobalSettings::Instance().MembershipType==MembershipTypeThor) && (TGlobalSettings::Instance().IsThorlinkSelected))
+        {
+           CompressedItem->Display->AddObject(AppliedMembership.Name, ItemParentRedirect);
+        }
+        else
+        {
+           CompressedItem->Display->AddObject(AppliedMembership.Name +" "+ AppliedMembership.Surname +" (" + AppliedMembership.MembershipNumber + ")" , ItemParentRedirect);
+        }
 
 		if(TGlobalSettings::Instance().EnableSeperateEarntPts)
 		{
 			TItemsCompleteCompressed *CompressedItem = new TItemsCompleteCompressed(this);
 			fCompressedItemsList->Add(CompressedItem);
 			CompressedItem->Type = icMemberInfo;
-
 			TItemRedirector *ItemParentRedirect = new TItemRedirector(CompressedItem);
 			ItemParentRedirect->ParentRedirector = ItemParentRedirect;
 			ItemParentRedirect->ItemType << itEarntPts;
 			ItemParentRedirect->ItemObject = NULL;
-
 			CompressedItem->Display->AddObject("Earned Points", ItemParentRedirect);
 		}
 		if(TGlobalSettings::Instance().EnableSeperateEarntPts)
@@ -257,12 +182,10 @@ void __fastcall TContainerOrders::Compress()
 			TItemsCompleteCompressed *CompressedItem = new TItemsCompleteCompressed(this);
 			fCompressedItemsList->Add(CompressedItem);
 			CompressedItem->Type = icMemberInfo;
-
 			TItemRedirector *ItemParentRedirect = new TItemRedirector(CompressedItem);
 			ItemParentRedirect->ParentRedirector = ItemParentRedirect;
 			ItemParentRedirect->ItemType << itLoadedPts;
 			ItemParentRedirect->ItemObject = NULL;
-
 			CompressedItem->Display->AddObject("Loaded Points", ItemParentRedirect);
 		}
 
@@ -274,8 +197,6 @@ void __fastcall TContainerOrders::Compress()
          ItemRedirect->ItemObject = NULL;
          CompressedItem->Display->AddObject(AppliedMembership.Note, ItemRedirect);
       }
-
-
 	}
 
 	if(Count > 0)
@@ -300,7 +221,7 @@ void __fastcall TContainerOrders::Compress()
 			fCompressedItemsList->Add(CompressedItem);
 			CompressedItem->Type = icCompleteItems;
 			PrevItem = CurrentItem;
-			if(soloitem(CurrentItem) || UnRavelDisplay)
+			if(TOrderUtils::SoloItem(CurrentItem) || UnRavelDisplay)
 			{
 				CompressedItem->Add(PrevItem);
 				CompressedItem->BuildSelf();
@@ -308,7 +229,7 @@ void __fastcall TContainerOrders::Compress()
 			}
 			else
 			{
-				while(match(PrevItem,CurrentItem) && (!soloitem(CurrentItem)) && (i <  fItems->Count))
+				while(TOrderUtils::Match(PrevItem,CurrentItem) && (!TOrderUtils::SoloItem(CurrentItem)) && (i <  fItems->Count))
 				{
 					 CompressedItem->Add(CurrentItem);
 					 i++;
@@ -320,7 +241,7 @@ void __fastcall TContainerOrders::Compress()
 			}
 
 			CompressedItem->BuildSelf();
-			if(CurrentItem == fItems->Items[fItems->Count-1] && (!match(PrevItem,CurrentItem)))
+			if(CurrentItem == fItems->Items[fItems->Count-1] && (!TOrderUtils::Match(PrevItem,CurrentItem)))
 			{
 				if(!HasServingCourseHeader(CurrentItem))
 				{
@@ -329,7 +250,7 @@ void __fastcall TContainerOrders::Compress()
 					fCompressedItemsList->Add(ServingHeader);
 					ServingHeader->Type = icServingCourse;
 					ServingHeader->ServingCourseKey = CurrentItem->ServingCourse.ServingCourseKey;
-   				ServingHeader->Visible = CurrentItem->ServingCourse.Selectable;
+   			     	ServingHeader->Visible = CurrentItem->ServingCourse.Selectable;
 					ServingHeader->Add(CurrentItem);
 					ServingHeader->BuildSelf();
 				}
@@ -354,7 +275,7 @@ void __fastcall TContainerOrders::Compress()
 			CompressedItem->Type = icIncompleteItems;
 			TItemMinorComplete *CurrentItem = PrevItems[i];
 			PrevItem = CurrentItem;
-			if(soloitem(CurrentItem))
+			if(TOrderUtils::SoloItem(CurrentItem))
 			{
 				CompressedItem->Add(PrevItem);
 				CompressedItem->BuildSelf();
@@ -362,7 +283,7 @@ void __fastcall TContainerOrders::Compress()
 			}
 			else
 			{
-				while(match(PrevItem,CurrentItem) && (!soloitem(CurrentItem)) && (i <  fPrevOrders->Count))
+				while(TOrderUtils::Match(PrevItem,CurrentItem) && (!TOrderUtils::SoloItem(CurrentItem)) && (i <  fPrevOrders->Count))
 				{
 					 CompressedItem->Add(CurrentItem);
 					 i++;
@@ -374,13 +295,12 @@ void __fastcall TContainerOrders::Compress()
 			}
 
 			CompressedItem->BuildSelf();
-			if(CurrentItem == fPrevOrders->Items[fPrevOrders->Count-1] && (!match(PrevItem,CurrentItem)))
+			if(CurrentItem == fPrevOrders->Items[fPrevOrders->Count-1] && (!TOrderUtils::Match(PrevItem,CurrentItem)))
 			{
 				CompressedItem = new TItemsCompleteCompressed(this);
 				fCompressedItemsList->Add(CompressedItem);
 				CompressedItem->Type = icIncompleteItems;
 				CompressedItem->Add(CurrentItem);
-//            CompressedItem->Count++;
 				CompressedItem->BuildSelf();
 				i++;
 			}
@@ -391,11 +311,8 @@ void __fastcall TContainerOrders::Compress()
 	for (int i=0; i< Count; i++)
 	{
 		TItemMinorComplete *Order = Items[i];
-                Currency discountValue = Order->TotalAdjustmentSides();
-                TotalDiscount += discountValue;
-
-                //bool MidPointRoundsDown = TGlobalSettings::Instance().MidPointRoundsDown != discountValue < 0;
-		//TotalDiscount += RoundToNearest(discountValue, 0.01, MidPointRoundsDown);
+        Currency discountValue = Order->TotalAdjustmentSides();
+        TotalDiscount += discountValue;
 	}
 
 
@@ -416,7 +333,7 @@ void __fastcall TContainerOrders::Compress()
 		CompressedItem->Display->AddObject("Total " + DisplayName, ItemParentRedirect);
 	}
 }
-
+//---------------------------------------------------------------------------
 __fastcall TContainerOrders::TContainerOrders()
 {
 	fItems = new TList;
@@ -451,45 +368,8 @@ int TContainerOrders::Add(TItemComplete *Item, TItem *Det)
 {
 	Item->ItemOrderedFrom = Det;
 	LastItemSelected = Item;
-   LastItemAdded = Item;
+    LastItemAdded = Item;
 	return fItems->Add(Item);
-
-
-
-
-
-
-
-/*	if(!soloitem(Item) )
-	{
-      TItemComplete *Match = NULL;
-      for (int i = 0; i < Count; i++)
-      {
-         if( Match == NULL && match(Items[i],Item))
-         {
-            Match = Items[i];
-         }
-      }
-      if(Match != NULL)
-      {
-			Match->Add(Item);
-         return fItems->IndexOf(Match);
-      }
-      else
-      {
-         Item->ItemOrderedFrom = Det;
-         LastItemSelected = Item;
-         LastItemAdded = Item;
-         return fItems->Add(Item);
-      }
-	}
-   else
-   {
-      Item->ItemOrderedFrom = Det;
-      LastItemSelected = Item;
-      LastItemAdded = Item;
-      return fItems->Add(Item);
-	}*/
 }
 //---------------------------------------------------------------------------
 int TContainerOrders::Remove(TItemMinorComplete *Item)
@@ -693,7 +573,6 @@ int TContainerOrders::Delete(TItemComplete *Item)
 	return retval;
 }
 //---------------------------------------------------------------------------
-
 void TContainerOrders::Delete(int i)
 {
    bool LastItemAddedRemoved = false;
@@ -719,7 +598,7 @@ void __fastcall TContainerOrders::Sort()
 		fItems->Sort(ptrSortFunc);
 	}
 }
-
+//---------------------------------------------------------------------------
 void TContainerOrders::RefreshDisplay()
 {
 	UnRavelDisplay = TGlobalSettings::Instance().UnRavelKitchenPrinting;

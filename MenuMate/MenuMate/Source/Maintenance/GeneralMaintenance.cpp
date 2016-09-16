@@ -37,8 +37,6 @@
 #include <memory>
 #include "SetButtonFontSize.h"
 #include "Registration.h"
-
-#include "quick_member_setup_options.h"
 #include "PrintOut.h"
 #include "Comms.h"
 
@@ -59,12 +57,11 @@ __fastcall TfrmGeneralMaintenance::TfrmGeneralMaintenance(TComponent* Owner,Data
 
 #pragma warn -par
 
-void __fastcall
-TfrmGeneralMaintenance::quick_member_setup_clicked(TObject *sender)
+void __fastcall TfrmGeneralMaintenance::quick_member_setup_clicked(TObject *sender)
 {
-	std::auto_ptr<TfrmQuickMemberSetupOptions> settings(
-	new TfrmQuickMemberSetupOptions(this));
-	settings->ShowModal();
+	//std::auto_ptr<TfrmQuickMemberSetupOptions> settings(
+    //new TfrmQuickMemberSetupOptions(this));
+	//settings->ShowModal();
 }
 
 #pragma warn .par
@@ -411,10 +408,11 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbPostMoneyToGLAccounts->OnClick = cbPostMoneyToGLAccountsClick;
 
     cbPostMoneyAsPayments->OnClick = NULL;
+
     cbPostMoneyAsPayments->Checked = TGlobalSettings::Instance().PostMoneyAsPayment;
     cbPostMoneyAsPayments->OnClick = cbPostMoneyAsPaymentsClick;
-   
-    cbPostMoneyToGLAccounts->Enabled = TGlobalSettings::Instance().PostZToAccountingSystem;
+
+    cbPostMoneyToGLAccounts->Enabled = TGlobalSettings::Instance().PostZToAccountingSystem && TGlobalSettings::Instance().IsXeroEnabled;
     cbPostMoneyAsPayments->Enabled = TGlobalSettings::Instance().PostZToAccountingSystem;
 
     cbUseNMIStandardFontSize->Checked = TGlobalSettings::Instance().SetTextFontSizeOnCustomerDisplay;
@@ -3772,7 +3770,7 @@ void _fastcall TfrmGeneralMaintenance::cbPostToXeroClick(TObject *Sender)
         cbPostMoneyToGLAccounts->OnClick=cbPostMoneyToGLAccountsClick;
 
     }
-    cbPostMoneyToGLAccounts->Enabled = TGlobalSettings::Instance().PostZToAccountingSystem;
+    cbPostMoneyToGLAccounts->Enabled = TGlobalSettings::Instance().PostZToAccountingSystem && TGlobalSettings::Instance().IsXeroEnabled;
     cbPostMoneyAsPayments->Enabled =  TGlobalSettings::Instance().PostZToAccountingSystem;
 
     DBTransaction.Commit();
@@ -3946,6 +3944,7 @@ void TfrmGeneralMaintenance::DisplayTextOnWeightLimit()
         tbEnterWeight->Caption = FormatFloat("0.000",TGlobalSettings::Instance().WeightLimit);
     }
 }
+//----------------------------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbNotifyForManuallyEnteredWeightClicked(TObject *Sender)
 {
  	TGlobalSettings::Instance().NotifyForManuallyEnteredWeight = cbNotifyForManuallyEnteredWeight->Checked;

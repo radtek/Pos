@@ -169,3 +169,10 @@ void __fastcall TfrmFunctions::btnAssignBarcodeMouseClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TfrmFunctions::btnSyncMouseClick(TObject *Sender)
+{
+   BtnSelection = 15;
+    Close();
+}
+//---------------------------------------------------------------------------
+

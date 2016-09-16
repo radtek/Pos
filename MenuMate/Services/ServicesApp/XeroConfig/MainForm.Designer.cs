@@ -1,4 +1,4 @@
-﻿namespace XeroConfig
+﻿namespace AccountingConfig
 {
     partial class MainForm
     {
@@ -50,6 +50,8 @@
             this.btnDelCompany = new System.Windows.Forms.Button();
             this.btnEditCompany = new System.Windows.Forms.Button();
             this.pNewCompany = new System.Windows.Forms.Panel();
+            this.isMYOBAccounting = new System.Windows.Forms.RadioButton();
+            this.isXeroAccounting = new System.Windows.Forms.RadioButton();
             this.tlpConfig = new System.Windows.Forms.TableLayoutPanel();
             this.gbCompanyName = new System.Windows.Forms.GroupBox();
             this.tbCompanyName = new System.Windows.Forms.TextBox();
@@ -112,7 +114,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackgroundImage = global::XeroConfig.Properties.Resources.menumate_logo_shifted;
+            this.pictureBox1.BackgroundImage = global::AccountingConfig.Properties.Resources.menumate_logo_shifted;
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Right;
             this.pictureBox1.Location = new System.Drawing.Point(568, 16);
@@ -129,7 +131,7 @@
             this.lbTitle.Name = "lbTitle";
             this.lbTitle.Size = new System.Drawing.Size(358, 36);
             this.lbTitle.TabIndex = 12;
-            this.lbTitle.Text = "XeroMate Configuration";
+            this.lbTitle.Text = "Accounting Configuration";
             // 
             // lbVersion
             // 
@@ -194,7 +196,7 @@
             this.btnAddCompany.BackColor = System.Drawing.Color.DimGray;
             this.btnAddCompany.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnAddCompany.ForeColor = System.Drawing.Color.White;
-            this.btnAddCompany.Location = new System.Drawing.Point(85, 0);
+            this.btnAddCompany.Location = new System.Drawing.Point(78, 57);
             this.btnAddCompany.Name = "btnAddCompany";
             this.btnAddCompany.Size = new System.Drawing.Size(118, 47);
             this.btnAddCompany.TabIndex = 1;
@@ -268,9 +270,9 @@
             // 
             this.pTVCompanies.Controls.Add(this.tvCompanies);
             this.pTVCompanies.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pTVCompanies.Location = new System.Drawing.Point(3, 71);
+            this.pTVCompanies.Location = new System.Drawing.Point(3, 128);
             this.pTVCompanies.Name = "pTVCompanies";
-            this.pTVCompanies.Size = new System.Drawing.Size(290, 348);
+            this.pTVCompanies.Size = new System.Drawing.Size(290, 291);
             this.pTVCompanies.TabIndex = 2;
             // 
             // tvCompanies
@@ -281,7 +283,7 @@
             this.tvCompanies.HideSelection = false;
             this.tvCompanies.Location = new System.Drawing.Point(0, 0);
             this.tvCompanies.Name = "tvCompanies";
-            this.tvCompanies.Size = new System.Drawing.Size(290, 348);
+            this.tvCompanies.Size = new System.Drawing.Size(290, 291);
             this.tvCompanies.TabIndex = 0;
             // 
             // pEditCompany
@@ -323,12 +325,38 @@
             // 
             // pNewCompany
             // 
+            this.pNewCompany.Controls.Add(this.isMYOBAccounting);
+            this.pNewCompany.Controls.Add(this.isXeroAccounting);
             this.pNewCompany.Controls.Add(this.btnAddCompany);
             this.pNewCompany.Dock = System.Windows.Forms.DockStyle.Top;
             this.pNewCompany.Location = new System.Drawing.Point(3, 18);
             this.pNewCompany.Name = "pNewCompany";
-            this.pNewCompany.Size = new System.Drawing.Size(290, 53);
+            this.pNewCompany.Size = new System.Drawing.Size(290, 110);
             this.pNewCompany.TabIndex = 1;
+            // 
+            // isMYOBAccounting
+            // 
+            this.isMYOBAccounting.AutoSize = true;
+            this.isMYOBAccounting.Location = new System.Drawing.Point(8, 31);
+            this.isMYOBAccounting.Name = "isMYOBAccounting";
+            this.isMYOBAccounting.Size = new System.Drawing.Size(131, 20);
+            this.isMYOBAccounting.TabIndex = 3;
+            this.isMYOBAccounting.TabStop = true;
+            this.isMYOBAccounting.Text = "MYOBAccounting";
+            this.isMYOBAccounting.UseVisualStyleBackColor = true;
+            this.isMYOBAccounting.CheckedChanged += new System.EventHandler(this.AccountingSystem_CheckedChanged);
+            // 
+            // isXeroAccounting
+            // 
+            this.isXeroAccounting.AutoSize = true;
+            this.isXeroAccounting.Location = new System.Drawing.Point(8, 10);
+            this.isXeroAccounting.Name = "isXeroAccounting";
+            this.isXeroAccounting.Size = new System.Drawing.Size(120, 20);
+            this.isXeroAccounting.TabIndex = 2;
+            this.isXeroAccounting.TabStop = true;
+            this.isXeroAccounting.Text = "XeroAccounting";
+            this.isXeroAccounting.UseVisualStyleBackColor = true;
+            this.isXeroAccounting.CheckedChanged += new System.EventHandler(this.AccountingSystem_CheckedChanged);
             // 
             // tlpConfig
             // 
@@ -369,7 +397,7 @@
             this.gbCompanyName.Size = new System.Drawing.Size(477, 66);
             this.gbCompanyName.TabIndex = 9;
             this.gbCompanyName.TabStop = false;
-            this.gbCompanyName.Text = " Xero Organisation Name ";
+            this.gbCompanyName.Text = " Organisation Name ";
             // 
             // tbCompanyName
             // 
@@ -416,7 +444,7 @@
             this.gbConsumerSecret.Size = new System.Drawing.Size(477, 66);
             this.gbConsumerSecret.TabIndex = 2;
             this.gbConsumerSecret.TabStop = false;
-            this.gbConsumerSecret.Text = "Xero  Consumer Secret";
+            this.gbConsumerSecret.Text = "Consumer Secret";
             // 
             // tbConsumerSecret
             // 
@@ -441,7 +469,7 @@
             this.gbConsumerKey.Size = new System.Drawing.Size(477, 66);
             this.gbConsumerKey.TabIndex = 1;
             this.gbConsumerKey.TabStop = false;
-            this.gbConsumerKey.Text = " Xero Consumer Key ";
+            this.gbConsumerKey.Text = "Consumer Key ";
             // 
             // tbConsumerKey
             // 
@@ -472,7 +500,7 @@
             this.lbRestartService.Name = "lbRestartService";
             this.lbRestartService.Size = new System.Drawing.Size(295, 37);
             this.lbRestartService.TabIndex = 4;
-            this.lbRestartService.Text = "Xero Service must be restarted after any modifications.";
+            this.lbRestartService.Text = "Accounting Service must be restarted after any modifications.";
             this.lbRestartService.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lbRestartService.Visible = false;
             // 
@@ -483,7 +511,7 @@
             this.lbRestartingSvc.Name = "lbRestartingSvc";
             this.lbRestartingSvc.Size = new System.Drawing.Size(459, 18);
             this.lbRestartingSvc.TabIndex = 3;
-            this.lbRestartingSvc.Text = "Restarting Xero Service. This will take a few seconds ...";
+            this.lbRestartingSvc.Text = "Restarting Accounting Service. This will take a few seconds ...";
             this.lbRestartingSvc.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbRestartingSvc.Visible = false;
             // 
@@ -496,7 +524,7 @@
             this.btnRestartService.Name = "btnRestartService";
             this.btnRestartService.Size = new System.Drawing.Size(171, 47);
             this.btnRestartService.TabIndex = 2;
-            this.btnRestartService.Text = "Restart Xero Service";
+            this.btnRestartService.Text = "Restart Accounting Service";
             this.btnRestartService.UseVisualStyleBackColor = false;
             this.btnRestartService.Visible = false;
             // 
@@ -548,7 +576,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Xero Integration Configuration";
+            this.Text = "Accounting Integration Configuration";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.pMainDescription.ResumeLayout(false);
             this.gbMainDescription.ResumeLayout(false);
@@ -563,6 +591,7 @@
             this.pTVCompanies.ResumeLayout(false);
             this.pEditCompany.ResumeLayout(false);
             this.pNewCompany.ResumeLayout(false);
+            this.pNewCompany.PerformLayout();
             this.tlpConfig.ResumeLayout(false);
             this.gbCompanyName.ResumeLayout(false);
             this.gbCompanyName.PerformLayout();
@@ -617,7 +646,8 @@
         private System.Windows.Forms.Panel pTVCompanies;
         private System.Windows.Forms.TreeView tvCompanies;
         private System.Windows.Forms.Panel pNewCompany;
-
+        private System.Windows.Forms.RadioButton isMYOBAccounting;
+        private System.Windows.Forms.RadioButton isXeroAccounting;
     }
 }
 

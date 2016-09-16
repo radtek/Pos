@@ -102,6 +102,7 @@ __published:	// IDE-managed Components
     void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
     void __fastcall NumQuantityChange(TObject *Sender);
     void __fastcall NumQuantityClick(TObject *Sender);
+    void __fastcall NumQuantityKeyPress(TObject *Sender, char &Key);
 private:	// User declarations
     void EnterText(AnsiString &Text);
     void ChangeFont(TObject *Object, ebox box);

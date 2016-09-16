@@ -83,6 +83,8 @@ __published:
     
     void __fastcall SearchReceipeOnClick(TObject *Sender );
     void __fastcall SearchBtnClick(TObject *Sender  );
+    void __fastcall NumTotalKeyPress(TObject *Sender, char &Key);
+    void __fastcall NumericEdit1KeyPress(TObject *Sender, char &Key);
 
 private:
     void DisplayStock(void);

@@ -87,7 +87,8 @@ enum ePrintOutFormatInstructions{
                                  epofiPrintItemsTwoLinesTotal,
                                  epofiPrintDeliveryTime,
                                  epofiPrintProfitTax,
-                                 epofiGroupItems
+                                 epofiGroupItems,
+                                 epofiCurrentYearPts
 								 };
 
 typedef std::pair<ePrintOutFormatInstructions,UnicodeString> InstructionPair;

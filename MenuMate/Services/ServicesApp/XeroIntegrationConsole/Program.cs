@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 using System.Configuration;
-using XeroIntegration;
+using AccountingIntegration;
 using System.Xml;
 using XMLManager;
 
@@ -18,16 +18,16 @@ namespace XeroIntegrationConsole
 
             if (appID.Trim() != @"")
             {
-                XeroIntegrationError error = XeroIntegrationManager.Instance.RunAppWithID(appID);
+                AccountingIntegrationError error = AccountingIntegrationManager.Instance.RunAppWithID(appID);
 
-                if (error == XeroIntegrationError.NoError)
+                if (error == AccountingIntegrationError.NoError)
                 {
                     Console.WriteLine(@"Xero Integration is running ...");
                     WaitForKey();
                 }
                 else
                 {
-                    Console.WriteLine(XeroIntegrationManager.Instance.ErrorMessage);
+                    Console.WriteLine(AccountingIntegrationManager.Instance.ErrorMessage);
                 }
             }
         }
@@ -38,7 +38,7 @@ namespace XeroIntegrationConsole
         /// <returns></returns>
         static string InitXeroIntegration()
         {
-            if(XeroIntegrationManager.Instance.Init() == XeroIntegrationError.NoError)
+            if (AccountingIntegrationManager.Instance.Init() == AccountingIntegrationError.NoError)
             {
                 return AppID();
             }
@@ -53,7 +53,7 @@ namespace XeroIntegrationConsole
         static string AppID()
         {
             //return XeroIntegrationConsole.Properties.Settings.Default.XeroAppID;
-            return XeroIntegrationManager.Instance.XeroAppInUse;
+            return AccountingIntegrationConfigManager.Instance.AccountingAppInUse;
         }
 
         /// <summary>

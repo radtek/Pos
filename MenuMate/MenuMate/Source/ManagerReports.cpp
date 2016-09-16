@@ -9,10 +9,30 @@
 #include "Comms.h"
 #include "ShowPrintout.h"
 #include "Printout.h"
+#include "Payment.h"
+#include "GlobalSettings.h"
 #include <vector>
 #include <cctype>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+
+
+TSumPayments::TSumPayments()
+{
+ Name  = "" ;
+ Total = 0 ;
+ CashOut = 0;
+ Rounding = 0;
+ Surcharge = 0;
+ Properties = 0;
+ Qty = 0;
+}
+
+bool TSumPayments::IsLoyaltyVoucher()
+{
+   return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card" || Name == "Voucher" )
+          && TGlobalSettings::Instance().LoyaltyMateEnabled;
+}
 
 TManagerReports::TManagerReports(TForm * inOwner)
 {
@@ -1153,9 +1173,8 @@ void TManagerReports::PrintFloatAdjustments(Database::TDBTransaction &DBTransact
 	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	  throw;
 	}
-
-
-
 }
+
+
 
 

@@ -9,7 +9,7 @@ namespace MenumateServices
     static class Program
     {
         /// <summary>
-        /// Three menumate services: Xero Integration, LoyaltyMate, WebMate, ChefMate, ClippIntegration, ThorLink, PocketVoucher, SalesForce
+        /// Three menumate services: Accounting Integration, LoyaltyMate, WebMate, ChefMate, ClippIntegration, ThorLink, PocketVoucher, SalesForce
         /// </summary>
         private const int ServiceCount = 9;
         static string _serviceConfigFileName = Properties.Settings.Default.ServiceConfigFilename;
@@ -215,7 +215,7 @@ namespace MenumateServices
 
         static bool IsMenumateService(string inServiceName)
         {
-            return (inServiceName == "MenumateServiceXero") ||
+            return (inServiceName == "MenumateServiceAccounting") ||
                    (inServiceName == "MenumateServiceLoyaltyMate") ||
                    (inServiceName == "MenumateServiceWebMate") ||
                    (inServiceName == "MenumateServiceChefMate") ||
@@ -229,7 +229,7 @@ namespace MenumateServices
         static ServiceController GetServiceEndPoint()
         {
             ServiceController[] svcs = ServiceController.GetServices();
-            return svcs.FirstOrDefault(svc => svc.ServiceName == "MenumateServiceXero");
+            return svcs.FirstOrDefault(svc => svc.ServiceName == "MenumateServiceAccounting");
         }
 
     }

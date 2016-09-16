@@ -153,6 +153,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\LoyaltyMate\CompanyInfo.cs" />
+    <Compile Include="DTO\LoyaltyMate\DiscountInfo.cs" />
+    <Compile Include="DTO\LoyaltyMate\DiscountUsageInfo.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyCompanyResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyGiftCardResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\LoyaltyVoucherResponse.cs" />
+    <Compile Include="DTO\LoyaltyMate\ReleasedVoucherInfo.cs" />
+    <Compile Include="DTO\LoyaltyMate\RequestInfo.cs" />
+    <Compile Include="DTO\LoyaltyMate\VoucherInfo.cs" />
+    <Compile Include="DTO\LoyaltyMate\VoucherTransactionInfo.cs" />
     <Compile Include="DTO\SalesForce\SalesForceCredentialFactory.cs" />
     <Compile Include="DTO\Thorlink\DTO_TPurchaseInfo.cs" />
     <Compile Include="DTO\Thorlink\DTO_TenderList.cs" />
@@ -162,6 +172,7 @@
     <Compile Include="DTO\Thorlink\DTO_ThorAuth.cs" />
     <Compile Include="DTO\Thorlink\DTO_ThorlinkInquiry.cs" />
     <Compile Include="DTO\Thorlink\DTO_TMemberInfo.cs" />
+    <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
     <Compile Include="DTO\Thorlink\DTO_RefundDetails.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorAuthCheck.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkMember.cs" />
@@ -169,6 +180,12 @@
     <Compile Include="MenumateRunners\PocketVoucherServiceRunner.cs" />
     <Compile Include="MenumateRunners\SalesForceIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\ThorlinkServiceRunner.cs" />
+    <Compile Include="MenumateServiceAccounting.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceAccounting.Designer.cs">
+      <DependentUpon>MenumateServiceAccounting.cs</DependentUpon>
+    </Compile>
     <Compile Include="MenumateServicePocketVoucher.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -189,7 +206,6 @@
     </Compile>
     <Compile Include="DTO\Clipp\ClippErrorDetail.cs" />
     <Compile Include="DTO\Clipp\ClippTabDetail.cs" />
-    <Compile Include="DTO\LoyaltyMate\LoyaltyTierListResponse.cs" />
     <Compile Include="MenumateServiceClippIntegration.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -234,13 +250,9 @@
     <Compile Include="DTO\DTOFactory.cs" />
     <Compile Include="DTO\DTOPrompt.cs" />
     <Compile Include="DTO\DTOResponse.cs" />
-    <Compile Include="DTO\LoyaltyMate\LoyaltyPointsInfoResponse.cs" />
-    <Compile Include="DTO\LoyaltyMate\LoyaltyTierResponse.cs" />
-    <Compile Include="DTO\LoyaltyMate\LoyaltyMemberListResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyMemberResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\MemberInfo.cs" />
-    <Compile Include="DTO\LoyaltyMate\PointsInfo.cs" />
     <Compile Include="DTO\MMServiceResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\TierLevelInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\TransactionInfo.cs" />
@@ -259,7 +271,7 @@
     <Compile Include="DTO\WebMate\DTO_WebOrderStatus.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyMember.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyResponsive.cs" />
-    <Compile Include="Internal Classes\LoyaltyMate\LoyaltyTier.cs" />
+    <Compile Include="Internal Classes\LoyaltyMate\LoyaltyCompany.cs" />
     <Compile Include="Internal Classes\WebMate\DBClasses.cs" />
     <Compile Include="Internal Classes\WebMate\WebOrder.cs" />
     <Compile Include="Internal Classes\WebMate\WebOrderDBAccessEventArgs.cs" />
@@ -283,7 +295,7 @@
     <Compile Include="MenumateRunners\MenumateWebServiceRunner.cs" />
     <Compile Include="MenumateRunners\SmartLinkRunner.cs" />
     <Compile Include="MenumateRunners\WebmateRunner.cs" />
-    <Compile Include="MenumateRunners\XeroIntegrationRunner.cs" />
+    <Compile Include="MenumateRunners\AccountingIntegrationRunner.cs" />
     <Compile Include="MenumateServiceLoyaltyMate.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -301,12 +313,6 @@
     </Compile>
     <Compile Include="MenumateServiceWebMate.Designer.cs">
       <DependentUpon>MenumateServiceWebMate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MenumateServiceXero.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MenumateServiceXero.Designer.cs">
-      <DependentUpon>MenumateServiceXero.cs</DependentUpon>
     </Compile>
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
@@ -338,6 +344,7 @@
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
+    <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />
     <Compile Include="WCFServices\WCFServiceThorlink.cs" />
     <Compile Include="WCFServices\ClippIntergrationWebService.cs" />
     <Compile Include="WCFServices\DTO_ChefMateTerminalNamesResponse.cs" />
@@ -350,7 +357,6 @@
     <Compile Include="WCFServices\IWCFServiceWebMate.cs" />
     <Compile Include="WCFServices\WCFServiceChefMate.cs" />
     <Compile Include="WCFServices\WCFServiceEFTPOS.cs" />
-    <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />
     <Compile Include="WCFServices\WCFServiceSmartLink.cs" />
     <Compile Include="WCFServices\WCFServiceWebMate.cs">
       <SubType>Code</SubType>
@@ -400,9 +406,9 @@
       <Project>{FD3662F2-D048-4ECA-86C6-A44611DE5B4B}</Project>
       <Name>SalesForceCommunication</Name>
     </ProjectReference>
-    <ProjectReference Include="..\XeroIntegration\XeroIntegration.csproj">
+    <ProjectReference Include="..\XeroIntegration\AccountingIntegration.csproj">
       <Project>{46E2DEBD-F1B9-41D1-BEEA-F1D903302B86}</Project>
-      <Name>XeroIntegration</Name>
+      <Name>AccountingIntegration</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -431,9 +437,6 @@
     <EmbeddedResource Include="MenumateServiceChefMate.resx">
       <DependentUpon>MenumateServiceChefMate.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MenumateServiceXero.resx">
-      <DependentUpon>MenumateServiceXero.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProjectInstaller.resx">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>

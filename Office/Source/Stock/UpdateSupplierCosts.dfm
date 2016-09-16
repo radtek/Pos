@@ -157,6 +157,7 @@ object frmUpdateSupplierCosts: TfrmUpdateSupplierCosts
         TabOrder = 5
         Visible = False
         OnKeyDown = KeyDownHandler
+        OnKeyPress = neStockNumericEditKeyPress
         DecimalPlaces = 4
       end
       object dbcbPreferredSupplier: TComboBox

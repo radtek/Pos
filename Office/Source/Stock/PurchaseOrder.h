@@ -183,6 +183,7 @@ private:	// User declarations
 	//	bool GetMaxOrderNumber(AnsiString Prefix,AnsiString Suffix, AnsiString &MaxOrderNumber,int &NextOrderNumber);
     int CheckImage();
     void CallPurchaseOrderRerport(AnsiString ReportName, bool emailp, AnsiString efname);
+    bool CheckNegativeValue();
 public:
 	TDateTime DateRequired;
 	// User declarations

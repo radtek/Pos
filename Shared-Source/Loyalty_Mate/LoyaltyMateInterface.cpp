@@ -8,21 +8,24 @@
 #include "DeviceRealTerminal.h"
 #include "Modules.h"
 #include "DateUtils.hpp"
+#include "ManagerDiscount.h"
+#include "DBMenu.h"
+#include "Payment.h"
+#include <map>
 //---------------------------------------------------------------------------
 
 //TLoyaltyMateInterface* TLoyaltyMateInterface::instance = NULL;
 
 TLoyaltyMateInterface::TLoyaltyMateInterface()
 {
-    initLMClient();
-    initMembership();
-    initSiteID();
-    initAutoSync();
+    InitLMClient();
+    InitSiteID();
+    InitAutoSync();
 }
 //---------------------------------------------------------------------------
 TLoyaltyMateInterface::~TLoyaltyMateInterface()
 {
-    doneMembership();
+//
 }
 //---------------------------------------------------------------------------
 
@@ -31,55 +34,43 @@ TLoyaltyMateInterface::~TLoyaltyMateInterface()
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 void TLoyaltyMateInterface::RefreshSiteID()
 {
-    initSiteID();
+    InitSiteID();
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(
-                                TSyndCode      syndicateCode,
-                                TMMContactInfo contactInfo,
-								AnsiString     &uuid )
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicateCode,TMMContactInfo contactInfo,AnsiString &uuid )
 {
     try
     {
         LoyaltyMemberResponse *wcfResponse;
-        MemberInfo            *wcfInfo = new MemberInfo();
+        MemberInfo *wcfInfo = new MemberInfo();
         CreateWcfContactInfo(wcfInfo,contactInfo);
         if(contactInfo.MemberType==2)
-           wcfInfo->Activated    = true;
+            wcfInfo->Activated    = true;
         else
-           wcfInfo->Activated    = false;     //trip
-         wcfInfo->EarnedPoints =  contactInfo.Points.getPointsBalance(ptstLoyalty);
-         wcfInfo->LoadedPoints =  contactInfo.Points.getPointsBalance(ptstAccount);
+            wcfInfo->Activated    = false;     //trip
+	
 
+        wcfInfo->EarnedPoints =  contactInfo.Points.getPointsBalance(ptstLoyalty);
+        wcfInfo->LoadedPoints =  contactInfo.Points.getPointsBalance(ptstAccount);
         CoInitialize(NULL);
 
-        wcfResponse =
-             loyaltymateClient->SaveMember(syndicateCode.SyndCode,wcfInfo );
+        wcfResponse = loyaltymateClient->SaveMember(syndicateCode.SyndCode,wcfInfo );
 
-        if( FAutoSync
-            && wcfResponse->Succesful)
+        if( FAutoSync && wcfResponse->Successful)
         {
             contactInfo.CloudUUID = AnsiString(wcfResponse->MemberInfo->UniqueId);
             contactInfo.MemberCode = AnsiString(wcfResponse->MemberInfo->MemberCardCode);
-            syncLoyaltymateAttrs( &contactInfo );
+            SyncLoyaltymateAttrs( &contactInfo );
         }
-
-        delete wcfInfo;
-
-        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-        return createMMResponse( wcfResponse );
+        return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
     {
-        return createExceptionFailedResponse( exc.Message );
+        return CreateExceptionFailedResponse( exc.Message );
     }
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMember(
-                                    TSyndCode      syndicateCode,
-                                    AnsiString     uuid,
-                                    const TMMContactInfo* const contactInfo)
+MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMember(TSyndCode syndicateCode,AnsiString uuid,const TMMContactInfo* const contactInfo)
 {
     try
     {
@@ -91,100 +82,68 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMember(
         CoInitialize(NULL);
         wcfResponse = loyaltymateClient->SaveMember(syndicateCode.SyndCode,wcfInfo);
         delete wcfInfo;
-        return createMMResponse( wcfResponse );
+        return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
     {
-        return createExceptionFailedResponse( exc.Message );
+        return CreateExceptionFailedResponse( exc.Message );
     }
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::DeleteMember(
-                            TSyndCode  syndicateCode,
-                            AnsiString uuid )
-{
-    try
-    {
-        LoyaltyResponse *wcfResponse;
-        loyaltymateClient->DeleteMember(syndicateCode.SyndCode,uuid );
-        return createMMResponse( wcfResponse );
-    }
-    catch( Exception& exc )
-    {
-        return createExceptionFailedResponse( exc.Message );
-    }
-}
-//---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(
-                            TSyndCode       syndicateCode,
-                            AnsiString      uuid,
-                            TMMContactInfo &outContactInfo,
-                            bool replacePoints )
+MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(TSyndCode syndicateCode,AnsiString uuid,TMMContactInfo &outContactInfo,bool replacePoints )
 {
     try
     {
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse =  loyaltymateClient->GetMemberByUniqueId(syndicateCode.SyndCode,uuid );
-        if(wcfResponse->Succesful)
-            readContactInfo(wcfResponse,outContactInfo,replacePoints );
-        return createMMResponse( wcfResponse );
+        wcfResponse =  loyaltymateClient->GetMemberByUniqueId(syndicateCode.SyndCode,CreateRequest(uuid));
+        if(wcfResponse->Successful)
+            ReadContactInfo(wcfResponse,outContactInfo,replacePoints );
+        return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
     {
-        return createExceptionFailedResponse( exc.Message );
+        return CreateExceptionFailedResponse( exc.Message );
     }
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByCode(
-                            TSyndCode       syndicateCode,
-                            AnsiString      memberCode,
-                            TMMContactInfo &outContactInfo,
-                            bool replacePoints )
+MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByCode(TSyndCode syndicateCode, AnsiString memberCode,TMMContactInfo &outContactInfo,bool replacePoints )
 {
     try
     {
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->GetMemberByCardCode(syndicateCode.SyndCode, memberCode );
-        if(wcfResponse->Succesful)
-            readContactInfo(wcfResponse, outContactInfo, replacePoints );
-        return createMMResponse( wcfResponse );
+        wcfResponse = loyaltymateClient->GetMemberByCardCode(syndicateCode.SyndCode, CreateRequest(memberCode));
+        if(wcfResponse->Successful)
+            ReadContactInfo(wcfResponse, outContactInfo, replacePoints );
+        return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
     {
-        return createExceptionFailedResponse( exc.Message );
+        return CreateExceptionFailedResponse( exc.Message );
     }
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByEmail(
-                                    TSyndCode       syndicateCode,
-                                    AnsiString      memberEmail,
-                                    TMMContactInfo &contactInfo,
+MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByEmail(TSyndCode syndicateCode,AnsiString memberEmail,TMMContactInfo &contactInfo,
                                     bool replacePoints)
 {
     try
     {
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->GetMemberByEmail(syndicateCode.SyndCode, memberEmail );
-        if(wcfResponse->Succesful)
-            readContactInfo(wcfResponse, contactInfo, replacePoints );
-        return createMMResponse( wcfResponse );
+        wcfResponse = loyaltymateClient->GetMemberByEmail(syndicateCode.SyndCode, CreateRequest(memberEmail));
+        if(wcfResponse->Successful)
+            ReadContactInfo(wcfResponse, contactInfo, replacePoints );
+        return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
     {
-        return createExceptionFailedResponse( exc.Message );
+        return CreateExceptionFailedResponse( exc.Message );
     }
 }
 //---------------------------------------------------------------------------  Need some changes
-MMLoyaltyServiceResponse TLoyaltyMateInterface::PostTransaction(
-                                            TSyndCode syndicateCode,
-                                            AnsiString uuid,
-                                            Currency pointsBalance,
-                                            Currency pointsDelta,
-                                            TDateTime occurredDate,
-                                            int pointsType)
+MMLoyaltyServiceResponse TLoyaltyMateInterface::PostTransaction(TSyndCode syndicateCode,AnsiString uuid,Currency pointsBalance,Currency pointsDelta,
+                                            TDateTime occurredDate,int pointsType,AnsiString inInvoiceNumber)
 {
     try
     {
@@ -196,147 +155,34 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostTransaction(
         wcfInfo->TransactionDate->AsUTCDateTime = occurredDate;
         wcfInfo->PointsType = pointsType;
         wcfInfo->SiteCode = siteId;
+        wcfInfo->InvoiceNumber = inInvoiceNumber;
         CoInitialize(NULL);
         wcfResponse = loyaltymateClient->PostTransaction(syndicateCode.SyndCode,wcfInfo);
         delete wcfInfo;
-        return createMMResponse( wcfResponse );
+        return CreateMMResponse( wcfResponse );
     }
     catch( Exception &exc)
     {
-        return createExceptionFailedResponse( exc.Message );
+        return CreateExceptionFailedResponse( exc.Message );
     }
 }
 //---------------------------------------------------------------------------
-void TLoyaltyMateInterface::SyncContactInfo(
-                                const TMMContactInfo* const inContactInfo )
-{
-    syncContactInfo( inContactInfo );
-}
-//---------------------------------------------------------------------------
-void TLoyaltyMateInterface::SyncPoints(
-                                const TMMContactInfo* const inContactInfo )
-{
-    syncContactPoints( inContactInfo );
-}
-//---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateTier(TSyndCode syndicateCode,TTierLevel *TierLevel)
+MMLoyaltyServiceResponse TLoyaltyMateInterface::SyncCompanyDetails(TSyndCode syndicateCode)
 {
     try
     {
-      LoyaltyTierResponse  *wcfResponse;
-      TierLevelInfo *wcfInfo = new TierLevelInfo();
-      wcfInfo->TierId = 0;
-      wcfInfo->Level = TierLevel->Level;
-      wcfInfo->Name = TierLevel->Name;
-      wcfInfo->BirthdayBonus = TierLevel->BirthDayBonus;
-      wcfInfo->PointsRequired = TierLevel->PointRequired;
-      wcfInfo->PricedRedemptionRate =TierLevel->PointRedemRate;
-      wcfInfo->WeighedRedemptionPoints = TierLevel->WeighedRedemPoint;
-      wcfInfo->WeighedRedemptionWeight = TierLevel->WeighedRedemWeight;
-      wcfInfo->SendMailToHeadOffice = TierLevel->SendMailToHeadOffice;
-      wcfInfo->SendMailToMember = TierLevel->SendMailToMember;
-      wcfInfo->ChangeCard = TierLevel->ChangeCard;
-      wcfInfo->AllowEarntLoyaltyRedemption = TierLevel->AllowEarntRedemption;
-      CoInitialize(NULL);
-      wcfResponse = loyaltymateClient->SaveTierLevel(syndicateCode.SyndCode,wcfInfo );
-      if( FAutoSync  && wcfResponse->Succesful)
-        {
-             TierLevel->CloudId = wcfResponse->TierInfo->TierId;
-             UpdateTierCloudId(TierLevel);
-        }
-      delete wcfInfo;
-      return createMMResponse( wcfResponse );
-    }
-    catch( Exception& exc )
-    {
-        return createExceptionFailedResponse( exc.Message );
-    }
-}
-//---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateTier(TSyndCode syndicateCode,TTierLevel *TierLevel)
-{
-    try
-    {
-      LoyaltyTierResponse *wcfResponse;
-      TierLevelInfo *wcfInfo = new TierLevelInfo();
-      wcfInfo->TierId = GetTierCloudId(TierLevel->Level);
-      wcfInfo->Level = TierLevel->Level;
-      wcfInfo->Name = TierLevel->Name;
-      wcfInfo->BirthdayBonus = TierLevel->BirthDayBonus;
-      wcfInfo->PointsRequired = TierLevel->PointRequired;
-      wcfInfo->PricedRedemptionRate =TierLevel->PointRedemRate;
-      wcfInfo->WeighedRedemptionPoints = TierLevel->WeighedRedemPoint;
-      wcfInfo->WeighedRedemptionWeight = TierLevel->WeighedRedemWeight;
-      wcfInfo->SendMailToHeadOffice = TierLevel->SendMailToHeadOffice;
-      wcfInfo->SendMailToMember = TierLevel->SendMailToMember;
-      wcfInfo->ChangeCard = TierLevel->ChangeCard;
-      wcfInfo->AllowEarntLoyaltyRedemption = TierLevel->AllowEarntRedemption;
-      CoInitialize(NULL);
-      wcfResponse = loyaltymateClient->SaveTierLevel(syndicateCode.SyndCode,wcfInfo);
-      if( FAutoSync  && wcfResponse->Succesful)
-        {
-             TierLevel->CloudId = wcfResponse->TierInfo->TierId;
-             UpdateTierCloudId(TierLevel);
-        }
-      delete wcfInfo;
-      return createMMResponse( wcfResponse );
-    }
-    catch( Exception& exc )
-    {
-        return createExceptionFailedResponse( exc.Message );
-    }
-}
-//---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::DeleteTier(TSyndCode syndicateCode,TTierLevel *TierLevel)
-{
-    try
-    {
-        LoyaltyResponse *wcfResponse;
+        LoyaltyCompanyResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->DeleteTierLevel(syndicateCode.SyndCode,TierLevel->CloudId);
-        return createMMResponse( wcfResponse );
-    }
-    catch( Exception& exc )
-    {
-        return createExceptionFailedResponse( exc.Message );
-    }
-}
-//---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::GetTier(TSyndCode syndicateCode,TTierLevel *TierLevel)
-{
-    try
-    {
-        LoyaltyTierResponse *wcfResponse;
-        CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->GetTierLevel(syndicateCode.SyndCode,TierLevel->CloudId );
-        if(wcfResponse->Succesful)
+        wcfResponse = loyaltymateClient->GetCompanyInformation(syndicateCode.SyndCode);
+        if(wcfResponse->Successful)
          {
-            readTierInfo(wcfResponse->TierInfo, TierLevel);
+            SyncCompanyInfo(wcfResponse->CompanyInfo);
          }
-        return createMMResponse( wcfResponse );
+        return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
     {
-        return createExceptionFailedResponse( exc.Message );
-    }
-}
-//---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::SyncTierLevels(TSyndCode syndicateCode)
-{
-    try
-    {
-        LoyaltyTierListResponse *wcfResponse;
-        CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->GetAllTierLevel(syndicateCode.SyndCode);
-        if(wcfResponse->Succesful)
-         {
-            syncTierLevels(wcfResponse->TierLevelList);
-         }
-        return createMMResponse( wcfResponse );
-    }
-    catch( Exception& exc )
-    {
-        return createExceptionFailedResponse( exc.Message );
+        return CreateExceptionFailedResponse( exc.Message );
     }
 }
 //---------------------------------------------------------------------------
@@ -347,11 +193,128 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMemberCardCode(TSyndCode s
         LoyaltyResponse *wcfResponse;
         CoInitialize(NULL);
         wcfResponse = loyaltymateClient->UpdateMemberCardCode(syndicateCode.SyndCode,uniqueId,memberCardCode);
-        return createMMResponse( wcfResponse );
+        return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
     {
-        return createExceptionFailedResponse( exc.Message );
+        return CreateExceptionFailedResponse( exc.Message );
+    }
+}
+//---------------------------------------------------------------------------
+MMLoyaltyServiceResponse TLoyaltyMateInterface::GetGiftVoucherBalance(TSyndCode syndicateCode,AnsiString giftVoucherNumber,double &balance)
+{
+  try
+    {
+        LoyaltyGiftCardResponse *wcfResponse;
+        CoInitialize(NULL);
+        wcfResponse = loyaltymateClient->GetGiftCardBalance(syndicateCode.SyndCode,CreateRequest(giftVoucherNumber));
+        if(wcfResponse->Successful)
+           balance = wcfResponse->GiftCardBalance;
+
+        return CreateMMResponse( wcfResponse );
+    }
+    catch( Exception& exc )
+    {
+        return CreateExceptionFailedResponse( exc.Message );
+    }
+}
+//---------------------------------------------------------------------------
+MMLoyaltyServiceResponse TLoyaltyMateInterface::GetPocketVoucherDetail(TSyndCode syndicateCode,AnsiString pocketVoucherNumber,TVoucherDetail& VoucherDetail)
+{
+  try
+    {
+        LoyaltyVoucherResponse *wcfResponse;
+        CoInitialize(NULL);
+        wcfResponse = loyaltymateClient->GetPocketVoucherDetail(syndicateCode.SyndCode, CreateRequest(pocketVoucherNumber));
+        if(wcfResponse->Successful)
+        {
+            VoucherDetail.VoucherNumber = pocketVoucherNumber;
+            ReadPocketVoucherInfo(wcfResponse->VoucherInfo, VoucherDetail );
+        }
+        return CreateMMResponse( wcfResponse );
+    }
+    catch( Exception& exc )
+    {
+        return CreateExceptionFailedResponse( exc.Message );
+    }
+}
+//---------------------------------------------------------------------------
+MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndCode syndicateCode,TVoucherUsageDetail inVoucherUsageDetail)
+{
+    try
+    {
+        LoyaltyResponse *wcfResponse;
+        VoucherTransactionInfo *wcfInfo = new VoucherTransactionInfo();
+        wcfInfo->TransactionDate = new TXSDateTime();
+        wcfInfo->TransactionReferenceNumber = inVoucherUsageDetail.ReferenceNumber;
+        wcfInfo->GiftCardNumber = inVoucherUsageDetail.GiftCardNumber;
+        wcfInfo->PointsRedeemed = inVoucherUsageDetail.PointsRedeemed;
+        wcfInfo->VoucherName = inVoucherUsageDetail.VoucherName;
+        wcfInfo->MemberVoucherDiscountAmount = inVoucherUsageDetail.MemberVoucherDiscountAmount;
+        wcfInfo->PocketVoucherNumber = inVoucherUsageDetail.PocketVoucherNumber;
+        wcfInfo->PocketVoucherDiscountAmount = inVoucherUsageDetail.PocketVoucherDiscountAmount;
+        wcfInfo->TotalSaleAmount = inVoucherUsageDetail.TotalSaleAmount;
+        wcfInfo->SiteCode = GetCurrentSiteId();
+        wcfInfo->InvoiceNumber =  inVoucherUsageDetail.InvoiceNumber;
+        TDateTime transactionDate =  Now();
+        wcfInfo->TransactionDate->AsUTCDateTime = Dateutils::EncodeDateTime(YearOf(transactionDate),MonthOf(transactionDate),DayOf(transactionDate),
+                                                             HourOf(transactionDate),MinuteOf(transactionDate),SecondOf(transactionDate),MilliSecondOf(transactionDate));
+        wcfInfo->MemberUniqueId = inVoucherUsageDetail.MemberUniqueId;
+        if(!inVoucherUsageDetail.DiscountUsage.empty())
+        {
+           ArrayOfDiscountUsageInfo DiscountUsageArray;
+           for(std::map<AnsiString,double>::iterator itDiscount = inVoucherUsageDetail.DiscountUsage.begin();
+            itDiscount != inVoucherUsageDetail.DiscountUsage.end(); ++itDiscount)
+            {
+               DiscountUsageInfo* discountUsageInfo = new DiscountUsageInfo;
+               discountUsageInfo->DiscountCode = itDiscount->first;
+               discountUsageInfo->DiscountAmount = itDiscount->second;
+               DiscountUsageArray.Length = DiscountUsageArray.Length + 1;
+               DiscountUsageArray[DiscountUsageArray.Length - 1] = discountUsageInfo;
+            }
+           wcfInfo->DiscountUsages = DiscountUsageArray;
+        }
+
+        CoInitialize(NULL);
+        wcfResponse = loyaltymateClient->ProcessVoucherTransaction(syndicateCode.SyndCode,wcfInfo);
+        return CreateMMResponse( wcfResponse );
+    }
+    catch( Exception& exc )
+    {
+        return CreateExceptionFailedResponse( exc.Message );
+    }
+}
+//---------------------------------------------------------------------------
+MMLoyaltyServiceResponse TLoyaltyMateInterface::ReleaseVouchers(TSyndCode syndicateCode,TReleasedVoucherDetail inReleasedVoucherDetail)
+{
+    try
+    {
+        LoyaltyResponse *wcfResponse;
+        ReleasedVoucherInfo *wcfInfo = new ReleasedVoucherInfo();
+        wcfInfo->TransactionReferenceNumber = inReleasedVoucherDetail.ReferenceNumber;
+        wcfInfo->GiftCardNumber = inReleasedVoucherDetail.GiftCardNumber;
+        wcfInfo->VoucherName = inReleasedVoucherDetail.VoucherName;
+        wcfInfo->PocketVoucherNumber = inReleasedVoucherDetail.PocketVoucherNumber;
+        if(!inReleasedVoucherDetail.DiscountUsage.empty())
+        {
+           ArrayOfDiscountUsageInfo DiscountUsageArray;
+           for(std::vector<AnsiString>::iterator itDiscount = inReleasedVoucherDetail.DiscountUsage.begin();
+            itDiscount != inReleasedVoucherDetail.DiscountUsage.end(); ++itDiscount)
+            {
+               DiscountUsageInfo* discountUsageInfo = new DiscountUsageInfo;
+               discountUsageInfo->DiscountCode = *itDiscount;
+               DiscountUsageArray.Length = DiscountUsageArray.Length + 1;
+               DiscountUsageArray[DiscountUsageArray.Length - 1] = discountUsageInfo;
+            }
+           wcfInfo->DiscountCodes = DiscountUsageArray;
+        }
+        CoInitialize(NULL);
+        wcfResponse = loyaltymateClient->ReleaseVouchers(syndicateCode.SyndCode,wcfInfo);
+        return CreateMMResponse( wcfResponse );
+    }
+    catch( Exception& exc )
+    {
+        return CreateExceptionFailedResponse( exc.Message );
     }
 }
 
@@ -360,39 +323,21 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMemberCardCode(TSyndCode s
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 // PRIVATE SECTION
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-void TLoyaltyMateInterface::initLMClient()
+void TLoyaltyMateInterface::InitLMClient()
 {
     bool useWSDL = false;
     AnsiString loyaltyMateURL = AnsiString(TGlobalSettings::Instance().ServiceURL);
-
-    loyaltymateClient = GetIWCFServiceLoyaltyMate(
-                            useWSDL, loyaltyMateURL, NULL );
+    loyaltymateClient = GetIWCFServiceLoyaltyMate(useWSDL, loyaltyMateURL, NULL );
 }
 //---------------------------------------------------------------------------
-void TLoyaltyMateInterface::initMembership()
+void TLoyaltyMateInterface::InitSiteID()
 {
-    membership = new TMembership( TDeviceRealTerminal::Instance().Modules );
+    siteId = GetCurrentSiteId();
 }
 //---------------------------------------------------------------------------
-void TLoyaltyMateInterface::initSiteID()
-{
-    siteId = getCurrentSiteId();
-}
-//---------------------------------------------------------------------------
-void TLoyaltyMateInterface::initAutoSync()
+void TLoyaltyMateInterface::InitAutoSync()
 {
     FAutoSync = true;
-}
-//---------------------------------------------------------------------------
-void TLoyaltyMateInterface::doneMembership()
-{
-    try
-    {
-        delete membership;
-    }
-    catch( ... )
-    {
-    }
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateInterface::CreateWcfContactInfo(MemberInfo* inMemberInfo,TMMContactInfo& inContactInfo)
@@ -443,31 +388,29 @@ void TLoyaltyMateInterface::CreateWcfContactInfo(MemberInfo* inMemberInfo,TMMCon
        SecondOf(inContactInfo.LastBirthdayProcessed),MilliSecondOf(inContactInfo.LastBirthdayProcessed));
 }
 //---------------------------------------------------------------------------
-int TLoyaltyMateInterface::getCurrentSiteId()
+int TLoyaltyMateInterface::GetCurrentSiteId()
 {
     return TGlobalSettings::Instance().SiteID;
 }
 //---------------------------------------------------------------------------
-AnsiString TLoyaltyMateInterface::createWCFName( const TMMContactInfo* const inContactInfo )
+AnsiString TLoyaltyMateInterface::CreateWCFName( const TMMContactInfo* const inContactInfo )
 {
     return inContactInfo->Name + " " + inContactInfo->Surname;
 }
 //---------------------------------------------------------------------------
-void TLoyaltyMateInterface::readContactInfo(
-                                LoyaltyMemberResponse* inWCFResponse,
-                                TMMContactInfo&            outContactInfo,
-                                bool replacePoints )
+void TLoyaltyMateInterface::ReadPocketVoucherInfo(VoucherInfo* inVoucherInfo,TVoucherDetail& VoucherDetail)
 {
-    readContactInfo(
-        inWCFResponse->MemberInfo,
-        outContactInfo,
-        replacePoints );
+    VoucherDetail.VoucherName  = inVoucherInfo->VoucherName;
+    VoucherDetail.DiscountCode  = inVoucherInfo->DiscountCode;
+    VoucherDetail.NumberOfUsesRemaining  = inVoucherInfo->NumberOfUsesRemaining;
 }
 //---------------------------------------------------------------------------
-void TLoyaltyMateInterface::readContactInfo(
-                                MemberInfo* inMemberInfo,
-                                TMMContactInfo& inContactInfo,
-                                bool replacePoints )
+void TLoyaltyMateInterface::ReadContactInfo(LoyaltyMemberResponse* inWCFResponse,TMMContactInfo& outContactInfo,bool replacePoints )
+{
+    ReadContactInfo(inWCFResponse->MemberInfo,outContactInfo,replacePoints );
+}
+//---------------------------------------------------------------------------
+void TLoyaltyMateInterface::ReadContactInfo(MemberInfo* inMemberInfo,TMMContactInfo& inContactInfo,bool replacePoints )
 {
     inContactInfo.CloudUUID   = inMemberInfo->UniqueId;
     inContactInfo.Mobile      = inMemberInfo->Mobile;
@@ -481,7 +424,7 @@ void TLoyaltyMateInterface::readContactInfo(
     inContactInfo.SiteID = inMemberInfo->HomeSiteId;
     if(inContactInfo.SiteID == 0)
     {
-      inContactInfo.SiteID = getCurrentSiteId();
+      inContactInfo.SiteID = GetCurrentSiteId();
     }
     inContactInfo.MemberType = inMemberInfo->MemberType;
     inContactInfo.CurrentYearPoint = inMemberInfo->CurrentYearPoint;
@@ -509,7 +452,7 @@ void TLoyaltyMateInterface::readContactInfo(
        inMemberInfo->LastModified->Second,inMemberInfo->LastModified->Millisecond);
 
      }
-
+    ReadMemberVouchers(inMemberInfo->MemberVouchers,inContactInfo);
     if(replacePoints) // Do we want to replace points or simply add them on to what we already have?
     {
         inContactInfo.Points.Clear();
@@ -523,10 +466,53 @@ void TLoyaltyMateInterface::readContactInfo(
         TPointsTypePair typepair2( pttPurchased,ptstAccount );
 	    TPointsType type2( pasCloud, typepair2, pesNone );
         inContactInfo.Points.Load( type2, inMemberInfo->LoadedPoints );
+
+         // Putting in the Birthday Points .
+        TPointsTypePair typepair3( pttBirthdayBonus,ptstLoyalty );
+	    TPointsType type3( pasCloud, typepair3, pesNone);
+        inContactInfo.Points.Load( type3, inMemberInfo->AvailableBirthDayPoint );
+
+         // Putting in the First Vist Points.
+        TPointsTypePair typepair4( pttFirstVisit,ptstLoyalty );
+	    TPointsType type4( pasCloud, typepair4, pesNone);
+        inContactInfo.Points.Load( type4, inMemberInfo->AvailableFirstVisitPoint);
     }
 }
 //---------------------------------------------------------------------------
-void TLoyaltyMateInterface::readTierInfo(TierLevelInfo* inTierInfo,TTierLevel *TierLevel)
+void TLoyaltyMateInterface::ReadMemberVouchers(DynamicArray<VoucherInfo*> memberVouchers,TMMContactInfo& inContactInfo)
+{
+    for(int i = 0; i< memberVouchers.Length;i++)
+       {
+         VoucherInfo* voucherInfo = memberVouchers[i];
+         TVoucherDetail voucherDetail;
+         voucherDetail.VoucherName = voucherInfo->VoucherName;
+         voucherDetail.DiscountCode = voucherInfo->DiscountCode;
+         voucherDetail.NumberOfUsesRemaining = voucherInfo->NumberOfUsesRemaining;
+         inContactInfo.MemberVouchers.push_back(voucherDetail);
+       }
+}
+//---------------------------------------------------------------------------
+int TLoyaltyMateInterface::GetTierLevelFromCloudId(int cloudId)
+{
+  int tierLevel = 0;
+  TDBTransaction transaction( TDeviceRealTerminal::Instance().DBControl  );
+  transaction.StartTransaction();
+  tierLevel = TDBTierLevel::GetTierLevelFromCloudId(transaction,cloudId);
+  transaction.Commit();
+  return tierLevel;
+}
+//---------------------------------------------------------------------------
+int TLoyaltyMateInterface::GetTierCloudId(int tierLevel)
+{
+  int tierCloudId = 0;
+  TDBTransaction transaction( TDeviceRealTerminal::Instance().DBControl );
+  transaction.StartTransaction();
+  tierCloudId = TDBTierLevel::GetTierCloudId(transaction,tierLevel);
+  transaction.Commit();
+  return tierCloudId;
+}
+//---------------------------------------------------------------------------
+void TLoyaltyMateInterface::ReadTierInfo(TierLevelInfo* inTierInfo,TTierLevel *TierLevel)
 {
       TierLevel->CloudId = inTierInfo->TierId ;
       TierLevel->Level = inTierInfo->Level ;
@@ -541,22 +527,117 @@ void TLoyaltyMateInterface::readTierInfo(TierLevelInfo* inTierInfo,TTierLevel *T
       TierLevel->ChangeCard = inTierInfo->ChangeCard ;
       TierLevel->AllowEarntRedemption = inTierInfo->AllowEarntLoyaltyRedemption;
 }
+//---------------------------------------------------------------------------
+void TLoyaltyMateInterface::ReadDiscountInfo(Database::TDBTransaction &DBTransaction,DiscountInfo* inDiscountInfo,TDiscount& discount)
+{
+  discount.Name =  inDiscountInfo->Name;
+  discount.DiscountCode = inDiscountInfo->Code;
+  discount.Description = inDiscountInfo->Description;
+  discount.Rounding = StrToCurr(inDiscountInfo->RoundToDecimalPlaces->DecimalString);
+  discount.Priority = inDiscountInfo->PriorityOrder;
+  discount.AppearanceOrder = inDiscountInfo->AppearanceOrder;
+  discount.MembersExempt = inDiscountInfo->IsMemberExemptDiscount;
+  discount.MembersOnly = inDiscountInfo->IsMembersOnlyDiscount;
+  discount.MaximumValue = fabs(StrToCurr(inDiscountInfo->MaximumValue->DecimalString));
+  discount.Group = inDiscountInfo->DiscountGroup;
+  discount.MaxItemAffected = inDiscountInfo->MaximumNumberOfItemsAllowed;
+  discount.MinItemRequired = inDiscountInfo->MinimumNumberOfItemsAllowed;
+  discount.IsCloudDiscount = true;
+  discount.DailyUsageAllowedPerMember = inDiscountInfo->DailyUsageAllowedPerMember;
+  switch((MMProductPriority)inDiscountInfo->ProductPriority)
+  {
+    case LowestPriceFirst:
+    discount.ProductPriority = ppCheapest;
+    break;
+    case HighestPriceFirst:
+    discount.ProductPriority =  ppHighest;
+     break;
+    case NotApllicable:
+    discount.ProductPriority = ppNone;
+     break;
+  }
 
-void TLoyaltyMateInterface::syncTierLevels(DynamicArray<TierLevelInfo*> tierLevels)
+  switch((MMDisplayOption)inDiscountInfo->DisplayAs)
+  {
+     case FixedDescriptionAndAmount:
+     discount.Type = dtFixed;
+     break;
+     case PromptForDescription:
+     discount.Type = dtPromptDescription;
+     break;
+     case PromptForAmount:
+     discount.Type = dtPromptAmount;
+     break;
+     case PromptForDescriptionAndAmount:
+     discount.Type = dtPromptDescriptionAmount;
+     break;
+  }
+  ExtractModeAndAmount(inDiscountInfo,discount);
+  if(inDiscountInfo->IsCategoryFilterApplicable)
+  {
+     int categorKey = TDBMenu::GetOrCreateCloudCategory(DBTransaction,inDiscountInfo->Name);
+     discount.CategoryFilterKeys.insert(categorKey);
+  }
+}
+//---------------------------------------------------------------------------
+void TLoyaltyMateInterface::ExtractModeAndAmount(DiscountInfo* inDiscountInfo,TDiscount& discount)
+{
+   Currency amount = fabs(StrToCurr(inDiscountInfo->Value->DecimalString));
+   if((MMImplicationType)inDiscountInfo->ImplicationType == 2)
+   {
+      discount.Mode = DiscModePoints;
+      discount.Amount = amount;
+   }
+   else
+   {
+     bool isSurcharge =  (MMImplicationType)inDiscountInfo->ImplicationType == Surcharge;
+
+      switch((MMDiscountType)inDiscountInfo->DiscountType)
+          {
+             case Percent:
+             discount.Mode = DiscModePercent;
+             discount.PercentAmount = isSurcharge ? -1 * amount : amount;
+             break;
+             case Dollar:
+             discount.Mode = DiscModeCurrency;
+             discount.Amount = isSurcharge ? -1 * amount : amount;
+             break;
+             case Combo:
+             discount.Mode = DiscModeCombo;
+             discount.Amount = amount;
+             discount.ComboAmount = amount;
+             break;
+             case ItemMode:
+             discount.Mode = DiscModeItem;
+             discount.Amount = isSurcharge ? -1 * amount : amount;
+             break;
+             case SetPrice:
+             discount.Mode = DiscModeSetPrice;
+             discount.Amount = amount;
+             break;
+          }
+   }
+
+
+}
+//---------------------------------------------------------------------------
+void TLoyaltyMateInterface::SyncCompanyInfo(CompanyInfo* companyInfo)
 {
       TDBTransaction transaction( TDeviceRealTerminal::Instance().DBControl );
       transaction.StartTransaction();
       try
         {
-           TDBTierLevel::ClearAll(transaction);
-           for(int i = 0; i< tierLevels.Length;i++)
-           {
-             TierLevelInfo* tierLevelInfo = tierLevels[i];
-             TTierLevel* tierLevel = new TTierLevel;
-             readTierInfo(tierLevelInfo,tierLevel);
-             TDBTierLevel::AddTierLevel(transaction,tierLevel);
-           }
-           transaction.Commit();
+          SyncTierLevels(transaction,companyInfo->TierLevels);
+          SyncDiscounts(transaction,companyInfo->Discounts);
+          if(companyInfo->HasGiftCardsAvailable)
+          {
+             CreateGiftVoucherPaymentType(transaction);
+          }
+          if(companyInfo->HasPocketVouchersAvailable)
+          {
+             CreateVoucherPaymentType(transaction);
+          }
+          transaction.Commit();
 	   }
       catch( Exception &exc )
         {
@@ -565,45 +646,71 @@ void TLoyaltyMateInterface::syncTierLevels(DynamicArray<TierLevelInfo*> tierLeve
             throw;
         }
 }
-
-
-void TLoyaltyMateInterface::syncContactInfo(const TMMContactInfo* const inContactInfo )
+//---------------------------------------------------------------------------
+void TLoyaltyMateInterface::SyncTierLevels(Database::TDBTransaction &DBTransaction,DynamicArray<TierLevelInfo*> tierLevels)
 {
-	try
-    {
-        syncLoyaltymateAttrs( inContactInfo );
-
-        TDBControl dbControl = TDeviceRealTerminal::Instance().DBControl;
-        Database::TDBTransaction dbTransaction( dbControl );
-
-        TMMContactInfo contactInfo = ( TMMContactInfo )( *inContactInfo );
-
-		membership->SetContactDetails(
-                        dbTransaction,
-                        contactInfo.ContactKey,
-                        contactInfo );
-	}
-	catch( Exception &exc )
-    {
-		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
-		throw;
-	}
+      try
+        {
+           TDBTierLevel::ClearAll(DBTransaction);
+           for(int i = 0; i< tierLevels.Length;i++)
+           {
+             TierLevelInfo* tierLevelInfo = tierLevels[i];
+             TTierLevel* tierLevel = new TTierLevel;
+             ReadTierInfo(tierLevelInfo,tierLevel);
+             TDBTierLevel::AddTierLevel(DBTransaction,tierLevel);
+           }
+	   }
+      catch( Exception &exc )
+        {
+            TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
+            throw;
+        }
 }
 //---------------------------------------------------------------------------
-void TLoyaltyMateInterface::syncLoyaltymateAttrs(
-                                const TMMContactInfo* const inContactInfo )
+void TLoyaltyMateInterface::SyncDiscounts(Database::TDBTransaction &DBTransaction,DynamicArray<DiscountInfo*> discounts)
 {
-    if( !updateLoyaltymateAttrs( inContactInfo ) )
+      try
+        {
+         if(!TGlobalSettings::Instance().IsCloudSyncedForDiscount && discounts.Length > 0)
+         {
+            ManagerDiscount->DeleteDiscounts(DBTransaction);
+            DisableSyncSetting(DBTransaction);
+         }
+         else
+         {
+           std::vector<AnsiString> discountsCodes;
+           for(int i = 0; i< discounts.Length;i++)
+           {
+              DiscountInfo* discountInfo = discounts[i];
+              discountsCodes.push_back(discountInfo->Code);
+           }
+           ManagerDiscount->DeleteCloudDiscounts(DBTransaction,discountsCodes);
+         }
+        for(int i = 0; i< discounts.Length;i++)
+           {
+             DiscountInfo* discountInfo = discounts[i];
+             TDiscount CloudDiscount;
+             ReadDiscountInfo(DBTransaction,discountInfo,CloudDiscount);
+             ManagerDiscount->SetDiscount(DBTransaction,0,CloudDiscount);
+           }
+	    }
+      catch( Exception &exc )
+        {
+            TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
+            throw;
+        }
+}
+//---------------------------------------------------------------------------
+void TLoyaltyMateInterface::SyncLoyaltymateAttrs(const TMMContactInfo* const inContactInfo )
+{
+    if( !UpdateLoyaltymateAttrs( inContactInfo ) )
     {
-        addLoyaltymateAttrs( inContactInfo );
+        AddLoyaltymateAttrs( inContactInfo );
     }
 }
 //---------------------------------------------------------------------------
-bool TLoyaltyMateInterface::updateLoyaltymateAttrs(
-                                const TMMContactInfo* const inContactInfo )
+bool TLoyaltyMateInterface::UpdateLoyaltymateAttrs(const TMMContactInfo* const inContactInfo )
 {
-    //TDBControl dbControl = TDeviceRealTerminal::Instance().DBControl;
-
     if( ( inContactInfo->CloudUUID != NULL ) &&
         ( inContactInfo->CloudUUID != ""   ) )
     {
@@ -613,21 +720,15 @@ bool TLoyaltyMateInterface::updateLoyaltymateAttrs(
                          "SITE_ID = "        + IntToStr(inContactInfo->SiteID) + " "
                          "WHERE CONTACTS_KEY = " + IntToStr(inContactInfo->ContactKey)  + "";
 
-        //return executeQuery( sql, &dbControl ) > 0;
-        return executeQuery( sql, &TDeviceRealTerminal::Instance().DBControl) > 0;
+             return ExecuteQuery( sql, &TDeviceRealTerminal::Instance().DBControl) > 0;
     }
 
     return false;
 }
 //---------------------------------------------------------------------------
-void TLoyaltyMateInterface::addLoyaltymateAttrs(
-                                const TMMContactInfo* const inContactInfo )
+void TLoyaltyMateInterface::AddLoyaltymateAttrs(const TMMContactInfo* const inContactInfo )
 {
-    //TDBControl dbControl = TDeviceRealTerminal::Instance().DBControl;
-
-    //int key = generateTableKey( "GEN_LOYALTYATTRIBUTES", &dbControl );
-    int key = generateTableKey( "GEN_LOYALTYATTRIBUTES", &TDeviceRealTerminal::Instance().DBControl );
-
+    int key = GenerateTableKey( "GEN_LOYALTYATTRIBUTES", &TDeviceRealTerminal::Instance().DBControl );
     AnsiString sql = "INSERT INTO LOYALTYATTRIBUTES "
                      "("
                         "ATTRIB_KEY, "
@@ -646,221 +747,79 @@ void TLoyaltyMateInterface::addLoyaltymateAttrs(
                      ")";
 
 	//executeQuery( sql, &dbControl );
-    executeQuery( sql , &TDeviceRealTerminal::Instance().DBControl);
+    ExecuteQuery( sql , &TDeviceRealTerminal::Instance().DBControl);
 }
 //---------------------------------------------------------------------------
-void TLoyaltyMateInterface::syncContactPoints(
-                                const TMMContactInfo* const inContactInfo )
-{
-/*
- 	try
-    {
-        TDBControl dbControl = TDeviceRealTerminal::Instance().DBControl;
-        Database::TDBTransaction dbTransaction( dbControl );
-
-        TMMContactInfo contactInfo = ( TMMContactInfo )( *inContactInfo );
-
-		Currency CurrentLocalBalance =
-                membership->LoyaltyGetValue( dbTransaction, contactInfo.ContactKey );
-
-		Currency SyncAdjustment =
-                contactInfo.Points.getPointsBalance() - CurrentLocalBalance;
-
-		if( SyncAdjustment != 0 )
-        {
-			TPointsTransaction pointsTransaction;
-
-			pointsTransaction.ContactKey = contactInfo.ContactKey;
-			pointsTransaction.TimeStamp = Now();
-			pointsTransaction.ExportStatus = pesNone;
-			pointsTransaction.PointsTransactionType = pttSync;
-			pointsTransaction.PointsTransactionAccountType = ptstLoyalty;
-			pointsTransaction.Adjustment = SyncAdjustment;
-			pointsTransaction.InvoiceNumber = "NA LoyaltyMate Sync";
-
-			membership->LoyaltyAddValue( dbTransaction, pointsTransaction);
-		}
-	}
-	catch( Exception &exc )
-    {
-		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, exc.Message);
-		throw;
-	}
-*/
-
-/*
-    // Putting in the Points Earned.
-    TPointsTypePair typepair( pttEarned,ptstLoyalty );
-    TPointsType type( pasDatabase, typepair, pesExported);
-    inContactInfo->Points.Load( type, inEarnedPoints );
-
-    // Putting in the Points Loaded ( Purchased ).
-    TPointsTypePair typepair( pttPurchased,ptstAccount );
-    TPointsType type( pasDatabase, typepair, pesExported );
-    inContactInfo->Points.Load( type, inLoadedPoints );
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    TDBControl dbControl = TDeviceRealTerminal::Instance().DBControl;
-    Database::TDBTransaction dbTransaction( dbControl );
-
-    inContactInfo.ContactKey = membership->GetInternalKey( dbTransaction, inContactInfo->ExternalKey );
-    membership->SetContactDetails( dbTransaction, inContactInfo->ContactKey, *inContactInfo );
-    membership->SyncPointsDetails( dbTransaction, *inContactInfo );
-
-    // Points are all synced now discard the Bally ones.
-    // they will be reloaded as part of Get contact details
-    inContactInfo->Points.Clear();
-    inContactInfo->Points.PointsRules << eprNoPointsPurchases;
-    inContactInfo->Points.PointsRules >> eprAllowedNegitive;
-*/
-}
-//---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::createMMResponse(
-                            LoyaltyResponse* inWCFResponse )
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyResponse* inWCFResponse )
 {
     return MMLoyaltyServiceResponse(
-                inWCFResponse->Succesful,
+                inWCFResponse->Successful,
                 AnsiString( inWCFResponse->Message.t_str() ),
                 AnsiString( inWCFResponse->Description.t_str() ),
                 ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
                 "" );
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::createMMResponse(
-                            LoyaltyMemberResponse* inWCFResponse )
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyMemberResponse* inWCFResponse )
 {
      return MMLoyaltyServiceResponse(
-                inWCFResponse->Succesful,
+                inWCFResponse->Successful,
                 AnsiString( inWCFResponse->Message.t_str() ),
                 AnsiString( inWCFResponse->Description.t_str() ),
                 ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
                 AnsiString( inWCFResponse->MemberInfo->UniqueId.t_str() ) );
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::createMMResponse(
-                            LoyaltyMemberListResponse* inWCFResponse )
-{
-    return MMLoyaltyServiceResponse(
-                    inWCFResponse->Succesful,
-                    AnsiString( inWCFResponse->Message.t_str() ),
-                    AnsiString( inWCFResponse->Description.t_str() ),
-                    ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
-                    "" );
-}
-//---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::createMMResponse(
-                            LoyaltyPointsInfoResponse* inWCFResponse )
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyCompanyResponse* inWCFResponse )
 {
      return MMLoyaltyServiceResponse(
-                inWCFResponse->Succesful,
-                AnsiString( inWCFResponse->Message.t_str() ),
-                AnsiString( inWCFResponse->Description.t_str() ),
-                ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
-                AnsiString( inWCFResponse->PointsInfo->UniqueId.t_str() ) );
-}
-//---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::createMMResponse(
-                            LoyaltyTierResponse* inWCFResponse )
-{
-     return MMLoyaltyServiceResponse(
-                inWCFResponse->Succesful,
-                AnsiString( inWCFResponse->Message.t_str() ),
-                AnsiString( inWCFResponse->Description.t_str() ),
-                ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
-                AnsiString( inWCFResponse->TierInfo->Name.t_str() ) );
-}
-//---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::createMMResponse(
-                            LoyaltyTierListResponse* inWCFResponse )
-{
-     return MMLoyaltyServiceResponse(
-                inWCFResponse->Succesful,
+                inWCFResponse->Successful,
                 AnsiString( inWCFResponse->Message.t_str() ),
                 AnsiString( inWCFResponse->Description.t_str() ),
                 ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
                 "" ) ;
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::createExceptionFailedResponse(
-                            AnsiString inMessage )
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyGiftCardResponse* inWCFResponse )
 {
-    return MMLoyaltyServiceResponse(
-                    false,
-                    inMessage,
-                    "",
-                    FailedDueToException,
-                    AnsiString( "" ) );
+     return MMLoyaltyServiceResponse(
+                inWCFResponse->Successful,
+                AnsiString( inWCFResponse->Message.t_str() ),
+                AnsiString( inWCFResponse->Description.t_str() ),
+                ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
+                "" ) ;
 }
 //---------------------------------------------------------------------------
-void TLoyaltyMateInterface::UpdateTierCloudId(const TTierLevel* const inTierInfo )
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyVoucherResponse* inWCFResponse )
 {
-  if( ( inTierInfo->CloudId != NULL ) &&
-        ( inTierInfo->TierKey != 0   ) )
-    {
-        AnsiString sql = "UPDATE TIER_LEVELS "
-                         "SET CLOUD_ID    = '" + IntToStr(inTierInfo->CloudId) + "' "
-                         "WHERE TIER_ID = " + IntToStr(inTierInfo->TierKey)  + "";
-        executeQuery( sql, &TDeviceRealTerminal::Instance().DBControl);
-    }
-
+     return MMLoyaltyServiceResponse(
+                inWCFResponse->Successful,
+                AnsiString( inWCFResponse->Message.t_str() ),
+                AnsiString( inWCFResponse->Description.t_str() ),
+                ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
+                "" ) ;
 }
 //---------------------------------------------------------------------------
-int TLoyaltyMateInterface::generateTableKey(
-                                const AnsiString  inGeneratorName,
-                                TDBControl* const inDBControl )
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateExceptionFailedResponse(AnsiString inMessage )
 {
-    int result = -1;
 
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    TDBTransaction transaction( *inDBControl );
-
-    try
-    {
-        transaction.StartTransaction();
-        TIBSQL *query = transaction.Query( transaction.AddQuery() );
-
-        query->SQL->Text =
-            "SELECT GEN_ID(" + inGeneratorName + ", 1) FROM RDB$DATABASE";
-
-            query->ExecQuery();
-
-            result = query->Fields[0]->AsInteger;
-        transaction.Commit();
-    }
-    catch( Exception &exc )
-    {
-        transaction.Rollback();
-		TManagerLogs::Instance().Add( __FUNC__, ERRORLOG, exc.Message );
-        throw;
-    }
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    return result;
+   if(inMessage.Pos("XML") > 0 || inMessage.Pos("The handle") > 0 )
+   return MMLoyaltyServiceResponse(false,"Not able to connect with server.","",FailedDueToException,AnsiString( "" ) );
+   else
+     return MMLoyaltyServiceResponse(false,inMessage,"",FailedDueToException,AnsiString( "" ) );
 }
 //---------------------------------------------------------------------------
-int TLoyaltyMateInterface::executeQuery(
-                                const AnsiString inSQL,
-                                TDBControl* const inDBControl )
+int TLoyaltyMateInterface::ExecuteQuery(const AnsiString inSQL,TDBControl* const inDBControl )
 {
     int result = 0;
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
     TDBTransaction transaction( *inDBControl );
-
     try
     {
         transaction.StartTransaction();
         TIBSQL *query = transaction.Query( transaction.AddQuery() );
-
         query->SQL->Text = UnicodeString( inSQL.c_str() );
-
-            query->ExecQuery();
-
-            result = query->RowsAffected;
+        query->ExecQuery();
+        result = query->RowsAffected;
         transaction.Commit();
     }
     catch( Exception &exc )
@@ -869,30 +828,113 @@ int TLoyaltyMateInterface::executeQuery(
 		TManagerLogs::Instance().Add( __FUNC__, ERRORLOG, exc.Message );
         throw;
     }
-
-    //::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-    return result;
+    return result;
 }
 //---------------------------------------------------------------------------
-int TLoyaltyMateInterface::GetTierCloudId(int tierLevel)
+//---------------------------------------------------------------------------
+int TLoyaltyMateInterface::GenerateTableKey(const AnsiString  inGeneratorName,TDBControl* const inDBControl )
 {
-  int tierCloudId = 0;
-  TDBTransaction transaction( TDeviceRealTerminal::Instance().DBControl );
-  transaction.StartTransaction();
-  tierCloudId = TDBTierLevel::GetTierCloudId(transaction,tierLevel);
-  transaction.Commit();
-  return tierCloudId;
+    int result = -1;
+    TDBTransaction transaction( *inDBControl );
+    try
+    {
+        transaction.StartTransaction();
+        TIBSQL *query = transaction.Query( transaction.AddQuery() );
+        query->SQL->Text =  "SELECT GEN_ID(" + inGeneratorName + ", 1) FROM RDB$DATABASE";
+        query->ExecQuery();
+        result = query->Fields[0]->AsInteger;
+        transaction.Commit();
+    }
+    catch( Exception &exc )
+    {
+        transaction.Rollback();
+		TManagerLogs::Instance().Add( __FUNC__, ERRORLOG, exc.Message );
+        throw;
+    }
+    return result;
 }
 //---------------------------------------------------------------------------
-int TLoyaltyMateInterface::GetTierLevelFromCloudId(int cloudId)
+
+void TLoyaltyMateInterface::CreateVoucherPaymentType(Database::TDBTransaction &DBTransaction)
 {
-  int tierLevel = 0;
-  TDBTransaction transaction( TDeviceRealTerminal::Instance().DBControl  );
-  transaction.StartTransaction();
-  tierLevel = TDBTierLevel::GetTierLevelFromCloudId(transaction,cloudId);
-  transaction.Commit();
-  return tierLevel;
+    try
+    {
+        int PaymentKey = 0;
+        TIBSQL *IBInternalQuery = DBTransaction.Query( DBTransaction.AddQuery() );
+        IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE PAYMENT_NAME = :PAYMENT_NAME";
+        IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Voucher";
+        IBInternalQuery->ExecQuery();
+        if(!IBInternalQuery->Eof)
+        {
+          PaymentKey = IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger ;
+        }
+        TPayment NewPayment;
+        NewPayment.Name = "Voucher";
+        NewPayment.SysNameOveride = "Voucher";
+        NewPayment.Properties |= ePayTypeGetVoucherDetails;
+        NewPayment.DisplayOrder = 1;
+        NewPayment.GroupNumber = 0;
+        NewPayment.Colour = clTeal;
+        NewPayment.PaymentThirdPartyID = "10007242";
+        TDeviceRealTerminal::Instance().PaymentSystem->PaymentSave(DBTransaction, PaymentKey, NewPayment);
+    }
+    catch(Exception & E)
+	{
+	}
 }
 //---------------------------------------------------------------------------
+void TLoyaltyMateInterface::CreateGiftVoucherPaymentType(Database::TDBTransaction &DBTransaction)
+{
+    try
+    {
+        int PaymentKey = 0;
+        TIBSQL *IBInternalQuery = DBTransaction.Query( DBTransaction.AddQuery() );
+        IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE PAYMENT_NAME = :PAYMENT_NAME";
+        IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Gift Card";
+        IBInternalQuery->ExecQuery();
+        if(!IBInternalQuery->Eof)
+        {
+          PaymentKey = IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger ;
+        }
+        TPayment NewPayment;
+        NewPayment.Name = "Gift Card";
+        NewPayment.SysNameOveride = "Gift Card";
+        NewPayment.Properties |= ePayTypeGetVoucherDetails;
+        NewPayment.DisplayOrder = 1;
+        NewPayment.GroupNumber = 0;
+        NewPayment.Colour = clTeal;
+        NewPayment.PaymentThirdPartyID = "10007242";
+        TDeviceRealTerminal::Instance().PaymentSystem->PaymentSave(DBTransaction, PaymentKey, NewPayment);
+    }
+    catch(Exception & E)
+	{
+	}
+
+}
+
+void  TLoyaltyMateInterface::DisableSyncSetting(Database::TDBTransaction &DBTransaction)
+{
+ 	TGlobalSettings  &gs = TGlobalSettings::Instance();
+	TManagerVariable &mv = TManagerVariable::Instance();
+
+	int global_profile_key;
+	if (!(global_profile_key = mv.GetProfile(DBTransaction, eSystemProfiles, "Globals")))
+	    global_profile_key = mv.SetProfile(DBTransaction, eSystemProfiles, "Globals");
+    TGlobalSettings::Instance().IsCloudSyncedForDiscount = true;
+	mv.SetProfileBool(DBTransaction, global_profile_key, vmIsCloudSynced,true);
+}
+
+
+RequestInfo* TLoyaltyMateInterface::CreateRequest(AnsiString requestKey)
+{
+   RequestInfo* requestInfo = new RequestInfo();
+   requestInfo->RequestKey = requestKey;
+   requestInfo->RequestTime = new TXSDateTime();
+   TDateTime requestDate = Now();
+   requestInfo->RequestTime->AsUTCDateTime = Dateutils::EncodeDateTime(YearOf(requestDate),MonthOf(requestDate),DayOf(requestDate),
+                                                             HourOf(requestDate),MinuteOf(requestDate),SecondOf(requestDate),MilliSecondOf(requestDate));
+
+   return requestInfo;
+}
+
 #pragma package(smart_init)

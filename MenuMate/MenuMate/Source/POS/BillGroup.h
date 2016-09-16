@@ -21,7 +21,6 @@
 #include "touchbtn.h"
 #include "touchcontrols.h"
 #include "touchgrid.h"
-
 #include <algorithm>
 #include <set>
 #include <iostream>
@@ -31,7 +30,6 @@
 #include "Membership.h"
 #include "MM_DBCore.h"
 #include "PnMOrder.h"
-
 #include "SystemEvents.h"
 #include "Modules.h"
 #include "ZForm.h"
@@ -79,7 +77,7 @@ __published:	// IDE-managed Components
 	TTouchBtn *tbtnSplit;
 	TTouchBtn *tbtnMove;
 	TTouchBtn *tbtnSelectZone;
-
+    TTimer *SplitTimer;
 
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormResize(TObject *Sender);
@@ -109,7 +107,11 @@ __published:	// IDE-managed Components
     void __fastcall tbtnCancelMouseClick(TObject *Sender);
     void __fastcall tbtnSelectZoneMouseClick(TObject *Sender);
     void __fastcall ProcessBillThorVouchers(Database::TDBTransaction &DBTransaction);
-
+    void __fastcall SplitTimerTick(TObject *Sender);
+    void __fastcall tgridItemListMouseDown(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, TGridButton *GridButton, int X, int Y);
+    void __fastcall tgridItemListMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          TGridButton *GridButton, int X, int Y);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall CardSwipe(Messages::TMessage& Message);
@@ -121,10 +123,11 @@ protected:
 	END_MESSAGE_MAP(TComponent)
 
 private:	// User declarations
+    __int64 SelectedItemKey;
+    void SplitItem(Database::TDBTransaction &transaction, int orderKey,double quantityToSplit);
     void __fastcall CloseTerminateCallBack(TObject* sender);
 	void UpdateTableDetails(Database::TDBTransaction &DBTransaction);
 	void UpdateSeatDetails(Database::TDBTransaction &DBTransaction,TMembership *Membership);
-	void UpdateChefMate(Database::TDBTransaction &DBTransaction, int tab_key);
 	void ShowReceipt();
     TDiscount SelectedDiscount;
 	bool InCheckFunc;
@@ -153,6 +156,7 @@ private:	// User declarations
     void EnableButtons();
     bool ClipOptionSelected;
     bool ClipTabInTable;
+    bool DoSplit(Database::TDBTransaction &transaction,std::map<__int64, TPnMOrder> orders);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);
@@ -204,8 +208,10 @@ public:		// User declarations
    void CheckingClipItemsInSelectedList(Database::TDBTransaction &DBTransaction);
    int CheckIfListContainOnlyClipItems(Database::TDBTransaction &DBTransaction,std::map<__int64,TPnMOrder> &SelectedItems);
    void CheckLinkedTable(int TableNumber);
+   int PatronCountForMallExport;
 private:
     void SendPointValueToRunRate( TPaymentTransaction &inTransaction );
+    int extractPatronCountForMallExport(TPaymentTransaction &paymentTransaction);
 
 };
 #endif

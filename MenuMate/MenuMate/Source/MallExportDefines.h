@@ -13,6 +13,7 @@
 #define MEGAWORLDMALL 7
 #define SHANGRILAMALL 8
 #define DLFMALL 9
+#define FEDERALLANDMALL 10
 
 #define MALLEXPORTFOLDERPATH "MallExport"
 //---------------------------------------------------------------------------

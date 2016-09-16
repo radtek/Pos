@@ -707,6 +707,8 @@ bool TManagerMembership::MemberCodeScanned(Database::TDBTransaction &DBTransacti
    }
    return false;
 }
+
+
 bool TManagerMembership::UpdateMemberCardCode(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode)
 {
    bool memberExist = false;

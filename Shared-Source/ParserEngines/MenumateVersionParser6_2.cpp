@@ -44,6 +44,23 @@ void TApplyParser::upgrade6_25Tables()
 {
     update6_25Tables();
 }
+//6.26
+void TApplyParser::upgrade6_26Tables()
+{
+    update6_26Tables();
+}
+//6.27
+void TApplyParser::upgrade6_27Tables()
+{
+    update6_27Tables();
+}
+//6.28
+void TApplyParser::upgrade6_28Tables()
+{
+    update6_28Tables();
+}
+
+
 //::::::::::::::::::::::::Version 6.20::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_20Tables()
 {
@@ -799,4 +816,279 @@ void TApplyParser::UpdateDiscountsTable6_25(TDBControl* const inDBControl)
 		inDBControl);
 	}
 }
+
+//::::::::::::::::::::::::Version 6.26::::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_26Tables()
+{
+    UpdateDiscountsTable6_26(_dbControl);
+    UpdateLoyaltyTransactionTable6_26(_dbControl);
+    UpdateArcCateoriesTable6_26(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::UpdateDiscountsTable6_26(TDBControl* const inDBControl)
+{
+   if ( !fieldExists( "DISCOUNTS", "IS_CLOUD_DISCOUNT", _dbControl ) )
+	{
+		executeQuery (
+		"ALTER TABLE DISCOUNTS ADD "
+        "IS_CLOUD_DISCOUNT T_TRUEFALSE DEFAULT 'F'; ",
+		inDBControl);
+	}
+    if ( !fieldExists( "DISCOUNTS", "DAILY_USE_PER_MEMBER", _dbControl ) )
+	{
+		executeQuery (
+		"ALTER TABLE DISCOUNTS ADD "
+        "DAILY_USE_PER_MEMBER INTEGER DEFAULT 0; ",
+		inDBControl);
+	}
+    executeQuery ("ALTER TABLE DISCOUNTS ALTER NAME TYPE VARCHAR(50);",inDBControl);
+    executeQuery ("ALTER TABLE DISCOUNTS ALTER DISCOUNT_ID TYPE Varchar(25); ",inDBControl);
+    executeQuery ("ALTER TABLE ARCORDERDISCOUNTS ALTER DISCOUNT_ID TYPE Varchar(25); ",inDBControl);
+    executeQuery ("ALTER TABLE DAYARCORDERDISCOUNTS ALTER DISCOUNT_ID TYPE Varchar(25); ",inDBControl);
+    executeQuery ("ALTER TABLE ORDERDISCOUNTS ALTER DISCOUNT_ID TYPE Varchar(25); ",inDBControl);
+}
+//---------------------------------------------------------------------------
+void TApplyParser::UpdateLoyaltyTransactionTable6_26(TDBControl* const inDBControl)
+{
+  if (!fieldExists( "LOYALTYPENDINGTRANSACTIONS", "INVOICE_NUMBER", _dbControl ) )
+	{
+        executeQuery (
+		"ALTER TABLE LOYALTYPENDINGTRANSACTIONS ADD "
+        "INVOICE_NUMBER VARCHAR(25); ",
+		inDBControl);
+	}
+}
+void TApplyParser::UpdateArcCateoriesTable6_26(TDBControl* const inDBControl)
+{
+  executeQuery ("ALTER TABLE ARCCATEGORIES ALTER CATEGORY TYPE Varchar(50); ",inDBControl);
+
+}
+//::::::::::::::::::::::::Version 6.27:::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_27Tables()
+{
+    UpdatePrnorderTable6_27(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::UpdatePrnorderTable6_27(TDBControl* const inDBControl)
+{
+    executeQuery (
+    "ALTER TABLE PRNORDER ALTER COURSE_NAME TYPE VARCHAR(50); ",
+    inDBControl);
+}
+//::::::::::::::::::::::::Version 6.28:::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_28Tables()
+{
+    create6_28MallViews(_dbControl);
+    update6_28MallExportHourly(_dbControl);
+    update6_28ArcMallExportHourly(_dbControl);
+    UpdateItemSizeTable6_28(_dbControl);
+    create6_28MallExportOtherDetails(_dbControl);
+    create6_28ArcMallExportOtherDetails(_dbControl);
+    CreateGenerators6_28(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::create6_28MallViews( TDBControl* const inDBControl )
+{
+    if ( !tableExists( "FEDERALLAND_MALLVIEW", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE VIEW FEDERALLAND_MALLVIEW "
+		"("
+		"   MALLEXPORT_KEY, "
+		"   FIELD_NAME, "
+		"   STRING_VALUE, "
+		"   INTEGER_VALUE, "
+		"   CURRENCY_VALUE, "
+		"   TIMESTAMP_VALUE "
+		") "
+		"AS "
+		"SELECT "
+		"   MALLEXPORT_KEY, "
+		"   FIELD_NAME, "
+		"   STRING_VALUE, "
+		"   INTEGER_VALUE, "
+		"   CURRENCY_VALUE, "
+		"   TIMESTAMP_VALUE "
+		"FROM "
+		"   MALLEXPORT "
+		"WHERE "
+		"   MALLEXPORT_KEY in ( 01, " // Tenant Number
+		"                       02, " // Terminal Number
+		"                       03, " // Total Gross Sale
+		"                       04, " // Total Sale Tax
+		"                       05, " // Total Cancelled
+		"                       07, " // Total Regular Discount
+		"                       09, " // Total Refund
+		"                       11, " // Total Senior Citizen Discount
+		"                       12, " // Total Senior Citizen Discount Count
+		"                       13, " // Total Service Charge
+		"                       15, " // Grand Total Old
+		"                       17, " // Grand Total
+		"                       21, " // Local Taxes
+		"                       24, " // Tax Exempt Sales
+		"                       27, " // Disability Discount
+		"                       31, " // Mall Code
+		"                       36, " // Employee Discount
+		"                       37, " // VIP Discount
+		"                       38, " // GPC Discount
+		"                       39, " // DiscountG1 Other Discounts
+		"                       51, " // Daily Sales
+		"                       52, " // Tax Inclusive Sales
+		"                       53, " // Cash Sales
+		"                       66, " // Transaction Count Document Count
+		"                       67, " // Beginning Invoice Number
+		"                       68, " // Ending Invoice Number
+		"                       81, " // Transaction Date
+		"                       83, " // Total Discount
+		"                       86, " // Daily Local Tax
+		"                       87, " // FineDiningCustomerCount
+		"                       90, " // Non-VAT Sales
+		"                       97, " // Card Sales
+		"                       98 )", // Other Sales
+		inDBControl );
+	}
+}
+//---------------------------------------------------------------------------
+
+void TApplyParser::update6_28MallExportHourly( TDBControl* const inDBControl )
+{   if ( !fieldExists("MALLEXPORT_HOURLY", "MINUTE_VALUE", inDBControl ) )
+	{
+		executeQuery(
+		"ALTER TABLE MALLEXPORT_HOURLY ADD MINUTE_VALUE INTEGER;",
+		inDBControl );
+	}
+
+    if ( !fieldExists("MALLEXPORT_HOURLY", "SCDISCOUNT_COUNT", inDBControl ) )
+	{
+		executeQuery(
+		"ALTER TABLE MALLEXPORT_HOURLY ADD SCDISCOUNT_COUNT INTEGER;",
+		inDBControl );
+	}
+}
+//---------------------------------------------------------------------------
+void TApplyParser::UpdateItemSizeTable6_28(TDBControl* const inDBControl)
+{
+    executeQuery (
+    " UPDATE ITEMSIZE A SET A.COST = 0 WHERE A.COST < 0 ; ",
+    inDBControl);
+
+    executeQuery (
+    " UPDATE ARCHIVE a SET A.COST = 0 WHERE A.COST < 0 ; ",
+    inDBControl);
+
+    executeQuery (
+    " UPDATE DAYARCHIVE a SET A.COST = 0 WHERE A.COST < 0 ; ",
+    inDBControl);
+
+    executeQuery (
+    " UPDATE ORDERS a SET A.COST = 0 WHERE A.COST < 0 ; ",
+    inDBControl);
+}
+
+//---------------------------------------------------------------------------
+void TApplyParser::update6_28ArcMallExportHourly(TDBControl* const inDBControl)
+{
+    if ( !fieldExists("ARCMALLEXPORTHOURLY", "MINUTE_VALUE", inDBControl ) )
+	{
+		executeQuery(
+		"ALTER TABLE ARCMALLEXPORTHOURLY ADD MINUTE_VALUE INTEGER;",
+		inDBControl );
+	}
+
+    if ( !fieldExists("ARCMALLEXPORTHOURLY", "SCDISCOUNT_COUNT", inDBControl ) )
+	{
+		executeQuery(
+		"ALTER TABLE ARCMALLEXPORTHOURLY ADD SCDISCOUNT_COUNT INTEGER;",
+		inDBControl );
+	}
+}
+//---------------------------------------------------------------------------
+
+void TApplyParser::create6_28MallExportOtherDetails(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "MALLEXPORTOTHERDETAILS", inDBControl ) )
+	{
+		executeQuery(
+                "CREATE TABLE MALLEXPORTOTHERDETAILS "
+                "( "
+                "   MEOD_OD_KEY INTEGER NOT NULL PRIMARY KEY, "
+                "   DATE_VALUE TIMESTAMP, "
+                "   TENANT_NAME VARCHAR(50), "
+                "   DISCOUNT_TYPE VARCHAR(50), "
+                "   DISCOUNT_PERC NUMERIC(15,4), "
+                "   DISCOUNT_AMOUNT NUMERIC(15,4), "
+                "   TRANSACTION_CODE VARCHAR(50), "
+                "   REFUND_CANCEL_REASON VARCHAR(50), "
+                "   REFUND_CANCEL_AMOUNT NUMERIC(15,4), "
+                "   REFUND_CANCEL_TABKEY INTEGER, "
+                "   TRANSACTION_COUNT INTEGER, "
+                "   FINEDINECUST_COUNT NUMERIC(17,4), "
+                "   SCDISCOUNT_COUNT INTEGER, "
+                "   PAYMENT_CODE VARCHAR(50), "
+                "   PAYMENT_CODE_DESC VARCHAR(50), "
+                "   PAYMENT_CLASS VARCHAR(50), "
+                "   PAYMENT_CLASS_DESC VARCHAR(50), "
+                "   PAYMENT_AMOUNT NUMERIC(15,4) "
+                ");",
+			inDBControl );
+	}
+}
+//---------------------------------------------------------------------------
+
+void TApplyParser::create6_28ArcMallExportOtherDetails(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "ARCMALLEXPORTOTHERDETAILS", inDBControl ) )
+	{
+		executeQuery(
+                "CREATE TABLE ARCMALLEXPORTOTHERDETAILS "
+                "( "
+                "   AMEOD_OD_KEY INTEGER NOT NULL PRIMARY KEY, "
+                "   DATE_VALUE TIMESTAMP, "
+                "   TENANT_NAME VARCHAR(50), "
+                "   DISCOUNT_TYPE VARCHAR(50), "
+                "   DISCOUNT_PERC NUMERIC(15,4), "
+                "   DISCOUNT_AMOUNT NUMERIC(15,4), "
+                "   TRANSACTION_CODE VARCHAR(50), "
+                "   REFUND_CANCEL_REASON VARCHAR(50), "
+                "   REFUND_CANCEL_AMOUNT NUMERIC(15,4), "
+                "   REFUND_CANCEL_TABKEY INTEGER, "
+                "   TRANSACTION_COUNT INTEGER, "
+                "   FINEDINECUST_COUNT NUMERIC(17,4), "
+                "   SCDISCOUNT_COUNT INTEGER, "
+                "   PAYMENT_CODE VARCHAR(50), "
+                "   PAYMENT_CODE_DESC VARCHAR(50), "
+                "   PAYMENT_CLASS VARCHAR(50), "
+                "   PAYMENT_CLASS_DESC VARCHAR(50), "
+                "   PAYMENT_AMOUNT NUMERIC(15,4) "
+                ");",
+			inDBControl );
+	}
+}
+//---------------------------------------------------------------------------
+
+void TApplyParser::CreateGenerators6_28( TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_MEOD_OD_KEY", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_MEOD_OD_KEY;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_MEOD_OD_KEY TO 0;", inDBControl
+        );
+    }
+    if(!generatorExists("GEN_MYOBINVOICE_NUMBER", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_MYOBINVOICE_NUMBER;", inDBControl
+        );
+        executeQuery(
+            "SET GENERATOR GEN_MYOBINVOICE_NUMBER TO 0;", inDBControl
+        );
+    }
+
+}
+//---------------------------------------------------------------------------
+
 }

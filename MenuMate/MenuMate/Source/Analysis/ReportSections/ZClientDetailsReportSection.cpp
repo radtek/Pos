@@ -12,6 +12,8 @@ ZClientDetailsReportSection::~ZClientDetailsReportSection()
 
 void ZClientDetailsReportSection::GetOutput(TPrintout* printout)
 {
+    if(!printout->BlindBalanceUsed)
+        return;
 	IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
 
     if (reportSectionDisplayStrategy)

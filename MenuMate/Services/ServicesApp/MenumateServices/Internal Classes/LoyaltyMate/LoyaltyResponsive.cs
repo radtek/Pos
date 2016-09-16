@@ -5,198 +5,88 @@ namespace MenumateServices.LoyaltyMate
 {
     public class LoyaltyResponsive
     {
-        #region Public
-
         protected LoyaltyResponse CreateResponseNoError()
         {
             return CreateResponse(true, "", "", LoyaltyResponseCode.Successful);
         }
 
-        protected LoyaltyResponse CreateResponseError(
-                                            string inMessage,
-                                            string inDescription,
-                                            LoyaltyResponseCode inResponseCode)
+        protected LoyaltyResponse CreateResponseError(string inMessage, string inDescription, LoyaltyResponseCode inResponseCode)
         {
             return CreateResponse(false, inMessage, inDescription, inResponseCode);
         }
 
+        //Member Response
         protected LoyaltyMemberResponse CreateMemberResponseNoError(MemberInfo inMemberInfo)
         {
             return CreateMemberResponse(true, "", "", LoyaltyResponseCode.Successful, inMemberInfo);
         }
 
-
-        protected LoyaltyMemberResponse CreateMemberResponseError(
-                                                string inMessage,
-                                                string inDescription,
-                                                LoyaltyResponseCode inResponseCode,
-                                                MemberInfo inMemberInfo)
+        protected LoyaltyMemberResponse CreateMemberResponseError(string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, MemberInfo inMemberInfo)
         {
             return CreateMemberResponse(false, inMessage, inDescription, inResponseCode, inMemberInfo);
         }
 
-
-        protected LoyaltyMemberListResponse CreateMemberListResponseNoError(List<MemberInfo> inMemberInfoList)
+        //Company Response
+        protected LoyaltyCompanyResponse CreateCompanyResponseNoError(CompanyInfo inCompanyInfo)
         {
-            return CreateMemberListResponse(true, "", "", LoyaltyResponseCode.Successful, inMemberInfoList);
+            return CreateCompanyResponse(true, "", "", LoyaltyResponseCode.Successful, inCompanyInfo);
         }
 
-        protected LoyaltyMemberListResponse CreateMemberListResponseError(
-                                                    string inMessage,
-                                                    string inDescription,
-                                                    LoyaltyResponseCode inResponseCode)
+        protected LoyaltyCompanyResponse CreateCompanyResponseError(string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, CompanyInfo inCompanyInfo)
         {
-            // Empty list
-            var emptyList = new List<MemberInfo>();
-
-            return CreateMemberListResponse(false, inMessage, inDescription, inResponseCode, emptyList);
+            return CreateCompanyResponse(false, inMessage, inDescription, inResponseCode, inCompanyInfo);
         }
 
-
-        protected LoyaltyTierResponse CreateTierResponseNoError(TierLevelInfo inTierInfo)
+        //GiftCard Response
+        protected LoyaltyGiftCardResponse CreateGiftCardResponseNoError(double giftCardBalance)
         {
-            return CreateTierResponse(true, "", "", LoyaltyResponseCode.Successful, inTierInfo);
+            return CreateGiftCardResponse(true, "", "", LoyaltyResponseCode.Successful, giftCardBalance);
         }
 
-
-        protected LoyaltyTierResponse CreateTierResponseError(
-                                                string inMessage,
-                                                string inDescription,
-                                                LoyaltyResponseCode inResponseCode,
-                                                TierLevelInfo inTierInfo)
+        protected LoyaltyGiftCardResponse CreateGiftCardResponseError(string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, double giftCardBalance)
         {
-            return CreateTierResponse(false, inMessage, inDescription, inResponseCode, inTierInfo);
+            return CreateGiftCardResponse(false, inMessage, inDescription, inResponseCode, giftCardBalance);
         }
 
-
-
-        protected LoyaltyTierListResponse CreateTierListResponseNoError(List<TierLevelInfo> inTierInfoList)
+        //Voucher Response
+        protected LoyaltyVoucherResponse CreateVoucherResponseNoError(VoucherInfo inVoucherInfo)
         {
-            return CreateTierListResponse(true, "", "", LoyaltyResponseCode.Successful, inTierInfoList);
+            return CreateVoucherResponse(true, "", "", LoyaltyResponseCode.Successful, inVoucherInfo);
+        }
+
+        protected LoyaltyVoucherResponse CreateVoucherResponseError(string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, VoucherInfo inVoucherInfo)
+        {
+            return CreateVoucherResponse(false, inMessage, inDescription, inResponseCode, inVoucherInfo);
         }
 
 
-        protected LoyaltyTierListResponse CreateTierListResponseError(
-                                                string inMessage,
-                                                string inDescription,
-                                                LoyaltyResponseCode inResponseCode,
-                                                List<TierLevelInfo> inTierInfoList)
+        #region Private Methods
+
+        private LoyaltyResponse CreateResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode)
         {
-            return CreateTierListResponse(false, inMessage, inDescription, inResponseCode, inTierInfoList);
+            return new LoyaltyResponse(inSuccesful, inMessage, inDescription, inResponseCode);
         }
 
-
-
-
-
-        protected LoyaltyPointsInfoResponse CreatePointsInfoResponseNoError(PointsInfo inPointsInfo)
+        private LoyaltyMemberResponse CreateMemberResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, MemberInfo inMemberInfo)
         {
-            return CreatePointsInfoResponse(true, "", "", LoyaltyResponseCode.Successful, inPointsInfo);
+            return new LoyaltyMemberResponse(inSuccesful, inMessage, inDescription, inResponseCode, inMemberInfo);
         }
 
-        protected LoyaltyPointsInfoResponse CreatePointsInfoResponseError(
-                                                       string inMessage,
-                                                       string inDescription,
-                                                       LoyaltyResponseCode inResponseCode,
-                                                       PointsInfo inPointsInfo)
+        private LoyaltyCompanyResponse CreateCompanyResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, CompanyInfo inCompanyInfo)
         {
-            return CreatePointsInfoResponse(false, inMessage, inDescription, inResponseCode, inPointsInfo);
+            return new LoyaltyCompanyResponse(inSuccesful, inMessage, inDescription, inResponseCode, inCompanyInfo);
         }
 
-
-        protected LoyaltyResponse CreateResponse(
-                                            bool inSuccesful,
-                                            string inMessage,
-                                            string inDescription,
-                                            LoyaltyResponseCode inResponseCode)
+        private LoyaltyGiftCardResponse CreateGiftCardResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, double giftCardBalance)
         {
-            return LoyaltyResponse.CreateResponse(
-                                           inSuccesful,
-                                           inMessage,
-                                           inDescription,
-                                           inResponseCode);
+            return new LoyaltyGiftCardResponse(inSuccesful, inMessage, inDescription, inResponseCode, giftCardBalance);
         }
 
-        protected LoyaltyMemberResponse CreateMemberResponse(
-                                                bool inSuccesful,
-                                                string inMessage,
-                                                string inDescription,
-                                                LoyaltyResponseCode inResponseCode,
-                                                MemberInfo inMemberInfo)
+        private LoyaltyVoucherResponse CreateVoucherResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, VoucherInfo inVoucherInfo)
         {
-            return LoyaltyMemberResponse.CreateResponse(
-                                                 inSuccesful,
-                                                 inMessage,
-                                                 inDescription,
-                                                 inResponseCode,
-                                                 inMemberInfo);
+            return new LoyaltyVoucherResponse(inSuccesful, inMessage, inDescription, inResponseCode, inVoucherInfo);
         }
-
-
-        protected LoyaltyMemberListResponse CreateMemberListResponse(
-                                                bool inSuccesful,
-                                                string inMessage,
-                                                string inDescription,
-                                                LoyaltyResponseCode inResponseCode,
-                                                List<MemberInfo> inMemberInfoList)
-        {
-            return LoyaltyMemberListResponse.CreateResponse(
-                                                    inSuccesful,
-                                                    inMessage,
-                                                    inDescription,
-                                                    inResponseCode,
-                                                    inMemberInfoList.ToArray());
-        }
-
-        protected LoyaltyTierResponse CreateTierResponse(
-                                                bool inSuccesful,
-                                                string inMessage,
-                                                string inDescription,
-                                                LoyaltyResponseCode inResponseCode,
-                                                TierLevelInfo inTierInfo)
-        {
-            return LoyaltyTierResponse.CreateResponse(
-                                                 inSuccesful,
-                                                 inMessage,
-                                                 inDescription,
-                                                 inResponseCode,
-                                                 inTierInfo);
-        }
-
-
-        protected LoyaltyTierListResponse CreateTierListResponse(
-                                                bool inSuccesful,
-                                                string inMessage,
-                                                string inDescription,
-                                                LoyaltyResponseCode inResponseCode,
-                                                List<TierLevelInfo> inTierInfoList)
-        {
-            return LoyaltyTierListResponse.CreateResponse(
-                                                 inSuccesful,
-                                                 inMessage,
-                                                 inDescription,
-                                                 inResponseCode,
-                                                 inTierInfoList.ToArray());
-        }
-
-
-
-        protected LoyaltyPointsInfoResponse CreatePointsInfoResponse(
-                                                bool inSuccesful,
-                                                string inMessage,
-                                                string inDescription,
-                                                LoyaltyResponseCode inResponseCode,
-                                                PointsInfo inPointsInfo)
-        {
-            return LoyaltyPointsInfoResponse.CreateResponse(
-                                                 inSuccesful,
-                                                 inMessage,
-                                                 inDescription,
-                                                 inResponseCode,
-                                                 inPointsInfo);
-        }
-
-
+        
         #endregion
     }
 }

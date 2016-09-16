@@ -37,7 +37,7 @@ __int32 TSaveMenu::SaveCategoryGroup( __int32 inKey, AnsiString inDescription, b
 
     addElement( _categoryGroupsElem, "CategoryGroup", groupElem );
     setNodeAttr( groupElem, "key",         IntToStr( inKey ) );
-    setNodeAttr( groupElem, "description", inDescription );
+    setNodeAttr( groupElem, "description", convertUTF8CharToWideString(inDescription) );
     setNodeAttr( groupElem, "deleted",     inGetDeleted ? "true" : "false" );
 
     //::::::::::::::::::::::::::::
@@ -51,11 +51,10 @@ void TSaveMenu::SaveCategory( __int32 inCategoryGroupHandle, __int32 inKey, Ansi
     {
       TiXmlElement *groupElem = ( TiXmlElement* )inCategoryGroupHandle;
       TiXmlElement *categoryElem;
-
       addElement( groupElem,     "Category", categoryElem );
       setNodeAttr( categoryElem, "key",         IntToStr( inKey ) );
-	  setNodeAttr( categoryElem, "description", inDescription );
-	  setNodeAttr( categoryElem, "glcode", inGLCode );
+	  setNodeAttr( categoryElem, "description", convertUTF8CharToWideString(inDescription) );
+	  setNodeAttr( categoryElem, "glcode",      convertUTF8CharToWideString(inGLCode) );
 	  setNodeAttr( categoryElem, "deleted",     inGetDeleted ? "true" : "false" );
     }
     catch( ... )
@@ -70,10 +69,10 @@ void TSaveMenu::SaveSize( __int32 inKey, AnsiString inDescription, AnsiString in
 
     addElement( _sizesElem, "Size",        sizeElem );
     setNodeAttr( sizeElem, "key",          IntToStr( inKey ) );
-    setNodeAttr( sizeElem, "description",  inDescription );
-    setNodeAttr( sizeElem, "kitchenName",  inKitchenName );
-    setNodeAttr( sizeElem, "handheldName", inHandheldName );
-    setNodeAttr( sizeElem, "kitchenName",  inKitchenName );
+    setNodeAttr( sizeElem, "description",  convertUTF8CharToWideString(inDescription) );
+    setNodeAttr( sizeElem, "kitchenName",  convertUTF8CharToWideString(inKitchenName) );
+    setNodeAttr( sizeElem, "handheldName", convertUTF8CharToWideString(inHandheldName) );
+    setNodeAttr( sizeElem, "kitchenName",  convertUTF8CharToWideString(inKitchenName) );
     setNodeAttr( sizeElem, "weighed",      inWeighed ? "true" : "false" );
     setNodeAttr( sizeElem, "sizeID",       IntToStr( inSizeID ) );
     setNodeAttr( sizeElem, "palmID",       IntToStr( inPalmID ) );
@@ -86,8 +85,8 @@ void TSaveMenu::SaveServingCourse( __int32 inKey, AnsiString inLongDescription, 
 
     addElement( _serviceCoursesElem, "ServiceCourse", serviceCourseElem );
     setNodeAttr( serviceCourseElem, "key",            IntToStr( inKey ) );
-    setNodeAttr( serviceCourseElem, "description",    inLongDescription );
-    setNodeAttr( serviceCourseElem, "kitchenName",    inKitchenName );
+    setNodeAttr( serviceCourseElem, "description",    convertUTF8CharToWideString(inLongDescription) );
+    setNodeAttr( serviceCourseElem, "kitchenName",    convertUTF8CharToWideString(inKitchenName) );
     setNodeAttr( serviceCourseElem, "enabled",        inEnabled    ? "true" : "false" );
     setNodeAttr( serviceCourseElem, "deleted",        inDeleted    ? "true" : "false" );
     setNodeAttr( serviceCourseElem, "selectable",     inSelectable ? "true" : "false" );
@@ -113,7 +112,7 @@ void TSaveMenu::SaveTaxProfile( __int32 inKey, AnsiString inName, Currency inTax
 
     addElement( _taxProfilesElem, "TaxProfile", taxProfileElem );
     setNodeAttr( taxProfileElem, "key",      IntToStr( inKey ) );
-    setNodeAttr( taxProfileElem, "name",     inName );
+    setNodeAttr( taxProfileElem, "name",     convertUTF8CharToWideString(inName) );
     setNodeAttr( taxProfileElem, "rate",     CurrToStr( inTaxRate ) );
     setNodeAttr( taxProfileElem, "type",     IntToStr( inTaxType ) );
     setNodeAttr( taxProfileElem, "priority", IntToStr( inPriority ) );
@@ -130,15 +129,15 @@ __int32 TSaveMenu::SaveMenuCourse( __int32 inKey, AnsiString inLongDescription, 
 
         addElement(  _coursesElem, "Course",                 courseElem );
         setNodeAttr(  courseElem,  "key",                    IntToStr( inKey ) );
-        setNodeAttr(  courseElem,  "description",            inLongDescription );
-        setNodeAttr(  courseElem,  "kitchenName",            inKitchenName );
-        setNodeAttr(  courseElem,  "handheldName",           inHandheldName );
-        setNodeAttr(  courseElem,  "receiptName",            inReceiptName );
+        setNodeAttr(  courseElem,  "description",            convertUTF8CharToWideString(inLongDescription) );
+        setNodeAttr(  courseElem,  "kitchenName",            convertUTF8CharToWideString(inKitchenName) );
+        setNodeAttr(  courseElem,  "handheldName",           convertUTF8CharToWideString(inHandheldName) );
+        setNodeAttr(  courseElem,  "receiptName",            convertUTF8CharToWideString(inReceiptName) );
         setNodeAttr(  courseElem,  "location",               IntToStr( inLocation ) );
         setNodeAttr(  courseElem,  "enabled",                inEnabled ? "true" : "false" );
         setNodeAttr(  courseElem,  "noDefaultServingCourse", inNoDefaultServingCourse ? "true" : "false" );
         setNodeAttr(  courseElem,  "servingCourseKey",       IntToStr( inServingCourseKey ) );
-        setNodeAttr(  courseElem,  "servingCourseName",      inServingCourse );
+        setNodeAttr(  courseElem,  "servingCourseName",      convertUTF8CharToWideString(inServingCourse) );
 
         //::::::::::::::::::::::::::
 
@@ -157,6 +156,7 @@ __int32 TSaveMenu::SaveMenuCourse( __int32 inKey, AnsiString inLongDescription, 
     }
 }
 //---------------------------------------------------------------------------
+//changes to save items...
 __int32 TSaveMenu::SaveItem( __int32 inCourseHandle, __int32 inKey, AnsiString inLongDescription,
                              AnsiString inKitchenName, AnsiString inHandheldName, AnsiString inReceiptName,
                              TColor inColor, bool inDisplaySizes, bool inEnabled, bool inItemOnlySide,
@@ -173,10 +173,10 @@ __int32 TSaveMenu::SaveItem( __int32 inCourseHandle, __int32 inKey, AnsiString i
 
       addElement(  itemsElem, "Item",              itemElem );
 	  setNodeAttr( itemElem,  "key",               IntToStr( inKey ) );
-	  setNodeAttr( itemElem,  "description",       inLongDescription );
-	  setNodeAttr( itemElem,  "kitchenName",       inKitchenName );
-	  setNodeAttr( itemElem,  "handheldName",      inHandheldName );
-	  setNodeAttr( itemElem,  "receiptName",       inReceiptName );
+	  setNodeAttr( itemElem,  "description",       convertUTF8CharToWideString(inLongDescription));
+	  setNodeAttr( itemElem,  "kitchenName",       convertUTF8CharToWideString(inKitchenName));
+	  setNodeAttr( itemElem,  "handheldName",      convertUTF8CharToWideString(inHandheldName));
+	  setNodeAttr( itemElem,  "receiptName",       convertUTF8CharToWideString(inReceiptName));
 	  setNodeAttr( itemElem,  "color",             IntToStr( inColor ) );
 	  setNodeAttr( itemElem,  "displaySizes",      inDisplaySizes ? "true" : "false" );
 	  setNodeAttr( itemElem,  "enabled",           inEnabled ? "true" : "false" );
@@ -247,10 +247,10 @@ void TSaveMenu::SaveOption( __int32 inCourseHandle, __int32 inKey, AnsiString in
 
       addElement(  optionsElem, "Option",            optionElem );
       setNodeAttr( optionElem,  "key",               IntToStr( inKey ) );
-      setNodeAttr( optionElem,  "description",       inLongDescription );
-      setNodeAttr( optionElem,  "kitchenName",       inKitchenName );
-      setNodeAttr( optionElem,  "handheldName",      inHandheldName );
-      setNodeAttr( optionElem,  "receiptName",       inReceiptName );
+      setNodeAttr( optionElem,  "description",       convertUTF8CharToWideString(inLongDescription));
+      setNodeAttr( optionElem,  "kitchenName",       convertUTF8CharToWideString(inKitchenName));
+      setNodeAttr( optionElem,  "handheldName",      convertUTF8CharToWideString(inHandheldName));
+      setNodeAttr( optionElem,  "receiptName",       convertUTF8CharToWideString(inReceiptName));
       setNodeAttr( optionElem,  "condimentsMask",    inCondimentsMask );
       setNodeAttr( optionElem,  "flags",             inFlags );
       setNodeAttr( optionElem,  "enabled",           inEnabled ? "true" : "false");
@@ -281,7 +281,7 @@ void TSaveMenu::SaveForcedSide( __int32 inItemHandle, __int32 inKey, __int32 inI
       addElement(  sidesElem, "ForcedSide",    sideElem );
       setNodeAttr( sideElem, "key",           IntToStr( inKey ) );
       setNodeAttr( sideElem, "itemFKey",      IntToStr( inItemFKey ) );
-      setNodeAttr( sideElem, "description",   inLongDescription );
+      setNodeAttr( sideElem, "description",   convertUTF8CharToWideString(inLongDescription));
       setNodeAttr( sideElem, "groupNumber",   inGroupNumber );
       setNodeAttr( sideElem, "maxSelect",     inMaxSelect );
       setNodeAttr( sideElem, "sideGroupSkip", inSideGroupSkip ? "true" : "false" );
@@ -303,7 +303,7 @@ void TSaveMenu::SaveMenuItemForcedOption( __int32 inItemHandle, __int32 inKey, _
         addElement( fisOptionsElem, "ForcedOption", fisOptionElem );
         setNodeAttr( fisOptionElem, "key",         IntToStr( inKey ) );
         setNodeAttr( fisOptionElem, "optionFKey",  IntToStr( inOptionFKey ) );
-        setNodeAttr( fisOptionElem, "description", inDescription );
+        setNodeAttr( fisOptionElem, "description", convertUTF8CharToWideString(inDescription));
         setNodeAttr( fisOptionElem, "groupNumber", inGroupNumber );
     }
     catch( ... )
@@ -341,9 +341,9 @@ __int32 TSaveMenu::SaveItemSize( __int32 inItemHandle, __int32 inKey, __int32 in
         addElement(  sizesElem, "ItemSize",                 sizeElem );
         setNodeAttr( sizeElem,  "key",                      IntToStr( inKey ) );
         setNodeAttr( sizeElem,  "sizeFKey",                 IntToStr( inSizeFKey ) );
-        setNodeAttr( sizeElem,  "description",              inLongDescription );
+        setNodeAttr( sizeElem,  "description",              convertUTF8CharToWideString(inLongDescription));
         //MM1351
-        setNodeAttr( sizeElem,  "kitchenName",              inKitchenName );
+        setNodeAttr( sizeElem,  "kitchenName",              convertUTF8CharToWideString(inKitchenName));
         setNodeAttr( sizeElem,  "free",                     inFree ? "true" : "false" );
 		setNodeAttr( sizeElem,  "price",                    CurrToStr( inPrice ) );
 		setNodeAttr( sizeElem,  "maxRetailPrice",           CurrToStr( inMaxRetailPrice ) );
@@ -362,7 +362,7 @@ __int32 TSaveMenu::SaveItemSize( __int32 inItemHandle, __int32 inKey, __int32 in
         setNodeAttr( sizeElem,  "barcode",                  inBarcode );
         setNodeAttr( sizeElem,  "enabled",                  inEnabled ? "true" : "false" );
         setNodeAttr( sizeElem,  "categoryKey",              inCategoryKey );
-        setNodeAttr( sizeElem,  "category",                 inCategory );
+        setNodeAttr( sizeElem,  "category",                 convertUTF8CharToWideString(inCategory));
         setNodeAttr( sizeElem,  "thirdPartyCodeKey",        IntToStr( inThirdPartyCodeKey ) );
         setNodeAttr( sizeElem,  "tareWeight",               inTareWeight );
         setNodeAttr( sizeElem,  "PLU",                      IntToStr( inPLU ) );
@@ -414,7 +414,7 @@ void TSaveMenu::SaveBCategory( __int32 inItemSizeHandle, __int32 inKey, AnsiStri
 
         addElement( bCategoriesElem, "BreakdownCategory", bCategoryElem );
         setNodeAttr( bCategoryElem,  "key",         IntToStr( inKey ) );
-        setNodeAttr( bCategoryElem,  "description", inName );
+        setNodeAttr( bCategoryElem,  "description", convertUTF8CharToWideString(inName));
     }
     catch( ... )
     {
@@ -432,9 +432,9 @@ void TSaveMenu::SaveItemSizeRecipe( __int32 inItemSizeHandle, __int32 inKey, Ans
 
         addElement( receipesElem, "Receipe",   receipeElem );
         setNodeAttr( receipeElem, "key",       IntToStr( inKey ) );
-        setNodeAttr( receipeElem, "stockCode", inStockCode );
+        setNodeAttr( receipeElem, "stockCode", convertUTF8CharToWideString(inStockCode));
         setNodeAttr( receipeElem, "quantity",  inQuantity );
-        setNodeAttr( receipeElem, "location",  inLocation );
+        setNodeAttr( receipeElem, "location",  convertUTF8CharToWideString(inLocation));
     }
     catch( ... )
     {
@@ -451,7 +451,7 @@ void TSaveMenu::SaveItemSizeTaxProfile( __int32 inItemSizeHandle, __int32 inKey,
 
         addElement( taxProfilesElem, "TaxProfile", taxProfileElem );
         setNodeAttr( taxProfileElem, "key",  IntToStr( inKey ) );
-        setNodeAttr( taxProfileElem, "name", inName );
+        setNodeAttr( taxProfileElem, "name", convertUTF8CharToWideString(inName));
     }
     catch( ... )
     {
@@ -584,7 +584,8 @@ AnsiString TSaveMenu::GetMenuName()
 
 void TSaveMenu::SetMenuName( AnsiString inName )
 {
-    setNodeAttr( _rootElem, "name", inName.c_str() );
+    WideString menu_name = inName + "    ";
+    setNodeAttr( _rootElem, "name", menu_name ); //inName.c_str() );
 }
 //----------------------------------------------------------------------------
 
@@ -662,4 +663,36 @@ void TSaveMenu::SaveItemSizePriceLevels( __int32 inItemSizeHandle, __int32 inKey
     }
 }
 ////----------------------------------------------------------
+WideString TSaveMenu::convertUTF8CharToWideString( AnsiString pchars )
+{
+	WideString result = "";
+#ifdef MenuMate
+//	result = UTF8ToWideString( pchars );
+    result = UnicodeString( pchars );
+#endif
 
+#ifdef Office
+	result = UTF8ToWideString( AnsiString(pchars) );
+#endif
+	return result;
+}
+//---------------------------------------------------------------------------
+
+
+WideString TSaveMenu::UTF8ToWideString(AnsiString inString)
+{
+	int BufferSize   = MultiByteToWideChar(CP_UTF8 , 0, inString.c_str(), inString.Length(), NULL, 0);
+	wchar_t *dest    = new wchar_t[BufferSize];
+	MultiByteToWideChar(CP_UTF8 , 0, inString.c_str(), inString.Length(), dest, BufferSize);
+	WideString RetVal(dest, BufferSize);
+	delete [] dest;
+    if(inString.Length() > 0)
+    {
+    	return RetVal + "    ";
+    }
+    else
+    {
+       return RetVal;
+    }
+
+}

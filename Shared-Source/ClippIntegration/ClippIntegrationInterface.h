@@ -335,7 +335,7 @@ private:
     //These methods are factory methods to convert wsdl specific domain objects to mm specific domain objects..
     MMClippMessage CreateMMClippMessage(ClippMessage* clippMessage);
     MMClippTabDetail CreateMMClippTabDetail(ClippTabDetailRequest* clippTabDetailRequest);
-    MMClippDiscount CreateMMClippDiscount(Discount* discount);
+    MMClippDiscount CreateMMClippDiscount(NS_ClippIntegrationWSDL::Discount* discount);
     MMClippItem CreateMMClippItem(Item* item);
     MMClippPayment CreateMMClippPayment(NS_ClippIntegrationWSDL::Payment* payment);
     MMClippSundry CreateMMClippSundry(Sundry* sundry);
@@ -346,7 +346,7 @@ private:
     ClippTabDetailRequest* CreateClippTabDetailRequest(MMClippTabDetail mmClippTabDetail);
     ClippErrorDetail* CreateClippErrorDetail(UnicodeString clippTabRef, UnicodeString recievedMessageId, UnicodeString errorCode,
                                                             UnicodeString errorDescription, Currency totalPaymentAmount = 0.0);
-    Discount* CreateDiscount(MMClippDiscount mmClippDiscount);
+    NS_ClippIntegrationWSDL::Discount* CreateDiscount(MMClippDiscount mmClippDiscount);
     Item* CreateItem(MMClippItem mmClippItem);
     NS_ClippIntegrationWSDL::Payment* CreatePayment(MMClippPayment mmClippPayment);
     Sundry* CreateSundry(MMClippSundry mmClippSundry);

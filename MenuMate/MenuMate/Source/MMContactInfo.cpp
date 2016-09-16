@@ -47,6 +47,7 @@ TMMContactInfo::TMMContactInfo()
     Points.Clear();
     AutoAppliedDiscounts.clear();
     AutoAppliedDiscountsID.clear();
+    AutoAppliedDiscountsIDDummy.clear();
     Charges = 0;
     currentGroups.clear();
     availableGroups.clear();
@@ -68,6 +69,7 @@ TMMContactInfo::TMMContactInfo()
     MemberCode = "";
     PointRule = 0;
     IsFirstVisitRewarded = false;
+    MemberVouchers.clear();
 }
 
 TMMContactInfo::TMMContactInfo( UnicodeString inName)
@@ -75,8 +77,6 @@ TMMContactInfo::TMMContactInfo( UnicodeString inName)
 	Name = inName;
 	TMMContactInfo();
 }
-
-
 // ---------------------------------------------------------------------------
 void TMMContactInfo::Clear()
 {
@@ -120,13 +120,10 @@ void TMMContactInfo::SaveToStream(TMemoryStream *Stream)
    StreamWrite(Stream, Phone);
    StreamWrite(Stream, Mobile);
    StreamWrite(Stream, EMail);
-   //StreamWrite(Stream, LocationAddress);
    StreamWrite(Stream, MailingAddress);
    StreamWrite(Stream, Note);
-   StreamWrite(Stream, AutoAppliedDiscountsID);
+   StreamWrite(Stream, AutoAppliedDiscountsIDDummy);
    StreamWrite(Stream, Points.PointsRules);
-   //StreamWrite(Stream, Title);
-   //StreamWrite(Stream, Sex);
 }
 
 void TMMContactInfo::SaveToStream(int CardVersion, TMemoryStream *Stream)
@@ -140,19 +137,15 @@ void TMMContactInfo::SaveToStream(int CardVersion, TMemoryStream *Stream)
        StreamWrite(Stream, Name);
        StreamWrite(Stream, Alias);
        StreamWrite(Stream, CardCreationDate);
-       //StreamWrite(Stream, LastModified);
        StreamWrite(Stream, PoleDisplayName);
        StreamWrite(Stream, DateOfBirth);
        StreamWrite(Stream, Phone);
        StreamWrite(Stream, Mobile);
        StreamWrite(Stream, EMail);
-       //StreamWrite(Stream, LocationAddress);
        StreamWrite(Stream, MailingAddress);
        StreamWrite(Stream, Note);
-       StreamWrite(Stream, AutoAppliedDiscountsID);
+       StreamWrite(Stream, AutoAppliedDiscountsIDDummy);
        StreamWrite(Stream, Points.PointsRules);
-       //StreamWrite(Stream, Title);
-       //StreamWrite(Stream, Sex);
     }
     else
         SaveToStream(Stream);
@@ -181,8 +174,6 @@ void TMMContactInfo::LoadFromStream(int CardVersion, TMemoryStream *Stream)
 		 StreamRead(Stream, MailingAddress);
 		 StreamRead(Stream, Note);
 		 Points.LoadFromStreamVer1(Stream);
-         //StreamRead(Stream, Title);
-         //StreamRead(Stream, Sex);
 	  }break;
    case SMART_CARD_VERSION_TWO:
 	  {
@@ -200,8 +191,6 @@ void TMMContactInfo::LoadFromStream(int CardVersion, TMemoryStream *Stream)
 		 StreamRead(Stream, LocationAddress);
 		 StreamRead(Stream, MailingAddress);
 		 StreamRead(Stream, Note);
-         //StreamRead(Stream, Title);
-         //StreamRead(Stream, Sex);
 	  }break;
 	case SMART_CARD_VERSION_THREE:
 	  {
@@ -219,10 +208,8 @@ void TMMContactInfo::LoadFromStream(int CardVersion, TMemoryStream *Stream)
 		 StreamRead(Stream, LocationAddress);
 		 StreamRead(Stream, MailingAddress);
 		 StreamRead(Stream, Note);
-		 StreamRead(Stream, AutoAppliedDiscountsID);
-		 StreamRead(Stream, Points.PointsRules);
-         //StreamRead(Stream, Title);
-         //StreamRead(Stream, Sex);
+		 StreamRead(Stream, AutoAppliedDiscountsIDDummy);
+         StreamRead(Stream, Points.PointsRules);
 	  }break;
 	case SMART_CARD_VERSION_FOUR:
 	  {
@@ -240,8 +227,8 @@ void TMMContactInfo::LoadFromStream(int CardVersion, TMemoryStream *Stream)
 		 StreamRead(Stream, LocationAddress);
 		 StreamRead(Stream, MailingAddress);
 		 StreamRead(Stream, Note);
-		 StreamRead(Stream, AutoAppliedDiscountsID);
-		 StreamRead(Stream, Points.PointsRules);
+   		 StreamRead(Stream, AutoAppliedDiscountsIDDummy);
+         StreamRead(Stream, Points.PointsRules);
 	  }break;
 	case SMART_CARD_VERSION_FIVE:
 	  {
@@ -256,16 +243,29 @@ void TMMContactInfo::LoadFromStream(int CardVersion, TMemoryStream *Stream)
 		 StreamRead(Stream, Phone);
 		 StreamRead(Stream, Mobile);
 		 StreamRead(Stream, EMail);
-		 //StreamRead(Stream, LocationAddress);
 		 StreamRead(Stream, MailingAddress);
 		 StreamRead(Stream, Note);
-		 StreamRead(Stream, AutoAppliedDiscountsID);
-		 StreamRead(Stream, Points.PointsRules);
-         //StreamRead(Stream, Title);
-         //StreamRead(Stream, Sex);
+ 		 StreamRead(Stream, AutoAppliedDiscountsIDDummy);
+         StreamRead(Stream, Points.PointsRules);
 	  }break;
 	case SMART_CARD_VERSION_SIX:
 	  {
+//		 StreamRead(Stream, SiteID);
+//		 StreamRead(Stream, MembershipNumber);
+//       StreamRead(Stream, CloudUUID);
+//		 StreamRead(Stream, Name);
+//		 StreamRead(Stream, Alias);
+//		 StreamRead(Stream, CardCreationDate);
+//		 StreamRead(Stream, PoleDisplayName);
+//		 StreamRead(Stream, DateOfBirth);
+//		 StreamRead(Stream, Phone);
+//		 StreamRead(Stream, Mobile);
+//		 StreamRead(Stream, EMail);
+//		 StreamRead(Stream, MailingAddress);
+//		 StreamRead(Stream, Note);
+//		 StreamRead(Stream, AutoAppliedDiscountsID);
+//   	 StreamRead(Stream, AutoAppliedDiscountsIDDummy);
+//		 StreamRead(Stream, Points.PointsRules);
 		 StreamRead(Stream, SiteID);
 		 StreamRead(Stream, MembershipNumber);
          StreamRead(Stream, CloudUUID);
@@ -281,7 +281,7 @@ void TMMContactInfo::LoadFromStream(int CardVersion, TMemoryStream *Stream)
 		 //StreamRead(Stream, LocationAddress);
 		 StreamRead(Stream, MailingAddress);
 		 StreamRead(Stream, Note);
-		 StreamRead(Stream, AutoAppliedDiscountsID);
+         StreamRead(Stream, AutoAppliedDiscountsIDDummy);
 		 StreamRead(Stream, Points.PointsRules);
          //StreamRead(Stream, Title);
          //StreamRead(Stream, Sex);
@@ -289,8 +289,7 @@ void TMMContactInfo::LoadFromStream(int CardVersion, TMemoryStream *Stream)
    }
 }
 
-UnicodeString TMMContactInfo::RefreshPoleDisplayName(
-                eMemberNameOnPoleDisplay inNameOnPoleDisplay )
+UnicodeString TMMContactInfo::RefreshPoleDisplayName(eMemberNameOnPoleDisplay inNameOnPoleDisplay )
 {
     switch( inNameOnPoleDisplay )
     {
@@ -320,4 +319,3 @@ bool TMMContactInfo::IsCodePresent()
 
 
 }
-

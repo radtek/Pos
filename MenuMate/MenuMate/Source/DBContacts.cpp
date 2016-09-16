@@ -183,12 +183,9 @@ void TDBContacts::GetContactDetails(Database::TDBTransaction &DBTransaction, int
          GetContactCards(DBTransaction,inContactKey,Info.Cards);
 		 GetDiscountDetails(DBTransaction, Info.ContactKey, Info);
 		 GetCurrentGroups(DBTransaction, inContactKey, Info);
+         // loads the cloud uuid if already registered on the cloud
+         Info.CloudUUID = TDBContacts::GetMemberCloudIdIfRegistered(DBTransaction, Info.ContactKey, Info.SiteID);
 
-		 // loads the cloud uuid if already registered on the cloud
-		 if (Info.CloudUUID != "00000000-0000-0000-0000-000000000000")
-		 {
-		 	Info.CloudUUID = TDBContacts::GetMemberCloudIdIfRegistered(DBTransaction, Info.ContactKey, Info.SiteID);
-		 }
 	  }
    }
    catch(Exception & E)

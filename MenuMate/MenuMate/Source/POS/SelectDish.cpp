@@ -129,8 +129,10 @@
 #include "SelectSizesAsList.h"
 #include "ReportUtilities.h"
 #include "InitializeDCSession.h"
+#include "ManagerCloudSync.h"
+#include "ManagerLoyaltyVoucher.h"
 #include "ProductSearch.h"
-
+#include "OrderUtils.h"
 using SfIntegration::Sf_svc_iface;
 using SfIntegration::Sf_svc_iface_params;//
 
@@ -363,7 +365,6 @@ ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
 
     if(ChitNumber.Valid())
     {
-        CheckPromptForChit = true;
         TGlobalSettings::Instance().TabPrintName = "";
         TGlobalSettings::Instance().TabPrintPhone = "";
     }
@@ -438,10 +439,10 @@ ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
             DBTransaction.StartTransaction();
             ApplyMembership(DBTransaction, TempUserInfo);
             DBTransaction.Commit();
-                    if (!TGlobalSettings::Instance().EnablePhoneOrders)
-                       {
-                          AutoLogOut();
-                       }
+            if (!TGlobalSettings::Instance().EnablePhoneOrders)
+               {
+                  AutoLogOut();
+               }
             //MM2064
             CustName = TempUserInfo.Name;
             CustPhone = TempUserInfo.Phone;
@@ -645,6 +646,7 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
          tedtSearchItem->Visible = false;
     }
     SetPOSBackgroundColor();
+    isChitDiscountExist = false;
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()
@@ -915,7 +917,6 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
                  && TGlobalSettings::Instance().IsDrinkCommandEnabled)
         {
               TMMContactInfo ContactInfo;
-
               ContactInfo.ProxStr = TempUserInfo.ProxStr;
               TDeviceRealTerminal::Instance().ManagerMembership->AddMember(ContactInfo);
               newCard = true;
@@ -1287,24 +1288,6 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
               DBTransaction.Commit();
 		}
 	}
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode)
-{
- 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
-	TMMContactInfo info;
-    info.MemberCode = Barcode;
-    info.CardStr = Barcode;
-    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info);
-
-	if (info.Valid())
-     {
-		Database::TDBTransaction DBTransaction(drt.DBControl);
-		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-		DBTransaction.StartTransaction();
-		ApplyMembership(DBTransaction, info);
-	}
-
 }
 // ---------------------------------------------------------------------------
 std::pair<TItem*, TItemSize*> TfrmSelectDish::GetLoadedItemFromBarcode(UnicodeString inBarcode)
@@ -1746,29 +1729,33 @@ bool have_orders_been_taken(std::vector<TSeatOrders *> &seat_orders)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::purge_unsent_orders()
 {
-        for (std::vector<TSeatOrders *>::size_type i = 0;
-             i != SeatOrders.size(); ++i) {
-                TContainerOrders &orders = *SeatOrders[i]->Orders;
+    for (std::vector<TSeatOrders *>::size_type i = 0; i != SeatOrders.size(); ++i)
+         {
+            TContainerOrders &orders = *SeatOrders[i]->Orders;
 
-                try {
+            try {
 
-			while (orders.Count != 0) {
-                                TItemComplete &item = *orders.Items[0];
-                                item.ReturnToAvailability();
-                                orders.Remove(&item);
-                                delete &item;
-                        }
+                    while (orders.Count != 0)
+                    {
+                            TItemComplete &item = *orders.Items[0];
+                            item.ReturnToAvailability();
+                            orders.Remove(&item);
+                            delete &item;
+                    }
 
-			while (orders.PrevCount != 0) {
-				delete orders.PrevItems[0];
-				orders.DeletePrev(0);
-			}
-                } __finally {
-			orders.Clear();
-			orders.ClearPrev();
-			orders.AppliedMembership.Clear();
-                }
-        }
+                    while (orders.PrevCount != 0)
+                    {
+                        delete orders.PrevItems[0];
+                        orders.DeletePrev(0);
+                    }
+                 }
+             __finally
+             {
+                orders.Clear();
+                orders.ClearPrev();
+                orders.AppliedMembership.Clear();
+             }
+         }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::FormCloseQuery(TObject *, bool &can_close)
@@ -1854,16 +1841,8 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
     //MM-1647: Ask for chit if it is enabled for every order.
     NagUserToSelectChit();
 
-
      //mm-5145
-
-
-      CheckMandatoryMembershipCardSetting(tbtnMembership);
-
-
-      //mm-5145
-
-
+    CheckMandatoryMembershipCardSetting(tbtnMembership);
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::RedrawSeatOrders()
@@ -1942,16 +1921,12 @@ void TfrmSelectDish::UpdateExternalDevices(bool UpdateTopPoleDisplay, bool Updat
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::TotalCosts()
 {
-
-
 	InitialMoney.Clear();
-
     if(ChitNumber.Valid())
     {
        AssignremovedTaxesList();
        AssignDiscountLists();
     }
-
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
 	TPaymentTransaction PaymentTransaction(DBTransaction);
@@ -1960,15 +1935,15 @@ void TfrmSelectDish::TotalCosts()
 	DBTransaction.Commit();
 	std::auto_ptr<TList>OrdersList(new TList);
 
-        for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
-            {
-                    TItemMinorComplete *Order = (TItemMinorComplete*)SeatOrders[SelectedSeat]->Orders->Items[i];
-                    OrdersList->Add(Order);
-            }
+    for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+        {
+                TItemMinorComplete *Order = (TItemMinorComplete*)SeatOrders[SelectedSeat]->Orders->Items[i];
+                OrdersList->Add(Order);
+        }
 
 	PaymentTransaction.Orders->Assign(OrdersList.get());
-        PaymentTransaction.Membership.Assign(Membership);
-        PaymentTransaction.ProcessPoints();
+    PaymentTransaction.Membership.Assign(Membership);
+    PaymentTransaction.ProcessPoints();
 
 
 
@@ -2297,7 +2272,6 @@ void __fastcall TfrmSelectDish::lbDisplayDrawItem(TWinControl *Control, int Inde
 		else if (ItemRedirector->ItemType.Contains(itMembershipDisplay))
 		{
 			DollarAmount = "Pts " + FormatFloat("0.00", ItemRedirector->CompressedContainer->Container->AppliedMembership.Points.getPointsBalance());
-
 			pCanvas->Font->Style = TFontStyles() << fsBold;
 			pCanvas->Font->Color = (TColor)CL_STANDARD_MEMBER_INFO;
 			pCanvas->Brush->Color = clGreen;
@@ -2553,9 +2527,10 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
                if(!IsSubSidizeOrderCancil)
 				SaveTabData(OrderContainer);
                 else
-                   {	ManagerDiscount->ClearDiscounts(SeatOrders[SelectedSeat]->Orders->List);
-			    RedrawSeatOrders();
-            	TotalCosts();
+                {
+                    ManagerDiscount->ClearDiscounts(SeatOrders[SelectedSeat]->Orders->List);
+                    RedrawSeatOrders();
+                    TotalCosts();
                 }
 				ModalResult = mrCancel;
 			}
@@ -2785,119 +2760,6 @@ bool TfrmSelectDish::DeleteUnsentAndProceed(Database::TDBTransaction &DBTransact
 		}
 		else
 		{
-//            if (dc_item_show)
-//            {
-//              lbDisplay->Clear();
-//              AnsiString memberNo = "";
-//              int end_idx , strt_idx = 0;
-//              char*  memberDetails_char = new char[memberName.Length() + 1];
-//              strcpy(memberDetails_char,memberName.c_str());
-//              int len = 0;
-//              for (int i = memberName.Length()-1 ; i > 0 ; i--)
-//              {
-//                 if (memberDetails_char[i] == ')' )
-//                 {
-//                    end_idx = i;
-//                 }
-//                 if (memberDetails_char[i] == '(' )
-//                 {
-//                    strt_idx = i;
-//                    len = (end_idx - strt_idx -1);
-//                    break;
-//                 }
-//               }
-//               memberNo = memberName.SubString(strt_idx+2, len);
-//               AnsiString cardId = TDrinkCommandData::Instance().GetCardIdFromMemberNo(memberNo);
-//               TDrinkCommandData::Instance().UpdateTimeStampToNull(cardId) ;
-//               dc_item_show = false;
-//               chcekitems = CheckItemsPrintCancel();
-//
-//               if(!chcekitems)
-//               {
-//                  TMMContactInfo TempUserInfo;
-//                  TempUserInfo = TDeviceRealTerminal::Instance().User;
-//                  std::auto_ptr <TContactStaff> Staff(new TContactStaff(DBTransaction));
-//                  chcekitems = Staff->TestAccessLevel(TempUserInfo, CheckCredit);
-//                  AnsiString Username;
-//                  if(!chcekitems)
-//                  {
-//                    TempUserInfo.Clear();
-//                    TLoginSuccess Result = Staff->Login(this, DBTransaction, TempUserInfo, CheckCredit);
-//                    if (Result == lsAccepted)
-//                    {
-//                      chcekitems = true;
-//
-//                    }
-//                    else if (Result == lsDenied)
-//                    {
-//                       chcekitems = false;
-//                       retval = false;
-//                       MessageBox("You do not have access rights to Cancels.", "Error", MB_OK + MB_ICONERROR);
-//                    }
-//                    else if (Result == lsPINIncorrect)
-//                    {
-//                      chcekitems = false;
-//                      retval = false;
-//                      MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
-//                    }
-//                    else if (Result == lsCancel)
-//                    {
-//                      chcekitems = false;
-//                      retval = false;
-//                    }
-//                  }
-//                  if(chcekitems)
-//                  {
-//                    Username = TempUserInfo.Name;
-//                    SaveRemoveItems(Username);
-//                  }
-//               }
-//
-//                if(chcekitems)
-//                {
-//                    lbDisplay->Clear();
-//                    for (UINT i = 0; i < SeatOrders.size(); i++)
-//                    {
-//                        try
-//                        {
-//                            TManagerFreebie::UndoFreeCount(DBTransaction, SeatOrders[i]->Orders->List);
-//                            while (SeatOrders[i]->Orders->Count != 0)
-//                            {
-//                                TItemComplete *Item = SeatOrders[i]->Orders->Items[0];
-//                                Item->ReturnToAvailability(Item->GetQty());
-//
-//                                SeatOrders[i]->Orders->Remove(Item);
-//                                delete Item;
-//                            }
-//                            while (SeatOrders[i]->Orders->PrevCount != 0)
-//                            {
-//                              TItemMinorComplete *item = SeatOrders[i]->Orders->PrevItems[0];
-//                              item->ReturnToAvailability(item->GetQty());
-//
-//                              delete item;
-//                              SeatOrders[i]->Orders->DeletePrev(0);
-//                            }
-//                        }
-//                        __finally
-//                        {
-//                            SeatOrders[i]->Orders->Clear();
-//                            SeatOrders[i]->Orders->ClearPrev();
-//                            SeatOrders[i]->Orders->AppliedMembership.Clear();
-//                            Membership.Clear();
-//                        }
-//                    }
-//
-//                    TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, 0);
-//                    TDBTables::ClearPatronCounts(DBTransaction);
-//                    tbtnMembership->Caption = "Membership";
-//                    SetSelectedSeat();
-//                    TotalCosts();
-//                    UpdateExternalDevices();
-//                    TDBSaleTimes::VoidSaleTime(DBTransaction, CurrentTimeKey);
-//                    CurrentTimeKey = 0;
-//                    CloseSidePanel();
-//                }
-//            }
 			retval = false;
 		}
 	}
@@ -3631,6 +3493,10 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				tbtnChitNumber->Visible = true;
 				tbtnChitNumber->Caption = ChitNumber.GetChitNumber();
 				PaymentTransaction.ChitNumber = ChitNumber;
+                if(ChitNumber.DiscountList.size() == 0 && ChitNumber.ApplyDiscountsList->Count >0 && !isChitDiscountExist)
+                {
+                    GetChitDiscountList(DBTransaction, ChitNumber.DiscountList);
+                }
 				break;
 			case ChitCancelled:
 				tbtnChitNumber->Caption = ChitNumber.Name;
@@ -3643,7 +3509,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 
 			// --------------------------------------------------------------------
 			// Sort Transaction Balance -------------------------------------------
-			TotalCosts();
+            TotalCosts();
 			UpdateExternalDevices();
 
 			if (ChitNumber.Valid())
@@ -3728,6 +3594,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 					TDeviceRealTerminal::Instance().ManagerStock->UpdateStock(DBTransaction, OrdersList.get(), TDeviceRealTerminal::Instance().User.Name);
                     if (!PaymentTransaction.CreditTransaction)
                        HideSoldItems(PaymentTransaction.DBTransaction,OrdersList.get());
+                    isChitDiscountExist = false;
 				}
 				else
 				{
@@ -3763,6 +3630,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                     TotalCosts();
                     UpdateExternalDevices();
                     HighlightSelectedItem();
+                    isChitDiscountExist = true;
 				}
 			}
 			else
@@ -3900,7 +3768,6 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 						}
 
                         order_was_resumed_via_hold_and_send = PrintTransaction->Orders->Count > 0 && !OrderOnHold;
-
 						// SENDS A COMPLETE ORDER AFTER TENDERING IT ...
 						// OR CASHERING IT OUT.
 						if (order_was_resumed_via_hold_and_send)
@@ -4243,15 +4110,6 @@ void __fastcall TfrmSelectDish::TimerTenderTimer(TObject *Sender)
    TimerTender->Enabled = false;
    std::auto_ptr<TfrmSelectPaymentTypeAndValue>frmSelectPaymentTypeAndValue(TfrmSelectPaymentTypeAndValue::Create<TfrmSelectPaymentTypeAndValue>(this));
    double amount = 0;
- /*  int pos;
-
-    do
-    {
-        pos = Btn->Caption.Pos( "," );
-        Btn->Caption.Delete( pos, 1 );   // Remove all commas
-    }
-    while( pos > 0 );   */
-
    if (TryStrToFloat(CurrentTenderButton->Caption,amount))
     {
       frmSelectPaymentTypeAndValue->InitialValue = StrToCurr( CurrentTenderButton->Caption );
@@ -5615,7 +5473,8 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Tag = int(eBTDMemberPoints);
 		}
 
-        if ((ButtonsSet.Contains(eBTDThorVouchers)) && (TGlobalSettings::Instance().IsThorlinkSelected))
+        if ((ButtonsSet.Contains(eBTDThorVouchers))
+            && (TGlobalSettings::Instance().IsThorlinkSelected || TGlobalSettings::Instance().LoyaltyMateEnabled))
 		{
 			btngridModify->RowCount++;
 			AnsiString Caption = "Vouchers";
@@ -6040,20 +5899,34 @@ void TfrmSelectDish::pcItemModifyDisplayMember(eBtnToDisplay ButtonID)
 
         else if (ButtonID == eBTDThorVouchers)
 		{
-			TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberStart(DBTransaction, Member, Report.get());
-			std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
-			if (Staff->TestAccessLevel(TDeviceRealTerminal::Instance().User, CheckViewMembersDetials))
-			{
-				TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberInfo(DBTransaction, Member, Report.get());
-				ManagerDiscount->GetReportDiscountInfo(DBTransaction, Member.AutoAppliedDiscounts, Report.get());
-				ManagerFreebie->GetReportMemberInfo(DBTransaction, Member.ContactKey, Report.get());
-			}
-			else
-			{
-				TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberInfoRestricted(DBTransaction, Member, Report.get());
-			}
-			TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberStop(DBTransaction, Member, Report.get());
-            GetThorVouchers();
+            if(TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate
+                && TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Applied())
+            {
+                TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+                ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Member);
+                SeatOrders[SelectedSeat]->Orders->AppliedMembership = Member;
+                ApplyMemberDiscounts(DBTransaction);
+                TotalCosts();
+                RedrawSeatOrders();
+                HighlightSelectedItem();
+            }
+           else
+            {
+                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberStart(DBTransaction, Member, Report.get());
+                std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
+                if (Staff->TestAccessLevel(TDeviceRealTerminal::Instance().User, CheckViewMembersDetials))
+                {
+                    TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberInfo(DBTransaction, Member, Report.get());
+                    ManagerDiscount->GetReportDiscountInfo(DBTransaction, Member.AutoAppliedDiscounts, Report.get());
+                    ManagerFreebie->GetReportMemberInfo(DBTransaction, Member.ContactKey, Report.get());
+                }
+                else
+                {
+                    TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberInfoRestricted(DBTransaction, Member, Report.get());
+                }
+                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberStop(DBTransaction, Member, Report.get());
+                GetThorVouchers();
+            }
         }
 
 		else
@@ -6076,6 +5949,7 @@ void TfrmSelectDish::pcItemModifyDisplayMember(eBtnToDisplay ButtonID)
 
 		DBTransaction.Commit();
 		Navigate(webDisplay, Report.get());
+        //UnicodeString msg1 = Report->Strings[0]
 	}
 	catch(Exception & E)
 	{
@@ -6227,7 +6101,7 @@ void TfrmSelectDish::Navigate(TWebBrowser *WebBrowser, TStringList *Html)
 
 	if (SUCCEEDED(WebBrowser->Document->QueryInterface(IID_IHTMLDocument2, (LPVOID*) & HTMLDocument)))
 	{
-		IHTMLElement* pBodyElem = 0;
+        IHTMLElement* pBodyElem = 0;
 		HRESULT hr = HTMLDocument->get_body(&pBodyElem);
 		if (SUCCEEDED(hr) && pBodyElem != NULL)
 		{
@@ -6243,7 +6117,6 @@ void TfrmSelectDish::Navigate(TWebBrowser *WebBrowser, TStringList *Html)
 					pStyle->put_borderStyle(BSTR("none"));
 					pStyle->Release();
 				}
-
 				// hide scrollbars
 				pBody->put_scroll(BSTR("no"));
 			}
@@ -6445,16 +6318,9 @@ void __fastcall TfrmSelectDish::tgridItemSideItemsMouseClick(TObject *Sender, TM
              OrdersList->Add((TItemComplete*)SeatOrders[SelectedSeat]->Orders->Items[totalItems]);
         }
 
-        /*for (std::set<int>::iterator ptrDiscountKey = SeatOrders[SelectedSeat]->Orders->AppliedMembership.AutoAppliedDiscounts.begin();
-                ptrDiscountKey != SeatOrders[SelectedSeat]->Orders->AppliedMembership.AutoAppliedDiscounts.end(); ptrDiscountKey++)
-            {
-                ApplyDiscount(DBTransaction, *ptrDiscountKey, OrdersList.get(),dsMMMembership);
-            }*/
-
 		DBTransaction.Commit();
 		ItemRedirector->CompressedContainer->Container->LastItemSelected = SubItem;
         ManageDiscounts();
-		// SetSelectedItem(MasterOrder);
         CheckDeals(DBTransaction); // a sub item is added to the orders list. check for possible deals here
 		RedrawSeatOrders();
 		HighlightSelectedItem();
@@ -7516,11 +7382,11 @@ void __fastcall TfrmSelectDish::tbtnChitNumberMouseClick(TObject *)
 {
     std::auto_ptr<TStringList>get_list(new TStringList);
     //TStringList *get_list = new TStringList;
-    GetChitDiscountList(get_list.get());
-
-    TCustNameAndOrderType *cust_name_type_instance =TGlobalSettings::Instance().CaptureCustomerName ? TCustNameAndOrderType::Instance() : 0x0;
     Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
     tr.StartTransaction();
+
+    TCustNameAndOrderType *cust_name_type_instance =TGlobalSettings::Instance().CaptureCustomerName ? TCustNameAndOrderType::Instance() : 0x0;
+
         switch (SetupChit(tr))
          {
             case ChitCancelled:
@@ -7529,8 +7395,7 @@ void __fastcall TfrmSelectDish::tbtnChitNumberMouseClick(TObject *)
             case ChitDisabled:
                 return;
             case ChitOk:
-                 CheckPromptForChit = true;
-                 ClearDiscountLists(get_list.get());
+                 ClearDiscountLists(ChitNumber.DiscountList);
                 break;
             default:
                 assert(0x0
@@ -7538,6 +7403,7 @@ void __fastcall TfrmSelectDish::tbtnChitNumberMouseClick(TObject *)
                 abort();
                 break;
         }
+         GetChitDiscountList(tr, ChitNumber.DiscountList);
     tr.Commit();
 
     if (cust_name_type_instance && cust_name_type_instance->IsNameCaught)
@@ -7559,7 +7425,6 @@ void TfrmSelectDish::SearchItems()
         OrderSearchedItem(itemAndSize);
     }
 }
-
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ResetChit()
 {
@@ -7638,6 +7503,10 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
             {
                 AssignBarcodeToMember();
 			}break;
+            case 15:
+            {
+                DoCloundSync();
+			}break;
         }
        if (askForLogin)
        {
@@ -7653,64 +7522,6 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
 		MessageBox(E.Message, "Error", MB_OK + MB_ICONERROR);
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::ChangeCard()
-{
-  try
-   {
-      if(TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardInserted)
-      {
-         TDeviceRealTerminal::Instance().ManagerMembership->RestoreCardWithPoints();
-         OnSmartCardInserted(NULL);
-      }
-      else
-      {
-         MessageBox("Please Insert Card in Reader", "Error No Card", MB_OK + MB_ICONERROR);
-      }
-   }
-   catch(Exception &E)
-    {
-      MessageBox(E.Message, "Error", MB_OK + MB_ICONERROR);
-    }
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::AssignBarcodeToMember()
-{
-  Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-  DBTransaction.StartTransaction();
-  try
-   {
-      if(TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardInserted)
-      {
-         AnsiString memberCardCode = "";
-         TMMContactInfo TempUserInfo;
-	     TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->GetContactInfo(TempUserInfo);
-         TempUserInfo.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, TempUserInfo.MembershipNumber,TempUserInfo.SiteID);
-         std::auto_ptr <TfrmCardSwipe> frmCardSwipe(TfrmCardSwipe::Create <TfrmCardSwipe> (this));
-         frmCardSwipe->tbOtherOpt->Visible = false;
-         frmCardSwipe->ShowModal();
-         if (frmCardSwipe->ModalResult == mrOk)
-           {
-              memberCardCode = AnsiString(frmCardSwipe->SwipeString).SubString(1, 50);
-           }
-         if(TDeviceRealTerminal::Instance().ManagerMembership->UpdateMemberCardCode(DBTransaction, TempUserInfo, memberCardCode))
-         {
-            TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->FormatCardToFactory();
-            MessageBox("Please Remove Card From Reader.", "Information", MB_OK);
-         }
-         DBTransaction.Commit();
-      }
-      else
-      {
-         MessageBox("Please Insert Card in Reader", "Error No Card", MB_OK + MB_ICONERROR);
-      }
-   }
-   catch(Exception &E)
-    {
-      DBTransaction.Rollback();
-      MessageBox(E.Message, "Error", MB_OK + MB_ICONERROR);
-    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
@@ -8365,7 +8176,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                        const int tab_key = OrderContainer.Location["TabKey"];
                        DBTransaction.StartTransaction();
                        frmBillGroup->AddToSelectedTabs(DBTransaction, tab_key);
-                       frmBillGroup->SplitItemsInSet(DBTransaction, tab_key);
+                       //frmBillGroup->SplitItemsInSet(DBTransaction, tab_key);
                        DBTransaction.Commit();
 					}
 					frmBillGroup->ShowModal();
@@ -8938,7 +8749,7 @@ void TfrmSelectDish::ResetPOS()
 
 	CurrentTender = 0;
 	tbtnTender->Caption = "Tender";
-	Membership.Clear();
+
     InitializeQuickPaymentOptions();
     //InitializeWaiterOptions();
 	UpdateExternalDevices();
@@ -8952,7 +8763,8 @@ void TfrmSelectDish::ResetPOS()
 			tgridOrderCourseMouseClick(tgridOrderCourse, mbLeft, TShiftState(), tgridOrderCourse->Buttons[0][0]);
 		}
 	}
-
+    TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
+    Membership.Clear();
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
 	{
         // Restore Membership, Reminds the user to remove the smart card.
@@ -8968,25 +8780,20 @@ void TfrmSelectDish::ResetPOS()
 	TransactionComplete(NULL);
 	ReloadChitNumberStatistics();
     CheckMandatoryMembershipCardSetting(tbtnMembership);
-  /*if ( TGlobalSettings::Instance().EnableWaiterStation )
-  {
-     tbtnCashSale->Enabled = false;
-  }
-  else
-  {
-     tbtnCashSale->Enabled = true;
-  } */
-  if (TDeviceRealTerminal::Instance().PaymentSystem->ForceTender) //disable cash button
-  {
-     tbtnCashSale->Caption = "Cash Sale Disabled";
-     tbtnCashSale->Enabled = false;
-  }
-  CustPhone = "";
-  CustName = "";
-  CustAddress = "";
-
-  RefreshMenu();
-
+    if (TDeviceRealTerminal::Instance().PaymentSystem->ForceTender) //disable cash button
+      {
+         tbtnCashSale->Caption = "Cash Sale Disabled";
+         tbtnCashSale->Enabled = false;
+         tbtnDollar1->Enabled = false;
+         tbtnDollar2->Enabled = false;
+         tbtnDollar3->Enabled = false;
+         tbtnDollar4->Enabled = false;
+         tbtnDollar5->Enabled = false;
+    }
+    CustPhone = "";
+    CustName = "";
+    CustAddress = "";
+    RefreshMenu();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()
@@ -9040,140 +8847,6 @@ void __fastcall TfrmSelectDish::memNoteClick(TObject *Sender)
 			}
 		}
 	}
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member)
-{
-     customerDisp.HappyBirthDay = false;
-     customerDisp.FirstVisit = false;
-	 eMemberSource MemberSource = emsManual;
-	 TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, Member, MemberSource);
-	if (Result == lsAccountBlocked)
-	{
-		MessageBox("Account Blocked " + Member.Name + " " + Member.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
-	}
-	else if (Result == lsAccepted)
-	{
-
-		bool ApplyToAllSeats = false;
-		if (SelectedTable != 0 && !LoyaltyPending())
-		{
-			if (MessageBox("Do you wish to apply this membership to all seats?", "Query", MB_YESNO + MB_ICONQUESTION) == IDYES)
-			{
-				ApplyToAllSeats = true;
-			}
-		}
-
-		SeatOrders[SelectedSeat]->Orders->AppliedMembership = Member;
-		Membership.Assign(Member, MemberSource);
-		// Sort out Free Drinks and stuff.
-		std::vector<int>SeatsToApply;
-		if (ApplyToAllSeats == true)
-		{
-			for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
-			{
-				SeatsToApply.push_back(iSeat);
-			}
-		}
-		else
-		{
-			SeatsToApply.push_back(SelectedSeat);
-		}
-
-		for (UINT iSeat = 0; iSeat < SeatsToApply.size(); iSeat++)
-		{
-			// Clear the Member Discounts from the orders.
-			ManagerDiscount->ClearMemberDiscounts(SeatOrders[SeatsToApply[iSeat]]->Orders->List);
-            ManagerDiscount->ClearThorVouchersDiscounts(SeatOrders[SelectedSeat]->Orders->List);
-
-			SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership = Member;
-
-			for (int i = 0; i < SeatOrders[SeatsToApply[iSeat]]->Orders->Count; i++)
-			{
-				TItemComplete *Order = SeatOrders[SeatsToApply[iSeat]]->Orders->Items[i];
-				Order->Loyalty_Key = SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership.ContactKey;
-				Order->ResetPrice();
-
-				// Sort out the Sides.
-				for (int j = 0; j < Order->SubOrders->Count; j++)
-				{
-					TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete*)Order->SubOrders->Items[j];
-					CurrentSubOrder->Loyalty_Key = SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership.ContactKey;
-					CurrentSubOrder->ResetPrice();
-				}
-				ManagerDiscount->AddDiscountsByTime(DBTransaction, Order);
-			}
-
-			// Calculate Members Freebie rewards.
-			// Rewards do not cascade though sides, which is the normal discount functionality.
-			TManagerFreebie::IsPurchasing(DBTransaction, SeatOrders[SeatsToApply[iSeat]]->Orders->List);
-
-			// Apply Member Specific Discounts.
-			ApplyMemberDiscounts(DBTransaction);
-
-		}
-		RedrawSeatOrders();
-        if((TGlobalSettings::Instance().IsDrinkCommandEnabled))
-        {
-            int contactKey = Member.ContactKey;
-            AnsiString memberPoints = Member.Points.getPointsBalance();
-            memberPoints = memberPoints * 100;
-            AnsiString memNo = Member.MembershipNumber;
-            int memPoints = atoi(memberPoints.c_str());
-
-            // Asks for DC Session only if DC is enabled and points are more than 0
-            // now prompt does not ask for consent to initialize session
-            if((memPoints > 0))
-            {
-                 YesGoForSessionWithDC(memPoints, memberPoints,memNo,contactKey);
-            }
-            else
-            {
-               TMMProcessingState State(Screen->ActiveForm, "Redirecting to Purchase Points", "Please Wait");
-               TDeviceRealTerminal::Instance().ProcessingController.Push(State);
-               Sleep(1200);
-               tbtnTenderClick(tbtnTender);                                      // Redirecting to Payment Screen #7678
-               TDeviceRealTerminal::Instance().ProcessingController.Pop();
-            }
-        }
-		TotalCosts();
-		UpdateExternalDevices();
-
-        eMemberNameOnPoleDisplay nameOnPoleDisplay = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->NameOnPoleDisplay;
-
-		if ( nameOnPoleDisplay != eMNPDNone)
-		{
-            Member.PoleDisplayName = Member.RefreshPoleDisplayName( nameOnPoleDisplay );
-
-			if( TGlobalSettings::Instance().ShowPointsOnDisplay )
-			{
-				AnsiString ShowPoints = FloatToStr(Member.Points.getPointsBalance());
-                TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplay(Member.PoleDisplayName, "", "Points:", ShowPoints);
-				TDeviceRealTerminal::Instance().SecurityPort->SetData(Member.PoleDisplayName);
-				TDeviceRealTerminal::Instance().SecurityPort->SetData("Points:" + ShowPoints);
-			}
-			else
-			{
-				TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplay("Welcome", Member.PoleDisplayName);
-				TDeviceRealTerminal::Instance().SecurityPort->SetData("Welcome " + Member.PoleDisplayName);
-			}
-			LastSale = 0;
-		}
-		TMembership *membershipSystem = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
-        customerDisp.HappyBirthDay = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->DisplayBirthDayNotification(DBTransaction,Member);
-        customerDisp.FirstVisit=TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->DisplayFirstVisitNotification(DBTransaction,Member);
-		AnsiString ShowPoints = FloatToStr( Member.Points.getPointsBalance() );
-        AnsiString name = Member.PoleDisplayName;
-		TDeviceRealTerminal::Instance().SecurityPort->SetData(Member.PoleDisplayName);
-		TDeviceRealTerminal::Instance().SecurityPort->SetData("Points:" + ShowPoints);
-        if(!TGlobalSettings::Instance().IsThorlinkTender)
-        {
-            GetThorVouchers();
-            TGlobalSettings::Instance().IsThorlinkTender = false;
-            TGlobalSettings::Instance().IsThorVoucherSelected = false;
-        }
-		LastSale = 0;
-    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::ForceHappyHourClick()
@@ -10243,42 +9916,6 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 	return Retval;
 }
 // ---------------------------------------------------------------------------
-void __fastcall TfrmSelectDish::tbtnMemberDisplayPageUpMouseClick(TObject *Sender)
-{
-	TComInterface<IHTMLDocument2>HTMLDocument;
-	TComInterface<IHTMLWindow2>parentWindow;
-
-	_di_IDispatch doc = webDisplay->Document;
-	if (doc != NULL)
-	{
-		if (SUCCEEDED(webDisplay->Document->QueryInterface(IID_IHTMLDocument2, (LPVOID*) & HTMLDocument)))
-		{
-			if (SUCCEEDED(HTMLDocument->get_parentWindow(&parentWindow)))
-			{
-				parentWindow->scrollBy(0, -400);
-			}
-		}
-	}
-}
-// ---------------------------------------------------------------------------
-void __fastcall TfrmSelectDish::tbtnMemberDisplayPageDownMouseClick(TObject *Sender)
-{
-	TComInterface<IHTMLDocument2>HTMLDocument;
-	TComInterface<IHTMLWindow2>parentWindow;
-
-	_di_IDispatch doc = webDisplay->Document;
-	if (doc != NULL)
-	{
-		if (SUCCEEDED(webDisplay->Document->QueryInterface(IID_IHTMLDocument2, (LPVOID*) & HTMLDocument)))
-		{
-			if (SUCCEEDED(HTMLDocument->get_parentWindow(&parentWindow)))
-			{
-				parentWindow->scrollBy(0, 400);
-			}
-		}
-	}
-}
-// ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tnpQuantityClick(TObject *Sender, TNumpadKey Key)
 {
    static const double maximum_quantity = 9999.0;
@@ -10322,83 +9959,6 @@ bool TfrmSelectDish::TabPINOk(Database::TDBTransaction &DBTransaction, int inTab
 		TabPINProceed = true;
 	}
 	return TabPINProceed;
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::OnSmartCardInserted(TSystemEvents *Sender)
-{
-	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
-	TMMContactInfo info;
-
-    drt.ManagerMembership->ManagerSmartCards->GetContactInfo(info);
-
-	if (TSmartcard_Preloader::is_preloaded_card(info))
-    {
-		if (!TGlobalSettings::Instance().QMSIsEnabled || ignore_preloaded_card ||
-           (ignore_preloaded_card = drt.ManagerMembership->AddMember(info, true)) != mbOK)
-			  return;
-	}
-
-	if (info.Valid())
-     {
-		Database::TDBTransaction DBTransaction(drt.DBControl);
-		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-		DBTransaction.StartTransaction();
-		ApplyMembership(DBTransaction, info);
-		DBTransaction.Commit();
-	}
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::OnSmartCardRemoved(TSystemEvents *Sender)
-{
-	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-	{
-		for (int i = 0; i < lbDisplay->Items->Count; i++)
-		{
-			TItemRedirector *ListItem = (TItemRedirector*)lbDisplay->Items->Objects[i];
-			if (ListItem->ItemType.Contains(itMembershipDisplay) || ListItem->ItemType.Contains(itMembershipDisplayNote))
-			{
-				lbDisplay->ItemIndex = i;
-				ListItem->CompressedContainer->Container->CurrentItemRedirector = ListItem;
-				ListItem->CompressedContainer->Container->SelectedIndex = lbDisplay->ItemIndex;
-				btnRemoveMouseClick(NULL);
-			}
-		}
-
-		ignore_preloaded_card = false;
-	}
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::RemoveMembership(Database::TDBTransaction &DBTransaction)
-{
-	if (bool(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]) &&
-             TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
-	{
-		MessageBox("To Remove Membership, Remove the Smart Card from the Reader.", "Error", MB_OK + MB_ICONERROR);
-	}
-	else
-	{
-
-		// Remove all Free Items.
-		TManagerFreebie::UndoFreeCount(DBTransaction, SeatOrders[SelectedSeat]->Orders->List);
-		for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
-		{
-			TItemComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
-			// Calculate Membership Pricing.
-			Item->Loyalty_Key = 0;
-			Item->ResetPrice();
-
-			for (int j = 0; j < Item->SubOrders->Count; j++)
-			{
-				TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete*)Item->SubOrders->Items[j];
-				CurrentSubOrder->Loyalty_Key = 0;
-				CurrentSubOrder->ResetPrice();
-			}
-		}
-
-		SeatOrders[SelectedSeat]->Orders->AppliedMembership.Clear();
-		Membership.Clear();
-		RemoveMembershipDiscounts();
-	}
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::WriteOffBillAsWastage()
@@ -10671,6 +10231,7 @@ void __fastcall TfrmSelectDish::webDisplayBeforeNavigate2(TObject *ASender, cons
 
 {
 	TWebBrowser *Browser;
+    //Browser->Document
 	if ((Browser = dynamic_cast<TWebBrowser*>(ASender)) != NULL)
 	{
 		std::auto_ptr<TManagerWebDispatch>Dispatch(new TManagerWebDispatch(this, Browser));
@@ -12122,14 +11683,9 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 				{
 					const int tab_key =
 					OrderContainer.Location["TabKey"];
-
 					DBTransaction.StartTransaction();
-					frmBillGroup->AddToSelectedTabs(
-					DBTransaction,
-					tab_key);
-					frmBillGroup->SplitItemsInSet(
-					DBTransaction,
-					tab_key);
+					frmBillGroup->AddToSelectedTabs(DBTransaction,tab_key);
+					//frmBillGroup->SplitItemsInSet(DBTransaction,tab_key);
 					DBTransaction.Commit();
 				}
 				frmBillGroup->ShowModal();
@@ -12691,18 +12247,7 @@ void TfrmSelectDish::YesGoForSessionWithDC(int memPoints, AnsiString memberPoint
    }
    TDeviceRealTerminal::Instance().ProcessingController.Pop();
 }
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::OnItemDetailsReceived(TSystemEvents *Sender)
-{
-      PaintItemToDisplay(Sender->ItemKey, Sender->ItemSizeKey , Sender->QtyValue , Sender->BillValue);
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::RefreshMenu()
-{
-    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)
-    {
-        for (int i = 0; i < TDeviceRealTerminal::Instance().Menus->Current->Count; i++)
-        {
+// ---------------------------------------------------------------------------void TfrmSelectDish::OnItemDetailsReceived(TSystemEvents *Sender){      PaintItemToDisplay(Sender->ItemKey, Sender->ItemSizeKey , Sender->QtyValue , Sender->BillValue);}// ---------------------------------------------------------------------------void TfrmSelectDish::RefreshMenu(){    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)    {        for (int i = 0; i < TDeviceRealTerminal::Instance().Menus->Current->Count; i++)        {
             std::auto_ptr<TNetMessageMenuChanged> Request( new TNetMessageMenuChanged );
             Request->Broadcast         = true;
             Request->CompareToDataBase = false;
@@ -12712,14 +12257,7 @@ void TfrmSelectDish::RefreshMenu()
         }
 
         TDeviceRealTerminal::Instance().Menus->SwapInNewMenus();
-    }
-
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::HideSoldItems(Database::TDBTransaction &DBTransaction,TList *OrdersList)
-{
-    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)
-         {
+    }}// ---------------------------------------------------------------------------void TfrmSelectDish::HideSoldItems(Database::TDBTransaction &DBTransaction,TList *OrdersList){    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)         {
             for (int i = 0; i < OrdersList->Count; i++)
             {
                 TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];
@@ -12750,17 +12288,7 @@ void TfrmSelectDish::HideSoldItems(Database::TDBTransaction &DBTransaction,TList
                 IBInsertQuery->ParamByName("SIZE_NAME")->AsString = sizeName;
                 IBInsertQuery->ExecQuery();
             }
-         }
-}
-// ---------------------------------------------------------------------------
-Currency  TfrmSelectDish::VerifyPriceLevelPrice(Database::TDBTransaction &DBTransaction,int itemSizeKey,Currency Price)
-{
-    try
-    {
-
-         int noOfPriceLevelInDataBase;
-         TIBSQL *IBInternalQuery2   = DBTransaction.Query( DBTransaction.AddQuery() );
-         IBInternalQuery2->Close();
+         }}// ---------------------------------------------------------------------------Currency  TfrmSelectDish::VerifyPriceLevelPrice(Database::TDBTransaction &DBTransaction,int itemSizeKey,Currency Price){    try    {         int noOfPriceLevelInDataBase;         TIBSQL *IBInternalQuery2   = DBTransaction.Query( DBTransaction.AddQuery() );         IBInternalQuery2->Close();
          IBInternalQuery2->SQL->Text =
                                          "SELECT "
                                              "INTEGER_VAL "
@@ -12769,15 +12297,7 @@ Currency  TfrmSelectDish::VerifyPriceLevelPrice(Database::TDBTransaction &DBTran
                                         "WHERE "
                                               "VARIABLES_KEY = 5014; ";
            IBInternalQuery2->ExecQuery();
-           noOfPriceLevelInDataBase= IBInternalQuery2->Fields[0]->AsInteger;
-
-           if (noOfPriceLevelInDataBase==0)noOfPriceLevelInDataBase=2;
-
-     if ( StrToInt(stHappyHour->Tag)>  noOfPriceLevelInDataBase  )
-       {
-            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =
+           noOfPriceLevelInDataBase= IBInternalQuery2->Fields[0]->AsInteger;           if (noOfPriceLevelInDataBase==0)noOfPriceLevelInDataBase=2;     if ( StrToInt(stHappyHour->Tag)>  noOfPriceLevelInDataBase  )       {            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());            IBInternalQuery->Close();            IBInternalQuery->SQL->Text =
                       "Select PRICELEVEL_KEY,PRICE from PRICELEVELITEMSIZE pls where "
                       " pls.ITEMSIZE_KEY = :ITEMSIZE_KEY and pls.PRICELEVEL_KEY = :PRICELEVEL_KEY ";
 
@@ -12785,18 +12305,7 @@ Currency  TfrmSelectDish::VerifyPriceLevelPrice(Database::TDBTransaction &DBTran
             IBInternalQuery->ParamByName("PRICELEVEL_KEY")->AsInteger = 1;
             IBInternalQuery->ExecQuery();
 
-            if(!IBInternalQuery->Eof)
-            {
-                  Price= IBInternalQuery->FieldByName("PRICE")->AsCurrency;
-
-            }
-
-       }else
-       {
-
-           TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =
+            if(!IBInternalQuery->Eof)            {                  Price= IBInternalQuery->FieldByName("PRICE")->AsCurrency;            }       }else       {           TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());            IBInternalQuery->Close();            IBInternalQuery->SQL->Text =
                       "Select PRICELEVEL_KEY,PRICE from PRICELEVELITEMSIZE pls where "
                       " pls.ITEMSIZE_KEY = :ITEMSIZE_KEY and pls.PRICELEVEL_KEY = :PRICELEVEL_KEY ";
 
@@ -12804,28 +12313,11 @@ Currency  TfrmSelectDish::VerifyPriceLevelPrice(Database::TDBTransaction &DBTran
             IBInternalQuery->ParamByName("PRICELEVEL_KEY")->AsInteger = stHappyHour->Tag;
             IBInternalQuery->ExecQuery();
 
-            if(!IBInternalQuery->Eof)
-            {
-                  Currency fetchPrice= IBInternalQuery->FieldByName("PRICE")->AsCurrency;
-                  if (fetchPrice != Price)
-                  {
-                    Price=  fetchPrice;
-                  }
-            }
-       }
-
-        return  Price;
-
-
-        }
-        catch(Exception & E)
+            if(!IBInternalQuery->Eof)            {                  Currency fetchPrice= IBInternalQuery->FieldByName("PRICE")->AsCurrency;                  if (fetchPrice != Price)                  {                    Price=  fetchPrice;                  }            }       }        return  Price;        }        catch(Exception & E)
         {
             TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
             throw;
-        }
-}
-// ---------------------------------------------------------------------------
-void  TfrmSelectDish::CheckLastAddedItem()
+        }}// ---------------------------------------------------------------------------void  TfrmSelectDish::CheckLastAddedItem()
 {
 		for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
 		{
@@ -12966,33 +12458,24 @@ bool TfrmSelectDish::ReadMenuUpdateSetting(Database::TDBTransaction &DBTransacti
     {
         bool retVal = false;
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
+        IBInternalQuery->Close();        IBInternalQuery->SQL->Text =
                   "SELECT a.INTEGER_VAL FROM VARSPROFILE a where a.VARIABLES_KEY = 4135 and a.PROFILE_KEY= :PROFILE_KEY " ;
 
         IBInternalQuery->ParamByName("PROFILE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
         IBInternalQuery->ExecQuery();
-
-        if(IBInternalQuery->RecordCount)
-        {
+        if(IBInternalQuery->RecordCount)        {
             for (;!IBInternalQuery->Eof; IBInternalQuery->Next())
             {
                 int integral_value = IBInternalQuery->FieldByName("INTEGER_VAL")->AsInteger;
-                if (integral_value > 0)
-                {
-                     return retVal = true;
-                }
-            }
-        }
-        return retVal;
+                if (integral_value > 0)                {                     return retVal = true;                }            }
+        }        return retVal;
     }
     catch(Exception & E)
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         throw;
     }
-}
-// ---------------------------------------------------------------------------
+}// ---------------------------------------------------------------------------
 void TfrmSelectDish::UpdateMenuItem(bool displaymessage)
 {
     RedrawMenu();
@@ -13078,22 +12561,11 @@ bool  TfrmSelectDish::ShowTabCreditLimitExceedsMessage(Database::TDBTransaction 
     return false;
 }
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::AddItemToSeat(
-                    Database::TDBTransaction& inDBTransaction,
-									   TItem* inItem,
-										bool  inSetMenuItem,
-								   TItemSize* inItemSize,
-									Currency  inPrice )
+void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TItem* inItem,	bool  inSetMenuItem,
+								   TItemSize* inItemSize,Currency  inPrice )
 {
     CheckLastAddedItem(); // check any added item in list;
-
 	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize );
-
-	if( Order != NULL )
-	{
-		SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
-		TManagerFreebie::IsPurchasing(inDBTransaction, SeatOrders[SelectedSeat]->Orders->List);
-	}
 
 	if (inPrice != 0)
 	{
@@ -13123,11 +12595,35 @@ void TfrmSelectDish::AddItemToSeat(
 			Order->PriceLevel1 = 0;
 		}
 	}
+
 	if (Order != NULL)
 	{
+       bool itemAdded = false;
+       for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+        {
+           TItemComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
+           double currentQty  = Item->GetQty();
+           Item->SetQtyCustom(1);
+           if(TOrderUtils::Match(Item,Order) && !TOrderUtils::SoloItem(Order))
+           {
+              itemAdded = true;
+              Item->SetQtyCustom(currentQty + 1);
+              break;
+           }
+           else
+           {
+             Item->SetQtyCustom(currentQty);
+           }
+        }
+        if(!itemAdded)
+          SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
+		TManagerFreebie::IsPurchasing(inDBTransaction, SeatOrders[SelectedSeat]->Orders->List);
 		CheckDeals(inDBTransaction);
-		ApplyMemberDiscounts(inDBTransaction);
+		ApplyMemberDiscounts(inDBTransaction,false);
 	}
+
+
+
 	RedrawSeatOrders();
 	TotalCosts();
 	UpdateExternalDevices();
@@ -13446,7 +12942,6 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 	NewSubOrder->CourseKitchenName = Item->CourseKitchenName;
 	NewSubOrder->ItemKitchenName = Item->ItemKitchenName;
 	NewSubOrder->MenuName = Item->MenuName;
-    //NewSubOrder->MenuKey = Item->MenuKey;
 	NewSubOrder->TimeStamp = MasterOrder->TimeStamp;
 	NewSubOrder->Cost = 0;
     NewSubOrder->PrintCancel = false;
@@ -13457,7 +12952,6 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 	}
 
 	NewSubOrder->FontInfo = Item->FontInfo;
-	// Sides get there Parents Serving Course.
 	NewSubOrder->ServingCourse = MasterOrder->ServingCourse;
 
 	if (Item->Sizes->Count == 0)
@@ -13511,10 +13005,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
         }
 		// Sort Categories
 		NewSubOrder->Categories->CategoryCopyList(Item->Sizes->SizeGet(SelectedSize)->Categories);
-
 		NewSubOrder->Size = Item->Sizes->SizeGet(SelectedSize)->Name;
-
-    //    if(cbEnableCountingFunctionality)
         Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
         dBTransaction.StartTransaction();
         bool isItemUsingPCD = TDBOrder::IsItemUsingPCD(dBTransaction, Item->ItemKey, NewSubOrder->Size);
@@ -13528,7 +13019,6 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
         NewSubOrder->GSTPercent = Item->Sizes->SizeGet(SelectedSize)->GSTPercent; // Get default cost if assigned.
 		NewSubOrder->TaxProfiles = Item->Sizes->SizeGet(SelectedSize)->TaxProfiles; // Get default cost if assigned.
 		NewSubOrder->PointsPercent = Item->Sizes->SizeGet(SelectedSize)->PointsPercent;
-
 		NewSubOrder->MemberFreeSaleCount = Item->Sizes->SizeGet(SelectedSize)->MemberFreeSaleCount;
 		NewSubOrder->MemberFreeSaleDiscount = Item->Sizes->SizeGet(SelectedSize)->MemberFreeSaleDiscount;
 		NewSubOrder->LocationFreeSaleCount = Item->Sizes->SizeGet(SelectedSize)->LocationFreeSaleCount;
@@ -13538,13 +13028,10 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 		NewSubOrder->PLU = Item->Sizes->SizeGet(SelectedSize)->PLU;
 		// Sort Recipes
 		NewSubOrder->SalesRecipesToApply->RecipeCopyList(Item->Sizes->SizeGet(SelectedSize)->Recipes);
-
 		NewSubOrder->Cost = Item->Sizes->SizeGet(SelectedSize)->Cost; // Get default cost if assigned.
 		NewSubOrder->CostGSTPercent = Item->Sizes->SizeGet(SelectedSize)->CostGSTPercent;
-
 		NewSubOrder->PriceLevel0 = Item->Sizes->SizeGet(SelectedSize)->Price;
 		NewSubOrder->PriceLevel1 = VerifyPriceLevelPrice(DBTransaction,Item->Sizes->SizeGet(SelectedSize)->ItemSizeKey,Item->Sizes->SizeGet(SelectedSize)->PriceLevels[stHappyHour->Tag].Price);
-
 	// Calculate Membership Pricing.
 		NewSubOrder->HappyHour = stHappyHour->Visible;
 		NewSubOrder->Loyalty_Key = MasterOrder->Loyalty_Key;
@@ -13587,13 +13074,8 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 			delete NewSubOrder;
 			return NULL;
 		}
-
-		// Sort Categories
 		NewSubOrder->Categories->CategoryCopyList(Item->Sizes->SizeGet(0)->Categories);
-
 		NewSubOrder->Size = Item->Sizes->SizeGet(0)->Name;
-
-  //    if(cbEnableCountingFunctionality)
         Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
         dBTransaction.StartTransaction();
         bool isItemUsingPCD = TDBOrder::IsItemUsingPCD(dBTransaction, Item->ItemKey, NewSubOrder->Size);
@@ -13617,13 +13099,10 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 		NewSubOrder->PLU = Item->Sizes->SizeGet(0)->PLU;
 		// Sort Recipes
 		NewSubOrder->SalesRecipesToApply->RecipeCopyList(Item->Sizes->SizeGet(0)->Recipes);
-
 		NewSubOrder->Cost = Item->Sizes->SizeGet(0)->Cost; // Get default cost if assigned.
 		NewSubOrder->CostGSTPercent = Item->Sizes->SizeGet(0)->CostGSTPercent;
-
 		NewSubOrder->PriceLevel0 = Item->Sizes->SizeGet(0)->Price;
 	  	NewSubOrder->PriceLevel1 =  VerifyPriceLevelPrice(DBTransaction,Item->Sizes->SizeGet(0)->ItemSizeKey,Item->Sizes->SizeGet(0)->PriceLevels[stHappyHour->Tag].Price);
-
 		// Calculate Membership Pricing.
 		NewSubOrder->HappyHour = stHappyHour->Visible;
 		NewSubOrder->Loyalty_Key = MasterOrder->Loyalty_Key;
@@ -13683,40 +13162,54 @@ void TfrmSelectDish::AssignDiscountLists()
    GetAllOrders(allOrders.get());
    TDiscount CurrentDiscount;
    TSeniorCitizenDiscountChecker SCDChecker;
+   isChitDiscountExist = false;
 
-   for(int i=0; i < ChitNumber.ApplyDiscountsList->Count; i++)
-   {
-      ManagerDiscount->GetDiscount(DBTransaction, (int)ChitNumber.ApplyDiscountsList->Objects[i], CurrentDiscount);
-      if(CurrentDiscount.IsComplimentaryDiscount())
-      {
-        TypeOfSale = ComplimentarySale;
-      }
-      else if( CurrentDiscount.IsNonChargableDiscount())
-      {
-         TypeOfSale = NonChargableSale;
-      }
-      ManagerDiscount->ClearDiscount(SeatOrders[SelectedSeat]->Orders->List, CurrentDiscount);
-      if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
-      {
-          ApplyDiscount(DBTransaction, (int)ChitNumber.ApplyDiscountsList->Objects[i], SeatOrders[SelectedSeat]->Orders->List);
-      }
-   }
+   for(int i=0; i < ChitNumber.DiscountList.size(); i++)
+    {
+         if(ChitNumber.DiscountList[i].IsComplimentaryDiscount())
+          {
+            TypeOfSale = ComplimentarySale;
+          }
+          else if( ChitNumber.DiscountList[i].IsNonChargableDiscount())
+          {
+             TypeOfSale = NonChargableSale;
+          }
+          ManagerDiscount->ClearDiscount(SeatOrders[SelectedSeat]->Orders->List, ChitNumber.DiscountList[i]);
+          if(SCDChecker.SeniorCitizensCheck(ChitNumber.DiscountList[i], allOrders.get()))
+          {
+               bool isDiscountApplied = ApplyDiscount(DBTransaction, ChitNumber.DiscountList[i], SeatOrders[SelectedSeat]->Orders->List);
+              if(isDiscountApplied && SeatOrders[SelectedSeat]->Orders->List->Count >0 )
+              {
+                    ChitNumber.DiscountList[i].Type = 0;
+              }
+              if(!isDiscountApplied)
+              {
+                    ChitNumber.DiscountList.erase(ChitNumber.DiscountList.begin()+i);
+                    i--;
+                    isChitDiscountExist = true;
+              }
+          }
+     }
+
    DBTransaction.Commit();
    RedrawSeatOrders();
 }
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::ClearDiscountLists(TStringList *List)
+void TfrmSelectDish::ClearDiscountLists(std::vector<TDiscount> DiscountList)
 {
-  RemoveDiscountList(List);
-  RedrawSeatOrders();
+    ChitNumber.DiscountList.erase(ChitNumber.DiscountList.begin(),ChitNumber.DiscountList.end());
+    // RemoveDiscountList(List);
+    RedrawSeatOrders();
 }
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::GetChitDiscountList(TStringList *List)
+void TfrmSelectDish::GetChitDiscountList(Database::TDBTransaction &dBTransaction, std::vector<TDiscount> DiscountList)
 {
+  TDiscount currentDiscount;
   for(int i = 0 ; i < ChitNumber.ApplyDiscountsList->Count; i++)
   {
     int discount_key = (int)ChitNumber.ApplyDiscountsList->Objects[i];
-    List->AddObject(ChitNumber.ApplyDiscountsList->Strings[i], (TObject *) discount_key);
+    ManagerDiscount->GetDiscount(dBTransaction, discount_key, currentDiscount);
+    ChitNumber.DiscountList.push_back(currentDiscount);
   }
 }
 // ---------------------------------------------------------------------------
@@ -13739,17 +13232,19 @@ void TfrmSelectDish::RemoveDiscountList(TStringList *List)
    }
    DBTransaction.Commit();
 }
+
 //---------------------------------------------------------------------------
-void TfrmSelectDish::ApplyMemberDiscounts(Database::TDBTransaction &DBTransaction)
+void TfrmSelectDish::ApplyMemberDiscounts(Database::TDBTransaction &DBTransaction,bool isInitiallyApplied)
 {
 	if (SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0)
 	{
 		// Apply Member Specific Discounts.
         ManagerDiscount->ClearMemberDiscounts(SeatOrders[SelectedSeat]->Orders->List);
+        ManagerDiscount->ClearMemberExemtDiscounts(SeatOrders[SelectedSeat]->Orders->List);
 		for (std::set<int>::iterator ptrDiscountKey = SeatOrders[SelectedSeat]->Orders->AppliedMembership.AutoAppliedDiscounts.begin();
 			ptrDiscountKey != SeatOrders[SelectedSeat]->Orders->AppliedMembership.AutoAppliedDiscounts.end(); ptrDiscountKey++)
 		{
-			ApplyDiscount(DBTransaction, *ptrDiscountKey, SeatOrders[SelectedSeat]->Orders->List,dsMMMembership);
+			ApplyDiscount(DBTransaction, *ptrDiscountKey, SeatOrders[SelectedSeat]->Orders->List,isInitiallyApplied,dsMMMembership);
 		}
 	}
 }
@@ -13835,8 +13330,7 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
 
 	if (!AllowDiscount)
 	{
-		TLoginSuccess Result = Staff->Login(this, DBTransaction, TempUserInfo,
-        combo ? CheckComboDiscounts :  CheckDiscountBill);
+		TLoginSuccess Result = Staff->Login(this, DBTransaction, TempUserInfo, combo ? CheckComboDiscounts :  CheckDiscountBill);
 		if (Result == lsAccepted)
 		{
 			AllowDiscount = true;
@@ -13941,175 +13435,200 @@ void TfrmSelectDish::AdjustItemQty(Currency Count)
    CheckDeals(DBTransaction);
    DBTransaction.Commit();
 
-   TItemsCompleteCompressed *CompContainer = redirector->ParentRedirector->CompressedContainer;
-   TContainerOrders *Container = CompContainer->Container;
-   Container->Select(selected_item);
+   TotalCosts();
+   RedrawSeatOrders();
+   HighlightSelectedItem();
+
    UnicodeString pole_display_str = FormatFloat("0.00", selected_item->GetQty()) + " " + selected_item->Item;
 
    AnsiString PoleDisplayPrice =  CurrToStrF(((selected_item->TotalPriceAdjustment())), ffNumber, CurrencyDecimals);
    TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplay(pole_display_str, PoleDisplayPrice, "", "");
    TDeviceRealTerminal::Instance().SecurityPort->SetData(pole_display_str + " " + PoleDisplayPrice);
-   TotalCosts();
-   RedrawSeatOrders();
-   HighlightSelectedItem();
+
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ManageDiscounts()
 {
    std::map<int,TList*> DiscountMap;
+   std::vector<TDiscountMode> exemptFilter;
+   exemptFilter.push_back(DiscModeDeal);
+   exemptFilter.push_back(DiscModeCombo);
    for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
 	{
 		TItemMinorComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
 		for(std::vector<TDiscount>::iterator ptrDiscount = Item->Discounts.begin(); ptrDiscount != Item->Discounts.end(); ++ptrDiscount)
         {
-           if(ptrDiscount->MinItemRequired != 0 || ptrDiscount->MaxItemAffected != 0)
-           {
-                if(DiscountMap[ptrDiscount->DiscountKey] == NULL)
+            if(ptrDiscount->Source != dsMMMembership && ptrDiscount->Mode != DiscModeDeal && ptrDiscount->Mode != DiscModeCombo &&
+               ptrDiscount->Source != dsMMLocationReward && ptrDiscount->Source != dsMMMembershipReward)
+            {
+               if(DiscountMap[ptrDiscount->DiscountKey] == NULL)
                 {
                   DiscountMap[ptrDiscount->DiscountKey] = new TList();
                 }
                 DiscountMap[ptrDiscount->DiscountKey]->Add(Item);
-           }
+            }
         }
+        Item->DiscountsClearByFilter(exemptFilter);
 	}
    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
    DBTransaction.StartTransaction();
+   ApplyMemberDiscounts(DBTransaction,false);
    for (std::map<int, TList*>::iterator i = DiscountMap.begin(); i != DiscountMap.end(); ++i)
     {
-      ApplyDiscount(DBTransaction,i->first,i->second);
+      ApplyDiscount(DBTransaction,i->first,i->second,false);
 	}
-   ApplyMemberDiscounts(DBTransaction);
-   DBTransaction.Commit();
+  DBTransaction.Commit();
 }
 // ---------------------------------------------------------------------------
-void __fastcall TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, int DiscountKey, TList *Orders, TDiscountSource DiscountSource)
+bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, int DiscountKey, TList *Orders,
+                                              bool isInitiallyApplied, TDiscountSource DiscountSource)
 {
+    bool isDiscountApplied = false;
     if (Orders->Count > 0)
     {
-        bool ProcessDiscount = true;
         TDiscount CurrentDiscount;
-        bool bailout = false;
         CurrentDiscount.DiscountKey = DiscountKey;
-
-        if (ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount))
-          {
-            if(DiscountSource == dsMMMembership)
+        if(ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount))
+        {
+          isDiscountApplied = ApplyDiscount(DBTransaction, CurrentDiscount, Orders, isInitiallyApplied, DiscountSource);
+        }
+        else
+        {
+            MessageBox("Member Discount not found in discount table.", "Error", MB_ICONWARNING + MB_OK);
+        }
+        return isDiscountApplied;
+  }
+}
+//------------------------------------------------------------------------------------------------------------------------------
+bool TfrmSelectDish::PromptForDiscountDescription(TDiscount &currentDiscount)
+{
+     bool bailout = false;
+     bool processDiscount = true;
+     if (currentDiscount.Type == dtPromptDescription || currentDiscount.Type == dtPromptDescriptionAmount)
+        {
+            std::auto_ptr<TfrmTouchKeyboard>frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+            do
             {
-               CurrentDiscount.IsThorBill = TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected;
-               if(CurrentDiscount.IsThorBill)
-               {
-                    ManagerDiscount->GetThorlinkDiscount(DBTransaction,CurrentDiscount);
-               }
-            }
-
-            if(CurrentDiscount.Source == dsMMUser)
-            {
-                CurrentDiscount.Source = DiscountSource;
-            }
-            else if(CurrentDiscount.Source == dsMMMebersPoints)
-            {
-                if(Membership.Applied())
+                frmTouchKeyboard->MaxLength = 200;
+                frmTouchKeyboard->AllowCarriageReturn = false;
+                frmTouchKeyboard->StartWithShiftDown = true;
+                frmTouchKeyboard->MustHaveValue = true;
+                frmTouchKeyboard->KeyboardText = currentDiscount.Description;
+                frmTouchKeyboard->Caption = "Please enter a discount / surcharge Description";
+                if (frmTouchKeyboard->ShowModal() == mrOk)
                 {
-                    Currency ProductValue = TOrderUtils::TotalPriceAdjustmentSides(Orders); //TOrderUtils::TotalPriceSides(Orders);
-                    CurrentDiscount.MaximumValue = Membership.Member.Points.getPointsBalance(pasDatabase,ptstLoyalty);
-                  	CurrentDiscount.Amount = ProductValue;
-	                ManagerDiscount->ClearDiscount(Orders, CurrentDiscount);
-			 		ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
-        	    }
-                else
-                	ProcessDiscount = false;
-            }
-
-            if(!ChitNumber.Valid() || CheckPromptForChit)
-            {
-
-                if (CurrentDiscount.Type == dtPromptDescription || CurrentDiscount.Type == dtPromptDescriptionAmount)
-                {
-                    std::auto_ptr<TfrmTouchKeyboard>frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-                    do
-                    {
-                        frmTouchKeyboard->MaxLength = 200;
-                        frmTouchKeyboard->AllowCarriageReturn = false;
-                        frmTouchKeyboard->StartWithShiftDown = true;
-                        frmTouchKeyboard->MustHaveValue = true;
-                        frmTouchKeyboard->KeyboardText = CurrentDiscount.Description;
-                        frmTouchKeyboard->Caption = "Please enter a discount / surcharge Description";
-                        if (frmTouchKeyboard->ShowModal() == mrOk)
-                        {
-                            CurrentDiscount.Description = frmTouchKeyboard->KeyboardText;
-                        }
-                        else
-                        {
-                            bailout = true;
-                            CheckDiscountPoints = true;
-                        }
-                    }
-                    while (frmTouchKeyboard->KeyboardText == "" && !bailout);
-
-                    if (bailout)
-                    {
-                        ProcessDiscount = false;
-                    }
+                    currentDiscount.Description = frmTouchKeyboard->KeyboardText;
                 }
+                else
+                {
+                    bailout = true;
+                    CheckDiscountPoints = true;
+                }
+            }
+            while (frmTouchKeyboard->KeyboardText == "" && !bailout);
+            if (bailout)
+            {
+                processDiscount = false;
             }
         }
-    else
+    return processDiscount;
+}
+//------------------------------------------------------------------------------------------------------------------------
+bool TfrmSelectDish::PromptForDiscountAmount(TDiscount &currentDiscount)
+{
+  bool processDiscount = true;
+  if (currentDiscount.Type == dtPromptAmount || currentDiscount.Type == dtPromptDescriptionAmount)
+   {
+        std::auto_ptr<TfrmDiscount>frmDiscount(TfrmDiscount::Create<TfrmDiscount>(this));
+        frmDiscount->Mode = currentDiscount.Mode;
+        frmDiscount->CURInitial = currentDiscount.Amount;
+        frmDiscount->PERCInitial = currentDiscount.PercentAmount;
+        frmDiscount->TotalValue = InitialMoney.GrandTotal;
+
+        if (frmDiscount->ShowModal() == mrOk)
+        {
+            currentDiscount.Mode = frmDiscount->Mode;
+            if (frmDiscount->Mode == DiscModeCurrency)
+            {
+                currentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+                if (currentDiscount.Amount != frmDiscount->CURResult)
+                {
+                   MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
+                }
+            }
+           if (frmDiscount->Mode == DiscModeItem)
+            {
+                currentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+                if (currentDiscount.Amount != frmDiscount->CURResult)
+                {
+                   MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
+                }
+            }
+            else if (frmDiscount->Mode == DiscModeSetPrice)
+            {
+                currentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+                if (currentDiscount.Amount != frmDiscount->CURResult)
+                {
+                   MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
+                }
+            }
+            else
+            {
+                 currentDiscount.PercentAmount = frmDiscount->PERCResult;
+            }
+        }
+        else
+        {
+                processDiscount = false;
+        }
+
+   }
+   return processDiscount;
+}
+///------------------------------------------------------------------------------------------------------------------------
+bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDiscount &CurrentDiscount, TList *Orders, bool isInitiallyApplied, TDiscountSource DiscountSource)
+{
+    if (Orders->Count == 0)
+     return false;
+
+    bool ProcessDiscount = true;
+    if(DiscountSource == dsMMMembership)
     {
-            MessageBox("Member Discount not found in discount table.", "Error", MB_ICONWARNING + MB_OK);
-            ProcessDiscount = false;
+       CurrentDiscount.IsThorBill = TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected;
+       if(CurrentDiscount.IsThorBill)
+       {
+            ManagerDiscount->GetThorlinkDiscount(DBTransaction,CurrentDiscount);
+       }
     }
 
+    if(CurrentDiscount.Source == dsMMUser || CurrentDiscount.Source == dsMMMembership)
+    {
+        CurrentDiscount.Source = DiscountSource;
+    }
+    else if(CurrentDiscount.Source == dsMMMebersPoints)
+    {
+        if(Membership.Applied())
+        {
+            Currency ProductValue = TOrderUtils::TotalPriceAdjustmentSides(Orders); //TOrderUtils::TotalPriceSides(Orders);
+            CurrentDiscount.MaximumValue = Membership.Member.Points.getPointsBalance(pasDatabase,ptstLoyalty);
+            CurrentDiscount.Amount = ProductValue;
+            ManagerDiscount->ClearDiscount(Orders, CurrentDiscount);
+            ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
+        }
+        else
+            ProcessDiscount = false;
+    }
+    //call prompt for description of discount
+    if(isInitiallyApplied)
+    {
+        ProcessDiscount = PromptForDiscountDescription(CurrentDiscount);
+    }
 
-   if(!ChitNumber.Valid() || CheckPromptForChit)
-   {
-         CheckPromptForChit = false;
+    if(ProcessDiscount && isInitiallyApplied)
+    {
+        ProcessDiscount = PromptForDiscountAmount(CurrentDiscount);
+    }
 
-         if (ProcessDiscount && (CurrentDiscount.Type == dtPromptAmount || CurrentDiscount.Type == dtPromptDescriptionAmount))
-           {
-                std::auto_ptr<TfrmDiscount>frmDiscount(TfrmDiscount::Create<TfrmDiscount>(this));
-                frmDiscount->Mode = CurrentDiscount.Mode;
-                frmDiscount->CURInitial = CurrentDiscount.Amount;
-                frmDiscount->PERCInitial = CurrentDiscount.PercentAmount;
-                frmDiscount->TotalValue = InitialMoney.GrandTotal;
-
-                if (frmDiscount->ShowModal() == mrOk)
-                {
-                    CurrentDiscount.Mode = frmDiscount->Mode;
-                    if (frmDiscount->Mode == DiscModeCurrency)
-                    {
-                        CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
-                        if (CurrentDiscount.Amount != frmDiscount->CURResult)
-                        {
-                           MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
-                        }
-                    }
-                   if (frmDiscount->Mode == DiscModeItem)
-                    {
-                        CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
-                        if (CurrentDiscount.Amount != frmDiscount->CURResult)
-                        {
-                           MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
-                        }
-                    }
-                    else if (frmDiscount->Mode == DiscModeSetPrice)
-                    {
-                        CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
-                        if (CurrentDiscount.Amount != frmDiscount->CURResult)
-                        {
-                           MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
-                        }
-                    }
-                    else
-                    {
-                         CurrentDiscount.PercentAmount = frmDiscount->PERCResult;
-                    }
-                }
-                else
-                {
-                        ProcessDiscount = false;
-                }
-         }
-   }
     if (ProcessDiscount)
     {
         if(CurrentDiscount.Mode == DiscModeCombo && checkQuantityAndSpliitItemsForCombo(Orders, DBTransaction))
@@ -14122,7 +13641,7 @@ void __fastcall TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransa
         if(Orders == NULL)
         {
             CheckDeals(DBTransaction);
-            return;
+            return false;
         }
         for(int x = 0 ; x< Orders->Count; x++)
         {
@@ -14142,20 +13661,26 @@ void __fastcall TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransa
                  }
             }
         }
+
         ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
         CheckDeals(DBTransaction);
 
         if( CurrentDiscount.Source == dsMMMebersPoints && SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0)
-            {
-                TMMContactInfo &Member = SeatOrders[SelectedSeat]->Orders->AppliedMembership;
-                TPointsTypePair Pair(pttRedeemed,ptstLoyalty);
-                TPointsType Type(pasDiscount,Pair,pesNone);
-                Membership.Member.Points.ClearBySource(pasDiscount);
-                Membership.Member.Points.Load(Type, CurrentDiscount.Amount);
-            }
+        {
+            TMMContactInfo &Member = SeatOrders[SelectedSeat]->Orders->AppliedMembership;
+            TPointsTypePair Pair(pttRedeemed,ptstLoyalty);
+            TPointsType Type(pasDiscount,Pair,pesNone);
+            Membership.Member.Points.ClearBySource(pasDiscount);
+            Membership.Member.Points.Load(Type, CurrentDiscount.Amount);
+        }
+        return true;
     }
-  }
+    else
+    {
+         return false;
+    }
 }
+
 // ---------------------------------------------------------------------------
 bool TfrmSelectDish::checkQuantityAndSpliitItemsForCombo(TList *Orders, Database::TDBTransaction &DBTransaction)
 {
@@ -14189,6 +13714,10 @@ bool TfrmSelectDish::checkQuantityAndSpliitItemsForCombo(TList *Orders, Database
 
     return itemsSplitted;
 }
+
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// Membership
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::RemoveMembershipDiscounts()
 {
@@ -14198,6 +13727,337 @@ void TfrmSelectDish::RemoveMembershipDiscounts()
 		Item->DiscountByTypeRemove(dsMMMembership);
 	}
 }
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::ChangeCard()
+{
+  try
+   {
+      if(TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardInserted)
+      {
+         TDeviceRealTerminal::Instance().ManagerMembership->RestoreCardWithPoints();
+         OnSmartCardInserted(NULL);
+      }
+      else
+      {
+         MessageBox("Please Insert Card in Reader", "Error No Card", MB_OK + MB_ICONERROR);
+      }
+   }
+   catch(Exception &E)
+    {
+      MessageBox(E.Message, "Error", MB_OK + MB_ICONERROR);
+    }
+}
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::AssignBarcodeToMember()
+{
+  Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+  DBTransaction.StartTransaction();
+  try
+   {
+      if(TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardInserted)
+      {
+         AnsiString memberCardCode = "";
+         TMMContactInfo TempUserInfo;
+	     TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->GetContactInfo(TempUserInfo);
+         TempUserInfo.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, TempUserInfo.MembershipNumber,TempUserInfo.SiteID);
+         std::auto_ptr <TfrmCardSwipe> frmCardSwipe(TfrmCardSwipe::Create <TfrmCardSwipe> (this));
+         frmCardSwipe->tbOtherOpt->Visible = false;
+         frmCardSwipe->ShowModal();
+         if (frmCardSwipe->ModalResult == mrOk)
+           {
+              memberCardCode = AnsiString(frmCardSwipe->SwipeString).SubString(1, 50);
+           }
+         if(TDeviceRealTerminal::Instance().ManagerMembership->UpdateMemberCardCode(DBTransaction, TempUserInfo, memberCardCode))
+         {
+            TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->FormatCardToFactory();
+            MessageBox("Please Remove Card From Reader.", "Information", MB_OK);
+         }
+         DBTransaction.Commit();
+      }
+      else
+      {
+         MessageBox("Please Insert Card in Reader", "Error No Card", MB_OK + MB_ICONERROR);
+      }
+   }
+   catch(Exception &E)
+    {
+      DBTransaction.Rollback();
+      MessageBox(E.Message, "Error", MB_OK + MB_ICONERROR);
+    }
+}
+// ---------------------------------------------------------------------------
+void __fastcall TfrmSelectDish::tbtnMemberDisplayPageUpMouseClick(TObject *Sender)
+{
+	TComInterface<IHTMLDocument2>HTMLDocument;
+	TComInterface<IHTMLWindow2>parentWindow;
+
+	_di_IDispatch doc = webDisplay->Document;
+	if (doc != NULL)
+	{
+		if (SUCCEEDED(webDisplay->Document->QueryInterface(IID_IHTMLDocument2, (LPVOID*) & HTMLDocument)))
+		{
+			if (SUCCEEDED(HTMLDocument->get_parentWindow(&parentWindow)))
+			{
+				parentWindow->scrollBy(0, -400);
+			}
+		}
+	}
+}
+// ---------------------------------------------------------------------------
+void __fastcall TfrmSelectDish::tbtnMemberDisplayPageDownMouseClick(TObject *Sender)
+{
+	TComInterface<IHTMLDocument2>HTMLDocument;
+	TComInterface<IHTMLWindow2>parentWindow;
+    //HTMLDocument2Ifc.execCommand('Bold', false,0);
+    //((Sender as TWebBrowser).Document as IHTMLDocument2)->body.style.fontFamily:='Arial';
+
+
+	_di_IDispatch doc = webDisplay->Document;
+	if (doc != NULL)
+	{
+		if (SUCCEEDED(webDisplay->Document->QueryInterface(IID_IHTMLDocument2, (LPVOID*) & HTMLDocument)))
+		{
+			if (SUCCEEDED(HTMLDocument->get_parentWindow(&parentWindow)))
+			{
+				parentWindow->scrollBy(0, 400);
+			}
+		}
+	}
+}
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::OnSmartCardInserted(TSystemEvents *Sender)
+{
+  if(!Membership.Applied())
+  {
+	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
+	TMMContactInfo info;
+    drt.ManagerMembership->ManagerSmartCards->GetContactInfo(info);
+
+	if (TSmartcard_Preloader::is_preloaded_card(info))
+    {
+		if (!TGlobalSettings::Instance().QMSIsEnabled || ignore_preloaded_card ||
+           (ignore_preloaded_card = drt.ManagerMembership->AddMember(info, false ,true)) != mbOK)
+			  return;
+	}
+
+	if (info.Valid())
+     {
+		Database::TDBTransaction DBTransaction(drt.DBControl);
+		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+		DBTransaction.StartTransaction();
+        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+        ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
+		ApplyMembership(DBTransaction, info);
+		DBTransaction.Commit();
+	}
+  }
+}
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::OnSmartCardRemoved(TSystemEvents *Sender)
+{
+	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+	{
+		for (int i = 0; i < lbDisplay->Items->Count; i++)
+		{
+			TItemRedirector *ListItem = (TItemRedirector*)lbDisplay->Items->Objects[i];
+			if (ListItem->ItemType.Contains(itMembershipDisplay) || ListItem->ItemType.Contains(itMembershipDisplayNote))
+			{
+				lbDisplay->ItemIndex = i;
+				ListItem->CompressedContainer->Container->CurrentItemRedirector = ListItem;
+				ListItem->CompressedContainer->Container->SelectedIndex = lbDisplay->ItemIndex;
+				btnRemoveMouseClick(NULL);
+			}
+		}
+
+		ignore_preloaded_card = false;
+	}
+}
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::RemoveMembership(Database::TDBTransaction &DBTransaction)
+{
+	if (bool(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]) &&
+             TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
+	{
+		MessageBox("To Remove Membership, Remove the Smart Card from the Reader.", "Error", MB_OK + MB_ICONERROR);
+	}
+	else
+	{
+
+		// Remove all Free Items.
+		TManagerFreebie::UndoFreeCount(DBTransaction, SeatOrders[SelectedSeat]->Orders->List);
+		for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+		{
+			TItemComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
+			// Calculate Membership Pricing.
+			Item->Loyalty_Key = 0;
+			Item->ResetPrice();
+
+			for (int j = 0; j < Item->SubOrders->Count; j++)
+			{
+				TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete*)Item->SubOrders->Items[j];
+				CurrentSubOrder->Loyalty_Key = 0;
+				CurrentSubOrder->ResetPrice();
+			}
+		}
+
+		SeatOrders[SelectedSeat]->Orders->AppliedMembership.Clear();
+		Membership.Clear();
+		RemoveMembershipDiscounts();
+        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
+	}
+}
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member)
+{
+     customerDisp.HappyBirthDay = false;
+     customerDisp.FirstVisit = false;
+	 eMemberSource MemberSource = emsManual;
+	 TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, Member, MemberSource);
+	if (Result == lsAccountBlocked)
+	{
+		MessageBox("Account Blocked " + Member.Name + " " + Member.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
+	}
+	else if (Result == lsAccepted)
+	{
+
+		bool ApplyToAllSeats = false;
+		if (SelectedTable != 0 && !LoyaltyPending())
+		{
+			if (MessageBox("Do you wish to apply this membership to all seats?", "Query", MB_YESNO + MB_ICONQUESTION) == IDYES)
+			{
+				ApplyToAllSeats = true;
+			}
+		}
+
+		SeatOrders[SelectedSeat]->Orders->AppliedMembership = Member;
+		Membership.Assign(Member, MemberSource);
+		// Sort out Free Drinks and stuff.
+		std::vector<int>SeatsToApply;
+		if (ApplyToAllSeats == true)
+		{
+			for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
+			{
+				SeatsToApply.push_back(iSeat);
+			}
+		}
+		else
+		{
+			SeatsToApply.push_back(SelectedSeat);
+		}
+
+		for (UINT iSeat = 0; iSeat < SeatsToApply.size(); iSeat++)
+		{
+			// Clear the Member Discounts from the orders.
+			ManagerDiscount->ClearMemberDiscounts(SeatOrders[SeatsToApply[iSeat]]->Orders->List);
+            ManagerDiscount->ClearThorVouchersDiscounts(SeatOrders[SelectedSeat]->Orders->List);
+
+			SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership = Member;
+
+			for (int i = 0; i < SeatOrders[SeatsToApply[iSeat]]->Orders->Count; i++)
+			{
+				TItemComplete *Order = SeatOrders[SeatsToApply[iSeat]]->Orders->Items[i];
+				Order->Loyalty_Key = SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership.ContactKey;
+				Order->ResetPrice();
+
+				// Sort out the Sides.
+				for (int j = 0; j < Order->SubOrders->Count; j++)
+				{
+					TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete*)Order->SubOrders->Items[j];
+					CurrentSubOrder->Loyalty_Key = SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership.ContactKey;
+					CurrentSubOrder->ResetPrice();
+				}
+				ManagerDiscount->AddDiscountsByTime(DBTransaction, Order);
+			}
+
+			// Calculate Members Freebie rewards.
+			// Rewards do not cascade though sides, which is the normal discount functionality.
+			TManagerFreebie::IsPurchasing(DBTransaction, SeatOrders[SeatsToApply[iSeat]]->Orders->List);
+
+			// Apply Member Specific Discounts.
+			ApplyMemberDiscounts(DBTransaction);
+
+		}
+		RedrawSeatOrders();
+        if((TGlobalSettings::Instance().IsDrinkCommandEnabled))
+        {
+            int contactKey = Member.ContactKey;
+            AnsiString memberPoints = Member.Points.getPointsBalance();
+            memberPoints = memberPoints * 100;
+            AnsiString memNo = Member.MembershipNumber;
+            int memPoints = atoi(memberPoints.c_str());
+
+            // Asks for DC Session only if DC is enabled and points are more than 0
+            // now prompt does not ask for consent to initialize session
+            if((memPoints > 0))
+            {
+                 YesGoForSessionWithDC(memPoints, memberPoints,memNo,contactKey);
+            }
+            else
+            {
+               TMMProcessingState State(Screen->ActiveForm, "Redirecting to Purchase Points", "Please Wait");
+               TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+               Sleep(1200);
+               tbtnTenderClick(tbtnTender);                                      // Redirecting to Payment Screen #7678
+               TDeviceRealTerminal::Instance().ProcessingController.Pop();
+            }
+        }
+		TotalCosts();
+		UpdateExternalDevices();
+
+        eMemberNameOnPoleDisplay nameOnPoleDisplay = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->NameOnPoleDisplay;
+
+		if ( nameOnPoleDisplay != eMNPDNone)
+		{
+            Member.PoleDisplayName = Member.RefreshPoleDisplayName( nameOnPoleDisplay );
+
+			if( TGlobalSettings::Instance().ShowPointsOnDisplay )
+			{
+				AnsiString ShowPoints = FloatToStr(Member.Points.getPointsBalance());
+                TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplay(Member.PoleDisplayName, "", "Points:", ShowPoints);
+				TDeviceRealTerminal::Instance().SecurityPort->SetData(Member.PoleDisplayName);
+				TDeviceRealTerminal::Instance().SecurityPort->SetData("Points:" + ShowPoints);
+			}
+			else
+			{
+				TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplay("Welcome", Member.PoleDisplayName);
+				TDeviceRealTerminal::Instance().SecurityPort->SetData("Welcome " + Member.PoleDisplayName);
+			}
+			LastSale = 0;
+		}
+		TMembership *membershipSystem = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
+        customerDisp.HappyBirthDay = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->DisplayBirthDayNotification(DBTransaction,Member);
+        customerDisp.FirstVisit=TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->DisplayFirstVisitNotification(DBTransaction,Member);
+		AnsiString ShowPoints = FloatToStr( Member.Points.getPointsBalance() );
+        AnsiString name = Member.PoleDisplayName;
+		TDeviceRealTerminal::Instance().SecurityPort->SetData(Member.PoleDisplayName);
+		TDeviceRealTerminal::Instance().SecurityPort->SetData("Points:" + ShowPoints);
+        if(!TGlobalSettings::Instance().IsThorlinkTender)
+        {
+            GetThorVouchers();
+            TGlobalSettings::Instance().IsThorlinkTender = false;
+            TGlobalSettings::Instance().IsThorVoucherSelected = false;
+        }
+		LastSale = 0;
+    }
+}
+// ---------------------------------------------------------------------------
+void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode)
+{
+ 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
+	TMMContactInfo info;
+    info.MemberCode = Barcode;
+    info.CardStr = Barcode;
+    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info);
+
+	if (info.Valid())
+     {
+        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+        ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
+		ApplyMembership(DBTransaction, info);
+	}
+
+}
+
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 // TCustNameAndOrderType
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -14314,6 +14174,15 @@ void TfrmSelectDish::SendPointValueToRunRate( TPaymentTransaction &inTransaction
         cmClient->SendPointDetailsToRunRate( inTransaction );
 	}
 }
+//-----------------------------------------------------------------------------------------------------
+void TfrmSelectDish::DoCloundSync()
+{
+  if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+     {
+        TManagerCloudSync ManagerCloudSync;
+        ManagerCloudSync.SyncCompanyDetails();
+     }
+}
 //----------------------------------------------------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tedtSearchItemChange(TObject *Sender)
 {
@@ -14335,9 +14204,7 @@ void __fastcall TfrmSelectDish::tedtSearchItemChange(TObject *Sender)
         delete frmproductSearch;
     }
 }
-
 //----------------------------------------------------------------------------------------------------------------------
-
 void __fastcall TfrmSelectDish::tedtSearchItemKeyPress(TObject *Sender, wchar_t &Key)
 {
 
@@ -14348,15 +14215,12 @@ void __fastcall TfrmSelectDish::tedtSearchItemKeyPress(TObject *Sender, wchar_t 
         DefocusControl(tedtSearchItem, false);
     }
 }
-
-//-------------------------------------------------------------------------------------------------------------------------
-
+ //-------------------------------------------------------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnSearchMouseClick(TObject *Sender)
 {
      SearchItems();
      DefocusControl(tedtSearchItem, false);
 }
-
 //------------------------------------------------------------------------------------------------------------------------------
 void TfrmSelectDish::AddSearchedItemToSeat()
 {
@@ -14414,7 +14278,6 @@ void TfrmSelectDish:: OrderSearchedItem(std::pair<TItem*, TItemSize*> &itemAndSi
         }
     }
 }
-
 //-----------------------------------------------------------------------------------------------------------------------------
 bool TfrmSelectDish::IsTextBoxFocused()
 {
@@ -14457,3 +14320,4 @@ void TfrmSelectDish::SetPOSBackgroundColor()
     }
 
 }
+

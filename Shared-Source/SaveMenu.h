@@ -141,6 +141,8 @@ private:
     void setNodeAttr( TiXmlElement* inElem, AnsiString inAttrName, AnsiString inAttrValue );
 
     TiXmlElement* findChildElement( TiXmlElement* inParentElem, AnsiString inChildElementName );
+    WideString UTF8ToWideString(AnsiString inString);
+    WideString convertUTF8CharToWideString( AnsiString pchars );
 
 };
 

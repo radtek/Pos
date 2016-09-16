@@ -10,35 +10,111 @@ namespace Loyaltymate.Sevices
 {
     public class LoyaltymateService : ILoyaltymateService
     {
-        public bool PostTransaction(PointsTransactionViewModel pointsTransaction, string syndicateCode, string uniqueId)
+        public ApiMemberViewModel SaveMember(ApiMemberViewModel member, string syndicateCode)
         {
-            bool response = false;
-            pointsTransaction.UniqueId = uniqueId;
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.PostTransaction, syndicateCode, null,
-                WebRequestMethods.Http.Post, pointsTransaction);
+            ApiMemberViewModel response = null;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.SaveMember, syndicateCode, null,
+                WebRequestMethods.Http.Post, member);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
+                var memberStream = new StreamReader(webResponse.GetResponseStream());
+                response = JsonUtility.Deserialize<ApiMemberViewModel>(memberStream.ReadToEnd());
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
-                return false;
+                HandleExceptions(webResponse);
             }
             finally
             {
                 if (webResponse != null)
                 {
                     webResponse.Close();
-                    response = true;
                 }
             }
             return response;
         }
-  
+
+        public ApiMemberViewModel GetMemberByUniqueId(ApiRequestViewModel requestViewModel, string syndicateCode)
+        {
+            ApiMemberViewModel response = null;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByUniqueId, syndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
+                var memberStream = new StreamReader(webResponse.GetResponseStream());
+                response = JsonUtility.Deserialize<ApiMemberViewModel>(memberStream.ReadToEnd());
+            }
+            catch (WebException we)
+            {
+                webResponse = (HttpWebResponse)we.Response;
+                HandleExceptions(webResponse);
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                }
+            }
+            return response;
+        }
+
+        public ApiMemberViewModel GetMemberByCardCode(ApiRequestViewModel requestViewModel, string syndicateCode)
+        {
+            ApiMemberViewModel response = null;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByCardCode, syndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
+                var memberStream = new StreamReader(webResponse.GetResponseStream());
+                response = JsonUtility.Deserialize<ApiMemberViewModel>(memberStream.ReadToEnd());
+            }
+            catch (WebException we)
+            {
+                webResponse = (HttpWebResponse)we.Response;
+                HandleExceptions(webResponse);
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                }
+            }
+            return response;
+        }
+
+        public ApiMemberViewModel GetMemberByEmail(ApiRequestViewModel requestViewModel, string inSyndicateCode)
+        {
+            ApiMemberViewModel response = null;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByEmail, inSyndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
+                var memberStream = new StreamReader(webResponse.GetResponseStream());
+                response = JsonUtility.Deserialize<ApiMemberViewModel>(memberStream.ReadToEnd());
+            }
+            catch (WebException we)
+            {
+                webResponse = (HttpWebResponse)we.Response;
+                HandleExceptions(webResponse);
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                }
+            }
+            return response;
+        }
+
         public bool UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode)
         {
             bool response = false;
@@ -56,17 +132,7 @@ namespace Loyaltymate.Sevices
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
-                else
-                {
-                    var memberStream = new StreamReader(webResponse.GetResponseStream());
-                    string message = memberStream.ReadToEnd();
-                    if (message.Contains("Card Code Already In Use."))
-                    {
-                        throw new CardCodeInUse();
-                    }
-                }
+                HandleExceptions(webResponse);
                 return false;
             }
             finally
@@ -80,147 +146,76 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public MemberViewModel SaveMember(MemberViewModel member, string syndicateCode)
+        public bool PostTransaction(PointsTransactionViewModel pointsTransaction, string syndicateCode)
         {
-            MemberViewModel response = null;
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.SaveMember, syndicateCode, null,
-                WebRequestMethods.Http.Post, member);
+            bool response = false;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.PostTransaction, syndicateCode, null,
+                WebRequestMethods.Http.Post, pointsTransaction);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
-                var memberStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<MemberViewModel>(memberStream.ReadToEnd());
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
+                HandleExceptions(webResponse);
+                return false;
             }
             finally
             {
                 if (webResponse != null)
                 {
                     webResponse.Close();
+                    response = true;
                 }
             }
             return response;
         }
 
-        public MemberViewModel GetMemberByUniqueId(string uniqueId, string syndicateCode)
+        public bool PostInvoiceTransaction(ApiMemberInvoiceTransactionViewModel pointsTransaction, string syndicateCode)
         {
-            MemberViewModel response = null;
-            var parameters = new List<KeyValuePair<string, string>>();
-            parameters.Add(new KeyValuePair<string, string>("uniqueId", uniqueId));
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByUniqueId, syndicateCode, parameters, WebRequestMethods.Http.Get);
+            bool response = false;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.PostInvoiceTransaction, syndicateCode, null,
+                WebRequestMethods.Http.Post, pointsTransaction);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
-                var memberStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<MemberViewModel>(memberStream.ReadToEnd());
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
+                HandleExceptions(webResponse);
+                return false;
             }
             finally
             {
                 if (webResponse != null)
                 {
                     webResponse.Close();
+                    response = true;
                 }
             }
             return response;
         }
 
-        public MemberViewModel GetMemberByCardCode(string cardCode, string syndicateCode)
+        public ApiCompanyViewModel GetCompanyDetail(string inSyndicateCode)
         {
-            MemberViewModel response = null;
-            var parameters = new List<KeyValuePair<string, string>>();
-            parameters.Add(new KeyValuePair<string, string>("cardCode", cardCode));
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByCardCode, syndicateCode, parameters, WebRequestMethods.Http.Get);
-            HttpWebResponse webResponse = null;
-            try
-            {
-                webResponse = (HttpWebResponse)request.GetResponse();
-                var memberStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<MemberViewModel>(memberStream.ReadToEnd());
-            }
-            catch (WebException we)
-            {
-                webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
-                else
-                {
-                    var memberStream = new StreamReader(webResponse.GetResponseStream());
-                    string message = memberStream.ReadToEnd();
-                    if (message.Contains("Member Not Exist."))
-                    {
-                        throw new MemberNotExistException();
-                    }
-                }
-            }
-            finally
-            {
-                if (webResponse != null)
-                {
-                    webResponse.Close();
-                }
-            }
-            return response;
-        }
-
-        public MemberViewModel GetMemberByEmail(string inMemberEmail, string inSyndicateCode)
-        {
-            MemberViewModel response = null;
-            var parameters = new List<KeyValuePair<string, string>>();
-            parameters.Add(new KeyValuePair<string, string>("email", inMemberEmail));
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByEmail, inSyndicateCode, parameters, WebRequestMethods.Http.Get);
-            HttpWebResponse webResponse = null;
-            try
-            {
-                webResponse = (HttpWebResponse)request.GetResponse();
-                var memberStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<MemberViewModel>(memberStream.ReadToEnd());
-            }
-            catch (WebException we)
-            {
-                webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
-            }
-            finally
-            {
-                if (webResponse != null)
-                {
-                    webResponse.Close();
-                }
-            }
-            return response;
-        }
-
-        public IEnumerable<MemberViewModel> GetAllMember(string syndicateCode)
-        {
-            List<MemberViewModel> response = null;
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetAllMember, syndicateCode, null,
+            ApiCompanyViewModel response = null;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetCompanyDetail, inSyndicateCode, null,
                 WebRequestMethods.Http.Get);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var responseStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<List<MemberViewModel>>(responseStream.ReadToEnd());
+                response = JsonUtility.Deserialize<ApiCompanyViewModel>(responseStream.ReadToEnd());
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
+                HandleExceptions(webResponse);
             }
             finally
             {
@@ -232,108 +227,47 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public bool DeleteMember(string uniqueId, string syndicateCode)
+        public double GetGiftCardBalance(string inSyndicateCode, ApiRequestViewModel requestViewModel)
         {
-            bool response = false;
-            var parameters = new List<KeyValuePair<string, string>>();
-            parameters.Add(new KeyValuePair<string, string>("uniqueId", uniqueId));
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.DeleteMember, syndicateCode, parameters, WebRequestMethods.Http.Post);
-            HttpWebResponse webResponse = null;
-            try
-            {
-                webResponse = (HttpWebResponse)request.GetResponse();
-                response = true;
-            }
-            catch (WebException we)
-            {
-                webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
-            }
-            finally
-            {
-                if (webResponse != null)
-                {
-                    webResponse.Close();
-                }
-            }
-            return response;
-        }
-
-        public TierLevelViewModel SaveTierLevel(TierLevelViewModel tierLevel, string syndicateCode)
-        {
-            TierLevelViewModel response = null;
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.SaveTierLevel, syndicateCode, null,
-                WebRequestMethods.Http.Post, tierLevel);
-            HttpWebResponse webResponse = null;
-            try
-            {
-                webResponse = (HttpWebResponse)request.GetResponse();
-                var responseStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<TierLevelViewModel>(responseStream.ReadToEnd());
-            }
-            catch (WebException we)
-            {
-                webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
-            }
-            finally
-            {
-                if (webResponse != null)
-                {
-                    webResponse.Close();
-                }
-            }
-            return response;
-        }
-
-        public IEnumerable<TierLevelViewModel> GetAllTierLevels(string syndicateCode)
-        {
-            List<TierLevelViewModel> response = null;
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetAllTierLevel, syndicateCode, null,
-                WebRequestMethods.Http.Get);
-            HttpWebResponse webResponse = null;
-            try
-            {
-                webResponse = (HttpWebResponse)request.GetResponse();
-                var responseStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<List<TierLevelViewModel>>(responseStream.ReadToEnd());
-            }
-            catch (WebException we)
-            {
-                webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
-            }
-            finally
-            {
-                if (webResponse != null)
-                {
-                    webResponse.Close();
-                }
-            }
-            return response;
-        }
-
-        public TierLevelViewModel GetTierLevel(long tierId, string syndicateCode)
-        {
-            TierLevelViewModel response = null;
-            var parameters = new List<KeyValuePair<string, string>>();
-            parameters.Add(new KeyValuePair<string, string>("tierId", Convert.ToString(tierId)));
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetTierLevel, syndicateCode, parameters, WebRequestMethods.Http.Get);
+            double balance = 0;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetGiftCardBalance, inSyndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<TierLevelViewModel>(memberStream.ReadToEnd());
+                balance = Convert.ToDouble(memberStream.ReadToEnd());
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
+                HandleExceptions(webResponse);
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                }
+            }
+            return balance;
+        }
+
+        public ApiPocketVoucherViewModel GetPocketVoucherDetail(string inSyndicateCode, ApiRequestViewModel requestViewModel)
+        {
+            ApiPocketVoucherViewModel response = null;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetPocketVoucher, inSyndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
+                var responseStream = new StreamReader(webResponse.GetResponseStream());
+                response = JsonUtility.Deserialize<ApiPocketVoucherViewModel>(responseStream.ReadToEnd());
+            }
+            catch (WebException we)
+            {
+                webResponse = (HttpWebResponse)we.Response;
+                HandleExceptions(webResponse);
             }
             finally
             {
@@ -345,61 +279,56 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public bool DeleteTierLevel(long tierId, string syndicateCode)
+        public List<ApiProcessingResult> PostVoucherTransactions(string inSyndicateCode, ApiVouchersUsageViewModel voucherTransaction)
+        {
+            voucherTransaction.RequestTime = DateTime.Now;
+            List<ApiProcessingResult> response = null;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.ProcessVoucherTransaction, inSyndicateCode, null,
+                WebRequestMethods.Http.Post, voucherTransaction);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                webResponse = (HttpWebResponse)request.GetResponse();
+                var responseStream = new StreamReader(webResponse.GetResponseStream());
+                response = JsonUtility.Deserialize<List<ApiProcessingResult>>(responseStream.ReadToEnd());
+            }
+            catch (WebException we)
+            {
+                webResponse = (HttpWebResponse)we.Response;
+                HandleExceptions(webResponse);
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                }
+            }
+            return response;
+        }
+
+        public bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction)
         {
             bool response = false;
-            var parameters = new List<KeyValuePair<string, string>>();
-            parameters.Add(new KeyValuePair<string, string>("tierLevelId", Convert.ToString(tierId)));
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.DeleteTierLevel, syndicateCode, parameters, WebRequestMethods.Http.Get);
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.ReleaseVouchers, inSyndicateCode, null,
+                WebRequestMethods.Http.Post, voucherTransaction);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
-                response = true;
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
+                HandleExceptions(webResponse);
+                return false;
             }
             finally
             {
                 if (webResponse != null)
                 {
                     webResponse.Close();
-                }
-            }
-            return response;
-        }
-
-        public PointQuery GetPointsInRange(PointQuery pointQuery, string syndicateCode)
-        {
-            PointQuery response = null;
-            var parameters = new List<KeyValuePair<string, string>>();
-            parameters.Add(new KeyValuePair<string, string>("startDate", pointQuery.StartDate.ToString("yyyy-MM-dd HH:mm:ss")));
-            parameters.Add(new KeyValuePair<string, string>("endDate", pointQuery.EndDate.ToString("yyyy-MM-dd HH:mm:ss")));
-            parameters.Add(new KeyValuePair<string, string>("uniqueId", pointQuery.UniqueId));
-            parameters.Add(new KeyValuePair<string, string>("pointType", Convert.ToString(pointQuery.PointType)));
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetTierLevel, syndicateCode, parameters, WebRequestMethods.Http.Get);
-            HttpWebResponse webResponse = null;
-            try
-            {
-                webResponse = (HttpWebResponse)request.GetResponse();
-                var memberStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<PointQuery>(memberStream.ReadToEnd());
-            }
-            catch (WebException we)
-            {
-                webResponse = (HttpWebResponse)we.Response;
-                if (webResponse == null)
-                    HandleExceptions(webResponse);
-            }
-            finally
-            {
-                if (webResponse != null)
-                {
-                    webResponse.Close();
+                    response = true;
                 }
             }
             return response;
@@ -407,20 +336,23 @@ namespace Loyaltymate.Sevices
 
         private void HandleExceptions(HttpWebResponse webResponse)
         {
-            switch ((int)webResponse.StatusCode)
+            if (webResponse != null)
             {
-                case 400:
-                    throw new Exception("Bad request");
-                case 401:
+                if ((int)webResponse.StatusCode == 401)
+                {
                     throw new AuthenticationFailedException();
-                case 404:
-                    throw new NotFoundException();
-                case 422:
-                    throw new InvalidRequestException();
-                case 500:
-                    throw new ApiDownException();
-                default:
-                    throw new Exception(webResponse.StatusCode + " : Unkonwn Exception");
+                }
+                else
+                {
+                    var memberStream = new StreamReader(webResponse.GetResponseStream());
+                    string message = memberStream.ReadToEnd();
+                    var customException = JsonUtility.Deserialize<CustomException>(message);
+                    throw new LoyaltymateOperationException(customException.ExceptionMessage);
+                }
+            }
+            else
+            {
+                throw new LoyaltymateOperationException("Not able to connect with server.");
             }
         }
     }

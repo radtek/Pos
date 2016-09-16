@@ -369,6 +369,7 @@ object frmCreateRecipe: TfrmCreateRecipe
         OnChange = NumQuantityChange
         OnClick = NumQuantityClick
         OnExit = BoxExit
+        OnKeyPress = NumQuantityKeyPress
       end
     end
     object Panel5: TPanel

@@ -46,39 +46,61 @@ namespace MenumateServices.LoyaltyMate
         }
 
 
-        public LoyaltyResponse DeleteMember(string inSyndicateCode, string inUniqueId)
+        public LoyaltyMemberResponse GetMemberByUniqueCode(string inSyndicateCode, RequestInfo requestInfo)
         {
-            return DeleteMemberFromCloud(inSyndicateCode, inUniqueId);
+            return GetMemberFromCloud(inSyndicateCode, requestInfo);
         }
 
-        public LoyaltyMemberResponse GetMemberByUniqueCode(string inSyndicateCode, string inUniqueId)
+        public LoyaltyMemberResponse GetByCardCode(string inSyndicateCode, RequestInfo requestInfo)
         {
-            return GetMemberFromCloud(inSyndicateCode, inUniqueId);
+            return GetMemberByCodeFromCloud(inSyndicateCode, requestInfo);
         }
 
-        public LoyaltyMemberResponse GetByCardCode(string inSyndicateCode, string inMemberCode)
+        public LoyaltyMemberResponse GetByEmail(string inSyndicateCode, RequestInfo requestInfo)
         {
-            return GetMemberByCodeFromCloud(inSyndicateCode, inMemberCode);
-        }
-
-        public LoyaltyMemberResponse GetByEmail(string inSyndicateCode, string inMemberEmail)
-        {
-            return GetMemberByEmailFromCloud(inSyndicateCode, inMemberEmail);
-        }
-
-        public LoyaltyMemberListResponse GetMemberList(string inSyndicateCode)
-        {
-            return GetMemberListFromCloud(inSyndicateCode);
+            return GetMemberByEmailFromCloud(inSyndicateCode, requestInfo);
         }
 
         public LoyaltyResponse PostTransaction(string inSyndicateCode, TransactionInfo transaction)
         {
-            return UploadTransactionToCloud(inSyndicateCode, CreateTransactionObject(transaction), transaction.UniqueId);
+            if (transaction.PointsType == 9)
+            {
+                return UploadInvoiceTransactionToCloud(inSyndicateCode, CreateInvoiceTransactionObject(transaction));
+            }
+            else
+            {
+                return UploadTransactionToCloud(inSyndicateCode, CreateTransactionObject(transaction));
+            }
         }
 
-        public LoyaltyPointsInfoResponse GetPointsInRange(string inSyndicateCode, PointsInfo pointsInfo)
+        public LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode)
         {
-            return GetPointsInRangeFromCloud(inSyndicateCode, pointsInfo);
+            try
+            {
+                ILoyaltymateService loyaltymateService = new LoyaltymateService();
+                var response = loyaltymateService.UpdateMemberCardCode(inSyndicateCode, uniqueId, memberCardCode);
+                if (response)
+                    return CreateResponseNoError();
+                else
+                    return CreateResponseError(
+                        "@Failed to update member information to server",
+                        "",
+                        LoyaltyResponseCode.UpdateMemberFailed);
+            }
+            catch (AuthenticationFailedException ex)
+            {
+                return CreateResponseError(
+                            @"Failed to Authenticate",
+                            ex.Message,
+                            LoyaltyResponseCode.AuthenticationFailed);
+            }
+            catch (Exception ex)
+            {
+                return CreateResponseError(
+                    "@Failed to update member information to server",
+                    ex.Message,
+                    LoyaltyResponseCode.UpdateMemberFailed);
+            }
         }
 
         #endregion
@@ -104,43 +126,19 @@ namespace MenumateServices.LoyaltyMate
             catch (Exception exc)
             {
                 return CreateMemberResponseError(
-                             @"Failed to create a member in the Cloud",
+                             @"Failed to create a member in the server",
                              exc.Message,
                              LoyaltyResponseCode.CreateMemberFailed,
                              CreateMemberInfo(@""));
             }
         }
 
-        LoyaltyResponse DeleteMemberFromCloud(string inSyndicateCode, string inUniqueId)
+        LoyaltyMemberResponse GetMemberFromCloud(string inSyndicateCode, RequestInfo requestInfo)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.DeleteMember(inUniqueId, inSyndicateCode);
-                return CreateResponseNoError();
-            }
-            catch (AuthenticationFailedException ex)
-            {
-                return CreateResponseError(
-                            @"Failed to Authenticate",
-                            ex.Message,
-                            LoyaltyResponseCode.AuthenticationFailed);
-            }
-            catch (Exception exc)
-            {
-                return CreateResponseError(
-                            @"Failed to delete a member from the Cloud",
-                            exc.Message,
-                            LoyaltyResponseCode.DeleteMemberFailed);
-            }
-        }
-
-        LoyaltyMemberResponse GetMemberFromCloud(string inSyndicateCode, string inUniqueId)
-        {
-            try
-            {
-                ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetMemberByUniqueId(inUniqueId, inSyndicateCode);
+                var response = loyaltymateService.GetMemberByUniqueId(CreateRequest(requestInfo), inSyndicateCode);
                 return CreateMemberResponseNoError(createMemberInfo(response));
             }
             catch (AuthenticationFailedException ex)
@@ -149,33 +147,42 @@ namespace MenumateServices.LoyaltyMate
                             @"Failed to Authenticate",
                             ex.Message,
                             LoyaltyResponseCode.AuthenticationFailed,
-                            CreateMemberInfo(inUniqueId));
+                            CreateMemberInfo(requestInfo.RequestKey));
             }
             catch (Exception exc)
             {
                 return CreateMemberResponseError(
-                             @"Failed to request member's info from the Cloud",
+                             @"Failed to request member's info from the server",
                              exc.Message,
                              LoyaltyResponseCode.GetMemberFailed,
-                             CreateMemberInfo(inUniqueId));
+                             CreateMemberInfo(requestInfo.RequestKey));
             }
         }
 
-        LoyaltyMemberResponse GetMemberByCodeFromCloud(string inSyndicateCode, string inMemberCode)
+        LoyaltyMemberResponse GetMemberByCodeFromCloud(string inSyndicateCode, RequestInfo requestInfo)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetMemberByCardCode(inMemberCode, inSyndicateCode);
+                var response = loyaltymateService.GetMemberByCardCode(CreateRequest(requestInfo), inSyndicateCode);
                 return CreateMemberResponseNoError(createMemberInfo(response));
             }
-            catch (MemberNotExistException ex)
+            catch (LoyaltymateOperationException ex)
             {
-                return CreateMemberResponseError(
-                            @"Failed to Authenticate",
-                            ex.Message,
+                if (ex.Message.Contains("Member Not"))
+                {
+                    return CreateMemberResponseError(ex.Message,
+                            @"Member Not Exist.",
                             LoyaltyResponseCode.MemberNotExist,
-                            new MemberInfo() { MemberCardCode = inMemberCode });
+                            new MemberInfo() { MemberCardCode = requestInfo.RequestKey });
+                }
+                else
+                {
+                    return CreateMemberResponseError(ex.Message,
+                            @"Loyaltymate error.",
+                            LoyaltyResponseCode.GetMemberFailed,
+                            new MemberInfo() { MemberCardCode = requestInfo.RequestKey });
+                }
             }
             catch (AuthenticationFailedException ex)
             {
@@ -183,23 +190,23 @@ namespace MenumateServices.LoyaltyMate
                             @"Failed to Authenticate",
                             ex.Message,
                             LoyaltyResponseCode.AuthenticationFailed,
-                            new MemberInfo() { MemberCardCode = inMemberCode });
+                            new MemberInfo() { MemberCardCode = requestInfo.RequestKey });
             }
             catch (Exception exc)
             {
-                return CreateMemberResponseError(@"Failed to request member's info from the Cloud",
+                return CreateMemberResponseError(@"Failed to request member's info from the server",
                              exc.Message,
                              LoyaltyResponseCode.GetMemberFailed,
-                             CreateMemberInfoByCode(inMemberCode));
+                             CreateMemberInfoByCode(requestInfo.RequestKey));
             }
         }
 
-        private LoyaltyMemberResponse GetMemberByEmailFromCloud(string inSyndicateCode, string inMemberEmail)
+        private LoyaltyMemberResponse GetMemberByEmailFromCloud(string inSyndicateCode, RequestInfo requestInfo)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetMemberByEmail(inMemberEmail, inSyndicateCode);
+                var response = loyaltymateService.GetMemberByEmail(CreateRequest(requestInfo), inSyndicateCode);
                 return CreateMemberResponseNoError(createMemberInfo(response));
             }
             catch (AuthenticationFailedException ex)
@@ -208,52 +215,28 @@ namespace MenumateServices.LoyaltyMate
                             @"Failed to Authenticate",
                             ex.Message,
                             LoyaltyResponseCode.AuthenticationFailed,
-                            new MemberInfo() { MemberCardCode = inMemberEmail });
+                            new MemberInfo() { MemberCardCode = requestInfo.RequestKey });
             }
             catch (Exception exc)
             {
                 return CreateMemberResponseError(@"Failed to request member's info from the Cloud",
                              exc.Message,
                              LoyaltyResponseCode.GetMemberFailed,
-                             CreateMemberInfoByEmail(inMemberEmail));
+                             CreateMemberInfoByEmail(requestInfo.RequestKey));
             }
         }
 
-        public LoyaltyMemberListResponse GetMemberListFromCloud(string inSyndicateCode)
+        LoyaltyResponse UploadTransactionToCloud(string inSyndicateCode, PointsTransactionViewModel transaction)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetAllMember(inSyndicateCode);
-                return CreateMemberListResponseNoError(CreateMemberInfoList(response));
-            }
-            catch (AuthenticationFailedException ex)
-            {
-                return CreateMemberListResponseError(
-                            @"Failed to Authenticate",
-                            ex.Message,
-                            LoyaltyResponseCode.AuthenticationFailed);
-            }
-            catch (Exception exc)
-            {
-                return CreateMemberListResponseError(
-                             @"Failed to request member's info list from the Cloud",
-                             exc.Message,
-                             LoyaltyResponseCode.CreateMemberFailed);
-            }
-        }
-
-        LoyaltyResponse UploadTransactionToCloud(string inSyndicateCode, PointsTransactionViewModel transaction, string uniqueId)
-        {
-            try
-            {
-                ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.PostTransaction(transaction, inSyndicateCode, uniqueId);
+                var response = loyaltymateService.PostTransaction(transaction, inSyndicateCode);
                 if (response)
                     return CreateResponseNoError();
                 else
                     return CreateResponseError(
-                        "@Failed to post member transaction to cloud",
+                        "@Failed to post member transaction to server",
                         "",
                         LoyaltyResponseCode.PostTransactionFailed);
             }
@@ -267,37 +250,43 @@ namespace MenumateServices.LoyaltyMate
             catch (Exception ex)
             {
                 return CreateResponseError(
-                    "@Failed to post member transaction to cloud",
+                    "@Failed to post member transaction to server",
                     ex.Message,
                     LoyaltyResponseCode.PostTransactionFailed);
             }
         }
 
-        LoyaltyPointsInfoResponse GetPointsInRangeFromCloud(string inSyndicateCode, PointsInfo pointsInfo)
+        LoyaltyResponse UploadInvoiceTransactionToCloud(string inSyndicateCode, ApiMemberInvoiceTransactionViewModel transaction)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetPointsInRange(CreatePointsInfoObject(pointsInfo), inSyndicateCode);
-                return CreatePointsInfoResponseNoError(CreatePointsInfo(response));
+                var response = loyaltymateService.PostInvoiceTransaction(transaction, inSyndicateCode);
+                if (response)
+                    return CreateResponseNoError();
+                else
+                    return CreateResponseError(
+                        "@Failed to post member transaction to server",
+                        "",
+                        LoyaltyResponseCode.PostTransactionFailed);
             }
             catch (AuthenticationFailedException ex)
             {
-                return CreatePointsInfoResponseError(
+                return CreateResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
-                            LoyaltyResponseCode.AuthenticationFailed, CreatePointsInfo(new PointQuery() { Balance = 0 }));
+                            LoyaltyResponseCode.AuthenticationFailed);
             }
             catch (Exception ex)
             {
-                return CreatePointsInfoResponseError(
-                    "@Failed to Get point balance for member",
+                return CreateResponseError(
+                    "@Failed to post member transaction to server",
                     ex.Message,
-                    LoyaltyResponseCode.PostTransactionFailed, CreatePointsInfo(new PointQuery() { Balance = 0 }));
+                    LoyaltyResponseCode.PostTransactionFailed);
             }
         }
 
-        MemberInfo createMemberInfo(MemberViewModel inMember)
+        MemberInfo createMemberInfo(ApiMemberViewModel inMember)
         {
             var result = new MemberInfo();
             //::::::::::::::::::::::::::::::::::::
@@ -323,7 +312,7 @@ namespace MenumateServices.LoyaltyMate
                 if (membershipProfile != null)
                 {
                     result.BirthdayBenefitDate = membershipProfile.LastBirthdayBenefitDate;
-                    result.HomeSiteId = membershipProfile.HomeSiteCode.HasValue ? membershipProfile.HomeSiteCode.Value : 0;
+                    result.HomeSiteId = membershipProfile.HomeSiteCode;
                     result.LastVisitDate = membershipProfile.LastTransactionDate;
                     result.TierId = membershipProfile.TierLevelId.HasValue ? membershipProfile.TierLevelId.Value : 0;
                     result.YearStartDate = membershipProfile.YearStartDate;
@@ -340,11 +329,25 @@ namespace MenumateServices.LoyaltyMate
                     result.IsFirstVisitRewarded = membershipProfile.IsFirstVisitRewarded;
                     if (membershipProfile.LastModified > lastModified)
                         lastModified = membershipProfile.LastModified;
+                    result.MemberVouchers = new List<VoucherInfo>();
+                    if (membershipProfile.Vouchers != null)
+                    {
+                        foreach (var voucher in membershipProfile.Vouchers)
+                        {
+                            var memberVoucher = new VoucherInfo()
+                            {
+                                DiscountCode = voucher.DiscountCode,
+                                VoucherName = voucher.Name,
+                                NumberOfUsesRemaining = voucher.NumberOfUsesAllowed.HasValue ? voucher.NumberOfUsesAllowed.Value : 0
+                            };
+                            result.MemberVouchers.Add(memberVoucher);
+                        }
+                    }
+
                 }
             }
             result.LastModified = lastModified.ToLocalTime();
             result.Activated = true;
-            //result.ActivationToken = inMember.activation_token;
             return result;
         }
 
@@ -369,19 +372,9 @@ namespace MenumateServices.LoyaltyMate
             return result;
         }
 
-        List<MemberInfo> CreateMemberInfoList(IEnumerable<MemberViewModel> inCloudMemberList)
+        ApiMemberViewModel CreateMemberObject(MemberInfo inInfo)
         {
-            var result = new List<MemberInfo>();
-            foreach (var member in inCloudMemberList)
-            {
-                result.Add(createMemberInfo(member));
-            }
-            return result;
-        }
-
-        MemberViewModel CreateMemberObject(MemberInfo inInfo)
-        {
-            var result = new MemberViewModel();
+            var result = new ApiMemberViewModel();
             result.Email = inInfo.Email;
             result.MemberType = (MemberType)inInfo.MemberType;
             result.Title = inInfo.Title;
@@ -408,13 +401,13 @@ namespace MenumateServices.LoyaltyMate
             {
                 result.UniqueId = Guid.Empty;
             }
-            result.MembershipProfiles = new List<MembershipProfileViewModel>();
-            var membershipProfile = new MembershipProfileViewModel();
+            result.MembershipProfiles = new List<ApiMembershipProfileViewModel>();
+            var membershipProfile = new ApiMembershipProfileViewModel();
             membershipProfile.MembershipNumber = inInfo.MembershipNumber;
             membershipProfile.CardCode = inInfo.MemberCardCode;
             membershipProfile.CardNumber = inInfo.CardNumber;
             membershipProfile.LastTransactionDate = inInfo.LastVisitDate.Value.Year == 1 ? null : inInfo.LastVisitDate;
-            membershipProfile.YearStartDate = inInfo.YearStartDate.Value.Year == 1 ? DateTime.Now : inInfo.YearStartDate;
+            membershipProfile.YearStartDate = inInfo.YearStartDate.HasValue && inInfo.YearStartDate.Value.Year != 1 ? inInfo.YearStartDate.Value : DateTime.Now;
             membershipProfile.LastBirthdayBenefitDate = inInfo.BirthdayBenefitDate.Value.Year == 1 ? null : inInfo.BirthdayBenefitDate;
             membershipProfile.IsFirstVisitRewarded = inInfo.IsFirstVisitRewarded;
             membershipProfile.HomeSiteCode = inInfo.HomeSiteId;
@@ -429,67 +422,42 @@ namespace MenumateServices.LoyaltyMate
             return result;
         }
 
-        PointQuery CreatePointsInfoObject(PointsInfo inInfo)
-        {
-            var result = new PointQuery();
-            result.UniqueId = inInfo.UniqueId;
-            result.StartDate = inInfo.StartDate;
-            result.EndDate = inInfo.EndDate;
-            result.PointType = (PointType)inInfo.PointsType;
-            return result;
-        }
-
-        PointsInfo CreatePointsInfo(PointQuery inInfo)
-        {
-            return new PointsInfo()
-            {
-                Balance = inInfo.Balance
-            };
-        }
-
         PointsTransactionViewModel CreateTransactionObject(TransactionInfo inTransactionInfo)
         {
             return new PointsTransactionViewModel()
             {
                 TransactionDate = inTransactionInfo.TransactionDate,
-                PointsDelta = inTransactionInfo.PointsDelta,
+                PointsDelta = Math.Round(inTransactionInfo.PointsDelta, 2),
                 PointType = (PointType)inTransactionInfo.PointsType,
-                SiteCode = inTransactionInfo.SiteCode
+                SiteCode = inTransactionInfo.SiteCode,
+                InvoiceNumber = inTransactionInfo.InvoiceNumber,
+                UniqueId = inTransactionInfo.UniqueId
             };
         }
 
+        ApiMemberInvoiceTransactionViewModel CreateInvoiceTransactionObject(TransactionInfo inTransactionInfo)
+        {
+            return new ApiMemberInvoiceTransactionViewModel()
+            {
+                SpendAmount = inTransactionInfo.PointsDelta,
+                SiteCode = inTransactionInfo.SiteCode,
+                InvoiceNumber = inTransactionInfo.InvoiceNumber,
+                MemberUniqueId = inTransactionInfo.UniqueId
+            };
+        }
+
+        ApiRequestViewModel CreateRequest(RequestInfo requestInfo)
+        {
+            return new ApiRequestViewModel()
+            {
+                RequestKey = requestInfo.RequestKey,
+                RequestTime = requestInfo.RequestTime
+            };
+        }
         #endregion
 
 
 
-        public LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode)
-        {
-            try
-            {
-                ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.UpdateMemberCardCode(inSyndicateCode, uniqueId, memberCardCode);
-                if (response)
-                    return CreateResponseNoError();
-                else
-                    return CreateResponseError(
-                        "@Failed to update member information to cloud",
-                        "",
-                        LoyaltyResponseCode.UpdateMemberFailed);
-            }
-            catch (AuthenticationFailedException ex)
-            {
-                return CreateResponseError(
-                            @"Failed to Authenticate",
-                            ex.Message,
-                            LoyaltyResponseCode.AuthenticationFailed);
-            }
-            catch (Exception ex)
-            {
-                return CreateResponseError(
-                    "@Failed to update member information to cloud",
-                    ex.Message,
-                    LoyaltyResponseCode.UpdateMemberFailed);
-            }
-        }
+
     }
 }

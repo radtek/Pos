@@ -204,9 +204,12 @@ namespace Chefmate.Core.Model
         public DateTime DeliveryTime { get; set; }
         public DateTime ArrivalTime { get; set; }
         public bool BeenSentToOutput { get; set; }
+        public double CordX { get; set; }
+        public double CordY { get; set; }
 
         #endregion
 
+        #region Constructors
         public Order()
         {
             Items = new ObservableCollection<Item>();
@@ -218,7 +221,34 @@ namespace Chefmate.Core.Model
             BeenSentToOutput = false;
             OrderStatus = OrderStatus.Normal;
         }
-        public void FilterOrders()
+        public Order(Order inOrder)
+            : this()
+        {
+            OrderKey = inOrder.OrderKey;
+            OrderNumber = inOrder.OrderNumber;
+            OrderPosKey = inOrder.OrderPosKey;
+            PatronCount = inOrder.PatronCount;
+            ChitValue = inOrder.ChitValue;
+            TableTabName = inOrder.TableTabName;
+            PartyName = inOrder.PartyName;
+            ServerName = inOrder.ServerName;
+            CustomerName = inOrder.CustomerName;
+            OrderType = inOrder.OrderType;
+            SourceTableName = inOrder.SourceTableName;
+            OrderState = inOrder.OrderState;
+            OrderStatus = inOrder.OrderStatus;
+            BumpTime = inOrder.BumpTime;
+            SaleStartTime = inOrder.SaleStartTime;
+            SaleFinishTime = inOrder.SaleFinishTime;
+            DeliveryTime = inOrder.DeliveryTime;
+            ArrivalTime = inOrder.ArrivalTime;
+            BeenSentToOutput = inOrder.BeenSentToOutput;
+            DisplayAttributes = new DisplayAttributes(inOrder.DisplayAttributes);
+        }
+        #endregion
+
+        #region Public Methods
+        public void FilterOrders(GroupType inGroupType, OrderInfoDisplay orderInfoDisplay)
         {
             ServingCourseGroups.ToList().ForEach(s => s.Items.Clear());
             CourseGroups.ToList().ForEach(s => s.Items.Clear());
@@ -227,6 +257,11 @@ namespace Chefmate.Core.Model
                 item.SCourseGroup.Items.Add(item);
                 item.CourseGroup.Items.Add(item);
             }
+            DisplayGroups = inGroupType == GroupType.ServingCourse
+                    ? ServingCourseGroups
+                    : CourseGroups;
+            DisplayGroups.RemoveAll(s => s.Items.Count == 0);
+            UpdateOrderInfoDisplay(orderInfoDisplay);
         }
         public void UpdateOrderInfoDisplay(OrderInfoDisplay orderInfoDisplay)
         {
@@ -255,6 +290,26 @@ namespace Chefmate.Core.Model
                     break;
             }
         }
+        public double GetOrderActualHeight()
+        {
+            var orderHeight = DisplayAttributes.IsHeaderVisible ? ChefmateConstants.OrderHeaderHeight : 0;
+            foreach (var group in DisplayGroups)
+            {
+                var groupHeight = group.GetGroupActualHeight();
+                orderHeight += groupHeight;
+            }
+            return orderHeight;
+        }
+
+        public void UpdateOrder()
+        {
+            if (Items.Count(s => !s.DisplayAttributes.IsOriginalItem) == Items.Count)
+                Items.Clear();
+        }
+
+        #endregion
+
+        #region Private Methods
         private void ChangeStatus()
         {
             switch (OrderState)
@@ -274,6 +329,6 @@ namespace Chefmate.Core.Model
                     break;
             }
         }
-
+        #endregion
     }
 }

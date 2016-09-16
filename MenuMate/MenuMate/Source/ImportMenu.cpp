@@ -202,7 +202,7 @@ bool TImportMenu::menuExists( AnsiString inMenuName )
 
    //:::::::::::::::::::::::::::::::::::::::::::::::::
 
-	result = menuExistsInDB( inMenuName, dbTransaction );
+	result = menuExistsInDB( inMenuName.Trim(), dbTransaction );
 
    //:::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -215,7 +215,7 @@ bool TImportMenu::deleteExistingMenu( AnsiString inMenuName )
 
    //:::::::::::::::::::::::::::::::::::::::::::::::::
 
-   result = deleteExistingMenuInDB( inMenuName, dbTransaction );
+   result = deleteExistingMenuInDB( inMenuName.Trim(), dbTransaction );
 
    //:::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -529,13 +529,13 @@ void TImportMenu::SaveSizeFromMenu( __int32 inIndex, __int32 inMenuKey, TLoadMen
 	if( inMenuKey > 0 )
 	{
 		__int32    sizeKey;
-		AnsiString description;
+		WideString description;
 		__int32    sizeID;
 		__int32    palmSizeID;
-		AnsiString kitchenName;
+		WideString kitchenName;
 		bool       weighted;
-		AnsiString handheldName;
-		AnsiString receiptName;
+		WideString handheldName;
+		WideString receiptName;
 		__int32    sao;
 
 
@@ -551,8 +551,8 @@ void TImportMenu::SaveSizeFromMenu( __int32 inIndex, __int32 inMenuKey, TLoadMen
 		{
             __int32 xmlKey  = sizeKey;
                     sizeKey = InsertSizeInDB(
-                                inMenuKey, description, sizeID, palmSizeID, sao, kitchenName,
-                                weighted, handheldName, receiptName, inDBTransaction );
+                                inMenuKey, description.Trim(), sizeID, palmSizeID, sao, kitchenName.Trim(),
+                                weighted, handheldName.Trim(), receiptName.Trim(), inDBTransaction );
 
             // This Key Map will be used in the ItemSize section
             AddKeyMap( "sizes", xmlKey, sizeKey );
@@ -563,7 +563,7 @@ void TImportMenu::SaveSizeFromMenu( __int32 inIndex, __int32 inMenuKey, TLoadMen
 void TImportMenu::SaveCategoryGroupFromMenu( __int32 inIndex, TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction )
 {
 	__int32    cgKey;
-	AnsiString description;
+	WideString description;
 	bool       getDeleted;
 
 	//::::::::::::::::::::::::::::::::::::::::::::::::
@@ -577,7 +577,7 @@ void TImportMenu::SaveCategoryGroupFromMenu( __int32 inIndex, TLoadMenu* inMenu,
 	{
 		if( description != "" )
 		{
-			cgKey = InsertCategoryGroupInDB( description, getDeleted, inDBTransaction );
+			cgKey = InsertCategoryGroupInDB( description.Trim(), getDeleted, inDBTransaction );
 
 			SaveCategoriesFromMenu( cgXMLHandle, cgKey, inMenu, inDBTransaction );
 		}
@@ -588,8 +588,8 @@ void TImportMenu::SaveCategoryFromMenu( __int32 inIndex, __int32 inCGXMLHandle, 
 										TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction )
 {
 	__int32    categoryKey;
-	AnsiString description;
-    AnsiString glcode;
+	WideString description;
+    WideString glcode;
 	bool       cDeleted;
 	__int32    coo;
 
@@ -606,7 +606,7 @@ void TImportMenu::SaveCategoryFromMenu( __int32 inIndex, __int32 inCGXMLHandle, 
         {
 			__int32 xmlKey     = categoryKey;
 			__int32 tempCategoryKey = -1;
-            getCategoryKeyIfExists(description, &tempCategoryKey, inDBTransaction);
+            getCategoryKeyIfExists(description.Trim(), &tempCategoryKey, inDBTransaction);
 
 			if( tempCategoryKey < 0 )
 			// New Category.
@@ -614,7 +614,7 @@ void TImportMenu::SaveCategoryFromMenu( __int32 inIndex, __int32 inCGXMLHandle, 
                 coo = getNextNewCOO();
 
                 categoryKey = InsertCategoryInDB(
-                                 description,glcode, !cDeleted, inCGroupKey, coo, inDBTransaction );
+                                 description.Trim(),glcode.Trim(), !cDeleted, inCGroupKey, coo, inDBTransaction );
 
                 // This Key Map will be used in the ItemSize section.
                 AddKeyMap( "categories", xmlKey, categoryKey );
@@ -623,7 +623,7 @@ void TImportMenu::SaveCategoryFromMenu( __int32 inIndex, __int32 inCGXMLHandle, 
             // Existing Category.
             {
                     UpdateCategoryInDB(
-                        tempCategoryKey, description, glcode, cDeleted, inCGroupKey, inDBTransaction );
+                        tempCategoryKey, description.Trim(), glcode.Trim(), cDeleted, inCGroupKey, inDBTransaction );
 //                    // This Key Map will be used in the ItemSize section.
 					AddKeyMap( "categories", xmlKey, tempCategoryKey );
             }
@@ -634,7 +634,7 @@ void TImportMenu::SaveCategoryFromMenu( __int32 inIndex, __int32 inCGXMLHandle, 
 void TImportMenu::SaveTaxProfileFromMenu(__int32 inIndex, TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction)
 {
 	__int32    taxProfileKey;
-	AnsiString taxProfileName;
+	WideString taxProfileName;
 	Currency   taxRate;
 	__int32    taxType;
     __int32    priority;
@@ -662,7 +662,7 @@ void TImportMenu::SaveTaxProfileFromMenu(__int32 inIndex, TLoadMenu* inMenu, Dat
 
             TaxType taxTypeEnum = TaxProfile::Convert(taxType);
 
-            TaxProfile taxProfile(taxProfileName, taxRate, taxTypeEnum, priority);
+            TaxProfile taxProfile(taxProfileName.Trim(), taxRate, taxTypeEnum, priority);
             taxProfileDBManager.InsertTaxProfile(*inDBTransaction, taxProfile, taxProfileKey);
         }
 
@@ -679,8 +679,8 @@ void TImportMenu::SaveServingCourseFromMenu(
 	if( inMenuKey > 0 )
 	{
 		__int32    scKey;
-		AnsiString description;
-		AnsiString kitchenName;
+		WideString description;
+		WideString kitchenName;
 		bool       enabled;
 		bool       scDeleted;
 		bool       selectable;
@@ -700,7 +700,7 @@ void TImportMenu::SaveServingCourseFromMenu(
 		{
             __int32 xmlKey = scKey;
                     scKey  = InsertServingCourseInDB(
-                                description, kitchenName, scDeleted,
+                                description.Trim(), kitchenName.Trim(), scDeleted,
                                 selectable, color, displayOrder,
                                 inDBTransaction );
 
@@ -720,8 +720,8 @@ void TImportMenu::SaveThirdPartyCodeFromMenu( __int32    inIndex,
                                               Database::TDBTransaction *inDBTransaction )
 {
 	__int32    tpcKey;
-	AnsiString code;
-	AnsiString description;
+	WideString code;
+	WideString description;
 	bool       visible;
 	__int32    codeType;
 
@@ -747,7 +747,7 @@ void TImportMenu::SaveThirdPartyCodeFromMenu( __int32    inIndex,
             if( ThirdPartyCodeExists( inDBTransaction, code ) )
             {
                 tpcKey = UpdateThirdPartyCodeInDB(
-                            code, description, visible, codeType, inDBTransaction );
+                            code.Trim(), description.Trim(), visible, codeType, inDBTransaction );
             }
             else
             {
@@ -767,14 +767,14 @@ void TImportMenu::SaveCourseFromMenu( __int32 inIndex, __int32 inMenuKey, TLoadM
 	if( inMenuKey > 0 )
 	{
 		__int32     courseKey;
-		AnsiString  description;
-		AnsiString  kitchenName;
-		AnsiString  handheldName;
-		AnsiString  receiptName;
+		WideString  description;
+		WideString  kitchenName;
+		WideString  handheldName;
+		WideString  receiptName;
 		__int32     location;
 		bool        enabled;
 		__int32     servingCourseKey;
-		AnsiString  serviceCourse;
+		WideString  serviceCourse;
 		bool        noDefaultServingCourse;
 		__int32     cao;
 
@@ -794,7 +794,7 @@ void TImportMenu::SaveCourseFromMenu( __int32 inIndex, __int32 inMenuKey, TLoadM
             cao = getNextNewCAO();
 
             courseKey = InsertCourseInDB(
-                            inMenuKey, description, kitchenName, handheldName, receiptName, location,
+                            inMenuKey, description.Trim(), kitchenName.Trim(), handheldName.Trim(), receiptName.Trim(), location,
                             enabled, scKeyMapped, serviceCourse, noDefaultServingCourse, cao,
                             inDBTransaction );
 
@@ -808,10 +808,10 @@ void TImportMenu::SaveOptionFromMenu( __int32 inIndex, __int32 inCourseXMLHandle
 									  TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction )
 {
 	__int32    optionKey;
-	AnsiString description;
-	AnsiString kitchenName;
-	AnsiString handheldName;
-	AnsiString receiptName;
+	WideString description;
+	WideString kitchenName;
+	WideString handheldName;
+	WideString receiptName;
 	__int32    condimentsMask;
 	__int32    flags;
 	bool       enabled;
@@ -840,7 +840,7 @@ void TImportMenu::SaveOptionFromMenu( __int32 inIndex, __int32 inCourseXMLHandle
         optionOrder = getNextNewOptionOrder();
 
         optionKey = InsertOptionInDB(
-                        inCourseKey, description, kitchenName, handheldName, receiptName,
+                        inCourseKey, description.Trim(), kitchenName.Trim(), handheldName.Trim(), receiptName.Trim(),
                         condimentsMask, flags, enabled, printUnderlined, printBold, printColor,
                         printFont, printDoubleWidth, printDoubleHeight, optionOrder, inDBTransaction );
 
@@ -853,10 +853,10 @@ void TImportMenu::SaveItemFromMenu( __int32 inIndex, __int32 inCourseXMLHandle, 
                                     Database::TDBTransaction *inDBTransaction )
 {
 	__int32    itemKey;
-	AnsiString description;
-	AnsiString kitchenName;
-	AnsiString handheldName;
-	AnsiString receiptName;
+	WideString description;
+	WideString kitchenName;
+	WideString handheldName;
+	WideString receiptName;
 	TColor     buttonColor;
 	bool       displaySizes;
 	bool       enabled;
@@ -891,18 +891,18 @@ void TImportMenu::SaveItemFromMenu( __int32 inIndex, __int32 inCourseXMLHandle, 
         {
             InsertItemInDBWithKey(
                     itemKey,
-                    inCourseKey, description, kitchenName,
+                    inCourseKey, description.Trim(), kitchenName.Trim(),
                     buttonColor, displaySizes, enabled,
                     itemOnlySide, printUnderlined, printBold, printColor, printFont,
-                    printDoubleWidth, printDoubleHeight, iao, inDBTransaction, handheldName );
+                    printDoubleWidth, printDoubleHeight, iao, inDBTransaction, handheldName.Trim() );
         }
         else
         {
             itemKey = InsertItemInDB(
-                    inCourseKey, description, kitchenName,
+                    inCourseKey, description.Trim(), kitchenName.Trim(),
                     buttonColor, displaySizes, enabled,
                     itemOnlySide, printUnderlined, printBold, printColor, printFont,
-                    printDoubleWidth, printDoubleHeight, iao, inDBTransaction, handheldName );
+                    printDoubleWidth, printDoubleHeight, iao, inDBTransaction, handheldName.Trim() );
         }
 
 		// This Item Map will be used in the Forced Sides section
@@ -921,7 +921,7 @@ void TImportMenu::SaveForcedSideFromMenu( __int32 inIndex, __int32 inItemXMLHand
 {
 	__int32    forcedSideKey;
 	__int32    itemFKey;  // Item as a Side.
-	AnsiString description;
+	WideString description;
 	__int32    groupNumber;
 	__int32    maxSelect;
 	bool       sideGroupSkip;
@@ -952,7 +952,7 @@ void TImportMenu::SaveForcedOptionFromMenu( __int32 inIndex, __int32 inItemXMLHa
 {
 	__int32    forcedOptionKey;
 	__int32    optionFKey;
-	AnsiString description;
+	WideString description;
 	__int32	   groupNumber;
 
 	//::::::::::::::::::::::::::::::::::::::::
@@ -982,7 +982,7 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
 	__int32    sizeID;
 	__int32    palmItemID;
 	__int32    palmSizeID;
-	AnsiString sizeName;
+	WideString sizeName;
 	Currency   price;
     Currency maxRetailPrice;
 	Currency   specialPrice;
@@ -991,20 +991,20 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
 	bool       free;
 	bool       availableAsStandard;
 	bool       noRecipe;
-	AnsiString barcode;
+	WideString barcode;
 	__int32    setMenuMask;
 	bool       enabled;
 	double     gstPercent;
 	double     costGSTPercent;
 	double     pointsPercent;
-	AnsiString sizeKitchenName;
+	WideString sizeKitchenName;
 	__int32    thirdPartyCodeFKey;
 	double     memberPurchaseDiscount;
 	double     locationPurchaseDiscount;
 	__int32    memberPurchaseCount;
 	__int32    locationPurchaseCount;
 	__int32    categoryFKey;
-	AnsiString category;
+	WideString category;
 	double     tareWeight;
 	AnsiString handheldName;
 	AnsiString receiptName;
@@ -1031,9 +1031,6 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
 														 category, thirdPartyCodeFKey, tareWeight, plu,
 														 availableQuantity, defaultQuantity, warningQuantity,
 														 disableWhenCountReachesZero, canBePaidForUsingPoints, default_patron_count, priceForPoints);
-
-	//::::::::::::::::::::::::::::::::::::::::
-
     // Item Sizes are allways inserted as new.
     itemID = itemSizeKey;
 	sizeID = sizeFKey;
@@ -1055,9 +1052,9 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
         {
             InsertItemSizeInDBWithKey(
                             itemSizeKey, inMasterItemKey, sizeFKeyMapped, itemID, sizeID, palmItemID, palmSizeID,
-                            sizeName, price, maxRetailPrice, specialPrice, cost, isao, free, availableAsStandard,
-                            noRecipe, barcode, setMenuMask, enabled, gstPercent, costGSTPercent,
-                            pointsPercent, sizeKitchenName, tpcFKeyMapped, memberPurchaseDiscount,
+                            sizeName.Trim(), price, maxRetailPrice, specialPrice, cost, isao, free, availableAsStandard,
+                            noRecipe, barcode.Trim(), setMenuMask, enabled, gstPercent, costGSTPercent,
+                            pointsPercent, sizeKitchenName.Trim(), tpcFKeyMapped, memberPurchaseDiscount,
                             locationPurchaseDiscount, memberPurchaseCount, locationPurchaseCount,
                             categoryFKeyMapped, tareWeight, handheldName, receiptName, plu,
                             availableQuantity, defaultQuantity, warningQuantity,
@@ -1068,9 +1065,9 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
         {
         itemSizeKey = InsertItemSizeInDB(
                         inMasterItemKey, sizeFKeyMapped, itemID, sizeID, palmItemID, palmSizeID,
-                        sizeName, price, maxRetailPrice, specialPrice, cost, isao, free, availableAsStandard,
-                        noRecipe, barcode, setMenuMask, enabled, gstPercent, costGSTPercent,
-                        pointsPercent, sizeKitchenName, tpcFKeyMapped, memberPurchaseDiscount,
+                        sizeName.Trim(), price, maxRetailPrice, specialPrice, cost, isao, free, availableAsStandard,
+                        noRecipe, barcode.Trim(), setMenuMask, enabled, gstPercent, costGSTPercent,
+                        pointsPercent, sizeKitchenName.Trim(), tpcFKeyMapped, memberPurchaseDiscount,
                         locationPurchaseDiscount, memberPurchaseCount, locationPurchaseCount,
                         categoryFKeyMapped, tareWeight, handheldName, receiptName, plu,
                         availableQuantity, defaultQuantity, warningQuantity,
@@ -1101,7 +1098,7 @@ void TImportMenu::SaveBCategoryFromMenu( __int32 inIndex, __int32 inItemSizeXMLH
 											 TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction )
 {
 	__int32    bCategoryKey;
-	AnsiString description;
+	WideString description;
 
 	//::::::::::::::::::::::::::::::::::::::::
 
@@ -1122,9 +1119,9 @@ void TImportMenu::SaveItemSizeReceipeFromMenu( __int32 inIndex, __int32 inItemSi
 											  TLoadMenu* inMenu, Database::TDBTransaction *inDBTransaction )
 {
 	__int32    isReceipeKey;
-	AnsiString stockCode;
+	WideString stockCode;
 	double     quantity;
-	AnsiString location;
+	WideString location;
 
 	//::::::::::::::::::::::::::::::::::::::::
 
@@ -1136,7 +1133,7 @@ void TImportMenu::SaveItemSizeReceipeFromMenu( __int32 inIndex, __int32 inItemSi
     // Item Size Receipes are allways inserted as new.
 	if( isReceipeXMLHandle > 0 )
 	{
-		isReceipeKey = InsertItemSizeReceipeInDB( inItemSizeKey, stockCode, quantity, location, inDBTransaction );
+		isReceipeKey = InsertItemSizeReceipeInDB( inItemSizeKey, stockCode.Trim(), quantity, location.Trim(), inDBTransaction );
 	}
 }
 // ---------------------------------------------------------------------------
@@ -1285,7 +1282,7 @@ bool TImportMenu::menuExistsInDB(
 		TIBSQL *qr    = inDBTransaction->Query( inDBTransaction->AddQuery() );
 		qr->SQL->Text = "SELECT COUNT(Menu.Menu_Name) FROM Menu WHERE Menu.Menu_Name = :menuName";
 
-		qr->ParamByName("menuName")->AsString = inMenuName;
+		qr->ParamByName("menuName")->AsString = inMenuName.Trim();
 
 		qr->ExecQuery();
 
@@ -1392,7 +1389,7 @@ void TImportMenu::getCategoryKeyIfExists(AnsiString inCategoryName, __int32 *out
 // Insert_InDBWithKey functions are not used so far!!!!.
 //::::::::::::::::::::::::::::::::::::::::::::::
 __int32 TImportMenu::InsertMenuInDB(
-                        AnsiString inMenuName, Menu::TMenuType inMenuType,
+                        WideString inMenuName, Menu::TMenuType inMenuType,
                         bool inAvailableOnPalm, Database::TDBTransaction *inDBTransaction )
 {
 	__int32 result = 0;
@@ -1409,7 +1406,7 @@ __int32 TImportMenu::InsertMenuInDB(
     //:::::::::::::::::::::::::::::::::::::::
 
     InsertMenuInDBWithKey(
-        key, inMenuName, inMenuType, inAvailableOnPalm, inDBTransaction );
+        key, inMenuName.Trim(), inMenuType, inAvailableOnPalm, inDBTransaction );
 
     result = key;
 
@@ -1419,7 +1416,7 @@ __int32 TImportMenu::InsertMenuInDB(
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::InsertMenuInDBWithKey (
-                        __int32 inKey, AnsiString inMenuName, Menu::TMenuType inMenuType,
+                        __int32 inKey, WideString inMenuName, Menu::TMenuType inMenuType,
                         bool inAvailableOnPalm, Database::TDBTransaction *inDBTransaction )
 {
     TIBSQL *qr    = inDBTransaction->Query( inDBTransaction->AddQuery() );
@@ -1436,9 +1433,9 @@ void TImportMenu::InsertMenuInDBWithKey (
     qr->ExecQuery();
 }
 // ---------------------------------------------------------------------------
-__int32 TImportMenu::InsertSizeInDB( __int32 inMenuKey, AnsiString inSizeName, __int32 inSizeID,
-									  __int32 inPalmSizeID, __int32 inSAO, AnsiString inKitchenName,
-									  bool inWeighted, AnsiString inHandheldName, AnsiString inReceiptName,
+__int32 TImportMenu::InsertSizeInDB( __int32 inMenuKey, WideString inSizeName, __int32 inSizeID,
+									  __int32 inPalmSizeID, __int32 inSAO, WideString inKitchenName,
+									  bool inWeighted, WideString inHandheldName, WideString inReceiptName,
 									  Database::TDBTransaction *inDBTransaction )
 {
 	__int32 result = 0;
@@ -1478,9 +1475,9 @@ __int32 TImportMenu::InsertSizeInDB( __int32 inMenuKey, AnsiString inSizeName, _
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::InsertSizeInDBWithKey(
-                            __int32 inKey, __int32 inMenuKey, AnsiString inSizeName, __int32 inSizeID,
-                            __int32 inPalmSizeID, __int32 inSAO, AnsiString inKitchenName,
-                            bool inWeighted, AnsiString inHandheldName, AnsiString inReceiptName,
+                            __int32 inKey, __int32 inMenuKey, WideString inSizeName, __int32 inSizeID,
+                            __int32 inPalmSizeID, __int32 inSAO, WideString inKitchenName,
+                            bool inWeighted, WideString inHandheldName, WideString inReceiptName,
                             Database::TDBTransaction *inDBTransaction )
 {
 	try
@@ -1518,7 +1515,7 @@ void TImportMenu::InsertSizeInDBWithKey(
     }
 }
 // ---------------------------------------------------------------------------
-__int32 TImportMenu::InsertCategoryGroupInDB( AnsiString inDescription, bool inDeleted,
+__int32 TImportMenu::InsertCategoryGroupInDB( WideString inDescription, bool inDeleted,
 												   Database::TDBTransaction *inDBTransaction )
 {
 	__int32 result = 0;
@@ -1565,7 +1562,7 @@ __int32 TImportMenu::InsertCategoryGroupInDB( AnsiString inDescription, bool inD
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::InsertCategoryGroupInDBWithKey(
-                        __int32 inKey, AnsiString inDescription, bool inDeleted,
+                        __int32 inKey, WideString inDescription, bool inDeleted,
                         Database::TDBTransaction *inDBTransaction )
 {
 	try
@@ -1592,7 +1589,7 @@ void TImportMenu::InsertCategoryGroupInDBWithKey(
 	}
 }
 // ---------------------------------------------------------------------------
-__int32 TImportMenu::InsertCategoryInDB( AnsiString inCategory,AnsiString inGLCode, bool inVisible, __int32 inCGroupKey,
+__int32 TImportMenu::InsertCategoryInDB( WideString inCategory,WideString inGLCode, bool inVisible, __int32 inCGroupKey,
 										 __int32 inCOO, Database::TDBTransaction *inDBTransaction )
 {
 	__int32 result = 0;
@@ -1611,7 +1608,7 @@ __int32 TImportMenu::InsertCategoryInDB( AnsiString inCategory,AnsiString inGLCo
 		//:::::::::::::::::::::::::::::::::::::::
 
 		InsertCategoryInDBWithKey(
-            key, inCategory,inGLCode, inVisible, inCGroupKey,
+            key, inCategory,inGLCode.Trim(), inVisible, inCGroupKey,
 			inCOO, inDBTransaction );
 
 		result = key;
@@ -1632,7 +1629,7 @@ __int32 TImportMenu::InsertCategoryInDB( AnsiString inCategory,AnsiString inGLCo
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::InsertCategoryInDBWithKey(
-                        __int32 inKey, AnsiString inCategory,AnsiString inGLCode, bool inVisible, __int32 inCGroupKey,
+                        __int32 inKey, WideString inCategory,WideString inGLCode, bool inVisible, __int32 inCGroupKey,
                         __int32 inCOO, Database::TDBTransaction *inDBTransaction )
 {
 	try
@@ -1663,7 +1660,7 @@ void TImportMenu::InsertCategoryInDBWithKey(
 }
 // ---------------------------------------------------------------------------
 __int32 TImportMenu::InsertServingCourseInDB(
-                        AnsiString inDescription, AnsiString inKitchenName,
+                        WideString inDescription, WideString inKitchenName,
                         bool inSCDeleted, bool inSelectable, TColor inColor,
                         __int32 inDisplayOrder,
                         Database::TDBTransaction *inDBTransaction )
@@ -1718,7 +1715,7 @@ __int32 TImportMenu::InsertServingCourseInDB(
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::InsertServingCourseInDBWithKey(
-                        __int32 inKey, AnsiString inDescription, AnsiString inKitchenName,
+                        __int32 inKey, WideString inDescription, WideString inKitchenName,
                         bool inSCDeleted, bool inSelectable, TColor inColor,
                         __int32 inDisplayOrder, Database::TDBTransaction *inDBTransaction )
 {
@@ -1800,7 +1797,7 @@ __int32 TImportMenu::InsertMenu_SCInDB( __int32 inMenuKey, __int32 inKey,
 }
 // ---------------------------------------------------------------------------
 __int32 TImportMenu::UpdateThirdPartyCodeInDB(
-                        AnsiString inCode, AnsiString inDescription,
+                        WideString inCode, WideString inDescription,
                         bool inVisible, __int32 inCodeType,
                         Database::TDBTransaction *inDBTransaction )
 {
@@ -1840,7 +1837,7 @@ __int32 TImportMenu::UpdateThirdPartyCodeInDB(
 }
 // ---------------------------------------------------------------------------
 __int32 TImportMenu::InsertThirdPartyCodeInDB(
-                        AnsiString inCode, AnsiString inDescription,
+                        WideString inCode, WideString inDescription,
                         bool inVisible, __int32 inCodeType,
                         Database::TDBTransaction *inDBTransaction )
 {
@@ -1882,8 +1879,8 @@ __int32 TImportMenu::InsertThirdPartyCodeInDB(
 
 void TImportMenu::UpdateThirdPartyCodeInDBWithKey(
                         __int32    inKey,
-                        AnsiString inCode,
-                        AnsiString inDescription,
+                        WideString inCode,
+                        WideString inDescription,
                         bool       inVisible,
                         __int32    inCodeType,
                         Database::TDBTransaction *inDBTransaction )
@@ -1921,7 +1918,7 @@ void TImportMenu::UpdateThirdPartyCodeInDBWithKey(
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::InsertThirdPartyCodeInDBWithKey(
-                        __int32 inKey, AnsiString inCode, AnsiString inDescription,
+                        __int32 inKey, WideString inCode, WideString inDescription,
                         bool inVisible, __int32 inCodeType, Database::TDBTransaction *inDBTransaction )
 {
 	try
@@ -1951,9 +1948,9 @@ void TImportMenu::InsertThirdPartyCodeInDBWithKey(
 	}
 }
 // ---------------------------------------------------------------------------
-__int32 TImportMenu::InsertCourseInDB( __int32 inMenuKey, AnsiString inDescription, AnsiString inKitchenName,
-									   AnsiString inHandheldName, AnsiString inReceiptName, __int32 inLocation,
-									   bool inEnabled, __int32 inServingCourseKey, AnsiString inServiceCourse,
+__int32 TImportMenu::InsertCourseInDB( __int32 inMenuKey, WideString inDescription, WideString inKitchenName,
+									   WideString inHandheldName, WideString inReceiptName, __int32 inLocation,
+									   bool inEnabled, __int32 inServingCourseKey, WideString inServiceCourse,
 									   bool inNoDefaultServingCourse, __int32 inCAO,
 									   Database::TDBTransaction *inDBTransaction )
 {
@@ -1996,9 +1993,9 @@ __int32 TImportMenu::InsertCourseInDB( __int32 inMenuKey, AnsiString inDescripti
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::InsertCourseInDBWithKey(
-                        __int32 inKey, __int32 inMenuKey, AnsiString inDescription, AnsiString inKitchenName,
-                        AnsiString inHandheldName, AnsiString inReceiptName, __int32 inLocation,
-                        bool inEnabled, __int32 inServingCourseKey, AnsiString inServiceCourse,
+                        __int32 inKey, __int32 inMenuKey, WideString inDescription, WideString inKitchenName,
+                        WideString inHandheldName, WideString inReceiptName, __int32 inLocation,
+                        bool inEnabled, __int32 inServingCourseKey, WideString inServiceCourse,
                         bool inNoDefaultServingCourse, __int32 inCAO,
                         Database::TDBTransaction *inDBTransaction )
 {
@@ -2052,8 +2049,8 @@ void TImportMenu::InsertCourseInDBWithKey(
 }
 // ---------------------------------------------------------------------------
 __int32 TImportMenu::InsertOptionInDB(
-                        __int32 inCourseKey, AnsiString inDescription, AnsiString inKitchenName,
-                        AnsiString inHandheldName, AnsiString inReceiptName,
+                        __int32 inCourseKey, WideString inDescription, WideString inKitchenName,
+                        WideString inHandheldName, WideString inReceiptName,
                         __int32 inCondimentsMask, __int32 inFlags, bool inEnabled, bool inPrintUnderlined,
                         bool inPrintBold, __int32 inPrintColor, __int32 inPrintFont,
                         bool inPrintDoubleWidth, bool inPrintDoubleHeight, __int32 inOptionOrder,
@@ -2099,8 +2096,8 @@ __int32 TImportMenu::InsertOptionInDB(
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::InsertOptionInDBWithKey(
-                        __int32 inKey, __int32 inCourseKey, AnsiString inDescription, AnsiString inKitchenName,
-                        AnsiString inHandheldName, AnsiString inReceiptName,
+                        __int32 inKey, __int32 inCourseKey, WideString inDescription, WideString inKitchenName,
+                        WideString inHandheldName, WideString inReceiptName,
                         __int32 inCondimentsMask, __int32 inFlags, bool inEnabled, bool inPrintUnderlined,
                         bool inPrintBold, __int32 inPrintColor, __int32 inPrintFont,
                         bool inPrintDoubleWidth, bool inPrintDoubleHeight, __int32 inOptionOrder,
@@ -2154,12 +2151,12 @@ void TImportMenu::InsertOptionInDBWithKey(
 }
 // ---------------------------------------------------------------------------
 __int32 TImportMenu::InsertItemInDB(
-                        __int32 inCourseKey, AnsiString inDescription,
-						AnsiString inKitchenName, TColor inButtonColor, bool inDisplaySizes,
+                        __int32 inCourseKey, WideString inDescription,
+						WideString inKitchenName, TColor inButtonColor, bool inDisplaySizes,
 						bool inEnabled, bool inItemOnlySide,
 						bool inPrintUnderlined, bool inPrintBold, TColor inPrintColor,
 						__int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight,
-						__int32 inIAO, Database::TDBTransaction *inDBTransaction, AnsiString inHandheldName )
+						__int32 inIAO, Database::TDBTransaction *inDBTransaction, WideString inHandheldName )
 {
 	__int32 result = 0;
 
@@ -2201,13 +2198,13 @@ __int32 TImportMenu::InsertItemInDB(
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::InsertItemInDBWithKey(
-                        __int32 inKey, __int32 inCourseKey, AnsiString inDescription,
-                        AnsiString inKitchenName, TColor inButtonColor, bool inDisplaySizes,
+                        __int32 inKey, __int32 inCourseKey, WideString inDescription,
+                        WideString inKitchenName, TColor inButtonColor, bool inDisplaySizes,
                         bool inEnabled, bool inItemOnlySide,
                         bool inPrintUnderlined, bool inPrintBold, TColor inPrintColor,
                         __int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight,
                         __int32 inIAO,
-                        Database::TDBTransaction *inDBTransaction, AnsiString inHandheldName )
+                        Database::TDBTransaction *inDBTransaction, WideString inHandheldName )
 {
 	try
 	{
@@ -2410,7 +2407,7 @@ __int32 TImportMenu::InsertItemSizeInDB(
 						__int32    inSizeID,
 						__int32    inPalmItemID,
 						__int32    inPalmSizeID,
-						AnsiString inSizeName,
+						WideString inSizeName,
 						Currency   inPrice,
                         Currency   inMaxRetailPrice,
 						Currency   inSpecialPrice,
@@ -2419,13 +2416,13 @@ __int32 TImportMenu::InsertItemSizeInDB(
 						bool       inFree,
 						bool       inAvailableAsStandard,
 						bool       inNoRecipe,
-						AnsiString inBarcode,
+						WideString inBarcode,
 						__int32    inSetMenuMask,
 						bool       inEnabled,
 						double     inGSTPercent,
 						double     inCostGSTPercent,
 						double     inPointsPercent,
-						AnsiString inSizeKitchenName,
+						WideString inSizeKitchenName,
 						__int32    inThirdPartyCodeKey,
 						double     inMemberPurchaseDiscount,
 						double     inLocationPurchaseDiscount,
@@ -2433,8 +2430,8 @@ __int32 TImportMenu::InsertItemSizeInDB(
 						__int32    inLocationPurchaseCount,
 						__int32    inCategoryKey,
 						double     inTareWeight,
-						AnsiString inHandheldName,
-						AnsiString inReceiptName,
+						WideString inHandheldName,
+						WideString inReceiptName,
 						__int32    inPLU,
                         Currency   inAvailableQuantity,
                         Currency   inDefaultQuantity,
@@ -2500,7 +2497,7 @@ void TImportMenu::InsertItemSizeInDBWithKey(
 						__int32    inSizeID,
 						__int32    inPalmItemID,
 						__int32    inPalmSizeID,
-						AnsiString inSizeName,
+						WideString inSizeName,
 						Currency   inPrice,
                         Currency   inMaxRetailPrice,
 						Currency   inSpecialPrice,
@@ -2509,13 +2506,13 @@ void TImportMenu::InsertItemSizeInDBWithKey(
 						bool       inFree,
 						bool       inAvailableAsStandard,
 						bool       inNoRecipe,
-						AnsiString inBarcode,
+						WideString inBarcode,
 						__int32    inSetMenuMask,
 						bool       inEnabled,
 						double     inGSTPercent,
 						double     inCostGSTPercent,
 						double     inPointsPercent,
-						AnsiString inSizeKitchenName,
+						WideString inSizeKitchenName,
 						__int32    inThirdPartyCodeKey,
 						double     inMemberPurchaseDiscount,
 						double     inLocationPurchaseDiscount,
@@ -2523,8 +2520,8 @@ void TImportMenu::InsertItemSizeInDBWithKey(
 						__int32    inLocationPurchaseCount,
 						__int32    inCategoryKey,
 						double     inTareWeight,
-						AnsiString inHandheldName,
-						AnsiString inReceiptName,
+						WideString inHandheldName,
+						WideString inReceiptName,
 						__int32    inPLU,
                         Currency   inAvailableQuantity,
                         Currency   inDefaultQuantity,
@@ -2795,8 +2792,8 @@ __int32 TImportMenu::InsertBCategoryInDB( __int32 inItemSizeKey, __int32 inCateg
 	return result;
 }
 // ---------------------------------------------------------------------------
-__int32 TImportMenu::InsertItemSizeReceipeInDB( __int32 inItemSizeKey, AnsiString inStockCode,
-												double inQuantity, AnsiString inLocation,
+__int32 TImportMenu::InsertItemSizeReceipeInDB( __int32 inItemSizeKey, WideString inStockCode,
+												double inQuantity, WideString inLocation,
 												Database::TDBTransaction *inDBTransaction  )
 {
 	__int32 result = 0;
@@ -2836,8 +2833,8 @@ __int32 TImportMenu::InsertItemSizeReceipeInDB( __int32 inItemSizeKey, AnsiStrin
 }
 // ---------------------------------------------------------------------------
 void TImportMenu::InsertItemSizeReceipeInDBWithKey(
-                        __int32 inKey, __int32 inItemSizeKey, AnsiString inStockCode,
-						double inQuantity, AnsiString inLocation,
+                        __int32 inKey, __int32 inItemSizeKey, WideString inStockCode,
+						double inQuantity, WideString inLocation,
 						Database::TDBTransaction *inDBTransaction  )
 {
 	try
@@ -2933,9 +2930,9 @@ void TImportMenu::InsertItemSizeTaxProfileInDBWithKey(
 }
 // ---------------------------------------------------------------------------
 // Update_InDB functions update objects in the DB.
-bool TImportMenu::UpdateSizeInDB( __int32 inKey, __int32 inMenuKey, AnsiString inSizeName,
-								  AnsiString inKitchenName, AnsiString inHandheldName,
-								  AnsiString inReceiptName, bool inWeighted, __int32 inSizeID,
+bool TImportMenu::UpdateSizeInDB( __int32 inKey, __int32 inMenuKey, WideString inSizeName,
+								  WideString inKitchenName, WideString inHandheldName,
+								  WideString inReceiptName, bool inWeighted, __int32 inSizeID,
 								  __int32 inPalmSizeID, Database::TDBTransaction* inDBTransaction )
 {
 	bool result = false;
@@ -2983,7 +2980,7 @@ bool TImportMenu::UpdateSizeInDB( __int32 inKey, __int32 inMenuKey, AnsiString i
 	return result;
 }
 // ---------------------------------------------------------------------------
-bool TImportMenu::UpdateCategoryGroupInDB( __int32 inKey, AnsiString inDescription,
+bool TImportMenu::UpdateCategoryGroupInDB( __int32 inKey, WideString inDescription,
 										   bool inCGDeleted, Database::TDBTransaction *inDBTransaction )
 {
 	bool result = false;
@@ -3021,7 +3018,7 @@ bool TImportMenu::UpdateCategoryGroupInDB( __int32 inKey, AnsiString inDescripti
 	return result;
 }
 // ---------------------------------------------------------------------------
-__int32 TImportMenu::UpdateCategoryInDB( __int32 inKey, AnsiString inDescription, AnsiString inGLCode, bool inDeleted,
+__int32 TImportMenu::UpdateCategoryInDB( __int32 inKey, WideString inDescription, WideString inGLCode, bool inDeleted,
 										 __int32 inCGroupKey, Database::TDBTransaction *inDBTransaction )
 {
 	bool result = false;
@@ -3060,7 +3057,7 @@ __int32 TImportMenu::UpdateCategoryInDB( __int32 inKey, AnsiString inDescription
 	return result;
 }
 // ---------------------------------------------------------------------------
-__int32 TImportMenu::UpdateServingCourseInDB( __int32 inKey, AnsiString inDescription, AnsiString inKitchenName,
+__int32 TImportMenu::UpdateServingCourseInDB( __int32 inKey, WideString inDescription, WideString inKitchenName,
 											  bool inSCDeleted, bool inSelectable,
 											  TColor inColor, __int32 inDisplayOrder, Database::TDBTransaction *inDBTransaction )
 {
@@ -3105,8 +3102,8 @@ __int32 TImportMenu::UpdateServingCourseInDB( __int32 inKey, AnsiString inDescri
 }
 // ---------------------------------------------------------------------------
 
-__int32 TImportMenu::UpdateCourseInDB( __int32 inCourseKey, __int32 inMenuKey, AnsiString inDescription,
-									   AnsiString inKitchenName, AnsiString inHandheldName, AnsiString inReceiptName,
+__int32 TImportMenu::UpdateCourseInDB( __int32 inCourseKey, __int32 inMenuKey, WideString inDescription,
+									   WideString inKitchenName, WideString inHandheldName, WideString inReceiptName,
 									   __int32 inLocation, bool inEnabled, __int32 inServingCourseKey,
 									   bool inNoDefaultServingCourse, Database::TDBTransaction* inDBTransaction )
 {
@@ -3155,8 +3152,8 @@ __int32 TImportMenu::UpdateCourseInDB( __int32 inCourseKey, __int32 inMenuKey, A
 	return result;
 }
 // ---------------------------------------------------------------------------
-__int32 TImportMenu::UpdateOptionInDB( __int32 inOptionKey, __int32 inCourseKey, AnsiString inDescription,
-									   AnsiString inKitchenName, AnsiString inHandheldName, AnsiString inReceiptName,
+__int32 TImportMenu::UpdateOptionInDB( __int32 inOptionKey, __int32 inCourseKey, WideString inDescription,
+									   WideString inKitchenName, WideString inHandheldName, WideString inReceiptName,
 									   __int32 inCondimentsMask, bool inFlags, bool inEnabled, bool inPrintUnderlined,
 									   bool inPrintBold, __int32 inPrintColor, __int32 inPrintFont,
 									   bool inPrintDoubleWidth, bool inPrintDoubleHeight,
@@ -3214,8 +3211,8 @@ __int32 TImportMenu::UpdateOptionInDB( __int32 inOptionKey, __int32 inCourseKey,
 	return result;
 }
 // ---------------------------------------------------------------------------
-__int32 TImportMenu::UpdateItemInDB( __int32 inItemKey, __int32 inCourseKey, AnsiString inDescription,
-									 AnsiString inKitchenName, __int32 inButtonColor, bool inDisplaySizes,
+__int32 TImportMenu::UpdateItemInDB( __int32 inItemKey, __int32 inCourseKey, WideString inDescription,
+									 WideString inKitchenName, __int32 inButtonColor, bool inDisplaySizes,
 									 bool inEnabled, bool inItemOnlySide, bool inPrintUnderlined,
 									 bool inPrintBold, __int32 inPrintColor, __int32 inPrintFont,
 									 bool inPrintDoubleWidth, bool inPrintDoubleHeight,
@@ -3366,20 +3363,20 @@ __int32 TImportMenu::UpdateItemSizeInDB(
 						__int32    inSizeID,
 						__int32    inPalmItemID,
 						__int32    inPalmSizeID,
-						AnsiString inSizeName,
+						WideString inSizeName,
 						Currency   inPrice,
 						Currency   inSpecialPrice,
 						Currency   inCost,
 						bool       inFree,
 						bool       inAvailableAsStandard,
 						bool       inNoRecipe,
-						AnsiString inBarcode,
+						WideString inBarcode,
 						__int32    inSetMenuMask,
 						bool       inEnabled,
 						double     inGSTPercent,
 						double     inCostGSTPercent,
 						double     inPointsPercent,
-						AnsiString inSizeKitchenName,
+						WideString inSizeKitchenName,
 						__int32    inThirdPartyCodeKey,
 						double     inMemberPurchaseDiscount,
 						double     inLocationPurchaseDiscount,
@@ -3387,8 +3384,8 @@ __int32 TImportMenu::UpdateItemSizeInDB(
 						__int32    inLocationPurchaseCount,
 						__int32    inCategoryKey,
 						double     inTareWeight,
-						AnsiString inHandheldName,
-						AnsiString inReceiptName,
+						WideString inHandheldName,
+						WideString inReceiptName,
 						__int32    inPLU,
                                                 Currency inAvailableQuantity,
                                                 Currency inDefaultQuantity,
@@ -3492,7 +3489,7 @@ __int32 TImportMenu::UpdateItemSizeInDB(
 }
 
 __int32 TImportMenu::UpdateItemSizeReceipeInDB( __int32 inReceipeKey, __int32 inItemSizeKey,
-												AnsiString inStockCode, double inQuantity, AnsiString inLocation,
+												WideString inStockCode, double inQuantity, WideString inLocation,
 												Database::TDBTransaction* inDBTransaction )
 {
 	bool result = false;
@@ -3995,7 +3992,7 @@ void TImportMenu::PopulateExistingServingCoursePrintOrders( AnsiString menuName 
 {
     //Database::TDBTransaction dbTransaction( ibDatabase );
 
-    __int32 menuKey = GetExistingMenuKeyByName( dbTransaction, menuName );
+    __int32 menuKey = GetExistingMenuKeyByName( dbTransaction, menuName.Trim() );
 
     if( menuKey > 0)
     {
@@ -4064,7 +4061,7 @@ __int32 TImportMenu::GetExistingMenuKeyByName( Database::TDBTransaction *inDBTra
 
     TIBSQL *qr    = inDBTransaction->Query( inDBTransaction->AddQuery() );
 	qr->SQL->Text = "Select Menu_Key FROM Menu WHERE Menu_Name = :menuName";
-	qr->ParamByName("menuName")->AsString = menuName;
+	qr->ParamByName("menuName")->AsString = menuName.Trim();
 	qr->ExecQuery();
 
     if(!qr->Eof)
@@ -4076,7 +4073,7 @@ __int32 TImportMenu::GetExistingMenuKeyByName( Database::TDBTransaction *inDBTra
 
 bool TImportMenu::ThirdPartyCodeExists(
                             Database::TDBTransaction *inDBTransaction,
-                            AnsiString inCode )
+                            WideString inCode )
 {
     bool result = false;
 
@@ -4098,7 +4095,7 @@ bool TImportMenu::ThirdPartyCodeExists(
 
 __int32 TImportMenu::GetTPCKey(
                         Database::TDBTransaction *inDBTransaction,
-                        AnsiString inCode )
+                        WideString inCode )
 {
     __int32 result = -1;
 
@@ -4177,7 +4174,7 @@ void TImportMenu::PopulateOrdersItemsKeyMap(
     TIBSQL *qr = inDBTransaction->Query(inDBTransaction->AddQuery());
     qr->SQL->Text = "SELECT DISTINCT(ITEM_ID) FROM ORDERS WHERE MENU_NAME = :MENU_NAME";
 
-    qr->ParamByName("MENU_NAME")->AsString = inMenuName;
+    qr->ParamByName("MENU_NAME")->AsString = inMenuName.Trim();
     qr->ExecQuery();
 
     int id = 0;

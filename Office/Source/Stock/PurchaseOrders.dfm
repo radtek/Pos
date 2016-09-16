@@ -1,7 +1,7 @@
 object frmPurchaseOrders: TfrmPurchaseOrders
   Tag = 1024
-  Left = 42
-  Top = 103
+  Left = 539
+  Top = 182
   AutoScroll = False
   BorderIcons = [biSystemMenu, biMaximize]
   Caption = 'Purchase Orders'

@@ -149,7 +149,6 @@ void __fastcall TfrmEditCustomer::WMDisplayChange(TWMDisplayChange& Message)
 {
    FormResize(NULL);
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::FormResize(TObject *Sender)
 {
@@ -163,107 +162,51 @@ void __fastcall TfrmEditCustomer::FormResize(TObject *Sender)
    Left = (Screen->Width - Width) / 2;
    Top = (Screen->Height - Height) / 2;
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::btnOkClick(TObject *Sender)
 {
- 
-   bool CheckEmail = true;
-   if(edFirstName->Text == ""  && edLastName->Text == ""  &&  edPhone->Text == "" && edEmail->Text == "" && edMobile->Text == "" && edAddress->Text == "" && edMemberNumber->Text == "" && edKnownas->Text == "" &&  edSex->Text == "" && edNote->Text == "" && reLocationAddress->Text == "" && reAddress->Text == "")
+   if(edFirstName->Text == ""  && edEmail->Text == "")
    {
-      ModalResult = mrCancel;
+     MessageBox("You must enter all mandatoy fields.", "Error", MB_OK + MB_ICONERROR);
    }
    else
    {
-
-    if (edFirstName->Text == "")
-    {
-          MessageBox("You must enter a First Name.", "Error", MB_OK + MB_ICONERROR);
-          edFirstName->SetFocus();
-    }
-
-
-
-    else if (TGlobalSettings::Instance().LoyaltyMateEnabled
-                && Info.CloudUUID != TLoyaltyMateUtilities::GetLoyaltyMateDisabledCloudUUID()
-                )
-    {
-
-        if(edEmail->Text == "")
+        bool isNameValid = true;
+        bool isEmailValid = false;
+        bool isMobileValid = false;
+        bool isPhoneValid = true;
+        Info.EMail = edEmail->Text;
+        if (edFirstName->Text.Trim() == "")
         {
-           MessageBox("You must enter a valid Email.", "Error", MB_OK + MB_ICONERROR);
-           edEmail->SetFocus();
-        }
-        else
-        {
-            if(ValidateEmailId())
-            {
-               Info.EMail = edEmail->Text;
-               CheckEmail = true;
-            }
-            else
-            {
-               CheckEmail = false;
-            }
-            if(CheckEmail)
-            {
-                if(edMobile->Text != "")
-                {
-                    if(CheckMobileNumber(edMobile->Text))
-                    {
-                        edMobile->SetFocus();
-                    }
-                    else
-                    {
-                        ProcessData();
-                    }
-                }
-                else
-                {
-                    ProcessData();
-                }
-            }
+              MessageBox("You must enter a First Name.", "Error", MB_OK + MB_ICONERROR);
+              edFirstName->SetFocus();
+              isNameValid = false;
         }
 
+        if (isNameValid && edLastName->Text.Trim() == "")
+        {
+              MessageBox("You must enter a Last Name.", "Error", MB_OK + MB_ICONERROR);
+              edFirstName->SetFocus();
+              isNameValid = false;
+        }
 
-    }
-	  else
-      {
-         if(edEmail->Text != "")
-         {
-            if(ValidateEmailId())
-            {
-               Info.EMail = edEmail->Text;
-               CheckEmail = true;
-            }
-            else
-            {
-               CheckEmail = false;
-            }
-         }
+        if(isNameValid)
+          isEmailValid = ValidateEmailId();
 
-         if(CheckEmail)
-         {
-            if(edMobile->Text != "")
-            {
-                if(CheckMobileNumber(edMobile->Text))
-                {
-                    edMobile->SetFocus();
-                }
-                else
-                {
-                    ProcessData();
-                }
-            }
-            else
-            {
-                ProcessData();
-            }
-         }
-     }
+        if(isEmailValid)
+          isMobileValid = CheckMobileNumber(edMobile->Text);
 
+        Info.Phone = edPhone->Text;
+        if(Info.Phone != "" && Info.Phone != NULL && Info.Phone.Length() < 5 )
+           {
+              MessageBox("Phone number should be greater than 4 digits.", "Invalid Moble Number", MB_ICONERROR);
+              isPhoneValid = false;
+           }
 
-
+        if(isNameValid && isEmailValid && isMobileValid && isPhoneValid)
+        {
+          ProcessData();
+        }
    }
 }
 // ---------------------------------------------------------------------------
@@ -457,11 +400,11 @@ void __fastcall TfrmEditCustomer::tgDiscountsMouseClick(TObject *Sender, TMouseB
         {
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		    DBTransaction.StartTransaction();
-            BYTE discountID = ManagerDiscount->GetDiscountIDByKey(DBTransaction,*ptrDiscount);
+            AnsiString discountCode = ManagerDiscount->GetDiscountCodeByKey(DBTransaction,*ptrDiscount);
             DBTransaction.Commit();
 
-            if(discountID != 0)
-                Info.AutoAppliedDiscountsID.erase(discountID);
+            if(discountCode != "")
+                Info.AutoAppliedDiscountsID.erase(discountCode);
 
 	        Info.AutoAppliedDiscounts.erase(ptrDiscount);
 	        GridButton->Latched = false;
@@ -1105,18 +1048,48 @@ void TfrmEditCustomer::SaveData()
 
 bool TfrmEditCustomer::ValidateEmailId()
 {
-    TMMContactInfo SmartCardContact;
-    bool emailValid = SmartCardContact.ValidEmail();
-    SmartCardContact.EMail = edEmail->Text;
-    emailValid  =  SmartCardContact.ValidEmail();
-    if(!emailValid)
+  bool isEmailValid = true;
+  if (TGlobalSettings::Instance().LoyaltyMateEnabled &&
+        Info.CloudUUID != TLoyaltyMateUtilities::GetLoyaltyMateDisabledCloudUUID()  &&
+       !Info.ValidEmail())
+  {
+     MessageBox("You must enter a valid Email.", "Error", MB_OK + MB_ICONERROR);
+     isEmailValid = false;
+  }
+  else if(!TGlobalSettings::Instance().LoyaltyMateEnabled && Info.EMail.Trim() == "")
+  {
+    isEmailValid = true;
+  }
+  else
     {
-      if(MessageBox("Entered email address is invalid.", "Invalid Email", MB_RETRYCANCEL) == IDRETRY)
-      {
-        edEmail->SetFocus();
-      }
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        if(Info.ContactKey > 0)
+        {
+          IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL AND CONTACTS_KEY <> :CONTACTS_KEY";
+          IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = Info.ContactKey;
+        }
+        else
+        {
+          IBInternalQuery->SQL->Text = "SELECT count(EMAIL) FROM CONTACTS where EMAIL =:EMAIL ";
+
+        }
+        IBInternalQuery->ParamByName("EMAIL")->AsString = Info.EMail;
+
+        IBInternalQuery->ExecQuery();
+        DBTransaction.Commit();
+        int	emailcount = IBInternalQuery->Fields[0]->AsInteger;
+        if(emailcount > 0)
+         {
+            MessageBox("Member with same email already exists!!!", "Error", MB_OK + MB_ICONERROR);
+            isEmailValid = false;
+         }
     }
-   return emailValid;
+   if(!isEmailValid)
+     edEmail->SetFocus();
+   return isEmailValid;
 }
 
 void __fastcall TfrmEditCustomer::cbCopyAddressClick(TObject *Sender)
@@ -1152,6 +1125,10 @@ void __fastcall TfrmEditCustomer::DateTimePicker1OnChange(TObject *Sender)
 
 void TfrmEditCustomer::ProcessData()
 {
+  if (Info.SiteID == 0)
+  {
+        Info.SiteID = TGlobalSettings::Instance().SiteID;
+  }
   SaveData();
   try
   {
@@ -1165,12 +1142,6 @@ void TfrmEditCustomer::ProcessData()
      if(CheckDateOfBirth)
      {
          Info.LastModified = Now();
-
-         if (Info.SiteID == 0)
-         {
-            Info.SiteID = TGlobalSettings::Instance().SiteID;
-         }
-
          if (tbtnAllowedTab->Latched == true)
          {
             Info.TabEnabled = true;
@@ -1198,17 +1169,21 @@ void TfrmEditCustomer::PopulateDateTimePicker(char valueChar, TDateTimePicker *d
   //-----------------------------------------------------------------------
 bool TfrmEditCustomer::CheckMobileNumber(UnicodeString mobile)
 {
-   bool retVal = false;
+   if(mobile.Trim() == "")
+     return true;
+
+   if(mobile.Length() < 5)
+   {
+      MessageBox("Mobile number should be greater than 4 digits.", "Invalid Moble Number", MB_ICONERROR);
+      return false;
+   }
+
+   bool retVal = true;
    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
+   DBTransaction.StartTransaction();
    try
    {
-//        if(Info.ContactKey != 0)
-//        {
-//           ///return false;
-//        }
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
         IBInternalQuery->Close();
         if(Info.ContactKey == 0)
         {
@@ -1223,21 +1198,20 @@ bool TfrmEditCustomer::CheckMobileNumber(UnicodeString mobile)
         IBInternalQuery->ExecQuery();
         if(IBInternalQuery->RecordCount)
         {
-            retVal = true;
+            retVal = false;
         }
-        if (retVal)
+        if (!retVal)
         {
             MessageBox("This mobile number already exits in our record.Please provide different mobile number for your registration.", "Different mobile number for your registration", MB_ICONERROR);
         }
        DBTransaction.Commit();
        return retVal;
    }
-
    catch(Exception & E)
    {
 	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
       DBTransaction.Rollback();
-	  throw;
+	  return false;
    }
 
 

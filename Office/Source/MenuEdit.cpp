@@ -1,3 +1,4 @@
+
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
@@ -49,7 +50,6 @@
 #pragma link "TouchControls"
 #pragma resource "*.dfm"
 #include "InputCategory.h"
-
 TfrmMenuEdit *frmMenuEdit;
 
 const MENU_PIC 			= ICON_NOTEPAD_INDEX;
@@ -2315,7 +2315,7 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
                 rowIndex++;
         }
 
-		edItemCost->Value									= ItemSizeData->Cost;
+		edItemCost->Value									= fabs(ItemSizeData->Cost);
 		edItemMaxPrice->Value									= ItemSizeData->MaxRetailPrice;
 		edCostGST->Value									= ItemSizeData->CostGST;
 		nePointsPercent->Value							= ItemSizeData->PointsPercent;
@@ -7240,6 +7240,7 @@ bool TfrmMenuEdit::NewMenu()
 	{
 		if (NewMenuName != "")
 		{
+
 			if (NewMenuName.Length() > MAX_MENU_NAME_LENGTH)
 			{
 				if (Application->MessageBox("The name is too long and will be trimmed.\rIs this OK?",
@@ -11110,7 +11111,7 @@ void *TfrmMenuEdit::AddServingCourse(Menu::TServingCoursesInfo *ServingCoursesIn
 	TServingCourseNode *CourseData = (TServingCourseNode *)ServingCourseNode->Data;
 	CourseData->Key  	         = ServingCoursesInfo->ServingCourses[i].Key;
 	CourseData->LongDescription	 = ServingCoursesInfo->ServingCourses[i].ServingCourse_Name;
-	CourseData->KitchenName	     = UTF8Decode(ServingCoursesInfo->ServingCourses[i].ServingCourse_Kitchen_Name);
+	CourseData->KitchenName	     = ServingCoursesInfo->ServingCourses[i].ServingCourse_Kitchen_Name;
 	CourseData->Enabled          = ServingCoursesInfo->ServingCourses[i].Enabled;
 	CourseData->Deleted 		 = false;
 	CourseData->Colour   		 = ServingCoursesInfo->ServingCourses[i].Colour;
@@ -11609,10 +11610,10 @@ void TfrmMenuEdit::ReadSizesInfo( TLoadMenu *inLoadMenu, Menu::TSizesInfo &inSiz
 	__int32 sizeCount = inLoadMenu->SizeCount();
 	inSizesInfo.Sizes.clear();
 
-	AnsiString sizeName = "";
-	AnsiString sizeKitchenName = "";
-	AnsiString sizeHandheldName = "";
-	AnsiString sizeReceiptName = "";
+	WideString sizeName = "";
+	WideString sizeKitchenName = "";
+	WideString sizeHandheldName = "";
+	WideString sizeReceiptName = "";
 
 	for( __int32 i = 0; i < sizeCount; i++ )
 	{
@@ -11627,10 +11628,10 @@ void TfrmMenuEdit::ReadSizesInfo( TLoadMenu *inLoadMenu, Menu::TSizesInfo &inSiz
 		sizeInfo.Size_ID,
 		sizeInfo.PalmID );
 
-		sizeInfo.Size_Name = UTF8Decode( sizeName );
-		sizeInfo.Size_Kitchen_Name = UTF8Decode( sizeKitchenName );
-		sizeInfo.Size_Handheld_Name = UTF8Decode( sizeHandheldName );
-		sizeInfo.Size_Receipt_Name = UTF8Decode( sizeReceiptName );
+		sizeInfo.Size_Name = WideString( sizeName );
+		sizeInfo.Size_Kitchen_Name = WideString( sizeKitchenName );
+		sizeInfo.Size_Handheld_Name = WideString( sizeHandheldName );
+		sizeInfo.Size_Receipt_Name = WideString( sizeReceiptName );
 
 		inSizesInfo.Sizes.push_back( sizeInfo );
 	}
@@ -11641,7 +11642,7 @@ void TfrmMenuEdit::ReadCategoriesInfo( TLoadMenu *inLoadMenu, Menu::TCategoriesI
 	__int32 categoryGroupCount = inLoadMenu->CategoryGroupCount();
 	inCategoriesInfo.CategoryGroups.clear();
 
-	AnsiString categoryGroupName = "";
+	WideString categoryGroupName = "";
 
 	for( __int32 i = 0; i < categoryGroupCount; i++ )
 	{
@@ -11654,7 +11655,7 @@ void TfrmMenuEdit::ReadCategoriesInfo( TLoadMenu *inLoadMenu, Menu::TCategoriesI
 		categoryGroupName,
 		deleted );
 
-		categoryGroupInfo.Category_Group_Name = UTF8Decode( categoryGroupName );
+		categoryGroupInfo.Category_Group_Name =  categoryGroupName;
 
 		//:::::::::::::::::::::::::::::::::
 
@@ -11665,11 +11666,11 @@ void TfrmMenuEdit::ReadCategoriesInfo( TLoadMenu *inLoadMenu, Menu::TCategoriesI
 		{
 			Menu::TCategoryInfo category;
 			category.Key = 0;
-			AnsiString Category_Name = "";
-			AnsiString Category_GL_Code = "";
+			WideString Category_Name = "";
+			WideString Category_GL_Code = "";
 			inLoadMenu->CategoryAtIndex( j, categoryGroupID, category.Key, Category_Name, Category_GL_Code, deleted );
-			category.Category_Name = UTF8Decode( Category_Name );
-			category.Category_GL_Code = UTF8Decode(Category_GL_Code  );
+			category.Category_Name =  Category_Name;
+			category.Category_GL_Code =  Category_GL_Code;
 			categoryGroupInfo.Categories.push_back(category  );
 		}
 
@@ -11685,8 +11686,8 @@ void TfrmMenuEdit::ReadServingCoursesInfo( TLoadMenu *inLoadMenu, Menu::TServing
 	inServingCoursesInfo.ServingCourses.clear();
 	DeletedServingCoursesInfo.DeletedServingCourseVector.clear();
 
-	AnsiString servingCourseName = "";
-	AnsiString servingCourseKitchenName = "";
+	WideString servingCourseName = "";
+	WideString servingCourseKitchenName = "";
 
 	for( __int32 i = 0; i < servingCourseCount; i++ )
 	{
@@ -11702,8 +11703,8 @@ void TfrmMenuEdit::ReadServingCoursesInfo( TLoadMenu *inLoadMenu, Menu::TServing
 		servingCourseInfo.Colour,
 		servingCourseInfo.DisplayOrder );
 
-		servingCourseInfo.ServingCourse_Name = UTF8Decode(servingCourseName);
-		servingCourseInfo.ServingCourse_Kitchen_Name = UTF8Decode(servingCourseKitchenName);
+		servingCourseInfo.ServingCourse_Name = UTF8Decode( servingCourseName );
+		servingCourseInfo.ServingCourse_Kitchen_Name = UTF8Decode( servingCourseKitchenName );
 
 		if( servingCourseInfo.Deleted )
 		{
@@ -11734,11 +11735,11 @@ bool TfrmMenuEdit::CreateCourseNodes( TLoadMenu* inLoadMenu )
 
 		__int32 courseCount = inLoadMenu->CourseCount();
 
-		AnsiString courseName = "";
-		AnsiString courseKitchenName = "";
-		AnsiString courseHandheldName = "";
-		AnsiString courseReceiptName = "";
-		AnsiString courseServingCourseName = "";
+		WideString courseName = "";
+		WideString courseKitchenName = "";
+		WideString courseHandheldName = "";
+		WideString courseReceiptName = "";
+		WideString courseServingCourseName = "";
 
 		for( __int32 i = 0; i < courseCount; i++ )
 		{
@@ -11757,11 +11758,11 @@ bool TfrmMenuEdit::CreateCourseNodes( TLoadMenu* inLoadMenu )
 			courseServingCourseName,
 			courseInfo.No_Default_Serving_Course );
 
-			courseInfo.Course_Name = UTF8Decode(courseName);
-			courseInfo.Course_Kitchen_Name = UTF8Decode(courseKitchenName);
-			courseInfo.Course_Handheld_Name = UTF8Decode(courseHandheldName);
-			courseInfo.Course_Receipt_Name = UTF8Decode(courseReceiptName);
-			courseInfo.ServingCourse_Name = UTF8Decode(courseServingCourseName);
+			courseInfo.Course_Name = courseName;
+			courseInfo.Course_Kitchen_Name = courseKitchenName;
+			courseInfo.Course_Handheld_Name = courseHandheldName;
+			courseInfo.Course_Receipt_Name = courseReceiptName;
+			courseInfo.ServingCourse_Name = courseServingCourseName;
 
 			ReadCourseOptionsInfo( inLoadMenu, courseID, courseInfo );
 
@@ -11823,10 +11824,10 @@ void TfrmMenuEdit::ReadCourseOptionsInfo( TLoadMenu* inLoadMenu, __int32 inCours
 {
 	__int32 optionCount = inLoadMenu->OptionCount( inCourseID );
 
-	AnsiString optionName = "";
-	AnsiString optionKitchenName = "";
-	AnsiString optionHandheldName = "";
-	AnsiString optionReceiptName = "";
+	WideString optionName = "";
+	WideString optionKitchenName = "";
+	WideString optionHandheldName = "";
+	WideString optionReceiptName = "";
 
 	for( __int32 i = 0; i < optionCount; i++ )
 	{
@@ -11851,10 +11852,10 @@ void TfrmMenuEdit::ReadCourseOptionsInfo( TLoadMenu* inLoadMenu, __int32 inCours
 		optionInfo.Print_Double_Width,
 		optionInfo.Print_Double_Height );
 
-		optionInfo.Option_Name = UTF8Decode(optionName);
-		optionInfo.Option_Kitchen_Name = UTF8Decode(optionKitchenName);
-		optionInfo.Option_Handheld_Name = UTF8Decode(optionHandheldName);
-		optionInfo.Option_Receipt_Name = UTF8Decode(optionReceiptName);
+		optionInfo.Option_Name = optionName; //UTF8Decode(optionName);
+		optionInfo.Option_Kitchen_Name = optionKitchenName; //UTF8Decode(optionKitchenName);
+		optionInfo.Option_Handheld_Name = optionHandheldName; //UTF8Decode(optionHandheldName);
+		optionInfo.Option_Receipt_Name = optionReceiptName; //UTF8Decode(optionReceiptName);
 
 		optionInfo.Print_Colour = StringToColor( AnsiString( optionColor ) );
 
@@ -11870,7 +11871,7 @@ void TfrmMenuEdit::ReadCourseOptionsInfo( TLoadMenu* inLoadMenu, __int32 inCours
 	}
 }
 //---------------------------------------------------------------------------
-bool TfrmMenuEdit::CreateItemNodes( TLoadMenu *inLoadMenu, __int32 inCourseHandle, AnsiString inCourseName, TTreeNode *inCourseNode )
+bool TfrmMenuEdit::CreateItemNodes( TLoadMenu *inLoadMenu, __int32 inCourseHandle, WideString inCourseName, TTreeNode *inCourseNode )   //WideString
 {
 	bool result = false;
 
@@ -11880,10 +11881,10 @@ bool TfrmMenuEdit::CreateItemNodes( TLoadMenu *inLoadMenu, __int32 inCourseHandl
 	{
 		__int32 itemCount = inLoadMenu->ItemCount( inCourseHandle );
 
-		AnsiString itemName = "";
-		AnsiString itemKitchenName = "";
-		AnsiString itemHandheldName = "";
-		AnsiString itemReceiptName = "";
+		WideString itemName = "";
+		WideString itemKitchenName = "";
+		WideString itemHandheldName = "";
+		WideString itemReceiptName = "";
 
 		for( __int32 i = 0; i < itemCount; i++ )
 		{
@@ -11907,10 +11908,10 @@ bool TfrmMenuEdit::CreateItemNodes( TLoadMenu *inLoadMenu, __int32 inCourseHandl
 			itemInfo.Print_Double_Width,
 			itemInfo.Print_Double_Height );
 
-			itemInfo.Item_Name = UTF8Decode(itemName);
-			itemInfo.Item_Kitchen_Name = UTF8Decode(itemKitchenName);
-			itemInfo.Item_Handheld_Name = UTF8Decode(itemHandheldName);
-			itemInfo.Item_Receipt_Name = UTF8Decode(itemReceiptName);
+			itemInfo.Item_Name = itemName;
+			itemInfo.Item_Kitchen_Name = itemKitchenName;
+			itemInfo.Item_Handheld_Name = itemHandheldName;
+			itemInfo.Item_Receipt_Name = itemReceiptName;
 
 			ReadItemForcedSidesInfo( inCourseName, inLoadMenu, itemHandle, itemInfo );
 
@@ -11937,12 +11938,12 @@ bool TfrmMenuEdit::CreateItemNodes( TLoadMenu *inLoadMenu, __int32 inCourseHandl
 	return result;
 }
 //---------------------------------------------------------------------------
-void TfrmMenuEdit::ReadItemForcedSidesInfo( const AnsiString &inCourseName, TLoadMenu *inLoadMenu, __int32 inItemID, Menu::TItemInfo &inItemInfo )
+void TfrmMenuEdit::ReadItemForcedSidesInfo( const WideString &inCourseName, TLoadMenu *inLoadMenu, __int32 inItemID, Menu::TItemInfo &inItemInfo )
 {
 	__int32 sideCount = inLoadMenu->ForcedSideCount( inItemID );
 	inItemInfo.Sides.clear();
 
-	AnsiString forceSideName = "";
+	WideString forceSideName = "";
 
 	for( __int32 i = 0; i < sideCount; i++ )
 	{
@@ -11959,7 +11960,7 @@ void TfrmMenuEdit::ReadItemForcedSidesInfo( const AnsiString &inCourseName, TLoa
 
 		sideInfo.Course_Name     = inCourseName;
 		sideInfo.Master_Item_Key = inItemInfo.Key;
-		sideInfo.Item_Name = UTF8Decode( forceSideName );
+		sideInfo.Item_Name =  forceSideName;
 
 		inItemInfo.Sides.push_back( sideInfo );
 	}
@@ -11971,7 +11972,7 @@ TLoadMenu *inLoadMenu,
 __int32    inItemHandle,
 std::vector<TForcedOption> &infOptions )
 {
-	AnsiString forcedOptionName = "";
+	WideString forcedOptionName = "";
 	__int32    forcedOptionPK;
 	__int32    optionFK;
 	__int32    groupNumber;
@@ -11991,7 +11992,7 @@ std::vector<TForcedOption> &infOptions )
 
 		if( groupNumber == inGroupNumber )
 		{
-			infOptions.push_back( TForcedOption( UTF8Decode(forcedOptionName),
+			infOptions.push_back( TForcedOption( forcedOptionName,
 			forcedOptionPK,
 			optionFK,
 			inItemKey ) );
@@ -12025,7 +12026,7 @@ bool TfrmMenuEdit::CreateItemSizeNodes( TLoadMenu *inLoadMenu, __int32 inItemID,
 	{
 		__int32 itemSizeCount = inLoadMenu->ItemSizeCount( inItemID );
 		std::vector<Menu::TThirdPartyCodeInfo> thirdPartyCodes;  // existing third party codes from xml file
-		AnsiString itemSizeName = "";
+		WideString itemSizeName = "";
 
 		if(itemSizeCount > 0)
 		{
@@ -12076,7 +12077,7 @@ bool TfrmMenuEdit::CreateItemSizeNodes( TLoadMenu *inLoadMenu, __int32 inItemID,
             itemSizeInfo.PriceForPoints);
 
 			itemSizeInfo.Third_Party_Code = GetThirdPartyCodeFromKeyFromFile(&thirdPartyCodes, itemSizeInfo.ThirdPartyCodes_Key);
-			itemSizeInfo.Size_Name = UTF8Decode( itemSizeName );
+			itemSizeInfo.Size_Name = itemSizeName;
 
 			ReadItemSizeBCategoriesInfo( inLoadMenu, itemSizeID, itemSizeInfo );
 			ReadItemSizeReceipesInfo(    inLoadMenu, itemSizeID, itemSizeInfo );
@@ -12258,8 +12259,8 @@ void TfrmMenuEdit::SaveMenuCategoryGroups( TSaveMenu* inSaveMenu, TTreeNode* inC
 
 			inSaveMenu->SaveCategory( categoryGroupID,
 			categoryData->Key,
-			categoryData->LongDescription,
-            categoryData->GLCode,
+			UTF8Encode( categoryData->LongDescription ),
+            UTF8Encode( categoryData->GLCode.Trim() ),
 			categoryData->GetDeleted()
 			);
 		}
@@ -12549,7 +12550,7 @@ __int32 TfrmMenuEdit::SaveMenuItemSize( TSaveMenu* inSaveMenu, __int32 inItemID,
 	inDCData->MaxRetailPrice,
 	inDCData->SpecialPrice,
 	inDCData->GST,
-	inDCData->Cost,
+	fabs( inDCData->Cost ),
 	inDCData->CostGST,
 	inDCData->PointsPercent,
 
@@ -12565,7 +12566,7 @@ __int32 TfrmMenuEdit::SaveMenuItemSize( TSaveMenu* inSaveMenu, __int32 inItemID,
 	inDCData->Barcode,
 	inDCData->Enabled,
 	inDCData->CategoryKey,
-	inDCData->Category,
+	UTF8Encode(inDCData->Category),
 	inDCData->ThirdPartyCodeKey,
 	inDCData->TareWeight,
 	inDCData->PLU,
@@ -13082,7 +13083,7 @@ void __fastcall TfrmMenuEdit::edGlCodeExit(TObject *Sender)
                             " ",   //BARCODE
                             1, //Enabled
                             itemSize.categoryKey, //CATEGORY KEY
-                            itemSize.categoryName, //categoryName
+                            UTF8Encode(itemSize.categoryName), //categoryName
                             0,   //thirdPartyCodesKey
                             0,  //TareWeight
                             0,//plu
@@ -13235,13 +13236,14 @@ void __fastcall TfrmMenuEdit::sgItemSizeExit(TObject *Sender)
 //------------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::sgItemSizeKeyUp(TObject *Sender, WORD &Key, TShiftState Shift)
 {
- 	if (sgItemsize->Col == 1)
+    if (sgItemsize->Col == 1)
 	{
 		if ((Key >= '0' && Key <= '9')  || (Key >= VK_NUMPAD0 && Key <= VK_NUMPAD9) ||
-				Key == VK_DECIMAL || Key == '.' || Key == VK_BACK)
+				Key == VK_DECIMAL || Key == '.' || Key == VK_BACK || Key == 229)
 		{
 			if (Key != '.')
 			{
+
 				AnsiString Value = sgItemsize->Cells[sgItemsize->Col][sgItemsize->Row];
 				AnsiString Dec,Frac = "";
 				int i = Value.AnsiPos(".");
@@ -13264,7 +13266,7 @@ void __fastcall TfrmMenuEdit::sgItemSizeKeyUp(TObject *Sender, WORD &Key, TShift
 			            sgItemsize->Cells[1][i] = sgItemsize->Cells[1][1];
                     }
 			    }
-            }    
+            }
 		}
 	}
     else if(sgItemsize->Col == 0)
@@ -13536,4 +13538,5 @@ void TfrmMenuEdit::UpdateItemForForcedOptions()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
+
 

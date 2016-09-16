@@ -529,12 +529,14 @@ void TfrmChitNumberGui::GetDiscounts(TStringList* discountsList)
 
   Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
   DBTransaction.StartTransaction();
-  static const discount_list_combo_filter_t filter[2] =
-  {
-     exclude_combos,
-     only_combos
-  };
-  ManagerDiscount->GetDiscountList(DBTransaction,discountsList,filter[allow_combo],ShowPointsAsDiscount);
+
+  std::vector<eDiscountFilter> discountFilter;
+  if(allow_combo)
+     discountFilter.push_back(only_combos);
+  else
+     discountFilter.push_back(exclude_combos);
+
+  ManagerDiscount->GetDiscountList(DBTransaction,discountsList,discountFilter,ShowPointsAsDiscount);
   DBTransaction.Commit();
 }
 

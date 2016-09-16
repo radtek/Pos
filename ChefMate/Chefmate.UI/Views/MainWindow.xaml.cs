@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -16,10 +17,9 @@ using Chefmate.Core.Extensions;
 using Chefmate.Core.Model;
 using Chefmate.Infrastructure.Builder;
 using Chefmate.Infrastructure.Controller;
-using Chefmate.Infrastructure.Utility;
 using Chefmate.Logger;
 using Chefmate.UI.Controller;
-using ChefMate.Database;
+using Chefmate.UI.UserControls;
 using Application = System.Windows.Application;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
@@ -30,168 +30,71 @@ namespace Chefmate.UI.Views
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private double _orderHeight;
         private double _orderWidth;
         private string _chitTableNumber;
         private DispatcherTimer _orderTimer;
         private double _horizontalScale;
         private bool _isRecallEnabled;
-        private string _lastStatus;
         private int _lastSelectedIndex = -1;
+        private double _cordX;
+        private double _cordY;
+        private double _maxHeight;
+
         public MainWindow()
         {
             InitializeComponent();
             Initialize();
-            InitializeChefmate();
             InitializeTimer();
             _chitTableNumber = "";
-            this.SizeChanged += MainWindow_SizeChanged;
-            this.Activated += MainWindow_Activated;
-            this.PreviewKeyUp += MainWindow_PreviewKeyUp;
-            this.Loaded += MainWindow_Loaded;
-            FileSystemInitializer.Instance.FileCreatedEvent += Instance_FileCreatedEvent;
-            Builder.Instance.DatabaseOrderReceivedEvent += Instance_DatabaseOrderReceivedEvent;
-            ChefmateController.Instance.OrderArrivedEvent += OrderArrivedEventHandler;
-            ChefmateController.Instance.NavigationUpdateEvent += UpdateNavigationButtonDisplay;
-            ChefmateController.Instance.StatusChangeEvent += StatusChangeEventHandler;
+            Subscribe();
             if (ChefmateController.Instance.CurrentSettings != null)
                 IsRecallEnabled = ChefmateController.Instance.CurrentSettings.TerminalType == TerminalType.Kitchen;
             this.DataContext = this;
-
         }
-
-       
-
 
         #region Start up
-        private void InitializeChefmate()
-        {
-            try
-            {
-                if (!Properties.Settings.Default.TerminalInitialized)
-                {
-                    InitializeTerminal();
-                }
-                else
-                {
-                    bool result = DatabaseCore.Instance.InitializeDatabae(Properties.Settings.Default.DatabaseAddress, Properties.Settings.Default.DatabasePath);
-                    if (result)
-                    {
-                        CheckVersionInformation();
-                        bool terminalExist = ChefmateController.Instance.LoadTerminal(Environment.MachineName);
-                        if (!terminalExist)
-                        {
-                            InitializeTerminal();
-                        }
-                    }
-                    else
-                    {
-                        InitializeTerminal();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ChefmateLogger.Instance.LogError("InitializeChefmate", ex.Message);
-            }
-
-        }
-        private void InitializeTerminal()
-        {
-            try
-            {
-                StartupView startupView = new StartupView();
-                startupView.ShowInTaskbar = false;
-                startupView.Topmost = true;
-                startupView.ShowDialog();
-                if (startupView.ModalResult == System.Windows.Forms.DialogResult.Cancel)
-                {
-                    Application.Current.Shutdown();
-                }
-                else
-                {
-                    Properties.Settings.Default.DatabaseAddress = startupView.DbIpAddress;
-                    Properties.Settings.Default.DatabasePath = startupView.DbPath;
-                    Properties.Settings.Default.TerminalInitialized = true;
-                    DatabaseCore.Instance.InitializeDatabae(Properties.Settings.Default.DatabaseAddress, Properties.Settings.Default.DatabasePath);
-                    ChefmateController.Instance.AddTerminal(startupView.DisplayName, startupView.TerminalIpAddress, startupView.DbIpAddress, startupView.DbPath);
-                    Properties.Settings.Default.Save();
-                    CheckVersionInformation();
-                }
-            }
-            catch (Exception ex)
-            {
-                ChefmateLogger.Instance.LogError("InitializeTerminal", ex.Message);
-            }
-        }
-        private void CheckVersionInformation()
-        {
-            try
-            {
-                string versionErrorMessage = "";
-                var versionMode = VersionChecker.Instance.CheckVersionInformation(ChefmateConstants.DatabaseVersion, ref versionErrorMessage);
-                if (versionMode == DatabaseMode.Correct)
-                {
-                    ChefmateInitializer.Start();
-                }
-                else
-                {
-                    ChefmateController.Instance.ShowMessageBox("Version Error", versionErrorMessage);
-                    var chefmateParser = new ChefmateParserView();
-                    chefmateParser.ShowInTaskbar = false;
-                    chefmateParser.Topmost = true;
-                    chefmateParser.ShowDialog();
-                    Application.Current.Shutdown();
-                }
-            }
-            catch (Exception ex)
-            {
-                ChefmateLogger.Instance.LogError("CheckVersionInformation", ex.Message);
-            }
-        }
         private void LoadAllOrders()
         {
             try
             {
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    LastStatus = "Loading orders.....";
                     ChefmateController.Instance.LoadAllOrders();
-                    ChefmateController.Instance.ManageOrderDisplay();
-                    UpdateNavigationButtonDisplay();
+                    RedrawOrders();
                     AnalyticalData.TotalOrdersCount += TotalOrders.Count;
                     AnalyticalData.CurrentOrdersCount += TotalOrders.Count;
                     TotalOrders.ForEach(s => { AnalyticalData.CurrentItems += s.Items.Count; });
                     UpdateOrderInfoDisplay();
                     this.IsEnabled = true;
-                    LastStatus = "Chefmate Started Successfully!";
                 }));
             }
             catch (Exception ex)
             {
                 this.IsEnabled = true;
-                LastStatus = "Failed to Load Orders.";
                 ChefmateLogger.Instance.LogError("LoadAllOrders", ex.Message);
             }
         }
         private void Initialize()
         {
             AnalyticalData = new AnalyticalData();
-            PopUpCommand = new DelegateCommand(ExceutePopUp);
             NavigateBackwardCommand = new DelegateCommand(Backward);
             NavigateForwardCommand = new DelegateCommand(Forward);
-            CallAwayStopCommand = new DelegateCommand(StopCallAway);
+            NavigateLeftCommand = new DelegateCommand(ScrollToLeft);
+            NavigateRightCommand = new DelegateCommand(ScrollToRight);
             CurrentDisplayOrders = new ObservableCollection<Order>();
             TotalOrders = new ObservableCollection<Order>();
             this.IsEnabled = false;
         }
+
+
         #endregion
 
         #region Commands
-        public ICommand PopUpCommand { get; set; }
         public ICommand NavigateForwardCommand { get; set; }
         public ICommand NavigateBackwardCommand { get; set; }
-        public ICommand CallAwayStopCommand { get; set; }
+        public ICommand NavigateLeftCommand { get; set; }
+        public ICommand NavigateRightCommand { get; set; }
+
         #endregion
 
         #region Properties
@@ -231,24 +134,6 @@ namespace Chefmate.UI.Views
                 OnPropertyChanged("AnalyticalData");
             }
         }
-        public string LastStatus
-        {
-            get { return _lastStatus; }
-            set
-            {
-                _lastStatus = value;
-                OnPropertyChanged("LastStatus");
-            }
-        }
-        public double OrderHeight
-        {
-            get { return _orderHeight; }
-            set
-            {
-                _orderHeight = value;
-                OnPropertyChanged("OrderHeight");
-            }
-        }
         public double OrderWidth
         {
             get { return _orderWidth; }
@@ -257,11 +142,6 @@ namespace Chefmate.UI.Views
                 _orderWidth = value;
                 OnPropertyChanged("OrderWidth");
             }
-        }
-        public int PageIndex
-        {
-            get { return ChefmateController.Instance.PageIndex; }
-            set { ChefmateController.Instance.PageIndex = value; }
         }
         public double HorizontalScale
         {
@@ -284,18 +164,29 @@ namespace Chefmate.UI.Views
         #endregion
 
         #region EventHandles
-        private void StopCallAway(object obj)
+
+        private void Subscribe()
         {
-            var group = obj as Group;
-            if (group != null)
-            {
-                group.DisplayAttributes.IsBlinkingEnable = false;
-            }
+            this.SizeChanged += MainWindow_SizeChanged;
+            this.Activated += MainWindow_Activated;
+            this.PreviewKeyUp += MainWindow_PreviewKeyUp;
+            this.Loaded += MainWindow_Loaded;
+            FileSystemInitializer.Instance.FileCreatedEvent += Instance_FileCreatedEvent;
+            Builder.Instance.DatabaseOrderReceivedEvent += Instance_DatabaseOrderReceivedEvent;
+            ChefmateController.Instance.OrderArrivedEvent += OrderArrivedEventHandler;
+            ChefmateController.Instance.AddOrderEvent += AddOrderEventHandler;
+            ChefmateController.Instance.OrderRedrawEvent += OrderRedrawEvent;
+            OrderController.Instance.OrderRedrawEvent += OrderRedrawEvent;
+        }
+        private void OrderRedrawEvent()
+        {
+            RedrawOrders();
         }
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             LoadAllOrders();
             StartTimer();
+            SetFont();
         }
         private void Instance_DatabaseOrderReceivedEvent(DbOrderReceivedEventArgs eventArgs)
         {
@@ -319,40 +210,31 @@ namespace Chefmate.UI.Views
                 BumpByLoacation(e.Key);
             else
                 BumpByChitTableNumber(e.Key);
-
-        }
-        private void ExceutePopUp(object param)
-        {
-            int orderNumber = Convert.ToInt32(param);
-            var order = TotalOrders.FirstOrDefault(s => s.OrderNumber == orderNumber);
-            OrderPopUp orderPopUp = new OrderPopUp
-            {
-                Order = order,
-                ShowInTaskbar = false,
-                Topmost = true
-            };
-            orderPopUp.ShowDialog();
             OrderContainer.Focus();
         }
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            OrderHeight = (this.ActualHeight * .75) / ChefmateController.Instance.PageRows;
             if (OrderContainer.ActualWidth > 0)
             {
-                OrderWidth = OrderContainer.ActualWidth / ChefmateController.Instance.PageColumns;
-                HorizontalScale = OrderContainer.ActualWidth / (ChefmateController.Instance.PageColumns * OrderWidth);
+                OrderWidth = this.ActualWidth / ChefmateController.Instance.PageColumns;
+                HorizontalScale = this.ActualWidth / (ChefmateController.Instance.PageColumns * OrderWidth);
+
             }
+            _maxHeight = OrderContainer.ActualHeight;
             this.SizeChanged -= MainWindow_SizeChanged;
+
         }
         private void MainWindow_Activated(object sender, EventArgs e)
         {
-            OrderHeight = (this.ActualHeight * .75) / ChefmateController.Instance.PageRows;
             if (OrderContainer.ActualWidth > 0)
             {
-                OrderWidth = OrderContainer.ActualWidth / ChefmateController.Instance.PageColumns;
-                HorizontalScale = OrderContainer.ActualWidth / (ChefmateController.Instance.PageColumns * OrderWidth);
+                OrderWidth = this.ActualWidth / ChefmateController.Instance.PageColumns;
+                HorizontalScale = this.ActualWidth / (ChefmateController.Instance.PageColumns * OrderWidth);
             }
-            
+            _maxHeight = OrderContainer.ActualHeight;
+            ParentScroller.Width = this.ActualWidth;
+            OrderContainer.MinWidth = this.ActualWidth;
+            OrderContainer.Focus();
         }
         private void CloseClick(object sender, RoutedEventArgs e)
         {
@@ -362,6 +244,7 @@ namespace Chefmate.UI.Views
         }
         private void Setting(object sender, RoutedEventArgs e)
         {
+            var displayType = ChefmateController.Instance.CurrentSettings.GroupType;
             var settingView = new SettingView { ShowInTaskbar = false, Topmost = true };
             settingView.ShowDialog();
             IsRecallEnabled = ChefmateController.Instance.CurrentSettings.TerminalType == TerminalType.Kitchen;
@@ -369,15 +252,16 @@ namespace Chefmate.UI.Views
             Properties.Settings.Default.DatabaseAddress = ChefmateController.Instance.CurrentSettings.DbIpAddress;
             Properties.Settings.Default.Save();
             ChefmateController.Instance.SaveSettings();
-            ChefmateController.Instance.ManageOrderDisplay();
+            SetFont();
+            if (displayType != ChefmateController.Instance.CurrentSettings.GroupType)
+                RedrawOrders();
             OrderContainer.Focus();
         }
         private void Recall(object sender, RoutedEventArgs e)
         {
             RecallOrderView recallOrderView = new RecallOrderView
             {
-                ShowInTaskbar = false,
-                Topmost = true
+                ShowInTaskbar = false
             };
             recallOrderView.ShowDialog();
             if (recallOrderView.ModalResult && recallOrderView.SelectedOrder != null)
@@ -386,80 +270,240 @@ namespace Chefmate.UI.Views
             }
             OrderContainer.Focus();
         }
-        private void StatusChangeEventHandler(string status)
-        {
-            this.Dispatcher.Invoke(new Action(() =>
-            {
-                LastStatus = status;
-            }));
-        }
         #endregion
 
         #region Navigations
         private void Backward(object sender)
         {
-            if (PageIndex > 0)
-            {
-                var orderInPage = ChefmateController.Instance.PageRows * ChefmateController.Instance.PageColumns;
-                PageIndex--;
-                CurrentDisplayOrders.Clear();
-                int remainingOrders = TotalOrders.Count - PageIndex * orderInPage;
-                remainingOrders = remainingOrders >= orderInPage ? orderInPage : remainingOrders;
-                var orders = TotalOrders.ToList().GetRange(PageIndex * orderInPage, remainingOrders);
-                foreach (var order in orders)
-                {
-                    order.UpdateOrderInfoDisplay(ChefmateController.Instance.CurrentSettings.OrderInfoDisplay);
-                    ChefmateController.Instance.ManageOrderGroups(order);
-                    CurrentDisplayOrders.Add(order);
-                }
-            }
-
-            UpdateNavigationButtonDisplay();
-
+            var position = ParentScroller.HorizontalOffset;
+            var offset = position - OrderWidth * ChefmateController.Instance.PageColumns;
+            ParentScroller.ScrollToHorizontalOffset(offset);
+            UpdateNavigationButtonDisplay(offset);
         }
         private void Forward(object sender)
         {
-            var orderInPage = ChefmateController.Instance.PageRows * ChefmateController.Instance.PageColumns;
-            if (TotalOrders.Count > (PageIndex + 1) * orderInPage)
-            {
-                PageIndex++;
-                CurrentDisplayOrders.Clear();
-                int remainingOrders = TotalOrders.Count - PageIndex * orderInPage;
-                remainingOrders = remainingOrders >= orderInPage ? orderInPage : remainingOrders;
-                var orders = TotalOrders.ToList().GetRange(PageIndex * orderInPage, remainingOrders);
-                foreach (var order in orders)
-                {
-                    order.UpdateOrderInfoDisplay(ChefmateController.Instance.CurrentSettings.OrderInfoDisplay);
-                    ChefmateController.Instance.ManageOrderGroups(order);
-                    CurrentDisplayOrders.Add(order);
-                }
-            }
-            UpdateNavigationButtonDisplay();
+            var position = ParentScroller.HorizontalOffset;
+            var offset = position + OrderWidth * ChefmateController.Instance.PageColumns;
+            ParentScroller.ScrollToHorizontalOffset(offset);
+            UpdateNavigationButtonDisplay(offset);
+
         }
-        private void UpdateNavigationButtonDisplay()
+        private void ScrollToRight(object obj)
+        {
+            ParentScroller.ScrollToRightEnd();
+            double index = Math.Floor(_cordX / (OrderWidth * ChefmateController.Instance.PageColumns)) + 1;
+            UpdateNavigationButtonDisplay(index * ChefmateController.Instance.PageColumns * OrderWidth);
+        }
+        private void ScrollToLeft(object obj)
+        {
+            ParentScroller.ScrollToLeftEnd();
+            UpdateNavigationButtonDisplay(0);
+        }
+        private void UpdateNavigationButtonDisplay(double offset = 0)
+        {
+            var backwardEnabled = offset > 0;
+            var forwardEnabled = offset + (this.ActualWidth + 10) < _cordX + _orderWidth;
+            BackwardNavigationButton.IsEnabled = backwardEnabled;
+            LeftNavigationButton.IsEnabled = backwardEnabled;
+            ForwardNavigationButton.IsEnabled = forwardEnabled;
+            RightNavigationButton.IsEnabled = forwardEnabled;
+            OrderContainer.Focus();
+        }
+        #endregion
+
+        #region Drawing
+        private void SetFont()
+        {
+            this.FontSize = ChefmateController.Instance.CurrentSettings.CmFontSize;
+        }
+        private void RedrawOrders()
         {
             this.Dispatcher.Invoke(new Action(() =>
             {
-                var orderInPage = ChefmateController.Instance.PageRows * ChefmateController.Instance.PageColumns;
-                BackwardNavigationButton.IsEnabled = PageIndex > 0;
-                ForwardNavigationButton.IsEnabled = TotalOrders.Count > (PageIndex + 1) * orderInPage;
+                _cordX = 0;
+                _cordY = 0;
+                CurrentDisplayOrders.Clear();
+                OrderContainer.Children.Clear();
+                foreach (var order in TotalOrders)
+                {
+                    FilterOrder(order);
+                }
+                UpdateNavigationButtonDisplay();
             }));
 
         }
+        private void FilterOrder(Order inOrder)
+        {
+            inOrder.FilterOrders(ChefmateController.Instance.CurrentSettings.GroupType, ChefmateController.Instance.CurrentSettings.OrderInfoDisplay);
+            double remainingHeight = _maxHeight - _cordY;
+            var orderheight = inOrder.GetOrderActualHeight();
+            if (remainingHeight > orderheight)
+            {
+                AddOrderToCanvas(inOrder);
+            }
+            else
+            {
+                _cordY = 0;
+                if (CurrentDisplayOrders.Count > 0)
+                    _cordX += OrderWidth;
+                if (orderheight > _maxHeight)
+                    DrawLargeOrder(inOrder, orderheight);
+                else
+                    FilterOrder(inOrder);
+            }
+
+        }
+        private void DrawLargeOrder(Order inOrder, double orderHeight)
+        {
+            OrderGuiIndex orderGuiIndex = new OrderGuiIndex();
+            bool headerVisible = true;
+            while (orderGuiIndex.GroupIndex < inOrder.DisplayGroups.Count)
+            {
+                double remainingHeight = _maxHeight - _cordY;
+                var order = GetOrderForHeight(inOrder, remainingHeight, orderGuiIndex, headerVisible);
+                order.DisplayAttributes.IsHeaderVisible = headerVisible;
+                headerVisible = false;
+                AddOrderToCanvas(order);
+                orderHeight -= order.GetOrderActualHeight();
+                if (orderHeight > 0)
+                {
+                    _cordX += _orderWidth;
+                    _cordY = 0;
+                }
+            }
+
+        }
+        private Order GetOrderForHeight(Order inOrder, double remainigHeight, OrderGuiIndex orderGuiIndex, bool inHeaderVisible)
+        {
+            var order = new Order(inOrder);
+            if (inHeaderVisible)
+                remainigHeight -= ChefmateConstants.OrderHeaderHeight;
+            while (remainigHeight >= ChefmateConstants.UnitHeight && orderGuiIndex.GroupIndex < inOrder.DisplayGroups.Count)
+            {
+                var group = GetGroupForHeight(inOrder.DisplayGroups[orderGuiIndex.GroupIndex], ref remainigHeight, orderGuiIndex);
+                if (group.Items.Count > 0)
+                {
+                    group.Order = order;
+                    order.DisplayGroups.Add(group);
+                    if (orderGuiIndex.GroupItemIndex == inOrder.DisplayGroups[orderGuiIndex.GroupIndex].Items.Count)
+                    {
+                        orderGuiIndex.GroupIndex++;
+                        orderGuiIndex.GroupItemIndex = 0;
+                        orderGuiIndex.ItemOptionIndex = 0;
+                        orderGuiIndex.ItemSideIndex = 0;
+                        orderGuiIndex.IsLastItempartial = false;
+                    }
+                }
+            }
+            return order;
+        }
+        private Group GetGroupForHeight(Group inGroup, ref double height, OrderGuiIndex orderGuiIndex)
+        {
+            var group = new Group(inGroup);
+            if (orderGuiIndex.GroupItemIndex == 0 && orderGuiIndex.ItemOptionIndex == 0 && orderGuiIndex.ItemSideIndex == 0)
+                height -= ChefmateConstants.UnitHeight;
+            else
+                group.DisplayAttributes.IsHeaderVisible = false;
+            while (height >= ChefmateConstants.UnitHeight && orderGuiIndex.GroupItemIndex < inGroup.Items.Count)
+            {
+                var item = inGroup.Items[orderGuiIndex.GroupItemIndex];
+                var newItem = GetItemForHeight(item, ref height, orderGuiIndex);
+                group.Items.Add(newItem);
+            }
+            return group;
+        }
+        private Item GetItemForHeight(Item inItem, ref double height, OrderGuiIndex orderGuiIndex)
+        {
+            var itemHeight = inItem.GetItemActualHeight();
+            if (itemHeight <= height)
+            {
+                orderGuiIndex.IsLastItempartial = false;
+                orderGuiIndex.GroupItemIndex++;
+                height -= itemHeight;
+                return inItem;
+            }
+            else
+            {
+                var item = new Item(inItem);
+                if (!orderGuiIndex.IsLastItempartial)
+                    height -= ChefmateConstants.UnitHeight;
+                else
+                    item.DisplayAttributes.IsHeaderVisible = false;
+                while (height > ChefmateConstants.UnitHeight && orderGuiIndex.ItemSideIndex < inItem.Sides.Count)
+                {
+                    var side = new Side(inItem.Sides[orderGuiIndex.ItemSideIndex]);
+                    item.Sides.Add(side);
+                    height -= ChefmateConstants.UnitHeight;
+                    orderGuiIndex.ItemSideIndex++;
+                }
+                while (height > ChefmateConstants.UnitHeight && orderGuiIndex.ItemOptionIndex < inItem.Options.Count)
+                {
+                    var option = new Option(inItem.Options[orderGuiIndex.ItemOptionIndex]);
+                    item.Options.Add(option);
+                    height -= ChefmateConstants.UnitHeight;
+                    orderGuiIndex.ItemOptionIndex++;
+                }
+                if (orderGuiIndex.ItemSideIndex == inItem.Sides.Count &&
+                    orderGuiIndex.ItemOptionIndex == inItem.Options.Count)
+                {
+                    orderGuiIndex.GroupItemIndex++;
+                    orderGuiIndex.IsLastItempartial = false;
+                }
+                else
+                {
+                    orderGuiIndex.IsLastItempartial = true;
+                }
+                return item;
+            }
+        }
+        private void AddOrderToCanvas(Order inOrder)
+        {
+            OrderWidth = this.ActualWidth / ChefmateController.Instance.PageColumns;
+            var orderControl = new OrderControl(inOrder, OrderWidth);
+            OrderContainer.Children.Add(orderControl);
+            Canvas.SetLeft(orderControl, _cordX);
+            Canvas.SetTop(orderControl, _cordY);
+            inOrder.CordX = _cordX;
+            inOrder.CordY = _cordY;
+            _cordY += inOrder.GetOrderActualHeight();
+            CurrentDisplayOrders.Add(inOrder);
+            OrderContainer.Width = (Math.Floor(_cordX / this.ActualWidth) + 1) * OrderWidth * ChefmateController.Instance.PageColumns;
+        }
+        private bool IsOrderInView(Order inOrder)
+        {
+            return inOrder.CordX >= ParentScroller.HorizontalOffset && inOrder.CordX < (ParentScroller.HorizontalOffset + this.ActualWidth);
+        }
+
 
         #endregion
 
         #region OrderDisplay
+        private void AddOrderEventHandler(Order order)
+        {
+            Application.Current.Dispatcher.Invoke(new
+                Action(() =>
+                {
+                    StopTimer();
+                    FilterOrder(order);
+                    StartTimer();
+                    UpdateNavigationButtonDisplay();
+                }));
+        }
         private void OrderArrivedEventHandler(Order order)
         {
             Application.Current.Dispatcher.Invoke(new
                 Action(() =>
                 {
                     StopTimer();
+                    bool addOrder = order.OrderState == OrderState.Complete && OutputTime.Immediately != ChefmateController.Instance.CurrentSettings.OutputTime;
                     ChefmateController.Instance.AddOrder(order);
+                    if (addOrder)
+                        FilterOrder(order);
                     StartTimer();
+                    UpdateNavigationButtonDisplay();
                 }));
         }
+
         #endregion
 
         #region PropertyChanged Implementation
@@ -530,14 +574,19 @@ namespace Chefmate.UI.Views
             {
                 if (CurrentDisplayOrders.Count > _lastSelectedIndex)
                 {
-                    var selectedOrder = CurrentDisplayOrders[_lastSelectedIndex];
-                    if (doBump)
+                    var selectedOrder = TotalOrders[_lastSelectedIndex];
+                    selectedOrder = CurrentDisplayOrders.FirstOrDefault(s => s.OrderKey == selectedOrder.OrderKey);
+                    if (selectedOrder != null && IsOrderInView(selectedOrder))
                     {
-                        OrderController.Instance.BumpOrder(selectedOrder);
-                        _lastSelectedIndex = -1;
+                        if (doBump)
+                        {
+                            OrderController.Instance.BumpOrder(selectedOrder);
+                            _lastSelectedIndex = -1;
+                            RedrawOrders();
+                        }
+                        else
+                            selectedOrder.DisplayAttributes.ExecutePopUp = true;
                     }
-                    else
-                        selectedOrder.DisplayAttributes.ExecutePopUp = true;
                 }
             }
         }
@@ -586,10 +635,14 @@ namespace Chefmate.UI.Views
                     _chitTableNumber += "9";
                     break;
                 case Key.Enter:
-                    if (!OrderController.Instance.BumpByChitTableNumber(_chitTableNumber))
+                    if (!BumpByChitTableNumber(_chitTableNumber))
                     {
                         ChefmateController.Instance.ShowMessageBox("Error",
                             "Table/Chit Number does not exist on the current screen. Please press enter to continue.");
+                    }
+                    else
+                    {
+                        RedrawOrders();
                     }
                     _chitTableNumber = "";
                     break;
@@ -598,6 +651,35 @@ namespace Chefmate.UI.Views
                     break;
             }
         }
+        public bool BumpByChitTableNumber(string chitTableNumber)
+        {
+            if (string.IsNullOrWhiteSpace(chitTableNumber))
+                return false;
+            bool bumpChit = BumpByChitNumber(chitTableNumber);
+            bool bumpTable = BumpByTableNumber(chitTableNumber);
+            return bumpTable || bumpChit;
+        }
+        private bool BumpByChitNumber(string chitNumber)
+        {
+            var order = CurrentDisplayOrders.FirstOrDefault(s => s.ChitValue.Contains(chitNumber));
+            if (order != null && IsOrderInView(order))
+            {
+                OrderController.Instance.BumpOrder(order);
+                return true;
+            }
+            return false;
+        }
+        private bool BumpByTableNumber(string tableNumber)
+        {
+            var order = CurrentDisplayOrders.FirstOrDefault(s => s.TableTabName.Contains(tableNumber));
+            if (order != null && IsOrderInView(order))
+            {
+                OrderController.Instance.BumpOrder(order);
+                return true;
+            }
+            return false;
+        }
+
         #endregion region
 
         #region Timer
@@ -649,8 +731,10 @@ namespace Chefmate.UI.Views
         }
         private void SetGroupsColor(Order order, SolidColorBrush solidColorBrush)
         {
-            order.ServingCourseGroups.ToList().ForEach(s => { SetGroupColor(s, solidColorBrush); });
-            order.CourseGroups.ToList().ForEach(s => { SetGroupColor(s, solidColorBrush); });
+            //order.ServingCourseGroups.ToList().ForEach(s => { SetGroupColor(s, solidColorBrush); });
+            //order.CourseGroups.ToList().ForEach(s => { SetGroupColor(s, solidColorBrush); });
+            order.DisplayGroups.ToList().ForEach(s => { SetGroupColor(s, solidColorBrush); });
+
         }
         private void SetGroupColor(Group group, SolidColorBrush solidColorBrush)
         {
@@ -671,7 +755,6 @@ namespace Chefmate.UI.Views
             }
         }
         #endregion
-
 
     }
 }

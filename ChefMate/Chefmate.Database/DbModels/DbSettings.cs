@@ -20,12 +20,13 @@ namespace ChefMate.Database
             var resultSet = DatabaseCore.Instance.ExecuteDataSetQuery(commandText, fbParameters);
             return ExtractSettings(resultSet);
         }
-        private static Settings ExtractSettings(DataTable dataTable)
+        public static Settings ExtractSettings(DataTable dataTable)
         {
             var settingCollection = new Dictionary<string, string>();
             for (int i = 0; i < dataTable.Rows.Count; i++)
             {
-                settingCollection.Add(Convert.ToString(dataTable.Rows[i]["SETTINGNAME"]), Convert.ToString(dataTable.Rows[i]["SETTINGVALUE"]));
+                if (!settingCollection.ContainsKey(Convert.ToString(dataTable.Rows[i]["SETTINGNAME"])))
+                    settingCollection.Add(Convert.ToString(dataTable.Rows[i]["SETTINGNAME"]), Convert.ToString(dataTable.Rows[i]["SETTINGVALUE"]));
             }
             var settings = new Settings();
             settings.AutoHide = settingCollection["AutoHide"].ToBoolean();
@@ -52,6 +53,8 @@ namespace ChefMate.Database
             settings.OrderInfoDisplay = (OrderInfoDisplay)settingCollection["OrderInfoDisplay"].ToInteger();
             settings.OutputType = (OutputType)settingCollection["OutputType"].ToInteger();
             settings.OrderLayout = (OrderLayout)settingCollection["OrderLayout"].ToInteger();
+            settings.RecallCount = settingCollection["RecallCount"].ToInteger();
+            settings.CmFontSize = settingCollection["FontSize"].ToInteger();
             return settings;
         }
         public static bool AddSettings(Settings settings, int terminakKey)
@@ -83,34 +86,45 @@ namespace ChefMate.Database
             AddSettingRow("OrderInfoDisplay", Convert.ToInt32(settings.OrderInfoDisplay), terminakKey);
             AddSettingRow("OutputType", Convert.ToInt32(settings.OutputType), terminakKey);
             AddSettingRow("OrderLayout", Convert.ToInt32(settings.OrderLayout), terminakKey);
+            AddSettingRow("RecallCount", Convert.ToInt32(settings.RecallCount), terminakKey);
+            AddSettingRow("FontSize", Convert.ToInt32(settings.CmFontSize), terminakKey);
             return true;
         }
-        private static void AddSettingRow(string key, string value, int terminakKey)
+        public static void AddSettingRow(string key, string value, int terminakKey)
         {
-            var parmeters = new List<QueryParameter>();
-            parmeters.Add(new QueryParameter("TERMINALKEY", terminakKey));
-            parmeters.Add(new QueryParameter("SETTINGNAME", key));
-            parmeters.Add(new QueryParameter("SETTINGVALUE", value));
-            var commandText = DatabaseCore.Instance.BuildInsertQuery("TERMINALSETTINGS", parmeters);
-            DatabaseCore.Instance.ExecuteNonQuery(commandText, parmeters);
+            if (!SettingExist(key, terminakKey))
+            {
+                var parmeters = new List<QueryParameter>();
+                parmeters.Add(new QueryParameter("TERMINALKEY", terminakKey));
+                parmeters.Add(new QueryParameter("SETTINGNAME", key));
+                parmeters.Add(new QueryParameter("SETTINGVALUE", value));
+                var commandText = DatabaseCore.Instance.BuildInsertQuery("TERMINALSETTINGS", parmeters);
+                DatabaseCore.Instance.ExecuteNonQuery(commandText, parmeters);
+            }
         }
-        private static void AddSettingRow(string key, int value, int terminakKey)
+        public static void AddSettingRow(string key, int value, int terminakKey)
         {
-            var parmeters = new List<QueryParameter>();
-            parmeters.Add(new QueryParameter("TERMINALKEY", terminakKey));
-            parmeters.Add(new QueryParameter("SETTINGNAME", key));
-            parmeters.Add(new QueryParameter("SETTINGVALUE", value));
-            var commandText = DatabaseCore.Instance.BuildInsertQuery("TERMINALSETTINGS", parmeters);
-            DatabaseCore.Instance.ExecuteNonQuery(commandText, parmeters);
+            if (!SettingExist(key, terminakKey))
+            {
+                var parmeters = new List<QueryParameter>();
+                parmeters.Add(new QueryParameter("TERMINALKEY", terminakKey));
+                parmeters.Add(new QueryParameter("SETTINGNAME", key));
+                parmeters.Add(new QueryParameter("SETTINGVALUE", value));
+                var commandText = DatabaseCore.Instance.BuildInsertQuery("TERMINALSETTINGS", parmeters);
+                DatabaseCore.Instance.ExecuteNonQuery(commandText, parmeters);
+            }
         }
-        private static void AddSettingRow(string key, bool value, int terminakKey)
+        public static void AddSettingRow(string key, bool value, int terminakKey)
         {
-            var parmeters = new List<QueryParameter>();
-            parmeters.Add(new QueryParameter("TERMINALKEY", terminakKey));
-            parmeters.Add(new QueryParameter("SETTINGNAME", key));
-            parmeters.Add(new QueryParameter("SETTINGVALUE", value));
-            var commandText = DatabaseCore.Instance.BuildInsertQuery("TERMINALSETTINGS", parmeters);
-            DatabaseCore.Instance.ExecuteNonQuery(commandText, parmeters);
+            if (!SettingExist(key, terminakKey))
+            {
+                var parmeters = new List<QueryParameter>();
+                parmeters.Add(new QueryParameter("TERMINALKEY", terminakKey));
+                parmeters.Add(new QueryParameter("SETTINGNAME", key));
+                parmeters.Add(new QueryParameter("SETTINGVALUE", value));
+                var commandText = DatabaseCore.Instance.BuildInsertQuery("TERMINALSETTINGS", parmeters);
+                DatabaseCore.Instance.ExecuteNonQuery(commandText, parmeters);
+            }
         }
         public static void SaveSettings(Settings settings, int terminakKey)
         {
@@ -138,8 +152,10 @@ namespace ChefMate.Database
             SaveSettingRow("OrderInfoDisplay", Convert.ToInt32(settings.OrderInfoDisplay), terminakKey);
             SaveSettingRow("OutputType", Convert.ToInt32(settings.OutputType), terminakKey);
             SaveSettingRow("OrderLayout", Convert.ToInt32(settings.OrderLayout), terminakKey);
+            SaveSettingRow("RecallCount", settings.RecallCount, terminakKey);
+            SaveSettingRow("FontSize", settings.CmFontSize, terminakKey);
         }
-        private static void SaveSettingRow(string key, string value, int terminakKey)
+        public static void SaveSettingRow(string key, string value, int terminakKey)
         {
             var parmeters = new List<QueryParameter>();
             var whereCondition = " WHERE SETTINGNAME=@SETTINGNAME AND TERMINALKEY=@TERMINALKEY";
@@ -149,7 +165,7 @@ namespace ChefMate.Database
             parmeters.Add(new QueryParameter("SETTINGNAME", key));
             DatabaseCore.Instance.ExecuteNonQuery(commandText, parmeters);
         }
-        private static void SaveSettingRow(string key, int value, int terminakKey)
+        public static void SaveSettingRow(string key, int value, int terminakKey)
         {
             var parmeters = new List<QueryParameter>();
             var whereCondition = " WHERE SETTINGNAME=@SETTINGNAME AND TERMINALKEY=@TERMINALKEY";
@@ -159,7 +175,7 @@ namespace ChefMate.Database
             parmeters.Add(new QueryParameter("SETTINGNAME", key));
             DatabaseCore.Instance.ExecuteNonQuery(commandText, parmeters);
         }
-        private static void SaveSettingRow(string key, bool value, int terminakKey)
+        public static void SaveSettingRow(string key, bool value, int terminakKey)
         {
             var parmeters = new List<QueryParameter>();
             var whereCondition = " WHERE SETTINGNAME=@SETTINGNAME AND TERMINALKEY=@TERMINALKEY";
@@ -169,6 +185,14 @@ namespace ChefMate.Database
             parmeters.Add(new QueryParameter("SETTINGNAME", key));
             DatabaseCore.Instance.ExecuteNonQuery(commandText, parmeters);
         }
+        public static bool SettingExist(string key, int terminakKey)
+        {
+            var whereCondition = " WHERE SETTINGNAME='" + key + "' AND TERMINALKEY=" + terminakKey;
+            var commandText = DatabaseCore.Instance.BuildRecordCountQuery("TERMINALSETTINGS", whereCondition);
+            return DatabaseCore.Instance.ExecuteScalar<int>(commandText) > 0;
+        }
+
+
     }
 
 

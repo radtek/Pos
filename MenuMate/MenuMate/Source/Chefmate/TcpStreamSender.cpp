@@ -193,6 +193,7 @@ void TTcpStreamSenderThread::sendData( TIdTCPClient* inTcpClient, TiXmlDocument*
 {
 
       std::string data         = SerializeOut( inXMLOrderDoc ).c_str();
+
 	__int32 dataSize         = data.size();
  	__int32 remainedDataSize = dataSize;
  //   __int32 remainedDataSize = data.size();
@@ -257,7 +258,7 @@ TBytes TTcpStreamSenderThread::createByteArray( const char* inBuffer, __int32 in
 {
 	TBytes result;
 	result.Length = inBufferSize;
-   
+
 	for( int i = 0; i < result.Length; i++ )
 	{
 	   result[i] = inBuffer[i];
@@ -322,7 +323,6 @@ void TTcpStreamSenderThread::setNodeAttr( TiXmlElement* inElem, AnsiString inAtt
 AnsiString TTcpStreamSenderThread::SerializeOut( TiXmlDocument* inXMLOrderDoc )
 {
    AnsiString result = "";
-
    //::::::::::::::::::::::::::::::::::::::::::::
 
    TiXmlPrinter printer;
@@ -331,7 +331,6 @@ AnsiString TTcpStreamSenderThread::SerializeOut( TiXmlDocument* inXMLOrderDoc )
    inXMLOrderDoc->Accept( &printer );
 
    result = AnsiString( printer.CStr() );
-
    //::::::::::::::::::::::::::::::::::::::::::::
 
    return result;

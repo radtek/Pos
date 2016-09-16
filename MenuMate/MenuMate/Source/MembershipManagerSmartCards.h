@@ -28,22 +28,19 @@ public:
 	  bool can_overwrite_already_initialized_card = false);
 
    void SaveContactInfoReassignedToSmartCard(TMMContactInfo &inContactInfo);
-   bool SavePointsTransactionsToSmartCard(TContactPoints &Points, bool PointsFromCloud = false);
-   bool SavePointsTransactionsForBarcodeCard(TContactPoints &Points,TMMContactInfo &UserInfo, bool PointsFromCloud = false);
+   bool SavePointsTransactionsToSmartCard(TContactPoints &Points,AnsiString inInvoiceNumber,bool PointsFromCloud = false);
+   bool SavePointsTransactionsForBarcodeCard(TContactPoints &Points,TMMContactInfo &UserInfo,AnsiString inInvoiceNumber, bool PointsFromCloud = false);
    void BlockAllOfContactsSmartCards(Database::TDBTransaction &DBTransaction, int contactKey);
    void SetSmartCardRestorePoint(Database::TDBTransaction &DBTransaction, TMMContactInfo &MMContactInfo, TSmartCardBlock *RestorePoint,
 	  TSyndCode &SyndCode);
    bool GetSmartCardRestorePointByCard(Database::TDBTransaction &DBTransaction, TSmartCardBlock &RestorePoint);
    bool GetSmartCardRestorePointByContact(Database::TDBTransaction &DBTransaction, int ContactKey, TSmartCardBlock &RestorePoint);
    bool GetSmartCardRestorePointBySmartCardKey(Database::TDBTransaction &DBTransaction, int SmartCardKey, TSmartCardBlock &RestorePoint);
-
    bool CardCheckBannedList(Database::TDBTransaction &DBTransaction, int ContactKey, UnicodeString Atr);
    int GetNextSmartCardNumber(Database::TDBTransaction &DBTransaction);
-
    void GetReportCardInfo(Database::TDBTransaction &DBTransaction,int inSmartCardKey, TSmartCardBlock *SmartCardBlock, TStringList *Report);
    void GetReportMemberCardsInfo(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member, TStringList *Report);
    void GetSmartCardReportForCardKey(Database::TDBTransaction &DBTransaction, int SmartCardKey, TStringList *Report);
-
    void virtual Initialise(Database::TDBTransaction &DBTransaction);
 
    TManagerSyndCode ManagerSyndicateCode;
@@ -97,6 +94,7 @@ private:
     TfrmLoyaltyMateOperationDialogBox* _lmOperationDialogBox;
 	void __fastcall loyaltyMateMemberCreationCompleted(TObject* sender);
     void GetMemberDetail(TMMContactInfo &MMContactInfo);
+    void SaveTransactionInvoiceDetail(TPaymentTransaction &PaymentTransaction);
 protected:
     bool createMemberOnLoyaltyMate(TSyndCode syndicateCode, TMMContactInfo &inContactInfo);   //this method is protected so it can be called from ManagerMembershipGUI
     void UpdateMemberCardCodeToDB(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode);

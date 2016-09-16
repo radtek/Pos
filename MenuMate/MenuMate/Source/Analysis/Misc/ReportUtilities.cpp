@@ -157,7 +157,6 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
                 if (itCurrentPayment->second.Name.UpperCase() != UpperCase(CHANGE) &&
                         itCurrentPayment->second.Name.UpperCase() != UpperCase(CREDIT) &&
                         !(itCurrentPayment->second.Properties & ePayTypeGetVoucherDetails) &&
-                      //  !(itCurrentPayment->second.Properties & ePayTypePoints) &&
                         !(itCurrentPayment->second.Properties & ePayTypeCredit) &&
                         itCurrentPayment->second.Name.UpperCase() != UpperCase(CASH))
                 {

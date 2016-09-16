@@ -23,6 +23,8 @@ object frmSetup: TfrmSetup
   OnCreate = FormCreate
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   DesignSize = (
     1030
     749)
@@ -860,6 +862,10 @@ object frmSetup: TfrmSetup
     object tsExport: TTabSheet
       Caption = 'Export Settings'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object gbMall: TGroupBox
         Left = 16
         Top = 3
@@ -876,9 +882,8 @@ object frmSetup: TfrmSetup
         object lbTenantNo: TLabel
           Left = 16
           Top = 94
-          Width = 104
+          Width = 5
           Height = 18
-          Caption = 'Tenant Number'
         end
         object lbFileLocation: TLabel
           Left = 16
@@ -963,6 +968,13 @@ object frmSetup: TfrmSetup
           Height = 18
           Caption = 'FTP Server'
         end
+        object lbConsolidated: TLabel
+          Left = 392
+          Top = 383
+          Width = 146
+          Height = 18
+          Caption = 'Consolidated DB Paths'
+        end
       end
       object cbMallLoc: TComboBox
         Left = 32
@@ -970,7 +982,7 @@ object frmSetup: TfrmSetup
         Width = 329
         Height = 26
         Style = csDropDownList
-        TabOrder = 1
+        TabOrder = 11
         OnChange = cbMallLocChange
       end
       object edTenantNo: TEdit
@@ -978,7 +990,7 @@ object frmSetup: TfrmSetup
         Top = 122
         Width = 330
         Height = 26
-        TabOrder = 2
+        TabOrder = 1
         OnMouseUp = edTenantNoMouseUp
       end
       object edMallPath: TEdit
@@ -986,7 +998,7 @@ object frmSetup: TfrmSetup
         Top = 180
         Width = 331
         Height = 26
-        TabOrder = 3
+        TabOrder = 2
         OnMouseUp = edMallPathMouseUp
       end
       object edClassCode: TEdit
@@ -994,7 +1006,7 @@ object frmSetup: TfrmSetup
         Top = 238
         Width = 331
         Height = 26
-        TabOrder = 4
+        TabOrder = 3
         OnMouseUp = edClassCodeMouseUp
       end
       object edTradeCode: TEdit
@@ -1002,7 +1014,7 @@ object frmSetup: TfrmSetup
         Top = 296
         Width = 329
         Height = 26
-        TabOrder = 5
+        TabOrder = 4
         OnMouseUp = edTradeCodeMouseUp
       end
       object edOutletCode: TEdit
@@ -1010,7 +1022,7 @@ object frmSetup: TfrmSetup
         Top = 354
         Width = 329
         Height = 26
-        TabOrder = 6
+        TabOrder = 5
         OnMouseUp = edOutletCodeMouseUp
       end
       object edBranchCode: TEdit
@@ -1018,7 +1030,7 @@ object frmSetup: TfrmSetup
         Top = 412
         Width = 329
         Height = 26
-        TabOrder = 7
+        TabOrder = 6
         OnMouseUp = edBranchCodeMouseUp
       end
       object edTerminalNo: TEdit
@@ -1026,7 +1038,7 @@ object frmSetup: TfrmSetup
         Top = 470
         Width = 329
         Height = 26
-        TabOrder = 8
+        TabOrder = 7
         OnMouseUp = edTerminalNoMouseUp
       end
       object edSerialNo: TEdit
@@ -1034,7 +1046,7 @@ object frmSetup: TfrmSetup
         Top = 528
         Width = 329
         Height = 26
-        TabOrder = 9
+        TabOrder = 8
         OnMouseUp = edSerialNoMouseUp
       end
       object btnResendReport: TTouchBtn
@@ -1098,7 +1110,7 @@ object frmSetup: TfrmSetup
         Top = 122
         Width = 330
         Height = 26
-        TabOrder = 11
+        TabOrder = 12
         OnMouseUp = edFTPServerMouseUp
       end
       object edFTPPath: TEdit
@@ -1106,7 +1118,7 @@ object frmSetup: TfrmSetup
         Top = 179
         Width = 330
         Height = 26
-        TabOrder = 12
+        TabOrder = 13
         OnMouseUp = edFTPPathMouseUp
       end
       object edFTPUserName: TEdit
@@ -1114,7 +1126,7 @@ object frmSetup: TfrmSetup
         Top = 235
         Width = 330
         Height = 26
-        TabOrder = 13
+        TabOrder = 14
         OnMouseUp = edFTPUserNameMouseUp
       end
       object edFTPPassword: TEdit
@@ -1122,8 +1134,31 @@ object frmSetup: TfrmSetup
         Top = 294
         Width = 330
         Height = 26
-        TabOrder = 14
+        TabOrder = 18
         OnMouseUp = edFTPPasswordMouseUp
+      end
+      object cbEnableConsolidatedRep: TCheckBox
+        Left = 408
+        Top = 355
+        Width = 289
+        Height = 20
+        Caption = 'Enable Consolidated Report'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -16
+        Font.Name = 'Arial'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 17
+        OnClick = cbEnableConsolidatedRepClick
+      end
+      object edConsolidatedDBPaths: TEdit
+        Left = 408
+        Top = 412
+        Width = 330
+        Height = 26
+        TabOrder = 15
+        OnMouseUp = edConsolidatedDBPathsMouseUp
       end
     end
   end

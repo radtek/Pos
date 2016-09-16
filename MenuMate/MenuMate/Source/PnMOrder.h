@@ -24,7 +24,8 @@ public:
 		ParentKey(0),
 		TimeStamp(0),
         TimeKey(0),
-        PatronCount(0) {
+        PatronCount(0),
+        IsWeighted(false) {
 	}
 
 	TPnMOrder( const TPnMOrder& inOther );
@@ -46,7 +47,7 @@ public:
 	TDateTime TimeStamp; // Time Ordered Used for Sorting Billing Lists.
 
 	bool Selected;
-
+    bool IsWeighted;
     int TimeKey;    // Time key value that is same as for orders placed at the same time. Used for chefmate cancellations.
         int     PatronCount;
 

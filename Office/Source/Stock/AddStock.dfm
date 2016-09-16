@@ -27,9 +27,9 @@ object frmAddStock: TfrmAddStock
     Width = 473
     Height = 393
     Hint = 'The sales unit refers to the measure deducted by sales.'
-    ActivePage = tsSubstitutes
+    ActivePage = tsItemDetails
     MultiLine = True
-    TabIndex = 4
+    TabIndex = 0
     TabOrder = 0
     OnChange = PageControl1Change
     object tsItemDetails: TTabSheet
@@ -506,7 +506,8 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 17
-          OnKeyPress = dbeKeyPress
+          OnChange = dbeConversionFactorChange
+          OnKeyPress = dbeConversionFactorKeyPress
         end
         object btnAddReductionUnit: TButton
           Left = 328
@@ -914,8 +915,9 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 6
+          OnChange = dbeLatestCostChange
           OnKeyDown = dbeKeyDown
-          OnKeyPress = dbeKeyPress
+          OnKeyPress = dbeLatestCostKeyPress
         end
         object dbeAveCost: TDBEdit
           Left = 140
@@ -934,8 +936,9 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 7
+          OnChange = dbeAveCostChange
           OnKeyDown = dbeKeyDown
-          OnKeyPress = dbeKeyPress
+          OnKeyPress = dbeAveCostKeyPress
         end
         object chbDefaultLocation: TCheckBox
           Left = 20
@@ -969,7 +972,8 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 8
-          OnKeyPress = dbeKeyPress
+          OnChange = dbeAssessedValueChange
+          OnKeyPress = dbeAssessedValueKeyPress
         end
       end
       object btnNext2: TBitBtn
@@ -1323,6 +1327,7 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 5
+          OnChange = dbcOrderQtyChange
           OnKeyDown = dbeKeyDown
           OnKeyPress = dbeKeyPress
         end
@@ -1358,8 +1363,8 @@ object frmAddStock: TfrmAddStock
           ParentCtl3D = False
           ParentFont = False
           TabOrder = 6
-          OnKeyDown = dbeKeyDown
-          OnKeyPress = dbeKeyPress
+          OnChange = dbeCostChange
+          OnKeyPress = dbeCostKeyPress
         end
         object btnDeleteOrderUnit: TButton
           Left = 96
@@ -2986,7 +2991,7 @@ object frmAddStock: TfrmAddStock
       '  QTY,'
       '  Min_Order_Qty,'
       '  LATEST_COST,'
-      '  Cast(Latest_Cost/Qty as numeric(15, 4)) AS Supplier_Cost'
+      '  Cast(Latest_Cost/Qty as numeric(15, 4)) AS Supplier_Cost '
       ''
       'from SUPPLIERSTOCK '
       'where'
@@ -3003,7 +3008,7 @@ object frmAddStock: TfrmAddStock
       '    Min_Order_Qty,'
       '    Latest_Cost,'
       '    Supplier_Code,'
-      '    Cast(Latest_Cost/Qty as numeric(15, 4)) AS Supplier_Cost'
+      '    Cast(Latest_Cost/Qty as numeric(15, 4)) AS Supplier_Cost '
       'From'
       '   SUPPLIERSTOCK'
       'Where'

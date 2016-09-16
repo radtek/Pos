@@ -263,7 +263,7 @@ void TPOS_XMLTransaction::BuildDiscount(TPaymentTransaction &PaymentTransaction,
 		TiXmlElement *ElePriceChange = new TiXmlElement(xmlElePriceChange);
 		ElePriceChange->SetAttribute(xmlAttrName, ptrDiscounts->Name.t_str());
 		ElePriceChange->SetAttribute(xmlAttrDiscription, ptrDiscounts->Description.t_str());
-		ElePriceChange->SetAttribute(xmlAttrID, ptrDiscounts->ID);
+		ElePriceChange->SetAttribute(xmlAttrID, ptrDiscounts->DiscountCode.t_str());
 		ElePriceChange->SetAttribute(xmlAttrXmlID, ptrDiscounts->DiscountKey);
 		ElePriceChange->SetAttribute(xmlAttrReason, Order->DiscountReason.t_str());
 

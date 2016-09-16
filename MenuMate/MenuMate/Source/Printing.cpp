@@ -1301,8 +1301,7 @@ bool TKitchen::GetOrdersForThisPrinter(Database::TDBTransaction &DBTransaction, 
 		 TItemComplete *CurrentOrder = (TItemComplete*)(OrdersList->Items[i]);
 		 // TODO : BUG? CurrentOrder->CourseKitchenName == IBInternalQuery->FieldByName("COURSE_NAME")->AsString
 
-          
-		 if (CurrentOrder->CourseKitchenName == UTF8ToUnicodeString((AnsiString)IBInternalQuery->FieldByName("COURSE_NAME")->AsString)
+		 if (CurrentOrder->CourseKitchenName == IBInternalQuery->FieldByName("COURSE_NAME")->AsString
 			&& CurrentOrder->MenuKey == IBInternalQuery->FieldByName("MENU_KEY")->AsInteger && CurrentOrder->DuplicateDetected == false)
 		 {
 			CurrentOrder->CoursePrintingOrder = IBInternalQuery->FieldByName("PRNORD_KEY")->AsInteger;

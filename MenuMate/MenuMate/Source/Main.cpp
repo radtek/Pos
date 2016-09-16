@@ -9,14 +9,12 @@
 #include "Main.h"
 #include "enum.h"
 #include "MMLogging.h"
-// Used for aligning databases.
 #include "ManagerClippIntegration.h"
 #include "Setup.h"
 #include "Maintain.h"
 #include "DbMod.h"
 #include "Pause.h"
 #include "NewUser.h"
-//#include "Reservation.h"
 #include "Secure.h"
 #include "PosMain.h"
 #include "TimeClock.h"
@@ -65,7 +63,6 @@
 #include "ZForm.h"
 #include "SmartCardAPI.h"
 #include "EftPos.h"
-
 #include "EftPosANZ.h"
 #include "EftPosSyncro.h"
 #include "EftposIngenico.h"
@@ -73,30 +70,23 @@
 #include "EftposDPS.h"
 #include "EftposIceLink.h"
 #include "EftposCadmusCronos.h"
-
 #include "StringTableRes.h"
 #include <StrUtils.hpp>
 #include "VerticalSelect.h"
 #include "WeighScale.h"
 #include "MMData.h"
 #include "DBTab.h"
-
 #include "WebMate.h"
 #include "DBGroups.h"
 #include "DBContacts.h"
 #include "MMTransactionRecovery.h"
-
 #include "MMessageFromFileManager.h"
 #include "XeroIntegration.h"
-
-// For Mall Export Includes
 #include "MallExportManager.h"
 #include "GlobalSettings.h"
 #include "MallExportDefines.h"
-
 #include "MMCustomerDisplayManager.h"
-#include "ManagerTierLevel.h"
-
+#include "ManagerCloudSync.h"
 
 #pragma package(smart_init)
 #pragma link "SHDocVw_OCX"
@@ -131,65 +121,48 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 	// To make sure it's the very last thing freed, as IBLogs logs using it.
 	TComms::Instance();
 	TRooms::Instance();
-
 	Receipt = new TReceipt;
-
-	//	Comms = new TComms(pnlDraw,pnlDraw);
 	Invoice = new TInvoice;
-
 	ManagerDiscount = new TManagerDiscount();
-
 	ManagerRun = new TManagerRun();
 	ManagerMessage = new TManagerMessage();
 	ManagerFreebie = new TManagerFreebie();
 	ManagerReceipt = new TManagerReceipt(TDeviceRealTerminal::Instance().DBControl);
 	ManagerDockets = new TManagerDockets(TDeviceRealTerminal::Instance().DBControl);
 	PhoenixHM = new TPhoenixHM(TDeviceRealTerminal::Instance().DBControl);
-
 	TManagerPatron::Instance();
 	TManagerChitNumber::Instance();
-
 	EftPos = NULL;
 	frmSplitPayment = NULL;
 	frmSecurity = NULL;
 	frmSelectDish = NULL;
-
 	Application->OnMessage = AppMessage;
 	Application->OnIdle = IdleHandler;
 	OleInitialize(NULL);
-
 	FMenusToImportFolder = ExtractFilePath( Application->ExeName ) + "Menu Import";
 	FMenusStockExchange= ExtractFilePath( Application->ExeName ) + "Stock Exchange";
-
 	proxyMateManager = &TProxyMateManager::Instance();
 	fpConnector   = NULL;
 	fpConnectorUp = false;
 	fpOpen        = false;
-
 }
 
 __fastcall TfrmMain::~TfrmMain()
 {
 	OleUninitialize();
 	if (Win32Platform != VER_PLATFORM_WIN32_NT) ::Sleep(5000);  // Stops Win 98 closeing to fast and causeing an Access Violation.
-	// Dont ask me how or why this seems to fix it.
 
-	// Turn off Timers.
 	tiNewMenuCheck->Enabled = false;
 	tiMenuUpdateReq->Enabled = false;
 	tiCardSwipe->Enabled = false;
-
 	tiBarStock->Enabled = false;
 	tiBarStockturnover->Enabled = false;
-
 	// For Mall Export Timer
 	tiMallExportTiming->Enabled = false;
 	tiCheckZedRead->Enabled = false;
-
 	delete frmSplitPayment;
 	delete frmSecurity;
 	delete frmSelectDish;
-
 	delete Receipt;
 	Receipt = NULL;
 	delete Invoice;
@@ -204,13 +177,10 @@ __fastcall TfrmMain::~TfrmMain()
 	ManagerMessage = NULL;
 	delete ManagerFreebie;
 	ManagerFreebie = NULL;
-
 	delete ManagerReceipt;
 	ManagerReceipt = NULL;
-
 	delete ManagerDockets;
 	ManagerDockets = NULL;
-
 	delete PhoenixHM;
 	PhoenixHM = NULL;
 }
@@ -242,33 +212,23 @@ void __fastcall TfrmMain::IdleHandler(TObject *Sender, bool &Done)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::FormShow(TObject *Sender)
 {
 	try
 	{
 		// Create DB.
 		frmDBMod = TfrmDBMod::Create<TfrmDBMod>(this);
-		//		Application->CreateForm(__classid(TfrmDBMod), &frmDBMod);
-
 		frmDBMod->Show();
 		frmDBMod->SetCaption("Loading...");
-
 		Application->CreateForm(__classid(TfrmData), &frmData);
-
 		frmDBMod->SetCaption("Opening Database...");
 		if(!TDeviceRealTerminal::Instance().OpenDatabases())
 		{
 			Close();
 			return;
 		}
-
-		//		lbeVersion->Caption = "Version " + GetFileVersion() + "  ";
 		lbeVersion->Caption = "";
 		frmDBMod->SetCaption("Initialising Terminal...");
-		// Terminal is Loaded in to RAM.
-		// Database has been opened.
-
 		Database::TDBTransaction DBBootTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBBootTransaction.StartTransaction();
 
@@ -289,83 +249,63 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 
 		frmDBMod->SetCaption("Updating Clock...");
 		TDeviceRealTerminal::Instance().UpdateClockSyncInfo();
-
 		frmDBMod->SetCaption("Initialising...");
-
 		TComms::Instance().Initialise(DBBootTransaction);
 		ManagerFreebie->Initialise(DBBootTransaction);
 		Invoice->Initialise();
 		ManagerDiscount->Initialise();
-
 		ManagerReceipt->Initialise(TDeviceRealTerminal::Instance().ID.Name,TDeviceRealTerminal::Instance().ID.DeviceKey);
 		ManagerDockets->Initialise(TDeviceRealTerminal::Instance().ID.Name,TDeviceRealTerminal::Instance().ID.DeviceKey);
 		TManagerThirdParty::Instance().Initialise(TDeviceRealTerminal::Instance().ID.Product);
-
 		TManagerPhysicalPrinter ManagerPhysicalPrinter;
 		ManagerPhysicalPrinter.Initialise(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey,TDeviceRealTerminal::Instance().ID.ComputerName);
-
 		TManagerVirtualPrinter::InitialisePrinters(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey);
-		//		ManagerVirtualPrinter->CreateWindowsDrivers(TDeviceRealTerminal::Instance().ID.DeviceKey);
-
 		TManagerChitNumber::Instance().Initialise(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey);
-
 		Receipt->Initialise(DBBootTransaction);
-
 		if(!TDBGroups::GroupExists(DBBootTransaction, "No Contacts Group"))
 		{
 			std::vector<ContactGroup> members;
 			TDBContacts DBContacts;
 			TMMContactInfo Info;
 			ContactGroup GroupKey;
-
 			GroupKey.Key = TDBGroups::SetDefaultGroup(DBBootTransaction);
 			DBContacts.GetContactNameList(DBBootTransaction, members, 0);
 			DBContacts.GetContactNameList(DBBootTransaction, members, 1);
-
 			for(int j = 0; j < members.size(); j++)
 			{
 				if(!TDBContacts::GetCurrentGroups(DBBootTransaction, members.at(j).Key, Info))
 				DBContacts.SetCurrentGroups(DBBootTransaction, members.at(j).Key, GroupKey);
 			}
-
 		}
-
-
 		if(TGlobalSettings::Instance().TabsEnabled)
 		{
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Tabs Enabled");
 		}
-
 		if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
 		{
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Members Mod Registered");
 		}
-
 		frmDBMod->SetCaption("Loading Rooms Interface...");
 		if(TDeviceRealTerminal::Instance().Modules.Status[eRegRooms]["Registered"])
 		{
 			TRooms::Instance().Initialise(DBBootTransaction);
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Rooms Mod Registered");
 		}
-
 		if(TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"])
 		{
 			PhoenixHM->Registered = true;
 			PhoenixHM->Initialise();
 			TRooms::Instance().Enabled = false;
 		}
-
 		if(TDeviceRealTerminal::Instance().Modules.Status[eRegKitchenScreen]["Registered"])
 		{
 			TDeviceRealTerminal::Instance().KitchenMod->Enabled = true;
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Kitchen Mod Registered");
 		}
-
 		if(TDeviceRealTerminal::Instance().Modules.Status[eRegSaleTurnAround]["Registered"])
 		{
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Sale Time Mod Registered");
 		}
-
 		bool EftPosRegiestered = TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"];
 		if (TGlobalSettings::Instance().EnableEftPosDPS && EftPosRegiestered)
 		{
@@ -407,27 +347,20 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 			EftPos = new TEftPosSyncro();
 			EftPos->Initialise();
 		}
-
 		TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"] = true;
-
-
 		TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"] = true;
 		if(TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
 		{
-			//TWebMate::Instance().Initialise(true,ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
-
 			TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
 			TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
 		}
 
 		// Set up Header and Footer Info.
 		TDeviceRealTerminal::Instance().LoadHdrFtr();
-
 		FormResize(Sender);
 		if(JstBooted)
 		{
 			JstBooted = false;
-
 			frmSplitPayment = TfrmSplitPayment::Create<TfrmSplitPayment>(this);
 			frmSecurity = TfrmSecurity::Create<TfrmSecurity>(this);
 			frmSelectDish = TfrmSelectDish::Create<TfrmSelectDish>(this);
@@ -440,7 +373,6 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 
 			frmDBMod->SetCaption("Cleaning Logs");
 			RemoveOldLogs();
-
 			frmDBMod->SetCaption("Loading Menus...");
 			TNetMessageMenuChanged *Request = new TNetMessageMenuChanged;
 			Request->Broadcast = false;
@@ -449,10 +381,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 			delete Request;
 			// Swap in the Menus.
 			TDeviceRealTerminal::Instance().Menus->ToggleMenus();
-
 			// Check and Create a defualt user in the Users table if necessary.
 			frmDBMod->SetCaption("Loading Users...");
-
 			std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBBootTransaction));
 			while(Staff->RecordCount(DBBootTransaction) == 0)
 			{
@@ -465,80 +395,45 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 
 			frmDBMod->SetCaption("Downloading Printer Graphic...");
 			TDeviceRealTerminal::Instance().LoadPrinterGraphic();
-
 			TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplayDefault();
-
 			// Set the Hint Pause.
 			Application->HintPause = 1000;
 			Application->HintHidePause = 9000;
-
 			tiNewMenuCheck->Enabled = true;
 			tiMenuUpdateReq->Enabled = true;
 			tiBarStock->Enabled = true;
 			tiBarStockturnover->Enabled = true;
 			frmDBMod->Close();
-
 			//--------------------------------- Customer Support File.
 			if (FileExists(ExtractFilePath(Application->ExeName) + "\\Dealer.Info"))
 			{
 				MemInfo->Lines->LoadFromFile(ExtractFilePath(Application->ExeName) + "\\Dealer.Info");
-				/*				std::auto_ptr<TStringList> Info (new TStringList);
-				Info->LoadFromFile(ExtractFilePath(Application->ExeName) + "\\Dealer.Info");
-				if(Info->Count > 0) lbInfo1->Caption = Info->Strings[0];
-				if(Info->Count > 1) lbInfo2->Caption = Info->Strings[1];
-				if(Info->Count > 2) lbInfo3->Caption = Info->Strings[2];
-				if(Info->Count > 3) lbInfo4->Caption = Info->Strings[3];
-				if(Info->Count > 4) lbInfo5->Caption = Info->Strings[4];
-				if(Info->Count > 5) lbInfo6->Caption = Info->Strings[5];
-				if(Info->Count > 6) lbInfo7->Caption = Info->Strings[6];
-				if(Info->Count > 7) lbInfo8->Caption = Info->Strings[7];
-				if(Info->Count > 8) lbInfo9->Caption = Info->Strings[8];*/
 			}
 		}
 		updateHTMLDisplay(DBBootTransaction);
-
-
 		TDeviceRealTerminal::Instance().PoleDisplay->UpdatePoleDisplayDefault();
-
 		// recover any lost eftpos transactions
 		TMMTransactionRecovery transactionRecovery;
 		transactionRecovery.ProcessTransactionRecovery();
-
 		SetGridColors(tgridMenu);
         tgridMenu->GridColor = RGB(255,255,255);
         tgridMenu->Color	= RGB(255,255,255);
-
-		//...............................
-
 		tiShowMsg->Interval = 3000;  // The timer will check for the msg.csv file every 3 sec
 		tiShowMsg->Enabled  = true;
-
 		TMMessageFromFileManager::Instance().Folder = ExtractFilePath(Application->ExeName) + "Import";
-
-		//................................
-
 		InitXeroIntegration();
-
 		tiFailedXeroInvoices->Interval = FailedXeroInvoivesToSend() ? TXeroIntegration::Instance().FailedActiveInterval : TXeroIntegration::Instance().FailedPauseInterval;
 		tiFailedXeroInvoices->Enabled  = true;
-
 		initProxyMateManager();
-
 		// Mall export code
 		EnablePOSForSpecifiedMallSchedule();
 		InitializeExportTimings(TGlobalSettings::Instance().FirstMallSet);
 		TGlobalSettings::Instance().FirstMallSet = false;
 		SaveBoolVariable(vmFirstMallSet, TGlobalSettings::Instance().FirstMallSet);
-
-		//::::::::::::::::::::::::::::::::::::::::::::
-
 		openCustomerDisplayServer();
-
-		//::::::::::::::::::::::::::::::::::::::::::::
-
-        if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
             TManagerClippIntegration::Instance();
-        SyncTierLevels();
+        SyncCompanyDetails();
        //initialize this variable when application starts..
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmNotifyLastWebOrder, TGlobalSettings::Instance().NotifyPOSForLastWebOrder);
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmUpdateMenu, TGlobalSettings::Instance().UpdateMenu);
@@ -552,7 +447,15 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
+void TfrmMain::SyncCompanyDetails()
+{
+   if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+         {
+           TManagerCloudSync ManagerCloudSync;
+           ManagerCloudSync.SyncCompanyDetails();
+         }
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormActivate(TObject *Sender)
 {
 	if( proxyMateManager->ClientUp && !fpConnectorUp )
@@ -561,13 +464,11 @@ void __fastcall TfrmMain::FormActivate(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::FormDeactivate(TObject *Sender)
 {
 	CloseFPConnector(); // Close XeroMate's FloorPlan connector;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::btnAnalysisClick(TObject *Sender)
 {
 	std::auto_ptr<TfrmAnalysis>(frmAnalysis)(TfrmAnalysis::Create<TfrmAnalysis>(this));
@@ -599,7 +500,6 @@ void __fastcall TfrmMain::btnSetupClick(TObject *Sender)
 		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 	}
 }
-
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnRemindersClick(TObject *Sender)
 {
@@ -612,7 +512,6 @@ void __fastcall TfrmMain::btnExitClick(TObject *Sender)
 	bool Continue = true;
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
-
 	if(frmSelectDish->ParkedSales->GetCount(DBTransaction) > 0)
 	{
 		Continue = false;
@@ -623,7 +522,6 @@ void __fastcall TfrmMain::btnExitClick(TObject *Sender)
 			Continue = true;
 		}
 	}
-
 	if(Continue)
 	{
 		frmSecurity->LogOut();
@@ -645,14 +543,8 @@ void __fastcall TfrmMain::FormResize(TObject *Sender)
 		}
 		frmMain->Width = Screen->Width;
 		frmMain->Height = Screen->Height;
-
 	}
-   //	tgridMenu->Top = 0;
-  //	tgridMenu->Left = ClientWidth - tgridMenu->Width;
-  //	tgridMenu->Height = ClientHeight;
-        	tgridMenu->Visible = true;
-
-	/*lbeVersion->Left = tgridMenu->Left - lbeVersion->Width;*/
+    tgridMenu->Visible = true;
 	lbTitle->Top = Height * 0.82;
 	lbeVersion->Top = lbTitle->Top + lbTitle->Height;
 	lbeRegistration->Top = lbeVersion->Top + lbeVersion->Height;
@@ -666,9 +558,7 @@ void __fastcall TfrmMain::btnMaintenanceClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void TfrmMain::RemoveOldLogs()
 {
-	/*   TFileListBox *List = new TFileListBox;
-List->ApplyFilePath(ExtractFilePath(Application->ExeName)+"Logs\\");
-extern PACKAGE bool __fastcall DeleteFile(const System::AnsiString FileName);*/
+//
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::btnPOSClick(TObject *Sender)
@@ -722,7 +612,6 @@ void __fastcall TfrmMain::WMDisplayChange(TWMDisplayChange& Message)
 	FormResize(this);
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::AppMessage(tagMSG &Msg, bool &Handled)
 {
 	if( proxyMateWillHandle( Msg ) )
@@ -778,15 +667,13 @@ void __fastcall TfrmMain::AppMessage(tagMSG &Msg, bool &Handled)
 	{
 		if(Msg.lParam == SMARTCARD_CARDREMOVED)
 		{
-			TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->PreviousYearPoints = 0 ;
-			TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints = 0 ;
-                        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableBDPoint = 0 ;
-                        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableFVPoint = 0 ;
+			TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
 			TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->SmartCardRemoved();
 
 		}
 		else if(Msg.lParam == SMARTCARD_CARDINSERTED)
 		{
+            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
 			TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->SmartCardInserted();
 		}
 	}
@@ -820,9 +707,6 @@ void __fastcall TfrmMain::tiCardSwipeTimer(TObject *Sender)
 		PostMessage(Screen->ActiveForm->Handle, UWM_CARDSWIPE, (UINT)&CardSwipeString, NULL);
 	}
 }
-
-//---------------------------------------------------------------------------
-
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormClose(TObject *Sender, TCloseAction &Action)
 {
@@ -832,14 +716,11 @@ void __fastcall TfrmMain::FormClose(TObject *Sender, TCloseAction &Action)
 	closeCustomerDisplayServer();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::FormPaint(TObject *Sender)
 {
 //
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmMain::tiNewMenuCheckTimer(TObject *Sender)
 {
 	if( TDeviceRealTerminal::Instance().DBControl.Connected() ) // If we not connected don't bother.
@@ -877,9 +758,6 @@ void TfrmMain::CreateMenusToImportFolder()
 bool TfrmMain::MenusToImport()
 {
 	bool result = false;
-
-	//::::::::::::::::::::::::::::::::::::::::::::::::
-
 	TSearchRec sr;
 	int iAttributes = faAnyFile;
 
@@ -888,9 +766,6 @@ bool TfrmMain::MenusToImport()
 		result = ( sr.Attr & iAttributes );
 	}
 	FindClose(sr);
-
-	//::::::::::::::::::::::::::::::::::::::::::::::::::
-
 	return result;
 }
 //---------------------------------------------------------------------------
@@ -903,9 +778,7 @@ void TfrmMain::ImportMenus()
 		std::auto_ptr<TNetMessageMenuChanged> Request( new TNetMessageMenuChanged );
 		Request->Broadcast         = true;
 		Request->CompareToDataBase = true;
-
 		Database::TDBTransaction DBBootTransaction(TDeviceRealTerminal::Instance().DBControl);
-
 		DBBootTransaction.StartTransaction();
 		TDeviceRealTerminal::Instance().Menus->MenuAddedRemoved( DBBootTransaction,Request.get() );
 		DBBootTransaction.Commit();
@@ -939,7 +812,6 @@ void TfrmMain::ImportMembers()
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::DEMOMODE1DrawItem(TObject *Sender,
 TCanvas *ACanvas, TRect &ARect, bool Selected)
 {
@@ -959,7 +831,6 @@ TCanvas *ACanvas, TRect &ARect, bool Selected)
 	ACanvas->TextOut(ARect.Left,ARect.Top,TextOut);
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::DEMOMODE1MeasureItem(TObject *Sender,
 TCanvas *ACanvas, int &Width, int &Height)
 {
@@ -1003,82 +874,7 @@ void __fastcall TfrmMain::tiMenuUpdateReqTimer(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::updateHTMLDisplay(Database::TDBTransaction &DBTransaction)
 {
-	/*   std::auto_ptr<TMemoryStream> SplashScreen(new TMemoryStream);
-	std::auto_ptr<TStringList> Report(new TStringList);
-
-	AnsiString Temp = LoadStr(HTML_HEAD);
-	Temp = AnsiReplaceStr(Temp, "%TITLE%", "MenuMate");
-	Report->Add(Temp);
-
-Report->Add("<body bgcolor=\"#000000\" text=\"#FFFFFF\" SCROLL=\"no\">");
-AnsiString ImageLine = "<img src=\"%IMAGE_LOCATION%\" align=\"center\" alt=\"Welcome To MenuMate\" width=\"%IMAGE_WIDTH%\" Hight=\"%IMAGE_HEIGHT%\"/>";
-AnsiString TitleLocation = ExtractFilePath(Application->ExeName) + "html\\Title.jpg";
-
-	ImageLine = AnsiReplaceStr(ImageLine, "%IMAGE_LOCATION%", TitleLocation);
-	ImageLine = AnsiReplaceStr(ImageLine, "%IMAGE_WIDTH%",IntToStr(webDisplay->Width - 180));
-	ImageLine = AnsiReplaceStr(ImageLine, "%IMAGE_HEIGHT%",IntToStr(webDisplay->Height/3));
-
-Report->Add("<div align=\"center\">");
-Report->Add(ImageLine);
-Report->Add("</div>");
-Report->Add("</body>");
-
-	Temp = LoadStr(HTML_STOP);
-	Report->Add(Temp);
-
-SplashScreen->Position = 0;
-std::auto_ptr<TMemoryStream> StreamRpt(new TMemoryStream);
-Report->SaveToStream(StreamRpt.get());
-IPersistStreamInit *psi;
-StreamRpt->Seek(0,0);
-	TStreamAdapter *sa = new TStreamAdapter(SplashScreen.get(),soReference);
-_di_IDispatch doc = webDisplay->Document;
-if ( doc == NULL )
-{
-	TVariant url = "about:blank";
-	webDisplay->Navigate2( &url );
-	while ( doc == NULL )
-	{
-		Application->ProcessMessages();
-		doc = webDisplay->Document;
-	}
-}
-
-	TComInterface<IHTMLDocument2> HTMLDocument;
-	TComInterface<IHTMLWindow2> parentWindow;
-
-	if( SUCCEEDED(webDisplay->Document->QueryInterface(IID_IHTMLDocument2,(LPVOID*)&HTMLDocument)) )
-	{
-	IHTMLElement* pBodyElem = 0;
-	HRESULT hr = HTMLDocument->get_body(&pBodyElem);
-	if (SUCCEEDED(hr))
-	{
-		IHTMLBodyElement* pBody = 0;
-		hr = pBodyElem->QueryInterface(IID_IHTMLBodyElement, (void**)&pBody);
-		if (SUCCEEDED(hr))
-		{
-			// hide 3D border
-			IHTMLStyle* pStyle;
-			hr = pBodyElem->get_style(&pStyle);
-			if (SUCCEEDED(hr))
-			{
-			pStyle->put_borderStyle(BSTR("none"));
-					pStyle->Release();
-			}
-			// hide scrollbars
-			pBody->put_scroll(BSTR("no"));
-		}
-		pBodyElem->Release();
-	}
-	pBodyElem->Release();
-	}
-
-if ( doc->QueryInterface(IID_IPersistStreamInit, (void**)&psi ) == S_OK )
-{
-	if ( psi )
-		psi->Load(*sa);
-}
-*/
+//
 }
 
 void __fastcall TfrmMain::tgButtonsMouseClick(TObject *Sender,
@@ -1444,172 +1240,65 @@ void __fastcall TfrmMain::Quit()
 	}
 }
 
-void TfrmMain::SyncTierLevels()
-{
-   if (TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().UseTierLevels)
-         {
-           TManagerTierLevel ManagerTierLevel;
-           ManagerTierLevel.SyncTierLevels();
-         }
-}
-
 void __fastcall TfrmMain::ImageTitleClick(TObject *Sender)
 {
-	/*   std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-TVerticalSelection Item;
-Item.Title = "Cancel";
-Item.Properties["Color"] = IntToStr(clMaroon);
-Item.CloseSelection = true;
-SelectionForm->Items.push_back(Item);
-
-TVerticalSelection Item1;
-Item1.Title = "Point Of Sale";
-Item1.Properties["Action"] = IntToStr(1);
-Item1.Properties["Color"] = IntToStr(clNavy);
-Item1.CloseSelection = true;
-SelectionForm->Items.push_back(Item1);
-
-Item1.Title = "Cash Drawer";
-Item1.Properties["Action"] = IntToStr(2);
-Item1.Properties["Color"] = IntToStr(clNavy);
-Item1.CloseSelection = true;
-SelectionForm->Items.push_back(Item1);
-
-Item1.Title = "Clock In / Out";
-Item1.Properties["Action"] = IntToStr(3);
-Item1.Properties["Color"] = IntToStr(clNavy);
-Item1.CloseSelection = true;
-SelectionForm->Items.push_back(Item1);
-
-Item1.Title = "Launch";
-Item1.Properties["Action"] = IntToStr(4);
-Item1.Properties["Color"] = IntToStr(clNavy);
-Item1.CloseSelection = true;
-SelectionForm->Items.push_back(Item1);
-
-Item1.Title = "Maintenance";
-Item1.Properties["Action"] = IntToStr(5);
-Item1.Properties["Color"] = IntToStr(clNavy);
-Item1.CloseSelection = true;
-SelectionForm->Items.push_back(Item1);
-
-Item1.Title = "Setup";
-Item1.Properties["Action"] = IntToStr(6);
-Item1.Properties["Color"] = IntToStr(clNavy);
-Item1.CloseSelection = true;
-SelectionForm->Items.push_back(Item1);
-
-Item1.Title = "Quit";
-Item1.Properties["Action"] = IntToStr(7);
-Item1.Properties["Color"] = IntToStr(clNavy);
-Item1.CloseSelection = true;
-SelectionForm->Items.push_back(Item1);
-
-SelectionForm->ShowModal();
-TVerticalSelection SelectedItem;
-if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
-{
-	int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
-	switch(Action)
-	{
-		case 1:
-			btnPOSClick(Sender);
-		break;
-		case 2:
-			btnAnalysisClick(Sender);
-		break;
-		case 3:
-			btnRemindersClick(Sender);
-		break;
-		case 4:
-		{
-			LaunchProcess();
-		}
-		break;
-		case 5:
-			btnMaintenanceClick(Sender);
-		break;
-		case 6:
-			btnSetupClick(Sender);
-		break;
-		case 7:
-			Quit();
-		break;
-	}
-}*/
+//
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::tiShowMsgTimer(TObject *Sender)
 {
 	tiShowMsg->Enabled = false;
-
-	//.................................
-
 	if( MessagesToBroadcast() )
 	{
 		BroadcastMessage();
 	}
-
-	//.................................
-
 	tiShowMsg->Enabled = true;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::tiFailedXeroInvoicesTimer(TObject *Sender)
 {
 	tiFailedXeroInvoices->Enabled = false;
-
-	//.................................
-
 	if( FailedXeroInvoivesToSend() )
 	{
 		SendFailedXeroInvoices();
 	}
-
-	//.................................
-
 	tiFailedXeroInvoices->Enabled = true;
 }
 //---------------------------------------------------------------------------
-
 bool TfrmMain::MessagesToBroadcast()
 {
 	return TMMessageFromFileManager::Instance().MessagesInQueue;
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::BroadcastMessage()
 {
 	return TMMessageFromFileManager::Instance().ShowMessage();
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::InitXeroIntegration()
 {
 	TXeroIntegration::Instance().XeroMachineName = TGlobalSettings::Instance().XeroMachineName;
 	TXeroIntegration::Instance().XeroFolderPath  = TGlobalSettings::Instance().XeroFolderPath;
 	TXeroIntegration::Instance().XeroUserName    = TGlobalSettings::Instance().XeroUserName;
 	TXeroIntegration::Instance().XeroPassword    = TGlobalSettings::Instance().XeroPassword;
-
 	TXeroIntegration::Instance().Validate();
+	TMYOBIntegration::Instance().MYOBMachineName = TGlobalSettings::Instance().MYOBMachineName;
+	TMYOBIntegration::Instance().MYOBFolderPath  = TGlobalSettings::Instance().MYOBFolderPath;
+	TMYOBIntegration::Instance().MYOBUserName    = TGlobalSettings::Instance().MYOBUserName;
+	TMYOBIntegration::Instance().MYOBPassword    = TGlobalSettings::Instance().MYOBPassword;
+	TMYOBIntegration::Instance().Validate();
 }
 //---------------------------------------------------------------------------
-
 bool TfrmMain::FailedXeroInvoivesToSend()
 {
 	return TXeroIntegration::Instance().FailedInvoicesInQueue;
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::SendFailedXeroInvoices()
 {
 	ResetFailedXeroInvoiceTimerInterval( TXeroIntegration::Instance().SendNextFailedXeroInvoice() );
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::ResetFailedXeroInvoiceTimerInterval( unsigned inInvoiceCount )
 {
 	if( TXeroIntegration::Instance().XeroErrorMessage == XI_ERROR_NO_ERROR )
@@ -1627,7 +1316,6 @@ void TfrmMain::initProxyMateManager()
 	proxyMateManager->Init();
 }
 //---------------------------------------------------------------------------
-
 bool TfrmMain::proxyMateWillHandle( tagMSG &inMsg )
 {
 	if( proxyMateManager->AppConnectorServer
@@ -1652,7 +1340,6 @@ bool TfrmMain::proxyMateWillHandle( tagMSG &inMsg )
 	return false;
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::OpenFPConnector()
 {
 	fpConnectorUp = false;
@@ -1673,7 +1360,6 @@ void TfrmMain::OpenFPConnector()
 	}
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::CloseFPConnector()
 {
 	TProxyMateManager::Instance().AppConnectorServer->CloseConnector( mmcFloorPlan );
@@ -1684,7 +1370,6 @@ void TfrmMain::CloseFPConnector()
 	fpOpen        = false;
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::showFloorPlan()
 {
 	if( fpConnectorUp )
@@ -1697,7 +1382,6 @@ void TfrmMain::showFloorPlan()
 	}
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::showNewFloorPlan( TMMFloorPlanConnectorServer* inConnector )
 {
 	if( !fpOpen )
@@ -1711,7 +1395,6 @@ void TfrmMain::showNewFloorPlan( TMMFloorPlanConnectorServer* inConnector )
 	}
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::showOldFloorPlan()
 {
 	TMMContactInfo TempUserInfo;
@@ -1749,13 +1432,6 @@ void TfrmMain::showOldFloorPlan()
 			(ExtractFilePath(Application->ExeName) + "\\Floorplan\\GuiClient\\FloorPlanEditor.exe").w_str(),
 			(ExtractFilePath(Application->ExeName) + "\\Floorplan\\GuiClient\\FloorPlanEditor.exe").w_str(),
 			NULL);
-			/*
-		_wspawnl(
-			P_NOWAIT,
-			(ExtractFilePath(Application->ExeName) + "\\Floorplan\\GuiClient\\Menumate.WinServices.Client.FloorPlan.exe").w_str(),
-			(ExtractFilePath(Application->ExeName) + "\\Floorplan\\GuiClient\\Menumate.WinServices.Client.FloorPlan.exe").w_str(),
-			NULL);
-		*/
 			::Sleep(1000);
 			PrevWnd = FindWindow(_T("TfrmMain"), _T("Menumate Floor Plan"));
 			if (PrevWnd != NULL)
@@ -1800,7 +1476,6 @@ void TfrmMain::openCustomerDisplayServer()
 	}
 }
 //.............................................................................
-
 void TfrmMain::closeCustomerDisplayServer()
 {
 	if( TGlobalSettings::Instance().ShowCustomerDisplay )
@@ -1811,7 +1486,6 @@ void TfrmMain::closeCustomerDisplayServer()
 	}
 }
 //.............................................................................
-
 void __fastcall TfrmMain::mmAppConnectorOpenConnectorAck( System::TObject* Sender, int inACK, TMMConnectorTypes inConnectorType, TMMConnectorServer* inConnector  )
 {
 	switch( inConnectorType )
@@ -1820,27 +1494,22 @@ void __fastcall TfrmMain::mmAppConnectorOpenConnectorAck( System::TObject* Sende
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::fpClientUp( TObject* Sender )
 {
 	fpConnectorUp = true;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::fpClientDown( TObject* Sender  )
 {
 	// Might not be needed
 	fpConnectorUp = false;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMain::fpUpdatedTables( TObject* Sender, TLocationStatus* inUpdatedTables, int inCount )
 {
 	fpOpen = false;
 }
-
 //---------------------------------------------------------------------------
-
 // For Mall Export
 // This function is for prompting an EOD message that the Z-Reading of the
 // previous day is not yet performed.
@@ -1856,7 +1525,6 @@ void TfrmMain::EnablePOSBtn( bool inEnabled )
 	gridBtn->Enabled = inEnabled;
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::InitializeExportTimings(bool FirstMallSet)
 {
 	std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
@@ -1867,13 +1535,12 @@ void TfrmMain::InitializeExportTimings(bool FirstMallSet)
 	}
 	if((TGlobalSettings::Instance().MallIndex == ROBINSONMALL) || (TGlobalSettings::Instance().MallIndex == AYALAMALL) ||
        (TGlobalSettings::Instance().MallIndex == POWERPLANTMALL) || (TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL) ||
-       (TGlobalSettings::Instance().MallIndex == SHANGRILAMALL))
+       (TGlobalSettings::Instance().MallIndex == SHANGRILAMALL) || (TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL))
 	{
 		MEM->IMallManager->SetTimingZedCheck(tiCheckZedRead,FirstMallSet);
 	}
 }
 //---------------------------------------------------------------------------
-
 // This function is for saving the integer global variable
 void TfrmMain::SaveBoolVariable(vmVariables vmVar, bool CompName)
 {
@@ -1888,7 +1555,6 @@ void TfrmMain::SaveBoolVariable(vmVariables vmVar, bool CompName)
 	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-
 // This method disable the POS button depending on the mall schedule
 void TfrmMain::EnablePOSForSpecifiedMallSchedule()
 {
@@ -1916,9 +1582,6 @@ bool TfrmMain::MenusToStockExchangeFolderExists()
 bool TfrmMain::MenusToStockExchange()
 {
 	bool result = false;
-
-	//::::::::::::::::::::::::::::::::::::::::::::::::
-
 	TSearchRec sr;
 	int iAttributes = faAnyFile;
 
@@ -1927,9 +1590,6 @@ bool TfrmMain::MenusToStockExchange()
 		result = ( sr.Attr & iAttributes );
 	}
 	FindClose(sr);
-
-	//::::::::::::::::::::::::::::::::::::::::::::::::::
-
 	return result;
 }
 
@@ -1998,12 +1658,8 @@ void __fastcall TfrmMain::tiBarStockTimer(TObject *Sender)
 		{
 			CreateMenusToExchangeStockFolder();
 		}
-
-		//ImportMembers();
-
 		tiBarStock->Enabled = true;
 	}
-
 }
 //---------------------------------------------------------------------------
 
@@ -2016,17 +1672,10 @@ void __fastcall TfrmMain::tiBarStockturnoverTimer(TObject *Sender)
     return;
     	tiBarStock->Enabled = false;
 	AnsiString FileName = TGlobalSettings::Instance().BarExchangePath + "\\" + "turnover.dat";
-  /*	if(!FileExists( FileName ) )
-	{
-		ForceDirectories(ExtractFilePath(FileName));
-		std::auto_ptr<TFileStream> NewFile(new TFileStream(FileName, fmCreate | fmShareDenyRead));
-	}  */
-
 	Database::TDBTransaction DBTransaction( TDeviceRealTerminal::Instance().DBControl );
 	DBTransaction.StartTransaction();
 	TDeviceRealTerminal::Instance().SelectBarStockTurnOver(DBTransaction,FileName);
 	DBTransaction.Commit();
-
 	tiBarStock->Enabled = true;
 }
 //---------------------------------------------------------------------------

@@ -49,90 +49,154 @@ namespace MenumateServices.WCFServices
             {
                 response.Successful = false;
                 response.ErrorText = ex.Message;
+                ServiceLogger.LogException("Exception in PingTerminal", ex);
             }
             return response;
         }
 
         public DTO_SmartLinkTransactionResponse Login(string ipAddress, string versionString)
         {
-            CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+            try
             {
-                provider.Logon(versionString);
-            }, ipAddress);
+                CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+                {
+                    provider.Logon(versionString);
+                }, ipAddress);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in Login", ex);
+            }
             return _response;
         }
 
         public DTO_SmartLinkTransactionResponse SettlementInquiry(string ipAddress)
         {
-            CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+            try
             {
-                MessageObject request = provider.CreateRequest(Function.SettlementInquiry);
-                provider.ProcessRequestAsync(request);
-            }, ipAddress);
+                CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+                {
+                    MessageObject request = provider.CreateRequest(Function.SettlementInquiry);
+                    provider.ProcessRequestAsync(request);
+                }, ipAddress);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in SettlementInquiry", ex);
+            }
             return _response;
         }
 
         public DTO_SmartLinkTransactionResponse SettlementCutover(string ipAddress)
         {
-            CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+            try
             {
-                MessageObject request = provider.CreateRequest(Function.SettlementCutover);
-                provider.ProcessRequestAsync(request);
-            }, ipAddress);
+                CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+                {
+                    MessageObject request = provider.CreateRequest(Function.SettlementCutover);
+                    provider.ProcessRequestAsync(request);
+                }, ipAddress);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in SettlementCutover", ex);
+            }
             return _response;
         }
 
         public DTO_SmartLinkTransactionResponse Purchase(string ipAddress, double amount)
         {
-            CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+            try
             {
-                provider.Purchase(GetAmount(amount));
-            }, ipAddress);
+                CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+                {
+                    provider.Purchase(GetAmount(amount));
+                }, ipAddress);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in Purchase", ex);
+            }
             return _response;
         }
 
         public DTO_SmartLinkTransactionResponse PurchasePlusCash(string ipAddress, double amount, double cash)
         {
-            CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+            try
             {
-                provider.PurchasePlusCash(GetAmount(amount), GetAmount(cash));
-            }, ipAddress);
+                CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+                {
+                    provider.PurchasePlusCash(GetAmount(amount), GetAmount(cash));
+                }, ipAddress);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in PurchasePlusCash", ex);
+            }
             return _response;
         }
 
         public DTO_SmartLinkTransactionResponse CashOnly(string ipAddress, double cash)
         {
-            CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+            try
             {
-                provider.CashAdvance(GetAmount(cash));
-            }, ipAddress);
+                CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+                {
+                    provider.CashAdvance(GetAmount(cash));
+                }, ipAddress);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in CashOnly", ex);
+            }
             return _response;
         }
 
         public DTO_SmartLinkTransactionResponse Refund(string ipAddress, double refundAmount)
         {
-            CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+            try
             {
-                provider.Refund(GetAmount(refundAmount));
-            }, ipAddress);
+                CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+                {
+                    provider.Refund(GetAmount(refundAmount));
+                }, ipAddress);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in Refund", ex);
+            }
             return _response;
         }
 
         public DTO_SmartLinkTransactionResponse ReprintLastReceipt(string ipAddress)
         {
-            CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+            try
             {
-                provider.ReprintReceipt();
-            }, ipAddress);
+                CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+                {
+                    provider.ReprintReceipt();
+                }, ipAddress);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in ReprintLastReceipt", ex);
+            }
             return _response;
         }
 
         public DTO_SmartLinkTransactionResponse PrintReceipt(string ipAddress)
         {
-            CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+            try
             {
-                provider.PrintOnTerminal(SampleText);
-            }, ipAddress);
+                CallPaymentProvider(delegate(ISimplePaymentProvider provider)
+                {
+                    provider.PrintOnTerminal(SampleText);
+                }, ipAddress);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in PrintReceipt", ex);
+            }
             return _response;
         }
 
@@ -145,20 +209,27 @@ namespace MenumateServices.WCFServices
 
         private void WaitForResponse()
         {
-            Reset();
-            Stopwatch watch = new Stopwatch();
-            watch.Reset();
-            watch.Start();
-            while (_waitflag)
+            try
             {
-                if (watch.Elapsed.Seconds > 120)
+                Reset();
+                Stopwatch watch = new Stopwatch();
+                watch.Reset();
+                watch.Start();
+                while (_waitflag)
                 {
-                    _waitflag = false;
-                    _response.TransactionResult = "Failed - Time-Out";
-                    _response.Successful = false;
-                    _response.ResultText = "Time-Out";
-                    _response.ErrorText = "Time-Out";
+                    if (watch.Elapsed.TotalMinutes > 2.00)
+                    {
+                        _waitflag = false;
+                        _response.TransactionResult = "Failed - Time-Out";
+                        _response.Successful = false;
+                        _response.ResultText = "Time-Out";
+                        _response.ErrorText = "Time-Out";
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in WaitForResponse", ex);
             }
         }
         private void CallPaymentProvider(Action<ISimplePaymentProvider> paymentFunction, string ipAddress)
@@ -175,6 +246,7 @@ namespace MenumateServices.WCFServices
                 _waitflag = false;
                 _response.Successful = false;
                 _response.ErrorText = ex.Message;
+                ServiceLogger.LogException("Exception in CallPaymentProvider", ex);
             }
         }
 
@@ -190,26 +262,42 @@ namespace MenumateServices.WCFServices
                 _response.Successful = false;
                 _response.TransactionResult = "Failed";
                 _response.ErrorText = ex.Message;
+                ServiceLogger.LogException("Exception in Provider_OnResponse", ex);
             }
 
         }
 
         private void ParseResponse(ResponseEventArgs responseEventArgs)
         {
-            _response.TransactionResult = responseEventArgs.Response.Args["TransactionResult"];
-            if (responseEventArgs.Response.Args.ContainsKey("ResultText"))
-                _response.ResultText = responseEventArgs.Response.Args["ResultText"];
-            _response.ErrorText = _response.ResultText;
-            if (_response.TransactionResult == "OK-ACCEPTED")
-                _response.Successful = true;
-
+            try
+            {
+                _response.TransactionResult = responseEventArgs.Response.Args["TransactionResult"];
+                if (responseEventArgs.Response.Args.ContainsKey("ResultText"))
+                    _response.ResultText = responseEventArgs.Response.Args["ResultText"];
+                _response.ErrorText = _response.ResultText;
+                if (responseEventArgs.Response.Args.ContainsKey("AcquirerRef"))
+                _response.AcquirerRef = responseEventArgs.Response.Args["AcquirerRef"];
+                if (_response.TransactionResult == "OK-ACCEPTED")
+                    _response.Successful = true;
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in ParseResponse", ex);
+            }
         }
 
         private uint GetAmount(double amount)
         {
             uint retAmount = 0;
-            Decimal decAmount = Convert.ToDecimal(amount);
-            retAmount = (uint)(decAmount * 100);
+            try
+            {
+                Decimal decAmount = Convert.ToDecimal(amount);
+                retAmount = (uint)(decAmount * 100);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.LogException("Exception in ParseResponse", ex);
+            }
             return retAmount;
         }
 

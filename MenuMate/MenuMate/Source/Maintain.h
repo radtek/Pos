@@ -210,10 +210,15 @@ private:
 	UnicodeString XeroFolderPath;
 	UnicodeString XeroUserName;
 	UnicodeString XeroPassword;
+   	UnicodeString MYOBMachineName;
+	UnicodeString MYOBFolderPath;
+	UnicodeString MYOBUserName;
+	UnicodeString MYOBPassword;
     bool _awaitingPaymentInXero;
 	void InitXeroIntegrationConfig();
 	void XeroSettings();
-	void SaveXeroConfig();
+    void MYOBSettings();
+	void SaveAccountingConfig(AccountingType accountingType);
     void SetupGLCodes();
     void __fastcall RefreshRunRateBoard();
     bool DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransaction);

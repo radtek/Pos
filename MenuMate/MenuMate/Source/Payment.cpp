@@ -66,7 +66,6 @@ void TPayment:: operator = (const TPayment & Data)
    FCashOutRounding = Data.FCashOutRounding;
    FAdjustment = Data.FAdjustment;
    FAdjustmentRounding = Data.FAdjustmentRounding;
-
    AdjustmentReason = Data.AdjustmentReason;
    AmountAdjust = Data.AmountAdjust;
    Colour = Data.Colour;
@@ -81,10 +80,6 @@ void TPayment:: operator = (const TPayment & Data)
    VoucherCode = Data.VoucherCode;
    FixedVoucherCode = Data.FixedVoucherCode;
    VoucherMerchantID = Data.VoucherMerchantID;
-
-   // Owner							= Data.Owner;
-   // Pay	  						= Data.Pay
-
    PaymentThirdPartyID = Data.PaymentThirdPartyID;
    PercentAdjust = Data.PercentAdjust;
    Properties = Data.Properties;
@@ -96,7 +91,6 @@ void TPayment:: operator = (const TPayment & Data)
    TabCreditKey = Data.TabCreditKey;
    TaxRate = Data.TaxRate;
    Visible = Data.Visible;
-
    UniVoucherURL = Data.UniVoucherURL;
    UniVoucherUser = Data.UniVoucherUser;
    UniVoucherPass = Data.UniVoucherPass;
@@ -269,7 +263,6 @@ Currency __fastcall TPayment::GetDiscountRounding()
    }
 }
 
-
 Currency __fastcall TPayment::GetSurchargeTotal()
 {
    if(FAdjustment > 0)
@@ -353,7 +346,6 @@ void __fastcall TPayment::SetAdjustment(Currency value)
    }
 }
 
-
 Currency __fastcall TPayment::GetPayTendered()
 {
    // Total Tendered by this Payment Type.
@@ -371,7 +363,6 @@ Currency __fastcall TPayment::GetCashOutRounding()
    // Total Paid by this Payment Type.
    return FCashOutRounding;
 }
-
 
 Currency __fastcall TPayment::GetRoundingTotal()
 {
@@ -424,4 +415,9 @@ void TPayment::SetAssignedGroups( TPaymentTypeGroup group )
 {
    _assignedPaymentGroups.clear();
    _assignedPaymentGroups.push_back( group );
+}
+
+bool TPayment::IsLoyaltyVoucher()
+{
+   return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card" || Name == "Voucher" );
 }

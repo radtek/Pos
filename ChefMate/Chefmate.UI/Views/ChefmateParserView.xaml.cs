@@ -17,18 +17,33 @@ namespace Chefmate.UI.Views
     public partial class ChefmateParserView : Window, INotifyPropertyChanged
     {
         private ObservableCollection<string> _parserLogs;
-
+        private bool _isParseVisible;
         public ChefmateParserView()
         {
             InitializeComponent();
             ParserLogs = new ObservableCollection<string>();
             ParserCommand = new DelegateCommand(ParserCommandHandler);
             CloseCommand = new DelegateCommand(CancelCommandHandler);
+            IsParseVisible = true;
             this.DataContext = this;
         }
-
+        public ChefmateParserView(string dbAddress, string dbPath) : this()
+        {
+            IsParseVisible = false;
+            RunParser(dbAddress, dbPath);
+        }
         public ICommand ParserCommand { get; set; }
         public ICommand CloseCommand { get; set; }
+
+        public bool IsParseVisible
+        {
+            get { return _isParseVisible; }
+            set
+            {
+                _isParseVisible = value;
+                OnPropertyChanged("IsParseVisible");
+            }
+        }
         public ObservableCollection<string> ParserLogs
         {
             get { return _parserLogs; }
@@ -45,10 +60,14 @@ namespace Chefmate.UI.Views
             var result = forlderBrowsingDialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                var chefmateParser = new ChefmateParser("127.0.0.1", Path.Combine(forlderBrowsingDialog.SelectedPath, "CHEFMATE.FDB"));
-                chefmateParser.StatusChangeEvent += ChefmateParser_StatusChangeEvent;
-                chefmateParser.CreateDatabaseAndrunParser();
+                RunParser("127.0.0.1", Path.Combine(forlderBrowsingDialog.SelectedPath, "CHEFMATE.FDB"));
             }
+        }
+        private void RunParser(string dbAddress, string dbPath)
+        {
+            var chefmateParser = new ChefmateParser(dbAddress, dbPath);
+            chefmateParser.StatusChangeEvent += ChefmateParser_StatusChangeEvent;
+            chefmateParser.CreateDatabaseAndrunParser();
         }
         private void ChefmateParser_StatusChangeEvent(string status)
         {

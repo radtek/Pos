@@ -145,22 +145,18 @@ void __fastcall TfrmMessage::FormShow(TObject *Sender)
             DisplayPaymentList(DBTransaction,x,y,ButtonWidth,PixelGap);
           }
           else if (MessageType == eDiscountReason)
-	  {
-		 TStringList *List = new TStringList;
-		 try
-		 {
-            static const discount_list_combo_filter_t filter[2] =
-            {
-                exclude_combos,
-                only_combos
-            };
+	      {
+             TStringList *List = new TStringList;
+             try
+             {
 
-            /* TODO 1 -o Michael -c Tech Debt :
-                This form shouldn't know about discounts. It should follow a MVC
-                pattern where it is the View only then the system discounts could be
-                maintained by the controller aka ManagerDiscount*/
+              std::vector<eDiscountFilter> discountFilter;
+              if(allow_combo)
+                 discountFilter.push_back(only_combos);
+              else
+                 discountFilter.push_back(exclude_combos);
 
-            ManagerDiscount->GetDiscountList(DBTransaction,List,filter[allow_combo],ShowPointsAsDiscount);
+            ManagerDiscount->GetDiscountList(DBTransaction,List,discountFilter,ShowPointsAsDiscount);
 
 			for (int i = 0; i < List->Count; i++)
 			{
@@ -195,11 +191,6 @@ void __fastcall TfrmMessage::FormShow(TObject *Sender)
 		 TStringList *List = new TStringList;
 		 try
 		 {
-            static const discount_list_combo_filter_t filter[2] =
-            {
-                exclude_combos,
-                only_combos
-            };
             ManagerDiscount->GetVoucherListThor(DBTransaction,List,ShowPointsAsDiscount);
 
 			for (int i = 0; i < List->Count; i++)
@@ -351,24 +342,27 @@ void  TfrmMessage::DisplayPaymentList(Database::TDBTransaction &DBTransaction,
     PaymentSystem->PaymentLoad(DBTransaction, PaymentList.get());
     for (int i = 1; i < PaymentList->Count; i++)
 	{
-           TMessageBtn *NewButton = new TMessageBtn(this);
-           NewButton->Parent = this->sbMessages;
-           NewButton->Visible = true;
-           NewButton->Font->Color = clWhite;
-           NewButton->Title = PaymentList->Strings[i];
-           NewButton->Tag = (int)PaymentList->Objects[i];
-           NewButton->TextResult = PaymentList->Strings[i];//ManagerMessage->GetContent(DBTransaction, NewButton->Tag);
-           NewButton->ButtonColor = clNavy;
-           NewButton->Font->Name = "Tahoma";
-           NewButton->Font->Size = 14;
-           NewButton->Font->Style = TFontStyles() << fsBold;
-           NewButton->Caption = NewButton->Title;
-           NewButton->Left = cordX;
-           NewButton->Top = cordY;
-           NewButton->Height = 65;
-           NewButton->Width = ButtonWidth;
-           NewButton->OnMouseClick = BtnMesasgeClick;
-           cordY += NewButton->Height + PixelGap;
+           if(PaymentList->Strings[i] != "Voucher" && PaymentList->Strings[i] != "Gift Card")
+           {
+               TMessageBtn *NewButton = new TMessageBtn(this);
+               NewButton->Parent = this->sbMessages;
+               NewButton->Visible = true;
+               NewButton->Font->Color = clWhite;
+               NewButton->Title = PaymentList->Strings[i];
+               NewButton->Tag = (int)PaymentList->Objects[i];
+               NewButton->TextResult = PaymentList->Strings[i];//ManagerMessage->GetContent(DBTransaction, NewButton->Tag);
+               NewButton->ButtonColor = clNavy;
+               NewButton->Font->Name = "Tahoma";
+               NewButton->Font->Size = 14;
+               NewButton->Font->Style = TFontStyles() << fsBold;
+               NewButton->Caption = NewButton->Title;
+               NewButton->Left = cordX;
+               NewButton->Top = cordY;
+               NewButton->Height = 65;
+               NewButton->Width = ButtonWidth;
+               NewButton->OnMouseClick = BtnMesasgeClick;
+               cordY += NewButton->Height + PixelGap;
+           }
         }
 }
 

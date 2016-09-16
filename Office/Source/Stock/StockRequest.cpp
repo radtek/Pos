@@ -1449,7 +1449,7 @@ void TfrmStockRequest::PopulateStockWithCategory(AnsiString Location)
 						}
 						else {NodeData->SupplierUnitQty = 0;}
 
-                        NodeData->SupplierUnitQty = 0;
+                        
 						if(counter == 0)
 						{
 							vtvStockQty->FocusedNode = OrderItemNode;
@@ -1599,7 +1599,7 @@ void TfrmStockRequest::PopulateStockWithOutCategory(AnsiString Location)
 				NodeData->SupplierUnitQty= finalval;
 			}
 			else {NodeData->SupplierUnitQty = 0;}
-            NodeData->SupplierUnitQty = 0;
+            
 			if(counter == 0)
 			{
 				vtvStockQty->FocusedNode = OrderItemNode;

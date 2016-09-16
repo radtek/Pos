@@ -43,14 +43,13 @@ __published:	// IDE-managed Components
 			 TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
 private:	// User declarations
 	__fastcall TfrmPaymentMaintenance(TComponent* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem);
-
 	static TForm *WinOwner;
 	void __fastcall CreateParams(Controls::TCreateParams &params);
-
 	void __fastcall UpdateList();
 	Database::TDBControl &DBControl;
 	TListPaymentSystem *PaymentSystem;
 	int PaymentKey;
+    bool IsPaymentExist(Database::TDBTransaction &DBTransaction,AnsiString PaymentName);
 public:		// User declarations
 	TfrmPaymentMaintenance static *Create(TForm* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem);
 

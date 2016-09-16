@@ -362,13 +362,18 @@ void __fastcall TfrmUpdateSupplierCosts::btnCancelClick(TObject *Sender)
 
 void __fastcall TfrmUpdateSupplierCosts::btnCommitClick(TObject *Sender)
 {
-  if (vtvStockItem->IsEditing())
+    if (vtvStockItem->IsEditing())
    	{
 	   	vtvStockItem->EndEditNode();
-	   }
+	}
 
     try
        {
+
+        if(!CheckNegativeCostOrQty())
+        {
+            return;
+        }        
         if(!Transaction->InTransaction)
             Transaction->StartTransaction();
         Query->Close();
@@ -584,3 +589,32 @@ void TfrmUpdateSupplierCosts::AddSupplierStock(TSupplierItemNodeData* NodeData)
 }
 
 
+void __fastcall TfrmUpdateSupplierCosts::neStockNumericEditKeyPress(
+      TObject *Sender, char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   }
+}
+//---------------------------------------------------------------------------
+bool TfrmUpdateSupplierCosts::CheckNegativeCostOrQty()
+{
+    bool retVal = true;
+    PVirtualNode Node = vtvStockItem->GetFirst();
+    TSupplierItemNodeData *NodeData = NULL;
+    while(Node && retVal)
+    {
+        NodeData = (TSupplierItemNodeData *)vtvStockItem->GetNodeData(Node);
+        if((NodeData->SupplierUnitCost < 0) || (NodeData->StockQuantity < 0))
+        {
+           retVal = false;
+        }
+        Node = vtvStockItem->GetNext(Node);
+    }
+    if(!retVal)
+    {
+        Application->MessageBox("You Cannot Process Negative Amount or Quantity" , "Error", MB_ICONERROR + MB_OK);
+    }
+    return retVal;
+}

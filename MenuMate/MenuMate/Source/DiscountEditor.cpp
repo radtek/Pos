@@ -57,7 +57,7 @@ void __fastcall TfrmDiscountEdit::FormShow(TObject *Sender)
           tbtnFilter->Caption = "Category Filtered";
        }
 		btnName->Caption = "Name\r" + CurrentDiscount.Name;
-      	tbtnDiscountID->Caption = "Discount ID\r" + IntToStr(CurrentDiscount.ID);
+      	tbtnDiscountID->Caption = "Discount Code\r" + CurrentDiscount.DiscountCode;
       	tbtnAppearanceOrder->Caption = "Appearance Order\r" + IntToStr(CurrentDiscount.AppearanceOrder);
       	tbtnPriority->Caption = "Discount Priority\r" + IntToStr(CurrentDiscount.Priority);
 		tbtnDiscountGroup->Caption = "Discount Group\r" + IntToStr(CurrentDiscount.Group);
@@ -91,18 +91,20 @@ void __fastcall TfrmDiscountEdit::FormShow(TObject *Sender)
 		else if (CurrentDiscount.Mode == DiscModeCombo)
 		{
 			btnAmount->Caption = "Combo\r"+ FormatFloat("$0.00",fabs(CurrentDiscount.Amount));
+
 		}
         else if (CurrentDiscount.Mode == DiscModeItem)
 		{
-			btnAmount->Caption = "Set Price\r"+ FormatFloat("$0.00",fabs(CurrentDiscount.Amount));
+			btnAmount->Caption = "Discount\r"+ FormatFloat("$0.00",fabs(CurrentDiscount.Amount));
 		}
         else if (CurrentDiscount.Mode == DiscModePoints)
 		{
-			btnAmount->Caption = "Set Points\r"+ FormatFloat("0.00",fabs(CurrentDiscount.Amount));
+			btnAmount->Caption = "Surcharge\r"+ FormatFloat("0.00",fabs(CurrentDiscount.Amount));
 		}
 		memDescription->Lines->Text = CurrentDiscount.Description;
+        tbMaxValue->Caption = "Maximum Value\r"+ CurrToStrF(fabs(CurrentDiscount.MaximumValue), ffCurrency, CurrencyDecimals);
 	}
-	tbRounding->Caption = "Round To\r" + FormatFloat("0.00",CurrentDiscount.Rounding);
+   tbRounding->Caption = "Round To\r" + FormatFloat("0.00",CurrentDiscount.Rounding);
    tbMembersOnly->Latched = CurrentDiscount.MembersOnly;
    tbMembersExempt->Latched = CurrentDiscount.MembersExempt;
 }
@@ -140,7 +142,6 @@ void __fastcall TfrmDiscountEdit::memDescriptionMouseUp(TObject *Sender,
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::Panel19Click(TObject *Sender)
 {
    try
@@ -167,13 +168,11 @@ void __fastcall TfrmDiscountEdit::Panel19Click(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::Panel20Click(TObject *Sender)
 {
 	Close();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::btnNameClick(TObject *Sender)
 {
   	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
@@ -189,8 +188,6 @@ void __fastcall TfrmDiscountEdit::btnNameClick(TObject *Sender)
    }
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmDiscountEdit::btnAmountClick(TObject *Sender)
 {
 	std::auto_ptr<TfrmDiscount> frmDiscount(TfrmDiscount::Create<TfrmDiscount>(this));
@@ -268,8 +265,21 @@ void __fastcall TfrmDiscountEdit::btnAmountClick(TObject *Sender)
 
        	else if (frmDiscount->Mode == DiscModeItem)
 		{
-			CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult,MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
-			btnAmount->Caption = "Set Price\r"+ CurrToStrF(fabs(CurrentDiscount.Amount), ffCurrency, CurrencyDecimals);
+           	CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult,MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
+
+			if(CurrentDiscount.Amount != frmDiscount->CURResult)
+			{
+				MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
+			}
+
+			if(CurrentDiscount.Amount > 0)
+			{
+				btnAmount->Caption = "Discount\r"+ CurrToStrF(fabs(CurrentDiscount.Amount), ffCurrency, CurrencyDecimals);
+			}
+			else
+			{
+				btnAmount->Caption = "Surcharge\r"+ CurrToStrF(fabs(CurrentDiscount.Amount), ffCurrency, CurrencyDecimals);
+			}
 			CurrentDiscount.PercentAmount = 0;
 		}
 
@@ -289,7 +299,6 @@ void __fastcall TfrmDiscountEdit::btnAmountClick(TObject *Sender)
    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::tbtnFilterClick(TObject *Sender)
 {
     std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
@@ -350,13 +359,11 @@ void __fastcall TfrmDiscountEdit::tbtnFilterClick(TObject *Sender)
    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::rgDiscountTypeClick(TObject *Sender)
 {
 	CurrentDiscount.Type = static_cast<TDiscountType>(rgDiscountType->ItemIndex);
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::tbRoundingMouseClick(TObject *Sender)
 {
 	std::auto_ptr<TfrmDiscount> frmDiscount(TfrmDiscount::Create<TfrmDiscount>(this));
@@ -374,29 +381,25 @@ void __fastcall TfrmDiscountEdit::tbRoundingMouseClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::tbtnDiscountIDMouseClick(TObject *Sender)
 {
-   std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-   frmTouchNumpad->Caption = "Enter Discount ID";
-	frmTouchNumpad->btnOk->Visible = true;
-   frmTouchNumpad->Mode = pmNumber;
-   frmTouchNumpad->INTInitial = CurrentDiscount.ID;
-   if (frmTouchNumpad->ShowModal() == mrOk)
+   std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+   frmTouchKeyboard->MaxLength = 15;
+   frmTouchKeyboard->AllowCarriageReturn = false;
+   frmTouchKeyboard->StartWithShiftDown = false;
+   frmTouchKeyboard->KeyboardText = CurrentDiscount.DiscountCode;
+   frmTouchKeyboard->Caption = "Enter Discount Code";
+   if (frmTouchKeyboard->ShowModal() == mrOk)
    {
-      if(frmTouchNumpad->INTResult < 1 || frmTouchNumpad->INTResult > 255)
-      {
-				MessageBox("The Discount ID must be between 1 and 255 inclusive.", "Error", MB_ICONWARNING + MB_OK);
-      }
-      else
-      {
-         CurrentDiscount.ID = frmTouchNumpad->INTResult;
-         tbtnDiscountID->Caption = "Discount ID\r" + IntToStr(CurrentDiscount.ID);         
-      }
+		CurrentDiscount.DiscountCode = frmTouchKeyboard->KeyboardText;
+		tbtnDiscountID->Caption = "Discount Code\r" + CurrentDiscount.DiscountCode;
    }
+
+
+
+
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::tbtnPriorityMouseClick(TObject *Sender)
 {
    std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
@@ -406,12 +409,18 @@ void __fastcall TfrmDiscountEdit::tbtnPriorityMouseClick(TObject *Sender)
    frmTouchNumpad->INTInitial = CurrentDiscount.Priority;
    if (frmTouchNumpad->ShowModal() == mrOk)
    {
-      CurrentDiscount.Priority = frmTouchNumpad->INTResult;
-      tbtnPriority->Caption = "Discount Priority\r" + IntToStr(CurrentDiscount.Priority);
+     if(frmTouchNumpad->INTResult > 0 && frmTouchNumpad->INTResult <= 99)
+      {
+        CurrentDiscount.Priority = frmTouchNumpad->INTResult;
+        tbtnPriority->Caption = "Discount Priority\r" + IntToStr(CurrentDiscount.Priority);
+      }
+     else
+     {
+       MessageBox("Please enter a value between 1 and 99.", "Warning", MB_ICONWARNING + MB_OK);
+     }
    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::tbtnAppearanceOrderMouseClick(
       TObject *Sender)
 {
@@ -422,21 +431,38 @@ void __fastcall TfrmDiscountEdit::tbtnAppearanceOrderMouseClick(
    frmTouchNumpad->INTInitial = CurrentDiscount.AppearanceOrder;
    if (frmTouchNumpad->ShowModal() == mrOk)
    {
-      CurrentDiscount.AppearanceOrder = frmTouchNumpad->INTResult;
-      tbtnAppearanceOrder->Caption = "Appearance Order\r" + IntToStr(CurrentDiscount.AppearanceOrder);
+       if(frmTouchNumpad->INTResult > 0 && frmTouchNumpad->INTResult <= 99)
+          {
+            CurrentDiscount.AppearanceOrder = frmTouchNumpad->INTResult;
+            tbtnAppearanceOrder->Caption = "Appearance Order\r" + IntToStr(CurrentDiscount.AppearanceOrder);
+          }
+         else
+         {
+           MessageBox("Please enter a value between 1 and 99.", "Warning", MB_ICONWARNING + MB_OK);
+         }
    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::tbMembersOnlyMouseClick(TObject *Sender)
 {
 	CurrentDiscount.MembersOnly = tbMembersOnly->Latched;
+    if(CurrentDiscount.MembersOnly)
+    {
+      CurrentDiscount.MembersExempt  = false;
+      tbMembersExempt->Latched = false;
+    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::tbMembersExemptMouseClick(TObject *Sender)
 {
 	CurrentDiscount.MembersExempt = tbMembersExempt->Latched;
+    if(CurrentDiscount.MembersExempt)
+    {
+      CurrentDiscount.MembersOnly  = false;
+      tbMembersOnly->Latched = false;
+    }
+
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmDiscountEdit::tbMaxValueMouseClick(TObject *Sender)
@@ -447,10 +473,8 @@ void __fastcall TfrmDiscountEdit::tbMaxValueMouseClick(TObject *Sender)
 	frmDiscount->TotalValue = 0;
 	frmDiscount->pnlToggle->Enabled = false;
 	frmDiscount->pnlToggle->Caption = "Maximum Value";
-    frmDiscount->Mode = CurrentDiscount.Mode;
-
-	if (CurrentDiscount.Mode == DiscModeCombo)
-		frmDiscount->CURInitial = CurrentDiscount.Amount;
+    frmDiscount->Mode = DiscModeCurrency;
+    frmDiscount->CURInitial = CurrentDiscount.MaximumValue;
 
 	if (frmDiscount->ShowModal() == mrOk)
 	{
@@ -459,7 +483,6 @@ void __fastcall TfrmDiscountEdit::tbMaxValueMouseClick(TObject *Sender)
    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmDiscountEdit::tbtnDiscountGroupMouseClick(TObject *Sender)
 {
    std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
@@ -469,8 +492,15 @@ void __fastcall TfrmDiscountEdit::tbtnDiscountGroupMouseClick(TObject *Sender)
    frmTouchNumpad->INTInitial = CurrentDiscount.Group;
    if (frmTouchNumpad->ShowModal() == mrOk)
    {
-   		CurrentDiscount.Group = frmTouchNumpad->INTResult;
-    	tbtnDiscountGroup->Caption = "Discount Group\r" + IntToStr(CurrentDiscount.Group);
+        if(frmTouchNumpad->INTResult > 0 && frmTouchNumpad->INTResult <= 99)
+        {
+            CurrentDiscount.Group = frmTouchNumpad->INTResult;
+            tbtnDiscountGroup->Caption = "Discount Group\r" + IntToStr(CurrentDiscount.Group);
+        }
+        else
+        {
+            MessageBox("Please enter a value between 1 and 99.", "Warning", MB_ICONWARNING + MB_OK);
+        }
    }
 }
 //---------------------------------------------------------------------------

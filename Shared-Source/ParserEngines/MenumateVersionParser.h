@@ -70,6 +70,9 @@ namespace MenumateVersionParser
             pv6_23,
             pv6_24,
             pv6_25,
+            pv6_26,
+            pv6_27,
+            pv6_28,
     };
 
     class TApplyParser
@@ -140,8 +143,9 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_23( TDBControl* const inDBControl );
         PARSER_ERROR apply6_24( TDBControl* const inDBControl );
         PARSER_ERROR apply6_25( TDBControl* const inDBControl );
-		//:::::::::::::::::::::::::::::::::::::::::::::::::::::
-        // Members
+        PARSER_ERROR apply6_26( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_27( TDBControl* const inDBControl );
+		PARSER_ERROR apply6_28( TDBControl* const inDBControl );        // Members
         TDBControl* _dbControl;
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -735,8 +739,31 @@ namespace MenumateVersionParser
         void update6_25Tables();
 		void UpdateDiscountsTable6_25(TDBControl* const inDBControl);
 
+        //6.26
+		void upgrade6_26Tables();
+        void update6_26Tables();
+		void UpdateDiscountsTable6_26(TDBControl* const inDBControl);
+        void UpdateLoyaltyTransactionTable6_26(TDBControl* const inDBControl);
+        void CreateDiscountUsageTable6_26(TDBControl* const inDBControl);
+        void UpdateArcCateoriesTable6_26(TDBControl* const inDBControl);
+
+        //6.27
+        void upgrade6_27Tables();
+        void update6_27Tables();
+        void UpdatePrnorderTable6_27(TDBControl* const inDBControl);
+
+        //6.28
+        void upgrade6_28Tables();
+        void update6_28Tables();
+		void UpdateItemSizeTable6_28(TDBControl* const inDBControl);
+        void create6_28MallViews(TDBControl* const inDBControl);
+        void update6_28MallExportHourly(TDBControl* const inDBControl);
+        void update6_28ArcMallExportHourly(TDBControl* const inDBControl);
+        void create6_28MallExportOtherDetails(TDBControl* const inDBControl);
+        void create6_28ArcMallExportOtherDetails(TDBControl* const inDBControl);
+        void CreateGenerators6_28(TDBControl* const inDBControl);
+		void Create6_28MYOBInvoiceNumberGenerator(TDBControl* const inDBControl);
     }; // class
 } // namespace
 
 #endif
-

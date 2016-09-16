@@ -23,6 +23,7 @@ namespace Chefmate.UI.Views
     {
         private ObservableCollection<Terminal> _terminals;
         private ObservableCollection<string> _soundList;
+        private ObservableCollection<int> _fontSizes;
         private double _sliderValue;
         private Terminal _selectedTerminal;
         private string _validationError;
@@ -115,6 +116,15 @@ namespace Chefmate.UI.Views
                 OnPropertyChanged("ValidationError");
             }
         }
+        public ObservableCollection<int> FontSizes
+        {
+            get { return _fontSizes; }
+            set
+            {
+                _fontSizes = value;
+                OnPropertyChanged("FontSizes");
+            }
+        }
         #endregion
 
         #region Command Handlers
@@ -150,7 +160,7 @@ namespace Chefmate.UI.Views
         }
         private void TerminalNameClick(object sender)
         {
-            CurrentSettings.DisplayName = KeyboardController.Instance.OpenKeyBoard("Eneter display name for terminal",
+            CurrentSettings.DisplayName = KeyboardController.Instance.OpenKeyBoard("Enter display name for terminal",
                 CurrentSettings.DisplayName);
         }
         private void TestConnectionHandler(object sender)
@@ -188,7 +198,7 @@ namespace Chefmate.UI.Views
                 return false;
             }
 
-            if (!ChefmateUtility.IsValidIpAddress(CurrentSettings.TerminalIpAddress))
+            if (string.IsNullOrWhiteSpace(CurrentSettings.TerminalIpAddress) || !ChefmateUtility.IsValidIpAddress(CurrentSettings.TerminalIpAddress))
             {
                 ValidationError = "Please Enter a valid ip address for terminal.";
                 return false;
@@ -199,7 +209,7 @@ namespace Chefmate.UI.Views
                 return false;
             }
 
-            if (!ChefmateUtility.IsValidIpAddress(CurrentSettings.DbIpAddress))
+            if (string.IsNullOrWhiteSpace(CurrentSettings.TerminalIpAddress) || !ChefmateUtility.IsValidIpAddress(CurrentSettings.DbIpAddress))
             {
                 ValidationError = "Please Enter a valid ip address for databse.";
                 return false;
@@ -283,6 +293,10 @@ namespace Chefmate.UI.Views
                     _terminals.Add(s);
             });
         }
+        private void LoadFontSizes()
+        {
+            FontSizes = new ObservableCollection<int>() {10,11,12,13,14,15,16,17,18,20,22,24};
+        }
         private void Initialize()
         {
             _terminals = new ObservableCollection<Terminal>();
@@ -291,6 +305,7 @@ namespace Chefmate.UI.Views
             SliderValue = SoundPlayerUtilities.Instance.GetSystemVolume();
             LoadSoundNames();
             LoadTerminals();
+            LoadFontSizes();
             SelectedTerminal = Terminals.FirstOrDefault(s => s.TerminalId == CurrentSettings.OutputTerminal);
         }
         private void PlaySound(object param)

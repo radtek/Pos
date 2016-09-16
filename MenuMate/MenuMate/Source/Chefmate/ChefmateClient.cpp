@@ -222,17 +222,17 @@ CMC_ERROR TChefmateClient::SendCancelOrder( TList* inElementsToCancel,AnsiString
 		return CMC_ERROR_NO_ITEMS_TO_CANCEL;
 	}
 	TPnMOrder* element = ( TPnMOrder* )inElementsToCancel->Items[0];
-	if( ChefmateInterface.OpenCancelOrder(element->TabKey, cmOrderNumber(),inTabTableName) )
-	{
-		ITEM_TO_CANCEL_MAP oc;  // Orders to Cancel
-		ITEM_TO_CANCEL_MAP::const_iterator ocIT;
-		populateOrdersToCancel( inElementsToCancel, oc );
-		for( ocIT = oc.begin(); ocIT != oc.end(); ocIT++ )
-		{
-		   orderItemToCancelToChefmate( ocIT->first, ocIT->second );
-		}
-		result = CMC_ERROR_SUCCESSFUL;
-	}
+    if( ChefmateInterface.OpenCancelOrder(element->TabKey, cmOrderNumber(),inTabTableName) )
+        {
+            ITEM_TO_CANCEL_MAP oc;  // Orders to Cancel
+            ITEM_TO_CANCEL_MAP::const_iterator ocIT;
+            populateOrdersToCancel( inElementsToCancel, oc );
+            for( ocIT = oc.begin(); ocIT != oc.end(); ocIT++ )
+            {
+               orderItemToCancelToChefmate( ocIT->first, ocIT->second );
+            }
+            result = CMC_ERROR_SUCCESSFUL;
+        }
 	commitOrder();
 	TChefmateOrderNumberGenerator::Instance().NextOrderNumber();
 	return result;
@@ -325,24 +325,26 @@ void TChefmateClient::populateOrdersToCancel(
 		for( int i = 0; i < inElementsToCancel->Count; i++ )
 		{
 			TPnMOrder* element = ( TPnMOrder* )inElementsToCancel->Items[i];
+            for(int i = 0; i < element->Qty ; i++)
+            {
+                TItemComplete    *order;
+                TItemCompleteSub *side;
 
-			TItemComplete    *order;
-			TItemCompleteSub *side;
-
-			if( elementIsItem( element ) )
-			{
-				if( orderFromElement( element, savedOrderList, order ) )
-				{
-					addToOrdersToCancelMap( order, outOrdersToCancel );
-				}
-			}
-			else
-			{
-				if( orderAndSideFromElement( element, savedOrderList, order, side ) )
-				{
-					addToSidesToCancelMap( order, side, outOrdersToCancel );
-				}
-			}
+                if( elementIsItem( element ) )
+                {
+                    if( orderFromElement( element, savedOrderList, order ) )
+                    {
+                        addToOrdersToCancelMap( order, outOrdersToCancel );
+                    }
+                }
+                else
+                {
+                    if( orderAndSideFromElement( element, savedOrderList, order, side ) )
+                    {
+                        addToSidesToCancelMap( order, side, outOrdersToCancel );
+                    }
+                }
+            }
 		}
 	}
 	catch( ... )
@@ -513,8 +515,7 @@ void TChefmateClient::addToOrdersToCancelMap(
 	// In this case HSIDE is used to cast TItemCompleteSub objects.
 	// It's not the same as HSIDE in ChefmateManager
 
-	ITEM_TO_CANCEL_MAP::const_iterator mapIT =
-		outOrdersToCancel.find( ( HITEM )inOrder );
+	ITEM_TO_CANCEL_MAP::const_iterator mapIT =  outOrdersToCancel.find( ( HITEM )inOrder );
 
 	if( mapIT == outOrdersToCancel.end() ) // inOrder needs to be added to the MAP
 	{
@@ -566,7 +567,6 @@ void TChefmateClient::orderItemToChefmate( TItemComplete *inOrderItem )
 		int itemCourseKey = TDBChefmate::GetItemCourseKey( inOrderItem->OriginalItemKey );
 
 		//.........................................................
-
 		// Chefmate is meant for restaurants and cafes where quantities are integer
 		unsigned int qty = std::fabs(inOrderItem->GetQty());
 
@@ -800,8 +800,7 @@ void TChefmateClient::orderItemOptionToChefmate(
 							HITEM inItemHandle,
 							TItemOption* inItemOption )
 {
-   if (CheckOptionKeyPresent(inItemOption->OptionKey) )
-    {
+
 
       	ChefmateInterface.AddItemOption(
 					cmHostname,
@@ -810,7 +809,6 @@ void TChefmateClient::orderItemOptionToChefmate(
 					inItemOption->Name,        // Item's Option Name
 					inItemOption->KitchenName, // Item's Option Kitchen Name
 					inItemOption->IsPlus    ); // Item's Option Is Plus
-    }
 }
 //---------------------------------------------------------------------------
 void TChefmateClient::orderItemSideToChefmate(
@@ -1186,30 +1184,4 @@ UnicodeString TChefmateClient::cmDeliveryTime()
           return _chitNumber->DeliveryTime.FormatString("dd/mm/yyyy hh:nn:ss ");
        }
 }
-
-
 //---------------------------------------
-bool  TChefmateClient::CheckOptionKeyPresent(int Key)
-{
-   	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-    DBTransaction.StartTransaction();
-    TIBSQL *ibInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-    ibInternalQuery->Close();
-    ibInternalQuery->SQL->Text = " SELECT "
-                                    "OD.ORDEROPTION_KEY "
-                                "FROM ORDEROPTION OD  "
-                                "WHERE OD.ORDEROPTION_KEY = :ORDEROPTION_KEY";
-
-    ibInternalQuery->ParamByName("ORDEROPTION_KEY")->AsInteger = Key;
-    ibInternalQuery->ExecQuery();
-    DBTransaction.Commit();
-
-    if(ibInternalQuery->Eof)
-    {
-        return false;
-    }
-     return true;
-
-}

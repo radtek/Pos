@@ -4,7 +4,7 @@
 #pragma hdrstop
 
 #include "LoadMenu.h"
-
+#include <system.hpp>
 #include "tinyxml.h"
 
 //---------------------------------------------------------------------------
@@ -50,8 +50,8 @@ __int32 TLoadMenu::SizeCount()
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::SizeAtIndex( __int32 inIndex, __int32& outKey, AnsiString& outDescription, AnsiString& outKitchenName,
-AnsiString& outHandheldName, AnsiString& outReceiptName, bool& outWeighed,
+__int32 TLoadMenu::SizeAtIndex( __int32 inIndex, __int32& outKey, WideString& outDescription, WideString& outKitchenName,
+WideString& outHandheldName, WideString& outReceiptName, bool& outWeighed,
 __int32& outSizeID, __int32& outPalmID )
 {
 	__int32 result = 0;
@@ -70,10 +70,10 @@ __int32& outSizeID, __int32& outPalmID )
 				if( it == inIndex )
 				{
 					outKey          = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
-					outDescription  = AnsiString( itPtr->Attribute( "description" ) );
-					outKitchenName  = AnsiString( itPtr->Attribute( "kitchenName" ) );
-					outHandheldName = AnsiString( itPtr->Attribute( "handheldName" ) );
-					outReceiptName  = AnsiString( itPtr->Attribute( "kitchenName" ) );
+					outDescription  = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
+					outKitchenName  = convertUTF8CharToWideString( itPtr->Attribute( "kitchenName" ) );
+					outHandheldName = convertUTF8CharToWideString( itPtr->Attribute( "handheldName" ) );
+					outReceiptName  = convertUTF8CharToWideString( itPtr->Attribute( "kitchenName" ) );
 					outWeighed      = AnsiString( itPtr->Attribute( "weighed" ) ).UpperCase() == "TRUE";
 					outSizeID       = StrToInt( AnsiString( itPtr->Attribute( "sizeID" ) ) );
 					outPalmID       = StrToInt( AnsiString( itPtr->Attribute( "palmID" ) ) );
@@ -104,7 +104,7 @@ __int32 TLoadMenu::CategoryGroupCount()
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::CategoryGroupAtIndex( __int32 inIndex, __int32& outKey, AnsiString& outDescription, bool& outGetDeleted )
+__int32 TLoadMenu::CategoryGroupAtIndex( __int32 inIndex, __int32& outKey, WideString& outDescription, bool& outGetDeleted )
 {
 	__int32 result = 0;
 
@@ -122,7 +122,7 @@ __int32 TLoadMenu::CategoryGroupAtIndex( __int32 inIndex, __int32& outKey, AnsiS
 				if( it == inIndex )
 				{
 					outKey          = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
-					outDescription  = AnsiString( itPtr->Attribute( "description" ) );
+					outDescription  = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
 					outGetDeleted   = AnsiString( itPtr->Attribute( "deleted" ) ).UpperCase() == "TRUE";
 
 					result = ( __int32 )itPtr;
@@ -153,7 +153,7 @@ __int32 TLoadMenu::CategoryCount( __int32 inCategoryGroupID )
 }
 //---------------------------------------------------------------------------
 
-bool TLoadMenu::CategoryAtIndex( __int32 inIndex, __int32 inCategoryGroupHandle, __int32& outKey, AnsiString& outDescription, AnsiString& outGLCode, bool& outGetDeleted )
+bool TLoadMenu::CategoryAtIndex( __int32 inIndex, __int32 inCategoryGroupHandle, __int32& outKey, WideString& outDescription, WideString& outGLCode, bool& outGetDeleted )
 {
 	__int32 result = 0;
 
@@ -173,9 +173,9 @@ bool TLoadMenu::CategoryAtIndex( __int32 inIndex, __int32 inCategoryGroupHandle,
 				if( it == inIndex )
 				{
 					outKey          = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
-					outDescription  = AnsiString( itPtr->Attribute( "description" ) );
+					outDescription  = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
 					outGetDeleted   = AnsiString( itPtr->Attribute( "deleted" ) ).UpperCase() == "TRUE";
-					outGLCode       = AnsiString( itPtr->Attribute( "glcode" ) );
+					outGLCode       = convertUTF8CharToWideString( itPtr->Attribute( "glcode" ) );
 					result = ( __int32 )itPtr;
 
 					break;
@@ -202,7 +202,7 @@ __int32 TLoadMenu::AllTaxProfilesCount()
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::TaxProfileAtIndex( __int32 inIndex,  __int32& outKey, AnsiString& outName, Currency& outRate,
+__int32 TLoadMenu::TaxProfileAtIndex( __int32 inIndex,  __int32& outKey, WideString& outName, Currency& outRate,
 __int32& outType, __int32& outPriority )
 {
 	__int32 result = 0;
@@ -221,7 +221,7 @@ __int32& outType, __int32& outPriority )
 				if( it == inIndex )
 				{
 					outKey      = StrToInt(   AnsiString( itPtr->Attribute( "key" ) ) );
-					outName     = AnsiString( itPtr->Attribute( "name" ) );
+					outName     = convertUTF8CharToWideString( itPtr->Attribute( "name" ) );
 					outRate     = StrToCurr(  AnsiString( itPtr->Attribute( "rate" ) ) );
 					outType     = StrToInt(   AnsiString( itPtr->Attribute( "type" ) ) );
 					outPriority = StrToInt(   AnsiString( itPtr->Attribute( "priority" ) ) );
@@ -252,7 +252,7 @@ __int32 TLoadMenu::ServingCourseCount()
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::ServingCourseAtIndex( __int32 inIndex, __int32& outKey, AnsiString& outLongDescription, AnsiString& outKitchenName,
+__int32 TLoadMenu::ServingCourseAtIndex( __int32 inIndex, __int32& outKey, WideString& outLongDescription, WideString& outKitchenName,
 bool& outEnabled, bool& outDeleted, bool& outSelectable, TColor& outColor,__int32& displayOrder )
 {
 	__int32 result = 0;
@@ -271,8 +271,8 @@ bool& outEnabled, bool& outDeleted, bool& outSelectable, TColor& outColor,__int3
 				if( it == inIndex )
 				{
 					outKey             = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
-					outLongDescription = AnsiString( itPtr->Attribute( "description" ) );
-					outKitchenName     = AnsiString( itPtr->Attribute( "kitchenName" ) );
+					outLongDescription = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
+					outKitchenName     = convertUTF8CharToWideString( itPtr->Attribute( "kitchenName" ) );
 					outEnabled         = AnsiString( itPtr->Attribute( "enabled" ) ).UpperCase() == "TRUE";
 					outDeleted         = AnsiString( itPtr->Attribute( "deleted" ) ).UpperCase() == "TRUE";
 					outSelectable      = AnsiString( itPtr->Attribute( "selectable" ) ).UpperCase() == "TRUE";
@@ -304,7 +304,7 @@ __int32 TLoadMenu::ThirdPartyCodeCount()
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::ThirdPartyCodeAtIndex( __int32 inIndex, __int32& outKey, AnsiString& outCode, AnsiString& outDescription, bool& outVisible,
+__int32 TLoadMenu::ThirdPartyCodeAtIndex( __int32 inIndex, __int32& outKey, WideString& outCode, WideString& outDescription, bool& outVisible,
 __int32& outCodeType )
 {
 	__int32 result = 0;
@@ -323,8 +323,8 @@ __int32& outCodeType )
 				if( it == inIndex )
 				{
 					outKey         = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
-					outCode        = AnsiString( itPtr->Attribute( "code" ) );
-					outDescription = AnsiString( itPtr->Attribute( "description" ) );
+					outCode        = convertUTF8CharToWideString( itPtr->Attribute( "code" ) );
+					outDescription = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
 					outVisible     = StrToInt(itPtr->Attribute( "visible" )) == 1 ? true : false;
 					outCodeType    = StrToInt( AnsiString( itPtr->Attribute( "codeType" ) ) );
 
@@ -354,9 +354,9 @@ __int32 TLoadMenu::CourseCount()
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::CourseAtIndex( __int32 inIndex, __int32& outKey, AnsiString& outDescription, AnsiString& outKitchenName,
-AnsiString& outHandheldName, AnsiString& outReceiptName, __int32& outLocation, bool& outEnabled,
-__int32& outServingCourseKey, AnsiString& outServiceCourse, bool& outNoDefaultServingCourse )
+__int32 TLoadMenu::CourseAtIndex( __int32 inIndex, __int32& outKey, WideString& outDescription, WideString& outKitchenName,
+WideString& outHandheldName, WideString& outReceiptName, __int32& outLocation, bool& outEnabled,
+__int32& outServingCourseKey, WideString& outServiceCourse, bool& outNoDefaultServingCourse )
 {
 	__int32 result = 0;
 
@@ -374,14 +374,14 @@ __int32& outServingCourseKey, AnsiString& outServiceCourse, bool& outNoDefaultSe
 				if( it == inIndex )
 				{
 					outKey                    = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
-					outDescription            = AnsiString( itPtr->Attribute( "description" ) );
-					outKitchenName            = AnsiString( itPtr->Attribute( "kitchenName" ) );
-					outHandheldName           = AnsiString( itPtr->Attribute( "handheldName" ) );
-					outReceiptName            = AnsiString( itPtr->Attribute( "receiptName" ) );
+					outDescription            = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
+					outKitchenName            = convertUTF8CharToWideString( itPtr->Attribute( "kitchenName" ) );
+					outHandheldName           = convertUTF8CharToWideString( itPtr->Attribute( "handheldName" ) );
+					outReceiptName            = convertUTF8CharToWideString( itPtr->Attribute( "receiptName" ) );
 					outLocation               = StrToInt( AnsiString( itPtr->Attribute( "location" ) ) );
 					outEnabled                = AnsiString( itPtr->Attribute( "enabled" ) ).UpperCase() == "TRUE";
 					outServingCourseKey       = StrToInt( AnsiString( itPtr->Attribute( "servingCourseKey" ) ) );
-					outServiceCourse          = AnsiString( itPtr->Attribute( "servingCourseName" ) );
+					outServiceCourse          = convertUTF8CharToWideString( itPtr->Attribute( "servingCourseName" ) );
 					outNoDefaultServingCourse = AnsiString( itPtr->Attribute( "noDefaultServingCourse" ) ).UpperCase() == "TRUE";
 
 					result = ( __int32 )itPtr;
@@ -412,8 +412,8 @@ __int32 TLoadMenu::ItemCount( __int32 inCourseHandle )
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::ItemAtIndex( __int32 inIndex, __int32 inCourseHandle, __int32& outKey, AnsiString& outLongDescription,
-AnsiString& outKitchenName, AnsiString& outHandheldName, AnsiString& outReceiptName,
+__int32 TLoadMenu::ItemAtIndex( __int32 inIndex, __int32 inCourseHandle, __int32& outKey, WideString& outLongDescription,
+WideString& outKitchenName, WideString& outHandheldName, WideString& outReceiptName,
 TColor& outColor, bool& outDisplaySizes, bool& outEnabled, bool& outItemOnlySide,
 bool& outPrintUnderlined,  bool& outPrintBold, TColor& outPrintColor, __int32& outPrintFont,
 bool& outPrintDoubleWidth, bool& outPrintDoubleHeight )
@@ -421,7 +421,7 @@ bool& outPrintDoubleWidth, bool& outPrintDoubleHeight )
 	__int32 result = 0;
 
 	//:::::::::::::::::::::::::::::::::::::
-
+   //AnsiString msg;
 	try
 	{
 		if( inIndex >= 0 )
@@ -436,11 +436,12 @@ bool& outPrintDoubleWidth, bool& outPrintDoubleHeight )
 				if( it == inIndex )
 				{
 					outKey               = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
-					outLongDescription   = AnsiString( itPtr->Attribute( "description" ) );
-					outKitchenName       = AnsiString( itPtr->Attribute( "kitchenName" ) );
-					outHandheldName      = AnsiString( itPtr->Attribute( "handheldName" ) );
-					outReceiptName       = AnsiString( itPtr->Attribute( "receiptName" ) );
-					outColor             = StrToInt( AnsiString( itPtr->Attribute( "color" ) ) );
+					outLongDescription   = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
+                    
+					outKitchenName       = convertUTF8CharToWideString( itPtr->Attribute( "kitchenName" ) );
+					outHandheldName      = convertUTF8CharToWideString( itPtr->Attribute( "handheldName" ) );
+					outReceiptName       = convertUTF8CharToWideString( itPtr->Attribute( "receiptName" ) );
+					outColor             = StrToInt(AnsiString( itPtr->Attribute( "color" ) ) ); //AnsiString( itPtr->Attribute( "color" ) ) );
 					outDisplaySizes      = AnsiString( itPtr->Attribute( "displaySizes" ) ).UpperCase() == "TRUE";
 					outEnabled           = AnsiString( itPtr->Attribute( "enabled" ) ).UpperCase() == "TRUE";
 					outItemOnlySide      = AnsiString( itPtr->Attribute( "itemOnlySide" ) ).UpperCase() == "TRUE";
@@ -460,8 +461,9 @@ bool& outPrintDoubleWidth, bool& outPrintDoubleHeight )
 				it++;
 			}
 		}
+
 	}
-	catch( ... )
+	catch(... )
 	{
 	}
 
@@ -500,8 +502,8 @@ const
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::OptionAtIndex( __int32 inIndex, __int32 inCourseHandle, __int32& outKey, AnsiString& outLongDescription,
-AnsiString& outKitchenName, AnsiString& outHandheldName, AnsiString& outReceiptName,
+__int32 TLoadMenu::OptionAtIndex( __int32 inIndex, __int32 inCourseHandle, __int32& outKey, WideString& outLongDescription,
+WideString& outKitchenName, WideString& outHandheldName, WideString& outReceiptName,
 __int32& outCondimentsMask, __int32& outFlags, bool& outEnabled, bool& outPrintUnderlined,
 bool& outPrintBold, __int32& outPrintColor, __int32& outPrintFont,
 bool& outPrintDoubleWidth, bool& outPrintDoubleHeight )
@@ -524,10 +526,10 @@ bool& outPrintDoubleWidth, bool& outPrintDoubleHeight )
 				if( it == inIndex )
 				{
 					outKey               = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
-					outLongDescription   = AnsiString( itPtr->Attribute( "description" ) );
-					outKitchenName       = AnsiString( itPtr->Attribute( "kitchenName" ) );
-					outHandheldName      = AnsiString( itPtr->Attribute( "handheldName" ) );
-					outReceiptName       = AnsiString( itPtr->Attribute( "receiptName" ) );
+					outLongDescription   = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
+					outKitchenName       = convertUTF8CharToWideString( itPtr->Attribute( "kitchenName" ) );
+					outHandheldName      = convertUTF8CharToWideString( itPtr->Attribute( "handheldName" ) );
+					outReceiptName       = convertUTF8CharToWideString( itPtr->Attribute( "receiptName" ) );
 					outCondimentsMask    = StrToInt( AnsiString( itPtr->Attribute( "condimentsMask" ) ) );
 					outFlags             = StrToInt(AnsiString( itPtr->Attribute( "flags" ) ) );
 					outEnabled           = AnsiString( itPtr->Attribute( "enabled" ) ).UpperCase() == "TRUE";
@@ -567,7 +569,7 @@ __int32 TLoadMenu::ForcedSideCount( __int32 inItemHandle )
 //---------------------------------------------------------------------------
 
 __int32 TLoadMenu::ForcedSideAtIndex( __int32 inIndex, __int32 inItemHandle, __int32& outKey, __int32& outItemKey,
-AnsiString& outLongDescription,
+WideString& outLongDescription,
 __int32& outGroupNumber, __int32& outMaxSelect, bool& outSideGroupSkip )
 {
 	__int32 result = 0;
@@ -589,7 +591,7 @@ __int32& outGroupNumber, __int32& outMaxSelect, bool& outSideGroupSkip )
 				{
 					outKey             = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
 					outItemKey         = StrToInt( AnsiString( itPtr->Attribute( "itemFKey" ) ) );
-					outLongDescription = AnsiString( itPtr->Attribute( "description" ) );
+					outLongDescription = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
 					outGroupNumber     = StrToInt( AnsiString( itPtr->Attribute( "groupNumber" ) ) );
 					outMaxSelect       = StrToInt( AnsiString( itPtr->Attribute( "maxSelect" ) ) );
 					outSideGroupSkip   = AnsiString( itPtr->Attribute( "sideGroupSkip" ) ).UpperCase() == "TRUE";
@@ -623,7 +625,7 @@ __int32 TLoadMenu::ForcedOptionCount( __int32 inItemID )
 //---------------------------------------------------------------------------
 
 __int32 TLoadMenu::ForcedOptionAtIndex( __int32 inIndex, __int32 inItemHandle, __int32& outKey,
-__int32& outOptionFKey, AnsiString& outDescription,
+__int32& outOptionFKey, WideString& outDescription,
 __int32& outGroupNumber )
 {
 	__int32 result = 0;
@@ -645,7 +647,7 @@ __int32& outGroupNumber )
 				{
 					outKey         = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
 					outOptionFKey  = StrToInt( AnsiString( itPtr->Attribute( "optionFKey" ) ) );
-					outDescription = AnsiString( itPtr->Attribute( "description" ) );
+					outDescription = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
 					outGroupNumber = StrToInt( AnsiString( itPtr->Attribute( "groupNumber" ) ) );
 
 					result = ( __int32 )itPtr;
@@ -676,12 +678,12 @@ __int32 TLoadMenu::ItemSizeCount( __int32 inItemHandle )
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int32& outKey, __int32& outSizeFKey, AnsiString& outLongDescription,
-									AnsiString& outSizeKitchenName, bool& outFree, Currency& outPrice, Currency& outMaxRetailPrice, Currency& outSpecialPrice,
+__int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int32& outKey, __int32& outSizeFKey, WideString& outLongDescription,
+									WideString& outSizeKitchenName, bool& outFree, Currency& outPrice, Currency& outMaxRetailPrice, Currency& outSpecialPrice,
 									double& outGST, Currency& outCost, double& outCostGST, double& outPointsPercent, __int32& outMemberPurchaseCount,
 									double& outMemberPurchaseDiscount, __int32& outLocationPurchaseCount, double& outLocationPurchaseDiscount, bool& outNoRecipe,
-									bool& outIsTaxExempt, bool& outHasServiceCharge, __int32& outSetMenuMask, bool& outAvailableAsStandard, AnsiString& outBarcode,
-									bool& outEnabled, __int32& outCategoryKey, AnsiString& outCategory, __int32& outThirdPartyCodeKey, double& outTareWeight,
+									bool& outIsTaxExempt, bool& outHasServiceCharge, __int32& outSetMenuMask, bool& outAvailableAsStandard, WideString& outBarcode,
+									bool& outEnabled, __int32& outCategoryKey, WideString& outCategory, __int32& outThirdPartyCodeKey, double& outTareWeight,
 									__int32& outPLU, double &outAvailableQuantity, double &outDefaultQuantity, double &outWarningQuantity,
 									bool &outDisableWhenCountReachesZero, bool &outCanBePaidForUsingPoints, int &outDefaultPatronCount,
                                     Currency& outPriceForPoints)
@@ -703,8 +705,8 @@ __int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int
 				{
 					outKey                      = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
 					outSizeFKey                 = StrToInt( AnsiString( itPtr->Attribute( "sizeFKey" ) ) );
-					outLongDescription          = AnsiString( itPtr->Attribute( "description" ) );
-					outSizeKitchenName          = AnsiString( itPtr->Attribute( "kitchenName" ) );
+					outLongDescription          = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
+					outSizeKitchenName          = convertUTF8CharToWideString( itPtr->Attribute( "kitchenName" ) );
 					outFree                     = AnsiString( itPtr->Attribute( "free" ) ).UpperCase() == "TRUE";
 					outPrice                    = StrToCurr(  AnsiString( itPtr->Attribute( "price" ) ) );
 					outMaxRetailPrice = itPtr->Attribute( "maxRetailPrice" ) == NULL ? 0.0 : StrToCurr(AnsiString(itPtr->Attribute( "maxRetailPrice" )));
@@ -720,10 +722,10 @@ __int32 TLoadMenu::ItemSizeAtIndex( __int32 inIndex, __int32 inItemHandle, __int
 					outNoRecipe                 = AnsiString( itPtr->Attribute( "noRecipe" ) ).UpperCase() == "TRUE";
 					outSetMenuMask              = StrToInt( AnsiString( itPtr->Attribute( "setMenuMask" ) ) );
 					outAvailableAsStandard      = AnsiString( itPtr->Attribute( "availableAsStandard" ) ).UpperCase() == "TRUE";
-					outBarcode                  = AnsiString( itPtr->Attribute( "barcode" ) );
+					outBarcode                  = convertUTF8CharToWideString( itPtr->Attribute( "barcode" ) );
 					outEnabled                  = AnsiString( itPtr->Attribute( "enabled" ) ).UpperCase() == "TRUE";
 					outCategoryKey              = StrToInt(   itPtr->Attribute( "categoryKey" ) );
-					outCategory                 = AnsiString( itPtr->Attribute( "category" ) );
+					outCategory                 = convertUTF8CharToWideString( itPtr->Attribute( "category" ) );
 					outThirdPartyCodeKey        = StrToInt( AnsiString( itPtr->Attribute( "thirdPartyCodeKey" ) ) );
 					outTareWeight               = StrToFloat( AnsiString( itPtr->Attribute( "tareWeight" ) ) );
 					outPLU                      = StrToInt( AnsiString( itPtr->Attribute( "PLU" ) ) );
@@ -821,7 +823,7 @@ __int32 TLoadMenu::BCategoryCount( __int32 inItemSizeHandle )
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::BCategoryAtIndex( __int32 inIndex, __int32 inItemSizeHandle, __int32& outKey, AnsiString& outDescription )
+__int32 TLoadMenu::BCategoryAtIndex( __int32 inIndex, __int32 inItemSizeHandle, __int32& outKey, WideString& outDescription )
 {
 	__int32 result = 0;
 
@@ -841,7 +843,7 @@ __int32 TLoadMenu::BCategoryAtIndex( __int32 inIndex, __int32 inItemSizeHandle, 
 				if( it == inIndex )
 				{
 					outKey         = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
-					outDescription = AnsiString( itPtr->Attribute( "description" ) );
+					outDescription = convertUTF8CharToWideString( itPtr->Attribute( "description" ) );
 
 					result = ( __int32 )itPtr;
 
@@ -871,8 +873,8 @@ __int32 TLoadMenu::ItemSizeReceipeCount( __int32 inItemSizeHandle )
 }
 //---------------------------------------------------------------------------
 
-__int32 TLoadMenu::ItemSizeReceipeAtIndex( __int32 inIndex, __int32 inItemSizeHandle, __int32& outKey, AnsiString& outStockCode,
-double& outQuantity, AnsiString& outLocation )
+__int32 TLoadMenu::ItemSizeReceipeAtIndex( __int32 inIndex, __int32 inItemSizeHandle, __int32& outKey, WideString& outStockCode,
+double& outQuantity, WideString& outLocation )
 {
 	__int32 result = 0;
 
@@ -892,9 +894,9 @@ double& outQuantity, AnsiString& outLocation )
 				if( it == inIndex )
 				{
 					outKey           = StrToInt( AnsiString( itPtr->Attribute( "key" ) ) );
-					outStockCode     = AnsiString( itPtr->Attribute( "stockCode" ) );
+					outStockCode     = convertUTF8CharToWideString( itPtr->Attribute( "stockCode" ) );
 					outQuantity      = StrToFloat( itPtr->Attribute( "quantity" ) );
-					outLocation      = AnsiString( itPtr->Attribute( "location" ) );
+					outLocation      = convertUTF8CharToWideString( itPtr->Attribute( "location" ) );
 
 					result = ( __int32 )itPtr;
 
@@ -1154,13 +1156,23 @@ WideString TLoadMenu::convertUTF8CharToWideString( const char* pchars )
 {
 	WideString result = "";
 #ifdef MenuMate
-	result = UTF8ToWideString( pchars );
+    result = UnicodeString( pchars );
 #endif
 
 #ifdef Office
-	result =  UTF8Decode( AnsiString( pchars ));
+	result = Trim(WideString( pchars ));
 #endif
 	return result;
 }
 //---------------------------------------------------------------------------
+
+WideString TLoadMenu::UTF8ToWideString(AnsiString inString)
+{
+	int BufferSize   = MultiByteToWideChar(CP_UTF8 , 0, inString.c_str(), inString.Length(), NULL, 0);
+	wchar_t *dest    = new wchar_t[BufferSize];
+	MultiByteToWideChar(CP_UTF8 , 0, inString.c_str(), inString.Length(), dest, BufferSize);
+	WideString RetVal(dest,BufferSize);
+	delete [] dest;
+	return RetVal;
+}
 

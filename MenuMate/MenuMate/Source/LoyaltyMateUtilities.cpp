@@ -4,7 +4,7 @@
 #pragma hdrstop
 
 #include "LoyaltyMateUtilities.h"
-#include "ManagerSyndCode.h"
+
 
 //---------------------------------------------------------------------------
 
@@ -13,9 +13,7 @@
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 // LoyaltyUtilities Methods
 //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-int TLoyaltyMateUtilities::DeleteTransaction(
-                                int contactKey,
-                                int transactionNumber)
+int TLoyaltyMateUtilities::DeleteTransaction(int contactKey,int transactionNumber)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
@@ -31,19 +29,13 @@ int TLoyaltyMateUtilities::DeleteTransaction(
     DBTransaction.Commit();
 }
 //-------------------------------------------------------------------------
-
-void TLoyaltyMateUtilities::SetTransaction(
-                        Database::TDBTransaction &DBTransaction,
-                        TLoyaltyMateTransaction transaction)
+void TLoyaltyMateUtilities::SetTransaction(Database::TDBTransaction &DBTransaction,TLoyaltyMateTransaction transaction)
 {
     TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
     query->Close();
-
     query->SQL->Text = "SELECT GEN_ID(GEN_LOYALTYPENDINGTRANSACTIONS, 1) FROM RDB$DATABASE";
     query->ExecQuery();
     int nextLoyaltyTransactionID = query->Fields[0]->AsInteger;
-
-
     query->Close();
     query->SQL->Text =  "INSERT INTO LOYALTYPENDINGTRANSACTIONS"
                         "("
@@ -53,7 +45,8 @@ void TLoyaltyMateUtilities::SetTransaction(
                         "   POINT_BALANCE,"
                         "   POINTS_DELTA,"
                         "   OCCURRED_DATE,"
-                        "   POINTS_TYPE "
+                        "   POINTS_TYPE, "
+                        "   INVOICE_NUMBER"
                         ")"
                         "Values"
                         "("
@@ -63,7 +56,8 @@ void TLoyaltyMateUtilities::SetTransaction(
                         "   :POINT_BALANCE,"
                         "   :POINTS_DELTA,"
                         "   :OCCURRED_DATE,"
-                        "   :POINTS_TYPE "
+                        "   :POINTS_TYPE, "
+                        "   :INVOICE_NUMBER "
                         ");";
 
     query->ParamByName("TRANSACTION_NUMBER")->AsInteger = nextLoyaltyTransactionID;
@@ -73,17 +67,15 @@ void TLoyaltyMateUtilities::SetTransaction(
     query->ParamByName("POINTS_DELTA")->AsCurrency = transaction.PointsDelta;
     query->ParamByName("OCCURRED_DATE")->AsDateTime = transaction.OccurredDate;
     query->ParamByName("POINTS_TYPE")->AsInteger = transaction.PointsType;
+    query->ParamByName("INVOICE_NUMBER")->AsString = transaction.InvoiceNumber;
     query->ExecQuery();
 }
 //-------------------------------------------------------------------------
-
 std::vector<int> TLoyaltyMateUtilities::GetAllContactsWithPendingTransactions()
 {
     std::vector<int> result;
-
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
-
     TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
     query->Close();
     query->SQL->Text =  "SELECT "
@@ -92,18 +84,15 @@ std::vector<int> TLoyaltyMateUtilities::GetAllContactsWithPendingTransactions()
                         "   LOYALTYPENDINGTRANSACTIONS LPT"
                         "   JOIN LOYALTYATTRIBUTES ATTR ON LPT.CONTACT_KEY = ATTR.CONTACTS_KEY ";
     query->ExecQuery();
-
     while(!query->Eof)
     {
         result.push_back(query->Fields[0]->AsInteger);
         query->Next();
     }
-
     DBTransaction.Commit();
     return result;
 }
 //-------------------------------------------------------------------------
-
 std::vector<TLoyaltyMateTransaction> TLoyaltyMateUtilities::GetPendingTransactionForContact(int contactKey)
 {
 	TManagerSyndCode managerSyndCode;
@@ -125,7 +114,8 @@ std::vector<TLoyaltyMateTransaction> TLoyaltyMateUtilities::GetPendingTransactio
                         "   LPT.POINT_BALANCE,"
                         "   LPT.POINTS_DELTA,"
                         "   LPT.OCCURRED_DATE, "
-                        "   LPT.POINTS_TYPE "
+                        "   LPT.POINTS_TYPE, "
+                        "   LPT.INVOICE_NUMBER "
                         "FROM "
                         "   LOYALTYPENDINGTRANSACTIONS LPT "
                         "   JOIN LOYALTYATTRIBUTES ATTR ON LPT.CONTACT_KEY = ATTR.CONTACTS_KEY "
@@ -148,6 +138,7 @@ std::vector<TLoyaltyMateTransaction> TLoyaltyMateUtilities::GetPendingTransactio
         transaction.PointsDelta = query->FieldByName("POINTS_DELTA")->AsCurrency;
         transaction.OccurredDate = query->FieldByName("OCCURRED_DATE")->AsDateTime;
         transaction.PointsType = query->FieldByName("POINTS_TYPE")->AsInteger;
+        transaction.InvoiceNumber = query->FieldByName("INVOICE_NUMBER")->AsString;
         result.push_back(transaction);
         query->Next();
    }
@@ -155,23 +146,16 @@ std::vector<TLoyaltyMateTransaction> TLoyaltyMateUtilities::GetPendingTransactio
   return result;
 }
 //-------------------------------------------------------------------------
-
-bool TLoyaltyMateUtilities::GetContactByCloudUUID(
-                                    Database::TDBTransaction &DBTransaction,
-                                    UnicodeString uuid,
-                                    int &contactKey,
-                                    int &siteId)
+bool TLoyaltyMateUtilities::GetContactByCloudUUID(Database::TDBTransaction &DBTransaction,UnicodeString uuid,int &contactKey,int &siteId)
 {
    bool result = false;
    try
    {
       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
       IBInternalQuery->Close();
       IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY, SITE_ID FROM LOYALTYATTRIBUTES WHERE UUID=:UUID";
       IBInternalQuery->ParamByName("UUID")->AsString = uuid;
       IBInternalQuery->ExecQuery();
-
       if(IBInternalQuery->RecordCount)
       {
          contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
@@ -188,12 +172,8 @@ bool TLoyaltyMateUtilities::GetContactByCloudUUID(
 	return result;
 }
 //-------------------------------------------------------------------------
-
-void TLoyaltyMateUtilities::SetLoyaltymateTransactions(
-                                    Database::TDBTransaction &DBTransaction,
-                                    int contactKey,
-                                    TSyndCode syndicateCode,
-                                    TContactPoints PointsToLoad)
+void TLoyaltyMateUtilities::SetLoyaltymateTransactions(Database::TDBTransaction &DBTransaction,int contactKey,TSyndCode syndicateCode,
+                                                       TContactPoints PointsToLoad,AnsiString inInvoiceNumber)
 {
     TPointsStore PointsToArchive = PointsToLoad.getExcludingSource(pasDatabase);
 	for (TPointsStore::iterator ptrPointsTransaction = PointsToArchive.begin();
@@ -206,6 +186,7 @@ void TLoyaltyMateUtilities::SetLoyaltymateTransactions(
         transaction.OccurredDate = Now();
         transaction.PointsDelta = Detials.second;
         transaction.PointsType = TLoyaltyMateUtilities::GetPointsType(Detials.first.AccType.first);
+        transaction.InvoiceNumber = inInvoiceNumber;
         if(transaction.PointsDelta != 0)
           TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
 	}
@@ -233,11 +214,8 @@ int TLoyaltyMateUtilities::GetPointsType(TPointsTransactionType pointType)
            return 5;
     }
 }
-
-UnicodeString TLoyaltyMateUtilities::GetMemberCloudIdIfRegistered(
-                                        Database::TDBTransaction &DBTransaction,
-                                        int contactKey,
-                                        int siteId)
+//-------------------------------------------------------------------------
+UnicodeString TLoyaltyMateUtilities::GetMemberCloudIdIfRegistered(Database::TDBTransaction &DBTransaction,int contactKey,int siteId)
 {
    UnicodeString result = "";
    try
@@ -261,14 +239,31 @@ UnicodeString TLoyaltyMateUtilities::GetMemberCloudIdIfRegistered(
    }
    return result;
 }
-//-------------------------------------------------------------------------
+//------------------------------------------------------------------------
+UnicodeString TLoyaltyMateUtilities::GetMemberCloudId(Database::TDBTransaction &DBTransaction,int contactKey)
+{
+   UnicodeString result = "";
+   try
+   {
+	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	  IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text = "SELECT UUID FROM LOYALTYATTRIBUTES WHERE CONTACTS_KEY=:CONTACTS_KEY";
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+	  IBInternalQuery->ExecQuery();
 
-bool TLoyaltyMateUtilities::SetMemberCloudId(
-							Database::TDBTransaction &DBTransaction,
-                            int contactKey,
-							int siteId,
-                            UnicodeString uuid,
-                            UnicodeString activationToken)
+      if(!IBInternalQuery->Eof)
+      {
+		result = IBInternalQuery->FieldByName("UUID")->AsString;
+      }
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+   }
+   return result;
+}
+//-------------------------------------------------------------------------
+bool TLoyaltyMateUtilities::SetMemberCloudId(Database::TDBTransaction &DBTransaction,int contactKey,int siteId,UnicodeString uuid,UnicodeString activationToken)
 {
    bool result = false;
    try
@@ -318,59 +313,6 @@ bool TLoyaltyMateUtilities::SetMemberCloudId(
    return result;
 }
 //-------------------------------------------------------------------------
-
-UnicodeString TLoyaltyMateUtilities::GetMemberActivationCode(
-                                Database::TDBTransaction &DBTransaction,
-                                int contactKey,
-                                int siteId)
-{
-   UnicodeString activationCode = "";
-   try
-   {
-	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	  IBInternalQuery->Close();
-	  IBInternalQuery->SQL->Text = "SELECT ACTIVATION_TOKEN FROM LOYALTYATTRIBUTES WHERE CONTACTS_KEY=:CONTACTS_KEY AND SITE_ID=:SITE_ID";
-      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
-      IBInternalQuery->ParamByName("SITE_ID")->AsInteger = siteId;
-	  IBInternalQuery->ExecQuery();
-
-      if(IBInternalQuery->RecordCount > 0)
-        activationCode = IBInternalQuery->Fields[0]->AsString;
-   }
-   catch(Exception & E)
-   {
-	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
-	  throw;
-   }
-   return activationCode;
-}
-//-------------------------------------------------------------------------
-void TLoyaltyMateUtilities::LoadMemberInformationForLatestActivationCode(
-                                                TMMContactInfo &outContactInfo)
-{
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-
-    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
-    query->Close();
-    query->SQL->Text =  "SELECT FIRST 1 L.ACTIVATION_TOKEN, C.CONTACTS_KEY, C.NAME, C.LAST_NAME, C.MEMBER_NUMBER "
-                        "FROM LOYALTYATTRIBUTES L JOIN CONTACTS C ON L.CONTACTS_KEY = C.CONTACTS_KEY "
-                        "WHERE L.ACTIVATION_TOKEN IS NOT NULL AND CHAR_LENGTH(TRIM(L.ACTIVATION_TOKEN)) > 0"
-                        "ORDER BY L.CREATION_TIME DESC";
-    query->ExecQuery();
-
-    if(!query->Eof)
-    {
-        outContactInfo.ActivationToken = query->FieldByName("ACTIVATION_TOKEN")->AsString;
-        outContactInfo.ContactKey = query->FieldByName("CONTACTS_KEY")->AsInteger;
-        outContactInfo.MembershipNumber = query->FieldByName("MEMBER_NUMBER")->AsString;
-        outContactInfo.Name = query->FieldByName("NAME")->AsString;
-        outContactInfo.Surname = query->FieldByName("LAST_NAME")->AsString;
-    }
-
-    DBTransaction.Commit();
-}
-//-------------------------------------------------------------------------
 bool TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UnicodeString uuid)
 {
 	bool lengthCheck = uuid.Length() > 0;
@@ -378,7 +320,6 @@ bool TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UnicodeString uuid)
 	return lengthCheck && disabledCheck;
 }
 //-------------------------------------------------------------------------
-
 UnicodeString TLoyaltyMateUtilities::GetLoyaltyMateDisabledCloudUUID()
 {
     return "00000000-0000-0000-0000-000000000000";

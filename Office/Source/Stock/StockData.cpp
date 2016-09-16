@@ -10,7 +10,7 @@ using std::auto_ptr;
 
 #include <cassert>
 
-#define STOCK_DB_VERSION "6.22.0"
+#define STOCK_DB_VERSION "6.23.0"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -326,7 +326,9 @@ bool TdmStockData::RequiresUpdateTo(DBVersion::DBVersions version)
     case DBVersion::V6_18_0:
       return !HasDBVersion("6.18.0") && RequiresUpdateTo(DBVersion::V6_22_0);
     case DBVersion::V6_22_0:
-      return !HasDBVersion("6.22.0")  ;
+      return !HasDBVersion("6.22.0");
+    case DBVersion::V6_23_0:
+      return !HasDBVersion("6.23.0");
       default:
          assert(0);
 	};
@@ -434,26 +436,34 @@ bool TdmStockData::UpdateDB(TLabel *Label)
                   SuccessfulUpdate = dmStockData->Update6_18_0();
 
                }
-                SuccessfulUpdate = dmStockData->Update6_22_0();
-					if (!SuccessfulUpdate)
-					{
-					 	Application->MessageBox("The upgrade was unsuccessful. Restoring original version.\r\rIf this is the first time you have seen this, please try once more.", "Error", MB_ICONERROR + MB_OK);
-					 	if (!dmStockData->WaitForSingleUser())
-					 	{
-					 		return false;
-					 	}
-					 	Label->Caption = "Restoring Database...";
-					 	Label->Update();
-					 	if (!dmStockData->RestoreDB(BackupFileName, Label, true))
-					 	{
-					 		Application->MessageBox(AnsiString("Could not restore previous version (" + BackupFileName + ").").c_str(), "Error", MB_ICONERROR + MB_OK);
-					 	}
-						return false;
-					}
-					else
-					{
-						return true;
-					}
+               if(SuccessfulUpdate)
+               {
+                   SuccessfulUpdate = dmStockData->Update6_22_0();
+               }
+
+               if(SuccessfulUpdate)
+               {
+                  SuccessfulUpdate =  dmStockData->Update6_23_0();
+               }
+                    if (!SuccessfulUpdate)
+                    {
+                        Application->MessageBox("The upgrade was unsuccessful. Restoring original version.\r\rIf this is the first time you have seen this, please try once more.", "Error", MB_ICONERROR + MB_OK);
+                        if (!dmStockData->WaitForSingleUser())
+                        {
+                            return false;
+                        }
+                        Label->Caption = "Restoring Database...";
+                        Label->Update();
+                        if (!dmStockData->RestoreDB(BackupFileName, Label, true))
+                        {
+                            Application->MessageBox(AnsiString("Could not restore previous version (" + BackupFileName + ").").c_str(), "Error", MB_ICONERROR + MB_OK);
+                        }
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
 				}
 				else
 				{
@@ -2832,6 +2842,7 @@ bool TdmStockData::Update6_18_0()
    const AnsiString THIS_VER_55 = "5.5";
    const AnsiString THIS_VER_56 = "5.6";
    const AnsiString THIS_VER_6180 = "6.18.0";
+   const AnsiString THIS_VER_6220 = "6.22.0";
    if (!RequiresUpdateTo(DBVersion::V6_22_0)||RequiresUpdateTo(DBVersion::V6_22_0))
      {
         try
@@ -2951,6 +2962,7 @@ void TdmStockData::UpdateTables6_22_0()
     }
 }
 //--------------------------------------------------------------------------------------------------------------
+
 bool TdmStockData::Update6_22_0()
 {
    const AnsiString THIS_VER = "6.22.0";
@@ -2973,6 +2985,42 @@ bool TdmStockData::Update6_22_0()
 		        return false;
          }
      }
+  return true;
+}
+//---------------------------------------------------------------------------------------------------------------
+void TdmStockData::UpdateTables6_23_0()
+{
+    const AnsiString THIS_VER_6230 = "6.23.0";
+
+    if(!HasDBVersionExist("6.23.0"))
+    {
+        RunSQL(" Update STOCKLOCATION a set a.AVERAGE_COST = 0 , a.LATEST_COST = 0 where a.AVERAGE_COST < 0 or a.LATEST_COST < 0  ");
+
+        RunSQL(" Update STOCKTAKEHISTORY a set a.AVERAGE_UNIT_COST = 0 , a.LATEST_UNIT_COST = 0 where a.AVERAGE_UNIT_COST < 0 or a.LATEST_UNIT_COST < 0  ");
+
+        RunSQL(" Insert into DBVersion (Version_Key, Version_Number, Time_Stamp) Values ((Select Gen_id(Gen_Version_Key, 1) From rdb$database), '" + THIS_VER_6230 + "', Current_TimeStamp) ");
+    }
+
+}
+//--------------------------------------------------------------------------------------------------------------
+bool TdmStockData::Update6_23_0()
+{
+    try
+      {
+         if (!Query->Transaction->InTransaction)
+             Query->Transaction->StartTransaction();
+            UpdateTables6_23_0();
+            if (Query->Transaction->InTransaction)
+                Query->Transaction->Commit();
+    }
+    catch (Exception &E)
+     {
+       if (Query->Transaction->InTransaction)
+            Query->Transaction->Rollback();
+              Application->ShowException(&E);
+            return false;
+     }
+
   return true;
 }
 

@@ -140,6 +140,7 @@ class TItemMinorComplete : public TItemMinor
     double GetGST() const;
 
     void DiscountsClear();
+    void DiscountsClearByFilter(std::vector<TDiscountMode> exemptFilter);
     void ThorVouchersDiscountsClear();
     void DiscountByTypeRemove(TDiscountSource DiscountSource);
     void DiscountByTypeRemove(TDiscountMode DiscountMode);
@@ -236,6 +237,7 @@ class TItemMinorComplete : public TItemMinor
                       const bool scale_patron_count = true);    //MM-6306 : double data type in place of currency
     void SetWeight(TWeight &inWeight);
     void SplitOrder(int WaysToSplit);
+    void SplitOrder(double quantityToSplit);
     Currency GetPriceRRP();
 
     bool IsTaxExempt() const;
@@ -319,7 +321,6 @@ class TItemMinorComplete : public TItemMinor
     bool GetIsManuallyEnteredWeight() const;
     bool LastAddedItem;
     bool IsPayByPoints;
-    Currency PayByPointsQuantity;
     Currency ItemPriceForPoints;
     Currency ItemPriceForPointsOriginal;
     bool printFreeSideForKitchen;

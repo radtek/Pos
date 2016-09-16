@@ -284,6 +284,18 @@ __published:	// IDE-managed Components
     void __fastcall btnGo1Click(TObject *Sender);
     void __fastcall btnGo3Click(TObject *Sender);
     void __fastcall chbminLevelClick(TObject *Sender);
+    void __fastcall dbeCostKeyPress(TObject *Sender, char &Key);
+    void __fastcall dbeLatestCostKeyPress(TObject *Sender, char &Key);
+    void __fastcall dbeAveCostKeyPress(TObject *Sender, char &Key);
+    void __fastcall dbeCostChange(TObject *Sender);
+    void __fastcall dbcOrderQtyChange(TObject *Sender);
+    void __fastcall dbeLatestCostChange(TObject *Sender);
+    void __fastcall dbeAveCostChange(TObject *Sender);
+    void __fastcall dbeAssessedValueChange(TObject *Sender);
+    void __fastcall dbeAssessedValueKeyPress(TObject *Sender, char &Key);
+    void __fastcall dbeConversionFactorKeyPress(TObject *Sender,
+          char &Key);
+    void __fastcall dbeConversionFactorChange(TObject *Sender);
  //  void __fastcall dbeLatestCostChange(TObject *Sender);
 
 	//void __fastcall btnScanSupplierBarcodeClick(TObject *Sender);
@@ -308,6 +320,7 @@ private:	// User declarations
    bool CheckReductionUnit();
 	const std::auto_ptr<TfrmAddSupplierUnit>frmAddSupplierUnit;
     void ResetSubstitueControl();
+    void CheckNegativeValue(TDBEdit *dbetextbox);
 public:		// User declarations
 	__fastcall TfrmAddStock(TComponent* Owner);
 	TAdjustStockMode Mode;

@@ -13,6 +13,7 @@
     public enum OutputType { None = 0, RunnerTerminal, KitchenTerminal, Printer }
     public enum KeypadOperation { BumpByLocation = 0, BumpByTableChitNumber }
     public enum TerminalNameType { Computer = 0, UserAdded }
+    
     public enum NumpadMode
     {
         None,

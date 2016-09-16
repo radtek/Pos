@@ -55,6 +55,8 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
 	Birthdaypoints = 0;
 	RedeemPointsInformation = new TRedeemPointsInformation;
 	RedeemWeightInformation = new TRedeemPointsInformation;
+    RedeemPocketVoucherInformation = new TRedeemPocketVoucherInformation;
+    RedeemGiftVoucherInformation = new TRedeemGiftVoucherInformation;
 	IsQuickPayTransaction = false;
 	QuickPaymentName = "";
 	SplittedItemKey = 0;
@@ -62,6 +64,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
     PartyName = "";
     TaxOnClippDiscount = 0;
     ServiceChargeWithTax = 0;
+    IsVouchersProcessed = false;
 }
 
 __fastcall TPaymentTransaction::~TPaymentTransaction()
@@ -105,12 +108,15 @@ TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransac
 		TPayment *Payment = (TPayment *)OtherTransaction.PaymentList->Items[i];
 		PaymentList->Add(Payment);
 	}
-        RedeemPointsInformation =  OtherTransaction.RedeemPointsInformation;
-        RedeemWeightInformation = OtherTransaction.RedeemWeightInformation;
-        IsQuickPayTransaction = OtherTransaction.IsQuickPayTransaction;
-        QuickPaymentName = OtherTransaction.QuickPaymentName;
-        WebOrderKey = OtherTransaction.WebOrderKey;
-        PartyName =  OtherTransaction.PartyName;
+    RedeemPointsInformation =  OtherTransaction.RedeemPointsInformation;
+    RedeemWeightInformation = OtherTransaction.RedeemWeightInformation;
+    IsQuickPayTransaction = OtherTransaction.IsQuickPayTransaction;
+    QuickPaymentName = OtherTransaction.QuickPaymentName;
+    WebOrderKey = OtherTransaction.WebOrderKey;
+    PartyName =  OtherTransaction.PartyName;
+    RedeemPocketVoucherInformation =  OtherTransaction.RedeemPocketVoucherInformation;
+    RedeemGiftVoucherInformation = OtherTransaction.RedeemGiftVoucherInformation;
+    IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
 }
 
 TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &OtherTransaction)
@@ -149,12 +155,15 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
 		TPayment *Payment = (TPayment *)OtherTransaction.PaymentList->Items[i];
 		PaymentList->Add(Payment);
 	}
-         RedeemPointsInformation =  OtherTransaction.RedeemPointsInformation;
-         RedeemWeightInformation = OtherTransaction.RedeemWeightInformation;
-        IsQuickPayTransaction = OtherTransaction.IsQuickPayTransaction;
-        QuickPaymentName = OtherTransaction.QuickPaymentName;
-        WebOrderKey = OtherTransaction.WebOrderKey;
-        PartyName = OtherTransaction.PartyName;
+    RedeemPointsInformation =  OtherTransaction.RedeemPointsInformation;
+    RedeemWeightInformation = OtherTransaction.RedeemWeightInformation;
+    IsQuickPayTransaction = OtherTransaction.IsQuickPayTransaction;
+    QuickPaymentName = OtherTransaction.QuickPaymentName;
+    WebOrderKey = OtherTransaction.WebOrderKey;
+    PartyName = OtherTransaction.PartyName;
+    RedeemPocketVoucherInformation =  OtherTransaction.RedeemPocketVoucherInformation;
+    RedeemGiftVoucherInformation = OtherTransaction.RedeemGiftVoucherInformation;
+    IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
 }
 
 int __fastcall PaymentCompare(void *Item1,void *Item2)
@@ -877,32 +886,33 @@ bool TPaymentTransaction::CopyFrom( const TPaymentTransaction *OtherTransaction 
 //---------------------------------------------------------------------------
 void TPaymentTransaction::copyBasicDetailsFrom( const TPaymentTransaction *OtherTransaction )
 {
-	Type                    = OtherTransaction->Type;
-	SalesType               = OtherTransaction->SalesType;
-	InvoiceNumber 			= OtherTransaction->InvoiceNumber;
-	Money 					= OtherTransaction->Money;
-	SplitMoney 				= OtherTransaction->SplitMoney;
-	InvoiceKey 				= OtherTransaction->InvoiceKey;
-	RoomNumber		 		= OtherTransaction->RoomNumber;
-	BookingID 				= OtherTransaction->BookingID;
-	Patrons 				= OtherTransaction->Patrons;
-	TotalAdjustment 		= OtherTransaction->TotalAdjustment;
-	DiscountReason 			= OtherTransaction->DiscountReason;
-	Phoenix.AccountNumber 	= OtherTransaction->Phoenix.AccountNumber;
-	Phoenix.AccountName 	= OtherTransaction->Phoenix.AccountName;
-	Phoenix.FolderNumber 	= OtherTransaction->Phoenix.FolderNumber;
-	CreditTransaction 		= OtherTransaction->CreditTransaction;
-	PaymentComp 			= &PaymentCompare;
-	Membership 				= OtherTransaction->Membership;
-	StaffMember 			= OtherTransaction->StaffMember;
-	RequestPartialPayment 	= OtherTransaction->RequestPartialPayment;
-        RedeemPointsInformation =  OtherTransaction->RedeemPointsInformation;
-        RedeemWeightInformation = OtherTransaction->RedeemWeightInformation;
-        IsQuickPayTransaction = OtherTransaction->IsQuickPayTransaction;
-        QuickPaymentName = OtherTransaction->QuickPaymentName;
+    Type                    = OtherTransaction->Type;
+    SalesType               = OtherTransaction->SalesType;
+    InvoiceNumber 			= OtherTransaction->InvoiceNumber;
+    Money 					= OtherTransaction->Money;
+    SplitMoney 				= OtherTransaction->SplitMoney;
+    InvoiceKey 				= OtherTransaction->InvoiceKey;
+    RoomNumber		 		= OtherTransaction->RoomNumber;
+    BookingID 				= OtherTransaction->BookingID;
+    Patrons 				= OtherTransaction->Patrons;
+    TotalAdjustment 		= OtherTransaction->TotalAdjustment;
+    DiscountReason 			= OtherTransaction->DiscountReason;
+    Phoenix.AccountNumber 	= OtherTransaction->Phoenix.AccountNumber;
+    Phoenix.AccountName 	= OtherTransaction->Phoenix.AccountName;
+    Phoenix.FolderNumber 	= OtherTransaction->Phoenix.FolderNumber;
+    CreditTransaction 		= OtherTransaction->CreditTransaction;
+    PaymentComp 			= &PaymentCompare;
+    Membership 				= OtherTransaction->Membership;
+    StaffMember 			= OtherTransaction->StaffMember;
+    RequestPartialPayment 	= OtherTransaction->RequestPartialPayment;
+    RedeemPointsInformation =  OtherTransaction->RedeemPointsInformation;
+    RedeemWeightInformation = OtherTransaction->RedeemWeightInformation;
+    IsQuickPayTransaction = OtherTransaction->IsQuickPayTransaction;
+    QuickPaymentName = OtherTransaction->QuickPaymentName;
     ChitNumber              = OtherTransaction->ChitNumber;
     PartyName = OtherTransaction->PartyName;
-	IsCopy					= true;
+    IsVouchersProcessed = OtherTransaction->IsVouchersProcessed;
+    IsCopy					= true;
 }
 //---------------------------------------------------------------------------
 void TPaymentTransaction::copyOrdersListFrom(TList* OrdersList)
@@ -933,7 +943,6 @@ void TPaymentTransaction::copyPaymentsDetails(TList* PaymentsList)
 //---------------------------------------------------------------------------
 bool TPaymentTransaction::CheckThorVoucherExistAsDiscount(AnsiString voucher_code)
 {
-    int voucherCode1 = atoi(voucher_code.c_str());
     bool discountExists = false;
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
@@ -946,7 +955,7 @@ bool TPaymentTransaction::CheckThorVoucherExistAsDiscount(AnsiString voucher_cod
                                             "  DISCOUNTS "
                                             " WHERE "
                                             " DISCOUNT_ID  = :DISCOUNT_ID ";
-    IBInternalQuery->ParamByName("DISCOUNT_ID")->AsInteger = voucherCode1;
+    IBInternalQuery->ParamByName("DISCOUNT_ID")->AsString = voucher_code;
     IBInternalQuery->ExecQuery();
     if(IBInternalQuery->RecordCount != 0)
     {

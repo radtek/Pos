@@ -25,19 +25,19 @@ namespace MenumateServices.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("XeroIntegration.xml")]
-        public string XeroIntegrationConfigFilename {
+        [global::System.Configuration.DefaultSettingValueAttribute("AccountingIntegration.xml")]
+        public string AccountingIntegrationConfigFilename {
             get {
-                return ((string)(this["XeroIntegrationConfigFilename"]));
+                return ((string)(this["AccountingIntegrationConfigFilename"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public string XeroAppID {
+        public string AccountingAppID {
             get {
-                return ((string)(this["XeroAppID"]));
+                return ((string)(this["AccountingAppID"]));
             }
         }
         

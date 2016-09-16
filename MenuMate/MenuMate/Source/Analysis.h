@@ -35,6 +35,8 @@
 #include "enumPoints.h"
 #include "XeroInvoiceBuilder.h"
 #include "XeroIntegration.h"
+#include "MYOBInvoiceBuilder.h"
+#include "MYOBIntegration.h"
 #include <DCBillProcessingAtZed.h>
 //---------------------------------------------------------------------------
 enum TReportSource {
@@ -75,16 +77,12 @@ private:	// User declarations
 	void UpdateStockComplete(Database::TDBTransaction &DBTransaction);
 	void PrintConsumption(Database::TDBTransaction &DBTransaction);
     TPrintout* SetupPrintOutInstance();
-
 	UnicodeString StockMasterPath;
 	bool IntergratedEFT;
-
 	std::vector<UnicodeString>	PalmList;
 	int	 PalmListOffset;
 	int	 ChosenDeviceOffset; // The green button
 	TMemoryStream * ZedToArchive;
-
-
 	void AdjustStock(Database::TDBTransaction &DBTransaction, StockInterface::TStockInterface &StockInterface);
 	void GetCosts(Database::TDBTransaction &DBTransaction,StockInterface::TStockInterface &StockInterface);
 	inline void Log(bool Success, UnicodeString Message);
@@ -94,83 +92,57 @@ private:	// User declarations
 	void __fastcall ReportFloatAdjustments();
 	void __fastcall ReportWriteOff(void);
 	void __fastcall ReportSiteSummary(void);
-
 	void GetFloatDetails(UnicodeString DeviceName, int Z_Key);
-
-
 	void AddSectionTitle(TPrintout *Printout,UnicodeString Title);
 	void AddSubSectionTitle(TPrintout *Printout,UnicodeString Title);
 	void PrintoutFormatForTxtValue(TPrintout *Printout);
-
 	void WriteBlindBalance(Database::TDBTransaction &DBTransaction, TPrintout *Printout, AnsiString Title, TBlindBalances Balances, AnsiString DeviceName, bool t);
 	void PrintBlindBalance(Database::TDBTransaction &DBTransaction, TBlindBalances Balances, AnsiString DeviceName);
-
 	void PrintSeperatePointsReport(Database::TDBTransaction &DBTransaction, TPrintout *Printout, TMembership *Membership, UnicodeString DeviceName);
 	void PrintUnifiedPointsReport(Database::TDBTransaction &DBTransaction, TPrintout *Printout, TMembership *Membership, UnicodeString DeviceName);
 	void PrintPointsReportHeader(TPrintout *Printout);
 	void PrintPointsReport(Database::TDBTransaction &DBTransaction, TPrintout *Printout, TMembership *Membership, UnicodeString DeviceName);
 	void PrintTipsAudit(Database::TDBTransaction &DBTransaction, TPrintout *Printout);
-
 	bool GetBlindBalences(Database::TDBTransaction &DBTransaction,TBlindBalances &Balance, AnsiString &DepositBagID, AnsiString DeviceName);
 	void UpdateBlindBlances(Database::TDBTransaction &DBTransaction,int ZedKey,TBlindBalances &Balance, AnsiString &BagID);
 	void UpdateCommissionDatabase(Database::TDBTransaction &DBTransaction,int ZedKey, TCommissionCache &Commission);
 	void UpdatePrinterReadingsDatabase(Database::TDBTransaction &DBTransaction,int ZedKey, TPrinterReadingsInterface &PrinterReading);
 	void UpdatePaxCountDatabase(Database::TDBTransaction &DBTransaction,int ZedKey, TPaxCount &inPaxCount);
-
 	void BuildXMLListPaymentType(Database::TDBTransaction &DBTransaction);
 	void BuildXMLInitTotalsPayment();
 	void BuildXMLTotalsPayment(UnicodeString PaymentName, TSumPayments &SumPayments);
-
 	void BuildXMLInitTotalsGroup();
 	void BuildXMLTotalsGroup(UnicodeString GroupName, TCategoryGroupDetails &CategoryGroupDetail);
-
 	void BuildXMLInitTotalsCategories();
 	void BuildXMLTotalsCategories(UnicodeString CatName, TCatTotal &CatTotal);
-
 	void BuildXMLListDiscounts(Database::TDBTransaction &DBTransaction);
 	void BuildXMLTotalsDiscount(Database::TDBTransaction &DBTransaction);
 	void __fastcall TableTabSummaryReport();
-
 	void BuildXMLTotalsProducts(Database::TDBTransaction &DBTransaction);
-
 	void BuildXMLListStaff(Database::TDBTransaction &DBTransaction);
 	void BuildXMLTotalsStaff(Database::TDBTransaction &DBTransaction);
-
 	void BuildXMLTotalsHourlySales(Database::TDBTransaction &DBTransaction);
-
 	void BuildXMLTotalsPatronCounts(Database::TDBTransaction &DBTransaction);
 	void BuildXMLListPatronCounts(Database::TDBTransaction &DBTransaction);
 	void BuildXMLTotalsCalculated(TTransactionInfo &TransactionInfo);
-
 	void BuildXMLListGroups(Database::TDBTransaction &DBTransaction);
 	void BuildXMLListCategories(Database::TDBTransaction &DBTransaction);
-	//   std::map<AnsiString,TCalculatedTotals> CalculatedTotals;
-
-
 	void __fastcall ExportIntaMateVersion();
-
 	void __fastcall ExportIntaMateListPaymentTypes();
 	void __fastcall ExportIntaMatePaymentTotals();
-
 	void __fastcall ExportIntaMateGroupTotals();
 	void __fastcall ExportIntaMateHourlyTotals();
 	void __fastcall ExportIntaMateCategoriesTotals();
 	void __fastcall ExportIntaMateListDiscounts();
 	void __fastcall ExportIntaMateDiscountTotals();
-
 	void __fastcall ExportIntaMateListCalculated(); // Fixed List.
 	void __fastcall ExportIntaMateCalculatedTotals();
-
 	void __fastcall ExportIntaMateProductTotals();
-
 	void __fastcall ExportIntaMateListStaff();
 	void __fastcall ExportIntaMateStaffTotals();
-
 	void __fastcall ExportIntaMatePatronCounts();
-
 	void __fastcall ExportIntaMateListGroups();
 	void __fastcall ExportIntaMateListCategories();
-
 	std::auto_ptr<TPOS_XMLBase> GroupTotalsXML;
 	std::auto_ptr<TPOS_XMLBase> CategoriesTotalsXML;
 	std::auto_ptr<TPOS_XMLBase> PaymentTotalsXML;
@@ -186,22 +158,16 @@ private:	// User declarations
 	std::auto_ptr<TPOS_XMLBase> PatronListXML;
 	std::auto_ptr<TPOS_XMLBase> GroupsListXML;
 	std::auto_ptr<TPOS_XMLBase> CategoryListXML;
-
 	void GetSummaGrossSalesTotal(Database::TDBTransaction &DBTransaction,UnicodeString DeviceName, TCalculatedTotals &BaseSales);
 	void GetSummaNetSalesTotal(Database::TDBTransaction &DBTransaction,UnicodeString DeviceName,TCalculatedTotals &BaseSales);
 	void GetSummaGrossNet(Database::TDBTransaction &DBTransaction,int ArchiveKey, TCalculatedTotals &BaseSales);
-
 	static TMMContactInfo lastAuthenticatedUser;
-
 	UnicodeString FormatMMReportCurrency( double inValue, bool inShowCurrencySymbol = false );
 	UnicodeString FormatMMReportPoints(   double inValue );
 	UnicodeString FormatMMReportRedeemCredit( double inValue, bool inShowCurrencySymbol = false );
 	UnicodeString FormatMMReportRedeemPoints( double inValue );
-
 	void DefaultItemQuantities(Database::TDBTransaction &);
-
 	bool are_any_tables_or_tabs_outstanding() const;
-
 	// Accumulated ZED
 	TPrintFormat &SetupCommonPrintZedFormat(TPrintFormat &pf);
 	void PrintAccumulatedZed(TPrintout &po, const Currency &todays_earnings, Currency &EODValue);
@@ -212,7 +178,6 @@ private:	// User declarations
 	void PrintTaxSummary(TPrintout &po, const Currency &todays_earnings);
 	void PrintServiceChargeSummary(TPrintout &po);
 	void SaveVariable(vmVariables vmVar, int CompName);
-
    Currency GetTaxExemptSales();
    Currency GetTotalSalesTax();
    Currency GetServiceCharge();
@@ -221,7 +186,6 @@ private:	// User declarations
    Currency GetLocalTax();
    int GetBeginningInvoiceNumber();
    int GetEndingInvoiceNumber();
-
    void GetReportData( int _key);
    TMemoryStream * ZedToMail; // MM-4130
    std::vector<int> zed_ids;
@@ -234,11 +198,22 @@ private:	// User declarations
     bool checkPointRedeem(Database::TDBTransaction &DBTransaction, int ContactKey); // MM 4579
     bool checkPointEarned(Database::TDBTransaction &DBTransaction, int ContactKey); // MM 4579
     void PostToAccountingSystem();
-    std::vector<TXeroInvoiceDetail> CalculateAccountingSystemData();
+    std::vector<TXeroInvoiceDetail> CalculateAccountingSystemData(Database::TDBTransaction &DBTransaction);
+    std::vector<TMYOBInvoiceDetail> CalculateMYOBData(Database::TDBTransaction &DBTransaction);
+    AnsiString GetJOBCode(AnsiString glCode);
     AnsiString GetCompanyName(Database::TDBTransaction &DBTransaction);
     void CreateXeroInvoiceAndSend(std::vector<TXeroInvoiceDetail>  &XeroInvoiceDetails);
+    void CreateMYOBInvoiceAndSend(std::vector<TMYOBInvoiceDetail>  &MYOBInvoiceDetails);
+    bool SendInvoiceToMYOB( TMYOBInvoice* inMYOBInvoice );
     bool SendInvoiceToXero( TXeroInvoice* inXeroInvoice );
+    //-------------------------------------------------
     void AddInvoiceItem(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiString Description,double unitAmount,AnsiString AccountCode,double taxAmount);
+    void AddMYOBInvoiceItem(TMYOBInvoiceDetail &MYOBInvoiceDetail,AnsiString GLCode,AnsiString Description,double unitAmount,double taxAmount,AnsiString AccountCode,AnsiString taxStatus);
+    AnsiString GetMYOBJobCode(Database::TDBTransaction &DBTransaction);
+    void GetPaymentDetails(AnsiString &paymentDetails, AnsiString terminalNamePredicate);
+    void CalculateNextday(TDateTime &nextDay);
+    void GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiString terminalNamePredicate);
+    //--------------------------------------------------
     void GetPointsAndVoucherData(Database::TDBTransaction &DBTransaction,double &PurchasedPoints, double &PurchasedVoucher,TDateTime startTime,TDateTime endTime);
     bool CheckContactsAdjustmentType(Database::TDBTransaction &DBTransaction, int contacts, int type); //MM5610
     void AddInvoicePayment(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiString Description,double unitAmount,AnsiString AccountCode,double taxAmount);
@@ -246,11 +221,8 @@ private:	// User declarations
                                  TDateTime startTime,TDateTime endTime);
     void GetFloatAmounts(Database::TDBTransaction &DBTransaction,double &floatAmount);
     AnsiString GetCashGlCode(Database::TDBTransaction &DBTransaction);
-     /******************************************/
-      void CompleteDLFMallExport();
-
+    void CompleteDLFMallExport();
     TDateTime GetMinDayArchiveTime(Database::TDBTransaction &DBTransaction, TDateTime PrevZedTime);
-         /******************************************/
 public:		// User declarations
 	static TLoginSuccess AuthenticateReportsAccess(TReportSource);
 	static const TMMContactInfo &GetLastAuthenticatedUser();
@@ -263,11 +235,8 @@ public:		// User declarations
 	UnicodeString GetTerminalName();
 	void PrintWriteOff(Database::TDBTransaction &DBTransaction, UnicodeString DeviceName);
 	TDateTime GetPrevZedTime(Database::TDBTransaction &DBTransaction);
-
 	void print_weborder_statistics(Database::TDBTransaction &, TPrintFormat &);
-
 	void print_chit_statistics(TPrintout &);
-
 	// For Mall Export, if zed is canceled and if log-in is canceled
 	bool ZedCancel;
 	bool ZedCompleted;
@@ -279,16 +248,13 @@ public:		// User declarations
      void SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName);
 private:
     std::vector<int> CANCELITEMS_KEY_ids;
-
     bool CheckCANCELITEMS_KEY;
     void CheckCancelItemsTable();
     void UpdateCancelItemsTable();
-
     void UpdateArcMallExport(Database::TDBTransaction &DBTransaction);
     void MallExportReadFromDB(UnicodeString DataQuery, std::map<UnicodeString, UnicodeString> &DataRead);
     UnicodeString MallExportCheckValue(UnicodeString StringValue, int IntegerValue, Currency CurrencyValue,
                     TDateTime TimeStampValue, TIBSQL* query);
-
     int MallExportKey;
     int IntegerValue;
     UnicodeString FieldName;
@@ -302,6 +268,7 @@ private:
     void UpdateZedStaffHoursEnable(Database::TDBTransaction &DBTransaction, int key);
     TMemoryStream* FormattedZed(TMemoryStream *ZedToArchive);
     void CheckPocketVoucherPaymentType();
+    void SyncCompanyDetails();
 
 };
 

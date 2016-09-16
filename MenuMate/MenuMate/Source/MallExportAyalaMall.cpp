@@ -533,8 +533,14 @@ bool TMallExportAyalaMall::CheckPreviousExportFile(UnicodeString MallPath, Unico
     {
         UnicodeString Filename = "";
         TDateTime Yesterday = Now() - 1.0;
+        TDateTime DateValYesterday;
+        TDateTime DateValCurrentday;
         UnicodeString Month = Yesterday.FormatString("mm");
         UnicodeString Day = Yesterday.FormatString("dd");
+        UnicodeString STime = "06:00:00";
+        UnicodeString ETime = "06:00:00";
+        TDateTime SDate;
+        TDateTime EDate;
 
         DateFormat = Month + Day;
 
@@ -556,7 +562,48 @@ bool TMallExportAyalaMall::CheckPreviousExportFile(UnicodeString MallPath, Unico
         else
         {
 //             ZReportStatus = CheckPreviousZedDateTime(); // Old Implementation
-            ZReportStatus = true;
+            UnicodeString LastZedDate = TGlobalSettings::Instance().LastZedDate;
+            UnicodeString LastZedTime = TGlobalSettings::Instance().LastZedTime;
+            UnicodeString YesterDate = Now().FormatString("mm/dd/yy");
+
+            DateValYesterday = Now().CurrentDate() - 1;
+            DateValCurrentday = Now().CurrentDate();
+
+            SDate = DateValYesterday;
+            EDate = DateValCurrentday;
+
+            SDate = SDate + StrToTime(STime);
+            EDate = EDate + StrToTime(ETime);
+
+            YesterDate = DateValYesterday.FormatString("mm/dd/yy");
+
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TIBSQL *query = DBTransaction.Query(DBTransaction.AddQuery());
+            query->Close();
+
+            query->SQL->Text = "SELECT * FROM ZEDS WHERE ZEDS.TIME_STAMP >= :STARTDATE AND ZEDS.TIME_STAMP < :ENDDATE";
+
+            query->ParamByName("STARTDATE")->AsDateTime = SDate;
+            query->ParamByName("ENDDATE")->AsDateTime = EDate;
+
+            query->ExecQuery();
+
+            if(query->RecordCount != 0)
+            {
+                ZReportStatus = true;
+            }
+            else
+            {
+                if(YesterDate.Compare(LastZedDate) == 0)
+                {
+                    ZReportStatus = true;
+                }
+                else
+                {
+                    ZReportStatus = false;
+                }
+            }
         }
         CheckPreviousFile.close();
     }
@@ -842,7 +889,7 @@ TExportResponse TMallExportAyalaMall::CreateOutputFormatZed(std::map<UnicodeStri
             }
             else if(((it->second) == "0") || ((it->second) == ""))
             {
-                if(i==13)
+                if(i==13 || i==19)
                 {
                     OutputValue = "0" + Format;
                 }
@@ -1179,7 +1226,7 @@ TExportResponse TMallExportAyalaMall::CreateOutputFormatHourly(std::map<UnicodeS
                     {
                         if(TransactionTotal != 0)
                         {
-                            OutputValue = TransactionTotal + ",";
+                            OutputValue = IntToStr(TransactionTotal) + ",";
                         }
                         else
                         {
@@ -1195,17 +1242,6 @@ TExportResponse TMallExportAyalaMall::CreateOutputFormatHourly(std::map<UnicodeS
                     }
                     else
                     {
-//                        UnicodeString MallCodeTemp = TenantName;
-//                        UnicodeString MallCodeVal = "";
-//                        std::string MallCodeSTR = MallCodeTemp.t_str();
-//                        for(int i=0;i<MallCodeTemp.Length();i++)
-//                        {
-//                            if(i>3)
-//                            {
-//                                MallCodeVal = MallCodeVal + MallCodeSTR[i];
-//                            }
-//                        }
-//                        OutputValue = MallCodeVal + Format;
                         OutputValue = TGlobalSettings::Instance().TenantNo + Format;
                     }
                 }
@@ -1375,6 +1411,12 @@ void TMallExportAyalaMall::SaveStrVariable(vmVariables vmVar, UnicodeString Comp
 	    }
         TManagerVariable::Instance().SetProfileStr(DBTransaction, GlobalProfileKey, vmVar, CompName);
         DBTransaction.Commit();
+
+//    Database::TDBTransaction DBTransaction(IBDatabase);
+//    DBTransaction.StartTransaction();
+//
+//    TManagerVariable::Instance().SetProfileStr(DBTransaction, TManagerVariable::Instance().DeviceProfileKey, vmVar, CompName);
+//    DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
 
@@ -2052,7 +2094,6 @@ bool TMallExportAyalaMall::CheckPreviousZedDateTime()
     unsigned short Minutes = 0;
     unsigned short Seconds = 0;
     unsigned short dummy = 0;
-    int DayCount = 0;
 
     Now().DecodeTime(&Hour,&Minutes,&Seconds,&dummy);
 

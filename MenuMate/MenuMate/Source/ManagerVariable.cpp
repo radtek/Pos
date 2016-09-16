@@ -11,6 +11,7 @@
 #include "AutoZReporting.h"
 
 #include "XeroIntegration.h"
+#include "MYOBIntegration.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -2602,6 +2603,12 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarStr(DBTransaction,vmFTPPassword, "FTP User Password",
 		"FTP User Password is used to identify the accessibility of the user for FTP Server",
 		vmgPOS, 0);
+		SetVarStr(DBTransaction,vmConsolidateReportPaths, "Consolidated DB Paths",
+		"Consilidated Database path to be use to consilidate sale from different database",
+		vmgPOS, 0);
+		SetVarBool(DBTransaction,vmEnableConsolidatedReport, "Checking the status of Consolidated Report",
+		"Enabling or Disabling the Consolidated Report in Zed Report",
+		vmgPOS, false);
 
 		// Accumulated ZED
 		SetVarBool(DBTransaction, vmShowAccumulatedZed, "Show Accumulated Zeds",
@@ -3028,12 +3035,50 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                      "Item Search Manually in POS"
                      "Default is False.",
                       vmgMiscEquipment, false);
+    SetVarBool(DBTransaction, vmIsCloudSynced, "Is Cloud Synced For Discounts",
+                     "If this setting id disabled all discouint will be deleted"
+                     "Default is False.",
+                      vmgPOS, false);
+
 
    SetVarBool(DBTransaction, vmShowDarkBackgroundInPOS, "Dark Background in POS",
                  "Show Dark background in POS"
                  "Default is False.",
                   vmgPOS, false);
 
+	SetVarStr( DBTransaction, vmMYOBMachineName, "MYOB Integration / Machine Name",
+		"Xero Integration / Machine Name.\r"
+		"Default is localhost",
+		vmg3rdPartyInterface, "localhost" );
+
+		SetVarStr( DBTransaction, vmMYOBUserName, "MYOB Integration / Username",
+		"Xero Integration / Username.\r"
+		"Default is empty string",
+		vmg3rdPartyInterface, "" );
+
+		SetVarStr( DBTransaction, vmMYOBPassword, "MYOB Integration / Password",
+		"MYOB Integration / Password.\r"
+		"Default is empty string",
+		vmg3rdPartyInterface, "" );
+
+		SetVarStr(DBTransaction, vmMYOBFolderPath, "MYOB Integration / Folder URL",
+		"MYOB Integration / Folder URL.\r"
+		"Default is C:\\Program Files\\Menumate\\" + MYOB_INTEGRATION_FOLDER,
+		vmg3rdPartyInterface, "C:\\Program Files\\Menumate\\" + MYOB_INTEGRATION_FOLDER);
+
+		SetVarBool(DBTransaction,
+                    vmIsXeroEnabled,
+                    "Enable Thorlink",
+                    "This setting will enable or disable Thorlink.",
+                    vmgPOS,
+                    false);
+
+		SetVarBool(DBTransaction,
+                    vmIsMYOBEnabled,
+                    "Enable Thorlink",
+                    "This setting will enable or disable Thorlink.",
+                    vmgPOS,
+                    false);
 	}
 	catch(Exception &E)
 	{

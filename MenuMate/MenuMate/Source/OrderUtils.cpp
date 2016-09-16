@@ -5,6 +5,7 @@
 
 #include "OrderUtils.h"
 #include "ItemComplete.h"
+#include "ItemMinorComplete.h"
 
 //---------------------------------------------------------------------------
 
@@ -177,3 +178,71 @@ Currency TOrderUtils::FinalPriceAdjustmentSides(TList *Orders)
 	}
    return RetVal;
 }
+
+//---------------------------------------------------------------------------
+bool TOrderUtils::SeperateNmiPriceBarcodedItem( TItemMinorComplete* CurrentItem )
+{
+	bool result = false;
+
+	result = TGlobalSettings::Instance().EnableNmiDisplay
+				&& CurrentItem->IsPriceBarcodedItem;
+
+	return result;
+}
+//---------------------------------------------------------------------------
+bool TOrderUtils::SoloItem(TItemComplete *CurrentItem)
+{
+	if((CurrentItem->OrderType != NormalOrder)
+		|| (CurrentItem->SetMenuMaster)
+		|| (CurrentItem->SubOrders->Count != 0)
+		|| (CurrentItem->WeightedPrice.WeightedItem == true)
+		|| ( SeperateNmiPriceBarcodedItem(CurrentItem)))	// checking to seperate nmi price barcode items
+	{
+		return true;
+	}
+	return false;
+}
+//---------------------------------------------------------------------------
+bool TOrderUtils::SoloItem(TItemMinorComplete *CurrentItem)
+{
+	if((CurrentItem->SetMenuMaster)
+		|| (CurrentItem->SubOrders->Count != 0)
+		|| (CurrentItem->WeightedPrice.WeightedItem == true)
+		|| ( SeperateNmiPriceBarcodedItem(CurrentItem)))   // checking to seperate nmi price barcode items
+	{
+		return true;
+	}
+	return false;
+}
+//---------------------------------------------------------------------------
+bool TOrderUtils::Match(TItemComplete *PrevItem,TItemComplete *CurrentItem )
+{
+   if((CurrentItem->Item != PrevItem->Item) ||
+      (PrevItem->Note != CurrentItem->Note) ||
+      (PrevItem->Size != CurrentItem->Size) ||
+      (PrevItem->TotalPriceAdjustment() != CurrentItem->TotalPriceAdjustment()) ||
+      (PrevItem->SetMenu != CurrentItem->SetMenu) ||
+      (PrevItem->SetMenuGroup != CurrentItem->SetMenuGroup) ||
+      (PrevItem->ServingCourse.ServingCourseKey != CurrentItem->ServingCourse.ServingCourseKey) ||
+      (CurrentItem->Item_ID != PrevItem->Item_ID) ||
+      (!CurrentItem->OptionsSelected->Compare(PrevItem->OptionsSelected)) ||
+      (!CurrentItem->SubOrders->Compare(PrevItem->SubOrders))) //
+    {
+		return false;
+	}
+	return true;
+
+}
+//---------------------------------------------------------------------------
+bool TOrderUtils::Match(TItemMinorComplete *PrevItem,TItemMinorComplete *CurrentItem )
+{
+   if((CurrentItem->Item != PrevItem->Item) ||
+      (PrevItem->Size != CurrentItem->Size) ||
+      (PrevItem->TotalPriceAdjustment() != CurrentItem->TotalPriceAdjustment()) ||
+      (!CurrentItem->SubOrders->Compare(PrevItem->SubOrders))) //
+   {
+		return false;
+	}
+	return true;
+}
+

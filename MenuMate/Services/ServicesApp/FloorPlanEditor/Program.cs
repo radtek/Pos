@@ -116,9 +116,6 @@ namespace FloorPlanIntegration
                     }
                     else
                     {
-                        //MessageBox.Show(string.Format(@"Summa Proccess ID: {0}", p.Id));
-
-                        //Application.OpenForms[0].Show();
                         ShowWindowAsync(p.MainWindowHandle, SW_SHOWMAXIMIZED);
                     }
                     break;

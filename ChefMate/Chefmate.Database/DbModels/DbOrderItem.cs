@@ -11,10 +11,11 @@ namespace Chefmate.Database.DbModels
 {
     public class DbOrderItem
     {
-        public static void AddOrderItems(ObservableCollection<Item> items, int terminalKey)
+        public static void AddOrderItems(ObservableCollection<Item> items, int terminalKey, int orderKey)
         {
             foreach (var item in items)
             {
+                item.OrderKey = orderKey;
                 AddOrderItem(item, terminalKey);
             }
         }
@@ -22,7 +23,7 @@ namespace Chefmate.Database.DbModels
         {
             item.ItemKey = DbItem.GetOrCreateItem(item);
             item.OrderItemKey = DatabaseCore.Instance.GetGeneratorValue("GEN_ORDERITEM");
-            var fbParameters = new List<QueryParameter>(); 
+            var fbParameters = new List<QueryParameter>();
             fbParameters.Add(new QueryParameter("ORDERITEM_KEY", item.OrderItemKey));
             fbParameters.Add(new QueryParameter("ITEM_KEY", item.ItemKey));
             fbParameters.Add(new QueryParameter("COURSE_KEY", item.CourseGroup.OrderGroupKey));

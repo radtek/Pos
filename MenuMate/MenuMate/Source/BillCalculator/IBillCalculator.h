@@ -35,29 +35,21 @@ enum TDiscountWay  { dwPercentage, dwMoney, dwSetPrice };
 struct TDiscountInfo
 {
     TDiscountInfo();
-
     int      DiscountKey;
-
-	string   Name;
+    string   Name;
     string   Description;
-	Currency   Percentage;
-	Currency Value;
-
-	int  Priority;
-
-    // Only apply if the Price is Tax Inclusive
-	bool TaxExclusiveDiscount;
-
-    // Set to TRUE is Person With Disability (PWD) discount is applied
+    Currency   Percentage;
+    Currency Value;
+    int  Priority;
+    bool TaxExclusiveDiscount;
     bool RecalcPriceWithTaxAfterDiscount;
-
-	TDiscountType DiscountType;
-	TDiscountWay  DiscountWay;
-    // dwPercentage: Discount Percentage (%)
-    // dwMoney:      Discount Value ($)
-
+    TDiscountType DiscountType;
+    TDiscountWay  DiscountWay;
+    string DiscountCode;
+    bool IsCloudDiscount;
+    int DailyUsageAllowedPerMember;
+    bool MembersOnly;
     std::vector<UnicodeString> DiscountGroupList;
-    //std::vector<void*> DiscountGroupList;
 };
 
 struct TServiceChargeInfo
@@ -96,27 +88,18 @@ struct TPriceInfo
     bool     TaxInclusive;
     bool     ServiceChargeInclusive;
     bool     ServiceChargeTaxInclusive;
-
-    // Only apply if the Price is Tax Inclusive
     bool TaxExclusiveServiceCharge;
-
     bool TaxBeforeDiscount;
     bool ServiceChargeBeforeDiscount;
-
     TMultiDiscountType MultiDiscountType;
     TMultiTaxType      MultiTaxType;
-
     TAX_INFO_LIST      TaxInfoList;
     DISCOUNT_INFO_LIST DiscountInfoList;
     TServiceChargeInfo ServiceChargeInfo;
-
     bool PriceTaxExempt;
-
     TServiceChargeInfo RemovedServiceChargeInfo;
     TAX_INFO_LIST      RemovedTaxInfoList;
-
     bool CalcDWTOnBasePrice;
-
     // The following two properties were implemented, however not used until the requirements are made clear.
     bool TaxExemptPriceExclusiveOfServiceCharge;    // when the price is tax exempt ( removed ), it should not contain service charge
     bool AllowServiceChargesOnTaxExemptPrice;       // when the price is tax exempt ( SCD applied ), it allows or not SC and SCT calculation.
@@ -142,15 +125,14 @@ struct TDiscountResult
     Currency Value;
     Currency Content;
     int  Priority;
-    // Only apply if the Price is Tax Inclusive
     bool TaxExclusiveDiscount;
-    // Set to TRUE is Person With Disability (PWD) discount is applied
     bool RecalcPriceWithTaxAfterDiscount;
     TDiscountType DiscountType;
     TDiscountWay  DiscountWay;
-    // dwPercentage: Discount Percentage (%)
-    // dwMoney:      Discount Value ($)
-
+    UnicodeString DiscountCode;
+    bool IsCloudDiscount;
+    int DailyUsageAllowedPerMember;
+    bool MembersOnly;
     std::vector<UnicodeString> DiscountGroupList;
 };
 

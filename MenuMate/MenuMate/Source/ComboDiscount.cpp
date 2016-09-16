@@ -337,8 +337,7 @@ void TfrmComboGUI::OnSelect(int Row, int Col)
 	if(Row < Prices.size())
 	{
 		std::vector<int>::iterator it = Orders.find(Row);
-		if(it == NULL && (Total + Prices.at(Row)) <= Max &&
-          (MaxItemAffected == 0 || MaxItemAffected >  Orders.size()))
+		if(it == NULL && (Total + Prices.at(Row)) <= Max )
 		{
 			Orders.insert(Row);
 			Orders.organiseints();

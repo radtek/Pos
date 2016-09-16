@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8738/MenumateServices/SmartLink/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (27/09/2015 5:10:04 p.m. - - $Rev: 25127 $)
+// (9/08/2016 6:07:10 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -20,7 +20,7 @@
 
 
 
-namespace NS_SmartLinkWSDL {
+namespace NS__SmartLinkWSDL {
 
 _di_IWCFServiceSmartLink GetIWCFServiceSmartLink(bool useWSDL, AnsiString addr, THTTPRIO* HTTPRIO)
 {
@@ -63,5 +63,4 @@ static void RegTypes()
 #pragma startup RegTypes 32
 
 };     // NS__
-
 

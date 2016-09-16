@@ -137,6 +137,7 @@ object frmUseRecipe: TfrmUseRecipe
         Precision = 10
         TabOrder = 1
         Visible = False
+        OnKeyPress = NumericEdit1KeyPress
       end
       object ComboBox1: TComboBox
         Left = 137
@@ -395,6 +396,7 @@ object frmUseRecipe: TfrmUseRecipe
         Alignment = taLeftJustify
         Precision = 10
         TabOrder = 6
+        OnKeyPress = NumTotalKeyPress
         DecimalPlaces = 2
       end
     end

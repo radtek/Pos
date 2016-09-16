@@ -50,8 +50,6 @@ void __fastcall TfrmVerticalSelect::FormResize(TObject *Sender)
    Top				= (Screen->Height - Height) / 2;
 }
 //---------------------------------------------------------------------------
-
-
 void TfrmVerticalSelect::UpdateSelectionList()
 {
 	tgridSelection->ColCount = 0;

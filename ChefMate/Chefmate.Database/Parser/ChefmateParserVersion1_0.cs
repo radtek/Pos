@@ -6,9 +6,12 @@
 
         public override void RunParser()
         {
-            CreateGenerators();
-            CreateTables();
-            UpdateVersionInDatabase(Version);
+            if (!IsVersionExist(Version))
+            {
+                CreateGenerators();
+                CreateTables();
+                UpdateVersionInDatabase(Version);
+            }
         }
         private void CreateGenerators()
         {

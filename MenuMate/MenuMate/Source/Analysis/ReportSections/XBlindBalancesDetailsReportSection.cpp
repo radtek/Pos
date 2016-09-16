@@ -16,7 +16,6 @@ void XBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut)
 {
     AddTitle(printOut, " Blind Balances");
     printOut->PrintFormat->NewLine();
-
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
     if(reportSectionDisplayTraits)
     {

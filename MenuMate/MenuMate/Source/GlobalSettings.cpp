@@ -148,12 +148,16 @@ TGlobalSettings::TGlobalSettings()
     XeroUserName    = "";
     XeroPassword    = "";
     XeroFolderPath  = "";
+    MYOBMachineName = "";
+    MYOBUserName    = "";
+    MYOBPassword    = "";
+    MYOBFolderPath  = "";
     NagUserToSelectChit = false;
-    bool LoyaltyMateEnabled = false;
-    UnicodeString ServiceURL = "";
-    UnicodeString MemberActivationURL = "";
-    bool EnableActivationTokenPrint = false;
-    UnicodeString ActivationTokenGreeting = "";
+    LoyaltyMateEnabled = false;
+    ServiceURL = "";
+    MemberActivationURL = "";
+    EnableActivationTokenPrint = false;
+    ActivationTokenGreeting = "";
     ReceiptNumberLabel="";
     ReprintReceiptLabel="";
     //Making the first setting for initialize tax setting
@@ -353,6 +357,11 @@ TGlobalSettings::TGlobalSettings()
     RunRateBoardIP = "";
     ShowLargeFonts = false;
     ItemSearch = false;
-    ShowDarkBackground = false;
+    IsXeroEnabled = false;
+    IsMYOBEnabled = false;
+
+    // MallExport Additional Settings
+    ConsolidateReportPaths = "";
+    EnableConsolidatedReport = false;
 }
 

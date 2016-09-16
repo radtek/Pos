@@ -653,7 +653,7 @@ TDiscount TManagerClippIntegrationHelper:: CreateMMDiscount(std::vector<MMClippD
     clippDiscount.DiscountKey               =   -99;
     clippDiscount.Name                      =   it->Description;
     clippDiscount.Description               =   it->Description;
-    clippDiscount.ID                        =   NULL;
+    clippDiscount.DiscountCode              =   "";
     clippDiscount.Priority                  =   99;
     clippDiscount.AppearanceOrder           =   0;
     clippDiscount.PercentAmount             =   0;
@@ -686,7 +686,7 @@ TDiscount TManagerClippIntegrationHelper:: CreateClippSurcharge(Currency clippPr
     clippSurcharge.DiscountKey              =   -98;
     clippSurcharge.Name                     =   "Clipp ProceSsing Fee";
     clippSurcharge.Description              =   "Clipp ProceSsing Fee";
-    clippSurcharge.ID                       =   NULL;
+    clippSurcharge.DiscountCode             =   "";
     clippSurcharge.Priority                 =   98;
     clippSurcharge.AppearanceOrder          =   0;
     clippSurcharge.PercentAmount            =   0;

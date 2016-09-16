@@ -21,6 +21,8 @@ object frmNewPaymentType: TfrmNewPaymentType
   WindowState = wsMaximized
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   DesignSize = (
     955
     618)
@@ -141,6 +143,10 @@ object frmNewPaymentType: TfrmNewPaymentType
     TabOrder = 1
     object tsPayment: TTabSheet
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
@@ -506,6 +512,10 @@ object frmNewPaymentType: TfrmNewPaymentType
       Caption = 'tsSecurity'
       ImageIndex = 1
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel2: TPanel
         Left = 0
         Top = 0
@@ -624,6 +634,10 @@ object frmNewPaymentType: TfrmNewPaymentType
       Caption = 'tsInterfaces'
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel4: TPanel
         Left = 0
         Top = 0
@@ -841,7 +855,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           Left = 260
           Top = 48
           Width = 240
-          Height = 289
+          Height = 296
           Caption = 'Payment Exporting'
           Font.Charset = ANSI_CHARSET
           Font.Color = clWindowText
@@ -851,7 +865,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           ParentBackground = False
           ParentFont = False
           TabOrder = 3
-          object Bevel1: TBevel
+          object Bevel2: TBevel
             Left = 10
             Top = 162
             Width = 220
@@ -911,8 +925,8 @@ object frmNewPaymentType: TfrmNewPaymentType
             Left = 10
             Top = 168
             Width = 220
-            Height = 40
-            Caption = 'Charge To Xero'
+            Height = 51
+            Caption = 'Charge To Accounting System'
             Color = clNavy
             Font.Charset = ANSI_CHARSET
             Font.Color = clWhite
@@ -922,11 +936,12 @@ object frmNewPaymentType: TfrmNewPaymentType
             ParentColor = False
             ParentFont = False
             TabOrder = 3
+            WordWrap = True
             OnClick = tbChargeToXeroClick
           end
           object tbGLCode: TTouchBtn
             Left = 10
-            Top = 214
+            Top = 225
             Width = 220
             Height = 60
             Font.Charset = ANSI_CHARSET
@@ -946,9 +961,9 @@ object frmNewPaymentType: TfrmNewPaymentType
         end
         object GroupBox9: TGroupBox
           Left = 260
-          Top = 344
+          Top = 350
           Width = 240
-          Height = 292
+          Height = 286
           Caption = 'PMS System'
           Font.Charset = ANSI_CHARSET
           Font.Color = clWindowText
@@ -960,7 +975,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           TabOrder = 4
           object tbtnSecondaryPMSPort: TTouchBtn
             Left = 10
-            Top = 210
+            Top = 199
             Width = 220
             Height = 73
             Font.Charset = ANSI_CHARSET
@@ -979,7 +994,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           end
           object tbtnSecondaryIPAddress: TTouchBtn
             Left = 10
-            Top = 135
+            Top = 120
             Width = 220
             Height = 73
             Font.Charset = ANSI_CHARSET
@@ -998,7 +1013,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           end
           object tbThirdPartyID: TTouchBtn
             Left = 10
-            Top = 78
+            Top = 63
             Width = 220
             Height = 51
             Font.Charset = ANSI_CHARSET
@@ -1017,9 +1032,9 @@ object frmNewPaymentType: TfrmNewPaymentType
           end
           object tbRoomPayment: TCheckBox
             Left = 10
-            Top = 21
+            Top = 24
             Width = 220
-            Height = 51
+            Height = 33
             Caption = 'PMS / Room Interface'
             Color = clNavy
             Font.Charset = ANSI_CHARSET
@@ -1142,7 +1157,7 @@ object frmNewPaymentType: TfrmNewPaymentType
           Left = 510
           Top = 364
           Width = 240
-          Height = 158
+          Height = 151
           Caption = 'RMS System'
           Font.Charset = ANSI_CHARSET
           Font.Color = clWindowText

@@ -867,7 +867,7 @@ namespace MenumateServices.WebMate.InternalClasses
             orderDbItem.ItemId = reader.GetInt32(reader.GetOrdinal("Item_ID"));
             orderDbItem.SizeName = reader.GetString(reader.GetOrdinal("Size_Name"));
             orderDbItem.SizeKitchenName = reader.GetString(reader.GetOrdinal("Size_Kitchen_Name"));
-            orderDbItem.PriceLevel0 = reader.GetDecimal(reader.GetOrdinal("Price"));
+            orderDbItem.PriceLevel0 = orderDbItem.Price;
             orderDbItem.PriceLevel1 = reader.GetDecimal(reader.GetOrdinal("Special_Price"));
             orderDbItem.GSTPercent = reader.GetDecimal(reader.GetOrdinal("GST_Percent"));
             orderDbItem.Cost = reader.GetDecimal(reader.GetOrdinal("Cost"));
@@ -887,7 +887,7 @@ namespace MenumateServices.WebMate.InternalClasses
             orderDbItem.Categories.FinancialCategoryGroup = reader.GetString(reader.GetOrdinal("Category_Group_Name"));
             orderDbItem.MenuItemKey = orderDbItem.ItemKey;
             //changes for chit
-            orderDbItem.Price = reader.GetDecimal(reader.GetOrdinal("Price"));
+            orderDbItem.Price = orderDbItem.Price;
 
             //orderDbItem.Price = orderDbItem.PriceLevel0;
             //orderDbItem.Price = orderDbItem.PriceLevel1;

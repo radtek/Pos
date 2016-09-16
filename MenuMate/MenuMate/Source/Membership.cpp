@@ -565,7 +565,6 @@ void TMembership::GetInvoices(Database::TDBTransaction &DBTransaction, TStringLi
    }
 }
 
-
 int TMembership::GetContactByCode(Database::TDBTransaction &DBTransaction, int inContactCode)
 {
    if (!fEnabled)
@@ -687,8 +686,6 @@ void TMembership::SetContactLoyaltyAttributes(Database::TDBTransaction &DBTransa
 	  throw;
    }
 }
-
-
 
 bool TMembership::CheckSiteIndex(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info)
 {
@@ -916,7 +913,6 @@ void __fastcall TMembership::GetReportCardInfoFormatCell(TObject *Sender, int Ce
    }
 }
 // ---------------------------------------------------------------------------
-
 void TMembership::GetReportThisCardsInfo(Database::TDBTransaction &DBTransaction, int inSmartCardKey, UnicodeString GUID,
    TStringList *Report)
 {
@@ -965,7 +961,6 @@ void TMembership::GetReportThisCardsInfo(Database::TDBTransaction &DBTransaction
 	  Report->Add("<br>");
    }
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TMembership::GetReportThisCardsInfoFormatCell(TObject *Sender, int CellRow, int CellColumn, THTMLBgColor &BgColor,
    THTMLAlign &Align, THTMLVAlign &VAlign, UnicodeString &CustomAttrs, UnicodeString &CellData)
@@ -1003,9 +998,7 @@ void __fastcall TMembership::GetReportThisCardsInfoFormatCell(TObject *Sender, i
 	  }
    }
 }
-
 // ---------------------------------------------------------------------------
-
 void TMembership::GetReportMemberInfo(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member, TStringList *Report)
 {
    TMMContactInfo ContactInfo;
@@ -1015,15 +1008,17 @@ void TMembership::GetReportMemberInfo(Database::TDBTransaction &DBTransaction, T
    UnicodeString Temp = LoadStr(TABLE_START);
    Report->Add(Temp);
    Temp = LoadStr(TABLE_ROW4_HEADER);
-   Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Member Information");
-   Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " " + ContactInfo.Title + " " + ContactInfo.Name +" "+ContactInfo.Surname + " (" + ContactInfo.MembershipNumber + ")");
+   Temp = ReplaceStr(Temp, "%TABLETITLE%", "Member Information");
+   //MessageBox(ContactInfo.Name +" "+ContactInfo.Surname + "'s Birthday" + "\n" , "Happy Birthday", MB_OK + MB_ICONINFORMATION);
+   Temp = ReplaceStr(Temp, "%TABLEHEADER%", " " + ContactInfo.Title + " " + ContactInfo.Name +" "+ContactInfo.Surname + " (" + ContactInfo.MembershipNumber + ")");
+   //MessageBox(Temp + "'s Temp" + "\n" , "Happy Birthday", MB_OK + MB_ICONINFORMATION);
    Report->Add(Temp);
 
    UnicodeString TempRow = LoadStr(TABLE_ROW4);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Alias");
-   TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", ContactInfo.Alias == "" ? ContactInfo.Name+" "+ContactInfo.Surname : ContactInfo.Alias);
+   TempRow = ReplaceStr(TempRow, "%ROWCONTENT1%", ContactInfo.Alias == "" ? ContactInfo.Name+" "+ContactInfo.Surname : ContactInfo.Alias);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Initials");
-   TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", ContactInfo.Initials == "" ? UnicodeString("&nbsp;") : ContactInfo.Initials);
+   TempRow = ReplaceStr(TempRow, "%ROWCONTENT2%", ContactInfo.Initials == "" ? UnicodeString("&nbsp;") : ContactInfo.Initials);
    Report->Add(TempRow);
    TempRow = LoadStr(TABLE_ROW4);
 
@@ -1032,26 +1027,26 @@ void TMembership::GetReportMemberInfo(Database::TDBTransaction &DBTransaction, T
    if (TempAdd == "")
 	  TempAdd = UnicodeString("&nbsp;");
    TempAdd = AnsiReplaceStr(TempAdd, "\r", "<br>");
-   TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", TempAdd);
+   TempRow = ReplaceStr(TempRow, "%ROWCONTENT1%", TempAdd);
 
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Mailing Address");
    TempAdd = ContactInfo.MailingAddress;
    if (TempAdd == "")
 	  TempAdd = UnicodeString("&nbsp;");
    TempAdd = AnsiReplaceStr(TempAdd, "\r", "<br>");
-   TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", TempAdd);
+   TempRow = ReplaceStr(TempRow, "%ROWCONTENT2%", TempAdd);
    Report->Add(TempRow);
    TempRow = LoadStr(TABLE_ROW4);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Phone");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", ContactInfo.Phone == "" ? UnicodeString("&nbsp;") : ContactInfo.Phone);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "EMail");
-   TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", ContactInfo.EMail == "" ? UnicodeString("&nbsp;") : ContactInfo.EMail);
+   TempRow = ReplaceStr(TempRow, "%ROWCONTENT2%", ContactInfo.EMail == "" ? UnicodeString("&nbsp;") : ContactInfo.EMail);
    Report->Add(TempRow);
    TempRow = LoadStr(TABLE_ROW4);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "DOB");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", ContactInfo.DateOfBirth.FormatString(" dd/mm/yyyy "));
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Mobile");
-   TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", ContactInfo.Mobile == "" ? UnicodeString("&nbsp;") : ContactInfo.Mobile);
+   TempRow = ReplaceStr(TempRow, "%ROWCONTENT2%", ContactInfo.Mobile == "" ? UnicodeString("&nbsp;") : ContactInfo.Mobile);
    Report->Add(TempRow);
    TempRow = LoadStr(TABLE_ROW4);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Gender");
@@ -2531,8 +2526,6 @@ void TMembership::GetReportMemberPurchaseInfo(Database::TDBTransaction &DBTransa
    }
 }
 
-
-
 void TMembership::GetReportMemberStop(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member, TStringList *Report)
 {
    // Start the Member Table.
@@ -2584,7 +2577,6 @@ TDateTime TMembership::GetLastBirthdayProcessed(Database::TDBTransaction &DBTran
    RetVal = IBInternalQuery->FieldByName("LAST_BIRTHDAY_PROCESSED")->AsDateTime;
    return RetVal;
 }
-
 
 void TMembership::SetLastVisit(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member)
 {
@@ -2793,19 +2785,19 @@ void TMembership::FastContactListing(TIBSQL **query,
 		"select name n, last_name l, "
       "       contacts_key k "
 		"       from contacts "
-	   "       where contact_type = :contact_type ",
+	   "       where contact_type = :contact_type and member_type <> 2 ",
 		"select name || ' ' ||  last_name n,member_number l, "
       "       contacts_key k "
 		"       from contacts "
-	   "       where contact_type = :contact_type ",
+	   "       where contact_type = :contact_type and member_type <> 2 ",
 		"select case when (phone is not null) then "
 		"                 name || ' ' || last_name "
 		"            else name "
 		"       end n, "
-        "       phone l, "
+        "       case when (phone = '') then MOBILE  else phone end l , "
       "       contacts_key k "
 		"       from contacts "
-	   "       where contact_type = :contact_type ",
+	   "       where contact_type = :contact_type and member_type <> 2 ",
 	};
 
 	populated_query =
@@ -2839,7 +2831,6 @@ const char *TMembership::FastFormatMemberName(AnsiString mbr_name)
 
 	return strbeg;
 }
-
 
 InvoiceData::InvoiceData(int inInvoiceNumber, AnsiString inContact, std::vector<TransData> inTransaction):
 InvoiceNumber(inInvoiceNumber), Contact(inContact), Transaction(inTransaction)
@@ -3006,7 +2997,8 @@ double TMembership::GetEarnedPointsForCurrentYear(Database::TDBTransaction &DBTr
      }
     return earnedPoints;
  }
-AnsiString TMembership::SendRequestForPay(std::vector<TTenderDetails> tenderDetailsList,std::vector<TItemDetailsThor> itemsList)
+
+ AnsiString TMembership::SendRequestForPay(std::vector<TTenderDetails> tenderDetailsList,std::vector<TItemDetailsThor> itemsList)
 {}
 AnsiString TMembership::SendRequestForRefund(TRefundTransaction refundTransaction)
 {}
@@ -3021,5 +3013,18 @@ bool TMembership::MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMM
 bool TMembership::UpdateMemberCardCode(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode)
 {
   return UpdateMemberCardCode(DBTransaction, UserInfo,memberCardCode);
+}
+
+void TMembership::ResetPoints()
+{
+   CurrentYearPoints = 0;
+   PreviousYearPoints = 0;
+   AvailableBDPoint = 0;
+   AvailableFVPoint = 0;
+   AvailableEarnedPoint = 0;
+   AvailableLoadedPoint = 0;
+   RedeemedVoucherName = "";
+   RedeemedVoucherDiscount = "";
+   MemberVouchers.clear();
 }
 

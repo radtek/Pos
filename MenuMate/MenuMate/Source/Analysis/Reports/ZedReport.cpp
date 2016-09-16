@@ -16,32 +16,43 @@ AnsiString ZedReport::GetReportName()
 
 int ZedReport::DisplayAndPrint(TMemoryStream* memoryStream)
 {
+    int retValue = 0;
     TPrintout* printOut = SetupPrintOutInstance();
 
     printOut->PrintFormat->PartialCut();
 
     TForm* currentForm = Screen->ActiveForm;
-    std::auto_ptr <TfrmShowPrintout> (frmShowPrintout)(TfrmShowPrintout::Create <TfrmShowPrintout> (currentForm));
-    printOut->PrintToStream(frmShowPrintout->CurrentPrintout.get());
-
-    if (TGlobalSettings::Instance().EnableBlindBalances)
+    if(printOut->BlindBalanceUsed)
     {
-        frmShowPrintout->btnCancel->Visible = false;
+        std::auto_ptr <TfrmShowPrintout> (frmShowPrintout)(TfrmShowPrintout::Create <TfrmShowPrintout> (currentForm));
+
+        printOut->PrintToStream(frmShowPrintout->CurrentPrintout.get());
+
+        if (TGlobalSettings::Instance().EnableBlindBalances)
+        {
+            frmShowPrintout->btnCancel->Visible = false;
+        }
+        else
+        {
+            frmShowPrintout->btnCancel->Visible = true;
+            frmShowPrintout->btnCancel->Caption = "Cancel Zed";
+        }
+        frmShowPrintout->btnClose->Caption = "Close Till";
+        frmShowPrintout->btnClosePrint->Caption = "Close Till and Print Zed";
+
+        frmShowPrintout->Execute();
+
+        if(memoryStream)
+        {
+            printOut->PrintToStream(memoryStream);
+        }
+        SkipZedProcess = false;
+        retValue = frmShowPrintout->ExitCode;
     }
     else
     {
-        frmShowPrintout->btnCancel->Visible = true;
-        frmShowPrintout->btnCancel->Caption = "Cancel Zed";
+        SkipZedProcess = true;
     }
-    frmShowPrintout->btnClose->Caption = "Close Till";
-    frmShowPrintout->btnClosePrint->Caption = "Close Till and Print Zed";
+    return retValue;
 
-    frmShowPrintout->Execute();
-
-    if(memoryStream)
-    {
-        printOut->PrintToStream(memoryStream);
-    }
-
-    return frmShowPrintout->ExitCode;
 }

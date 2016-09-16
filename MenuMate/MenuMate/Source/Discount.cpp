@@ -32,7 +32,7 @@ void TDiscount::Clear()
    DiscountKey = 0;
    DBKey = 0;
    Priority = 0;
-   ID = 0;
+   DiscountCode = "";
    AppearanceOrder = 0;
    MembersExempt = false;
    MembersOnly = false;
@@ -45,6 +45,9 @@ void TDiscount::Clear()
    IsClipp = false;
    MaxItemAffected = 0;
    MinItemRequired = 0;
+   IsCloudDiscount = false;
+   DailyUsageAllowedPerMember = 0;
+   ProductPriority = ppCheapest;
 }
 
 bool
@@ -67,7 +70,9 @@ TDiscount::operator==(TDiscount &rhs)
           && Group == rhs.Group
           && CategoryFilterKeys == rhs.CategoryFilterKeys
           && MaxItemAffected == rhs.MaxItemAffected
-          && MinItemRequired == rhs.MinItemRequired;
+          && MinItemRequired == rhs.MinItemRequired
+          && IsCloudDiscount == rhs.IsCloudDiscount
+          && DailyUsageAllowedPerMember == rhs.DailyUsageAllowedPerMember;
 }
 
 UnicodeString TDiscount::GetDescription() const

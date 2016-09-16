@@ -52,18 +52,21 @@ private:
     AnsiString extractMallCode();
     AnsiString extractDate();
     AnsiString extractTime();
+    AnsiString extractMinute();
     AnsiString extractTenantId();
     Currency extractSales();
     int extractTransactionCount();
     int extractRefundCount();
     int extractVoidCount();
     int extractPatronCount();
+    int extractSCDiscountCount();
 
     Currency getDiscountGroupTotal( UnicodeString discountGroupName );
     Currency getDailySales();
     bool isRefundedOrder( const TItemMinorComplete *order );
     bool isCancelledOrder( const TItemMinorComplete *order );
     bool PerformedLastZed();
+    int getDiscountGroupCountPerTransaction( UnicodeString discountGroupName );
 
     void setPaymentTransaction( TPaymentTransaction *payTransac );
     void setDbTransaction( Database::TDBTransaction *transaction );
@@ -89,12 +92,14 @@ private:
     AnsiString mallCode;
     AnsiString dateValue;
     AnsiString timeValue;
+    AnsiString minuteValue;
     AnsiString tenantId;
     Currency salesValue;
     int transactionCount;
     int refundCount;
     int voidCount;
     int patronCount;
+    int scdiscountCount;
 
     // Utility methods
     void flatternOrdersList();

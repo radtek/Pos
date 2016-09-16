@@ -52,7 +52,7 @@ const WM_LOADMENU								= WM_USER + 4;
 //const WM_LOADMENU_DB						= WM_USER + 4;
 //const WM_LOADMENU_FILE					= WM_USER + 5;
 //---------------------------------------------------------------------------
-const MAX_COURSE_SIZES						= 16;
+const MAX_COURSE_SIZES						= 25;
 
 const MAX_DESCRIPTION_LENGTH				= 25;
 const MAX_3RD_PARTY_CODE_LENGTH			= 50;
@@ -451,7 +451,6 @@ class TfrmMenuEdit : public TForm
     TIBSQL *qrLocations;
     TLabel *lblPriceForPoint;
     TNumericEdit *nePriceForPoint;
-    TIBSQL *qrGetForcedOptions;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall tvMenuGetImageIndex(TObject *Sender,
 	TTreeNode *Node);
@@ -908,9 +907,9 @@ private:
 	bool CreateCourseNodes(     TLoadMenu *inLoadMenu );
 	void ReadCourseOptionsInfo( TLoadMenu* inLoadMenu, __int32 inCourseID, Menu::TCourseInfo& inCourseInfo );
 
-	bool CreateItemNodes(           TLoadMenu *inLoadMenu, __int32 inCourseHandle, AnsiString inCourseName, TTreeNode *inCourseNode );
+	bool CreateItemNodes(           TLoadMenu *inLoadMenu, __int32 inCourseHandle, WideString inCourseName, TTreeNode *inCourseNode );
 	bool AssignForcedSidesReferences();
-	void ReadItemForcedSidesInfo( const AnsiString &inCourseName, TLoadMenu *inLoadMenu, __int32 inItemID, Menu::TItemInfo &inItemInfo );
+	void ReadItemForcedSidesInfo( const WideString &inCourseName, TLoadMenu *inLoadMenu, __int32 inItemID, Menu::TItemInfo &inItemInfo );
 	void ReadItemForcedOptionsInfo( __int32    inGroupNumber,
 	__int32    inItemKey,
 	TLoadMenu *inLoadMenu,

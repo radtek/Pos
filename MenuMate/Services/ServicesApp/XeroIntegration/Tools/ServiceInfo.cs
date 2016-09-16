@@ -5,7 +5,7 @@ using System.Text;
 
 using System.Xml;
 
-namespace XeroIntegration
+namespace AccountingIntegration
 {
 
     public sealed class ServiceInfo

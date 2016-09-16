@@ -1110,13 +1110,22 @@ void TfrmAddStock::SubsituteData()
 
 bool TfrmAddStock::PostData()
 {
+
 	if (dtStockLocationEdit->State == dsEdit || dtStockLocationEdit->State == dsInsert)
 	{
 		dtStockLocationEdit->Post();
 	}
 	if (dtSuppliersStock->State == dsEdit || dtSuppliersStock->State == dsInsert)
 	{
-		dtSuppliersStock->Post();
+        if(dbgSuppliers->DataSource->DataSet->RecordCount == 0)
+        {
+			Application->MessageBox("You must add a supplier.", "Error", MB_ICONERROR + MB_OK);
+			return false;           
+        }
+        else
+        {
+		    dtSuppliersStock->Post();
+        }
 	}
 	if (Mode == amAddSupplierUnit)
 	{
@@ -1163,6 +1172,7 @@ bool TfrmAddStock::PostData()
    {
    	return false;
    }
+
 	try
 	{
 		dtStockEdit->Post();
@@ -1641,7 +1651,10 @@ void __fastcall TfrmAddStock::btnAddSupplierClick(TObject *Sender)
 {
 	if (dtSuppliersStock->State == dsEdit || dtSuppliersStock->State == dsInsert)
 	{
-		dtSuppliersStock->Post();
+        if(dbgSuppliers->DataSource->DataSet->RecordCount > 0)
+        {
+		    dtSuppliersStock->Post();
+        }
 	}
 	frmSelectSupplier->Reset = true;
 	if (frmSelectSupplier->ShowModal() == mrOk)
@@ -2605,7 +2618,7 @@ void __fastcall TfrmAddStock::btnGoClick(TObject *Sender)
 
 
   }
-  }
+  }                       
 }
 //---------------------------------------------------------------------------
 
@@ -2722,7 +2735,124 @@ bool TfrmAddStock::CheckReductionUnit()
     }
    return true;
 }
+//---------------------------------------------------------------------------
+void __fastcall TfrmAddStock::dbeCostKeyPress(TObject *Sender, char &Key)
+{
+    if (Key == VK_RETURN)
+	{
+		Key = NULL;
+		SelectNext((TWinControl *)Sender, true, true);
+	}
+    if (Key == '-')
+	{
+		Key = NULL;
+	}
 
+}
+//---------------------------------------------------------------------------
 
+void __fastcall TfrmAddStock::dbeLatestCostKeyPress(TObject *Sender,
+      char &Key)
+{
+    if (Key == VK_RETURN)
+	{
+		Key = NULL;
+		SelectNext((TWinControl *)Sender, true, true);
+	}
+    if (Key == '-')
+	{
+		Key = NULL;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmAddStock::dbeAveCostKeyPress(TObject *Sender,
+      char &Key)
+{
+    if (Key == VK_RETURN)
+	{
+		Key = NULL;
+		SelectNext((TWinControl *)Sender, true, true);
+	}
+    if (Key == '-')
+	{
+		Key = NULL;
+	}
+}
+void __fastcall TfrmAddStock::dbeCostChange(TObject *Sender)
+{
+   CheckNegativeValue(dbeCost);
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmAddStock::dbcOrderQtyChange(TObject *Sender)
+{
+   CheckNegativeValue(dbcOrderQty);
+}
+//---------------------------------------------------------------------------
+void TfrmAddStock::CheckNegativeValue(TDBEdit *dbetextbox)
+{
+   if(dbetextbox->Text.Trim().Length() > 0)
+   {
+      AnsiString cost = dbetextbox->Text.TrimLeft();
+      cost = cost.SubString(0, 1);
+       if(cost == '-')
+       {
+          dbetextbox->Text = "";
+       }
+   }
+
+}
+void __fastcall TfrmAddStock::dbeLatestCostChange(TObject *Sender)
+{
+   CheckNegativeValue(dbeLatestCost);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmAddStock::dbeAveCostChange(TObject *Sender)
+{
+   CheckNegativeValue(dbeAveCost);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmAddStock::dbeAssessedValueChange(TObject *Sender)
+{
+   CheckNegativeValue(dbeAssessedValue);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmAddStock::dbeAssessedValueKeyPress(TObject *Sender,
+      char &Key)
+{
+    if (Key == VK_RETURN)
+	{
+		Key = NULL;
+		SelectNext((TWinControl *)Sender, true, true);
+	}
+    if (Key == '-')
+	{
+		Key = NULL;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmAddStock::dbeConversionFactorKeyPress(TObject *Sender,
+      char &Key)
+{
+	if (Key == VK_RETURN)
+	{
+		Key = NULL;
+		SelectNext((TWinControl *)Sender, true, true);
+	}
+    if(Key == '-')
+    {
+       Key = NULL;
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmAddStock::dbeConversionFactorChange(TObject *Sender)
+{
+   CheckNegativeValue(dbeConversionFactor);
+}
 //---------------------------------------------------------------------------
 

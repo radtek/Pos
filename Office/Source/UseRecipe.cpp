@@ -169,6 +169,11 @@ void __fastcall TfrmUseRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
 void __fastcall TfrmUseRecipe::QuantityOnKeyPress(TObject *Sender,
       char &Key)
 {
+    if(Key == '-')
+    {
+       Key = NULL;
+    }
+    
     std::vector<AnsiString> LocationArray;
     int i = 0;
 
@@ -658,4 +663,23 @@ void __fastcall TfrmUseRecipe::SearchReceipeOnClick(TObject *Sender)
        dtRecipes->Open();
  }
 
+
+void __fastcall TfrmUseRecipe::NumTotalKeyPress(TObject *Sender, char &Key)
+{
+    if(Key == '-')
+    {
+       Key = NULL;
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmUseRecipe::NumericEdit1KeyPress(TObject *Sender,
+      char &Key)
+{
+    if(Key == '-')
+    {
+       Key = NULL;
+    }
+}
+//---------------------------------------------------------------------------
 

@@ -279,6 +279,7 @@ private:
     void PrintServiceChargeTax(TReqPrintJob* PrintJob);
     void PrintZeroRated(TReqPrintJob* PrintJob);
     void PrintServiceChargePlusServiceChargeTax(TReqPrintJob* PrintJob);
+    void PrintCurrentYearPts(TReqPrintJob *PrintJob);
 
     Currency getProductTax(TItemMinorComplete* item);
     Currency getLocalTax(TItemMinorComplete* item);
@@ -325,6 +326,7 @@ private:
     void PrintManuallyEnteredWeightString(TOrderBundle* , 	TPrintFormat* );
     void AddManuallyEnteredLineInReceipt(TPrintFormat*);
     void PrintNonFreeItemsOnly(TReqPrintJob *PrintJob);
+    int GetItemLength(UnicodeString itemname, int length);
 };
 
 // ------------------------------------------------------------------------------

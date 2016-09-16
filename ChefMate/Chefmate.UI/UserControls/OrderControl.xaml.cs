@@ -1,65 +1,75 @@
-﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
+﻿using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Chefmate.Core.Commands;
 using Chefmate.Core.Model;
-using Chefmate.UI.Annotations;
-using Chefmate.UI.Views;
+using Chefmate.Database.DbModels;
+
 
 namespace Chefmate.UI.UserControls
 {
     /// <summary>
     /// Interaction logic for OrderControl.xaml
     /// </summary>
-    public partial class OrderControl : UserControl,INotifyPropertyChanged
+    public partial class OrderControl : UserControl, INotifyPropertyChanged
     {
-        public static readonly DependencyProperty ChefmateOrderProperty = DependencyProperty.Register("ChefmateOrder", typeof(Order), typeof(OrderControl));
+        private double _orderWidth;
+        private Order _order;
         public OrderControl()
         {
             InitializeComponent();
-            PopUpCommand = new DelegateCommand(ExceutePopUp);
-            this.DataContext = this;
+            
         }
 
-        #region Commands
-        public ICommand PopUpCommand { get; set; }
-        #endregion
-
-        public Order ChefmateOrder
+        public OrderControl(Order inOrder, double inWidth)
+            : this()
         {
-            get
-            {
-                return (Order)GetValue(ChefmateOrderProperty);
-            }
+            this.Order = inOrder;
+            this.DataContext = this;
+            OrderWidth = inWidth;
+            CallAwayStopCommand = new DelegateCommand(StopCallAway);
+            HeaderPoppup.Order = inOrder;
+        }
+        public ICommand CallAwayStopCommand { get; set; }
+        public Order Order
+        {
+            get { return _order; }
             set
             {
-                SetValue(ChefmateOrderProperty, value);
+                _order = value;
+                OnPropertyChanged("Order");
             }
         }
-
-
-
-        private void ExceutePopUp(object param)
+        public double OrderWidth
         {
-            //int orderNumber = Convert.ToInt32(param);
-            //var order = TotalOrders.FirstOrDefault(s => s.OrderNumber == orderNumber);
-            //OrderPopUp orderPopUp = new OrderPopUp
-            //{
-            //    Order = order,
-            //    ShowInTaskbar = false
-            //};
-            //orderPopUp.ShowDialog();
+            get { return _orderWidth; }
+            set
+            {
+                _orderWidth = value;
+                OnPropertyChanged("OrderWidth");
+            }
         }
-
+        private void StopCallAway(object obj)
+        {
+            var group = obj as Group;
+            if (group != null)
+            {
+                group.DisplayAttributes.IsBlinkingEnable = false;
+                DbOrderGroup.CallAwayGroup(group.OrderGroupKey, false);
+            }
+        }
+ 
+        
+        #region PropertyChanged Implementation
         public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged(string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
+
+        
     }
 }

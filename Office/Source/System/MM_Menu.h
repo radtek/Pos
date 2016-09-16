@@ -359,25 +359,25 @@ public:
 class TNameAndKey: public TDBKey
 {
 public:
-   TNameAndKey( __int32 inKey, AnsiString inName );
+   TNameAndKey( __int32 inKey, WideString inName );
 
-   AnsiString Name;
+   WideString Name;
 };
 //---------------------------------------------------------------------------
 class TSizeRecipeInfo : public TDBKey
 {
 public:
-	AnsiString	Stock_Code;
+	WideString	Stock_Code;
 	double		Qty;
 	Currency	Stock_GST_Percent;
 	Currency	Stock_Unit_Cost;
-	AnsiString	Stock_Location;
+	WideString	Stock_Location;
 };
 //---------------------------------------------------------------------------
 class TSizeCategoryInfo : public TDBKey
 {
 public:
-	AnsiString	Category;
+	WideString	Category;
 };
 //---------------------------------------------------------------------------
 class TItemSizePriceLevel
@@ -402,7 +402,7 @@ public:
     __int32     Size_Key;
 
 	int			Size_ID;
-	AnsiString	Size_Name;
+	WideString	Size_Name;
 	WideString	Size_Kitchen_Name;
 
    WideString  Size_Handheld_Name;
@@ -426,10 +426,10 @@ public:
 	int			Loc_Sale_Count;
 	double		Loc_Discount_Percent;
     __int32     CategoryKey;
-	AnsiString	Category;
-	AnsiString	Category_Group_Name;
+	WideString	Category;
+	WideString	Category_Group_Name;
 	int			ThirdPartyCodes_Key;
-	AnsiString	Third_Party_Code;
+	WideString	Third_Party_Code;
 
     __int32     PLU;
 
@@ -458,10 +458,10 @@ class TItemSideInfo : public TDBKey
 public:
 
 	int			Master_Item_Key;
-	AnsiString	Course_Name;
+	WideString	Course_Name;
 	int			Item_Key;
 	//int			IOO;
-	AnsiString	Item_Name;
+	WideString	Item_Name;
 	int			Group_Number;
 	int			Max_Select;
 	bool		Allow_Skip;
@@ -635,7 +635,7 @@ public:
 class TLocationsInfo
 {
 public:
-	std::vector<AnsiString> Locations;
+	std::vector<WideString> Locations;
 };
 //---------------------------------------------------------------------------
 enum TMenuType { mtFoodMenu = 0, mtBeverageMenu = 1};
@@ -651,10 +651,10 @@ public:
 class TThirdPartyCodeInfo : public TDBKey
 {
 public:
-	AnsiString Code;
+	WideString Code;
 	__int32    Code_Type;
 	bool	   Visible;
-    AnsiString Description;
+    WideString Description;
 };
 //---------------------------------------------------------------------------
 class TMenuLoad

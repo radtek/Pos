@@ -216,6 +216,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmApplyServiceChargeTax,              TGlobalSettings::Instance().ApplyServiceChargeTax);
             TManagerVariable::Instance().GetProfileInt( DBTransaction, GlobalProfileKey, vmServiceChargeTaxProfileKey,         TGlobalSettings::Instance().ServiceChargeTaxProfileKey);
             TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmServiceChargeTaxRate,               TGlobalSettings::Instance().ServiceChargeTaxRate);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmIsCloudSynced, TGlobalSettings::Instance().IsCloudSyncedForDiscount);
             InitializeMallExportConfig(DBTransaction);
 
         }
@@ -224,6 +225,10 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().XeroUserName	= TManagerVariable::Instance().GetStr(DBTransaction, vmXeroUserName, "");
         TGlobalSettings::Instance().XeroPassword	= TManagerVariable::Instance().GetStr(DBTransaction, vmXeroPassword, "");
         TGlobalSettings::Instance().XeroFolderPath	= TManagerVariable::Instance().GetStr(DBTransaction, vmXeroFolderPath, "");
+        TGlobalSettings::Instance().MYOBMachineName	= TManagerVariable::Instance().GetStr(DBTransaction, vmMYOBMachineName,"");
+        TGlobalSettings::Instance().MYOBUserName	= TManagerVariable::Instance().GetStr(DBTransaction, vmMYOBUserName, "");
+        TGlobalSettings::Instance().MYOBPassword	= TManagerVariable::Instance().GetStr(DBTransaction, vmMYOBPassword, "");
+        TGlobalSettings::Instance().MYOBFolderPath	= TManagerVariable::Instance().GetStr(DBTransaction, vmMYOBFolderPath, "");
         TGlobalSettings::Instance().EnablePhoneOrders = TManagerVariable::Instance().GetBool(DBTransaction, vmEnablePhoneOrders, false);
         TGlobalSettings::Instance().LoyaltyMateEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmLoyaltyMateEnabled, false);
         TGlobalSettings::Instance().ServiceURL = TManagerVariable::Instance().GetStr(DBTransaction, vmServiceURL, "");
@@ -344,7 +349,10 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().IsRunRateBoardEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmRunRateBoardEnabled, false);
         TGlobalSettings::Instance().ShowLargeFonts = TManagerVariable::Instance().GetBool(DBTransaction, vmShowLargeFonts, false);
         TGlobalSettings::Instance().ItemSearch = TManagerVariable::Instance().GetBool(DBTransaction, vmItemSearch, false);
-        TGlobalSettings::Instance().ShowDarkBackground = TManagerVariable::Instance().GetBool(DBTransaction, vmShowDarkBackgroundInPOS, false);
+        TGlobalSettings::Instance().ShowDarkBackground = TManagerVariable::Instance().GetBool(DBTransaction, vmShowDarkBackgroundInPOS, false);        
+	    TGlobalSettings::Instance().IsXeroEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsXeroEnabled, false);
+        TGlobalSettings::Instance().IsMYOBEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsMYOBEnabled, false);
+
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)
@@ -383,6 +391,7 @@ void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransac
     TManagerVariable::Instance().GetProfileStr(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmFTPUserName, TGlobalSettings::Instance().FTPUserName);
     TManagerVariable::Instance().GetProfileStr(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmFTPPassword, TGlobalSettings::Instance().FTPPassword);
     TManagerVariable::Instance().GetProfileStr(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmDLFMallFileName, TGlobalSettings::Instance().DLFMallFileName);
-
+    TManagerVariable::Instance().GetProfileStr(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths);
+    TManagerVariable::Instance().GetProfileBool(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport);
     }
 

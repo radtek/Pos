@@ -43,10 +43,16 @@ int TPointsRulesSetUtils::Compress(TPointsRulesSet &PointsRulesSet)
 
 void TPointsRulesSetUtils::Expand(int BitSet, TPointsRulesSet &PointsRulesSet)
 {
-   if(BitSet & eprAllowedNegitive)                       PointsRulesSet << eprAllowedNegitive;
-   if(BitSet & eprNeverEarnsPoints)                      PointsRulesSet << eprNeverEarnsPoints;
-   if(BitSet & eprEarnsPointsWhileRedeemingPoints)       PointsRulesSet << eprEarnsPointsWhileRedeemingPoints;
-   if(BitSet & eprOnlyEarnsPointsWhileRedeemingPoints)   PointsRulesSet << eprOnlyEarnsPointsWhileRedeemingPoints;
-   if(BitSet & eprNoPointsPurchases)                     PointsRulesSet << eprNoPointsPurchases;
-   if(BitSet & eprNoPointsRedemption)                    PointsRulesSet << eprNoPointsRedemption;
+   if(BitSet & eprAllowedNegitive)
+        PointsRulesSet << eprAllowedNegitive;
+   if(BitSet & eprNeverEarnsPoints)
+        PointsRulesSet << eprNeverEarnsPoints;
+   if(BitSet & eprEarnsPointsWhileRedeemingPoints)
+        PointsRulesSet << eprEarnsPointsWhileRedeemingPoints;
+   if(BitSet & eprOnlyEarnsPointsWhileRedeemingPoints)
+        PointsRulesSet << eprOnlyEarnsPointsWhileRedeemingPoints;
+   if(BitSet & eprNoPointsPurchases)
+        PointsRulesSet << eprNoPointsPurchases;
+   if(BitSet & eprNoPointsRedemption)
+        PointsRulesSet << eprNoPointsRedemption;
 }

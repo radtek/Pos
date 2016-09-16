@@ -132,6 +132,7 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	try
 	{
 		if (AlreadyRunning()) return 0;
+        SysLocale.FarEast = true;
 		Application->Initialize();
 		Application->Title = "MenuMate Office";
 		Application->CreateForm(__classid(TfrmMain), &frmMain);

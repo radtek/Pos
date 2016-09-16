@@ -609,7 +609,8 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
         {
             grossPrice = order->BillCalcResult.FinalPrice;
         }
-        else if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
+        else if(TGlobalSettings::Instance().MallIndex == AYALAMALL ||
+                TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
         {
             grossPrice += order->BillCalcResult.FinalPrice;
 
@@ -936,7 +937,8 @@ Currency TMallExportUpdateAdaptor::extractGrandTotal( TFinancialDetails financia
             query->Next();
         }
 
-        if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
+        if(TGlobalSettings::Instance().MallIndex == AYALAMALL ||
+           TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
         {
             result = 0;
 
@@ -1071,7 +1073,8 @@ Currency TMallExportUpdateAdaptor::extractTaxExemptSales()
     Currency tax_exempt_total = getTotalTaxExemptSalesExeptSC();
     Currency tax_zero_rated_total = getTotalTaxZeroRatedSalesExeptSC();
 
-    if(TGlobalSettings::Instance().MallIndex == ALPHALANDMALL)
+    if(TGlobalSettings::Instance().MallIndex == ALPHALANDMALL ||
+       TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
     {
         result = tax_exempt_total;
     }
@@ -2772,7 +2775,8 @@ Currency TMallExportUpdateAdaptor::getTotalTaxInclusiveSalesExeptSC()
 
     taxExemptSales = RoundToNearest(extractTaxExemptSales(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
 
-    if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
+    if(TGlobalSettings::Instance().MallIndex == AYALAMALL ||
+       TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
     {
         taxIncSales = (getDailySales() - localTaxes);
         taxIncSales = (taxIncSales - taxExemptSales);
@@ -3215,6 +3219,10 @@ Currency TMallExportUpdateAdaptor::getDailySales()
             }
         }
         result += Surcharge;
+    }
+    else if(TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
+    {
+        result = extractTotalGrossSales() - extractTotalDiscount() - extractTotalRefund() - extractTotalCancelled() - extractTotalSalesTax() - extractTotalServiceCharge();
     }
     else
     {

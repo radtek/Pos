@@ -26,7 +26,7 @@ namespace MenumateServices
 
         }
 
-        private void serviceInstallerXero_AfterInstall(object sender, InstallEventArgs e)
+        private void serviceInstallerAccounting_AfterInstall(object sender, InstallEventArgs e)
         {
 
         }
@@ -36,7 +36,7 @@ namespace MenumateServices
 
         }
 
-        private void serviceInstallerXeroIntegration_AfterInstall(object sender, InstallEventArgs e)
+        private void serviceInstallerAccountingIntegration_AfterInstall(object sender, InstallEventArgs e)
         {
 
         }

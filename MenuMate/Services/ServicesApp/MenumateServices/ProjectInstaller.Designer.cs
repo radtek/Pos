@@ -31,7 +31,7 @@ namespace MenumateServices
         private void InitializeComponent()
         {
             this.serviceProcessInstaller = new System.ServiceProcess.ServiceProcessInstaller();
-            this.serviceInstallerXero = new System.ServiceProcess.ServiceInstaller();
+            this.serviceInstallerAccounting = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerLoyaltyMate = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerWebMate = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerChefMate = new System.ServiceProcess.ServiceInstaller();
@@ -48,13 +48,13 @@ namespace MenumateServices
             this.serviceProcessInstaller.Username = null;
             this.serviceProcessInstaller.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.serviceProcessInstaller_AfterInstall);
             // 
-            // serviceInstallerXero
+            // serviceInstallerAccounting
             // 
-            this.serviceInstallerXero.DelayedAutoStart = true;
-            this.serviceInstallerXero.Description = "Menumate Xero server";
-            this.serviceInstallerXero.DisplayName = "Menumate Xero";
-            this.serviceInstallerXero.ServiceName = "MenumateServiceXero";
-            this.serviceInstallerXero.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            this.serviceInstallerAccounting.DelayedAutoStart = true;
+            this.serviceInstallerAccounting.Description = "Menumate Accounting server";
+            this.serviceInstallerAccounting.DisplayName = "Menumate Accounting";
+            this.serviceInstallerAccounting.ServiceName = "MenumateServiceAccounting";
+            this.serviceInstallerAccounting.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // serviceInstallerLoyaltyMate
             // 
@@ -106,18 +106,18 @@ namespace MenumateServices
             this.serviceInstallerPocketVoucher.ServiceName = "MenumateServicePocketVoucher";
             this.serviceInstallerPocketVoucher.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
-            // serviceInstaller1
+            // serviceInstallerSalesForceIntegration
             // 
-            this.serviceInstallerSalesForceIntegration.ServiceName = "MenumateServiceSalesForce";
             this.serviceInstallerSalesForceIntegration.Description = "Menumate Sales Force";
             this.serviceInstallerSalesForceIntegration.DisplayName = "MenumateServiceSalesForce";
+            this.serviceInstallerSalesForceIntegration.ServiceName = "MenumateServiceSalesForce";
             this.serviceInstallerSalesForceIntegration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
             this.serviceProcessInstaller,
-            this.serviceInstallerXero,
+            this.serviceInstallerAccounting,
             this.serviceInstallerLoyaltyMate,
             this.serviceInstallerWebMate,
             this.serviceInstallerChefMate,
@@ -162,7 +162,7 @@ namespace MenumateServices
         #endregion
 
         private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller;
-        private System.ServiceProcess.ServiceInstaller serviceInstallerXero;
+        private System.ServiceProcess.ServiceInstaller serviceInstallerAccounting;
         private System.ServiceProcess.ServiceInstaller serviceInstallerLoyaltyMate;
         private System.ServiceProcess.ServiceInstaller serviceInstallerWebMate;
         private System.ServiceProcess.ServiceInstaller serviceInstallerChefMate;

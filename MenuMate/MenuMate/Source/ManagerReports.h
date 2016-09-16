@@ -29,15 +29,16 @@ public:
 class TSumPayments
 {
 	public:
-	TSumPayments() : Name(""), Total(0),CashOut(0),Rounding(0),Surcharge(0),Properties(0),Qty(0){}
-	int Properties;
-   int Qty;
-	AnsiString Name;
-	Currency Total;
-	Currency CashOut;
-	Currency Surcharge;
-	Currency Rounding;
-	std::map<int, Currency> Points;
+        TSumPayments();
+        int Properties;
+        int Qty;
+        AnsiString Name;
+        Currency Total;
+        Currency CashOut;
+        Currency Surcharge;
+        Currency Rounding;
+        std::map<int, Currency> Points;
+        bool IsLoyaltyVoucher();
 };
 
 //<Cobb Loaf (small)> <Totals for this Item>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Media;
 using Chefmate.Core.Enums;
 
@@ -24,6 +25,24 @@ namespace Chefmate.Core.Model
             DisplayAttributes = new DisplayAttributes();
             DisplayAttributes.BackGroundColor = ChefmateConstants.NormalGroupColor;
             Items = new ObservableCollection<Item>();
+        }
+
+        public Group(Group inGroup) : this()
+        {
+            GroupKey = inGroup.GroupKey;
+            GroupPosKey = inGroup.GroupPosKey;
+            OrderGroupKey = inGroup.OrderGroupKey;
+            DisplayOrder = inGroup.DisplayOrder;
+            GroupName = inGroup.GroupName;
+            GroupDisplayName = inGroup.GroupDisplayName;
+            IsVisible = inGroup.IsVisible;
+            BeenSentToOutput = inGroup.BeenSentToOutput;
+            CalledAway = inGroup.CalledAway;
+            OrderStatus = inGroup.OrderStatus;
+            GroupType = inGroup.GroupType;
+            OrderKey = inGroup.OrderKey;
+            CompletionTime = inGroup.CompletionTime;
+            DisplayAttributes = new DisplayAttributes(inGroup.DisplayAttributes);
         }
 
         #region Public Members
@@ -81,7 +100,7 @@ namespace Chefmate.Core.Model
                 if (_calledAway)
                 {
                     DisplayAttributes.IsBlinkingEnable = true;
-                   
+
                 }
             }
         }
@@ -111,6 +130,28 @@ namespace Chefmate.Core.Model
                 OnPropertyChanged("GroupType");
             }
         }
+        public int OrderKey
+        {
+            get { return _orderKey; }
+            set
+            {
+                _orderKey = value;
+                OnPropertyChanged("OrderKey");
+            }
+        }
+        public DateTime CompletionTime { get; set; }
+        public DisplayAttributes DisplayAttributes
+        {
+            get
+            {
+                return _displayAttributes;
+            }
+            set
+            {
+                _displayAttributes = value;
+                OnPropertyChanged("DisplayAttributes");
+            }
+        }
         public ObservableCollection<Item> Items
         {
             get
@@ -134,28 +175,18 @@ namespace Chefmate.Core.Model
                     OrderKey = _order.OrderKey;
             }
         }
-        public int OrderKey
-        {
-            get { return _orderKey; }
-            set
-            {
-                _orderKey = value;
-                OnPropertyChanged("OrderKey");
-            }
-        }
-        public DateTime CompletionTime { get; set; }
-        public DisplayAttributes DisplayAttributes
-        {
-            get
-            {
-                return _displayAttributes;
-            }
-            set
-            {
-                _displayAttributes = value;
-                OnPropertyChanged("DisplayAttributes");
-            }
-        }
+
         #endregion
+
+        public double GetGroupActualHeight()
+        {
+            var groupHeight = DisplayAttributes.IsHeaderVisible ? ChefmateConstants.UnitHeight : 0;
+            foreach (var item in Items)
+            {
+                var itemHeight = item.GetItemActualHeight();
+                groupHeight += itemHeight;
+            }
+            return groupHeight;
+        }
     }
 }

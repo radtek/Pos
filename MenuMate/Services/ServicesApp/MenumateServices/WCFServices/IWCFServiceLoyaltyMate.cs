@@ -15,42 +15,36 @@ namespace MenumateServices.WCFServices
     {
         // Member Operations
         [OperationContract]
-        LoyaltyMemberResponse SaveMember(string inSyndicateCode,MemberInfo inInfo);
+        LoyaltyMemberResponse SaveMember(string inSyndicateCode, MemberInfo inInfo);
 
         [OperationContract]
-        LoyaltyResponse DeleteMember(string inSyndicateCode,string inUniqueId);
+        LoyaltyMemberResponse GetMemberByUniqueId(string inSyndicateCode, RequestInfo requestInfo);
 
         [OperationContract]
-        LoyaltyMemberResponse GetMemberByUniqueId(string inSyndicateCode, string inUniqueId);
+        LoyaltyMemberResponse GetMemberByCardCode(string inSyndicateCode, RequestInfo requestInfo);
 
         [OperationContract]
-        LoyaltyMemberResponse GetMemberByCardCode(string inSyndicateCode, string inMemberCode);
+        LoyaltyMemberResponse GetMemberByEmail(string inSyndicateCode, RequestInfo requestInfo);
 
         [OperationContract]
-        LoyaltyMemberResponse GetMemberByEmail(string inSyndicateCode, string inMemberEmail);
+        LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode);
 
         [OperationContract]
-        LoyaltyMemberListResponse GetMemberList(string inSyndicateCode);
+        LoyaltyResponse PostTransaction(string inSyndicateCode, TransactionInfo transaction);
 
         [OperationContract]
-        LoyaltyResponse PostTransaction(string inSyndicateCode,TransactionInfo transaction);
+        LoyaltyCompanyResponse GetCompanyInformation(string inSyndicateCode);
 
         [OperationContract]
-        LoyaltyTierResponse SaveTierLevel(string inSyndicateCode,TierLevelInfo inInfo);
+        LoyaltyGiftCardResponse GetGiftCardBalance(string inSyndicateCode, RequestInfo requestInfo);
 
         [OperationContract]
-        LoyaltyResponse DeleteTierLevel(string inSyndicateCode,int tierLevelId);
+        LoyaltyVoucherResponse GetPocketVoucherDetail(string inSyndicateCode, RequestInfo requestInfo);
 
         [OperationContract]
-        LoyaltyTierResponse GetTierLevel(string inSyndicateCode,int tierId);
-      
-        [OperationContract]
-        LoyaltyTierListResponse GetAllTierLevel(string inSyndicateCode);
+        LoyaltyResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction);
 
         [OperationContract]
-        LoyaltyPointsInfoResponse GetPointsInRange(string inSyndicateCode,PointsInfo inInfo);
-
-        [OperationContract]
-        LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId,string memberCardCode);
+        LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo);
     }
 }

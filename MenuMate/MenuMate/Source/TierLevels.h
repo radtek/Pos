@@ -23,29 +23,27 @@
 class TfrmTierLevel : public TZForm
 {
 __published:	// IDE-managed Components
-	TPanel *pnlMajor;
-        TTouchGrid *tgridSelection;
-	TPanel *pnlMinor;
-	TTouchBtn *btnClose;
-	TTouchBtn *btnAdd;
-	TTouchBtn *btnEdit;
-	TTouchBtn *btnDelete;
-        TStaticText *lbeHeader;
-    TTouchBtn *btnSync;
-        void __fastcall FormShow(TObject *Sender);
-	void __fastcall FormResize(TObject *Sender);
-	void __fastcall btnAddMouseClick(TObject *Sender);
-	void __fastcall btnEditMouseClick(TObject *Sender);
-	void __fastcall btnDeleteMouseClick(TObject *Sender);
-	void __fastcall btnCloseMouseClick(TObject *Sender);
-        void __fastcall tgridSelectionMouseClick(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, TGridButton *GridButton);
-    void __fastcall btnSyncMouseClick(TObject *Sender);
+    TPanel *pnlMajor;
+    TTouchGrid *tgridSelection;
+    TPanel *pnlMinor;
+    TTouchBtn *btnClose;
+    TTouchBtn *btnAdd;
+    TTouchBtn *btnEdit;
+    TTouchBtn *btnDelete;
+    TStaticText *lbeHeader;
+    void __fastcall FormShow(TObject *Sender);
+    void __fastcall FormResize(TObject *Sender);
+    void __fastcall btnAddMouseClick(TObject *Sender);
+    void __fastcall btnEditMouseClick(TObject *Sender);
+    void __fastcall btnDeleteMouseClick(TObject *Sender);
+    void __fastcall btnCloseMouseClick(TObject *Sender);
+    void __fastcall tgridSelectionMouseClick(TObject *Sender, TMouseButton Button,
+                                             TShiftState Shift, TGridButton *GridButton);
 private:	// User declarations
-	Database::TDBControl &DBControl;
-        void PopulateTierLevels();
-        int SelectedTierKey;
-        void DeleteTier();
+    Database::TDBControl &DBControl;
+    void PopulateTierLevels();
+    int SelectedTierKey;
+    void DeleteTier();
 public:		// User declarations
 	__fastcall TfrmTierLevel(TComponent* Owner, Database::TDBControl &inDBControl);
         __fastcall ~TfrmTierLevel();

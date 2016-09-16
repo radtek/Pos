@@ -228,7 +228,7 @@ void TMMTransactionRecovery::savePaymentTypesInfoToFile( TPaymentTransaction &Pa
     for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
     {
          TPayment *Payment = PaymentTransaction.PaymentGet(i);
-         PaymentTypesCsv.Add(Payment->Name + "," + IntToStr(Payment->Properties) + "," + IntToStr(Payment->Colour) + "," + IntToStr
+         PaymentTypesCsv.Add(Payment->Name + "," + AnsiString(Payment->Properties) + "," + IntToStr(Payment->Colour) + "," + IntToStr
              (Payment->DisplayOrder) + "," + FloatToStrF(Payment->PercentAdjust, ffGeneral, 15,
                 0) + "," + FloatToStrF(Payment->AmountAdjust, ffGeneral, 15, 0) + "," + Payment->AdjustmentReason + "," + IntToStr
              (Payment->GroupNumber) + "," + CurrToStr(Payment->GetPay()) + "," + CurrToStr(Payment->GetCashOut()) + "," + CurrToStr

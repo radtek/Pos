@@ -22,7 +22,8 @@ public:
 protected:
 
     void AddTitleWithColumn(TPrintout* printOut, AnsiString title1, AnsiString title2);
-    AnsiString GetSalesDetails();
+    int GetSalesDetails();
+    UnicodeString FixDecimalPlaces(Currency AmountTotal);
 
 private:
     DataFormatUtilities* dataFormatUtilities;

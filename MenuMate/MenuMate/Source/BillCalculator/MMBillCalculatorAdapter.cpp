@@ -114,9 +114,6 @@ TPriceInfo TMMBillCalculatorAdapter::ConvertItemCompleteToPriceInfo( TItemMinorC
     for( int i = 0; i < inOrderItem->Discounts.size(); i++ )
     {
         TDiscount discount = inOrderItem->Discounts[i];
-        if(discount.Mode == DiscModePoints)
-          continue;
-
         if( IsRefundedOrder( inOrderItem ))
         {
          discount.Amount  =-1*discount.Amount;
@@ -196,13 +193,21 @@ TDiscountInfo TMMBillCalculatorAdapter::ConvertDiscountToDiscountInfo( TDiscount
     discountInfo.Percentage           = fabs(inDiscount->PercentAmount);
     discountInfo.Priority             = inDiscount->Priority;
     discountInfo.RecalcPriceWithTaxAfterDiscount = inDiscount->IsPersonWithDisabilityDiscount();
-
+    discountInfo.DiscountCode = inDiscount->DiscountCode;
+    discountInfo.IsCloudDiscount = inDiscount->IsCloudDiscount;
+    discountInfo.DailyUsageAllowedPerMember = inDiscount->DailyUsageAllowedPerMember;
+    discountInfo.MembersOnly = inDiscount->MembersOnly;
     setDiscountGroupListFromList( inDiscount->DiscountGroupList, discountInfo );
 
     switch ( inDiscount->Mode )
     {
+        case DiscModePoints:
+            discountInfo.Value        = 0;
+            discountInfo.DiscountType = dtDiscount;
+            discountInfo.DiscountWay  = dwMoney;
         case DiscModeItem:
         case DiscModeCurrency:
+        case DiscModeCombo:
             discountInfo.Value        = ( inDiscount->Amount < 0 ) ? ( inDiscount->Amount * -1 ) : inDiscount->Amount;
             discountInfo.DiscountType = ( inDiscount->Amount < 0 ) ? dtSurcharge : dtDiscount;
             discountInfo.DiscountWay  = dwMoney;
@@ -212,7 +217,6 @@ TDiscountInfo TMMBillCalculatorAdapter::ConvertDiscountToDiscountInfo( TDiscount
             discountInfo.DiscountWay  = dwPercentage;
             break;
         case DiscModeSetPrice: // combo,deals and set prices works the same way
-        case DiscModeCombo:
         case DiscModeDeal:
             discountInfo.Value        = inDiscount->Amount;
             discountInfo.DiscountType = dtDiscount;

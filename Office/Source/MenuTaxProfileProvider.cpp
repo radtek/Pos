@@ -124,7 +124,7 @@ TaxProfileMap TMenuTaxProfileProvider::loadTaxProfiles( TLoadMenu* inLoadMenu )
 TaxProfile* TMenuTaxProfileProvider::createTaxProfileAtIndex( __int32 inIndex, TLoadMenu* inLoadMenu )
 {
    __int32    tpKey;
-   AnsiString tpName;
+   WideString tpName;
    Currency   tpRate;
    __int32    tpType;
    __int32    tpPriority;

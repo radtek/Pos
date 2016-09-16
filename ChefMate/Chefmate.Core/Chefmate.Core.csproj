@@ -58,6 +58,7 @@
     <Compile Include="Model\Option.cs" />
     <Compile Include="Model\Order.cs" />
     <Compile Include="Model\DisplayAttributes.cs" />
+    <Compile Include="Model\OrderGuiIndex.cs" />
     <Compile Include="Model\Settings.cs" />
     <Compile Include="Model\Side.cs" />
     <Compile Include="Model\Terminal.cs" />

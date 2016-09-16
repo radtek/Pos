@@ -21,6 +21,7 @@ private:
     TMembership* _memberShip;
     DataFormatUtilities* dataFormatUtilities;
     DataCalculationUtilities* dataCalculationUtilities;
+
 };
 
 

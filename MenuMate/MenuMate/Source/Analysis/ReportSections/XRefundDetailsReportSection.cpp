@@ -16,6 +16,8 @@ XRefundDetailsReportSection::~XRefundDetailsReportSection()
 
 void XRefundDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+    if(!printOut->BlindBalanceUsed)
+        return;
     TStringList *_creditServerList = new TStringList;
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
 

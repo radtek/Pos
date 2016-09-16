@@ -40,10 +40,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
     </Style>
-    <Style x:Key="CourseLable" TargetType="{x:Type Label}">
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="FontWeight" Value="Bold"/>
-    </Style>
+   
     <Style x:Key="HeaderTopStyle" TargetType="{x:Type Label}">
         <Setter Property="Background" Value="#F09422"/>
         <Setter Property="Height" Value="5"/>
@@ -76,9 +73,17 @@
     </Style>
 
     <!--TextBlock Style-->
+    <Style x:Key="CourseLable" TargetType="{x:Type TextBlock}">
+        <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+        <Setter Property="TextWrapping" Value="Wrap"></Setter>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="MaxHeight" Value="50"></Setter>
+    </Style>
     <Style x:Key="ItemLable" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontSize" Value="15"></Setter>
         <Setter Property="Text" Value="{Binding Name}"></Setter>
+        <Setter Property="TextWrapping" Value="Wrap"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="MaxHeight" Value="50"></Setter>
         <Style.Triggers>
             <DataTrigger Binding="{Binding OrderStatus}" Value="{x:Static enums:OrderStatus.Bumped}">
                 <Setter Property="TextBlock.TextDecorations" >
@@ -108,7 +113,7 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <DataTrigger Binding="{Binding DisplayAttributes.IsTransferredItem}" Value="1">
+            <DataTrigger Binding="{Binding DisplayAttributes.IsOriginalItem}" Value="False">
                 <Setter Property="TextBlock.TextDecorations" >
                     <Setter.Value>
                         <TextDecorationCollection>
@@ -125,7 +130,10 @@
         </Style.Triggers>
     </Style>
     <Style x:Key="SideLable" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontSize" Value="15"></Setter>
+        <Setter Property="MaxHeight" Value="50"></Setter>
+        <Setter Property="Height" Value="50"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="TextWrapping" Value="Wrap"></Setter>
         <Style.Triggers>
             <DataTrigger Binding="{Binding ItemStatus}" Value="{x:Static enums:OrderStatus.Bumped}">
                 <Setter Property="TextBlock.TextDecorations" >
@@ -141,7 +149,7 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <DataTrigger Binding="{Binding DisplayAttributes.IsTransferredItem}" Value="1">
+            <DataTrigger Binding="{Binding DisplayAttributes.IsOriginalItem}" Value="False">
                 <Setter Property="TextBlock.TextDecorations" >
                     <Setter.Value>
                         <TextDecorationCollection>
@@ -159,7 +167,10 @@
 
     </Style>
     <Style x:Key="OptionLable" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontSize" Value="15"></Setter>
+        <Setter Property="Height" Value="50"></Setter>
+        <Setter Property="MaxHeight" Value="50"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="TextWrapping" Value="Wrap"></Setter>
         <Style.Triggers>
             <DataTrigger Binding="{Binding ItemStatus}" Value="{x:Static enums:OrderStatus.Bumped}">
                 <Setter Property="TextBlock.TextDecorations" >
@@ -175,7 +186,7 @@
                     </Setter.Value>
                 </Setter>
             </DataTrigger>
-            <DataTrigger Binding="{Binding DisplayAttributes.IsTransferredItem}" Value="1">
+            <DataTrigger Binding="{Binding DisplayAttributes.IsOriginalItem}" Value="False">
                 <Setter Property="TextBlock.TextDecorations" >
                     <Setter.Value>
                         <TextDecorationCollection>
@@ -196,22 +207,28 @@
                 <Setter Property="Foreground" Value="Red"></Setter>
             </DataTrigger>
         </Style.Triggers>
-
     </Style>
     <Style x:Key="NoteLable" TargetType="{x:Type TextBlock}">
+        <Setter Property="MaxHeight" Value="40"></Setter>
+        <Setter Property="Height" Value="40"></Setter>
         <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="Foreground" Value="Red"></Setter>
         <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>
     </Style>
     <Style x:Key="OrderHeaderTextBlock" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontSize" Value="15"/>
         <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="MaxHeight" Value="50"></Setter>
+    </Style>
+    <Style x:Key="OrderHeaderTableTextBlock" TargetType="{x:Type TextBlock}">
+        <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="MaxHeight" Value="25"></Setter>
     </Style>
     <Style x:Key="OrderPopupHeaderTextBlock" TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="White"/>
-        <Setter Property="FontSize" Value="15"/>
         <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -278,6 +295,11 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="LightGray"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                     <Grid>
                         <Border
                                 x:Name="Border"
@@ -298,6 +320,40 @@
     <Style x:Key="FunctionButtonStyle" TargetType="{x:Type Button}">
         <!--<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>-->
         <Setter Property="Background" Value="#F09422"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="18"></Setter>
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <Border
+                                x:Name="Border"
+                                IsEnabled="{TemplateBinding IsEnabled}"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                 BorderThickness="3,3,2,2" CornerRadius="4" />
+
+                        <ContentPresenter
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                RecognizesAccessKey="True" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="LightGray"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="NavigationButtonStyle" TargetType="{x:Type Button}">
+        <!--<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>-->
+        <Setter Property="Background" Value="Black"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -435,7 +491,7 @@
         <Setter Property="Fill" Value="White"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
-    
+
 </ResourceDictionary>
     
     

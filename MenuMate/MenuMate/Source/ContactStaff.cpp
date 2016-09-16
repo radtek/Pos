@@ -142,7 +142,7 @@ TLoginSuccess TContactStaff::TestKeyLogin(Database::TDBTransaction &DBTransactio
 	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 	  IBInternalQuery->Close();
 	  IBInternalQuery->SQL->Text =
-		  "Select CONTACTS_KEY,ACCESS_LEVEL from CONTACTS where CONTACT_TYPE = :CONTACT_TYPE and CONTACTS_KEY = :CONTACTS_KEY and PIN = :PIN";
+		  "Select CONTACTS_KEY,NAME,ACCESS_LEVEL from CONTACTS where CONTACT_TYPE = :CONTACT_TYPE and CONTACTS_KEY = :CONTACTS_KEY and PIN = :PIN";
 	  IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = ContactType;
 	  IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = UserInfo.ContactKey;
 	  IBInternalQuery->ParamByName("PIN")->AsString = UserInfo.PIN;
@@ -153,6 +153,7 @@ TLoginSuccess TContactStaff::TestKeyLogin(Database::TDBTransaction &DBTransactio
 		 if (AccessSuccess)
 		 {
 			Success = lsAccepted;
+            TDeviceRealTerminal::Instance().User.Name = IBInternalQuery->FieldByName("NAME")->AsString;
 			TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "TestKeyLogin lsAccepted Found User: " + UserInfo.Name);
 		 }
 		 else

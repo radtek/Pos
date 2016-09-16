@@ -725,4 +725,22 @@ void __fastcall TfrmEditRecipe::NumericEdit1Change(TObject *Sender)
             }
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmEditRecipe::NumericEdit1KeyPress(TObject *Sender,
+      char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmEditRecipe::NumericEdit2KeyPress(TObject *Sender,
+      char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   }
+}
+//---------------------------------------------------------------------------
 

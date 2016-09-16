@@ -95,21 +95,21 @@ int TfrmSelectGlass::Preprocess(bool PickingSetMenuItem)
    tgridItemSizes->ColCount = 0;
 	tgridItemSizes->RowCount = 0;
 
-   tgridItemSizes->ColCount = 4;
-   tgridItemSizes->RowCount = 4;
+   tgridItemSizes->ColCount = 5;
+   tgridItemSizes->RowCount = 5;
 
    for (int i = 0; i < tgridItemSizes->RowCount ; i++)
    {
       for (int j = 0; j < tgridItemSizes->ColCount; j++)
       {
-         TItemSize *Size = Sizes->SizeGet((i*4) + j);
+         TItemSize *Size = Sizes->SizeGet((i*5) + j);
          if(Size != NULL)
          {
             tgridItemSizes->Buttons[i][j]->Visible = true;
             tgridItemSizes->Buttons[i][j]->Caption = Size->GetDecoratedName();
             tgridItemSizes->Buttons[i][j]->DisabledColor = clBtnFace;
             tgridItemSizes->Buttons[i][j]->FontColor = clWhite;
-            tgridItemSizes->Buttons[i][j]->Tag = (i*4) + j;
+            tgridItemSizes->Buttons[i][j]->Tag = (i*5) + j;
 
             if( ((Size->SetMenuMask & SetMenuMask) && PickingSetMenuItem) // Set Menu ItemSize Matches.
                 || ( Size->Available_As_Standard && !PickingSetMenuItem)  ) // Not a set Menu and Available as Standard.
@@ -119,7 +119,7 @@ int TfrmSelectGlass::Preprocess(bool PickingSetMenuItem)
                tgridItemSizes->Buttons[i][j]->Visible = true;
                tgridItemSizes->Buttons[i][j]->Color = clNavy;
                ButtonsEnabled++;
-               AutoSelectedGlass = (i*4) + j;
+               AutoSelectedGlass = (i*5) + j;
 			   ProductCountEnabled = ProductCountEnabled || Size->IsProductCountEnabled();
             }
             else
@@ -148,9 +148,6 @@ int TfrmSelectGlass::Preprocess(bool PickingSetMenuItem)
    }
    return SelectedGlass;
 }
-
-
-
 
 void __fastcall TfrmSelectGlass::tgridItemSizesMouseDown(TObject *Sender,
       TMouseButton Button, TShiftState Shift, TGridButton *GridButton,

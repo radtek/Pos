@@ -69,7 +69,7 @@ STATUSREPORT_BOTTOM, "</table> \
 HTML_START, "<html> \
 	<head> \
 	<title>%TITLE%</title> \
-	<meta http-equiv=""Content-Type"" content=""text/html; charset=iso-8859-1""> \
+	<meta http-equiv=""Content-Type"" content=""text/html; charset=ANSI_CHARSET""> \
    <STYLE TYPE=""text/css""> \
    <!-- \
    body {overflow:hidden} \

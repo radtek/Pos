@@ -25,6 +25,7 @@ public:
 	static void UpdateOrder(Database::TDBTransaction &DBTransaction,TItemMinorComplete *Order);
 	//	__int64 SplitOrder(Database::TDBTransaction &DBTransaction,__int64 OrderKey, Currency ValueRequired);
 	static __int64 SplitOrder(Database::TDBTransaction &DBTransaction,__int64 OrderKey, int WaysToSplit);
+    static __int64 SplitOrderToQuantity(Database::TDBTransaction &DBTransaction,__int64 OrderKey, double quantityToSplit);
 	//	TItemComplete *SplitOrder(Database::TDBTransaction &DBTransaction,TItemComplete *Order, Currency ValueRequired);
 
 	static void DeleteOrderDiscounts(Database::TDBTransaction &DBTransaction,TItemMinorComplete * Order);
@@ -55,7 +56,7 @@ public:
 	static void LoadPickNMixOrder(Database::TDBTransaction &DBTransaction,int OrderKey,TPnMOrder *Order);
 
 	static void LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,int TabKey, std::vector<TPnMOrder> &Orders);
-	static void LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,int TabKey, std::map<__int64,TPnMOrder> &Orders, bool SelectingItems = false);
+	static double LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTransaction,int TabKey, std::map<__int64,TPnMOrder> &Orders, bool SelectingItems = false);
 	static void LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,std::set<__int64> &OrderKeys, std::map<__int64,TPnMOrder> &Orders);
 
 	static void GetOrdersFromOrderKeys(Database::TDBTransaction &DBTransaction,TList *Orders, std::set<__int64> OrderKeys);
@@ -139,7 +140,7 @@ public:
     static Currency GetPriceForPoints(Database::TDBTransaction &DBTransaction,TItemComplete *Order);
     static void UpdateOrderTableDlinkingWithClipp(Database::TDBTransaction &dbTransaction,long SourceKey);
     static void UpdateTabNameInOrder(Database::TDBTransaction &DBTransaction,long SourceKey, UnicodeString clipTabName,bool isTabSelected);
-    static int CheckItemAvailability(Database::TDBTransaction &DBTransaction, int itemKey, AnsiString sizeName);
+    static double CheckItemAvailability(Database::TDBTransaction &DBTransaction, int itemKey, AnsiString sizeName);
 };
 //---------------------------------------------------------------------------
 #endif

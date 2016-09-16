@@ -12,7 +12,8 @@
 #include "ManagerSyndCode.h"
 #include "DBTierLevel.h"
 #include "LoyaltyMateWSDL.h"
-
+#include "Discount.h"
+#include "LoyaltyMateUtilities.h"
 //---------------------------------------------------------------------------
 // enums and service reponse classes that maps the information from responses from wcf service
 //---------------------------------------------------------------------------
@@ -25,12 +26,47 @@ enum MMLoyaltyResponseCode
   DeleteMemberFailed,
   GetMemberFailed,
   PostTransactionFailed,
-  CreateTierFailed,
-  UpdateTierFailed,
-  DeleteTierFailed,
-  FailedDueToException,
   MemberNotExist,
+  CompanySyncFailed,
+  InvalidGiftVoucher,
+  InvalidPocketVoucher,
+  TransactionFailed,
+  GetGiftCardFailed,
+  GetPocketVoucherFailed,
+  FailedDueToException,
 };
+
+enum  MMDiscountType
+{
+  Percent,
+  Dollar,
+  Combo,
+  ItemMode,
+  SetPrice
+};
+
+enum MMDisplayOption
+{
+  FixedDescriptionAndAmount,
+  PromptForDescription,
+  PromptForAmount,
+  PromptForDescriptionAndAmount
+};
+
+enum MMImplicationType
+{
+  Discount,
+  Surcharge,
+  Point
+};
+
+enum MMProductPriority
+{
+  LowestPriceFirst,
+  HighestPriceFirst,
+  NotApllicable
+};
+
 
 typedef std::pair <AnsiString, AnsiString> TNamePair;
 using Database::TDBControl;
@@ -45,17 +81,8 @@ class MMLoyaltyServiceResponse
         MMLoyaltyResponseCode ResponseCode;
         AnsiString            UUID;
 
-        MMLoyaltyServiceResponse(
-                bool                  inSuccess,
-                AnsiString            inMessage,
-                AnsiString            inDescription,
-                MMLoyaltyResponseCode inResponseCode,
-                AnsiString            inUUID)
-            : IsSuccesful(inSuccess),
-              Message(inMessage),
-              Description(inDescription),
-              ResponseCode(inResponseCode),
-              UUID(inUUID)
+        MMLoyaltyServiceResponse(bool  inSuccess,AnsiString inMessage,AnsiString  inDescription,MMLoyaltyResponseCode inResponseCode,AnsiString inUUID)
+            : IsSuccesful(inSuccess),Message(inMessage),Description(inDescription),ResponseCode(inResponseCode),UUID(inUUID)
         {
         }
 };
@@ -71,14 +98,10 @@ class TLoyaltyMateInterface
         // Private Members
         _di_IWCFServiceLoyaltyMate loyaltymateClient; // WCF client
         int siteId; // site id for the menumate database
-
         bool FAutoSync;
-
-        TMembership *membership;
-
     public:
 
-         // Constructor and Destructor
+        // Constructor and Destructor
         TLoyaltyMateInterface();
         ~TLoyaltyMateInterface();
 
@@ -87,58 +110,36 @@ class TLoyaltyMateInterface
 
         // creates a member in the cloud
         // returns a globally unique identifier so the POS can store it on the card and in the database for future use
-        MMLoyaltyServiceResponse CreateMember(
-									TSyndCode      syndicateCode,
-									TMMContactInfo contactInfo,
-                                    AnsiString     &uuid );
+        MMLoyaltyServiceResponse CreateMember(TSyndCode syndicateCode,TMMContactInfo contactInfo,AnsiString &uuid );
 
         // updates member details using a uuid
-        MMLoyaltyServiceResponse UpdateMember(
-									TSyndCode             syndicateCode,
-									AnsiString            uuid,
-									const TMMContactInfo* const contactInfo);
+        MMLoyaltyServiceResponse UpdateMember(TSyndCode syndicateCode,AnsiString uuid,const TMMContactInfo* const contactInfo);
 
         // deletes a member in the cloud
-        MMLoyaltyServiceResponse DeleteMember(
-                                    TSyndCode  syndicateCode,
-                                    AnsiString uuid );
+        MMLoyaltyServiceResponse DeleteMember(TSyndCode  syndicateCode,AnsiString uuid );
 
         // retrieve member details using a uuid
-        MMLoyaltyServiceResponse GetMemberDetails(
-                                    TSyndCode       syndicateCode,
-                                    AnsiString      uuid,
-                                    TMMContactInfo &contactInfo,
-                                    bool replacePoints = false );
+        MMLoyaltyServiceResponse GetMemberDetails(TSyndCode syndicateCode,AnsiString uuid,TMMContactInfo &contactInfo,bool replacePoints = false );
 
-       // retrieve member details using a uuid
-        MMLoyaltyServiceResponse GetMemberDetailsByCode(
-                                    TSyndCode       syndicateCode,
-                                    AnsiString      memberCode,
-                                    TMMContactInfo &contactInfo,
-                                    bool replacePoints = false );
+        // retrieve member details using a uuid
+        MMLoyaltyServiceResponse GetMemberDetailsByCode(TSyndCode syndicateCode,AnsiString memberCode,TMMContactInfo &contactInfo,bool replacePoints = false );
 
-       MMLoyaltyServiceResponse GetMemberDetailsByEmail(
-                                    TSyndCode       syndicateCode,
-                                    AnsiString      memberEmail,
-                                    TMMContactInfo &contactInfo,
-                                    bool replacePoints = false );
+        // retrieve member details using a uuid
+        MMLoyaltyServiceResponse GetMemberDetailsByEmail(TSyndCode syndicateCode,AnsiString memberEmail,TMMContactInfo &contactInfo,bool replacePoints = false );
 
         // posts members transactions on to the cloud
-        MMLoyaltyServiceResponse PostTransaction(
-                                            TSyndCode syndicateCode,
-                                            AnsiString uuid,
-                                            Currency pointsBalance,
-                                            Currency pointsDelta,
-                                            TDateTime occurredDate,
-                                            int pointsType);
+        MMLoyaltyServiceResponse PostTransaction(TSyndCode syndicateCode,AnsiString uuid,Currency pointsBalance,Currency pointsDelta,
+                                                 TDateTime occurredDate,int pointsType,AnsiString inInvoiceNumber);
 
-        // Save contact info to DB. No need for calling this method
-        // if AutoSync = true
-        void SyncContactInfo( const TMMContactInfo* const inContactInfo );
+        // Get gift voucher balance
+        MMLoyaltyServiceResponse GetGiftVoucherBalance(TSyndCode syndicateCode,AnsiString giftVoucherNumber,double &balance);
 
-        // Save points to DB. No need for calling this method
-        // if AutoSync = true
-        void SyncPoints( const TMMContactInfo* const inContactInfo );
+        // Get pocket voucher Detail
+        MMLoyaltyServiceResponse GetPocketVoucherDetail(TSyndCode syndicateCode,AnsiString pocketVoucherNumber,TVoucherDetail &VoucherDetail);
+
+        MMLoyaltyServiceResponse ProcessVoucherTransaction(TSyndCode syndicateCode,TVoucherUsageDetail inVoucherUsageDetail);
+
+        MMLoyaltyServiceResponse ReleaseVouchers(TSyndCode syndicateCode,TReleasedVoucherDetail inReleasedVoucherDetail);
 
         // Public Properties
         __property bool AutoSync =
@@ -146,109 +147,79 @@ class TLoyaltyMateInterface
 	        read = FAutoSync, write = FAutoSync
         };
 
-        MMLoyaltyServiceResponse CreateTier(TSyndCode syndicateCode,TTierLevel *TierLevel);
-        MMLoyaltyServiceResponse UpdateTier(TSyndCode syndicateCode,TTierLevel *TierLevel);
-        MMLoyaltyServiceResponse DeleteTier(TSyndCode syndicateCode,TTierLevel *TierLevel);
-        MMLoyaltyServiceResponse GetTier(TSyndCode syndicateCode,TTierLevel *TierLevel);
-        MMLoyaltyServiceResponse SyncTierLevels(TSyndCode syndicateCode);
+        MMLoyaltyServiceResponse SyncCompanyDetails(TSyndCode syndicateCode);
         MMLoyaltyServiceResponse UpdateMemberCardCode(TSyndCode syndicateCode,AnsiString uniqueId,AnsiString memberCardCode);
-        void syncTierLevels(DynamicArray<TierLevelInfo*> tierLevels);
+        void SyncCompanyInfo(CompanyInfo* companyInfo);
+        void SyncTierLevels(Database::TDBTransaction &DBTransaction,DynamicArray<TierLevelInfo*> tierLevels);
+        void SyncDiscounts(Database::TDBTransaction &DBTransaction,DynamicArray<DiscountInfo*> discounts);
+        void ReadPocketVoucherInfo(VoucherInfo* inVoucherInfo,TVoucherDetail& VoucherDetail);
+        void ReadMemberVouchers(DynamicArray<VoucherInfo*> memberVouchers,TMMContactInfo& inContactInfo);
     private:
         // initiates the Loyaltymate WCF Client
-        void initLMClient();
-
-        // initiates the Membership object
-        void initMembership();
+        void InitLMClient();
 
         // initiates the Site ID. Read the value from the DB
-        void initSiteID();
+        void InitSiteID();
 
         // initiates the AutoSync property.
         // AutoSync = true means both the External Key and the Points
         // are synced with their values in the cloud automatically
-        void initAutoSync();
+        void InitAutoSync();
 
-        // initiates the Loyaltymate WCF Client
-        void doneMembership();
 
         // searches through menumate contact table to get the site id
-        int getCurrentSiteId();
+        int GetCurrentSiteId();
 
         // creates the contact name with Loyalty WCF format
-        AnsiString createWCFName( const TMMContactInfo* const contactInfo );
+        AnsiString CreateWCFName( const TMMContactInfo* const contactInfo );
 
         void CreateWcfContactInfo(MemberInfo* inMemberInfo,TMMContactInfo& inContactInfo);
 
         // reads the contact info from the WCF response
-        void readContactInfo(
-					LoyaltyMemberResponse* inWCFResponse,
-					TMMContactInfo&            outContactInfo,
-                    bool                       replacePoints = false );
+        void ReadContactInfo(LoyaltyMemberResponse* inWCFResponse,TMMContactInfo& outContactInfo, bool replacePoints = false );
 
         // reads the contact info list from the WCF member info
-        void readContactInfo(
-					MemberInfo* inMemberInfo,
-					TMMContactInfo& contactInfo,
-                    bool            replacePoints = false );
-
-        // syncs contact info coming with the cloud with the db's
-        void syncContactInfo( const TMMContactInfo* const inContactInfo );
+        void ReadContactInfo(MemberInfo* inMemberInfo,TMMContactInfo& contactInfo,bool replacePoints = false );
 
         // syncs loyaltymate attr coming with the cloud with the db's
-		void syncLoyaltymateAttrs(
-                         const TMMContactInfo* const inContactInfo );
+		void SyncLoyaltymateAttrs(const TMMContactInfo* const inContactInfo );
 
         // updates loyaltymate attr in the db's
-	   bool updateLoyaltymateAttrs(
-                         const TMMContactInfo* const inContactInfo );
+	   bool UpdateLoyaltymateAttrs(const TMMContactInfo* const inContactInfo );
 
         // add loyaltymate attr to the db's
-		void addLoyaltymateAttrs(
-                         const TMMContactInfo* const inContactInfo );
-
-        // syncs contact points coming with the cloud with the db's
-	void syncContactPoints(
-                         const TMMContactInfo* const inContactInfo );
+		void AddLoyaltymateAttrs(const TMMContactInfo* const inContactInfo );
 
         // creates MMResponse from LoyaltyResponse
-        MMLoyaltyServiceResponse createMMResponse(
-                                    LoyaltyResponse* inWCFResponse );
+        MMLoyaltyServiceResponse CreateMMResponse(LoyaltyResponse* inWCFResponse );
 
         // creates MMResponse from LoyaltyMemberResponse
-        MMLoyaltyServiceResponse createMMResponse(
-                                    LoyaltyMemberResponse* inWCFResponse );
+        MMLoyaltyServiceResponse CreateMMResponse(LoyaltyMemberResponse* inWCFResponse );
 
-        // creates MMResponse from LoyaltyMemberListResponse
-        MMLoyaltyServiceResponse createMMResponse(
-                                    LoyaltyMemberListResponse* inWCFResponse );
+        MMLoyaltyServiceResponse CreateMMResponse(LoyaltyCompanyResponse* inWCFResponse );
 
-        MMLoyaltyServiceResponse createMMResponse(
-                            LoyaltyTierResponse* inWCFResponse );
+        MMLoyaltyServiceResponse CreateMMResponse(LoyaltyGiftCardResponse* inWCFResponse );
 
-        MMLoyaltyServiceResponse createMMResponse(
-                            LoyaltyPointsInfoResponse* inWCFResponse );
-
-        MMLoyaltyServiceResponse createMMResponse(
-                            LoyaltyTierListResponse* inWCFResponse );
+        MMLoyaltyServiceResponse CreateMMResponse(LoyaltyVoucherResponse* inWCFResponse );
 
         // creates MMResponse from an exception message
-        MMLoyaltyServiceResponse createExceptionFailedResponse(
-                                    AnsiString inMessage );
+        MMLoyaltyServiceResponse CreateExceptionFailedResponse(AnsiString inMessage );
 
 		// generates a table key
-		int generateTableKey( const AnsiString inGeneratorName,
-                              TDBControl* const inDBControl );
+		int GenerateTableKey( const AnsiString inGeneratorName,TDBControl* const inDBControl );
 
 		// executes an SQL query
-		int executeQuery(
-                const AnsiString  inGeneratorName,
-                TDBControl* const inDBControl );
+		int ExecuteQuery(const AnsiString  inGeneratorName,TDBControl* const inDBControl );
 
-       // add loyaltymate attr to the db's for tier level
-        void UpdateTierCloudId(const TTierLevel* const inTierInfo );
         int GetTierCloudId(int tierLevel);
         int GetTierLevelFromCloudId(int cloudId);
-        void readTierInfo(TierLevelInfo* inTierInfo,TTierLevel *TierLevel);
+        void ReadTierInfo(TierLevelInfo* inTierInfo,TTierLevel *TierLevel);
+        void ReadDiscountInfo(Database::TDBTransaction &DBTransaction,DiscountInfo* inDiscountInfo,TDiscount& discount);
+        void ExtractModeAndAmount(DiscountInfo* inDiscountInfo,TDiscount& discount);
+        void CreateVoucherPaymentType(Database::TDBTransaction &DBTransaction);
+        void CreateGiftVoucherPaymentType(Database::TDBTransaction &DBTransaction);
+        void  DisableSyncSetting(Database::TDBTransaction &DBTransaction);
+        RequestInfo* CreateRequest(AnsiString requestKey);
 };
 
 #endif

@@ -322,7 +322,7 @@ void __fastcall TfrmCreateRecipe::IncludeOnClick(TObject *Sender)
 
     PVirtualNode RecipeNode						= NULL;
     TRecipeNodeData *NodeData				= NULL;
-    double temp;
+    double temp = 0;
 
     RecipeNode = vtvStock->AddChild(NULL);
     NodeData = (TRecipeNodeData *)vtvStock->GetNodeData(RecipeNode);
@@ -624,7 +624,7 @@ void TfrmCreateRecipe::UpdateLocationDB(void)
     {
 	    PVirtualNode Node = vtvStock->GetFirst();
         int Stock_Key;
-        double Costs[2];
+        double Costs[2] = {0};
 
 		Query->Close();
 		Query->SQL->Text = "Select Gen_id(Gen_Recipes_Key, 1) From rdb$database";
@@ -866,6 +866,16 @@ void __fastcall TfrmCreateRecipe::NumQuantityClick(TObject *Sender)
         ChangeFont(NumQuantity, eQuantity);
         firstclick[eQuantity] = true;
     }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmCreateRecipe::NumQuantityKeyPress(TObject *Sender,
+      char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   }
 }
 //---------------------------------------------------------------------------
 

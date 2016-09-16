@@ -39,7 +39,8 @@ public:
 	static TListMenu *LoadMenuFromDB(Database::TDBControl &DBControl, const UnicodeString &MenuName, eMenuCommand Command);
 
 	static void SetMenuList(Database::TDBTransaction &DBTransaction, int DeviceKey);
-
+    static int GetOrCreateCloudCategoryGroup(Database::TDBTransaction &DBTransaction);
+    static int GetOrCreateCloudCategory(Database::TDBTransaction &DBTransaction,AnsiString CategoryName);
 };
 
 #endif

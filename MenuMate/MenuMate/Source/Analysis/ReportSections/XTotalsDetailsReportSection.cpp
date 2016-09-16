@@ -17,6 +17,8 @@ XTotalsDetailsReportSection::~XTotalsDetailsReportSection()
 
 void XTotalsDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+    if(!printOut->BlindBalanceUsed)
+      return;
     TTransactionInfo TransactionInfo;
     AnsiString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
 

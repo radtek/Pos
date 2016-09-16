@@ -14,6 +14,16 @@ namespace Chefmate.Core.Extensions
             return collection;
         }
 
+        public static void AddRange<T>(this ObservableCollection<T> list, ObservableCollection<T> itemsToAdd)
+        {
+            foreach (var item in itemsToAdd)
+            {
+                list.Add(item);
+            }
+           
+        }
+
+
         public static void ForEach<T>(this IEnumerable<T> list, Action<T> action)
         {
             if (list == null) return;

@@ -4,7 +4,7 @@ using Chefmate.Core.Enums;
 
 namespace Chefmate.Core.Model
 {
-    public class Settings : ModelBase,ICloneable
+    public class Settings : ModelBase, ICloneable
     {
         private string _newOrderMmSound;
         private string _cancelNoticeMmSound;
@@ -19,6 +19,7 @@ namespace Chefmate.Core.Model
         private int _outputTerminal;
         private int _firstWarningTime;
         private int _secondWarningTime;
+        private int _recallCount;
         private bool _autoHide;
         private bool _bumpOnly;
         private bool _confirmOnRefund;
@@ -30,6 +31,7 @@ namespace Chefmate.Core.Model
         private OutputScope _outputScope;
         private KeypadOperation _keypadOperation;
         private OrderLayout _orderLayout;
+        private int _cmFontSize;
         public Settings()
         {
             GroupType = GroupType.ServingCourse;
@@ -95,6 +97,24 @@ namespace Chefmate.Core.Model
             {
                 _secondWarningTime = value;
                 OnPropertyChanged("SecondWarningTime");
+            }
+        }
+        public int RecallCount
+        {
+            get { return _recallCount; }
+            set
+            {
+                _recallCount = value;
+                OnPropertyChanged("RecallCount");
+            }
+        }
+        public int CmFontSize
+        {
+            get { return _cmFontSize; }
+            set
+            {
+                _cmFontSize = value;
+                OnPropertyChanged("CmFontSize");
             }
         }
         public string DbIpAddress

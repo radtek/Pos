@@ -48,6 +48,7 @@ __published:	// IDE-managed Components
         TTouchBtn *btnChangeCard;
     TTouchBtn *btnLiveTransaction;
     TTouchBtn *btnAssignBarcode;
+    TTouchBtn *btnSync;
 
 	void __fastcall btnOkMouseClick(TObject *Sender);
 	void __fastcall CallAwayMouseClick(TObject *Sender);
@@ -66,6 +67,7 @@ __published:	// IDE-managed Components
 
         void __fastcall btnLiveTransactionMouseClick(TObject *Sender);
     void __fastcall btnAssignBarcodeMouseClick(TObject *Sender);
+    void __fastcall btnSyncMouseClick(TObject *Sender);
 
 private:	// User declarations
 	int BtnSelection;

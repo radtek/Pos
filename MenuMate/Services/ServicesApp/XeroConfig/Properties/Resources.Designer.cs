@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace XeroConfig.Properties {
+namespace AccountingConfig.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace XeroConfig.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("XeroConfig.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AccountingConfig.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -77,6 +77,13 @@ namespace XeroConfig.Properties {
         internal static System.Drawing.Bitmap menumate_logo_shifted {
             get {
                 object obj = ResourceManager.GetObject("menumate_logo_shifted", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap myobapilogo {
+            get {
+                object obj = ResourceManager.GetObject("myobapilogo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -234,23 +234,5 @@ object frmTierLevel: TfrmTierLevel
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnDeleteMouseClick
     end
-    object btnSync: TTouchBtn
-      Left = 8
-      Top = 413
-      Width = 121
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWhite
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ParentColor = True
-      Caption = 'Sync With Cloud'
-      ButtonColor = 8487296
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
-      LatchingProperties = [lkLatchColor, lkStayDown]
-      OnMouseClick = btnSyncMouseClick
-    end
   end
 end

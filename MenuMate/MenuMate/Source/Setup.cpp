@@ -941,7 +941,7 @@ void __fastcall TfrmSetup::cbScalesTypeChange(TObject *Sender)
 void __fastcall TfrmSetup::cbMallLocChange(TObject *Sender)
 {
     ChangeMallType();
-   lbBranchCode->Caption = RenameBranchCode();
+    lbBranchCode->Caption = RenameBranchCode();
     lbSerialNumber->Caption = RenameSerialNumber();
     lbTenantNo->Caption = RenameTenantNumber();
 }
@@ -1031,6 +1031,13 @@ void __fastcall TfrmSetup::edFTPPasswordMouseUp(TObject *Sender, TMouseButton Bu
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TfrmSetup::edConsolidatedDBPathsMouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupConsolidatedPaths();
+}
+//---------------------------------------------------------------------------
+
 void TfrmSetup::ChangeMallType()
 {
     TGlobalSettings::Instance().MallIndex = cbMallLoc->ItemIndex;
@@ -1056,7 +1063,7 @@ void TfrmSetup::SetupTenantNumber()
         TGlobalSettings::Instance().TenantNo = frmTouchKeyboard->KeyboardText;
         SaveCompValueinDBStrUnique(vmTenantNo, TGlobalSettings::Instance().TenantNo); // See Function Description
 	}
-     if(cbMallLoc->ItemIndex !=9)
+
     SaveMESettings();
 }
 //---------------------------------------------------------------------------
@@ -1275,6 +1282,35 @@ void TfrmSetup::SetupFTPPassword()
 }
 //---------------------------------------------------------------------------
 
+void TfrmSetup::SetupConsolidatedPaths()
+{
+  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+	frmTouchKeyboard->MaxLength = 1000;
+	frmTouchKeyboard->AllowCarriageReturn = false;
+	frmTouchKeyboard->StartWithShiftDown = false;
+	frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().ConsolidateReportPaths;
+	frmTouchKeyboard->Caption = "Enter Consolidated Database Paths \n (e.g 192.168.0.1:C:\\Program Files\\MenuMate,)";
+	if (frmTouchKeyboard->ShowModal() == mrOk)
+	{
+        edConsolidatedDBPaths->Text = frmTouchKeyboard->KeyboardText;
+        TGlobalSettings::Instance().ConsolidateReportPaths = frmTouchKeyboard->KeyboardText;
+        SaveCompValueinDBStrUnique(vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths); // See Function Description
+	}
+
+    SaveMESettings();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::cbEnableConsolidatedRepClick(
+TObject *Sender)
+{
+	TGlobalSettings::Instance().EnableConsolidatedReport = cbEnableConsolidatedRep->Checked;
+    SaveCompValueinDBBoolUnique(vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport);
+    edConsolidatedDBPaths->Enabled = cbEnableConsolidatedRep->Checked;
+    edConsolidatedDBPaths->Color = edConsolidatedDBPaths->Enabled ? clWindow : clInactiveCaptionText;
+}
+//---------------------------------------------------------------------------
+
 // This Function is for saving each string component into the DB for every function call
 void TfrmSetup::SaveCompValueinDBStr(vmVariables vmVar, UnicodeString CompName)
 {
@@ -1348,6 +1384,27 @@ void TfrmSetup::ClearCompValueinDBIntUnique(vmVariables vmVar, int CompName, TEd
 }
 //---------------------------------------------------------------------------
 
+void TfrmSetup::SaveCompValueinDBBoolUnique(vmVariables vmVar, bool CompName)
+{
+    Database::TDBTransaction DBTransaction(IBDatabase);
+    DBTransaction.StartTransaction();
+
+    TManagerVariable::Instance().SetProfileBool(DBTransaction, TManagerVariable::Instance().DeviceProfileKey, vmVar, CompName);
+    DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+
+void TfrmSetup::ClearCompValueinDBBoolUnique(vmVariables vmVar, bool CompName, TCheckBox *CompfrmName)
+{
+    Database::TDBTransaction DBTransaction(IBDatabase);
+    DBTransaction.StartTransaction();
+
+    CompfrmName->Checked = CompName;
+    TManagerVariable::Instance().SetProfileBool(DBTransaction, TManagerVariable::Instance().DeviceProfileKey, vmVar, CompName);
+    DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+
 void TfrmSetup::ClearAllComponentValue()
 {
     ClearCompValueinDBStrUnique(vmTenantNo, TGlobalSettings::Instance().TenantNo = "", edTenantNo);
@@ -1362,13 +1419,16 @@ void TfrmSetup::ClearAllComponentValue()
     ClearCompValueinDBStrUnique(vmFTPPath, TGlobalSettings::Instance().FTPPath = "", edFTPPath);
     ClearCompValueinDBStrUnique(vmFTPUserName, TGlobalSettings::Instance().FTPUserName = "", edFTPUserName);
     ClearCompValueinDBStrUnique(vmFTPPassword, TGlobalSettings::Instance().FTPPassword = "", edFTPPassword);
+    ClearCompValueinDBStrUnique(vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths = "", edConsolidatedDBPaths);
+    ClearCompValueinDBBoolUnique(vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport = false, cbEnableConsolidatedRep);
 }
 //---------------------------------------------------------------------------
 
 // This Function is for Enabling and Disabling the Text field of the components
 void TfrmSetup::EnableFieldComponent(bool isMallPathSet, bool isTerminalNoSet, bool isClassCodeSet, bool isTradeCodeSet,
                                      bool isOutletCodeSet, bool isSerialNoSet, bool isTenantNoSet, bool isBranchCodeSet,
-                                     bool isFTPServerSet, bool isFTPPathSet, bool isFTPUserNameSet, bool isFTPPasswordSet)
+                                     bool isFTPServerSet, bool isFTPPathSet, bool isFTPUserNameSet, bool isFTPPasswordSet,
+                                     bool isConsolidatedRepSet, bool isEnableConsolidatedRepSet)
 {
     edMallPath->Enabled = isMallPathSet;
     edMallPath->Color = edMallPath->Enabled ? clWindow : clInactiveCaptionText;
@@ -1397,6 +1457,11 @@ void TfrmSetup::EnableFieldComponent(bool isMallPathSet, bool isTerminalNoSet, b
     edFTPUserName->Color = edFTPUserName->Enabled ? clWindow : clInactiveCaptionText;
     edFTPPassword->Enabled = isFTPPasswordSet;
     edFTPPassword->Color = edFTPPassword->Enabled ? clWindow : clInactiveCaptionText;
+
+    edConsolidatedDBPaths->Enabled = isConsolidatedRepSet;
+    edConsolidatedDBPaths->Color = edConsolidatedDBPaths->Enabled ? clWindow : clInactiveCaptionText;
+    cbEnableConsolidatedRep->Enabled = isEnableConsolidatedRepSet;
+    cbEnableConsolidatedRep->Color = cbEnableConsolidatedRep->Enabled ? clBtnFace : clInactiveCaptionText;
 }
 //---------------------------------------------------------------------------
 
@@ -1434,14 +1499,16 @@ void TfrmSetup::SetSpecificMall(int MallIdx)
         break;
 
         case SHANGRILAMALL:
-            EnableShangrilaComponents();
-
+        EnableShangrilaComponents();
         break;
 
         case DLFMALL:
         EnableDLFMallComponents();
         break;
 
+        case FEDERALLANDMALL:
+        EnableFederalLandComponents();
+        break;
 
         default:
         NoSelectedMall();
@@ -1457,9 +1524,9 @@ void TfrmSetup::NoSelectedMall()
     btnAssignSalesType->Enabled = false;
 
     // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
     EnableFieldComponent(false, false, false, false, false, false, false, false,
-                         false, false, false, false);
+                         false, false, false, false, false, false);
     ClearAllComponentValue();
 }
 //---------------------------------------------------------------------------
@@ -1471,9 +1538,9 @@ void TfrmSetup::EnableSMComponents()
     btnAssignSalesType->Enabled = false;
 
     // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
     EnableFieldComponent(true, true, true, true, true, true, true, true,
-                         false, false, false, false);
+                         false, false, false, false, false, false);
 }
 //---------------------------------------------------------------------------
 
@@ -1484,9 +1551,9 @@ void TfrmSetup::EnableRobinsonComponents()
     btnAssignSalesType->Enabled = false;
 
     // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
     EnableFieldComponent(true, true, false, false, false, false, true, false,
-                         false, false, false, false);
+                         false, false, false, false, false, false);
 
     ClearCompValueinDBStrUnique(vmClassCode, TGlobalSettings::Instance().ClassCode = "", edClassCode);
     ClearCompValueinDBStrUnique(vmTradeCode, TGlobalSettings::Instance().TradeCode = "", edTradeCode);
@@ -1497,6 +1564,8 @@ void TfrmSetup::EnableRobinsonComponents()
     ClearCompValueinDBStrUnique(vmFTPPath, TGlobalSettings::Instance().FTPPath = "", edFTPPath);
     ClearCompValueinDBStrUnique(vmFTPUserName, TGlobalSettings::Instance().FTPUserName = "", edFTPUserName);
     ClearCompValueinDBStrUnique(vmFTPPassword, TGlobalSettings::Instance().FTPPassword = "", edFTPPassword);
+    ClearCompValueinDBStrUnique(vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths = "", edConsolidatedDBPaths);
+    ClearCompValueinDBBoolUnique(vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport = false, cbEnableConsolidatedRep);
 }
 //---------------------------------------------------------------------------
 
@@ -1505,11 +1574,12 @@ void TfrmSetup::EnableAyalaComponents()
     btnResendReport->Visible = true;
     btnRegenReport->Visible = true;
     btnAssignSalesType->Enabled = false;
+    bool EnableConSolidated = TGlobalSettings::Instance().EnableConsolidatedReport;
 
     // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
     EnableFieldComponent(true, true, false, false, false, true, true, true,
-                         false, false, false, false);
+                         false, false, false, false, EnableConSolidated, true);
 
     ClearCompValueinDBStrUnique(vmClassCode, TGlobalSettings::Instance().ClassCode = "", edClassCode);
     ClearCompValueinDBStrUnique(vmTradeCode, TGlobalSettings::Instance().TradeCode = "", edTradeCode);
@@ -1528,9 +1598,9 @@ void TfrmSetup::EnablePowerPlantComponents()
     btnAssignSalesType->Enabled = false;
 
     // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
     EnableFieldComponent(true, false, false, false, false, false, true, true,
-                         false, false, false, false);
+                         false, false, false, false, false, false);
 
     ClearCompValueinDBStrUnique(vmTerminalNo, TGlobalSettings::Instance().TerminalNo = "", edTerminalNo);
     ClearCompValueinDBStrUnique(vmClassCode, TGlobalSettings::Instance().ClassCode = "", edClassCode);
@@ -1541,6 +1611,8 @@ void TfrmSetup::EnablePowerPlantComponents()
     ClearCompValueinDBStrUnique(vmFTPPath, TGlobalSettings::Instance().FTPPath = "", edFTPPath);
     ClearCompValueinDBStrUnique(vmFTPUserName, TGlobalSettings::Instance().FTPUserName = "", edFTPUserName);
     ClearCompValueinDBStrUnique(vmFTPPassword, TGlobalSettings::Instance().FTPPassword = "", edFTPPassword);
+    ClearCompValueinDBStrUnique(vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths = "", edConsolidatedDBPaths);
+    ClearCompValueinDBBoolUnique(vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport = false, cbEnableConsolidatedRep);
 }
 
 //---------------------------------------------------------------------------
@@ -1552,9 +1624,9 @@ void TfrmSetup::EnableCapitalandComponents()
     btnAssignSalesType->Enabled = false;
 
     // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
     EnableFieldComponent(false, false, false, false, false, false, false, true,
-                         true, true, true, true);
+                         true, true, true, true, false, false);
 
     ClearCompValueinDBStrUnique(vmMallPath, TGlobalSettings::Instance().MallPath = "", edMallPath);
     ClearCompValueinDBStrUnique(vmTerminalNo, TGlobalSettings::Instance().TerminalNo = "", edTerminalNo);
@@ -1563,6 +1635,8 @@ void TfrmSetup::EnableCapitalandComponents()
     ClearCompValueinDBStrUnique(vmOutletCode, TGlobalSettings::Instance().OutletCode = "", edOutletCode);
     ClearCompValueinDBStrUnique(vmSerialNo, TGlobalSettings::Instance().SerialNo = "", edSerialNo);
     ClearCompValueinDBStrUnique(vmTenantNo, TGlobalSettings::Instance().TenantNo = "", edTenantNo);
+    ClearCompValueinDBStrUnique(vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths = "", edConsolidatedDBPaths);
+    ClearCompValueinDBBoolUnique(vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport = false, cbEnableConsolidatedRep);
 }
 
 //---------------------------------------------------------------------------
@@ -1574,9 +1648,9 @@ void TfrmSetup::EnableAlphalandComponents()
     btnAssignSalesType->Enabled = false;
 
     // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
     EnableFieldComponent(true, true, false, false, false, false, true, false,
-                         false, false, false, false);
+                         false, false, false, false, false, false);
 
     ClearCompValueinDBStrUnique(vmClassCode, TGlobalSettings::Instance().ClassCode = "", edClassCode);
     ClearCompValueinDBStrUnique(vmTradeCode, TGlobalSettings::Instance().TradeCode = "", edTradeCode);
@@ -1587,6 +1661,8 @@ void TfrmSetup::EnableAlphalandComponents()
     ClearCompValueinDBStrUnique(vmFTPPath, TGlobalSettings::Instance().FTPPath = "", edFTPPath);
     ClearCompValueinDBStrUnique(vmFTPUserName, TGlobalSettings::Instance().FTPUserName = "", edFTPUserName);
     ClearCompValueinDBStrUnique(vmFTPPassword, TGlobalSettings::Instance().FTPPassword = "", edFTPPassword);
+    ClearCompValueinDBStrUnique(vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths = "", edConsolidatedDBPaths);
+    ClearCompValueinDBBoolUnique(vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport = false, cbEnableConsolidatedRep);
 }
 
 //---------------------------------------------------------------------------
@@ -1598,9 +1674,9 @@ void TfrmSetup::EnableMegaworldComponents()
     btnAssignSalesType->Enabled = true;
 
     // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
     EnableFieldComponent(true, true, false, false, false, false, true, false,
-                         false, false, false, false);
+                         false, false, false, false, false, false);
 
     ClearCompValueinDBStrUnique(vmClassCode, TGlobalSettings::Instance().ClassCode = "", edClassCode);
     ClearCompValueinDBStrUnique(vmTradeCode, TGlobalSettings::Instance().TradeCode = "", edTradeCode);
@@ -1611,11 +1687,11 @@ void TfrmSetup::EnableMegaworldComponents()
     ClearCompValueinDBStrUnique(vmFTPPath, TGlobalSettings::Instance().FTPPath = "", edFTPPath);
     ClearCompValueinDBStrUnique(vmFTPUserName, TGlobalSettings::Instance().FTPUserName = "", edFTPUserName);
     ClearCompValueinDBStrUnique(vmFTPPassword, TGlobalSettings::Instance().FTPPassword = "", edFTPPassword);
+    ClearCompValueinDBStrUnique(vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths = "", edConsolidatedDBPaths);
+    ClearCompValueinDBBoolUnique(vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport = false, cbEnableConsolidatedRep);
 }
 
 //---------------------------------------------------------------------------
-
-
 
 void TfrmSetup::EnableShangrilaComponents()
 {
@@ -1624,9 +1700,9 @@ void TfrmSetup::EnableShangrilaComponents()
     btnAssignSalesType->Enabled = false;
 
     // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
     EnableFieldComponent(true, false, false, false, false, false, true, true,
-                         false, false, false, false);
+                         false, false, false, false, false, false);
 
     ClearCompValueinDBStrUnique(vmTerminalNo, TGlobalSettings::Instance().TerminalNo = "", edTerminalNo);
     ClearCompValueinDBStrUnique(vmClassCode, TGlobalSettings::Instance().ClassCode = "", edClassCode);
@@ -1637,10 +1713,11 @@ void TfrmSetup::EnableShangrilaComponents()
     ClearCompValueinDBStrUnique(vmFTPPath, TGlobalSettings::Instance().FTPPath = "", edFTPPath);
     ClearCompValueinDBStrUnique(vmFTPUserName, TGlobalSettings::Instance().FTPUserName = "", edFTPUserName);
     ClearCompValueinDBStrUnique(vmFTPPassword, TGlobalSettings::Instance().FTPPassword = "", edFTPPassword);
+    ClearCompValueinDBStrUnique(vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths = "", edConsolidatedDBPaths);
+    ClearCompValueinDBBoolUnique(vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport = false, cbEnableConsolidatedRep);
 }
 
-
-
+//---------------------------------------------------------------------------
 
 void TfrmSetup::EnableDLFMallComponents()
 {
@@ -1649,9 +1726,9 @@ void TfrmSetup::EnableDLFMallComponents()
     btnAssignSalesType->Enabled = false;
 
     // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
     EnableFieldComponent(true, false, false, false, false, false, true, false,
-                         true, true, true, true);
+                         true, true, true, true, false, false);
 
   /*  ClearCompValueinDBStrUnique(vmTerminalNo, TGlobalSettings::Instance().TerminalNo = "", edTerminalNo);
     ClearCompValueinDBStrUnique(vmClassCode, TGlobalSettings::Instance().ClassCode = "", edClassCode);
@@ -1664,6 +1741,29 @@ void TfrmSetup::EnableDLFMallComponents()
     ClearCompValueinDBStrUnique(vmFTPPassword, TGlobalSettings::Instance().FTPPassword = "", edFTPPassword);
         ClearCompValueinDBStrUnique(vmTenantNo, TGlobalSettings::Instance().TenantNo = "", edTenantNo);
   */  }
+
+//---------------------------------------------------------------------------
+
+void TfrmSetup::EnableFederalLandComponents()
+{
+    btnResendReport->Visible = false;
+    btnRegenReport->Visible = true;
+    btnAssignSalesType->Enabled = false;
+
+    // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
+    // FTPServer, FTPPath, FTPUserName, FTPPassword
+    EnableFieldComponent(true, true, false, false, false, false, true, true,
+                         false, false, false, false, false, false);
+
+    ClearCompValueinDBStrUnique(vmClassCode, TGlobalSettings::Instance().ClassCode = "", edClassCode);
+    ClearCompValueinDBStrUnique(vmTradeCode, TGlobalSettings::Instance().TradeCode = "", edTradeCode);
+    ClearCompValueinDBStrUnique(vmOutletCode, TGlobalSettings::Instance().OutletCode = "", edOutletCode);
+    ClearCompValueinDBStrUnique(vmSerialNo, TGlobalSettings::Instance().SerialNo = "", edSerialNo);
+    ClearCompValueinDBStrUnique(vmFTPServer, TGlobalSettings::Instance().FTPServer = "", edFTPServer);
+    ClearCompValueinDBStrUnique(vmFTPPath, TGlobalSettings::Instance().FTPPath = "", edFTPPath);
+    ClearCompValueinDBStrUnique(vmFTPUserName, TGlobalSettings::Instance().FTPUserName = "", edFTPUserName);
+    ClearCompValueinDBStrUnique(vmFTPPassword, TGlobalSettings::Instance().FTPPassword = "", edFTPPassword);
+}
 
 //---------------------------------------------------------------------------
 
@@ -1680,6 +1780,8 @@ void TfrmSetup::InitializeMallExport()
     cbMallLoc->AddItem("Megaworld Mall",NULL);
     cbMallLoc->AddItem("Shangri-La Mall",NULL);
     cbMallLoc->AddItem("DLF Mall",NULL);
+    cbMallLoc->AddItem("Federal Land Mall",NULL);
+
     lbBranchCode->Caption = RenameBranchCode();
     lbSerialNumber->Caption = RenameSerialNumber();
     lbTenantNo->Caption = RenameTenantNumber();
@@ -1697,6 +1799,8 @@ void TfrmSetup::InitializeMallExport()
     edFTPPath->Text = TGlobalSettings::Instance().FTPPath;
     edFTPUserName->Text = TGlobalSettings::Instance().FTPUserName;
     edFTPPassword->Text = TGlobalSettings::Instance().FTPPassword;
+    edConsolidatedDBPaths->Text = TGlobalSettings::Instance().ConsolidateReportPaths;
+    cbEnableConsolidatedRep->Checked = TGlobalSettings::Instance().EnableConsolidatedReport;
 
     cbMallLoc->ItemIndex = TGlobalSettings::Instance().MallIndex;
     SetSpecificMall(TGlobalSettings::Instance().MallIndex);
@@ -1746,6 +1850,10 @@ UnicodeString TfrmSetup::RenameBranchCode()
     else if (TGlobalSettings::Instance().MallIndex == CAPITALAND)
     {
         Caption = "Machine ID";
+    }
+    else if (TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
+    {
+        Caption = "Merchant Name";
     }
     else
     {
@@ -1977,7 +2085,7 @@ void __fastcall TfrmSetup::btnRegenerateReportMouseClick(TObject *Sender)
 
 void TfrmSetup::SaveMESettings()
 {
-    if((TGlobalSettings::Instance().MallIndex >= ROBINSONMALL) && (TGlobalSettings::Instance().MallIndex <= SHANGRILAMALL))
+    if((TGlobalSettings::Instance().MallIndex >= ROBINSONMALL) && (TGlobalSettings::Instance().MallIndex <= FEDERALLANDMALL))
     {
         TGlobalSettings::Instance().FirstMallSet = true;
         TGlobalSettings::Instance().FirstMallDate = Now().FormatString("mmddyy");
@@ -2047,6 +2155,10 @@ UnicodeString TfrmSetup::RenameTenantNumber()
     if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
     {
         Caption = "Tenant Name For TEXT";
+    }
+    else if(TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
+    {
+        Caption = "Merchant Code";
     }
     else
     {

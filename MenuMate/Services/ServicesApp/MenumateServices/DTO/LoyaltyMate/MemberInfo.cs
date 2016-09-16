@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Collections.Generic;
 
 namespace MenumateServices.DTO.LoyaltyMate
 {
@@ -76,5 +77,7 @@ namespace MenumateServices.DTO.LoyaltyMate
         public DateTime LastModified { get; set; }
         [DataMember]
         public bool IsFirstVisitRewarded { get; set; }
+        [DataMember]
+        public List<VoucherInfo> MemberVouchers { get; set; }
     }
 }

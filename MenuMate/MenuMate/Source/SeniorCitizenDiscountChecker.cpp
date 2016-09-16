@@ -56,7 +56,8 @@ bool TSeniorCitizenDiscountChecker::ItemSelectionCheck(Database::TDBTransaction 
     std::set<__int64> keyToCheck;
     keyToCheck.insert(OrderItemToCheckKey);
 
-    if(SelectedOrderItems.size() > 0 && checkItemsHaveDiscount(DBTransaction, SelectedOrderItems) && checkItemsHaveDiscount(DBTransaction, keyToCheck))
+    if(SelectedOrderItems.size() > 0 && checkItemsHaveDiscount(DBTransaction, SelectedOrderItems) &&
+        checkItemsHaveDiscount(DBTransaction, keyToCheck))
     {
         retVal = checkItemsHaveSeniorCitizenDiscount(DBTransaction, SelectedOrderItems) == checkItemsHaveSeniorCitizenDiscount(DBTransaction, keyToCheck);
     }

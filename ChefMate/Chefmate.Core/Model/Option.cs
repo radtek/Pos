@@ -13,12 +13,24 @@ namespace Chefmate.Core.Model
         public Option()
         {
             _status = OrderStatus.Normal;
-            DisplayAttributes = new DisplayAttributes(); 
+            DisplayAttributes = new DisplayAttributes();
         }
+
+        public Option(Option inOption) : this()
+        {
+            OptionKey = inOption.OptionKey;
+            OptionPosKey = inOption.OptionPosKey;
+            OrderOptionKey = inOption.OrderOptionKey;
+            DisplayName = inOption.DisplayName;
+            Name = inOption.Name;
+            IsPlus = inOption.IsPlus;
+            ItemStatus = inOption.ItemStatus;
+            OrderItemKey = inOption.OrderItemKey;
+            DisplayAttributes = new DisplayAttributes(inOption.DisplayAttributes);
+        }
+
         public int OptionKey { get; set; }
-
         public int OptionPosKey { get; set; }
-
         public int OrderOptionKey { get; set; }
         public string DisplayName
         {
@@ -59,9 +71,7 @@ namespace Chefmate.Core.Model
                 OnPropertyChanged("ItemStatus");
             }
         }
-        public Item Item { get; set; }
         public int OrderItemKey { get; set; }
-
         public DisplayAttributes DisplayAttributes
         {
             get
@@ -74,5 +84,7 @@ namespace Chefmate.Core.Model
                 OnPropertyChanged("DisplayAttributes");
             }
         }
+        public Item Item { get; set; }
+
     }
 }

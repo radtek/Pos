@@ -3,7 +3,7 @@ using Loyaltymate.Enum;
 
 namespace Loyaltymate.Model
 {
-    public class PointsTransactionViewModel : DomainObjectBase
+    public class PointsTransactionViewModel
     {
         public long MembershipProfileId { get; set; }
         public DateTime TransactionDate { get; set; }
@@ -11,5 +11,6 @@ namespace Loyaltymate.Model
         public double PointsDelta { get; set; }
         public long SiteCode { get; set; }
         public string UniqueId { get; set; }
+        public string InvoiceNumber { get; set; }
     }
 }

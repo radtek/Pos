@@ -29,5 +29,6 @@ void ZBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut)
 	{
 		//Call the strategy to build the section..
 		reportSectionDisplayStrategy->BuildSection(printOut);
+        return;
 	}
-}
+}

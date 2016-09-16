@@ -1444,16 +1444,7 @@ void TfrmTransfer::ProcessInvoice(Database::TDBTransaction &DBTransaction, long 
    {
       TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
    }
-   while (Transaction.Orders->Count != 0)
-   {
-      delete(TItemComplete*)Transaction.Orders->Items[0];
-      Transaction.Orders->Delete(0);
-   }
-   while (OrdersList->Count > 0)
-   {
-      delete(TItemComplete*)OrdersList->Items[0];
-      OrdersList->Delete(0);
-   }
+   
 }
 
 bool TfrmTransfer::CheckItemsOnTab(Database::TDBTransaction &DBTransaction,int inTabKey)

@@ -49,6 +49,21 @@ struct TRedeemPointsInformation
     Currency TotalValue;
 };
 
+struct TRedeemPocketVoucherInformation
+{
+    AnsiString VoucherNumber;
+    Currency TotalSaleAmount;
+    Currency RedeemedAmount;
+};
+
+struct TRedeemGiftVoucherInformation
+{
+    AnsiString VoucherNumber;
+    Currency TotalSaleAmount;
+    Currency RedeemedAmount;
+    Currency GiftVoucherAmount;
+};
+
 class TPaymentTransaction
 {
 
@@ -146,6 +161,8 @@ class TPaymentTransaction
         bool IsFirstVisitProcessed;
         TRedeemPointsInformation *RedeemPointsInformation;
         TRedeemPointsInformation *RedeemWeightInformation;
+        TRedeemPocketVoucherInformation *RedeemPocketVoucherInformation;
+        TRedeemGiftVoucherInformation  *RedeemGiftVoucherInformation;
         bool HasOrders();			// whether this transaction has orders in it
         void ReCalculateAmounts();	// recalculate TMoney instance
         bool CopyFrom( const TPaymentTransaction *inOtherTransaction );
@@ -155,8 +172,8 @@ class TPaymentTransaction
         bool CheckThorVoucherExistAsDiscount(AnsiString voucher_code) ;
         Currency TaxOnClippDiscount;
         Currency ServiceChargeWithTax;
-
         bool CheckDiscountApplied(TDiscount CurrentDiscount);
+        bool IsVouchersProcessed;
 };
 
 #endif

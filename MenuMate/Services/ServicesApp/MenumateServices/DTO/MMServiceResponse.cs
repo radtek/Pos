@@ -22,33 +22,20 @@ namespace MenumateServices.DTO
         string _message;
         string _description;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        internal MMServiceResponse(
-                        bool inSuccesful,
-                        string inMessage,
-                        string inDescription)
+        internal MMServiceResponse(bool inSuccesful,string inMessage,string inDescription)
         {
             _succesful   = inSuccesful;
             _message     = inMessage;
             _description = inDescription;
         }
 
-        #region Public
-        /// <summary>
-        /// 
-        /// </summary>
         [DataMember]
-        bool Succesful
+        bool Successful
         {
             set { _succesful = value; }
             get { return _succesful; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         [DataMember]
         string Message
         {
@@ -56,15 +43,12 @@ namespace MenumateServices.DTO
             get { return _message; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         [DataMember]
         string Description
         {
             set { _description = value; }
             get { return _description; }
         }
-        #endregion
+
     }
 }

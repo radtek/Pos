@@ -14,6 +14,7 @@
 #include "ZForm.h"
 #include <ComCtrls.hpp>
 
+#include "MallExportFederalLandMall.h"
 #include "MallExportShangrilaMall.h"
 #include "MallExportMegaworldMall.h"
 #include "MallExportAlphalandMall.h"
@@ -109,6 +110,7 @@ public:		// User declarations
     TMallExportSMMall* smExport;
     TMallExportMegaworldMall* megaworldExport;
     TMallExportShangrilaMall* shangrilaExport;
+    TMallExportFederalLandMall* federallandExport;
 
     void ResetMallExportValues();
     void InitializeTimeOptions();
@@ -121,6 +123,7 @@ public:		// User declarations
     void RegenerateAlphalandExport();
     void RegenerateMegaworldExport();
     void RegenerateShangrilaExport();
+    void RegenerateFederalLandExport();
     void GenerateNoExportDays(UnicodeString &TerminalName, UnicodeString &MallCode, TDateTime &TransactionDate, UnicodeString &BegInvoice,
                               UnicodeString &EndInvoice, Currency &OldGT, Currency &NewGT, UnicodeString &BegOR, UnicodeString &EndOR, UnicodeString Mall, bool &Pastdate);
     void InitializeTimeSet(TDateTime &SDate, TDateTime &EDate);
@@ -131,6 +134,7 @@ public:		// User declarations
     UnicodeString GetHourlyData(UnicodeString &TerminalName, UnicodeString &TenantName,
                                 UnicodeString &DateValue, UnicodeString &TimeValue,
                                 int &TransactionTotal, UnicodeString &Amount);
+
     // For Megaworld
     int GetHourlyData(UnicodeString &TerminalName, UnicodeString &TenantName,
                                 UnicodeString &DateValue, UnicodeString &TimeValue,
@@ -141,8 +145,15 @@ public:		// User declarations
                                                         UnicodeString AmountValue, UnicodeString TaxValue, UnicodeString AdjValue, UnicodeString SChargeValue,
                                                         int TransactionTotal, UnicodeString SalesDept);
 
+    // For Federal Land
+    UnicodeString GetHourlyData(UnicodeString &TerminalName, UnicodeString &TenantName,
+                                UnicodeString &DateValue, UnicodeString &TimeValue,
+                                int &TransactionTotal, UnicodeString &Amount, UnicodeString &MinuteValue,
+                                int &SCDiscountCount, int &PatronCount);
+
     UnicodeString AddZeroesToValue(int ZeroCount, int Value);
     UnicodeString CheckValue(Currency Amount);
+    void SetSpecificMallTimes(int &StartH, int &EndH, int &StartM, int &EndM);
 
     //DLF Mall Export
     void RegenerateDLFMallExport();
@@ -280,6 +291,10 @@ public:		// User declarations
     Currency SALESTYPE_MEDICINES;
     Currency SALESTYPE_OTHERS;
     TDateTime TrasactionDate;
+    int StartH;
+    int EndH;
+    int StartM;
+    int EndM;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmMallExportRegenerateReport *frmMallExportRegenerateReport;

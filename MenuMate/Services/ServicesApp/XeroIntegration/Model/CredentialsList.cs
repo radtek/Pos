@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace XeroIntegration.Model
+namespace AccountingIntegration.Model
 {
     [XmlRoot(ElementName = "CredentialsList")]
     public class CredentialsList

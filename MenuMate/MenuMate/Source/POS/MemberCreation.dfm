@@ -26,8 +26,8 @@ object frmMemberCreation: TfrmMemberCreation
     ParentBackground = False
     TabOrder = 0
     object lbeEmail: TLabel
-      Left = 135
-      Top = 40
+      Left = 190
+      Top = 65
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -37,9 +37,24 @@ object frmMemberCreation: TfrmMemberCreation
       Font.Style = []
       ParentFont = False
     end
+    object lbeHeader: TLabel
+      Left = 20
+      Top = 4
+      Width = 395
+      Height = 16
+      Caption = 
+        'Fields marked with * are mandatory to be entered to create membe' +
+        'r.'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clMaroon
+      Font.Height = -13
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+    end
     object lbeContactPhone: TLabel
-      Left = 135
-      Top = 161
+      Left = 190
+      Top = 185
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -50,8 +65,20 @@ object frmMemberCreation: TfrmMemberCreation
       ParentFont = False
     end
     object lbeName: TLabel
-      Left = 135
-      Top = 102
+      Left = 190
+      Top = 125
+      Width = 5
+      Height = 22
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clMaroon
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+    end
+    object lbeLastName: TLabel
+      Left = 190
+      Top = 185
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -101,8 +128,8 @@ object frmMemberCreation: TfrmMemberCreation
     end
     object btnEmail: TTouchBtn
       Left = 28
-      Top = 24
-      Width = 101
+      Top = 50
+      Width = 150
       Height = 53
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -111,7 +138,27 @@ object frmMemberCreation: TfrmMemberCreation
       Font.Style = []
       ParentFont = False
       ParentColor = True
-      Caption = 'Email'
+      Caption = 'Email*'
+      ButtonColor = 6052441
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = EditCustomerBasicDetails
+    end
+    object btnLastName: TTouchBtn
+      Tag = 2
+      Left = 28
+      Top = 170
+      Width = 150
+      Height = 53
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Last Name*'
       ButtonColor = 6052441
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -119,10 +166,10 @@ object frmMemberCreation: TfrmMemberCreation
       OnMouseClick = EditCustomerBasicDetails
     end
     object btnContactPhone: TTouchBtn
-      Tag = 2
+      Tag = 3
       Left = 28
-      Top = 145
-      Width = 101
+      Top = 230
+      Width = 150
       Height = 53
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -307,8 +354,8 @@ object frmMemberCreation: TfrmMemberCreation
     object btnName: TTouchBtn
       Tag = 1
       Left = 28
-      Top = 86
-      Width = 101
+      Top = 110
+      Width = 150
       Height = 53
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -317,7 +364,7 @@ object frmMemberCreation: TfrmMemberCreation
       Font.Style = []
       ParentFont = False
       ParentColor = True
-      Caption = 'Name'
+      Caption = 'First Name*'
       ButtonColor = 6052441
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -326,7 +373,7 @@ object frmMemberCreation: TfrmMemberCreation
     end
     object gbLoyaltyMateActivation: TGroupBox
       Left = 1
-      Top = 228
+      Top = 297
       Width = 408
       Height = 89
       Caption = 'LoyaltyMate Activation'

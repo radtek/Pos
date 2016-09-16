@@ -193,11 +193,11 @@ class TXMLOrderSmartManager
 					TCMHostname   inHostname,
 					__int32       inDBKey,
 					__int32       inOrderItemDBKey,
-					AnsiString    inName,
-					AnsiString    inKitchenName,
+                 AnsiString    inName,
+                 AnsiString    inKitchenName,
 					__int32       inServingCourseKey,
 					__int32       inCourseKey,
-					UnicodeString inNote );
+					AnsiString inNote );
 
 		// Adds a Item to cancel to an Order
 		// THIS FUNCTION IS TO BE USED FOR CANCEL ORDERS ONLY

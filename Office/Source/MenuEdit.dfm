@@ -10,7 +10,7 @@ object frmMenuEdit: TfrmMenuEdit
   Color = clBtnFace
   Constraints.MinHeight = 518
   Constraints.MinWidth = 648
-  Font.Charset = DEFAULT_CHARSET
+  Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
@@ -100,7 +100,7 @@ object frmMenuEdit: TfrmMenuEdit
             Top = 0
             Width = 346
             Height = 460
-            ActivePage = tsMenu
+            ActivePage = tsItemSize
             Align = alClient
             Style = tsFlatButtons
             TabOrder = 0
@@ -335,7 +335,7 @@ object frmMenuEdit: TfrmMenuEdit
                 Font.Height = -11
                 Font.Name = 'Tahoma'
                 Font.Style = []
-                ItemHeight = 13
+                ItemHeight = 0
                 ParentFont = False
                 TabOrder = 5
                 OnChange = cbServingCourseChange
@@ -553,7 +553,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 13
+                    ItemHeight = 0
                     ParentFont = False
                     TabOrder = 0
                     OnChange = cbItemNameChange
@@ -778,7 +778,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Left = 8
                     Top = 168
                     Width = 313
-                    Height = 246
+                    Height = 244
                     Anchors = [akLeft, akTop, akBottom]
                     ColCount = 3
                     DefaultColWidth = 102
@@ -956,7 +956,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Left = 8
                     Top = 88
                     Width = 313
-                    Height = 294
+                    Height = 292
                     Anchors = [akLeft, akTop, akBottom]
                     Color = clInfoBk
                     Font.Charset = DEFAULT_CHARSET
@@ -972,7 +972,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnAddSide: TButton
                     Left = 8
-                    Top = 389
+                    Top = 387
                     Width = 70
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -988,7 +988,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnRemoveSide: TButton
                     Left = 89
-                    Top = 389
+                    Top = 387
                     Width = 70
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -1004,7 +1004,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnForcedSideMoveUp: TButton
                     Left = 252
-                    Top = 389
+                    Top = 387
                     Width = 70
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -1035,7 +1035,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnSyncSide: TButton
                     Left = 170
-                    Top = 389
+                    Top = 387
                     Width = 75
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -1182,7 +1182,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Left = 8
                     Top = 88
                     Width = 313
-                    Height = 294
+                    Height = 292
                     OnClickCheck = chklstCondimentsClickCheck
                     Anchors = [akLeft, akTop, akBottom]
                     Color = clInfoBk
@@ -1198,7 +1198,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object BitBtn1: TBitBtn
                     Left = 8
-                    Top = 389
+                    Top = 387
                     Width = 113
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -1830,7 +1830,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object Label35: TLabel
                     Left = 8
-                    Top = 291
+                    Top = 289
                     Width = 121
                     Height = 13
                     Anchors = [akLeft, akBottom]
@@ -1871,7 +1871,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object Bevel6: TBevel
                     Left = 8
-                    Top = 307
+                    Top = 305
                     Width = 313
                     Height = 9
                     Anchors = [akLeft, akBottom]
@@ -1926,7 +1926,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Left = 112
                     Top = 112
                     Width = 209
-                    Height = 160
+                    Height = 158
                     Anchors = [akLeft, akTop, akBottom]
                     Color = clInfoBk
                     Font.Charset = DEFAULT_CHARSET
@@ -1987,7 +1987,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object cb3rdPartyGroupCode: TComboBox
                     Left = 8
-                    Top = 323
+                    Top = 321
                     Width = 313
                     Height = 21
                     Anchors = [akLeft, akBottom]
@@ -1997,7 +1997,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 13
+                    ItemHeight = 0
                     ParentFont = False
                     Sorted = True
                     TabOrder = 6
@@ -2006,7 +2006,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnSync3rdPartyGroupItem: TButton
                     Left = 8
-                    Top = 389
+                    Top = 387
                     Width = 97
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2022,7 +2022,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnSync3rdPartyGroupCourse: TButton
                     Left = 112
-                    Top = 389
+                    Top = 387
                     Width = 105
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2038,7 +2038,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnSync3rdPartyGroupMenu: TButton
                     Left = 224
-                    Top = 389
+                    Top = 387
                     Width = 97
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2054,7 +2054,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object Button1: TButton
                     Left = 112
-                    Top = 357
+                    Top = 355
                     Width = 105
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2077,7 +2077,7 @@ object frmMenuEdit: TfrmMenuEdit
                     422)
                   object Label8: TLabel
                     Left = 8
-                    Top = 301
+                    Top = 299
                     Width = 97
                     Height = 13
                     Anchors = [akLeft, akBottom]
@@ -2091,7 +2091,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object Label12: TLabel
                     Left = 176
-                    Top = 245
+                    Top = 243
                     Width = 120
                     Height = 13
                     Anchors = [akLeft, akBottom]
@@ -2105,7 +2105,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object Label20: TLabel
                     Left = 8
-                    Top = 245
+                    Top = 243
                     Width = 77
                     Height = 13
                     Anchors = [akLeft, akBottom]
@@ -2131,7 +2131,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnAddRecipeToItems: TBitBtn
                     Left = 120
-                    Top = 357
+                    Top = 355
                     Width = 97
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2180,7 +2180,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Left = 8
                     Top = 48
                     Width = 313
-                    Height = 186
+                    Height = 184
                     Anchors = [akLeft, akTop, akBottom]
                     Color = clInfoBk
                     ColCount = 3
@@ -2204,7 +2204,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object edLoc: TComboBox
                     Left = 176
-                    Top = 261
+                    Top = 259
                     Width = 145
                     Height = 21
                     Anchors = [akLeft, akBottom]
@@ -2214,7 +2214,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 13
+                    ItemHeight = 0
                     ParentFont = False
                     Sorted = True
                     TabOrder = 3
@@ -2223,7 +2223,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnSetLocationForAllItems: TBitBtn
                     Left = 8
-                    Top = 389
+                    Top = 387
                     Width = 313
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2239,7 +2239,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object btnAddRecipeToSizes: TBitBtn
                     Left = 8
-                    Top = 357
+                    Top = 355
                     Width = 153
                     Height = 25
                     Anchors = [akLeft, akBottom]
@@ -2264,7 +2264,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object edRecipeQty: TNumericEdit
                     Left = 8
-                    Top = 261
+                    Top = 259
                     Width = 153
                     Height = 21
                     Alignment = taLeftJustify
@@ -2645,7 +2645,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Left = 8
                     Top = 77
                     Width = 313
-                    Height = 337
+                    Height = 335
                     Anchors = [akLeft, akTop, akBottom]
                     Color = clInfoBk
                     Font.Charset = DEFAULT_CHARSET
@@ -2691,7 +2691,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Left = 8
                     Top = 77
                     Width = 313
-                    Height = 337
+                    Height = 335
                     Anchors = [akLeft, akTop, akBottom]
                     Color = clInfoBk
                     Font.Charset = DEFAULT_CHARSET
@@ -2706,7 +2706,7 @@ object frmMenuEdit: TfrmMenuEdit
                   end
                   object chbSetMenuStandardItem: TCheckBox
                     Left = 8
-                    Top = 45
+                    Top = 43
                     Width = 193
                     Height = 17
                     Anchors = [akLeft, akBottom]
@@ -4385,10 +4385,16 @@ object frmMenuEdit: TfrmMenuEdit
       Ctl3D = True
       DragCursor = crArrow
       DragMode = dmAutomatic
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
       HideSelection = False
       Images = dmUtilities.imlTreeImages
       Indent = 19
       ParentCtl3D = False
+      ParentFont = False
       PopupMenu = pmDrinksBevs
       StateImages = dmUtilities.imlTreeStateImages
       TabOrder = 2

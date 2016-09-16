@@ -41,7 +41,7 @@ namespace MenumateServices
         {
             var serviceList = new List<ServiceBase>();
 
-            AddService(serviceList, MenumateServicesIdentifier.XeroIntegration); // Standard Windows Service: XeroIntegration
+            AddService(serviceList, MenumateServicesIdentifier.AccountingIntegration); // Standard Windows Service: AccountingIntegration
             AddService(serviceList, MenumateServicesIdentifier.LoyaltyMate);     // WCF Service: LoyaltyMate
             AddService(serviceList, MenumateServicesIdentifier.WebMate);         // WCF Service: WebMate
             AddService(serviceList, MenumateServicesIdentifier.ChefMate);        // WCF Service: ChefMate
@@ -143,8 +143,8 @@ namespace MenumateServices
 
             switch (serviceIdentifier)
             {
-                case MenumateServicesIdentifier.XeroIntegration:
-                    return new MenumateServiceXero();
+                case MenumateServicesIdentifier.AccountingIntegration:
+                    return new MenumateServiceAccounting();
                 case MenumateServicesIdentifier.LoyaltyMate:
                     return new MenumateServiceLoyaltyMate();
                 case MenumateServicesIdentifier.WebMate:

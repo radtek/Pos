@@ -433,7 +433,8 @@ object frmBillGroup: TfrmBillGroup
           DefaultButtonColor = clInfoBk
           DefaultButtonLatchedColor = clNavy
           LatchingProperties = [lkIndicator]
-          OnMouseClick = tgridItemListMouseClick
+          OnMouseDown = tgridItemListMouseDown
+          OnMouseUp = tgridItemListMouseUp
           AutoScale = True
           GridBorder = False
           RowCount = 1
@@ -825,5 +826,12 @@ object frmBillGroup: TfrmBillGroup
   object IBQuery: TIBQuery
     Left = 536
     Top = 168
+  end
+  object SplitTimer: TTimer
+    Enabled = False
+    Interval = 2000
+    OnTimer = SplitTimerTick
+    Left = 892
+    Top = 244
   end
 end

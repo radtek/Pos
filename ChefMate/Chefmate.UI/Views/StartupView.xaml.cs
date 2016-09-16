@@ -33,6 +33,7 @@ namespace Chefmate.UI.Views
             DatabaseAddressPreviewMouseUpCommand = new DelegateCommand(DatabaseIpAddressClick);
             this.DataContext = this;
         }
+       
         #region Properties
         public DialogResult ModalResult { get; set; }
         public string TerminalIpAddress
@@ -95,6 +96,7 @@ namespace Chefmate.UI.Views
             }
         }
         #endregion
+     
         #region Commands
         public ICommand CloseCommand { get; set; }
         public ICommand CreateDatabaseCommand { get; set; }
@@ -104,7 +106,7 @@ namespace Chefmate.UI.Views
         public ICommand DatabaseAddressPreviewMouseUpCommand { get; set; }
         private void CheckIpAddress(string ipAddress, string prop)
         {
-            if (!ChefmateUtility.IsValidIpAddress(ipAddress))
+            if (string.IsNullOrWhiteSpace(ipAddress) || !ChefmateUtility.IsValidIpAddress(ipAddress))
                 ValidationError = "Invalid " + prop;
             else
                 ValidationError = String.Empty;
@@ -127,7 +129,7 @@ namespace Chefmate.UI.Views
                 return false;
             }
 
-            if (!ChefmateUtility.IsValidIpAddress(TerminalIpAddress))
+            if (string.IsNullOrWhiteSpace(TerminalIpAddress) || !ChefmateUtility.IsValidIpAddress(TerminalIpAddress))
             {
                 ValidationError = "Please Enter a valid ip address for terminal.";
                 return false;
@@ -138,7 +140,7 @@ namespace Chefmate.UI.Views
                 return false;
             }
 
-            if (!ChefmateUtility.IsValidIpAddress(DbIpAddress))
+            if (string.IsNullOrWhiteSpace(DbIpAddress) || !ChefmateUtility.IsValidIpAddress(DbIpAddress))
             {
                 ValidationError = "Please Enter a valid ip address for databse.";
                 return false;
@@ -160,6 +162,7 @@ namespace Chefmate.UI.Views
             return true;
         }
         #endregion
+  
         #region CommandHandlers
         private void CloseCommandHandler(object param)
         {
@@ -215,7 +218,7 @@ namespace Chefmate.UI.Views
             }
             else
             {
-                DbPath = KeyboardController.Instance.OpenKeyBoard("Eneter database path", DbPath);
+                DbPath = KeyboardController.Instance.OpenKeyBoard("Enter database path", DbPath);
             }
         }
         #endregion

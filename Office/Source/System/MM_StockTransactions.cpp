@@ -6,6 +6,7 @@
 #include <vector>
 #include "MM_StockTransactions.h"
 #include "CSV.h"
+#include <Math.h>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -532,8 +533,8 @@ void TStockTransaction::fSetStockParams(int StockKey, AnsiString Location, TTran
 	sqlAdjustStock->Close();
 	sqlAdjustStock->ParamByName("Stock_Key")->AsInteger	= StockKey;
 	sqlAdjustStock->ParamByName("Location")->AsString		= Location;
-	sqlAdjustStock->ParamByName("Average_Cost")->AsDouble	= AverageCost;
-	sqlAdjustStock->ParamByName("Latest_Cost")->AsDouble	= LatestCost;
+	sqlAdjustStock->ParamByName("Average_Cost")->AsDouble	= fabs(AverageCost);
+	sqlAdjustStock->ParamByName("Latest_Cost")->AsDouble	= fabs(LatestCost);
 	sqlAdjustStock->ParamByName("Quantity")->AsDouble		= Qty;
 	sqlAdjustStock->ExecQuery();
 }
@@ -722,29 +723,29 @@ bool TReceiveInvoice::fReceivePackingSlipItem(TTransactionBatchInfo const& Batch
 			Currency NewLatestCost;
 			if (TransactionInfo.Qty <= 0)
 			{
-				NewLatestCost	= StockDetails.Latest_Cost;
-				NewAverage		= StockDetails.Average_Cost;
+				NewLatestCost	= fabs(StockDetails.Latest_Cost);
+				NewAverage		= fabs(StockDetails.Average_Cost);
 			}
 			else
 			{
 				// Don't change the latest cost if it's $0.00 (i.e. freebie)
 				if (TransactionInfo.Unit_Cost == 0)
 				{
-					NewLatestCost = StockDetails.Latest_Cost;
+					NewLatestCost = fabs(StockDetails.Latest_Cost);
 				}
 				else
 				{
-					NewLatestCost = TransactionInfo.Unit_Cost;
+					NewLatestCost = fabs(TransactionInfo.Unit_Cost);
 				}
 
 				if (StockDetails.Average_Cost == 0 || StockDetails.On_Hand <= 0 || NewOnHand <= 0)
 				{
-					NewAverage	= TransactionInfo.Unit_Cost;
+					NewAverage	= fabs(TransactionInfo.Unit_Cost);
 				}
 				else
 				{
-					NewAverage	= ((StockDetails.Average_Cost * StockDetails.On_Hand) +
-										(double(InvoiceItemInfo->Supplier_Unit_Cost) * double(TransactionInfo.Order_Qty))) / NewOnHand;
+					NewAverage	= fabs(((StockDetails.Average_Cost * StockDetails.On_Hand) +
+										(double(InvoiceItemInfo->Supplier_Unit_Cost) * double(TransactionInfo.Order_Qty))) / NewOnHand );
 
 
 
@@ -780,8 +781,8 @@ bool TReceiveInvoice::fReceivePackingSlipItem(TTransactionBatchInfo const& Batch
 
 
                  
-                      	NewAverage	= ((StockDetails.Average_Cost * (StockDetails.On_Hand - double(TransactionInfo.Qty))) +
-										(double(InvoiceItemInfo->Supplier_Unit_Cost) * double(TransactionInfo.Order_Qty))) / NewOnHand;
+                      	NewAverage	= fabs(((StockDetails.Average_Cost * (StockDetails.On_Hand - double(TransactionInfo.Qty))) +
+										(double(InvoiceItemInfo->Supplier_Unit_Cost) * double(TransactionInfo.Order_Qty))) / NewOnHand);
 
                     }
 
@@ -797,11 +798,11 @@ bool TReceiveInvoice::fReceivePackingSlipItem(TTransactionBatchInfo const& Batch
                     Currency costUpdated  ;
                     if(TransactionInfo.Order_Unit!=InvoiceItemInfo->Supplier_Unit)
                     {
-                      costUpdated = InvoiceItemInfo->Supplier_Unit_Cost*InvoiceItemInfo->Supplier_Unit_Qty;
+                      costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost*InvoiceItemInfo->Supplier_Unit_Qty);
                     }
                     else
                     {
-                      costUpdated = InvoiceItemInfo->Supplier_Unit_Cost;
+                      costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost);
                     }
 					fSetSupplierStockCost(
 							InvoiceItemInfo->Stock_Key,
@@ -880,29 +881,29 @@ bool TReceiveInvoice::fReceiveInvoiceItem(TTransactionBatchInfo const& BatchInfo
 			Currency NewLatestCost;
 			if (TransactionInfo.Qty <= 0 || BatchInfo.BatchType == ttPackingSlip)
 			{
-				NewLatestCost	= StockDetails.Latest_Cost;
-				NewAverage		= StockDetails.Average_Cost;
+				NewLatestCost	= fabs(StockDetails.Latest_Cost);
+				NewAverage		= fabs(StockDetails.Average_Cost);
 			}
 			else
 			{
 				// Don't change the latest cost if it's $0.00 (i.e. freebie)
 				if (TransactionInfo.Unit_Cost == 0)
 				{
-					NewLatestCost = StockDetails.Latest_Cost;
+					NewLatestCost = fabs(StockDetails.Latest_Cost);
 				}
 				else
 				{
-					NewLatestCost = TransactionInfo.Unit_Cost;
+					NewLatestCost = fabs(TransactionInfo.Unit_Cost);
 				}
 
 				if (StockDetails.Average_Cost == 0 || StockDetails.On_Hand <= 0 || NewOnHand <= 0)
 				{
-					NewAverage	= TransactionInfo.Unit_Cost;
+					NewAverage	= fabs(TransactionInfo.Unit_Cost);
 				}
 				else
 				{
-					NewAverage	= ((StockDetails.Average_Cost * StockDetails.On_Hand) +
-										(double(InvoiceItemInfo->Supplier_Unit_Cost) * double(TransactionInfo.Order_Qty))) / NewOnHand;
+					NewAverage	= fabs(((StockDetails.Average_Cost * StockDetails.On_Hand) +
+										(double(InvoiceItemInfo->Supplier_Unit_Cost) * double(TransactionInfo.Order_Qty))) / NewOnHand);
 				}
 			}
 			// Update the Order item. Set it's backorder and received.
@@ -952,11 +953,11 @@ bool TReceiveInvoice::fReceiveInvoiceItem(TTransactionBatchInfo const& BatchInfo
                    Currency costUpdated  ;
                    if(TransactionInfo.Order_Unit!=InvoiceItemInfo->Supplier_Unit)
                    {
-                       costUpdated = InvoiceItemInfo->Supplier_Unit_Cost*InvoiceItemInfo->Supplier_Unit_Qty;
+                       costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost*InvoiceItemInfo->Supplier_Unit_Qty);
                    }
                    else
                    {
-                       costUpdated = InvoiceItemInfo->Supplier_Unit_Cost;
+                       costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost);
                    }
                    fSetSupplierStockCost(
 							InvoiceItemInfo->Stock_Key,
@@ -1088,12 +1089,12 @@ void TTransferStock::fTransferStock(TTransactionBatchInfo const& BatchInfo, TiTr
 		// Destination doesn't have a usable average. Just make it the same as the source.
 		if (DestAverage == 0 || DestOnHand <= 0 || (DestOnHand + Quantity) == 0)
 		{
-			NewAverage = SourceDetails.Average_Cost;
+			NewAverage = fabs(SourceDetails.Average_Cost);
 		}
 		else
 		{
 			// Calculate new averages.
-			NewAverage = ((SourceDetails.Average_Cost * Quantity) + (DestAverage * DestOnHand)) / (DestOnHand + Quantity);
+			NewAverage = fabs(((SourceDetails.Average_Cost * Quantity) + (DestAverage * DestOnHand)) / (DestOnHand + Quantity));
 		}
 		TTransactionInfo TransactionInfo(ttTransfer, BatchInfo);
 

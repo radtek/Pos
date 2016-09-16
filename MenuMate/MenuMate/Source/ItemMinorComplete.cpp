@@ -216,7 +216,6 @@ TItemMinorComplete::TItemMinorComplete() {
     IsPayByPoints = false;
     ItemPriceForPoints = 0;
     ItemPriceForPointsOriginal = 0;
-    PayByPointsQuantity = 0;
     printFreeSideForKitchen = false;
     printFreeSideForReceipt = false;
 }
@@ -273,7 +272,6 @@ TItemMinorComplete::TItemMinorComplete(
     IsPayByPoints = initializer.IsPayByPoints; //
     ItemPriceForPoints = initializer.ItemPriceForPoints;
     ItemPriceForPointsOriginal = initializer.ItemPriceForPointsOriginal;
-    PayByPointsQuantity = initializer.PayByPointsQuantity;
 }
 
 TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
@@ -318,7 +316,6 @@ TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
     IsPayByPoints = rhs.IsPayByPoints; //
     ItemPriceForPoints = rhs.ItemPriceForPoints;
     ItemPriceForPointsOriginal = rhs.ItemPriceForPointsOriginal;
-    PayByPointsQuantity = rhs.PayByPointsQuantity;
 }
 
 void TItemMinorComplete::Assign(TItemMinor * BaseItem)
@@ -364,7 +361,6 @@ void TItemMinorComplete::Assign(TItemMinor * BaseItem)
         RetItem->IsPayByPoints = IsPayByPoints; //
         RetItem->ItemPriceForPoints = ItemPriceForPoints;
         RetItem->ItemPriceForPointsOriginal = ItemPriceForPointsOriginal;
-        RetItem->PayByPointsQuantity = PayByPointsQuantity;
     }
 }
 
@@ -387,7 +383,8 @@ Currency TItemMinorComplete::TotalAdjustmentExcCombo() const
 		TDiscount CurrentDiscount = *ptrDiscount;
 		if ( DiscountApplies(CurrentDiscount)
              && CurrentDiscount.Mode != DiscModeCombo
-             && CurrentDiscount.Mode != DiscModeDeal) {
+             && CurrentDiscount.Mode != DiscModeDeal)
+             {
 
 			if (CurrentDiscount.Mode == DiscModePercent)
             {
@@ -397,21 +394,18 @@ Currency TItemMinorComplete::TotalAdjustmentExcCombo() const
                     CurrentDiscount.Rounding,
                     TGlobalSettings::Instance().MidPointRoundsDown);
 			}
-			else if (CurrentDiscount.Mode == DiscModeSetPrice ||
-				CurrentDiscount.Mode == DiscModeCombo
-                || CurrentDiscount.Mode == DiscModeDeal) {
-				CurrentDiscountValue = RoundToNearest
-					 (CurrentDiscount.Amount - OrdersTotal,
-					CurrentDiscount.Rounding,
-					TGlobalSettings::Instance().MidPointRoundsDown);
+			else if (CurrentDiscount.Mode == DiscModeSetPrice || CurrentDiscount.Mode == DiscModeCombo || CurrentDiscount.Mode == DiscModeDeal)
+            {
+				   CurrentDiscountValue = RoundToNearest(CurrentDiscount.Amount - OrdersTotal,CurrentDiscount.Rounding,	TGlobalSettings::Instance().MidPointRoundsDown);
 			}
 			else if (CurrentDiscount.Mode == DiscModeCurrency)
             {
-				if (CurrentDiscount.Amount > OrdersTotal && !
-					(OrderType == CreditNonExistingOrder)) {
+				if (CurrentDiscount.Amount > OrdersTotal && ! (OrderType == CreditNonExistingOrder))
+                {
 					CurrentDiscountValue = -OrdersTotal;
 				}
-				else {
+				else
+                {
 					CurrentDiscountValue = -CurrentDiscount.Amount;
 				}
 			}
@@ -1159,7 +1153,7 @@ void TItemMinorComplete::ThorVouchersDiscountsClear()
 
 void TItemMinorComplete::DiscountsClear()
 {
-	// Discounts.clear();
+	//Discounts.clear();
 	DiscountByTypeLevelRemove(dsMMSystem);
 	for (int j = 0; j < SubOrders->Count; j++)
     {
@@ -1167,6 +1161,49 @@ void TItemMinorComplete::DiscountsClear()
 		SubOrder->DiscountByTypeLevelRemove(dsMMSystem);
 	}
 }
+
+void TItemMinorComplete::DiscountsClearByFilter(std::vector<TDiscountMode> exemptFilter)
+{
+   if(exemptFilter.empty())
+   {
+     DiscountsClear();
+   }
+   else
+   {
+     for (std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin(); ptrDiscount != Discounts.end(); )
+	  {
+		TDiscount CurrentDiscount = *ptrDiscount;
+        bool processRemove = true;
+        for (std::vector<TDiscountMode>::iterator ptrDiscountMode = exemptFilter.begin(); ptrDiscountMode != exemptFilter.end();std::advance(ptrDiscountMode,1))
+          {
+                if(CurrentDiscount.Mode == *ptrDiscountMode || CurrentDiscount.Source == dsMMLocationReward ||
+                CurrentDiscount.Source == dsMMMembershipReward)
+                {
+                   processRemove = false;
+                   break;
+                }
+          }
+
+		if (processRemove)
+		{
+ 			Discounts.erase(ptrDiscount);
+			ptrDiscount = Discounts.begin();
+		}
+		else
+		{
+			ptrDiscount++;
+		}
+
+        for (int j = 0; j < SubOrders->Count; j++)
+        {
+            TItemMinorComplete *SubOrder = (TItemMinorComplete*)SubOrders->Items[j];
+            SubOrder->DiscountsClearByFilter(exemptFilter);
+        }
+	  }
+    RunBillCalculator();
+   }
+}
+
 
 void TItemMinorComplete::ThorlinkDiscountByTypeLevelRemove(TDiscountSource DiscountSource)
 {
@@ -1194,7 +1231,7 @@ void TItemMinorComplete::DiscountByTypeLevelRemove (TDiscountSource DiscountSour
 	for (std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin(); ptrDiscount != Discounts.end(); )
 	{
 		TDiscount CurrentDiscount = *ptrDiscount;
-		if (CurrentDiscount.Source < DiscountSource)
+		if (CurrentDiscount.Source <= DiscountSource)
 		{
             if(CurrentDiscount.Mode == DiscModePoints)
                ItemPriceForPoints = ItemPriceForPointsOriginal;
@@ -1374,8 +1411,8 @@ void TItemMinorComplete::SplitOrder(int WaysToSplit)
 	Cost = RoundToNearest(Cost / WaysToSplit, MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
 	Redeemed = Redeemed / WaysToSplit;
 
-	for (std::vector<TDiscount>::iterator ptrDiscounts = DiscountsBegin();
-		ptrDiscounts != DiscountsEnd(); std::advance(ptrDiscounts, 1))
+	for (std::vector<TDiscount>::iterator ptrDiscounts = Discounts.begin();
+		ptrDiscounts != Discounts.end(); std::advance(ptrDiscounts, 1))
         {
      		if (ptrDiscounts->Mode == DiscModeDeal)
             {
@@ -1388,6 +1425,27 @@ void TItemMinorComplete::SplitOrder(int WaysToSplit)
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
 		SubOrderImage->SplitOrder(WaysToSplit);
 	}
+}
+
+void TItemMinorComplete::SplitOrder(double quantityToSplit)
+{
+	for (std::vector<TDiscount>::iterator ptrDiscounts = Discounts.begin();
+		ptrDiscounts != Discounts.end(); std::advance(ptrDiscounts, 1))
+        {
+     		if (ptrDiscounts->Mode == DiscModeDeal)
+            {
+			    ptrDiscounts->Amount = RoundToNearest (ptrDiscounts->Amount  * quantityToSplit/ Qty, MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
+	     	}
+	    }
+
+	for (int i = 0; i < SubOrders->Count; i++)
+    {
+		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
+		SubOrderImage->SplitOrder(quantityToSplit);
+	}
+    Cost = RoundToNearest(Cost * quantityToSplit/ Qty, MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
+	Redeemed = Redeemed * quantityToSplit / Qty;
+    Qty = quantityToSplit;
 }
 
 Currency TItemMinorComplete::GetPriceRRP() {
@@ -1428,11 +1486,8 @@ Currency TItemMinorComplete::PriceEach_BillCalc() const
 
     Currency qty = Currency(GetQty());
     if(qty==0)
-    return RetVal;
-
+       return RetVal;
     RetVal = BillCalcResult.FinalPrice / qty;
-
-//    return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 //--------------------------------------------------------------------------
@@ -1440,11 +1495,7 @@ Currency TItemMinorComplete::PriceEach_BillCalc() const
 Currency TItemMinorComplete::Price_BillCalc() const
 {
     Currency RetVal = 0;
-//    RetVal = HasSeniorCitizensDiscountApplied() ? BillCalcResult.BasePrice : Price(); // when senior citizens discount is there, we always get the base price ( tax exclusive price )
-// ----------------------------------------------------------------
     RetVal = Price();
-// ----------------------------------------------------------------
-//    return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);;
     return RetVal;
 }
 
@@ -1454,11 +1505,11 @@ Currency TItemMinorComplete::TotalPriceSides_BillCalc() const
 	Currency RetVal = 0;
 	RetVal = Price_BillCalc();
 
-	for (int i = 0; i < SubOrders->Count; i++) {
+	for (int i = 0; i < SubOrders->Count; i++)
+    {
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
 		RetVal += SubOrderImage->Price_BillCalc();
 	}
-//	return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
@@ -1467,7 +1518,6 @@ Currency TItemMinorComplete::TotalPriceAdjustment_BillCalc() const
 {
 	Currency RetVal = 0;
 	RetVal = Price_BillCalc() + TotalAdjustment_BillCalc();
-//	return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
@@ -1476,8 +1526,6 @@ Currency TItemMinorComplete::TotalPriceAdjustmentSides_BillCalc() const
 {
     Currency RetVal = 0;
     RetVal = TotalPriceSides_BillCalc() + TotalAdjustmentSides_BillCalc();
-//    RetVal = TotalPriceSides_BillCalc() + TotalAdjustmentSides();   //todo: remove and revert to the line above
-//    return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
@@ -1485,27 +1533,22 @@ Currency TItemMinorComplete::TotalPriceAdjustmentSidesExclGST_BillCalc() const
 {
 	Currency RetVal = 0;
 	Currency OrderTotal = TotalPriceAdjustment_BillCalc();
-	if (OrderTotal != 0) {
-//		RetVal += RoundToNearest(OrderTotal - BillCalcResult.TotalTax ,
-//			                     MIN_CURRENCY_VALUE,
-//                                 TGlobalSettings::Instance().MidPointRoundsDown);
+	if (OrderTotal != 0)
+    {
 		RetVal += OrderTotal - BillCalcResult.TotalTax;
 	}
 	for (int i = 0; i < SubOrders->Count; i++) {
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
 		Currency SubOrderTotal = SubOrderImage->TotalPriceAdjustment_BillCalc();
-		if (SubOrderTotal != 0) {
-//			RetVal += RoundToNearest(SubOrderTotal - SubOrderImage->BillCalcResult.TotalTax,
-//                                     MIN_CURRENCY_VALUE,
-//                                     TGlobalSettings::Instance().MidPointRoundsDown);
+		if (SubOrderTotal != 0)
+        {
 			RetVal += SubOrderTotal - SubOrderImage->BillCalcResult.TotalTax;
 		}
 	}
-//	return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);;
     return RetVal;
 }
 
-Currency TItemMinorComplete::TotalSurcharge_BillCalc() const        //
+Currency TItemMinorComplete::TotalSurcharge_BillCalc() const
 {
 	Currency TotalSurchage = 0;
 
@@ -1522,7 +1565,7 @@ Currency TItemMinorComplete::TotalSurcharge_BillCalc() const        //
 	return TotalSurchage;
 }
 
-Currency TItemMinorComplete::TotalSurchargeSides_BillCalc() const   //
+Currency TItemMinorComplete::TotalSurchargeSides_BillCalc() const
 {
     Currency RetVal = 0;
     RetVal += TotalSurcharge_BillCalc();
@@ -1532,20 +1575,17 @@ Currency TItemMinorComplete::TotalSurchargeSides_BillCalc() const   //
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
 		RetVal += SubOrderImage->TotalSurcharge_BillCalc();
 	}
-
-//	return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
 	return RetVal;
 }
 
-Currency TItemMinorComplete::GrandTotal_BillCalc() const           //
+Currency TItemMinorComplete::GrandTotal_BillCalc() const
 {
 	Currency RetVal = 0;
 	RetVal = TotalPriceAdjustment_BillCalc() - Redeemed;
-//	return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
 	return RetVal;
 }
 
-Currency TItemMinorComplete::GrandTotalExclGSTSides_BillCalc()const    //
+Currency TItemMinorComplete::GrandTotalExclGSTSides_BillCalc()const
 {
 #ifdef _DEBUG
     Currency billCalcFinalPrice = BillCalcResult.FinalPrice;
@@ -1575,7 +1615,7 @@ Currency TItemMinorComplete::GrandTotalExclGSTSides_BillCalc()const    //
     return RetVal;
 }
 
-Currency TItemMinorComplete::GrandTotalGSTContentSides_BillCalc() const       //
+Currency TItemMinorComplete::GrandTotalGSTContentSides_BillCalc() const
 {
     Currency RetVal = 0;
     RetVal += BillCalcResult.TotalTax - BillCalcResult.ServiceCharge.TaxValue;
@@ -1585,8 +1625,6 @@ Currency TItemMinorComplete::GrandTotalGSTContentSides_BillCalc() const       //
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
         RetVal += SubOrderImage->BillCalcResult.TotalTax  - SubOrderImage->BillCalcResult.ServiceCharge.TaxValue;
 	}
-
-//    return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
@@ -1600,7 +1638,7 @@ bool TItemMinorComplete::HasPWDApplied() const
     return Discounts.size() == 1 && Discounts[0].IsPersonWithDisabilityDiscount();
 }
 
-Currency TItemMinorComplete::TotalDiscount_BillCalc() const         //
+Currency TItemMinorComplete::TotalDiscount_BillCalc() const
 {
 	Currency TotalDiscount = 0;
 
@@ -1617,7 +1655,7 @@ Currency TItemMinorComplete::TotalDiscount_BillCalc() const         //
 	return TotalDiscount;
 }
 
-Currency TItemMinorComplete::TotalDiscountSides_BillCalc() const        //
+Currency TItemMinorComplete::TotalDiscountSides_BillCalc() const
 {
     Currency RetVal = TotalDiscount_BillCalc();
 
@@ -1626,12 +1664,10 @@ Currency TItemMinorComplete::TotalDiscountSides_BillCalc() const        //
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
         RetVal += SubOrderImage->TotalDiscount_BillCalc();
 	}
-
-//    return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
-Currency TItemMinorComplete::TotalAdjustment_BillCalc() const   //
+Currency TItemMinorComplete::TotalAdjustment_BillCalc() const
 {
 	Currency TotalAdjustment = 0;
 
@@ -1648,12 +1684,6 @@ Currency TItemMinorComplete::TotalAdjustment_BillCalc() const   //
             TotalAdjustment += itDiscountResult->Content;
         }
 	}
-
-    //if (OrderType == CreditNonExistingOrder)
-    //{
-    //    TotalAdjustment *= -1;
-    //}
-
 	return TotalAdjustment;
 }
 
@@ -1666,12 +1696,10 @@ Currency TItemMinorComplete::TotalAdjustmentSides_BillCalc() const
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
         RetVal += SubOrderImage->TotalAdjustment_BillCalc();
 	}
-
-//    return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
-Currency TItemMinorComplete::TotalSalesTax_BillCalc() const          //
+Currency TItemMinorComplete::TotalSalesTax_BillCalc() const
 {
     Currency TotalSalesTax = 0;
         std::vector<BillCalculator::TTaxResult> TaxResults = BillCalcResult.Tax;
@@ -1683,22 +1711,19 @@ Currency TItemMinorComplete::TotalSalesTax_BillCalc() const          //
 	return TotalSalesTax;
 }
 
-Currency TItemMinorComplete::TotalTax_BillCalc() const  //
+Currency TItemMinorComplete::TotalTax_BillCalc() const
 {
     Currency TotalSalesTax = 0;
-
     std::vector<BillCalculator::TTaxResult> TaxResults = BillCalcResult.Tax;
 
     for (std::vector<BillCalculator::TTaxResult>::iterator itTaxResult = TaxResults.begin(); itTaxResult != TaxResults.end(); ++itTaxResult)
     {
         TotalSalesTax += itTaxResult->Value;
 	}
-
-	//return TotalSalesTax_BillCalc() + BillCalcResult.ServiceCharge.Value + BillCalcResult.ServiceCharge.TaxValue;        //todo: incorrect to add service charge here ??
-    return TotalSalesTax_BillCalc() + BillCalcResult.ServiceCharge.TaxValue;                                               //I think so
+    return TotalSalesTax_BillCalc() + BillCalcResult.ServiceCharge.TaxValue;
 }
 
-Currency TItemMinorComplete::TotalSalesTaxSides_BillCalc() const    //
+Currency TItemMinorComplete::TotalSalesTaxSides_BillCalc() const
 {
     Currency RetVal = TotalSalesTax_BillCalc();
 
@@ -1707,12 +1732,10 @@ Currency TItemMinorComplete::TotalSalesTaxSides_BillCalc() const    //
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
 		RetVal += SubOrderImage->TotalSalesTax_BillCalc();
 	}
-
-//	return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
-Currency TItemMinorComplete::TotalTaxSides_BillCalc() const      //
+Currency TItemMinorComplete::TotalTaxSides_BillCalc() const
 {
     Currency RetVal = 0;
      RetVal = TotalTax_BillCalc();
@@ -1722,35 +1745,31 @@ Currency TItemMinorComplete::TotalTaxSides_BillCalc() const      //
                 TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
                 RetVal += SubOrderImage->TotalTax_BillCalc();
             }
-//	return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
-Currency TItemMinorComplete::ServiceCharge_BillCalc() const    //
+Currency TItemMinorComplete::ServiceCharge_BillCalc() const
 {
        return BillCalcResult.ServiceCharge.Value;
 }
 
-Currency TItemMinorComplete::ServiceChargeSides_BillCalc() const       //
+Currency TItemMinorComplete::ServiceChargeSides_BillCalc() const
 {
     Currency RetVal = ServiceCharge_BillCalc();
-
 	for (int i = 0; i < SubOrders->Count; i++)
     {
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
 		RetVal += SubOrderImage->ServiceCharge_BillCalc();
 	}
-
-//	return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
-Currency TItemMinorComplete::ServiceChargeTax_BillCalc() const  //
+Currency TItemMinorComplete::ServiceChargeTax_BillCalc() const
 {
     return BillCalcResult.ServiceCharge.TaxValue;
 }
 
-Currency TItemMinorComplete::ServiceChargeTaxSides_BillCalc() const        //
+Currency TItemMinorComplete::ServiceChargeTaxSides_BillCalc() const
 {
     Currency RetVal = ServiceChargeTax_BillCalc();
 
@@ -1759,8 +1778,6 @@ Currency TItemMinorComplete::ServiceChargeTaxSides_BillCalc() const        //
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
 		RetVal += SubOrderImage->ServiceChargeTax_BillCalc();
 	}
-
-//	return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
@@ -1778,13 +1795,10 @@ Currency TItemMinorComplete::FinalPriceSides_BillCalc() const
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
 		RetVal += SubOrderImage->FinalPrice_BillCalc();
 	}
-
-//	return RoundToNearest(RetVal, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
     return RetVal;
 }
 
-Currency TItemMinorComplete::DiscountValue_BillCalc
-	 (std::vector<TDiscount>::const_iterator &Discount)
+Currency TItemMinorComplete::DiscountValue_BillCalc(std::vector<TDiscount>::const_iterator &Discount)
 {
     Currency discountContent = 0;
 

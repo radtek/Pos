@@ -1,12 +1,14 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include "ManagerLoyaltyVoucher.h"
 #ifdef MenuMate
 #include "DeviceRealTerminal.h"
 #endif
 #ifdef  PalmMate
 #include "Palm.h"
 #endif
+#include <Sysutils.hpp>
 #include "SelectDish.h"
 #include "Requests.h"
 #include "ListPaymentSystem.h"
@@ -20,7 +22,6 @@
 #include "Eftpos.h"
 #include "EftPosDialogs.h"
 #include "Paytype.h"
-// #include "EftposSyncroPinPadCTRL.h"
 #include "ManagerVoucherElectronic.h"
 #include "CardSwipe.h"
 #include "MMTouchKeyboard.h"
@@ -56,13 +57,15 @@
 #include "MallExportHourlyUpdate.h"
 #include "MallExportTransactionUpdate.h"
 #include "MallExportDefines.h"
+#include "MallExportOtherDetailsUpdate.h"
 #include "DBTierLevel.h"
 #include "ManagerDelayedPayment.h"
 #include "DrinkCommandManager.h"
-  #include "DeviceRealTerminal.h"
+#include "DeviceRealTerminal.h"
 #include "DrinkCommandData.h"
 #include "InitializeDCSession.h"
 #include "MallExportRegenerateReport.h"
+#include "LoyaltyMateUtilities.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -168,12 +171,10 @@ void TListPaymentSystem::PaymentLoad(Database::TDBTransaction &DBTransaction, in
 			Payment.GroupNumber = IBInternalQuery->FieldByName("GROUP_NUMBER")->AsInteger;
 			Payment.SecondaryPMSIPAddress = IBInternalQuery->FieldByName("DEST_IP")->AsString;
 			Payment.SecondaryPMSPortNumber = IBInternalQuery->FieldByName("DEST_PORT")->AsInteger;
-			//Payment.FixedVoucherCode = IBInternalQuery->FieldByName("PRE_VOUCHER_CODE")->AsString;
 			Payment.Export = IBInternalQuery->FieldByName("INVOICE_EXPORT")->AsInteger;
 			Payment.VoucherMerchantID = IBInternalQuery->FieldByName("VOUCHER_MERCHANT_ID")->AsString;
 			Payment.PaymentThirdPartyID = TDBThirdPartyCodes::GetThirdPartyCodeByKey(DBTransaction,
 			IBInternalQuery->FieldByName("THIRDPARTYCODES_KEY")->AsInteger);
-		  //	Payment.UniVoucherURL	=	IBInternalQuery->FieldByName("VOUCHER_URL")->AsString;
 			Payment.UniVoucherUser	=	IBInternalQuery->FieldByName("VOUCHER_USER")->AsString;
 			Payment.UniVoucherPass	=	IBInternalQuery->FieldByName("VOUCHER_PASS")->AsString;
 			Payment.CVSReadLocation	=	IBInternalQuery->FieldByName("CSV_READ_LOCATION")->AsString;
@@ -246,6 +247,17 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 
 		if (PaymentKey != 0)
 		{
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE UPPER(PAYMENT_NAME) = :PAYMENT_NAME "
+                                          " AND  PAYMENT_KEY <> :PAYMENT_KEY";
+            IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name.UpperCase();
+            IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+            IBInternalQuery->ExecQuery();
+            if(!IBInternalQuery->Eof)
+            {
+               throw new Exception("A Payment type of with name "+ Payment.Name +" already exists.\rPlease enter a different Payment name.");
+            }
+
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Text = " UPDATE PAYMENTTYPES " " SET " " PAYMENT_NAME = :PAYMENT_NAME, " " PROPERTIES = :PROPERTIES, "
 			" EXCHANGE_RATE = :EXCHANGE_RATE, " " COLOUR = :COLOUR, " " DISPLAY_ORDER = :DISPLAY_ORDER, "
@@ -268,10 +280,8 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = Payment.GroupNumber;
 			IBInternalQuery->ParamByName("DEST_IP")->AsString = Payment.SecondaryPMSIPAddress;
 			IBInternalQuery->ParamByName("DEST_PORT")->AsInteger = Payment.SecondaryPMSPortNumber;
-            //IBInternalQuery->ParamByName("PRE_VOUCHER_CODE")->AsString = Payment.FixedVoucherCode;
 			IBInternalQuery->ParamByName("VOUCHER_MERCHANT_ID")->AsString = Payment.VoucherMerchantID;
 			IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = Payment.Export;
-		//	IBInternalQuery->ParamByName("VOUCHER_URL")->AsString = Payment.UniVoucherURL;
 			IBInternalQuery->ParamByName("VOUCHER_USER")->AsString = Payment.UniVoucherUser;
 			IBInternalQuery->ParamByName("VOUCHER_PASS")->AsString = Payment.UniVoucherPass;
 			IBInternalQuery->ParamByName("CSV_READ_LOCATION")->AsString = Payment.CVSReadLocation;
@@ -294,6 +304,14 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 		}
 		else
 		{
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE UPPER(PAYMENT_NAME) = :PAYMENT_NAME";
+            IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name.UpperCase();
+            IBInternalQuery->ExecQuery();
+            if(!IBInternalQuery->Eof)
+            {
+               throw new Exception("A Payment type of with name "+ Payment.Name +" already exists.\rPlease enter a different Payment name.");
+            }
 			IBInternalQuery->Close();
 			IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_PAYMENTTYPES, 1) FROM RDB$DATABASE";
 			IBInternalQuery->ExecQuery();
@@ -324,11 +342,9 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ParamByName("DEST_IP")->AsString = Payment.SecondaryPMSIPAddress;
 			IBInternalQuery->ParamByName("DEST_PORT")->AsInteger = Payment.SecondaryPMSPortNumber;
 			IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = Payment.TaxRate;
-			//IBInternalQuery->ParamByName("PRE_VOUCHER_CODE")->AsString = Payment.FixedVoucherCode;
 			IBInternalQuery->ParamByName("VOUCHER_MERCHANT_ID")->AsString = Payment.VoucherMerchantID;
 			IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = Payment.Export;
-		 //	IBInternalQuery->ParamByName("VOUCHER_URL")->AsString = Payment.UniVoucherURL.SubString(1,80);
-			IBInternalQuery->ParamByName("VOUCHER_USER")->AsString = Payment.UniVoucherUser.SubString(1,50);
+ 			IBInternalQuery->ParamByName("VOUCHER_USER")->AsString = Payment.UniVoucherUser.SubString(1,50);
 			IBInternalQuery->ParamByName("VOUCHER_PASS")->AsString = Payment.UniVoucherPass.SubString(1,20);
 			IBInternalQuery->ParamByName("CSV_READ_LOCATION")->AsString = Payment.CVSReadLocation.SubString(1,255);
 			IBInternalQuery->ParamByName("CSV_WRITE_LOCATION")->AsString = Payment.CVSWriteLocation.SubString(1,255);
@@ -357,18 +373,11 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransaction)
 {
     TIBSQL *IBInternalQuery = PaymentTransaction.DBTransaction.Query(PaymentTransaction.DBTransaction.AddQuery());
-
-	//Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-	//PaymentTransaction.DBTransaction.RegisterQuery(IBInternalQuery);
-
 	int CurrentDisplayOrder = 0;
-
 	if (PaymentTransaction.Membership.Member.ContactKey != 0)
 	{
           LoadMemberPaymentTypes(PaymentTransaction);
 	}
-
-    //Loading clipp Payment Type
     if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
     {
         LoadClippPaymentTypes(PaymentTransaction);
@@ -519,7 +528,6 @@ void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTran
         PaymentTransaction.PaymentAdd(NewPayment);
     }
 
-
     if (PaymentTransaction.Membership.Member.ContactKey != 0 && !TGlobalSettings::Instance().UseTierLevels)
     {
         TPayment *NewPayment = new TPayment;
@@ -531,10 +539,7 @@ void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTran
         NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
         NewPayment->Colour = clTeal;
         NewPayment->PaymentThirdPartyID = "10007242";
-        //if(!TGlobalSettings::Instance().PointOnly) // MM 4775
-       // {
         PaymentTransaction.PaymentAdd(NewPayment);
-       // }
     }
 
     if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal)
@@ -820,6 +825,12 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
             }
             UpdateCachedRewardPoints(PaymentTransaction);
             PerformPostTransactionOperations( PaymentTransaction );
+
+            if(TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
+            {
+                TMallExportOtherDetailsUpdate exportOtherDetailsUpdate;
+                TExportUpdateResponse responseotherdetails = exportOtherDetailsUpdate.UpdateOtherDetailsExportTablesOnTransaction( &PaymentTransaction );
+            }
                                                            //Current points of member
         }
 		else
@@ -887,8 +898,6 @@ bool TListPaymentSystem::CheckForCard(TPaymentTransaction &PaymentTransaction)
       throw Exception("Failed To Read Card. Either Re-insert card or remove member.");
     return retVal;
 }
-
-
 
 void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &PaymentTransaction )
 {
@@ -1163,7 +1172,15 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                             if (Payment->Result != eAccepted)
                             {
                                  Payment->Result = eFailed;
-                                MessageBox(EftTrans->ResultText, "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
+                                 AnsiString unhandledState = "HANDLE IS IN THE WRONG";
+                                 if(EftTrans->ResultText.UpperCase().Pos(unhandledState) != 0)
+                                 {
+                                    MessageBox("Timed Out. Please try again after some time", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
+                                 }
+                                 else
+                                 {
+                                    MessageBox(EftTrans->ResultText, "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
+                                 }
                             }
 						}
 						else
@@ -1522,7 +1539,16 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
                        else if(!TGlobalSettings::Instance().UseTierLevels)
                        {
                           double currentPoint = PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned();
-                          TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
+                          if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints == 0)
+                          {
+                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints =
+                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetEarnedPointsForCurrentYear(PaymentTransaction.DBTransaction, PaymentTransaction.Membership.Member);
+                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
+                          }
+                          else
+                          {
+                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
+                          }
                        }
                        return;
 
@@ -2068,7 +2094,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 	return Retval;
 }
 
-
 void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, long ArcBillLK)
 {
     /**********************DLF MALL START****************************************/
@@ -2514,7 +2539,7 @@ void TListPaymentSystem::ArchiveOrderDiscounts(Database::TDBTransaction &DBTrans
 	Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
 	DBTransaction.RegisterQuery(IBInternalQuery);
 
-	for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->DiscountsBegin(); ptrDiscounts != Order->DiscountsEnd();
+	for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();
 	std::advance(ptrDiscounts, 1))
 	{
         if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
@@ -2556,7 +2581,7 @@ void TListPaymentSystem::ArchiveOrderDiscounts(Database::TDBTransaction &DBTrans
         IBInternalQuery->ParamByName("SOURCE")->AsInteger = ptrDiscounts->Source;
         IBInternalQuery->ParamByName("APPEARANCE_ORDER")->AsInteger = ptrDiscounts->AppearanceOrder;
         IBInternalQuery->ParamByName("PRIORITY")->AsInteger = ptrDiscounts->Priority;
-        IBInternalQuery->ParamByName("DISCOUNT_ID")->AsInteger = ptrDiscounts->ID;
+        IBInternalQuery->ParamByName("DISCOUNT_ID")->AsString = ptrDiscounts->DiscountCode;
         IBInternalQuery->ParamByName("MEMBERS_ONLY")->AsString = (ptrDiscounts->MembersOnly == true) ? "T" : "F";
         IBInternalQuery->ParamByName("MEMBERS_EXEMPT")->AsString = (ptrDiscounts->MembersExempt == true) ? "T" : "F";
         IBInternalQuery->ExecQuery();
@@ -3304,6 +3329,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	bool GeneralLedgerMate = true;
 	bool RMSCSVRoomExport = true;
     bool NewBookCSVRoomExport = true;
+    bool LoyaltyVouchers = true;
 	if (PaymentTransaction.TransVerifyCheque())
 	{
 		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
@@ -3341,6 +3367,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 				TransRetriveElectronicResult(PaymentTransaction, Payment);
 				if (Payment->Result != eAccepted)
 				{
+                    transactionRecovery.ClearRecoveryInfo();
 					Payment->Failed();
 					EftPosOk = false;
 				}
@@ -3348,6 +3375,9 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 				{
 					if (Payment->ReferenceNumber != "")
 					{
+                        if(TGlobalSettings::Instance().EnableEftPosSmartPay && TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"]
+                           && EftPos->AcquirerRefSmartPay.Length() != 0)
+                           Payment->ReferenceNumber = EftPos->AcquirerRefSmartPay;
 						PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
 						ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_EFTPOS)));
 					}
@@ -3405,11 +3435,6 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	if (!PhoenixHSOk)
 	return RetVal;
 
-	//PointsOk = TDeviceRealTerminal::Instance().ManagerMembership->ProcessPoints(PaymentTransaction);
-
-	//if (!PointsOk)
-	//return RetVal;
-
 	for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *Payment = PaymentTransaction.PaymentGet(i);
@@ -3417,36 +3442,6 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 				(Payment->GetCashOut() != 0 || Payment->GetPay() != 0) &&
 				(Payment->Result != eAccepted))
 		{
-//			if(Payment->UniVoucherURL != "")
-//            if(TDeviceRealTerminal::Instance().PocketVouchers->URL != "")
-//			{ // Process as a universal voucher.
-//
-//				// There is no REFERENCE for this payment type, that means it's hard to look up the payment
-//				// by a common reference provided by us to the 3rd party Voucher house.
-//				// This should be added at some stage.
-//
-//				/* Payment->ReferenceNumber = ManagerReference->BuildReference(TGlobalSettings::Instance().SiteID,
-//					TDeviceRealTerminal::Instance().ID.Name, REFTYPE_ELECTRONIC_VOUCHER_CODE);*/
-//				std::auto_ptr<TManagerVoucherElectronic> VouchersElectronic (new TManagerVoucherElectronic());
-//				VouchersElectronic->ProcessVoucher(PaymentTransaction, Payment);
-//				if (Payment->Result != eAccepted)
-//				{
-//					Payment->Failed();
-//					PocketVoucher = false;
-//				}
-//				else
-//				{
-//					/*PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
-//							ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_POCKETVOUCHER_MMTRANS)));
-//					PaymentTransaction.References.push_back(RefRefType(Payment->VoucherCode,
-//							ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_POCKETVOUCHER_CODE)));
-//					PaymentTransaction.References.push_back(RefRefType(Payment->ExternalReferenceNumber,
-//							ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_POCKETVOUCHER_PVTRANS)));*/
-//				}
-//
-//			}
-//			else
-//			{ // Process as a normal Pocket Voucher.
 				Payment->ReferenceNumber = ManagerReference->BuildReference(TGlobalSettings::Instance().SiteID,
 				TDeviceRealTerminal::Instance().ID.Name, REFTYPE_POCKETVOUCHER_CODE);
                 TDeviceRealTerminal::Instance().PocketVouchers->ProcessVoucher(PaymentTransaction, Payment);
@@ -3464,8 +3459,6 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 					PaymentTransaction.References.push_back(RefRefType(Payment->ExternalReferenceNumber,
 					ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_POCKETVOUCHER_PVTRANS)));
 				}
-//			}
-
 		}
 	}
 
@@ -3503,9 +3496,104 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
             NewBookCSVRoomExport = false;
         }
     }
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+       LoyaltyVouchers = ProcessLoyaltyVouchers(PaymentTransaction);
 
-	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PointsOk && PocketVoucher && GeneralLedgerMate && RMSCSVRoomExport;
+	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PointsOk && PocketVoucher && GeneralLedgerMate && RMSCSVRoomExport && LoyaltyVouchers;
 	return RetVal;
+}
+
+bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction)
+{
+  bool paymentComplete = true;
+  bool isVoucherPresent = false;
+  TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+  TVoucherUsageDetail VoucherUsageDetail;
+  TGUID transactionReference;
+  CreateGUID(transactionReference);
+  SetInvoiceNumber(PaymentTransaction);
+  VoucherUsageDetail.ReferenceNumber =  Sysutils::GUIDToString(transactionReference);
+  VoucherUsageDetail.InvoiceNumber =  PaymentTransaction.InvoiceNumber;
+  VoucherUsageDetail.TotalSaleAmount = PaymentTransaction.Money.GrandTotal;
+  if(PaymentTransaction.Membership.Applied())
+  {
+     VoucherUsageDetail.MemberUniqueId = TLoyaltyMateUtilities::GetMemberCloudId(PaymentTransaction.DBTransaction,
+                                                       PaymentTransaction.Membership.Member.ContactKey);
+  }
+
+  if(PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber != NULL &&
+     PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber !="")
+  {
+    isVoucherPresent = true;
+    VoucherUsageDetail.PocketVoucherDiscountAmount = PaymentTransaction.RedeemPocketVoucherInformation->RedeemedAmount;
+    VoucherUsageDetail.PocketVoucherNumber = PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber;
+  }
+
+  if(paymentComplete && PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber != NULL &&
+     PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber !="")
+  {
+    isVoucherPresent = true;
+    VoucherUsageDetail.PointsRedeemed = PaymentTransaction.RedeemGiftVoucherInformation->RedeemedAmount;
+    VoucherUsageDetail.GiftCardNumber = PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber;
+  }
+
+   if(paymentComplete && TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName != NULL &&
+     TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName !="")
+  {
+    isVoucherPresent = true;
+    VoucherUsageDetail.MemberVoucherDiscountAmount = 0;
+    VoucherUsageDetail.VoucherName = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName;
+  }
+  for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
+  {
+    TItemComplete *Order = (TItemComplete*)(PaymentTransaction.Orders->Items[i]);
+    DISCOUNT_RESULT_LIST::iterator it_discount = Order->BillCalcResult.Discount.begin();
+    for( ; it_discount != Order->BillCalcResult.Discount.end(); it_discount++ )
+    {
+        TDiscount CurrentDiscount;
+        ManagerDiscount->GetDiscount(PaymentTransaction.DBTransaction,(*it_discount).DiscountKey,CurrentDiscount);
+        double discountAmount = RoundToNearest((*it_discount).Value,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+        if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
+           && CurrentDiscount.DiscountCode  == TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount)
+        {
+            VoucherUsageDetail.MemberVoucherDiscountAmount += discountAmount;
+        }
+
+        if(CurrentDiscount.IsCloudDiscount && CurrentDiscount.MembersOnly && CurrentDiscount.DailyUsageAllowedPerMember > 0)
+        {
+           isVoucherPresent = true;
+
+           VoucherUsageDetail.DiscountUsage[(*it_discount).DiscountCode] += discountAmount;
+        }
+    }
+  }
+
+  if(isVoucherPresent)
+  {
+    if(!PaymentTransaction.IsVouchersProcessed)
+    {
+         paymentComplete = ManagerLoyaltyVoucher.ProcessVouchers(VoucherUsageDetail);
+    }
+    PaymentTransaction.IsVouchersProcessed = paymentComplete;
+    if(paymentComplete)
+    {
+       TReleasedVoucherDetail ReleasedVoucherDetail;
+       ReleasedVoucherDetail.GiftCardNumber =  PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber;
+       ReleasedVoucherDetail.PocketVoucherNumber =  PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber;
+       ReleasedVoucherDetail.VoucherName =  TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName;
+       ReleasedVoucherDetail.ReferenceNumber = VoucherUsageDetail.ReferenceNumber;
+       if(!VoucherUsageDetail.DiscountUsage.empty())
+       {
+           for(std::map<AnsiString,double>::iterator itDiscount = VoucherUsageDetail.DiscountUsage.begin();
+            itDiscount != VoucherUsageDetail.DiscountUsage.end(); ++itDiscount)
+            {
+               ReleasedVoucherDetail.DiscountUsage.push_back(itDiscount->first);
+            }
+       }
+       paymentComplete = ManagerLoyaltyVoucher.ReleaseVouchers(ReleasedVoucherDetail);
+    }
+  }
+  return paymentComplete;
 }
 //------------------------------------------------------------------------------
 void TListPaymentSystem::CreateXeroInvoiceAndSend( TPaymentTransaction &inPaymentTransaction )
@@ -4115,7 +4203,7 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
         int QuickTransactionCounter = 0;
 
 	while (!PaymentComplete && !PaymentAborted &&
-           (!PaymentTransaction.IsQuickPayTransaction || (PaymentTransaction.IsQuickPayTransaction && QuickTransactionCounter<1)))
+           (!PaymentTransaction.IsQuickPayTransaction || (PaymentTransaction.IsQuickPayTransaction && QuickTransactionCounter < 1)))
 	{
                 QuickTransactionCounter++;
 
@@ -4138,7 +4226,6 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
   			    PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 				PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
-                /////////////////////////////////////////////////
                 /***Send Requests to Thor*****/
                 /////////////////////////////////////////////////
                 if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
@@ -4168,7 +4255,6 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 					StoreInfo(PaymentTransaction);
 					ProcessRewardSchemes(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
-
 					if(PaymentTransaction.TypeOfSale == RegularSale)
 					{
 						exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
@@ -4209,9 +4295,9 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
             PaymentTransaction.SplitMoney.TotalDivisions = TDBTab::GetTotalDivisions(PaymentTransaction.DBTransaction, *itTabs);
 	}
 
-	std::auto_ptr <TList> ClonedOrdersList(new TList);
+        std::auto_ptr <TList> ClonedOrdersList(new TList);
         TItemComplete *SplittedItem = new TItemComplete();
-	double SplitPercentage = 0;
+        double SplitPercentage = 0;
         bool DelayAll = false;
         bool result = SplitPayment(PaymentTransaction, &PaymentTransaction.SplitMoney, SplitPercentage,DelayAll);
 
@@ -4220,7 +4306,7 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
            DelayAllPayments(PaymentTransaction);
         }
         else if (result)
-	{
+	     {
             if (PaymentTransaction.SplitMoney.LeftOwing != 0)
             {
                TDBOrder::UpdateOrdersForPartialPayment(PaymentTransaction.DBTransaction, PaymentTransaction.Orders,
@@ -4246,13 +4332,6 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
             PaymentTransaction.SplitMoney.NumberOfPayments);
                }
             }
-
-//             for(std::vector<TPatronType>::iterator it = Patron.begin(); it != GetSavedOrderKey.end(); ++it)
-//             {
-//            TManagerPatron::Instance().SetDefaultPatrons(PaymentTransaction.DBTransaction, PaymentTransaction.Patrons,
-//            PaymentTransaction.SplitMoney.NumberOfPayments);
-//            }
-
 
             // Load points.
             PaymentsReload(PaymentTransaction);
@@ -4281,8 +4360,7 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                             if (Screen->ActiveForm != NULL)
                                 Screen->ActiveForm->Repaint();
                             TDeviceRealTerminal::Instance().ProcessingController.Repaint();
-                            if(TManagerDelayedPayment::Instance().IsDelayedPayment(PaymentTransaction) &&
-                               ((!IsAllItemSelected(PaymentTransaction)) ||
+                            if(TManagerDelayedPayment::Instance().IsDelayedPayment(PaymentTransaction) && ((!IsAllItemSelected(PaymentTransaction)) ||
                                 (IsAllItemSelected(PaymentTransaction) && SplittedItem->OrderKey > 0)))
                                {
                                  TManagerDelayedPayment::Instance().MoveOrderToTab(PaymentTransaction,false);
@@ -4329,7 +4407,6 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                                         }
                                 }
                             }
-                       //
                             RemoveOrders(PaymentTransaction);
                             AdjustCredit(PaymentTransaction);
 
@@ -4719,7 +4796,6 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 						Screen->ActiveForm->Repaint();
 					}
 					TDeviceRealTerminal::Instance().ProcessingController.Repaint();
-
 					UpdateFreebieRewards(PaymentTransaction);
 					SetInvoiceNumber(PaymentTransaction);
 					//MM-2277 Calculate tier level for user
@@ -4817,6 +4893,7 @@ void TListPaymentSystem::updateMallExportTables( TPaymentTransaction &paymentTra
 	TMallExportUpdateAdaptor exportUpdateAdaptor;
 	TMallExportHourlyUpdate exportHourlyUpdate;
 	TMallExportTransactionUpdate exportTransactionUpdate;
+//    TMallExportOtherDetailsUpdate exportOtherDetailsUpdate;
 	if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
 	{
 		int Time = Now().FormatString("hh").ToInt();
@@ -4835,6 +4912,16 @@ void TListPaymentSystem::updateMallExportTables( TPaymentTransaction &paymentTra
     {
      	TExportUpdateResponse response = exportUpdateAdaptor.UpdateExportTablesOnTransaction( &paymentTransaction );
     	TExportUpdateResponse responsehourly = exportHourlyUpdate.UpdateHourlyExportTablesOnTransaction( &paymentTransaction );
+
+//        if(TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
+//        {
+//            TExportUpdateResponse responseotherdetails = exportOtherDetailsUpdate.UpdateOtherDetailsExportTablesOnTransaction( &paymentTransaction );
+//        }
+
+//    	if(TGlobalSettings::Instance().MallIndex == ALPHALANDMALL || TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
+//        {
+//            TExportUpdateResponse responsetransaction = exportTransactionUpdate.UpdateTransactionExportTablesOnTransaction( &paymentTransaction );
+//        }
     	if(TGlobalSettings::Instance().MallIndex == ALPHALANDMALL)
         {
             TExportUpdateResponse responsetransaction = exportTransactionUpdate.UpdateTransactionExportTablesOnTransaction( &paymentTransaction );
@@ -5267,7 +5354,7 @@ void TListPaymentSystem::GetDLFMallCMDCodeThird(TItemComplete *ItemComplete,Ansi
  //ItemComplete->Discounts.
 	try
 	{     Currency percentAmount =0;
-    	for (std::vector <TDiscount> ::const_iterator ptrDiscounts = ItemComplete->DiscountsBegin(); ptrDiscounts != ItemComplete->DiscountsEnd();
+    	for (std::vector <TDiscount> ::const_iterator ptrDiscounts = ItemComplete->Discounts.begin(); ptrDiscounts != ItemComplete->Discounts.end();
 	    std::advance(ptrDiscounts, 1))
 	{   //Currency ab=  ptrDiscounts->
         percentAmount =  percentAmount+ ptrDiscounts->PercentAmount ;
@@ -5321,7 +5408,7 @@ void TListPaymentSystem::GetDLFMallCMDCodeSubOrderThird(TItemCompleteSub *ItemCo
  //ItemComplete->Discounts.
 	try
 	{     Currency percentAmount =0;
-    	for (std::vector <TDiscount> ::const_iterator ptrDiscounts = ItemComplete->DiscountsBegin(); ptrDiscounts != ItemComplete->DiscountsEnd();
+    	for (std::vector <TDiscount> ::const_iterator ptrDiscounts = ItemComplete->Discounts.begin(); ptrDiscounts != ItemComplete->Discounts.end();
 	std::advance(ptrDiscounts, 1))
 	{   //Currency ab=  ptrDiscounts->
       percentAmount =  percentAmount+ ptrDiscounts->PercentAmount ;

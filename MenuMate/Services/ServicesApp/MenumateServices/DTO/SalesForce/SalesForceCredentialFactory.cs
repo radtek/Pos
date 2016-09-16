@@ -42,8 +42,8 @@ namespace MenumateServices.DTO.SalesForce
                     var salesForceCredential = new SalesForceCredential
                     {
                         UserName = "menumate@menumate.com",
-                        Password = "Menu1203mate@SF",
-                        SecurityToken = "JAznA5075w7OdVZG8UTTztUyt"
+                        Password = "Loyaltymate@1358",//"Menu1203mate@SF",
+                        SecurityToken = "oLbdKUyN9j6k9T15ocIx4ZZz"// "JAznA5075w7OdVZG8UTTztUyt"
                     };
 
                     return salesForceCredential;

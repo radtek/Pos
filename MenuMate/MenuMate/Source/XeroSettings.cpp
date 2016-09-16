@@ -11,6 +11,7 @@
 #include "GlobalSettings.h"
 #include "ManagerVariable.h"
 #include "DeviceRealTerminal.h"
+#include "MYOBIntegration.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -60,12 +61,22 @@ void __fastcall TfrmXeroSettings::btnEditHostNameMouseClick(TObject *Sender)
 	if( !( ( TControl *)Sender )->Enabled )
 		return;
 
-	UnicodeString text = CheckMachineName( XeroMachineName );
+	UnicodeString text = CheckMachineName( AccountingMachineName );
 
-	if( EditText( "Xero Station Name", text ) )
-	{
-		XeroMachineName = text;
-	}
+    if(Caption.Pos("MYOB") == 0)
+    {
+        if( EditText( "Xero Station Name", text ) )
+        {
+            AccountingMachineName = text;
+        }
+    }
+    else
+    {
+        if( EditText( "MYOB Station Name", text ) )
+        {
+            AccountingMachineName = text;
+        }
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmXeroSettings::btnEditFolderNameMouseClick(TObject *Sender)
@@ -73,12 +84,22 @@ void __fastcall TfrmXeroSettings::btnEditFolderNameMouseClick(TObject *Sender)
 	if( !( ( TControl *)Sender )->Enabled )
 		return;
 
-	UnicodeString text = CheckFolderName( XeroFolderPath );
+	UnicodeString text = CheckFolderName( AccountingFolderPath );
 
-	if( EditText( "Xero Folder Name", text ) )
-	{
-		XeroFolderPath = text;
-   }
+    if(Caption.Pos("MYOB") == 0)
+    {
+        if( EditText( "Xero Folder Name", text ) )
+        {
+            AccountingFolderPath = text;
+        }
+    }
+    else
+    {
+        if( EditText( "MYOB Folder Name", text ) )
+        {
+            AccountingFolderPath = text;
+        }
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmXeroSettings::btnEditUserNameMouseClick(TObject *Sender)
@@ -86,12 +107,22 @@ void __fastcall TfrmXeroSettings::btnEditUserNameMouseClick(TObject *Sender)
 	if( !( ( TControl *)Sender )->Enabled )
 		return;
 
-	UnicodeString text = CheckUserName( XeroUserName );
+	UnicodeString text = CheckUserName( AccountingUserName );
 
-	if( EditText( "Xero Remote Host: User Name", text ) )
-	{
-		XeroUserName = text;
-	}
+    if(Caption.Pos("MYOB") == 0)
+    {
+        if( EditText( "Xero Remote Host: User Name", text ) )
+        {
+            AccountingUserName = text;
+        }
+    }
+    else
+    {
+        if( EditText( "MYOB Remote Host: User Name", text ) )
+        {
+            AccountingUserName = text;
+        }
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmXeroSettings::btnEditPasswordMouseClick(TObject *Sender)
@@ -99,21 +130,44 @@ void __fastcall TfrmXeroSettings::btnEditPasswordMouseClick(TObject *Sender)
 	if( !( ( TControl *)Sender )->Enabled )
 		return;
 
-	UnicodeString text = CheckPassword( XeroPassword );
+	UnicodeString text = CheckPassword( AccountingPassword );
 
-	if( EditText( "Xero Remote Host:  Password", text ) )
-	{
-		XeroPassword = text;
-	}
+    if(Caption.Pos("MYOB") == 0)
+    {
+        if( EditText( "Xero Remote Host:  Password", text ) )
+        {
+            AccountingPassword = text;
+        }
+    }
+    else
+    {
+        if( EditText( "MYOB Remote Host:  Password", text ) )
+        {
+            AccountingPassword = text;
+        }
+    }
 }
 //---------------------------------------------------------------------------
-void TfrmXeroSettings::SetAndValidate( AnsiString inMachineName, AnsiString inFolderPath, AnsiString inUserName, AnsiString inPassword )
+void TfrmXeroSettings::SetAndValidate( AnsiString inMachineName, AnsiString inFolderPath, AnsiString inUserName, AnsiString inPassword, AccountingType accountingType)
 {
-	XeroMachineName = inMachineName;
-	XeroFolderPath  = inFolderPath;
-	XeroUserName    = inUserName;
-	XeroPassword    = inPassword;
+	AccountingMachineName = inMachineName;
+	AccountingFolderPath  = inFolderPath;
+	AccountingUserName    = inUserName;
+	AccountingPassword    = inPassword;
+    if(accountingType == eAccountingMYOB)
+        CustomiseForMYOB();
 	Validate();
+}
+//---------------------------------------------------------------------------
+void TfrmXeroSettings::CustomiseForMYOB()
+{
+    Caption = "MYOB Integration Settings";
+    cbSendAwaitingPayment->Enabled = false;
+    cbSendAwaitingPayment->Caption = "Send Account Charges to Awaiting Payment in MYOB";
+    rbXeroLocal->Caption = "Local MYOB Service";
+    Label1->Caption = "Connect to MYOB Integration Service  in the local machine. The Invoice Folder Name is only needed" ;
+    rbXeroRemote->Caption = "Remote MYOB Service";
+    Label2->Caption = "Connect to MYOB Integration Service  in an remote machine. ";
 }
 //---------------------------------------------------------------------------
 void TfrmXeroSettings::Validate()
@@ -121,7 +175,7 @@ void TfrmXeroSettings::Validate()
 	if( FValidated )
 	  return;
 
-	bool isLocalHost = TRemoteHostManager::Instance().IsLocalHost( XeroMachineName );
+	bool isLocalHost = TRemoteHostManager::Instance().IsLocalHost( AccountingMachineName );
 
 	if( isLocalHost )
 	{
@@ -129,14 +183,14 @@ void TfrmXeroSettings::Validate()
 		FRemoteUserName   = "";
 		FRemotePassword   = "";
 		FRemoteFolderName = "";
-		FLocalFolderName  = XeroFolderPath;
+		FLocalFolderName  = AccountingFolderPath;
 	}
 	else
 	{
-		FRemoteHostName   = XeroMachineName;
-		FRemoteUserName   = XeroUserName;
-		FRemotePassword   = XeroPassword;
-		FRemoteFolderName = XeroFolderPath;
+		FRemoteHostName   = AccountingMachineName;
+		FRemoteUserName   = AccountingUserName;
+		FRemotePassword   = AccountingPassword;
+		FRemoteFolderName = AccountingFolderPath;
 		FLocalFolderName  = "";
 	}
 
@@ -195,18 +249,32 @@ UnicodeString TfrmXeroSettings::CheckLocalFolderName( UnicodeString inFolderName
 
 	if( text == "" )
 	{
-		if( DirectoryExists( ExtractFilePath( Application->ExeName ) + XERO_INTEGRATION_FOLDER ) )
-		{
-			text = ExtractFilePath( Application->ExeName ) + XERO_INTEGRATION_FOLDER;
-		}
-		else
-		{
-			text = "C:\\Program Files\\MenuMate\\" + XERO_INTEGRATION_FOLDER;
-		}
+        if(Caption.Pos("MYOB") == 0)
+        {
+            if( DirectoryExists( ExtractFilePath( Application->ExeName ) + XERO_INTEGRATION_FOLDER ) )
+            {
+                text = ExtractFilePath( Application->ExeName ) + XERO_INTEGRATION_FOLDER;
+            }
+            else
+            {
+                text = "C:\\Program Files\\MenuMate\\" + XERO_INTEGRATION_FOLDER;
+            }
+        }
+        else
+        {
+            if( DirectoryExists( ExtractFilePath( Application->ExeName ) + MYOB_INTEGRATION_FOLDER ) )
+            {
+                text = ExtractFilePath( Application->ExeName ) + MYOB_INTEGRATION_FOLDER;
+            }
+            else
+            {
+                text = "C:\\Program Files\\MenuMate\\" + MYOB_INTEGRATION_FOLDER;
+            }
+        }
 	}
 
 	result = text;
-	
+
 	//...........................................
 
 	return result;
@@ -227,27 +295,27 @@ UnicodeString TfrmXeroSettings::CheckPassword( UnicodeString inPassword )
 	return LocalHostChecked() ? EmptyUnicodeString() : inPassword;
 }
 //---------------------------------------------------------------------------
-UnicodeString TfrmXeroSettings::readXeroMachineName()
+UnicodeString TfrmXeroSettings::readAccountingMachineName()
 {
 	return edHostName->Text;
 }
 //---------------------------------------------------------------------------
-UnicodeString TfrmXeroSettings::readXeroFolderPath()
+UnicodeString TfrmXeroSettings::readAccountingFolderPath()
 {
 	return edFolderName->Text;
 }
 //---------------------------------------------------------------------------
-UnicodeString TfrmXeroSettings::readXeroUserName()
+UnicodeString TfrmXeroSettings::readAccountingUserName()
 {
 	return edUserName->Text;
 }
 //---------------------------------------------------------------------------
-UnicodeString TfrmXeroSettings::readXeroPassword()
+UnicodeString TfrmXeroSettings::readAccountingPassword()
 {
 	return edPassword->Text;
 }
 //---------------------------------------------------------------------------
-void TfrmXeroSettings::writeXeroMachineName( UnicodeString inName )
+void TfrmXeroSettings::writeAccountingMachineName( UnicodeString inName )
 {
 	edHostName->Text = inName;
 	if( !LocalHostChecked() )
@@ -256,7 +324,7 @@ void TfrmXeroSettings::writeXeroMachineName( UnicodeString inName )
 	FValidated = false;
 }
 //---------------------------------------------------------------------------
-void TfrmXeroSettings::writeXeroFolderPath( UnicodeString inPath )
+void TfrmXeroSettings::writeAccountingFolderPath( UnicodeString inPath )
 {
 	edFolderName->Text = inPath;
 	if( !LocalHostChecked() )
@@ -265,7 +333,7 @@ void TfrmXeroSettings::writeXeroFolderPath( UnicodeString inPath )
 	FValidated = false;
 }
 //---------------------------------------------------------------------------
-void TfrmXeroSettings::writeXeroUserName( UnicodeString inName )
+void TfrmXeroSettings::writeAccountingUserName( UnicodeString inName )
 {
 	edUserName->Text = inName;
 	FRemoteUserName  = inName;
@@ -273,7 +341,7 @@ void TfrmXeroSettings::writeXeroUserName( UnicodeString inName )
 	FValidated = false;
 }
 //---------------------------------------------------------------------------
-void TfrmXeroSettings::writeXeroPassword( UnicodeString inPassw )
+void TfrmXeroSettings::writeAccountingPassword( UnicodeString inPassw )
 {
 	edPassword->Text = inPassw;
 	FRemotePassword  = inPassw;

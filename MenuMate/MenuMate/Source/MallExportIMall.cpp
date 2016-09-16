@@ -18,6 +18,7 @@
 #include "MallExportAlphalandMall.h"
 #include "MallExportMegaworldMall.h"
 #include "MallExportShangrilaMall.h"
+#include "MallExportFederalLandMall.h"
 #include "MallExportUpdateAdaptor.h"
 #include "ShowPrintout.h"
 #include <string>
@@ -38,7 +39,8 @@ TMallExportIMall::TMallExportIMall() : TObject()
     initTimingExportResponse( FTimingExportResponse );
     InputManager = new TMallExportInputFileDriver();
     if(TGlobalSettings::Instance().MallIndex == AYALAMALL ||
-       TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
+       TGlobalSettings::Instance().MallIndex == POWERPLANTMALL ||
+       TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
     {
         OutputManager = new TMallExportOutputDBDriver();
     } else {

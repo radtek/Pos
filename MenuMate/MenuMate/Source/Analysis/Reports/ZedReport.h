@@ -10,6 +10,8 @@ public:
     AnsiString GetReportName();
 
     int DisplayAndPrint(TMemoryStream* memoryStream = NULL);
+    bool SkipZedProcess;
+
 };
 
 #endif

@@ -98,6 +98,7 @@ void TEftPosSmartLink::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPur
                   }
                   if(wcfResponse->Successful)
                    {
+                      AcquirerRefSmartPay = wcfResponse->AcquirerRef;
                       TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
                       if(EftTrans != NULL)
                        {

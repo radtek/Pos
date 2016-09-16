@@ -21,15 +21,11 @@ XTransactionSummaryGroupDetailsReportSection::~XTransactionSummaryGroupDetailsRe
 
 void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+    if(!printOut->BlindBalanceUsed)
+       return;
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
 
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-
-    printOut->PrintFormat->Line->Columns[0]->Text =deviceName ;
-    printOut->PrintFormat->AddLine();
-    const TMMContactInfo &staff_member = TfrmAnalysis::GetLastAuthenticatedUser();
-     printOut->PrintFormat->Line->Columns[0]->Text =staff_member.Name;
-     printOut->PrintFormat->AddLine();
 
      _memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
 
@@ -127,9 +123,8 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
         {
             if (itCurrentPayment->second.Name.UpperCase() != UpperCase(CHANGE)
                 && itCurrentPayment->second.Name.UpperCase() != UpperCase(CREDIT)
-                && !(itCurrentPayment->second.Properties & ePayTypeGetVoucherDetails)
-                //&& !(itCurrentPayment->second.Properties & ePayTypePoints)
-                && !(itCurrentPayment->second.Properties & ePayTypeCredit))
+                && !(itCurrentPayment->second.Properties & ePayTypeCredit)
+                || itCurrentPayment->second.IsLoyaltyVoucher())
             {
                 std::map <UnicodeString, TTransactionCount> TransactionsCount = transactionInfo.TransactionsCountGroups[itPayments->first];
                 TTransactionCount ThisTransaction = TransactionsCount[itCurrentPayment->second.Name];
@@ -235,7 +230,8 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
 
         for (itCurrentPayment = PaymentValues.begin(); itCurrentPayment != PaymentValues.end(); itCurrentPayment++)
         {
-            if (itCurrentPayment->second.Properties & ePayTypeGetVoucherDetails)
+            if (itCurrentPayment->second.Properties & ePayTypeGetVoucherDetails &&
+                !itCurrentPayment->second.IsLoyaltyVoucher())
             {
                 if (itCurrentPayment->second.Surcharge == 0)
                 {
@@ -605,4 +601,8 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( skimCalculations.CurrentFloat + skimCalculations.Refloats + skimCalculations.Skims );
         printOut->PrintFormat->AddLine();
     }
+
 }
+
+
+

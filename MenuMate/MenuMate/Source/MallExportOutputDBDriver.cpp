@@ -216,27 +216,27 @@ void TMallExportOutputDBDriver::GenerateDBF(std::vector<UnicodeString> DataToWri
                             break;
                         case 8:
                             fd.cFieldType='C';
-                            fd.uLength=10;
+                            fd.uLength=15;
                             fd.uNumberOfDecimalPlaces=0;
                             break;
                         case 9:
                             fd.cFieldType='N';
-                            fd.uLength=6;
+                            fd.uLength=15;
                             fd.uNumberOfDecimalPlaces=0;
                             break;
                         case 10:
                             fd.cFieldType='N';
-                            fd.uLength=6;
+                            fd.uLength=15;
                             fd.uNumberOfDecimalPlaces=0;
                             break;
                         case 11:
                             fd.cFieldType='N';
-                            fd.uLength=6;
+                            fd.uLength=15;
                             fd.uNumberOfDecimalPlaces=0;
                             break;
                         case 12:
                             fd.cFieldType='N';
-                            fd.uLength=6;
+                            fd.uLength=15;
                             fd.uNumberOfDecimalPlaces=0;
                             break;
                         case 13:
@@ -349,7 +349,7 @@ void TMallExportOutputDBDriver::GenerateDBF(std::vector<UnicodeString> DataToWri
                             break;
                         case 4:
                             fd.cFieldType='C';
-                            fd.uLength=10;
+                            fd.uLength=15;
                             fd.uNumberOfDecimalPlaces=0;
                             break;
                         case 5:

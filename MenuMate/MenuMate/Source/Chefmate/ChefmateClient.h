@@ -137,7 +137,6 @@ private:
 	UnicodeString cmPatronCount( TPaymentTransaction* inPaymentTransaction );
 	UnicodeString cmSaleStartTime( TItemComplete* inOrder );
     UnicodeString cmStaffName(TItemComplete* inOrder);
-    bool  CheckOptionKeyPresent(int Key);
 };
 
 //---------------------------------------------------------------------------

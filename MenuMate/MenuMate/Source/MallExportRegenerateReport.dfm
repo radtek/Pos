@@ -129,7 +129,7 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
         Width = 246
         Height = 183
         AutoSize = True
-        Date = 42200.992448298610000000
+        Date = 42200.818103009260000000
         DoubleBuffered = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -147,7 +147,7 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
         Width = 246
         Height = 183
         AutoSize = True
-        Date = 42200.992448298610000000
+        Date = 42200.818103009260000000
         DoubleBuffered = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText

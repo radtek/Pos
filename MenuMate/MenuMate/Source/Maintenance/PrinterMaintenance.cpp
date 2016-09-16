@@ -533,7 +533,7 @@ void TfrmPrinterMaintenance::SaveCoursePrinterProfiles()
 				  IBInternalQuery->ParamByName("MENU_KEY")->AsInteger = CourseInfo[*ptrCourseKey].MenuKey;
 
 				  IBInternalQuery->ParamByName("COURSE_KEY")->AsInteger = *ptrCourseKey;
-                  IBInternalQuery->ParamByName("COURSE_NAME")->AsString	= UnicodeToUTF8AnsiString(CourseInfo[*ptrCourseKey].CourseKitchenName);
+                  IBInternalQuery->ParamByName("COURSE_NAME")->AsString	= CourseInfo[*ptrCourseKey].CourseKitchenName; 
 				  IBInternalQuery->ExecQuery();
 			   }
 

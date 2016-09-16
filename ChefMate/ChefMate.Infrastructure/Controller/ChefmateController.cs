@@ -16,16 +16,14 @@ namespace Chefmate.Infrastructure.Controller
     public class ChefmateController
     {
         public delegate void OrderArrivedDelegate(Order order);
-        public delegate void NavigationDisplayDelegate();
         public event OrderArrivedDelegate OrderArrivedEvent;
-        public delegate void StatusChangeDelegate(string status);
-        public event StatusChangeDelegate StatusChangeEvent;
-        public event NavigationDisplayDelegate NavigationUpdateEvent;
+        public event OrderArrivedDelegate AddOrderEvent;
+        public delegate void OrderRedrawDelegate();
+        public event OrderRedrawDelegate OrderRedrawEvent;
         private static ChefmateController _instance;
         public static volatile object _syncRoot = new object();
         private ChefmateController()
         {
-            PageIndex = 0;
         }
         public static ChefmateController Instance
         {
@@ -49,67 +47,22 @@ namespace Chefmate.Infrastructure.Controller
         public AnalyticalData AnalyticalData { get; set; }
         public ObservableCollection<Order> TotalOrders { get; set; }
         public ObservableCollection<Order> CurrentDisplayOrders { get; set; }
-        public int PageIndex { get; set; }
-        public int PageRows { get; set; }
         public int PageColumns { get; set; }
+
         #endregion
 
-        public void ManageOrderDisplay()
-        {
-            try
-            {
-                TotalOrders.RemoveAll(s => s.Items.Count == 0);
-                CurrentDisplayOrders.Clear();
-                if (TotalOrders.Count > 0)
-                {
-                    var orderInPage = PageRows * PageColumns;
-                    int remainingOrders = 0;
-                    if (TotalOrders.Count > PageIndex * orderInPage)
-                    {
-                        remainingOrders = TotalOrders.Count - PageIndex * orderInPage;
-                    }
-                    else
-                    {
-                        PageIndex = PageIndex > 0 ? PageIndex-- : PageIndex;
-                        remainingOrders = TotalOrders.Count - PageIndex * orderInPage;
-                    }
-
-                    remainingOrders = remainingOrders >= orderInPage ? orderInPage : remainingOrders;
-                    var orders = TotalOrders.ToList().GetRange(PageIndex * orderInPage, remainingOrders);
-                    foreach (var order in orders)
-                    {
-                        order.UpdateOrderInfoDisplay(CurrentSettings.OrderInfoDisplay);
-                        ManageOrderGroups(order);
-                        CurrentDisplayOrders.Add(order);
-                    }
-                    if (NavigationUpdateEvent != null)
-                        NavigationUpdateEvent();
-                }
-            }
-            catch (Exception ex)
-            {
-                ChefmateLogger.Instance.LogError("ManageOrderDisplay", ex.Message);
-            }
-        }
-        public void ManageOrderGroups(Order order)
-        {
-            if (order != null)
-            {
-                order.FilterOrders();
-                order.DisplayGroups = CurrentSettings.GroupType == GroupType.ServingCourse
-                    ? order.ServingCourseGroups
-                    : order.CourseGroups;
-                order.DisplayGroups.RemoveAll(s => s.Items.Count == 0);
-            }
-        }
         public void OrderArrived(Order order)
         {
             if (OrderArrivedEvent != null)
                 OrderArrivedEvent(order);
         }
+        private void PublishAddOrder(Order inOrder)
+        {
+            if (AddOrderEvent != null)
+                AddOrderEvent(inOrder);
+        }
         public void AddOrder(Order order)
         {
-            string statusString = "";
             try
             {
                 lock (_syncRoot)
@@ -118,36 +71,24 @@ namespace Chefmate.Infrastructure.Controller
                     {
                         case OrderState.Complete:
                             AddCompleteOrder(order);
-                            statusString = "New Order";
                             break;
                         case OrderState.Transfer:
                             AddTransferOrder(order);
-                            statusString = string.Format("Transfer Order | Source Table Name: {0}  ", order.SourceTableName);
                             break;
                         case OrderState.Cancel:
                             AddCancelOrder(order);
-                            statusString = "Cancelled Order ";
                             break;
                         case OrderState.Credit:
                             AddCreditOrder(order);
-                            statusString = "Refund Order";
                             break;
                         case OrderState.CallAway:
                             CallAwayOrder(order);
-                            statusString = "Callaway Order";
                             break;
                         case OrderState.Runner:
                             AddRunnerOrder(order);
-                            statusString = "Bumped Order";
                             break;
 
                     }
-
-                    statusString = string.Format("Last Order:- {0} | Table/Tab Name: {1} | Server Name: {2}", statusString, order.TableTabName,
-                        order.ServerName);
-                    if (StatusChangeEvent != null)
-                        StatusChangeEvent(statusString);
-                    ManageOrderDisplay();
                 }
             }
             catch (Exception ex)
@@ -174,21 +115,33 @@ namespace Chefmate.Infrastructure.Controller
             }
 
         }
+        public void RemoveOrder(Order order)
+        {
+            TotalOrders.Remove(order);
+        }
+        private void PublishRedrawEvent()
+        {
+            if (OrderRedrawEvent != null)
+                OrderRedrawEvent();
+        }
 
         #region Cancelled/Credit Order
         private void AddCancelOrder(Order order)
         {
             List<Item> processedItem = new List<Item>();
+            List<Item> processedExistingItem = new List<Item>();
             List<Order> sourceOrders = TotalOrders.Where(s => s.TableTabName == order.TableTabName).ToList();
             foreach (var sourceOrder in sourceOrders)
             {
                 foreach (var newItem in order.Items)
                 {
-                    var existingItem = sourceOrder.Items.FirstOrDefault(s => s.OrderItemPosKey == newItem.OrderItemPosKey && !processedItem.Contains(newItem));
+                    var existingItem = sourceOrder.Items.FirstOrDefault(s => s.OrderItemPosKey == newItem.OrderItemPosKey && !processedItem.Contains(s)
+                    && !processedExistingItem.Contains(s));
                     if (existingItem != null)
                     {
+                        processedExistingItem.Add(existingItem);
                         processedItem.Add(newItem);
-                        if (existingItem.DisplayAttributes.IsTransferredItem == 1)
+                        if (!existingItem.DisplayAttributes.IsOriginalItem)
                         {
                             UpdateTransferProperty(existingItem);
                         }
@@ -207,29 +160,17 @@ namespace Chefmate.Infrastructure.Controller
             TotalOrders.Add(order);
             if (CurrentSettings.ConfirmOnRefund)
                 ShowMessageBox("Refund Order", "A Refund Order has come in.");
+            PublishAddOrder(order);
         }
         #endregion
 
         #region Transfer
         private void AddTransferOrder(Order order)
         {
-            ManageOrderGroups(order);
+            order.FilterOrders(CurrentSettings.GroupType, CurrentSettings.OrderInfoDisplay);
             List<Order> sourceOrders = TotalOrders.Where(s => s.TableTabName == order.SourceTableName).ToList();
-            int itemCount =0;
-            int itemCountWithZeroKey = 0;
-            int CountAllItems = 0;
-            sourceOrders.ForEach(s => CountAllItems += s.Items.Count);
-            sourceOrders.ForEach(s =>
-                {
-                    itemCount = itemCount + s.Items.Count(z => z.ItemKey > 0);
-                    itemCountWithZeroKey = itemCountWithZeroKey + s.Items.Count(z => z.ItemKey == 0);
-                   
-                });
 
-            if (itemCount == order.Items.Count || itemCountWithZeroKey == order.Items.Count || CountAllItems == order.Items.Count)
-            {
-                order.DisplayAttributes.SourceTabTableText = order.SourceTableName;
-            }
+            order.DisplayAttributes.SourceTabTableText = order.SourceTableName;
             var destinationOrders = TotalOrders.FirstOrDefault(s => s.TableTabName == order.TableTabName);
             if (destinationOrders != null)
             {
@@ -245,18 +186,13 @@ namespace Chefmate.Infrastructure.Controller
                 AnalyticalData.TotalOrdersCount++;
                 AnalyticalData.CurrentOrdersCount++;
             }
-            if (itemCount == order.Items.Count || itemCountWithZeroKey == order.Items.Count || CountAllItems == order.Items.Count)
-            {                
-                sourceOrders.ForEach(s =>
-                {
-                    s.Items.RemoveAll(z => z.ItemKey == 0);
-                });     
-            }
+
             if (CurrentSettings.ConfirmOnTransfer)
             {
-               ShowMessageBox("Order Transferred", order.SourceTableName + " is transferred to " + order.TableTabName);
+                ShowMessageBox("Order Transferred", order.SourceTableName + " is transferred to " + order.TableTabName);
             }
-            ManageOrderDisplay();
+            TotalOrders.RemoveAll(s => s.Items.Count == 0);
+            PublishRedrawEvent();
         }
         private void ProcessTransferWhenDestinationExist(List<Order> existingOrders, Order newOrder, Order destinationOrder)
         {
@@ -265,26 +201,17 @@ namespace Chefmate.Infrastructure.Controller
             {
                 foreach (var newItem in newOrder.Items)
                 {
-                    var existingItem = order.Items.FirstOrDefault(
-                          s =>
-                              s.Name == newItem.Name && s.Sides.Count == newItem.Sides.Count &&
-                              s.Options.Count == newItem.Options.Count && !processedItem.Contains(s) );
+                    var existingItem = order.Items.FirstOrDefault(s => s.DisplayAttributes.IsOriginalItem && s.Name == newItem.Name && s.Sides.Count == newItem.Sides.Count &&
+                              s.Options.Count == newItem.Options.Count && !processedItem.Contains(s));
                     if (existingItem != null)
                     {
-                        CopyBasiDetails(existingItem, newItem);                        
+                        CopyBasiDetails(existingItem, newItem);
                         processedItem.Add(existingItem);
-                        if (!string.IsNullOrWhiteSpace(newOrder.DisplayAttributes.SourceTabTableText))
-                        {
-                            order.Items.Remove(existingItem);
-                        }
-                        else
-                        {
-                            UpdateTransferProperty(existingItem);                            
-                        }
-                        existingItem.ItemKey = 0;
+                        UpdateTransferProperty(existingItem);
                         UpdateGroupsForTransferredItem(newItem, destinationOrder);
                     }
                 }
+                order.UpdateOrder();
                 if (order.Items.Count == 0)
                 {
                     AnalyticalData.TotalOrdersCount--;
@@ -300,32 +227,23 @@ namespace Chefmate.Infrastructure.Controller
             {
                 foreach (var newItem in newOrder.Items)
                 {
-                    var existingItem = order.Items.FirstOrDefault(
-                          s =>
-                              s.Name == newItem.Name && s.Sides.Count == newItem.Sides.Count &&
+                    var existingItem = order.Items.FirstOrDefault(s => s.DisplayAttributes.IsOriginalItem && s.Name == newItem.Name && s.Sides.Count == newItem.Sides.Count &&
                               s.Options.Count == newItem.Options.Count && !processedItem.Contains(s));
                     if (existingItem != null)
                     {
                         CopyBasiDetails(existingItem, newItem);
                         processedItem.Add(existingItem);
-                        if (!string.IsNullOrWhiteSpace(newOrder.DisplayAttributes.SourceTabTableText))
-                        {
-                            order.Items.Remove(existingItem);
-                        }
-                        else
-                        {
-                            UpdateTransferProperty(existingItem);
-                        }
-                        existingItem.ItemKey = 0;
+                        UpdateTransferProperty(existingItem);
                         DbOrderItem.UpdateGroupInformation(newItem);
                     }
                 }
+                order.UpdateOrder();
                 if (order.Items.Count == 0)
                 {
                     AnalyticalData.TotalOrdersCount--;
                     AnalyticalData.CurrentOrdersCount--;
                 }
-                order.FilterOrders();
+                //order.FilterOrders(CurrentSettings.GroupType, CurrentSettings.OrderInfoDisplay);
             }
             newOrder.Items.RemoveAll(s => s.OrderItemKey == 0);
         }
@@ -334,6 +252,7 @@ namespace Chefmate.Infrastructure.Controller
             destination.OrderItemKey = source.OrderItemKey;
             destination.OrderStatus = source.OrderStatus;
             destination.ArrivalTime = source.ArrivalTime;
+            //destination.SCourseGroup.CalledAway = source.SCourseGroup.CalledAway;
             if (!string.IsNullOrWhiteSpace(source.Note))
             {
                 destination.Note = source.Note;
@@ -369,14 +288,15 @@ namespace Chefmate.Infrastructure.Controller
         }
         private void UpdateTransferProperty(Item newItem)
         {
-            newItem.DisplayAttributes.IsTransferredItem = 1;
+            newItem.DisplayAttributes.IsOriginalItem = false;
+            newItem.OrderItemKey = 0;
             foreach (var side in newItem.Sides)
             {
-                side.DisplayAttributes.IsTransferredItem = 1;
+                side.DisplayAttributes.IsOriginalItem = false;
             }
             foreach (var option in newItem.Options)
             {
-                option.DisplayAttributes.IsTransferredItem = 1;
+                option.DisplayAttributes.IsOriginalItem = false;
             }
         }
         #endregion
@@ -416,7 +336,7 @@ namespace Chefmate.Infrastructure.Controller
                     if (existingGroup != null)
                     {
                         existingGroup.CalledAway = true;
-                        DbOrderGroup.CallAwayGroup(existingGroup.OrderGroupKey);
+                        DbOrderGroup.CallAwayGroup(existingGroup.OrderGroupKey, true);
                     }
                 }
             }
@@ -472,15 +392,16 @@ namespace Chefmate.Infrastructure.Controller
                 inOrder.ServingCourseGroups.ToList().ForEach(s => AnalyticalData.CurrentItems += s.Items.Count);
                 TotalOrders.Add(inOrder);
             }
-            // ManageOrderDisplay();
+            PublishRedrawEvent();
         }
         #endregion
 
         #region Recall Order
-        public void AddRecallOrder(Order order)
+        public void AddRecallOrder(Order inOrder)
         {
             lock (_syncRoot)
             {
+                var order = DbOrder.GetOrder(inOrder.OrderKey, 0, true);
                 AnalyticalData.CurrentOrdersCount++;
                 AnalyticalData.CurrentItems += order.Items.Count;
                 TimeSpan recalledOrderMakeTime = order.BumpTime - order.ArrivalTime;
@@ -490,7 +411,7 @@ namespace Chefmate.Infrastructure.Controller
                     DbOrderItem.UpdateOrderItemTerminalKey(item.OrderItemKey, CurrenTerminal.TerminalId);
                 }
                 TotalOrders.Add(order);
-                ManageOrderDisplay();
+                PublishAddOrder(order);
             }
         }
         #endregion
@@ -515,30 +436,26 @@ namespace Chefmate.Infrastructure.Controller
                 TerminalIpAddress = terminalAddress,
                 TerminalType = TerminalType.Kitchen
             };
-
-            if (DbTerminal.AddTerminal(CurrenTerminal))
+            DbTerminal.AddTerminal(CurrenTerminal);
+            CurrentSettings = new Settings
             {
-                CurrentSettings = new Settings
-                {
-                    TerminalType = TerminalType.Kitchen,
-                    DbIpAddress = dbAddress,
-                    DbPath = dbPath,
-                    TerminalIpAddress = terminalAddress,
-                    DisplayName = terminalDisplayName
-                };
-                DbSettings.AddSettings(CurrentSettings, CurrenTerminal.TerminalId);
-                GetPageInformation();
-            }
-            else
-            {
-                LoadSettings();
-                CurrentSettings.TerminalType = TerminalType.Kitchen;
-                CurrentSettings.DbIpAddress = dbAddress;
-                CurrentSettings.DbPath = dbPath;
-                CurrentSettings.TerminalIpAddress = terminalAddress;
-                CurrentSettings.DisplayName = terminalDisplayName;
-                DbSettings.SaveSettings(CurrentSettings, CurrenTerminal.TerminalId);
+                TerminalType = TerminalType.Kitchen,
+                DbIpAddress = dbAddress,
+                DbPath = dbPath,
+                TerminalIpAddress = terminalAddress,
+                DisplayName = terminalDisplayName,
+                RecallCount = 5,
+                CmFontSize = 15
             };
+            DbSettings.AddSettings(CurrentSettings, CurrenTerminal.TerminalId);
+            LoadSettings();
+            CurrentSettings.TerminalType = TerminalType.Kitchen;
+            CurrentSettings.DbIpAddress = dbAddress;
+            CurrentSettings.DbPath = dbPath;
+            CurrentSettings.TerminalIpAddress = terminalAddress;
+            CurrentSettings.DisplayName = terminalDisplayName;
+            DbSettings.SaveSettings(CurrentSettings, CurrenTerminal.TerminalId);
+            GetPageInformation();
         }
 
         public void LoadSettings()
@@ -557,7 +474,6 @@ namespace Chefmate.Infrastructure.Controller
         }
         private void GetPageInformation()
         {
-            PageRows = 2;
             switch (CurrentSettings.OrderLayout)
             {
                 case OrderLayout.TwoByFour:
@@ -600,10 +516,7 @@ namespace Chefmate.Infrastructure.Controller
             return customMessageBox.ModalResult;
         }
         #endregion
-        public void RemoveOrder(Order order)
-        {
-            TotalOrders.Remove(order);
-            ManageOrderDisplay();
-        }
+
+
     }
 }

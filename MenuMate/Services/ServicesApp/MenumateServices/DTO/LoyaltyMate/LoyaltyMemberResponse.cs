@@ -14,14 +14,7 @@ namespace MenumateServices.DTO.LoyaltyMate
         LoyaltyResponseCode _responseCode;
         MemberInfo _memberInfo;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        internal LoyaltyMemberResponse(
-                        bool inSuccesful,
-                        string inMessage,
-                        string inDescription,
-                        LoyaltyResponseCode inResponseCode,
+        internal LoyaltyMemberResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode,
                         MemberInfo inMemberInfo)
             : base(inSuccesful, inMessage, inDescription)
         {
@@ -29,10 +22,7 @@ namespace MenumateServices.DTO.LoyaltyMate
             _memberInfo = createMemberInfo(inMemberInfo);
         }
 
-        #region Public
-        /// <summary>
-        /// 
-        /// </summary>
+
         [DataMember]
         public LoyaltyResponseCode ResponseCode
         {
@@ -40,9 +30,6 @@ namespace MenumateServices.DTO.LoyaltyMate
             set { _responseCode = value; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         [DataMember]
         public MemberInfo MemberInfo
         {
@@ -50,61 +37,6 @@ namespace MenumateServices.DTO.LoyaltyMate
             set { _memberInfo = value; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public static LoyaltyMemberResponse CreateResponseNoError(MemberInfo inMemberInfo)
-        {
-            return CreateResponse(true, "", "", LoyaltyResponseCode.Successful, inMemberInfo);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="inMessage"></param>
-        /// <param name="inDescription"></param>
-        /// <param name="inResponseCode"></param>
-        /// <returns></returns>
-        public static LoyaltyMemberResponse CreateResponseError(
-                                       string inMessage,
-                                       string inDescription,
-                                       LoyaltyResponseCode inResponseCode,
-                                       MemberInfo inMemberInfo)
-        {
-            return CreateResponse(false, inMessage, inDescription, inResponseCode, inMemberInfo);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="inSuccesful"></param>
-        /// <param name="inMessage"></param>
-        /// <param name="inDescription"></param>
-        /// <param name="inResponseCode"></param>
-        /// <returns></returns>
-        public static LoyaltyMemberResponse CreateResponse(
-                                                bool inSuccesful,
-                                                string inMessage,
-                                                string inDescription,
-                                                LoyaltyResponseCode inResponseCode,
-                                                MemberInfo inMemberInfo)
-        {
-            return new LoyaltyMemberResponse(
-                                inSuccesful,
-                                inMessage,
-                                inDescription,
-                                inResponseCode,
-                                inMemberInfo);
-        }
-        #endregion
-
-        #region Private
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="inMemberInfo"></param>
-        /// <returns></returns>
         MemberInfo createMemberInfo(MemberInfo inMemberInfo)
         {
             var result = new MemberInfo();
@@ -141,10 +73,19 @@ namespace MenumateServices.DTO.LoyaltyMate
             result.PointRule = inMemberInfo.PointRule;
             result.LastModified = inMemberInfo.LastModified;
             result.IsFirstVisitRewarded = inMemberInfo.IsFirstVisitRewarded;
-            //:::::::::::::::::::::::::::::::::::::::
 
+            result.MemberVouchers = new List<VoucherInfo>();
+            if (inMemberInfo.MemberVouchers != null)
+                foreach (var memberVoucher in inMemberInfo.MemberVouchers)
+                {
+                    var voucher = new VoucherInfo();
+                    voucher.DiscountCode = memberVoucher.DiscountCode;
+                    voucher.VoucherName = memberVoucher.VoucherName;
+                    voucher.NumberOfUsesRemaining = memberVoucher.NumberOfUsesRemaining;
+                    result.MemberVouchers.Add(voucher);
+                }
             return result;
         }
-        #endregion
+
     }
 }

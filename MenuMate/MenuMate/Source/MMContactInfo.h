@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 #include <Classes.hpp>
 #include <set>
-
+#include <vector>
 #include "PalmUserSettings.h"
 #include "PointsRulesSet.h"
 #include "ContactPoints.h"
@@ -13,6 +13,9 @@
 #include "ContactGroup.h"
 #include "Membership.h"
 
+
+
+//---------------------------------------------------------------------------
 class TMMContactInfo
 {
 public:
@@ -27,8 +30,7 @@ public:
    // we strip out the site id and database key
    void SaveToStream(int CardVersion, TMemoryStream *Stream);
 
-   UnicodeString RefreshPoleDisplayName(
-					eMemberNameOnPoleDisplay inNameOnPoleDisplay );
+   UnicodeString RefreshPoleDisplayName(eMemberNameOnPoleDisplay inNameOnPoleDisplay );
 
    bool HasHotelNumber( void );
    bool IsCodePresent();
@@ -90,27 +92,29 @@ public:
    TAccess AccessLevel;
 
    std::set <int> AutoAppliedDiscounts;
-   std::set <byte> AutoAppliedDiscountsID;
-
+   std::set <AnsiString> AutoAppliedDiscountsID;
+//   std::set <int> AutoAppliedDiscountsDummy;
+   std::set <byte> AutoAppliedDiscountsIDDummy;
+   std::vector<TVoucherDetail> MemberVouchers;
    std::vector<ContactGroup> currentGroups;
    std::vector<ContactGroup> availableGroups;
    ContactGroup summagroup;
 
-	int Charges;
+    int Charges;
 
-	double HourlyRate;
+    double HourlyRate;
 
     AnsiString CloudUUID;     // if this uuid is empty or null it means the member is not in the cloud yet
-	UnicodeString ActivationToken; // activation token returned from the server. need to be printed so that user can use it to activate himself
-        Currency PreviousYearPoint;
-        Currency CurrentYearPoint;
-        Currency AvailableBDPoint;
-        Currency AvailableFVPoint;
+    UnicodeString ActivationToken; // activation token returned from the server. need to be printed so that user can use it to activate himself
+    Currency PreviousYearPoint;
+    Currency CurrentYearPoint;
+    Currency AvailableBDPoint;
+    Currency AvailableFVPoint;
 
-        int LatestLoginContactKey;
-        UnicodeString LatestLoginName;
-     int PointRule;
-     bool IsFirstVisitRewarded;
+    int LatestLoginContactKey;
+    UnicodeString LatestLoginName;
+    int PointRule;
+    bool IsFirstVisitRewarded;
 protected:
 	TMMContactInfo( UnicodeString inName );
 };

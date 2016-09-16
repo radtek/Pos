@@ -26,7 +26,7 @@ namespace ChefMate.Database.Parser
         }
         public void RunParser()
         {
-            DatabaseCore.Instance.InitializeDatabae(_dbAddress, _dbPath);
+            DatabaseCore.Instance.InitializeDatabase(_dbAddress, _dbPath);
             SendStatus("Starting Database upgrade.....");
             foreach (var version in _versionNumbers)
             {
@@ -53,6 +53,7 @@ namespace ChefMate.Database.Parser
         {
             _versionNumbers = new List<string>();
             _versionNumbers.Add("1.0");
+            _versionNumbers.Add("1.1");
         }
 
         private void SendStatus(string inStatus)

@@ -7,6 +7,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <converter:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
+            <converter:RecallValueConverter x:Key="RecallValueConverter"/>
             <converter:VolumeStringConverters x:Key="VolumeStringConverters"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
@@ -148,17 +149,33 @@
                         </StackPanel>
                     </Border>
                     <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="6" Grid.Column="0"></Label>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="6" Grid.Column="1"></Label>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="6" Grid.Column="2"></Label>
                     <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="7" Grid.Column="0" Content="Layout (Restart Required)"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="7" Grid.Column="1" Content="Recall Order Count"></Label>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="7" Grid.Column="2" Content="Font Size"></Label>
                     <Border Grid.Row="8" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
                         <StackPanel>
-                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByFour}}">2 x 4</RadioButton>
-                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByFive}}">2 x 5 (Wide Screen)</RadioButton>
-                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoBySix}}">2 x 6 (Wide Screen)</RadioButton>
-                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoBySeven}}">2 x 7 (Wide Screen)</RadioButton>
-                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByTen}}">2 x 10 (Big Screen)</RadioButton>
-                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByEleven}}">2 x 11 (Big Screen)</RadioButton>
-                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByTwelve}}">2 x 12 (Big Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByFour}}">4 Columns</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByFive}}">5 Columns (Wide Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoBySix}}">6 Columns (Wide Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoBySeven}}">7 Columns (Wide Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByTen}}">10 Columns (Big Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByEleven}}">11 Columns (Big Screen)</RadioButton>
+                            <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByTwelve}}">12 Columns (Big Screen)</RadioButton>
                         </StackPanel>
+                    </Border>
+                    <Border Grid.Row="8" Grid.Column="1" Style="{StaticResource MarginalGroupBorder}">
+                        <StackPanel>
+                            <RadioButton GroupName="Recall" IsChecked="{Binding Path=CurrentSettings.RecallCount, Converter={StaticResource RecallValueConverter}, ConverterParameter=5}">5</RadioButton>
+                            <RadioButton GroupName="Recall" IsChecked="{Binding Path=CurrentSettings.RecallCount, Converter={StaticResource RecallValueConverter}, ConverterParameter=10}">10</RadioButton>
+                            <RadioButton GroupName="Recall" IsChecked="{Binding Path=CurrentSettings.RecallCount, Converter={StaticResource RecallValueConverter}, ConverterParameter=15}">15</RadioButton>
+                           
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Row="8" Grid.Column="2" Style="{StaticResource MarginalGroupBorder}">
+                        <ComboBox ItemsSource="{Binding FontSizes}" SelectedValue="{Binding CurrentSettings.CmFontSize}" MinWidth="150"
+                                  VerticalAlignment="Center" HorizontalAlignment="Stretch" />
                     </Border>
                 </Grid>
             </TabItem>

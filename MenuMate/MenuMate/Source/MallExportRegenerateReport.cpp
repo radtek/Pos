@@ -57,7 +57,8 @@ __fastcall TfrmMallExportRegenerateReport::TfrmMallExportRegenerateReport(TCompo
 
     InputManager = new TMallExportInputFileDriver();
     if(TGlobalSettings::Instance().MallIndex == AYALAMALL ||
-       TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
+       TGlobalSettings::Instance().MallIndex == POWERPLANTMALL ||
+       TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
     {
         OutputManager = new TMallExportOutputDBDriver();
     } else {
@@ -152,6 +153,10 @@ void __fastcall TfrmMallExportRegenerateReport::btnGenerateMouseClick(TObject *S
 
         case DLFMALL:
         RegenerateDLFMallExport();
+        break;
+
+        case FEDERALLANDMALL:
+        RegenerateFederalLandExport();
         break;
 
         default:
@@ -3746,3 +3751,524 @@ void TfrmMallExportRegenerateReport::LoadFileToFTP()
     std::auto_ptr<TfrmAnalysis>(frmAnalysis)(TfrmAnalysis::Create<TfrmAnalysis>(this));
     frmAnalysis->FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount);
 }
+//-------------------------------------------------------------------------------------------------------------------------------------
+
+// Initialize Start and End Time for each mall
+void TfrmMallExportRegenerateReport::SetSpecificMallTimes(int &StartH, int &EndH, int &StartM, int &EndM)
+{
+    if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
+    {
+        StartH = 6;
+        EndH = 6;
+        StartM = 0;
+        EndM = 0;
+    }
+    else
+    {
+        StartH = 5;
+        EndH = 5;
+        StartM = 0;
+        EndM = 0;
+    }
+}
+//---------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------------------------------------------
+// For Federal Land
+UnicodeString TfrmMallExportRegenerateReport::GetHourlyData(UnicodeString &TerminalName, UnicodeString &TenantName,
+                                                  UnicodeString &DateValue, UnicodeString &TimeValue,
+                                                  int &TransactionTotal, UnicodeString &Amount, UnicodeString &MinuteValue,
+                                                  int &SCDiscountCount, int &PatronCount)
+{
+    Currency AmountTotal = 0;
+    UnicodeString result = "";
+    UnicodeString Format = "";
+
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+    TIBSQL* query1 = DBTransaction.Query(DBTransaction.AddQuery());
+
+    query->SQL->Text = "SELECT SUM(AMOUNT_VALUE) AS AMOUNTSUM, SUM(TRANSACTION_COUNT) as TRANSSUM, SUM(SCDISCOUNT_COUNT) as SCCOUNT, SUM(PATRON_COUNT) as PATRON_COUNT "
+                       "FROM ARCMALLEXPORTHOURLY WHERE DATE_VALUE >= :STARTDATE AND DATE_VALUE < :ENDDATE AND TIME_VALUE=:TIMEVALUE AND TERMINAL_NAME=:TERMINALNAME";
+    DBTransaction.StartTransaction();
+    query->ParamByName("STARTDATE")->AsDateTime = SDate;
+    query->ParamByName("ENDDATE")->AsDateTime = EDate;
+    query->ParamByName("TIMEVALUE")->AsString = TimeValue;
+    query->ParamByName("TERMINALNAME")->AsString = TerminalName;
+    query->ExecQuery();
+
+    AmountTotal = RoundToNearest(query->FieldByName("AMOUNTSUM")->AsCurrency, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+    TransactionTotal = RoundToNearest(query->FieldByName("TRANSSUM")->AsCurrency, 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
+    SCDiscountCount = query->FieldByName("SCCOUNT")->AsInteger;
+    PatronCount = query->FieldByName("PATRON_COUNT")->AsInteger;
+
+    Amount = federallandExport->FixDecimalPlaces(AmountTotal);
+
+    DBTransaction.Commit();
+    query->Close();
+
+    query1->SQL->Text = "SELECT MINUTE_VALUE FROM ARCMALLEXPORTHOURLY "
+                       "WHERE DATE_VALUE >= :STARTDATE AND DATE_VALUE < :ENDDATE AND TIME_VALUE=:TIMEVALUE AND TERMINAL_NAME=:TERMINALNAME ORDER BY MINUTE_VALUE DESC";
+    DBTransaction.StartTransaction();
+    query1->ParamByName("STARTDATE")->AsDateTime = SDate;
+    query1->ParamByName("ENDDATE")->AsDateTime = EDate;
+    query1->ParamByName("TIMEVALUE")->AsString = TimeValue;
+    query1->ParamByName("TERMINALNAME")->AsString = TerminalName;
+    query1->ExecQuery();
+
+    MinuteValue = query1->FieldByName("MINUTE_VALUE")->AsString;
+
+    DBTransaction.Commit();
+    query1->Close();
+
+    return result;
+}
+//---------------------------------------------------------------------------
+
+void TfrmMallExportRegenerateReport::RegenerateFederalLandExport()
+{
+    UnicodeString Format = ",";
+    UnicodeString OutputValue = "";
+    UnicodeString MallPath = edLocationPath->Text;
+    UnicodeString MallPathFileName = "";
+    UnicodeString DateVal = "";
+    UnicodeString Query = "";
+
+    // For Daily Sales
+    federallandExport->CreateFilename("S", MallPath, MallPathFileName);
+    federallandExport->CreateHeaderFormat(MallPathFileName,DataToWrite, "S");
+    dataManager->ExportFile(OutputManager, DataToWrite, MallPathFileName, "ZTXTHEADER");
+    DataToWrite.clear();
+
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL *query = DBTransaction.Query(DBTransaction.AddQuery());
+    TIBSQL *query1 = DBTransaction.Query(DBTransaction.AddQuery());
+    TIBSQL *query2 = DBTransaction.Query(DBTransaction.AddQuery());
+    TIBSQL *query3 = DBTransaction.Query(DBTransaction.AddQuery());
+    TIBSQL *query4 = DBTransaction.Query(DBTransaction.AddQuery());
+    TIBSQL *query5 = DBTransaction.Query(DBTransaction.AddQuery());
+    TIBSQL *query6 = DBTransaction.Query(DBTransaction.AddQuery());
+
+    query->Close();
+
+    query->SQL->Text = "SELECT FIRST 1 OLD_GRANDTOTAL, BEGINNING_INVOICE, TERMINAL_NAME, TENANT_NAME, MALLCODE FROM ARCMALLEXPORT "
+                       "WHERE TRANSACTIONDATE >= :STARTDATE AND TRANSACTIONDATE < :ENDDATE ORDER BY BEGINNING_INVOICE ASC";
+
+    query->ParamByName("STARTDATE")->AsDateTime = SDate;
+    query->ParamByName("ENDDATE")->AsDateTime = EDate;
+    query->ExecQuery();
+
+    if(!query->Eof)
+    {
+        OLD_GRANDTOTAL = query->FieldByName("OLD_GRANDTOTAL")->AsCurrency;
+        BEGINNING_INVOICE = query->FieldByName("BEGINNING_INVOICE")->AsString;
+        TERMINAL_NAME = query->FieldByName("TERMINAL_NAME")->AsString;
+        TENANT_NAME = query->FieldByName("TENANT_NAME")->AsString;
+        MALLCODE = query->FieldByName("MALLCODE")->AsString;
+    }
+
+    query1->Close();
+
+    query1->SQL->Text = "SELECT FIRST 1 NEW_GRANDTOTAL, ENDING_INVOICE FROM ARCMALLEXPORT "
+                       "WHERE TRANSACTIONDATE >= :STARTDATE AND TRANSACTIONDATE < :ENDDATE ORDER BY BEGINNING_INVOICE DESC";
+
+    query1->ParamByName("STARTDATE")->AsDateTime = SDate;
+    query1->ParamByName("ENDDATE")->AsDateTime = EDate;
+    query1->ExecQuery();
+
+    if(!query1->Eof)
+    {
+        NEW_GRANDTOTAL = query1->FieldByName("NEW_GRANDTOTAL")->AsCurrency;
+        ENDING_INVOICE = query1->FieldByName("ENDING_INVOICE")->AsString;
+    }
+
+    query2->Close();
+
+    query2->SQL->Text = "SELECT SUM(DAILY_SALES) AS DAILY_SALES, SUM(TOTALDISCOUNT) AS TOTALDISCOUNT, SUM(SCDISCOUNT_AMOUNT) AS SCDISCOUNT_AMOUNT, "
+                        "SUM(PWDDISCOUNT_AMOUNT) PWDDISCOUNT_AMOUNT, SUM(GPCDISCOUNT_AMOUNT) AS GPCDISCOUNT_AMOUNT, SUM(VIPDISCOUNT_AMOUNT) AS VIPDISCOUNT_AMOUNT, "
+                        "SUM(EMPDISCOUNT_AMOUNT) AS EMPDISCOUNT_AMOUNT, SUM(REGDISCOUNT_AMOUNT) AS REGDISCOUNT_AMOUNT, "
+                        "SUM(DISCOUNTG1_AMOUNT) AS DISCOUNTG1_AMOUNT, SUM(REFUND_AMOUNT) AS REFUND_AMOUNT, SUM(VOID_AMOUNT) AS VOID_AMOUNT, "
+                        "SUM(VAT_SALES) AS VAT_SALES, SUM(TAX_INCLUSIVE_SALES) AS TAX_INCLUSIVE_SALES, SUM(VATEXEMPT_SALES) AS VATEXEMPT_SALES, "
+                        "SUM(TRANSACTION_COUNT) AS TRANSACTION_COUNT, SUM(FINEDINECUST_COUNT) AS FINEDINECUST_COUNT, "
+                        "SUM(SCDISCOUNT_COUNT) AS SCDISCOUNT_COUNT, SUM(LOCALTAXES) AS LOCALTAXES, SUM(SCHARGE_AMOUNT) AS SCHARGE_AMOUNT, "
+                        "SUM(NONVAT_SALES) AS NONVAT_SALES, SUM(GROSS_SALES) AS GROSS_SALES, SUM(LOCTAXEXEMPTDLY_SALES) AS LOCTAXEXEMPTDLY_SALES, "
+                        "SUM(CASH_SALES) AS CASH_SALES, SUM(CARD_SALES) AS CARD_SALES, SUM(OTHER_SALES) AS OTHER_SALES FROM ARCMALLEXPORT "
+                        "WHERE TRANSACTIONDATE >= :STARTDATE AND TRANSACTIONDATE < :ENDDATE";
+
+    query2->ParamByName("STARTDATE")->AsDateTime = SDate;
+    query2->ParamByName("ENDDATE")->AsDateTime = EDate;
+    query2->ExecQuery();
+
+    if(!query2->Eof)
+    {
+        DAILY_SALES = query2->FieldByName("DAILY_SALES")->AsCurrency;
+        TOTALDISCOUNT = query2->FieldByName("TOTALDISCOUNT")->AsCurrency;
+        SCDISCOUNT_AMOUNT = query2->FieldByName("SCDISCOUNT_AMOUNT")->AsCurrency;
+        PWDDISCOUNT_AMOUNT = query2->FieldByName("PWDDISCOUNT_AMOUNT")->AsCurrency;
+        GPCDISCOUNT_AMOUNT = query2->FieldByName("GPCDISCOUNT_AMOUNT")->AsCurrency;
+        VIPDISCOUNT_AMOUNT = query2->FieldByName("VIPDISCOUNT_AMOUNT")->AsCurrency;
+        EMPDISCOUNT_AMOUNT = query2->FieldByName("EMPDISCOUNT_AMOUNT")->AsCurrency;
+        REGDISCOUNT_AMOUNT = query2->FieldByName("REGDISCOUNT_AMOUNT")->AsCurrency;
+        DISCOUNTG1_AMOUNT = query2->FieldByName("DISCOUNTG1_AMOUNT")->AsCurrency;
+        REFUND_AMOUNT = query2->FieldByName("REFUND_AMOUNT")->AsCurrency;
+        VOID_AMOUNT = query2->FieldByName("VOID_AMOUNT")->AsCurrency;
+        VAT_SALES = query2->FieldByName("VAT_SALES")->AsCurrency;
+        TAX_INCLUSIVE_SALES = query2->FieldByName("TAX_INCLUSIVE_SALES")->AsCurrency;
+        VATEXEMPT_SALES = query2->FieldByName("VATEXEMPT_SALES")->AsCurrency;
+        TRANSACTION_COUNT = query2->FieldByName("TRANSACTION_COUNT")->AsInteger;
+        FINEDINECUST_COUNT = query2->FieldByName("FINEDINECUST_COUNT")->AsInteger;
+        SCDISCOUNT_COUNT = query2->FieldByName("SCDISCOUNT_COUNT")->AsInteger;
+        LOCALTAXES = query2->FieldByName("LOCALTAXES")->AsCurrency;
+        SCHARGE_AMOUNT = query2->FieldByName("SCHARGE_AMOUNT")->AsCurrency;
+        NONVAT_SALES = query2->FieldByName("NONVAT_SALES")->AsCurrency;
+        GROSS_SALES = query2->FieldByName("GROSS_SALES")->AsCurrency;
+        LOCTAXEXEMPTDLY_SALES = query2->FieldByName("LOCTAXEXEMPTDLY_SALES")->AsCurrency;
+        CASH_SALES = query2->FieldByName("CASH_SALES")->AsCurrency;
+        CARD_SALES = query2->FieldByName("CARD_SALES")->AsCurrency;
+        OTHER_SALES = query2->FieldByName("OTHER_SALES")->AsCurrency;
+    }
+
+    DateVal = SDate.FormatString("mm/dd/yyyy");
+
+    OutputValue = DateVal + Format + TENANT_NAME + Format + MALLCODE + Format + "=\"" + federallandExport->FixDecimalPlaces(OLD_GRANDTOTAL) + "\"" + Format +
+                  "=\"" + federallandExport->FixDecimalPlaces(NEW_GRANDTOTAL) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(DAILY_SALES) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(TOTALDISCOUNT) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(SCDISCOUNT_AMOUNT) + "\"" + Format +
+                  "=\"" + federallandExport->FixDecimalPlaces(PWDDISCOUNT_AMOUNT) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(GPCDISCOUNT_AMOUNT) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(VIPDISCOUNT_AMOUNT) + "\"" + Format +
+                  "=\"" + federallandExport->FixDecimalPlaces(EMPDISCOUNT_AMOUNT) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(REGDISCOUNT_AMOUNT) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(DISCOUNTG1_AMOUNT) + "\"" + Format +
+                  "=\"" + federallandExport->FixDecimalPlaces(REFUND_AMOUNT) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(VOID_AMOUNT) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(VAT_SALES) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(TAX_INCLUSIVE_SALES) + "\"" + Format +
+                  "=\"" + federallandExport->FixDecimalPlaces(VATEXEMPT_SALES) + "\"" + Format + BEGINNING_INVOICE + Format + ENDING_INVOICE + Format +
+                  TRANSACTION_COUNT + Format + FINEDINECUST_COUNT + Format + SCDISCOUNT_COUNT + Format +
+                  "=\"" + federallandExport->FixDecimalPlaces(LOCALTAXES) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(SCHARGE_AMOUNT) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(NONVAT_SALES) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(GROSS_SALES) + "\"" + Format +
+                  "=\"" + federallandExport->FixDecimalPlaces(LOCTAXEXEMPTDLY_SALES) + "\"" + Format + TERMINAL_NAME + Format + "=\"" + federallandExport->FixDecimalPlaces(CASH_SALES) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(CARD_SALES) + "\"" + Format + "=\"" + federallandExport->FixDecimalPlaces(OTHER_SALES) + "\"" + "\n";
+
+    DataToWrite.push_back(OutputValue.t_str());
+    dataManager->ExportFile(OutputManager, DataToWrite, MallPathFileName, "ZTXTDATA");
+    DataToWrite.clear();
+
+    // For Daily Sales Discount
+    UnicodeString DISCOUNTTYPECODE = "";
+    Currency DISCOUNTPERC = 0;
+    Currency DISCOUNTAMOUNT = 0;
+
+    federallandExport->CreateFilename("D", MallPath, MallPathFileName);
+    federallandExport->CreateHeaderFormat(MallPathFileName,DataToWrite, "D");
+    dataManager->ExportFile(OutputManager, DataToWrite, MallPathFileName, "ZTXTHEADER");
+    DataToWrite.clear();
+
+    query3->Close();
+
+    query3->SQL->Text = "SELECT DATE_VALUE, TENANT_NAME, DISCOUNT_TYPE, DISCOUNT_PERC, DISCOUNT_AMOUNT, TRANSACTION_COUNT, "
+                        "FINEDINECUST_COUNT, SCDISCOUNT_COUNT FROM ARCMALLEXPORTOTHERDETAILS "
+                        "WHERE DATE_VALUE >= :STARTDATE AND DATE_VALUE < :ENDDATE AND TRANSACTION_CODE = 'DISC'";
+
+    DBTransaction.StartTransaction();
+    query3->ParamByName("STARTDATE")->AsDateTime = SDate;
+    query3->ParamByName("ENDDATE")->AsDateTime = EDate;
+    query3->ExecQuery();
+
+    DateVal = SDate.FormatString("mm/dd/yyyy");
+
+    while(!query3->Eof)
+    {
+        TENANT_NAME = query3->FieldByName("TENANT_NAME")->AsString;
+        DISCOUNTTYPECODE = query3->FieldByName("DISCOUNT_TYPE")->AsString;
+        DISCOUNTPERC = query3->FieldByName("DISCOUNT_PERC")->AsCurrency;
+        DISCOUNTAMOUNT = query3->FieldByName("DISCOUNT_AMOUNT")->AsCurrency;
+        TRANSACTION_COUNT = query3->FieldByName("TRANSACTION_COUNT")->AsInteger;
+        FINEDINECUST_COUNT = query3->FieldByName("FINEDINECUST_COUNT")->AsInteger;
+        SCDISCOUNT_COUNT = query3->FieldByName("SCDISCOUNT_COUNT")->AsInteger;
+
+        OutputValue = DateVal + Format + TENANT_NAME + Format + DISCOUNTTYPECODE + Format +
+                      DISCOUNTPERC + Format + "=\"" + federallandExport->FixDecimalPlaces(DISCOUNTAMOUNT) + "\"" + Format + TRANSACTION_COUNT + Format +
+                      FINEDINECUST_COUNT + Format + SCDISCOUNT_COUNT + "\n";
+        DataToWrite.push_back(OutputValue.t_str());
+        query3->Next();
+    }
+    DBTransaction.Commit();
+
+    dataManager->ExportFile(OutputManager, DataToWrite, MallPathFileName, "ZTXTDATA");
+    DataToWrite.clear();
+
+    // For Daily Sales Payment
+    UnicodeString PAYMENTCODE = "";
+    UnicodeString PAYMENTCODEDESC = "";
+    UnicodeString PAYMENTCLASS = "";
+    UnicodeString PAYMENTCLASSDESC = "";
+    Currency PAYMENTAMOUNT = 0;
+
+    federallandExport->CreateFilename("P", MallPath, MallPathFileName);
+    federallandExport->CreateHeaderFormat(MallPathFileName,DataToWrite, "P");
+    dataManager->ExportFile(OutputManager, DataToWrite, MallPathFileName, "ZTXTHEADER");
+    DataToWrite.clear();
+
+    query4->Close();
+
+    query4->SQL->Text = "SELECT DATE_VALUE, TENANT_NAME, PAYMENT_CODE, PAYMENT_CODE_DESC, "
+                        "PAYMENT_CLASS, PAYMENT_CLASS_DESC, PAYMENT_AMOUNT FROM ARCMALLEXPORTOTHERDETAILS "
+                        "WHERE DATE_VALUE >= :STARTDATE AND DATE_VALUE < :ENDDATE AND TRANSACTION_CODE = 'PAYMENT' AND REFUND_CANCEL_REASON = ''";
+
+    DBTransaction.StartTransaction();
+    query4->ParamByName("STARTDATE")->AsDateTime = SDate;
+    query4->ParamByName("ENDDATE")->AsDateTime = EDate;
+    query4->ExecQuery();
+
+    DateVal = SDate.FormatString("mm/dd/yyyy");
+
+    while(!query4->Eof)
+    {
+        TENANT_NAME = query4->FieldByName("TENANT_NAME")->AsString;
+        PAYMENTCODE = query4->FieldByName("PAYMENT_CODE")->AsString;
+        PAYMENTCODEDESC = query4->FieldByName("PAYMENT_CODE_DESC")->AsString;
+        PAYMENTCLASS = query4->FieldByName("PAYMENT_CLASS")->AsString;
+        PAYMENTCLASSDESC = query4->FieldByName("PAYMENT_CLASS_DESC")->AsString;
+        PAYMENTAMOUNT = query4->FieldByName("PAYMENT_AMOUNT")->AsCurrency;
+
+        OutputValue = DateVal + Format + TENANT_NAME + Format + PAYMENTCODE + Format +
+                      PAYMENTCODEDESC + Format + PAYMENTCLASS + Format + PAYMENTCLASSDESC +
+                      Format + "=\"" + federallandExport->FixDecimalPlaces(PAYMENTAMOUNT) + "\"" + "\n";
+        DataToWrite.push_back(OutputValue.t_str());
+        query4->Next();
+    }
+    DBTransaction.Commit();
+
+    dataManager->ExportFile(OutputManager, DataToWrite, MallPathFileName, "ZTXTDATA");
+    DataToWrite.clear();
+
+    // For Daily Sales Refund Cancel
+    UnicodeString RCCODE = "";
+    UnicodeString RCREASON = "";
+    Currency RCAMOUNT = 0;
+
+    federallandExport->CreateFilename("R", MallPath, MallPathFileName);
+    federallandExport->CreateHeaderFormat(MallPathFileName,DataToWrite, "R");
+    dataManager->ExportFile(OutputManager, DataToWrite, MallPathFileName, "ZTXTHEADER");
+    DataToWrite.clear();
+
+    query5->Close();
+
+    query5->SQL->Text = "SELECT DATE_VALUE, TENANT_NAME, TRANSACTION_CODE, REFUND_CANCEL_REASON, "
+                        "REFUND_CANCEL_AMOUNT, TRANSACTION_COUNT, FINEDINECUST_COUNT, SCDISCOUNT_COUNT "
+                        "FROM ARCMALLEXPORTOTHERDETAILS WHERE DATE_VALUE >= :STARTDATE AND DATE_VALUE < :ENDDATE AND TRANSACTION_CODE = 'CNCLD' OR TRANSACTION_CODE = 'RFND'";
+
+    DBTransaction.StartTransaction();
+    query5->ParamByName("STARTDATE")->AsDateTime = SDate;
+    query5->ParamByName("ENDDATE")->AsDateTime = EDate;
+    query5->ExecQuery();
+
+    DateVal = SDate.FormatString("mm/dd/yyyy");
+
+    while(!query5->Eof)
+    {
+        TENANT_NAME = query5->FieldByName("TENANT_NAME")->AsString;
+        RCCODE = query5->FieldByName("TRANSACTION_CODE")->AsString;
+        RCREASON = query5->FieldByName("REFUND_CANCEL_REASON")->AsString;
+        RCAMOUNT = query5->FieldByName("REFUND_CANCEL_AMOUNT")->AsCurrency;
+        TRANSACTION_COUNT = query5->FieldByName("TRANSACTION_COUNT")->AsInteger;
+        FINEDINECUST_COUNT = query5->FieldByName("FINEDINECUST_COUNT")->AsInteger;
+        SCDISCOUNT_COUNT = query5->FieldByName("SCDISCOUNT_COUNT")->AsInteger;
+
+        OutputValue = DateVal + Format + TENANT_NAME + Format + RCCODE + Format +
+                      RCREASON + Format + "=\"" + federallandExport->FixDecimalPlaces(RCAMOUNT) + "\"" + Format + TRANSACTION_COUNT + Format +
+                      FINEDINECUST_COUNT + Format + SCDISCOUNT_COUNT + "\n";
+        DataToWrite.push_back(OutputValue.t_str());
+        query5->Next();
+    }
+    DBTransaction.Commit();
+
+    dataManager->ExportFile(OutputManager, DataToWrite, MallPathFileName, "ZTXTDATA");
+    DataToWrite.clear();
+
+    // For Hourly Sales
+    UnicodeString TERMINALNUM = TGlobalSettings::Instance().TerminalNo;
+    UnicodeString DATEVALUE = "";
+    UnicodeString TIMEVALUE = "";
+    UnicodeString MINUTEVALUE = "";
+    Currency AMOUNTVALUE = 0;
+    int TransactionTotal = 0;
+    UnicodeString Amount = "";
+    UnicodeString TempVal = "";
+    TENANT_NAME = "";
+    OutputValue = "";
+
+    std::map<UnicodeString, UnicodeString>::iterator it;
+
+    federallandExport->CreateFilename("H", MallPath, MallPathFileName);
+    federallandExport->CreateHeaderFormat(MallPathFileName,DataToWrite, "H");
+    dataManager->ExportFile(OutputManager, DataToWrite, MallPathFileName, "ZTXTHEADER");
+    DataToWrite.clear();
+    DataRead.clear();
+
+    query6->Close();
+
+    query6->SQL->Text = "SELECT * FROM ARCMALLEXPORTHOURLY WHERE DATE_VALUE >= :STARTDATE AND DATE_VALUE < :ENDDATE AND TERMINAL_NAME=:TERMINALNAME "
+                        "ORDER BY DATE_VALUE, TIME_VALUE ASC";
+
+    DBTransaction.StartTransaction();
+    query6->ParamByName("STARTDATE")->AsDateTime = SDate;
+    query6->ParamByName("ENDDATE")->AsDateTime = EDate;
+    query6->ParamByName("TERMINALNAME")->AsString = TERMINALNUM;
+    query6->ExecQuery();
+
+    while(!query6->Eof)
+    {
+        TENANT_NAME = query6->FieldByName("MALLCODE")->AsString;
+        DATEVALUE = SDate.FormatString("mm/dd/yyyy");
+        TIMEVALUE = query6->FieldByName("TIME_VALUE")->AsString;
+        AMOUNTVALUE = query6->FieldByName("AMOUNT_VALUE")->AsCurrency;
+        MINUTEVALUE = query6->FieldByName("MINUTE_VALUE")->AsString;
+        SCDISCOUNT_COUNT = query6->FieldByName("SCDISCOUNT_COUNT")->AsInteger;
+        FINEDINECUST_COUNT = query6->FieldByName("PATRON_COUNT")->AsInteger;
+
+        DataRead[TIMEVALUE] = federallandExport->GetHourlyFormat(TERMINALNUM, TENANT_NAME, DATEVALUE, TIMEVALUE, FINEDINECUST_COUNT, MINUTEVALUE, SCDISCOUNT_COUNT);
+
+        query6->Next();
+    }
+    DBTransaction.Commit();
+
+    for(int i=0;i<24;i++)
+    {
+        UnicodeString Time = "";
+        UnicodeString Data = "";
+        TDateTime Tomorrow = Now() + 1.0;
+        TDateTime Yesterday = Now() - 1.0;
+
+        switch(i)
+        {
+            case 0:
+                Time = "00";
+                break;
+            case 1:
+                Time = "01";
+                break;
+            case 2:
+                Time = "02";
+                break;
+            case 3:
+                Time = "03";
+                break;
+            case 4:
+                Time = "04";
+                break;
+            case 5:
+                Time = "05";
+                break;
+            case 6:
+                Time = "06";
+                break;
+            case 7:
+                Time = "07";
+                break;
+            case 8:
+                Time = "08";
+                break;
+            case 9:
+                Time = "09";
+                break;
+            case 10:
+                Time = "10";
+                break;
+            case 11:
+                Time = "11";
+                break;
+            case 12:
+                Time = "12";
+                break;
+            case 13:
+                Time = "13";
+                break;
+            case 14:
+                Time = "14";
+                break;
+            case 15:
+                Time = "15";
+                break;
+            case 16:
+                Time = "16";
+                break;
+            case 17:
+                Time = "17";
+                break;
+            case 18:
+                Time = "18";
+                break;
+            case 19:
+                Time = "19";
+                break;
+            case 20:
+                Time = "20";
+                break;
+            case 21:
+                Time = "21";
+                break;
+            case 22:
+                Time = "22";
+                break;
+            case 23:
+                Time = "23";
+                break;
+            default:
+                break;
+        }
+
+        if(query6->RecordCount == 0)
+        {
+            DataRead[Time] = federallandExport->GetHourlyFormat(TERMINALNUM, TENANT_NAME, DATEVALUE, TIMEVALUE, FINEDINECUST_COUNT, MINUTEVALUE, SCDISCOUNT_COUNT);
+        }
+
+        it = DataRead.find(Time);
+        TempVal = (it->second);
+
+
+        if(TENANT_NAME == "")
+        {
+            TENANT_NAME = TGlobalSettings::Instance().BranchCode;
+        }
+
+        GetHourlyData(TERMINALNUM, TENANT_NAME, DATEVALUE, Time, TransactionTotal, Amount, MINUTEVALUE, SCDISCOUNT_COUNT, FINEDINECUST_COUNT);
+
+        for(int i=0;i<7;i++)
+        {
+            if(i==0)
+            {
+                TempVal = DATEVALUE + Format;
+            }
+            else if(i==1)
+            {
+                TempVal = TENANT_NAME + Format;
+            }
+            else if(i==2)
+            {
+                TempVal = Time + ":" + MINUTEVALUE + Format;
+            }
+            else if(i==3)
+            {
+                TempVal = "=\"" + Amount + "\"" + Format;
+            }
+            else if(i==4)
+            {
+                TempVal = IntToStr(TransactionTotal) + Format;
+            }
+            else if(i==5)
+            {
+                TempVal = IntToStr(FINEDINECUST_COUNT) + Format;
+            }
+            else
+            {
+                TempVal = IntToStr(SCDISCOUNT_COUNT) + "\n";
+            }
+            OutputValue += TempVal;
+        }
+        DataToWrite.push_back(OutputValue.t_str());
+        dataManager->ExportFile(OutputManager, DataToWrite, MallPathFileName, "HTXTDATA");
+        DataToWrite.clear();
+        OutputValue = "";
+    }
+
+    DataToWrite.clear();
+
+    MessageBox( "Generation of file Successful", "Gernerating File", MB_OK );
+
+    DataRead.clear();
+    ResetMallExportValues();
+}
+//---------------------------------------------------------------------------

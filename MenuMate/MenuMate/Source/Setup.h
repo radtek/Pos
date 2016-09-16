@@ -122,6 +122,8 @@ __published:	// IDE-managed Components
     TLabel *lbFTPServer;
     TTouchBtn *btnRegenReport;
     TTouchBtn *btnAssignSalesType;
+    TEdit *edConsolidatedDBPaths;
+    TCheckBox *cbEnableConsolidatedRep;
    void __fastcall imgCloseClick(TObject *Sender);
    void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
    void __fastcall FormCreate(TObject *Sender);
@@ -206,6 +208,9 @@ __published:	// IDE-managed Components
 
     void __fastcall btnRegenerateReportMouseClick(TObject *Sender);
     void __fastcall btnAssignSalesTypeMouseClick(TObject *Sender);
+    void __fastcall edConsolidatedDBPathsMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall cbEnableConsolidatedRepClick(TObject *Sender);
 
 
       //MM-4104
@@ -242,6 +247,7 @@ public:		// User declarations
     void SetupFTPPath();
     void SetupFTPUserName();
     void SetupFTPPassword();
+    void SetupConsolidatedPaths();
 
     void NoSelectedMall();
     void EnableSMComponents();
@@ -253,9 +259,11 @@ public:		// User declarations
     void EnableMegaworldComponents();
     void EnableShangrilaComponents();
     void EnableDLFMallComponents();
+    void EnableFederalLandComponents();
     void EnableFieldComponent(bool isMallPathSet, bool isTerminalNoSet, bool isClassCodeSet, bool isTradeCodeSet,
                               bool isOutletCodeSet, bool isSerialNoSet, bool isTenantNoSet, bool isBranchCodeSet,
-                              bool isFTPServerSet, bool isFTPPathSet, bool isFTPUserNameSet, bool isFTPPasswordSet);
+                              bool isFTPServerSet, bool isFTPPathSet, bool isFTPUserNameSet, bool isFTPPasswordSet,
+                              bool isConsolidatedRepSet, bool isEnableConsolidatedRepSet);
     void ClearAllComponentValue();
     void SaveCompValueinDBStr(vmVariables vmVar, UnicodeString CompName);
     void SaveCompValueinDBInt(vmVariables vmVar, int CompName);
@@ -266,6 +274,8 @@ public:		// User declarations
     void ClearCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName, TEdit *CompfrmName);
     void SaveCompValueinDBIntUnique(vmVariables vmVar, int CompName);
     void ClearCompValueinDBIntUnique(vmVariables vmVar, int CompName, TEdit *CompfrmName);
+    void SaveCompValueinDBBoolUnique(vmVariables vmVar, bool CompName);
+    void ClearCompValueinDBBoolUnique(vmVariables vmVar, bool CompName, TCheckBox *CompfrmName);
     void SetSpecificMall(int MallIdx);
     void CheckMallPath();
     void SaveMESettings();

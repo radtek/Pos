@@ -17,13 +17,11 @@
 #include <memory>
 #include "Money.h"
 #include <math.h>
-
 #include "StringTableRes.h"
 #include "DBOrder.h"
 #include <StrUtils.hpp>
 #include "rounding.h"
 #include "ComboDiscount.h"
-
 #include "DiscountGroupsManager.h"
 #include "DiscountGroup.h"
 #include "IBillCalculator.h"
@@ -101,61 +99,52 @@ void TManagerDiscount::GetVoucherListThor(Database::TDBTransaction &tr,TStringLi
 
 }
 //---------------------------------------------------------------------------
-void TManagerDiscount::GetDiscountList(Database::TDBTransaction &tr,TStringList *destination_list,const discount_list_combo_filter_t filter, bool ShowPointsAsDiscount)
+void TManagerDiscount::GetDiscountList(Database::TDBTransaction &tr,TStringList *destination_list,
+                                        std::vector<eDiscountFilter> filters, bool ShowPointsAsDiscount)
 {
-	static const UnicodeString queries[1][__num_discount_list_combo_filters] = {
-		/* menu not specified. */ {
-			/* exclude_combos */ (
-			L"select discount_key key, "
-			"       name "
-			"       from discounts "
-			"       where discount_mode <> :combo_discount_mode "
-			"       order by appearance_order asc;"
-			), /* include_combos */ (
-			L"select discount_key key, "
-			"       name "
-			"       from discounts "
-			"       order by appearance_order asc;"
-			), /* only_combos */ (
-			L"select discount_key key, "
-			"       name "
-			"       from discounts "
-			"       where discount_mode = :combo_discount_mode "
-			"       order by appearance_order asc;"
-			)
-		}
-	};
-	TIBSQL *q;
-
-	if (!fEnabled || destination_list == NULL)
+   	if (!fEnabled || destination_list == NULL)
 	return;
+    AnsiString queryString = "select discount_key key,name from discounts ";
 
-	q = tr.Query(tr.AddQuery());
-	q->SQL->Text = queries[0][filter];
-	if (filter == exclude_combos || filter == only_combos)
-	q->ParamByName(L"combo_discount_mode")->AsInteger = DiscModeCombo;
+    if(!filters.empty())
+    {
+        int size = filters.size();
+        queryString += " where ";
+        for (std::vector<eDiscountFilter>::iterator ptrFilter = filters.begin(); ptrFilter != filters.end(); ptrFilter++)
+        {
+            eDiscountFilter filter = *ptrFilter;
+            switch(filter)
+            {
+                case exclude_combos:
+                queryString += " discount_mode <> 3 "; //DiscModeCombo
+                break;
+                case only_combos:
+                queryString += " discount_mode = 3 ";    //DiscModeCombo
+                break;
+                case exclude_member_exempt:
+                queryString += " members_exempt <> 'T' ";
+                break;
+            }
+            size--;
+            if(size > 0)
+              queryString += " and ";
+        }
+    }
 
-	for (q->ExecQuery(); !q->Eof; q->Next()) {
-		const int index =
-		destination_list->Add(q->FieldByName(L"name")->AsString);
-		destination_list->Objects[index] =
-		reinterpret_cast<TObject *>(q->FieldByName(L"key")->AsInteger);
+    queryString += " order by appearance_order asc";
+    TIBSQL *IBInternalQuery;
+    IBInternalQuery = tr.Query(tr.AddQuery());
+    IBInternalQuery->SQL->Text = queryString;
+    for (IBInternalQuery->ExecQuery(); !IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+		const int index = destination_list->Add(IBInternalQuery->FieldByName(L"name")->AsString);
+		destination_list->Objects[index] = reinterpret_cast<TObject *>(IBInternalQuery->FieldByName(L"key")->AsInteger);
 	}
-
-	/* TODO 1 -o Michael -c Kludge : This code is less than ideal
-		we are fudging the creation of a Discount here and the  Manager Dicount will
-		recoginse the Key and supply an appropriate system discount when queryied.
-		In an ideal world the membership discount around points would be a system
-		discount and these 'system discounts' would live in the DB and
-		show where appropriate. */
-
 	if(TGlobalSettings::Instance().EnableSeperateEarntPts && ShowPointsAsDiscount)
 	{
 		const int index = destination_list->Add("Loyalty Points");
 		destination_list->Objects[index] = reinterpret_cast<TObject *>(dsMMMebersPointsKEY);
 	}
-
-
 }
 //---------------------------------------------------------------------------
 void TManagerDiscount::GetDiscountListByPriority(Database::TDBTransaction &DBTransaction,TStringList *List)
@@ -244,7 +233,7 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
 		Discount.DiscountKey = dsMMMebersPointsKEY;
 		Discount.Name = "Loyalty Points";
 		Discount.Description = "Loyalty Points Discount";
-		Discount.ID = dsMMMebersPointsKEY;
+		Discount.DiscountCode = dsMMMebersPointsKEY;
 		Discount.Priority = 999;
 		Discount.AppearanceOrder = 0;
 		Discount.PercentAmount = 0;
@@ -264,7 +253,7 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
 	else if(DiscountKey == dsMMDealKey)
 	{
 		Discount.DiscountKey = dsMMDealKey;
-		Discount.ID = dsMMDealKey;
+		Discount.DiscountCode = dsMMDealKey;
 		Discount.AppearanceOrder = 0;
 		Discount.PercentAmount = 0;
 		Discount.Rounding = 0.01;
@@ -293,7 +282,7 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
 			Discount.DiscountKey = IBInternalQuery->FieldByName("DISCOUNT_KEY")->AsInteger;
 			Discount.Name = IBInternalQuery->FieldByName("NAME")->AsString;
 			Discount.Description = IBInternalQuery->FieldByName("DESCRIPTION")->AsString;
-			Discount.ID = IBInternalQuery->FieldByName("DISCOUNT_ID")->AsInteger;
+			Discount.DiscountCode = IBInternalQuery->FieldByName("DISCOUNT_ID")->AsString;
 			Discount.Priority = IBInternalQuery->FieldByName("PRIORITY")->AsInteger;
 			Discount.AppearanceOrder = IBInternalQuery->FieldByName("APPEARANCE_ORDER")->AsInteger;
 			Discount.PercentAmount = IBInternalQuery->FieldByName("PERCENTAGE")->AsFloat;
@@ -308,6 +297,8 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
 			Discount.Group = IBInternalQuery->FieldByName("DISCOUNT_GROUP")->AsInteger;
             Discount.MaxItemAffected  = IBInternalQuery->FieldByName("MAX_ITEM_AFFECTED")->AsInteger;
             Discount.MinItemRequired  = IBInternalQuery->FieldByName("MIN_ITEMS_REQUIRED")->AsInteger;
+            Discount.DailyUsageAllowedPerMember  = IBInternalQuery->FieldByName("DAILY_USE_PER_MEMBER")->AsInteger;
+            Discount.IsCloudDiscount = IBInternalQuery->FieldByName("IS_CLOUD_DISCOUNT")->AsString == "T";
 			GetDiscountCategories(DBTransaction,DiscountKey,Discount);
 			ReturnVal = true;
 		}
@@ -425,14 +416,15 @@ void TManagerDiscount::SetDiscountCategories(Database::TDBTransaction &DBTransac
 	}
 }
 //---------------------------------------------------------------------------
-int TManagerDiscount::GetDiscountKeyByID(Database::TDBTransaction &DBTransaction,BYTE DiscountID)
+int TManagerDiscount::GetDiscountKeyByCode(Database::TDBTransaction &DBTransaction,AnsiString DiscountCode)
 {
-	if( !fEnabled )return false;
+	if( !fEnabled )
+      return false;
 	int ReturnVal = 0;
 
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-	if(DiscountID != 0)
+	if(DiscountCode != "")
 	{
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
@@ -441,7 +433,7 @@ int TManagerDiscount::GetDiscountKeyByID(Database::TDBTransaction &DBTransaction
 		"  DISCOUNTS"
 		" WHERE"
 		" DISCOUNT_ID = :DISCOUNT_ID";
-		IBInternalQuery->ParamByName("DISCOUNT_ID")->AsInteger = DiscountID;
+		IBInternalQuery->ParamByName("DISCOUNT_ID")->AsString = DiscountCode;
 		IBInternalQuery->ExecQuery();
 		if(IBInternalQuery->RecordCount)
 		{
@@ -451,10 +443,11 @@ int TManagerDiscount::GetDiscountKeyByID(Database::TDBTransaction &DBTransaction
 	return ReturnVal;
 }
 //---------------------------------------------------------------------------
-BYTE TManagerDiscount::GetDiscountIDByKey(Database::TDBTransaction &DBTransaction,long DiscountKey)
+AnsiString TManagerDiscount::GetDiscountCodeByKey(Database::TDBTransaction &DBTransaction,long DiscountKey)
 {
-	if( !fEnabled )return false;
-	BYTE ReturnVal = 0;
+	if( !fEnabled )
+      return "";
+	AnsiString ReturnVal = "";
 
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
@@ -471,17 +464,17 @@ BYTE TManagerDiscount::GetDiscountIDByKey(Database::TDBTransaction &DBTransactio
 		IBInternalQuery->ExecQuery();
 		if(IBInternalQuery->RecordCount)
 		{
-			ReturnVal = (BYTE)IBInternalQuery->FieldByName("DISCOUNT_ID")->AsInteger;
+			ReturnVal = IBInternalQuery->FieldByName("DISCOUNT_ID")->AsString;
 		}
 	}
 	return ReturnVal;
 }
 //---------------------------------------------------------------------------
-void TManagerDiscount::DiscountIDToKey(Database::TDBTransaction &DBTransaction,std::set<byte> &AutoAppliedDiscountsID, std::set<int> &AutoAppliedDiscounts)
+void TManagerDiscount::DiscountCodeToKey(Database::TDBTransaction &DBTransaction,std::set<AnsiString> &AutoAppliedDiscountsID, std::set<int> &AutoAppliedDiscounts)
 {
-	for(std::set<byte>::iterator itDiscountsID = AutoAppliedDiscountsID.begin(); itDiscountsID != AutoAppliedDiscountsID.end(); std::advance(itDiscountsID,1) )
+	for(std::set<AnsiString>::iterator itDiscountsID = AutoAppliedDiscountsID.begin(); itDiscountsID != AutoAppliedDiscountsID.end(); std::advance(itDiscountsID,1) )
 	{
-		int DiscountKey = GetDiscountKeyByID(DBTransaction,*itDiscountsID);
+		int DiscountKey = GetDiscountKeyByCode(DBTransaction,*itDiscountsID);
 		if(DiscountKey)
 		{
 			AutoAppliedDiscounts.insert(DiscountKey);
@@ -489,14 +482,14 @@ void TManagerDiscount::DiscountIDToKey(Database::TDBTransaction &DBTransaction,s
 	}
 };
 //---------------------------------------------------------------------------
-void TManagerDiscount::DiscountKeyToID(Database::TDBTransaction &DBTransaction,std::set<byte> &AutoAppliedDiscountsID, std::set<int> &AutoAppliedDiscounts)
+void TManagerDiscount::DiscountKeyToCode(Database::TDBTransaction &DBTransaction,std::set<AnsiString> &AutoAppliedDiscountsID, std::set<int> &AutoAppliedDiscounts)
 {
 	for(std::set<int>::iterator itDiscountsKey = AutoAppliedDiscounts.begin(); itDiscountsKey != AutoAppliedDiscounts.end(); std::advance(itDiscountsKey,1) )
 	{
-		BYTE DiscountID = GetDiscountIDByKey(DBTransaction,*itDiscountsKey);
-		if(DiscountID)
+		AnsiString DiscountCode = GetDiscountCodeByKey(DBTransaction,*itDiscountsKey);
+		if(DiscountCode != "")
 		{
-			AutoAppliedDiscountsID.insert(DiscountID);
+			AutoAppliedDiscountsID.insert(DiscountCode);
 		}
 	}
 };
@@ -710,9 +703,17 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
 {
 	if( !fEnabled )return ;
 
-	if(DiscountIDExisits(DBTransaction,DiscountKey,Discount.ID))
+    if(Discount.IsCloudDiscount)
+    {
+       int discountKey = GetDiscountKeyByCode(DBTransaction,Discount.DiscountCode);
+       if(discountKey > 0)
+       {
+         DiscountKey =  discountKey;
+       }
+    }
+    else if(DiscountCodeExisits(DBTransaction,DiscountKey,Discount.DiscountCode))
 	{
-		throw Exception("A Discount with this Discount ID Already Exists.");
+		throw Exception("A Discount with this Discount Code Already Exists.");
 	}
 
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -742,7 +743,11 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
 		"MEMBERS_EXEMPT,"
 		"DISCOUNT_ID,"
 		"MAX_VALUE,"
-		"DISCOUNT_GROUP) "
+		"DISCOUNT_GROUP, "
+        "DAILY_USE_PER_MEMBER,"
+        "MAX_ITEM_AFFECTED,"
+        "MIN_ITEMS_REQUIRED,"
+        "IS_CLOUD_DISCOUNT) "
 		"VALUES ("
 		":DISCOUNT_KEY,"
 		":NAME,"
@@ -758,7 +763,11 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
 		":MEMBERS_EXEMPT,"
 		":DISCOUNT_ID,"
 		":MAX_VALUE,"
-		":DISCOUNT_GROUP );";
+		":DISCOUNT_GROUP, "
+        ":DAILY_USE_PER_MEMBER,"
+        ":MAX_ITEM_AFFECTED,"
+        ":MIN_ITEMS_REQUIRED,"
+        ":IS_CLOUD_DISCOUNT);";
 		IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
 		IBInternalQuery->ParamByName("NAME")->AsString = Discount.Name;
 		IBInternalQuery->ParamByName("DESCRIPTION")->AsString = Discount.Description;
@@ -772,14 +781,17 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
 		IBInternalQuery->ParamByName("APPEARANCE_ORDER")->AsInteger = Discount.AppearanceOrder;
 		IBInternalQuery->ParamByName("PRIORITY")->AsInteger = Discount.Priority;
 		IBInternalQuery->ParamByName("DISCOUNT_GROUP")->AsInteger = Discount.Group;
-
-		if(Discount.ID < 1)
+		IBInternalQuery->ParamByName("DAILY_USE_PER_MEMBER")->AsInteger = Discount.DailyUsageAllowedPerMember;
+		IBInternalQuery->ParamByName("MAX_ITEM_AFFECTED")->AsInteger = Discount.MaxItemAffected;
+		IBInternalQuery->ParamByName("MIN_ITEMS_REQUIRED")->AsInteger = Discount.MinItemRequired;
+        IBInternalQuery->ParamByName("IS_CLOUD_DISCOUNT")->AsString = Discount.IsCloudDiscount ? "T" : "F";
+		if(Discount.DiscountCode == "")
 		{
 			IBInternalQuery->ParamByName("DISCOUNT_ID")->Clear();
 		}
 		else
 		{
-			IBInternalQuery->ParamByName("DISCOUNT_ID")->AsInteger = Discount.ID;
+			IBInternalQuery->ParamByName("DISCOUNT_ID")->AsString = Discount.DiscountCode;
 		}
 		IBInternalQuery->ParamByName("MAX_VALUE")->AsCurrency = Discount.MaximumValue;
 		IBInternalQuery->ExecQuery();
@@ -804,7 +816,11 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
 		" MEMBERS_ONLY = :MEMBERS_ONLY,"
 		" MEMBERS_EXEMPT = :MEMBERS_EXEMPT,"
 		" MAX_VALUE = :MAX_VALUE,"
-		"DISCOUNT_GROUP = :DISCOUNT_GROUP"
+        " DISCOUNT_GROUP = :DISCOUNT_GROUP,"
+        " DAILY_USE_PER_MEMBER=:DAILY_USE_PER_MEMBER,"
+        " MAX_ITEM_AFFECTED=:MAX_ITEM_AFFECTED,"
+        " MIN_ITEMS_REQUIRED=:MIN_ITEMS_REQUIRED,"
+        " IS_CLOUD_DISCOUNT = :IS_CLOUD_DISCOUNT"
 		" WHERE"
 		" DISCOUNT_KEY = :DISCOUNT_KEY";
 
@@ -823,20 +839,24 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
 		IBInternalQuery->ParamByName("DISCOUNT_TYPE")->AsInteger = Discount.Type;
 		IBInternalQuery->ParamByName("MAX_VALUE")->AsCurrency = Discount.MaximumValue;
 		IBInternalQuery->ParamByName("DISCOUNT_GROUP")->AsInteger = Discount.Group;
-		if(Discount.ID < 1)
+		IBInternalQuery->ParamByName("DAILY_USE_PER_MEMBER")->AsInteger = Discount.DailyUsageAllowedPerMember;
+		IBInternalQuery->ParamByName("MAX_ITEM_AFFECTED")->AsInteger = Discount.MaxItemAffected;
+		IBInternalQuery->ParamByName("MIN_ITEMS_REQUIRED")->AsInteger = Discount.MinItemRequired;
+        IBInternalQuery->ParamByName("IS_CLOUD_DISCOUNT")->AsString = Discount.IsCloudDiscount ? "T" : "F";
+		if(Discount.DiscountCode == "")
 		{
 			IBInternalQuery->ParamByName("DISCOUNT_ID")->Clear();
 		}
 		else
 		{
-			IBInternalQuery->ParamByName("DISCOUNT_ID")->AsInteger = Discount.ID;
+			IBInternalQuery->ParamByName("DISCOUNT_ID")->AsString = Discount.DiscountCode;
 		}
 		IBInternalQuery->ExecQuery();
 	}
 	SetDiscountCategories(DBTransaction,DiscountKey,Discount);
 }
 //---------------------------------------------------------------------------
-bool TManagerDiscount::DiscountIDExisits(Database::TDBTransaction &DBTransaction,long DiscountKey, int DiscountID)
+bool TManagerDiscount::DiscountCodeExisits(Database::TDBTransaction &DBTransaction,long DiscountKey, AnsiString DiscountCode)
 {
 	bool RetVal = false;
 
@@ -850,7 +870,7 @@ bool TManagerDiscount::DiscountIDExisits(Database::TDBTransaction &DBTransaction
 		" FROM"
 		"  DISCOUNTS"
 		" WHERE DISCOUNT_ID = :DISCOUNT_ID";
-		IBInternalQuery->ParamByName("DISCOUNT_ID")->AsInteger = DiscountID;
+		IBInternalQuery->ParamByName("DISCOUNT_ID")->AsString = DiscountCode;
 		IBInternalQuery->ExecQuery();
 		if(IBInternalQuery->RecordCount > 0)
 		{
@@ -866,7 +886,7 @@ bool TManagerDiscount::DiscountIDExisits(Database::TDBTransaction &DBTransaction
 		"  DISCOUNTS"
 		" WHERE DISCOUNT_ID = :DISCOUNT_ID AND "
 		" DISCOUNT_KEY != :DISCOUNT_KEY";
-		IBInternalQuery->ParamByName("DISCOUNT_ID")->AsInteger = DiscountID;
+		IBInternalQuery->ParamByName("DISCOUNT_ID")->AsString = DiscountCode;
 		IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
 		IBInternalQuery->ExecQuery();
 		if(IBInternalQuery->RecordCount > 0)
@@ -983,7 +1003,46 @@ void TManagerDiscount::ClearMemberDiscounts(TList * DiscountItems)
 	}
 }
 //---------------------------------------------------------------------------
-int __fastcall SortByFinalPrice(void *Item1,void *Item2)
+void TManagerDiscount::ClearMemberExemtDiscounts(TList * DiscountItems)
+{
+	for (int i = 0; i < DiscountItems->Count ; i++)
+	{
+		TItemMinorComplete *Order = (TItemMinorComplete *) DiscountItems->Items[i];
+        for (std::vector<TDiscount>::iterator ptrDiscount = Order->Discounts.begin(); ptrDiscount != Order->Discounts.end(); )
+        {
+            TDiscount CurrentDiscount = *ptrDiscount;
+            if (CurrentDiscount.MembersExempt)
+            {
+                Order->Discounts.erase(ptrDiscount);
+                ptrDiscount = Order->Discounts.begin();
+            }
+            else
+            {
+                ptrDiscount++;
+            }
+        }
+
+        for (int j = 0; j < Order->SubOrders->Count; j++)
+        {
+           TItemMinorComplete *SubOrder = (TItemMinorComplete*)Order->SubOrders->Items[j];
+           for (std::vector<TDiscount>::iterator ptrDiscount = SubOrder->Discounts.begin(); ptrDiscount != SubOrder->Discounts.end(); )
+           {
+                TDiscount CurrentDiscount = *ptrDiscount;
+                if (CurrentDiscount.MembersExempt)
+                {
+                    SubOrder->Discounts.erase(ptrDiscount);
+                    ptrDiscount = SubOrder->Discounts.begin();
+                }
+                else
+                {
+                    ptrDiscount++;
+                }
+           }
+        }
+	}
+}
+//---------------------------------------------------------------------------
+int __fastcall SortByFinalPriceAsc(void *Item1,void *Item2)
 {
 	TItemMinorComplete *Order1 = (TItemMinorComplete *)Item1;
 	TItemMinorComplete *Order2 = (TItemMinorComplete *)Item2;
@@ -1001,6 +1060,27 @@ int __fastcall SortByFinalPrice(void *Item1,void *Item2)
 	else
 	{
 		return -1;
+	}
+}
+//---------------------------------------------------------------------------
+int __fastcall SortByFinalPriceDesc(void *Item1,void *Item2)
+{
+	TItemMinorComplete *Order1 = (TItemMinorComplete *)Item1;
+	TItemMinorComplete *Order2 = (TItemMinorComplete *)Item2;
+    double unitPrice1 = Order1->BillCalcResult.FinalPrice/Order1->GetQty();
+    double unitPrice2 = Order2->BillCalcResult.FinalPrice/Order2->GetQty();
+
+	if (unitPrice1 > unitPrice2)
+	{
+		return -1;
+	}
+	else if (unitPrice1 == unitPrice2)
+	{
+		return -0;
+	}
+	else
+	{
+		return 1;
 	}
 }
 //---------------------------------------------------------------------------
@@ -1027,14 +1107,23 @@ void  TManagerDiscount::AddDiscount(TList *DiscountItems,TDiscount DiscountToBeA
             }
          }
      }
-    allItems->Sort(&SortByFinalPrice);
+
+     if(DiscountToBeApplied.ProductPriority == ppCheapest)
+     {
+        allItems->Sort(&SortByFinalPriceAsc);
+     }
+     else if(DiscountToBeApplied.ProductPriority == ppHighest)
+     {
+         allItems->Sort(&SortByFinalPriceDesc);
+     }
+
     switch(DiscountToBeApplied.Mode)
     {
        case DiscModeCurrency:
             AddCurrencyModeDiscount(allItems,DiscountToBeApplied);
 		    break;
        case DiscModeCombo:
-            AddComboDiscount(DiscountItems,DiscountToBeApplied);
+            AddComboDiscount(allItems,DiscountToBeApplied);
 		    break;
        case DiscModeDeal:
             AddDealDiscount(DiscountItems,DiscountToBeApplied);
@@ -1061,27 +1150,35 @@ void  TManagerDiscount::AddSetPriceDiscount(TList *DiscountItems,TDiscount Disco
     if(orderQty < DiscountToBeApplied.MinItemRequired)
        return;
 
-    double maxDiscountQty = DiscountToBeApplied.MaxItemAffected == 0 ? orderQty : DiscountToBeApplied.MaxItemAffected;
+    double maxDiscountQty = (DiscountToBeApplied.MaxItemAffected == 0 )|| (DiscountToBeApplied.MaxItemAffected > 0 && orderQty <  DiscountToBeApplied.MaxItemAffected)
+                              ? orderQty : DiscountToBeApplied.MaxItemAffected;
     Currency discount = RoundToNearest(DiscountToBeApplied.Amount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
 
-    TDiscount scaled_discount;
-    scaled_discount.DiscountKey = DiscountToBeApplied.DiscountKey;
-    scaled_discount.Source = DiscountToBeApplied.Source;
-    scaled_discount.MaximumValue = DiscountToBeApplied.MaximumValue;
-    scaled_discount.Priority = DiscountToBeApplied.Priority;
-    scaled_discount.IsThorBill = DiscountToBeApplied.IsThorBill;
-    scaled_discount.VoucherCode = DiscountToBeApplied.VoucherCode;
-    scaled_discount.Name 		= DiscountToBeApplied.Name;
-    scaled_discount.Description = DiscountToBeApplied.Description;
-    scaled_discount.Mode = DiscountToBeApplied.Mode;
-    scaled_discount.MaxItemAffected = DiscountToBeApplied.MaxItemAffected;
-    scaled_discount.MinItemRequired = DiscountToBeApplied.MinItemRequired;
 
+    //Calculate order Total then calculate discount amount
+    Currency order_total = GetOrderTotal(DiscountItems,DiscountToBeApplied,maxDiscountQty);
+    Currency offset  = order_total - (maxDiscountQty * discount);
+    //if total discount is greater than maximum value then change discount amount
+    if(fabs(offset) > DiscountToBeApplied.MaximumValue && DiscountToBeApplied.MaximumValue > 0)
+    {
+        Currency amount = DiscountToBeApplied.MaximumValue;
+        if(offset < 0)
+           amount = -1 * amount;
+        DiscountToBeApplied.Mode = DiscModeCurrency;
+        DiscountToBeApplied.Amount = amount;
+        AddCurrencyModeDiscount(DiscountItems,DiscountToBeApplied);
+        return;
+    }
+
+    TDiscount scaled_discount;
+    CopyDiscountDetails(scaled_discount,DiscountToBeApplied);
     Currency  itemDiscount = 0;
     for(int x = 0; x < DiscountItems->Count; x++)
      {
         order = reinterpret_cast<TItemMinorComplete *>(DiscountItems->Items[x]);
-        if(maxDiscountQty >= order->GetQty() )
+        //if item quantity is equals to remaining quantity then apply discount on full quantity
+        //else change amount as per quantity applicable
+        if(maxDiscountQty >= order->GetQty())
          {
             scaled_discount.Amount = discount;
             order->DiscountAdd(scaled_discount);
@@ -1089,8 +1186,8 @@ void  TManagerDiscount::AddSetPriceDiscount(TList *DiscountItems,TDiscount Disco
          else if(maxDiscountQty > 0)
          {
             Currency unitPrice = order->GrandTotal()/order->GetQty();
-            itemDiscount = ((discount * maxDiscountQty)+((order->GetQty() - maxDiscountQty) * unitPrice));
-            scaled_discount.Amount = itemDiscount/order->GetQty();
+            itemDiscount = ((discount * maxDiscountQty) + ((order->GetQty() - maxDiscountQty) * unitPrice));
+            scaled_discount.Amount = RoundToNearest(itemDiscount / order->GetQty(),0.01, TGlobalSettings::Instance().MidPointRoundsDown);;
             order->DiscountAdd(scaled_discount);
          }
          else
@@ -1110,34 +1207,36 @@ void  TManagerDiscount::AddPercentageModeDiscount(TList *DiscountItems,TDiscount
     if(orderQty < DiscountToBeApplied.MinItemRequired)
        return;
 
-    double remainingQty = DiscountToBeApplied.MaxItemAffected == 0 ? orderQty : DiscountToBeApplied.MaxItemAffected;
-    TDiscount scaled_discount;
-    scaled_discount.DiscountKey = DiscountToBeApplied.DiscountKey;
-    scaled_discount.Source = DiscountToBeApplied.Source;
-    scaled_discount.MaximumValue = DiscountToBeApplied.MaximumValue;
-    scaled_discount.Priority = DiscountToBeApplied.Priority;
-    scaled_discount.DiscountGroupList = DiscountToBeApplied.DiscountGroupList;
-    scaled_discount.IsThorBill = DiscountToBeApplied.IsThorBill;
-    scaled_discount.VoucherCode = DiscountToBeApplied.VoucherCode;
-    scaled_discount.Name 		= DiscountToBeApplied.Name;
-	scaled_discount.Description = DiscountToBeApplied.Description;
-    scaled_discount.Mode = DiscountToBeApplied.Mode;
-    scaled_discount.MaxItemAffected = DiscountToBeApplied.MaxItemAffected;
-    scaled_discount.MinItemRequired = DiscountToBeApplied.MinItemRequired;
-    Currency  discount = RoundToNearest(DiscountToBeApplied.Amount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
+    double maxDiscountQty = (DiscountToBeApplied.MaxItemAffected == 0 )|| (DiscountToBeApplied.MaxItemAffected > 0 && orderQty <  DiscountToBeApplied.MaxItemAffected)
+                              ? orderQty : DiscountToBeApplied.MaxItemAffected;
 
+    TDiscount scaled_discount;
+    CopyDiscountDetails(scaled_discount,DiscountToBeApplied);
+    Currency  discount = RoundToNearest(DiscountToBeApplied.PercentAmount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
+    Currency order_total = GetOrderTotal(DiscountItems,DiscountToBeApplied,maxDiscountQty);
+    //calculate discount amount
+    Currency discountedAmount = (order_total * fabs(discount))/100;
+    bool isSurcharge =  discount < 0;
+    //if discount amount is greater than max value then apply discount as curreny mode
+    //with max value as discount amount
+    if(discountedAmount >  scaled_discount.MaximumValue && scaled_discount.MaximumValue > 0)
+    {
+       scaled_discount.Amount =  isSurcharge ? -1 * scaled_discount.MaximumValue : scaled_discount.MaximumValue;
+       scaled_discount.Mode = DiscModeCurrency;
+       AddCurrencyModeDiscount(DiscountItems,scaled_discount);
+       return;
+    }
     for(int i = 0; i < DiscountItems->Count ; i++)
      {
         order = reinterpret_cast<TItemMinorComplete *>(DiscountItems->Items[i]);
-        if(remainingQty >= order->GetQty())
+        if(maxDiscountQty >= order->GetQty())
          {
-           scaled_discount.PercentAmount = DiscountToBeApplied.PercentAmount;
+           scaled_discount.PercentAmount = discount;
            order->DiscountAdd(scaled_discount);
          }
-         else if(remainingQty > 0)
+         else if(maxDiscountQty > 0)
          {
-           scaled_discount.PercentAmount =  (DiscountToBeApplied.PercentAmount * remainingQty)/order->GetQty();
-           scaled_discount.PercentAmount = scaled_discount.PercentAmount;
+           scaled_discount.PercentAmount =  (discount * maxDiscountQty)/order->GetQty();
            order->DiscountAdd(scaled_discount);
          }
         else
@@ -1146,7 +1245,7 @@ void  TManagerDiscount::AddPercentageModeDiscount(TList *DiscountItems,TDiscount
            scaled_discount.Amount =  0;
            order->DiscountAdd(scaled_discount);
          }
-        remainingQty -= order->GetQty();
+        maxDiscountQty -= order->GetQty();
      }
 }
 //---------------------------------------------------------------------------
@@ -1157,44 +1256,49 @@ void  TManagerDiscount::AddCurrencyModeDiscount(TList *DiscountItems,TDiscount D
     if(orderQty < DiscountToBeApplied.MinItemRequired)
        return;
 
-    double maxDiscountQty = DiscountToBeApplied.MaxItemAffected == 0 ? orderQty : DiscountToBeApplied.MaxItemAffected;
+    double maxDiscountQty = (DiscountToBeApplied.MaxItemAffected == 0 )|| (DiscountToBeApplied.MaxItemAffected > 0 && orderQty <  DiscountToBeApplied.MaxItemAffected)
+                              ? orderQty : DiscountToBeApplied.MaxItemAffected;
     Currency order_total = 0;
     Currency discount = RoundToNearest(DiscountToBeApplied.Amount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
     order_total = GetOrderTotal(DiscountItems,DiscountToBeApplied,maxDiscountQty);
 
-    if(order_total < 0)
-      return;
+    if(order_total <= 0)
+      order_total = 1;
 
     TDiscount scaled_discount;
-    scaled_discount.DiscountKey = DiscountToBeApplied.DiscountKey;
-    scaled_discount.Source = DiscountToBeApplied.Source;
-    scaled_discount.MaximumValue = DiscountToBeApplied.MaximumValue;
-    scaled_discount.Priority = DiscountToBeApplied.Priority;
-    scaled_discount.IsThorBill = DiscountToBeApplied.IsThorBill;
-    scaled_discount.VoucherCode = DiscountToBeApplied.VoucherCode;
-    scaled_discount.Name 		= DiscountToBeApplied.Name;
-    scaled_discount.Description = DiscountToBeApplied.Description;
-    scaled_discount.MaxItemAffected = DiscountToBeApplied.MaxItemAffected;
-    scaled_discount.MinItemRequired = DiscountToBeApplied.MinItemRequired;
-    Currency  itemDiscount = 0;
+    CopyDiscountDetails(scaled_discount,DiscountToBeApplied);
+    double  itemDiscount = 0;
 
     //if discount amount is greater than order total then change discount amount to order total
     if(order_total < discount)
        discount = order_total;
 
+    bool isSurcharge =  discount < 0;
+    if(scaled_discount.MaximumValue < fabs(discount) && scaled_discount.MaximumValue > 0)
+       discount = isSurcharge ? -1 * scaled_discount.MaximumValue : scaled_discount.MaximumValue;
 
+    Currency discountApplied = 0;
     for(int x = 0; x < DiscountItems->Count; x++)
      {
         order = reinterpret_cast<TItemMinorComplete *>(DiscountItems->Items[x]);
-        if(maxDiscountQty >= order->GetQty())
+        if(maxDiscountQty > order->GetQty())
          {
-            itemDiscount = (order->GrandTotal() * discount )/(order_total * order->GetQty());
+            Currency itemTotal = order->GrandTotal();// > 0 ? order->GrandTotal() : 1.00;
+            if(x == DiscountItems->Count- 1)
+            {
+               itemDiscount  = (discount - discountApplied)/ order->GetQty();
+            }
+            else
+            {
+               itemDiscount = (itemTotal /(order_total * order->GetQty()))* discount ;
+            }
             scaled_discount.Amount = itemDiscount;
+            discountApplied +=  scaled_discount.Amount * order->GetQty();
             order->DiscountAdd(scaled_discount);
          }
          else if(maxDiscountQty > 0)
          {
-            itemDiscount = (order->GrandTotal() * discount * maxDiscountQty)/(order_total * order->GetQty()* order->GetQty());
+            itemDiscount = (discount - discountApplied)/ order->GetQty();
             scaled_discount.Amount = itemDiscount;
             order->DiscountAdd(scaled_discount);
          }
@@ -1210,106 +1314,46 @@ void  TManagerDiscount::AddCurrencyModeDiscount(TList *DiscountItems,TDiscount D
 //---------------------------------------------------------------------------
 void  TManagerDiscount::AddComboDiscount(TList *DiscountItems,TDiscount DiscountToBeApplied)
 {
-        TItemMinorComplete *order;
-        volatile unsigned int i = 0;
-        unsigned int j = DiscountItems->Count;
-        std::vector<Currency> item_totals;
-        std::vector<TItemMinorComplete *> ordered_items;
-        TItemCompleteSub *side;
-        Currency  discount = RoundToNearest(DiscountToBeApplied.Amount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
-        Currency  order_total = 0;
-        Currency  remaining_discount = 0;
-        Currency  temp;
-        TDiscount scaled_discount;
+	TItemMinorComplete *order;
+    double orderQty = GetOrderQty(DiscountItems);
+    if(orderQty < DiscountToBeApplied.MinItemRequired)
+       return;
 
-        item_totals.reserve(j);
-        ordered_items.reserve(j);
+    double maxDiscountQty = (DiscountToBeApplied.MaxItemAffected == 0 )|| (DiscountToBeApplied.MaxItemAffected > 0 && orderQty <  DiscountToBeApplied.MaxItemAffected)
+                              ? orderQty : DiscountToBeApplied.MaxItemAffected;
 
-        /*
-        * We need to do this so that we can prevent applying the same discount
-        * on the same item multiple times. See DiscountApplied(...).
-        */
-        scaled_discount.DiscountKey = DiscountToBeApplied.DiscountKey;
-        scaled_discount.Source = DiscountToBeApplied.Source;
-        scaled_discount.Mode = DiscModeCombo;
-        scaled_discount.Priority = DiscountToBeApplied.Priority;
-        /*
-        * Flatten the tree and calculate the order total.
-        * We could probably turn this into a set of functions but where to put
-        * them?
-        */
-        Currency GrandTotal = 0;
-		for (unsigned int k, l; i < j; i++) {
-			order =
-			reinterpret_cast<TItemMinorComplete *>(DiscountItems->Items[i]);
-			temp = order->GrandTotalExcCombo()/(order->GetQty());
+    Currency discount = RoundToNearest(DiscountToBeApplied.Amount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
+    Currency order_total  = GetOrderTotal(DiscountItems,DiscountToBeApplied,maxDiscountQty);
+    discount = order_total - discount;
+    TDiscount scaled_discount;
+    CopyDiscountDetails(scaled_discount,DiscountToBeApplied);
+    Currency  itemDiscount = 0;
 
-			GrandTotal += order->GrandTotalExcCombo()/(order->GetQty())*(order->SelectedItems - order->PrevSelectedItems);
-			order_total += temp;
-			if (order->DiscountApplies(DiscountToBeApplied))
-			{
-				item_totals.push_back(temp);
-				ordered_items.push_back(order);
-			}
-
-			for (k = 0, l = order->SubOrders->Count; k < l; k++)
-            {
-				side = order->SubOrders->SubOrderGet(k);
-				temp = side->GrandTotalExcCombo()/(side->GetQty());
-				GrandTotal += side->GrandTotalExcCombo()/(order->GetQty())*(order->SelectedItems - order->PrevSelectedItems);
-				order_total += temp;
-				if (side->DiscountApplies(DiscountToBeApplied))
-				{
-					item_totals.push_back(temp);
-					ordered_items.push_back(side);
-				}
-			}
-		}
-
-		scaled_discount.Name 		= DiscountToBeApplied.Name;
-		scaled_discount.Description = DiscountToBeApplied.Description;
-		scaled_discount.ComboAmount = DiscountToBeApplied.ComboAmount;
-
-		Currency con = 0;
-		Currency sum = 0;
-		for (i = 0, j = ordered_items.size(); i < j; i++)
-		{
-			int rem = ordered_items.at(i)->GetQty() - ordered_items.at(i)->PrevSelectedItems;
-			Currency Total = ordered_items.at(i)->GrandTotalExcCombo()/ordered_items.at(i)->GetQty()*rem;
-			int remain = ordered_items.at(i)->GetQty() - ordered_items.at(i)->SelectedItems;
-
-			if(ordered_items.at(i)->GetQty() > 1)
-			{
-				double F = item_totals.at(i)*(ordered_items.at(i)->SelectedItems - ordered_items.at(i)->PrevSelectedItems)/GrandTotal;
-				scaled_discount.ComboAmount = F*DiscountToBeApplied.ComboAmount;
-				con = (Total/rem*(rem - ordered_items.at(i)->SelectedItems + ordered_items.at(i)->PrevSelectedItems));
-				scaled_discount.Amount = RoundToNearest(con + F*DiscountToBeApplied.ComboAmount + ordered_items.at(i)->DiscountGet(DiscModeCombo), scaled_discount.Rounding, false);
-				if(ordered_items.at(i)->DiscountGet(DiscModeCombo) != 0)
-				{
-					scaled_discount.ComboAmount = RoundToNearest(ordered_items.at(i)->DiscountGet(DiscModeCombo) + F*DiscountToBeApplied.ComboAmount, scaled_discount.Rounding, false);
-					sum += scaled_discount.ComboAmount;
-				}
-				Currency tmp = (ordered_items.at(i)->GrandTotal() - scaled_discount.Amount)/(ordered_items.at(i)->SelectedItems - ordered_items.at(i)->PrevSelectedItems);
-				remaining_discount += (item_totals.at(i) - tmp)*(ordered_items.at(i)->SelectedItems - ordered_items.at(i)->PrevSelectedItems);
-				ordered_items.at(i)->DiscountByTypeRemove(DiscModeCombo);
-				ordered_items.at(i)->DiscountAdd(scaled_discount);
-
-			}
-			else
-			{
-				scaled_discount.Amount = RoundToNearest((item_totals.at(i) / GrandTotal * DiscountToBeApplied.Amount), scaled_discount.Rounding, false);
-				scaled_discount.PercentAmount = item_totals.at(i) / order_total;
-				ordered_items.at(i)->DiscountAdd(scaled_discount);
-				remaining_discount += (scaled_discount.Amount);
-			}
-			ordered_items.at(i)->PrevSelectedItems = ordered_items.at(i)->SelectedItems;
-		}
-		Currency dif = DiscountToBeApplied.ComboAmount - remaining_discount ;
-		if(dif != 0)
-		{
-			TDiscount &dsc = ordered_items.at(i - 1)->Discount_Back();
-			dsc.Amount += dif;
-		}
+    Currency discountApplied = 0;
+    for(int x = 0; x < DiscountItems->Count; x++)
+     {
+        order = reinterpret_cast<TItemMinorComplete *>(DiscountItems->Items[x]);
+        if(maxDiscountQty >= order->GetQty())
+         {
+            itemDiscount = (order->GrandTotal() * discount )/(order_total * order->GetQty());
+            scaled_discount.Amount = itemDiscount;
+            order->DiscountAdd(scaled_discount);
+            discountApplied +=  itemDiscount * order->GetQty();
+         }
+         else if(maxDiscountQty > 0)
+         {
+            itemDiscount = (discount - discountApplied)/ order->GetQty();
+            scaled_discount.Amount = itemDiscount;
+            order->DiscountAdd(scaled_discount);
+         }
+         else
+         {
+           scaled_discount.Mode = DiscModeCurrency;
+           scaled_discount.Amount =  0;
+           order->DiscountAdd(scaled_discount);
+         }
+         maxDiscountQty -= order->GetQty();
+     }
 }
 //---------------------------------------------------------------------------
 void  TManagerDiscount::AddDealDiscount(TList *DiscountItems,TDiscount DiscountToBeApplied)
@@ -1333,8 +1377,11 @@ void  TManagerDiscount::AddDealDiscount(TList *DiscountItems,TDiscount DiscountT
 		scaled_discount.Source = DiscountToBeApplied.Source;
 		scaled_discount.Mode = DiscModeDeal;
 		scaled_discount.Priority = DiscountToBeApplied.Priority;
-
-
+        scaled_discount.IsCloudDiscount = DiscountToBeApplied.IsCloudDiscount;
+        scaled_discount.DiscountCode = DiscountToBeApplied.DiscountCode;
+        scaled_discount.DailyUsageAllowedPerMember = DiscountToBeApplied.DailyUsageAllowedPerMember;
+        scaled_discount.MembersOnly = DiscountToBeApplied.MembersOnly;
+        scaled_discount.MembersExempt = DiscountToBeApplied.MembersExempt;
 		Currency GrandTotal = 0;
 		unsigned int k = 0;
 		unsigned int l = 0;
@@ -1366,8 +1413,8 @@ void  TManagerDiscount::AddDealDiscount(TList *DiscountItems,TDiscount DiscountT
                 Currency Amounts=0;
                 Currency OtherDiscount = 0;
                 int dealPriority = DiscountToBeApplied.Priority ;
-                for (std::vector <TDiscount> ::iterator ptrDiscounts = ordered_items.at(i)->DiscountsBegin();
-                     ptrDiscounts != ordered_items.at(i)->DiscountsEnd(); std::advance(ptrDiscounts, 1))
+                for (std::vector <TDiscount> ::iterator ptrDiscounts = ordered_items.at(i)->Discounts.begin();
+                     ptrDiscounts != ordered_items.at(i)->Discounts.end(); std::advance(ptrDiscounts, 1))
                 {
                    if(ptrDiscounts->Mode == DiscModeDeal)
                     {
@@ -1427,37 +1474,39 @@ void  TManagerDiscount::AddItemModeDiscount(TList *DiscountItems,TDiscount Disco
     if(orderQty < DiscountToBeApplied.MinItemRequired)
        return;
 
-    double remainingQty = DiscountToBeApplied.MaxItemAffected == 0 ? orderQty : DiscountToBeApplied.MaxItemAffected;
+    double maxDiscountQty = (DiscountToBeApplied.MaxItemAffected == 0 )|| (DiscountToBeApplied.MaxItemAffected > 0 && orderQty <  DiscountToBeApplied.MaxItemAffected)
+                              ? orderQty : DiscountToBeApplied.MaxItemAffected;
     TDiscount scaled_discount;
-    scaled_discount.DiscountKey = DiscountToBeApplied.DiscountKey;
-    scaled_discount.Source = DiscountToBeApplied.Source;
-    scaled_discount.MaximumValue = DiscountToBeApplied.MaximumValue;
-    scaled_discount.Priority = DiscountToBeApplied.Priority;
-    scaled_discount.DiscountGroupList = DiscountToBeApplied.DiscountGroupList;
-    scaled_discount.IsThorBill = DiscountToBeApplied.IsThorBill;
-    scaled_discount.VoucherCode = DiscountToBeApplied.VoucherCode;
-    scaled_discount.Name 		= DiscountToBeApplied.Name;
-	scaled_discount.Description = DiscountToBeApplied.Description;
-    scaled_discount.Mode = DiscountToBeApplied.Mode;
-    scaled_discount.MaxItemAffected = DiscountToBeApplied.MaxItemAffected;
-    scaled_discount.MinItemRequired = DiscountToBeApplied.MinItemRequired;
+    CopyDiscountDetails(scaled_discount,DiscountToBeApplied);
     Currency  discount = RoundToNearest(DiscountToBeApplied.Amount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
+
+    bool isSurcharge =  discount < 0;
+    Currency maxDiscountValue = fabs(discount) * maxDiscountQty;
+
+    if(maxDiscountValue > scaled_discount.MaximumValue && scaled_discount.MaximumValue > 0)
+    {
+       scaled_discount.Amount =  isSurcharge ? -1 * scaled_discount.MaximumValue : scaled_discount.MaximumValue;
+       scaled_discount.Mode = DiscModeCurrency;
+       AddCurrencyModeDiscount(DiscountItems,scaled_discount);
+       return;
+    }
+
     Currency itemDiscount = 0;
     for(int i = 0; i < DiscountItems->Count ; i++)
      {
         order = reinterpret_cast<TItemMinorComplete *>(DiscountItems->Items[i]);
-        if(remainingQty >= order->GetQty())
+        if(maxDiscountQty >= order->GetQty())
          {
            scaled_discount.Amount = discount;
            order->DiscountAdd(scaled_discount);
          }
-         else if(remainingQty > 0)
+         else if(maxDiscountQty > 0)
          {
            scaled_discount.Mode = DiscModeCurrency;
            itemDiscount = discount;
            if(discount * order->GetQty() >  order->GrandTotal())
               itemDiscount = order->GrandTotal()/order->GetQty();
-           scaled_discount.Amount =  (itemDiscount * remainingQty)/order->GetQty();
+           scaled_discount.Amount =  RoundToNearest((itemDiscount * maxDiscountQty)/order->GetQty(),0.01,TGlobalSettings::Instance().MidPointRoundsDown);
            order->DiscountAdd(scaled_discount);
          }
         else
@@ -1466,7 +1515,7 @@ void  TManagerDiscount::AddItemModeDiscount(TList *DiscountItems,TDiscount Disco
            scaled_discount.Amount =  0;
            order->DiscountAdd(scaled_discount);
          }
-        remainingQty -= order->GetQty();
+        maxDiscountQty -= order->GetQty();
      }
 }
 //---------------------------------------------------------------------------
@@ -1477,41 +1526,48 @@ void  TManagerDiscount::AddPointModeDiscount(TList *DiscountItems,TDiscount Disc
     if(orderQty < DiscountToBeApplied.MinItemRequired)
        return;
 
-    double remainingQty = DiscountToBeApplied.MaxItemAffected == 0 ? orderQty : DiscountToBeApplied.MaxItemAffected;
+    double maxDiscountQty = (DiscountToBeApplied.MaxItemAffected == 0 )|| (DiscountToBeApplied.MaxItemAffected > 0 && orderQty <  DiscountToBeApplied.MaxItemAffected)
+                              ? orderQty : DiscountToBeApplied.MaxItemAffected;
     TDiscount scaled_discount;
-    scaled_discount.DiscountKey = DiscountToBeApplied.DiscountKey;
-    scaled_discount.Source = DiscountToBeApplied.Source;
-    scaled_discount.MaximumValue = DiscountToBeApplied.MaximumValue;
-    scaled_discount.Priority = DiscountToBeApplied.Priority;
-    scaled_discount.DiscountGroupList = DiscountToBeApplied.DiscountGroupList;
-    scaled_discount.IsThorBill = DiscountToBeApplied.IsThorBill;
-    scaled_discount.VoucherCode = DiscountToBeApplied.VoucherCode;
-    scaled_discount.Name 		= DiscountToBeApplied.Name;
-	scaled_discount.Description = DiscountToBeApplied.Description;
-    scaled_discount.Mode = DiscountToBeApplied.Mode;
-    scaled_discount.MaxItemAffected = DiscountToBeApplied.MaxItemAffected;
-    scaled_discount.MinItemRequired = DiscountToBeApplied.MinItemRequired;
+    CopyDiscountDetails(scaled_discount,DiscountToBeApplied);
     scaled_discount.Amount = 0;
     Currency  discount = RoundToNearest(DiscountToBeApplied.Amount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
+
+    Currency pointsTotal = GetOrderPointsTotal(DiscountItems,DiscountToBeApplied,maxDiscountQty);
+    Currency pointDiscount = pointsTotal - discount * maxDiscountQty;
+    if(pointDiscount > scaled_discount.MaximumValue && scaled_discount.MaximumValue > 0)
+    {
+        discount = (pointsTotal - scaled_discount.MaximumValue) / maxDiscountQty;
+    }
 
     for(int i = 0; i < DiscountItems->Count ; i++)
      {
         order = reinterpret_cast<TItemMinorComplete *>(DiscountItems->Items[i]);
-        if(remainingQty >= order->GetQty())
-         {
-            order->ItemPriceForPoints =  discount;
-            order->PayByPointsQuantity = order->GetQty();
-         }
-         else if(remainingQty > 0)
-         {
-            //Currency amount =  ((remainingQty * discount) + ((order->GetQty() - remainingQty) * order->ItemPriceForPoints)/order->GetQty());
-            order->ItemPriceForPoints = discount;//RoundToNearest(amount,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
-            order->PayByPointsQuantity = remainingQty;
-         }
         order->ItemPriceForPoints =  discount;
         order->DiscountAdd(scaled_discount);
-        remainingQty -= order->GetQty();
+        maxDiscountQty -= order->GetQty();
      }
+}
+//---------------------------------------------------------------------------
+void TManagerDiscount::CopyDiscountDetails(TDiscount& destination,TDiscount& source)
+{
+    destination.DiscountKey = source.DiscountKey;
+    destination.Source = source.Source;
+    destination.MaximumValue = source.MaximumValue;
+    destination.Priority = source.Priority;
+    destination.DiscountGroupList = source.DiscountGroupList;
+    destination.IsThorBill = source.IsThorBill;
+    destination.VoucherCode = source.VoucherCode;
+    destination.Name 		= source.Name;
+	destination.Description = source.Description;
+    destination.Mode = source.Mode;
+    destination.MaxItemAffected = source.MaxItemAffected;
+    destination.MinItemRequired = source.MinItemRequired;
+    destination.IsCloudDiscount = source.IsCloudDiscount;
+    destination.DiscountCode = source.DiscountCode;
+    destination.DailyUsageAllowedPerMember = source.DailyUsageAllowedPerMember;
+    destination.MembersOnly = source.MembersOnly;
+    destination.MembersExempt = source.MembersExempt;
 }
 //---------------------------------------------------------------------------
 Currency TManagerDiscount::GetOrderTotal(TList *DiscountItems,TDiscount DiscountToBeApplied, double maxDiscountQty)
@@ -1528,6 +1584,29 @@ Currency TManagerDiscount::GetOrderTotal(TList *DiscountItems,TDiscount Discount
          else
          {
             order_total += (order->GrandTotal()/order->GetQty())*maxDiscountQty;
+         }
+         maxDiscountQty -= order->GetQty();
+         if(maxDiscountQty <= 0 && DiscountToBeApplied.MaxItemAffected > 0)
+           break;
+
+     }
+     return order_total;
+}
+//---------------------------------------------------------------------------
+Currency TManagerDiscount::GetOrderPointsTotal(TList *DiscountItems,TDiscount DiscountToBeApplied, double maxDiscountQty)
+{
+    TItemMinorComplete *order;
+    Currency  order_total = 0;
+    for(int x = 0; x < DiscountItems->Count; x++)
+     {
+        order = reinterpret_cast<TItemMinorComplete *>(DiscountItems->Items[x]);
+        if(maxDiscountQty >= order->GetQty())
+         {
+            order_total += order->ItemPriceForPointsOriginal;
+         }
+         else
+         {
+            order_total += (order->ItemPriceForPointsOriginal/order->GetQty())*maxDiscountQty;
          }
          maxDiscountQty -= order->GetQty();
          if(maxDiscountQty <= 0 && DiscountToBeApplied.MaxItemAffected > 0)
@@ -1558,18 +1637,22 @@ void TManagerDiscount::AddDiscountsByTime(Database::TDBTransaction &DBTransactio
 	for (	std::set<int>::iterator ptrDiscountKey = DiscountKeys.begin();
 	ptrDiscountKey != DiscountKeys.end() ; std::advance(ptrDiscountKey,1))
 	{
-		//Auto Discounts wont add a discount twice to an order to stop double ups.
- 		if(!Order->DiscountApplied(*ptrDiscountKey) )
+        TDiscount CurrentDiscount;
+		GetDiscount(DBTransaction,*ptrDiscountKey, CurrentDiscount);
+        std::auto_ptr<TList> itemList(new TList());
+        itemList->Add(Order);
+        AddDiscount(itemList.get(),CurrentDiscount);
+
+ 	   /*	if(!Order->DiscountApplied(*ptrDiscountKey) )
 		{
-			TDiscount CurrentDiscount;
-			GetDiscount(DBTransaction,*ptrDiscountKey, CurrentDiscount);
+
             if(CurrentDiscount.Mode == DiscModeItem)
             {
               CurrentDiscount.Mode = DiscModeCurrency;
             }
             if(CurrentDiscount.MinItemRequired <= 1)
 			   Order->DiscountAddIncSides(CurrentDiscount);
-		}
+		}*/
 	}
 }
 //---------------------------------------------------------------------------
@@ -2079,7 +2162,7 @@ void TManagerDiscount::GetReportItemDiscounts(TItemMinorComplete *Item,TStringLi
 		{
 
 			Currency ItemBalance = Item->Price();
-			for (std::vector<TDiscount>::const_iterator ptrDiscounts = Item->DiscountsBegin();ptrDiscounts != Item->DiscountsEnd(); std::advance(ptrDiscounts,1))
+			for (std::vector<TDiscount>::const_iterator ptrDiscounts = Item->Discounts.begin();ptrDiscounts != Item->Discounts.end(); std::advance(ptrDiscounts,1))
 			{
 				TempRow = LoadStr(TABLE_ROW4S);
 				TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%","40%");
@@ -2412,7 +2495,8 @@ void TManagerDiscount::BuildXMLListDiscounts(Database::TDBTransaction &DBTransac
 		List->SetAttribute(xmlAttrSiteID, TGlobalSettings::Instance().SiteID);
 
 		std::auto_ptr<TStringList>DiscountList(new TStringList);
-		ManagerDiscount->GetDiscountList(DBTransaction,DiscountList.get());
+        std::vector<eDiscountFilter> discountFilter;
+		ManagerDiscount->GetDiscountList(DBTransaction,DiscountList.get(),discountFilter);
 
 		for (int i = 0; i < DiscountList->Count; i++)
 		{
@@ -2498,7 +2582,7 @@ int TManagerDiscount::GetDiscountKeyForVoucher(int id)
         "  DISCOUNTS "
         " WHERE "
         " DISCOUNT_ID = :DISCOUNT_ID ";
-        IBInternalQuery1->ParamByName("DISCOUNT_ID")->AsInteger = code;
+        IBInternalQuery1->ParamByName("DISCOUNT_ID")->AsString = IntToStr(code);
         IBInternalQuery1->ExecQuery();
         if(IBInternalQuery1->RecordCount > 0)
         {
@@ -2512,6 +2596,73 @@ int TManagerDiscount::GetDiscountKeyForVoucher(int id)
  		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
      }
      return discountKey;
+}
+//---------------------------------------------------------------------------
+void TManagerDiscount::DeleteCloudDiscounts(Database::TDBTransaction &DBTransaction,std::vector<AnsiString> discountsCodes)
+{
+	if( !fEnabled )
+      return;
+
+	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	IBInternalQuery->Close();
+	AnsiString query =
+	"DELETE FROM "
+	"DISCOUNTS "
+	"WHERE "
+	"IS_CLOUD_DISCOUNT = 'T' ";
+    int size = discountsCodes.size();
+    if(size > 0)
+    {
+      query += " and discount_id not in (";
+      for(std::vector<AnsiString>::iterator itDiscountCode = discountsCodes.begin() ; itDiscountCode != discountsCodes.end() ; ++itDiscountCode)
+          {
+               query += "'" + *itDiscountCode + "'";
+               size--;
+               if(size > 0)
+                query += ",";
+          }
+      query += ");";;
+    }
+    IBInternalQuery->SQL->Text  = query;
+	IBInternalQuery->ExecQuery();
+}
+
+//---------------------------------------------------------------------------
+void TManagerDiscount::DeleteDiscounts(Database::TDBTransaction &DBTransaction)
+{
+	if( !fEnabled )
+      return;
+
+	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	IBInternalQuery->Close();
+	IBInternalQuery->SQL->Text =
+	"DELETE FROM DISCOUNTS";
+	IBInternalQuery->ExecQuery();
+}
+
+//---------------------------------------------------------------------------
+bool TManagerDiscount::IsCloudDiscount(Database::TDBTransaction &DBTransaction,long discountKey)
+{
+	if( !fEnabled )
+      return false;
+    bool retVal = false;
+	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	IBInternalQuery->Close();
+	IBInternalQuery->SQL->Text =
+	"SELECT IS_CLOUD_DISCOUNT FROM "
+	"DISCOUNTS "
+	"WHERE "
+	"DISCOUNT_KEY = :DISCOUNT_KEY";
+    IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = discountKey;
+	IBInternalQuery->ExecQuery();
+
+    if(!IBInternalQuery->Eof)
+    {
+        if(IBInternalQuery->FieldByName("IS_CLOUD_DISCOUNT")->AsString == "T")
+          retVal = true;
+    }
+
+    return retVal;
 }
 //------------------------------------------------------------------------------------------------------------------------------------
 bool TManagerDiscount::IsVouchersAvailable()

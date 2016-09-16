@@ -74,6 +74,7 @@ void __fastcall TfrmLoyaltyMateOperationDialogBox::loyaltyMateDownloadMemberThre
         Info.PointRule  = loyaltyMemberDownloadThread->ReturnContactInfo.PointRule;
         Info.LastModified = loyaltyMemberDownloadThread->ReturnContactInfo.LastModified;
         Info.IsFirstVisitRewarded = loyaltyMemberDownloadThread->ReturnContactInfo.IsFirstVisitRewarded;
+        Info.MemberVouchers = loyaltyMemberDownloadThread->ReturnContactInfo.MemberVouchers;
         Info.MemberCode = loyaltyMemberDownloadThread->ReturnContactInfo.MemberCode;
 		ModalResult = mrOk;
 	}
@@ -82,7 +83,7 @@ void __fastcall TfrmLoyaltyMateOperationDialogBox::loyaltyMateDownloadMemberThre
         if(loyaltyMemberDownloadThread->ErrorMessage  == "Member Not Exist.")
           {
               BarcodeMemberNotExist = true;
-              MessageBox("Member Not Exist on Cloud.","Member Not Exist", MB_ICONERROR + MB_OK);
+              MessageBox("Member Not Exist on server.","Member Not Exist", MB_ICONERROR + MB_OK);
           }
         else
           {

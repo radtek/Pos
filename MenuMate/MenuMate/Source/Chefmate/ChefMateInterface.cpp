@@ -843,7 +843,7 @@ HITEM TChefmateInterface::AddItem(
 
 	   	try
 	   {
-			result = _xmlOrderManager->AddItem(
+            result = _xmlOrderManager->AddItem(
 						_orderDocH,
 						inCMHostname,
 						inItemSizeKey,

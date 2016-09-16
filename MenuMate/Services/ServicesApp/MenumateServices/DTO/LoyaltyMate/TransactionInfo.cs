@@ -19,5 +19,7 @@ namespace MenumateServices.DTO.LoyaltyMate
         public int PointsType { get; set; }
         [DataMember]
         public long SiteCode { get; set; }
+        [DataMember]
+        public string InvoiceNumber { get; set; }
     }
 }

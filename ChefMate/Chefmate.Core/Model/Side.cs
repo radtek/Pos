@@ -17,6 +17,20 @@ namespace Chefmate.Core.Model
             DisplayAttributes = new DisplayAttributes();
         }
 
+        public Side(Side inSide) : this()
+        {
+            Name = inSide.Name;
+            DisplayName = inSide.DisplayName;
+            IsCanceled = inSide.IsCanceled;
+            SideKey = inSide.SideKey;
+            SidePosKey = inSide.SidePosKey;
+            OrderSideKey = inSide.OrderSideKey;
+            ItemStatus = inSide.ItemStatus;
+            OrderItemKey = inSide.OrderItemKey;
+            DisplayAttributes = new DisplayAttributes(inSide.DisplayAttributes);
+        }
+
+
         public string Name
         {
             get { return _name; }
@@ -45,11 +59,8 @@ namespace Chefmate.Core.Model
             }
         }
         public int SideKey { get; set; }
-
         public int SidePosKey { get; set; }
-
         public int OrderSideKey { get; set; }
-
         public OrderStatus ItemStatus
         {
             get
@@ -62,9 +73,7 @@ namespace Chefmate.Core.Model
                 OnPropertyChanged("ItemStatus");
             }
         }
-        public Item Item { get; set; }
         public int OrderItemKey { get; set; }
-
         public DisplayAttributes DisplayAttributes
         {
             get
@@ -77,6 +86,6 @@ namespace Chefmate.Core.Model
                 OnPropertyChanged("DisplayAttributes");
             }
         }
-
+        public Item Item { get; set; }
     }
 }

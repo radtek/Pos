@@ -20,6 +20,8 @@ XWriteOffDetailsReportSection::~XWriteOffDetailsReportSection()
 
 void XWriteOffDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+    if(!printOut->BlindBalanceUsed)
+        return;
     DataCalculationUtilities dataCalcUtils;
 
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;

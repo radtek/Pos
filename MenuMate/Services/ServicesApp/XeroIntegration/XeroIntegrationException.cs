@@ -5,7 +5,7 @@ using System.Text;
 
 using System.Runtime.Serialization;
 
-namespace XeroIntegration
+namespace AccountingIntegration
 {
     [Serializable]
     public class XeroIntegrationException : Exception

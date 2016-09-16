@@ -141,11 +141,11 @@ protected:
 		// Adds a Item to an Order
 		HITEM AddItem( __int32    inDBKey,
 					   __int32    inOrderItemDBKey,
-					   AnsiString inName,
-					   AnsiString inKitchenName,
+                    AnsiString    inName,
+                    AnsiString    inKitchenName,
 					   __int32    inServingCourseKey,
 					   __int32    inCourseKey,
-					   AnsiString inNote );
+                    AnsiString    inNote );
 
 		// Adds a Item to cancel to an Order
 		// THIS FUNCTION IS TO BE USED FOR CANCEL ORDERS ONLY

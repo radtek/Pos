@@ -265,6 +265,7 @@ bool TManagerDockets::Get(Database::TDBTransaction &DBTransaction)
 
 		 IBInternalQuery->Close();
 		 IBInternalQuery->SQL->Text = Format;
+
 		 IBInternalQuery->ParamByName("DOCKETS_KEY")->AsInteger = Array[ArrayIndex];
 		 IBInternalQuery->ExecQuery();
 
@@ -407,7 +408,7 @@ void TManagerDockets::Get(TStringList *Lines)
    try
    {
 	  ManagerDockets->Docket->Position = 0;
-	  UnicodeString TrimmedLine;
+      AnsiString TrimmedLine;
 	  char *Line = (char*)ManagerDockets->Docket->Memory;
 	  for (int j = 0; j < ManagerDockets->Docket->Size; j++)
 	  {
@@ -737,6 +738,7 @@ void TManagerDockets::Archive(TReqPrintJob * Request)
 	  {
 		 TPrintout *Printout = (TPrintout*)Request->Printouts->Items[i];
 		 int DocketNumber = StrToIntDef(Printout->PrintInfo["DocketNumber"], 0);
+
 		 if (DocketNumber != 0)
 		 {
 			UnicodeString ChitNumber = Printout->PrintInfo["ChitNumber"];

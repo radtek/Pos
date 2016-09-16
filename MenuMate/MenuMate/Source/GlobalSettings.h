@@ -212,6 +212,7 @@ public:
 	int PPlantFlag;
 	int CMFileSerialNumber;
 	bool FirstMallSet;
+    bool EnableConsolidatedReport;
 	UnicodeString FirstMallDate;
 	UnicodeString ClassCode;
 	UnicodeString OutletCode;
@@ -230,6 +231,7 @@ public:
 	UnicodeString FTPPassword;
 	UnicodeString AmountValue;
     UnicodeString DLFMallFileName;
+    UnicodeString ConsolidateReportPaths;
 
 	/* Unsigned so to use the most significant bit as a flag specifying
 	* whether the default font size has been overriden by the User.
@@ -271,6 +273,11 @@ public:
 	UnicodeString XeroUserName;
 	UnicodeString XeroPassword;
 	UnicodeString XeroFolderPath;
+
+  	UnicodeString MYOBMachineName;
+	UnicodeString MYOBUserName;
+	UnicodeString MYOBPassword;
+	UnicodeString MYOBFolderPath;
 
 	bool NagUserToSelectChit;
 
@@ -415,6 +422,8 @@ public:
     bool IsThorlinkTender;
     bool IsThorPay;
     bool IsThorBillSelected;
+    bool IsXeroEnabled;
+    bool IsMYOBEnabled;
     UnicodeString ThorlinkAppKey;
     UnicodeString ThorlinkSiteNo;
     UnicodeString ThorlinkMerchantCode;
@@ -438,6 +447,7 @@ public:
     UnicodeString RunRateBoardIP;
     bool ShowLargeFonts;
     bool ItemSearch;
+    bool IsCloudSyncedForDiscount;
     bool ShowDarkBackground;
 };
 

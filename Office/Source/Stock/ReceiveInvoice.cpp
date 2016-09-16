@@ -1084,8 +1084,15 @@ void __fastcall TfrmReceiveInvoice::btnOkClick(TObject *Sender)
 {
    // IsPackingSlipUpdateMode=false;
 	CommitInvoice();
+    if(IsPrintReport)
+    {
+         if(CurrentConnection.AutoPrintReceiveTransferAudit)
+         {
+             PrintReceiveInvoice();
+         }
     	if (Transaction->InTransaction)
 					Transaction->Commit();
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -1228,6 +1235,11 @@ char &Key)
 	{
 		Key = NULL;
 	}
+    if (Key == '-')
+	{
+		Key = NULL;
+	}
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::neTotalCostExit(TObject *Sender)
@@ -1281,7 +1293,7 @@ void __fastcall TfrmReceiveInvoice::neStockQtyExit(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::neGSTKeyPress(TObject *Sender,char &Key)
 {
-	if (Key == VK_RETURN)
+	if(Key == VK_RETURN || Key == '-')
 	{
 		Key = NULL;
 	}
@@ -1389,7 +1401,10 @@ AnsiString TfrmReceiveInvoice::ReadCompanyName()
 
 void __fastcall TfrmReceiveInvoice::btnCommitPackingSlipClick(TObject*Sender)
 {
-    CommitPackingSlip(true);
+    if(CheckInvoiceQtyAndPrice())
+    {
+        CommitPackingSlip(true);
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -1723,9 +1738,10 @@ void __fastcall TfrmReceiveInvoice::dbcbLocationChange(TObject *Sender)
 		TInvoiceItemNodeData *NodeData	= (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
 		AnsiString Locationsel=  NodeData->Location;
 
-		qrLocationUpdate->ParamByName("SUPPLIER_KEY")->AsString = SupplierKey;
+		qrLocationUpdate->ParamByName("SUPPLIER_KEY")->AsInteger = SupplierKey;
 		qrLocationUpdate->ParamByName("LOCATION")->AsString = NodeData->Location;
         qrLocationUpdate->ParamByName("QTY")->AsString = GetSupplierUnitSize(NodeData->StockKey, NodeData->SupplierKey, NodeData->SupplierUnit);
+        qrLocationUpdate->ParamByName("STOCK_KEY")->AsInteger = NodeData->StockKey;
 		qrLocationUpdate->Open();
 		qrLocationUpdate->First();
 
@@ -1756,27 +1772,10 @@ void __fastcall TfrmReceiveInvoice::btnPrintCommitInvoiceClick(TObject *Sender)
         qrBatchKey->SQL->Text = "Select Gen_id(Gen_Stocktrans_Batch_Key, 1) From rdb$database";
         qrBatchKey->Open();
         }      */
-         if(IsPrintReport)
+         if(IsPrintReport || CurrentConnection.AutoPrintReceiveTransferAudit)
          {
-            if (dmStockReportData->StockTrans->DefaultDatabase->Connected && !dmStockReportData->StockTrans->InTransaction)
-            {
-             dmStockReportData->StockTrans->StartTransaction();
-            }
-             dmStockReportData->SetupSupplierPurchasesRuntime(ReceiptNumber, SupplierName, InvoiceReference);;
-            if (frmReports->rvStock->SelectReport("repSupplierPurchaseStock", false))
-            {
-            
-                frmReports->rvStock->SetParam("CURRENTUSER", frmLogin->CurrentUser.UserID +" at  "+ Now());
-                frmReports->rvStock->SetParam("CompanyName", CurrentConnection.CompanyName);
-
-
-             frmReports->rvStock->Execute();
-            }
-            if (dmStockReportData->StockTrans->DefaultDatabase->Connected)
-            {
-             dmStockReportData->StockTrans->Commit();
-            }
-        }
+             PrintReceiveInvoice();
+         }
 
         	if (Transaction->InTransaction)
 					Transaction->Commit();
@@ -1788,6 +1787,11 @@ void  TfrmReceiveInvoice::CommitInvoice()
     IsPrintReport=true;
 	if(vtvStockQty->IsEditing())
 	vtvStockQty->EndEditNode();
+    if(!CheckInvoiceQtyAndPrice())
+    {
+        IsPrintReport = false;
+        return;
+    }
 	if(IsPackingSlipUpdateMode)
 	{
 		//If its a packing slip we only need to update the cost and average prices for the items. No more calculations are required.
@@ -2036,8 +2040,10 @@ void  TfrmReceiveInvoice::CommitInvoice()
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice:: btnSaveClick(TObject *Sender)
 {
-    CommitPackingSlip(false);
-
+    if(CheckInvoiceQtyAndPrice())
+    {
+       CommitPackingSlip(false);
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -2468,4 +2474,51 @@ double TfrmReceiveInvoice::GetStockTakeUnitSize(int stock_key, int supplier_key)
        size = qrGetStockUnitSize->FieldByName("QTY")->AsFloat;
     }
     return size;
+}
+
+bool TfrmReceiveInvoice::CheckInvoiceQtyAndPrice()
+{
+	bool Continue  = true;
+	PVirtualNode Node = vtvStockQty->GetFirst();
+	while (Node && Continue)
+	{
+		TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(Node);
+
+        if((NodeData->OrderQty < 0) || (NodeData->SupplierUnitCost < 0))
+        {
+           Continue = false;
+           break;
+        }
+		// All done. Get the next one.
+		Node = vtvStockQty->GetNext(Node);
+	}
+	if (!Continue)
+	{
+	   Application->MessageBox("You Cannot Process Negative Amount or Quantity", "Error", MB_ICONERROR);
+	}
+	return Continue;
+}
+
+//---------------------------------------------------------------------------
+
+void TfrmReceiveInvoice::PrintReceiveInvoice()
+{
+    if (dmStockReportData->StockTrans->DefaultDatabase->Connected && !dmStockReportData->StockTrans->InTransaction)
+    {
+     dmStockReportData->StockTrans->StartTransaction();
+    }
+     dmStockReportData->SetupSupplierPurchasesRuntime(ReceiptNumber, SupplierName, InvoiceReference);;
+    if (frmReports->rvStock->SelectReport("repSupplierPurchaseStock", false))
+    {
+
+        frmReports->rvStock->SetParam("CURRENTUSER", frmLogin->CurrentUser.UserID +" at  "+ Now());
+        frmReports->rvStock->SetParam("CompanyName", CurrentConnection.CompanyName);
+
+
+     frmReports->rvStock->Execute();
+    }
+    if (dmStockReportData->StockTrans->DefaultDatabase->Connected)
+    {
+     dmStockReportData->StockTrans->Commit();
+    }
 }

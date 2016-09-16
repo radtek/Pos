@@ -78,7 +78,6 @@ public:
    UnicodeString VoucherMerchantID;
    UnicodeString SysNameOveride;
    UnicodeString PaymentThirdPartyID;
-
    UnicodeString UniVoucherURL;
    UnicodeString UniVoucherUser;
    UnicodeString UniVoucherPass;
@@ -87,20 +86,17 @@ public:
    /* Used for the RMS room interface as the location to read and write csv files*/
    UnicodeString CVSReadLocation;
    UnicodeString CVSWriteLocation;
-
    /*Holds the RMS Room Info*/
    TRMSRoom RMSRoom;
    TNewBookRoom NewBookRoom;
    AnsiString SecondaryPMSIPAddress;
    int SecondaryPMSPortNumber;
-
    int Colour;
    int Properties;
    int DisplayOrder;
    int TabCreditKey;
    int GroupNumber;
    int CSVNumber;
-
    bool Visible;
    bool CreditTransaction; // EftPos Reversal. Negitives Money Amounts Stored in DB.
    bool SuppressEftPosReceipt;
@@ -167,6 +163,7 @@ public:
 
    WideString CardType; // when used an eftpos machine (specially dps) this property will be set to actual card type used. Visa, Mastercard, BankCard etc
    UnicodeString EftposTransactionID; // unique eftpos transaction id returned from the eftpos machine
+   bool IsLoyaltyVoucher();
 };
 
 #endif

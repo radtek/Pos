@@ -621,7 +621,10 @@ TPriceInfo* TMMBillCalculator::CreatePriceInfoWithPriceInfo( const TPriceInfo* c
         discountInfo.DiscountWay            = discountInfoIT->DiscountWay;
         discountInfo.RecalcPriceWithTaxAfterDiscount = discountInfoIT->RecalcPriceWithTaxAfterDiscount;
         discountInfo.DiscountGroupList      = discountInfoIT->DiscountGroupList;
-
+        discountInfo.DiscountCode = discountInfoIT->DiscountCode;
+        discountInfo.IsCloudDiscount = discountInfoIT->IsCloudDiscount;
+        discountInfo.DailyUsageAllowedPerMember = discountInfoIT->DailyUsageAllowedPerMember;
+        discountInfo.MembersOnly = discountInfoIT->MembersOnly;
         result->DiscountInfoList.push_back( discountInfo );
     }
 
@@ -1253,7 +1256,10 @@ bool TMMBillCalculator::calcEachActualDiscount(
 	discountResult.DiscountType           = inDiscountInfo->DiscountType;
 	discountResult.DiscountWay            = inDiscountInfo->DiscountWay;
     discountResult.RecalcPriceWithTaxAfterDiscount = inDiscountInfo->RecalcPriceWithTaxAfterDiscount;
-
+    discountResult.DiscountCode = inDiscountInfo->DiscountCode;
+    discountResult.IsCloudDiscount = inDiscountInfo->IsCloudDiscount;
+    discountResult.DailyUsageAllowedPerMember = inDiscountInfo->DailyUsageAllowedPerMember;
+    discountResult.MembersOnly = inDiscountInfo->MembersOnly;
 	outResult->Discount.push_back( discountResult );
 
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2297,7 +2303,10 @@ void TMMBillCalculator::putFinalDiscountInTheResult(
     finalDiscResult.RecalcPriceWithTaxAfterDiscount   = finalDiscountInfo->RecalcPriceWithTaxAfterDiscount;
     finalDiscResult.DiscountType  = finalDiscountInfo->DiscountType;
     finalDiscResult.DiscountWay   = finalDiscountInfo->DiscountWay;
-
+    finalDiscResult.DiscountCode = finalDiscountInfo->DiscountCode;
+    finalDiscResult.IsCloudDiscount = finalDiscountInfo->IsCloudDiscount;
+    finalDiscResult.DailyUsageAllowedPerMember = finalDiscountInfo->DailyUsageAllowedPerMember;
+    finalDiscResult.MembersOnly = finalDiscountInfo->MembersOnly;
     outCalcResult->Discount.push_back( finalDiscResult );
 }
 //.........................................................................

@@ -2,6 +2,7 @@
 #include "DeviceRealTerminal.h"
 #include "SecurityReference.h"
 #include "ManagerReports.h"
+#include "GlobalSettings.h"
 
 XAccumulatedTotalDetailsReportSection::XAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	: BaseReportSection(mmXReport, mmAccumulatedTotalDetailsSection, dbTransaction, globalSettings)

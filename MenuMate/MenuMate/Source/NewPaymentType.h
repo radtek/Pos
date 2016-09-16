@@ -14,9 +14,12 @@
 #include "TouchBtn.h"
 #include "TouchControls.h"
 #include <ComCtrls.hpp>
+#include "ZForm.h"
 //---------------------------------------------------------------------------
-class TfrmNewPaymentType : public TForm
+class TfrmNewPaymentType : public TZForm
 {
+
+	friend TZForm;
 __published:	// IDE-managed Components
         TPanel *pnlButtons;
         TTouchBtn *tbPayment;
@@ -137,7 +140,6 @@ __published:	// IDE-managed Components
 
 private:	// User declarations
 	__fastcall TfrmNewPaymentType(TComponent* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem,int inPaymentKey = 0);
-
 	static TForm *WinOwner;
 	void __fastcall CreateParams(Controls::TCreateParams &params);
 	void GetTabDetailDetails(Database::TDBTransaction &DBTransaction);

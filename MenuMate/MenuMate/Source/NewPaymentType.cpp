@@ -31,7 +31,7 @@ TForm * TfrmNewPaymentType::WinOwner = NULL;
 
 // ---------------------------------------------------------------------------
 __fastcall TfrmNewPaymentType::TfrmNewPaymentType(TComponent* Owner, Database::TDBControl &inDBControl,
-   TListPaymentSystem *inPaymentSystem, int inPaymentKey) : TForm(Owner), DBControl(inDBControl), PaymentSystem(inPaymentSystem)
+   TListPaymentSystem *inPaymentSystem, int inPaymentKey) : TZForm(Owner), DBControl(inDBControl), PaymentSystem(inPaymentSystem)
 {
    PaymentKey = inPaymentKey;
 }
@@ -59,9 +59,8 @@ TfrmNewPaymentType *TfrmNewPaymentType::Create(TForm* Owner, Database::TDBContro
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
 {
-   try
-   {
-	  if (btnName->Caption == "" || btnName->Caption == "Payment Name")
+
+    if (btnName->Caption == "" || btnName->Caption == "Payment Name")
 	  {
 		 MessageBox("You must enter a payment type name.", "Error", MB_OK);
 		 return;
@@ -70,12 +69,13 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
 	  Database::TDBTransaction DBTransaction(DBControl);
 	  DBTransaction.StartTransaction();
 
-	  Payment.Name = btnName->Caption;
+   try
+   {
+      Payment.Name = btnName->Caption;
 	  Payment.DisplayOrder = PaymentPos;
 	  Payment.Colour = btnName->ButtonColor;
 	  Payment.GroupNumber = PaymentGroup;
 	  Payment.PaymentThirdPartyID = PaymentThirdPartyID;
-	  //Payment.FixedVoucherCode = FixedVoucherCode;
 	  Payment.VoucherMerchantID = VoucherMerchantID;
 	  Payment.TaxRate = TaxRate;
 	  Payment.Properties = 0;
@@ -83,7 +83,6 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
 	  Payment.SecondaryPMSIPAddress = SecondaryPMSIPAddress;
 	  Payment.SecondaryPMSPortNumber = SecondaryPMSPortNumber;
       Payment.Export = Export;
-     // Payment.UniVoucherURL = UniURL;
       Payment.UniVoucherUser = UniUser;
    	  Payment.UniVoucherPass = UniPass;
 	  Payment.UniVoucherToken = "";
@@ -150,8 +149,7 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
 	  if(cbAllowTips->Checked)
 		 Payment.Properties |= ePayTypeAllowTips;
 
-
-	  if (Reason != "")
+ 	  if (Reason != "")
 	  {
 		 Payment.AdjustmentReason = Reason;
 		 if (SurchargeIsAPercentAdjust)
@@ -173,17 +171,14 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
 	  }
 
 	  PaymentSystem->PaymentSave(DBTransaction, PaymentKey, Payment);
-
-	  DBTransaction.Commit();
    }
    catch(EDatabaseError & Err)
    {
 	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Err.Message);
 	  MessageBox("A Payment type of with name may already exists.\rPlease enter a different Payment name.", "Error", MB_OK);
    }
-
    //................................
-
+   DBTransaction.Commit();
    Close();
 }
 
@@ -478,24 +473,38 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
 	  {
 		 cbPVAcceptedMsg->Checked = false;
 	  }
-      if (Properties & ePayTypeChargeToAccount)
+      if(TGlobalSettings::Instance().IsXeroEnabled)
       {
-		CheckBoxExport->Checked = true;
+          if (Properties & ePayTypeChargeToAccount)
+          {
+            CheckBoxExport->Checked = true;
+          }
+          else
+          {
+            CheckBoxExport->Checked = false;
+          }
       }
       else
       {
-        CheckBoxExport->Checked = false;
+        CheckBoxExport->Enabled = false;
       }
 
 
-	  if(Properties & ePayTypeChargeToXero)
-	  {
-		tbChargeToXero->Checked = true;
-	  }
-	  else
-	  {
-		tbChargeToXero->Checked = false;
-	  }
+      if(TGlobalSettings::Instance().IsXeroEnabled)
+      {
+          if(Properties & ePayTypeChargeToXero)
+          {
+            tbChargeToXero->Checked = true;
+          }
+          else
+          {
+            tbChargeToXero->Checked = false;
+          }
+      }
+      else
+      {
+        tbChargeToXero->Enabled = false;
+      }
 
 	 if(Payment.Properties & ePayTypeRMSInterface)
 	 {
@@ -875,7 +884,8 @@ void __fastcall TfrmNewPaymentType::cbElectronicTransactionClick(TObject *Sender
    }
   else
    {
-     CheckBoxExport->Enabled = true;
+     CheckBoxExport->Enabled = TGlobalSettings::Instance().IsXeroEnabled;
+     tbChargeToXero->Enabled = true;
    }
 }
 // ---------------------------------------------------------------------------
@@ -1406,5 +1416,4 @@ void __fastcall TfrmNewPaymentType::tbGLCodeMouseClick(TObject *Sender)
    }
 
 }
-
 

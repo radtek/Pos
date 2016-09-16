@@ -1,9 +1,9 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="XeroIntegration.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AccountingIntegration.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="XeroIntegrationConfigFilename" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">XeroIntegration.xml</Value>
+    <Setting Name="AccountingIntegrationConfigFilename" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">AccountingIntegration.xml</Value>
     </Setting>
     <Setting Name="XeroIntegrationCacheFolder" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Xero Integration\Cache</Value>
@@ -16,6 +16,21 @@
     </Setting>
     <Setting Name="XeroIntegrationRetryFolder" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Xero Integration\Retry</Value>
+    </Setting>
+    <Setting Name="MYOBIntegrationCacheFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">MYOB Integration\Cache</Value>
+    </Setting>
+    <Setting Name="MYOBIntegrationFailedFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">MYOB Integration\Failed</Value>
+    </Setting>
+    <Setting Name="MYOBIntegrationSuccessfulFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">MYOB Integration\Successful</Value>
+    </Setting>
+    <Setting Name="MYOBIntegrationRetryFolder" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">MYOB Integration\Retry</Value>
+    </Setting>
+    <Setting Name="CompanyFileDetails" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">CompanyFileDetails.xml</Value>
     </Setting>
   </Settings>
 </SettingsFile>

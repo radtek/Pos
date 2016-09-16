@@ -111,6 +111,7 @@ void TMallExportHourlyUpdate::clearHourlyExportFieldValues()
     mallCode = "";
     dateValue = "";
     timeValue = "";
+    minuteValue = "";
     salesValue = 0;
     transactionCount = 0;
     refundCount = 0;
@@ -136,12 +137,14 @@ void TMallExportHourlyUpdate::setHourlyExportFieldValuesOnTransaction()
     mallCode                     = extractMallCode();
     dateValue                    = extractDate();
     timeValue                    = extractTime();
+    minuteValue                  = extractMinute();
     salesValue                   = extractSales();
     tenantId                     = extractTenantId();
     transactionCount             = extractTransactionCount();
     refundCount                  = extractRefundCount();
     voidCount                    = extractVoidCount();
     patronCount                  = extractPatronCount();
+    scdiscountCount              = extractSCDiscountCount();
 }
 //---------------------------------------------------------------------------
 
@@ -162,12 +165,14 @@ void TMallExportHourlyUpdate::Commit()
     Query->SQL->Text = "INSERT INTO MALLEXPORT_HOURLY (" "ME_HOURLY_KEY, " "TERMINAL_NAME, "
                        "TENANT_NAME, " "DATE_VALUE, " "TIME_VALUE, " "AMOUNT_VALUE, " "TRANSACTION_COUNT, "
                        "VAT_SALES, " "TOTALDISCOUNT, " "SCHARGE_AMOUNT, " "REFUND_COUNT, " "REFUND_AMOUNT, "
-                       "VOID_COUNT, " "VOID_AMOUNT, " "SCDISCOUNT_AMOUNT, " "MALLCODE, " "PATRON_COUNT ) "
+                       "VOID_COUNT, " "VOID_AMOUNT, " "SCDISCOUNT_AMOUNT, " "MALLCODE, " "PATRON_COUNT, "
+                       "MINUTE_VALUE, " "SCDISCOUNT_COUNT ) "
                        "" "VALUES ("
                        ":ME_HOURLY_KEY, " ":TERMINAL_NAME, " ":TENANT_NAME, " ":DATE_VALUE, " ":TIME_VALUE, "
                        ":AMOUNT_VALUE, " ":TRANSACTION_COUNT, "
                        ":VAT_SALES, " ":TOTALDISCOUNT, " ":SCHARGE_AMOUNT, " ":REFUND_COUNT, " ":REFUND_AMOUNT, "
-                       ":VOID_COUNT, " ":VOID_AMOUNT, " ":SCDISCOUNT_AMOUNT, " ":MALLCODE, " ":PATRON_COUNT ) ";
+                       ":VOID_COUNT, " ":VOID_AMOUNT, " ":SCDISCOUNT_AMOUNT, " ":MALLCODE, " ":PATRON_COUNT, "
+                       ":MINUTE_VALUE, " ":SCDISCOUNT_COUNT ) ";
 	Transaction.StartTransaction();
     Query->ParamByName("ME_HOURLY_KEY")->AsString = Retval;
     Query->ParamByName("TERMINAL_NAME")->AsString = terminalNumber;
@@ -186,6 +191,8 @@ void TMallExportHourlyUpdate::Commit()
     Query->ParamByName("SCDISCOUNT_AMOUNT")->AsCurrency = scdiscountAmount;
     Query->ParamByName("MALLCODE")->AsString = tenantId;
     Query->ParamByName("PATRON_COUNT")->AsString = patronCount;
+    Query->ParamByName("MINUTE_VALUE")->AsString = minuteValue;
+    Query->ParamByName("SCDISCOUNT_COUNT")->AsInteger = scdiscountCount;
 	Query->ExecQuery();
 
 	Transaction.Commit();
@@ -218,24 +225,30 @@ Currency TMallExportHourlyUpdate::extractTotalGrossSales()
     for( ; it != flatternedOrdersList.end(); it++ )
     {
         order = *it;
-        grossPrice = 0;
         SalesTax = extractTotalTaxFromResult( order->BillCalcResult, TTaxType::ttSale );
 
         if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
         {
+            grossPrice = 0;
             if(SalesTax != 0) {
                 grossPrice = order->BillCalcResult.GrossPrice;
             }
             grossPrice += order->BillCalcResult.ServiceCharge.Value;
             grossPrice += order->BillCalcResult.ServiceCharge.TaxValue;
         }
+        else if(TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
+        {
+            grossPrice += order->BillCalcResult.FinalPrice;
+        }
         else
         {
+            grossPrice = 0;
             grossPrice = order->BillCalcResult.FinalPrice;
         }
     }
 
-    return grossPrice;
+    result = grossPrice;
+    return result;
 }
 //---------------------------------------------------------------------------
 
@@ -442,6 +455,10 @@ Currency TMallExportHourlyUpdate::extractSales()
     {
         result = getDailySales();
         result = RoundToNearest(result,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+    }
+    else if(TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
+    {
+        result = getDailySales();
     }
     else
     {
@@ -843,10 +860,72 @@ Currency TMallExportHourlyUpdate::getDailySales()
         }
         result += Surcharge;
     }
+    else
+    {
+        result = extractTotalGrossSales() - extractTotalSalesTax() - extractTotalServiceCharge();
+    }
 
     if((TGlobalSettings::Instance().MallIndex == MEGAWORLDMALL || TGlobalSettings::Instance().MallIndex == SHANGRILAMALL))
     {
         result = RoundToNearest(result,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+    }
+
+    return result;
+}
+//---------------------------------------------------------------------------
+
+AnsiString TMallExportHourlyUpdate::extractMinute()
+{
+    AnsiString result;
+
+    result = Now().FormatString("nn");
+
+    return result;
+}
+//---------------------------------------------------------------------------
+
+int TMallExportHourlyUpdate::extractSCDiscountCount()
+{
+    Currency result = 0;
+    result = getDiscountGroupCountPerTransaction(SCD_DISCOUNT_GROUP);
+    return result;
+}
+//---------------------------------------------------------------------------
+
+int TMallExportHourlyUpdate::getDiscountGroupCountPerTransaction( UnicodeString discountGroupName )
+{
+    int result = 0;
+    DISCOUNT_RESULT_LIST::iterator it_discount_list;
+    std::vector<UnicodeString>::iterator it_discount_group_list;
+    bool discountGroupFound = false;
+
+    TItemMinorComplete* order;
+    std::vector<TItemMinorComplete*>::iterator it_orders = flatternedOrdersList.begin();
+
+    for( ;
+         it_orders != flatternedOrdersList.end() && !discountGroupFound;
+         it_orders++ )    // for each orders
+    {
+        order = *it_orders;
+
+        it_discount_list = order->BillCalcResult.Discount.begin();
+        for( ;
+             it_discount_list != order->BillCalcResult.Discount.end() && !discountGroupFound;
+             it_discount_list++ )   //for each bill calc result discounts results list
+        {
+            it_discount_group_list = it_discount_list->DiscountGroupList.begin();
+            for( ;
+                 it_discount_group_list != it_discount_list->DiscountGroupList.end() && !discountGroupFound;
+                 it_discount_group_list++ ) // for each group in discount result
+            {
+                if( *it_discount_group_list == discountGroupName )
+                {
+                    result ++;
+                    discountGroupFound = true;
+                    break;
+                }
+            }
+        }
     }
 
     return result;

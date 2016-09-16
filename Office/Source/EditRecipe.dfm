@@ -317,6 +317,7 @@ object frmEditRecipe: TfrmEditRecipe
         OnChange = NumericEdit1Change
         OnClick = QuantityOnClick
         OnExit = BoxExit
+        OnKeyPress = NumericEdit1KeyPress
       end
       object NumericEdit2: TNumericEdit
         Left = 104
@@ -326,6 +327,7 @@ object frmEditRecipe: TfrmEditRecipe
         Alignment = taLeftJustify
         Precision = 10
         TabOrder = 5
+        OnKeyPress = NumericEdit2KeyPress
       end
       object cbLocation: TComboBox
         Left = 16

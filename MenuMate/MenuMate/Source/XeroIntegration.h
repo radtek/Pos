@@ -12,7 +12,7 @@
 
 //---------------------------------------------------------------------------
 
-const AnsiString XERO_INTEGRATION_FOLDER = "Menumate Services\\XeroIntegration\\Cache";
+const AnsiString XERO_INTEGRATION_FOLDER = "Menumate Services\\Xero Integration\\Cache";
 
 const AnsiString XI_ERROR_NO_ERROR                              = "No Error";
 const AnsiString XI_ERROR_MESSAGE_XINTEGRATION_FOLDER_NOT_FOUND = "Xero Integration Folder not found";
@@ -159,13 +159,13 @@ class TXeroIntegration
 		__property unsigned FailedActiveInterval         = { read = FFailedActiveInterval     };
 		__property unsigned FailedPauseInterval   		 = { read = FFailedPauseInterval      };
 		__property unsigned FailedFolderNotFoundInterval = { read = FFailedFolderNotFoundInterval    };
+        		// Username and Password to the remote host where Xero Integration service is running
+		// They are ignored if the service is running localy
 
 		__property AnsiString XeroMachineName  = { read = readXeroMachineName, write = writeXeroMachineName };
 		__property AnsiString XeroFolderPath   = { read = readXeroFolderPath,  write = writeXeroFolderPath  };
 		__property AnsiString XeroUserName     = { read = readXeroUserName,    write = writeXeroUserName    };
 		__property AnsiString XeroPassword     = { read = readXeroPassword,    write = writeXeroPassword    };
-		// Username and Password to the remote host where Xero Integration service is running
-		// They are ignored if the service is running localy
 
 		__property AnsiString XeroErrorMessage = { read = FErrorMessage };
 

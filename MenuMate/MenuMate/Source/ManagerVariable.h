@@ -114,6 +114,7 @@ enum vmVariables
     vmUpdateMenu,
     vmPontsSpentCountedAsRevenue,
     vmShowDarkBackgroundInPOS,
+    vmIsCloudSynced,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
@@ -176,15 +177,23 @@ enum vmVariables
 	vmMaximumChitNumber,
 
 	//Thorlink Loyalty 6148
-    vmIsThorlinkEnabled,
+    vmIsThorlinkEnabled,    // enum value = 9049
     vmThorlinkAppKey,
     vmThorlinkSiteNo,
     vmThorlinkMerchantCode,
     vmThorlinkDeviceCode,
     //////////////////
 
-   vmShowLargeFonts
-
+    vmShowLargeFonts,
+    // MYOB Integration 10224
+    vmMYOBMachineName,  // enum value = 9055
+    vmMYOBFolderPath,
+    vmMYOBUserName,
+    vmMYOBPassword,
+    vmIsXeroEnabled,
+    vmIsMYOBEnabled,
+    vmConsolidateReportPaths,
+    vmEnableConsolidatedReport
 };
 
 // ---------------------------------------------------------------------------

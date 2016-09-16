@@ -136,8 +136,9 @@ void __fastcall TfrmSelectDiscounts::Execute(TItemMinorComplete *inSelectedItem,
 	  Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	  DBTransaction.StartTransaction();
 	  std::auto_ptr <TStringList> List(new TStringList);
-
- 	  ManagerDiscount->GetDiscountList(DBTransaction, List.get(), exclude_combos);
+      std::vector<eDiscountFilter> discountFilter;
+      discountFilter.push_back(exclude_combos);
+ 	  ManagerDiscount->GetDiscountList(DBTransaction, List.get(), discountFilter);
 	  DBTransaction.Commit();
 
 	  tgridItemPrice->ColCount = 1;

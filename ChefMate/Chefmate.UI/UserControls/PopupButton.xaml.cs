@@ -18,12 +18,13 @@ namespace Chefmate.UI.UserControls
         public static readonly DependencyProperty GroupProperty = DependencyProperty.Register("Group", typeof(Group), typeof(PopupButton));
         public static readonly DependencyProperty ItemProperty = DependencyProperty.Register("Item", typeof(Item), typeof(PopupButton));
         public static readonly DependencyProperty ItemTypeProperty = DependencyProperty.Register("ItemType", typeof(int), typeof(PopupButton));
-
+   
         public PopupButton()
         {
             InitializeComponent();
         }
         public ICommand ShowPopupCommand { get; set; }
+
         public Order Order
         {
             get { return (Order)GetValue(OrderProperty); }
@@ -56,7 +57,6 @@ namespace Chefmate.UI.UserControls
             get { return (int)GetValue(ItemTypeProperty); }
             set { SetValue(ItemTypeProperty, value); }
         }
-
         private void ShowPopup(object sender, RoutedEventArgs e)
         {
             LoadCommands();
@@ -172,7 +172,7 @@ namespace Chefmate.UI.UserControls
             if (Item.IsChildVisible)
             {
                 if (Item.SCourseGroup.Order.OrderState == OrderState.Complete && Item.OrderStatus != OrderStatus.Bumped
-                    && !ChefmateController.Instance.CurrentSettings.BumpOnly)
+                    && !ChefmateController.Instance.CurrentSettings.BumpOnly && Item.DisplayAttributes.IsOriginalItem)
                 {
                     CommandComboBox.Items.Add(new ComboBoxItem() { Content = "Start" });
                     CommandComboBox.Items.Add(new ComboBoxItem() { Content = "Hold" });
@@ -180,16 +180,16 @@ namespace Chefmate.UI.UserControls
 
                 if ((Item.Options.Count > 0
                      || Item.Sides.Count > 0
-                     || Item.Note != "")
+                     || Item.Note != "" || !Item.DisplayAttributes.IsOriginalItem)
                     && !ChefmateController.Instance.CurrentSettings.BumpOnly)
                 {
                     CommandComboBox.Items.Add(new ComboBoxItem() { Content = "Hide" });
                 }
 
-                if (Item.OrderStatus != OrderStatus.Bumped)
+                if (Item.OrderStatus != OrderStatus.Bumped && Item.DisplayAttributes.IsOriginalItem)
                     CommandComboBox.Items.Add(new ComboBoxItem() { Content = "Bump" });
 
-                if (!ChefmateController.Instance.CurrentSettings.BumpOnly)
+                if (!ChefmateController.Instance.CurrentSettings.BumpOnly && Item.DisplayAttributes.IsOriginalItem)
                     CommandComboBox.Items.Add(new ComboBoxItem() { Content = "Note" });
             }
             else
@@ -211,6 +211,6 @@ namespace Chefmate.UI.UserControls
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-       
+
     }
 }

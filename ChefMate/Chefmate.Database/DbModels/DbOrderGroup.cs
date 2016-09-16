@@ -42,11 +42,11 @@ namespace Chefmate.Database.DbModels
             var resultSet = DatabaseCore.Instance.ExecuteDataSetQuery(queryString, queryParameters);
             return ExtractGroupsInformation(resultSet, order);
         }
-        public static void CallAwayGroup(int orderGroupKey)
+        public static void CallAwayGroup(int orderGroupKey,bool callAwayStatus)
         {
             var whereCondition = " WHERE ORDERGROUP_KEY=@ORDERGROUP_KEY";
             var parameters = new List<QueryParameter>();
-            parameters.Add(new QueryParameter("ORDERGROUP_CALLED_AWAY", true));
+            parameters.Add(new QueryParameter("ORDERGROUP_CALLED_AWAY", callAwayStatus));
             var queryString = DatabaseCore.Instance.BuildUpdateQuery("ORDERGROUPS", parameters, whereCondition);
             parameters.Add(new QueryParameter("ORDERGROUP_KEY", orderGroupKey));
             DatabaseCore.Instance.ExecuteNonQuery(queryString, parameters);

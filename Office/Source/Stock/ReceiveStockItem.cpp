@@ -528,3 +528,53 @@ TDataSet *DataSet)
 	lbeTitle->Caption = qrStock->FieldByName("Description")->AsString + " (" + qrSupplierStock->FieldByName("Company_Name")->AsString + ")";
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmReceiveStockItem::neCost1KeyPress(TObject *Sender,
+      char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveStockItem::neCost2KeyPress(TObject *Sender,
+      char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveStockItem::neCost3KeyPress(TObject *Sender,
+      char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   } 
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveStockItem::neCost4KeyPress(TObject *Sender,
+      char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveStockItem::neQtyKeyPress(TObject *Sender,
+      char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   }
+}
+//---------------------------------------------------------------------------
+

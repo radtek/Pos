@@ -18,6 +18,8 @@ ZStaffHoursDetailsReportSection::~ZStaffHoursDetailsReportSection()
 
 void ZStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+    if(!printOut->BlindBalanceUsed)
+        return;
     AddTitle(printOut, " Staff Hours");
     TForm* currentForm = Screen->ActiveForm;
 

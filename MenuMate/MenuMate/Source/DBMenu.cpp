@@ -21,7 +21,6 @@
 #pragma package(smart_init)
 
 // ---------------------------------------------------------------------------
-
 int TDBMenu::GetMenuServingCourse(Database::TDBTransaction &DBTransaction, int MenuKey, int ServingCourseKey)
 {
    int MenuServingCourseKey = 0;
@@ -49,7 +48,7 @@ int TDBMenu::GetMenuServingCourse(Database::TDBTransaction &DBTransaction, int M
    }
    return MenuServingCourseKey;
 }
-
+// ---------------------------------------------------------------------------
 UnicodeString TDBMenu::GetServingCourseKitchenName(Database::TDBTransaction &DBTransaction, int ServingCourseKey)
 {
 
@@ -81,7 +80,7 @@ UnicodeString TDBMenu::GetServingCourseKitchenName(Database::TDBTransaction &DBT
    }
    return ServingCourse;
 }
-
+// ---------------------------------------------------------------------------
 TServingCourse TDBMenu::GetServingCourseFromDB(Database::TDBTransaction &DBTransaction, int ServingCourseKey)
 {
    TServingCourse ServingCourse;
@@ -123,7 +122,7 @@ TServingCourse TDBMenu::GetServingCourseFromDB(Database::TDBTransaction &DBTrans
    }
    return ServingCourse;
 }
-
+// ---------------------------------------------------------------------------
 int TDBMenu::GetServingCourseDisplayOrder(Database::TDBTransaction &DBTransaction, int ServingCourseKey)
 {
 
@@ -149,7 +148,7 @@ int TDBMenu::GetServingCourseDisplayOrder(Database::TDBTransaction &DBTransactio
    }
    return DisplayOrder;
 }
-
+// ---------------------------------------------------------------------------
 TColor TDBMenu::GetServingCourseColour(Database::TDBTransaction &DBTransaction, int ServingCourseKey)
 {
 
@@ -175,7 +174,7 @@ TColor TDBMenu::GetServingCourseColour(Database::TDBTransaction &DBTransaction, 
    }
    return Colour;
 }
-
+// ---------------------------------------------------------------------------
 int TDBMenu::SetServingCourse(Database::TDBTransaction &DBTransaction, UnicodeString ServingCourse,
    UnicodeString ServingCourseKitchenName, int SCOO, bool Deleted, bool Selectable, TColor ServingCourseColour)
 {
@@ -253,7 +252,7 @@ int TDBMenu::SetServingCourse(Database::TDBTransaction &DBTransaction, UnicodeSt
    }
    return ServingCourseKey;
 }
-
+// ---------------------------------------------------------------------------
 int TDBMenu::SetServingCourseToMenu(Database::TDBTransaction &DBTransaction, int MenuKey, int ServingCourseKey)
 {
    if (MenuKey == 0)
@@ -289,7 +288,7 @@ int TDBMenu::SetServingCourseToMenu(Database::TDBTransaction &DBTransaction, int
    }
    return ServingCourseKey;
 }
-
+// ---------------------------------------------------------------------------
 TServingCourse TDBMenu::LoadDefaultServingCourse(Database::TDBTransaction &DBTransaction)
 {
    TServingCourse ServingCourse;
@@ -344,8 +343,7 @@ TServingCourse TDBMenu::LoadDefaultServingCourse(Database::TDBTransaction &DBTra
    IBInternalQuery->Close();
    return ServingCourse;
 }
-
-
+// ---------------------------------------------------------------------------
 int TDBMenu::GetServingCourseByName(Database::TDBTransaction &DBTransaction, UnicodeString ServingCourse)
 {
    int ServingCourseKey = 0;
@@ -371,7 +369,7 @@ int TDBMenu::GetServingCourseByName(Database::TDBTransaction &DBTransaction, Uni
    }
    return ServingCourseKey;
 }
-
+// ---------------------------------------------------------------------------
 UnicodeString TDBMenu::GetServingCourseName(Database::TDBTransaction &DBTransaction, int ServingCourseKey)
 {
 
@@ -398,7 +396,7 @@ UnicodeString TDBMenu::GetServingCourseName(Database::TDBTransaction &DBTransact
    }
    return ServingCourse;
 }
-
+// ---------------------------------------------------------------------------
 void TDBMenu::GetCourseList(Database::TDBTransaction &DBTransaction, int MenuKey, TStringList *CourseList)
 {
    try
@@ -422,9 +420,7 @@ void TDBMenu::GetCourseList(Database::TDBTransaction &DBTransaction, int MenuKey
 	  throw;
    }
 }
-
 // ---------------------------------------------------------------------------
-
 void TDBMenu::GetCourseKitchenNameList(Database::TDBTransaction &DBTransaction, int MenuKey, TStringList *CourseList)
 {
    try
@@ -472,9 +468,7 @@ void TDBMenu::GetCourseKitchenNameList(Database::TDBTransaction &DBTransaction, 
 	  throw;
    }
 }
-
 // ---------------------------------------------------------------------------
-
 void TDBMenu::GetMenuList(Database::TDBTransaction &DBTransaction, TStringList *MenuList)
 {
    try
@@ -497,7 +491,6 @@ void TDBMenu::GetMenuList(Database::TDBTransaction &DBTransaction, TStringList *
 	  throw;
    }
 }
-
 // ---------------------------------------------------------------------------
 void TDBMenu::GetMenuList(Database::TDBTransaction &DBTransaction, TStringList *MenuList, TMenuType MenuType)
 {
@@ -523,7 +516,6 @@ void TDBMenu::GetMenuList(Database::TDBTransaction &DBTransaction, TStringList *
 	  throw;
    }
 }
-
 // ---------------------------------------------------------------------------
 bool TDBMenu::IsAValidMenu(Database::TDBTransaction &DBTransaction, int MenuKey)
 {
@@ -553,8 +545,7 @@ bool TDBMenu::GetMenusExist(Database::TDBTransaction &DBTransaction)
    try
    {
 	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	  IBInternalQuery->Close();
+ 	  IBInternalQuery->Close();
 	  IBInternalQuery->SQL->Text = "SELECT MENU_KEY,MENU_NAME " "FROM MENU";
 	  IBInternalQuery->ExecQuery();
 
@@ -570,9 +561,7 @@ bool TDBMenu::GetMenusExist(Database::TDBTransaction &DBTransaction)
    }
    return Retval;
 }
-
 // ---------------------------------------------------------------------------
-
 TListMenu *TDBMenu::LoadMenuFromDB(Database::TDBControl &DBControl, const UnicodeString &MenuName, eMenuCommand Command)
 {
    Menu::TMenuLoadDB MenuEnumerator(DBControl);
@@ -841,5 +830,59 @@ TListMenu *TDBMenu::LoadMenuFromDB(Database::TDBControl &DBControl, const Unicod
    }
    return NULL;
 }
-
 // ---------------------------------------------------------------------------
+int TDBMenu::GetOrCreateCloudCategoryGroup(Database::TDBTransaction &DBTransaction)
+{
+    int Retval = 0;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "Select CATEGORYGROUPS_KEY from CATEGORYGROUPS where NAME = 'Loyalty Discounts'";
+    IBInternalQuery->ExecQuery();
+    if (IBInternalQuery->RecordCount > 0)
+	  {
+		 Retval = IBInternalQuery->FieldByName("CATEGORYGROUPS_KEY")->AsInteger;
+	  }
+      else
+      {
+          IBInternalQuery->Close();
+          IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_CATEGORYGROUPS, 1) FROM RDB$DATABASE";
+          IBInternalQuery->ExecQuery();
+          Retval = IBInternalQuery->Fields[0]->AsInteger;
+          IBInternalQuery->Close();
+          IBInternalQuery->SQL->Text = "INSERT INTO CATEGORYGROUPS (CATEGORYGROUPS_KEY, NAME, VISIBLE) "
+                                       "VALUES (:CATEGORYGROUPS_KEY, 'Loyalty Discounts', 'T') ";
+          IBInternalQuery->ParamByName("CATEGORYGROUPS_KEY")->AsInteger = Retval;
+          IBInternalQuery->ExecQuery();
+      }
+      return Retval;
+}
+
+int TDBMenu::GetOrCreateCloudCategory(Database::TDBTransaction &DBTransaction,AnsiString CategoryName)
+{
+    int Retval = 0;
+    int GroupKey = TDBMenu::GetOrCreateCloudCategoryGroup(DBTransaction);
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "Select CATEGORY_KEY from ARCCATEGORIES where CATEGORY = :CATEGORY";
+    IBInternalQuery->ParamByName("CATEGORY")->AsString = CategoryName;
+    IBInternalQuery->ExecQuery();
+    if (IBInternalQuery->RecordCount > 0)
+	  {
+		 Retval = IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+	  }
+      else
+      {
+          IBInternalQuery->Close();
+          IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ARCCATEGORIES, 1) FROM RDB$DATABASE";
+          IBInternalQuery->ExecQuery();
+          Retval = IBInternalQuery->Fields[0]->AsInteger;
+          IBInternalQuery->Close();
+          IBInternalQuery->SQL->Text = "INSERT INTO ARCCATEGORIES (CATEGORY_KEY, CATEGORY, CATEGORYGROUPS_KEY, COO, VISIBLE)"
+                                       "VALUES (:CATEGORY_KEY, :CATEGORY, :CATEGORYGROUPS_KEY, 1 , 'T') ";
+          IBInternalQuery->ParamByName("CATEGORY_KEY")->AsInteger = Retval;
+          IBInternalQuery->ParamByName("CATEGORY")->AsString = CategoryName;
+          IBInternalQuery->ParamByName("CATEGORYGROUPS_KEY")->AsInteger = GroupKey;
+          IBInternalQuery->ExecQuery();
+      }
+      return Retval;
+}

@@ -6,7 +6,6 @@
 #include "MMTouchNumpad.h"
 #include "TierLevelEditor.h"
 #include "MMMessageBox.h"
-#include "ManagerTierLevel.h"
 #include "GlobalSettings.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -94,12 +93,6 @@ void __fastcall TfrmTierLevelEditor::btnOkMouseClick(TObject *Sender)
       else
        {
          AddTierLevel();
-         if (TGlobalSettings::Instance().LoyaltyMateEnabled)
-         {
-           TManagerTierLevel ManagerTierLevel;
-           ManagerTierLevel.createTierOnLoyaltyMate(TierLevel);
-         }
-
        }
       ModalResult = mrOk;
   }
@@ -221,11 +214,6 @@ void TfrmTierLevelEditor::UpdateTierLevel()
     DBTransaction.StartTransaction();
     TDBTierLevel::UpdateTierLevel(DBTransaction,TierLevel);
     DBTransaction.Commit();
-    if (TGlobalSettings::Instance().LoyaltyMateEnabled)
-     {
-        TManagerTierLevel ManagerTierLevel;
-        ManagerTierLevel.updateTierOnLoyaltyMate(TierLevel);
-     }
 }
 //---------------------------------------------------------------------------
 //Get Tier Level Information

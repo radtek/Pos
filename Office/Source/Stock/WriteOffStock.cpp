@@ -384,3 +384,13 @@ void TfrmWriteOffStock::StockLocation(void)
 
 
 }
+void __fastcall TfrmWriteOffStock::neQtyKeyPress(TObject *Sender,
+      char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   }
+}
+//---------------------------------------------------------------------------
+

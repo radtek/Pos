@@ -1,6 +1,6 @@
 object dmStockData: TdmStockData
   OldCreateOrder = False
-  Top = 27
+  Top = 33
   Height = 372
   Width = 640
   object DataSource1: TDataSource

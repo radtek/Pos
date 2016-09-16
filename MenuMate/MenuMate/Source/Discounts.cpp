@@ -81,7 +81,9 @@ void TfrmDiscounts::LoadDiscountList()
    }
    else
    {
-      ManagerDiscount->GetDiscountList(DBTransaction,List.get());
+    std::auto_ptr<TStringList>DiscountList(new TStringList);
+    std::vector<eDiscountFilter> discountFilter;
+    ManagerDiscount->GetDiscountList(DBTransaction,List.get(),discountFilter);
    }
 	DBTransaction.Commit();
 
@@ -210,8 +212,14 @@ void __fastcall TfrmDiscounts::Panel19Click(TObject *Sender)
 void __fastcall TfrmDiscounts::tgridSelectionMouseClick(TObject *Sender,
       TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
 {
-   CurrentDiscountKey = GridButton->Tag;
-   CurrentDiscountName = GridButton->Caption;
+    CurrentDiscountKey = GridButton->Tag;
+    CurrentDiscountName = GridButton->Caption;
+    Database::TDBTransaction DBTransaction(DBControl);
+    DBTransaction.StartTransaction();
+    bool isCloudDiscount = ManagerDiscount->IsCloudDiscount(DBTransaction,CurrentDiscountKey);
+    DBTransaction.Commit();
+    tbtnEditDiscount->Enabled = !isCloudDiscount;
+    btnDelete->Enabled = !isCloudDiscount;
 }
 //---------------------------------------------------------------------------
 

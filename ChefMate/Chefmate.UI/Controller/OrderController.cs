@@ -17,6 +17,7 @@ namespace Chefmate.UI.Controller
         private static OrderController _instance;
         private static volatile object _syncRoot = new object();
 
+
         private OrderController() { }
 
         public static OrderController Instance
@@ -74,6 +75,8 @@ namespace Chefmate.UI.Controller
             }
 
         }
+        public delegate void OrderRedrawDelegate();
+        public event OrderRedrawDelegate OrderRedrawEvent;
 
         #region Bump
         public void Bump(object sender)
@@ -88,6 +91,7 @@ namespace Chefmate.UI.Controller
                         BumpGroup(sender as Group);
                     if (sender.GetType() == typeof(Item))
                         BumpItem(sender as Item);
+                    PublishRedrawEvent();
                 }
             }
             catch (Exception Ex)
@@ -96,8 +100,10 @@ namespace Chefmate.UI.Controller
             }
 
         }
-        public void BumpOrder(Order order)
+        public void BumpOrder(Order inOrder)
         {
+            var order = ChefmateController.Instance.TotalOrders.FirstOrDefault(s => s.OrderKey == inOrder.OrderKey);
+
             foreach (var group in order.DisplayGroups)
             {
                 if (group.OrderStatus != OrderStatus.Bumped && group.OrderStatus != OrderStatus.Canceled)
@@ -133,8 +139,11 @@ namespace Chefmate.UI.Controller
                 DbOrder.OrderBumped(order.OrderKey, DateTime.Now);
 
         }
-        private void BumpGroup(Group group, bool isBumbedFromOrder = false)
+        private void BumpGroup(Group inGroup, bool isBumbedFromOrder = false)
         {
+            Group group = inGroup;
+            if (!isBumbedFromOrder)
+                group = GetFromOriginalItem(inGroup);
             foreach (var item in group.Items)
             {
                 if (item.OrderStatus != OrderStatus.Bumped && item.OrderStatus != OrderStatus.Canceled)
@@ -155,20 +164,21 @@ namespace Chefmate.UI.Controller
                 }
             }
         }
-        private void BumpItem(Item item, bool isBumbedFromGroup = false)
+        private void BumpItem(Item inItem, bool isBumbedFromGroup = false)
         {
-            if (item.DisplayAttributes.IsTransferredItem == 1)
+            var item = inItem;
+            if (!isBumbedFromGroup)
             {
-                item.DisplayAttributes.IsTransferredItem = 0;
-                foreach (var side in item.Sides)
+                var order = ChefmateController.Instance.TotalOrders.FirstOrDefault(s => s.OrderKey == inItem.OrderKey);
+                if (order != null)
                 {
-                    side.DisplayAttributes.IsTransferredItem = 0;
-                }
-                foreach (var option in item.Options)
-                {
-                    option.DisplayAttributes.IsTransferredItem = 0;
+                    item = order.Items.FirstOrDefault(s => s.OrderItemKey == inItem.OrderItemKey);
                 }
             }
+
+            if (!item.DisplayAttributes.IsOriginalItem)
+                return;
+
             ChangeItemStatus(item, OrderStatus.Bumped);
             foreach (var side in item.Sides)
             {
@@ -218,6 +228,12 @@ namespace Chefmate.UI.Controller
                     SendGroupToOutput(inGroupToOutput);
                     break;
             }
+        }
+        private Group GetFromOriginalItem(Group inGroup)
+        {
+            var order = ChefmateController.Instance.TotalOrders.FirstOrDefault(s => s.OrderKey == inGroup.Order.OrderKey);
+            var group = order.DisplayGroups.FirstOrDefault(s => s.OrderGroupKey == inGroup.OrderGroupKey);
+            return group;
         }
         private void OutputItem(Item inItemToOutput)
         {
@@ -277,7 +293,11 @@ namespace Chefmate.UI.Controller
                 if (sender != null)
                 {
                     if (sender.GetType() == typeof(Order))
-                        TransferOrder(sender as Order);
+                    {
+                        var order = sender as Order;
+                        var originalOrder = ChefmateController.Instance.TotalOrders.FirstOrDefault(s => s.OrderKey == order.OrderKey);
+                        TransferOrder(originalOrder);
+                    }
                 }
             }
             catch (Exception Ex)
@@ -310,6 +330,7 @@ namespace Chefmate.UI.Controller
                     ChefmateController.Instance.AnalyticalData.CurrentOrdersCount--;
                     ChefmateController.Instance.AnalyticalData.CurrentItems -= order.Items.Count;
                     ChefmateController.Instance.RemoveOrder(order);
+                    PublishRedrawEvent();
                 }
             }
 
@@ -331,6 +352,14 @@ namespace Chefmate.UI.Controller
         }
         private void StartOrder(Order order)
         {
+            var orders = ChefmateController.Instance.CurrentDisplayOrders.Where(s => s.OrderKey == order.OrderKey);
+            foreach (var item in orders)
+            {
+                StartChildOrder(item);
+            }
+        }
+        private void StartChildOrder(Order order)
+        {
             order.OrderStatus = OrderStatus.Started;
             foreach (var group in order.ServingCourseGroups)
             {
@@ -340,16 +369,28 @@ namespace Chefmate.UI.Controller
             {
                 StartGroup(group);
             }
-        }
-        private void StartGroup(Group group)
-        {
-            if (group.OrderStatus != OrderStatus.Bumped)
+            foreach (var group in order.DisplayGroups)
             {
-                group.OrderStatus = OrderStatus.Started;
-                group.Order.OrderStatus = OrderStatus.Started;
-                foreach (var item in group.Items)
+                StartGroup(group);
+            }
+        }
+        private void StartGroup(Group inGroup)
+        {
+            var orders = ChefmateController.Instance.CurrentDisplayOrders.Where(s => s.OrderKey == inGroup.Order.OrderKey);
+            foreach (var order in orders)
+            {
+                var group = order.DisplayGroups.FirstOrDefault(s => s.OrderGroupKey == inGroup.OrderGroupKey);
+                if (group != null)
                 {
-                    StartItem(item);
+                    if (group.OrderStatus != OrderStatus.Bumped)
+                    {
+                        group.OrderStatus = OrderStatus.Started;
+                        group.Order.OrderStatus = OrderStatus.Started;
+                        foreach (var item in group.Items)
+                        {
+                            StartItem(item);
+                        }
+                    }
                 }
             }
         }
@@ -376,33 +417,46 @@ namespace Chefmate.UI.Controller
                     HoldItem(sender as Item);
             }
         }
-        private void HoldOrder(Order order)
+        private void HoldOrder(Order inOrder)
         {
-            order.OrderStatus = OrderStatus.Hold;
-            foreach (var group in order.ServingCourseGroups)
+            var orders = ChefmateController.Instance.CurrentDisplayOrders.Where(s => s.OrderKey == inOrder.OrderKey);
+            foreach (var order in orders)
             {
-                HoldGroup(group);
-            }
-            foreach (var group in order.CourseGroups)
-            {
-                HoldGroup(group);
+                order.OrderStatus = OrderStatus.Hold;
+                foreach (var group in order.ServingCourseGroups)
+                {
+                    HoldGroup(group);
+                }
+                foreach (var group in order.CourseGroups)
+                {
+                    HoldGroup(group);
+                }
+                foreach (var group in order.DisplayGroups)
+                {
+                    HoldGroup(group);
+                }
             }
         }
-        private void HoldGroup(Group group)
+        private void HoldGroup(Group inGroup)
         {
-            if (group.OrderStatus != OrderStatus.Bumped)
+            var orders = ChefmateController.Instance.CurrentDisplayOrders.Where(s => s.OrderKey == inGroup.Order.OrderKey);
+            foreach (var order in orders)
             {
-                group.OrderStatus = OrderStatus.Hold;
-                foreach (var item in group.Items)
+                var group = order.DisplayGroups.FirstOrDefault(s => s.OrderGroupKey == inGroup.OrderGroupKey);
+                if (group.OrderStatus != OrderStatus.Bumped)
                 {
-                    HoldItem(item);
+                    group.OrderStatus = OrderStatus.Hold;
+                    foreach (var item in group.Items)
+                    {
+                        HoldItem(item);
+                    }
                 }
             }
         }
         private void HoldItem(Item item)
         {
             item.OrderStatus = OrderStatus.Hold;
-        }        
+        }
         #endregion
 
         #region Hide
@@ -468,34 +522,7 @@ namespace Chefmate.UI.Controller
         #endregion
 
         #region Keypad Operation
-        public bool BumpByChitTableNumber(string chitTableNumber)
-        {
-            bool bumpChit = BumpByChitNumber(chitTableNumber);
-            bool bumpTable = BumpByTableNumber(chitTableNumber);
-            return bumpTable || bumpChit;
-        }
 
-        private bool BumpByChitNumber(string chitNumber)
-        {
-            var order = ChefmateController.Instance.CurrentDisplayOrders.FirstOrDefault(s => s.ChitValue.Contains(chitNumber));
-            if (order != null)
-            {
-                BumpOrder(order);
-                return true;
-            }
-            return false;
-        }
-
-        private bool BumpByTableNumber(string tableNumber)
-        {
-            var order = ChefmateController.Instance.CurrentDisplayOrders.FirstOrDefault(s => s.TableTabName.Contains(tableNumber));
-            if (order != null)
-            {
-                BumpOrder(order);
-                return true;
-            }
-            return false;
-        }
         #endregion
 
         #region StatusChange
@@ -620,6 +647,10 @@ namespace Chefmate.UI.Controller
         }
         #endregion
 
-
+        private void PublishRedrawEvent()
+        {
+            if (OrderRedrawEvent != null)
+                OrderRedrawEvent();
+        }
     }
 }

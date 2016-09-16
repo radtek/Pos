@@ -135,7 +135,7 @@ void TfrmPurchaseOrder::LoadOrder()
 		NodeData->SupplierCode						= qrPurchaseStock->FieldByName("Supplier_Code")->AsString;
 		NodeData->SupplierUnit						= qrPurchaseStock->FieldByName("Supplier_Unit")->AsString;
 		NodeData->SupplierUnitCost					= qrPurchaseStock->FieldByName("Supplier_Unit_Cost")->AsFloat;
-		//		NodeData->SupplierUnitSize					= qrPurchaseStock->FieldByName("Stock_Qty")->AsFloat / qrPurchaseStock->FieldByName("Order_Qty")->AsFloat;
+		//NodeData->SupplierUnitSize					= qrPurchaseStock->FieldByName("Stock_Qty")->AsFloat / qrPurchaseStock->FieldByName("Order_Qty")->AsFloat;
 		NodeData->SupplierUnitSize					= qrPurchaseStock->FieldByName("Supplier_Unit_Size")->AsFloat;
 		NodeData->SupplierUnitQty					= qrPurchaseStock->FieldByName("Supplier_Unit_Qty")->AsFloat;
 	}
@@ -185,7 +185,12 @@ void __fastcall TfrmPurchaseOrder::btnOkClick(TObject *Sender)
 	}
 }//---------------------------------------------------------------------------
 void __fastcall TfrmPurchaseOrder::btnCommitClick(TObject *Sender)
-{	if (!is_okay_to_commit())
+{
+    if(!CheckNegativeValue())
+    {
+        return;
+    }
+    if (!is_okay_to_commit())
 	return;
 	DoCommit(reinterpret_cast<TBitBtn *>(Sender)->Tag);
 	/*
@@ -991,6 +996,11 @@ char &Key)
 	{
 		Key = NULL;
 	}
+    if (Key == '-')
+	{
+		Key = NULL;
+	}
+
 }//---------------------------------------------------------------------------
 bool TfrmPurchaseOrder::OrderNumberExists(AnsiString OrderNumber)
 {	bool Exists = false;
@@ -1134,6 +1144,11 @@ TfrmPurchaseOrder::DoCommit(bool emailp)
         Transaction->StartTransaction();
 
 
+   if(!CheckNegativeValue())
+   {
+      Transaction->Rollback();
+      return;
+   }
 
     if (!SaveOrder()) {
         /* Why save the order if the user chooses not to commit? */
@@ -1202,6 +1217,7 @@ void TfrmPurchaseOrder::PopulateStockWithCategory(AnsiString Location)
 			"Left Join PurchaseStock On PurchaseStock.Code = Stock.Code And PurchaseStock.Location = StockLocation.Location "
 			"where StockCategory.Deleted='F' and STOCK.STOCK_KEY is not null and "
 			"StockCategory.Stock_Category =:Stock_Category "
+            " and STOCK.DELETED = 'F' "
 			"and SUPPLIERSTOCK.SUPPLIER_KEY=:SUPPLIER_KEY "  + LocationCondition +
 			"group by "
 			"1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,20,21  "
@@ -1290,6 +1306,7 @@ void TfrmPurchaseOrder::PopulateStockWithOutCategory(AnsiString Location)
 	"left join STOCKLOCATION on STOCK.STOCK_KEY = STOCKLOCATION.STOCK_KEY "
 	"Left Join PurchaseStock On PurchaseStock.Code = Stock.Code And PurchaseStock.Location = StockLocation.Location "
 	"where StockCategory.Deleted='F' and STOCK.STOCK_KEY is not null "
+    "and STOCK.DELETED = 'F' "
 	"and SUPPLIERSTOCK.SUPPLIER_KEY=:SUPPLIER_KEY "  + LocationCondition +
 	"group by "
 	"1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,20,21  " ;
@@ -1444,4 +1461,23 @@ void TfrmPurchaseOrder::CallPurchaseOrderRerport(AnsiString ReportName, bool ema
  
 }
 
-
+bool TfrmPurchaseOrder::CheckNegativeValue()
+{
+    bool retVal = true;
+	PVirtualNode Node = vtvStockQty->GetFirst();
+	while (Node && retVal)
+	{
+		TOrderItemNodeData *NodeData = (TOrderItemNodeData *)vtvStockQty->GetNodeData(Node);
+        if(NodeData->SupplierUnitCost < 0)
+        {
+           retVal = false;
+           break;
+        }
+        Node = vtvStockQty->GetNext(Node);
+	}
+	if(!retVal)
+	{
+	   Application->MessageBox("You Cannot Process Negative Amount or Quantity", "Error", MB_ICONERROR);
+	}
+    return retVal;
+}

@@ -569,10 +569,13 @@ void __fastcall TfrmCreateOrders::btnAutoClick(TObject *Sender)
 			CategoryCheckEnable=true;
 		}
 		if(CategoryCheckEnable)
-		{PopulateStockWithCategory(StockLocation);
+		{
+          PopulateStockWithCategory(StockLocation);
 		}
 		else
-		{PopulateStockWithOutCategory(StockLocation);}
+		{
+          PopulateStockWithOutCategory(StockLocation);
+        }
 	}
 	if(Transaction->InTransaction)
 	Transaction->Commit();
@@ -726,11 +729,14 @@ void TfrmCreateOrders::PopulateStockWithCategory(AnsiString Location)
 					{  if(finalval<0)
 						finalval=0;
 					}
+                    else
+                    {
+                       finalval = 0;
+                    }
 					if(finalval<0)
 					finalval=0;
 					NodeData->SupplierUnitQty= finalval;
 					//*******************************/
-					//  NodeData->SupplierUnitQty = 0;
 					if(counter == 0)
 					{
 						vtvStockQty->FocusedNode = OrderItemNode;
@@ -836,14 +842,19 @@ void TfrmCreateOrders::PopulateStockWithOutCategory(AnsiString Location)
 				qty = qrStockPrefferedSupplier->FieldByName("SUPPLIER_UNIT_SIZE")->AsFloat;
 			}
 			int finalval=( maxLevel/qty ) -((onhand/qty)+(onOrder/qty));
-			if((onhand+onOrder)<=minLevel)
+
+			if((onhand+onOrder) <= minLevel)
 			{  if(finalval<0)
 				finalval=0;
 			}
+            else
+            {
+              finalval = 0;
+            }
 			if(finalval<0)
 			finalval=0;
 			NodeData->SupplierUnitQty= finalval;
-			//*******************************/
+
 			//  NodeData->SupplierUnitQty = 0;
 			if(counter == 0)
 			{

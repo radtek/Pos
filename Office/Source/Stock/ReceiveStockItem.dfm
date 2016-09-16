@@ -318,6 +318,7 @@ object frmReceiveStockItem: TfrmReceiveStockItem
           ParentFont = False
           TabOrder = 7
           OnChange = neCostChange
+          OnKeyPress = neCost1KeyPress
           DecimalPlaces = 4
         end
         object neCost2: TNumericEdit
@@ -338,6 +339,7 @@ object frmReceiveStockItem: TfrmReceiveStockItem
           ParentFont = False
           TabOrder = 8
           OnChange = neCostChange
+          OnKeyPress = neCost2KeyPress
           DecimalPlaces = 4
         end
         object dbluLocation: TDBLookupComboBox
@@ -393,6 +395,7 @@ object frmReceiveStockItem: TfrmReceiveStockItem
           ParentFont = False
           TabOrder = 9
           OnChange = neCostChange
+          OnKeyPress = neCost3KeyPress
           DecimalPlaces = 4
         end
         object neCost4: TNumericEdit
@@ -414,6 +417,7 @@ object frmReceiveStockItem: TfrmReceiveStockItem
           ParentFont = False
           TabOrder = 10
           OnChange = neCostChange
+          OnKeyPress = neCost4KeyPress
           DecimalPlaces = 4
         end
         object neQty: TNumericEdit
@@ -434,6 +438,7 @@ object frmReceiveStockItem: TfrmReceiveStockItem
           ParentFont = False
           TabOrder = 6
           OnChange = neQtyChange
+          OnKeyPress = neQtyKeyPress
           DecimalPlaces = 4
         end
         object dbluSupplier: TDBLookupComboBox

@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------------
 #include <vcl.h>
-#pragma hdrstop
 
+#pragma hdrstop
 #include <FileCtrl.hpp>
 #include "MMData.h"
 #include "Registration.h"
 #include "MMRegistry.h"
 #include "Consts.h"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -19,6 +20,7 @@ __fastcall TdmMMData::TdmMMData(TComponent* Owner)
 //---------------------------------------------------------------------------
 bool TdmMMData::Connect(TLabel *Label)
 {
+    //UnicodeString s = "";
 	dbMenuMate->Connected = false;
 	if (CurrentConnection.MenuMateDB.RemoteConnection)
 	{

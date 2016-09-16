@@ -58,6 +58,18 @@ namespace Chefmate.Database.DbModels
             }
             return terminals;
         }
+
+        public static IEnumerable<int> GetTerminalKeys()
+        {
+            var terminalKeys = new List<int>();
+            var commandText = "SELECT TERMINALID FROM TERMINALS";
+            var resultSet = DatabaseCore.Instance.ExecuteDataSetQuery(commandText);
+            for (int i = 0; i < resultSet.Rows.Count; i++)
+            {
+                terminalKeys.Add(Convert.ToInt32(resultSet.Rows[i]["TERMINALID"]));
+            }
+            return terminalKeys;
+        }
         public static bool AddTerminal(Terminal terminal)
         {
             var existingTerminal = GetTerminal(terminal.TerminalName);

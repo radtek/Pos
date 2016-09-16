@@ -414,6 +414,7 @@ void __fastcall TfrmSuppliers::btnOkClick(TObject *Sender)
 			else
 			{
 				Application->MessageBox("You need to select a contact or press 'Cancel'.", "Error", MB_ICONERROR + MB_OK);
+                ModalResult = mrCancel;
 			}
 		}
 	}

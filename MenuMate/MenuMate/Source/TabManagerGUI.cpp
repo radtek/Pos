@@ -1657,11 +1657,11 @@ TShiftState Shift, TGridButton *GridButton)
 		{
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
-			BYTE discountID = ManagerDiscount->GetDiscountIDByKey(DBTransaction,*ptrDiscount);
+			AnsiString discountCode = ManagerDiscount->GetDiscountCodeByKey(DBTransaction,*ptrDiscount);
 			DBTransaction.Commit();
 
-			if(discountID != 0)
-			TempUserInfo.AutoAppliedDiscountsID.erase(discountID);
+			if(discountCode != "")
+			TempUserInfo.AutoAppliedDiscountsID.erase(discountCode);
 
 			TempUserInfo.AutoAppliedDiscounts.erase(ptrDiscount);
 			GridButton->Latched = false;

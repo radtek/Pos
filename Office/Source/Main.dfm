@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
   Tag = 1024
   Left = 399
-  Top = 167
+  Top = 173
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   BorderIcons = [biSystemMenu, biMinimize]

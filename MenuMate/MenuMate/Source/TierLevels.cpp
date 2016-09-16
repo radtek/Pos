@@ -15,7 +15,6 @@
 #include "MMMessageBox.h"
 #include "DeviceRealTerminal.h"
 #include "TierLevelEditor.h"
-#include "ManagerTierLevel.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -39,7 +38,9 @@ void __fastcall TfrmTierLevel::FormShow(TObject *Sender)
 	FormResize(this);
     SetGridColors(tgridSelection);
     PopulateTierLevels();
-    btnSync->Visible = TGlobalSettings::Instance().LoyaltyMateEnabled;
+    btnAdd->Visible = !TGlobalSettings::Instance().LoyaltyMateEnabled;
+    btnEdit->Visible = !TGlobalSettings::Instance().LoyaltyMateEnabled;
+    btnDelete->Visible = !TGlobalSettings::Instance().LoyaltyMateEnabled;
 }
 // ---------------------------------------------------------------------------
 
@@ -146,11 +147,6 @@ void TfrmTierLevel::DeleteTier()
         TDBTierLevel::GetTierLevelInformation(DBTransaction,tierLevel);
         TDBTierLevel::DeleteTierLevel(DBTransaction,SelectedTierKey);
         DBTransaction.Commit();
-        if (TGlobalSettings::Instance().LoyaltyMateEnabled)
-         {
-            TManagerTierLevel ManagerTierLevel;
-            ManagerTierLevel.DeleteTierLevel(tierLevel);
-         }
      }
   }
   else
@@ -158,11 +154,6 @@ void TfrmTierLevel::DeleteTier()
     MessageBox("Select a Tier Level", "Select a Tier Level", MB_ICONINFORMATION + MB_OK);
   }
 }
-void __fastcall TfrmTierLevel::btnSyncMouseClick(TObject *Sender)
-{
-  TManagerTierLevel ManagerTierLevel;
-  ManagerTierLevel.SyncTierLevels();
-  PopulateTierLevels();
-}
+
 //---------------------------------------------------------------------------
 

@@ -26,6 +26,8 @@
 #include "DiscountGroup.h"
 #include "MMTouchKeyboard.h"
 #include "ZForm.h"
+//#include <wchar.h>
+
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -296,7 +298,11 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiGroupItems, "Group Items");
 	DefaultCaption[epofiGroupItems] = "Group Items";
+
+    Instructions[i++] = InstructionPair(epofiCurrentYearPts, "Current Year Points");
+	DefaultCaption[epofiCurrentYearPts] = "Current Year Points";
 }
+
 
 UnicodeString TPrintOutFormatInstructions::GetCaption(ePrintOutFormatInstructions Instruction)
 {
@@ -469,6 +475,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
 	case epofiPrintServiceChargePlusServiceChargeTax:
 	case epofiPrintZeroRated:
 	case epofiPrintRedeemableWeight:
+    case epofiCurrentYearPts:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -797,6 +804,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 		case epofiPrintPointsDetails:
 			PrintPointsInformation(PrintJob);
 			break;
+		case epofiCurrentYearPts:
+			PrintCurrentYearPts(PrintJob);
+			break;
 		case epofiPrintItemTotal:
 			PrintItemTotal(PrintJob);
 			break;
@@ -1033,9 +1043,18 @@ TPrintSection::PrintProductTotalsWithUnitPrice(TReqPrintJob *pj)
 		pPrinter->Line->ColCount = 2;
 		pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
 		pPrinter->Line->Columns[1]->Alignment = taRightJustify;
+        int length = GetItemLength((*m)->ItemKitchenName, (*m)->ItemKitchenName.Length());
 		pPrinter->Line->Columns[1]->Width = pPrinter->Width / 3;
-		pPrinter->Line->Columns[0]->Width =
-		pPrinter->Width - pPrinter->Line->Columns[1]->Width;
+        if(length > 0)
+        {
+           pPrinter->Line->Columns[0]->Width =
+           pPrinter->Width - pPrinter->Line->Columns[1]->Width - length;
+        }
+        else
+        {
+            pPrinter->Line->Columns[0]->Width =
+            pPrinter->Width - pPrinter->Line->Columns[1]->Width;
+        }
 
         if((*m)->OrderType == CanceledOrder)
         {
@@ -1056,33 +1075,7 @@ TPrintSection::PrintProductTotalsWithUnitPrice(TReqPrintJob *pj)
 		pPrinter->AddLine();
 	}
 }
-  /*
-void TPrintSection::PrintCustomerName(TReqPrintJob *PrintJob)
-{
-	AnsiString CustomerName = "";
-	if (PrintJob->Transaction->CustomerOrder.first == "" || PrintJob->Transaction->CustomerOrder.second == "")
-	{
-		CustomerName += PrintJob->Transaction->CustomerOrder.second + PrintJob->Transaction->CustomerOrder.first;
-	}
-	else
-	{
-		CustomerName += PrintJob->Transaction->CustomerOrder.second + " - " + PrintJob->Transaction->CustomerOrder.first;
-	}
-	pPrinter->Line->ColCount = 1;
-	pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
-	pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-	pPrinter->Line->Columns[0]->Alignment = taCenter;
-	if (CustomerName != "" && TGlobalSettings::Instance().CaptureCustomerName)
-	{
-		pPrinter->Line->Columns[0]->Text = CustomerName;
-		pPrinter->AddLine();
-	}
-	else
-	{
-		Empty = true;
-	}
-}
-  */
+
 void TPrintSection::PrintHotelCustomerName(TReqPrintJob *PrintJob)
 {   /************MM-5048*****Add line to get updated value**********************/
   TSectionInstructStorage::iterator i = ThisInstruction;
@@ -2463,10 +2456,10 @@ void TPrintSection::PrintPointsInformation(TReqPrintJob *PrintJob)
            ||PrintJob->Transaction->Membership.MemberSource ==  emsBarcode)
 		{
 
-             if(PrintJob->Transaction->Membership.Member.MemberCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled &&
+             if(TGlobalSettings::Instance().LoyaltyMateEnabled &&
                 !TGlobalSettings::Instance().IsPOSOffline)
                 {
-                   PrintJob->Transaction->Membership.Member.Points.ClearBySource(pasDatabase) ;
+                    PrintJob->Transaction->Membership.Member.Points.ClearBySource(pasDatabase) ;
                       // Putting in the Points Earned.
                     TPointsTypePair typepair1( pttEarned,ptstLoyalty );
                     TPointsType type1( pasDatabase, typepair1, pesExported);
@@ -2502,8 +2495,6 @@ void TPrintSection::PrintPointsInformation(TReqPrintJob *PrintJob)
 			{
 				pPrinter->Add("First Visit Reward|" + FormatFloat("0.00", TGlobalSettings::Instance().FirstVisitPoint));
 			}
-			pPrinter->Add("Current Year Points|" + FormatFloat("0.00", TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints));
-
 
 			if (TGlobalSettings::Instance().UseTierLevels && PrintJob->Transaction->Membership.Member.TierLevel > 0)
 			{
@@ -2520,8 +2511,15 @@ void TPrintSection::PrintPointsInformation(TReqPrintJob *PrintJob)
 					pPrinter->Add("Points Refunded|" + FormatFloat("0.00", PrintJob->Transaction->Membership.Member.Points.getCurrentPointsPurchased()));
 				}
 			}
-			pPrinter->Add("Points New Total|" + FormatFloat("0.00", PrintJob->Transaction->Membership.Member.Points.getPointsBalance()));
-
+            if(PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRefunded() != 0)
+            {
+                double points_new_total = PrintJob->Transaction->Membership.Member.Points.getPointsBalance(pasDatabase) + PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRefunded();
+                pPrinter->Add("Points New Total|" + FormatFloat("0.00", points_new_total));
+            }
+            else
+            {
+                pPrinter->Add("Points New Total|" + FormatFloat("0.00", PrintJob->Transaction->Membership.Member.Points.getPointsBalance()));
+            }
 			if(TGlobalSettings::Instance().EnableSeperateEarntPts)
 			{
 				pPrinter->Add("  - Earned Balance   " + FormatFloat("0.00", PrintJob->Transaction->Membership.Member.Points.getPointsBalance(ptstLoyalty)) );
@@ -2541,6 +2539,26 @@ void TPrintSection::PrintPointsInformation(TReqPrintJob *PrintJob)
 	{
 		Empty = true;
 	}
+}
+
+void TPrintSection::PrintCurrentYearPts(TReqPrintJob *PrintJob)
+{
+	pPrinter->Line->FontInfo = ThisInstruction->FontInfo;
+	pPrinter->Line->ColCount = 2;
+	pPrinter->Line->Columns[0]->Width = pPrinter->Width * 2 / 3;
+	pPrinter->Line->Columns[1]->Width = pPrinter->Width - pPrinter->Line->Columns[0]->Width;
+	if (PrintJob->Transaction->Membership.Member.ContactKey != 0)
+	{
+        if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints > 0)
+        {
+            pPrinter->Add("Current Year Points|" + FormatFloat("0.00", TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints)); //GetEarnedPointsForCurrentYear(PrintJob->Transaction->DBTransaction, PrintJob->Transaction->Membership.Member)));
+        }
+        else
+        {
+            pPrinter->Add("Current Year Points|" + FormatFloat("0.00", TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetEarnedPointsForCurrentYear(PrintJob->Transaction->DBTransaction, PrintJob->Transaction->Membership.Member)));
+        }
+
+    }
 }
 
 void TPrintSection::PrintAvailableWeight(TReqPrintJob *PrintJob)
@@ -2671,6 +2689,7 @@ void TPrintSection::PrintItem(TReqPrintJob *PrintJob)
 				{
 					ItemLineSize = CurrentOrder->Size;
 				}
+
 				if (UpperCase(ItemLineSize) == "DEFAULT")
 				ItemLineSize = "";
 
@@ -3381,9 +3400,17 @@ void TPrintSection::PrintTwoLinesItemTotal(TReqPrintJob *PrintJob)     // print 
             pPrinter->Line->Columns[1]->Text = "";
             pPrinter->AddLine();
         }
-		pPrinter->Line->Columns[1]->Width = ItemPrice.Length() + 1;
-		pPrinter->Line->Columns[0]->Width = pPrinter->Width - ItemPrice.Length() - 1;
+        int length = GetItemLength(InitialOrder->Item, InitialOrder->Item.Length());
 
+		pPrinter->Line->Columns[1]->Width = ItemPrice.Length() + 1;
+        if(length > 0)
+        {
+           pPrinter->Line->Columns[0]->Width = pPrinter->Width - pPrinter->Line->Columns[1]->Width - length;
+        }
+        else
+        {
+           pPrinter->Line->Columns[0]->Width = pPrinter->Width - ItemPrice.Length() - 1;
+        }
 		TStringList *NameList = new TStringList;
 		PrepareName(pPrinter->Line->Columns[0]->Width,ItemName,NameList);
 
@@ -3498,8 +3525,19 @@ void TPrintSection::PrintTwoLinesItemsTotal(TReqPrintJob *PrintJob)     // print
 				pPrinter->AddLine();
 			}
 
-			pPrinter->Line->Columns[1]->Width = ItemPrice.Length() + 1;
-			pPrinter->Line->Columns[0]->Width = pPrinter->Width - ItemPrice.Length() - 1;
+            int length = GetItemLength(CurrentOrderBundle->ItemLine, CurrentOrderBundle->ItemLine.Length());
+            pPrinter->Line->Columns[1]->Width = ItemPrice.Length() + 1;
+            if(length > 0)
+            {
+               pPrinter->Line->Columns[0]->Width = pPrinter->Width - pPrinter->Line->Columns[1]->Width - length;
+            }
+            else
+            {
+               pPrinter->Line->Columns[0]->Width = pPrinter->Width - ItemPrice.Length() - 1;
+            }
+
+			//pPrinter->Line->Columns[1]->Width = ItemPrice.Length() + 1;
+			//pPrinter->Line->Columns[0]->Width = pPrinter->Width - ItemPrice.Length() - 1;
 
 			TStringList *NameList = new TStringList;
 			PrepareName(pPrinter->Line->Columns[0]->Width,ItemName,NameList);
@@ -3818,16 +3856,15 @@ void TPrintSection::PrintTotalDicountsName(TReqPrintJob *PrintJob)
 			ffNumber,
 			CurrencyDecimals);
 
-			pPrinter->Line->Columns[1]->Width = Adjustment.Length() + 1;
-			pPrinter->Line->Columns[0]->Width = pPrinter->Width - Adjustment.Length() - 1;
+            if(Adjustment != "0.00")
+            {
+                pPrinter->Line->Columns[1]->Width = Adjustment.Length() + 1;
+                pPrinter->Line->Columns[0]->Width = pPrinter->Width - Adjustment.Length() - 1;
 
-			pPrinter->Line->Columns[0]->Text = itDiscountTotals->first;
-			pPrinter->Line->Columns[1]->Text = Adjustment;
-			//            pPrinter->Line->Columns[1]->Text = CurrToStrF(
-			//                                                    RoundToNearest(itDiscountTotals->second, 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
-			//                                                    ffNumber,
-			//                                                    CurrencyDecimals);
-			pPrinter->AddLine();
+                pPrinter->Line->Columns[0]->Text = itDiscountTotals->first;
+                pPrinter->Line->Columns[1]->Text = Adjustment;
+                pPrinter->AddLine();
+            }
 		}
 
 		// Senior Citizen Discount (SCD) applied
@@ -3950,13 +3987,17 @@ void TPrintSection::PrintTotalDicountDetails(TReqPrintJob *PrintJob)
 			RoundToNearest(itDiscounts->second, 0.01, MidPointRoundsDown ),
 			ffNumber,
 			CurrencyDecimals);
-			pPrinter->Line->Columns[1]->Width = Adjustment.Length() + 1;
-			pPrinter->Line->Columns[0]->Width = pPrinter->Width - Adjustment.Length() - 1;
+            if(Adjustment != "0.00")
+            {
+                pPrinter->Line->Columns[1]->Width = Adjustment.Length() + 1;
+                pPrinter->Line->Columns[0]->Width = pPrinter->Width - Adjustment.Length() - 1;
 
-			pPrinter->Line->Columns[0]->Text = Discription;
-			pPrinter->Line->Columns[1]->Text = Adjustment;
-			pPrinter->AddLine();
-			Empty = false;
+                pPrinter->Line->Columns[0]->Text = Discription;
+                pPrinter->Line->Columns[1]->Text = Adjustment;
+                pPrinter->AddLine();
+                Empty = false;
+            }
+
 		}
 	}
 }
@@ -4892,20 +4933,22 @@ void TPrintSection::PrintItemsTotal(TReqPrintJob *PrintJob)
                 pPrinter->Line->Columns[1]->Text = "";
 				pPrinter->AddLine();
 			}
+            int item_len = GetItemLength(CurrentOrderBundle->ItemLine, CurrentOrderBundle->ItemLine.Length());
 
 			pPrinter->Line->Columns[1]->Width = ItemPrice.Length() + 1;
-			pPrinter->Line->Columns[0]->Width = pPrinter->Width - ItemPrice.Length() - 1;
-
+            if(item_len > 0)
+            {
+               pPrinter->Line->Columns[0]->Width = pPrinter->Width -  pPrinter->Line->Columns[1]->Width - item_len;
+            }
+            else
+            {
+               pPrinter->Line->Columns[0]->Width = pPrinter->Width -  ItemPrice.Length() - 1;
+            }
 			pPrinter->Line->Columns[0]->Text = ItemName;
 			pPrinter->Line->Columns[1]->Text = (PrintJob->Transaction->TypeOfSale == NonChargableSale) ? UnicodeString::UnicodeString() : ItemPrice;
 			pPrinter->AddLine();
 
             PrintManuallyEnteredWeightString(CurrentOrderBundle,pPrinter);
-
-
-        
-
-
 			// change.........
 			/*TStringList *NameList = new TStringList;
 						PrepareName(pPrinter->Line->Columns[0]->Width,ItemName,NameList);
@@ -4995,6 +5038,20 @@ void TPrintSection::PrintItemsTotal(TReqPrintJob *PrintJob)
 		}
 		delete OrderBundle;
 	}
+}
+
+
+int TPrintSection::GetItemLength(UnicodeString itemname, int itemlength)
+{
+    int length = 0;
+    std::string item = itemname.t_str();
+    int len = item.length();
+
+    if(len > itemlength)
+    {
+        length = len - itemlength;
+    }
+    return length;
 }
 
 
@@ -6235,6 +6292,29 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 				ffNumber,
 				CurrencyDecimals));
 			}
+            else if(SubPayment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled)
+            {
+                pPrinter->Add(SubPayment->Name + "|" + CurrToStrF(
+				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
+				ffNumber,
+				CurrencyDecimals));
+
+                AnsiString vouchercode = "";
+                bool isGiftCardUsed = false;
+                if(SubPayment->Name == "Gift Card")
+                  {
+                    vouchercode = "Gift Card #" + PrintJob->Transaction->RedeemGiftVoucherInformation->VoucherNumber;
+                    isGiftCardUsed = true;
+                  }
+                  else if(SubPayment->Name == "Voucher")
+                  {
+                    vouchercode = "Voucher #" + PrintJob->Transaction->RedeemPocketVoucherInformation->VoucherNumber;
+                  }
+                  pPrinter->Add(vouchercode);
+                  if(isGiftCardUsed)
+                     pPrinter->Add("Balance " + CurrToStr( PrintJob->Transaction->RedeemGiftVoucherInformation->GiftVoucherAmount -
+                                                           PrintJob->Transaction->RedeemGiftVoucherInformation->RedeemedAmount));
+            }
 			else
 			{
 				pPrinter->Add(SubPayment->Name + "|" + CurrToStrF(
@@ -7701,8 +7781,20 @@ void TPrintSection::printItemScales( TReqPrintJob *PrintJob )
 				CurrencyDecimals);
 			}
 
+            int item_len = GetItemLength(CurrentOrderBundle->ItemLine, CurrentOrderBundle->ItemLine.Length());
+
 			pPrinter->Line->Columns[1]->Width = ItemPrice.Length() + 1;
-			pPrinter->Line->Columns[0]->Width = pPrinter->Width - ItemPrice.Length() - 1;
+            if(item_len > 0)
+            {
+               pPrinter->Line->Columns[0]->Width = pPrinter->Width -  pPrinter->Line->Columns[1]->Width - item_len;
+            }
+            else
+            {
+               pPrinter->Line->Columns[0]->Width = pPrinter->Width -  ItemPrice.Length() - 1;
+            }
+
+			//pPrinter->Line->Columns[1]->Width = ItemPrice.Length() + 1;
+			//pPrinter->Line->Columns[0]->Width = pPrinter->Width - ItemPrice.Length() - 1;
 
 			pPrinter->Line->Columns[0]->Text = ItemName;
 			pPrinter->Line->Columns[1]->Text = (PrintJob->Transaction->TypeOfSale == NonChargableSale) ? UnicodeString::UnicodeString() : ItemPrice;

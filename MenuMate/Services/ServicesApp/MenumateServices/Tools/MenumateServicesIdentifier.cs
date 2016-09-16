@@ -8,7 +8,7 @@ namespace MenumateServices
         PosIntegration = 1,
         Reservations,
         EFTPosIntegration,
-        XeroIntegration,
+        AccountingIntegration,
         WebMate,
         LoyaltyMate,
         ChefMate,
