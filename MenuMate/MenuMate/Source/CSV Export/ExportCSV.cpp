@@ -36,8 +36,12 @@ void TExportCSV::PostDateToCSV()
     //calling existing mall function for insert Data into CSV
     exportCSV.GenerateTXT(DataToWrite, CSVPath, "ZTXTDATA");
 
-    TCSVExportClient *csvClient = new TCSVExportClient();
-        csvClient->SendPointDetailsToCSVExport(CSVPath);
+
+    if(TGlobalSettings::Instance().CSVExportIP != "" && (TGlobalSettings::Instance().CSVExportIP).LowerCase() != "localhost" && TGlobalSettings::Instance().CSVExportIP != "127.0.0.1")
+    {
+        TCSVExportClient *csvClient = new TCSVExportClient();
+            csvClient->SendPointDetailsToCSVExport(CSVPath);
+    }
 }
 
 //------------------------------------------------------------------------
