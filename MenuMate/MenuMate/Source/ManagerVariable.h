@@ -193,7 +193,9 @@ enum vmVariables
     vmIsXeroEnabled,
     vmIsMYOBEnabled,
     vmConsolidateReportPaths,
-    vmEnableConsolidatedReport
+    vmEnableConsolidatedReport,
+    ///PechTree CSV
+    vmCSVPath = 9500, vmIsEnabledPeachTree, vmCSVExportIP
 };
 
 // ---------------------------------------------------------------------------

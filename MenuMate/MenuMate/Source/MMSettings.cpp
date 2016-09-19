@@ -352,6 +352,9 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().ShowDarkBackground = TManagerVariable::Instance().GetBool(DBTransaction, vmShowDarkBackgroundInPOS, false);        
 	    TGlobalSettings::Instance().IsXeroEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsXeroEnabled, false);
         TGlobalSettings::Instance().IsMYOBEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsMYOBEnabled, false);
+        TGlobalSettings::Instance().IsEnabledPeachTree = TManagerVariable::Instance().GetBool(DBTransaction, vmIsEnabledPeachTree, false);
+        TGlobalSettings::Instance().CSVPath = TManagerVariable::Instance().GetStr(DBTransaction, vmCSVPath, "");
+        TGlobalSettings::Instance().CSVExportIP = TManagerVariable::Instance().GetStr(DBTransaction, vmCSVExportIP, "");
 
 }
 

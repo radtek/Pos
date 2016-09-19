@@ -449,6 +449,9 @@ public:
     bool ItemSearch;
     bool IsCloudSyncedForDiscount;
     bool ShowDarkBackground;
+    UnicodeString CSVPath;
+    bool IsEnabledPeachTree;
+    UnicodeString CSVExportIP;
 };
 
 #endif

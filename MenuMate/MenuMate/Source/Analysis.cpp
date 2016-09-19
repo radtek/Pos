@@ -57,6 +57,7 @@
 #include "MagicMemoriesSfService.h"
 #include "MagicMemoriesSfProgressMonitor.h"
 #include "SalesForceCommAtZed.h"
+#include "ExportCSV.h"
 
 #include <string>
 #include <map>
@@ -3357,6 +3358,13 @@ Zed:
             }
 			if (CompleteZed)
 			   DefaultItemQuantities(DBTransaction);
+
+            //create CSV
+            if(TGlobalSettings::Instance().IsEnabledPeachTree && CompleteZed)
+            {
+                TExportCSV exportCSV;
+                exportCSV.PostDateToCSV();
+            }
 
 			DBTransaction.Commit();
             if(TGlobalSettings::Instance().PostZToAccountingSystem && CompleteZed && XeroInvoiceDetails.size() > 0 )

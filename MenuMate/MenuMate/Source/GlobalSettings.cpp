@@ -363,5 +363,8 @@ TGlobalSettings::TGlobalSettings()
     // MallExport Additional Settings
     ConsolidateReportPaths = "";
     EnableConsolidatedReport = false;
+    CSVPath = "";
+    IsEnabledPeachTree = false;
+    CSVExportIP = "";
 }
 
