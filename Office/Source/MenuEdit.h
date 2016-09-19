@@ -1012,6 +1012,9 @@ public:		// User declarations
        int allPriceLevels;
     std::map<int,Menu::TPriceLevelsName> PriceLevelsName;
     void UpdateItemForForcedOptions();
+    //TStringList *AllSizes;
+    //std::map<AnsiString, int> AllSizesForMenu;
+    std::map<AnsiString, std::pair<int, bool> > AllSizesForMenu;
 };
 //---------------------------------------------------------------------------
 struct TPrinterOptions

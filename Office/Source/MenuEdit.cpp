@@ -2236,7 +2236,22 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 		chbSetMenuMaster->OnClick						= NULL;
 		chbSetMenuItem->OnClick							= NULL;
 		bool weighed = false;
-		TTreeNode *SizesNode = tvMenu->Items->GetFirstNode()->Item[SIZES_INDEX];
+
+        /*if()
+        {
+
+        }*/
+
+       std::map<AnsiString, std::pair<int, bool> >::iterator it = AllSizesForMenu.find(ItemSizeData->LongDescription);
+
+       if(it != AllSizesForMenu.end())
+       {
+          if(it->second.second)
+          {
+             weighed = true;
+          }
+       }
+		/*TTreeNode *SizesNode = tvMenu->Items->GetFirstNode()->Item[SIZES_INDEX];
 		for (int i=0; i<SizesNode->Count; i++)
 		{
 			TSizeNode *SizeData = (TSizeNode *)SizesNode->Item[i]->Data;
@@ -2246,10 +2261,9 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 				{
 					weighed = true;
 				}
-
 				break;
 			}
-		}
+		}*/
 
 		GroupBox1->Caption = "Prices";
 
@@ -2657,10 +2671,56 @@ void TfrmMenuEdit::RefreshItem(TItemNode *ItemData, bool isItemTranfer)
 			}
 		}
 	}
-	std::auto_ptr<TStringList> AllSizes(new TStringList());
-	GetAllSizes(AllSizes.get());
+	///std::auto_ptr<TStringList> AllSizes(new TStringList());
+	//GetAllSizes(AllSizes.get());
 
-	for (int i=0; i<AllSizes->Count; i+=5)
+    //std::map<AnsiString, int>::iterator it;
+    //std::map<AnsiString, TForcedOption>::iterator it = ItemData->ForcedOptions[group_number].find(LongDescription);
+    /*if  (it != ItemData->ForcedOptions[group_number].end())
+    {
+        ItemData->ForcedOptions[group_number].erase(it);
+    }*/
+
+    for(std::map<AnsiString, std::pair<int, bool> >::iterator it = AllSizesForMenu.begin(); it != AllSizesForMenu.end(); ++it)
+    {
+       bool Used = false;
+       for (int j=0; j<ItemData->Owner->Count; j++)
+       {
+           TItemSizeNode *UsedItemSizeData = (TItemSizeNode *)ItemData->Owner->Item[j]->Data;
+           if(it->first == UsedItemSizeData->LongDescription)
+           {
+              Used = true;
+              break;
+           }
+           //it = AllSizesForMenu.find(UsedItemSizeData->LongDescription);
+       }
+       if(!Used)
+       {
+          lbSizesUnused->Items->AddObject(it->first, (TObject*)it->second.first);
+       }
+    }
+
+    /*bool Used = false;
+    for(int i = 0; i < AllSizesForMenu.size(); i += 5)
+    {
+        for (int j=0; j<ItemData->Owner->Count; j++)
+        {
+            TItemSizeNode *UsedItemSizeData = (TItemSizeNode *)ItemData->Owner->Item[j]->Data;
+            it = AllSizesForMenu.find(UsedItemSizeData->LongDescription);
+            if (it != AllSizesForMenu.end())
+            {
+                Used = true;
+                break;
+                //lbSizesUnused->Items->AddObject(it->, AllSizes->Objects[i]);
+            }
+        }
+        if (!Used)
+        {
+            lbSizesUnused->Items->AddObject(it, AllSizes->Objects[i]);
+        }
+   }*/
+
+	/*for (int i=0; i<AllSizes->Count; i+=5)
 	{
 		bool Used = false;
 		for (int j=0; j<ItemData->Owner->Count; j++)
@@ -2674,10 +2734,9 @@ void TfrmMenuEdit::RefreshItem(TItemNode *ItemData, bool isItemTranfer)
 		}
 		if (!Used)
 		{
-			lbSizesUnused->Items->AddObject(AllSizes->Strings[i],
-			AllSizes->Objects[i]);
+			lbSizesUnused->Items->AddObject(AllSizes->Strings[i], AllSizes->Objects[i]);
 		}
-	}
+	}*/
 	sgItem->ColWidths[0] = sgItem->ClientWidth / 3;
   //	sgItem->ColWidths[1] = (sgItem->ClientWidth - sgItem->ColWidths[0] - sgItem->GridLineWidth) / 2;
  //	sgItem->ColWidths[2] = sgItem->ClientWidth - sgItem->ColWidths[0] - sgItem->ColWidths[1] -
@@ -3171,12 +3230,16 @@ void TfrmMenuEdit::RefreshServingCourse(TServingCourseNode *ServingData)  //cww
 void TfrmMenuEdit::RefreshSizes(TMenuNode *SizesData)
 {
 	lbAvailableSizes->Items->Clear();
-	for (int i=0; i<SizesData->Owner->Count; i++)
+    for(std::map<AnsiString, std::pair<int, bool> >::iterator it = AllSizesForMenu.begin(); it != AllSizesForMenu.end(); ++it)
+    {
+        lbAvailableSizes->Items->Add(it->first);
+    }
+	/*for (int i=0; i<SizesData->Owner->Count; i++)
 	{
 		TTreeNode *SizeNode = SizesData->Owner->Item[i];
 		TSizeNode *SizeData = (TSizeNode *)SizeNode->Data;
 		lbAvailableSizes->Items->Add(SizeData->LongDescription);
-	}
+	}*/
 }
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::RefreshSize(TSizeNode *SizeData)
@@ -3194,6 +3257,7 @@ void TfrmMenuEdit::RefreshSize(TSizeNode *SizeData)
 	{
 		chbSizeWeighed->OnClick = chbSizeWeighedClick;
 	}
+
 }
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::RefreshCategories(TCategoryGroupNode *CategoriesData)
@@ -5636,13 +5700,13 @@ void __fastcall TfrmMenuEdit::btnCheckClick(TObject *Sender)
 			}
 		}
 
-		std::set<AnsiString> allSizes;
+		/*std::set<AnsiString> allSizes;
 		TTreeNode *SizesNode = tvMenu->Items->GetFirstNode()->Item[SIZES_INDEX];
 		for (int i=0; i<SizesNode->Count; i++)
 		{
 			TSizeNode *SizeData = (TSizeNode *)SizesNode->Item[i]->Data;
 			allSizes.insert(SizeData->LongDescription);
-		}
+		}*/
 
 		TTreeNode *ServingCoursesNode  = tvMenu->Items->GetFirstNode()->Item[SERVING_COURSES_INDEX];
 		std::map<AnsiString /*Name*/, bool /*Enabled*/> servingCoursesLookup;
@@ -5775,7 +5839,7 @@ void __fastcall TfrmMenuEdit::btnCheckClick(TObject *Sender)
 					{
 						TTreeNode *ItemSizeNode = ItemNode->Item[k];
 						TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
-						if (ItemSizeData->LongDescription == "" || allSizes.find(ItemSizeData->LongDescription) == allSizes.end())//!FindCategory(ItemSizeData->Category, NULL, NULL, &deleted))
+						if (ItemSizeData->LongDescription == "" || AllSizesForMenu.find(ItemSizeData->LongDescription) == AllSizesForMenu.end()) //allSizes.find(ItemSizeData->LongDescription) == allSizes.end())//!FindCategory(ItemSizeData->Category, NULL, NULL, &deleted))
 						{
 							ErrorCount++;
 							int Index = lbWarnings->Items->AddObject("[Error] N" + IntToStr(ItemSizeData->Owner->AbsoluteIndex) + ": Item size doesen't exist.", ItemSizeData);
@@ -11048,6 +11112,8 @@ Menu::TServingCoursesInfo *ServingCoursesInfo)  // cww
 		SizeData->Weighed		  = SizesInfo->Sizes[i].Weighed;
 		SizeData->Size_ID		  = SizesInfo->Sizes[i].Size_ID;
 		SizeData->PalmID		  = SizesInfo->Sizes[i].PalmID;
+        //AllSizesForMenu[SizeData->LongDescription] = SizeData->Key;
+        AllSizesForMenu.insert(std::make_pair(SizeData->LongDescription, std::make_pair(SizeData->Key, SizeData->Weighed)));
 	}
 	for (unsigned i=0; i<CategoriesInfo->CategoryGroups.size(); i++)
 	{
