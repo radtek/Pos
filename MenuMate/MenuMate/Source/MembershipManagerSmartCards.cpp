@@ -24,6 +24,9 @@
 #include "ManagerLoyaltyMate.h"
 #include "MMTouchKeyboard.h"
 #include "LoyaltyMateOperationDialogBox.h"
+#include "DBTab.h"
+#include "EditCustomer.h"
+#include "DBGroups.h"
 
 // ---------------------------------------------------------------------------
 
@@ -1785,35 +1788,34 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
 			"Does this member want to use LoyaltyMate?",
 			"Loyaltymate Registration",
 			MB_ICONQUESTION + MB_YESNO) == IDYES;
-			if(wantToUseLoyaltyMate)
+            if(wantToUseLoyaltyMate)
 			{
-				bool emailValid = SmartCardContact.ValidEmail();
-                std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(Screen->ActiveForm));
-				frmTouchKeyboard->AllowCarriageReturn = false;
-				frmTouchKeyboard->StartWithShiftDown = false;
-				frmTouchKeyboard->Caption = "Enter Valid Email Address for LoyaltyMate";
-				frmTouchKeyboard->KeyboardText = SmartCardContact.EMail;
-				if (!emailValid && frmTouchKeyboard->ShowModal() == mrOk)
-				{
-					SmartCardContact.EMail = frmTouchKeyboard->KeyboardText;
-					emailValid = SmartCardContact.ValidEmail();
-					while (!emailValid && MessageBox("Entered email address is invalid.", "Invalid Email", MB_RETRYCANCEL) == IDRETRY)
-					{
-						if (frmTouchKeyboard->ShowModal() == mrOk)
-						{
-							SmartCardContact.EMail = frmTouchKeyboard->KeyboardText;
-						}
-						else
-						{
-							break;
-						}
-						emailValid = SmartCardContact.ValidEmail();
-					}
-				}
-
-				if(emailValid)
-				{
-                    if(SmartCardContact.EMail.Pos("GiftCard") == 1)
+               AnsiString message = "For Loyaltymate, you will need to update your ";
+               bool updateMember = false;
+               if(SmartCardContact.ValidateMandatoryField(message))
+               {
+                  updateMember = true;
+               }
+               else
+               {
+                   MessageBox(message.SubString(1, message.Length()-1) + ".", "Message", MB_ICONINFORMATION + MB_OK);
+                   std::auto_ptr < TfrmEditCustomer >
+                   frmEditCustomer(TfrmEditCustomer::Create(Screen->ActiveForm));
+                   frmEditCustomer->Editing = true;
+                   frmEditCustomer->Info = SmartCardContact;
+                   frmEditCustomer->MemberType = SmartCardContact.MemberType;
+                   if(frmEditCustomer->ShowModal() == mrOk)
+                   {
+                      updateMember = true;
+                      SmartCardContact = frmEditCustomer->Info;
+                      MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+                      DBTransaction.Commit();
+                      DBTransaction.StartTransaction();
+                   }
+               }
+               if(updateMember)
+               {
+                   if(SmartCardContact.EMail.Pos("GiftCard") == 1)
                     {
                       SmartCardContact.MemberType = 2;
                     }
@@ -1830,7 +1832,7 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
 						smartCardUpdateRequired = true;
 						storeCloudUUIDInDB = true;
 					}
-				}
+               }
 			}
 			else
 			{
@@ -2330,7 +2332,33 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
                                                                  MB_ICONQUESTION + MB_YESNO) == IDYES;
                         if(wantToUseLoyaltyMate)
                         {
-                            bool memberCreationSuccess = createMemberOnLoyaltyMate(ManagerSyndicateCode.GetDefaultSyndCode(),UserInfo);
+                           AnsiString message = "For Loyaltymate, you will need to update your ";
+                           bool updateMember = false;
+                           if(UserInfo.ValidateMandatoryField(message))
+                           {
+                              updateMember = true;
+                           }
+                           else
+                           {
+                               MessageBox(message.SubString(1, message.Length()-1) + ".", "Message", MB_ICONINFORMATION + MB_OK);
+                               std::auto_ptr < TfrmEditCustomer >
+                               frmEditCustomer(TfrmEditCustomer::Create(Screen->ActiveForm));
+                               frmEditCustomer->Editing = true;
+                               frmEditCustomer->Info = UserInfo;
+                               frmEditCustomer->MemberType = UserInfo.MemberType;
+                               if(frmEditCustomer->ShowModal() == mrOk)
+                               {
+                                  updateMember = true;
+                                  UserInfo = frmEditCustomer->Info;
+                                  MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
+                                  DBTransaction.Commit();
+                                  DBTransaction.StartTransaction();
+                               }
+                           }
+                           if(updateMember)
+                           {
+                               bool memberCreationSuccess = createMemberOnLoyaltyMate(ManagerSyndicateCode.GetDefaultSyndCode(),UserInfo);
+                           }
                         }
                     }
                 }
