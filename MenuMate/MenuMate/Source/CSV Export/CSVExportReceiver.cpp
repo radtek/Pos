@@ -86,10 +86,11 @@ void __fastcall TCSVExportReceiver::OnExecute(TIdContext *AContext)
 		AContext->Connection->IOHandler->ReadTimeout = 5000;
         TMemoryStream* recStream = new TMemoryStream;
         AContext->Connection->IOHandler->ReadStream(recStream, -1, false);
+        CSVDir = CSVDir + "\\" ;
         if(recStream->Size > 0)
         {
             if( FindFirst( CSVDir + "*.CSV", iAttributes, sr ) == 0 )
-            {
+	        {
                 do
                 {
                     if (sr.Attr & iAttributes)
@@ -99,7 +100,7 @@ void __fastcall TCSVExportReceiver::OnExecute(TIdContext *AContext)
                 }
                 while(FindNext(sr) == 0);
             }
-           AnsiString FileName = CSVDir + "\\" +  TerminalName + Now().FormatString("ddmmyyyyhhnnss") + Format;
+           AnsiString FileName = CSVDir +  TerminalName + Now().FormatString("ddmmyyyyhhnnss") + Format;
            recStream->SaveToFile(FileName);
         }
         delete recStream;
