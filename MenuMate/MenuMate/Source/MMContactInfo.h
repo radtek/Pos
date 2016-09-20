@@ -115,6 +115,8 @@ public:
     UnicodeString LatestLoginName;
     int PointRule;
     bool IsFirstVisitRewarded;
+
+    bool ValidateMandatoryField(AnsiString& message);
 protected:
 	TMMContactInfo( UnicodeString inName );
 };

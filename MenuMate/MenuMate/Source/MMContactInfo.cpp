@@ -319,3 +319,39 @@ bool TMMContactInfo::IsCodePresent()
 
 
 }
+
+bool TMMContactInfo::ValidateMandatoryField(AnsiString& message)
+{
+    bool isvalid = false;
+    int count = 0;
+    if(Name == "")
+    {
+       message = message + "First Name,";
+       count++;
+    }
+    if(Surname == "")
+    {
+       message = message + "Last Name,";
+       count++;
+    }
+    if(!ValidEmail())
+    {
+       message = message + "Email,";
+       count++;
+    }
+    if(Mobile != "" && Mobile.Length() < 5)
+    {
+       message = message + "Mobile Phone,";
+       count++;
+    }
+    if(Phone != "" && Phone.Length() < 5)
+    {
+       message = message + "Phone,";
+       count++;
+    }
+    if(count == 0)
+    {
+         isvalid = true;
+    }
+    return isvalid;
+}
