@@ -80,6 +80,7 @@ class TServingCourseNode;
 class TPriceLevelsName;
 
 class i_generator;
+class TAvailableMenuSize;
 
 //class TSizesNode;
 //---------------------------------------------------------------------------
@@ -1014,7 +1015,9 @@ public:		// User declarations
     void UpdateItemForForcedOptions();
     //TStringList *AllSizes;
     //std::map<AnsiString, int> AllSizesForMenu;
-    std::map<AnsiString, std::pair<int, bool> > AllSizesForMenu;
+    //std::map<AnsiString, std::pair<int, bool> > AllSizesForMenu;
+    std::map<AnsiString, TAvailableMenuSize > AllSizesForMenu;
+    TStringList *ServingCoursesList; 
 };
 //---------------------------------------------------------------------------
 struct TPrinterOptions
@@ -1471,6 +1474,21 @@ public:
 	int MaxSelect;
 	bool OptionGroupSkip;
 };
+
+
+class TAvailableMenuSize
+{
+public:
+	__int32    Key;               // DB Key
+	AnsiString LongDescription;
+	WideString KitchenName;
+    AnsiString HandheldName;
+    AnsiString ReceiptName;
+	bool       Weighed;
+	int		   Size_ID;
+	int		   PalmID;
+};
+
 
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmMenuEdit *frmMenuEdit;

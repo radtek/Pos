@@ -195,7 +195,6 @@ __int32 TSaveMenu::SaveItem( __int32 inCourseHandle, __int32 inKey, AnsiString i
       addElement( itemElem, "ForcedSides",   newElem );
       addElement( itemElem, "ForcedOptions", newElem );
       addElement( itemElem, "ItemSizes",     newElem );
-
       //:::::::::::::::::::::::::::::::::
 
       return ( __int32 )itemElem;
@@ -260,6 +259,7 @@ void TSaveMenu::SaveOption( __int32 inCourseHandle, __int32 inKey, AnsiString in
       setNodeAttr( optionElem,  "printFont",         IntToStr( inPrintFont ) );
       setNodeAttr( optionElem,  "printDoubleWidth",  inPrintDoubleWidth ? "true" : "false" );
       setNodeAttr( optionElem,  "printDoubleHeight", inPrintDoubleHeight ? "true" : "false" );
+      //optionElem->Clear();
     }
     catch( ... )
     {
@@ -285,6 +285,7 @@ void TSaveMenu::SaveForcedSide( __int32 inItemHandle, __int32 inKey, __int32 inI
       setNodeAttr( sideElem, "groupNumber",   inGroupNumber );
       setNodeAttr( sideElem, "maxSelect",     inMaxSelect );
       setNodeAttr( sideElem, "sideGroupSkip", inSideGroupSkip ? "true" : "false" );
+      //sideElem->Clear();
     }
     catch( ... )
     {
@@ -305,6 +306,7 @@ void TSaveMenu::SaveMenuItemForcedOption( __int32 inItemHandle, __int32 inKey, _
         setNodeAttr( fisOptionElem, "optionFKey",  IntToStr( inOptionFKey ) );
         setNodeAttr( fisOptionElem, "description", convertUTF8CharToWideString(inDescription));
         setNodeAttr( fisOptionElem, "groupNumber", inGroupNumber );
+        //fisOptionElem->Clear();
     }
     catch( ... )
     {
@@ -337,7 +339,8 @@ __int32 TSaveMenu::SaveItemSize( __int32 inItemHandle, __int32 inKey, __int32 in
         TiXmlElement *sizeElem;
 
         //:::::::::::::::::::::::::::::::::
-
+        //sizeElem->Clear();
+        
         addElement(  sizesElem, "ItemSize",                 sizeElem );
         setNodeAttr( sizeElem,  "key",                      IntToStr( inKey ) );
         setNodeAttr( sizeElem,  "sizeFKey",                 IntToStr( inSizeFKey ) );
@@ -415,6 +418,7 @@ void TSaveMenu::SaveBCategory( __int32 inItemSizeHandle, __int32 inKey, AnsiStri
         addElement( bCategoriesElem, "BreakdownCategory", bCategoryElem );
         setNodeAttr( bCategoryElem,  "key",         IntToStr( inKey ) );
         setNodeAttr( bCategoryElem,  "description", convertUTF8CharToWideString(inName));
+
     }
     catch( ... )
     {
@@ -485,15 +489,12 @@ bool TSaveMenu::Commit()
 TiXmlDocument* TSaveMenu::createXMLMenuDoc( __int32 inKey, AnsiString inMenuVersion )
 {
     TiXmlDocument* result = new TiXmlDocument();
-
     //::::::::::::::::::::::::::::::
 
     // add declaration
 	TiXmlDeclaration *decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
-	result->LinkEndChild( decl );
-
-    //::::::::::::::::::::::::::::::
-
+	result->LinkEndChild( decl );               
+    //::::::::::::::::::::::::::::::  
     return result;
 }
 //---------------------------------------------------------------------------
@@ -543,11 +544,9 @@ TiXmlElement* findChildElement( TiXmlElement* inParentElem, AnsiString inChildEl
     throw Exception( "Element not found: " + elementNotFound );
 }
 //----------------------------------------------------------------------------
-
 //::::::::::::::::::::::::::::::::
 // Protected
 //::::::::::::::::::::::::::::::::
-
 AnsiString TSaveMenu::GetMenuVersion()
 {
     try
@@ -561,13 +560,11 @@ AnsiString TSaveMenu::GetMenuVersion()
     }
 }
 //----------------------------------------------------------------------------
-
 void TSaveMenu::SetMenuVersion( AnsiString inVersion )
 {
     setNodeAttr( _rootElem, "version", inVersion.c_str() );
 }
 //----------------------------------------------------------------------------
-
 AnsiString TSaveMenu::GetMenuName()
 {
     try
@@ -677,8 +674,6 @@ WideString TSaveMenu::convertUTF8CharToWideString( AnsiString pchars )
 	return result;
 }
 //---------------------------------------------------------------------------
-
-
 WideString TSaveMenu::UTF8ToWideString(AnsiString inString)
 {
 	int BufferSize   = MultiByteToWideChar(CP_UTF8 , 0, inString.c_str(), inString.Length(), NULL, 0);
