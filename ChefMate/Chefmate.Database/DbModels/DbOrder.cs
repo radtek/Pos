@@ -34,6 +34,10 @@ namespace Chefmate.Database.DbModels
             fbParameters.Add(new QueryParameter("DELIVERY_TIME", order.DeliveryTime));
             fbParameters.Add(new QueryParameter("ARRIVAL_TIME", order.ArrivalTime));
             fbParameters.Add(new QueryParameter("IS_BUMPED", false));
+            fbParameters.Add(new QueryParameter("CUSTOMER_PHONE", order.CustomerPhone));
+            fbParameters.Add(new QueryParameter("CUSTOMER_EMAIL", order.CustomerEmail));
+            fbParameters.Add(new QueryParameter("CUSTOMER_ADDRESS", order.CustomerAddress));
+            fbParameters.Add(new QueryParameter("PAYMENT_STATUS", order.PaymentStatus));
             var queryString = DatabaseCore.Instance.BuildInsertQuery("ORDERS", fbParameters);
             bool result = DatabaseCore.Instance.ExecuteNonQuery(queryString, fbParameters);
             if (result)
@@ -192,6 +196,10 @@ namespace Chefmate.Database.DbModels
             order.DeliveryTime = Convert.ToString(dataRow["DELIVERY_TIME"]).ToDateTime();
             order.ArrivalTime = Convert.ToString(dataRow["ARRIVAL_TIME"]).ToDateTime();
             order.BumpTime = Convert.ToString(dataRow["BUMP_TIME"]).ToDateTime();
+            order.CustomerPhone = Convert.ToString(dataRow["CUSTOMER_PHONE"]);
+            order.CustomerAddress = Convert.ToString(dataRow["CUSTOMER_ADDRESS"]);
+            order.CustomerEmail = Convert.ToString(dataRow["CUSTOMER_EMAIL"]);
+            order.PaymentStatus = Convert.ToString(dataRow["PAYMENT_STATUS"]);
             return order;
         }
         private static List<int> GetOrderKeys(int terminalKey)

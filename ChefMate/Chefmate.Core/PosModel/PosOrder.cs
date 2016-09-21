@@ -42,6 +42,14 @@ namespace Chefmate.Core.PosModel
         public string DeliveryTime { get; set; }
         [XmlAttribute(AttributeName = "sourceTableName")]
         public string SourceTableName { get; set; }
+        [XmlAttribute(AttributeName = "customerPhone")]
+        public string CustomerPhone { get; set; }
+        [XmlAttribute(AttributeName = "customerEmail")]
+        public string CustomerEmail { get; set; }
+        [XmlAttribute(AttributeName = "customerAddress")]
+        public string CustomerAddress{ get; set; }
+        [XmlAttribute(AttributeName = "paymentStatus")]
+        public string PaymentStatus { get; set; }
         
     }
 }

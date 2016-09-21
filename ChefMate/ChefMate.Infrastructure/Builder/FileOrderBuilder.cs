@@ -86,6 +86,10 @@ namespace Chefmate.Infrastructure.Builder
                 AssignServingCourses(posOrder, order);
                 AssignCourses(posOrder, order);
             }
+            order.CustomerPhone   = posOrder.CustomerPhone;
+            order.CustomerEmail   = posOrder.CustomerEmail;
+            order.CustomerAddress = posOrder.CustomerAddress;
+            order.PaymentStatus   = posOrder.PaymentStatus;
             GetAllItems(posOrder, order);
             return order;
         }

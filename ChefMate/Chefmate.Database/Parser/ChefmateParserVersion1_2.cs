@@ -13,6 +13,7 @@ namespace Chefmate.Database.Parser
             if (!IsVersionExist(Version))
             {
                 AddSettings();
+                AlterTableOrders();
                 UpdateVersionInDatabase(Version);
             }
         }
@@ -26,6 +27,18 @@ namespace Chefmate.Database.Parser
                     DbSettings.AddSettingRow("WebOrderTime", 20, terminalKey);
 
             }
+        }
+        private void AlterTableOrders()
+        {
+            var query = @"ALTER TABLE ORDERS
+		                        ADD CUSTOMER_PHONE Varchar(25),
+                                ADD CUSTOMER_EMAIL Varchar(50),
+                                ADD CUSTOMER_ADDRESS Varchar(250),
+                                ADD PAYMENT_STATUS Varchar(10);";
+            CheckAndCreateColumn("ORDERS", "CUSTOMER_PHONE", query);
+            CheckAndCreateColumn("ORDERS", "CUSTOMER_EMAIL", query);
+            CheckAndCreateColumn("ORDERS", "CUSTOMER_ADDRESS", query);
+            CheckAndCreateColumn("ORDERS", "PAYMENT_STATUS", query);
         }
     }
 }

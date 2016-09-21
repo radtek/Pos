@@ -27,6 +27,11 @@ namespace Chefmate.Core.Model
         private ObservableCollection<Item> _items;
         private DisplayAttributes _displayAttributes;
         private DateTime _bumpTime;
+        private string _customerPhone;
+        private string _customerEmail;        
+        private string _customerAddress;
+        private string _paymentStatus;
+        
         #endregion
 
         #region Public Properties
@@ -199,6 +204,42 @@ namespace Chefmate.Core.Model
                 OnPropertyChanged("BumpTime");
             }
         }
+        public string CustomerPhone
+        {
+            get { return _customerPhone; }
+            set 
+            { 
+                _customerPhone = value;
+                OnPropertyChanged("CustomerPhone");
+            }
+        }
+        public string CustomerEmail
+        {
+            get { return _customerEmail; }
+            set 
+            { 
+                _customerEmail = value;
+                OnPropertyChanged("CustomerEmail");
+            }
+        }
+        public string CustomerAddress
+        {
+            get { return _customerAddress; }
+            set 
+            { 
+                _customerAddress = value;
+                OnPropertyChanged("CustomerAddress");
+            }
+        }
+        public string PaymentStatus
+        {
+            get { return _paymentStatus; }
+            set
+            {
+                _paymentStatus = value;
+                OnPropertyChanged("PaymentStatus");
+            }
+        }
         public DateTime SaleStartTime { get; set; }
         public DateTime SaleFinishTime { get; set; }
         public DateTime DeliveryTime { get; set; }
@@ -243,6 +284,10 @@ namespace Chefmate.Core.Model
             DeliveryTime = inOrder.DeliveryTime;
             ArrivalTime = inOrder.ArrivalTime;
             BeenSentToOutput = inOrder.BeenSentToOutput;
+            CustomerPhone = inOrder.CustomerPhone;
+            CustomerEmail = inOrder.CustomerEmail;
+            CustomerAddress = inOrder.CustomerAddress;
+            PaymentStatus = inOrder.PaymentStatus;
             DisplayAttributes = new DisplayAttributes(inOrder.DisplayAttributes);
         }
         #endregion
