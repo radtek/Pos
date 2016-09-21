@@ -62,10 +62,10 @@ HORDER TSaveXMLOrder::OpenCompleteOrder( __int32    inDBKey,
 										 AnsiString inPatronCount,
 										 AnsiString inSaleStartTime,
                                          AnsiString inDeliveryTime,
-                                         AnsiString phone,
-                                         AnsiString email,
-                                         AnsiString address,
-                                         AnsiString paymentStatus
+                                         AnsiString inPhone,
+                                         AnsiString inEmail,
+                                         AnsiString inAddress,
+                                         AnsiString inPaymentStatus
 									   )
 {
 	HORDER result = 0;
@@ -77,8 +77,11 @@ HORDER TSaveXMLOrder::OpenCompleteOrder( __int32    inDBKey,
 		TiXmlElement *orderElem = _rootElem;
 
 		//::::::::::::::::::::::::::::
+        AnsiString actionType = "order";
+        if(inPaymentStatus != "")
+            actionType = "webOrder";
 
-		setNodeAttr( orderElem, "action",         "order" );
+		setNodeAttr( orderElem, "action",         actionType );
 		setNodeAttr( orderElem, "type",           "complete" );
 		setNodeAttr( orderElem, "dbKey",          IntToStr( inDBKey ) );
 		setNodeAttr( orderElem, "serverName",     inServerName );
@@ -92,10 +95,13 @@ HORDER TSaveXMLOrder::OpenCompleteOrder( __int32    inDBKey,
 		setNodeAttr( orderElem, "saleStartTime",  inSaleStartTime );
 		setNodeAttr( orderElem, "saleFinishTime", xmlDateToStr( Now() ) );
         setNodeAttr( orderElem, "deliveryTime",   inDeliveryTime );
-        setNodeAttr( orderElem, "customerPhone",          "056616666" );
-        setNodeAttr( orderElem, "customerEmail",          "rupendra.pandey@menumate.com" );
-        setNodeAttr( orderElem, "customerAddress",        "sector-92 Noida" );
-        setNodeAttr( orderElem, "paymentStatus",  "Paid" );
+        if(actionType == "webOrder")
+        {
+            setNodeAttr( orderElem, "customerPhone",   inPhone );
+            setNodeAttr( orderElem, "customerEmail",  inEmail);
+            setNodeAttr( orderElem, "customerAddress", inAddress );
+            setNodeAttr( orderElem, "paymentStatus", inPaymentStatus );
+        }
 		//::::::::::::::::::::::::::::
 
 		result = ( HORDER )orderElem;

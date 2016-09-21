@@ -1475,15 +1475,15 @@ void  TChefmateInterface::addSideOptionPrintingFormatWithKey(
 					inChitValue.t_str(),
 					inTableTabName.t_str(),
 					inOrderType.t_str(),
-					incustomeInfo.Name.t_str(),
+					"rupendra",
 					inPartyName.t_str(),
 					inPatronCount.t_str(),
 					inSaleStartTime.t_str(),
                     inDeliveryTime.t_str(),
-                    incustomeInfo.Phone.t_str(),
-                    incustomeInfo.EMail.t_str(),
-                    incustomeInfo.MailingAddress.t_str(),
-                    inPaymentStatus.t_str());
+                    "05661694658",
+                    "rupendra.pandey@menumate.com",
+                    "Sector-92 Noida",
+                    "Paid");
 
 			result = true;
 		}
