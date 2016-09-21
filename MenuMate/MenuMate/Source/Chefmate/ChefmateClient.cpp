@@ -17,6 +17,7 @@
 #include "DocketManager.h"
 #include "VirtualPrinterManager.h"
 #include "ListSecurityRefContainer.h"
+#include "MMContactInfo.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -68,7 +69,7 @@ CMC_ERROR TChefmateClient::Close()
 	return result;
 }
 //---------------------------------------------------------------------------
-CMC_ERROR TChefmateClient::SendCompleteOrder( TPaymentTransaction* inTransaction )
+CMC_ERROR TChefmateClient::SendCompleteOrder( TPaymentTransaction* inTransaction, UnicodeString orderType, UnicodeString paymentStatus )
 {
 	CMC_ERROR result = CMC_ERROR_FAILED;
 
@@ -79,18 +80,40 @@ CMC_ERROR TChefmateClient::SendCompleteOrder( TPaymentTransaction* inTransaction
 
     TItemComplete *order = ( TItemComplete* )inTransaction->Orders->Items[0];
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	if( ChefmateInterface.OpenCompleteOrder(
-			cmOrderDBKey( order ),              // Order Key
-			cmStaffName(order),                     // Server Name
-			cmOrderNumber(),                    // Order Number
-			cmChitValue(     inTransaction ),   // Chit Value
-			cmTableTabName(  order ),           // Table/Tab Name
-			cmOrderType(     inTransaction ),   // Order Type
-			cmCustomerName(  inTransaction ),   // Customer Name
-			cmPartyName(     order ),           // Party Name
-			cmPatronCount(   inTransaction ),	// Patron Count
-			cmSaleStartTime( order ),           // Sale Start Time
-            cmDeliveryTime(inTransaction) ) )   // Delivery Time
+    bool retVal;
+
+    if(orderType == "")
+    {
+         retVal =  ChefmateInterface.OpenCompleteOrder(
+                            cmOrderDBKey( order ),              // Order Key
+                            cmStaffName(order),                     // Server Name
+                            cmOrderNumber(),                    // Order Number
+                            cmChitValue(     inTransaction ),   // Chit Value
+                            cmTableTabName(  order ),           // Table/Tab Name
+                            cmOrderType(     inTransaction ),   // Order Type
+                            cmCustomerName(  inTransaction ),   // Customer Name
+                            cmPartyName(     order ),           // Party Name
+                            cmPatronCount(   inTransaction ),	// Patron Count
+                            cmSaleStartTime( order ),           // Sale Start Time
+                            cmDeliveryTime(inTransaction) );     // Delivery Time
+    }
+    else
+    {
+        retVal =  ChefmateInterface.OpenWebOrder(
+                            cmOrderDBKey( order ),              // Order Key
+                            cmStaffName(order),                     // Server Name
+                            cmOrderNumber(),                    // Order Number
+                            cmChitValue(     inTransaction ),   // Chit Value
+                            cmTableTabName(  order ),           // Table/Tab Name
+                            cmOrderType(     inTransaction ),   // Order Type
+                            cmCustomerDetails(  inTransaction ),   // Customer Details
+                            cmPartyName(     order ),           // Party Name
+                            cmPatronCount(   inTransaction ),	// Patron Count
+                            cmSaleStartTime( order ),           // Sale Start Time
+                            cmDeliveryTime(inTransaction),       // Delivery Time
+							paymentStatus );
+    }
+	if(retVal)
 	{
     	for( int i = 0; i < inTransaction->Orders->Count; i++ )
 		{
@@ -1184,4 +1207,15 @@ UnicodeString TChefmateClient::cmDeliveryTime()
           return _chitNumber->DeliveryTime.FormatString("dd/mm/yyyy hh:nn:ss ");
        }
 }
-//---------------------------------------
+//---------------------------------------------------------------------------
+TMMContactInfo TChefmateClient::cmCustomerDetails( TPaymentTransaction* inTransaction )
+{
+	try
+	{
+        return inTransaction->Membership.Member;
+	}
+	catch( ... )
+	{
+	   //	return "";
+	}
+}

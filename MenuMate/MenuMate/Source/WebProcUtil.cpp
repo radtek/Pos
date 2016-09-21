@@ -991,10 +991,10 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 void __fastcall TWebProcUtil::completeOrderToChefMate(TPaymentTransaction* inTransaction)
 {
     std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
-
+     UnicodeString paymentStatus;   ///todo
     if( ChefMateClientManager->ChefMateEnabled() )
 	{
-        CMC_ERROR error =  ChefMateClientManager->SendCompleteOrder(inTransaction);
+        CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus);
         if( error == CMC_ERROR_FAILED )
         {
             TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to send an complete order to Chefmate");

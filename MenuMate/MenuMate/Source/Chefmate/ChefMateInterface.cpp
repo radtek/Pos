@@ -7,6 +7,7 @@
 #include "ChefmateSettings.h"
 
 #include "MMMessageBox.h"
+#include "MMContactInfo.h"
 
 // This is used until the DLL is fixed
 #include "TcpStreamSenderSettings.h"
@@ -626,7 +627,7 @@ bool TChefmateInterface::OpenCompleteOrder( __int32       inOrderDBKey,
 											UnicodeString inPartyName,
 											UnicodeString inPatronCount,
 											UnicodeString inSaleStartTime,
-                                                                                        UnicodeString inDeliveryTime )
+                                            UnicodeString inDeliveryTime)
 {
 	bool result = false;
 
@@ -651,7 +652,11 @@ bool TChefmateInterface::OpenCompleteOrder( __int32       inOrderDBKey,
 					inPartyName.t_str(),
 					inPatronCount.t_str(),
 					inSaleStartTime.t_str(),
-                                        inDeliveryTime.t_str() );
+                    inDeliveryTime.t_str(),
+                    "",
+                    "",
+                    "",
+                    "" );
 
 			result = true;
 		}
@@ -1439,5 +1444,53 @@ void  TChefmateInterface::addSideOptionPrintingFormatWithKey(
 	}
 }
 //---------------------------------------------------------------------------
+ bool TChefmateInterface::OpenWebOrder( __int32       inOrderDBKey,
+											UnicodeString inServerName,
+											__int32       inOrderNumber,
+											UnicodeString inChitValue,
+											UnicodeString inTableTabName,
+											UnicodeString inOrderType,
+											TMMContactInfo incustomeInfo,
+											UnicodeString inPartyName,
+											UnicodeString inPatronCount,
+											UnicodeString inSaleStartTime,
+                                            UnicodeString inDeliveryTime,
+                                            UnicodeString inPaymentStatus )
+{
+	bool result = false;
 
+    if( _cmGeneratorOpen )
+	{
+		try
+		{
+			if( _orderDocH > 0 )
+			{
+				Clear();
+			}
+			// This is used until the DLL is fixed
+		   	_orderDocH = _xmlOrderManager->OpenCompleteOrder(
+					inOrderDBKey,
+					inServerName.t_str(),
+					inOrderNumber,
+					inChitValue.t_str(),
+					inTableTabName.t_str(),
+					inOrderType.t_str(),
+					incustomeInfo.Name.t_str(),
+					inPartyName.t_str(),
+					inPatronCount.t_str(),
+					inSaleStartTime.t_str(),
+                    inDeliveryTime.t_str(),
+                    incustomeInfo.Phone.t_str(),
+                    incustomeInfo.EMail.t_str(),
+                    incustomeInfo.MailingAddress.t_str(),
+                    inPaymentStatus.t_str());
+
+			result = true;
+		}
+		catch( ... )
+		{
+		}
+	}
+	return result;
+}
 

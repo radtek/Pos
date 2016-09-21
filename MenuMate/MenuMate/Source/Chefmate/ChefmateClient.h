@@ -70,7 +70,7 @@ public:
 	CMC_ERROR Open(TIBDatabase* inIBDatabase,TChitNumber* inChitNumber = NULL );
 	CMC_ERROR Close();
 
-	CMC_ERROR SendCompleteOrder( TPaymentTransaction* inTransaction );
+	CMC_ERROR SendCompleteOrder( TPaymentTransaction* inTransaction, UnicodeString orderType = "",  UnicodeString paymentStatus = "");
 	CMC_ERROR SendCancelOrder( TList* inElementsToCancel,AnsiString inTabTableName );
 	CMC_ERROR SendTransferOrder( TList* orderList ,UnicodeString SourceTableName);
 	CMC_ERROR SendCreditOrder( TContainerOrders* inOrders );
@@ -137,6 +137,7 @@ private:
 	UnicodeString cmPatronCount( TPaymentTransaction* inPaymentTransaction );
 	UnicodeString cmSaleStartTime( TItemComplete* inOrder );
     UnicodeString cmStaffName(TItemComplete* inOrder);
+    TMMContactInfo cmCustomerDetails(TPaymentTransaction* inPaymentTransaction);
 };
 
 //---------------------------------------------------------------------------

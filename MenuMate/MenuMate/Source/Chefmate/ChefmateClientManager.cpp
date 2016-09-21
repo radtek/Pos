@@ -158,3 +158,18 @@ void TChefmateClientManager::doneChefMate( TChefmateClient *inClient )
 {
 	inClient->Close();
 }
+//----------------------------------------------------------------------------------------------------
+CMC_ERROR TChefmateClientManager::SendWebOrder( TPaymentTransaction* inTransaction, UnicodeString paymentStatus )
+{
+	CMC_ERROR result = CMC_ERROR_NOT_AVAILABLE;
+    if( chefMateEnabled() )
+    {
+        TChefmateClient *cmClient = new TChefmateClient();
+        initChefMate( cmClient, &inTransaction->ChitNumber );
+        cmClient->SendCompleteOrder( inTransaction, "WebOrder", paymentStatus );
+        doneChefMate( cmClient );
+        result = CMC_ERROR_SUCCESSFUL;
+        delete cmClient;
+    }
+	return result;
+}

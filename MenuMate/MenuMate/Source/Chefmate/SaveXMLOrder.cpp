@@ -61,7 +61,11 @@ HORDER TSaveXMLOrder::OpenCompleteOrder( __int32    inDBKey,
 										 AnsiString inPartyName,
 										 AnsiString inPatronCount,
 										 AnsiString inSaleStartTime,
-                                                                                 AnsiString inDeliveryTime
+                                         AnsiString inDeliveryTime,
+                                         AnsiString phone,
+                                         AnsiString email,
+                                         AnsiString address,
+                                         AnsiString paymentStatus
 									   )
 {
 	HORDER result = 0;
@@ -87,7 +91,11 @@ HORDER TSaveXMLOrder::OpenCompleteOrder( __int32    inDBKey,
 		setNodeAttr( orderElem, "patronCount",    inPatronCount );
 		setNodeAttr( orderElem, "saleStartTime",  inSaleStartTime );
 		setNodeAttr( orderElem, "saleFinishTime", xmlDateToStr( Now() ) );
-                setNodeAttr( orderElem, "deliveryTime",  inDeliveryTime );
+        setNodeAttr( orderElem, "deliveryTime",   inDeliveryTime );
+        setNodeAttr( orderElem, "customerPhone",          "056616666" );
+        setNodeAttr( orderElem, "customerEmail",          "rupendra.pandey@menumate.com" );
+        setNodeAttr( orderElem, "customerAddress",        "sector-92 Noida" );
+        setNodeAttr( orderElem, "paymentStatus",  "Paid" );
 		//::::::::::::::::::::::::::::
 
 		result = ( HORDER )orderElem;
