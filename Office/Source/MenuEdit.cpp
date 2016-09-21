@@ -12250,27 +12250,19 @@ void TfrmMenuEdit::SaveMenu( AnsiString inFileName, AnsiString inBackupFileName 
 		// Category Groups
 		menuTreeNode = tvMenu->Items->GetFirstNode()->Item[CATEGORY_GROUPS_INDEX];
 		SaveMenuCategoryGroups( saveMenu, menuTreeNode );
-        //saveMenu->Commit();
 		// Sizes
 		menuTreeNode = tvMenu->Items->GetFirstNode()->Item[SIZES_INDEX];
 		SaveMenuSizes( saveMenu, menuTreeNode );
-        //saveMenu->Commit();
-
 		// Serving Courses
 		menuTreeNode = tvMenu->Items->GetFirstNode()->Item[SERVING_COURSES_INDEX];
 		SaveMenuServingCourses( saveMenu, menuTreeNode );
-        //saveMenu->Commit();
-
         // 3rd Party Groups
 		menuTreeNode = tvMenu->Items->GetFirstNode();
 		SaveMenuThirdPartyGroups( saveMenu, menuTreeNode );
-        //saveMenu->Commit();
-
 		// Tax Profiles
 		std::set<TaxProfile*> taxProfiles;
 		menuTaxProfileProvider->ReadAllTaxProfiles( taxProfiles );
 		SaveMenuTaxProfiles( saveMenu, &taxProfiles );
-        //saveMenu->Commit();
         // Courses
 		menuTreeNode = tvMenu->Items->GetFirstNode();
 		SaveMenuCourses( saveMenu, menuTreeNode );
