@@ -5,6 +5,7 @@
              xmlns:userControls="clr-namespace:Chefmate.UI.UserControls">
     <UserControl.Resources>
         <ResourceDictionary>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <Style x:Key="OrderHeaderSelectorStyle" TargetType="{x:Type Label}">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Order.OrderAction}" Value="webOrder">
@@ -59,8 +60,7 @@
                         </Setter>
                     </DataTrigger>
                 </Style.Triggers>
-            </Style>
-            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            </Style>           
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>

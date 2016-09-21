@@ -28,11 +28,11 @@ TSmartOrderDocHeader::TSmartOrderDocHeader(
 						AnsiString inPatronCount,
 						AnsiString inSaleStartTime,
                         AnsiString inDeliveryTime,
-                        AnsiString inSourceTableName,
-                        AnsiString phone,
-                        AnsiString email,
-                        AnsiString address,
-                        AnsiString paymentStatus )
+                        AnsiString inPhone,
+                        AnsiString inEmail,
+                        AnsiString inAddress,
+                        AnsiString inPaymentStatus,
+                        AnsiString inSourceTableName )
 {
 	FAction       = inAction;
 	FType         = inType,
@@ -48,6 +48,10 @@ TSmartOrderDocHeader::TSmartOrderDocHeader(
 	FSaleStartTime = inSaleStartTime;
     FDeliveryTime =  inDeliveryTime;
     FSourceTableName = inSourceTableName;
+    FPhone           = inPhone;
+    FEmail           = inEmail;
+    FAddress       = inPaymentStatus;
+    FPaymentStatus   = inPaymentStatus;
 }
 //......................................................
 
