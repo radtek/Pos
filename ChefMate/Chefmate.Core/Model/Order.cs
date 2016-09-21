@@ -31,6 +31,7 @@ namespace Chefmate.Core.Model
         private string _customerEmail;        
         private string _customerAddress;
         private string _paymentStatus;
+        private string _orderAction;
         
         #endregion
 
@@ -240,6 +241,15 @@ namespace Chefmate.Core.Model
                 OnPropertyChanged("PaymentStatus");
             }
         }
+        public string OrderAction
+        {
+            get { return _orderAction; }
+            set 
+            {
+                _orderAction = value;
+                OnPropertyChanged("OrderAction");
+            }
+        }
         public DateTime SaleStartTime { get; set; }
         public DateTime SaleFinishTime { get; set; }
         public DateTime DeliveryTime { get; set; }
@@ -288,6 +298,7 @@ namespace Chefmate.Core.Model
             CustomerEmail = inOrder.CustomerEmail;
             CustomerAddress = inOrder.CustomerAddress;
             PaymentStatus = inOrder.PaymentStatus;
+            OrderAction = inOrder.OrderAction;
             DisplayAttributes = new DisplayAttributes(inOrder.DisplayAttributes);
         }
         #endregion

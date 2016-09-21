@@ -38,6 +38,7 @@ namespace Chefmate.Database.DbModels
             fbParameters.Add(new QueryParameter("CUSTOMER_EMAIL", order.CustomerEmail));
             fbParameters.Add(new QueryParameter("CUSTOMER_ADDRESS", order.CustomerAddress));
             fbParameters.Add(new QueryParameter("PAYMENT_STATUS", order.PaymentStatus));
+            fbParameters.Add(new QueryParameter("ORDER_ACTION", order.OrderAction));
             var queryString = DatabaseCore.Instance.BuildInsertQuery("ORDERS", fbParameters);
             bool result = DatabaseCore.Instance.ExecuteNonQuery(queryString, fbParameters);
             if (result)
@@ -200,6 +201,7 @@ namespace Chefmate.Database.DbModels
             order.CustomerAddress = Convert.ToString(dataRow["CUSTOMER_ADDRESS"]);
             order.CustomerEmail = Convert.ToString(dataRow["CUSTOMER_EMAIL"]);
             order.PaymentStatus = Convert.ToString(dataRow["PAYMENT_STATUS"]);
+            order.OrderAction = Convert.ToString(dataRow["ORDER_ACTION"]);
             return order;
         }
         private static List<int> GetOrderKeys(int terminalKey)

@@ -2,15 +2,71 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:Chefmate.UI.Converters"
-             xmlns:userControls="clr-namespace:Chefmate.UI.UserControls" >
+             xmlns:userControls="clr-namespace:Chefmate.UI.UserControls">
     <UserControl.Resources>
         <ResourceDictionary>
+            <Style x:Key="OrderHeaderSelectorStyle" TargetType="{x:Type Label}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Order.OrderAction}" Value="webOrder">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Border Style="{StaticResource GroupBorder}">
+                                        <StackPanel Orientation="Vertical" MaxHeight="50" VerticalAlignment="Center">
+                                            <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.CustomerName}"/>
+                                            <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.CustomerPhone}"/>
+                                            <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.DeliveryTime}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                    <DataTrigger  Binding="{Binding Order.OrderAction}" Value="order">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width=".33*"/>
+                                            <ColumnDefinition Width=".33*"/>
+                                            <ColumnDefinition Width=".33*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Style="{StaticResource GroupBorder}">
+                                            <StackPanel Orientation="Vertical" MaxHeight="50" VerticalAlignment="Center">
+                                                <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.DisplayAttributes.SourceTabTableText}"
+                                       Visibility="{Binding Order.DisplayAttributes.IsSourceTableExist,Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock.TextDecorations>
+                                    <TextDecoration Location="Strikethrough">
+                                        <TextDecoration.Pen>
+                                            <Pen Brush="Blue" Thickness="2"/>
+                                        </TextDecoration.Pen>
+                                    </TextDecoration>
+                                </TextBlock.TextDecorations>
+                                                </TextBlock>
+                                                <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.DisplayAttributes.TabtableText}"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Column="1" Style="{StaticResource GroupBorder}">
+                                            <TextBlock Style="{StaticResource OrderHeaderTextBlock}" Text="{Binding Order.DisplayAttributes.OrderNumberText}"/>
+                                        </Border>
+                                        <Border Grid.Column="2" Style="{StaticResource GroupBorder}">
+                                            <TextBlock  Style="{StaticResource OrderHeaderTextBlock}" Text="{Binding Order.DisplayAttributes.PatronDisplayText}"/>
+                                        </Border>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -24,36 +80,14 @@
                     <RowDefinition Height=".20*"/>
                     <RowDefinition Height=".80*"/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" Visibility="{Binding Order.DisplayAttributes.IsHeaderVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid Grid.Row="0"  Visibility="{Binding Order.DisplayAttributes.IsHeaderVisible,Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=".25*"/>
-                        <ColumnDefinition Width=".25*"/>
-                        <ColumnDefinition Width=".25*"/>
+                        <ColumnDefinition Width=".75*"/>
                         <ColumnDefinition Width=".25*"/>
                     </Grid.ColumnDefinitions>
-                    <Border Grid.Column="0" Style="{StaticResource GroupBorder}">
-                        <StackPanel Orientation="Vertical" MaxHeight="50" VerticalAlignment="Center">
-                            <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.DisplayAttributes.SourceTabTableText}"
-                                       Visibility="{Binding Order.DisplayAttributes.IsSourceTableExist,Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <TextBlock.TextDecorations>
-                                    <TextDecoration Location="Strikethrough">
-                                        <TextDecoration.Pen>
-                                            <Pen Brush="Blue" Thickness="2"/>
-                                        </TextDecoration.Pen>
-                                    </TextDecoration>
-                                </TextBlock.TextDecorations>
-                            </TextBlock>
-                            <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.DisplayAttributes.TabtableText}"/>
-                        </StackPanel>
-                    </Border>
+                    <Label Grid.Column="0" Content="{Binding Order}" Style="{StaticResource OrderHeaderSelectorStyle}"/>
                     <Border Grid.Column="1" Style="{StaticResource GroupBorder}">
-                        <TextBlock Style="{StaticResource OrderHeaderTextBlock}" Text="{Binding Order.DisplayAttributes.OrderNumberText}"/>
-                    </Border>
-                    <Border Grid.Column="2" Style="{StaticResource GroupBorder}">
-                        <TextBlock  Style="{StaticResource OrderHeaderTextBlock}" Text="{Binding Order.DisplayAttributes.PatronDisplayText}"/>
-                    </Border>
-                    <Border Grid.Column="3" Style="{StaticResource GroupBorder}">
-                        <userControls:PopupButton x:Name="HeaderPoppup"  ItemType="1"/>
+                        <userControls:PopupButton x:Name="HeaderPoppup" ItemType="1"/>
                     </Border>
                 </Grid>
                 <Grid Grid.Row="1" Background="{Binding Order.DisplayAttributes.BackGroundColor}">

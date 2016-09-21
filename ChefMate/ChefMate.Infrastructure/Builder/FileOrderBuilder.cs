@@ -90,6 +90,7 @@ namespace Chefmate.Infrastructure.Builder
             order.CustomerEmail   = posOrder.CustomerEmail;
             order.CustomerAddress = posOrder.CustomerAddress;
             order.PaymentStatus   = posOrder.PaymentStatus;
+            order.OrderAction     = posOrder.Action;
             GetAllItems(posOrder, order);
             return order;
         }
