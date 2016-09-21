@@ -66,18 +66,7 @@ bool TImportMenu::ImportFromXMLFilesInDir( AnsiString inDirName )
 		   }
 		}
 	}
-    if(!result)
-    {
-       //UnicodeString destpath = ExtractFilePath( Application->ExeName ) + "Menu Import\\Failed\\";
-       //MoveFile((path + sr.Name).t_str(), (destpath + sr.Name).t_str());
-       //DeleteFile(path + sr.Name);
-       ///RenameFile(path + sr.Name.t_str(), path + "abc.xml");
-    }
-
 	FindClose(sr);
-
-
-
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	return result;
@@ -145,7 +134,6 @@ bool TImportMenu::ImportFromXMLFile( UnicodeString inFileName )
             textLog = "The file format is invalid: " + inFileName + ".";
             TManagerLogs::Instance().Add( __FUNC__, EXCEPTIONLOG, textLog );
             AddErrorLog( textLog );
-            result = false;
         }
     }
     catch( Exception& exc )
@@ -153,8 +141,6 @@ bool TImportMenu::ImportFromXMLFile( UnicodeString inFileName )
         textLog = inFileName +  ". The menu load process failed: " + exc.Message;
         TManagerLogs::Instance().Add( __FUNC__, EXCEPTIONLOG, textLog );
         AddErrorLog( textLog );
-        //
-        result = false;
     }
 
     //.....................................................................
