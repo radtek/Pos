@@ -2754,21 +2754,30 @@ void TfrmMenuEdit::GetAllServingCourses(TStringList *AllServingCourses)
 		TServingCourseNode *ServingCourseData = (TServingCourseNode *)ServingCoursesNode->Item[i]->Data;
 		AllServingCourses->Add(ServingCourseData->LongDescription);
 		AllServingCourses->Add(UTF8Encode(ServingCourseData->KitchenName));
-		switch (ServingCourseData->Enabled)
+		if(ServingCourseData->Enabled)
 		{
-		case true  : AllServingCourses->Add("True"); break;
-		case false : AllServingCourses->Add("False"); break;
+		    AllServingCourses->Add("True");
 		}
-		switch (ServingCourseData->Deleted)
+        else
+        {
+           AllServingCourses->Add("False");
+        }
+		if(ServingCourseData->Deleted)
 		{
-		case true  : AllServingCourses->Add("True"); break;
-		case false : AllServingCourses->Add("False"); break;
+		    AllServingCourses->Add("True");
 		}
-		switch (ServingCourseData->Selectable)
+        else
+        {
+            AllServingCourses->Add("False");
+        }
+		if(ServingCourseData->Selectable)
 		{
-		case true  : AllServingCourses->Add("True"); break;
-		case false : AllServingCourses->Add("False"); break;
+		    AllServingCourses->Add("True");
 		}
+        else
+        {
+           AllServingCourses->Add("False");
+        }
 		AllServingCourses->Add(IntToStr((int)ServingCourseData->Colour));
         AllServingCourses->Add(IntToStr((int)ServingCourseData->Key));
         AllServingCourses->Add(IntToStr((int)i));
