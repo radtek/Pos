@@ -985,7 +985,7 @@ void __fastcall TWebProcUtil::completeOrderToChefMate(TPaymentTransaction* inTra
     std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
-    TMMContactInfo memberInfo = TDBWebUtil::LoadMemberDetails(DBTransaction, inTransaction->WebOrderKey);
+    TMMContactInfo memberInfo = TDBWebUtil::LoadMemberDetails(DBTransaction, inTransaction->WebOrderKey, inTransaction->ChitNumber.OnlinePickupOrder);
     UnicodeString paymentStatus = TDBWebUtil::LoadPaymentStatus(DBTransaction, inTransaction->WebOrderKey);
        ///todo
     if( ChefMateClientManager->ChefMateEnabled() )
