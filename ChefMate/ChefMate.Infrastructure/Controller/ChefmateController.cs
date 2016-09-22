@@ -464,7 +464,8 @@ namespace Chefmate.Infrastructure.Controller
                 TerminalIpAddress = terminalAddress,
                 DisplayName = terminalDisplayName,
                 RecallCount = 5,
-                CmFontSize = 15
+                CmFontSize = 15,
+                WebOrderTime =20
             };
             DbSettings.AddSettings(CurrentSettings, CurrenTerminal.TerminalId);
             LoadSettings();

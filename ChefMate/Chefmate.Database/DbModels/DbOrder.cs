@@ -8,6 +8,7 @@ using Chefmate.Core.Extensions;
 using Chefmate.Core.Model;
 using Chefmate.Database.Model;
 using ChefMate.Database;
+using Chefmate.Core;
 
 namespace Chefmate.Database.DbModels
 {
@@ -202,6 +203,8 @@ namespace Chefmate.Database.DbModels
             order.CustomerEmail = Convert.ToString(dataRow["CUSTOMER_EMAIL"]);
             order.PaymentStatus = Convert.ToString(dataRow["PAYMENT_STATUS"]);
             order.OrderAction = Convert.ToString(dataRow["ORDER_ACTION"]);
+            if (string.IsNullOrWhiteSpace(order.OrderAction))
+                order.OrderAction = ChefmateConstants.OrderAction;
             return order;
         }
         private static List<int> GetOrderKeys(int terminalKey)
