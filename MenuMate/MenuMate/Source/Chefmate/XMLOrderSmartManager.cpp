@@ -174,7 +174,7 @@ void TSmartOrderDoc::openOrder( TSaveXMLOrder* inOrderDoc )
 
 void TSmartOrderDoc::openCompleteOrder( TSaveXMLOrder* inOrderDoc )
 {
-	if( FHeader->Action.UpperCase() == "ORDER" )
+	if( FHeader->Action.UpperCase() == "ORDER" || FHeader->Action.UpperCase() == "WEBORDER")
 	{
 		inOrderDoc->OpenCompleteOrder(
 						FHeader->DBKey,
