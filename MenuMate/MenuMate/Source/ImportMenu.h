@@ -45,7 +45,7 @@ class TImportMenu
 
 
 		bool ImportFromXMLFilesInDir( AnsiString inDirName  );
-		bool ImportFromXMLFile(       AnsiString inFileName );
+		bool ImportFromXMLFile(       UnicodeString inFileName );
 
 		void       ResetErrorLog();
 		__int32    FailedToLoadAMenu();
@@ -554,7 +554,7 @@ class TImportMenu
 		bool resetNextNewCOO( __int32 inCGroupKey, Database::TDBTransaction *inDBTransaction );
 		__int32 getNextNewCOO();
 
-		void MoveMenuFile( AnsiString inFileName, AnsiString inDestPath );
+		void MoveMenuFile( UnicodeString inFileName, UnicodeString inDestPath );
 
         //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         // Key Map: It maps new keys from the XML file with actual DB keys.
