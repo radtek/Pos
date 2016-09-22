@@ -378,10 +378,10 @@ namespace Chefmate.UI.Views
         {
             var order = new Order(inOrder);
             if (inHeaderVisible)
-                remainigHeight -= ChefmateConstants.OrderHeaderHeight;
+                remainigHeight -= inOrder.OrderAction == ChefmateConstants.WebOrderAction ? ChefmateConstants.WebOrderHeaderHeight : ChefmateConstants.OrderHeaderHeight;
             while (remainigHeight >= ChefmateConstants.UnitHeight && orderGuiIndex.GroupIndex < inOrder.DisplayGroups.Count)
             {
-                var group = GetGroupForHeight(inOrder.DisplayGroups[orderGuiIndex.GroupIndex], ref remainigHeight, orderGuiIndex, inOrder.OrderAction);
+                var group = GetGroupForHeight(inOrder.DisplayGroups[orderGuiIndex.GroupIndex], ref remainigHeight, orderGuiIndex);
                 if (group.Items.Count > 0)
                 {
                     group.Order = order;
@@ -398,11 +398,11 @@ namespace Chefmate.UI.Views
             }
             return order;
         }
-        private Group GetGroupForHeight(Group inGroup, ref double height, OrderGuiIndex orderGuiIndex, string inOrderAction)
+        private Group GetGroupForHeight(Group inGroup, ref double height, OrderGuiIndex orderGuiIndex)
         {
             var group = new Group(inGroup);
             if (orderGuiIndex.GroupItemIndex == 0 && orderGuiIndex.ItemOptionIndex == 0 && orderGuiIndex.ItemSideIndex == 0)
-                height -= inOrderAction == "order" ? ChefmateConstants.UnitHeight : ChefmateConstants.WebOrderHeaderHeight;
+                height -= ChefmateConstants.UnitHeight;
             else
                 group.DisplayAttributes.IsHeaderVisible = false;
             while (height >= ChefmateConstants.UnitHeight && orderGuiIndex.GroupItemIndex < inGroup.Items.Count)

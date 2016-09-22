@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml;
+using Chefmate.Core;
 using Chefmate.Core.Enums;
 using Chefmate.Core.Extensions;
 using Chefmate.Core.Model;
@@ -86,11 +87,11 @@ namespace Chefmate.Infrastructure.Builder
                 AssignServingCourses(posOrder, order);
                 AssignCourses(posOrder, order);
             }
-            order.CustomerPhone   = posOrder.CustomerPhone;
-            order.CustomerEmail   = posOrder.CustomerEmail;
+            order.CustomerPhone = posOrder.CustomerPhone;
+            order.CustomerEmail = posOrder.CustomerEmail;
             order.CustomerAddress = posOrder.CustomerAddress;
-            order.PaymentStatus   = posOrder.PaymentStatus;
-            order.OrderAction     = posOrder.Action;
+            order.PaymentStatus = posOrder.PaymentStatus;
+            order.OrderAction = string.IsNullOrWhiteSpace(posOrder.Action) ? ChefmateConstants.OrderAction : posOrder.Action;
             GetAllItems(posOrder, order);
             return order;
         }
@@ -205,8 +206,8 @@ namespace Chefmate.Infrastructure.Builder
             if (item.Name.EndsWith("Default"))
                 item.Name = item.Name.Substring(0, item.Name.LastIndexOf("Default", StringComparison.Ordinal));
             item.Name = item.Name.Trim();
-            
-            
+
+
             item.Note = posItem.Note;
             if (!string.IsNullOrWhiteSpace(item.Note) && item.Note.Length > 80)
                 item.Note = item.Note.Substring(0, 80);

@@ -28,11 +28,11 @@ namespace Chefmate.Core.Model
         private DisplayAttributes _displayAttributes;
         private DateTime _bumpTime;
         private string _customerPhone;
-        private string _customerEmail;        
+        private string _customerEmail;
         private string _customerAddress;
         private string _paymentStatus;
         private string _orderAction;
-        
+
         #endregion
 
         #region Public Properties
@@ -208,8 +208,8 @@ namespace Chefmate.Core.Model
         public string CustomerPhone
         {
             get { return _customerPhone; }
-            set 
-            { 
+            set
+            {
                 _customerPhone = value;
                 OnPropertyChanged("CustomerPhone");
             }
@@ -217,8 +217,8 @@ namespace Chefmate.Core.Model
         public string CustomerEmail
         {
             get { return _customerEmail; }
-            set 
-            { 
+            set
+            {
                 _customerEmail = value;
                 OnPropertyChanged("CustomerEmail");
             }
@@ -226,8 +226,8 @@ namespace Chefmate.Core.Model
         public string CustomerAddress
         {
             get { return _customerAddress; }
-            set 
-            { 
+            set
+            {
                 _customerAddress = value;
                 OnPropertyChanged("CustomerAddress");
             }
@@ -244,9 +244,11 @@ namespace Chefmate.Core.Model
         public string OrderAction
         {
             get { return _orderAction; }
-            set 
+            set
             {
                 _orderAction = value;
+                if (string.IsNullOrWhiteSpace(value))
+                    _orderAction = ChefmateConstants.OrderAction;
                 OnPropertyChanged("OrderAction");
             }
         }
@@ -271,6 +273,7 @@ namespace Chefmate.Core.Model
             DisplayAttributes.BackGroundColor = ChefmateConstants.NormalOrderColor;
             BeenSentToOutput = false;
             OrderStatus = OrderStatus.Normal;
+            OrderAction = ChefmateConstants.OrderAction;
         }
         public Order(Order inOrder)
             : this()
@@ -348,7 +351,7 @@ namespace Chefmate.Core.Model
         }
         public double GetOrderActualHeight()
         {
-            var orderHeight = DisplayAttributes.IsHeaderVisible ? ChefmateConstants.OrderHeaderHeight : 0;
+            var orderHeight = DisplayAttributes.IsHeaderVisible ? (OrderAction == ChefmateConstants.WebOrderAction ? ChefmateConstants.WebOrderHeaderHeight : ChefmateConstants.OrderHeaderHeight) : 0;
             foreach (var group in DisplayGroups)
             {
                 var groupHeight = group.GetGroupActualHeight();
