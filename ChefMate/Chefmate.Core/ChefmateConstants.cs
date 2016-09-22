@@ -7,7 +7,7 @@ namespace Chefmate.Core
         public const double OrderHeaderHeight = 54;
         public const double UnitHeight = 50;
         public const double NoteHeight = 40;
-        public const string Number = "6.28.0.5";
+        public const string Number = "6.28.0.6";
         public const string DatabaseVersion = "1.1";
         public static SolidColorBrush NormalOrderColor = new SolidColorBrush(Color.FromRgb(180, 199, 180));
         public static SolidColorBrush FirstWarningOrderColor = new SolidColorBrush(Color.FromRgb(241, 218, 180));
