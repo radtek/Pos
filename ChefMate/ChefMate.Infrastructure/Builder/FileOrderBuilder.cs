@@ -91,7 +91,8 @@ namespace Chefmate.Infrastructure.Builder
             order.CustomerEmail = posOrder.CustomerEmail;
             order.CustomerAddress = posOrder.CustomerAddress;
             order.PaymentStatus = posOrder.PaymentStatus;
-            order.OrderAction = string.IsNullOrWhiteSpace(posOrder.Action) ? ChefmateConstants.OrderAction : posOrder.Action;
+            order.OrderAction = ChefmateConstants.WebOrderAction == posOrder.Action ? ChefmateConstants.WebOrderAction : ChefmateConstants.OrderAction;
+            //order.OrderAction = string.IsNullOrWhiteSpace(posOrder.Action) ? ChefmateConstants.OrderAction : posOrder.Action;
             GetAllItems(posOrder, order);
             return order;
         }
