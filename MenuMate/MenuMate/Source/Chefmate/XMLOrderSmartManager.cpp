@@ -289,7 +289,8 @@ HORDERDOC TXMLOrderSmartManager::OpenCompleteOrder(
                 TSmartOrderDoc* xmlSmartOrderDoc = createXMLSmartOrderDoc(
                                                         new TSmartOrderDocHeader(
                                                                 orderType,
-                                                                "complete",   
+                                                                "complete",
+                                                                inDBKey,
                                                                 inServerName,
                                                                 inOrderNumber,
                                                                 inChitValue,

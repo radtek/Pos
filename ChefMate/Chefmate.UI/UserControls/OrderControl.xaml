@@ -13,11 +13,11 @@
                             <Setter.Value>
                                 <ControlTemplate>
                                     <Border Style="{StaticResource GroupBorder}">
-                                        <Grid Background="#5B9BD5">                                        
-                                            <StackPanel Grid.Column="1" Orientation="Vertical" Height="100" VerticalAlignment="Center">
-                                                <TextBlock HorizontalAlignment="Left" Foreground="White" Height="30" Style="{StaticResource WebOrderHeaderTextBlock}" Text="{Binding Path = Order.CustomerName, StringFormat=' From: {0}'}"/>
-                                                <TextBlock HorizontalAlignment="Left" Foreground="White" Height="30" Style="{StaticResource WebOrderHeaderTextBlock}" Text="{Binding Path = Order.CustomerPhone, StringFormat=' Phone: {0}'}"/>
-                                                <TextBlock HorizontalAlignment="Left" FontWeight="Bold" Height="30" Foreground="White" Style="{StaticResource WebOrderHeaderTextBlock}" Text="{Binding Path = Order.DeliveryTime, StringFormat=' Expected: {0}'}"/>
+                                        <Grid Background="#5B9BD5">
+                                            <StackPanel Grid.Column="0" Orientation="Vertical" Height="100" VerticalAlignment="Center">
+                                                <TextBlock   Style="{StaticResource WebOrderHeaderTextBlock}" Text="{Binding Path = Order.CustomerName, StringFormat=' From: {0}'}"/>
+                                                <TextBlock   Style="{StaticResource WebOrderHeaderTextBlock}" Text="{Binding Path = Order.CustomerPhone, StringFormat=' Phone: {0}'}"/>
+                                                <TextBlock  FontWeight="Bold" Style="{StaticResource WebOrderHeaderTextBlock}" Text="{Binding Path = Order.DeliveryTime, StringFormat=' Expected: {0:hh:mm tt}'}"/>
                                             </StackPanel>
                                         </Grid>
                                     </Border>
@@ -39,13 +39,13 @@
                                             <StackPanel Orientation="Vertical" MaxHeight="50" VerticalAlignment="Center">
                                                 <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.DisplayAttributes.SourceTabTableText}"
                                        Visibility="{Binding Order.DisplayAttributes.IsSourceTableExist,Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <TextBlock.TextDecorations>
-                                    <TextDecoration Location="Strikethrough">
-                                        <TextDecoration.Pen>
-                                            <Pen Brush="Blue" Thickness="2"/>
-                                        </TextDecoration.Pen>
-                                    </TextDecoration>
-                                </TextBlock.TextDecorations>
+                                                    <TextBlock.TextDecorations>
+                                                        <TextDecoration Location="Strikethrough">
+                                                            <TextDecoration.Pen>
+                                                                <Pen Brush="Blue" Thickness="2"/>
+                                                            </TextDecoration.Pen>
+                                                        </TextDecoration>
+                                                    </TextBlock.TextDecorations>
                                                 </TextBlock>
                                                 <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.DisplayAttributes.TabtableText}"/>
                                             </StackPanel>
@@ -62,13 +62,12 @@
                         </Setter>
                     </DataTrigger>
                 </Style.Triggers>
-            </Style>           
+            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

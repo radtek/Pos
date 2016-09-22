@@ -332,10 +332,21 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
 		// Change the Order Status.
 		TDBWebUtil::SetWebOrderStatus(PaymentTransaction.DBTransaction, WebOrder.WebKey, ewosProcessed);
 
-		// RollBackSecurity(PaymentTransaction);
-
-		// Chefmate.
      	ProcessKitchenMod(true, PaymentTransaction);
+
+        if(PaymentTransaction.Orders->Count > 0 && TDeviceRealTerminal::Instance().KitchenMod->Enabled)
+        {
+            for (int i = 0; i <PaymentTransaction.Orders->Count; i++)
+            {
+                TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[i];
+                if (Order->OriginalItemKey != NULL)
+                {
+                    Order->ItemOrderedFrom = TDeviceRealTerminal::Instance().Menus->FetchItemByKey(Order->OriginalItemKey);
+                }
+            }
+            completeOrderToChefMate(&PaymentTransaction);
+        }
+
 
 	}
 	catch(EAbort &E)
@@ -495,19 +506,10 @@ void __fastcall TWebProcUtil::ProcessPrintJob(Database::TDBTransaction &DBTransa
 			// ProcessChitNumbers(inDisplayOwner, PaymentTransaction);
 			ProcessPatrons(PaymentTransaction, PaymentTransaction.SalesType, 1);
 
-			/*
-				MM-1066
-				No processing of stock is done here. As handhelds use this function only for printing
-			*/
-			// ProcessStock(PaymentTransaction);
-
 			// Print the Order to the Kitchen.
           	PrintKitchenDockets(PaymentTransaction, 0,TransNo,DeviceName);
 			// Print the Receipts.
 			AutoPrintReceipts(PaymentTransaction.SalesType, PaymentTransaction);
-
-			// Chefmate.
-     	//  ProcessKitchenMod(true, PaymentTransaction);
 
 		}
 		else
@@ -723,7 +725,6 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
                     throw Exception("Printing Some Orders Failed, Please Check Printer.");
                 }
                 ManagerDockets->Archive(Request.get());
-                  completeOrderToChefMate(PrintTransaction.get());
             }
         }
     }
@@ -734,7 +735,6 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
     }
 }
 // ---------------------------------------------------------------------------
-
 void __fastcall TWebProcUtil::AutoPrintReceipts(TMMTabType TabType, TPaymentTransaction &PaymentTransaction)
 {
 	if (checkAutoPrintReceipts(TabType))
@@ -866,7 +866,6 @@ void __fastcall TWebProcUtil::AutoPrintReceipts(TMMTabType TabType, TPaymentTran
 		}
 	}
 }
-
 // ---------------------------------------------------------------------------
 void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction &PaymentTransaction)
 {
@@ -876,7 +875,6 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 		{
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
-
 			std::auto_ptr<TPaymentTransaction>Transaction(new TPaymentTransaction(DBTransaction));
 			Transaction->Orders->Assign(PaymentTransaction.Orders);
 
@@ -924,11 +922,9 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 				CMInstruction.LineBelow = false;
 				CMInstruction.Visible = true;
 				Template.push_back(CMInstruction);
-
-	                        std::auto_ptr<TKitchen> Kitchen(new TKitchen());
+                std::auto_ptr<TKitchen> Kitchen(new TKitchen());
 				Kitchen->Initialise(DBTransaction);
 				Kitchen->GetPrintouts(DBTransaction, Request.get() );
-
 				std::auto_ptr<TNetMessageChefMate>ChefRequest(new TNetMessageChefMate());
 				ChefRequest->OrderNumber = TGlobalSettings::Instance().KitchenOrderNumber;
 				if (Finial)
@@ -942,24 +938,13 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 				ChefRequest->Device = TDeviceRealTerminal::Instance().ID.Name;
 				ChefRequest->User = PaymentTransaction.StaffMember.Name;
 				ChefRequest->TimeKey = PaymentTransaction.TimeKey;
-
 				Request->Printouts->FilterForChefMate();
-                                for (int i = 0; i <PaymentTransaction.Orders->Count; i++)
-                                {
-                                    TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[i];
-                                    if (Order->OriginalItemKey != NULL)
-                                    {
-                                        Order->ItemOrderedFrom = TDeviceRealTerminal::Instance().Menus->FetchItemByKey(Order->OriginalItemKey);
-                                    }
-                                }
-               completeOrderToChefMate(&PaymentTransaction);
 			}
 			else
 			{
 				std::auto_ptr<TStringList>ChefMateIPList(new TStringList);
 				TManagerPhysicalPrinter ManagerPhysicalPrinter;
 				ManagerPhysicalPrinter.GetPrinterServerList(DBTransaction, ChefMateIPList.get(), ptChefMate_Printer);
-
 				std::auto_ptr<TNetMessageChefMate>ChefRequest(new TNetMessageChefMate);
 				ChefRequest->OrderNumber = TGlobalSettings::Instance().KitchenOrderNumber;
 				ChefRequest->RemoveOrder = false;

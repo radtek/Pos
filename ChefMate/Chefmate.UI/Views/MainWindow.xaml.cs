@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -380,7 +381,7 @@ namespace Chefmate.UI.Views
                 remainigHeight -= ChefmateConstants.OrderHeaderHeight;
             while (remainigHeight >= ChefmateConstants.UnitHeight && orderGuiIndex.GroupIndex < inOrder.DisplayGroups.Count)
             {
-                var group = GetGroupForHeight(inOrder.DisplayGroups[orderGuiIndex.GroupIndex], ref remainigHeight, orderGuiIndex,inOrder.OrderAction);
+                var group = GetGroupForHeight(inOrder.DisplayGroups[orderGuiIndex.GroupIndex], ref remainigHeight, orderGuiIndex, inOrder.OrderAction);
                 if (group.Items.Count > 0)
                 {
                     group.Order = order;
@@ -473,6 +474,28 @@ namespace Chefmate.UI.Views
         {
             return inOrder.CordX >= ParentScroller.HorizontalOffset && inOrder.CordX < (ParentScroller.HorizontalOffset + this.ActualWidth);
         }
+        private bool CanAddOrderToGui(Order inOrder)
+        {
+            bool retVal = inOrder.OrderAction.Equals(ChefmateConstants.OrderAction, StringComparison.InvariantCultureIgnoreCase) &&
+                inOrder.OrderState == OrderState.Complete && OutputTime.Immediately != ChefmateController.Instance.CurrentSettings.OutputTime;
+            return retVal;
+        }
+
+        private void AddPendingWebOrdersToGui()
+        {
+            var ordersToRemove = new List<int>();
+            foreach (var webOrder in ChefmateController.Instance.WebOrders)
+            {
+                var canAdd = webOrder.DeliveryTime.Subtract(DateTime.Now).TotalMinutes <= ChefmateController.Instance.CurrentSettings.WebOrderTime;
+                if (canAdd)
+                {
+                    ordersToRemove.Add(webOrder.OrderKey);
+                    TotalOrders.Add(webOrder);
+                    FilterOrder(webOrder);
+                }
+            }
+            ChefmateController.Instance.WebOrders.RemoveAll(s => ordersToRemove.Contains(s.OrderKey));
+        }
 
 
         #endregion
@@ -495,7 +518,7 @@ namespace Chefmate.UI.Views
                 Action(() =>
                 {
                     StopTimer();
-                    bool addOrder = order.OrderState == OrderState.Complete && OutputTime.Immediately != ChefmateController.Instance.CurrentSettings.OutputTime;
+                    bool addOrder = CanAddOrderToGui(order);
                     ChefmateController.Instance.AddOrder(order);
                     if (addOrder)
                         FilterOrder(order);
@@ -691,7 +714,11 @@ namespace Chefmate.UI.Views
         }
         private void OrderTimerOnTick(object sender, EventArgs eventArgs)
         {
-            Application.Current.Dispatcher.Invoke(new Action(UpdateOrderInfoDisplay));
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                AddPendingWebOrdersToGui();
+                UpdateOrderInfoDisplay();
+            }));
         }
         private void StartTimer()
         {
