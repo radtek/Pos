@@ -13,11 +13,13 @@
                             <Setter.Value>
                                 <ControlTemplate>
                                     <Border Style="{StaticResource GroupBorder}">
-                                        <StackPanel Orientation="Vertical" MaxHeight="50" VerticalAlignment="Center">
-                                            <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.CustomerName}"/>
-                                            <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.CustomerPhone}"/>
-                                            <TextBlock Style="{StaticResource OrderHeaderTableTextBlock}" Text="{Binding Order.DeliveryTime}"/>
-                                        </StackPanel>
+                                        <Grid Background="#5B9BD5">                                        
+                                            <StackPanel Grid.Column="1" Orientation="Vertical" Height="100" VerticalAlignment="Center">
+                                                <TextBlock HorizontalAlignment="Left" Foreground="White" Height="30" Style="{StaticResource WebOrderHeaderTextBlock}" Text="{Binding Path = Order.CustomerName, StringFormat=' From: {0}'}"/>
+                                                <TextBlock HorizontalAlignment="Left" Foreground="White" Height="30" Style="{StaticResource WebOrderHeaderTextBlock}" Text="{Binding Path = Order.CustomerPhone, StringFormat=' Phone: {0}'}"/>
+                                                <TextBlock HorizontalAlignment="Left" FontWeight="Bold" Height="30" Foreground="White" Style="{StaticResource WebOrderHeaderTextBlock}" Text="{Binding Path = Order.DeliveryTime, StringFormat=' Expected: {0}'}"/>
+                                            </StackPanel>
+                                        </Grid>
                                     </Border>
                                 </ControlTemplate>
                             </Setter.Value>
