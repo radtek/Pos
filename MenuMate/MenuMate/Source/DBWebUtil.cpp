@@ -1559,7 +1559,7 @@ void TDBWebUtil::AssignChitNumber(Database::TDBTransaction &DBTransaction, TChit
    }
 }
 //---------------------------------------------------------------------------------------------------------
-TMMContactInfo TDBWebUtil::LoadMemberDetails(Database::TDBTransaction &DBTransaction, int webKey, bool isPickUpOrder)
+TMMContactInfo TDBWebUtil::LoadMemberDetails(Database::TDBTransaction &DBTransaction, int webKey)
 {
     try
     {
@@ -1584,10 +1584,18 @@ TMMContactInfo TDBWebUtil::LoadMemberDetails(Database::TDBTransaction &DBTransac
             {
                  Address += IBInternalQuery->FieldByName("DATA")->AsString;
             }
-            if(isPickUpOrder)
-                Address = "";
 
             memberInfo.MailingAddress = Address;
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Clear();
+            IBInternalQuery->SQL->Text = selectQuery +  " = 'OrderType'";
+            IBInternalQuery->ParamByName("WEBORDER_KEY")->AsString = webKey;
+            IBInternalQuery->ExecQuery();
+            AnsiString OrderType = IBInternalQuery->FieldByName("DATA")->AsString;
+
+            if(OrderType == "Pick up")
+                memberInfo.MailingAddress = "";
 
             IBInternalQuery->Close();
             IBInternalQuery->SQL->Clear();
