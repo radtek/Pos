@@ -50,7 +50,7 @@ TSmartOrderDocHeader::TSmartOrderDocHeader(
     FSourceTableName = inSourceTableName;
     FPhone           = inPhone;
     FEmail           = inEmail;
-    FAddress       = inPaymentStatus;
+    FAddress       = inAddress;
     FPaymentStatus   = inPaymentStatus;
 }
 //......................................................
@@ -143,11 +143,11 @@ TSmartOrderDocHeader* TSmartOrderDoc::createHeader( TSmartOrderDocHeader* inHead
 						inHeader->PatronCount,
 						inHeader->SaleStartTime,
                         inHeader->DeliveryTime,
-                        inHeader->SourceTableName,
-                        inHeader->email,
                         inHeader->phone,
+                        inHeader->email,
                         inHeader->address,
-                        inHeader->paymentStatus );
+                        inHeader->paymentStatus,
+                        inHeader->SourceTableName );
 }
 //......................................................
 
@@ -289,21 +289,20 @@ HORDERDOC TXMLOrderSmartManager::OpenCompleteOrder(
                 TSmartOrderDoc* xmlSmartOrderDoc = createXMLSmartOrderDoc(
                                                         new TSmartOrderDocHeader(
                                                                 orderType,
-                                                                "complete",   //todo
-                                                                inDBKey,
+                                                                "complete",   
                                                                 inServerName,
                                                                 inOrderNumber,
                                                                 inChitValue,
                                                                 inTableTabName,
                                                                 inOrderType,
-                                                                inCustomerName,//"Rupendra",
+                                                                inCustomerName,
                                                                 inPartyName,
                                                                 inPatronCount,
                                                                 inSaleStartTime,
                                                                 inDeliveryTime,
-                                                                inPhone,//"05661694658",         //todo
-                                                                inPhone,//"rupendrapanday@gmail.com",
-                                                                inAddress,//"B-228 Sector-92 Noida",
+                                                                inPhone,
+                                                                inEmail,
+                                                                inAddress,
                                                                 inPaymentStatus ) );
 
 			result      = addSmartOrderXMLDoc( xmlSmartOrderDoc );
