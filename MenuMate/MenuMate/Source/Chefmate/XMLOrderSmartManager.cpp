@@ -277,13 +277,18 @@ HORDERDOC TXMLOrderSmartManager::OpenCompleteOrder(
 		}
 		else
 		{
+            UnicodeString orderType = "";
             if(inPaymentStatus == "")
             {
-                inPaymentStatus =  "order";
+                orderType =  "order";
+            }
+            else
+            {
+                orderType = "webOrder";
             }
                 TSmartOrderDoc* xmlSmartOrderDoc = createXMLSmartOrderDoc(
                                                         new TSmartOrderDocHeader(
-                                                                "Order",
+                                                                orderType,
                                                                 "complete",   //todo
                                                                 inDBKey,
                                                                 inServerName,
@@ -291,15 +296,15 @@ HORDERDOC TXMLOrderSmartManager::OpenCompleteOrder(
                                                                 inChitValue,
                                                                 inTableTabName,
                                                                 inOrderType,
-                                                                "Rupendra",
+                                                                inCustomerName,//"Rupendra",
                                                                 inPartyName,
                                                                 inPatronCount,
                                                                 inSaleStartTime,
                                                                 inDeliveryTime,
-                                                                "05661694658",         //todo
-                                                                "rupendrapanday@gmail.com",
-                                                                "B-228 Sector-92 Noida",
-                                                                "Paid" ) );
+                                                                inPhone,//"05661694658",         //todo
+                                                                inPhone,//"rupendrapanday@gmail.com",
+                                                                inAddress,//"B-228 Sector-92 Noida",
+                                                                inPaymentStatus ) );
 
 			result      = addSmartOrderXMLDoc( xmlSmartOrderDoc );
 			_lastOError = OERROR_SUCCESSFUL;

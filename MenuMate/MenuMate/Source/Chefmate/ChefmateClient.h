@@ -70,7 +70,7 @@ public:
 	CMC_ERROR Open(TIBDatabase* inIBDatabase,TChitNumber* inChitNumber = NULL );
 	CMC_ERROR Close();
 
-	CMC_ERROR SendCompleteOrder( TPaymentTransaction* inTransaction, UnicodeString orderType = "",  UnicodeString paymentStatus = "");
+	CMC_ERROR SendCompleteOrder( TPaymentTransaction* inTransaction );
 	CMC_ERROR SendCancelOrder( TList* inElementsToCancel,AnsiString inTabTableName );
 	CMC_ERROR SendTransferOrder( TList* orderList ,UnicodeString SourceTableName);
 	CMC_ERROR SendCreditOrder( TContainerOrders* inOrders );
@@ -78,6 +78,7 @@ public:
 	CMC_ERROR SendReplacementOrder( TPaymentTransaction* inTransaction );
 	CMC_ERROR SendCallAwayOrder( TCallAwayComplete* inCallAway );
 	CMC_ERROR SendCompleteEmptyOrder();
+    CMC_ERROR SendCompleteWebOrder( TPaymentTransaction* inTransaction,  UnicodeString paymentStatus, TMMContactInfo customerDetails);
 
 private:
 	TChefmateInterface ChefmateInterface;

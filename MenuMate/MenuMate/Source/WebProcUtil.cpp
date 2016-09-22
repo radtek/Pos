@@ -322,6 +322,7 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
         }
 
         PaymentTransaction.Membership.Assign(webMember, emsManual);
+        PaymentTransaction.WebOrderKey =  WebOrder.WebKey;
 
 		// Print the Order to the Kitchen.
 		PrintKitchenDockets(PaymentTransaction, WebOrder.WebKey,WebOrder.GUID,"");
@@ -708,6 +709,7 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
                 }
                 Request->DeliveryInfo->AddStrings(WebDeliveryDetials.get());
             }
+            PrintTransaction->WebOrderKey =  WebKey;
 
             Request->Transaction->Money.Recalc(*Request->Transaction);
             if (PrintTransaction->Orders->Count > 0)
@@ -897,6 +899,7 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 				{
 					std::auto_ptr<TStringList>WebDetials(new TStringList);
                     int WebKey = TDBWebUtil::GetWebOrderKeyByTabKey(DBTransaction, Order->TabKey);
+                    PaymentTransaction.WebOrderKey =  WebKey;
 					TDBWebUtil::getWebOrderDetials(DBTransaction,WebKey , *WebDetials.get());
 					Request->ExtraInfo->AddStrings(WebDetials.get());
 
@@ -991,10 +994,14 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 void __fastcall TWebProcUtil::completeOrderToChefMate(TPaymentTransaction* inTransaction)
 {
     std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
-     UnicodeString paymentStatus;   ///todo
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TMMContactInfo memberInfo = TDBWebUtil::LoadMemberDetails(DBTransaction, inTransaction->WebOrderKey);
+    UnicodeString paymentStatus = TDBWebUtil::LoadPaymentStatus(DBTransaction, inTransaction->WebOrderKey);
+       ///todo
     if( ChefMateClientManager->ChefMateEnabled() )
 	{
-        CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus);
+        CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
         if( error == CMC_ERROR_FAILED )
         {
             TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to send an complete order to Chefmate");

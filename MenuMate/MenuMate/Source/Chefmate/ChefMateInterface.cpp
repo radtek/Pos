@@ -1450,7 +1450,7 @@ void  TChefmateInterface::addSideOptionPrintingFormatWithKey(
 											UnicodeString inChitValue,
 											UnicodeString inTableTabName,
 											UnicodeString inOrderType,
-											TMMContactInfo incustomeInfo,
+											TMMContactInfo inCustomerInfo,
 											UnicodeString inPartyName,
 											UnicodeString inPatronCount,
 											UnicodeString inSaleStartTime,
@@ -1475,15 +1475,15 @@ void  TChefmateInterface::addSideOptionPrintingFormatWithKey(
 					inChitValue.t_str(),
 					inTableTabName.t_str(),
 					inOrderType.t_str(),
-					"rupendra",
+					inCustomerInfo.Name.t_str(),//"rupendra",
 					inPartyName.t_str(),
 					inPatronCount.t_str(),
 					inSaleStartTime.t_str(),
                     inDeliveryTime.t_str(),
-                    "05661694658",
-                    "rupendra.pandey@menumate.com",
-                    "Sector-92 Noida",
-                    "Paid");
+                    inCustomerInfo.Phone.t_str(),//"05661694658",
+                    inCustomerInfo.EMail.t_str(),//"rupendra.pandey@menumate.com",
+                    inCustomerInfo.MailingAddress.t_str(),
+                    inPaymentStatus.t_str());
 
 			result = true;
 		}

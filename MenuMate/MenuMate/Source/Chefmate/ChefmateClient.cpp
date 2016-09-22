@@ -69,7 +69,7 @@ CMC_ERROR TChefmateClient::Close()
 	return result;
 }
 //---------------------------------------------------------------------------
-CMC_ERROR TChefmateClient::SendCompleteOrder( TPaymentTransaction* inTransaction, UnicodeString orderType, UnicodeString paymentStatus )
+CMC_ERROR TChefmateClient::SendCompleteOrder( TPaymentTransaction* inTransaction)
 {
 	CMC_ERROR result = CMC_ERROR_FAILED;
 
@@ -80,11 +80,8 @@ CMC_ERROR TChefmateClient::SendCompleteOrder( TPaymentTransaction* inTransaction
 
     TItemComplete *order = ( TItemComplete* )inTransaction->Orders->Items[0];
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-    bool retVal;
 
-    if(orderType == "")
-    {
-         retVal =  ChefmateInterface.OpenCompleteOrder(
+	if(ChefmateInterface.OpenCompleteOrder(
                             cmOrderDBKey( order ),              // Order Key
                             cmStaffName(order),                     // Server Name
                             cmOrderNumber(),                    // Order Number
@@ -95,25 +92,7 @@ CMC_ERROR TChefmateClient::SendCompleteOrder( TPaymentTransaction* inTransaction
                             cmPartyName(     order ),           // Party Name
                             cmPatronCount(   inTransaction ),	// Patron Count
                             cmSaleStartTime( order ),           // Sale Start Time
-                            cmDeliveryTime(inTransaction) );     // Delivery Time
-    }
-    else
-    {
-        retVal =  ChefmateInterface.OpenWebOrder(
-                            cmOrderDBKey( order ),              // Order Key
-                            cmStaffName(order),                     // Server Name
-                            cmOrderNumber(),                    // Order Number
-                            cmChitValue(     inTransaction ),   // Chit Value
-                            cmTableTabName(  order ),           // Table/Tab Name
-                            cmOrderType(     inTransaction ),   // Order Type
-                            cmCustomerDetails(  inTransaction ),   // Customer Details
-                            cmPartyName(     order ),           // Party Name
-                            cmPatronCount(   inTransaction ),	// Patron Count
-                            cmSaleStartTime( order ),           // Sale Start Time
-                            cmDeliveryTime(inTransaction),       // Delivery Time
-							paymentStatus );
-    }
-	if(retVal)
+                            cmDeliveryTime(inTransaction) ))
 	{
     	for( int i = 0; i < inTransaction->Orders->Count; i++ )
 		{
@@ -1208,14 +1187,43 @@ UnicodeString TChefmateClient::cmDeliveryTime()
        }
 }
 //---------------------------------------------------------------------------
-TMMContactInfo TChefmateClient::cmCustomerDetails( TPaymentTransaction* inTransaction )
+CMC_ERROR TChefmateClient::SendCompleteWebOrder( TPaymentTransaction* inTransaction, UnicodeString paymentStatus, TMMContactInfo customerDetails )
 {
-	try
+	CMC_ERROR result = CMC_ERROR_FAILED;
+
+	if( inTransaction->Orders->Count == 0 )
 	{
-        return inTransaction->Membership.Member;
+		return SendCompleteEmptyOrder();
 	}
-	catch( ... )
+
+    TItemComplete *order = ( TItemComplete* )inTransaction->Orders->Items[0];
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+	if(ChefmateInterface.OpenWebOrder(
+                            cmOrderDBKey( order ),              // Order Key
+                            cmStaffName(order),                     // Server Name
+                            cmOrderNumber(),                    // Order Number
+                            cmChitValue(     inTransaction ),   // Chit Value
+                            cmTableTabName(  order ),           // Table/Tab Name
+                            cmOrderType(     inTransaction ),   // Order Type
+                            customerDetails,   // Customer Details
+                            cmPartyName(     order ),           // Party Name
+                            cmPatronCount(   inTransaction ),	// Patron Count
+                            cmSaleStartTime( order ),           // Sale Start Time
+                            cmDeliveryTime(inTransaction),       // Delivery Time
+							paymentStatus ))
 	{
-	   //	return "";
+    	for( int i = 0; i < inTransaction->Orders->Count; i++ )
+		{
+			TItemComplete *order1 = ( TItemComplete* )inTransaction->Orders->Items[i];
+			orderItemToChefmate( order1 );
+		}
+    	commitOrder();
+		TChefmateOrderNumberGenerator::Instance().NextOrderNumber();
+		result = CMC_ERROR_SUCCESSFUL;
 	}
+
+	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+	return result;
 }
+//------------------------------------------------------------------------------------------------------------
