@@ -29,7 +29,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate>
-                                    <Grid Grid.Row="0">
+                                    <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width=".33*"/>
                                             <ColumnDefinition Width=".33*"/>
@@ -51,7 +51,7 @@
                                             </StackPanel>
                                         </Border>
                                         <Border Grid.Column="1" Style="{StaticResource GroupBorder}">
-                                            <TextBlock Style="{StaticResource OrderHeaderTextBlock}" Text="{Binding Order.DisplayAttributes.OrderNumberText}"/>
+                                            <TextBlock  Style="{StaticResource OrderHeaderTextBlock}"  Text="{Binding Order.DisplayAttributes.OrderNumberText}"/>
                                         </Border>
                                         <Border Grid.Column="2" Style="{StaticResource GroupBorder}">
                                             <TextBlock  Style="{StaticResource OrderHeaderTextBlock}" Text="{Binding Order.DisplayAttributes.PatronDisplayText}"/>
@@ -86,8 +86,8 @@
                         <ColumnDefinition Width=".75*"/>
                         <ColumnDefinition Width=".25*"/>
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Column="0" Content="{Binding Order}" Style="{StaticResource OrderHeaderSelectorStyle}"/>
-                    <Border Grid.Column="1" Style="{StaticResource GroupBorder}">
+                    <Label Grid.Column="0" Content="{Binding Order}"  Style="{StaticResource OrderHeaderSelectorStyle}"/>
+                    <Border Grid.Column="1" Style="{StaticResource AnalysisGroupBorder}">
                         <userControls:PopupButton x:Name="HeaderPoppup" ItemType="1"/>
                     </Border>
                 </Grid>
@@ -105,13 +105,14 @@
                                             <ColumnDefinition Width=".75*"/>
                                             <ColumnDefinition Width=".25*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Style="{StaticResource CourseLable}" Background="{Binding DisplayAttributes.BackGroundColor}"
-                                                           Text="{Binding Path = GroupDisplayName}">
+                                        <Border Grid.Column="0" Height="50" Background="{Binding DisplayAttributes.BackGroundColor}">
+                                        <TextBlock   Style="{StaticResource CourseLable}" Text="{Binding Path = GroupDisplayName}">
                                             <TextBlock.InputBindings>
                                                 <MouseBinding MouseAction="LeftClick" Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}},Path=CallAwayStopCommand}"
                                                                           CommandParameter="{Binding}"/>
                                             </TextBlock.InputBindings>
                                         </TextBlock>
+                                        </Border>
                                         <userControls:PopupButton Grid.Column="1" Group="{Binding BindsDirectlyToSource=True}" ItemType="2"/>
                                     </Grid>
                                     <ItemsControl Grid.Row="1" ItemsSource="{Binding Items}">

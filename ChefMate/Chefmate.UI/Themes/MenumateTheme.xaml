@@ -74,10 +74,9 @@
 
     <!--TextBlock Style-->
     <Style x:Key="CourseLable" TargetType="{x:Type TextBlock}">
-        <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
         <Setter Property="TextWrapping" Value="Wrap"></Setter>
         <Setter Property="FontWeight" Value="Bold"/>
-        <Setter Property="Height" Value="50"></Setter>
     </Style>
     <Style x:Key="ItemLable" TargetType="{x:Type TextBlock}">
         <Setter Property="Text" Value="{Binding Name}"></Setter>
@@ -217,7 +216,7 @@
         <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Height" Value="50"></Setter>
+        <!--<Setter Property="MaxHeight" Value="50"></Setter>-->
     </Style>
     <Style x:Key="OrderHeaderTableTextBlock" TargetType="{x:Type TextBlock}">
         <Setter Property="TextWrapping" Value="WrapWithOverflow"/>
@@ -443,6 +442,11 @@
 
     <!--Border Style-->
     <Style x:Key="GroupBorder" TargetType="{x:Type Border}">
+        <Setter Property="BorderThickness" Value="1"></Setter>
+        <Setter Property="BorderBrush" Value="Gray"></Setter>
+        <Setter Property="Height" Value="50"></Setter>
+    </Style>
+    <Style x:Key="AnalysisGroupBorder" TargetType="{x:Type Border}">
         <Setter Property="BorderThickness" Value="1"></Setter>
         <Setter Property="BorderBrush" Value="Gray"></Setter>
     </Style>
