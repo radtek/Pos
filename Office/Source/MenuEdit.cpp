@@ -345,6 +345,7 @@ void __fastcall TfrmMenuEdit::FormShow(TObject *Sender)
 	pcItemDetails->ActivePage		= tsItemDetails;
 	pcItemSizeDetails->ActivePage	= tsItemSizePrice;
 	ClearingTree						= false;
+    ServingCoursesList = new TStringList;
 	DeletedServingCoursesInfo.DeletedServingCourseVector.clear();
 
     //store no of price Levels
@@ -2236,21 +2237,16 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 		chbSetMenuMaster->OnClick						= NULL;
 		chbSetMenuItem->OnClick							= NULL;
 		bool weighed = false;
-		TTreeNode *SizesNode = tvMenu->Items->GetFirstNode()->Item[SIZES_INDEX];
-		for (int i=0; i<SizesNode->Count; i++)
-		{
-			TSizeNode *SizeData = (TSizeNode *)SizesNode->Item[i]->Data;
-			if (SizeData->LongDescription == ItemSizeData->LongDescription)
-			{
-				if (SizeData->Weighed)
-				{
-					weighed = true;
-				}
 
-				break;
-			}
-		}
+       std::map<AnsiString, TAvailableMenuSize >::iterator it = AllSizesForMenu.find(ItemSizeData->LongDescription);
 
+       if(it != AllSizesForMenu.end())
+       {
+          if(it->second.Weighed)
+          {
+             weighed = true;
+          }
+       }
 		GroupBox1->Caption = "Prices";
 
 		lbeTareWeight->Visible = weighed;
@@ -2657,32 +2653,26 @@ void TfrmMenuEdit::RefreshItem(TItemNode *ItemData, bool isItemTranfer)
 			}
 		}
 	}
-	std::auto_ptr<TStringList> AllSizes(new TStringList());
-	GetAllSizes(AllSizes.get());
 
-	for (int i=0; i<AllSizes->Count; i+=5)
-	{
-		bool Used = false;
-		for (int j=0; j<ItemData->Owner->Count; j++)
-		{
-			TItemSizeNode *UsedItemSizeData = (TItemSizeNode *)ItemData->Owner->Item[j]->Data;
-			if (AllSizes->Strings[i] == UsedItemSizeData->LongDescription)
-			{
-				Used = true;
-				break;
-			}
-		}
-		if (!Used)
-		{
-			lbSizesUnused->Items->AddObject(AllSizes->Strings[i],
-			AllSizes->Objects[i]);
-		}
-	}
+    for(std::map<AnsiString,  TAvailableMenuSize>::iterator it = AllSizesForMenu.begin(); it != AllSizesForMenu.end(); ++it)
+    {
+       bool Used = false;
+       for (int j=0; j<ItemData->Owner->Count; j++)
+       {
+           TItemSizeNode *UsedItemSizeData = (TItemSizeNode *)ItemData->Owner->Item[j]->Data;
+           if(it->first == UsedItemSizeData->LongDescription)
+           {
+              Used = true;
+              break;
+           }
+       }
+       if(!Used)
+       {
+          lbSizesUnused->Items->AddObject(it->first, (TObject*)it->second.Key);
+       }
+    }
+
 	sgItem->ColWidths[0] = sgItem->ClientWidth / 3;
-  //	sgItem->ColWidths[1] = (sgItem->ClientWidth - sgItem->ColWidths[0] - sgItem->GridLineWidth) / 2;
- //	sgItem->ColWidths[2] = sgItem->ClientWidth - sgItem->ColWidths[0] - sgItem->ColWidths[1] -
- //	(sgItem->GridLineWidth * 3);
-
 	if (frmPreview->Tag == Screen->Width)
 	{
 		btnItemColour->Width = frmPreview->sbDishes->ClientWidth / 4;
@@ -2764,22 +2754,33 @@ void TfrmMenuEdit::GetAllServingCourses(TStringList *AllServingCourses)
 		TServingCourseNode *ServingCourseData = (TServingCourseNode *)ServingCoursesNode->Item[i]->Data;
 		AllServingCourses->Add(ServingCourseData->LongDescription);
 		AllServingCourses->Add(UTF8Encode(ServingCourseData->KitchenName));
-		switch (ServingCourseData->Enabled)
+		if(ServingCourseData->Enabled)
 		{
-		case true  : AllServingCourses->Add("T"); break;
-		case false : AllServingCourses->Add("F"); break;
+		    AllServingCourses->Add("True");
 		}
-		switch (ServingCourseData->Deleted)
+        else
+        {
+           AllServingCourses->Add("False");
+        }
+		if(ServingCourseData->Deleted)
 		{
-		case true  : AllServingCourses->Add("T"); break;
-		case false : AllServingCourses->Add("F"); break;
+		    AllServingCourses->Add("True");
 		}
-		switch (ServingCourseData->Selectable)
+        else
+        {
+            AllServingCourses->Add("False");
+        }
+		if(ServingCourseData->Selectable)
 		{
-		case true  : AllServingCourses->Add("T"); break;
-		case false : AllServingCourses->Add("F"); break;
+		    AllServingCourses->Add("True");
 		}
+        else
+        {
+           AllServingCourses->Add("False");
+        }
 		AllServingCourses->Add(IntToStr((int)ServingCourseData->Colour));
+        AllServingCourses->Add(IntToStr((int)ServingCourseData->Key));
+        AllServingCourses->Add(IntToStr((int)i));
 	}
 }
 
@@ -3024,12 +3025,12 @@ void TfrmMenuEdit::RefreshCourse(TCourseNode *CourseData)
 	{
 		// Dont fill the combo box if Greyed out
 		cbServingCourse->Items->Clear();
-		std::auto_ptr<TStringList> ServingCourseList(new TStringList());
-		GetAllServingCourses(ServingCourseList.get());
-		for (int i=0; i<ServingCourseList->Count; i+=6)
+		//std::auto_ptr<TStringList> ServingCourseList(new TStringList());
+		//GetAllServingCourses(ServingCourseList.get());
+		for (int i=0; i<ServingCoursesList->Count; i+=8)
 		{
-			if (ServingCourseList->Strings[i + 2] == "T")  // enabled ones only
-			cbServingCourse->Items->Add(ServingCourseList->Strings[i]);
+			if (ServingCoursesList->Strings[i + 2] == "True")  // enabled ones only
+			cbServingCourse->Items->Add(ServingCoursesList->Strings[i]);
 		}
 		if (CourseData->ServingCourse == "")
 		cbServingCourse->ItemIndex = -1;
@@ -3171,12 +3172,10 @@ void TfrmMenuEdit::RefreshServingCourse(TServingCourseNode *ServingData)  //cww
 void TfrmMenuEdit::RefreshSizes(TMenuNode *SizesData)
 {
 	lbAvailableSizes->Items->Clear();
-	for (int i=0; i<SizesData->Owner->Count; i++)
-	{
-		TTreeNode *SizeNode = SizesData->Owner->Item[i];
-		TSizeNode *SizeData = (TSizeNode *)SizeNode->Data;
-		lbAvailableSizes->Items->Add(SizeData->LongDescription);
-	}
+    for(std::map<AnsiString, TAvailableMenuSize >::iterator it = AllSizesForMenu.begin(); it != AllSizesForMenu.end(); ++it)
+    {
+        lbAvailableSizes->Items->Add(it->first);
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::RefreshSize(TSizeNode *SizeData)
@@ -3194,6 +3193,7 @@ void TfrmMenuEdit::RefreshSize(TSizeNode *SizeData)
 	{
 		chbSizeWeighed->OnClick = chbSizeWeighedClick;
 	}
+
 }
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::RefreshCategories(TCategoryGroupNode *CategoriesData)
@@ -5181,8 +5181,15 @@ void __fastcall TfrmMenuEdit::btnSizesEditClick(TObject *Sender)
 					}
 				}
 				MenuEdited = true;
-
 				int NewIndex = EditSize(SizeName, lbAvailableSizes->ItemIndex);
+                if(NewIndex > -1)
+                {
+                   AllSizesForMenu.erase(OldSizeName);
+                   TAvailableMenuSize availablesize;
+                   availablesize.Key = NewIndex;
+                   AllSizesForMenu[SizeName] = availablesize;
+                }
+
 
 				TTreeNode *MenuNode = tvMenu->Items->GetFirstNode();
 				for (int i = FIRST_COURSE_INDEX; i<MenuNode->Count; i++)
@@ -5256,6 +5263,7 @@ void __fastcall TfrmMenuEdit::btnSizesDeleteClick(TObject *Sender)
 		{
 			//delete the data against the size
 			DeleteSize(lbAvailableSizes->ItemIndex);
+            AllSizesForMenu.erase(lbAvailableSizes->Items->Strings[lbAvailableSizes->ItemIndex]);
 			// delete from the list box
 			lbAvailableSizes->Items->Delete(lbAvailableSizes->ItemIndex);
 			int OldIndex = lbAvailableSizes->ItemIndex;
@@ -5607,10 +5615,10 @@ void __fastcall TfrmMenuEdit::btnCheckClick(TObject *Sender)
 		}
 
 		/* Serving Courses   */
-		std::auto_ptr<TStringList> ServingCoursesList(new TStringList());
-		GetAllServingCourses(ServingCoursesList.get());
+		//ServingCoursesList = new TStringList;
+		//GetAllServingCourses(ServingCoursesList);
 		bool ServingCourseSelectable = false; // Indicates that at least 1 serving course is available?
-		for (int i=0; i<ServingCoursesList->Count; i+=6)
+		for (int i=0; i<ServingCoursesList->Count; i+=8)
 		{
 			if (ServingCourseSelectable == false)
 			ServingCourseSelectable = dmUtilities->StrToBoolean(ServingCoursesList->Strings[i+4]);
@@ -5636,13 +5644,13 @@ void __fastcall TfrmMenuEdit::btnCheckClick(TObject *Sender)
 			}
 		}
 
-		std::set<AnsiString> allSizes;
+		/*std::set<AnsiString> allSizes;
 		TTreeNode *SizesNode = tvMenu->Items->GetFirstNode()->Item[SIZES_INDEX];
 		for (int i=0; i<SizesNode->Count; i++)
 		{
 			TSizeNode *SizeData = (TSizeNode *)SizesNode->Item[i]->Data;
 			allSizes.insert(SizeData->LongDescription);
-		}
+		}*/
 
 		TTreeNode *ServingCoursesNode  = tvMenu->Items->GetFirstNode()->Item[SERVING_COURSES_INDEX];
 		std::map<AnsiString /*Name*/, bool /*Enabled*/> servingCoursesLookup;
@@ -5775,7 +5783,7 @@ void __fastcall TfrmMenuEdit::btnCheckClick(TObject *Sender)
 					{
 						TTreeNode *ItemSizeNode = ItemNode->Item[k];
 						TItemSizeNode *ItemSizeData = (TItemSizeNode *)ItemSizeNode->Data;
-						if (ItemSizeData->LongDescription == "" || allSizes.find(ItemSizeData->LongDescription) == allSizes.end())//!FindCategory(ItemSizeData->Category, NULL, NULL, &deleted))
+						if (ItemSizeData->LongDescription == "" || AllSizesForMenu.find(ItemSizeData->LongDescription) == AllSizesForMenu.end())
 						{
 							ErrorCount++;
 							int Index = lbWarnings->Items->AddObject("[Error] N" + IntToStr(ItemSizeData->Owner->AbsoluteIndex) + ": Item size doesen't exist.", ItemSizeData);
@@ -5833,7 +5841,6 @@ void __fastcall TfrmMenuEdit::btnCheckClick(TObject *Sender)
                                 }
 							}
 						}
-
 						if (CheckNoThirdPartyCode)
 						{
 							if (ItemSizeData->ThirdPartyCode == "")
@@ -8032,11 +8039,16 @@ int TfrmMenuEdit::InsertSize(AnsiString SizeName)
 
 	reinterpret_cast<TEditorNode *>(NewSizeNode->Data)->Key =
 	(*new_menu_element_key_generator_)();
+    TAvailableMenuSize availablesize;
+    availablesize.Key = reinterpret_cast<TEditorNode *>(NewSizeNode->Data)->Key;
+    AllSizesForMenu[SizeName] = availablesize;
 
 	tvMenu->Items->BeginUpdate();
 	SizesNode->CustomSort(CompareFunc, 1);
 	SizesNode->Expand(false);
 	tvMenu->Items->EndUpdate();
+
+    
 
 	for (int i=0; i<SizesNode->Count; i++)
 	{
@@ -8114,6 +8126,8 @@ void TfrmMenuEdit::DeleteSize(int Index)
 {
 	TTreeNode *SizesNode = tvMenu->Items->GetFirstNode()->Item[SIZES_INDEX];
 	SizesNode->Item[Index]->Delete();
+    
+    
 }
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::DeleteServingCourse(int Index)
@@ -9054,10 +9068,17 @@ void __fastcall TfrmMenuEdit::droidwareNameChange(TObject *Sender)
 
 	if (id_name.Length() > MAX_ITEM_NAME_LENGTH)
 	id_name = id_name.SubString(1, MAX_ITEM_NAME_LENGTH);
-
+    std::map<AnsiString, TAvailableMenuSize >::iterator it = AllSizesForMenu.find(((TEditorNode *)tvMenu->Selected->Data)->LongDescription);
 	if (((TTntEdit *)Sender)->Tag)
-	((TEditorNode *)tvMenu->Selected->Data)->ReceiptName = id_name;
-	else ((TEditorNode *)tvMenu->Selected->Data)->HandheldName = id_name;
+    {
+	    ((TEditorNode *)tvMenu->Selected->Data)->ReceiptName = id_name;
+        it->second.ReceiptName = id_name;
+    }
+	else
+    {
+      ((TEditorNode *)tvMenu->Selected->Data)->HandheldName = id_name;
+      it->second.HandheldName = id_name;
+    }
 
 	MenuEdited = true;
 }
@@ -9076,6 +9097,12 @@ void __fastcall TfrmMenuEdit::tntedSizeKitchenNameChange(TObject *Sender)
 	{
 		TSizeNode *SizeData		= (TSizeNode *)CurrentNodeData;
 		SizeData->KitchenName	= tntedSizeKitchenName->Text;
+        std::map<AnsiString, TAvailableMenuSize >::iterator it = AllSizesForMenu.find(SizeData->LongDescription);
+        if(it != AllSizesForMenu.end())
+        {
+          it->second.KitchenName = tntedSizeKitchenName->Text;
+        }
+        
 	}
 }
 //---------------------------------------------------------------------------
@@ -9087,6 +9114,11 @@ void __fastcall TfrmMenuEdit::chbSizeWeighedClick(TObject *Sender)
 	{
 		TSizeNode *SizeData = (TSizeNode *)CurrentNodeData;
 		SizeData->Weighed = chbSizeWeighed->Checked;
+        std::map<AnsiString, TAvailableMenuSize >::iterator it = AllSizesForMenu.find(SizeData->LongDescription);
+        if(it != AllSizesForMenu.end())
+        {
+          it->second.Weighed = chbSizeWeighed->Checked;
+       }
 	}
 }
 //---------------------------------------------------------------------------
@@ -9716,6 +9748,8 @@ void __fastcall TfrmMenuEdit::btnNewServingCourseClick(TObject *Sender) //cww
 			//RelabelDrinkCosts();
 			RefreshMenuDetails();
 			lbAvailableServingCourses->ItemIndex = Index;
+            ServingCoursesList->Clear();
+            GetAllServingCourses(ServingCoursesList);
 		}
 	}
 
@@ -9758,6 +9792,9 @@ void __fastcall TfrmMenuEdit::btnServingCoursesEditClick(TObject *Sender)     //
 				//RelabelDrinkCosts();
 				RefreshMenuDetails();
 				lbAvailableServingCourses->ItemIndex = NewIndex;
+                ServingCoursesList->Clear();
+                GetAllServingCourses(ServingCoursesList);
+
 			}
 		}
 	}
@@ -9780,7 +9817,8 @@ void __fastcall TfrmMenuEdit::btnServingCoursesDeleteClick(TObject *Sender)  // 
 		lbAvailableServingCourses->SetFocus();
 		if (OldIndex > lbAvailableServingCourses->Items->Count -1) OldIndex--;
 		lbAvailableServingCourses->ItemIndex = OldIndex;
-
+        ServingCoursesList->Clear();
+        GetAllServingCourses(ServingCoursesList);
 	}
 }
 //---------------------------------------------------------------------------
@@ -9857,6 +9895,8 @@ void __fastcall TfrmMenuEdit::cbServingCourseEnableClick(TObject *Sender)
 			ServingCourseData->Disable();
 		}
 		MenuEdited = true;
+        ServingCoursesList->Clear();
+        GetAllServingCourses(ServingCoursesList);
 	}
 }
 //---------------------------------------------------------------------------
@@ -9875,6 +9915,8 @@ void __fastcall TfrmMenuEdit::cbSelectableClick(TObject *Sender)
 			ServingCourseData->Selectable = false;
 		}
 		MenuEdited = true;
+        ServingCoursesList->Clear();
+        GetAllServingCourses(ServingCoursesList);
 	}
 }
 //---------------------------------------------------------------------------
@@ -9921,6 +9963,8 @@ void __fastcall TfrmMenuEdit::cbServingCoursesEnableClick(TObject *Sender)
 		RefreshServingCourses((TServingCoursesNode *)ServingCoursesNode->Data);
 		lbAvailableServingCourses->SetFocus();
 		lbAvailableServingCourses->ItemIndex = OldIndex;
+        ServingCoursesList->Clear();
+        GetAllServingCourses(ServingCoursesList);
 	}
 }
 //---------------------------------------------------------------------------
@@ -11037,6 +11081,7 @@ Menu::TServingCoursesInfo *ServingCoursesInfo)  // cww
 	lbAvailableSizes->Clear();
 	for (unsigned i=0; i<SizesInfo->Sizes.size(); i++)
 	{
+        TAvailableMenuSize availablesize;
 		TTreeNode *SizeNode		  = ((TEditorNode *)SizesNode->Data)->AddNode(SIZE_NODE, false);
 		SizeNode->Text			  = SizesInfo->Sizes[i].Size_Name;
 		TSizeNode *SizeData		  = (TSizeNode *)SizeNode->Data;
@@ -11048,6 +11093,14 @@ Menu::TServingCoursesInfo *ServingCoursesInfo)  // cww
 		SizeData->Weighed		  = SizesInfo->Sizes[i].Weighed;
 		SizeData->Size_ID		  = SizesInfo->Sizes[i].Size_ID;
 		SizeData->PalmID		  = SizesInfo->Sizes[i].PalmID;
+        availablesize.Key = SizeData->Key;
+        availablesize.KitchenName = SizeData->KitchenName;
+        availablesize.HandheldName = SizeData->HandheldName;
+        availablesize.ReceiptName = SizeData->ReceiptName;
+        availablesize.Weighed = SizeData->Weighed;
+        availablesize.Size_ID = SizeData->Size_ID;
+        availablesize.PalmID = SizeData->PalmID;
+        AllSizesForMenu[SizeData->LongDescription] = availablesize;
 	}
 	for (unsigned i=0; i<CategoriesInfo->CategoryGroups.size(); i++)
 	{
@@ -11096,6 +11149,8 @@ void *TfrmMenuEdit::AddServingCourses(Menu::TServingCoursesInfo *ServingCoursesI
 		CourseData->NewServingCourse = false;
 		CourseData->Selectable  	 = ServingCoursesInfo->ServingCourses[i].Selectable;
 	}
+    ServingCoursesList->Clear();
+    GetAllServingCourses(ServingCoursesList);
 	return NULL;
 }
 //---------------------------------------------------------------------------
@@ -12200,36 +12255,27 @@ void TfrmMenuEdit::SaveMenu( AnsiString inFileName, AnsiString inBackupFileName 
 		saveMenu->MenuName        = menuData->LongDescription;
 		saveMenu->MenuType        = rbFoodMenu->Checked ? Menu::mtFoodMenu : Menu::mtBeverageMenu;
 		saveMenu->AvailableOnPalm = chbAvailableOnPalm->Checked;
-
 		//........................................
-
 		// Category Groups
 		menuTreeNode = tvMenu->Items->GetFirstNode()->Item[CATEGORY_GROUPS_INDEX];
 		SaveMenuCategoryGroups( saveMenu, menuTreeNode );
-
 		// Sizes
 		menuTreeNode = tvMenu->Items->GetFirstNode()->Item[SIZES_INDEX];
 		SaveMenuSizes( saveMenu, menuTreeNode );
-
 		// Serving Courses
 		menuTreeNode = tvMenu->Items->GetFirstNode()->Item[SERVING_COURSES_INDEX];
 		SaveMenuServingCourses( saveMenu, menuTreeNode );
-
-		// 3rd Party Groups
+        // 3rd Party Groups
 		menuTreeNode = tvMenu->Items->GetFirstNode();
 		SaveMenuThirdPartyGroups( saveMenu, menuTreeNode );
-
 		// Tax Profiles
 		std::set<TaxProfile*> taxProfiles;
 		menuTaxProfileProvider->ReadAllTaxProfiles( taxProfiles );
 		SaveMenuTaxProfiles( saveMenu, &taxProfiles );
-
-		// Courses
+        // Courses
 		menuTreeNode = tvMenu->Items->GetFirstNode();
 		SaveMenuCourses( saveMenu, menuTreeNode );
-
 		//:::::::::::::::::::::::::::::::::::::::
-
 		saveMenu->Commit();
 
 		Application->MessageBox( "Menu Saved", "Save", MB_OK + MB_ICONINFORMATION );
@@ -12269,40 +12315,36 @@ void TfrmMenuEdit::SaveMenuCategoryGroups( TSaveMenu* inSaveMenu, TTreeNode* inC
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::SaveMenuSizes( TSaveMenu* inSaveMenu, TTreeNode* inSizesTreeNode )
 {
-	for( int i = 0; i < inSizesTreeNode->Count; i++ )
-	{
-		TSizeNode *SizeData = ( TSizeNode * )inSizesTreeNode->Item[i]->Data;
 
-		inSaveMenu->SaveSize( SizeData->Key,
-		UTF8Encode( SizeData->LongDescription ),
-		UTF8Encode( SizeData->KitchenName  ),
-		UTF8Encode( SizeData->HandheldName ),
-		UTF8Encode( SizeData->ReceiptName  ),
-		SizeData->Weighed,
-		SizeData->Size_ID,
-		SizeData->PalmID
+    for(std::map<AnsiString,  TAvailableMenuSize>::iterator it = AllSizesForMenu.begin(); it != AllSizesForMenu.end(); ++it)
+    {
+        inSaveMenu->SaveSize( it->second.Key,
+		UTF8Encode( it->first ),
+		UTF8Encode( it->second.KitchenName  ),
+		UTF8Encode( it->second.HandheldName ),
+		UTF8Encode( it->second.ReceiptName  ),
+		it->second.Weighed,
+		it->second.Size_ID,
+		it->second.PalmID
 		);
-	}
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::SaveMenuServingCourses( TSaveMenu* inSaveMenu, TTreeNode* inServingCoursesTreeNode )
 {
-	for( int i = 0; i < inServingCoursesTreeNode->Count; i++ )
-	{
-		TServingCourseNode *servingCourseData = ( TServingCourseNode * )inServingCoursesTreeNode->Item[i]->Data;
-		servingCourseData->DisplayOrder = i;
-
-		inSaveMenu->SaveServingCourse( servingCourseData->Key,
-		UTF8Encode( servingCourseData->LongDescription ),
-		UTF8Encode( servingCourseData->KitchenName ),
-		servingCourseData->Enabled,
-		servingCourseData->Deleted,
-		servingCourseData->Selectable,
-		servingCourseData->Colour,
-		servingCourseData->DisplayOrder
-		);
-	}
-
+    for( int i = 0; i < ServingCoursesList->Count; i+=8 )
+    {
+ 		inSaveMenu->SaveServingCourse
+        (
+          StrToInt(ServingCoursesList->Strings[i + 6]),
+		  UTF8Encode( ServingCoursesList->Strings[i] ),
+		  UTF8Encode( ServingCoursesList->Strings[i + 1] ),
+		  StrToBool(ServingCoursesList->Strings[i + 2]),
+		  StrToBool(ServingCoursesList->Strings[i + 3]),
+		  StrToBool(ServingCoursesList->Strings[i + 4]),
+		  StringToColor(ServingCoursesList->Strings[i + 5]),
+          StrToInt(ServingCoursesList->Strings[i + 7]) );
+    }
 	// Deleted Serving Courses that need to be notified to the POS
 	for (unsigned i=0; i<DeletedServingCoursesInfo.DeletedServingCourseVector.size(); i++)
 	{
@@ -12391,7 +12433,6 @@ void TfrmMenuEdit::SaveMenuTaxProfiles( TSaveMenu* inSaveMenu, std::set<TaxProfi
 	}
 }
 //---------------------------------------------------------------------------
-
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::SaveMenuCourses( TSaveMenu* inSaveMenu, TTreeNode* inMenuNode )
 {

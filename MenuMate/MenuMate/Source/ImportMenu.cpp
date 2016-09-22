@@ -43,7 +43,7 @@ bool TImportMenu::ImportFromXMLFilesInDir( AnsiString inDirName )
 
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-	AnsiString path = ExtractFilePath( Application->ExeName ) + "Menu Import\\";
+	UnicodeString path = ExtractFilePath( Application->ExeName ) + "Menu Import\\";
 
 	TSearchRec sr;
 	int iAttributes = faAnyFile;
@@ -56,7 +56,7 @@ bool TImportMenu::ImportFromXMLFilesInDir( AnsiString inDirName )
 	{
 		if (sr.Attr & iAttributes)
 		{
-			result = ImportFromXMLFile( path + sr.Name );
+			result = ImportFromXMLFile( path + sr.Name);
 		}
 		while( FindNext(sr) == 0 )
 		{
@@ -67,13 +67,12 @@ bool TImportMenu::ImportFromXMLFilesInDir( AnsiString inDirName )
 		}
 	}
 	FindClose(sr);
-
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 	return result;
 }
 //...........................................................................
-bool TImportMenu::ImportFromXMLFile( AnsiString inFileName )
+bool TImportMenu::ImportFromXMLFile( UnicodeString inFileName )
 {
 	bool result = false;
 
@@ -152,7 +151,6 @@ bool TImportMenu::ImportFromXMLFile( AnsiString inFileName )
         // so we can rollback in a event of an error
         dbTransaction->Commit();
         //...................................................
-
 	    MoveMenuFile( inFileName, ExtractFilePath( Application->ExeName ) + "Menu Import\\Old Menus\\" );
 	}
 	else
@@ -163,7 +161,6 @@ bool TImportMenu::ImportFromXMLFile( AnsiString inFileName )
             dbTransaction->Rollback();
         }
         //...................................................
-
 	   MoveMenuFile( inFileName, ExtractFilePath( Application->ExeName ) + "Menu Import\\Failed\\" );
 	}
 
@@ -3805,27 +3802,29 @@ __int32 TImportMenu::getNextNewCOO()
 }
 // ---------------------------------------------------------------------------
 
-void TImportMenu::MoveMenuFile( AnsiString inFileName, AnsiString inDestPath )
+void TImportMenu::MoveMenuFile( UnicodeString inFileName, UnicodeString inDestPath )
 {
+    UnicodeString destFileName;
 	if( !DirectoryExists( inDestPath ) )
 	{
 		ForceDirectories( inDestPath );
 	}
 
-	AnsiString destFileName = inDestPath + Now().FormatString("yyyy-mm-dd - hh-nn-ss ") +
+	destFileName = inDestPath + Now().FormatString("yyyy-mm-dd - hh-nn-ss ") +
 							  ExtractFileName( inFileName );
 	if( FileExists( destFileName ) )
 	{
 		DeleteFile( destFileName );
 	}
 
-	if( CopyFile( inFileName.c_str(), destFileName.c_str(), false ) != 0 )
+	if( CopyFileW( inFileName.c_str(), destFileName.c_str(), false ) != 0 )
 	{
 		if( FileExists( inFileName ) )
 		{
 			DeleteFile( inFileName );
 		}
 	}
+
 }
 // ---------------------------------------------------------------------------
 
