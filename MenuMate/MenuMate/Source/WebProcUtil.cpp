@@ -318,6 +318,10 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
                    WebOrderChitNumber.DeliveryTime = WebOrder.DateExpected;
                 }
            }
+           else
+           {
+               WebOrderChitNumber.DeliveryTime = WebOrder.DateExpected;
+           }
            PaymentTransaction.ChitNumber = WebOrderChitNumber;
         }
 

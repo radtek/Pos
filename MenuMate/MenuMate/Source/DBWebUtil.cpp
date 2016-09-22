@@ -1644,11 +1644,11 @@ UnicodeString TDBWebUtil::LoadPaymentStatus(Database::TDBTransaction &DBTransact
 
             if(prepaidAmount > 0)
             {
-                paidStatus = "Paid";
+                paidStatus = "PAID";
             }
             else
             {
-                paidStatus = "Unpaid";
+                paidStatus = "TO BE PAID FOR";
             }
             return paidStatus;
         }

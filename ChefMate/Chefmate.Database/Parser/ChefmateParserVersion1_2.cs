@@ -34,7 +34,7 @@ namespace Chefmate.Database.Parser
 		                        ADD CUSTOMER_PHONE Varchar(25),
                                 ADD CUSTOMER_EMAIL Varchar(50),
                                 ADD CUSTOMER_ADDRESS Varchar(250),
-                                ADD PAYMENT_STATUS Varchar(10),
+                                ADD PAYMENT_STATUS Varchar(20),
                                 ADD ORDER_ACTION Varchar(20);";
             CheckAndCreateColumn("ORDERS", "CUSTOMER_PHONE", query);
             CheckAndCreateColumn("ORDERS", "CUSTOMER_EMAIL", query);
