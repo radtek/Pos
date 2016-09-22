@@ -3553,7 +3553,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
         TDiscount CurrentDiscount;
         ManagerDiscount->GetDiscount(PaymentTransaction.DBTransaction,(*it_discount).DiscountKey,CurrentDiscount);
 
-        double discountAmount = RoundToNearest((*it_discount).Value,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+        double discountAmount = (*it_discount).Value;
         if(it_discount->DiscountType == BillCalculator::dtDiscount)
            discountAmount = -1.0 * discountAmount;
         if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
