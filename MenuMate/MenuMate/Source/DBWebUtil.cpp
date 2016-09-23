@@ -1606,10 +1606,10 @@ TMMContactInfo TDBWebUtil::LoadMemberDetails(Database::TDBTransaction &DBTransac
 
             IBInternalQuery->Close();
             IBInternalQuery->SQL->Clear();
-            IBInternalQuery->SQL->Text = selectQuery +  " = 'Recipient'";
+            IBInternalQuery->SQL->Text = "SELECT a.NAME FROM WEBORDERS a where a.WEBORDER_KEY = :WEBORDER_KEY ";
             IBInternalQuery->ParamByName("WEBORDER_KEY")->AsString = webKey;
             IBInternalQuery->ExecQuery();
-            memberInfo.Name = IBInternalQuery->FieldByName("DATA")->AsString;
+            memberInfo.Name = IBInternalQuery->FieldByName("NAME")->AsString;
 
             IBInternalQuery->Close();
             IBInternalQuery->SQL->Clear();

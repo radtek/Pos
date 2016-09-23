@@ -23,6 +23,7 @@ using Chefmate.UI.Controller;
 using Chefmate.UI.UserControls;
 using Application = System.Windows.Application;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using Chefmate.Database.DbModels;
 
 namespace Chefmate.UI.Views
 {
@@ -84,6 +85,7 @@ namespace Chefmate.UI.Views
             NavigateRightCommand = new DelegateCommand(ScrollToRight);
             CurrentDisplayOrders = new ObservableCollection<Order>();
             TotalOrders = new ObservableCollection<Order>();
+            WebOrders = new ObservableCollection<Order>();
             this.IsEnabled = false;
         }
 
@@ -160,6 +162,18 @@ namespace Chefmate.UI.Views
             {
                 _isRecallEnabled = value;
                 OnPropertyChanged("IsRecallEnabled");
+            }
+        }
+        public ObservableCollection<Order> WebOrders
+        {
+            get
+            {
+                return ChefmateController.Instance.WebOrders;
+            }
+            set
+            {
+                ChefmateController.Instance.WebOrders = value;
+                OnPropertyChanged("WebOrders");
             }
         }
         #endregion
@@ -489,9 +503,14 @@ namespace Chefmate.UI.Views
                 var canAdd = webOrder.DeliveryTime.Subtract(DateTime.Now).TotalMinutes <= ChefmateController.Instance.CurrentSettings.WebOrderTime;
                 if (canAdd)
                 {
+                    webOrder.ArrivalTime = DateTime.Now;
                     ordersToRemove.Add(webOrder.OrderKey);
                     TotalOrders.Add(webOrder);
                     FilterOrder(webOrder);
+                    AnalyticalData.TotalOrdersCount++;
+                    AnalyticalData.CurrentOrdersCount++;
+                    AnalyticalData.CurrentItems += webOrder.Items.Count;
+                    DbOrder.UpdateOrderArrivalTime(webOrder.OrderKey);
                 }
             }
             ChefmateController.Instance.WebOrders.RemoveAll(s => ordersToRemove.Contains(s.OrderKey));

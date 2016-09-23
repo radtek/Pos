@@ -284,5 +284,14 @@ namespace Chefmate.Database.DbModels
             if (servingCourseFound && courseFound)
                 order.Items.Add(item);
         }
+        public static void UpdateOrderArrivalTime(int orderKey)
+        {
+            var whereCondition = " WHERE ORDER_KEY=@ORDER_KEY";
+            var parameters = new List<QueryParameter>();
+            parameters.Add(new QueryParameter("ARRIVAL_TIME", DateTime.Now));
+            var queryString = DatabaseCore.Instance.BuildUpdateQuery("ORDERS", parameters, whereCondition);
+            parameters.Add(new QueryParameter("ORDER_KEY", orderKey));
+            DatabaseCore.Instance.ExecuteNonQuery(queryString, parameters);
+        }
     }
 }

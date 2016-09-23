@@ -82,7 +82,7 @@
         <Setter Property="Text" Value="{Binding Name}"></Setter>
         <Setter Property="TextWrapping" Value="Wrap"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
-        <Setter Property="Height" Value="50"></Setter>
+        <Setter Property="MaxHeight" Value="35"></Setter>
         <Style.Triggers>
             <DataTrigger Binding="{Binding OrderStatus}" Value="{x:Static enums:OrderStatus.Bumped}">
                 <Setter Property="TextBlock.TextDecorations" >
@@ -206,8 +206,6 @@
         </Style.Triggers>
     </Style>
     <Style x:Key="NoteLable" TargetType="{x:Type TextBlock}">
-        <Setter Property="MaxHeight" Value="40"></Setter>
-        <Setter Property="Height" Value="40"></Setter>
         <Setter Property="FontSize" Value="12"></Setter>
         <Setter Property="Foreground" Value="Red"></Setter>
         <Setter Property="TextWrapping" Value="WrapWithOverflow"></Setter>

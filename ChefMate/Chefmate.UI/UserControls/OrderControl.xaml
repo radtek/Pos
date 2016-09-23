@@ -133,16 +133,18 @@
                                                             <ColumnDefinition Width=".75*"/>
                                                             <ColumnDefinition Width=".25*"/>
                                                         </Grid.ColumnDefinitions>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition/>
+                                                        <Grid Grid.Column="0" Height="50">
+                                                        <Grid.RowDefinitions >
+                                                                <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
                                                         </Grid.RowDefinitions>
-                                                        <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource ItemLable}"/>
-                                                        <userControls:PopupButton Grid.Row="0" Grid.Column="1" ItemType="3"
-                                                                              Item="{Binding BindsDirectlyToSource=True}"/>
-                                                        <TextBlock  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                                                          Visibility="{Binding IsNoteVisible,Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                                            <TextBlock Grid.Row="0"  Style="{StaticResource ItemLable}"/>
+                                                            <TextBlock  Grid.Row="1" Visibility="{Binding IsNoteVisible,Converter={StaticResource BooleanToVisibilityConverter}}" 
                                                                            Style="{StaticResource NoteLable}" Text="{Binding Note}"/>
+                                                        </Grid>
+
+                                                        <userControls:PopupButton Grid.Column="1" ItemType="3"
+                                                                              Item="{Binding BindsDirectlyToSource=True}"/>
                                                     </Grid>
                                                     <ItemsControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                                                               Visibility="{Binding IsChildVisible,Converter={StaticResource BooleanToVisibilityConverter}}"
