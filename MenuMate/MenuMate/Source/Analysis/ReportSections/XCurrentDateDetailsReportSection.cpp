@@ -31,7 +31,7 @@ void XCurrentDateDetailsReportSection::GetOutput(TPrintout* printout)
         printout->PrintFormat->AddLine();
         DataCalculationUtilities* dataCalculationUtilities = new DataCalculationUtilities;
         int value = dataCalculationUtilities->GetZedKey(*_dbTransaction);
-        value += value;
+        value += 1;
         printout->PrintFormat->Line->Columns[0]->Text = "#" + IntToStr(value);
         printout->PrintFormat->AddLine();
 
