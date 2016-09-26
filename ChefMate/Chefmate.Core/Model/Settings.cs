@@ -32,6 +32,8 @@ namespace Chefmate.Core.Model
         private KeypadOperation _keypadOperation;
         private OrderLayout _orderLayout;
         private int _cmFontSize;
+        private int _webOrderTime;
+       
         public Settings()
         {
             GroupType = GroupType.ServingCourse;
@@ -44,6 +46,7 @@ namespace Chefmate.Core.Model
             OrderLayout = OrderLayout.TwoByFour;
             FirstWarningTime = 100;
             SecondWarningTime = 200;
+            WebOrderTime = 20;
         }
         public bool AutoHide
         {
@@ -115,6 +118,15 @@ namespace Chefmate.Core.Model
             {
                 _cmFontSize = value;
                 OnPropertyChanged("CmFontSize");
+            }
+        }
+        public int WebOrderTime
+        {
+            get { return _webOrderTime; }
+            set 
+            { 
+                _webOrderTime = value;
+                OnPropertyChanged("WebOrderTime");
             }
         }
         public string DbIpAddress

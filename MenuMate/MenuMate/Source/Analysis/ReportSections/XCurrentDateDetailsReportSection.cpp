@@ -29,5 +29,8 @@ void XCurrentDateDetailsReportSection::GetOutput(TPrintout* printout)
         const TMMContactInfo &staff_member = TfrmAnalysis::GetLastAuthenticatedUser();
         printout->PrintFormat->Line->Columns[0]->Text =staff_member.Name;
         printout->PrintFormat->AddLine();
+        printout->PrintFormat->Line->Columns[0]->Text = "#" + UnicodeString(TGlobalSettings::Instance().ZCount);
+        printout->PrintFormat->AddLine();
     }
+        
 }

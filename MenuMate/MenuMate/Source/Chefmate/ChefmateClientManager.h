@@ -24,6 +24,7 @@ class TChefmateClientManager
         CMC_ERROR SendCancelOrder( TList* inElementsToCancel , AnsiString inTabTableName);
         CMC_ERROR SendCallAwayOrder( TCallAwayComplete* inCallAway );
         CMC_ERROR SendReplacementOrder( TPaymentTransaction* inTransaction );
+        CMC_ERROR SendWebOrder( TPaymentTransaction* inTransaction , UnicodeString paymentStaus, TMMContactInfo customerInfo);
 
     private:
        bool TChefmateClientManager::chefMateEnabled();

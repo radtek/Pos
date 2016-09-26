@@ -26,25 +26,25 @@
                     <ColumnDefinition Width=".25*"/>
                     <ColumnDefinition Width=".25*"/>
                 </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Style="{StaticResource GroupBorder}">
+                <Border Grid.Column="0" Style="{StaticResource AnalysisGroupBorder}">
                     <StackPanel Orientation="Vertical" VerticalAlignment="Top">
                         <Label Style="{StaticResource AnalysisHeaderLable}">Total Orders</Label>
                         <Label Style="{StaticResource AnalysisValueLable}" Content="{Binding AnalyticalData.TotalOrdersCount}"/>
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="1" Style="{StaticResource GroupBorder}">
+                <Border Grid.Column="1" Style="{StaticResource AnalysisGroupBorder}">
                     <StackPanel Orientation="Vertical" VerticalAlignment="Top">
                         <Label Style="{StaticResource AnalysisHeaderLable}">Current Orders</Label>
                         <Label Style="{StaticResource AnalysisValueLable}" Content="{Binding AnalyticalData.CurrentOrdersCount}"/>
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="2" Style="{StaticResource GroupBorder}">
+                <Border Grid.Column="2" Style="{StaticResource AnalysisGroupBorder}">
                     <StackPanel Orientation="Vertical" VerticalAlignment="Top">
                         <Label Style="{StaticResource AnalysisHeaderLable}">Current Items</Label>
                         <Label Style="{StaticResource AnalysisValueLable}" Content="{Binding AnalyticalData.CurrentItems}"/>
                     </StackPanel>
                 </Border>
-                <Border Grid.Column="3" Style="{StaticResource GroupBorder}">
+                <Border Grid.Column="3" Style="{StaticResource AnalysisGroupBorder}">
                     <StackPanel Orientation="Vertical"  VerticalAlignment="Top">
                         <Label Style="{StaticResource AnalysisHeaderLable}">Average Make Time</Label>
                         <Label Style="{StaticResource AnalysisValueLable}" Content="{Binding AnalyticalData.AverageMakeTime}"/>
