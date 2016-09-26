@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -22,6 +23,7 @@ using Chefmate.UI.Controller;
 using Chefmate.UI.UserControls;
 using Application = System.Windows.Application;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using Chefmate.Database.DbModels;
 
 namespace Chefmate.UI.Views
 {
@@ -83,6 +85,7 @@ namespace Chefmate.UI.Views
             NavigateRightCommand = new DelegateCommand(ScrollToRight);
             CurrentDisplayOrders = new ObservableCollection<Order>();
             TotalOrders = new ObservableCollection<Order>();
+            WebOrders = new ObservableCollection<Order>();
             this.IsEnabled = false;
         }
 
@@ -159,6 +162,18 @@ namespace Chefmate.UI.Views
             {
                 _isRecallEnabled = value;
                 OnPropertyChanged("IsRecallEnabled");
+            }
+        }
+        public ObservableCollection<Order> WebOrders
+        {
+            get
+            {
+                return ChefmateController.Instance.WebOrders;
+            }
+            set
+            {
+                ChefmateController.Instance.WebOrders = value;
+                OnPropertyChanged("WebOrders");
             }
         }
         #endregion
@@ -377,7 +392,7 @@ namespace Chefmate.UI.Views
         {
             var order = new Order(inOrder);
             if (inHeaderVisible)
-                remainigHeight -= ChefmateConstants.OrderHeaderHeight;
+                remainigHeight -= inOrder.OrderAction == ChefmateConstants.WebOrderAction ? ChefmateConstants.WebOrderHeaderHeight : ChefmateConstants.OrderHeaderHeight;
             while (remainigHeight >= ChefmateConstants.UnitHeight && orderGuiIndex.GroupIndex < inOrder.DisplayGroups.Count)
             {
                 var group = GetGroupForHeight(inOrder.DisplayGroups[orderGuiIndex.GroupIndex], ref remainigHeight, orderGuiIndex);
@@ -473,6 +488,33 @@ namespace Chefmate.UI.Views
         {
             return inOrder.CordX >= ParentScroller.HorizontalOffset && inOrder.CordX < (ParentScroller.HorizontalOffset + this.ActualWidth);
         }
+        private bool CanAddOrderToGui(Order inOrder)
+        {
+            bool retVal = inOrder.OrderAction.Equals(ChefmateConstants.OrderAction, StringComparison.InvariantCultureIgnoreCase) &&
+                inOrder.OrderState == OrderState.Complete && OutputTime.Immediately != ChefmateController.Instance.CurrentSettings.OutputTime;
+            return retVal;
+        }
+
+        private void AddPendingWebOrdersToGui()
+        {
+            var ordersToRemove = new List<int>();
+            foreach (var webOrder in ChefmateController.Instance.WebOrders)
+            {
+                var canAdd = webOrder.DeliveryTime.Subtract(DateTime.Now).TotalMinutes <= ChefmateController.Instance.CurrentSettings.WebOrderTime;
+                if (canAdd)
+                {
+                    webOrder.ArrivalTime = DateTime.Now;
+                    ordersToRemove.Add(webOrder.OrderKey);
+                    TotalOrders.Add(webOrder);
+                    FilterOrder(webOrder);
+                    AnalyticalData.TotalOrdersCount++;
+                    AnalyticalData.CurrentOrdersCount++;
+                    AnalyticalData.CurrentItems += webOrder.Items.Count;
+                    DbOrder.UpdateOrderArrivalTime(webOrder.OrderKey);
+                }
+            }
+            ChefmateController.Instance.WebOrders.RemoveAll(s => ordersToRemove.Contains(s.OrderKey));
+        }
 
 
         #endregion
@@ -495,7 +537,7 @@ namespace Chefmate.UI.Views
                 Action(() =>
                 {
                     StopTimer();
-                    bool addOrder = order.OrderState == OrderState.Complete && OutputTime.Immediately != ChefmateController.Instance.CurrentSettings.OutputTime;
+                    bool addOrder = CanAddOrderToGui(order);
                     ChefmateController.Instance.AddOrder(order);
                     if (addOrder)
                         FilterOrder(order);
@@ -691,7 +733,11 @@ namespace Chefmate.UI.Views
         }
         private void OrderTimerOnTick(object sender, EventArgs eventArgs)
         {
-            Application.Current.Dispatcher.Invoke(new Action(UpdateOrderInfoDisplay));
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                AddPendingWebOrdersToGui();
+                UpdateOrderInfoDisplay();
+            }));
         }
         private void StartTimer()
         {

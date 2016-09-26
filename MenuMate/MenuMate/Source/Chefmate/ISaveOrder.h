@@ -27,7 +27,11 @@ class ISaveOrder
 										  AnsiString inPartyName,
 										  AnsiString inPatronCount,
 										  AnsiString inSaleStartTime,
-										  AnsiString inDeliveryTime) = 0;
+										  AnsiString inDeliveryTime,
+                                          AnsiString phone,
+                                          AnsiString email,
+                                          AnsiString address,
+                                          AnsiString paymentStatus ) = 0;
 
 		// Opens an Incomplete Order
 		// Order's components must be added afterwards

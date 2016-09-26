@@ -187,8 +187,6 @@ namespace Chefmate.Core.Model
         {
             var itemHeight =  ChefmateConstants.UnitHeight + Sides.Count * ChefmateConstants.UnitHeight +
                              Options.Count * ChefmateConstants.UnitHeight;
-            if (!string.IsNullOrWhiteSpace(Note))
-                itemHeight += ChefmateConstants.NoteHeight;
             return itemHeight;
         }
     }

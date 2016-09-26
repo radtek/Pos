@@ -180,7 +180,7 @@ namespace Chefmate.Core.Model
 
         public double GetGroupActualHeight()
         {
-            var groupHeight = DisplayAttributes.IsHeaderVisible ? ChefmateConstants.UnitHeight : 0;
+            var groupHeight = ChefmateConstants.UnitHeight;
             foreach (var item in Items)
             {
                 var itemHeight = item.GetItemActualHeight();

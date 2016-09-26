@@ -42,6 +42,7 @@ namespace Chefmate.UI.Views
             DatabaseAddressPreviewMouseUpCommand = new DelegateCommand(DatabaseAddreddMouseUp);
             FirstWarningPreviewMouseUpCommand = new DelegateCommand(FirstWarningTimeClick);
             SecondWarningPreviewMouseUpCommand = new DelegateCommand(SecondWarningTimeClick);
+            WebOrderTimePreviewMouseUpCommand = new DelegateCommand(WebOrderTimeClick);
             this.DataContext = this;
         }
 
@@ -54,6 +55,7 @@ namespace Chefmate.UI.Views
         public ICommand TerminalAddressPreviewMouseUpCommand { get; set; }
         public ICommand FirstWarningPreviewMouseUpCommand { get; set; }
         public ICommand SecondWarningPreviewMouseUpCommand { get; set; }
+        public ICommand WebOrderTimePreviewMouseUpCommand { get; set; }
 
         #region Properties
         public Settings CurrentSettings
@@ -154,6 +156,15 @@ namespace Chefmate.UI.Views
                 CurrentSettings.SecondWarningTime = time;
             }
         }
+        private void WebOrderTimeClick(object sender)
+        {
+            string webOrderTime = KeyboardController.Instance.OpenNumPad(Convert.ToString(CurrentSettings.WebOrderTime), NumpadMode.Numeric);
+            int time = 0;
+            if (int.TryParse(webOrderTime, out time))
+            {
+                CurrentSettings.WebOrderTime = time;
+            }
+        }
         private void TerminalAddressClick(object sender)
         {
             CurrentSettings.TerminalIpAddress = KeyboardController.Instance.OpenNumPad(CurrentSettings.TerminalIpAddress, NumpadMode.IpAddress);
@@ -227,6 +238,11 @@ namespace Chefmate.UI.Views
             if (CurrentSettings.FirstWarningTime >= CurrentSettings.SecondWarningTime)
             {
                 ValidationError = "First warning time can't be greater than or equal to second warning time.";
+                return false;
+            }
+            if (CurrentSettings.WebOrderTime == 0)
+            {
+                ValidationError = "Web Order time should be greater than 0.";
                 return false;
             }
             try

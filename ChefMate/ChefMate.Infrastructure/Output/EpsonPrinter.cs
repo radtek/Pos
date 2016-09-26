@@ -54,7 +54,7 @@
 
         private string Line()
         {
-            return new string(SingleLine, _printerLineWidth) + PrinterNewLine;
+            return new string('_', _printerLineWidth) + PrinterNewLine;
         }
 
         private string Cut()
