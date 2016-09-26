@@ -149,6 +149,11 @@
                               IS_BUMPED Integer,
                               ARRIVAL_TIME Timestamp,
                               BUMP_TIME Timestamp,
+                              CUSTOMER_PHONE Varchar(25),
+                              CUSTOMER_EMAIL Varchar(50),
+                              CUSTOMER_ADDRESS Varchar(250),
+                              PAYMENT_STATUS Varchar(20),
+                              ORDER_ACTION Varchar(20),
                               PRIMARY KEY (ORDER_KEY)
                             );";
             CheckAndCreateTable("ORDERS", query);

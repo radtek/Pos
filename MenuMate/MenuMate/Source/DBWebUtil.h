@@ -80,5 +80,7 @@ public:
     static void TDBWebUtil::getWebOrderData(Database::TDBTransaction &DBTransaction, TStringList *webDeliveryDetails, TStringList *webPaymentDetials, TStringList *webComments,  int web_key);
     static TChitNumber InitializeChit(int web_key, TChitNumber &WebOrderChitNumber);//,TChitNumberController &ChitNumberController);
     static void AssignChitNumber(Database::TDBTransaction &DBTransaction, TChitNumber &chit_number, TChitNumber &WebOrderChitNumber);//, TChitNumberController &ChitNumberController);
+    static TMMContactInfo LoadMemberDetails(Database::TDBTransaction &DBTransaction, int webKey);
+    static UnicodeString LoadPaymentStatus(Database::TDBTransaction &DBTransaction, int webKey);
 };
 #endif

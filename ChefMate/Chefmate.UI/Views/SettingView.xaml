@@ -140,7 +140,23 @@
                         </Grid>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="1" Style="{StaticResource MarginalGroupBorder}">
-                        <CheckBox Content="Bump Only" IsChecked="{Binding CurrentSettings.BumpOnly}"></CheckBox>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition  />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Grid.Row="0" Content="Bump Only" IsChecked="{Binding CurrentSettings.BumpOnly}"></CheckBox>
+                            <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Display Web Order Time :</Label>
+                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormTextBox}" Text="{Binding CurrentSettings.WebOrderTime}">
+                                <TextBox.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding Path=WebOrderTimePreviewMouseUpCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </Grid>                        
                     </Border>
                     <Border Grid.Row="5" Grid.Column="2" Style="{StaticResource MarginalGroupBorder}">
                         <StackPanel Orientation="Vertical">

@@ -55,6 +55,7 @@ namespace ChefMate.Database
             settings.OrderLayout = (OrderLayout)settingCollection["OrderLayout"].ToInteger();
             settings.RecallCount = settingCollection["RecallCount"].ToInteger();
             settings.CmFontSize = settingCollection["FontSize"].ToInteger();
+            settings.WebOrderTime = settingCollection["WebOrderTime"].ToInteger();
             return settings;
         }
         public static bool AddSettings(Settings settings, int terminakKey)
@@ -88,6 +89,7 @@ namespace ChefMate.Database
             AddSettingRow("OrderLayout", Convert.ToInt32(settings.OrderLayout), terminakKey);
             AddSettingRow("RecallCount", Convert.ToInt32(settings.RecallCount), terminakKey);
             AddSettingRow("FontSize", Convert.ToInt32(settings.CmFontSize), terminakKey);
+            AddSettingRow("WebOrderTime", Convert.ToInt32(settings.WebOrderTime), terminakKey);
             return true;
         }
         public static void AddSettingRow(string key, string value, int terminakKey)
@@ -154,6 +156,7 @@ namespace ChefMate.Database
             SaveSettingRow("OrderLayout", Convert.ToInt32(settings.OrderLayout), terminakKey);
             SaveSettingRow("RecallCount", settings.RecallCount, terminakKey);
             SaveSettingRow("FontSize", settings.CmFontSize, terminakKey);
+            SaveSettingRow("WebOrderTime", settings.WebOrderTime, terminakKey);
         }
         public static void SaveSettingRow(string key, string value, int terminakKey)
         {
