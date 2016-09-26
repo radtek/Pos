@@ -117,6 +117,8 @@ public:
     bool IsFirstVisitRewarded;
 
     bool ValidateMandatoryField(AnsiString& message);
+    bool ValidateLastName(AnsiString& message);
+    bool ValidateFirstName(AnsiString& message);
 protected:
 	TMMContactInfo( UnicodeString inName );
 };

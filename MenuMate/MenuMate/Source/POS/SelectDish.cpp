@@ -1283,9 +1283,16 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 
 		if(!ItemFound && !(TGlobalSettings::Instance().IsThorlinkSelected))
 		{
+              if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
+              {
+                 MessageBox("No Item Found, Press OK to continue.", "No Item Found", MB_OK + MB_ICONWARNING);
+              }
+              else
+              {
               DBTransaction.StartTransaction();
               GetMemberByBarcode(DBTransaction,Data);
               DBTransaction.Commit();
+              }
 		}
 	}
 }
