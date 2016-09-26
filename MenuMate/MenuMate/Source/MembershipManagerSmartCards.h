@@ -77,7 +77,7 @@ public:
    ~TManagerMembershipSmartCards();
    bool MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo);
    bool UpdateMemberCardCode(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode);
-   bool GetMemberDetailFromBarcode(TMMContactInfo &MMContactInfo,bool &isModalCancel);
+   bool GetMemberDetailFromBarcode(TMMContactInfo &MMContactInfo);
    void SyncBarcodeMemberDetailWithCloud(TMMContactInfo &MMContactInfo);
    void RewardBirthdaybenefit(TPaymentTransaction &PaymentTransaction);
    void RewardFirstVisitPoints(TPaymentTransaction &PaymentTransaction);
@@ -88,7 +88,7 @@ private:
 	void BlockNewSmartCard(Database::TDBTransaction &DBTransaction, TMMContactInfo &MMContactInfo, TSyndCode &SyndCode);
     void performLoyaltyMateOperations();
 	bool runMemberDownloadThread(TSyndCode CurrentSyndicateCode, TMMContactInfo &SmartCardContact,
-                                 bool useUUID, bool useMemberCode, bool useEmail,bool &memberNotExist,bool &isCancel);
+                                 bool useUUID, bool useMemberCode, bool useEmail,bool &memberNotExist);
 	AnsiString GetActivationEmailFromUser();
 	TDateTime GetCardCreationDateFromContactKey(Database::TDBTransaction &DBTransaction, int inContactKey);
     TfrmLoyaltyMateOperationDialogBox* _lmOperationDialogBox;

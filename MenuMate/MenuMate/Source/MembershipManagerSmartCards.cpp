@@ -1979,10 +1979,9 @@ AnsiString TManagerMembershipSmartCards::GetActivationEmailFromUser()
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 bool TManagerMembershipSmartCards::runMemberDownloadThread(TSyndCode CurrentSyndicateCode,TMMContactInfo &SmartCardContact,
-bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist,bool &isCancel)
+bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
 {
 	bool replacePointsFromCloud = true;
-    bool dialogResultSuccessful = false;
 	TLoyaltyMateDownloadMemberThread* loyaltyMemberDownloadThread = new TLoyaltyMateDownloadMemberThread(CurrentSyndicateCode,replacePointsFromCloud);
 	loyaltyMemberDownloadThread->FreeOnTerminate = true;
 	loyaltyMemberDownloadThread->UUID = SmartCardContact.CloudUUID;
@@ -1998,9 +1997,8 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist,bool &isCanc
 	loyaltyMateOperationDialogBox->DownloadThread 		= loyaltyMemberDownloadThread;
 	loyaltyMateOperationDialogBox->Info			= SmartCardContact;
 	loyaltyMemberDownloadThread->Start();
-    int isSuccess = 0;
-    isSuccess = loyaltyMateOperationDialogBox->ShowModal();
-	if(isSuccess == mrOk)
+    bool dialogResultSuccessful = loyaltyMateOperationDialogBox->ShowModal() == mrOk;
+	if(dialogResultSuccessful)
 	{
         dialogResultSuccessful = true;
 		//download complete, copy the values across and display the member information
@@ -2034,16 +2032,9 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist,bool &isCanc
         TPointsRulesSetUtils().Expand(loyaltyMateOperationDialogBox->Info.PointRule, SmartCardContact.Points.PointsRules);
         SmartCardContact.MemberVouchers = loyaltyMateOperationDialogBox->Info.MemberVouchers;
 	}
-    if(isSuccess == mrAbort)
+    else
     {
-      dialogResultSuccessful = false;
       memberNotExist = loyaltyMateOperationDialogBox->BarcodeMemberNotExist;
-    }
-    if(isSuccess == mrCancel)
-    {
-     dialogResultSuccessful = false;
-     memberNotExist = true;
-     isCancel = true;
     }
 	return dialogResultSuccessful;
 }
@@ -2090,9 +2081,7 @@ void TManagerMembershipSmartCards::GetMemberDetail(TMMContactInfo &MMContactInfo
    bool MemberNotExist = false;
    bool isCancel = false;
    TGlobalSettings::Instance().IsPOSOffline = !runMemberDownloadThread(ManagerSyndicateCode.GetDefaultSyndCode(),MMContactInfo,
-                                               true,false,false,MemberNotExist,isCancel);
-   if(!isCancel)
-   {
+                                               true,false,false,MemberNotExist);
    if(TGlobalSettings::Instance().IsPOSOffline)
    {
      MessageBox( "Unable to read data from server. Members may not be able to spend their points for the time being.", "Message", MB_ICONINFORMATION + MB_OK);
@@ -2104,7 +2093,6 @@ void TManagerMembershipSmartCards::GetMemberDetail(TMMContactInfo &MMContactInfo
        MembershipSystem->AvailableEarnedPoint = MMContactInfo.Points.getPointsBalance(ptstLoyalty) + MembershipSystem->AvailableBDPoint +  MembershipSystem->AvailableFVPoint;
        MembershipSystem->AvailableLoadedPoint = MMContactInfo.Points.getPointsBalance(ptstAccount);
        MembershipSystem->MemberVouchers = MMContactInfo.MemberVouchers;
-   }
 }
 
 void TManagerMembershipSmartCards::SaveContactProfileOnDownload(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
@@ -2184,28 +2172,22 @@ void TManagerMembershipSmartCards::SaveContactInfoOnDownload(Database::TDBTransa
 //Barcode
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-bool TManagerMembershipSmartCards::GetMemberDetailFromBarcode(TMMContactInfo &MMContactInfo,bool &isModalCancel)
+bool TManagerMembershipSmartCards::GetMemberDetailFromBarcode(TMMContactInfo &MMContactInfo)
 {
    bool memberDownloadStatus = false;
    bool MemberNotExist = false;
-   bool isCancel = false;
    if(ManagerSyndicateCode.GetDefaultSyndCode().Valid())
    {
-       memberDownloadStatus = runMemberDownloadThread(ManagerSyndicateCode.GetDefaultSyndCode(),MMContactInfo,false,true,false,MemberNotExist,isCancel);
+       memberDownloadStatus = runMemberDownloadThread(ManagerSyndicateCode.GetDefaultSyndCode(),MMContactInfo,false,true,false,MemberNotExist);
+       
        if(MemberNotExist)
         {
            TGlobalSettings::Instance().IsPOSOffline = false;
-           if(isCancel)
-           {
-             isModalCancel = true;
-           }
         }
        else
         {
            TGlobalSettings::Instance().IsPOSOffline = !memberDownloadStatus;
         }
-       if(!isCancel)
-       {
        if(TGlobalSettings::Instance().IsPOSOffline)
        {
          MessageBox( "Unable to read data from Cloud. Members may not be able to spend their points for the time being.", "Message", MB_ICONINFORMATION + MB_OK);
@@ -2218,7 +2200,6 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromBarcode(TMMContactInfo &MM
        MembershipSystem->AvailableLoadedPoint = MMContactInfo.Points.getPointsBalance(ptstAccount);
        MembershipSystem->MemberVouchers = MMContactInfo.MemberVouchers;
        }
-   }
    else
    {
       MessageBox( "Syndicate Code is not valid.", "Message", MB_ICONINFORMATION + MB_OK);
@@ -2241,11 +2222,17 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
             if (TGlobalSettings::Instance().LoyaltyMateEnabled)
 			{
 				//Get information from cloud
-			   memberNotExist = GetMemberDetailFromBarcode(SmartCardContact,isCancel);
+			   memberNotExist = GetMemberDetailFromBarcode(SmartCardContact);
 			}
-
-			if (SmartCardContact.ContactKey == 0 && !isCancel)
-			{
+            if(memberNotExist)
+            {
+                if(MessageBox("No Item/Member found, Press Ok to create a new member or Cancel to continue.","Member Not Exist", MB_OKCANCEL + MB_ICONQUESTION) == ID_CANCEL)
+                   {
+                        return false;
+                   }
+			}
+            if (SmartCardContact.ContactKey == 0)
+            {
                 if(memberNotExist || !TGlobalSettings::Instance().LoyaltyMateEnabled)
                  {
                     bool canAddMember = false;
@@ -2305,7 +2292,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
                     UserInfo = SmartCardContact;
 
                 }
-			}
+            }
 			if(SmartCardContact.ContactKey != 0)
 			{
 				if (!TGlobalSettings::Instance().IsPOSOffline && TGlobalSettings::Instance().LoyaltyMateEnabled && !memberNotExist)

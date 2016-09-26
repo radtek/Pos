@@ -83,11 +83,6 @@ void __fastcall TfrmLoyaltyMateOperationDialogBox::loyaltyMateDownloadMemberThre
         if(loyaltyMemberDownloadThread->ErrorMessage  == "Member Not Exist.")
           {
               BarcodeMemberNotExist = true;
-              if(MessageBox("No Item/Member found, Press Ok to create a new member or Cancel to continue.","Member Not Exist", MB_OKCANCEL + MB_ICONQUESTION) == ID_CANCEL)
-              {
-              ModalResult = mrCancel;
-              return;
-              }
           }
         else
           {
