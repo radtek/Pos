@@ -3537,6 +3537,13 @@ Zed:
                 exportTransactionUpdate.ResetTransactionExportTablesOnZed();
                 exportOtherDetailsUpdate.ResetOtherDetailsExportTablesOnZed();
             }
+            if(CompleteZed)
+            {
+               if(TGlobalSettings::Instance().OpenCashDrawer)
+               {
+
+               }
+            }
 
             //
       }
