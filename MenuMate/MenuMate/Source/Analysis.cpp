@@ -3541,7 +3541,11 @@ Zed:
             {
                if(TGlobalSettings::Instance().OpenCashDrawer)
                {
-
+                    Database::TDBTransaction OpenCashDrawerTransaction(TDeviceRealTerminal::Instance().DBControl);
+                    TDeviceRealTerminal::Instance().RegisterTransaction(OpenCashDrawerTransaction);
+                    OpenCashDrawerTransaction.StartTransaction();
+                    TComms::Instance().KickLocalDraw(OpenCashDrawerTransaction);
+                    OpenCashDrawerTransaction.Commit();
                }
             }
 
