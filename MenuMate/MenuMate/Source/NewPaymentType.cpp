@@ -93,13 +93,7 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
 	  if (cbIsTip->Checked)
 		 Payment.Properties |= ePayTypeCustomSurcharge;
 	  if (cbOpendrawer->Checked)
-      {
 		 Payment.Properties |= ePayTypeOpensCashDrawer;
-      }
-      else
-      {
-         Payment.Properties &= ~ePayTypeOpensCashDrawer;
-      }
 	  if (cbIsCash->Checked)
 		 Payment.Properties |= ePayTypeCash;
 	  if (cbCashOut->Checked)
@@ -1422,4 +1416,3 @@ void __fastcall TfrmNewPaymentType::tbGLCodeMouseClick(TObject *Sender)
    }
 
 }
-

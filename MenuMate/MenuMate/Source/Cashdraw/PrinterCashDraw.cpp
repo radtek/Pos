@@ -29,6 +29,7 @@ void TPrinterCashDraw::OpenDraw()
         Printout->Printer = Printer;
         try
         {
+            makeLogFile("Opening cash drawer Class - TPrinterCashDraw");
             SendOpenDrawCommands(Printout);
         }
         __finally
@@ -157,3 +158,15 @@ void TCashDrawCashDrawPrinter::SendOpenDrawCommands(TPrintout* Printout)
     Printout->Print();
 }
 
+//---------------------------------------------------------------------------
+void TPrinterCashDraw::makeLogFile(UnicodeString str)
+{
+    AnsiString fileName = ExtractFilePath(Application->ExeName) + "EFTPOSCashDrawer_Logs.txt" ;
+    TStrings * List = new TStringList();
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+    List->Add(" "+ str +  "\n");
+    List->SaveToFile(fileName );
+}

@@ -156,6 +156,7 @@ private:	// User declarations
     void ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TPayment *Payment);
     void ProcessLoyaltyPocketVoucher(AnsiString voucherCode,TPayment *Payment);
     void GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode);
+    void makeLogFile(UnicodeString str);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);
