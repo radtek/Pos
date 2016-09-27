@@ -61,6 +61,10 @@ void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
 	{
 		pnlLabel->Caption = "Customer Order Type Reasons";
 	}
+	else if (MessageType == eCashDrawer)
+	{
+		pnlLabel->Caption = "Cash Drawer Reason";
+	}
 
 	this->Caption = pnlLabel->Caption;
 
@@ -166,6 +170,11 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
 			CurrentCaption = "Enter Button Title";
 			CurrentMessage = "Enter Order Type Reason";
 		}
+		else if (MessageType == eCashDrawer)
+		{
+			CurrentCaption = "Enter Button Title";
+			CurrentMessage = "Enter Cash Drawer Reason";
+		}
 
     	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
 		frmTouchKeyboard->MaxLength = 15;
@@ -174,8 +183,6 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
 		frmTouchKeyboard->MustHaveValue = true;		
 		frmTouchKeyboard->KeyboardText = "";
 		frmTouchKeyboard->Caption = CurrentCaption;
-
-
 
 		if (frmTouchKeyboard->ShowModal() == mrOk)
 		{
@@ -204,6 +211,10 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
 				frmTouchKeyboard->AllowCarriageReturn = false;
 				frmTouchKeyboard->StartWithShiftDown = true;
 				frmTouchKeyboard->KeyboardText = "";
+                if(MessageType == eCashDrawer)
+                {
+                   frmTouchKeyboard->MustHaveValue = true;
+                }
 				frmTouchKeyboard->Caption = CurrentMessage;
 				if (frmTouchKeyboard->ShowModal() == mrOk)
 				{
@@ -284,6 +295,11 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(
 				CurrentCaption = "Enter Button Title";
 				CurrentMessage = "Enter Reason";
 			}
+			else if (MessageType == eCashDrawer)
+			{
+				CurrentCaption = "Enter Button Title";
+				CurrentMessage = "Enter Cash Drawer Reason";
+			}
 
 			Database::TDBTransaction DBTransaction(DBControl);
 			DBTransaction.StartTransaction();
@@ -325,10 +341,14 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(
 					Manager = ManagerMessage;
 				}
 
-	      	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+	      	    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
 				frmTouchKeyboard->MaxLength = 15;
 				frmTouchKeyboard->AllowCarriageReturn = false;
 				frmTouchKeyboard->StartWithShiftDown = true;
+                if(MessageType == eCashDrawer)
+                {
+                   frmTouchKeyboard->MustHaveValue = true;
+                }
 				frmTouchKeyboard->KeyboardText =  Manager->GetTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
 				frmTouchKeyboard->Caption = CurrentCaption;
 				if (frmTouchKeyboard->ShowModal() == mrOk)
@@ -337,6 +357,10 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(
 					frmTouchKeyboard->MaxLength = 200	;
 					frmTouchKeyboard->AllowCarriageReturn = false;
 					frmTouchKeyboard->StartWithShiftDown = true;
+                    if(MessageType == eCashDrawer)
+                    {
+                       frmTouchKeyboard->MustHaveValue = true;
+                    }
 					frmTouchKeyboard->KeyboardText =  Manager->GetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
 					frmTouchKeyboard->Caption = CurrentMessage;
 					if (frmTouchKeyboard->ShowModal() == mrOk)

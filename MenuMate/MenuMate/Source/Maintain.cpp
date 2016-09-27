@@ -497,6 +497,11 @@ void __fastcall TfrmMaintain::BitBtn2Click(TObject *Sender)
 			frmMessageMaintenance->MessageType = ePatronTypes;
 			frmMessageMaintenance->ShowModal();
 		}
+		else if (Sender == tbtnCashDrawer)
+		{
+			frmMessageMaintenance->MessageType = eCashDrawer;
+			frmMessageMaintenance->ShowModal();
+		}
 	}
 	else if (Result == lsDenied)
 	{
@@ -3708,4 +3713,5 @@ void TfrmMaintain::SetupGLCodes()
    }
    delete frmSetupGlCodes;
 }
+
 
