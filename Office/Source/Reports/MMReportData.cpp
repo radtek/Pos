@@ -2959,9 +2959,11 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
 			"Cast(Archive.Item_Name as VarChar(50)) Item_Name, "
 			"Archive.Size_Name, "
 			"cast(Sum(Archive.Qty) as numeric(17, 4)) Item_Count, "
-		"Cast(Sum((Archive.Qty * Archive.BASE_PRICE )) +  Sum(Archive.DISCOUNT_WITHOUT_TAX ) as Numeric(17,4)) Price,"		  //sales excl
-        "Cast(Sum(Archive.QTY * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) SalesIncl, "
-			"cast(Sum(Archive.Qty * Archive.Cost) as numeric(17, 4)) Cost "
+		    "Cast(Sum((Archive.Qty * Archive.BASE_PRICE )) +  Sum(Archive.DISCOUNT_WITHOUT_TAX ) as Numeric(17,4)) Price,"		  //sales excl
+            "Cast(Sum(Archive.QTY * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) SalesIncl, "
+			"cast(Sum(Archive.Qty * Archive.Cost) as numeric(17, 4)) Cost, "
+            "cast(0.00 as numeric(17,4)) PriceExcl, "
+            "cast(0.00 as numeric(17,4)) Profit "
 		"From "
 			"Security Left Join Archive on "
 				"Security.Security_Ref = Archive.Security_Ref "
@@ -3030,7 +3032,9 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
 			"cast(Sum(DayArchive.Qty) as numeric(17, 4)) Item_Count, "
 			"Cast(Sum((DayArchive.Qty * DAYARCHIVE.BASE_PRICE ) ) +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Price,"				 //sales excl
             "Cast(Sum(DayArchive.QTY * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) SalesIncl, "
-			"cast(Sum(DayArchive.Qty * DayArchive.Cost) as numeric(17, 4)) Cost "
+			"cast(Sum(DayArchive.Qty * DayArchive.Cost) as numeric(17, 4)) Cost, "
+             "cast(0.00 as numeric(17,4)) PriceExcl, "
+            "cast(0.00 as numeric(17,4)) Profit "
 		"From "
 			"Security Left Join DayArchive on "
 				"Security.Security_Ref = DayArchive.Security_Ref "
@@ -3098,7 +3102,9 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
 			"cast(Sum(Orders.Qty) as numeric(17, 4)) Item_Count, "
 			"Cast(Sum((Orders.Qty * Orders.BASE_PRICE ) ) +  Sum(Orders.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Price,"				//sales excl
             "Cast(Sum((Orders.Qty * Orders.BASE_PRICE ) ) +  Sum(Orders.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) SalesIncl,"
-			"cast(Sum(Orders.Qty * Orders.Cost)  as numeric(17, 4)) Cost "
+			"cast(Sum(Orders.Qty * Orders.Cost)  as numeric(17, 4)) Cost, "
+            "cast(0.00 as numeric(17,4)) PriceExcl, "
+            "cast(0.00 as numeric(17,4)) Profit "
 		"From "
 			"Security Left Join Orders on "
 				"Security.Security_Ref = Orders.Security_Ref "
