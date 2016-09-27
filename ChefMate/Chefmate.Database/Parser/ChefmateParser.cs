@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ChefMate.Database.Parser
 {
@@ -32,9 +33,17 @@ namespace ChefMate.Database.Parser
             {
                 var versionParser = _parserFactory.GetVersionParser(version);
                 SendStatus("Checking Version " + version + ".....");
-                SendStatus("Starting upgarde to version " + version);
-                versionParser.RunParser();
-                SendStatus("Upgarde to version " + version + " Successfully!");
+                if (versionParser.IsVersionExist(version))
+                {
+                    SendStatus("Already upgraded to version " + version);
+                }
+                else
+                {
+                    SendStatus("Starting upgarde to version " + version);
+                    versionParser.RunParser();
+                    SendStatus("Upgarde to version " + version + " Successfully!");
+                }
+               
             }
             SendStatus("Successfully upgraded Database!");
         }
@@ -44,10 +53,13 @@ namespace ChefMate.Database.Parser
         }
         public void CreateDatabaseAndrunParser()
         {
-            SendStatus("Creating database.....");
-            CreateDatabase();
+            if (!DatabaseCore.Instance.TestConnection(_dbAddress, _dbPath))
+            {
+                SendStatus("Creating database.....");
+                CreateDatabase();
+                SendStatus("Database Created");
+            }
             RunParser();
-            SendStatus("Database Created");
         }
         private void InitializeVersionNumbers()
         {
@@ -55,6 +67,7 @@ namespace ChefMate.Database.Parser
             _versionNumbers.Add("1.0");
             _versionNumbers.Add("1.1");
             _versionNumbers.Add("1.2");
+            _versionNumbers.Add("1.3");
         }
 
         private void SendStatus(string inStatus)

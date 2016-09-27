@@ -41,7 +41,7 @@ namespace Chefmate.UI.Views
         private double _cordX;
         private double _cordY;
         private double _maxHeight;
-
+        private GuiStyles _guiStyles;
         public MainWindow()
         {
             InitializeComponent();
@@ -50,7 +50,10 @@ namespace Chefmate.UI.Views
             _chitTableNumber = "";
             Subscribe();
             if (ChefmateController.Instance.CurrentSettings != null)
+            {
                 IsRecallEnabled = ChefmateController.Instance.CurrentSettings.TerminalType == TerminalType.Kitchen;
+                SetFont();
+            }
             this.DataContext = this;
         }
 
@@ -87,9 +90,8 @@ namespace Chefmate.UI.Views
             TotalOrders = new ObservableCollection<Order>();
             WebOrders = new ObservableCollection<Order>();
             this.IsEnabled = false;
+            GuiStyles = new GuiStyles();
         }
-
-
         #endregion
 
         #region Commands
@@ -101,6 +103,16 @@ namespace Chefmate.UI.Views
         #endregion
 
         #region Properties
+
+        public GuiStyles GuiStyles
+        {
+            get { return _guiStyles; }
+            set
+            {
+                _guiStyles = value;
+                OnPropertyChanged("GuiStyles");
+            }
+        }
         public ObservableCollection<Order> TotalOrders
         {
             get
@@ -201,7 +213,7 @@ namespace Chefmate.UI.Views
         {
             LoadAllOrders();
             StartTimer();
-            SetFont();
+
         }
         private void Instance_DatabaseOrderReceivedEvent(DbOrderReceivedEventArgs eventArgs)
         {
@@ -260,7 +272,7 @@ namespace Chefmate.UI.Views
         private void Setting(object sender, RoutedEventArgs e)
         {
             var displayType = ChefmateController.Instance.CurrentSettings.GroupType;
-            var settingView = new SettingView { ShowInTaskbar = false, Topmost = true };
+            var settingView = new SettingView { ShowInTaskbar = false, Topmost = false };
             settingView.ShowDialog();
             IsRecallEnabled = ChefmateController.Instance.CurrentSettings.TerminalType == TerminalType.Kitchen;
             Properties.Settings.Default.DatabasePath = ChefmateController.Instance.CurrentSettings.DbPath;
@@ -329,7 +341,22 @@ namespace Chefmate.UI.Views
         #region Drawing
         private void SetFont()
         {
-            this.FontSize = ChefmateController.Instance.CurrentSettings.CmFontSize;
+            GuiStyles.ItemFontSize = ChefmateController.Instance.CurrentSettings.CmFontSize;
+            GuiStyles.GroupFontSize = ChefmateController.Instance.CurrentSettings.GroupFontSize;
+            GuiStyles.OrderHeaderFontSize = ChefmateController.Instance.CurrentSettings.OrderHeaderFontSize;
+            GuiStyles.AnalysisFontSize = ChefmateController.Instance.CurrentSettings.AnalysisFontSize;
+
+            GuiStyles.GroupFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.GroupFontFamily);
+            GuiStyles.ItemFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.ItemFontFamily);
+            GuiStyles.AnalysisFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.AnalysisFontFamily);
+
+            GuiStyles.AnalysisFontWeight = ChefmateController.Instance.CurrentSettings.AnalysisFontBold ? FontWeights.Bold : FontWeights.Normal;
+            GuiStyles.GroupFontWeight = ChefmateController.Instance.CurrentSettings.GroupFontBold ? FontWeights.Bold : FontWeights.Normal;
+            GuiStyles.HeaderForeGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderForegroundColor));
+            GuiStyles.HeaderBackGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderBackgroundColor));
+            ChefmateConstants.FirstWarningOrderColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.FirstWarningColor));
+            ChefmateConstants.SecondWarningOrderColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.SecondWarningColor));
+            ChefmateConstants.NormalOrderColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.NewOrderColor));
         }
         private void RedrawOrders()
         {
@@ -494,7 +521,6 @@ namespace Chefmate.UI.Views
                 inOrder.OrderState == OrderState.Complete && OutputTime.Immediately != ChefmateController.Instance.CurrentSettings.OutputTime;
             return retVal;
         }
-
         private void AddPendingWebOrdersToGui()
         {
             var ordersToRemove = new List<int>();
@@ -777,8 +803,6 @@ namespace Chefmate.UI.Views
         }
         private void SetGroupsColor(Order order, SolidColorBrush solidColorBrush)
         {
-            //order.ServingCourseGroups.ToList().ForEach(s => { SetGroupColor(s, solidColorBrush); });
-            //order.CourseGroups.ToList().ForEach(s => { SetGroupColor(s, solidColorBrush); });
             order.DisplayGroups.ToList().ForEach(s => { SetGroupColor(s, solidColorBrush); });
 
         }

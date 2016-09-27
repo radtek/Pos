@@ -181,11 +181,8 @@ namespace ChefMate.Database
 
         public void CreateDatabase(string dataSource, string dbPath)
         {
-            if (!File.Exists(dbPath))
-            {
-                var connectionString = BuildConnectionString(dataSource, dbPath);
-                FbConnection.CreateDatabase(connectionString);
-            }
+            var connectionString = BuildConnectionString(dataSource, dbPath);
+            FbConnection.CreateDatabase(connectionString);
         }
         public bool InitializeDatabase(string databaseAddress, string databasePath)
         {
