@@ -5614,6 +5614,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("IncludeGST", CategoryFilter->GSTChecked ? "1":"0");
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("subCategory", "By Category");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5645,6 +5647,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("IncludeGST", MenuFilter->GSTChecked ? "1":"0");
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("subCategory", "By Menu");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5677,6 +5681,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("IncludeGST", MenuFilter->GSTChecked ? "1":"0");
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("subCategory", "By Location");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5708,6 +5714,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("IncludeGST", TabFilter->GSTChecked ? "1":"0");
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("subCategory", "By Tab");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5739,6 +5747,7 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5800,6 +5809,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("subCategory", "By Category Excluding Surcharge");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5949,6 +5960,7 @@ void TfrmReports::PrintConsumptionByHalfHour(TReportControl *ReportControl)
 				rvMenuMate->SetParam("ReportRange", DateRange);
 				rvMenuMate->SetParam("IncludeGST", CategoryFilter->GSTChecked ? "1":"0");
 				rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 				rvMenuMate->Execute();
 			}
 			else
