@@ -5992,93 +5992,93 @@ void TfrmReports::PrintUserSales(TReportControl *ReportControl)
 		{
 			case 0:
 			{
-				const AnsiString ReportName = "repUserSales";
+                const AnsiString ReportName = "repUserSales";
 
-            TReportTreeFilter *CategoryFilter = (TReportTreeFilter *)ReportControl->ReportFilter(1);
-            TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
-            dmMMReportData->SetupUserSales(ReportControl->Start, ReportControl->End, UsersFilter->Selection,CategoryFilter->Selection );
-            if (ReportType == rtExcel)
-            {
-               std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-               ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
-               ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
-            }
-            else
-            {
-               if (rvMenuMate->SelectReport(ReportName, false))
-               {
-                  AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-                                          "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-                  rvMenuMate->SetParam("ReportRange", DateRange);
-						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
-                  rvMenuMate->Execute();
+                TReportTreeFilter *CategoryFilter = (TReportTreeFilter *)ReportControl->ReportFilter(1);
+                TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
+                dmMMReportData->SetupUserSales(ReportControl->Start, ReportControl->End, UsersFilter->Selection,CategoryFilter->Selection );
+                if (ReportType == rtExcel)
+                {
+                    std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+                    ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
+                    ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
+                }
+                else
+                {
+                    if (rvMenuMate->SelectReport(ReportName, false))
+                    {
+                      AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+                                              "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+                      rvMenuMate->SetParam("ReportRange", DateRange);
+                      rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                      rvMenuMate->Execute();
+                    }
+                    else
+                    {
+                      Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+                    }
                }
-               else
-               {
-                  Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-               }
-            }
-				break;
+               break;
 			}
 			case 1:
 			{
-				const AnsiString ReportName = "repUserSalesByCategory";
+                 const AnsiString ReportName = "repUserSalesByCategory";
 
-            TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
+                TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
 
-            dmMMReportData->SetupUserSalesByCategory(ReportControl->Start, ReportControl->End, UsersFilter->Selection);
-            if (ReportType == rtExcel)
-            {
-               std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-               ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
-               ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
-            }
-            else
-            {
-               if (rvMenuMate->SelectReport(ReportName, false))
-               {
-                  AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-                                          "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-                  rvMenuMate->SetParam("ReportRange", DateRange);
-						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
-                  rvMenuMate->Execute();
-               }
-               else
-               {
-                  Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-               }
-            }
-				break;
+                dmMMReportData->SetupUserSalesByCategory(ReportControl->Start, ReportControl->End, UsersFilter->Selection);
+                if (ReportType == rtExcel)
+                {
+                   std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+                   ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
+                   ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
+                }
+                else
+                {
+                   if (rvMenuMate->SelectReport(ReportName, false))
+                   {
+                      AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+                                              "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+                      rvMenuMate->SetParam("ReportRange", DateRange);
+                            rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                      rvMenuMate->Execute();
+                   }
+                   else
+                   {
+                      Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+                   }
+                }
+                    break;
 			}
 			case 2:
 			{
-				const AnsiString ReportName = "repUserSalesSummary";
+                const AnsiString ReportName = "repUserSalesSummary";
 
-            TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
+                TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
 
-            dmMMReportData->SetupUserSalesSummary(ReportControl->Start, ReportControl->End, UsersFilter->Selection);
-            if (ReportType == rtExcel)
-            {
-               std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-               ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
-               ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
-            }
-            else
-            {
-               if (rvMenuMate->SelectReport(ReportName, false))
-               {
-                  AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-                                          "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-                  rvMenuMate->SetParam("ReportRange", DateRange);
-						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
-                  rvMenuMate->Execute();
-               }
-               else
-               {
-                  Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-               }
-            }
-				break;
+                dmMMReportData->SetupUserSalesSummary(ReportControl->Start, ReportControl->End, UsersFilter->Selection);
+                if (ReportType == rtExcel)
+                {
+                    std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+                    ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
+                    ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
+                }
+                else
+                {
+                    if (rvMenuMate->SelectReport(ReportName, false))
+                    {
+                        AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+                                              "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+                        rvMenuMate->SetParam("ReportRange", DateRange);
+                            rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->Execute();
+                    }
+                    else
+                    {
+                        Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+                    }
+                }
+                break;
 			}
       }
 	}
