@@ -10696,7 +10696,7 @@ void TfrmReports::PrintDeptSalesSummary(TReportControl *ReportControl)
 	try
 	{
 
-				const AnsiString ReportName = "repDeptSalesSummary";
+			 const AnsiString ReportName = "repDeptSalesSummary";
             TReportCheckboxFilter *ReportCheckboxFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
 
 				dmMMReportData->SetupSalesSummaryByLocation(ReportControl->Start, ReportControl->End, ReportCheckboxFilter->Selection);
