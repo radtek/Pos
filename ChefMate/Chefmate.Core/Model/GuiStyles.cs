@@ -60,7 +60,7 @@ namespace Chefmate.Core.Model
             set
             {
                 _groupFontWeight = value;
-                OnPropertyChanged("GroupFontBold");
+                OnPropertyChanged("GroupFontWeight");
             }
         }
         public FontWeight AnalysisFontWeight

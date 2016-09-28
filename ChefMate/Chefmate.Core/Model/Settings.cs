@@ -62,9 +62,14 @@ namespace Chefmate.Core.Model
             WebOrderTime = 20;
             RecallCount = 5;
             CmFontSize = 15;
+            ItemFontFamily = "Tahoma";
             GroupFontSize = 18;
             GroupFontFamily = "Tahoma";
             GroupFontBold = true;
+            OrderHeaderFontSize = 15;
+            OrderFontFamily = "Tahoma";
+            AnalysisFontSize = 18;
+            AnalysisFontFamily = "Tahoma";
             NewOrderColor = "#FFB4C7B4";
             FirstWarningColor = "#FFF1DAB4";
             SecondWarningColor = "#FFF4B4B4";

@@ -354,9 +354,18 @@ namespace Chefmate.UI.Views
             GuiStyles.GroupFontWeight = ChefmateController.Instance.CurrentSettings.GroupFontBold ? FontWeights.Bold : FontWeights.Normal;
             GuiStyles.HeaderForeGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderForegroundColor));
             GuiStyles.HeaderBackGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderBackgroundColor));
-            ChefmateConstants.FirstWarningOrderColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.FirstWarningColor));
-            ChefmateConstants.SecondWarningOrderColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.SecondWarningColor));
-            ChefmateConstants.NormalOrderColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.NewOrderColor));
+
+            var color = (Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.FirstWarningColor);
+            ChefmateConstants.FirstWarningOrderColor = new SolidColorBrush(Color.FromArgb(200, color.R, color.G, color.B));
+            ChefmateConstants.FirstWarningGroupColor = new SolidColorBrush(Color.FromArgb(255, color.R, color.G, color.B));
+
+            color = (Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.SecondWarningColor);
+            ChefmateConstants.SecondWarningOrderColor = new SolidColorBrush(Color.FromArgb(200, color.R, color.G, color.B));
+            ChefmateConstants.SecondWarningGroupColor = new SolidColorBrush(Color.FromArgb(255, color.R, color.G, color.B));
+
+            color = (Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.NewOrderColor);
+            ChefmateConstants.NormalOrderColor = new SolidColorBrush(Color.FromArgb(200, color.R, color.G, color.B));
+            ChefmateConstants.NormalGroupColor = new SolidColorBrush(Color.FromArgb(255, color.R, color.G, color.B));
         }
         private void RedrawOrders()
         {
