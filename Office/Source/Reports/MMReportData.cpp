@@ -1206,18 +1206,16 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"Extract (Day From ArcBill.Time_Stamp) Bill_Day,"
 			"Extract (Month From ArcBill.Time_Stamp) Bill_Month,"
 			"Extract (Year From ArcBill.Time_Stamp) Bill_Year,"
-
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From ArcBill.Time_Stamp) / 30) * 30 * 60) + "
 			"(Extract (Hour From ArcBill.Time_Stamp) * 60 * 60) As Double Precision) / 86400  as Time) Start_Time,"
-
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From ArcBill.Time_Stamp) / 30) * 30 * 60) + "
 			"(Extract (Hour From ArcBill.Time_Stamp) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
-
 			"cast( ArcBill.Total as Numeric (17,4) ) Bill_Total,"
 			"ArcBill.Patron_Count, "
-		"Cast('1' as int) SalesQty "
+		    "Cast('1' as int) SalesQty, "
+            " Cast(0.00 as numeric(17,4)) SalesIncl "
 		"From "
 			"Security Left Join ARCBILL on  "
          "Security.Security_Ref = ARCBILL.Security_Ref "
@@ -1250,18 +1248,16 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"Extract (Day From DayArcBill.Time_Stamp) Bill_Day,"
 			"Extract (Month From DayArcBill.Time_Stamp) Bill_Month,"
 			"Extract (Year From DayArcBill.Time_Stamp) Bill_Year,"
-
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From DayArcBill.Time_Stamp) / 30) * 30 * 60) + "
 			"(Extract (Hour From DayArcBill.Time_Stamp) * 60 * 60) As Double Precision) / 86400  as Time) Start_Time,"
-
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From DayArcBill.Time_Stamp) / 30) * 30 * 60) + "
 			"(Extract (Hour From DayArcBill.Time_Stamp) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
-
 			"cast( DayArcBill.Total as Numeric(17,4) ) Bill_Total,"
 			"DayArcBill.Patron_Count, "
-		"Cast('1' as int) SalesQty "
+		    "Cast('1' as int) SalesQty, "
+            " Cast(0.00 as numeric(17,4)) SalesIncl "
 		"From "
 			"Security Left Join DAYARCBILL on  "
          "Security.Security_Ref = DAYARCBILL.Security_Ref "
@@ -1344,18 +1340,16 @@ void TdmMMReportData::SetupHalfHourlyConsolidated(TDateTime StartTime, TDateTime
 			"cast(1 as integer) Bill_Day,"
 			"cast(1 as integer) Bill_Month,"
 			"cast(2005 as integer) Bill_Year,"
-
 			"min(cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From ArcBill.Time_Stamp) / 30) * 30 * 60) + "
 			"(Extract (Hour From ArcBill.Time_Stamp) * 60 * 60) As Double Precision) / 86400 as Time)) Start_Time,"
-
 			"min(cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From ArcBill.Time_Stamp) / 30) * 30 * 60) + "
 			"(Extract (Hour From ArcBill.Time_Stamp) * 60 * 60) + 1800 As Double Precision) / 86400 as Time)) End_Time,"
-
 			"cast (Sum(ArcBill.Total) as Numeric(17,4)) Bill_Total,"
 			"cast (Sum(ArcBill.Patron_Count) as Integer) Patron_Count, "
-			"count(HALFHOUR.ArcBill_Key) as SalesQty "
+			"count(HALFHOUR.ArcBill_Key) as SalesQty, "
+            " Cast(0.00 as numeric(17,4)) SalesIncl "
 		"From "
 			"Security, ArcBill, HALFHOUR "
 		"Where "
@@ -1387,18 +1381,16 @@ void TdmMMReportData::SetupHalfHourlyConsolidated(TDateTime StartTime, TDateTime
 			"cast(1 as integer) Bill_Day,"
 			"cast(1 as integer) Bill_Month,"
 			"cast(2005 as integer) Bill_Year,"
-
 			"min(cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From DayArcBill.Time_Stamp) / 30) * 30 * 60) + "
 			"(Extract (Hour From DayArcBill.Time_Stamp) * 60 * 60) As Double Precision) / 86400 as Time)) Start_Time,"
-
 			"min(cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From Security.Time_Stamp) / 30) * 30 * 60) + "
 			"(Extract (Hour From DayArcBill.Time_Stamp) * 60 * 60) + 1800 As Double Precision) / 86400 as Time)) End_Time,"
-
 			"cast (sum(DayArcBill.Total) as Numeric(17,4)) Bill_Total,"
 			"cast (Sum(DayArcBill.Patron_Count) as Integer) Patron_Count, "
-			"count(HALFHOUR.ArcBill_Key) as SalesQty "
+			"count(HALFHOUR.ArcBill_Key) as SalesQty, "
+            " Cast(0.00 as numeric(17,4)) SalesIncl "
 
 		"From "
 			"Security, DayArcBill, HALFHOUR "
@@ -4132,7 +4124,7 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 	qrHalfHoulrySummary->SQL->Text =
 		"Select "
             "ARCHIVE.ARCBILL_KEY OrderKey,"
-			"cast ( 'D' as Char(1)) Report_Type,"
+		  	"cast ( 'D' as Char(1)) Report_Type,"
 			"Archive.Order_Location Billed_Location,"
 			"Archive.TIME_STAMP_BILLED,"
 			"Extract (Minute From Archive.TIME_STAMP_BILLED) / 30 Bill_Half_Hour,"
@@ -4141,27 +4133,37 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 			"Extract (Day From Archive.TIME_STAMP_BILLED) Bill_Day,"
 			"Extract (Month From Archive.TIME_STAMP_BILLED) Bill_Month,"
 			"Extract (Year From Archive.TIME_STAMP_BILLED) Bill_Year,"
-
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From Archive.TIME_STAMP_BILLED) / 30) * 30 * 60) + "
 			"(Extract (Hour From Archive.TIME_STAMP_BILLED) * 60 * 60) As Double Precision) / 86400  as Time) Start_Time,"
-
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From Archive.TIME_STAMP_BILLED) / 30) * 30 * 60) + "
 			"(Extract (Hour From Archive.TIME_STAMP_BILLED) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
-
-
-"Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)  ) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"		//sales excl
+            "Cast(Sum((Archive.Qty * abs(Archive.BASE_PRICE)  ) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"		//sales excl
 			"max(Patron_Count) Patron_Count,"
-			"SUM (Archive.QTY)  SalesQty "		   //sales Item count
+			"SUM (Archive.QTY)  SalesQty, "		   //sales Item count
+            "Cast(Sum(Archive.QTY * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(abs(AOT.VAT),0)+COALESCE(abs(AOT.ServiceCharge),0) + COALESCE(abs(AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 
-		"From "
+		"From "                                                   
 			"Security Left Join Archive on "
 				"Security.Security_Ref = Archive.Security_Ref "
+            "LEFT JOIN ( "
+                 "SELECT "
+                        "ARCORDERTAXES.ARCHIVE_KEY, "
+                        "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS VAT,               "
+                        "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge,     "
+                        "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge "
+                  "FROM (SELECT  a.ARCHIVE_KEY,a.TAX_TYPE, "
+                        "Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
+                        "FROM ARCORDERTAXES a                               "
+                        "group by  a.TAX_TYPE  , a.ARCHIVE_KEY              "
+                        "order by 1 )  ARCORDERTAXES                        "
+                        "GROUP BY ARCORDERTAXES.ARCHIVE_KEY )               "
+                        "AOT ON Archive.ARCHIVE_KEY = AOT.ARCHIVE_KEY       "
         " LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
-		"FROM ARCORDERDISCOUNTS a "
-		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
-		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
+                "FROM ARCORDERDISCOUNTS a "
+                "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
+                "ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
          " left join PATRONCOUNT on PATRONCOUNT.ARCBILL_KEY=ARCHIVE.ARCBILL_KEY "
 
         " Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from archive left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
@@ -4174,8 +4176,6 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 			"Security.Security_Event = 'Ordered By'  and "
             "ARCHIVE.ARCBILL_KEY > 0 ";
 
-
-
 	if (Terminals->Count > 0)
 	{
 		qrHalfHoulrySummary->SQL->Text	=	qrHalfHoulrySummary->SQL->Text + "and (" +
@@ -4184,8 +4184,7 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 
     qrHalfHoulrySummary->SQL->Text = qrHalfHoulrySummary->SQL->Text +
     " Group by "
-                                            "OrderKey,Report_Type,Billed_Location,Archive.TIME_STAMP_BILLED,Archive.Qty " ;
-
+                                            "OrderKey,Report_Type,Billed_Location,Archive.TIME_STAMP_BILLED,Archive.Qty " ;  
 
 
  	qrHalfHoulrySummary->SQL->Text = qrHalfHoulrySummary->SQL->Text +
@@ -4202,17 +4201,16 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
         "Extract (Day From  writeoff.Time_Stamp) Bill_Day,  "
         "Extract (Month From  writeoff.Time_Stamp) Bill_Month,  "
         "Extract (Year From  writeoff.Time_Stamp) Bill_Year,   "
-
         "cast(CAST('12/30/1899' AS TIMESTAMP) +  "
         "Cast(((Extract (Minute From  writeoff.Time_Stamp) / 30) * 30 * 60) +  "
         "(Extract (Hour From  writeoff.Time_Stamp) * 60 * 60) As Double Precision) / 86400  as Time) Start_Time,  "
-
         "cast(CAST('12/30/1899' AS TIMESTAMP) +   "
         "Cast(((Extract (Minute From  writeoff.Time_Stamp) / 30) * 30 * 60) +  "
         "(Extract (Hour From  writeoff.Time_Stamp) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,  "
        " cast(0 as int) Bill_Total, "
        " cast(0 as int) Patron_Count, "
-        "cast(0 as int) SalesQty "
+        "cast(0 as int) SalesQty, "
+        " Cast(0.00 as numeric(17,4)) SalesIncl "
 
     "From   "
        " WRITEOFF  "
@@ -4238,7 +4236,7 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 
 		"Select "
             "DAYARCHIVE.ARCBILL_KEY OrderKey,"
-			"cast ( 'D' as Char(1)) Report_Type,"
+	   		"cast ( 'D' as Char(1)) Report_Type,"
 			"DayArchive.Order_Location Billed_Location,"
 			"DAYARCHIVE.TIME_STAMP_BILLED,"
 			"Extract (Minute From DAYARCHIVE.TIME_STAMP_BILLED) / 30 Bill_Half_Hour,"
@@ -4247,28 +4245,38 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 			"Extract (Day From DAYARCHIVE.TIME_STAMP_BILLED) Bill_Day,"
 			"Extract (Month From DAYARCHIVE.TIME_STAMP_BILLED) Bill_Month,"
 			"Extract (Year From DAYARCHIVE.TIME_STAMP_BILLED) Bill_Year,"
-
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From DAYARCHIVE.TIME_STAMP_BILLED) / 30) * 30 * 60) + "
 			"(Extract (Hour From DAYARCHIVE.TIME_STAMP_BILLED) * 60 * 60) As Double Precision) / 86400  as Time) Start_Time,"
-
 			"cast(CAST('12/30/1899' AS TIMESTAMP) + "
 			"Cast(((Extract (Minute From DAYARCHIVE.TIME_STAMP_BILLED) / 30) * 30 * 60) + "
 			"(Extract (Hour From DAYARCHIVE.TIME_STAMP_BILLED) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
            "Cast(Sum((DayArchive.Qty * abs(DAYARCHIVE.BASE_PRICE) ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) Bill_Total,"	  //sales excl
-
 			"max(Patron_Count) Patron_Count, "
-			"SUM (DayArchive.QTY)  SalesQty "
+			"SUM (DayArchive.QTY)  SalesQty, "
+            "Cast(Sum(DayArchive.QTY * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(abs(AOT.VAT),0)+COALESCE(abs(AOT.ServiceCharge),0) + COALESCE(abs(AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 		"From "
 			"Security Left Join DayArchive on "
 				"Security.Security_Ref = DayArchive.Security_Ref "
-
+            "LEFT JOIN ( "
+				 "SELECT "
+						"DAYARCORDERTAXES.ARCHIVE_KEY, "
+						"MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 0 THEN DAYARCORDERTAXES.TAX_VALUE END) AS VAT,               "
+						"MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 2 THEN DAYARCORDERTAXES.TAX_VALUE END) AS ServiceCharge,     "
+						"MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 3 THEN DAYARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge "
+				  "FROM (SELECT  a.ARCHIVE_KEY,a.TAX_TYPE, "
+						"Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
+						"FROM DAYARCORDERTAXES a                               "
+						"group by  a.TAX_TYPE  , a.ARCHIVE_KEY              "
+						"order by 1 )  DAYARCORDERTAXES                        "
+						"GROUP BY DAYARCORDERTAXES.ARCHIVE_KEY )               "
+						"AOT ON DayArchive.ARCHIVE_KEY = AOT.ARCHIVE_KEY       "
 		    "Left join (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
-		"FROM DAYARCORDERDISCOUNTS a "
-		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
-		"DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+                    "FROM DAYARCORDERDISCOUNTS a "
+                    "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
+                    "DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
             " left join DAYPATRONCOUNT on DAYPATRONCOUNT.ARCBILL_KEY=DAYARCHIVE.ARCBILL_KEY  "
-		
+
         " Where DAYARCHIVE.ARCHIVE_KEY not in (Select     DAYARCHIVE.ARCHIVE_KEY from DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DAYARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
 		    " (( "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
@@ -4277,9 +4285,7 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
 			"DAYArchive.TIME_STAMP_BILLED >= :StartTime and "
 			"DAYArchive.TIME_STAMP_BILLED < :EndTime and "
 			"Security.Security_Event = 'Ordered By'  and "
-            "DAYARCHIVE.ARCBILL_KEY > 0 ";
-
-
+            "DAYARCHIVE.ARCBILL_KEY > 0 ";   
 
 	if (Terminals->Count > 0)
 	{
@@ -10409,6 +10415,7 @@ void TdmMMReportData::AddInZeroHalfHours(bool isConsumptionByHalfHour)
 			cdsHalfHourlySummary->FieldDefs->Add("BILL_TOTAL", ftCurrency, 0);
 			cdsHalfHourlySummary->FieldDefs->Add("PATRON_COUNT", ftInteger, 0);
 			cdsHalfHourlySummary->FieldDefs->Add("SALESQTY", ftInteger, 0);
+            cdsHalfHourlySummary->FieldDefs->Add("SalesIncl", ftInteger, 0);
 			cdsHalfHourlySummary->CreateDataSet();
 		 }
 		 catch (Exception &E)
@@ -10536,6 +10543,7 @@ void TdmMMReportData::AddInZeroHalfHours(bool isConsumptionByHalfHour)
 		cdsHalfHourlySummary->FieldByName("BILL_TOTAL")->AsCurrency      = qrHalfHoulrySummary->FieldByName("BILL_TOTAL")->AsCurrency;
 		cdsHalfHourlySummary->FieldByName("PATRON_COUNT")->AsInteger     = qrHalfHoulrySummary->FieldByName("PATRON_COUNT")->AsInteger;
 		cdsHalfHourlySummary->FieldByName("SALESQTY")->AsInteger         = qrHalfHoulrySummary->FieldByName("SALESQTY")->AsInteger;
+        cdsHalfHourlySummary->FieldByName("SalesIncl")->AsCurrency         = qrHalfHoulrySummary->FieldByName("SalesIncl")->AsCurrency;
 		cdsHalfHourlySummary->Post();
 		// Keep Previous records End Time
 		GetRoundedTime(qrHalfHoulrySummary->FieldByName("END_TIME")->AsDateTime, PreviousHour,PreviousMin,PreviousSec,PreviousMSec );

@@ -5220,7 +5220,7 @@ void TfrmReports::PrintCategoryBreakdown(TReportControl *ReportControl)
 //---------------------------------------------------------------------------
 void TfrmReports::PrintHalfHourlySales(TReportControl *ReportControl)
 {
-	const AnsiString ReportName = "repHalfHourlySummary";
+	const AnsiString ReportName = "repHalfHourlySalesSummary";
 
 	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
 	{
@@ -5262,6 +5262,7 @@ void TfrmReports::PrintHalfHourlySales(TReportControl *ReportControl)
 							rvMenuMate->SetParam("Terminals", TerminalRange);
 						}
 						rvMenuMate->SetParam("EndTime", " ");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5933,6 +5934,7 @@ void TfrmReports::PrintConsumptionByHalfHour(TReportControl *ReportControl)
 							rvMenuMate->SetParam("Terminals", TerminalRange);
 						}
 						rvMenuMate->SetParam("EndTime", " ");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
