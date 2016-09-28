@@ -220,9 +220,10 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             Guid.TryParse(inTransactionInfo.MemberUniqueId, out memberUniqueId);
             if (!string.IsNullOrWhiteSpace(inTransactionInfo.GiftCardNumber))
             {
-                voucherUsageViewModel.GiftCard = new ApiGiftCardUsageRequestViewModel();
+                voucherUsageViewModel.GiftCard = new ApiGiftCardTransactionRequestViewModel();
+                voucherUsageViewModel.GiftCard.TransactionType = Loyaltymate.Enum.GiftCardVoucherTransactionType.GiftCardUsage;
                 voucherUsageViewModel.GiftCard.GiftCardNumber = inTransactionInfo.GiftCardNumber;
-                voucherUsageViewModel.GiftCard.PointsRedeemed = inTransactionInfo.PointsRedeemed;
+                voucherUsageViewModel.GiftCard.PointsTransactionAmount = inTransactionInfo.PointsRedeemed;
                 voucherUsageViewModel.GiftCard.MemberUniqueId = memberUniqueId;
                 if (memberUniqueId == Guid.Empty)
                     voucherUsageViewModel.GiftCard.MemberUniqueId = null;
@@ -231,6 +232,24 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                 voucherUsageViewModel.GiftCard.Date = inTransactionInfo.TransactionDate;
                 voucherUsageViewModel.GiftCard.InvoiceNumber = inTransactionInfo.InvoiceNumber;
             }
+
+            if (!string.IsNullOrWhiteSpace(inTransactionInfo.PurchasedGiftCardNumber))
+            {
+                voucherUsageViewModel.GiftCardRecharge = new ApiGiftCardTransactionRequestViewModel();
+                voucherUsageViewModel.GiftCardRecharge.TransactionType = Loyaltymate.Enum.GiftCardVoucherTransactionType.GiftCardRecharge;
+                voucherUsageViewModel.GiftCardRecharge.GiftCardNumber = inTransactionInfo.PurchasedGiftCardNumber;
+                voucherUsageViewModel.GiftCardRecharge.PointsTransactionAmount = inTransactionInfo.PointsPurchased;
+                voucherUsageViewModel.GiftCardRecharge.MemberUniqueId = memberUniqueId;
+                if (memberUniqueId == Guid.Empty)
+                    voucherUsageViewModel.GiftCardRecharge.MemberUniqueId = null;
+                voucherUsageViewModel.GiftCardRecharge.SiteCode = inTransactionInfo.SiteCode;
+                voucherUsageViewModel.GiftCardRecharge.TotalSaleAmount = inTransactionInfo.TotalSaleAmount;
+                voucherUsageViewModel.GiftCardRecharge.Date = inTransactionInfo.TransactionDate;
+                voucherUsageViewModel.GiftCardRecharge.InvoiceNumber = inTransactionInfo.InvoiceNumber;
+            }
+
+
+
 
             if (!string.IsNullOrWhiteSpace(inTransactionInfo.PocketVoucherNumber))
             {
@@ -284,7 +303,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             return new ApiRequestViewModel()
             {
                 RequestKey = requestInfo.RequestKey,
-                RequestTime = requestInfo.RequestTime
+                RequestTime = requestInfo.RequestTime,
+                SiteCode = requestInfo.SiteCode
             };
         }
     }

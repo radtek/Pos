@@ -249,6 +249,8 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndC
         wcfInfo->TransactionReferenceNumber = inVoucherUsageDetail.ReferenceNumber;
         wcfInfo->GiftCardNumber = inVoucherUsageDetail.GiftCardNumber;
         wcfInfo->PointsRedeemed = inVoucherUsageDetail.PointsRedeemed;
+        wcfInfo->PurchasedGiftCardNumber = inVoucherUsageDetail.PurchasedGiftCardNumber;
+        wcfInfo->PointsPurchased = inVoucherUsageDetail.PointsPurchased;
         wcfInfo->VoucherName = inVoucherUsageDetail.VoucherName;
         wcfInfo->MemberVoucherDiscountAmount = inVoucherUsageDetail.MemberVoucherDiscountAmount;
         wcfInfo->PocketVoucherNumber = inVoucherUsageDetail.PocketVoucherNumber;
@@ -928,6 +930,7 @@ void  TLoyaltyMateInterface::DisableSyncSetting(Database::TDBTransaction &DBTran
 RequestInfo* TLoyaltyMateInterface::CreateRequest(AnsiString requestKey)
 {
    RequestInfo* requestInfo = new RequestInfo();
+   requestInfo->SiteCode = GetCurrentSiteId();
    requestInfo->RequestKey = requestKey;
    requestInfo->RequestTime = new TXSDateTime();
    TDateTime requestDate = Now();

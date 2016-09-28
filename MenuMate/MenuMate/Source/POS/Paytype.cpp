@@ -280,8 +280,10 @@ void TfrmPaymentType::Reset()
 
            if(Payment->Properties & ePayTypeGetVoucherDetails && Payment->IsLoyaltyVoucher())
              {
-               tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
+               tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
+               tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = Payment->IsLoyaltyGiftCard();
                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
+               CopyPaymentColor(ButtonPos);
              }
            else if (Payment->Properties & ePayTypeAllowCashOut || Payment->Properties & ePayTypePoints || (Payment->Properties & ePayTypeGetVoucherDetails && !Payment->IsLoyaltyVoucher()))
             {
@@ -406,8 +408,7 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
 		{
 			if (Payment->GetPay() == 0)
 			{
-				if (Payment->GetAdjustment() != 0 && !(Payment->Properties & ePayTypeGetVoucherDetails) && !
-						(Payment->Properties & ePayTypePoints))
+				if (Payment->GetAdjustment() != 0 && !(Payment->Properties & ePayTypeGetVoucherDetails) && !(Payment->Properties & ePayTypePoints))
 				{
 					tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + CurrToStrF(Payment->GetAdjustment(), ffNumber,
 					CurrencyDecimals);
@@ -423,20 +424,29 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
 				(Payment->GetPay() + Payment->GetAdjustment(), ffNumber, CurrencyDecimals);
 			}
 
-            if ((Payment->Properties & ePayTypeGetVoucherDetails && ! Payment->IsLoyaltyVoucher()) || Payment->Properties & ePayTypePoints)
-			{
-
-				if (Payment->GetAdjustment() == 0)
+            if(Payment->Properties & ePayTypeGetVoucherDetails && Payment->IsLoyaltyGiftCard())
+            {
+                if (Payment->GetAdjustment() == 0)
 				{
-
-                        tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
-
+                   tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
 				}
 				else
 				{
 				   	tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase\r" + CurrToStrF(Payment->GetAdjustment(), ffNumber,
 					CurrencyDecimals);
+				}
+            }
+            else if ((Payment->Properties & ePayTypeGetVoucherDetails && ! Payment->IsLoyaltyVoucher()) || Payment->Properties & ePayTypePoints)
+			{
 
+				if (Payment->GetAdjustment() == 0)
+				{
+                   tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
+				}
+				else
+				{
+				   	tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase\r" + CurrToStrF(Payment->GetAdjustment(), ffNumber,
+					CurrencyDecimals);
 				}
 
 			}
@@ -2092,7 +2102,15 @@ void TfrmPaymentType::ProcessLoyaltyVoucher(TPayment *Payment)
       AnsiString voucherCode =  frmTouchKeyboard->KeyboardText.Trim();
       if(Payment->Name == "Gift Card")
       {
-        ProcessLoyaltyGiftVoucherVoucher(voucherCode,Payment);
+        if(DoLoyaltyGiftCardValidation(voucherCode,CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber))
+        {
+           ProcessLoyaltyGiftVoucherVoucher(voucherCode,Payment);
+        }
+        else
+        {
+           CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
+           Payment->SetPay(0);
+        }
       }
       else if(Payment->Name == "Voucher")
       {
@@ -2109,8 +2127,7 @@ void TfrmPaymentType::ProcessLoyaltyVoucher(TPayment *Payment)
       {
         CurrentTransaction.RedeemPocketVoucherInformation->VoucherNumber = "";
       }
-
-       Payment->SetPay(0);
+      Payment->SetPay(0);
     }
 
 }
@@ -2191,6 +2208,20 @@ void TfrmPaymentType::ProcessLoyaltyPocketVoucher(AnsiString voucherCode,TPaymen
     }
 }
 // ---------------------------------------------------------------------------
+bool TfrmPaymentType::DoLoyaltyGiftCardValidation(AnsiString redeemedGiftCard,AnsiString purchasedGiftcard)
+{
+   bool retVal = false;
+   if(redeemedGiftCard == "" && purchasedGiftcard == "")
+      retVal = true;
+   else
+      retVal = redeemedGiftCard != purchasedGiftcard;
+    if(!retVal)
+    {
+      MessageBox(AnsiString("You cannot purchase and redeem same gift card.").c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
+    }
+    return retVal;
+}
+// ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 {
 	if (SecurePaymentAccess(Payment))
@@ -2255,23 +2286,41 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
             }
         }
 		else if (Payment->Properties & ePayTypeGetVoucherDetails)
-		{ // Vouchers are not cash out.
-			std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-			frmTouchKeyboard->MaxLength = 50;
-			frmTouchKeyboard->AllowCarriageReturn = false;
-			frmTouchKeyboard->StartWithShiftDown = false;
-			frmTouchKeyboard->MustHaveValue = true;
-			frmTouchKeyboard->KeyboardText = Payment->ReferenceNumber;
-			frmTouchKeyboard->Caption = "Enter " + Payment->Name + " Number";
-			if (frmTouchKeyboard->ShowModal() == mrOk)
-			{
-				Payment->ReferenceNumber = frmTouchKeyboard->KeyboardText;
-			}
-			else
-			{
-				Payment->Reset();
-				return;
-			}
+		{
+
+           // Vouchers are not cash out.
+            std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+            frmTouchKeyboard->MaxLength = 50;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = false;
+            frmTouchKeyboard->MustHaveValue = true;
+            frmTouchKeyboard->KeyboardText = Payment->ReferenceNumber;
+            frmTouchKeyboard->Caption = "Enter " + Payment->Name + " Number";
+            if (frmTouchKeyboard->ShowModal() == mrOk)
+            {
+                Payment->ReferenceNumber = frmTouchKeyboard->KeyboardText;
+            }
+            else
+            {
+                Payment->Reset();
+                return;
+            }
+
+            if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
+            {
+               if(DoLoyaltyGiftCardValidation(CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber,Payment->ReferenceNumber))
+                {
+                    CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = Payment->ReferenceNumber;
+                    CurrentTransaction.PurchasedGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
+                    CurrentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount = wrkPayAmount;
+                }
+                else
+                {
+                   CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
+                   Payment->Reset();
+                   return;
+                }
+            }
 
 			if (CurrentTransaction.CreditTransaction)
 			{
@@ -2283,7 +2332,6 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 			{
 				Payment->SetAdjustment(wrkPayAmount);
 				Payment->AdjustmentReason = "Purchased " + Payment->Name;
-				//Payment->SysNameOveride = "Purchased " + Payment->Name;
                 Payment->SysNameOveride = Payment->Name;
 			}
 			Payment->SetPay(0);
