@@ -2135,7 +2135,8 @@ void TfrmPaymentType::ProcessLoyaltyVoucher(TPayment *Payment)
 void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TPayment *Payment)
 {
     TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
-    double balance = ManagerLoyaltyVoucher.GetGiftVoucherDetail(voucherCode);
+    bool isValidGiftCard = true;
+    double balance = ManagerLoyaltyVoucher.GetGiftVoucherDetail(voucherCode,isValidGiftCard);
     if(balance > 0)
     {
        Currency amountToPay = 0;
@@ -2160,6 +2161,7 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
             }
            Payment->SetPay(amountToPay);
         }
+        CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
         CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = voucherCode;
         CurrentTransaction.RedeemGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
         CurrentTransaction.RedeemGiftVoucherInformation->RedeemedAmount = amountToPay;
@@ -2213,11 +2215,13 @@ bool TfrmPaymentType::DoLoyaltyGiftCardValidation(AnsiString redeemedGiftCard,An
    bool retVal = false;
    if(redeemedGiftCard == "" && purchasedGiftcard == "")
       retVal = true;
+   else if(redeemedGiftCard != "" && purchasedGiftcard != "")
+      retVal = false;
    else
-      retVal = redeemedGiftCard != purchasedGiftcard;
+     retVal = true;
     if(!retVal)
     {
-      MessageBox(AnsiString("You cannot purchase and redeem same gift card.").c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
+      MessageBox(AnsiString("You cannot purchase and redeem gift card at same time.").c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
     }
     return retVal;
 }
@@ -2308,11 +2312,16 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 
             if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
             {
-               if(DoLoyaltyGiftCardValidation(CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber,Payment->ReferenceNumber))
+               TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+               bool isValidGiftCard = true;
+               double balance = ManagerLoyaltyVoucher.GetGiftVoucherDetail(Payment->ReferenceNumber,isValidGiftCard);
+               if(isValidGiftCard && DoLoyaltyGiftCardValidation(CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber,Payment->ReferenceNumber))
                 {
+                    CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
                     CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = Payment->ReferenceNumber;
                     CurrentTransaction.PurchasedGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
                     CurrentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount = wrkPayAmount;
+                    CurrentTransaction.PurchasedGiftVoucherInformation->GiftVoucherAmount = balance;
                 }
                 else
                 {
