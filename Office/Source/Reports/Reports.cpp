@@ -5862,6 +5862,8 @@ void TfrmReports::PrintConsumptionBySalesType(TReportControl *ReportControl)
 				rvMenuMate->SetParam("ReportRange", DateRange);
 				rvMenuMate->SetParam("IncludeGST", CategoryFilter->GSTChecked ? "1":"0");
 				rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                rvMenuMate->SetParam("subCategory", "By Sales Type");
+                rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 				rvMenuMate->Execute();
 			}
 			else
