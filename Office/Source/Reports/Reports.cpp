@@ -5912,6 +5912,9 @@ void TfrmReports::PrintConsumptionByHalfHour(TReportControl *ReportControl)
 				dmMMReportData->SetupHalfHourlyDailyByConsumption(ReportControl->Start, ReportControl->End,TerminalFilter->Selection);
 				if (ReportType == rtExcel)
 				{
+                    std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+                    ExcelDataSetsList->AddObject("Consumption",(TObject *)dmMMReportData->qrHalfHoulrySummary);
+                    ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
 				}
 				else
 				{
