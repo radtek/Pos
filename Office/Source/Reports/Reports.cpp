@@ -2245,7 +2245,7 @@ static AnsiString PaymentTypeList =
 			ReportFilter1->SelectionField				= "Order_Location";
 			ReportFilter1->SelectionDateRange		= true;
 			SubReport0->AddFilterIndex(1);
-			SubReport1->AddFilterIndex(1);
+		   	SubReport2->AddFilterIndex(1);
 			SubReport3->AddFilterIndex(1);
          SubReport6->AddFilterIndex(1);
 			ReportControl->AddFilter(ReportFilter1);
@@ -2260,7 +2260,7 @@ static AnsiString PaymentTypeList =
 			ReportFilter2->SelectionField				= "Menu_Name";
 			ReportFilter2->SelectionDateRange		= true;
 			SubReport1->AddFilterIndex(2);
-			SubReport2->AddFilterIndex(2);
+		   //	SubReport2->AddFilterIndex(2);
 			SubReport4->AddFilterIndex(2);
 			ReportControl->AddFilter(ReportFilter2);
 
