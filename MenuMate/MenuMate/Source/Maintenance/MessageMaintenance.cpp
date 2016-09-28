@@ -214,6 +214,7 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
                 if(MessageType == eCashDrawer)
                 {
                    frmTouchKeyboard->MustHaveValue = true;
+                   frmTouchKeyboard->MaxLength = 39;
                 }
 				frmTouchKeyboard->Caption = CurrentMessage;
 				if (frmTouchKeyboard->ShowModal() == mrOk)
@@ -354,12 +355,13 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(
 				if (frmTouchKeyboard->ShowModal() == mrOk)
 				{
 					Manager->SetTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],frmTouchKeyboard->KeyboardText);
-					frmTouchKeyboard->MaxLength = 200	;
+					frmTouchKeyboard->MaxLength = 200;
 					frmTouchKeyboard->AllowCarriageReturn = false;
 					frmTouchKeyboard->StartWithShiftDown = true;
                     if(MessageType == eCashDrawer)
                     {
                        frmTouchKeyboard->MustHaveValue = true;
+                       frmTouchKeyboard->MaxLength = 39;
                     }
 					frmTouchKeyboard->KeyboardText =  Manager->GetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
 					frmTouchKeyboard->Caption = CurrentMessage;
