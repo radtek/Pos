@@ -3366,9 +3366,7 @@ Zed:
 
 			if(CompleteZed)
 			{
-                // For Mall Export
                 UpdateMallExportDetails();
-                UpdateDLFMall();
             }
             //
       }
@@ -3392,6 +3390,8 @@ Zed:
         {
             // For Mall Export
             SyncCompanyDetails();
+            // For Mall Export
+            UpdateDLFMall();
         }
         frmSecurity->LogOut();
         Processing->Close();
