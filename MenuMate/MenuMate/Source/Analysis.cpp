@@ -3368,7 +3368,6 @@ Zed:
 			{
                 // For Mall Export
                 UpdateMallExportDetails();
-                SyncCompanyDetails();
                 UpdateDLFMall();
             }
             //
@@ -3389,6 +3388,11 @@ Zed:
        "Please write down and report the following message to your service provider. \r\r " + E.Message, "Error",
         MB_OK + MB_ICONERROR);
       }
+        if(CompleteZed)
+        {
+            // For Mall Export
+            SyncCompanyDetails();
+        }
         frmSecurity->LogOut();
         Processing->Close();
 	}
@@ -9076,7 +9080,8 @@ void TfrmAnalysis::SyncCompanyDetails()
    }
     catch(Exception & E)
     {
-       throw;
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 
 }
@@ -9095,7 +9100,8 @@ void TfrmAnalysis::UpdateSalesForce()
     }
     catch(Exception & E)
     {
-       throw;
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
 
@@ -9111,7 +9117,8 @@ void TfrmAnalysis::ClearParkedSale(Database::TDBTransaction &DBTransaction)
     }
     catch(Exception & E)
     {
-       throw;
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
 
@@ -9134,7 +9141,8 @@ void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransacti
    }
     catch(Exception & E)
     {
-       throw;
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
 
@@ -9158,7 +9166,8 @@ void TfrmAnalysis::UpdateStock(bool UpdateingStock)
     }
     catch(Exception & E)
     {
-       throw;
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
 
@@ -9237,7 +9246,9 @@ void TfrmAnalysis::ResetPoints()
     }
     catch(Exception &E)
     {
-       DBTransactionResetPoints.Rollback();
+        DBTransactionResetPoints.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
 
@@ -9264,7 +9275,8 @@ void TfrmAnalysis::EmailZedReport(int z_key)
     }
     catch(Exception & E)
     {
-       throw;
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
 
@@ -9295,7 +9307,8 @@ void TfrmAnalysis::UpdateMallExportDetails()
     }
     catch(Exception & E)
     {
-       throw;
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
 
@@ -9314,7 +9327,8 @@ void TfrmAnalysis::OpenCashDrawer()
     }
     catch(Exception & E)
     {
-       throw;
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
 
@@ -9352,7 +9366,8 @@ void TfrmAnalysis::PostDataToXeroAndMyOB(std::vector<TXeroInvoiceDetail>  &XeroI
     }
     catch(Exception & E)
     {
-       throw;
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
 
@@ -9369,6 +9384,7 @@ void TfrmAnalysis::UpdateDLFMall()
     }
     catch(Exception & E)
     {
-       throw;
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
 }
