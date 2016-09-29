@@ -11,7 +11,7 @@
 #include "SmartCardVer4API.h"
 #include "SmartCardVer5API.h"
 #include "SmartCardVer6API.h"
-#include "DeviceRealTerminal.h"
+#include <ctype.h>
 
 //---------------------------------------------------------------------------
 
@@ -371,7 +371,7 @@ bool TMMContactInfo::ValidateFirstName(AnsiString& message)
 
     for(int i = 0; i < name_len; i++)
     {
-       if(!IsAlpha(temp_char[i]))
+       if(!isalpha(temp_char[i]))
        {
          nameCounter++;
          break;
@@ -415,7 +415,7 @@ bool TMMContactInfo::ValidateLastName(AnsiString& message)
 
     for(int i = 0; i < last_name_len; i++)
     {
-       if(!IsAlpha(temp_lname_char[i]))
+       if(!isalpha(temp_lname_char[i]))
        {
          lastNameCounter++;
          break;
