@@ -2169,6 +2169,9 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
     }
     else
     {
+      if(isValidGiftCard)
+         MessageBox("The gift card with code " + voucherCode + " has zero balance.", "Warning", MB_OK + MB_ICONINFORMATION);
+
       CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
       Payment->SetPay(0);
     }

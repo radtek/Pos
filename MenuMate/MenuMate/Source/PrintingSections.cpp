@@ -6380,6 +6380,7 @@ void TPrintSection::PrintPaymentSurcharges(TReqPrintJob *PrintJob)
                                                            TGlobalSettings::Instance().MidPointRoundsDown));
                 pPrinter->Line->Columns[0]->Width = pPrinter->Width;
                 pPrinter->Line->Columns[0]->Text = "Balance " + balance;
+                pPrinter->Line->Columns[1]->Text = "";
                 pPrinter->AddLine();
             }
             Empty = false;
