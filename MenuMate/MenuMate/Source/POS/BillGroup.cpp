@@ -2404,8 +2404,7 @@ void __fastcall TfrmBillGroup::SplitTimerTick(TObject *Sender)
     frmTouchNumpad->btnSurcharge->Caption = "Ok";
     frmTouchNumpad->btnDiscount->Visible = false;
     frmTouchNumpad->btnSurcharge->Visible = true;
-    frmTouchNumpad->Mode = pmCurrency;
-    frmTouchNumpad->CURInitial = 0;
+    frmTouchNumpad->View = viewQuantity;
     if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->CURResult > 0)
     {
         Database::TDBTransaction DBTransaction(DBControl);
@@ -2465,7 +2464,6 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
 		{ // Must selected the Entire Invoice.
 			SelectedItems.clear();
 		}
-
 		for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
 		{
 			if (itItem->second.TabKey == VisibleItems[GridButton->Tag].TabKey)
@@ -2482,7 +2480,7 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
 			TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, VisibleItems[GridButton->Tag].TabKey);
 			DBTransaction.Commit();
 		}
-		UpdateItemListColourDisplay();
+    	UpdateItemListColourDisplay();
 	}
 	// Reset the Split Payment Form.
 
@@ -2602,28 +2600,28 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 				{
 					tgridItemList->Buttons[i][0]->Color = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR_CANCELLED];
 				}
-                                else
-                                {
-                                    tgridItemList->Buttons[i][0]->Color = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
-                                }
-                                tgridItemList->Buttons[i][0]->FontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
-                                tgridItemList->Buttons[i][0]->LatchedColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
-                                tgridItemList->Buttons[i][0]->LatchedFontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
+                else
+                {
+                    tgridItemList->Buttons[i][0]->Color = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
+                }
+                tgridItemList->Buttons[i][0]->FontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
+                tgridItemList->Buttons[i][0]->LatchedColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
+                tgridItemList->Buttons[i][0]->LatchedFontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
 			}
 			else
 			{
-                            if(ptrItem->Type == CanceledOrder)
-                            {
-                                tgridItemList->Buttons[i][0]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR_CANCELLED];
-                            }
-                            else
-                            {
-                                tgridItemList->Buttons[i][0]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
-                            }
-                            tgridItemList->Buttons[i][0]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
-                            tgridItemList->Buttons[i][0]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
-                            tgridItemList->Buttons[i][0]->LatchedFontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
-                        }
+                if(ptrItem->Type == CanceledOrder)
+                {
+                    tgridItemList->Buttons[i][0]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR_CANCELLED];
+                }
+                else
+                {
+                    tgridItemList->Buttons[i][0]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
+                }
+                tgridItemList->Buttons[i][0]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
+                tgridItemList->Buttons[i][0]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
+                tgridItemList->Buttons[i][0]->LatchedFontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
+            }
 
 			AnsiString QtyStr = "";
 			if (ptrItem->Qty != 1)

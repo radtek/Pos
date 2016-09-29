@@ -9,6 +9,19 @@
 #pragma package(smart_init)
 #pragma link "TouchBtn"
 #pragma link "TouchControls"
+#pragma link "TouchGrid"
+#pragma link "TouchNumpad"
+#pragma link "TouchNumpad"
+#pragma link "SHDocVw_OCX"
+#pragma link "TouchPages"
+#pragma link "touchbtn"
+#pragma link "touchcontrols"
+#pragma link "touchgrid"
+#pragma link "touchnumpad"
+#pragma link "touchpages"
+#pragma link "SHDocVw_OCX"
+#pragma link "SHDocVw_OCX"
+#pragma resource "*.dfm"
 #pragma resource "*.dfm"
 
 // ---------------------------------------------------------------------------
@@ -24,10 +37,19 @@ void __fastcall TfrmTouchNumpad::FormShow(TObject *Sender)
 {
    FormResize(NULL);
    BtnExit = -1;
-
+   if(View == viewQuantity)
+   {
+       pcItemModify->ActivePage = tsQuantity;
+   }
+   else
+   {
+       pcItemModify->ActivePage = tsGeneral;
+   }
    // Set the Foramt for currency and decimal formatting.
    TFloatFormat Format = (Mode == pmCurrency) ? ffCurrency : ffFixed;
 
+   if(pcItemModify->ActivePage != tsQuantity)
+   {
    if (Mode == pmCurrency || Mode == pmDecimal || Mode == pmWeight)
    {
 	  pnl00->Visible = true;
@@ -92,7 +114,7 @@ void __fastcall TfrmTouchNumpad::FormShow(TObject *Sender)
 		 lbeEnteredValue->Color = clHighlight;
 		 lbeEnteredValue->Font->Color = clHighlightText;
 	  }
-   }
+   }  }
 }
 
 void __fastcall TfrmTouchNumpad::UpdateDisplay()
@@ -410,19 +432,25 @@ void __fastcall TfrmTouchNumpad::btnDiscountClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmTouchNumpad::btnSurchargeClick(TObject *Sender)
 {
-   if (Mode == pmCurrency || Mode == pmDecimal || Mode == pmWeight)
-   {
-	  CURResult = wrkPayAmount;
+    if(View = viewGeneral)
+    {
+       if (Mode == pmCurrency || Mode == pmDecimal || Mode == pmWeight)
+       {
+          CURResult = wrkPayAmount;
+       }
+       else if (Mode == pmNumber)
+       {
+          INTResult = wrkIntAmount;
+       }
+       else if (Mode == pmPIN)
+       {
+          STRResult = wrkStrAmount;
+       }
    }
-   else if (Mode == pmNumber)
+   else
    {
-	  INTResult = wrkIntAmount;
+        CURResult = splitValue;
    }
-   else if (Mode == pmPIN)
-   {
-	  STRResult = wrkStrAmount;
-   }
-
    BtnExit = 1;
    ModalResult = mrOk;
 }
@@ -554,21 +582,20 @@ void __fastcall TfrmTouchNumpad::btnOkMouseClick(TObject *Sender)
 {
    if (Mode == pmCurrency || Mode == pmDecimal || Mode == pmWeight)
    {
-	  CURResult = wrkPayAmount;
+      CURResult = wrkPayAmount;
    }
    else if (Mode == pmNumber)
    {
-	  INTResult = wrkIntAmount;
+      INTResult = wrkIntAmount;
    }
    else if (Mode == pmPIN)
    {
-	  STRResult = wrkStrAmount;
+      STRResult = wrkStrAmount;
    }
    else if (Mode == pmSTR)
    {
       NUMSTRResult = wrkNumStrAmount;
    }
-
    BtnExit = 1;
    ModalResult = mrOk;
 }
@@ -577,4 +604,12 @@ void __fastcall TfrmTouchNumpad::btnOkMouseClick(TObject *Sender)
 void TfrmTouchNumpad::SetMaxLengthValue(int Length)
 {
     MaxLength = Length;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmTouchNumpad::tnpQuantityClick(TObject *Sender, TNumpadKey Key)
+{
+   static const double maximum_quantity = 9999.0;
+   if (QtyDisplay->Numeric() > maximum_quantity)
+      QtyDisplay->SetNumeric(static_cast<int>(QtyDisplay->Numeric()) / 10);
+   splitValue = QtyDisplay->Numeric();
 }
