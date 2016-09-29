@@ -9,19 +9,8 @@
 #pragma package(smart_init)
 #pragma link "TouchBtn"
 #pragma link "TouchControls"
-#pragma link "TouchGrid"
 #pragma link "TouchNumpad"
-#pragma link "TouchNumpad"
-#pragma link "SHDocVw_OCX"
 #pragma link "TouchPages"
-#pragma link "touchbtn"
-#pragma link "touchcontrols"
-#pragma link "touchgrid"
-#pragma link "touchnumpad"
-#pragma link "touchpages"
-#pragma link "SHDocVw_OCX"
-#pragma link "SHDocVw_OCX"
-#pragma resource "*.dfm"
 #pragma resource "*.dfm"
 
 // ---------------------------------------------------------------------------
@@ -40,6 +29,7 @@ void __fastcall TfrmTouchNumpad::FormShow(TObject *Sender)
    if(View == viewQuantity)
    {
        pcItemModify->ActivePage = tsQuantity;
+       QtyDisplay->SetNumeric(0);
    }
    else
    {

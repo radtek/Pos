@@ -344,8 +344,8 @@ object frmTouchNumpad: TfrmTouchNumpad
               object lbeEnteredValue: TLabel
                 Left = 0
                 Top = 0
-                Width = 81
-                Height = 36
+                Width = 271
+                Height = 63
                 Align = alClient
                 Alignment = taCenter
                 Caption = '$0.00'
@@ -356,6 +356,8 @@ object frmTouchNumpad: TfrmTouchNumpad
                 Font.Style = []
                 ParentFont = False
                 Layout = tlCenter
+                ExplicitWidth = 81
+                ExplicitHeight = 36
               end
             end
           end
