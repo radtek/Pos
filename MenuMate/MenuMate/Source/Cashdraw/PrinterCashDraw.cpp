@@ -162,7 +162,7 @@ void TCashDrawCashDrawPrinter::SendOpenDrawCommands(TPrintout* Printout)
 void TPrinterCashDraw::makeLogFile(UnicodeString str)
 {
     AnsiString fileName = ExtractFilePath(Application->ExeName) + "EFTPOSCashDrawer_Logs.txt" ;
-    TStrings * List = new TStringList();
+    std::auto_ptr<TStringList> List(new TStringList);
     if (FileExists(fileName) )
     {
       List->LoadFromFile(fileName);
