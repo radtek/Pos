@@ -7,6 +7,7 @@
 #include "PortTalk.h"
 #include "PrinterPhysical.h"
 #include "Printout.h"
+#include "MallExportIMall.h"
 //---------------------------------------------------------------------------
 class TPrinterCashDraw : public TCashDraw
 {
@@ -16,6 +17,7 @@ protected:
 
 public:
     void OpenDraw();
+    void makeLogFile(UnicodeString str);
 };
 //---------------------------------------------------------------------------
 

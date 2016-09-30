@@ -151,7 +151,6 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->Close();
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Cheque";
           Properties = 0;
-          Properties |= ePayTypeOpensCashDrawer;
           IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clBlue;
           IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 1;
@@ -166,7 +165,6 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->Close();
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Eftpos";
           Properties = 0;
-          Properties |= ePayTypeOpensCashDrawer;
           Properties |= ePayTypeAllowCashOut;
           Properties |= ePayTypeElectronicTransaction;
           Properties |= ePayTypeCheckAccepted;
@@ -183,7 +181,6 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->Close();
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Amex";
           Properties = 0;
-          Properties |= ePayTypeOpensCashDrawer;
           Properties |= ePayTypeElectronicTransaction;
           Properties |= ePayTypeCheckAccepted;
           IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
@@ -200,7 +197,6 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->Close();
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Diners";
           Properties = 0;
-          Properties |= ePayTypeOpensCashDrawer;
           Properties |= ePayTypeElectronicTransaction;
           Properties |= ePayTypeCheckAccepted;
           IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
@@ -217,7 +213,6 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->Close();
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Visa";
           Properties = 0;
-          Properties |= ePayTypeOpensCashDrawer;
           Properties |= ePayTypeElectronicTransaction;
           Properties |= ePayTypeCheckAccepted;
           IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
@@ -234,7 +229,6 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->Close();
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Master Card";
           Properties = 0;
-          Properties |= ePayTypeOpensCashDrawer;
           Properties |= ePayTypeElectronicTransaction;
           Properties |= ePayTypeCheckAccepted;
           IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
@@ -251,7 +245,6 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           IBInternalQuery->Close();
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Tips";
           Properties = 0;
-          Properties |= ePayTypeOpensCashDrawer;
           Properties |= ePayTypeCustomSurcharge;
           IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clGray;

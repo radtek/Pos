@@ -175,6 +175,7 @@ class TPaymentTransaction
         Currency ServiceChargeWithTax;
         bool CheckDiscountApplied(TDiscount CurrentDiscount);
         bool IsVouchersProcessed;
+        void makeLogFile(UnicodeString str);
 };
 
 #endif

@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------------
 #include "CashDraw.h"
 #include "PortTalk.h"
+#include "MallExportIMall.h"
 //---------------------------------------------------------------------------
 class TPortCashDraw : public TCashDraw
 {
@@ -12,6 +13,7 @@ protected:
     virtual void SendOpenDrawCommands(TPortTalk* PortTalk) =0;
 public:
     void OpenDraw();
+    void makeLogFile(UnicodeString str);
 };
 //---------------------------------------------------------------------------
 

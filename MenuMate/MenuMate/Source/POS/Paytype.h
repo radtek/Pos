@@ -157,6 +157,7 @@ private:	// User declarations
     void ProcessLoyaltyPocketVoucher(AnsiString voucherCode,TPayment *Payment);
     void GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode);
     bool DoLoyaltyGiftCardValidation(AnsiString redeemedGiftCard,AnsiString purchasedGiftcard);
+    void makeLogFile(UnicodeString str);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);

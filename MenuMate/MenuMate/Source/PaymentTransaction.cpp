@@ -389,7 +389,7 @@ bool TPaymentTransaction::TransOpenCashDraw()
 	for ( int i = 0 ; i <  PaymentsCount(); i++ )
 	{
 		TPayment *Payment = PaymentGet(i);
-		if((Payment->Properties & ePayTypeOpensCashDrawer) && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0) || Payment->RefundPoints)
+		if((Payment->Properties & ePayTypeOpensCashDrawer) && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0))
 		{
 			return true;
 		}
@@ -973,5 +973,15 @@ bool TPaymentTransaction::CheckThorVoucherExistAsDiscount(AnsiString voucher_cod
 }
 
 //---------------------------------------------------------------------------
-
+void TPaymentTransaction::makeLogFile(UnicodeString str)
+{
+    AnsiString fileName = ExtractFilePath(Application->ExeName) + "EFTPOSCashDrawer_Logs.txt" ;
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+    List->Add(" "+ str +  "\n");
+    List->SaveToFile(fileName );
+}
 
