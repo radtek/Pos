@@ -2,7 +2,7 @@
 {
     public class RequestAddress
     {
-        public const string BaseAddress = "http://menumateloyalty.com/";
+        public const string BaseAddress = "http://192.168.0.13/Loyaltymate/";
 
         //Member
         public const string SaveMember = "api/MemberApi/Save";
@@ -24,7 +24,7 @@
         public const string GetPocketVoucher = "api/VoucherApi/PocketVoucher";
 
         //Voucher Processing
-        public const string ProcessVoucherTransaction = "api/VoucherApi/ProcessVouchers";
+        public const string ProcessVoucherTransaction = "api/v2Pos/VoucherApi/ProcessVouchers";
         
         public const string ReleaseVouchers = "api/VoucherApi/ReleaseVouchers";
 

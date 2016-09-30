@@ -57,6 +57,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
 	RedeemWeightInformation = new TRedeemPointsInformation;
     RedeemPocketVoucherInformation = new TRedeemPocketVoucherInformation;
     RedeemGiftVoucherInformation = new TRedeemGiftVoucherInformation;
+    PurchasedGiftVoucherInformation = new TRedeemGiftVoucherInformation;
 	IsQuickPayTransaction = false;
 	QuickPaymentName = "";
 	SplittedItemKey = 0;
@@ -116,6 +117,7 @@ TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransac
     PartyName =  OtherTransaction.PartyName;
     RedeemPocketVoucherInformation =  OtherTransaction.RedeemPocketVoucherInformation;
     RedeemGiftVoucherInformation = OtherTransaction.RedeemGiftVoucherInformation;
+    PurchasedGiftVoucherInformation = OtherTransaction.PurchasedGiftVoucherInformation;
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
 }
 
@@ -163,6 +165,7 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
     PartyName = OtherTransaction.PartyName;
     RedeemPocketVoucherInformation =  OtherTransaction.RedeemPocketVoucherInformation;
     RedeemGiftVoucherInformation = OtherTransaction.RedeemGiftVoucherInformation;
+    PurchasedGiftVoucherInformation = OtherTransaction.PurchasedGiftVoucherInformation;
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
 }
 
@@ -912,6 +915,9 @@ void TPaymentTransaction::copyBasicDetailsFrom( const TPaymentTransaction *Other
     ChitNumber              = OtherTransaction->ChitNumber;
     PartyName = OtherTransaction->PartyName;
     IsVouchersProcessed = OtherTransaction->IsVouchersProcessed;
+    RedeemPocketVoucherInformation =  OtherTransaction->RedeemPocketVoucherInformation;
+    RedeemGiftVoucherInformation = OtherTransaction->RedeemGiftVoucherInformation;
+    PurchasedGiftVoucherInformation = OtherTransaction->PurchasedGiftVoucherInformation;
     IsCopy					= true;
 }
 //---------------------------------------------------------------------------

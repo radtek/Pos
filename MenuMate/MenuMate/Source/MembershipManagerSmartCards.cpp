@@ -24,6 +24,9 @@
 #include "ManagerLoyaltyMate.h"
 #include "MMTouchKeyboard.h"
 #include "LoyaltyMateOperationDialogBox.h"
+#include "DBTab.h"
+#include "EditCustomer.h"
+#include "DBGroups.h"
 
 // ---------------------------------------------------------------------------
 
@@ -1053,6 +1056,7 @@ void TManagerMembershipSmartCards::OnCardInserted(TSystemEvents *Sender)
 			{
                if (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
                 {
+                   if(SmartCardContact.Surname != "")
                    MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
                    SavePointsTransactionsToSmartCard(SmartCardContact.Points,"",true);
                 }
@@ -1754,66 +1758,34 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
     TDBContacts::GetContactDetails(DBTransaction,SmartCardContact.ContactKey,SmartCardContact);
     SmartCardContact.Points = Points;
 
-	if(SmartCardContact.CloudUUID.Length() == 0)
+	if(SmartCardContact.CloudUUID.Length() == 0 && TGlobalSettings::Instance().LoyaltyMateEnabled)
 	{
-		bool memberRegisteredOnline =  MessageBox(
-		"Has this member registered online for LoyaltyMate?",
-		"Loyaltymate Registration",
-		MB_ICONQUESTION + MB_YESNO) == IDYES;
-		if(memberRegisteredOnline)
-		{
-			SmartCardContact.EMail = GetActivationEmailFromUser();
-			if(!SmartCardContact.ValidEmail())
-			{
-                bool MemberNotExist = false;
-				bool replacePointsFromCloud = false;
-				bool result = runMemberDownloadThread(currentSyndicateCode, SmartCardContact,false,false,true,MemberNotExist);
-				if(result)
-				{
-					storeCloudUUIDInDB = true;
-					smartCardUpdateRequired = true;
-				}
-			}
-            else
-             {
-               MessageBox("You must enter a valid Email.", "Error", MB_OK + MB_ICONERROR);
-             }
-		}
-		else
-		{
-			bool wantToUseLoyaltyMate = MessageBox(
-			"Does this member want to use LoyaltyMate?",
-			"Loyaltymate Registration",
-			MB_ICONQUESTION + MB_YESNO) == IDYES;
-			if(wantToUseLoyaltyMate)
-			{
-				bool emailValid = SmartCardContact.ValidEmail();
-                std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(Screen->ActiveForm));
-				frmTouchKeyboard->AllowCarriageReturn = false;
-				frmTouchKeyboard->StartWithShiftDown = false;
-				frmTouchKeyboard->Caption = "Enter Valid Email Address for LoyaltyMate";
-				frmTouchKeyboard->KeyboardText = SmartCardContact.EMail;
-				if (!emailValid && frmTouchKeyboard->ShowModal() == mrOk)
-				{
-					SmartCardContact.EMail = frmTouchKeyboard->KeyboardText;
-					emailValid = SmartCardContact.ValidEmail();
-					while (!emailValid && MessageBox("Entered email address is invalid.", "Invalid Email", MB_RETRYCANCEL) == IDRETRY)
-					{
-						if (frmTouchKeyboard->ShowModal() == mrOk)
-						{
-							SmartCardContact.EMail = frmTouchKeyboard->KeyboardText;
-						}
-						else
-						{
-							break;
-						}
-						emailValid = SmartCardContact.ValidEmail();
-					}
-				}
-
-				if(emailValid)
-				{
-                    if(SmartCardContact.EMail.Pos("GiftCard") == 1)
+               AnsiString message = "For Loyaltymate, you will need to update your ";
+               bool updateMember = false;
+               if(SmartCardContact.ValidateMandatoryField(message))
+               {
+                  updateMember = true;
+               }
+               else
+               {
+                   MessageBox(message.SubString(1, message.Length()-1) + ".", "Message", MB_ICONINFORMATION + MB_OK);
+                   std::auto_ptr < TfrmEditCustomer >
+                   frmEditCustomer(TfrmEditCustomer::Create(Screen->ActiveForm));
+                   frmEditCustomer->Editing = true;
+                   frmEditCustomer->Info = SmartCardContact;
+                   frmEditCustomer->MemberType = SmartCardContact.MemberType;
+                   if(frmEditCustomer->ShowModal() == mrOk)
+                   {
+                      updateMember = true;
+                      SmartCardContact = frmEditCustomer->Info;
+                      MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+                      DBTransaction.Commit();
+                      DBTransaction.StartTransaction();
+                   }
+               }
+               if(updateMember)
+               {
+                   if(SmartCardContact.EMail.Pos("GiftCard") == 1)
                     {
                       SmartCardContact.MemberType = 2;
                     }
@@ -1830,14 +1802,7 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
 						smartCardUpdateRequired = true;
 						storeCloudUUIDInDB = true;
 					}
-				}
-			}
-			else
-			{
-				SmartCardContact.CloudUUID = TLoyaltyMateUtilities::GetLoyaltyMateDisabledCloudUUID();
-				smartCardUpdateRequired = true;
-			}
-		}
+               }
 	}
     else
     {
@@ -2032,10 +1997,10 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
 	loyaltyMateOperationDialogBox->DownloadThread 		= loyaltyMemberDownloadThread;
 	loyaltyMateOperationDialogBox->Info			= SmartCardContact;
 	loyaltyMemberDownloadThread->Start();
-	bool dialogResultSuccessful = loyaltyMateOperationDialogBox->ShowModal() == mrOk;
-
+    bool dialogResultSuccessful = loyaltyMateOperationDialogBox->ShowModal() == mrOk;
 	if(dialogResultSuccessful)
 	{
+        dialogResultSuccessful = true;
 		//download complete, copy the values across and display the member information
 		SmartCardContact.CloudUUID       = loyaltyMateOperationDialogBox->Info.CloudUUID;
 		SmartCardContact.Phone          = loyaltyMateOperationDialogBox->Info.Phone;
@@ -2114,6 +2079,7 @@ void __fastcall TManagerMembershipSmartCards::loyaltyMateMemberCreationCompleted
 void TManagerMembershipSmartCards::GetMemberDetail(TMMContactInfo &MMContactInfo)
 {
    bool MemberNotExist = false;
+   bool isCancel = false;
    TGlobalSettings::Instance().IsPOSOffline = !runMemberDownloadThread(ManagerSyndicateCode.GetDefaultSyndCode(),MMContactInfo,
                                                true,false,false,MemberNotExist);
    if(TGlobalSettings::Instance().IsPOSOffline)
@@ -2213,6 +2179,7 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromBarcode(TMMContactInfo &MM
    if(ManagerSyndicateCode.GetDefaultSyndCode().Valid())
    {
        memberDownloadStatus = runMemberDownloadThread(ManagerSyndicateCode.GetDefaultSyndCode(),MMContactInfo,false,true,false,MemberNotExist);
+       
        if(MemberNotExist)
         {
            TGlobalSettings::Instance().IsPOSOffline = false;
@@ -2232,7 +2199,7 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromBarcode(TMMContactInfo &MM
        MembershipSystem->AvailableEarnedPoint = MMContactInfo.Points.getPointsBalance(ptstLoyalty) + MembershipSystem->AvailableBDPoint +  MembershipSystem->AvailableFVPoint;
        MembershipSystem->AvailableLoadedPoint = MMContactInfo.Points.getPointsBalance(ptstAccount);
        MembershipSystem->MemberVouchers = MMContactInfo.MemberVouchers;
-   }
+       }
    else
    {
       MessageBox( "Syndicate Code is not valid.", "Message", MB_ICONINFORMATION + MB_OK);
@@ -2244,6 +2211,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
 {
 	try
 		{
+            bool isCancel = false;
 			TMMContactInfo SmartCardContact;
 			SmartCardContact.MemberCode = UserInfo.MemberCode;
             TDBContacts::GetContactDetailsByMemberCode(DBTransaction,SmartCardContact);
@@ -2256,9 +2224,15 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
 				//Get information from cloud
 			   memberNotExist = GetMemberDetailFromBarcode(SmartCardContact);
 			}
-
-			if (SmartCardContact.ContactKey == 0)
-			{
+            if(memberNotExist)
+            {
+                if(MessageBox("No Item/Member found, Press Ok to create a new member or Cancel to continue.","Member Not Exist", MB_OKCANCEL + MB_ICONQUESTION) == ID_CANCEL)
+                   {
+                        return false;
+                   }
+			}
+            if (SmartCardContact.ContactKey == 0)
+            {
                 if(memberNotExist || !TGlobalSettings::Instance().LoyaltyMateEnabled)
                  {
                     bool canAddMember = false;
@@ -2268,20 +2242,27 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
                      }
                      else
                      {
-                        TMMContactInfo TempUserInfo;
-                        std::auto_ptr <TContactStaff> Staff(new TContactStaff(DBTransaction));
-                        TLoginSuccess Result = Staff->Login(Screen->ActiveForm, DBTransaction, TempUserInfo, CheckAccountManager);
-                        if (Result == lsAccepted)
+                        if(!TGlobalSettings::Instance().EnablePhoneOrders)
                         {
-                           canAddMember = true;
+                            TMMContactInfo TempUserInfo;
+                            std::auto_ptr <TContactStaff> Staff(new TContactStaff(DBTransaction));
+                            TLoginSuccess Result = Staff->Login(Screen->ActiveForm, DBTransaction, TempUserInfo, CheckAccountManager);
+                            if (Result == lsAccepted)
+                            {
+                               canAddMember = true;
+                            }
+                            else if (Result == lsDenied)
+                            {
+                              MessageBox("You do not have access to Membership.", "Error", MB_OK + MB_ICONERROR);
+                            }
+                            else if (Result == lsPINIncorrect)
+                            {
+                              MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+                            }
                         }
-                        else if (Result == lsDenied)
+                        else
                         {
-                          MessageBox("You do not have access to Membership.", "Error", MB_OK + MB_ICONERROR);
-                        }
-                        else if (Result == lsPINIncorrect)
-                        {
-                          MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+                            canAddMember = true;
                         }
                      }
 
@@ -2311,8 +2292,8 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
                     UserInfo = SmartCardContact;
 
                 }
-			}
-			else
+            }
+			if(SmartCardContact.ContactKey != 0)
 			{
 				if (!TGlobalSettings::Instance().IsPOSOffline && TGlobalSettings::Instance().LoyaltyMateEnabled && !memberNotExist)
 				{
@@ -2326,12 +2307,33 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
                    TDBContacts::GetContactDetailsByMemberCode(DBTransaction,UserInfo);
                    if (TGlobalSettings::Instance().LoyaltyMateEnabled && UserInfo.CloudUUID.Length() == 0 && memberNotExist)
 		            {
-                         bool wantToUseLoyaltyMate = MessageBox( "Does this member want to use LoyaltyMate?", "Loyaltymate Registration",
-                                                                 MB_ICONQUESTION + MB_YESNO) == IDYES;
-                        if(wantToUseLoyaltyMate)
-                        {
-                            bool memberCreationSuccess = createMemberOnLoyaltyMate(ManagerSyndicateCode.GetDefaultSyndCode(),UserInfo);
-                        }
+                           AnsiString message = "For Loyaltymate, you will need to update your ";
+                           bool updateMember = false;
+                           if(UserInfo.ValidateMandatoryField(message))
+                           {
+                              updateMember = true;
+                           }
+                           else
+                           {
+                               MessageBox(message.SubString(1, message.Length()-1) + ".", "Message", MB_ICONINFORMATION + MB_OK);
+                               std::auto_ptr < TfrmEditCustomer >
+                               frmEditCustomer(TfrmEditCustomer::Create(Screen->ActiveForm));
+                               frmEditCustomer->Editing = true;
+                               frmEditCustomer->Info = UserInfo;
+                               frmEditCustomer->MemberType = UserInfo.MemberType;
+                               if(frmEditCustomer->ShowModal() == mrOk)
+                               {
+                                  updateMember = true;
+                                  UserInfo = frmEditCustomer->Info;
+                                  MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
+                                  DBTransaction.Commit();
+                                  DBTransaction.StartTransaction();
+                               }
+                           }
+                           if(updateMember)
+                           {
+                               bool memberCreationSuccess = createMemberOnLoyaltyMate(ManagerSyndicateCode.GetDefaultSyndCode(),UserInfo);
+                           }
                     }
                 }
 			}

@@ -312,6 +312,7 @@ __published:	// IDE-managed Components
         TGroupBox *GroupBox23;
         TCheckBox *cbItemSearch;
         TCheckBox *cbShowDarkBackgroundInPOS;
+        TCheckBox *cbOpenCashDrawer;
 
         //**********
         void __fastcall FormShow(TObject *Sender);
@@ -533,6 +534,7 @@ __published:	// IDE-managed Components
         void __fastcall cbShowLargeFontsClick(TObject *Sender);
         void __fastcall cbItemSearchClick(TObject *Sender);   //cbShowDarkBackgroundInPOS
         void __fastcall cbShowDarkBackgroundInPOSClick(TObject *Sender);
+        void __fastcall cbOpenCashDrawerClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP

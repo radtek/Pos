@@ -1283,9 +1283,16 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 
 		if(!ItemFound && !(TGlobalSettings::Instance().IsThorlinkSelected))
 		{
+              if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
+              {
+                 MessageBox("No Item Found, Press OK to continue.", "No Item Found", MB_OK + MB_ICONWARNING);
+              }
+              else
+              {
               DBTransaction.StartTransaction();
               GetMemberByBarcode(DBTransaction,Data);
               DBTransaction.Commit();
+              }
 		}
 	}
 }
@@ -7740,10 +7747,14 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
 	{
 		DBTransaction.StartTransaction();
 		TDeviceRealTerminal::Instance().User = TempUserInfo;
-		TDBSecurity::ProcessSecurity(DBTransaction, TDBSecurity::GetNextSecurityRef(DBTransaction), TDeviceRealTerminal::Instance().User.ContactKey, SecurityTypes[secOpenDraw],
-			TDeviceRealTerminal::Instance().User.Name, TDeviceRealTerminal::Instance().User.Initials, Now(), TDeviceRealTerminal::Instance().ID.Name);
-
-		TComms::Instance().KickLocalDraw(DBTransaction);
+        std::auto_ptr <TfrmMessage> frmMessage(TfrmMessage::Create <TfrmMessage> (this, TDeviceRealTerminal::Instance().DBControl));
+        frmMessage->MessageType = eCashDrawer;
+        if(frmMessage->ShowModal() == mrOk)
+        {
+            TComms::Instance().KickLocalDraw(DBTransaction);            
+            TDBSecurity::ProcessSecurity(DBTransaction, TDBSecurity::GetNextSecurityRef(DBTransaction), TDeviceRealTerminal::Instance().User.ContactKey, SecurityTypes[secOpenDraw],
+            TDeviceRealTerminal::Instance().User.Name, TDeviceRealTerminal::Instance().User.Initials, Now(), TDeviceRealTerminal::Instance().ID.Name, frmMessage->TextResult);
+        }
 		DBTransaction.Commit();
 	}
 	else if (Result == lsDenied)
@@ -7755,7 +7766,6 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
 		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 	}
       AutoLogOut();
-
     //MM-1647: Ask for chit if it is enabled for every order.
     NagUserToSelectChit();
 }

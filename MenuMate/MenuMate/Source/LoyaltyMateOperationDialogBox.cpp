@@ -83,7 +83,6 @@ void __fastcall TfrmLoyaltyMateOperationDialogBox::loyaltyMateDownloadMemberThre
         if(loyaltyMemberDownloadThread->ErrorMessage  == "Member Not Exist.")
           {
               BarcodeMemberNotExist = true;
-              MessageBox("Member Not Exist on server.","Member Not Exist", MB_ICONERROR + MB_OK);
           }
         else
           {

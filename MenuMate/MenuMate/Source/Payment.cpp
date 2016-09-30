@@ -421,3 +421,8 @@ bool TPayment::IsLoyaltyVoucher()
 {
    return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card" || Name == "Voucher" );
 }
+
+bool TPayment::IsLoyaltyGiftCard()
+{
+   return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card");
+}

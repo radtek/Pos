@@ -176,20 +176,35 @@ void __fastcall TfrmEditCustomer::btnOkClick(TObject *Sender)
         bool isMobileValid = false;
         bool isPhoneValid = true;
         Info.EMail = edEmail->Text;
+        Info.Name = edFirstName->Text;
+        Info.Surname = edLastName->Text;
+
+        AnsiString firstNameMessage = "First Name should be ";
+        AnsiString lastNameMessage = "Last Name should be ";
         if (edFirstName->Text.Trim() == "")
         {
               MessageBox("You must enter a First Name.", "Error", MB_OK + MB_ICONERROR);
               edFirstName->SetFocus();
               isNameValid = false;
         }
-
+        if(isNameValid && !Info.ValidateFirstName(firstNameMessage))
+        {
+           MessageBox(firstNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
+           edFirstName->SetFocus();
+           isNameValid = false;
+        }
         if (isNameValid && edLastName->Text.Trim() == "")
         {
               MessageBox("You must enter a Last Name.", "Error", MB_OK + MB_ICONERROR);
               edFirstName->SetFocus();
               isNameValid = false;
         }
-
+        if(isNameValid && !Info.ValidateLastName(lastNameMessage))
+        {
+           MessageBox(lastNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
+           edFirstName->SetFocus();
+           isNameValid = false;
+        }
         if(isNameValid)
           isEmailValid = ValidateEmailId();
 
@@ -203,10 +218,10 @@ void __fastcall TfrmEditCustomer::btnOkClick(TObject *Sender)
               isPhoneValid = false;
            }
 
-        if(isNameValid && isEmailValid && isMobileValid && isPhoneValid)
-        {
+      if(isNameValid && isEmailValid && isMobileValid && isPhoneValid)
+      {
           ProcessData();
-        }
+      }
    }
 }
 // ---------------------------------------------------------------------------
