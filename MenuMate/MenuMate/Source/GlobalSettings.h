@@ -449,6 +449,7 @@ public:
     bool ItemSearch;
     bool IsCloudSyncedForDiscount;
     bool ShowDarkBackground;
+    bool OpenCashDrawer;
 };
 
 #endif

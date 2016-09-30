@@ -363,5 +363,7 @@ TGlobalSettings::TGlobalSettings()
     // MallExport Additional Settings
     ConsolidateReportPaths = "";
     EnableConsolidatedReport = false;
+    ShowDarkBackground = false;
+    OpenCashDrawer = false;
 }
 
