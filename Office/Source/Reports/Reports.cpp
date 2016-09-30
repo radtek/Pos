@@ -7820,7 +7820,9 @@ void TfrmReports::PrintManualCashDrawer(TReportControl *ReportControl)
 				AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
 												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
 				rvMenuMate->SetParam("ReportRange", DateRange);
-				rvMenuMate->Execute();
+                rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
+                rvMenuMate->Execute();
 			}
 			else
 			{

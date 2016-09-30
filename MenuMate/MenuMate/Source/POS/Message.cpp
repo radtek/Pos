@@ -63,75 +63,73 @@ void __fastcall TfrmMessage::FormShow(TObject *Sender)
 
    y += CloseButton->Height + PixelGap;
 
-   if (MessageType != eHHProfile)
+   if (MessageType != eHHProfile && MessageType != eCashDrawer)
    {
+       TMessageBtn *TopButton = new TMessageBtn(this);
+       TopButton->Parent = this->sbMessages;
+       TopButton->Font->Color = clWhite;
 
+       if (MessageType == ePaymentTypeDisplay || MessageType == eDiscountReason || MessageType == eThorDiscountReason)
+       {
+          TopButton->Title = "Clear";
+          TopButton->Tag = -1;
+          TopButton->ShowKeyboard = false;
+          TopButton->BtnType = eSelectionComplete;
+          TopButton->Visible = true;
+       }
+       else if (MessageType == eRunProgram)
+       {
+          TopButton->Title = "Run...";
+          TopButton->ShowKeyboard = true;
+          TopButton->Tag = -1;
+          TopButton->Visible = true;
+          TopButton->BtnType = eSelectionComplete;
+       }
+       else if (MessageType == eCallAway)
+       {
+          TopButton->Title = "Send...";
+          TopButton->ShowKeyboard = false;
+          TopButton->Tag = -1;
+          TopButton->BtnType = eSelectionComplete;
+          TopButton->Visible = true;
+       }
+       else if (MessageType == eCancelReason)
+       {
+          TopButton->Title = "Custom Cancel";
+          TopButton->Tag = -1;
+          TopButton->ShowKeyboard = true;
+          TopButton->BtnType = eSelectionComplete;
+          TopButton->Visible = true;
+       }
+       else if (MessageType == eCustomerTypes)
+       {
+          TopButton->Title = "Custom Order Type";
+          TopButton->Tag = -1;
+          TopButton->ShowKeyboard = true;
+          TopButton->BtnType = eSelectionComplete;
+          TopButton->Visible = true;
+       }
+       else
+       {
+          TopButton->Title = "Notes :";
+          TopButton->ShowKeyboard = true;
+          TopButton->Tag = -1;
+          TopButton->BtnType = eSelectionComplete;
+          TopButton->Visible = true;
+       }
+       TopButton->Caption = TopButton->Title;
+       TopButton->TextResult = "";
+       TopButton->ButtonColor = clTeal;
+       TopButton->Left = x;
+       TopButton->Top = y;
+       TopButton->Height = sbMessages->ClientHeight / NUMBER_OF_MSG_IN_VIEW;
+       TopButton->Width = ButtonWidth;
+       TopButton->OnMouseClick = BtnMesasgeClick;
 
-   TMessageBtn *TopButton = new TMessageBtn(this);
-   TopButton->Parent = this->sbMessages;
-   TopButton->Font->Color = clWhite;
-
-   if (MessageType == ePaymentTypeDisplay || MessageType == eDiscountReason || MessageType == eThorDiscountReason)
-   {
-	  TopButton->Title = "Clear";
-	  TopButton->Tag = -1;
-	  TopButton->ShowKeyboard = false;
-	  TopButton->BtnType = eSelectionComplete;
-	  TopButton->Visible = true;
-   }
-   else if (MessageType == eRunProgram)
-   {
-	  TopButton->Title = "Run...";
-	  TopButton->ShowKeyboard = true;
-	  TopButton->Tag = -1;
-	  TopButton->Visible = true;
-	  TopButton->BtnType = eSelectionComplete;
-   }
-   else if (MessageType == eCallAway)
-   {
-	  TopButton->Title = "Send...";
-	  TopButton->ShowKeyboard = false;
-	  TopButton->Tag = -1;
-	  TopButton->BtnType = eSelectionComplete;
-	  TopButton->Visible = true;
-   }
-   else if (MessageType == eCancelReason)
-   {
-	  TopButton->Title = "Custom Cancel";
-	  TopButton->Tag = -1;
-	  TopButton->ShowKeyboard = true;
-	  TopButton->BtnType = eSelectionComplete;
-	  TopButton->Visible = true;
-   }
-   else if (MessageType == eCustomerTypes)
-   {
-	  TopButton->Title = "Custom Order Type";
-	  TopButton->Tag = -1;
-	  TopButton->ShowKeyboard = true;
-	  TopButton->BtnType = eSelectionComplete;
-	  TopButton->Visible = true;
-   }
-   else
-   {
-	  TopButton->Title = "Notes :";
-	  TopButton->ShowKeyboard = true;
-	  TopButton->Tag = -1;
-	  TopButton->BtnType = eSelectionComplete;
-	  TopButton->Visible = true;
-   }
-   TopButton->Caption = TopButton->Title;
-   TopButton->TextResult = "";
-   TopButton->ButtonColor = clTeal;
-   TopButton->Left = x;
-   TopButton->Top = y;
-   TopButton->Height = sbMessages->ClientHeight / NUMBER_OF_MSG_IN_VIEW;
-   TopButton->Width = ButtonWidth;
-   TopButton->OnMouseClick = BtnMesasgeClick;
-
-           if (TopButton->Visible)
-           {
-              y += TopButton->Height + PixelGap;
-           }
+       if (TopButton->Visible)
+       {
+          y += TopButton->Height + PixelGap;
+       }
 
     }
 

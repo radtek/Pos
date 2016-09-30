@@ -11,6 +11,7 @@
 #include "SmartCardVer4API.h"
 #include "SmartCardVer5API.h"
 #include "SmartCardVer6API.h"
+#include <ctype.h>
 
 //---------------------------------------------------------------------------
 
@@ -318,4 +319,128 @@ bool TMMContactInfo::IsCodePresent()
    return retVal;
 
 
+}
+
+bool TMMContactInfo::ValidateMandatoryField(AnsiString& message)
+{
+    bool isvalid = false;
+    int count = 0;
+    if(Name == "")
+    {
+       message = message + "First Name,";
+       count++;
+    }
+    if(Surname == "")
+    {
+       message = message + "Last Name,";
+       count++;
+    }
+    if(!ValidEmail())
+    {
+       message = message + "Email,";
+       count++;
+    }
+    if(Mobile != "" && Mobile.Length() < 5)
+    {
+       message = message + "Mobile Phone,";
+       count++;
+    }
+    if(Phone != "" && Phone.Length() < 5)
+    {
+       message = message + "Phone,";
+       count++;
+    }
+    if(count == 0)
+    {
+         isvalid = true;
+    }
+    return isvalid;
+}
+
+bool TMMContactInfo::ValidateFirstName(AnsiString& message)
+{
+    bool isvalid = false;
+    int nameCounter = 0;
+    int fCount = 0;
+    UnicodeString name = Name;
+    AnsiString strName = name;
+	int name_len = name.Length();
+
+    char* temp_char = new char[strName.Length()+1];
+   	strcpy(temp_char, strName.c_str());
+
+    for(int i = 0; i < name_len; i++)
+    {
+       if(!isalpha(temp_char[i]))
+       {
+         nameCounter++;
+         break;
+       }
+    }
+    if(nameCounter > 0)
+    {
+        message = message + "consisting of Alphabet characters";
+        fCount++;
+    }
+    if(name_len > 20)
+    {
+       if(nameCounter == 0)
+       {
+       message = message + "less than 21 characters";
+       }
+       else
+       {
+         message = message + " and less than 21 characters";
+       }
+       fCount++;
+    }
+    if(fCount == 0)
+    {
+         isvalid = true;
+    }
+    return isvalid;
+}
+
+bool TMMContactInfo::ValidateLastName(AnsiString& message)
+{
+    bool isvalid = false;
+    int lastNameCounter = 0;
+    int lCount = 0;
+    UnicodeString surname = Surname;
+    AnsiString strLastName = surname;
+	int last_name_len = surname.Length();
+
+    char* temp_lname_char = new char[strLastName.Length()+1];
+   	strcpy(temp_lname_char, strLastName.c_str());
+
+    for(int i = 0; i < last_name_len; i++)
+    {
+       if(!isalpha(temp_lname_char[i]))
+       {
+         lastNameCounter++;
+         break;
+       }
+    }
+    if(lastNameCounter > 0)
+    {
+        message = message + "consisting of Alphabet characters";
+        lCount++;
+    }
+    if(last_name_len > 20)
+    {
+       if(lastNameCounter == 0)
+       {
+             message = message + "less than 21 characters";
+       }
+       else
+       {
+             message = message + " and less than 21 characters";
+       }
+     lCount++;
+    }
+    if(lCount == 0)
+    {
+         isvalid = true;
+    }
+    return isvalid;
 }

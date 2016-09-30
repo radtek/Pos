@@ -106,6 +106,7 @@ class TfrmMaintain : public TZForm
     TPanel *Panel7;
     TTouchBtn *btnTierLevels;
     TTouchBtn *btnAccountingInterface;
+    TTouchBtn *tbtnCashDrawer;
 
     //*****************
 
@@ -155,6 +156,7 @@ class TfrmMaintain : public TZForm
     void __fastcall TouchBtnRunRateBoardMouseClick(TObject *Sender);
     TTouchBtn *TouchBtnMemberSalesOnly;
    // void __fastcall TouchBtnMembersaleOnlyClick(TObject *Sender);
+   
 
 
     //*****************

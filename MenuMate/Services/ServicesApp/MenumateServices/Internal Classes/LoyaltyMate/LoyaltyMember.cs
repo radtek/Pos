@@ -451,7 +451,8 @@ namespace MenumateServices.LoyaltyMate
             return new ApiRequestViewModel()
             {
                 RequestKey = requestInfo.RequestKey,
-                RequestTime = requestInfo.RequestTime
+                RequestTime = requestInfo.RequestTime,
+                SiteCode = requestInfo.SiteCode
             };
         }
         #endregion

@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:Chefmate.UI.Converters"
         WindowStyle="None" ResizeMode="NoResize"
-        BorderThickness="3" BorderBrush="Gray" WindowStartupLocation="CenterScreen" Icon="../Images/C_Transparent.ico">
+        BorderThickness="3" BorderBrush="Gray" WindowStartupLocation="CenterScreen" Icon="../Images/C_Transparent.ico" FontFamily="Tahoma">
     <Window.Resources>
         <ResourceDictionary>
-            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>

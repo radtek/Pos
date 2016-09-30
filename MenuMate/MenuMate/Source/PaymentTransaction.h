@@ -163,6 +163,7 @@ class TPaymentTransaction
         TRedeemPointsInformation *RedeemWeightInformation;
         TRedeemPocketVoucherInformation *RedeemPocketVoucherInformation;
         TRedeemGiftVoucherInformation  *RedeemGiftVoucherInformation;
+        TRedeemGiftVoucherInformation  *PurchasedGiftVoucherInformation;
         bool HasOrders();			// whether this transaction has orders in it
         void ReCalculateAmounts();	// recalculate TMoney instance
         bool CopyFrom( const TPaymentTransaction *inOtherTransaction );
