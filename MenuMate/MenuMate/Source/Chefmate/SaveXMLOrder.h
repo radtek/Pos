@@ -76,7 +76,11 @@ protected:
 								  AnsiString inPartyName,
 								  AnsiString inPatronCount,
 								  AnsiString inSaleStartTime,
-                                                                  AnsiString inDeliveryTime );
+                                  AnsiString inDeliveryTime,
+                                  AnsiString phone,
+                                  AnsiString email,
+                                  AnsiString address,
+                                  AnsiString paymentStatus );
 
 		// Opens an Incomplete Order
 		// Order's components must be added afterwards

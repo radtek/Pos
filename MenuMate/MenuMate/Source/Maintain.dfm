@@ -123,11 +123,15 @@ object frmMaintain: TfrmMaintain
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsMaintenance
+    ActivePage = tsQuickMessages
     TabOrder = 1
     object tsMaintenance: TTabSheet
       Caption = 'Maintenance.'
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
@@ -492,6 +496,10 @@ object frmMaintain: TfrmMaintain
       Caption = 'Quick Messages.'
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel2: TPanel
         Left = 0
         Top = 0
@@ -505,7 +513,7 @@ object frmMaintain: TfrmMaintain
           Left = 8
           Top = 49
           Width = 241
-          Height = 426
+          Height = 489
           Caption = 'Quick Messages '
           Font.Charset = ANSI_CHARSET
           Font.Color = clBlack
@@ -615,6 +623,23 @@ object frmMaintain: TfrmMaintain
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = CustomerOrderTypesClick
+          end
+          object tbtnCashDrawer: TTouchBtn
+            Left = 28
+            Top = 411
+            Font.Charset = THAI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ParentColor = True
+            Caption = 'Cash Drawer'
+            ButtonColor = 6052441
+            LatchedColor = clBtnFace
+            DisabledButtonColor = clBtnFace
+            LatchingProperties = [lkLatchColor, lkStayDown]
+            OnMouseClick = BitBtn2Click
           end
         end
         object Panel5: TPanel

@@ -1,6 +1,6 @@
 ﻿<Window x:Class="Chefmate.UI.Views.TransferView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  FontFamily="Tahoma"
         Title="Transfer" Height="500" Width="500" WindowStyle="None" ResizeMode="NoResize" BorderBrush="Gray" BorderThickness="3"
         WindowStartupLocation="CenterScreen" Icon="../Images/C_Transparent.ico">
     <Window.Resources>

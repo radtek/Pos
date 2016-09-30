@@ -28,6 +28,10 @@ TSmartOrderDocHeader::TSmartOrderDocHeader(
 						AnsiString inPatronCount,
 						AnsiString inSaleStartTime,
                         AnsiString inDeliveryTime,
+                        AnsiString inPhone,
+                        AnsiString inEmail,
+                        AnsiString inAddress,
+                        AnsiString inPaymentStatus,
                         AnsiString inSourceTableName )
 {
 	FAction       = inAction;
@@ -44,6 +48,10 @@ TSmartOrderDocHeader::TSmartOrderDocHeader(
 	FSaleStartTime = inSaleStartTime;
     FDeliveryTime =  inDeliveryTime;
     FSourceTableName = inSourceTableName;
+    FPhone           = inPhone;
+    FEmail           = inEmail;
+    FAddress       = inAddress;
+    FPaymentStatus   = inPaymentStatus;
 }
 //......................................................
 
@@ -135,6 +143,10 @@ TSmartOrderDocHeader* TSmartOrderDoc::createHeader( TSmartOrderDocHeader* inHead
 						inHeader->PatronCount,
 						inHeader->SaleStartTime,
                         inHeader->DeliveryTime,
+                        inHeader->phone,
+                        inHeader->email,
+                        inHeader->address,
+                        inHeader->paymentStatus,
                         inHeader->SourceTableName );
 }
 //......................................................
@@ -162,7 +174,7 @@ void TSmartOrderDoc::openOrder( TSaveXMLOrder* inOrderDoc )
 
 void TSmartOrderDoc::openCompleteOrder( TSaveXMLOrder* inOrderDoc )
 {
-	if( FHeader->Action.UpperCase() == "ORDER" )
+	if( FHeader->Action.UpperCase() == "ORDER" || FHeader->Action.UpperCase() == "WEBORDER")
 	{
 		inOrderDoc->OpenCompleteOrder(
 						FHeader->DBKey,
@@ -175,7 +187,12 @@ void TSmartOrderDoc::openCompleteOrder( TSaveXMLOrder* inOrderDoc )
 						FHeader->PartyName,
 						FHeader->PatronCount,
 						FHeader->SaleStartTime,
-                                                FHeader->DeliveryTime  );
+                        FHeader->DeliveryTime,
+                        FHeader->phone,
+                        FHeader->email,
+                        FHeader->address,
+                        FHeader->paymentStatus
+                        );
 	}
 	else if( FHeader->Action.UpperCase() == "CANCEL" )
 	{
@@ -244,7 +261,11 @@ HORDERDOC TXMLOrderSmartManager::OpenCompleteOrder(
 									AnsiString inPartyName,
 									AnsiString inPatronCount,
 									AnsiString inSaleStartTime,
-                                                                        AnsiString inDeliveryTime )
+                                    AnsiString inDeliveryTime,
+                                    AnsiString inPhone,
+                                    AnsiString inEmail,
+                                    AnsiString inAddress,
+                                    AnsiString inPaymentStatus )
 {
 	HORDERDOC result = 0;
 
@@ -256,21 +277,34 @@ HORDERDOC TXMLOrderSmartManager::OpenCompleteOrder(
 		}
 		else
 		{
-			TSmartOrderDoc* xmlSmartOrderDoc = createXMLSmartOrderDoc(
-													new TSmartOrderDocHeader(
-															"order",
-															"complete",
-															inDBKey,
-															inServerName,
-															inOrderNumber,
-															inChitValue,
-															inTableTabName,
-															inOrderType,
-															inCustomerName,
-															inPartyName,
-															inPatronCount,
-															inSaleStartTime,
-                                                                                                                        inDeliveryTime ) );
+            UnicodeString orderType = "";
+            if(inPaymentStatus == "")
+            {
+                orderType =  "order";
+            }
+            else
+            {
+                orderType = "webOrder";
+            }
+                TSmartOrderDoc* xmlSmartOrderDoc = createXMLSmartOrderDoc(
+                                                        new TSmartOrderDocHeader(
+                                                                orderType,
+                                                                "complete",
+                                                                inDBKey,
+                                                                inServerName,
+                                                                inOrderNumber,
+                                                                inChitValue,
+                                                                inTableTabName,
+                                                                inOrderType,
+                                                                inCustomerName,
+                                                                inPartyName,
+                                                                inPatronCount,
+                                                                inSaleStartTime,
+                                                                inDeliveryTime,
+                                                                inPhone,
+                                                                inEmail,
+                                                                inAddress,
+                                                                inPaymentStatus ) );
 
 			result      = addSmartOrderXMLDoc( xmlSmartOrderDoc );
 			_lastOError = OERROR_SUCCESSFUL;
@@ -325,7 +359,11 @@ HORDERDOC TXMLOrderSmartManager::OpenIncompleteOrder(
 															inPartyName,
 															"",
 															"",
-                                                                                                                        "" ) );
+                                                            "",
+                                                            "",
+                                                            "",
+                                                            "",
+                                                            "" ) );
 
 			result      = addSmartOrderXMLDoc( xmlSmartOrderDoc );
 			_lastOError = OERROR_SUCCESSFUL;
@@ -380,7 +418,11 @@ HORDERDOC TXMLOrderSmartManager::OpenCancelOrder(
 															"",      // Party Name
 															"",      // Patron Count
 															"",      // Sale Start Time
-                                                            ""  ) ); //Delivery Time
+                                                            "",      //Delivery Time
+                                                            "",      //phone
+															"",      //eMail
+															"",      // Address
+                                                            ""  ) ); // paid status
 
 			result      = addSmartOrderXMLDoc( xmlSmartOrderDoc );
 			_lastOError = OERROR_SUCCESSFUL;
@@ -424,7 +466,11 @@ HORDERDOC TXMLOrderSmartManager::OpenCreditOrder()
 														"",      // Party Name
 														"",      // Patron Count
 														"",      // Sale Start Time
-                                                                                                                ""  ) ); //Delivery Time
+                                                        "",
+                                                        "",
+                                                        "",
+                                                        "",
+                                                        ""  ) ); //Delivery Time
 
 		result      = addSmartOrderXMLDoc( xmlSmartOrderDoc );
 		_lastOError = OERROR_SUCCESSFUL;
@@ -469,7 +515,11 @@ HORDER TXMLOrderSmartManager::OpenReplacementOrder(
 														"",      			 // Party Name
 														"",                  // Patron Count
 														"",      // Sale Start Time
-                                                                                                                ""  ) ); //Delivery Time
+                                                        "",
+                                                        "",
+                                                        "",
+                                                        "",
+                                                        ""  ) ); //Delivery Time
 
 		result      = addSmartOrderXMLDoc( xmlSmartOrderDoc );
 		_lastOError = OERROR_SUCCESSFUL;
@@ -516,7 +566,11 @@ HORDER TXMLOrderSmartManager::OpenCallAwayOrder(
 														"",      			 // Party Name
 														"",		 			 // Patron Count
 														"",      // Sale Start Time
-                                                                                                                ""  ) ); //Delivery Time
+                                                        "",
+                                                        "",
+                                                        "",
+                                                        "",
+                                                        ""  ) ); //Delivery Time
 
 		result      = addSmartOrderXMLDoc( xmlSmartOrderDoc );
 		_lastOError = OERROR_SUCCESSFUL;
@@ -569,6 +623,10 @@ HORDERDOC TXMLOrderSmartManager::OpenTransferOrder(
 															inPatronCount,      // Patron Count
 															inSaleStartTime, // Sale Start Time
                                                             "" ,
+                                                            "",
+                                                            "",
+                                                            "",
+                                                            "",
                                                             inSourceTableName ) );//Delivery Time
 
 			result      = addSmartOrderXMLDoc( xmlSmartOrderDoc );

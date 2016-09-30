@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Chefmate.Core;
 using Chefmate.Core.Enums;
 using Chefmate.Core.Extensions;
 using Chefmate.Core.Model;
@@ -24,6 +25,7 @@ namespace Chefmate.Infrastructure.Controller
         public static volatile object _syncRoot = new object();
         private ChefmateController()
         {
+            WebOrders = new ObservableCollection<Order>();
         }
         public static ChefmateController Instance
         {
@@ -47,6 +49,7 @@ namespace Chefmate.Infrastructure.Controller
         public AnalyticalData AnalyticalData { get; set; }
         public ObservableCollection<Order> TotalOrders { get; set; }
         public ObservableCollection<Order> CurrentDisplayOrders { get; set; }
+        public ObservableCollection<Order> WebOrders { get; set; }
         public int PageColumns { get; set; }
 
         #endregion
@@ -105,7 +108,16 @@ namespace Chefmate.Infrastructure.Controller
                 var orders = DatabaseOrderBuilder.Instance.GetAllOrders(CurrenTerminal.TerminalId);
                 foreach (var order in orders)
                 {
-                    TotalOrders.Add(order);
+                    if (order.OrderAction == ChefmateConstants.WebOrderAction &&
+                        order.DeliveryTime.Subtract(DateTime.Now).TotalMinutes > CurrentSettings.WebOrderTime)
+                    {
+                        WebOrders.Add(order);
+                    }
+                    else
+                    {
+                        TotalOrders.Add(order);
+                    }
+                  
                 }
             }
             catch (Exception ex)
@@ -312,13 +324,20 @@ namespace Chefmate.Infrastructure.Controller
             }
             else
             {
-                if (order.OrderState == OrderState.Complete || order.OrderState == OrderState.Runner)
+                if (order.OrderAction == ChefmateConstants.OrderAction)
                 {
-                    AnalyticalData.TotalOrdersCount++;
-                    AnalyticalData.CurrentOrdersCount++;
-                    AnalyticalData.CurrentItems += order.Items.Count;
+                    if (order.OrderState == OrderState.Complete || order.OrderState == OrderState.Runner)
+                    {
+                        AnalyticalData.TotalOrdersCount++;
+                        AnalyticalData.CurrentOrdersCount++;
+                        AnalyticalData.CurrentItems += order.Items.Count;
+                    }
+                    TotalOrders.Add(order);
                 }
-                TotalOrders.Add(order);
+                else
+                {
+                    WebOrders.Add(order);
+                }
             }
         }
 
@@ -437,16 +456,7 @@ namespace Chefmate.Infrastructure.Controller
                 TerminalType = TerminalType.Kitchen
             };
             DbTerminal.AddTerminal(CurrenTerminal);
-            CurrentSettings = new Settings
-            {
-                TerminalType = TerminalType.Kitchen,
-                DbIpAddress = dbAddress,
-                DbPath = dbPath,
-                TerminalIpAddress = terminalAddress,
-                DisplayName = terminalDisplayName,
-                RecallCount = 5,
-                CmFontSize = 15
-            };
+            CurrentSettings = new Settings(TerminalType.Kitchen, dbAddress, dbPath, terminalAddress, terminalDisplayName);
             DbSettings.AddSettings(CurrentSettings, CurrenTerminal.TerminalId);
             LoadSettings();
             CurrentSettings.TerminalType = TerminalType.Kitchen;

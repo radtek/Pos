@@ -17,7 +17,7 @@ TLoadMenu::TLoadMenu( AnsiString inFileName )
 {
 	FFileName = inFileName;
 
-	_xmlMenuDoc = createXMLMenuDoc( FFileName );
+	_xmlMenuDoc = createXMLMenuDoc( FFileName.c_str() );
 
 	if( _xmlMenuDoc != NULL )
 	{

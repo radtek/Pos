@@ -250,7 +250,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndC
         wcfInfo->GiftCardNumber = inVoucherUsageDetail.GiftCardNumber;
         wcfInfo->PointsRedeemed = inVoucherUsageDetail.PointsRedeemed;
         wcfInfo->VoucherName = inVoucherUsageDetail.VoucherName;
-        wcfInfo->MemberVoucherDiscountAmount = inVoucherUsageDetail.MemberVoucherDiscountAmount;
+        wcfInfo->MemberVoucherDiscountAmount = RoundToNearest(inVoucherUsageDetail.MemberVoucherDiscountAmount,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
         wcfInfo->PocketVoucherNumber = inVoucherUsageDetail.PocketVoucherNumber;
         wcfInfo->PocketVoucherDiscountAmount = inVoucherUsageDetail.PocketVoucherDiscountAmount;
         wcfInfo->TotalSaleAmount = inVoucherUsageDetail.TotalSaleAmount;
@@ -268,7 +268,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndC
             {
                DiscountUsageInfo* discountUsageInfo = new DiscountUsageInfo;
                discountUsageInfo->DiscountCode = itDiscount->first;
-               discountUsageInfo->DiscountAmount = itDiscount->second;
+               discountUsageInfo->DiscountAmount = RoundToNearest(itDiscount->second,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
                DiscountUsageArray.Length = DiscountUsageArray.Length + 1;
                DiscountUsageArray[DiscountUsageArray.Length - 1] = discountUsageInfo;
             }

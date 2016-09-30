@@ -115,6 +115,7 @@ enum vmVariables
     vmPontsSpentCountedAsRevenue,
     vmShowDarkBackgroundInPOS,
     vmIsCloudSynced,
+    vmOpenCashDrawer,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
