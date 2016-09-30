@@ -1975,7 +1975,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
         "(( "
           "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and  "
-		 
+
 			"Archive.TIME_STAMP >= :StartTime and "
 			"Archive.TIME_STAMP < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -2967,8 +2967,8 @@ void TdmMMReportData::SetupTabConsumption(TDateTime StartTime, TDateTime EndTime
 			"Orders.Item_Name,"
 			"Orders.Size_Name,"
 			"Sum(Orders.Qty) Item_Count,"
-			"Cast(Sum(Orders.Qty * Orders.Price ) + Sum(Orders.Discount) as Numeric(17,4)) Price,"
-      	    "Cast(Sum((Orders.Qty * od.PriceExc ) ) + Sum(Orders.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"				 //sales excl
+			"Cast(Sum(Orders.Qty * Orders.BASE_PRICE ) + Sum(Orders.Discount) as Numeric(17,4)) Price,"
+      	    "Cast(Sum((Orders.Qty * Orders.BASE_PRICE ) ) + Sum(Orders.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"				 //sales excl
 			"Cast(Sum(Orders.Qty * Orders.Cost) as Numeric(17,4)) Cost, "
             "  Cast(Sum(Orders.QTY * Orders.BASE_PRICE  + COALESCE(Orders.DISCOUNT_WITHOUT_TAX,0)+COALESCE(((Orders.Qty * Orders.BASE_PRICE+ Orders.DISCOUNT_WITHOUT_TAX))*Tax.VAT/100,0) "
             "+ COALESCE(((Orders.Qty * Orders.BASE_PRICE+ Orders.DISCOUNT_WITHOUT_TAX))*Tax.ServiceCharge/100,0)+ COALESCE((((Orders.Qty * Orders.BASE_PRICE+ Orders.DISCOUNT_WITHOUT_TAX))*Tax.ServiceCharge/100)*STAX.ServiceChargeTax/100,0)) as Numeric(17,4)) SalesIncl "
@@ -2994,7 +2994,7 @@ void TdmMMReportData::SetupTabConsumption(TDateTime StartTime, TDateTime EndTime
             "MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8007 THEN VARSPROFILE.NUMERIC_VAL END) AS ServiceChargeTax      FROM VARSPROFILE    ) STAX on  STAX.keyvalue=Tax.keyvalue "
 		 "Left Join Tab on "
 				"Orders.Tab_Key = Tab.Tab_Key "
-          "inner join  (	select orders.SECURITY_REF ,case when (orders.PRICE<>0) then (orders.BASE_PRICE) else (orders.PRICE) end as PriceExc from ORDERS)OD on OD .SECURITY_REF =SECURITY.SECURITY_REF "
+       //   "inner join  (	select orders.SECURITY_REF ,case when (orders.PRICE<>0) then (orders.BASE_PRICE) else (orders.PRICE) end as PriceExc from ORDERS)OD on OD .SECURITY_REF =SECURITY.SECURITY_REF "
 
 		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
 			"Orders.Time_Stamp >= :StartTime and "
