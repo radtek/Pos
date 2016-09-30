@@ -98,6 +98,7 @@ public: // User declarations
 
 	Currency CURInitial;
 	int INTInitial;
+    double valueEntered;
 	UnicodeString StrInitial;
     UnicodeString NUMSTRInitial;
 	bool ForcedNegitive;

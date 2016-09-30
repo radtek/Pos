@@ -22,8 +22,6 @@ object frmBillGroup: TfrmBillGroup
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 23
   object pnlButtons: TPanel
@@ -303,7 +301,7 @@ object frmBillGroup: TfrmBillGroup
       object lbeMembership: TLabel
         Left = 8
         Top = 8
-        Width = 4
+        Width = 307
         Height = 19
         Align = alTop
         Color = clGreen
@@ -316,6 +314,7 @@ object frmBillGroup: TfrmBillGroup
         ParentFont = False
         Visible = False
         WordWrap = True
+        ExplicitWidth = 4
       end
       object Panel2: TPanel
         Left = 8
@@ -438,13 +437,12 @@ object frmBillGroup: TfrmBillGroup
           AutoScale = True
           GridBorder = False
           RowCount = 1
-          ColCount = 1
+          ColCount = 2
           ParentGridColor = False
           GridColor = 14342874
           DefaultColWidth = 240
           DefaultRowHeight = 55
           ButtonGapHeight = 5
-          AutoButtonWidth = True
           VertScrollButtonPos = vsBelow
           VertScrollButtonHeight = 55
           HorizScrollButtonWidth = 70
@@ -525,12 +523,17 @@ object frmBillGroup: TfrmBillGroup
           ScrollBtnRight.DisabledColor = -2147483633
           ScrollBtnRight.LatchedFontColor = -2147483640
           Buttons = {
-            04000000400000008A213ADC9F9D77F1FB3FF700000059AB884EA9EE62ADFE3F
-            000080000080000000008000050000004100720069080000800C000000010000
-            00000000000000000000000000080000FF050000004100720069080000800C00
-            000001000000000000000000000000000000080000FF00000000010000000100
-            000001000000010000000100000001000000FF00000064000000010000000000
-            0000010000000000000000000000}
+            04000000400000000F60CAB6182FBFEEFB3F3C00000045EB8B0F57B4BEF8FC3F
+            B9000000B0DAFB1B03ABBDBFFE3F00004100720069080000800C050000004100
+            720069080000FF0C00000001000000000000000000000000000000080000FF05
+            0000004100720069080000FF0C00000001000000000000000000000000000000
+            080000FF00000000010000000100000001000000010000000100000001000000
+            FF000000640000000100000000000000010000000000000000000000180000FF
+            00008000180000FF050000004100720069080000FF0C00000001000000000000
+            000000000000000000080000FF050000004100720069080000FF0C0000000100
+            0000000000000000000000000000080000FF0000000001000000010000000100
+            0000010000000100000001000000FF0000006400000001000000000000000100
+            00000000000000000000}
         end
       end
       object pnlgridContainerListBoarder: TPanel
