@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing.Text;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using Chefmate.Core.Commands;
 using Chefmate.Core.Enums;
+using Chefmate.Core.Extensions;
 using Chefmate.Core.Model;
 using Chefmate.Database.DbModels;
 using Chefmate.Infrastructure.Controller;
@@ -23,11 +26,13 @@ namespace Chefmate.UI.Views
     {
         private ObservableCollection<Terminal> _terminals;
         private ObservableCollection<string> _soundList;
+        private ObservableCollection<string> _fontFamilies;
         private ObservableCollection<int> _fontSizes;
         private double _sliderValue;
         private Terminal _selectedTerminal;
         private string _validationError;
         private Settings _currentSettings;
+
         public SettingView()
         {
             InitializeComponent();
@@ -46,6 +51,7 @@ namespace Chefmate.UI.Views
             this.DataContext = this;
         }
 
+        #region Commands
         public ICommand TestConnectionCommand { get; set; }
         public ICommand SaveCommand { get; set; }
         public ICommand CloseCommand { get; set; }
@@ -56,6 +62,7 @@ namespace Chefmate.UI.Views
         public ICommand FirstWarningPreviewMouseUpCommand { get; set; }
         public ICommand SecondWarningPreviewMouseUpCommand { get; set; }
         public ICommand WebOrderTimePreviewMouseUpCommand { get; set; }
+        #endregion
 
         #region Properties
         public Settings CurrentSettings
@@ -127,6 +134,16 @@ namespace Chefmate.UI.Views
                 OnPropertyChanged("FontSizes");
             }
         }
+        public ObservableCollection<string> FontFamiles
+        {
+            get { return _fontFamilies; }
+            set
+            {
+                _fontFamilies = value;
+                OnPropertyChanged("FontFamiles");
+            }
+        }
+
         #endregion
 
         #region Command Handlers
@@ -311,7 +328,14 @@ namespace Chefmate.UI.Views
         }
         private void LoadFontSizes()
         {
-            FontSizes = new ObservableCollection<int>() {10,11,12,13,14,15,16,17,18,20,22,24};
+            FontSizes = new ObservableCollection<int>() { 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 22, 24 };
+        }
+        private void LoadFontFamilies()
+        {
+            FontFamiles = new ObservableCollection<string>();
+            InstalledFontCollection installedFontCollection = new InstalledFontCollection();
+            var fontFamilies = installedFontCollection.Families;
+            fontFamilies.ToList().ForEach(s => FontFamiles.Add(s.Name));
         }
         private void Initialize()
         {
@@ -322,6 +346,7 @@ namespace Chefmate.UI.Views
             LoadSoundNames();
             LoadTerminals();
             LoadFontSizes();
+            LoadFontFamilies();
             SelectedTerminal = Terminals.FirstOrDefault(s => s.TerminalId == CurrentSettings.OutputTerminal);
         }
         private void PlaySound(object param)

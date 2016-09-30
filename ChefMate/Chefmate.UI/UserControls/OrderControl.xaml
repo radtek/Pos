@@ -1,11 +1,9 @@
 ﻿<UserControl x:Class="Chefmate.UI.UserControls.OrderControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:converters="clr-namespace:Chefmate.UI.Converters"
              xmlns:userControls="clr-namespace:Chefmate.UI.UserControls">
     <UserControl.Resources>
         <ResourceDictionary>
-            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <Style x:Key="OrderHeaderSelectorStyle" TargetType="{x:Type Label}">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Order.OrderAction}" Value="webOrder">

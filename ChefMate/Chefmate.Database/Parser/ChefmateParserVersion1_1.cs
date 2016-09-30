@@ -8,11 +8,8 @@ namespace ChefMate.Database.Parser
         private const string Version = "1.1";
         public override void RunParser()
         {
-            if (!IsVersionExist(Version))
-            {
-                AddSettings();
-                UpdateVersionInDatabase(Version);
-            }
+            AddSettings();
+            UpdateVersionInDatabase(Version);
         }
 
         private void AddSettings()
