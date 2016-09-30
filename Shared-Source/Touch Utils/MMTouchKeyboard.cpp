@@ -108,7 +108,7 @@ void __fastcall TfrmTouchKeyboard::ClearClick(TObject *Sender)
 void __fastcall TfrmTouchKeyboard::FormCloseQuery(TObject *Sender,
       bool &CanClose)
 {
-   if(MustHaveValue && memText->Text == "")
+   if(MustHaveValue && memText->Text.Trim() == "")
 	{
 		if(ModalResult == mrCancel)
 		{
