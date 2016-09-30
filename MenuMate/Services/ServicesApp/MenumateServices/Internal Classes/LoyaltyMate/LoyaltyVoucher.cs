@@ -220,10 +220,10 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             Guid.TryParse(inTransactionInfo.MemberUniqueId, out memberUniqueId);
             if (!string.IsNullOrWhiteSpace(inTransactionInfo.GiftCardNumber))
             {
-                voucherUsageViewModel.GiftCard = new ApiGiftCardTransactionRequestViewModel();
+                voucherUsageViewModel.GiftCard = new ApiGiftCardUsageRequestViewModel();
                 voucherUsageViewModel.GiftCard.TransactionType = Loyaltymate.Enum.GiftCardVoucherTransactionType.GiftCardUsage;
                 voucherUsageViewModel.GiftCard.GiftCardNumber = inTransactionInfo.GiftCardNumber;
-                voucherUsageViewModel.GiftCard.PointsTransactionAmount = inTransactionInfo.PointsRedeemed;
+                voucherUsageViewModel.GiftCard.PointsRedeemed = inTransactionInfo.PointsRedeemed;
                 voucherUsageViewModel.GiftCard.MemberUniqueId = memberUniqueId;
                 if (memberUniqueId == Guid.Empty)
                     voucherUsageViewModel.GiftCard.MemberUniqueId = null;
@@ -235,10 +235,10 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
 
             if (!string.IsNullOrWhiteSpace(inTransactionInfo.PurchasedGiftCardNumber))
             {
-                voucherUsageViewModel.GiftCardRecharge = new ApiGiftCardTransactionRequestViewModel();
+                voucherUsageViewModel.GiftCardRecharge = new ApiGiftCardUsageRequestViewModel();
                 voucherUsageViewModel.GiftCardRecharge.TransactionType = Loyaltymate.Enum.GiftCardVoucherTransactionType.GiftCardRecharge;
                 voucherUsageViewModel.GiftCardRecharge.GiftCardNumber = inTransactionInfo.PurchasedGiftCardNumber;
-                voucherUsageViewModel.GiftCardRecharge.PointsTransactionAmount = inTransactionInfo.PointsPurchased;
+                voucherUsageViewModel.GiftCardRecharge.PointsRedeemed = inTransactionInfo.PointsPurchased;
                 voucherUsageViewModel.GiftCardRecharge.MemberUniqueId = memberUniqueId;
                 if (memberUniqueId == Guid.Empty)
                     voucherUsageViewModel.GiftCardRecharge.MemberUniqueId = null;
