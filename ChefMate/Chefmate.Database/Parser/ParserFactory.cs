@@ -18,6 +18,7 @@ namespace ChefMate.Database.Parser
             _versionParsers.Add("1.0", new ChefmateParserVersion1_0());
             _versionParsers.Add("1.1", new ChefmateParserVersion1_1());
             _versionParsers.Add("1.2", new ChefmateParserVersion1_2());
+            _versionParsers.Add("1.3", new ChefmateParserVersion1_3());
         }
 
         public VersionParser GetVersionParser(string version)
