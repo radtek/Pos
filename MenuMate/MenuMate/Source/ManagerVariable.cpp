@@ -3079,6 +3079,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                     "This setting will enable or disable Thorlink.",
                     vmgPOS,
                     false);
+       SetVarBool(DBTransaction, vmOpenCashDrawer, "Open Cash Drawer",
+                 "Open Cash Drawer after Zed"
+                 "Default is False.",
+                  vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

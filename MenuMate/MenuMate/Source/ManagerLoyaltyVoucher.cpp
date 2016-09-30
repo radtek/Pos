@@ -65,7 +65,7 @@ void TManagerLoyaltyVoucher::GetPocketVoucherDetail(AnsiString voucherCode,TVouc
     }
 }
 //------------------------------------------------------------------------------
-double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode)
+double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode,bool &isValidGiftCard)
 {
     double balance = 0;
     TManagerSyndCode managerSyndCode;
@@ -99,6 +99,7 @@ double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode)
                MessageBox("Supplied voucher is not valid. please use another voucher or payment method.","Menumate", MB_ICONERROR + MB_OK);
             else
                MessageBox(voucherThread->ErrorMessage,"Menumate", MB_ICONERROR + MB_OK);
+            isValidGiftCard = false;
         }
         else
             balance = voucherThread->GiftCardBalance;

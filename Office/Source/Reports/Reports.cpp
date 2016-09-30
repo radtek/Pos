@@ -2245,7 +2245,7 @@ static AnsiString PaymentTypeList =
 			ReportFilter1->SelectionField				= "Order_Location";
 			ReportFilter1->SelectionDateRange		= true;
 			SubReport0->AddFilterIndex(1);
-			SubReport1->AddFilterIndex(1);
+		   	SubReport2->AddFilterIndex(1);
 			SubReport3->AddFilterIndex(1);
          SubReport6->AddFilterIndex(1);
 			ReportControl->AddFilter(ReportFilter1);
@@ -2260,7 +2260,7 @@ static AnsiString PaymentTypeList =
 			ReportFilter2->SelectionField				= "Menu_Name";
 			ReportFilter2->SelectionDateRange		= true;
 			SubReport1->AddFilterIndex(2);
-			SubReport2->AddFilterIndex(2);
+		   //	SubReport2->AddFilterIndex(2);
 			SubReport4->AddFilterIndex(2);
 			ReportControl->AddFilter(ReportFilter2);
 
@@ -5220,7 +5220,7 @@ void TfrmReports::PrintCategoryBreakdown(TReportControl *ReportControl)
 //---------------------------------------------------------------------------
 void TfrmReports::PrintHalfHourlySales(TReportControl *ReportControl)
 {
-	const AnsiString ReportName = "repHalfHourlySummary";
+	const AnsiString ReportName = "repHalfHourlySalesSummary";
 
 	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
 	{
@@ -5262,6 +5262,7 @@ void TfrmReports::PrintHalfHourlySales(TReportControl *ReportControl)
 							rvMenuMate->SetParam("Terminals", TerminalRange);
 						}
 						rvMenuMate->SetParam("EndTime", " ");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5614,6 +5615,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("IncludeGST", CategoryFilter->GSTChecked ? "1":"0");
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("subCategory", "By Category");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5645,6 +5648,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("IncludeGST", MenuFilter->GSTChecked ? "1":"0");
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("subCategory", "By Menu");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5677,6 +5682,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("IncludeGST", MenuFilter->GSTChecked ? "1":"0");
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("subCategory", "By Location");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5708,6 +5715,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("IncludeGST", TabFilter->GSTChecked ? "1":"0");
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("subCategory", "By Tab");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5739,6 +5748,7 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5800,6 +5810,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
 						rvMenuMate->SetParam("ReportRange", DateRange);
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("subCategory", "By Category Excluding Surcharge");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5851,6 +5863,8 @@ void TfrmReports::PrintConsumptionBySalesType(TReportControl *ReportControl)
 				rvMenuMate->SetParam("ReportRange", DateRange);
 				rvMenuMate->SetParam("IncludeGST", CategoryFilter->GSTChecked ? "1":"0");
 				rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                rvMenuMate->SetParam("subCategory", "By Sales Type");
+                rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 				rvMenuMate->Execute();
 			}
 			else
@@ -5898,6 +5912,9 @@ void TfrmReports::PrintConsumptionByHalfHour(TReportControl *ReportControl)
 				dmMMReportData->SetupHalfHourlyDailyByConsumption(ReportControl->Start, ReportControl->End,TerminalFilter->Selection);
 				if (ReportType == rtExcel)
 				{
+                    std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+                    ExcelDataSetsList->AddObject("Consumption",(TObject *)dmMMReportData->qrHalfHoulrySummary);
+                    ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
 				}
 				else
 				{
@@ -5920,6 +5937,7 @@ void TfrmReports::PrintConsumptionByHalfHour(TReportControl *ReportControl)
 							rvMenuMate->SetParam("Terminals", TerminalRange);
 						}
 						rvMenuMate->SetParam("EndTime", " ");
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
@@ -5949,6 +5967,7 @@ void TfrmReports::PrintConsumptionByHalfHour(TReportControl *ReportControl)
 				rvMenuMate->SetParam("ReportRange", DateRange);
 				rvMenuMate->SetParam("IncludeGST", CategoryFilter->GSTChecked ? "1":"0");
 				rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
 				rvMenuMate->Execute();
 			}
 			else
@@ -5980,93 +5999,93 @@ void TfrmReports::PrintUserSales(TReportControl *ReportControl)
 		{
 			case 0:
 			{
-				const AnsiString ReportName = "repUserSales";
+                const AnsiString ReportName = "repUserSales";
 
-            TReportTreeFilter *CategoryFilter = (TReportTreeFilter *)ReportControl->ReportFilter(1);
-            TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
-            dmMMReportData->SetupUserSales(ReportControl->Start, ReportControl->End, UsersFilter->Selection,CategoryFilter->Selection );
-            if (ReportType == rtExcel)
-            {
-               std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-               ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
-               ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
-            }
-            else
-            {
-               if (rvMenuMate->SelectReport(ReportName, false))
-               {
-                  AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-                                          "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-                  rvMenuMate->SetParam("ReportRange", DateRange);
-						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
-                  rvMenuMate->Execute();
+                TReportTreeFilter *CategoryFilter = (TReportTreeFilter *)ReportControl->ReportFilter(1);
+                TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
+                dmMMReportData->SetupUserSales(ReportControl->Start, ReportControl->End, UsersFilter->Selection,CategoryFilter->Selection );
+                if (ReportType == rtExcel)
+                {
+                    std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+                    ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
+                    ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
+                }
+                else
+                {
+                    if (rvMenuMate->SelectReport(ReportName, false))
+                    {
+                      AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+                                              "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+                      rvMenuMate->SetParam("ReportRange", DateRange);
+                      rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                      rvMenuMate->Execute();
+                    }
+                    else
+                    {
+                      Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+                    }
                }
-               else
-               {
-                  Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-               }
-            }
-				break;
+               break;
 			}
 			case 1:
 			{
-				const AnsiString ReportName = "repUserSalesByCategory";
+                 const AnsiString ReportName = "repUserSalesByCategory";
 
-            TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
+                TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
 
-            dmMMReportData->SetupUserSalesByCategory(ReportControl->Start, ReportControl->End, UsersFilter->Selection);
-            if (ReportType == rtExcel)
-            {
-               std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-               ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
-               ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
-            }
-            else
-            {
-               if (rvMenuMate->SelectReport(ReportName, false))
-               {
-                  AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-                                          "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-                  rvMenuMate->SetParam("ReportRange", DateRange);
-						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
-                  rvMenuMate->Execute();
-               }
-               else
-               {
-                  Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-               }
-            }
-				break;
+                dmMMReportData->SetupUserSalesByCategory(ReportControl->Start, ReportControl->End, UsersFilter->Selection);
+                if (ReportType == rtExcel)
+                {
+                   std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+                   ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
+                   ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
+                }
+                else
+                {
+                   if (rvMenuMate->SelectReport(ReportName, false))
+                   {
+                      AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+                                              "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+                      rvMenuMate->SetParam("ReportRange", DateRange);
+                            rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                      rvMenuMate->Execute();
+                   }
+                   else
+                   {
+                      Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+                   }
+                }
+                    break;
 			}
 			case 2:
 			{
-				const AnsiString ReportName = "repUserSalesSummary";
+                const AnsiString ReportName = "repUserSalesSummary";
 
-            TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
+                TReportCheckboxFilter *UsersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
 
-            dmMMReportData->SetupUserSalesSummary(ReportControl->Start, ReportControl->End, UsersFilter->Selection);
-            if (ReportType == rtExcel)
-            {
-               std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-               ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
-               ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
-            }
-            else
-            {
-               if (rvMenuMate->SelectReport(ReportName, false))
-               {
-                  AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-                                          "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-                  rvMenuMate->SetParam("ReportRange", DateRange);
-						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
-                  rvMenuMate->Execute();
-               }
-               else
-               {
-                  Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-               }
-            }
-				break;
+                dmMMReportData->SetupUserSalesSummary(ReportControl->Start, ReportControl->End, UsersFilter->Selection);
+                if (ReportType == rtExcel)
+                {
+                    std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+                    ExcelDataSetsList->AddObject("User Sales",(TObject *)dmMMReportData->qrUserSales);
+                    ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
+                }
+                else
+                {
+                    if (rvMenuMate->SelectReport(ReportName, false))
+                    {
+                        AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+                                              "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+                        rvMenuMate->SetParam("ReportRange", DateRange);
+                            rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->Execute();
+                    }
+                    else
+                    {
+                        Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+                    }
+                }
+                break;
 			}
       }
 	}
@@ -7801,7 +7820,9 @@ void TfrmReports::PrintManualCashDrawer(TReportControl *ReportControl)
 				AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
 												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
 				rvMenuMate->SetParam("ReportRange", DateRange);
-				rvMenuMate->Execute();
+                rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
+                rvMenuMate->Execute();
 			}
 			else
 			{
@@ -10684,7 +10705,7 @@ void TfrmReports::PrintDeptSalesSummary(TReportControl *ReportControl)
 	try
 	{
 
-				const AnsiString ReportName = "repDeptSalesSummary";
+			 const AnsiString ReportName = "repDeptSalesSummary";
             TReportCheckboxFilter *ReportCheckboxFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
 
 				dmMMReportData->SetupSalesSummaryByLocation(ReportControl->Start, ReportControl->End, ReportCheckboxFilter->Selection);

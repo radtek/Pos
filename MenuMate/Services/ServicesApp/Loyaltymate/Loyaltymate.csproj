@@ -47,6 +47,7 @@
     <Compile Include="Enum\DisplayOption.cs" />
     <Compile Include="Enum\ElementType.cs" />
     <Compile Include="Enum\Gender.cs" />
+    <Compile Include="Enum\GiftCardVoucherTransactionType.cs" />
     <Compile Include="Enum\ImplicationType.cs" />
     <Compile Include="Enum\MemberType.cs" />
     <Compile Include="Enum\PointType.cs" />

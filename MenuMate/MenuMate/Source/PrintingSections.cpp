@@ -6360,18 +6360,30 @@ void TPrintSection::PrintPaymentSurcharges(TReqPrintJob *PrintJob)
 
 		if (SubPayment->GetAdjustment() != 0)
 		{
-			pPrinter->Line->Columns[1]->Width = CurrToStrF(
-			RoundToNearest(SubPayment->GetAdjustment(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
-			ffNumber,
-			CurrencyDecimals).Length() + 1;
-			pPrinter->Line->Columns[0]->Width = pPrinter->Width - pPrinter->Line->Columns[1]->Width;
-			pPrinter->Line->Columns[0]->Text = SubPayment->AdjustmentReason;
-			pPrinter->Line->Columns[1]->Text = CurrToStrF(
-			RoundToNearest(SubPayment->GetAdjustment(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
-			ffNumber,
-			CurrencyDecimals);
-			pPrinter->AddLine();
-			Empty = false;
+            AnsiString text = SubPayment->AdjustmentReason;
+            if(SubPayment->IsLoyaltyGiftCard())
+            {
+               text = "Purchased Gift Card #" + PrintJob->Transaction->PurchasedGiftVoucherInformation->VoucherNumber;
+            }
+            pPrinter->Line->Columns[1]->Width = CurrToStrF(RoundToNearest(SubPayment->GetAdjustment(), 0.01,
+                                               TGlobalSettings::Instance().MidPointRoundsDown),ffNumber,CurrencyDecimals).Length() + 1;
+            pPrinter->Line->Columns[0]->Width = pPrinter->Width - pPrinter->Line->Columns[1]->Width;
+            pPrinter->Line->Columns[0]->Text = text;
+            pPrinter->Line->Columns[1]->Text = CurrToStrF(
+            RoundToNearest(SubPayment->GetAdjustment(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),ffNumber,CurrencyDecimals);
+            pPrinter->AddLine();
+
+            if(SubPayment->IsLoyaltyGiftCard())
+            {
+                AnsiString balance = CurrToStr(RoundToNearest(PrintJob->Transaction->PurchasedGiftVoucherInformation->GiftVoucherAmount +
+                                                           PrintJob->Transaction->PurchasedGiftVoucherInformation->RedeemedAmount,0.01,
+                                                           TGlobalSettings::Instance().MidPointRoundsDown));
+                pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+                pPrinter->Line->Columns[0]->Text = "Balance " + balance;
+                pPrinter->Line->Columns[1]->Text = "";
+                pPrinter->AddLine();
+            }
+            Empty = false;
 		}
 		if (SubPayment->GetRefundPointsValue() != 0)
 		{

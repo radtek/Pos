@@ -255,10 +255,6 @@ TRvDataSetConnection *ravCheckRemoval;      //MM-4327
     TIBQuery *qrBreakdownCategory;
     TRvDataSetConnection *ravBreakdownCategory;
 
-   
-
-
-
 	void __fastcall qrMenuAfterScroll(TDataSet *DataSet);
 	void __fastcall qrAveSummaryAfterScroll(TDataSet *DataSet);
 	void __fastcall qrBillPaymentsAfterScroll(TDataSet *DataSet);
@@ -276,8 +272,10 @@ private:	// User declarations
 	TDateTime FixHalfHour(TDateTime HalfHour);
 	void  GetRoundedTime(TDateTime theTime, Word &theHour, Word &theMin, Word &theSec,Word &theMSec );
 	void  AdjustHalfHour( bool IncreaseHalfHour, Word &theHour, Word &theMin, bool &AfterMidnight );
-
     void ShowSql(AnsiString &s);
+    AnsiString _taxJoins;
+    AnsiString _selectSalesIncl;
+    AnsiString _groupByClause;
 
 public:		// User declarations
 	__fastcall TdmMMReportData(TComponent* Owner);

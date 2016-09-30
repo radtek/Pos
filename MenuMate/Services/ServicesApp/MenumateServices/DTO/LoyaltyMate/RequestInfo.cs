@@ -12,6 +12,8 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public string RequestKey { get; set; }
         [DataMember]
+        public long SiteCode { get; set; }
+        [DataMember]
         public DateTime RequestTime { get; set; }
     }
 }

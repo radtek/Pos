@@ -106,7 +106,8 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
     IBInternalQuery->ExecQuery();
     DBTransaction.Commit();
     int	emailcount = IBInternalQuery->Fields[0]->AsInteger;
-
+    AnsiString firstNameMessage = "First Name should be ";
+    AnsiString lastNameMessage = "Last Name should be ";
     if (TGlobalSettings::Instance().LoyaltyMateEnabled &&
         Info.CloudUUID != TLoyaltyMateUtilities::GetLoyaltyMateDisabledCloudUUID()  &&
        !Info.ValidEmail())
@@ -121,9 +122,17 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
     {
        MessageBox("You must enter first name.", "Error", MB_ICONERROR);
     }
+    else if(!Info.ValidateFirstName(firstNameMessage))
+    {
+       MessageBox(firstNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
+    }
     else if(Info.Surname == NULL || Info.Surname.Trim() == "")
     {
        MessageBox("You must enter last name.", "Error", MB_ICONERROR);
+    }
+    else if(!Info.ValidateLastName(lastNameMessage))
+    {
+       MessageBox(lastNameMessage + ".", "Error", MB_OK + MB_ICONERROR);
     }
     else if(Info.Phone != "" && Info.Phone != NULL && Info.Phone.Length() < 5)
     {

@@ -423,6 +423,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbShowLargeFonts->Checked = TGlobalSettings::Instance().ShowLargeFonts;
     cbItemSearch->Checked= TGlobalSettings::Instance().ItemSearch;
     cbShowDarkBackgroundInPOS->Checked = TGlobalSettings::Instance().ShowDarkBackground;
+    cbOpenCashDrawer->Checked = TGlobalSettings::Instance().OpenCashDrawer;
 }
 
 //---------------------------------------------------------------------------
@@ -3995,6 +3996,15 @@ void __fastcall TfrmGeneralMaintenance::cbShowDarkBackgroundInPOSClick(TObject *
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmShowDarkBackgroundInPOS, TGlobalSettings::Instance().ShowDarkBackground);
+	DBTransaction.Commit();
+}
+
+void __fastcall TfrmGeneralMaintenance::cbOpenCashDrawerClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().OpenCashDrawer = cbOpenCashDrawer->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmOpenCashDrawer, TGlobalSettings::Instance().OpenCashDrawer);
 	DBTransaction.Commit();
 }
 
