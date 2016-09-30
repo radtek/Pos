@@ -160,6 +160,7 @@ class TfrmStockRequest : public TForm
     void __fastcall btnRemoveClick(TObject *Sender);
     void __fastcall BitBtn1Click(TObject *Sender);
     void __fastcall btnAutoClick(TObject *Sender);
+    void __fastcall neStockQtyKeyPress(TObject *Sender, char &Key);
 
 private:	// User declarations
 	const std::auto_ptr<TfrmPurchaseOrder>frmPurchaseOrder;

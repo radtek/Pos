@@ -211,6 +211,7 @@ object frmStockRequest: TfrmStockRequest
         TabOrder = 3
         Visible = False
         OnKeyDown = neStockQtyKeyDown
+        OnKeyPress = neStockQtyKeyPress
         DecimalPlaces = 4
       end
       object edDateRequired: TEdit

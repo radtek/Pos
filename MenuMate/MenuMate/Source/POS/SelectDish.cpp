@@ -8794,7 +8794,7 @@ void TfrmSelectDish::ResetPOS()
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()
 {
-    bool enableQuickPayment = !TGlobalSettings::Instance().EnableWaiterStation && !IsWaiterLogged && !TGlobalSettings::Instance().PointOnly;
+    bool enableQuickPayment = !TGlobalSettings::Instance().EnableWaiterStation && !IsWaiterLogged && !TGlobalSettings::Instance().PointOnly && !TDeviceRealTerminal::Instance().PaymentSystem->ForceTender;
     bool enableCashSale = !TGlobalSettings::Instance().PointOnly && !TGlobalSettings::Instance().EnableWaiterStation  &&  !IsWaiterLogged
                            && !TDeviceRealTerminal::Instance().PaymentSystem->ForceTender;
     tbtnCashSale->Enabled = enableCashSale;

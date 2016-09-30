@@ -479,15 +479,12 @@ void __fastcall TfrmPurchaseOrders::btnDeleteClick(TObject *Sender)
 			}
 		}
 	}
-	else if (Application->MessageBox("Are you sure you wish to delete this order?", "Delete", MB_ICONQUESTION + MB_OKCANCEL) == ID_OK)
+	else if (Application->MessageBox("Are you sure you wish to cancel this order?", "Cancel", MB_ICONQUESTION + MB_OKCANCEL) == ID_OK)
 	{
 		try
 		{
 			qrOrder->DisableControls();
 
-//			qrDeleteOrder->Close();
-//			qrDeleteOrder->ParamByName("OrderKey")->AsInteger = qrOrder->FieldByName("ORDER_LK")->AsInteger;
-//			qrDeleteOrder->ExecSQL();
 			Stock::TPurchaseOrdersControl PurchaseOrder(dmStockData->dbStock);
 			PurchaseOrder.DeleteOrder(qrOrder->FieldByName("ORDER_LK")->AsInteger);
 

@@ -1123,6 +1123,11 @@ bool TfrmReceiveInvoice::CheckInvoice()
 		AnsiString Message = "Please confirm that the total for invoice \"" + InvoiceReference + "\" is correct.\r\rContinue?";
 		Continue = (Application->MessageBox(Message.c_str(), "Continue?", MB_ICONQUESTION + MB_OKCANCEL) == ID_OK);
 	}
+    if(!Continue)
+    {
+       IsPrintReport = false;
+    }
+
 	return Continue;
 }
 bool TfrmReceiveInvoice::CheckPackingSlip()
