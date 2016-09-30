@@ -15,6 +15,13 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public double PointsRedeemed { get; set; }
 
+        //Gift Card
+        [DataMember]
+        public string PurchasedGiftCardNumber { get; set; }
+        [DataMember]
+        public double PointsPurchased { get; set; }
+
+
         //Member Voucher
         [DataMember]
         public string VoucherName { get; set; }

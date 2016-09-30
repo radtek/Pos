@@ -456,17 +456,7 @@ namespace Chefmate.Infrastructure.Controller
                 TerminalType = TerminalType.Kitchen
             };
             DbTerminal.AddTerminal(CurrenTerminal);
-            CurrentSettings = new Settings
-            {
-                TerminalType = TerminalType.Kitchen,
-                DbIpAddress = dbAddress,
-                DbPath = dbPath,
-                TerminalIpAddress = terminalAddress,
-                DisplayName = terminalDisplayName,
-                RecallCount = 5,
-                CmFontSize = 15,
-                WebOrderTime =20
-            };
+            CurrentSettings = new Settings(TerminalType.Kitchen, dbAddress, dbPath, terminalAddress, terminalDisplayName);
             DbSettings.AddSettings(CurrentSettings, CurrenTerminal.TerminalId);
             LoadSettings();
             CurrentSettings.TerminalType = TerminalType.Kitchen;

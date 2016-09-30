@@ -1416,4 +1416,3 @@ void __fastcall TfrmNewPaymentType::tbGLCodeMouseClick(TObject *Sender)
    }
 
 }
-

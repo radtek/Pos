@@ -6,5 +6,6 @@ namespace Loyaltymate.Model
     {
         public string RequestKey { get; set; }
         public DateTime RequestTime { get; set; }
+        public long SiteCode { get; set; }
     }
 }

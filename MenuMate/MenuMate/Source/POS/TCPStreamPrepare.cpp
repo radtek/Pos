@@ -624,19 +624,17 @@ void TTCPClient::makeLogFile(AnsiString str)
 {
      AnsiString fileName = ExtractFilePath(Application->ExeName) + "DCLogs.txt" ;
 
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
 
 
-            TStrings * List = new TStringList();
-            if (FileExists(fileName) )
-            {
-              List->LoadFromFile(fileName);
-            }
+    List->Add("Request/Response:- "+ str +  "\n");
 
 
-            List->Add("Request/Response:- "+ str +  "\n");
-
-
-            List->SaveToFile(fileName );
+    List->SaveToFile(fileName );
 }
 
 void TTCPClient::writeToProductFile(AnsiString str)
