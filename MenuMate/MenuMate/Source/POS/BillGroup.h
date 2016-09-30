@@ -157,6 +157,8 @@ private:	// User declarations
     bool ClipOptionSelected;
     bool ClipTabInTable;
     bool DoSplit(Database::TDBTransaction &transaction,std::map<__int64, TPnMOrder> orders);
+    void SplitItemOnClick(int itemSelected);
+    void RefreshItemStatus(Currency splitValue,int itemSelected,Database::TDBTransaction &DBTransaction);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

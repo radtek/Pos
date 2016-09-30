@@ -2404,7 +2404,6 @@ void __fastcall TfrmBillGroup::SplitTimerTick(TObject *Sender)
     frmTouchNumpad->btnSurcharge->Caption = "Ok";
     frmTouchNumpad->btnDiscount->Visible = false;
     frmTouchNumpad->btnSurcharge->Visible = true;
-    frmTouchNumpad->View = viewQuantity;
     if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->CURResult > 0)
     {
         Database::TDBTransaction DBTransaction(DBControl);
@@ -2458,29 +2457,35 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
 	else
 	{
 		bool TabContainsItems = false;
-		SelectedItems.erase(GridButton->Tag);
+        if(SelectedItems[GridButton->Tag].Qty > 1.0f)
+        {
+            SplitItemOnClick(GridButton->Tag);
+        }
+        else
+        {
+            SelectedItems.erase(GridButton->Tag);
+            if (CurrentDisplayMode == eInvoices)
+            { // Must selected the Entire Invoice.
+                SelectedItems.clear();
+            }
+            for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
+            {
+                if (itItem->second.TabKey == VisibleItems[GridButton->Tag].TabKey)
+                {
+                    TabContainsItems = true;
+                }
+            }
 
-		if (CurrentDisplayMode == eInvoices)
-		{ // Must selected the Entire Invoice.
-			SelectedItems.clear();
-		}
-		for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
-		{
-			if (itItem->second.TabKey == VisibleItems[GridButton->Tag].TabKey)
-			{
-				TabContainsItems = true;
-			}
-		}
-
-		if (!TabContainsItems)
-		{
-			SelectedTabs.erase(VisibleItems[GridButton->Tag].TabKey);
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, VisibleItems[GridButton->Tag].TabKey);
-			DBTransaction.Commit();
-		}
-    	UpdateItemListColourDisplay();
+            if (!TabContainsItems)
+            {
+                SelectedTabs.erase(VisibleItems[GridButton->Tag].TabKey);
+                Database::TDBTransaction DBTransaction(DBControl);
+                DBTransaction.StartTransaction();
+                TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, VisibleItems[GridButton->Tag].TabKey);
+                DBTransaction.Commit();
+            }
+            UpdateItemListColourDisplay();
+        }
 	}
 	// Reset the Split Payment Form.
 
@@ -2516,6 +2521,74 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
         CheckingClipItemsInSelectedList(DBTransaction);
         DBTransaction.Commit();
     }
+}
+void TfrmBillGroup::SplitItemOnClick(int itemSelected)
+{
+    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+    frmTouchNumpad->Caption = "Enter Quantity";
+    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+    frmTouchNumpad->btnDiscount->Visible = false;
+    frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->View = viewQuantity;
+    if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->CURResult > 0)
+    {
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        SplitItem(DBTransaction,itemSelected,frmTouchNumpad->CURResult);
+//        UpdateItemListDisplay(DBTransaction);
+        RefreshItemStatus(frmTouchNumpad->CURResult,itemSelected,DBTransaction);
+        DBTransaction.Commit();
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Database::TDBTransaction &DBTransaction)
+{
+    VisibleItems.clear();
+    std::auto_ptr <TList> SortingList(new TList);
+    for (int i = 0; i < TabList->Count; i++)
+    {
+        TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction,(int)TabList->Objects[i],VisibleItems);
+    }
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+    {
+        SortingList->Add(&itItem->second);
+    }
+    tgridItemList->RowCount += 1;
+    for(int i = 0; i < SortingList->Count ; i++)
+    {
+        TPnMOrder *ptrItem1 = (TPnMOrder*)SortingList->Items[i];
+        if(ptrItem1->Key == itemSelected)
+        {
+    //
+            double newQty = ptrItem1->Qty - (splitValue/1000);
+            AnsiString qtyStr = FormatFloat("0.00", newQty) + " ";
+            tgridItemList->Buttons[i][0]->Caption = qtyStr + ptrItem1->Name;
+            tgridItemList->Buttons[i][0]->Color = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
+            tgridItemList->Buttons[i][0]->FontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
+            tgridItemList->Buttons[i][0]->LatchedColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
+            tgridItemList->Buttons[i][0]->LatchedFontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
+            SelectedItems.erase(itemSelected);
+            break;
+        }
+    }
+    TPnMOrder *ptrItem = (TPnMOrder*)SortingList->Items[SortingList->Count-1];
+    AnsiString QtyStr = "";
+    if (ptrItem->Qty != 1)
+    {
+        QtyStr = FormatFloat("0.00", ptrItem->Qty) + " ";
+        tgridItemList->Buttons[SortingList->Count-1][0]->Latched = (ptrItem->Qty  - (int)ptrItem->Qty) > 0;
+    }
+    else
+    {
+        tgridItemList->Buttons[SortingList->Count-1][0]->Latched = false;
+    }
+    tgridItemList->Buttons[SortingList->Count-1][0]->Caption = QtyStr + ptrItem->Name;
+    tgridItemList->Buttons[SortingList->Count-1][0]->Tag = ptrItem->Key;
+    tgridItemList->Buttons[SortingList->Count-1][0]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
+    tgridItemList->Buttons[SortingList->Count-1][0]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
+    tgridItemList->Buttons[SortingList->Count-1][0]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
+    tgridItemList->Buttons[SortingList->Count-1][0]->LatchedFontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
+    SelectedItems[ptrItem->Key] = VisibleItems[ptrItem->Key];
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::SplitItemsInSet(Database::TDBTransaction &transaction, int tab_key)

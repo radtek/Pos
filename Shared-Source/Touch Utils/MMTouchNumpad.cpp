@@ -29,7 +29,6 @@ void __fastcall TfrmTouchNumpad::FormShow(TObject *Sender)
    if(View == viewQuantity)
    {
        pcItemModify->ActivePage = tsQuantity;
-       QtyDisplay->SetNumeric(0);
    }
    else
    {
@@ -422,7 +421,7 @@ void __fastcall TfrmTouchNumpad::btnDiscountClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmTouchNumpad::btnSurchargeClick(TObject *Sender)
 {
-    if(View = viewGeneral)
+    if(View == viewGeneral)
     {
        if (Mode == pmCurrency || Mode == pmDecimal || Mode == pmWeight)
        {
