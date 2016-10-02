@@ -8041,6 +8041,7 @@ int TfrmMenuEdit::InsertSize(AnsiString SizeName)
 	(*new_menu_element_key_generator_)();
     TAvailableMenuSize availablesize;
     availablesize.Key = reinterpret_cast<TEditorNode *>(NewSizeNode->Data)->Key;
+    availablesize.Weighed = false;
     AllSizesForMenu[SizeName] = availablesize;
 
 	tvMenu->Items->BeginUpdate();
