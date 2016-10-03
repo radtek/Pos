@@ -1566,7 +1566,7 @@ void __fastcall TfrmBillGroup::tbtnSplitMouseClick(TObject *Sender)
 		frmTouchNumpad->btnDiscount->Visible = false;
 		frmTouchNumpad->btnSurcharge->Visible = true;
 		frmTouchNumpad->INTInitial = 1;
-		if (frmTouchNumpad->ShowModal() == mrOk)
+		if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0)
 		{
 			WaysToSplit = frmTouchNumpad->INTResult;
 			int SplitCount = 0;
