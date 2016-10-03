@@ -2519,13 +2519,16 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
     }
     else
     {
-         if(!SelectedItems[GridButton->Tag].IsSide)
-         {
+//         if(!SelectedItems[GridButton->Tag].IsSide)
+//         {
             if(SelectedItems.find(GridButton->Tag) != SelectedItems.end())
             {
                 if(SelectedItems[GridButton->Tag].Qty > 1.0f && VisibleItems[GridButton->Tag].Type != CanceledOrder)
                 {
-                    SplitItemOnClick(GridButton->Tag);
+                    if(!SelectedItems[GridButton->Tag].IsSide)
+                        SplitItemOnClick(GridButton->Tag);
+                    else
+                        MessageBox("It is an ItemSide. Selected operation is not allowed", "Warning", MB_OK + MB_ICONWARNING);
                 }
                 else if((SelectedItems[GridButton->Tag].Qty <= 1.0f))
                     ToggleItemState(GridButton);
@@ -2534,11 +2537,11 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
             {
                 ToggleItemState(GridButton);
             }
-         }
-         else
-         {
-            MessageBox("It is an ItemSide. Selected operation is not allowed", "Warning", MB_OK + MB_ICONWARNING);
-         }
+//         }
+//         else
+//         {
+//            MessageBox("It is an ItemSide. Selected operation is not allowed", "Warning", MB_OK + MB_ICONWARNING);
+//         }
     }
 	// Reset the Split Payment Form.
 
@@ -2635,6 +2638,7 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
             tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedFontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
             tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Latched =
                                                          (ptrItem1->Qty  - (int)ptrItem1->Qty) > 0;
+            tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_UNSELECTED][ATTRIB_BUTTONCOLOR];
             SelectedItems.erase(itemSelected);
             if(ptrItem1->IsParent)
             {
@@ -2656,6 +2660,7 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
                     tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->LatchedFontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
                     tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->Latched =
                                                                  (SubOrder->GetQty()  - (int)ptrItem1->Qty) > 0;
+                    tgridItemList->Buttons[i+j][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_UNSELECTED][ATTRIB_BUTTONCOLOR];
                     SelectedItems.erase(SubOrder->OrderKey);
                 }
             }
@@ -2681,35 +2686,12 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
         tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
         tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
         tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedFontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
-        tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_UNSELECTED][ATTRIB_BUTTONCOLOR];
-        tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_SEC_UNSELECTED][ATTRIB_FONTCOLOR];
+        tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_SELECTED][ATTRIB_BUTTONCOLOR];
+        tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_SEC_SELECTED][ATTRIB_FONTCOLOR];
         tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Tag = ptrItem->Key;
         tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Caption = "Select";
         SelectedItems[ptrItem->Key] = VisibleItems[ptrItem->Key];
     }
-    //Enable the new button
-//    TPnMOrder *ptrItem = (TPnMOrder*)SortingList->Items[SortingList->Count-1];
-//    AnsiString QtyStr = "";
-//    if (ptrItem->Qty != 1)
-//    {
-//        QtyStr = FormatFloat("0.00", ptrItem->Qty) + " ";
-//        tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_COLUMN]->Latched = (ptrItem->Qty  - (int)ptrItem->Qty) > 0;
-//    }
-//    else
-//    {
-//        tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_COLUMN]->Latched = false;
-//    }
-//    tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_COLUMN]->Caption = QtyStr + ptrItem->Name;
-//    tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_COLUMN]->Tag = ptrItem->Key;
-//    tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_COLUMN]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
-//    tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
-//    tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_COLUMN]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
-//    tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_COLUMN]->LatchedFontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
-//    tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_UNSELECTED][ATTRIB_BUTTONCOLOR];
-//    tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_ENABLE_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_SEC_UNSELECTED][ATTRIB_FONTCOLOR];
-//    tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_ENABLE_COLUMN]->Tag = ptrItem->Key;
-//    tgridItemList->Buttons[SortingList->Count-1][ITEM_LIST_ENABLE_COLUMN]->Caption = "Select";
-//    SelectedItems[ptrItem->Key] = VisibleItems[ptrItem->Key];
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::SplitItemsInSet(Database::TDBTransaction &transaction, int tab_key)

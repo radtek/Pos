@@ -79,8 +79,8 @@ object frmTouchNumpad: TfrmTouchNumpad
           Visible = False
           Caption = 'Surcharge'
           ButtonColor = 9933970
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnSurchargeClick
         end
@@ -99,8 +99,8 @@ object frmTouchNumpad: TfrmTouchNumpad
           Visible = False
           Caption = 'Discount'
           ButtonColor = 9933970
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnDiscountClick
         end
@@ -113,8 +113,8 @@ object frmTouchNumpad: TfrmTouchNumpad
           Visible = False
           Caption = 'Cancel'
           ButtonColor = 2200566
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnCancelClick
         end
@@ -127,8 +127,8 @@ object frmTouchNumpad: TfrmTouchNumpad
           Visible = False
           Caption = 'Ok'
           ButtonColor = 18944
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnOkMouseClick
         end
@@ -345,8 +345,8 @@ object frmTouchNumpad: TfrmTouchNumpad
               object lbeEnteredValue: TLabel
                 Left = 0
                 Top = 0
-                Width = 271
-                Height = 63
+                Width = 81
+                Height = 36
                 Align = alClient
                 Alignment = taCenter
                 Caption = '$0.00'
@@ -357,8 +357,6 @@ object frmTouchNumpad: TfrmTouchNumpad
                 Font.Style = []
                 ParentFont = False
                 Layout = tlCenter
-                ExplicitWidth = 81
-                ExplicitHeight = 36
               end
             end
           end

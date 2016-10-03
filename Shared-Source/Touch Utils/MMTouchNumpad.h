@@ -73,7 +73,6 @@ __published: // IDE-managed Components
 	void __fastcall FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 	void __fastcall btnOkMouseClick(TObject *Sender);
     void __fastcall tnpQuantityClick(TObject *Sender, TNumpadKey Key);
-    void __fastcall FormMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
 
 
 protected:
@@ -89,8 +88,6 @@ private: // User declarations
     UnicodeString wrkNumStrAmount;
 
     int MaxLength;
-    void UpdateNumericCustom(char Key);
-
 public: // User declarations
 
 	Currency CURResult;

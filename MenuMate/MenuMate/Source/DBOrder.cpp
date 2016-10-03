@@ -48,7 +48,7 @@ __int64 TDBOrder::SplitOrder(Database::TDBTransaction &DBTransaction,__int64 Ord
 	// Qty = Qty / WaysToSpit
 	// Duplicate edited Item Ways To Split-1 times.
 	// Recursivly split Sides this item has.
-   	if( WaysToSplit == 1 )
+   	if( WaysToSplit == 1 || WaysToSplit == 0)
        return 1;
 
 	TItemComplete* Order = new TItemComplete();

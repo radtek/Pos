@@ -572,58 +572,18 @@ void __fastcall TfrmTouchNumpad::FormKeyDown(TObject *Sender, WORD &Key, TShiftS
    {
         if ((char(Key) >= '0' && char(Key) <= '9') || Key == 190)
         {
-            char text = char(Key);
-            if(Key == 190)
-              text = '.';
-            UpdateNumericCustom(text);
+           AnsiString text = char(Key);
+           TNumpadKey NumpadKey;
+           if(Key == 190)
+            NumpadKey = nkCustom;
+           else
+            NumpadKey  = static_cast<TNumpadKey>(StrToInt(text));
+           QtyDisplay->KeyPressed(NumpadKey) ;
+           QtyDisplay->Invalidate();
+           splitValue = QtyDisplay->Numeric();
         }
    }
 }
-
-
-void TfrmTouchNumpad::UpdateNumericCustom(char Key)
-{
-    AnsiString FText = QtyDisplay->Numeric();
-	switch (Key)
-	{
-		case '.':
-		{
-			if (FText.Pos(".") == 0)
-			{
-				FText = FText + ".";
-			}
-			break;
-		}
-		default:
-		{
-			int KeyNumber = static_cast<int>(Key)-48;
-			if (Key == '0' && FText == "0")
-			{
-				return;
-			}
-			else if (FText == "0")
-			{
-				FText = Key;
-			}
-			else
-			{
-				int PointPos = FText.Pos(".");
-				if (PointPos > 0)
-				{
-					if (FText.Length() - PointPos >= 2)
-					{
-						return;
-					}
-				}
-				FText = FText + Key;
-			}
-		}
-	}
-    QtyDisplay->SetNumeric(StrToInt(FText));
-    QtyDisplay->Invalidate();
-}
-
-
 
 // ---------------------------------------------------------------------------
 
@@ -661,11 +621,6 @@ void __fastcall TfrmTouchNumpad::tnpQuantityClick(TObject *Sender, TNumpadKey Ke
    if (QtyDisplay->Numeric() > maximum_quantity)
       QtyDisplay->SetNumeric(static_cast<int>(QtyDisplay->Numeric()) / 10);
    splitValue = QtyDisplay->Numeric();
-}
-void __fastcall TfrmTouchNumpad::FormMouseMove(TObject *Sender, TShiftState Shift,
-          int X, int Y)
-{
-//
 }
 //---------------------------------------------------------------------------
 
