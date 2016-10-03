@@ -10579,7 +10579,7 @@ bool TfrmMenuEdit::LoadMenu()
 	//....................................
 
 	bool result = false;
-
+    AllSizesForMenu.clear();
 	//::::::::::::::::::::::::::::::::::::
 
 	TButtonResult btnResult = ShowLoadMenuDialog();
