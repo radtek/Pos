@@ -5147,7 +5147,8 @@ void __fastcall TfrmMenuEdit::btnAddSizeClick(TObject *Sender)
 			MenuEdited = true;
 			int Index = InsertSize(NewGlassName);
 			RefreshMenuDetails();
-			lbAvailableSizes->ItemIndex = Index;
+			lbAvailableSizes->ItemIndex = UpdateSizeItem(NewGlassName);
+
 		}
 	}
 }
@@ -5215,7 +5216,7 @@ void __fastcall TfrmMenuEdit::btnSizesEditClick(TObject *Sender)
 				//				int OldIndex = lbAvailableSizes->ItemIndex;
 				RelabelDrinkCosts();
 				RefreshMenuDetails();
-				lbAvailableSizes->ItemIndex = NewIndex;
+				lbAvailableSizes->ItemIndex = UpdateSizeItem(SizeName);//NewIndex;
 			}
 		}
 	}
@@ -8048,6 +8049,8 @@ int TfrmMenuEdit::InsertSize(AnsiString SizeName)
 	SizesNode->Expand(false);
 	tvMenu->Items->EndUpdate();
 
+    //std::sort(AllSizesForMenu.begin(), AllSizesForMenu.end(), SizeName);
+
     
 
 	for (int i=0; i<SizesNode->Count; i++)
@@ -9702,6 +9705,7 @@ void __fastcall TfrmMenuEdit::btnSizeDeleteSizeClick(TObject *Sender) // cww
 						"Warning", MB_OKCANCEL + MB_ICONQUESTION) == ID_OK)
 
 			{
+                AllSizesForMenu.erase(CurrentNodeData->LongDescription);
 				tvMenu->Selected->Delete();
 				MenuEdited = true;
 				RelabelDrinkCosts();
@@ -11063,6 +11067,7 @@ Menu::TCategoriesInfo *CategoriesInfo,
 Menu::TLocationsInfo *LocationsInfo,
 Menu::TServingCoursesInfo *ServingCoursesInfo)  // cww
 {
+    AllSizesForMenu.clear();
 	TTreeNode *MenuNode			= tvMenu->Items->Add(NULL, MenuInfo->Menu_Name);
 	TMenuNode *MenuData			= new TMenuNode;
 	MenuNode->Data				= MenuData;
@@ -13578,6 +13583,18 @@ void TfrmMenuEdit::UpdateItemForForcedOptions()
     RefreshItem((TItemNode *)tvMenu->Selected->Data, true);// refresh item when drag down..
 }
 //---------------------------------------------------------------------------
+int TfrmMenuEdit::UpdateSizeItem(AnsiString SizeName)
+{
+    for(int i = 0; i < lbAvailableSizes->Count; i++)
+    {
+       AnsiString size_name = lbAvailableSizes->Items->Strings[i];
+       if(size_name == SizeName)
+       {
+          return i;
+       }
+
+    }
+}
 //---------------------------------------------------------------------------
 
 
