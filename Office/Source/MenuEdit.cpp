@@ -5216,7 +5216,7 @@ void __fastcall TfrmMenuEdit::btnSizesEditClick(TObject *Sender)
 				//				int OldIndex = lbAvailableSizes->ItemIndex;
 				RelabelDrinkCosts();
 				RefreshMenuDetails();
-				lbAvailableSizes->ItemIndex = UpdateSizeItem(SizeName);//NewIndex;
+				lbAvailableSizes->ItemIndex = UpdateSizeItem(SizeName);
 			}
 		}
 	}
@@ -8048,11 +8048,7 @@ int TfrmMenuEdit::InsertSize(AnsiString SizeName)
 	tvMenu->Items->BeginUpdate();
 	SizesNode->CustomSort(CompareFunc, 1);
 	SizesNode->Expand(false);
-	tvMenu->Items->EndUpdate();
-
-    //std::sort(AllSizesForMenu.begin(), AllSizesForMenu.end(), SizeName);
-
-    
+	tvMenu->Items->EndUpdate();    
 
 	for (int i=0; i<SizesNode->Count; i++)
 	{
