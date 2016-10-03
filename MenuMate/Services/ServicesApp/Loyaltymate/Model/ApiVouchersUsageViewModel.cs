@@ -8,6 +8,7 @@ namespace Loyaltymate.Model
         public DateTime RequestTime { get; set; }
         public string TransactionReferenceNumber { get; set; }
         public ApiGiftCardUsageRequestViewModel GiftCard { get; set; }
+        public ApiGiftCardUsageRequestViewModel GiftCardRecharge { get; set; }
         public ApiPocketVoucherUsageRequestViewModel PocketVoucher { get; set; }
         public ApiVoucherUsageRequestViewModel Voucher { get; set; }
         public List<ApiDiscountUsageRequestViewModel> Discounts { get; set; }

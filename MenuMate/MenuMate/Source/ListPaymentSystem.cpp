@@ -3531,6 +3531,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
                                                        PaymentTransaction.Membership.Member.ContactKey);
   }
 
+  //Loyalty Pocket Voucher
   if(PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber != NULL &&
      PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber !="")
   {
@@ -3539,6 +3540,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
     VoucherUsageDetail.PocketVoucherNumber = PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber;
   }
 
+  //Loyalty Gift Card redemtion
   if(paymentComplete && PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber != NULL &&
      PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber !="")
   {
@@ -3547,6 +3549,16 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
     VoucherUsageDetail.GiftCardNumber = PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber;
   }
 
+  //Loyalty gift card point purchase
+  if(paymentComplete && PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber != NULL &&
+     PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber !="")
+  {
+    isVoucherPresent = true;
+    VoucherUsageDetail.PointsPurchased = PaymentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount;
+    VoucherUsageDetail.PurchasedGiftCardNumber = PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber;
+  }
+
+  //Loyalty member voucher
    if(paymentComplete && TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName != NULL &&
      TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName !="")
   {
@@ -3554,6 +3566,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
     VoucherUsageDetail.MemberVoucherDiscountAmount = 0;
     VoucherUsageDetail.VoucherName = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName;
   }
+  //Loyalty members only discounts
   for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
   {
     TItemComplete *Order = (TItemComplete*)(PaymentTransaction.Orders->Items[i]);
@@ -3562,7 +3575,10 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
     {
         TDiscount CurrentDiscount;
         ManagerDiscount->GetDiscount(PaymentTransaction.DBTransaction,(*it_discount).DiscountKey,CurrentDiscount);
-        double discountAmount = RoundToNearest((*it_discount).Value,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+
+        double discountAmount = (*it_discount).Value;
+        if(it_discount->DiscountType == BillCalculator::dtDiscount)
+           discountAmount = -1.0 * discountAmount;
         if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
            && CurrentDiscount.DiscountCode  == TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount)
         {
