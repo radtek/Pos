@@ -8,6 +8,7 @@
 #include "PortCashDraw.h"
 #include "MMLogging.h"
 
+
 #pragma package(smart_init)
 
 //---------------------------------------------------------------------------
@@ -22,6 +23,7 @@ void TPortCashDraw::OpenDraw()
         std::auto_ptr<TPortTalk> PortTalk(new TPortTalk);
         if(PortTalk->Initialise())
         {
+            makeLogFile("Opening cash drawer Class - TPortCashDraw");
             SendOpenDrawCommands(PortTalk.get());
         }
     }
@@ -238,3 +240,14 @@ void TCashDrawAerpos3435::SendOpenDrawCommands(TPortTalk* PortTalk)
     PortTalk->OutPort(0x284, 0x04);
 }
 //---------------------------------------------------------------------------
+void TPortCashDraw::makeLogFile(UnicodeString str)
+{
+    AnsiString fileName = ExtractFilePath(Application->ExeName) + "EFTPOSCashDrawer_Logs.txt" ;
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+    List->Add(" "+ str +  "\n");
+    List->SaveToFile(fileName );
+}

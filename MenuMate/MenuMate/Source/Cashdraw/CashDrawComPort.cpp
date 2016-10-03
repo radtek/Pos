@@ -36,6 +36,7 @@ TCashDrawComPort::TCashDrawComPort(char inPortNumber, int inPortLength, bool inP
  */
 void TCashDrawComPort::OpenDraw()
 {
+    makeLogFile("Opening cash drawer Class - TCashDrawComPort");
     cashDrawPort->Open();
 
     unsigned char *buffer = new unsigned char [portLength];
@@ -56,4 +57,17 @@ void TCashDrawComPort::OpenDraw()
         delete []buffer;
         cashDrawPort->Close();
     }
+}
+
+//---------------------------------------------------------------------------
+void TCashDrawComPort::makeLogFile(UnicodeString str)
+{
+    AnsiString fileName = ExtractFilePath(Application->ExeName) + "EFTPOSCashDrawer_Logs.txt" ;
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+    List->Add(" "+ str +  "\n");
+    List->SaveToFile(fileName );
 }

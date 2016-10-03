@@ -39,6 +39,7 @@ void TCashDrawAdvancePOS::OpenDraw()
         else
         {
             // Turn on the Cash Drawer Output (Fire the required solenoid)
+            makeLogFile("Opening cash drawer Class - TCashDrawAdvancePOS");
             bRet = DeviceIoControl(hFile, ADV_OPEN_CTL_CODE, &uDrawer, sizeof(uDrawer), NULL, 0, &ulBytesReturned, NULL);
             if (bRet == FALSE || ulBytesReturned != 1)
             {
@@ -61,3 +62,14 @@ void TCashDrawAdvancePOS::OpenDraw()
     }
 }
 //---------------------------------------------------------------------------
+void TCashDrawAdvancePOS::makeLogFile(UnicodeString str)
+{
+    AnsiString fileName = ExtractFilePath(Application->ExeName) + "EFTPOSCashDrawer_Logs.txt" ;
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+    List->Add(" "+ str +  "\n");
+    List->SaveToFile(fileName );
+}

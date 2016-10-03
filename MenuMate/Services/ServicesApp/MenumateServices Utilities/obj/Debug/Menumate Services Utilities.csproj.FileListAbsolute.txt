@@ -59,3 +59,8 @@ C:\work\Menumate\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate S
 C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\ResolveAssemblyReference.cache
 C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.dll
 C:\work\Menumate\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.pdb
+C:\Projects\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate Services Utilities.dll
+C:\Projects\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate Services Utilities.pdb
+C:\Projects\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\ResolveAssemblyReference.cache
+C:\Projects\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.dll
+C:\Projects\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.pdb

@@ -560,6 +560,8 @@ private:
   bool            FRequestKey_Specified;
   TXSDateTime*    FRequestTime;
   bool            FRequestTime_Specified;
+  __int64         FSiteCode;
+  bool            FSiteCode_Specified;
   void __fastcall SetRequestKey(int Index, UnicodeString _prop_val)
   {  FRequestKey = _prop_val; FRequestKey_Specified = true;  }
   bool __fastcall RequestKey_Specified(int Index)
@@ -568,12 +570,17 @@ private:
   {  FRequestTime = _prop_val; FRequestTime_Specified = true;  }
   bool __fastcall RequestTime_Specified(int Index)
   {  return FRequestTime_Specified;  }
+  void __fastcall SetSiteCode(int Index, __int64 _prop_val)
+  {  FSiteCode = _prop_val; FSiteCode_Specified = true;  }
+  bool __fastcall SiteCode_Specified(int Index)
+  {  return FSiteCode_Specified;  }
 
 public:
   __fastcall ~RequestInfo();
 __published:
   __property UnicodeString RequestKey = { index=(IS_OPTN|IS_NLBL), read=FRequestKey, write=SetRequestKey, stored = RequestKey_Specified };
   __property TXSDateTime* RequestTime = { index=(IS_OPTN), read=FRequestTime, write=SetRequestTime, stored = RequestTime_Specified };
+  __property __int64      SiteCode = { index=(IS_OPTN), read=FSiteCode, write=SetSiteCode, stored = SiteCode_Specified };
 };
 
 
@@ -1063,8 +1070,12 @@ private:
   bool            FPocketVoucherDiscountAmount_Specified;
   UnicodeString   FPocketVoucherNumber;
   bool            FPocketVoucherNumber_Specified;
+  double          FPointsPurchased;
+  bool            FPointsPurchased_Specified;
   double          FPointsRedeemed;
   bool            FPointsRedeemed_Specified;
+  UnicodeString   FPurchasedGiftCardNumber;
+  bool            FPurchasedGiftCardNumber_Specified;
   __int64         FSiteCode;
   bool            FSiteCode_Specified;
   double          FTotalSaleAmount;
@@ -1103,10 +1114,18 @@ private:
   {  FPocketVoucherNumber = _prop_val; FPocketVoucherNumber_Specified = true;  }
   bool __fastcall PocketVoucherNumber_Specified(int Index)
   {  return FPocketVoucherNumber_Specified;  }
+  void __fastcall SetPointsPurchased(int Index, double _prop_val)
+  {  FPointsPurchased = _prop_val; FPointsPurchased_Specified = true;  }
+  bool __fastcall PointsPurchased_Specified(int Index)
+  {  return FPointsPurchased_Specified;  }
   void __fastcall SetPointsRedeemed(int Index, double _prop_val)
   {  FPointsRedeemed = _prop_val; FPointsRedeemed_Specified = true;  }
   bool __fastcall PointsRedeemed_Specified(int Index)
   {  return FPointsRedeemed_Specified;  }
+  void __fastcall SetPurchasedGiftCardNumber(int Index, UnicodeString _prop_val)
+  {  FPurchasedGiftCardNumber = _prop_val; FPurchasedGiftCardNumber_Specified = true;  }
+  bool __fastcall PurchasedGiftCardNumber_Specified(int Index)
+  {  return FPurchasedGiftCardNumber_Specified;  }
   void __fastcall SetSiteCode(int Index, __int64 _prop_val)
   {  FSiteCode = _prop_val; FSiteCode_Specified = true;  }
   bool __fastcall SiteCode_Specified(int Index)
@@ -1138,7 +1157,9 @@ __published:
   __property double     MemberVoucherDiscountAmount = { index=(IS_OPTN), read=FMemberVoucherDiscountAmount, write=SetMemberVoucherDiscountAmount, stored = MemberVoucherDiscountAmount_Specified };
   __property double     PocketVoucherDiscountAmount = { index=(IS_OPTN), read=FPocketVoucherDiscountAmount, write=SetPocketVoucherDiscountAmount, stored = PocketVoucherDiscountAmount_Specified };
   __property UnicodeString PocketVoucherNumber = { index=(IS_OPTN|IS_NLBL), read=FPocketVoucherNumber, write=SetPocketVoucherNumber, stored = PocketVoucherNumber_Specified };
+  __property double     PointsPurchased = { index=(IS_OPTN), read=FPointsPurchased, write=SetPointsPurchased, stored = PointsPurchased_Specified };
   __property double     PointsRedeemed = { index=(IS_OPTN), read=FPointsRedeemed, write=SetPointsRedeemed, stored = PointsRedeemed_Specified };
+  __property UnicodeString PurchasedGiftCardNumber = { index=(IS_OPTN|IS_NLBL), read=FPurchasedGiftCardNumber, write=SetPurchasedGiftCardNumber, stored = PurchasedGiftCardNumber_Specified };
   __property __int64      SiteCode = { index=(IS_OPTN), read=FSiteCode, write=SetSiteCode, stored = SiteCode_Specified };
   __property double     TotalSaleAmount = { index=(IS_OPTN), read=FTotalSaleAmount, write=SetTotalSaleAmount, stored = TotalSaleAmount_Specified };
   __property TXSDateTime* TransactionDate = { index=(IS_OPTN), read=FTransactionDate, write=SetTransactionDate, stored = TransactionDate_Specified };
