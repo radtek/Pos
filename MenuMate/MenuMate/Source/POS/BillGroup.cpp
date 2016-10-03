@@ -2619,8 +2619,7 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
         TPnMOrder *ptrItem1 = (TPnMOrder*)SortingList->Items[i];
         if(ptrItem1->Key == itemSelected)
         {
-            double newQty = ptrItem1->Qty - (splitValue/1000);
-            AnsiString qtyStr = FormatFloat("0.00", newQty) + " ";
+            AnsiString qtyStr = FormatFloat("0.00", ptrItem1->Qty) + " ";
             if(ptrItem1->Qty != 1)
                 tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Caption = qtyStr + ptrItem1->Name;
             else
@@ -2641,8 +2640,7 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
                 for (int j = 1; j <= Order->SubOrders->Count ; j++)
                 {
                     TItemCompleteSub *SubOrder = (TItemCompleteSub *)Order->SubOrders->Items[j-1];
-                    newQty = SubOrder->GetQty() - (splitValue/1000);
-                    qtyStr = FormatFloat("0.00", newQty) + " ";
+                    qtyStr = FormatFloat("0.00", SubOrder->GetQty()) + " ";
                     if(ptrItem1->Qty != 1)
                         tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->Caption = qtyStr + SubOrder->Item;
                     else
