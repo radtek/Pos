@@ -13,7 +13,7 @@ object frmTouchNumpad: TfrmTouchNumpad
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
@@ -72,7 +72,7 @@ object frmTouchNumpad: TfrmTouchNumpad
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWhite
           Font.Height = -17
-          Font.Name = 'Arial'
+          Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
           ParentColor = True
@@ -92,7 +92,7 @@ object frmTouchNumpad: TfrmTouchNumpad
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWhite
           Font.Height = -17
-          Font.Name = 'Arial'
+          Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
           ParentColor = True
@@ -109,6 +109,12 @@ object frmTouchNumpad: TfrmTouchNumpad
           Top = 354
           Width = 132
           Align = alBottom
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -17
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
           ParentColor = True
           Visible = False
           Caption = 'Cancel'
@@ -123,6 +129,12 @@ object frmTouchNumpad: TfrmTouchNumpad
           Top = 5
           Width = 132
           Align = alTop
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -17
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
           ParentColor = True
           Visible = False
           Caption = 'Ok'
@@ -164,7 +176,7 @@ object frmTouchNumpad: TfrmTouchNumpad
           Font.Name = 'Arial'
           Font.Style = [fsBold]
           ParentFont = False
-          ActivePage = tsQuantity
+          ActivePage = tsGeneral
           TabHeight = 0
           TabWidth = 0
           TabColor = 14342874
@@ -177,6 +189,12 @@ object frmTouchNumpad: TfrmTouchNumpad
             Caption = 'tsGeneral'
             Color = 14342874
             ParentColor = True
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -17
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
             object Panel6: TPanel
               Left = 16
               Top = 96
@@ -186,7 +204,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '7'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 0
               OnMouseDown = btnNumberMouseDown
             end
@@ -199,7 +223,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '8'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 1
               OnMouseDown = btnNumberMouseDown
             end
@@ -212,7 +242,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '9'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 2
               OnMouseDown = btnNumberMouseDown
             end
@@ -225,7 +261,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '4'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 3
               OnMouseDown = btnNumberMouseDown
             end
@@ -238,7 +280,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '5'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 4
               OnMouseDown = btnNumberMouseDown
             end
@@ -251,7 +299,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '6'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 5
               OnMouseDown = btnNumberMouseDown
             end
@@ -264,7 +318,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '1'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 6
               OnMouseDown = btnNumberMouseDown
             end
@@ -277,7 +337,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '2'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 7
               OnMouseDown = btnNumberMouseDown
             end
@@ -290,7 +356,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '3'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 8
               OnMouseDown = btnNumberMouseDown
             end
@@ -303,7 +375,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '0'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 9
               OnMouseDown = btnNumberMouseDown
             end
@@ -316,7 +394,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = '00'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 10
               OnMouseDown = btnNumberMouseDown
             end
@@ -329,7 +413,13 @@ object frmTouchNumpad: TfrmTouchNumpad
               BorderStyle = bsSingle
               Caption = 'CLR'
               Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
               ParentBackground = False
+              ParentFont = False
               TabOrder = 11
               OnMouseDown = btnCLRMouseUp
             end
@@ -345,18 +435,20 @@ object frmTouchNumpad: TfrmTouchNumpad
               object lbeEnteredValue: TLabel
                 Left = 0
                 Top = 0
-                Width = 81
-                Height = 36
+                Width = 271
+                Height = 63
                 Align = alClient
                 Alignment = taCenter
                 Caption = '$0.00'
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clBlack
                 Font.Height = -32
-                Font.Name = 'Arial'
+                Font.Name = 'Tahoma'
                 Font.Style = []
                 ParentFont = False
                 Layout = tlCenter
+                ExplicitWidth = 78
+                ExplicitHeight = 39
               end
             end
           end

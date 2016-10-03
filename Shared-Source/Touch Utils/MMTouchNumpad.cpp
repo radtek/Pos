@@ -386,12 +386,11 @@ void __fastcall TfrmTouchNumpad::FormResize(TObject *Sender)
    {
 	  int Temp = Tag;
 	  Tag = Screen->Width;
-          if((double)Screen->Width / Screen->Height)
-          {
-	  	ScaleBy(Screen->Width, Temp);
-          }
+      if((double)Screen->Width / Screen->Height)
+      {
+         ScaleBy(Screen->Width, Temp);
+      }
    }
-
    Panel5->Width = Panel2->BorderWidth;
    ClientWidth = Panel2->Width;
    ClientHeight = Panel2->Height;
