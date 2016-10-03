@@ -365,5 +365,6 @@ TGlobalSettings::TGlobalSettings()
     EnableConsolidatedReport = false;
     ShowDarkBackground = false;
     OpenCashDrawer = false;
+    HideReceiptNumberForRefundItem = false;
 }
 
