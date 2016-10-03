@@ -2519,8 +2519,6 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
     }
     else
     {
-//         if(!SelectedItems[GridButton->Tag].IsSide)
-//         {
             if(SelectedItems.find(GridButton->Tag) != SelectedItems.end())
             {
                 if(SelectedItems[GridButton->Tag].Qty > 1.0f && VisibleItems[GridButton->Tag].Type != CanceledOrder)
@@ -2537,11 +2535,6 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
             {
                 ToggleItemState(GridButton);
             }
-//         }
-//         else
-//         {
-//            MessageBox("It is an ItemSide. Selected operation is not allowed", "Warning", MB_OK + MB_ICONWARNING);
-//         }
     }
 	// Reset the Split Payment Form.
 
