@@ -12318,17 +12318,19 @@ void TfrmMenuEdit::SaveMenuCategoryGroups( TSaveMenu* inSaveMenu, TTreeNode* inC
 void TfrmMenuEdit::SaveMenuSizes( TSaveMenu* inSaveMenu, TTreeNode* inSizesTreeNode )
 {
 
-    for(std::map<AnsiString,  TAvailableMenuSize>::iterator it = AllSizesForMenu.begin(); it != AllSizesForMenu.end(); ++it)
+    for( int i = 0; i < inSizesTreeNode->Count; i++ )
     {
-        inSaveMenu->SaveSize( it->second.Key,
-		UTF8Encode( it->first ),
-		UTF8Encode( it->second.KitchenName  ),
-		UTF8Encode( it->second.HandheldName ),
-		UTF8Encode( it->second.ReceiptName  ),
-		it->second.Weighed,
-		it->second.Size_ID,
-		it->second.PalmID
-		);
+        TSizeNode *SizeData = ( TSizeNode * )inSizesTreeNode->Item[i]->Data;
+
+        inSaveMenu->SaveSize( SizeData->Key,
+        UTF8Encode( SizeData->LongDescription ),
+        UTF8Encode( SizeData->KitchenName  ),
+        UTF8Encode( SizeData->HandheldName ),
+        UTF8Encode( SizeData->ReceiptName  ),
+        SizeData->Weighed,
+        SizeData->Size_ID,
+        SizeData->PalmID
+        );
     }
 }
 //---------------------------------------------------------------------------
