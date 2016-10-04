@@ -62,7 +62,7 @@ void TSmartCardVer6::UnlockCard(std::map <int, TSyndCode> SyndCodes)
 #ifdef _DEBUG
 	    LastModifiedDateStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedLastModifiedDateStream.bin");
 #endif
-		DecryptInPlace(*LastModifiedDateStream.get(),ptrSyndCodes->second.SyndCode);
+		DecryptInPlace(*LastModifiedDateStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
 #ifdef _DEBUG
 	    LastModifiedDateStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedLastModifiedDateStream.bin");
 #endif
@@ -81,7 +81,7 @@ void TSmartCardVer6::UnlockCard(std::map <int, TSyndCode> SyndCodes)
 #ifdef _DEBUG
             ContactStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedContactSteam.bin");
 #endif
-            DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.SyndCode);
+            DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
 #ifdef _DEBUG
             ContactStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedContactSteam.bin");
 #endif
@@ -97,7 +97,7 @@ void TSmartCardVer6::UnlockCard(std::map <int, TSyndCode> SyndCodes)
                 PointsStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedPointsStreamRead.bin");
 #endif
 
-                DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.SyndCode);
+                DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
 #ifdef _DEBUG
                 PointsStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedPointsStreamRead.bin");
 #endif

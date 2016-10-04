@@ -1271,7 +1271,7 @@ int TManagerSmartCard::GetCardBlockVersion(TSmartCardBlock &CardBlock)
 		 Stream->Clear();
 		 Stream->Position = 0;
 		 CardBlock.BlockInfoRead(V1_CARD_MEMBER_DATA_START, 8, *Stream.get());
-		 Decrypt(*Stream.get(), ptrSyndCodes->second.SyndCode);
+		 Decrypt(*Stream.get(), ptrSyndCodes->second.DecryptedSyndCode);
 		 Stream->Position = 0;
 		 CardVersion = SMART_CARD_VERSION_UNK;
 		 StreamRead(Stream.get(), CardVersion);

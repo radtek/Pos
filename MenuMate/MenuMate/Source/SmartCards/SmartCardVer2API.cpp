@@ -53,7 +53,7 @@ void TSmartCardVer2::UnlockCard(std::map <int, TSyndCode> SyndCodes)
    for (ptrSyndCodes = SyndCodes.begin();ptrSyndCodes != SyndCodes.end() && !SyndCodeValidated ; advance(ptrSyndCodes,1))
    {
       StreamGetContact(*ContactStream.get());
-      DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.SyndCode);
+      DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
       ContactInfo.LoadFromStream(BlockData.Version,ContactStream.get());
       CRC = 0; CalcCRC = 0;
       StreamRead(ContactStream.get(),CRC);
@@ -61,7 +61,7 @@ void TSmartCardVer2::UnlockCard(std::map <int, TSyndCode> SyndCodes)
       {
          std::auto_ptr<TMemoryStream> PointsStream(new TMemoryStream);
          StreamGetPoints(*PointsStream.get());
-         DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.SyndCode);
+         DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
          ContactInfo.Points.LoadFromStream(BlockData.Version,PointsStream.get());
          CRC = 0; CalcCRC = 0;
          StreamRead(PointsStream.get(),CRC);

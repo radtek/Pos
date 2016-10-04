@@ -38,7 +38,7 @@ void __fastcall TfrmSyndCodeGui::tbtnNameMouseClick(TObject *Sender)
 void __fastcall TfrmSyndCodeGui::TouchBtn3MouseClick(TObject *Sender)
 {
    // Run the Controller.
-  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+   std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
    frmTouchKeyboard->MaxLength = 50;
    frmTouchKeyboard->AllowCarriageReturn = false;
    frmTouchKeyboard->StartWithShiftDown = false;
@@ -48,7 +48,7 @@ void __fastcall TfrmSyndCodeGui::TouchBtn3MouseClick(TObject *Sender)
    {
       if(frmTouchKeyboard->KeyboardText.Length() > 7  || frmTouchKeyboard->KeyboardText.Length() == 0)
       {
-         SyndCode.SyndCode = frmTouchKeyboard->KeyboardText;
+         SyndCode.OriginalSyndCode = SyndCode.DecryptedSyndCode = frmTouchKeyboard->KeyboardText;
          tbtnName->Caption = "Name : " + SyndCode.Name;         
       }
       else

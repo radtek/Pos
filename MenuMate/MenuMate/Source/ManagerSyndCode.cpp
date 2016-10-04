@@ -11,13 +11,13 @@
 #pragma package(smart_init)
 
 
-TSyndCode::TSyndCode(int inSyndCodeKey,  AnsiString inName, AnsiString inSyndCode, bool inEnabled,bool inEncryptCode,AnsiString inReplaceCode ) :
+TSyndCode::TSyndCode(int inSyndCodeKey,  AnsiString inName, AnsiString inSyndCode, bool inEnabled,bool inEncryptCode,AnsiString inOriginalSyndCode ) :
       SyndCodeKey(inSyndCodeKey),
       Name(inName) ,
-      SyndCode(inSyndCode),
+      DecryptedSyndCode(inSyndCode),
       Enabled(inEnabled),
       DefaultEncryptCode(inEncryptCode),
-      ReplaceCode(inReplaceCode)
+      OriginalSyndCode(inOriginalSyndCode)
 {
 }
 
@@ -30,7 +30,15 @@ TSyndCode::TSyndCode()
 
 bool TSyndCode::Valid()
 {
-   return ((SyndCodeKey > 0) && (SyndCode != ""));
+   return (SyndCodeKey > 0) && (DecryptedSyndCode != "") && (OriginalSyndCode != "");
+}
+
+AnsiString TSyndCode::GetSyndCode()
+{
+   AnsiString retVal =  OriginalSyndCode;
+   if(retVal == "" || retVal == NULL)
+     retVal =  DecryptedSyndCode;
+  return retVal;
 }
 
 
@@ -77,8 +85,8 @@ void TManagerSyndCode::AddCode(Database::TDBTransaction &DBTransaction,TSyndCode
          ":ENCRYPT_CODE, "
          ":NAME);";
    IBInternalQuery->ParamByName("SYNDCODES_KEY")->AsInteger	   = inSyndCode.SyndCodeKey;
-   IBInternalQuery->ParamByName("SYNDCODE")->AsString		      = Encrypt(inSyndCode.SyndCode);
-   IBInternalQuery->ParamByName("REPLACEMENTCODE")->AsString	= "";
+   IBInternalQuery->ParamByName("SYNDCODE")->AsString		      = Encrypt(inSyndCode.OriginalSyndCode);
+   IBInternalQuery->ParamByName("REPLACEMENTCODE")->AsString	= inSyndCode.OriginalSyndCode;
    IBInternalQuery->ParamByName("ENABLED")->AsString		      = inSyndCode.Enabled ? "T" : "F";
    IBInternalQuery->ParamByName("ENCRYPT_CODE")->AsString		= inSyndCode.DefaultEncryptCode ? "T" : "F";
    IBInternalQuery->ParamByName("NAME")->AsString		         = inSyndCode.Name;
@@ -103,10 +111,10 @@ void TManagerSyndCode::UpdateCode(Database::TDBTransaction &DBTransaction,TSyndC
          " WHERE SYNDCODES_KEY = :SYNDCODES_KEY";
    IBInternalQuery->ParamByName("SYNDCODES_KEY")->AsInteger    = inSyndCode.SyndCodeKey;
    IBInternalQuery->ParamByName("NAME")->AsString	            = inSyndCode.Name;
-   IBInternalQuery->ParamByName("SYNDCODE")->AsString		      = Encrypt(inSyndCode.SyndCode);
+   IBInternalQuery->ParamByName("SYNDCODE")->AsString		      = Encrypt(inSyndCode.OriginalSyndCode);
    IBInternalQuery->ParamByName("ENCRYPT_CODE")->AsString      = inSyndCode.DefaultEncryptCode ? "T" : "F";
    IBInternalQuery->ParamByName("ENABLED")->AsString		      = inSyndCode.Enabled ? "T" : "F";
-   IBInternalQuery->ParamByName("REPLACEMENTCODE")->AsString	= inSyndCode.ReplaceCode;
+   IBInternalQuery->ParamByName("REPLACEMENTCODE")->AsString	= inSyndCode.OriginalSyndCode;
    IBInternalQuery->ExecQuery();
 }
 
@@ -204,7 +212,7 @@ void TManagerSyndCode::LoadCodes(Database::TDBTransaction &DBTransaction)
                          IBInternalQuery->FieldByName("REPLACEMENTCODE")->AsString
                          );
       SyndCodes[inSyndCode.SyndCodeKey] = inSyndCode;
-		IBInternalQuery->Next();
+	  IBInternalQuery->Next();
 	}
 }
 
@@ -217,18 +225,6 @@ void TManagerSyndCode::RemoveCode(Database::TDBTransaction &DBTransaction,int It
       "DELETE FROM SYNDCODES WHERE SYNDCODES_KEY = :SYNDCODES_KEY";
    IBInternalQuery->ParamByName("SYNDCODES_KEY")->AsInteger	= ItemKey;
    IBInternalQuery->ExecQuery();
-}
-
-AnsiString TManagerSyndCode::FindCode(Database::TDBTransaction &DBTransaction, AnsiString Code)
-{
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text = "Select * From SYNDCODES WHERE CODE = :CODE;";
-   IBInternalQuery->ParamByName("CODE")->AsString = Code;
-	IBInternalQuery->ExecQuery();
-
-   return IBInternalQuery->FieldByName("NAME")->AsString;
 }
 
 void TManagerSyndCode::First(bool EnabledCodesOnly)

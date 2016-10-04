@@ -11,18 +11,18 @@
 class TSyndCode
 {
 public:
-   TSyndCode(int SyndCodeKey, AnsiString inName, AnsiString inSyndCode, bool inEnabled, bool inEncryptCode, AnsiString inReplaceCode);
+   TSyndCode(int SyndCodeKey, AnsiString inName, AnsiString inSyndCode, bool inEnabled, bool inEncryptCode, AnsiString inOriginalSyndCode);
    TSyndCode();
 
    int SyndCodeKey;
    AnsiString Name;
-   AnsiString SyndCode;
-   AnsiString ReplaceCode;
+   AnsiString DecryptedSyndCode;
+   AnsiString OriginalSyndCode;
    bool DefaultEncryptCode;
    bool Enabled;
    TDateTime ValidFrom;
    TDateTime ValidTo;
-
+   AnsiString GetSyndCode();
    bool Valid();
 };
 
@@ -36,11 +36,12 @@ private:
 
    void LoadCodes(Database::TDBTransaction &DBTransaction);
    void UpdateEncryptCode(Database::TDBTransaction &DBTransaction, TSyndCode SyndCode);
-   AnsiString Decrypt(AnsiString Data);
-   AnsiString Encrypt(AnsiString Data);
+
 
 public:
    TManagerSyndCode();
+   AnsiString Decrypt(AnsiString Data);
+   AnsiString Encrypt(AnsiString Data);
    void Initialise(Database::TDBTransaction &DBTransaction);
    void AddCode(Database::TDBTransaction &DBTransaction, TSyndCode SyndCode);
    void RemoveCode(Database::TDBTransaction &DBTransaction, int SyndKey);

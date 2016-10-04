@@ -58,7 +58,7 @@ void TSmartCard::EncryptInPlace(TMemoryStream &Data)
    // has it inherently ( yea you cant see it but its there ).
    // BYTE Passwd[] = {"0123456789abcdefghijklmnopqrstuvwxyz0123456789"};
    // BF.Initialize(Passwd,sizeof(Passwd));
-   BF.Initialize(SyndCode.SyndCode.c_str(),SyndCode.SyndCode.Length()+1);
+   BF.Initialize(SyndCode.DecryptedSyndCode.c_str(),SyndCode.DecryptedSyndCode.Length()+1);
    BF.Encode((BYTE *)Data.Memory,(BYTE *)Data.Memory,Data.Size);
 }
 
@@ -139,7 +139,7 @@ void TSmartCard::ReloadCardDetails()
     std::auto_ptr<TMemoryStream> PointsStream(new TMemoryStream);
     StreamGetPoints(*PointsStream.get());
 
-    DecryptInPlace(*PointsStream.get(),SyndCode.SyndCode);
+    DecryptInPlace(*PointsStream.get(),SyndCode.DecryptedSyndCode);
     ContactInfo.Points.LoadFromStream(BlockData.Version,PointsStream.get());
 
     ContactInfo.Points.PointsRules = pointsRules;
