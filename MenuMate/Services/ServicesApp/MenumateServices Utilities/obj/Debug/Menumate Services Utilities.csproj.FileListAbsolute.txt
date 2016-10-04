@@ -64,3 +64,8 @@ C:\Projects\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\Menum
 C:\Projects\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\ResolveAssemblyReference.cache
 C:\Projects\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.dll
 C:\Projects\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.pdb
+C:\Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate Services Utilities.dll
+C:\Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\Menumate Services Utilities.pdb
+C:\Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\ResolveAssemblyReference.cache
+C:\Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.dll
+C:\Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Utilities\obj\Debug\Menumate Services Utilities.pdb

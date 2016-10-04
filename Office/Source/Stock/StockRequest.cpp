@@ -1113,7 +1113,7 @@ void __fastcall TfrmStockRequest::btnAddClick(TObject *Sender)
 				NodeData->SupplierCode							= frmReceiveStockItem->SupplierCode;
 				NodeData->SupplierUnit							= frmReceiveStockItem->SupplierUnit;
 				NodeData->SupplierUnitCost						= frmReceiveStockItem->SupplierUnitCost;
-				NodeData->SupplierUnitSize						= frmReceiveStockItem->SupplierUnitSize;
+				NodeData->SupplierUnitSize						= frmReceiveStockItem->SupplierUnitSize;  
 				NodeData->RequestNumber= StockRequestNumber;
 				NodeData->STOCKGROUPKEY						= qrStock->FieldByName("STOCK_GROUP_KEY")->AsInteger;
 				NodeData->STOCKCATEGORYKEY						= qrStock->FieldByName("Stock_Category_Key")->AsInteger;
@@ -1129,6 +1129,8 @@ void __fastcall TfrmStockRequest::btnAddClick(TObject *Sender)
 				vtvStockQty->FocusedColumn						= 4;
 				vtvStockQty->Selected[OrderItemNode]		= true;
 				counter = counter + 1;
+                NodeData->onhand = frmReceiveStockItem->OnHandQty;
+                NodeData->LatestCost = frmReceiveStockItem->LatestCost;
 			}
 			if(Transaction->InTransaction)
 			Transaction->Commit();
@@ -1256,6 +1258,8 @@ void TfrmStockRequest::RecieveStockItem(AnsiString StockCode)
 			vtvStockQty->FocusedColumn						= 4;
 			vtvStockQty->Selected[OrderItemNode]		= true;
 			counter = counter + 1;
+            NodeData->onhand = frmReceiveStockItem->OnHandQty;
+            NodeData->LatestCost = frmReceiveStockItem->LatestCost;
 		}
 		if(Transaction->InTransaction)
 		Transaction->Commit();
@@ -1703,6 +1707,19 @@ void __fastcall TfrmStockRequest::btnAutoClick(TObject *Sender)
 	{
 		vtvStockQty->EditNode(vtvStockQty->FocusedNode, vtvStockQty->FocusedColumn);
 	}
+}
+//---------------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmStockRequest::neStockQtyKeyPress(TObject *Sender,
+      char &Key)
+{
+   if(Key == '-')
+   {
+      Key = NULL;
+   }
 }
 //---------------------------------------------------------------------------
 

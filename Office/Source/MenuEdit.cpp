@@ -5147,7 +5147,8 @@ void __fastcall TfrmMenuEdit::btnAddSizeClick(TObject *Sender)
 			MenuEdited = true;
 			int Index = InsertSize(NewGlassName);
 			RefreshMenuDetails();
-			lbAvailableSizes->ItemIndex = Index;
+			lbAvailableSizes->ItemIndex = UpdateSizeItem(NewGlassName);
+
 		}
 	}
 }
@@ -5215,7 +5216,7 @@ void __fastcall TfrmMenuEdit::btnSizesEditClick(TObject *Sender)
 				//				int OldIndex = lbAvailableSizes->ItemIndex;
 				RelabelDrinkCosts();
 				RefreshMenuDetails();
-				lbAvailableSizes->ItemIndex = NewIndex;
+				lbAvailableSizes->ItemIndex = UpdateSizeItem(SizeName);
 			}
 		}
 	}
@@ -8041,14 +8042,13 @@ int TfrmMenuEdit::InsertSize(AnsiString SizeName)
 	(*new_menu_element_key_generator_)();
     TAvailableMenuSize availablesize;
     availablesize.Key = reinterpret_cast<TEditorNode *>(NewSizeNode->Data)->Key;
+    availablesize.Weighed = false;
     AllSizesForMenu[SizeName] = availablesize;
 
 	tvMenu->Items->BeginUpdate();
 	SizesNode->CustomSort(CompareFunc, 1);
 	SizesNode->Expand(false);
-	tvMenu->Items->EndUpdate();
-
-    
+	tvMenu->Items->EndUpdate();    
 
 	for (int i=0; i<SizesNode->Count; i++)
 	{
@@ -9702,6 +9702,7 @@ void __fastcall TfrmMenuEdit::btnSizeDeleteSizeClick(TObject *Sender) // cww
 						"Warning", MB_OKCANCEL + MB_ICONQUESTION) == ID_OK)
 
 			{
+                AllSizesForMenu.erase(CurrentNodeData->LongDescription);
 				tvMenu->Selected->Delete();
 				MenuEdited = true;
 				RelabelDrinkCosts();
@@ -10578,7 +10579,7 @@ bool TfrmMenuEdit::LoadMenu()
 	//....................................
 
 	bool result = false;
-
+    AllSizesForMenu.clear();
 	//::::::::::::::::::::::::::::::::::::
 
 	TButtonResult btnResult = ShowLoadMenuDialog();
@@ -11063,6 +11064,7 @@ Menu::TCategoriesInfo *CategoriesInfo,
 Menu::TLocationsInfo *LocationsInfo,
 Menu::TServingCoursesInfo *ServingCoursesInfo)  // cww
 {
+    AllSizesForMenu.clear();
 	TTreeNode *MenuNode			= tvMenu->Items->Add(NULL, MenuInfo->Menu_Name);
 	TMenuNode *MenuData			= new TMenuNode;
 	MenuNode->Data				= MenuData;
@@ -12316,17 +12318,19 @@ void TfrmMenuEdit::SaveMenuCategoryGroups( TSaveMenu* inSaveMenu, TTreeNode* inC
 void TfrmMenuEdit::SaveMenuSizes( TSaveMenu* inSaveMenu, TTreeNode* inSizesTreeNode )
 {
 
-    for(std::map<AnsiString,  TAvailableMenuSize>::iterator it = AllSizesForMenu.begin(); it != AllSizesForMenu.end(); ++it)
+    for( int i = 0; i < inSizesTreeNode->Count; i++ )
     {
-        inSaveMenu->SaveSize( it->second.Key,
-		UTF8Encode( it->first ),
-		UTF8Encode( it->second.KitchenName  ),
-		UTF8Encode( it->second.HandheldName ),
-		UTF8Encode( it->second.ReceiptName  ),
-		it->second.Weighed,
-		it->second.Size_ID,
-		it->second.PalmID
-		);
+        TSizeNode *SizeData = ( TSizeNode * )inSizesTreeNode->Item[i]->Data;
+
+        inSaveMenu->SaveSize( SizeData->Key,
+        UTF8Encode( SizeData->LongDescription ),
+        UTF8Encode( SizeData->KitchenName  ),
+        UTF8Encode( SizeData->HandheldName ),
+        UTF8Encode( SizeData->ReceiptName  ),
+        SizeData->Weighed,
+        SizeData->Size_ID,
+        SizeData->PalmID
+        );
     }
 }
 //---------------------------------------------------------------------------
@@ -13578,6 +13582,18 @@ void TfrmMenuEdit::UpdateItemForForcedOptions()
     RefreshItem((TItemNode *)tvMenu->Selected->Data, true);// refresh item when drag down..
 }
 //---------------------------------------------------------------------------
+int TfrmMenuEdit::UpdateSizeItem(AnsiString SizeName)
+{
+    for(int i = 0; i < lbAvailableSizes->Count; i++)
+    {
+       AnsiString size_name = lbAvailableSizes->Items->Strings[i];
+       if(size_name == SizeName)
+       {
+          return i;
+       }
+
+    }
+}
 //---------------------------------------------------------------------------
 
 
