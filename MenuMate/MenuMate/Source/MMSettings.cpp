@@ -353,6 +353,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
 	    TGlobalSettings::Instance().IsXeroEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsXeroEnabled, false);
         TGlobalSettings::Instance().IsMYOBEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsMYOBEnabled, false);
         TGlobalSettings::Instance().OpenCashDrawer = TManagerVariable::Instance().GetBool(DBTransaction, vmOpenCashDrawer, false);
+        TGlobalSettings::Instance().HideReceiptNumberForRefundItem = TManagerVariable::Instance().GetBool(DBTransaction, vmHideReceiptNumberForRefundItem, false);
 
 }
 

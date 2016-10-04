@@ -3008,7 +3008,17 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
    if(!TManagerDelayedPayment::Instance().IsDelayedPayment(PaymentTransaction))
     {
       if(PaymentTransaction.InvoiceNumber == "" || PaymentTransaction.InvoiceNumber == "Undefined")
-         PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+      {
+         if(TGlobalSettings::Instance().HideReceiptNumberForRefundItem && PaymentTransaction.CreditTransaction)
+         {
+            PaymentTransaction.InvoiceNumber = "";
+         }
+         else
+         {
+            PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+         }
+
+      }
     }
    else
    {

@@ -450,6 +450,7 @@ public:
     bool IsCloudSyncedForDiscount;
     bool ShowDarkBackground;
     bool OpenCashDrawer;
+    bool HideReceiptNumberForRefundItem;
 };
 
 #endif

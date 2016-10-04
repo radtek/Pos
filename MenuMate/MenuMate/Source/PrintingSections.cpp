@@ -6167,19 +6167,21 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 				pPrinter->AddLine();
 			}
 
-			pPrinter->Line->Columns[0]->Text = "Tax Invoice";
-			pPrinter->AddLine();
-            pPrinter->Line->Columns[0]->Text    =   TGlobalSettings::Instance().ReceiptNumberLabel;
-            if(PrintJob->Transaction->TypeOfSale == RegularSale)
-               {
-                 pPrinter->Line->Columns[0]->Text += LeftPadString( PrintJob->Transaction->InvoiceNumber, "0", ReceiptLength);
-               }
-            else
-               {
-                  pPrinter->Line->Columns[0]->Text += PrintJob->Transaction->InvoiceNumber;
-               }
-			pPrinter->AddLine();
-
+            if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem || !PrintJob->Transaction->CreditTransaction)
+            {
+                pPrinter->Line->Columns[0]->Text = "Tax Invoice";
+                pPrinter->AddLine();
+                pPrinter->Line->Columns[0]->Text    =   TGlobalSettings::Instance().ReceiptNumberLabel;
+                if(PrintJob->Transaction->TypeOfSale == RegularSale)
+                {
+                     pPrinter->Line->Columns[0]->Text += LeftPadString( PrintJob->Transaction->InvoiceNumber, "0", ReceiptLength);
+                }
+                else
+                {
+                      pPrinter->Line->Columns[0]->Text += PrintJob->Transaction->InvoiceNumber;
+                }
+                pPrinter->AddLine();
+            }
 		}
 	}
 }

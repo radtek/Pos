@@ -981,6 +981,7 @@ private:
     void LoadPriceLevelNames();
     void LoadRecipeLocations(AnsiString stockcode);
     bool CheckIfNumeric(AnsiString Value);
+    int UpdateSizeItem(AnsiString SizeName);
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);
