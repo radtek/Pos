@@ -12605,30 +12605,38 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
 	if (Order != NULL)
 	{
        bool itemAdded = false;
-       for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
-        {
-           TItemComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
-           double currentQty  = Item->GetQty();
-           Item->SetQtyCustom(1);
-           if(TOrderUtils::Match(Item,Order) && !TOrderUtils::SoloItem(Order))
+
+       if(TGlobalSettings::Instance().MergeSimilarItem)
+       {
+           for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
            {
-              itemAdded = true;
-              Item->SetQtyCustom(currentQty + 1);
-              break;
-           }
-           else
-           {
-             Item->SetQtyCustom(currentQty);
-           }
-        }
-        if(!itemAdded)
+               TItemComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
+               double currentQty  = Item->GetQty();
+               Item->SetQtyCustom(1);
+               if(TOrderUtils::Match(Item,Order) && !TOrderUtils::SoloItem(Order))
+               {
+                  itemAdded = true;
+                  Item->SetQtyCustom(currentQty + 1);
+                  break;
+               }
+               else
+               {
+                   Item->SetQtyCustom(currentQty);
+               }
+            }
+            if(!itemAdded)
+              SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
+       }
+       else
+       {
           SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
+       }
+        //if(!itemAdded)
+        //  SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
 		TManagerFreebie::IsPurchasing(inDBTransaction, SeatOrders[SelectedSeat]->Orders->List);
 		CheckDeals(inDBTransaction);
 		ApplyMemberDiscounts(inDBTransaction,false);
 	}
-
-
 
 	RedrawSeatOrders();
 	TotalCosts();

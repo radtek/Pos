@@ -314,6 +314,8 @@ __published:	// IDE-managed Components
         TCheckBox *cbShowDarkBackgroundInPOS;
         TCheckBox *cbOpenCashDrawer;
         TCheckBox *cbHideReceiptNumber;
+        TGroupBox *gbItemBilling;
+        TCheckBox *cbMergeSimilarItem;
 
         //**********
         void __fastcall FormShow(TObject *Sender);
@@ -537,6 +539,7 @@ __published:	// IDE-managed Components
         void __fastcall cbShowDarkBackgroundInPOSClick(TObject *Sender);
         void __fastcall cbOpenCashDrawerClick(TObject *Sender);
         void __fastcall cbHideReceiptNumberClick(TObject *Sender);
+        void __fastcall cbMergeSimilarItemClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP
