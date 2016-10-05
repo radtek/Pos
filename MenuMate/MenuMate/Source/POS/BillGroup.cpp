@@ -2429,7 +2429,10 @@ void __fastcall TfrmBillGroup::SplitTimerTick(TObject *Sender)
 void __fastcall TfrmBillGroup::tgridItemListMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, TGridButton *GridButton, int X, int Y)
 {
-   SplitTimer->Enabled = true;
+   if(TGlobalSettings::Instance().MergeSimilarItem)
+   {
+        SplitTimer->Enabled = true;
+   }
    SelectedItemKey = GridButton->Tag;
 }
 //---------------------------------------------------------------------------
