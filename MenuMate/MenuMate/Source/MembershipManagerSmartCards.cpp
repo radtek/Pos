@@ -2080,7 +2080,7 @@ void TManagerMembershipSmartCards::GetMemberDetail(TMMContactInfo &MMContactInfo
 {
    bool MemberNotExist = false;
    bool isCancel = false;
-   TGlobalSettings::Instance().IsPOSOffline = !runMemberDownloadThread(ManagerSyndicateCode.GetDefaultSyndCode(),MMContactInfo,
+   TGlobalSettings::Instance().IsPOSOffline = !runMemberDownloadThread(ManagerSyndicateCode.GetCommunicationSyndCode(),MMContactInfo,
                                                true,false,false,MemberNotExist);
    if(TGlobalSettings::Instance().IsPOSOffline)
    {
@@ -2176,9 +2176,9 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromBarcode(TMMContactInfo &MM
 {
    bool memberDownloadStatus = false;
    bool MemberNotExist = false;
-   if(ManagerSyndicateCode.GetDefaultSyndCode().Valid())
+   if(ManagerSyndicateCode.GetCommunicationSyndCode().Valid())
    {
-       memberDownloadStatus = runMemberDownloadThread(ManagerSyndicateCode.GetDefaultSyndCode(),MMContactInfo,false,true,false,MemberNotExist);
+       memberDownloadStatus = runMemberDownloadThread(ManagerSyndicateCode.GetCommunicationSyndCode(),MMContactInfo,false,true,false,MemberNotExist);
        
        if(MemberNotExist)
         {
@@ -2332,7 +2332,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
                            }
                            if(updateMember)
                            {
-                               bool memberCreationSuccess = createMemberOnLoyaltyMate(ManagerSyndicateCode.GetDefaultSyndCode(),UserInfo);
+                               bool memberCreationSuccess = createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(),UserInfo);
                            }
                     }
                 }
@@ -2350,9 +2350,6 @@ bool TManagerMembershipSmartCards::SavePointsTransactionsForBarcodeCard(TContact
     Database::TDBTransaction DBTransaction(DBControl);
     RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
-    TManagerSyndCode managerSyndCode;
-    managerSyndCode.Initialise(DBTransaction);
-    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
 
     if(TGlobalSettings::Instance().LoyaltyMateEnabled
                 && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID)
@@ -2361,7 +2358,7 @@ bool TManagerMembershipSmartCards::SavePointsTransactionsForBarcodeCard(TContact
             TLoyaltyMateUtilities::SetLoyaltymateTransactions(
             DBTransaction,
             UserInfo.ContactKey,
-            syndicateCode,
+            ManagerSyndicateCode.GetCommunicationSyndCode(),
             Points,
             inInvoiceNumber);
         }
@@ -2376,14 +2373,7 @@ void TManagerMembershipSmartCards::SyncBarcodeMemberDetailWithCloud(TMMContactIn
      if(MMContactInfo.MemberCode != "" &&  TGlobalSettings::Instance().LoyaltyMateEnabled
                 && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(MMContactInfo.CloudUUID))
                 {
-                    Database::TDBTransaction DBTransaction(DBControl);
-                    RegisterTransaction(DBTransaction);
-                    DBTransaction.StartTransaction();
-                    TManagerSyndCode managerSyndCode;
-                    managerSyndCode.Initialise(DBTransaction);
-                    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-                    DBTransaction.Commit();
-                    TManagerLoyaltyMate::Instance()->SyncMemberDetailsWithCloud(syndicateCode,MMContactInfo);
+                    TManagerLoyaltyMate::Instance()->SyncMemberDetailsWithCloud(ManagerSyndicateCode.GetCommunicationSyndCode(),MMContactInfo);
                 }
 }
 
@@ -2391,7 +2381,7 @@ bool TManagerMembershipSmartCards::UpdateMemberCardCode(Database::TDBTransaction
 {
    	bool result = false;
 
-	TLoyaltyMateUpdateCardThread* memberUpdationThread = new TLoyaltyMateUpdateCardThread(ManagerSyndicateCode.GetDefaultSyndCode(),
+	TLoyaltyMateUpdateCardThread* memberUpdationThread = new TLoyaltyMateUpdateCardThread(ManagerSyndicateCode.GetCommunicationSyndCode(),
                                                          UserInfo.CloudUUID,memberCardCode);
 	memberUpdationThread->OnTerminate = loyaltyMateMemberCreationCompleted;
 	memberUpdationThread->Start();
@@ -2480,23 +2470,9 @@ void TManagerMembershipSmartCards::SaveTransactionInvoiceDetail(TPaymentTransact
     if(TGlobalSettings::Instance().LoyaltyMateEnabled &&
         TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(PaymentTransaction.Membership.Member.CloudUUID))
     {
-        TSyndCode syndicateCode;
-        if(PaymentTransaction.Membership.Member.MemberCode != "")
-        {
-            TManagerSyndCode managerSyndCode;
-            managerSyndCode.Initialise(PaymentTransaction.DBTransaction);
-            syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-        }
-        else
-        {
-           if(ManagerSmartCards->CardOk)
-            syndicateCode = ManagerSmartCards->GetCurrentSyndicateCode();
-           else
-            return;
-        }
         TLoyaltyMateTransaction transaction;
         transaction.ContactKey = PaymentTransaction.Membership.Member.ContactKey;
-        transaction.SyndicateCode = syndicateCode;
+        transaction.SyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
         transaction.OccurredDate = Now();
         transaction.PointsDelta = PaymentTransaction.Money.GrandTotal;
         transaction.PointsType = 9;

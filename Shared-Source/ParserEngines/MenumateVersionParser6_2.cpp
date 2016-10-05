@@ -1095,7 +1095,19 @@ void TApplyParser::CreateGenerators6_28( TDBControl* const inDBControl)
 //::::::::::::::::::::::::Version 6.29:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_29Tables()
 {
+  UpdateSyndCodeTable6_29(_dbControl);
   UpdateSyndCodes6_29(_dbControl);
+}
+//---------------------------------------------------------------------------
+
+void TApplyParser::UpdateSyndCodeTable6_29( TDBControl* const inDBControl)
+{
+    if ( !fieldExists("SYNDCODES", "USE_FOR_LM_CLOUD", inDBControl ) )
+	{
+		executeQuery(
+		"ALTER TABLE SYNDCODES ADD USE_FOR_LM_CLOUD T_TRUEFALSE DEFAULT 'F';",
+		inDBControl );
+	}
 }
 //---------------------------------------------------------------------------
 void TApplyParser::UpdateSyndCodes6_29( TDBControl* const inDBControl)

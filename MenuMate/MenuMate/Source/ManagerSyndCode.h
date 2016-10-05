@@ -11,7 +11,8 @@
 class TSyndCode
 {
 public:
-   TSyndCode(int SyndCodeKey, AnsiString inName, AnsiString inSyndCode, bool inEnabled, bool inEncryptCode, AnsiString inOriginalSyndCode);
+   TSyndCode(int SyndCodeKey, AnsiString inName, AnsiString inSyndCode, bool inEnabled,
+             bool inEncryptCode, AnsiString inOriginalSyndCode,bool inUseForCom);
    TSyndCode();
 
    int SyndCodeKey;
@@ -24,6 +25,7 @@ public:
    TDateTime ValidTo;
    AnsiString GetSyndCode();
    bool Valid();
+   bool UseForCom;
 };
 
 class TManagerSyndCode
@@ -47,6 +49,7 @@ public:
    void RemoveCode(Database::TDBTransaction &DBTransaction, int SyndKey);
    void UpdateCode(Database::TDBTransaction &DBTransaction, TSyndCode SyndCode);
    TSyndCode GetDefaultSyndCode();
+   TSyndCode GetCommunicationSyndCode();
    std::map <int, TSyndCode> GetSyndCodes(bool EnabledCodesOnly);
    AnsiString FindCode(Database::TDBTransaction &DBTransaction, AnsiString Code); // Returns the Codes Name;
    void ExportToFile(Database::TDBTransaction &DBTransaction, int Key, AnsiString FileName);
@@ -59,6 +62,8 @@ public:
    int Size();
    TSyndCode &SyndCode();
    TSyndCode &SyndCodeByKey(int SyndKey);
+   bool ValidateSyndCodes(AnsiString& errorMessage);
+   bool CanUseForCommunication(int syndCodeKey);
 };
 
 #endif

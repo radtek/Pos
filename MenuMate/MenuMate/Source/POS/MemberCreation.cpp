@@ -340,13 +340,8 @@ void __fastcall TfrmMemberCreation::btnActivateLoyaltyMateMouseClick(TObject *Se
 
 void TfrmMemberCreation::getMemberDetailsFromActivationEmail()
 {
-
-    TManagerSyndCode managerSyndCode;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    CurrentSyndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    CurrentSyndicateCode =  managerSyndCode.GetCommunicationSyndCode();
 
     bool replacePointsFromCloud = true;
 	TLoyaltyMateDownloadMemberThread* loyaltyMemberDownloadThread = new TLoyaltyMateDownloadMemberThread(CurrentSyndicateCode,replacePointsFromCloud);

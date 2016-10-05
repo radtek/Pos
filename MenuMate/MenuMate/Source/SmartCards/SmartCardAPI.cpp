@@ -431,8 +431,6 @@ void TManagerSmartCard::SmartCardInserted()
                                                         hCard,
                                                         CardBlockData,
                                                         GetDefaultSyndCode()));
-							  //SmartCard.reset(new TSmartCardVer2(SmartCardVer1));
-                              //SmartCard->UnlockCard(SyndCodes);
 						   }break;
 						case SMART_CARD_VERSION_ONE:
 						   {
@@ -440,14 +438,6 @@ void TManagerSmartCard::SmartCardInserted()
                                                         hCard,
                                                         CardBlockData,
                                                         GetDefaultSyndCode()));
-                              //SmartCard->UnlockCard(SyndCodes);
-
-							  //TSmartCardVer2 SmartCardVer2(SmartCardVer1);
-                              //SmartCard.reset(new TSmartCardVer3(SmartCardVer2));
-
-							  //TSmartCardVer3 SmartCardVer3(SmartCardVer2);
-							  //SmartCard.reset(new TSmartCardVer4(SmartCardVer3));
-                              //SmartCard->UnlockCard(SyndCodes);
 						   }break;
 						case SMART_CARD_VERSION_TWO:
 						   {
@@ -455,13 +445,6 @@ void TManagerSmartCard::SmartCardInserted()
                                                         hCard,
                                                         CardBlockData,
                                                         GetDefaultSyndCode()));
-                              //SmartCard->UnlockCard(SyndCodes);
-
-                              //SmartCard.reset(new TSmartCardVer3(SmartCardVer2));
-
-							  //TSmartCardVer3 SmartCardVer3(SmartCardVer2);
-							  //SmartCard.reset(new TSmartCardVer4(SmartCardVer3));
-							  //SmartCard->UnlockCard(SyndCodes);
 							}break;
 						case SMART_CARD_VERSION_THREE:
 							{
@@ -470,12 +453,6 @@ void TManagerSmartCard::SmartCardInserted()
                                                     hCard,
                                                     CardBlockData,
                                                     GetDefaultSyndCode()));
-                              //SmartCard->UnlockCard(SyndCodes);
-
-							  //TSmartCardVer3 scv3(hCard, CardBlockData,GetDefaultSyndCode());
-                              //scv3.UnlockCard(SyndCodes);
-                              //SmartCard.reset(new TSmartCardVer5(scv3));
-                              //SmartCard->Upgrade(SyndCodes);
 
 							}break;
                         case SMART_CARD_VERSION_FOUR:
@@ -491,7 +468,6 @@ void TManagerSmartCard::SmartCardInserted()
                                                    CardBlockData,
                                                    GetDefaultSyndCode()));
 
-                              //SmartCard->UnlockCard(SyndCodes);
 							break;
                         }
                         case SMART_CARD_VERSION_SIX: {
@@ -502,7 +478,6 @@ void TManagerSmartCard::SmartCardInserted()
                                                    CardBlockData,
                                                    GetDefaultSyndCode()));
 
-                              //SmartCard->UnlockCard(SyndCodes);
 							break;
                         }
 						default:
@@ -801,39 +776,6 @@ void __fastcall TManagerSmartCard::TMonitoringThread::SetStatus()
    }
 }
 
-/* void TManagerSmartCard::Refresh()
-{
-try
-{
-if(Enabled)
-{
-if(CardInserted)
-{
-if(!CardBlank)
-{
-try
-{
-LoadContactInfo(ContactInfo);
-}
-catch(TSCException &E)
-{
-if(E.Type != tsceInvalidCRC)
-{
-throw;
-}
-}
-}
-}
-}
-}
-catch(Exception &E)
-{
-TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Error Refreshing Contact.");
-TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,E.Message);
-throw;
-}
-} */
-
 void TManagerSmartCard::SaveContactInfo(TMMContactInfo &inContactInfo)
 {
    try
@@ -1002,76 +944,6 @@ void TManagerSmartCard::SaveCardGUID(TSmartCardGUID &CardGuid)
    }
 }
 
-/* void TManagerSmartCard::SavePointsInfo(TMMContactInfo &inContactInfo,TSmartCardPoints &inPointsInfo)
-{
-try
-{
-if(CardInserted)
-{
-if(CardBlank)
-{
-FormatCard();
-// Write out the Contact Info.
-inContactInfo.CardCreationDate = Now();
-ContactInfoWrite(inContactInfo);
-PointsInfoWrite(inPointsInfo);
-}
-else
-{
-if(ContactInfoMatches(inContactInfo))
-{
-PointsInfoWrite(inPointsInfo);
-}
-else
-{
-throw TSCException(tsceIncorrectCard,"Incorrect Smart Card in Reader.");
-}
-}
-}
-else
-{
-throw TSCException(tsceNoCard,"No Smart Card in Reader.");
-}
-}
-catch(Exception &E)
-{
-TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Error Saving Contact.");
-TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,E.Message);
-throw;
-}
-}
-
-void TManagerSmartCard::LoadPointsInfo(TMMContactInfo &inContactInfo,TSmartCardPoints &inPointsInfo)
-{
-try
-{
-if(CardInserted)
-{
-if(!CardBlank)
-{
-if(ContactInfoMatches(inContactInfo))
-{
-PointsInfoRead(inPointsInfo);
-}
-else
-{
-throw TSCException(tsceIncorrectCard,"Incorrect Smart Card in Reader.");
-}
-}
-}
-else
-{
-throw TSCException(tsceNoCard,"No Smart Card in Reader.");
-}
-}
-catch(Exception &E)
-{
-TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Error Saving Contact.");
-TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,E.Message);
-throw;
-}
-} */
-
 void TManagerSmartCard::FormatCard()
 {
    LONG lReturn = SCARD_S_SUCCESS;
@@ -1083,54 +955,6 @@ void TManagerSmartCard::FormatCard()
 	  TManagerLogs::Instance().Add(__FUNC__, SMARTCARDLOG, "Format Card Failed. : " + UnicodeString(IntToHex(int(lReturn), 2)));
    }
 }
-
-/* void TManagerSmartCard::PointsInfoWrite(TSmartCardPoints &inPointsInfo)
-{
-std::auto_ptr<TMemoryStream> Stream(new TMemoryStream);
-inPointsInfo.SaveToStream(Stream.get());
-
-if(Stream->Size > (CARD_POINTS_DATA_END - CARD_POINTS_DATA_START))
-{
-throw TSCException(tsceToMuchCardData,"Too Much Data to fit on Memory Card");
-}
-
-LONG lReturn = SCARD_S_SUCCESS;
-
-CasBeginTransaction(hCard);
-lReturn = SLE4442_Update_Main_MemoryA(hCard,(unsigned char *)Stream->Memory,CARD_POINTS_DATA_START,Stream->Size);
-CasEndTransaction(hCard,SCARD_LEAVE_CARD);
-
-if(lReturn != SCARD_S_SUCCESS)
-{
-TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Writing Data Failed. : " + UnicodeString(IntToHex(int(lReturn),2)));
-}
-
-}
-
-void TManagerSmartCard::PointsInfoRead(TSmartCardPoints &inPointsInfo)
-{
-std::auto_ptr<TMemoryStream> Stream(new TMemoryStream);
-
-BYTE recvbuffer[CARD_POINTS_DATA_END - CARD_POINTS_DATA_START];
-
-
-LONG lReturn = SCARD_S_SUCCESS;
-DWORD length = sizeof(recvbuffer);
-
-CasBeginTransaction(hCard);
-lReturn = SLE4442_Read_Main_Memory(hCard,recvbuffer,CARD_POINTS_DATA_START,&length);
-CasEndTransaction(hCard,SCARD_LEAVE_CARD);
-
-Stream->Write(recvbuffer,sizeof(recvbuffer));
-Stream->Position = 0;
-inPointsInfo.Clear();
-inPointsInfo.LoadFromStream(Stream.get());
-
-if(lReturn != SCARD_S_SUCCESS)
-{
-TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Reading Data Failed. : " + UnicodeString(IntToHex(int(lReturn),2)));
-}
-} */
 
 void TManagerSmartCard::RestoreToRestorePoint(TSmartCardBlock &RestorePoint)
 {
@@ -1306,132 +1130,6 @@ bool TManagerSmartCard::CheckStreamCRC(TMemoryStream *Stream)
    return RetVal;
 }
 
-/*
-The Original Ver 1 Contact Info Code.
-void TManagerSmartCard::ContactInfoWrite(TMMContactInfo &inContactInfo)
-{
-#ifdef _DEBUG
-__int64 start = ::GetTickCount();
-#endif
-
-std::auto_ptr<TMemoryStream> Stream(new TMemoryStream);
-inContactInfo.SaveToSmartCardStream(Stream.get());
-
-
-unsigned short CalculatedCRC = 0;
-unsigned char *ptrData = (unsigned char *)Stream->Memory;
-CalculatedCRC = static_cast<unsigned short>( StartCRC( ptrData[0] ) ) ;
-for(int i=1 ; i < Stream->Size ; i++)
-{
-CalculatedCRC = static_cast<unsigned short>(UpdateCRC(CalculatedCRC,ptrData[i] ) );
-}
-
-StreamWrite(Stream.get(),CalculatedCRC);
-
-if(Stream->Size % 8 != 0)
-{
-int BlockSize = 0;
-if( (Stream->Size - (Stream->Size % 8)) %8 == 0 )
-{
-BlockSize = 8 - (Stream->Size % 8);
-}
-else
-{
-BlockSize = (Stream->Size % 8);
-}
-
-unsigned char *ptrBuffer = new unsigned char[BlockSize];
-ZeroMemory(ptrBuffer,BlockSize);
-Stream->Write(ptrBuffer,BlockSize);
-delete []ptrBuffer;
-}
-
-Encrypt(Stream.get());
-
-if(Stream->Size > (CARD_MEMBER_DATA_END - CARD_MEMBER_DATA_START))
-{
-throw TSCException(tsceToMuchCardData,"Too Much Data to fit on Memory Card");
-}
-
-LONG lReturn = SCARD_S_SUCCESS;
-
-CasBeginTransaction(hCard);
-lReturn = SLE4442_Update_Main_MemoryA(hCard,(unsigned char *)Stream->Memory,CARD_MEMBER_DATA_START,Stream->Size);
-CasEndTransaction(hCard,SCARD_LEAVE_CARD);
-
-if(lReturn != SCARD_S_SUCCESS)
-{
-TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Writing Data Failed. : " + UnicodeString(IntToHex(int(lReturn),2)));
-}
-
-// Update the Ram copy of whats now on the card.
-if(lReturn == SCARD_S_SUCCESS)
-{
-ContactInfo = inContactInfo;
-}
-#ifdef _DEBUG
-__int64 Time = ((::GetTickCount() - start));
-TManagerLogs::Instance().Add(__FUNC__,DEBUGLOG,"--------------------------------");
-TManagerLogs::Instance().Add(__FUNC__,DEBUGLOG,"SmartCard Write Time :" + IntToStr(Time));
-#endif
-
-} */
-
-/*
-The Original Ver 1 Contact Info Code.
-void TManagerSmartCard::ContactInfoRead(TMMContactInfo &inContactInfo)
-{
-#ifdef _DEBUG
-__int64 start = ::GetTickCount();
-#endif
-
-std::auto_ptr<TMemoryStream> Stream(new TMemoryStream);
-BYTE recvbuffer[CARD_MEMBER_DATA_END - CARD_MEMBER_DATA_START];
-
-
-LONG lReturn = SCARD_S_SUCCESS;
-DWORD length = sizeof(recvbuffer);
-ZeroMemory(recvbuffer,length);
-
-CasBeginTransaction(hCard);
-lReturn = SLE4442_Read_Main_Memory(hCard,recvbuffer,CARD_MEMBER_DATA_START,&length);
-CasEndTransaction(hCard,SCARD_LEAVE_CARD);
-
-Stream->Write(recvbuffer,sizeof(recvbuffer));
-Decrypt(Stream.get());
-
-Stream->Position = 0;
-inContactInfo.LoadFromSmartCardStream(Stream.get());
-
-unsigned short CalculatedCRC = 0;
-unsigned short CardCRC = 0;
-int DataSize = Stream->Position;
-StreamRead(Stream.get(),CardCRC);
-
-unsigned char *ptrData = (unsigned char *)Stream->Memory;
-CalculatedCRC = (unsigned short) StartCRC(ptrData[0]);
-for(int i=1 ; i < DataSize; i++)
-{
-CalculatedCRC = (unsigned short)UpdateCRC(CalculatedCRC,ptrData[i]);
-}
-
-if(CalculatedCRC != CardCRC)
-{
-inContactInfo.Clear();
-throw TSCException(tsceInvalidCRC,"Card Data is Corrupt");
-}
-
-if(lReturn != SCARD_S_SUCCESS)
-{
-TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Reading Data Failed. : " + UnicodeString(IntToHex(int(lReturn),2)));
-}
-#ifdef _DEBUG
-__int64 Time = ((::GetTickCount() - start));
-TManagerLogs::Instance().Add(__FUNC__,DEBUGLOG,"--------------------------------");
-TManagerLogs::Instance().Add(__FUNC__,DEBUGLOG,"SmartCard Read Time :" + IntToStr(Time));
-#endif
-} */
-
 LONG TManagerSmartCard::CardReadMainMemory(int BlockStart, int BlockLength, TMemoryStream &Stream)
 {
 #ifdef _DEBUG
@@ -1548,37 +1246,6 @@ bool TManagerSmartCard::ContactInfoMatches(TMMContactInfo &inContactInfo)
    }
    return ContactInfoMatches;
 }
-
-/*
-void TManagerSmartCard::Encrypt(TMemoryStream &Data)
-{
-// Space must be a multiple of 8 for Blowfish encryption.
-if(Data.Size % 8 != 0)
-{
-int BlockSize = 0;
-if( (Data.Size - (Data.Size % 8)) %8 == 0 )
-{
-BlockSize = 8 - (Data.Size % 8);
-}
-else
-{
-BlockSize = (Data.Size % 8);
-}
-
-unsigned char *ptrBuffer = new unsigned char[BlockSize];
-ZeroMemory(ptrBuffer,BlockSize);
-Data.Write(ptrBuffer,BlockSize);
-delete []ptrBuffer;
-}
-
-CBlowFish BF;
-// Have to pass though the NULL on the end of the string because this old format
-// has it inherently ( yea you cant see it but its there ).
-// BYTE Passwd[] = {"0123456789abcdefghijklmnopqrstuvwxyz0123456789"};
-// BF.Initialize(Passwd,sizeof(Passwd));
-BF.Initialize(SyndicateCode.c_str(),SyndicateCode.Length()+1);
-BF.Encode((BYTE *)Data.Memory,(BYTE *)Data.Memory,Data.Size);
-} */
 
 void TManagerSmartCard::Decrypt(TMemoryStream &Data, AnsiString SyndicateCode)
 {

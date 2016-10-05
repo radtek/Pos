@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "ManagerSyndCode.h"
+#include "GlobalSettings.h"
 #include <iterator>
 #include "blowfish.h"
 //---------------------------------------------------------------------------
@@ -11,13 +12,15 @@
 #pragma package(smart_init)
 
 
-TSyndCode::TSyndCode(int inSyndCodeKey,  AnsiString inName, AnsiString inSyndCode, bool inEnabled,bool inEncryptCode,AnsiString inOriginalSyndCode ) :
+TSyndCode::TSyndCode(int inSyndCodeKey,  AnsiString inName, AnsiString inSyndCode, bool inEnabled,
+                     bool inEncryptCode,AnsiString inOriginalSyndCode,bool inUseForCom ) :
       SyndCodeKey(inSyndCodeKey),
       Name(inName) ,
       DecryptedSyndCode(inSyndCode),
       Enabled(inEnabled),
       DefaultEncryptCode(inEncryptCode),
-      OriginalSyndCode(inOriginalSyndCode)
+      OriginalSyndCode(inOriginalSyndCode),
+      UseForCom(inUseForCom)
 {
 }
 
@@ -26,6 +29,7 @@ TSyndCode::TSyndCode()
    SyndCodeKey = 0;
    Enabled = false;
    DefaultEncryptCode = false;
+   UseForCom = false;
 }
 
 bool TSyndCode::Valid()
@@ -40,7 +44,6 @@ AnsiString TSyndCode::GetSyndCode()
      retVal =  DecryptedSyndCode;
   return retVal;
 }
-
 
 TManagerSyndCode::TManagerSyndCode()
 {
@@ -76,6 +79,7 @@ void TManagerSyndCode::AddCode(Database::TDBTransaction &DBTransaction,TSyndCode
          "REPLACEMENTCODE, "
          "ENABLED, "
          "ENCRYPT_CODE, "
+         "USE_FOR_LM_CLOUD, "
          "NAME) "
       "VALUES ( "
          ":SYNDCODES_KEY, "
@@ -83,6 +87,7 @@ void TManagerSyndCode::AddCode(Database::TDBTransaction &DBTransaction,TSyndCode
          ":REPLACEMENTCODE, "
          ":ENABLED, "
          ":ENCRYPT_CODE, "
+         ":USE_FOR_LM_CLOUD, "
          ":NAME);";
    IBInternalQuery->ParamByName("SYNDCODES_KEY")->AsInteger	   = inSyndCode.SyndCodeKey;
    IBInternalQuery->ParamByName("SYNDCODE")->AsString		      = Encrypt(inSyndCode.OriginalSyndCode);
@@ -90,6 +95,7 @@ void TManagerSyndCode::AddCode(Database::TDBTransaction &DBTransaction,TSyndCode
    IBInternalQuery->ParamByName("ENABLED")->AsString		      = inSyndCode.Enabled ? "T" : "F";
    IBInternalQuery->ParamByName("ENCRYPT_CODE")->AsString		= inSyndCode.DefaultEncryptCode ? "T" : "F";
    IBInternalQuery->ParamByName("NAME")->AsString		         = inSyndCode.Name;
+   IBInternalQuery->ParamByName("USE_FOR_LM_CLOUD")->AsString		= inSyndCode.UseForCom ? "T" : "F";
    IBInternalQuery->ExecQuery();
 }
 
@@ -107,6 +113,7 @@ void TManagerSyndCode::UpdateCode(Database::TDBTransaction &DBTransaction,TSyndC
          "SYNDCODE         = :SYNDCODE, "
          "ENCRYPT_CODE     = :ENCRYPT_CODE, "
          "ENABLED          = :ENABLED, "
+         "USE_FOR_LM_CLOUD = :USE_FOR_LM_CLOUD, "
          "REPLACEMENTCODE  = :REPLACEMENTCODE "
          " WHERE SYNDCODES_KEY = :SYNDCODES_KEY";
    IBInternalQuery->ParamByName("SYNDCODES_KEY")->AsInteger    = inSyndCode.SyndCodeKey;
@@ -115,6 +122,7 @@ void TManagerSyndCode::UpdateCode(Database::TDBTransaction &DBTransaction,TSyndC
    IBInternalQuery->ParamByName("ENCRYPT_CODE")->AsString      = inSyndCode.DefaultEncryptCode ? "T" : "F";
    IBInternalQuery->ParamByName("ENABLED")->AsString		      = inSyndCode.Enabled ? "T" : "F";
    IBInternalQuery->ParamByName("REPLACEMENTCODE")->AsString	= inSyndCode.OriginalSyndCode;
+   IBInternalQuery->ParamByName("USE_FOR_LM_CLOUD")->AsString		= inSyndCode.UseForCom ? "T" : "F";
    IBInternalQuery->ExecQuery();
 }
 
@@ -151,7 +159,6 @@ void TManagerSyndCode::UpdateEncryptCode(Database::TDBTransaction &DBTransaction
       //Figure out how to let the other tills know to update their settings / load on use?
    }
 }
-
 
 AnsiString TManagerSyndCode::Encrypt(AnsiString Data)
 {
@@ -208,8 +215,9 @@ void TManagerSyndCode::LoadCodes(Database::TDBTransaction &DBTransaction)
                          IBInternalQuery->FieldByName("NAME")->AsString,
                          Decrypt(AnsiString(IBInternalQuery->FieldByName("SYNDCODE")->AsString)),
                          IBInternalQuery->FieldByName("ENABLED")->AsString == "T",
-                         IBInternalQuery->FieldByName("ENCRYPT_CODE")->AsString == "T",                         
-                         IBInternalQuery->FieldByName("REPLACEMENTCODE")->AsString
+                         IBInternalQuery->FieldByName("ENCRYPT_CODE")->AsString == "T",
+                         IBInternalQuery->FieldByName("REPLACEMENTCODE")->AsString,
+                         IBInternalQuery->FieldByName("USE_FOR_LM_CLOUD")->AsString == "T"
                          );
       SyndCodes[inSyndCode.SyndCodeKey] = inSyndCode;
 	  IBInternalQuery->Next();
@@ -226,6 +234,54 @@ void TManagerSyndCode::RemoveCode(Database::TDBTransaction &DBTransaction,int It
    IBInternalQuery->ParamByName("SYNDCODES_KEY")->AsInteger	= ItemKey;
    IBInternalQuery->ExecQuery();
 }
+
+bool TManagerSyndCode::ValidateSyndCodes(AnsiString& errorMessage)
+{
+   if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
+     return true;
+   int comSyndCount = 0;
+   for (First(false);!Eof();Next(false))
+   {
+      TSyndCode CurrentSyndCode = SyndCode();
+      if(CurrentSyndCode.UseForCom)
+      {
+         comSyndCount++;
+      }
+   }
+   if(comSyndCount == 1)
+   {
+      return true;
+   }
+   else if(comSyndCount == 0)
+   {
+      errorMessage = "There is no Syndicate Code configured for communication with Menumate Cloud. Please configure it or disable Loyaltymate if you do not wish to configure it.";
+      return false;
+   }
+   else
+   {
+      errorMessage = "There are multiple Syndicate Code configured. Please setup a Syndicate Code for communication with Menumate Cloud. It should be the one configured for your company at Menumate Cloud.";;
+      return false;
+   }
+}
+
+bool TManagerSyndCode::CanUseForCommunication(int syndCodeKey)
+{
+   if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
+     return true;
+
+   bool retVal = true;
+   for (First(false);!Eof();Next(false))
+   {
+      TSyndCode CurrentSyndCode = SyndCode();
+      if(CurrentSyndCode.UseForCom && CurrentSyndCode.SyndCodeKey != syndCodeKey)
+      {
+         retVal = false;
+         break;
+      }
+   }
+   return retVal;
+}
+
 
 void TManagerSyndCode::First(bool EnabledCodesOnly)
 {
@@ -314,6 +370,21 @@ TSyndCode TManagerSyndCode::GetDefaultSyndCode()
       if(CurrentSyndCode.DefaultEncryptCode)
       {
          retval = CurrentSyndCode;
+      }
+   }
+   return retval;
+}
+
+TSyndCode TManagerSyndCode::GetCommunicationSyndCode()
+{
+   TSyndCode retval;
+   for (First(false);!Eof();Next(false))
+   {
+      TSyndCode CurrentSyndCode = SyndCode();
+      if(CurrentSyndCode.UseForCom)
+      {
+         retval = CurrentSyndCode;
+         break;
       }
    }
    return retval;

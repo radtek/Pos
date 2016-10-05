@@ -26,6 +26,7 @@ __published:	// IDE-managed Components
    TTouchBtn *tbtnEnabled;
    TTouchBtn *TouchBtn3;
    TTouchBtn *tbtnEncryption;
+    TTouchBtn *btnUseForCom;
    void __fastcall TouchBtn3MouseClick(TObject *Sender);
    void __fastcall tbtnNameMouseClick(TObject *Sender);
    void __fastcall tbtnEnabledMouseClick(TObject *Sender);
@@ -34,9 +35,11 @@ __published:	// IDE-managed Components
    void __fastcall FormShow(TObject *Sender);
    void __fastcall FormResize(TObject *Sender);
    void __fastcall tbtnEncryptionMouseClick(TObject *Sender);
+    void __fastcall btnUseForComMouseClick(TObject *Sender);
 private:	// User declarations
+   TManagerSyndCode &ManagerSyndCode;
 public:		// User declarations
-   __fastcall TfrmSyndCodeGui(TComponent* Owner);
+   __fastcall TfrmSyndCodeGui(TComponent* Owner,TManagerSyndCode &ManagerSyndCode);
 
    TSyndCode SyndCode;   
 };

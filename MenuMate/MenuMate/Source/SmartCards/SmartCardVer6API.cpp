@@ -242,7 +242,6 @@ void TSmartCardVer6::Validate(TSmartCardBlock &inCardBlockData)
    }
 }
 
-
 void TSmartCardVer6::SetContactInfo(TMMContactInfo inContactInfo)
 {
 	DirtyContacts = true;
@@ -257,7 +256,6 @@ void TSmartCardVer6::SetContactInfo(TMMContactInfo inContactInfo)
 		ContactInfo.CardCreationDate = Now();
    }
 }
-
 
 TMMContactInfo TSmartCardVer6::GetContactInfo()
 {

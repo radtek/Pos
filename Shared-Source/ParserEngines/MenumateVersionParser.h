@@ -769,6 +769,7 @@ namespace MenumateVersionParser
         //6.29
         void upgrade6_29Tables();
         void update6_29Tables();
+        void UpdateSyndCodeTable6_29(TDBControl* const inDBControl);
         void UpdateSyndCodes6_29(TDBControl* const inDBControl);
 
     }; // class
