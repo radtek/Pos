@@ -4166,7 +4166,7 @@ void TfrmAnalysis::CreateMYOBInvoiceAndSend(std::vector<TMYOBInvoiceDetail>  &TM
             }
      }
 }
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool TfrmAnalysis::SendInvoiceToXero( TXeroInvoice* inXeroInvoice )
 {
    bool result =  TXeroIntegration::Instance().SendInvoice( inXeroInvoice );
