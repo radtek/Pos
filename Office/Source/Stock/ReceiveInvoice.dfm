@@ -399,7 +399,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         Visible = False
         OnExit = neCostExit
         OnKeyDown = neStockQtyKeyDown
-        OnKeyPress = neStockQtyKeyPress
+        OnKeyPress = neCostKeyPress
         DecimalPlaces = 4
       end
       object neTotalCost: TNumericEdit
@@ -413,7 +413,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         Visible = False
         OnExit = neTotalCostExit
         OnKeyDown = neStockQtyKeyDown
-        OnKeyPress = neStockQtyKeyPress
+        OnKeyPress = neTotalCostKeyPress
         DecimalPlaces = 4
       end
       object btnAdd: TBitBtn
@@ -449,7 +449,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         Visible = False
         OnExit = neTotalCostExit
         OnKeyDown = neStockQtyKeyDown
-        OnKeyPress = neStockQtyKeyPress
+        OnKeyPress = neBackOrderKeyPress
         DecimalPlaces = 2
       end
       object dtpInvoiceDate: TDateTimePicker
@@ -1066,7 +1066,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         DataType = ftUnknown
         Name = 'QTY'
         ParamType = ptUnknown
-	  end
+      end
       item
         DataType = ftUnknown
         Name = 'STOCK_KEY'

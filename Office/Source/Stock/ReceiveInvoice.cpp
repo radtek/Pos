@@ -75,12 +75,14 @@ void __fastcall TfrmReceiveInvoice::FormShow(TObject *Sender)
 	neGST->DecimalPlaces= Decimalpalaces;
 	LoadForm();
 	qrSupplier->Close();
+    IsReceiveInvoice = true;
 	if(OrderKey == 0)
 	{
 		qrSupplier->ParamByName("Supplier_Key")->AsInteger = SupplierKey;
 		qrSupplier->Open();
 		int ccc =  qrSupplier->FieldByName("Contact_LK")->AsInteger;
 		lbeTitle->Caption = "Invoice: " + InvoiceReference + " (" + qrSupplier->FieldByName("Company_Name")->AsString + ")";
+        IsReceiveInvoice = false;
 	}
 
 	ShowTotals();
@@ -449,7 +451,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column,
 bool &Allowed)
 {
 	TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)Sender->GetNodeData(Node);
-	Allowed = ((Column == 4 && !IsPackingSlipUpdateMode) || Column == 5 || (Column == 3 && NodeData && NodeData->IsUnitEditable)|| Column == 6 || (Column == 2 && NodeData && NodeData->IsUnitEditable) || (Column == 7 && !IsPackingSlipUpdateMode) || (Column == 4 && !IsSavedPackingSlip));
+	Allowed = ((Column == 4 && !IsPackingSlipUpdateMode) || (Column == 5 && NodeData->OrderQty > 0) || (Column == 3 && NodeData && NodeData->IsUnitEditable)|| (Column == 6 && NodeData->OrderQty > 0) || (Column == 2 && NodeData && NodeData->IsUnitEditable) || (Column == 7 && !IsPackingSlipUpdateMode) || (Column == 4 && !IsSavedPackingSlip));
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::vtvStockQtyFocusChanged(
@@ -873,7 +875,14 @@ void TfrmReceiveInvoice::ProcessPackingSlip()
 				InvoiceItemInfo.BackOrder = NodeData->BackOrder;
 				InvoiceItemInfo.TransactionNumber = NodeData->TransactionNumber;
 				
-				InvoiceItemInfo.Supplier_Unit_Cost = (NodeData->OrderQty != 0) ? NodeData->SupplierTotalCost / NodeData->OrderQty : 0;
+				if(NodeData->OrderQty < 0)
+                {
+                    InvoiceItemInfo.Supplier_Unit_Cost = NodeData->SupplierUnitCost; //(NodeData->OrderQty != 0) ? NodeData->SupplierTotalCost / NodeData->OrderQty : 0;
+                }
+                else
+                {
+				    InvoiceItemInfo.Supplier_Unit_Cost = (NodeData->OrderQty != 0) ? NodeData->SupplierTotalCost / NodeData->OrderQty : 0;
+                }
 				// Temporarily store entered cost and unit cost. May need GST removed.
 				InvoiceItemInfo.Total_Cost = NodeData->SupplierTotalCost;
                 invoice_created_date = NodeData->Createdtime;
@@ -1236,7 +1245,7 @@ char &Key)
 	{
 		Key = NULL;
 	}
-    if (Key == '-')
+    if ((Key == '-') && IsReceiveInvoice)
 	{
 		Key = NULL;
 	}
@@ -2498,24 +2507,56 @@ bool TfrmReceiveInvoice::CheckInvoiceQtyAndPrice()
 {
 	bool Continue  = true;
 	PVirtualNode Node = vtvStockQty->GetFirst();
-	while (Node && Continue)
-	{
-		TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(Node);
-
-        if((NodeData->OrderQty < 0) || (NodeData->SupplierUnitCost < 0))
+    if(IsReceiveInvoice)
+    {
+        while (Node && Continue)
         {
-           Continue = false;
-           break;
+            TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(Node);
+
+            if((NodeData->OrderQty < 0) || (NodeData->SupplierUnitCost < 0))
+            {
+               Continue = false;
+               break;
+            }
+            // All done. Get the next one.
+            Node = vtvStockQty->GetNext(Node);
         }
-		// All done. Get the next one.
-		Node = vtvStockQty->GetNext(Node);
-	}
-	if (!Continue)
-	{
-	   Application->MessageBox("You Cannot Process Negative Amount or Quantity", "Error", MB_ICONERROR);
-	}
+        if (!Continue)
+        {
+           Application->MessageBox("You Cannot Process Negative Amount or Quantity", "Error", MB_ICONERROR);
+        }
+    }
 	return Continue;
 }
 
+//---------------------------------------------------------------------------
+void __fastcall TfrmReceiveInvoice::neCostKeyPress(TObject *Sender,
+      char &Key)
+{
+	if (Key == VK_RETURN || Key == '-')
+	{
+		Key = NULL;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::neTotalCostKeyPress(TObject *Sender,
+      char &Key)
+{
+	if (Key == VK_RETURN || Key == '-')
+	{
+		Key = NULL;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::neBackOrderKeyPress(TObject *Sender,
+      char &Key)
+{
+	if (Key == VK_RETURN || Key == '-')
+	{
+		Key = NULL;
+	}
+}
 //---------------------------------------------------------------------------
 

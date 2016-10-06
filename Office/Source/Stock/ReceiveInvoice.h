@@ -178,6 +178,9 @@ __published:	// IDE-managed Components
     void __fastcall btnPrintCommitInvoiceClick(TObject *Sender);
     void __fastcall btnSaveClick(TObject *Sender);
     void __fastcall btnCommitPackingSlipClick(TObject *Sender);
+    void __fastcall neCostKeyPress(TObject *Sender, char &Key);
+    void __fastcall neTotalCostKeyPress(TObject *Sender, char &Key);
+    void __fastcall neBackOrderKeyPress(TObject *Sender, char &Key);
     //void __fastcall neCostKeyPress(TObject *Sender, char &Key);
 
 private:	// User declarations
@@ -231,6 +234,7 @@ public:		// User declarations
     int Decimalpalaces ;
     bool IsPrintReport;
     bool IsSavedPackingSlip;
+    bool IsReceiveInvoice;
 
 };
 //---------------------------------------------------------------------------
