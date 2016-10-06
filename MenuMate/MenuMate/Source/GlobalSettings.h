@@ -451,6 +451,10 @@ public:
     bool ShowDarkBackground;
     bool OpenCashDrawer;
     bool HideReceiptNumberForRefundItem;
+
+    bool HideTaxInvoice;
+    bool ExportReprintReceipt;
+    bool CaptureRefundRefNo;
 };
 
 #endif

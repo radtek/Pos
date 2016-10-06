@@ -5162,13 +5162,3 @@ void __fastcall TfrmPrinterMaintenance::cbCaptureRefundReferenceClick(TObject *S
    DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberMouseClick(TObject *Sender)
-{
-   Database::TDBTransaction DBTransaction(DBControl);
-   DBTransaction.StartTransaction();
-   TGlobalSettings::Instance().PrintNoticeOnTransfer = cbPrintNoticeOnTransfer->Checked;
-   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
-   DBTransaction.Commit();
-}
-//---------------------------------------------------------------------------
-
