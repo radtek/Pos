@@ -40,6 +40,7 @@ void TSyndCodeController::ValidateSyndCodes()
        frmListManager->Edit.DeregisterForEvent(OnEdit);
        frmListManager->Delete.DeregisterForEvent(OnDelete);
        frmListManager->Close.DeregisterForEvent(OnClose);
+       MessageBox("You will need to restart MenuMate for this to take effect.", "Restart Required", MB_OK + MB_ICONINFORMATION);
     }
     else
     {
