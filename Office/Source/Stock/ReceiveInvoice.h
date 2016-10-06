@@ -234,7 +234,7 @@ public:		// User declarations
     int Decimalpalaces ;
     bool IsPrintReport;
     bool IsSavedPackingSlip;
-    bool IsReceiveInvoice;
+    bool AllowNegativeValue;
 
 };
 //---------------------------------------------------------------------------

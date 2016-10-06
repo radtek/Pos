@@ -75,14 +75,14 @@ void __fastcall TfrmReceiveInvoice::FormShow(TObject *Sender)
 	neGST->DecimalPlaces= Decimalpalaces;
 	LoadForm();
 	qrSupplier->Close();
-    IsReceiveInvoice = true;
+    AllowNegativeValue = false;
 	if(OrderKey == 0)
 	{
 		qrSupplier->ParamByName("Supplier_Key")->AsInteger = SupplierKey;
 		qrSupplier->Open();
 		int ccc =  qrSupplier->FieldByName("Contact_LK")->AsInteger;
 		lbeTitle->Caption = "Invoice: " + InvoiceReference + " (" + qrSupplier->FieldByName("Company_Name")->AsString + ")";
-        IsReceiveInvoice = false;
+        AllowNegativeValue = true;
 	}
 
 	ShowTotals();
@@ -1245,7 +1245,7 @@ char &Key)
 	{
 		Key = NULL;
 	}
-    if ((Key == '-') && IsReceiveInvoice)
+    if ((Key == '-') && !AllowNegativeValue)
 	{
 		Key = NULL;
 	}
@@ -2507,7 +2507,7 @@ bool TfrmReceiveInvoice::CheckInvoiceQtyAndPrice()
 {
 	bool Continue  = true;
 	PVirtualNode Node = vtvStockQty->GetFirst();
-    if(IsReceiveInvoice)
+    if(!AllowNegativeValue)
     {
         while (Node && Continue)
         {
