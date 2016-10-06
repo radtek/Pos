@@ -2696,13 +2696,12 @@ void TfrmBillGroup::SplitItemsInSet(Database::TDBTransaction &transaction, int t
         std::map<__int64, TPnMOrder> orders;
         double quantity = TDBOrder::LoadPickNMixOrdersAndGetQuantity(transaction, tab_key, orders);
         bool orderSplit = false;
-        bool doSplit = quantity < 10;
         std::map<__int64, TPnMOrder>::iterator i = orders.begin();
         std::map<__int64, TPnMOrder>::iterator j = orders.end();
 
         for ( ; i != j; i++)
         {
-            if ( doSplit && (i->second.IsParent || !i->second.GroupNumber)
+            if ( (i->second.IsParent || !i->second.GroupNumber)
                     && !i->second.IsWeighted && i->second.Qty > 1)
             {
                 TDBOrder::SplitOrder(transaction, i->second.Key, i->second.Qty);
