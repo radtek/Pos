@@ -5,7 +5,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
   Anchors = [akLeft, akTop, akRight, akBottom]
   BorderIcons = []
   Caption = 'Printer Settings'
-  ClientHeight = 768
+  ClientHeight = 753
   ClientWidth = 1024
   Color = clBlack
   DefaultMonitor = dmPrimary
@@ -28,7 +28,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
     Top = 5
     Width = 865
     Height = 756
-    ActivePage = tsKitchenFormat
+    ActivePage = tsReceiptOptions
     TabOrder = 0
     object tsPrinting: TTabSheet
       Caption = 'tsPrinting'
@@ -553,9 +553,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Add / Edit Printer Profiles'
-            ButtonColor = clNavy
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbPrinterPropertiesClick
           end
@@ -573,8 +573,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clNavy
-            DefaultButtonLatchedColor = clGreen
+            DefaultButtonColor = -16777201
+            DefaultButtonLatchedColor = -16777201
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridPrinterProfilesMouseClick
@@ -722,8 +722,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clNavy
-            DefaultButtonLatchedColor = clGreen
+            DefaultButtonColor = -16777201
+            DefaultButtonLatchedColor = -16777201
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridMenuMouseClick
@@ -871,8 +871,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clNavy
-            DefaultButtonLatchedColor = clGreen
+            DefaultButtonColor = -16777201
+            DefaultButtonLatchedColor = -16777201
             LatchingType = ltCheckbox
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridCourseMouseClick
@@ -998,9 +998,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Clear All'
-              ButtonColor = clInfoBk
-              LatchedColor = clBtnFace
-              DisabledButtonColor = clBtnFace
+              ButtonColor = -16777201
+              LatchedColor = -16777201
+              DisabledButtonColor = -16777201
               LatchingProperties = [lkLatchColor, lkStayDown]
               OnMouseClick = tbtnClearAllMouseClick
             end
@@ -1018,9 +1018,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Select All'
-              ButtonColor = clNavy
-              LatchedColor = clBtnFace
-              DisabledButtonColor = clBtnFace
+              ButtonColor = -16777201
+              LatchedColor = -16777201
+              DisabledButtonColor = -16777201
               LatchingProperties = [lkLatchColor, lkStayDown]
               OnMouseClick = tbtnSelectAllMouseClick
             end
@@ -1551,9 +1551,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Add / Edit Printer Profiles'
-            ButtonColor = clNavy
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbPrinterProfilesBrkDwnMouseClick
           end
@@ -1571,8 +1571,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clNavy
-            DefaultButtonLatchedColor = clGreen
+            DefaultButtonColor = -16777201
+            DefaultButtonLatchedColor = -16777201
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgPrnProfileBreakDwnMouseClick
@@ -1729,9 +1729,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Clear All'
-              ButtonColor = clInfoBk
-              LatchedColor = clBtnFace
-              DisabledButtonColor = clBtnFace
+              ButtonColor = -16777201
+              LatchedColor = -16777201
+              DisabledButtonColor = -16777201
               LatchingProperties = [lkLatchColor, lkStayDown]
               OnMouseClick = tbtnClearAllCatMouseClick
             end
@@ -1749,9 +1749,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Select All'
-              ButtonColor = clNavy
-              LatchedColor = clBtnFace
-              DisabledButtonColor = clBtnFace
+              ButtonColor = -16777201
+              LatchedColor = -16777201
+              DisabledButtonColor = -16777201
               LatchingProperties = [lkLatchColor, lkStayDown]
               OnMouseClick = tbtnSelectAllCatMouseClick
             end
@@ -1770,8 +1770,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clNavy
-            DefaultButtonLatchedColor = clGreen
+            DefaultButtonColor = -16777201
+            DefaultButtonLatchedColor = -16777201
             LatchingType = ltCheckbox
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridBreakDwnMouseClick
@@ -1974,9 +1974,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             ParentFont = False
             ParentColor = True
-            ButtonColor = clNavy
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseDown = tbtnPrinterProfileMouseDown
           end
@@ -3149,9 +3149,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Test Print'
-            ButtonColor = clOlive
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbPrintToClick
           end
@@ -3167,8 +3167,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             ButtonColor = 11587808
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             ArrowType = atUp
             OnMouseClick = tbKitchenTemplateUpClick
@@ -3185,8 +3185,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             ButtonColor = 11587808
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             ArrowType = atDown
             OnMouseClick = tbKitchenTemplateDownClick
@@ -3203,9 +3203,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = '<< Insert'
-            ButtonColor = clGreen
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseDown = tbInsertPrintConfigMouseDown
           end
@@ -3221,9 +3221,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Remove >>'
-            ButtonColor = clMaroon
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseDown = tbRemovePrintConfigMouseDown
           end
@@ -3239,9 +3239,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Section Properties'
-            ButtonColor = clNavy
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseDown = tbPropertiesMouseDown
           end
@@ -3273,8 +3273,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 Align = alRight
                 ParentColor = True
                 ButtonColor = 11587808
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 ArrowType = atRight
                 OnMouseClick = tbtnKitchenIndentRightMouseClick
@@ -3287,8 +3287,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 Align = alLeft
                 ParentColor = True
                 ButtonColor = 11587808
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 ArrowType = atLeft
                 OnMouseClick = tbtnKitchenIndentLeftMouseClick
@@ -3348,9 +3348,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Templates'
-            ButtonColor = clTeal
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnKitchenTemplatesMouseClick
           end
@@ -3447,9 +3447,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Colour'
-              ButtonColor = clNavy
-              LatchedColor = clBtnFace
-              DisabledButtonColor = clBtnFace
+              ButtonColor = -16777201
+              LatchedColor = -16777201
+              DisabledButtonColor = -16777201
               LatchingProperties = [lkLatchColor, lkStayDown]
               OnMouseClick = tbChefMateColourMouseClick
             end
@@ -3465,9 +3465,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Add ChefMate Printer'
-              ButtonColor = clNavy
-              LatchedColor = clBtnFace
-              DisabledButtonColor = clBtnFace
+              ButtonColor = -16777201
+              LatchedColor = -16777201
+              DisabledButtonColor = -16777201
               LatchingProperties = [lkLatchColor, lkStayDown]
               OnMouseClick = tbChefMateIPMouseClick
             end
@@ -3483,9 +3483,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Delete Chefmate Printer'
-              ButtonColor = clMaroon
-              LatchedColor = clBtnFace
-              DisabledButtonColor = clBtnFace
+              ButtonColor = -16777201
+              LatchedColor = -16777201
+              DisabledButtonColor = -16777201
               LatchingProperties = [lkLatchColor, lkStayDown]
               OnMouseClick = btnDelChefPrinterMouseClick
             end
@@ -3502,9 +3502,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Manually Add Printer'
-            ButtonColor = clMaroon
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = ManuallyAddPrinterMouseClick
           end
@@ -3536,9 +3536,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Reload Printer Models'
-            ButtonColor = clNavy
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnRefreshPrinterModelsMouseClick
           end
@@ -3554,9 +3554,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Delete Printer'
-            ButtonColor = clRed
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = DeletePrinterMouseClick
           end
@@ -3703,9 +3703,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '\/'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = btnNormalFontDownMouseDown
                 AccelSteps = 2
@@ -3739,9 +3739,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '/\'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = btnBoldFontUpMouseDown
                 AccelSteps = 2
@@ -3775,9 +3775,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '\/'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = btnCutterGapDownMouseDown
                 AccelSteps = 2
@@ -3811,9 +3811,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '/\'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = btnTopMarginUpMouseDown
                 AccelSteps = 2
@@ -3831,9 +3831,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '/\'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = btnNormalFontUpMouseDown
                 AccelSteps = 2
@@ -3851,9 +3851,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '/\'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = btnCutterGapUpMouseDown
                 AccelSteps = 2
@@ -3871,9 +3871,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '\/'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = btnTopMarginDownMouseDown
                 AccelSteps = 2
@@ -3891,9 +3891,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '\/'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = btnBoldFontDownMouseDown
                 AccelSteps = 2
@@ -3911,9 +3911,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '/\'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = btnKitchenTopMarginUpMouseDown
                 AccelSteps = 2
@@ -3947,9 +3947,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '\/'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = btnKitchenTopMarginDownMouseDown
                 AccelSteps = 2
@@ -3966,9 +3966,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = 'Test Printer'
-                ButtonColor = clNavy
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                ButtonColor = -16777201
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseClick = btnTestMouseClick
               end
@@ -4004,9 +4004,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Load Printer Initialisation'
-            ButtonColor = clNavy
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnTestCharSetsMouseClick
           end
@@ -4070,9 +4070,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Add / Edit Printer Profile'
-            ButtonColor = clNavy
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnAddEditProfileMouseClick
           end
@@ -4090,8 +4090,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clNavy
-            DefaultButtonLatchedColor = clGreen
+            DefaultButtonColor = -16777201
+            DefaultButtonLatchedColor = -16777201
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridSCPrinterProfilesMouseClick
@@ -4239,8 +4239,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clNavy
-            DefaultButtonLatchedColor = clGreen
+            DefaultButtonColor = -16777201
+            DefaultButtonLatchedColor = -16777201
             LatchingType = ltCheckbox
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridServingCoursesMouseClick
@@ -4366,9 +4366,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Clear All'
-              ButtonColor = clInfoBk
-              LatchedColor = clBtnFace
-              DisabledButtonColor = clBtnFace
+              ButtonColor = -16777201
+              LatchedColor = -16777201
+              DisabledButtonColor = -16777201
               LatchingProperties = [lkLatchColor, lkStayDown]
               OnMouseClick = tbtnServingCourseClearMouseClick
             end
@@ -4386,9 +4386,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Select All'
-              ButtonColor = clNavy
-              LatchedColor = clBtnFace
-              DisabledButtonColor = clBtnFace
+              ButtonColor = -16777201
+              LatchedColor = -16777201
+              DisabledButtonColor = -16777201
               LatchingProperties = [lkLatchColor, lkStayDown]
               OnMouseClick = tbtnSCSelectAllMouseClick
             end
@@ -4435,8 +4435,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clNavy
-            DefaultButtonLatchedColor = clGreen
+            DefaultButtonColor = -16777201
+            DefaultButtonLatchedColor = -16777201
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tgridDeviceListMouseClick
@@ -4530,7 +4530,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             VertScrollTime = 450
             VertScrollDistance = 400
             Buttons = {
-              040000003A000000DB537AB8A66208D9FB3F3A000000DB537AB8A66208D9FB3F
+              040000003B000000DB537AB8A66208D9FB3F3B000000DB537AB8A66208D9FB3F
               620100005996655996655996FD3F000080000080000000008000050000004100
               720069080000800C00000001000000000000000000000000000000080000FF05
               0000004100720069080000800C00000001000000000000000000000000000000
@@ -4556,8 +4556,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentColor = True
             Caption = 'Delete Device'
             ButtonColor = 86478
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnDeleteDeviceClick
           end
@@ -4604,8 +4604,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clNavy
-            DefaultButtonLatchedColor = clGreen
+            DefaultButtonColor = -16777201
+            DefaultButtonLatchedColor = -16777201
             LatchingType = ltCheckbox
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridProfileListMouseClick
@@ -4744,10 +4744,10 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
         Font.Height = -15
         Font.Name = 'Tahoma'
         Font.Style = []
-        Color = clBlack
+        Color = 0
         ParentFont = False
         ParentColor = False
-        ActivePage = TouchSheet3
+        ActivePage = TouchSheet1
         TabWidth = 200
         TabColor = 6052441
         object TouchSheet1: TTouchSheet
@@ -4812,7 +4812,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 Font.Style = []
                 ParentBackground = False
                 ParentFont = False
-                TabOrder = 0
+                TabOrder = 2
               end
               object Panel29: TPanel
                 Left = 4
@@ -4858,8 +4858,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Download Graphic to Printer'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseClick = btnLoadPrinterGraphicMouseClick
               end
@@ -4877,8 +4877,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Refresh Header.bmp'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseClick = btnRefreshMouseClick
               end
@@ -4896,8 +4896,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Save Header Footer'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseClick = btnHeaderFooterSaveMouseClick
               end
@@ -4915,8 +4915,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Test Header'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseClick = tbtnTestHeaderMouseClick
                 object TouchBtn1: TTouchBtn
@@ -4933,8 +4933,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                   ParentColor = True
                   Caption = 'Test Header'
                   ButtonColor = 6052441
-                  LatchedColor = clBtnFace
-                  DisabledButtonColor = clBtnFace
+                  LatchedColor = -16777201
+                  DisabledButtonColor = -16777201
                   LatchingProperties = [lkLatchColor, lkStayDown]
                   OnMouseClick = tbtnTestHeaderMouseClick
                 end
@@ -4953,8 +4953,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Load Header Footer'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseClick = btnLoadHdrFtrMouseClick
               end
@@ -5012,7 +5012,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                   Height = 237
                   BorderWidth = 3
                   Caption = 'Preliminary Header'
-                  Color = clNavy
                   object memPHeader: TRichEdit
                     Left = 0
                     Top = 0
@@ -5041,7 +5040,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                   Height = 237
                   BorderWidth = 3
                   Caption = 'Footer'
-                  Color = clNavy
                   object memFooter: TRichEdit
                     Left = 0
                     Top = 0
@@ -5080,246 +5078,335 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 OnChange = cbReceiptPrinterChange
                 OnDropDown = cbReceiptPrinterDropDown
               end
-              object GroupBox2: TGroupBox
+              object PanelInfo: TPanel
                 Left = 456
                 Top = 44
-                Width = 381
-                Height = 571
-                Caption = 'Receipt Information'
+                Width = 387
+                Height = 572
+                BevelOuter = bvNone
+                BorderWidth = 4
                 Color = 14342874
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
                 Font.Height = -16
-                Font.Name = 'Tahoma'
+                Font.Name = 'Arial'
                 Font.Style = [fsBold]
                 ParentBackground = False
-                ParentColor = False
                 ParentFont = False
-                TabOrder = 9
-                object cbAlwaysPrintReceiptTenderedSales: TCheckBox
-                  Left = 11
-                  Top = 25
-                  Width = 315
-                  Height = 20
-                  Caption = 'Always print receipt on tendered sales'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 0
-                  OnClick = cbAlwaysPrintReceiptTenderedSalesClick
-                end
-                object cbReceiptBarCodes: TCheckBox
-                  Left = 11
-                  Top = 200
-                  Width = 289
-                  Height = 20
-                  Caption = 'Show bar codes on receipt.'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 1
-                  OnClick = cbReceiptBarCodesClick
-                end
-                object cbDoublePrint: TCheckBox
-                  Left = 11
-                  Top = 165
-                  Width = 315
-                  Height = 20
-                  Caption = 'Duplicate auto print receipts'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 2
-                  OnClick = cbDoublePrintClick
-                end
-                object cbAlwaysPrintCashSales: TCheckBox
-                  Left = 11
-                  Top = 60
-                  Width = 315
-                  Height = 20
-                  Caption = 'Always print receipt on cash sales'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 3
-                  OnClick = cbAlwaysPrintCashSalesClick
-                end
-                object cbDuplicateReceipts: TCheckBox
-                  Left = 11
-                  Top = 95
-                  Width = 315
-                  Height = 20
-                  Caption = 'Duplicate all receipts'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 4
-                  OnClick = cbDuplicateReceiptsClick
-                end
-                object cbAPTROS: TCheckBox
-                  Left = 11
-                  Top = 235
-                  Width = 315
-                  Height = 20
-                  Caption = 'Auto Print Tab Receipt On Save'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 5
-                  OnClick = cbAPTROSClick
-                end
-                object cbAPSROS: TCheckBox
-                  Left = 11
-                  Top = 270
-                  Width = 315
-                  Height = 20
-                  Caption = 'Auto Print Staff Receipt On Save'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 6
-                  OnClick = cbAPSROSClick
-                end
-                object cbAPMOS: TCheckBox
-                  Left = 11
-                  Top = 305
-                  Width = 315
-                  Height = 20
-                  Caption = 'Auto Print Member Receipt On Save'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 7
-                  OnClick = cbAPMOSClick
-                end
-                object cbAPTAROS: TCheckBox
-                  Left = 11
-                  Top = 340
-                  Width = 315
-                  Height = 20
-                  Caption = 'Auto Print Table Receipt On Save'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 8
-                  OnClick = cbAPTAROSClick
-                end
-                object cbAPCROS: TCheckBox
-                  Left = 11
-                  Top = 375
-                  Width = 315
-                  Height = 20
-                  Caption = 'Auto Print Cash Receipt On Save'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 9
-                  OnClick = cbAPCROSClick
-                end
-                object cbAPRROS: TCheckBox
-                  Left = 11
-                  Top = 410
-                  Width = 315
-                  Height = 20
-                  Caption = 'Auto Print Room Receipt On Save'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 10
-                  OnClick = cbAPRROSClick
-                end
-                object cbAPIROS: TCheckBox
-                  Left = 11
-                  Top = 445
-                  Width = 315
-                  Height = 20
-                  Caption = 'Auto Print Invoice On Save'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 11
-                  OnClick = cbAPIROSClick
-                end
-                object cbSaveAndPrint: TCheckBox
-                  Left = 11
-                  Top = 130
-                  Width = 369
-                  Height = 20
-                  Caption = #39'Save and Print'#39' prints only the new orders'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 12
-                  OnClick = cbSaveAndPrintClick
-                end
-                object cbAPWOOS: TCheckBox
-                  Left = 11
-                  Top = 480
-                  Width = 315
-                  Height = 20
-                  Caption = 'Auto Print Web Order On Save'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 13
-                  OnClick = cbAPWOOSClick
-                end
-                object cbPrintZeroTaxes: TCheckBox
-                  Left = 11
-                  Top = 515
-                  Width = 318
-                  Height = 20
-                  Caption = 'Print Taxes On Receipt When Zero'
-                  Font.Charset = DEFAULT_CHARSET
-                  Font.Color = clWindowText
-                  Font.Height = -16
-                  Font.Name = 'Tahoma'
-                  Font.Style = []
-                  ParentFont = False
-                  TabOrder = 14
-                  OnClick = cbPrintZeroTaxesClick
+                TabOrder = 0
+                object tsReceiptOptionsInfo: TTabSheet
+                  Caption = 'tsReceiptOptionsInfo'
+                  ImageIndex = 2
+                  TabVisible = False
+                  object tpsReceiptInfo: TTouchPages
+                    Left = 0
+                    Top = 0
+                    Width = 379
+                    Height = 564
+                    Align = alClient
+                    Font.Charset = DEFAULT_CHARSET
+                    Font.Color = clWindow
+                    Font.Height = -15
+                    Font.Name = 'Tahoma'
+                    Font.Style = []
+                    Color = 14342874
+                    ParentFont = False
+                    ParentColor = False
+                    ActivePage = TouchSheetGeneralInfo
+                    TabColor = 6052441
+                    object TouchSheetGeneralInfo: TTouchSheet
+                      Left = 2
+                      Top = 50
+                      Width = 375
+                      Height = 512
+                      Caption = 'Receipt General Info'
+                      object PanelGeneralInfo: TPanel
+                        Left = 0
+                        Top = 0
+                        Width = 387
+                        Height = 537
+                        BevelOuter = bvNone
+                        BorderWidth = 4
+                        Color = 14342874
+                        Font.Charset = DEFAULT_CHARSET
+                        Font.Color = clWindowText
+                        Font.Height = -16
+                        Font.Name = 'Arial'
+                        Font.Style = [fsBold]
+                        ParentBackground = False
+                        ParentFont = False
+                        TabOrder = 0
+                        object GroupBox2: TGroupBox
+                          Left = 4
+                          Top = 0
+                          Width = 365
+                          Height = 531
+                          Caption = 'Receipt Information'
+                          Color = 14342874
+                          Ctl3D = True
+                          Font.Charset = DEFAULT_CHARSET
+                          Font.Color = clWindowText
+                          Font.Height = -16
+                          Font.Name = 'Tahoma'
+                          Font.Style = [fsBold]
+                          ParentBackground = False
+                          ParentColor = False
+                          ParentCtl3D = False
+                          ParentFont = False
+                          TabOrder = 0
+                          object cbAlwaysPrintReceiptTenderedSales: TCheckBox
+                            Left = 11
+                            Top = 25
+                            Width = 315
+                            Height = 20
+                            Caption = 'Always print receipt on tendered sales'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 0
+                            OnClick = cbAlwaysPrintReceiptTenderedSalesClick
+                          end
+                          object cbReceiptBarCodes: TCheckBox
+                            Left = 11
+                            Top = 200
+                            Width = 289
+                            Height = 20
+                            Caption = 'Show bar codes on receipt.'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 1
+                            OnClick = cbReceiptBarCodesClick
+                          end
+                          object cbDoublePrint: TCheckBox
+                            Left = 11
+                            Top = 165
+                            Width = 315
+                            Height = 20
+                            Caption = 'Duplicate auto print receipts'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 2
+                            OnClick = cbDoublePrintClick
+                          end
+                          object cbAlwaysPrintCashSales: TCheckBox
+                            Left = 11
+                            Top = 60
+                            Width = 315
+                            Height = 20
+                            Caption = 'Always print receipt on cash sales'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 3
+                            OnClick = cbAlwaysPrintCashSalesClick
+                          end
+                          object cbDuplicateReceipts: TCheckBox
+                            Left = 11
+                            Top = 95
+                            Width = 315
+                            Height = 20
+                            Caption = 'Duplicate all receipts'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 4
+                            OnClick = cbDuplicateReceiptsClick
+                          end
+                          object cbAPTROS: TCheckBox
+                            Left = 11
+                            Top = 235
+                            Width = 315
+                            Height = 20
+                            Caption = 'Auto Print Tab Receipt On Save'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 5
+                            OnClick = cbAPTROSClick
+                          end
+                          object cbAPSROS: TCheckBox
+                            Left = 11
+                            Top = 270
+                            Width = 315
+                            Height = 20
+                            Caption = 'Auto Print Staff Receipt On Save'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 6
+                            OnClick = cbAPSROSClick
+                          end
+                          object cbAPMOS: TCheckBox
+                            Left = 11
+                            Top = 305
+                            Width = 315
+                            Height = 20
+                            Caption = 'Auto Print Member Receipt On Save'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 7
+                            OnClick = cbAPMOSClick
+                          end
+                          object cbAPTAROS: TCheckBox
+                            Left = 11
+                            Top = 340
+                            Width = 315
+                            Height = 20
+                            Caption = 'Auto Print Table Receipt On Save'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 8
+                            OnClick = cbAPTAROSClick
+                          end
+                          object cbAPCROS: TCheckBox
+                            Left = 11
+                            Top = 375
+                            Width = 315
+                            Height = 20
+                            Caption = 'Auto Print Cash Receipt On Save'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 9
+                            OnClick = cbAPCROSClick
+                          end
+                          object cbAPRROS: TCheckBox
+                            Left = 11
+                            Top = 410
+                            Width = 315
+                            Height = 20
+                            Caption = 'Auto Print Room Receipt On Save'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 10
+                            OnClick = cbAPRROSClick
+                          end
+                          object cbAPIROS: TCheckBox
+                            Left = 11
+                            Top = 445
+                            Width = 315
+                            Height = 20
+                            Caption = 'Auto Print Invoice On Save'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 11
+                            OnClick = cbAPIROSClick
+                          end
+                          object cbSaveAndPrint: TCheckBox
+                            Left = 11
+                            Top = 130
+                            Width = 360
+                            Height = 20
+                            Caption = #39'Save and Print'#39' prints only the new orders'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 12
+                            OnClick = cbSaveAndPrintClick
+                          end
+                          object cbAPWOOS: TCheckBox
+                            Left = 11
+                            Top = 480
+                            Width = 315
+                            Height = 20
+                            Caption = 'Auto Print Web Order On Save'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 13
+                            OnClick = cbAPWOOSClick
+                          end
+                          object cbPrintZeroTaxes: TCheckBox
+                            Left = 11
+                            Top = 515
+                            Width = 318
+                            Height = 20
+                            Caption = 'Print Taxes On Receipt When Zero'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 14
+                            OnClick = cbPrintZeroTaxesClick
+                          end
+                        end
+                      end
+                    end
+                    object TouchSheetCustomInfo: TTouchSheet
+                      Left = 2
+                      Top = 50
+                      Width = 375
+                      Height = 512
+                      Caption = 'Receipt Custom Info'
+                      object PanelCustomInfo: TPanel
+                        Left = 4
+                        Top = 0
+                        Width = 387
+                        Height = 537
+                        BevelOuter = bvNone
+                        BorderWidth = 4
+                        Color = 14342874
+                        Font.Charset = DEFAULT_CHARSET
+                        Font.Color = clWindowText
+                        Font.Height = -16
+                        Font.Name = 'Arial'
+                        Font.Style = [fsBold]
+                        ParentBackground = False
+                        ParentFont = False
+                        TabOrder = 0
+                      end
+                    end
+                  end
                 end
               end
               object tbtnReceiptNumberLabel: TTouchBtn
@@ -5336,8 +5423,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Receipt Number Label'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseClick = tbtnReceiptNumberLabelMouseClick
               end
@@ -5355,8 +5442,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Reprint Receipt Label'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseClick = tbtnReprintLabelMouseClick
               end
@@ -6398,8 +6485,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Test Print'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseClick = tbtnReceiptTestPrintMouseClick
               end
@@ -6415,8 +6502,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 ArrowType = atUp
                 OnMouseClick = tbReceiptTemplateUpMouseClick
@@ -6433,8 +6520,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 ArrowType = atDown
                 OnMouseClick = tbReceiptTemplateDownMouseClick
@@ -6452,8 +6539,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = '<< Insert'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = tbReceiptInsertMouseDown
               end
@@ -6470,8 +6557,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Remove >>'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = tbReceiptRemoveMouseDown
               end
@@ -6488,8 +6575,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Section Properties'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = tbReceiptPropertiesMouseDown
               end
@@ -6506,8 +6593,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentColor = True
                 Caption = 'Template'
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseClick = tbtnReceiptTemplatesMouseClick
               end
@@ -6538,7 +6625,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                     ParentColor = True
                     ButtonColor = 6052441
                     LatchedColor = 6052441
-                    DisabledButtonColor = clBtnFace
+                    DisabledButtonColor = -16777201
                     LatchingProperties = [lkLatchColor, lkStayDown]
                     ArrowType = atLeft
                     OnMouseClick = tbtnIndentSectionLeftMouseClick
@@ -6551,8 +6638,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                     Align = alRight
                     ParentColor = True
                     ButtonColor = 6052441
-                    LatchedColor = clBtnFace
-                    DisabledButtonColor = clBtnFace
+                    LatchedColor = -16777201
+                    DisabledButtonColor = -16777201
                     LatchingProperties = [lkLatchColor, lkStayDown]
                     ArrowType = atRight
                     OnMouseClick = tbtnIndentSectionRightMouseClick
@@ -6694,8 +6781,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
+                LatchedColor = -16777201
+                DisabledButtonColor = -16777201
                 LatchingProperties = [lkLatchColor, lkStayDown]
                 OnMouseDown = tbSelectReceiptPrinterMouseDown
               end
@@ -6728,8 +6815,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       ParentColor = True
       Caption = 'Ok'
       ButtonColor = 18944
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnOkMouseClick
     end

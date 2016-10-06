@@ -25,8 +25,8 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
     const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
 	const Currency closingBalance = openingBalance + todaysEarnings;
 
-	const AnsiString startInvoiceNumber = GetStartInvoiceNumber();
-	const AnsiString endInvoiceNumber = GetEndInvoiceNumber();
+	const AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
+	const AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
 
     AddTitle(printOut, "Site Accumulated Zed");
 	printOut->PrintFormat->NewLine();

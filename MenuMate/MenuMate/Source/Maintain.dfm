@@ -20,8 +20,6 @@ object frmMaintain: TfrmMaintain
   Scaled = False
   OnResize = FormResize
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   DesignSize = (
     1009
     768)
@@ -52,8 +50,8 @@ object frmMaintain: TfrmMaintain
       ParentColor = True
       Caption = 'Ok'
       ButtonColor = 18944
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = imgExitClick
     end
@@ -71,8 +69,8 @@ object frmMaintain: TfrmMaintain
       ParentColor = True
       Caption = 'Maintenance'
       ButtonColor = 6052441
-      LatchedColor = clNavy
-      DisabledButtonColor = clBtnFace
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingType = ltCheckbox
       LatchingProperties = [lkLatchColor]
       OnMouseClick = tbMaintenanceClick
@@ -91,8 +89,8 @@ object frmMaintain: TfrmMaintain
       ParentColor = True
       Caption = 'Quick Messages'
       ButtonColor = 6052441
-      LatchedColor = clNavy
-      DisabledButtonColor = clBtnFace
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingType = ltCheckbox
       LatchingProperties = [lkLatchColor]
       OnMouseClick = tbQuickMessagesClick
@@ -111,8 +109,8 @@ object frmMaintain: TfrmMaintain
       ParentColor = True
       Caption = 'Interfaces'
       ButtonColor = 6052441
-      LatchedColor = clNavy
-      DisabledButtonColor = clBtnFace
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingType = ltCheckbox
       LatchingProperties = [lkLatchColor]
       OnMouseClick = tbInterfacesClick
@@ -166,8 +164,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Table Names'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnTableNameClick
           end
@@ -183,8 +181,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Location'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnLocationsClick
           end
@@ -200,8 +198,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Room Names'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnChangeRoomsClick
           end
@@ -231,8 +229,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Misc Settings'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnMiscSettingsMouseClick
           end
@@ -248,8 +246,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Setup Run Programs'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = BitBtn2Click
           end
@@ -265,8 +263,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Patron Types'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = BitBtn2Click
           end
@@ -282,8 +280,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Chit Numbers'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = TouchBtn1MouseClick
           end
@@ -317,8 +315,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Membership'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnLoyaltyClick
           end
@@ -334,8 +332,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Staff'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnUsersClick
           end
@@ -351,8 +349,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Contact Groups'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnGUIMouseClick
           end
@@ -368,8 +366,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Tier Levels'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnTierLevelsMouseClick
           end
@@ -399,8 +397,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Discount & Surcharges'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnDiscountsClick
           end
@@ -416,8 +414,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Happy Hour'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnHappyHourClick
           end
@@ -433,8 +431,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Payment Types'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = BtnPaymentClick
           end
@@ -450,8 +448,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Deals'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnDealsMouseClick
           end
@@ -467,8 +465,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Tax Settings'
             ButtonColor = 6315356
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnTaxSettingsMouseClick
           end
@@ -496,10 +494,6 @@ object frmMaintain: TfrmMaintain
       Caption = 'Quick Messages.'
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel2: TPanel
         Left = 0
         Top = 0
@@ -534,8 +528,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Refund'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = BitBtn2Click
           end
@@ -551,8 +545,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Broadcasts'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = BitBtn2Click
           end
@@ -568,8 +562,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Cancel'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = BitBtn2Click
           end
@@ -585,8 +579,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Float Adjustment Reasons'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnSkimMouseclick
           end
@@ -602,8 +596,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Writeoff Reasons'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = WriteOffMouseClick
           end
@@ -619,8 +613,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Customer Order Types'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = CustomerOrderTypesClick
           end
@@ -636,8 +630,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Cash Drawer'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = BitBtn2Click
           end
@@ -703,8 +697,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'P.M.S Interface'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbPHSInterfaceClick
           end
@@ -720,8 +714,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Printer Maintenance'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnPrinterMaintenanceClick
           end
@@ -737,8 +731,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Smartcards'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnSmartCardsMouseClick
           end
@@ -754,8 +748,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Intermate Interface'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbIntaMateMouseClick
           end
@@ -771,8 +765,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Pocket Vouchers'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnPocketVouchersMouseClick
           end
@@ -788,8 +782,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'eBet'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnEBetMouseClick
           end
@@ -805,8 +799,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'WebMate'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tchbtnWebMateMouseClick
           end
@@ -822,8 +816,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'FloorPlan'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = TouchBtnReservationsMouseClick
           end
@@ -839,8 +833,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'LoyaltyMate'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = TouchBtnLoyaltyMateMouseClick
           end
@@ -856,8 +850,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'BarExchange'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = TouchBtnBarExchangeMouseClick
           end
@@ -873,8 +867,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Accounting Interface'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnAccountingInterfaceMouseClick
           end
@@ -890,8 +884,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'DrinkCommand'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tchbtnDrinkCommandMouseClick
           end
@@ -907,8 +901,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Clipp Interface'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = TouchBtnClipInterfaceMouseClick
           end
@@ -924,8 +918,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Run Rate Board'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = TouchBtnRunRateBoardMouseClick
           end
@@ -941,8 +935,8 @@ object frmMaintain: TfrmMaintain
             ParentColor = True
             Caption = 'Thorlink'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = TouchBtnThorlinkClick
           end

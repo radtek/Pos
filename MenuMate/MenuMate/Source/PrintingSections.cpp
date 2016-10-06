@@ -26,6 +26,7 @@
 #include "DiscountGroup.h"
 #include "MMTouchKeyboard.h"
 #include "ZForm.h"
+#include "ReceiptUtility.h"
 //#include <wchar.h>
 
 
@@ -853,8 +854,14 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 		case epofiPrintReceiptHeader:
 			PrintReceiptHeader(PrintJob);
 			break;
+        case epofiPrintReceiptHeaderSecond:
+            PrintReceiptHeaderSecond(PrintJob);
+            break;
 		case epofiPrintReceiptFooter:
 			PrintReceiptFooter(PrintJob);
+			break;
+		case epofiPrintReceiptFooterSecond:
+			PrintReceiptFooterSecond(PrintJob);
 			break;
 		case epofiPrintPaymentTotals:
 			PrintPaymentTotals(PrintJob);
@@ -6166,10 +6173,10 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 				pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptHeader->Strings[i];
 				pPrinter->AddLine();
 			}
-
+            // ToDo:- move the code after printing Second part of header
             if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem || !PrintJob->Transaction->CreditTransaction)
             {
-                pPrinter->Line->Columns[0]->Text = "Tax Invoice";
+                pPrinter->Line->Columns[0]->Text = "Tax Invoice";  // PrintTaxInvoice(PrintJob,pPrinter)
                 pPrinter->AddLine();
                 pPrinter->Line->Columns[0]->Text    =   TGlobalSettings::Instance().ReceiptNumberLabel;
                 if(PrintJob->Transaction->TypeOfSale == RegularSale)
@@ -6185,7 +6192,17 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 		}
 	}
 }
-
+//-----------------------------------------------------------------------------
+void TPrintSection::PrintReceiptHeaderSecond(TReqPrintJob *PrintJob)
+{
+   TReceiptUtility::PrintReceiptHeaderSecond(PrintJob,pPrinter);
+}
+//-----------------------------------------------------------------------------
+void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
+{
+   TReceiptUtility::PrintReceiptFooterSecond(PrintJob,pPrinter);
+}
+//-----------------------------------------------------------------------------
 UnicodeString TPrintSection::LeftPadString(UnicodeString inString, UnicodeString inChar, int strLen)
 {
 	for(int i = inString.Length(); i < strLen; i++)

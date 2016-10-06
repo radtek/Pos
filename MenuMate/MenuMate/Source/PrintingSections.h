@@ -220,8 +220,10 @@ private:
 	void PrintSoldBy(TReqPrintJob *PrintJob);
 	void PrintChitNumber(TReqPrintJob *PrintJob);
 	void PrintReceiptHeader(TReqPrintJob *PrintJob);
+    void PrintReceiptHeaderSecond(TReqPrintJob *PrintJob);
 	void PrintReceiptLogo(TReqPrintJob *PrintJob);
 	void PrintReceiptFooter(TReqPrintJob *PrintJob);
+	void PrintReceiptFooterSecond(TReqPrintJob *PrintJob);
 	void PrintPaymentTotals(TReqPrintJob *PrintJob);
 	void PrintPaymentSurcharges(TReqPrintJob *PrintJob);
 	void PrintWaitTimes(TReqPrintJob *PrintJob);
