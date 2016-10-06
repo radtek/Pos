@@ -5112,7 +5112,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                     Color = 14342874
                     ParentFont = False
                     ParentColor = False
-                    ActivePage = TouchSheetGeneralInfo
+                    ActivePage = TouchSheetCustomInfo
                     TabColor = 6052441
                     object TouchSheetGeneralInfo: TTouchSheet
                       Left = 2
@@ -5389,7 +5389,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                       Height = 512
                       Caption = 'Receipt Custom Info'
                       object PanelCustomInfo: TPanel
-                        Left = 4
+                        Left = 0
                         Top = 0
                         Width = 387
                         Height = 537
@@ -5404,6 +5404,159 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                         ParentBackground = False
                         ParentFont = False
                         TabOrder = 0
+                        object GroupBoxCustom: TGroupBox
+                          Left = 4
+                          Top = 0
+                          Width = 365
+                          Height = 531
+                          Caption = 'Receipt Information'
+                          Color = 14342874
+                          Ctl3D = True
+                          Font.Charset = DEFAULT_CHARSET
+                          Font.Color = clWindowText
+                          Font.Height = -16
+                          Font.Name = 'Tahoma'
+                          Font.Style = [fsBold]
+                          ParentBackground = False
+                          ParentColor = False
+                          ParentCtl3D = False
+                          ParentFont = False
+                          TabOrder = 0
+                          object LabelReceiptDigits: TLabel
+                            Left = 32
+                            Top = 121
+                            Width = 146
+                            Height = 19
+                            Caption = 'Digits for Receipt No'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                          end
+                          object LabelFooter: TLabel
+                            Left = 30
+                            Top = 187
+                            Width = 179
+                            Height = 42
+                            Caption = 'Label Footer for Refund/Void Transaction'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            WordWrap = True
+                          end
+                          object cbHideTaxInvoice: TCheckBox
+                            Left = 11
+                            Top = 25
+                            Width = 315
+                            Height = 20
+                            Caption = 'Hide Tax Invoice'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            TabOrder = 1
+                            OnClick = cbAlwaysPrintReceiptTenderedSalesClick
+                          end
+                          object cbCaptureRefundReference: TCheckBox
+                            Left = 11
+                            Top = 60
+                            Width = 351
+                            Height = 40
+                            BiDiMode = bdLeftToRight
+                            Caption = 'Capture Receipt No for Refund/Void Transaction'
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentBiDiMode = False
+                            ParentFont = False
+                            TabOrder = 0
+                            WordWrap = True
+                            OnClick = cbAlwaysPrintReceiptTenderedSalesClick
+                          end
+                          object TouchBtn3: TTouchBtn
+                            Left = 238
+                            Top = 187
+                            Width = 73
+                            Height = 42
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWhite
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            ParentColor = True
+                            Caption = 'Footer'
+                            ButtonColor = 6052441
+                            LatchedColor = -16777201
+                            DisabledButtonColor = -16777201
+                            LatchingProperties = [lkLatchColor, lkStayDown]
+                          end
+                          object TouchBtn4: TTouchBtn
+                            Left = 31
+                            Top = 247
+                            Width = 117
+                            Height = 61
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWhite
+                            Font.Height = -15
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            ParentColor = True
+                            Caption = 'Reprint Receipt Label'
+                            ButtonColor = 6052441
+                            LatchedColor = -16777201
+                            DisabledButtonColor = -16777201
+                            LatchingProperties = [lkLatchColor, lkStayDown]
+                            OnMouseClick = tbtnReprintLabelMouseClick
+                          end
+                          object TouchBtn5: TTouchBtn
+                            Left = 201
+                            Top = 247
+                            Width = 117
+                            Height = 61
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWhite
+                            Font.Height = -15
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            ParentColor = True
+                            Caption = 'Receipt Number Label'
+                            ButtonColor = 6052441
+                            LatchedColor = -16777201
+                            DisabledButtonColor = -16777201
+                            LatchingProperties = [lkLatchColor, lkStayDown]
+                            OnMouseClick = tbtnReceiptNumberLabelMouseClick
+                          end
+                          object TouchBtn2: TTouchBtn
+                            Left = 239
+                            Top = 117
+                            Width = 73
+                            Height = 42
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWhite
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            ParentColor = True
+                            Caption = '11'
+                            ButtonColor = 6052441
+                            LatchedColor = -16777201
+                            DisabledButtonColor = -16777201
+                            LatchingProperties = [lkLatchColor, lkStayDown]
+                          end
+                        end
                       end
                     end
                   end

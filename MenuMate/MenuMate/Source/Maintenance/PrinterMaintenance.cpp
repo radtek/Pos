@@ -5134,3 +5134,4 @@ void __fastcall TfrmPrinterMaintenance::cbPrintNoticeOnTransferClick(TObject *Se
    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
    DBTransaction.Commit();
 }
+

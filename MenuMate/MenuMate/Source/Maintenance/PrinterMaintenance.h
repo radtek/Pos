@@ -269,6 +269,11 @@ __published:	// IDE-managed Components
     TTouchBtn *tbtnReprintLabel;
     TCheckBox *cbPrintZeroTaxes;
     TCheckBox *cbPrintNoticeOnTransfer;
+    TLabel *Label4;
+    TTouchBtn *TouchBtn3;
+    TTouchBtn *TouchBtn4;
+    TTouchBtn *TouchBtn5;
+    TTouchBtn *TouchBtn2;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);

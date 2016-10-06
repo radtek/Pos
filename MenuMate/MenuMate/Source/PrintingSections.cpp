@@ -6176,8 +6176,9 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
             // ToDo:- move the code after printing Second part of header
             if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem || !PrintJob->Transaction->CreditTransaction)
             {
-                pPrinter->Line->Columns[0]->Text = "Tax Invoice";  // PrintTaxInvoice(PrintJob,pPrinter)
-                pPrinter->AddLine();
+//                pPrinter->Line->Columns[0]->Text = "Tax Invoice";  // PrintTaxInvoice(PrintJob,pPrinter)
+//                pPrinter->AddLine();
+                TReceiptUtility::PrintTaxInvoice(TReqPrintJob *PrintJob, TPrintFormat *pPrinter)
                 pPrinter->Line->Columns[0]->Text    =   TGlobalSettings::Instance().ReceiptNumberLabel;
                 if(PrintJob->Transaction->TypeOfSale == RegularSale)
                 {
