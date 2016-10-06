@@ -875,14 +875,8 @@ void TfrmReceiveInvoice::ProcessPackingSlip()
 				InvoiceItemInfo.BackOrder = NodeData->BackOrder;
 				InvoiceItemInfo.TransactionNumber = NodeData->TransactionNumber;
 				
-				if(NodeData->OrderQty < 0)
-                {
-                    InvoiceItemInfo.Supplier_Unit_Cost = NodeData->SupplierUnitCost; //(NodeData->OrderQty != 0) ? NodeData->SupplierTotalCost / NodeData->OrderQty : 0;
-                }
-                else
-                {
-				    InvoiceItemInfo.Supplier_Unit_Cost = (NodeData->OrderQty != 0) ? NodeData->SupplierTotalCost / NodeData->OrderQty : 0;
-                }
+				InvoiceItemInfo.Supplier_Unit_Cost = (NodeData->OrderQty != 0) ? NodeData->SupplierTotalCost / NodeData->OrderQty : 0;
+                //}
 				// Temporarily store entered cost and unit cost. May need GST removed.
 				InvoiceItemInfo.Total_Cost = NodeData->SupplierTotalCost;
                 invoice_created_date = NodeData->Createdtime;
@@ -1865,7 +1859,8 @@ void  TfrmReceiveInvoice::CommitInvoice()
 
 				if (NodeData->OrderQty != 0)
 				{
-					InvoiceItemInfo.Supplier_Unit_Cost = NodeData->SupplierTotalCost / NodeData->OrderQty;
+
+				   InvoiceItemInfo.Supplier_Unit_Cost = NodeData->SupplierTotalCost / NodeData->OrderQty;
 				}
 				else
 				{
@@ -2117,7 +2112,7 @@ void TfrmReceiveInvoice::CommitPackingSlip(bool isCommitted)
 				InvoiceItemInfo.TransactionNumber = NodeData->TransactionNumber;
 				if (NodeData->OrderQty != 0)
 				{
-					InvoiceItemInfo.Supplier_Unit_Cost = NodeData->SupplierTotalCost / NodeData->OrderQty;
+				    InvoiceItemInfo.Supplier_Unit_Cost = NodeData->SupplierTotalCost / NodeData->OrderQty;
 				}
 				else
 				{
