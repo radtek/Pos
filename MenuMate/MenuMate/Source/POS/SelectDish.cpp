@@ -133,6 +133,7 @@
 #include "ManagerLoyaltyVoucher.h"
 #include "ProductSearch.h"
 #include "OrderUtils.h"
+#include "MessageManager.h"
 using SfIntegration::Sf_svc_iface;
 using SfIntegration::Sf_svc_iface_params;//
 
@@ -7737,23 +7738,43 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
 	frmSelectDish->PreUserInfo = TDeviceRealTerminal::Instance().User;
+    bool openCashDrawer = false;
 
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
 	std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
 	TLoginSuccess Result = Staff->Login(this, DBTransaction, TempUserInfo, CheckOpenDrawer);
 	DBTransaction.Commit();
+    UnicodeString quickMessage = "";
 	if (Result == lsAccepted)
 	{
 		DBTransaction.StartTransaction();
 		TDeviceRealTerminal::Instance().User = TempUserInfo;
-        std::auto_ptr <TfrmMessage> frmMessage(TfrmMessage::Create <TfrmMessage> (this, TDeviceRealTerminal::Instance().DBControl));
-        frmMessage->MessageType = eCashDrawer;
-        if(frmMessage->ShowModal() == mrOk)
+        TStringList *MessageList = new TStringList;
+        ManagerMessage->GetListTitle(DBTransaction, MessageList, eCashDrawer);
+        if(MessageList->Count == 1)
         {
-            TComms::Instance().KickLocalDraw(DBTransaction);            
+            delete MessageList;
+        }
+        else
+        {
+            delete MessageList;
+            std::auto_ptr <TfrmMessage> frmMessage(TfrmMessage::Create <TfrmMessage> (this, TDeviceRealTerminal::Instance().DBControl));
+            frmMessage->MessageType = eCashDrawer;
+            if(frmMessage->ShowModal() == mrOk)
+            {
+               quickMessage = frmMessage->TextResult;
+            }
+            else
+            {
+               openCashDrawer = true;
+            }
+        }
+        if(!openCashDrawer)
+        {
+            TComms::Instance().KickLocalDraw(DBTransaction);
             TDBSecurity::ProcessSecurity(DBTransaction, TDBSecurity::GetNextSecurityRef(DBTransaction), TDeviceRealTerminal::Instance().User.ContactKey, SecurityTypes[secOpenDraw],
-            TDeviceRealTerminal::Instance().User.Name, TDeviceRealTerminal::Instance().User.Initials, Now(), TDeviceRealTerminal::Instance().ID.Name, frmMessage->TextResult);
+            TDeviceRealTerminal::Instance().User.Name, TDeviceRealTerminal::Instance().User.Initials, Now(), TDeviceRealTerminal::Instance().ID.Name, quickMessage);
         }
 		DBTransaction.Commit();
 	}
