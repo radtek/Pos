@@ -4864,8 +4864,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 OnMouseClick = btnLoadPrinterGraphicMouseClick
               end
               object btnRefresh: TTouchBtn
-                Left = 335
-                Top = 155
+                Left = 334
+                Top = 399
                 Width = 105
                 Height = 70
                 Font.Charset = DEFAULT_CHARSET
@@ -4902,8 +4902,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 OnMouseClick = btnHeaderFooterSaveMouseClick
               end
               object tbtnTestHeader: TTouchBtn
-                Left = 335
-                Top = 400
+                Left = 334
+                Top = 156
                 Width = 105
                 Height = 70
                 Font.Charset = DEFAULT_CHARSET
@@ -5337,7 +5337,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                           object cbSaveAndPrint: TCheckBox
                             Left = 11
                             Top = 130
-                            Width = 360
+                            Width = 340
                             Height = 20
                             Caption = #39'Save and Print'#39' prints only the new orders'
                             Font.Charset = DEFAULT_CHARSET
@@ -5410,7 +5410,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                           Top = 0
                           Width = 365
                           Height = 531
-                          Caption = 'Receipt Information'
+                          Caption = 'Receipt Customize Information'
                           Color = 14342874
                           Ctl3D = True
                           Font.Charset = DEFAULT_CHARSET
@@ -5497,13 +5497,13 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             Font.Style = []
                             ParentBiDiMode = False
                             ParentFont = False
-                            TabOrder = 0
+                            TabOrder = 3
                             WordWrap = True
                             OnClick = cbExportReprintReceiptClick
                           end
                           object TouchBtn3: TTouchBtn
-                            Left = 239
-                            Top = 212
+                            Left = 247
+                            Top = 203
                             Width = 73
                             Height = 42
                             Font.Charset = DEFAULT_CHARSET
@@ -5519,47 +5519,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             DisabledButtonColor = clBtnFace
                             LatchingProperties = [lkLatchColor, lkStayDown]
                           end
-                          object TouchBtn4: TTouchBtn
-                            Left = 31
-                            Top = 272
-                            Width = 117
-                            Height = 61
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWhite
-                            Font.Height = -15
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            ParentColor = True
-                            Caption = 'Reprint Receipt Label'
-                            ButtonColor = 6052441
-                            LatchedColor = clBtnFace
-                            DisabledButtonColor = clBtnFace
-                            LatchingProperties = [lkLatchColor, lkStayDown]
-                            OnMouseClick = tbtnReprintLabelMouseClick
-                          end
-                          object TouchBtn5: TTouchBtn
-                            Left = 201
-                            Top = 272
-                            Width = 117
-                            Height = 61
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWhite
-                            Font.Height = -15
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            ParentColor = True
-                            Caption = 'Receipt Number Label'
-                            ButtonColor = 6052441
-                            LatchedColor = clBtnFace
-                            DisabledButtonColor = clBtnFace
-                            LatchingProperties = [lkLatchColor, lkStayDown]
-                            OnMouseClick = tbtnReceiptNumberLabelMouseClick
-                          end
                           object tbtnReceiptNumber: TTouchBtn
-                            Left = 239
-                            Top = 146
+                            Left = 247
+                            Top = 140
                             Width = 73
                             Height = 42
                             Font.Charset = DEFAULT_CHARSET
@@ -5576,49 +5538,66 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             LatchingProperties = [lkLatchColor, lkStayDown]
                             OnMouseClick = tbtnReceiptNumberMouseClick
                           end
+                          object tbtnReceiptNumberLabel: TTouchBtn
+                            Left = 194
+                            Top = 415
+                            Width = 105
+                            Height = 70
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWhite
+                            Font.Height = -15
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            ParentColor = True
+                            Caption = 'Receipt Number Label'
+                            ButtonColor = 6052441
+                            LatchedColor = clBtnFace
+                            DisabledButtonColor = clBtnFace
+                            LatchingProperties = [lkLatchColor, lkStayDown]
+                            OnMouseClick = tbtnReceiptNumberLabelMouseClick
+                          end
+                          object tbtnReprintLabel: TTouchBtn
+                            Left = 34
+                            Top = 419
+                            Width = 105
+                            Height = 70
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWhite
+                            Font.Height = -15
+                            Font.Name = 'Tahoma'
+                            Font.Style = []
+                            ParentFont = False
+                            ParentColor = True
+                            Caption = 'Reprint Receipt Label'
+                            ButtonColor = 6052441
+                            LatchedColor = clBtnFace
+                            DisabledButtonColor = clBtnFace
+                            LatchingProperties = [lkLatchColor, lkStayDown]
+                            OnMouseClick = tbtnReprintLabelMouseClick
+                          end
+                          object memCustomizeFooter: TRichEdit
+                            Left = 22
+                            Top = 265
+                            Width = 323
+                            Height = 50
+                            Alignment = taCenter
+                            Color = clWhite
+                            Font.Charset = ANSI_CHARSET
+                            Font.Color = clBlack
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = [fsBold]
+                            ParentFont = False
+                            PlainText = True
+                            ReadOnly = True
+                            TabOrder = 0
+                          end
                         end
                       end
                     end
                   end
                 end
-              end
-              object tbtnReceiptNumberLabel: TTouchBtn
-                Left = 335
-                Top = 230
-                Width = 105
-                Height = 70
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWhite
-                Font.Height = -15
-                Font.Name = 'Tahoma'
-                Font.Style = []
-                ParentFont = False
-                ParentColor = True
-                Caption = 'Receipt Number Label'
-                ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
-                LatchingProperties = [lkLatchColor, lkStayDown]
-                OnMouseClick = tbtnReceiptNumberLabelMouseClick
-              end
-              object tbtnReprintLabel: TTouchBtn
-                Left = 335
-                Top = 325
-                Width = 105
-                Height = 70
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWhite
-                Font.Height = -15
-                Font.Name = 'Tahoma'
-                Font.Style = []
-                ParentFont = False
-                ParentColor = True
-                Caption = 'Reprint Receipt Label'
-                ButtonColor = 6052441
-                LatchedColor = clBtnFace
-                DisabledButtonColor = clBtnFace
-                LatchingProperties = [lkLatchColor, lkStayDown]
-                OnMouseClick = tbtnReprintLabelMouseClick
               end
             end
           end

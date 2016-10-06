@@ -271,12 +271,13 @@ __published:	// IDE-managed Components
     TCheckBox *cbPrintNoticeOnTransfer;
     //TLabel *Label4;
     TTouchBtn *TouchBtn3;
-    TTouchBtn *TouchBtn4;
-    TTouchBtn *TouchBtn5;
     TTouchBtn *tbtnReceiptNumber;
     TCheckBox *cbCaptureRefundReference;
     TCheckBox *cbHideTaxInvoice;
     TCheckBox *cbExportReprintReceipt;
+    TRichEdit *memCustomizeFooter;
+    //TGroupBox *GropuBoxCustom;
+
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
