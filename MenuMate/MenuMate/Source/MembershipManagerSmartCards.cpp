@@ -1333,7 +1333,7 @@ bool TManagerMembershipSmartCards::SavePointsTransactionsToSmartCard(TContactPoi
                                     TLoyaltyMateUtilities::SetLoyaltymateTransactions(
                                     DBTransaction,
                                     SmartCardContact.ContactKey,
-                                    ManagerSmartCards->GetCurrentSyndicateCode(),
+                                    ManagerSyndicateCode.GetCommunicationSyndCode(),
                                     Points,
                                     inInvoiceNumber);
                                 }
@@ -1747,7 +1747,7 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
 	TMMContactInfo SmartCardContact;
 	ManagerSmartCards->GetContactInfo(SmartCardContact);
     TContactPoints Points =  SmartCardContact.Points;
-	TSyndCode currentSyndicateCode = ManagerSmartCards->GetCurrentSyndicateCode();
+	TSyndCode currentSyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
 
 	Database::TDBTransaction DBTransaction(DBControl);
 	RegisterTransaction(DBTransaction);
