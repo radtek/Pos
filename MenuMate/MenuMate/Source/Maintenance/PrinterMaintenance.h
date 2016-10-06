@@ -269,11 +269,14 @@ __published:	// IDE-managed Components
     TTouchBtn *tbtnReprintLabel;
     TCheckBox *cbPrintZeroTaxes;
     TCheckBox *cbPrintNoticeOnTransfer;
-    TLabel *Label4;
+    //TLabel *Label4;
     TTouchBtn *TouchBtn3;
     TTouchBtn *TouchBtn4;
     TTouchBtn *TouchBtn5;
-    TTouchBtn *TouchBtn2;
+    TTouchBtn *tbtnReceiptNumber;
+    TCheckBox *cbCaptureRefundReference;
+    TCheckBox *cbHideTaxInvoice;
+    TCheckBox *cbExportReprintReceipt;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
@@ -418,6 +421,11 @@ __published:	// IDE-managed Components
     void __fastcall tbtnReprintLabelMouseClick(TObject *Sender);
     void __fastcall cbPrintZeroTaxesClick(TObject *Sender);
     void __fastcall cbPrintNoticeOnTransferClick(TObject *Sender);
+    void __fastcall cbExportReprintReceiptClick(TObject *Sender);
+    void __fastcall cbCaptureRefundReferenceClick(TObject *Sender);
+    void __fastcall cbHideTaxInvoiceClick(TObject *Sender);
+    void __fastcall PanelCustomInfoClick(TObject *Sender);
+    void __fastcall tbtnReceiptNumberMouseClick(TObject *Sender);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	 BEGIN_MESSAGE_MAP

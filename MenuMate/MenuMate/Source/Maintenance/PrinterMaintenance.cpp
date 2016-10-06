@@ -5103,7 +5103,7 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberLabelMouseClick(TObject
 void __fastcall TfrmPrinterMaintenance::tbtnReprintLabelMouseClick(TObject *Sender)
 
 {
-     std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+   std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
    frmTouchKeyboard->MaxLength = 0;
    frmTouchKeyboard->AllowCarriageReturn = true;
    frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
@@ -5134,4 +5134,41 @@ void __fastcall TfrmPrinterMaintenance::cbPrintNoticeOnTransferClick(TObject *Se
    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
    DBTransaction.Commit();
 }
+//---------------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbExportReprintReceiptClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().PrintNoticeOnTransfer = cbPrintNoticeOnTransfer->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbHideTaxInvoiceClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().PrintNoticeOnTransfer = cbPrintNoticeOnTransfer->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::cbCaptureRefundReferenceClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().PrintNoticeOnTransfer = cbPrintNoticeOnTransfer->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberMouseClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().PrintNoticeOnTransfer = cbPrintNoticeOnTransfer->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
 
