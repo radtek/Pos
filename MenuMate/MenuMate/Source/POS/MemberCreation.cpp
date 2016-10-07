@@ -114,7 +114,7 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
     {
       MessageBox("You must enter a valid Email.", "Error", MB_OK + MB_ICONERROR);
     }
-    else if(emailcount > 0)
+    else if(Info.EMail != "" && emailcount > 0)
     {
         MessageBox("Member already exists!!!", "Error", MB_OK + MB_ICONERROR);
     }
@@ -340,13 +340,8 @@ void __fastcall TfrmMemberCreation::btnActivateLoyaltyMateMouseClick(TObject *Se
 
 void TfrmMemberCreation::getMemberDetailsFromActivationEmail()
 {
-
-    TManagerSyndCode managerSyndCode;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    CurrentSyndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    CurrentSyndicateCode =  managerSyndCode.GetCommunicationSyndCode();
 
     bool replacePointsFromCloud = true;
 	TLoyaltyMateDownloadMemberThread* loyaltyMemberDownloadThread = new TLoyaltyMateDownloadMemberThread(CurrentSyndicateCode,replacePointsFromCloud);

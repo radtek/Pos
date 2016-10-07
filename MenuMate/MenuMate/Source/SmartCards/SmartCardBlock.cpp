@@ -25,17 +25,12 @@ TSmartCardBlock::TSmartCardBlock(TSmartCardBlock &inSmartCardBlock) : Stream(new
 
 void TSmartCardBlock::ClearData()
 {
-   Version = SMART_CARD_VERSION_UNK;
-
-   std::auto_ptr<TMemoryStream> ClearStream(new TMemoryStream);
-	int BlankBlockSize = CARD_TOTAL_MEMORY_LENGTH - (V4_CARD_GUID_START + V4_CARD_GUID_LENGTH);
-   std::vector<BYTE> recvbuffer(BlankBlockSize,0xFF);
-   ClearStream->Write(&recvbuffer[0],recvbuffer.size());
-	BlockInfoWrite(V4_CARD_GUID_START + V4_CARD_GUID_LENGTH,BlankBlockSize,*ClearStream.get());
-//   FillMemory(&recvbuffer[0],recvbuffer.size(),0xFF);
-//   Stream->Position = V2_CARD_GUID_START + V2_CARD_GUID_LENGTH;
-//   Stream->Write(&recvbuffer[0],recvbuffer.size());
-//   Stream->Position = 0;
+    Version = SMART_CARD_VERSION_UNK;
+    std::auto_ptr<TMemoryStream> ClearStream(new TMemoryStream);
+    int BlankBlockSize = CARD_TOTAL_MEMORY_LENGTH - (V4_CARD_GUID_START + V4_CARD_GUID_LENGTH);
+    std::vector<BYTE> recvbuffer(BlankBlockSize,0xFF);
+    ClearStream->Write(&recvbuffer[0],recvbuffer.size());
+    BlockInfoWrite(V4_CARD_GUID_START + V4_CARD_GUID_LENGTH,BlankBlockSize,*ClearStream.get());
 }
 
 void TSmartCardBlock::ClearAll()
@@ -84,7 +79,6 @@ void TSmartCardBlock::LoadFromFile(AnsiString FileName)
    LoadGUID();
 }
 
-
 TMemoryStream * TSmartCardBlock::GetStream()
 {
    return Stream.get();
@@ -105,12 +99,9 @@ void TSmartCardBlock::Assign(TSmartCardBlock &inSmartCardBlock)
 void TSmartCardBlock::LoadGUID()
 {
    std::auto_ptr<TMemoryStream> GUIDStream(new TMemoryStream);
-	BlockInfoRead(V4_CARD_GUID_START,V4_CARD_GUID_LENGTH,*GUIDStream.get());
+   BlockInfoRead(V4_CARD_GUID_START,V4_CARD_GUID_LENGTH,*GUIDStream.get());
    GUIDStream->Position = 0;
    CardGuid.Assign(GUIDStream.get());
-   #ifdef _DEBUG
-   GUIDStream->SaveToFile("MMCardGUID.bin");
-   #endif
 }
 
 TSmartCardGUID *TSmartCardBlock::GetGUID()

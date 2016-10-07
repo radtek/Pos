@@ -354,6 +354,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().IsMYOBEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsMYOBEnabled, false);
         TGlobalSettings::Instance().OpenCashDrawer = TManagerVariable::Instance().GetBool(DBTransaction, vmOpenCashDrawer, false);
         TGlobalSettings::Instance().HideReceiptNumberForRefundItem = TManagerVariable::Instance().GetBool(DBTransaction, vmHideReceiptNumberForRefundItem, false);
+        TGlobalSettings::Instance().MergeSimilarItem = TManagerVariable::Instance().GetBool(DBTransaction, vmMergeSimilarItem, false);
 
 }
 

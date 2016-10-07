@@ -20,18 +20,35 @@ DBTransaction(inDBTransaction)
 
 void TSyndCodeController::Run()
 {
-   frmListManager->Add.RegisterForEvent(OnAdd);
-   frmListManager->Edit.RegisterForEvent(OnEdit);
-	frmListManager->Delete.RegisterForEvent(OnDelete);
-	frmListManager->Close.RegisterForEvent(OnClose);
-   PopulateListManager();
-   frmListManager->SetCaption("Syndicate Codes");
-   frmListManager->ShowModal();
+    ManagerSyndCode.Initialise(DBTransaction);
+    frmListManager->Add.RegisterForEvent(OnAdd);
+    frmListManager->Edit.RegisterForEvent(OnEdit);
+    frmListManager->Delete.RegisterForEvent(OnDelete);
+    frmListManager->Close.RegisterForEvent(OnClose);
+    PopulateListManager();
+    frmListManager->SetCaption("Syndicate Codes");
+    frmListManager->ShowModal();
+    ValidateSyndCodes();
+}
 
-   frmListManager->Add.DeregisterForEvent(OnAdd);
-   frmListManager->Edit.DeregisterForEvent(OnEdit);
-	frmListManager->Delete.DeregisterForEvent(OnDelete);
-	frmListManager->Close.DeregisterForEvent(OnClose);
+void TSyndCodeController::ValidateSyndCodes()
+{
+    AnsiString errorMessage = "";
+    bool syndCodesValid = ManagerSyndCode.ValidateSyndCodes(errorMessage);
+    if(syndCodesValid)
+    {
+       frmListManager->Add.DeregisterForEvent(OnAdd);
+       frmListManager->Edit.DeregisterForEvent(OnEdit);
+       frmListManager->Delete.DeregisterForEvent(OnDelete);
+       frmListManager->Close.DeregisterForEvent(OnClose);
+       MessageBox("You will need to restart MenuMate for this to take effect.", "Restart Required", MB_OK + MB_ICONINFORMATION);
+    }
+    else
+    {
+       MessageBox(errorMessage, "Warning", MB_OKCANCEL);
+       frmListManager->ShowModal();
+       ValidateSyndCodes();
+    }
 }
 
 void TSyndCodeController::OnClose(int SyndKey, int ColIndex)
@@ -41,7 +58,7 @@ void TSyndCodeController::OnClose(int SyndKey, int ColIndex)
 
 void TSyndCodeController::OnAdd(int SyndKey, int ColIndex)
 {
-   std::auto_ptr<TfrmSyndCodeGui> frmSyndCodeGui(new TfrmSyndCodeGui(DisplayOwner));
+   std::auto_ptr<TfrmSyndCodeGui> frmSyndCodeGui(new TfrmSyndCodeGui(DisplayOwner,ManagerSyndCode));
    frmSyndCodeGui->SyndCode = TSyndCode();
    TModalResult Result = frmSyndCodeGui->ShowModal();
    if(Result == mrOk)
@@ -53,7 +70,7 @@ void TSyndCodeController::OnAdd(int SyndKey, int ColIndex)
 
 void TSyndCodeController::OnEdit(int SyndKey, int ColIndex)
 {
-   std::auto_ptr<TfrmSyndCodeGui> frmSyndCodeGui(new TfrmSyndCodeGui(DisplayOwner));
+   std::auto_ptr<TfrmSyndCodeGui> frmSyndCodeGui(new TfrmSyndCodeGui(DisplayOwner,ManagerSyndCode));
    frmSyndCodeGui->SyndCode = ManagerSyndCode.SyndCodeByKey(SyndKey);
    TModalResult Result = frmSyndCodeGui->ShowModal();
    if(Result == mrOk)
@@ -79,12 +96,10 @@ void TSyndCodeController::PopulateListManager()
 {
    try
    {
-       frmListManager->sgDisplay->Cols[0]->Clear();
-       frmListManager->sgDisplay->Cols[1]->Clear();
-
+      frmListManager->sgDisplay->Cols[0]->Clear();
+      frmListManager->sgDisplay->Cols[1]->Clear();
       frmListManager->sgDisplay->ColCount = 0;
       frmListManager->sgDisplay->RowCount = 0;
-
       frmListManager->sgDisplay->ColCount = 2;
       frmListManager->sgDisplay->RowCount = ManagerSyndCode.Size();
       int i = 0;

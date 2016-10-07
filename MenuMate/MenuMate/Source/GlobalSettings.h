@@ -451,6 +451,7 @@ public:
     bool ShowDarkBackground;
     bool OpenCashDrawer;
     bool HideReceiptNumberForRefundItem;
+    bool MergeSimilarItem;
 };
 
 #endif

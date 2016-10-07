@@ -179,23 +179,8 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
 			   if (TGlobalSettings::Instance().LoyaltyMateEnabled && Info.CloudUUID == "" && (IsSmartCardEnabled || IsBarcodeCard) )
 			   {
                    // calling the protected method from MembershipManagerSmartCards
-
-                    TSyndCode syndicateCode;
-                    if(IsBarcodeCard || !ManagerSmartCards->CardOk)
-                     {
-                        TManagerSyndCode managerSyndCode;
-                        DBTransaction.StartTransaction();
-                        managerSyndCode.Initialise(DBTransaction);
-                        syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-                        DBTransaction.Commit();
-
-                     }
-                     else
-                     {
-                         syndicateCode  = ManagerSmartCards->GetCurrentSyndicateCode();
-                     }
-
-				    bool memberCreationSuccess =	TManagerMembershipSmartCards::createMemberOnLoyaltyMate(syndicateCode, Info);
+                    TSyndCode syndicateCode =  GetSyndicateCodeManager().GetCommunicationSyndCode();
+                    bool memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(syndicateCode, Info);
 			   }
 
                if(!IsBarcodeCard)
