@@ -114,6 +114,14 @@ void __fastcall TfrmReceiveInvoice::FormShow(TObject *Sender)
         lblReceiptnumber->Caption=(qrBatchKey->Fields->Fields[0]->AsInteger+1);
         ReceiptNumber=qrBatchKey->Fields->Fields[0]->AsInteger+1;
   }
+  RichEdit1->Enabled =  false;
+  if(!RichEdit1->Enabled)
+  {
+     RichEdit1->Color = clBtnFace;
+  }
+
+  //myEditBox->Enabled = false;
+  //neGst->Enabled = false;
 }
 
 void TfrmReceiveInvoice::LoadForm()
@@ -273,6 +281,7 @@ void TfrmReceiveInvoice::LoadForm()
         neBackOrder->Enabled = true;
         btnCommitPackingSlip->Enabled = true;
     }
+    //RichEdit1->Enabled =  false;
 
 }
 
@@ -517,7 +526,10 @@ TVSTTextType TextType, WideString &CellText)
 			break;
 		case 5:	CellText = MMMath::FloatString(NodeData->SupplierUnitCost, neCost->DecimalPlaces, ffCurrency);
 			break;
-		case 6:	CellText = MMMath::FloatString(NodeData->SupplierTotalCost, neTotalCost->DecimalPlaces, ffCurrency);
+		case 6:
+            CellText = FormatFloat("0.0000", NodeData->SupplierTotalCost);;
+
+          //CellText = MMMath::FloatString(NodeData->SupplierTotalCost, neTotalCost->DecimalPlaces);
 			break;
 		case 7:  CellText = MMMath::FloatString(NodeData->BackOrder);  // Back Order
 			break;
@@ -553,10 +565,11 @@ void __fastcall TfrmReceiveInvoice::rbGSTClick(TObject *Sender)
 void TfrmReceiveInvoice::CalculateInvoiceTotals(TInvoiceSummary &InvoiceSummary)
 {
 	PVirtualNode node							= vtvStockQty->GetFirst();
-	Currency total								= 0;
+	double total								= 0.0;
 	InvoiceSummary.BackOrderWarning		= false;
-	InvoiceSummary.TotalGST					= 0;
-	Currency totalCalculatedGST			= 0;
+	InvoiceSummary.TotalGST					= 0.00;
+	//Currency totalCalculatedGST			= 0;
+    double totalCalculatedGST			= 0.0;
 	while (node)
 	{
 		TInvoiceItemNodeData *nodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(node);
@@ -578,12 +591,19 @@ void TfrmReceiveInvoice::CalculateInvoiceTotals(TInvoiceSummary &InvoiceSummary)
 		}
 		node = vtvStockQty->GetNext(node);
 	}
-	InvoiceSummary.TotalExcl	= 0;
-	InvoiceSummary.TotalInc		= 0;
+	InvoiceSummary.TotalExcl	= 0.0;
+	InvoiceSummary.TotalInc		= 0.0;
 
 	if (chbGSTOverride->Checked)
 	{
-		InvoiceSummary.TotalGST = neGST->Value;
+        if(RichEdit1->Text == "")
+        {
+           InvoiceSummary.TotalGST = 0.0;
+        }
+        else
+        {
+           InvoiceSummary.TotalGST = StrToFloat(RichEdit1->Text);
+        }
 	}
 	else
 	{
@@ -604,16 +624,20 @@ void TfrmReceiveInvoice::CalculateInvoiceTotals(TInvoiceSummary &InvoiceSummary)
 void TfrmReceiveInvoice::ShowTotals()
 {       Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
 	TInvoiceSummary invoiceSummary;
+    //neGST->Value = 0.00;
 	CalculateInvoiceTotals(invoiceSummary);
 	imgWarning->Visible	= invoiceSummary.BackOrderWarning;
 	lbeWarning->Visible	= invoiceSummary.BackOrderWarning;
 	lbeTotalExc->Caption	= MMMath::FloatString(invoiceSummary.TotalExcl, Decimalpalaces);
 	lbeTotalInc->Caption	= MMMath::FloatString(invoiceSummary.TotalInc, Decimalpalaces);
-	neGST->Value			= invoiceSummary.TotalGST;
+    //myEditBox->Text =  FormatFloat("0.00",invoiceSummary.TotalGST) ;
+	//neGST->Value			= invoiceSummary.TotalGST;
 	if(Decimalpalaces==2)
 	{
 		lbeTotalExc->Caption= FormatFloat("0.00",invoiceSummary.TotalExcl);;
 		lbeTotalInc->Caption= FormatFloat("0.00",invoiceSummary.TotalInc);;
+        //myEditBox->Text =  FormatFloat("0.00",invoiceSummary.TotalGST);
+        RichEdit1->Text = FormatFloat("0.00",invoiceSummary.TotalGST);
 
 		
 	}
@@ -621,6 +645,8 @@ void TfrmReceiveInvoice::ShowTotals()
 	{
 		lbeTotalExc->Caption= FormatFloat("0.0000",invoiceSummary.TotalExcl);;
 		lbeTotalInc->Caption= FormatFloat("0.0000",invoiceSummary.TotalInc);;
+        //myEditBox->Text =  FormatFloat("0.0000",invoiceSummary.TotalGST) ;
+        RichEdit1->Text = FormatFloat("0.0000",invoiceSummary.TotalGST) ;
 	}
 
 }
@@ -1319,7 +1345,13 @@ void __fastcall TfrmReceiveInvoice::neGSTExit(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::chbGSTOverrideClick(TObject *Sender)
 {
-	neGST->Enabled = chbGSTOverride->Checked;
+	//neGST->Enabled = chbGSTOverride->Checked;
+    //myEditBox->Enabled =  chbGSTOverride->Checked;
+    RichEdit1->Enabled =  chbGSTOverride->Checked;
+    if(RichEdit1->Enabled)
+    {
+      RichEdit1->Color = clWindow;
+    }
 	ShowTotals();
 }
 
@@ -2552,6 +2584,85 @@ void __fastcall TfrmReceiveInvoice::neBackOrderKeyPress(TObject *Sender,
 	{
 		Key = NULL;
 	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::myEditBoxKeyPress(TObject *Sender,
+      char &Key)
+{
+	if(Key == VK_RETURN || Key == '-')
+	{
+		Key = NULL;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::myEditBoxKeyDown(TObject *Sender,
+      WORD &Key, TShiftState Shift)
+{
+	if (Key == VK_RETURN)
+	{
+		btnOk->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::myEditBoxExit(TObject *Sender)
+{
+    ShowTotals();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::RichEdit1KeyPress(TObject *Sender,
+      char &Key)
+{
+	if(Key == VK_RETURN || Key == '-' || (Key != '0' && Key != '1' && Key != '2' && Key != '3' && Key != '4' && Key != '5' && Key != '6' && Key != '7' && Key != '8' && Key != '9' && Key != '.'))
+	{
+        Key = NULL;
+	}
+    if(CheckPointEntered() && Key == '.')
+    {
+       Key = NULL;
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::RichEdit1KeyDown(TObject *Sender,
+      WORD &Key, TShiftState Shift)
+{
+	if (Key == VK_RETURN)
+	{
+		btnOk->SetFocus();
+	}
+    if(Key > 10 && Key != 46)
+    {
+       Key = NULL;
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::RichEdit1Exit(TObject *Sender)
+{
+   RichEdit1->Alignment = taRightJustify;
+   ShowTotals();
+}
+//---------------------------------------------------------------------------
+bool TfrmReceiveInvoice::CheckPointEntered()
+{
+   AnsiString value = RichEdit1->Text;
+   bool point_value = value.Pos('.');
+   return point_value;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::RichEdit1MouseDown(TObject *Sender,
+      TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+   RichEdit1->Alignment = taLeftJustify;
+   if(RichEdit1->Text == "0.00" || RichEdit1->Text == "0.0000")
+   {
+      RichEdit1->Text = "";
+   }
 }
 //---------------------------------------------------------------------------
 

@@ -48,7 +48,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         880
         354)
       object Label1: TLabel
-        Left = 565
+        Left = 525
         Top = 278
         Width = 113
         Height = 13
@@ -64,7 +64,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         ParentFont = False
       end
       object Label2: TLabel
-        Left = 565
+        Left = 524
         Top = 302
         Width = 113
         Height = 13
@@ -80,7 +80,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         ParentFont = False
       end
       object Label3: TLabel
-        Left = 565
+        Left = 525
         Top = 326
         Width = 113
         Height = 13
@@ -342,7 +342,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         DecimalPlaces = 2
       end
       object GroupBox1: TGroupBox
-        Left = 405
+        Left = 373
         Top = 270
         Width = 145
         Height = 73
@@ -467,16 +467,17 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         TabOrder = 8
       end
       object neGST: TNumericEdit
-        Left = 697
-        Top = 299
-        Width = 77
+        Left = 648
+        Top = 331
+        Width = 129
         Height = 21
-        Value = 1.23457
+        Value = -5.65465465465465E21
         Precision = 5
         FixedPoint = True
         Anchors = [akRight, akBottom]
         Enabled = False
         TabOrder = 9
+        Visible = False
         OnExit = neGSTExit
         OnKeyDown = neGSTKeyDown
         OnKeyPress = neGSTKeyPress
@@ -502,6 +503,21 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         Caption = 'Override'
         TabOrder = 10
         OnClick = chbGSTOverrideClick
+      end
+      object myEditBox: TEdit
+        Left = 760
+        Top = 331
+        Width = 129
+        Height = 21
+        BiDiMode = bdLeftToRight
+        Enabled = False
+        ParentBiDiMode = False
+        TabOrder = 13
+        Text = 'myEditBox'
+        Visible = False
+        OnExit = myEditBoxExit
+        OnKeyDown = myEditBoxKeyDown
+        OnKeyPress = myEditBoxKeyPress
       end
     end
     object btnFind: TBitBtn
@@ -698,6 +714,21 @@ object frmReceiveInvoice: TfrmReceiveInvoice
     TabOrder = 2
     Visible = False
     OnChange = dbcbLocationChange
+  end
+  object RichEdit1: TRichEdit
+    Left = 660
+    Top = 310
+    Width = 129
+    Height = 21
+    Alignment = taRightJustify
+    Enabled = False
+    Lines.Strings = (
+      'RichEdit1')
+    TabOrder = 4
+    OnExit = RichEdit1Exit
+    OnKeyDown = RichEdit1KeyDown
+    OnKeyPress = RichEdit1KeyPress
+    OnMouseDown = RichEdit1MouseDown
   end
   object Transaction: TIBTransaction
     DefaultDatabase = dmStockData.dbStock
