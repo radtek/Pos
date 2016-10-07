@@ -108,16 +108,19 @@ namespace Chefmate.Infrastructure.Controller
                 var orders = DatabaseOrderBuilder.Instance.GetAllOrders(CurrenTerminal.TerminalId);
                 foreach (var order in orders)
                 {
-                    if (order.OrderAction == ChefmateConstants.WebOrderAction &&
-                        order.DeliveryTime.Subtract(DateTime.Now).TotalMinutes > CurrentSettings.WebOrderTime)
+                    if (order.Items.Count > 0)
                     {
-                        WebOrders.Add(order);
+                        if (order.OrderAction == ChefmateConstants.WebOrderAction &&
+                                        order.DeliveryTime.Subtract(DateTime.Now).TotalMinutes > CurrentSettings.WebOrderTime)
+                        {
+                            WebOrders.Add(order);
+                        }
+                        else
+                        {
+                            TotalOrders.Add(order);
+                        }
                     }
-                    else
-                    {
-                        TotalOrders.Add(order);
-                    }
-                  
+
                 }
             }
             catch (Exception ex)
@@ -133,6 +136,7 @@ namespace Chefmate.Infrastructure.Controller
         }
         private void PublishRedrawEvent()
         {
+            TotalOrders.RemoveAll(s => s.Items.Count == 0);
             if (OrderRedrawEvent != null)
                 OrderRedrawEvent();
         }
@@ -203,7 +207,7 @@ namespace Chefmate.Infrastructure.Controller
             {
                 ShowMessageBox("Order Transferred", order.SourceTableName + " is transferred to " + order.TableTabName);
             }
-            TotalOrders.RemoveAll(s => s.Items.Count == 0);
+
             PublishRedrawEvent();
         }
         private void ProcessTransferWhenDestinationExist(List<Order> existingOrders, Order newOrder, Order destinationOrder)
