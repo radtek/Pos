@@ -20,6 +20,7 @@ DBTransaction(inDBTransaction)
 
 void TSyndCodeController::Run()
 {
+    ManagerSyndCode.Initialise(DBTransaction);
     frmListManager->Add.RegisterForEvent(OnAdd);
     frmListManager->Edit.RegisterForEvent(OnEdit);
     frmListManager->Delete.RegisterForEvent(OnDelete);

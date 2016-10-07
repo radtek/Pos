@@ -105,7 +105,7 @@ void TManagerSyndCode::UpdateCode(Database::TDBTransaction &DBTransaction,TSyndC
 
    SyndCodes[inSyndCode.SyndCodeKey] = inSyndCode;
    UpdateEncryptCode(DBTransaction,inSyndCode);
-
+   SyndCodes[inSyndCode.SyndCodeKey].UseForCom = inSyndCode.UseForCom;
    IBInternalQuery->SQL->Clear();
    IBInternalQuery->SQL->Text =
       "UPDATE SYNDCODES SET "

@@ -114,7 +114,7 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
     {
       MessageBox("You must enter a valid Email.", "Error", MB_OK + MB_ICONERROR);
     }
-    else if(emailcount > 0)
+    else if(Info.EMail != "" && emailcount > 0)
     {
         MessageBox("Member already exists!!!", "Error", MB_OK + MB_ICONERROR);
     }
