@@ -715,7 +715,7 @@ object frmReceiveInvoice: TfrmReceiveInvoice
     Visible = False
     OnChange = dbcbLocationChange
   end
-  object RichEdit1: TRichEdit
+  object reGstValue: TRichEdit
     Left = 660
     Top = 310
     Width = 129
@@ -723,12 +723,12 @@ object frmReceiveInvoice: TfrmReceiveInvoice
     Alignment = taRightJustify
     Enabled = False
     Lines.Strings = (
-      'RichEdit1')
+      'reGstValue')
     TabOrder = 4
-    OnExit = RichEdit1Exit
-    OnKeyDown = RichEdit1KeyDown
-    OnKeyPress = RichEdit1KeyPress
-    OnMouseDown = RichEdit1MouseDown
+    OnExit = reGstValueExit
+    OnKeyDown = reGstValueKeyDown
+    OnKeyPress = reGstValueKeyPress
+    OnMouseDown = reGstValueMouseDown
   end
   object Transaction: TIBTransaction
     DefaultDatabase = dmStockData.dbStock

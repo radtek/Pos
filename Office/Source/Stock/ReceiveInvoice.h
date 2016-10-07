@@ -144,7 +144,7 @@ __published:	// IDE-managed Components
     TIBQuery *qrUpdateDateInStockTrans;
     TIBQuery *qrUpdateDateInTransactionBatch;
     TEdit *myEditBox;
-    TRichEdit *RichEdit1;
+    TRichEdit *reGstValue;
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
     void __fastcall vtvStockQtyAfterPaint(TBaseVirtualTree *Sender, TCanvas *TargetCanvas);
@@ -187,11 +187,11 @@ __published:	// IDE-managed Components
     void __fastcall myEditBoxKeyDown(TObject *Sender, WORD &Key,
           TShiftState Shift);
     void __fastcall myEditBoxExit(TObject *Sender);
-    void __fastcall RichEdit1KeyPress(TObject *Sender, char &Key);
-    void __fastcall RichEdit1KeyDown(TObject *Sender, WORD &Key,
+    void __fastcall reGstValueKeyPress(TObject *Sender, char &Key);
+    void __fastcall reGstValueKeyDown(TObject *Sender, WORD &Key,
           TShiftState Shift);
-    void __fastcall RichEdit1Exit(TObject *Sender);
-    void __fastcall RichEdit1MouseDown(TObject *Sender,
+    void __fastcall reGstValueExit(TObject *Sender);
+    void __fastcall reGstValueMouseDown(TObject *Sender,
           TMouseButton Button, TShiftState Shift, int X, int Y);
     //void __fastcall neCostKeyPress(TObject *Sender, char &Key);
 
