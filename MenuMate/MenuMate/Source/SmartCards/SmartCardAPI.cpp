@@ -193,21 +193,6 @@ void TManagerSmartCard::FormatCardToNewUser()
 			TManagerLogs::Instance().Add(__FUNC__, SMARTCARDLOG, "Format Card To Blank Failed. : " + UnicodeString(IntToHex(int(lReturn), 2)));
 		 }
 
-#ifdef _DEBUG
-		 std::auto_ptr <TMemoryStream> Temp(new TMemoryStream);
-		 Temp->Clear();
-		 CardReadSecurityMemory(*Temp.get());
-		 Temp->SaveToFile("MMCardSecurityMemAfterUserFormat.bin");
-
-		 Temp->Clear();
-		 CardReadProtectedMemory(*Temp.get());
-		 Temp->SaveToFile("MMCardProtectedMemAfterUserFormat.bin");
-
-		 Temp->Clear();
-		 CardReadMainMemory(CARD_BLOCK_START, CARD_TOTAL_MEMORY_LENGTH, *Temp.get());
-		 Temp->SaveToFile("MMCardImageAfterUserFormat.bin");
-#endif
-
 	  }
    }
    catch(Exception & E)
@@ -241,13 +226,6 @@ bool TManagerSmartCard::FormatCardToFactory()
      	return false;
 	  }
 
-	  /* BYTE ErrorCounter[1] = {0xFF};
-	  lReturn = SLE4442_Update_Security_Memory(hCard,ErrorCounter,0x00,0x01);
-	  if(lReturn != SCARD_S_SUCCESS)
-	  {
-	  TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Format Card To Blank Failed. Unable to reset Error Counter " + UnicodeString(IntToHex(int(lReturn),2)));
-	  } */
-
 	  CasEndTransaction(hCard, SCARD_LEAVE_CARD);
 
 	  if (lReturn == SCARD_S_SUCCESS)
@@ -273,21 +251,7 @@ bool TManagerSmartCard::FormatCardToFactory()
          return false;
 		 }
 
-#ifdef _DEBUG
-		 std::auto_ptr <TMemoryStream> Temp(new TMemoryStream);
-		 Temp->Clear();
-		 CardReadSecurityMemory(*Temp.get());
-		 Temp->SaveToFile("MMCardSecurityMemAfterFactoryFormat.bin");
-
-		 Temp->Clear();
-		 CardReadProtectedMemory(*Temp.get());
-		 Temp->SaveToFile("MMCardProtectedMemAfterFactoryFormat.bin");
-
-		 Temp->Clear();
-		 CardReadMainMemory(CARD_BLOCK_START, CARD_TOTAL_MEMORY_LENGTH, *Temp.get());
-		 Temp->SaveToFile("MMCardImageAfterFactoryFormat.bin");
-#endif
-		 return true;
+	 return true;
 	  }
    }
    catch(Exception & E)
@@ -354,9 +318,6 @@ void TManagerSmartCard::SmartCardRemoved()
 
 void TManagerSmartCard::SmartCardInserted()
 {
-#ifdef _DEBUG
-   __int64 start = ::GetTickCount();
-#endif
    if (Enabled)
    {
 	  CardUnreadable = false;
@@ -608,11 +569,6 @@ void TManagerSmartCard::SmartCardInserted()
 		 OnCardUnreadable.Occured();
 	  }
    }
-#ifdef _DEBUG
-   int Time = ((::GetTickCount() - start));
-   TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "--------------------------------");
-   TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "SmartCard Inserted Time :" + Sysutils::IntToStr(Time));
-#endif
 }
 
 LONG TManagerSmartCard::CardConnect()
@@ -654,12 +610,6 @@ void TManagerSmartCard::CardDisconnect()
 
 bool TManagerSmartCard::VerifyFactoryCard()
 {
-   std::auto_ptr <TMemoryStream> Temp(new TMemoryStream);
-   Temp->Clear();
-   CardReadSecurityMemory(*Temp.get());
-#ifdef _DEBUG
-   Temp->SaveToFile("MMCardSecurity.bin");
-#endif
    bool FactoryCard = false;
    LONG lReturn = SCARD_S_SUCCESS;
    BYTE PSC[3] =
@@ -1028,10 +978,6 @@ UnicodeString TManagerSmartCard::LoadCardGUID()
    {
 	  throw TSCException(tsceReadFailed, "Unable to load card GUID");
    }
-#ifdef _DEBUG
-   GUIDStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardGUID.bin");
-#endif
-
    std::vector <char> recvbuffer((V2_CARD_GUID_LENGTH * 2) + 1);
    ZeroMemory(&recvbuffer[0], recvbuffer.size());
 
@@ -1043,13 +989,6 @@ void TManagerSmartCard::LoadCardBlock(TSmartCardBlock &CardBlock)
 {
    if (fMonitoringThread)
    {
-	  std::auto_ptr <TMemoryStream> Temp(new TMemoryStream);
-	  Temp->Clear();
-	  CardReadSecurityMemory(*Temp.get());
-#ifdef _DEBUG
-	  Temp->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardSecurityMem.bin");
-#endif
-
 	  LONG lReturn = SCARD_F_UNKNOWN_ERROR;
 	  CardBlock.ClearAll();
 	  lReturn = CardReadMainMemory(CARD_BLOCK_START, CARD_TOTAL_MEMORY_LENGTH, CardBlock.GetStreamRef());
@@ -1057,19 +996,7 @@ void TManagerSmartCard::LoadCardBlock(TSmartCardBlock &CardBlock)
 	  {
 		 throw TSCException(tsceReadFailed, "Unable to load card data");
 	  }
-#ifdef _DEBUG
-	  CardBlock.SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardImage.bin");
-	  CardBlock.SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMBlockInfo.bin");
-#endif
-
-	  Temp->Clear();
-	  CardReadProtectedMemory(*Temp.get());
-#ifdef _DEBUG
-	  Temp->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardProtectedMem.bin");
-#endif
-
 	  CardBlock.LoadGUID();
-
 	  CardBlock.Version = GetCardBlockVersion(CardBlock);
    }
 }
@@ -1132,10 +1059,6 @@ bool TManagerSmartCard::CheckStreamCRC(TMemoryStream *Stream)
 
 LONG TManagerSmartCard::CardReadMainMemory(int BlockStart, int BlockLength, TMemoryStream &Stream)
 {
-#ifdef _DEBUG
-   __int64 start = ::GetTickCount();
-#endif
-
    DWORD length = BlockLength;
    std::vector <BYTE> recvbuffer(length);
    ZeroMemory(&recvbuffer[0], length);
@@ -1151,20 +1074,11 @@ LONG TManagerSmartCard::CardReadMainMemory(int BlockStart, int BlockLength, TMem
    {
 	  TManagerLogs::Instance().Add(__FUNC__, SMARTCARDLOG, "Reading Data Failed. : " + UnicodeString(IntToHex(int(lReturn), 2)));
    }
-#ifdef _DEBUG
-   __int64 Time = ((::GetTickCount() - start));
-   TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "--------------------------------");
-   TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "SmartCard Read Time :" + IntToStr(Time));
-#endif
    return lReturn;
 }
 
 LONG TManagerSmartCard::CardReadProtectedMemory(TMemoryStream &Stream)
 {
-#ifdef _DEBUG
-   __int64 start = ::GetTickCount();
-#endif
-
    DWORD length = 4;
    std::vector <BYTE> recvbuffer(length);
    ZeroMemory(&recvbuffer[0], length);
@@ -1180,20 +1094,11 @@ LONG TManagerSmartCard::CardReadProtectedMemory(TMemoryStream &Stream)
    {
 	  TManagerLogs::Instance().Add(__FUNC__, SMARTCARDLOG, "Reading Data Failed. : " + UnicodeString(IntToHex(int(lReturn), 2)));
    }
-#ifdef _DEBUG
-   __int64 Time = ((::GetTickCount() - start));
-   TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "--------------------------------");
-   TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "SmartCard Read Time :" + IntToStr(Time));
-#endif
    return lReturn;
 }
 
 LONG TManagerSmartCard::CardReadSecurityMemory(TMemoryStream &Stream)
 {
-#ifdef _DEBUG
-   __int64 start = ::GetTickCount();
-#endif
-
    DWORD length = 4;
    std::vector <BYTE> recvbuffer(length);
    ZeroMemory(&recvbuffer[0], length);
@@ -1209,11 +1114,6 @@ LONG TManagerSmartCard::CardReadSecurityMemory(TMemoryStream &Stream)
    {
 	  TManagerLogs::Instance().Add(__FUNC__, SMARTCARDLOG, "Reading Data Failed. : " + UnicodeString(IntToHex(int(lReturn), 2)));
    }
-#ifdef _DEBUG
-   __int64 Time = ((::GetTickCount() - start));
-   TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "--------------------------------");
-   TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "SmartCard Read Time :" + IntToStr(Time));
-#endif
    return lReturn;
 }
 

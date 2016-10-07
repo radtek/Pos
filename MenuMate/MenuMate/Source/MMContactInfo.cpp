@@ -251,41 +251,23 @@ void TMMContactInfo::LoadFromStream(int CardVersion, TMemoryStream *Stream)
 	  }break;
 	case SMART_CARD_VERSION_SIX:
 	  {
-//		 StreamRead(Stream, SiteID);
-//		 StreamRead(Stream, MembershipNumber);
-//       StreamRead(Stream, CloudUUID);
-//		 StreamRead(Stream, Name);
-//		 StreamRead(Stream, Alias);
-//		 StreamRead(Stream, CardCreationDate);
-//		 StreamRead(Stream, PoleDisplayName);
-//		 StreamRead(Stream, DateOfBirth);
-//		 StreamRead(Stream, Phone);
-//		 StreamRead(Stream, Mobile);
-//		 StreamRead(Stream, EMail);
-//		 StreamRead(Stream, MailingAddress);
-//		 StreamRead(Stream, Note);
-//		 StreamRead(Stream, AutoAppliedDiscountsID);
-//   	 StreamRead(Stream, AutoAppliedDiscountsIDDummy);
-//		 StreamRead(Stream, Points.PointsRules);
 		 StreamRead(Stream, SiteID);
 		 StreamRead(Stream, MembershipNumber);
          StreamRead(Stream, CloudUUID);
-		 StreamRead(Stream, Name);
+         UnicodeString membername = "";
+		 StreamRead(Stream, membername);
+         ExtractNames(membername);
 		 StreamRead(Stream, Alias);
 		 StreamRead(Stream, CardCreationDate);
-		 //StreamRead(Stream, LastModified);
 		 StreamRead(Stream, PoleDisplayName);
 		 StreamRead(Stream, DateOfBirth);
 		 StreamRead(Stream, Phone);
 		 StreamRead(Stream, Mobile);
 		 StreamRead(Stream, EMail);
-		 //StreamRead(Stream, LocationAddress);
 		 StreamRead(Stream, MailingAddress);
 		 StreamRead(Stream, Note);
          StreamRead(Stream, AutoAppliedDiscountsIDDummy);
 		 StreamRead(Stream, Points.PointsRules);
-         //StreamRead(Stream, Title);
-         //StreamRead(Stream, Sex);
 	  }break;
    }
 }
@@ -300,6 +282,22 @@ UnicodeString TMMContactInfo::RefreshPoleDisplayName(eMemberNameOnPoleDisplay in
         default: return "";
     }
 }
+
+void TMMContactInfo::ExtractNames(AnsiString memberFullName)
+{
+   int breakPosition = memberFullName.Pos(" ");
+   if(breakPosition > 0 && memberFullName.Length() > breakPosition)
+   {
+      Name = memberFullName.SubString(0,breakPosition-1).Trim();
+      Surname = memberFullName.SubString(breakPosition + 1, memberFullName.Length() - (breakPosition)).Trim();
+   }
+   else
+   {
+      Name = memberFullName;
+   }
+}
+
+
 
 bool TMMContactInfo::HasHotelNumber( void )
 {

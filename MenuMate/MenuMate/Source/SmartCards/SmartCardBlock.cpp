@@ -99,12 +99,9 @@ void TSmartCardBlock::Assign(TSmartCardBlock &inSmartCardBlock)
 void TSmartCardBlock::LoadGUID()
 {
    std::auto_ptr<TMemoryStream> GUIDStream(new TMemoryStream);
-	BlockInfoRead(V4_CARD_GUID_START,V4_CARD_GUID_LENGTH,*GUIDStream.get());
+   BlockInfoRead(V4_CARD_GUID_START,V4_CARD_GUID_LENGTH,*GUIDStream.get());
    GUIDStream->Position = 0;
    CardGuid.Assign(GUIDStream.get());
-   #ifdef _DEBUG
-   GUIDStream->SaveToFile("MMCardGUID.bin");
-   #endif
 }
 
 TSmartCardGUID *TSmartCardBlock::GetGUID()

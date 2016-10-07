@@ -1777,7 +1777,9 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
                    if(frmEditCustomer->ShowModal() == mrOk)
                    {
                       updateMember = true;
+                      TContactPoints points = SmartCardContact.Points;
                       SmartCardContact = frmEditCustomer->Info;
+                      SmartCardContact.Points =  points;
                       MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
                       DBTransaction.Commit();
                       DBTransaction.StartTransaction();
@@ -2324,7 +2326,9 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
                                if(frmEditCustomer->ShowModal() == mrOk)
                                {
                                   updateMember = true;
+                                  TContactPoints points = UserInfo.Points;
                                   UserInfo = frmEditCustomer->Info;
+                                  UserInfo.Points =  points;
                                   MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
                                   DBTransaction.Commit();
                                   DBTransaction.StartTransaction();

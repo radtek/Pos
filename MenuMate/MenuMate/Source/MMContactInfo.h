@@ -31,7 +31,7 @@ public:
    void SaveToStream(int CardVersion, TMemoryStream *Stream);
 
    UnicodeString RefreshPoleDisplayName(eMemberNameOnPoleDisplay inNameOnPoleDisplay );
-
+   void ExtractNames(AnsiString memberFullName);
    bool HasHotelNumber( void );
    bool IsCodePresent();
 
