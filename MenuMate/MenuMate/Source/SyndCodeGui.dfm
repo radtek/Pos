@@ -6,7 +6,7 @@ object frmSyndCodeGui: TfrmSyndCodeGui
   BorderStyle = bsDialog
   BorderWidth = 5
   Caption = 'Syndicate Code'
-  ClientHeight = 319
+  ClientHeight = 388
   ClientWidth = 463
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -25,12 +25,13 @@ object frmSyndCodeGui: TfrmSyndCodeGui
     Left = 0
     Top = 0
     Width = 321
-    Height = 319
+    Height = 388
     Align = alLeft
     BorderWidth = 6
     Color = 14342874
     ParentBackground = False
     TabOrder = 0
+    ExplicitHeight = 319
     object pnlLabel: TPanel
       Left = 7
       Top = 7
@@ -121,18 +122,37 @@ object frmSyndCodeGui: TfrmSyndCodeGui
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnEncryptionMouseClick
     end
+    object btnUseForCom: TTouchBtn
+      Left = 9
+      Top = 316
+      Width = 305
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Use For Communication : '
+      ButtonColor = clNavy
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnUseForComMouseClick
+    end
   end
   object pnlMinor: TPanel
     Left = 329
     Top = 0
     Width = 134
-    Height = 319
+    Height = 388
     Align = alRight
     BevelOuter = bvNone
     BorderWidth = 5
     Color = 14342874
     ParentBackground = False
     TabOrder = 1
+    ExplicitHeight = 319
     object btnClose: TTouchBtn
       Left = 5
       Top = 5
@@ -154,7 +174,7 @@ object frmSyndCodeGui: TfrmSyndCodeGui
     end
     object TouchBtn4: TTouchBtn
       Left = 5
-      Top = 257
+      Top = 326
       Width = 124
       Align = alBottom
       Font.Charset = DEFAULT_CHARSET
@@ -170,6 +190,7 @@ object frmSyndCodeGui: TfrmSyndCodeGui
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = TouchBtn4MouseClick
+      ExplicitTop = 257
     end
   end
 end

@@ -2,7 +2,7 @@
 {
     public class RequestAddress
     {
-        public const string BaseAddress = "http://menumateloyalty.com/";
+        public const string BaseAddress = "http://192.168.0.13/Loyaltymate/";
 
         //Member
         public const string SaveMember = "api/MemberApi/Save";

@@ -11,7 +11,7 @@
 #include "MMLogging.h"
 #include "SmartCardDefs.h"
 #include "SmartCardException.h"
-
+#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -35,11 +35,11 @@ TSmartCardVer6::TSmartCardVer6(TSmartCard &inCard)
 void TSmartCardVer6::UnlockCard(std::map <int, TSyndCode> SyndCodes)
 {
    // Read in entire card block and check it for curruption.
-   std::auto_ptr<TMemoryStream> Stream(new TMemoryStream);
-   unsigned short CRC = 0;
-   unsigned short CalcCRC = 0;
-	BlockData.Read(V6_CARD_CRC_DATA_START,CRC);
-
+    std::auto_ptr<TMemoryStream> Stream(new TMemoryStream);
+    unsigned short CRC = 0;
+    unsigned short CalcCRC = 0;
+    BlockData.Read(V6_CARD_CRC_DATA_START,CRC);
+    //MessageBox(CRC, "CRC", MB_OK + MB_ICONINFORMATION);
    if (!StreamCheckCRC(CRC,
                        CalcCRC,
                        BlockData.GetStream(),
@@ -47,30 +47,23 @@ void TSmartCardVer6::UnlockCard(std::map <int, TSyndCode> SyndCodes)
                        (V6_CARD_POINTS_DATA_START \
                         + V6_CARD_POINTS_DATA_LENGTH \
                         - V6_CARD_VERSION_DATA_START))) {
+
        throw TSCException(tsceInvalidCRC,"Card Data is Corrupt");
    }
    // Retrieve Decrypted Contact Block & Points Block.
    // Both blocks must unencrypt in order to be Valid.
 	bool SyndCodeValidated = false;
    std::auto_ptr<TMemoryStream> ContactStream(new TMemoryStream);
-   std::map <int, TSyndCode> ::iterator ptrSyndCodes = SyndCodes.begin();
+  std::map <int, TSyndCode> ::iterator ptrSyndCodes = SyndCodes.begin();
    for (ptrSyndCodes = SyndCodes.begin();ptrSyndCodes != SyndCodes.end() && !SyndCodeValidated ; advance(ptrSyndCodes,1))
    {
         // loading the last modified date
         std::auto_ptr<TMemoryStream> LastModifiedDateStream(new TMemoryStream);
         StreamGetLastModifiedDate(*LastModifiedDateStream.get());
-#ifdef _DEBUG
-	    LastModifiedDateStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedLastModifiedDateStream.bin");
-#endif
-		DecryptInPlace(*LastModifiedDateStream.get(),ptrSyndCodes->second.SyndCode);
-#ifdef _DEBUG
-	    LastModifiedDateStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedLastModifiedDateStream.bin");
-#endif
-
+		DecryptInPlace(*LastModifiedDateStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
+        LastModifiedDate = Now();
         LastModifiedDateStream->Position = 0;
-        StreamRead(
-            LastModifiedDateStream.get(),
-            LastModifiedDate);
+        StreamRead(LastModifiedDateStream.get(),LastModifiedDate);
         CRC = 0;
         CalcCRC = 0;
         StreamRead(LastModifiedDateStream.get(), CRC);
@@ -78,14 +71,7 @@ void TSmartCardVer6::UnlockCard(std::map <int, TSyndCode> SyndCodes)
         {
 
             StreamGetContact(*ContactStream.get());
-#ifdef _DEBUG
-            ContactStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedContactSteam.bin");
-#endif
-            DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.SyndCode);
-#ifdef _DEBUG
-            ContactStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedContactSteam.bin");
-#endif
-
+            DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
             ContactInfo.LoadFromStream(BlockData.Version,ContactStream.get());
             CRC = 0; CalcCRC = 0;
             StreamRead(ContactStream.get(),CRC);
@@ -93,14 +79,7 @@ void TSmartCardVer6::UnlockCard(std::map <int, TSyndCode> SyndCodes)
             {
                 std::auto_ptr<TMemoryStream> PointsStream(new TMemoryStream);
                 StreamGetPoints(*PointsStream.get());
-#ifdef _DEBUG
-                PointsStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedPointsStreamRead.bin");
-#endif
-
-                DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.SyndCode);
-#ifdef _DEBUG
-                PointsStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedPointsStreamRead.bin");
-#endif
+                DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
                 ContactInfo.Points.LoadFromStream(BlockData.Version,PointsStream.get());
                 CRC = 0; CalcCRC = 0;
                 StreamRead(PointsStream.get(),CRC);
@@ -242,7 +221,6 @@ void TSmartCardVer6::Validate(TSmartCardBlock &inCardBlockData)
    }
 }
 
-
 void TSmartCardVer6::SetContactInfo(TMMContactInfo inContactInfo)
 {
 	DirtyContacts = true;
@@ -257,7 +235,6 @@ void TSmartCardVer6::SetContactInfo(TMMContactInfo inContactInfo)
 		ContactInfo.CardCreationDate = Now();
    }
 }
-
 
 TMMContactInfo TSmartCardVer6::GetContactInfo()
 {
@@ -434,7 +411,7 @@ void TSmartCardVer6::Save()
 
    if(DirtyGUID)
    {
-      LONG lReturn = CardInfoWrite(V6_CARD_GUID_START,V5_CARD_GUID_LENGTH,*GUIDStream.get());
+      LONG lReturn = CardInfoWrite(V6_CARD_GUID_START,V6_CARD_GUID_LENGTH,*GUIDStream.get());
       if (lReturn != SCARD_S_SUCCESS && lReturn != SCARD_M_CHECK_ERROR)
       {
          TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Writing GUID Data Failed. : " + AnsiString(IntToHex(int(lReturn),2)));
@@ -487,9 +464,6 @@ void TSmartCardVer6::Restore(TSmartCardBlock &RestorePoint)
    TMemoryStream &RestoreStream = RestorePoint.GetStreamRef();
    lReturn = CardInfoWrite(V6_CARD_RESTORE_POINT_DATA_START,CARD_RESTORE_POINT_LENGTH,RestoreStream);
    RestoreStream.Position = 0;
-   #ifdef _DEBUG
-   RestoreStream.SaveToFile("MMRestoreToRestorePoint.bin");
-   #endif
    if (lReturn != SCARD_S_SUCCESS && lReturn != SCARD_M_CHECK_ERROR)
    {
       TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Write Restore Point Failed. : " + AnsiString(IntToHex(int(lReturn),2)));

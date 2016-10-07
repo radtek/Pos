@@ -447,11 +447,13 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
+
 void TfrmMain::SyncCompanyDetails()
 {
    if (TGlobalSettings::Instance().LoyaltyMateEnabled)
          {
            TManagerCloudSync ManagerCloudSync;
+           ManagerCloudSync.CheckSyndCodes();
            ManagerCloudSync.SyncCompanyDetails();
          }
 }

@@ -3087,6 +3087,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "Hide Receipt Number when Refund Item"
                  "Default is False.",
                   vmgPOS, false);
+       SetVarBool(DBTransaction, vmMergeSimilarItem, "Merge Similar item",
+                 "Merge Similar item"
+                 "Default is True.",
+                  vmgPOS, true);
 	}
 	catch(Exception &E)
 	{

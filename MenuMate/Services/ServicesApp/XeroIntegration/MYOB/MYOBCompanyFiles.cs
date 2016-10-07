@@ -36,12 +36,14 @@ namespace AccountingIntegration.MYOB
         private IApiConfiguration ConfigurationCloud;
         private IOAuthKeyService MyOAuthKeyService;
         private ICompanyFileCredentials Credentials;
+        private MYOBInvoiceController _myobInvoiceContoller;
         string FileName;
 
         #region Public
         public MYOBCompanyFiles(Credentials inCredentials)
         {
             CompanyName = inCredentials.Organisation;
+            _myobInvoiceContoller = new MYOBInvoiceController();
         }
 
         public void FetchFile(IApiConfiguration configurationCloud, IWebRequestFactory webRequestFactory, IOAuthKeyService keyService,string inFilename)
@@ -128,10 +130,10 @@ namespace AccountingIntegration.MYOB
         {
             try
             {
-                MYOBInvoiceController.Instance.Customers = new Customer[(int)customers.Count];
+                _myobInvoiceContoller.Customers = new Customer[(int)customers.Count];
                 for (int i = 0; i < customers.Count; i++)
                 {
-                    MYOBInvoiceController.Instance.Customers[i] = customers.Items[i];
+                    _myobInvoiceContoller.Customers[i] = customers.Items[i];
                 }
                 LoadAccounts();
             }
@@ -162,10 +164,10 @@ namespace AccountingIntegration.MYOB
         {
             try
             {
-                MYOBInvoiceController.Instance.Accounts = new Account[(int)accounts.Count];
+                _myobInvoiceContoller.Accounts = new Account[(int)accounts.Count];
                 for (int i = 0; i < accounts.Count; i++)
                 {
-                    MYOBInvoiceController.Instance.Accounts[i] = accounts.Items[i];
+                    _myobInvoiceContoller.Accounts[i] = accounts.Items[i];
                 }
                 LoadJOB();
             }
@@ -193,10 +195,10 @@ namespace AccountingIntegration.MYOB
         {
             try
             {
-                MYOBInvoiceController.Instance.Jobs = new Job[(int)jobs.Count];
+                _myobInvoiceContoller.Jobs = new Job[(int)jobs.Count];
                 for (int i = 0; i < jobs.Count; i++)
                 {
-                    MYOBInvoiceController.Instance.Jobs[i] = jobs.Items[i];
+                    _myobInvoiceContoller.Jobs[i] = jobs.Items[i];
                 }
                 LoadTaxes();
             }
@@ -224,15 +226,15 @@ namespace AccountingIntegration.MYOB
         {
             try
             {
-                MYOBInvoiceController.Instance.TaxCodes = new TaxCode[(int)taxCodes.Count];
+                _myobInvoiceContoller.TaxCodes = new TaxCode[(int)taxCodes.Count];
                 for (int i = 0; i < taxCodes.Count; i++)
                 {
-                    MYOBInvoiceController.Instance.TaxCodes[i] = taxCodes.Items[i];
+                    _myobInvoiceContoller.TaxCodes[i] = taxCodes.Items[i];
                 }
-                MYOBInvoiceController.Instance.ConfigurationCloud = ConfigurationCloud;
-                MYOBInvoiceController.Instance.MyOAuthKeyService = MyOAuthKeyService;
-                MYOBInvoiceController.Instance.Credentials = Credentials;
-                MYOBInvoiceController.Instance.PostInvoice(CompanyFile, FileName);
+               _myobInvoiceContoller.ConfigurationCloud = ConfigurationCloud;
+               _myobInvoiceContoller.MyOAuthKeyService = MyOAuthKeyService;
+               _myobInvoiceContoller.Credentials = Credentials;
+                _myobInvoiceContoller.PostInvoice(CompanyFile, FileName);
             }
             catch (Exception ex)
             {

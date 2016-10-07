@@ -56,7 +56,7 @@ void TSmartCardVer4::UnlockCard(std::map <int, TSyndCode> SyndCodes)
 #ifdef _DEBUG
 	  ContactStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedContactSteam.bin");
 #endif
-      DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.SyndCode);
+      DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
 #ifdef _DEBUG
 	  ContactStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedContactSteam.bin");
 #endif
@@ -72,7 +72,7 @@ void TSmartCardVer4::UnlockCard(std::map <int, TSyndCode> SyndCodes)
             PointsStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedPointsStreamRead.bin");
             #endif
 
-            DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.SyndCode);
+            DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
             #ifdef _DEBUG
             PointsStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedPointsStreamRead.bin");
             #endif
@@ -252,12 +252,12 @@ void TSmartCardVer4::Upgrade(std::map <int, TSyndCode> SyndCode)
 	for (ptrSyndCodes = SyndCode.begin();ptrSyndCodes != SyndCode.end() ; advance(ptrSyndCodes,1))
 	{
 		StreamGetContact(*ContactStream.get());
-		DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.SyndCode);
+		DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
         // TODO 1 -o Michael -c Descrespancy : Hardcoded SartCard version number this should be DEFINED?
 		ContactInfo.LoadFromStream(3,ContactStream.get());
 
 		StreamGetPoints(*PointsStream.get(), SMART_CARD_VERSION_THREE);
-		DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.SyndCode);
+		DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
 		ContactInfo.Points.LoadFromStream(3,PointsStream.get());
 	}
 	ContactInfo.SaveToStream(ContactStream.get());
