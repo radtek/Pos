@@ -627,7 +627,10 @@ bool TChefmateInterface::OpenCompleteOrder( __int32       inOrderDBKey,
 											UnicodeString inPartyName,
 											UnicodeString inPatronCount,
 											UnicodeString inSaleStartTime,
-                                            UnicodeString inDeliveryTime)
+                                            UnicodeString inDeliveryTime,
+                                            UnicodeString inCustomerPhone,
+                                            UnicodeString inCustomerEmail,
+                                            UnicodeString inCustomerAddress)
 {
 	bool result = false;
 
@@ -653,9 +656,9 @@ bool TChefmateInterface::OpenCompleteOrder( __int32       inOrderDBKey,
 					inPatronCount.t_str(),
 					inSaleStartTime.t_str(),
                     inDeliveryTime.t_str(),
-                    "",
-                    "",
-                    "",
+                    inCustomerPhone.t_str(),
+                    inCustomerEmail.t_str(),
+                    inCustomerAddress.t_str(),
                     "" );
 
 			result = true;
@@ -1475,13 +1478,13 @@ void  TChefmateInterface::addSideOptionPrintingFormatWithKey(
 					inChitValue.t_str(),
 					inTableTabName.t_str(),
 					inOrderType.t_str(),
-					inCustomerInfo.Name.t_str(),//"rupendra",
+					inCustomerInfo.Name.t_str(),
 					inPartyName.t_str(),
 					inPatronCount.t_str(),
 					inSaleStartTime.t_str(),
                     inDeliveryTime.t_str(),
-                    inCustomerInfo.Phone.t_str(),//"05661694658",
-                    inCustomerInfo.EMail.t_str(),//"rupendra.pandey@menumate.com",
+                    inCustomerInfo.Phone.t_str(),
+                    inCustomerInfo.EMail.t_str(),
                     inCustomerInfo.MailingAddress.t_str(),
                     inPaymentStatus.t_str());
 
