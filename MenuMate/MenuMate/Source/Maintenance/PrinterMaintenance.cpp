@@ -311,6 +311,9 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 		 tbChefMateIP->Enabled = false;
 	  }
 	  DBTransaction.Commit();
+     cbCaptureRefundReference->Checked = TGlobalSettings::Instance().CaptureRefundRefNo;
+     cbHideTaxInvoice->Checked = TGlobalSettings::Instance().HideTaxInvoice;
+     cbExportReprintReceipt->Checked = TGlobalSettings::Instance().ExportReprintReceipt;
    }
    }
    catch(Exception & E)
@@ -5135,30 +5138,48 @@ void __fastcall TfrmPrinterMaintenance::cbPrintNoticeOnTransferClick(TObject *Se
    DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------------
-void __fastcall TfrmPrinterMaintenance::cbExportReprintReceiptClick(TObject *Sender)
-{
-   Database::TDBTransaction DBTransaction(DBControl);
-   DBTransaction.StartTransaction();
-   TGlobalSettings::Instance().PrintNoticeOnTransfer = cbPrintNoticeOnTransfer->Checked;
-   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
-   DBTransaction.Commit();
-}
+
 //---------------------------------------------------------------------------
+
 void __fastcall TfrmPrinterMaintenance::cbHideTaxInvoiceClick(TObject *Sender)
 {
    Database::TDBTransaction DBTransaction(DBControl);
    DBTransaction.StartTransaction();
-   TGlobalSettings::Instance().PrintNoticeOnTransfer = cbPrintNoticeOnTransfer->Checked;
-   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
+   TGlobalSettings::Instance().HideTaxInvoice = cbHideTaxInvoice->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmHideTaxInvoice, TGlobalSettings::Instance().HideTaxInvoice);
    DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
+
 void __fastcall TfrmPrinterMaintenance::cbCaptureRefundReferenceClick(TObject *Sender)
+
 {
    Database::TDBTransaction DBTransaction(DBControl);
    DBTransaction.StartTransaction();
-   TGlobalSettings::Instance().PrintNoticeOnTransfer = cbPrintNoticeOnTransfer->Checked;
-   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
+   TGlobalSettings::Instance().CaptureRefundRefNo = cbCaptureRefundReference->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmCaptureRefundRefNo, TGlobalSettings::Instance().CaptureRefundRefNo);
    DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::cbExportReprintReceiptClick(TObject *Sender)
+
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().ExportReprintReceipt = cbExportReprintReceipt->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmExportReprintReceipt, TGlobalSettings::Instance().ExportReprintReceipt);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::cbSetFooterClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().ExportReprintReceipt = cbExportReprintReceipt->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmExportReprintReceipt, TGlobalSettings::Instance().ExportReprintReceipt);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+

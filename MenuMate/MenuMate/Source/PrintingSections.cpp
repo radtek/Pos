@@ -6178,7 +6178,7 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
             {
 //                pPrinter->Line->Columns[0]->Text = "Tax Invoice";  // PrintTaxInvoice(PrintJob,pPrinter)
 //                pPrinter->AddLine();
-                TReceiptUtility::PrintTaxInvoice(TReqPrintJob *PrintJob, TPrintFormat *pPrinter)
+                //TReceiptUtility::PrintTaxInvoice(TReqPrintJob *PrintJob, TPrintFormat *pPrinter)
                 pPrinter->Line->Columns[0]->Text    =   TGlobalSettings::Instance().ReceiptNumberLabel;
                 if(PrintJob->Transaction->TypeOfSale == RegularSale)
                 {
@@ -6196,12 +6196,12 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintReceiptHeaderSecond(TReqPrintJob *PrintJob)
 {
-   TReceiptUtility::PrintReceiptHeaderSecond(PrintJob,pPrinter);
+   //TReceiptUtility::PrintReceiptHeaderSecond(PrintJob,pPrinter);
 }
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
 {
-   TReceiptUtility::PrintReceiptFooterSecond(PrintJob,pPrinter);
+   //TReceiptUtility::PrintReceiptFooterSecond(PrintJob,pPrinter);
 }
 //-----------------------------------------------------------------------------
 UnicodeString TPrintSection::LeftPadString(UnicodeString inString, UnicodeString inChar, int strLen)

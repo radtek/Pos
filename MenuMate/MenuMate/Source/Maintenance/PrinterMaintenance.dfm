@@ -5094,504 +5094,504 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentBackground = False
                 ParentFont = False
                 TabOrder = 0
-                object tsReceiptOptionsInfo: TTabSheet
-                  Caption = 'tsReceiptOptionsInfo'
-                  ImageIndex = 2
-                  TabVisible = False
-                  object tpsReceiptInfo: TTouchPages
-                    Left = 0
-                    Top = 0
-                    Width = 379
-                    Height = 564
-                    Align = alClient
-                    Font.Charset = DEFAULT_CHARSET
-                    Font.Color = clWindow
-                    Font.Height = -15
-                    Font.Name = 'Tahoma'
-                    Font.Style = []
-                    Color = 14342874
-                    ParentFont = False
-                    ParentColor = False
-                    ActivePage = TouchSheetCustomInfo
-                    TabColor = 6052441
-                    object TouchSheetGeneralInfo: TTouchSheet
-                      Left = 2
-                      Top = 50
-                      Width = 375
-                      Height = 512
-                      Caption = 'Receipt General Info'
-                      object PanelGeneralInfo: TPanel
-                        Left = 0
-                        Top = 0
-                        Width = 387
-                        Height = 537
-                        BevelOuter = bvNone
-                        BorderWidth = 4
-                        Color = 14342874
-                        Font.Charset = DEFAULT_CHARSET
-                        Font.Color = clWindowText
-                        Font.Height = -16
-                        Font.Name = 'Arial'
-                        Font.Style = [fsBold]
-                        ParentBackground = False
-                        ParentFont = False
-                        TabOrder = 0
-                        object GroupBox2: TGroupBox
-                          Left = 4
+                object pgControl123: TPageControl
+                  Left = 0
+                  Top = 0
+                  Width = 379
+                  Height = 564
+                  Margins.Left = 0
+                  Margins.Top = 0
+                  Margins.Right = 0
+                  Margins.Bottom = 0
+                  ActivePage = tsReceiptOptionsInfo
+                  Font.Charset = DEFAULT_CHARSET
+                  Font.Color = clWindowText
+                  Font.Height = -16
+                  Font.Name = 'Arial'
+                  Font.Style = [fsBold]
+                  ParentFont = False
+                  Style = tsButtons
+                  TabOrder = 0
+                  object tsReceiptOptionsInfo: TTabSheet
+                    Caption = 'tsReceiptOptionsInfo'
+                    ImageIndex = 2
+                    TabVisible = False
+                    object tpsReceiptInfo: TTouchPages
+                      Left = 0
+                      Top = 0
+                      Width = 371
+                      Height = 554
+                      Align = alClient
+                      Font.Charset = DEFAULT_CHARSET
+                      Font.Color = clWindow
+                      Font.Height = -15
+                      Font.Name = 'Tahoma'
+                      Font.Style = []
+                      Color = 14342874
+                      ParentFont = False
+                      ParentColor = False
+                      ActivePage = TouchSheetCustomInfo
+                      TabColor = 6052441
+                      object TouchSheetGeneralInfo: TTouchSheet
+                        Left = 2
+                        Top = 50
+                        Width = 367
+                        Height = 502
+                        Caption = 'Receipt General Info'
+                        object PanelGeneralInfo: TPanel
+                          Left = 0
                           Top = 0
-                          Width = 365
-                          Height = 531
-                          Caption = 'Receipt Information'
+                          Width = 387
+                          Height = 537
+                          BevelOuter = bvNone
+                          BorderWidth = 4
                           Color = 14342874
-                          Ctl3D = True
                           Font.Charset = DEFAULT_CHARSET
                           Font.Color = clWindowText
                           Font.Height = -16
-                          Font.Name = 'Tahoma'
+                          Font.Name = 'Arial'
                           Font.Style = [fsBold]
                           ParentBackground = False
-                          ParentColor = False
-                          ParentCtl3D = False
                           ParentFont = False
                           TabOrder = 0
-                          object cbAlwaysPrintReceiptTenderedSales: TCheckBox
-                            Left = 11
-                            Top = 25
-                            Width = 315
-                            Height = 20
-                            Caption = 'Always print receipt on tendered sales'
+                          object GroupBox2: TGroupBox
+                            Left = 4
+                            Top = 0
+                            Width = 365
+                            Height = 531
+                            Caption = 'Receipt Information'
+                            Color = 14342874
+                            Ctl3D = True
                             Font.Charset = DEFAULT_CHARSET
                             Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 0
-                            OnClick = cbAlwaysPrintReceiptTenderedSalesClick
-                          end
-                          object cbReceiptBarCodes: TCheckBox
-                            Left = 11
-                            Top = 200
-                            Width = 289
-                            Height = 20
-                            Caption = 'Show bar codes on receipt.'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 1
-                            OnClick = cbReceiptBarCodesClick
-                          end
-                          object cbDoublePrint: TCheckBox
-                            Left = 11
-                            Top = 165
-                            Width = 315
-                            Height = 20
-                            Caption = 'Duplicate auto print receipts'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 2
-                            OnClick = cbDoublePrintClick
-                          end
-                          object cbAlwaysPrintCashSales: TCheckBox
-                            Left = 11
-                            Top = 60
-                            Width = 315
-                            Height = 20
-                            Caption = 'Always print receipt on cash sales'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 3
-                            OnClick = cbAlwaysPrintCashSalesClick
-                          end
-                          object cbDuplicateReceipts: TCheckBox
-                            Left = 11
-                            Top = 95
-                            Width = 315
-                            Height = 20
-                            Caption = 'Duplicate all receipts'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 4
-                            OnClick = cbDuplicateReceiptsClick
-                          end
-                          object cbAPTROS: TCheckBox
-                            Left = 11
-                            Top = 235
-                            Width = 315
-                            Height = 20
-                            Caption = 'Auto Print Tab Receipt On Save'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 5
-                            OnClick = cbAPTROSClick
-                          end
-                          object cbAPSROS: TCheckBox
-                            Left = 11
-                            Top = 270
-                            Width = 315
-                            Height = 20
-                            Caption = 'Auto Print Staff Receipt On Save'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 6
-                            OnClick = cbAPSROSClick
-                          end
-                          object cbAPMOS: TCheckBox
-                            Left = 11
-                            Top = 305
-                            Width = 315
-                            Height = 20
-                            Caption = 'Auto Print Member Receipt On Save'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 7
-                            OnClick = cbAPMOSClick
-                          end
-                          object cbAPTAROS: TCheckBox
-                            Left = 11
-                            Top = 340
-                            Width = 315
-                            Height = 20
-                            Caption = 'Auto Print Table Receipt On Save'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 8
-                            OnClick = cbAPTAROSClick
-                          end
-                          object cbAPCROS: TCheckBox
-                            Left = 11
-                            Top = 375
-                            Width = 315
-                            Height = 20
-                            Caption = 'Auto Print Cash Receipt On Save'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 9
-                            OnClick = cbAPCROSClick
-                          end
-                          object cbAPRROS: TCheckBox
-                            Left = 11
-                            Top = 410
-                            Width = 315
-                            Height = 20
-                            Caption = 'Auto Print Room Receipt On Save'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 10
-                            OnClick = cbAPRROSClick
-                          end
-                          object cbAPIROS: TCheckBox
-                            Left = 11
-                            Top = 445
-                            Width = 315
-                            Height = 20
-                            Caption = 'Auto Print Invoice On Save'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 11
-                            OnClick = cbAPIROSClick
-                          end
-                          object cbSaveAndPrint: TCheckBox
-                            Left = 11
-                            Top = 130
-                            Width = 340
-                            Height = 20
-                            Caption = #39'Save and Print'#39' prints only the new orders'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 12
-                            OnClick = cbSaveAndPrintClick
-                          end
-                          object cbAPWOOS: TCheckBox
-                            Left = 11
-                            Top = 480
-                            Width = 315
-                            Height = 20
-                            Caption = 'Auto Print Web Order On Save'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 13
-                            OnClick = cbAPWOOSClick
-                          end
-                          object cbPrintZeroTaxes: TCheckBox
-                            Left = 11
-                            Top = 515
-                            Width = 318
-                            Height = 20
-                            Caption = 'Print Taxes On Receipt When Zero'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 14
-                            OnClick = cbPrintZeroTaxesClick
-                          end
-                        end
-                      end
-                    end
-                    object TouchSheetCustomInfo: TTouchSheet
-                      Left = 2
-                      Top = 50
-                      Width = 375
-                      Height = 512
-                      Caption = 'Receipt Custom Info'
-                      object PanelCustomInfo: TPanel
-                        Left = 0
-                        Top = 0
-                        Width = 387
-                        Height = 537
-                        BevelOuter = bvNone
-                        BorderWidth = 4
-                        Color = 14342874
-                        Font.Charset = DEFAULT_CHARSET
-                        Font.Color = clWindowText
-                        Font.Height = -16
-                        Font.Name = 'Arial'
-                        Font.Style = [fsBold]
-                        ParentBackground = False
-                        ParentFont = False
-                        TabOrder = 0
-                        OnClick = PanelCustomInfoClick
-                        object GroupBoxCustom: TGroupBox
-                          Left = 4
-                          Top = 0
-                          Width = 365
-                          Height = 531
-                          Caption = 'Receipt Customize Information'
-                          Color = 14342874
-                          Ctl3D = True
-                          Font.Charset = DEFAULT_CHARSET
-                          Font.Color = clWindowText
-                          Font.Height = -16
-                          Font.Name = 'Tahoma'
-                          Font.Style = [fsBold]
-                          ParentBackground = False
-                          ParentColor = False
-                          ParentCtl3D = False
-                          ParentFont = False
-                          TabOrder = 0
-                          object LabelReceiptDigits: TLabel
-                            Left = 11
-                            Top = 155
-                            Width = 146
-                            Height = 19
-                            Caption = 'Digits for Receipt No'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                          end
-                          object LabelFooter: TLabel
-                            Left = 11
-                            Top = 212
-                            Width = 175
-                            Height = 38
-                            Caption = 'Label Footer for Refund/Void Transaction'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            WordWrap = True
-                          end
-                          object cbHideTaxInvoice: TCheckBox
-                            Left = 11
-                            Top = 25
-                            Width = 315
-                            Height = 20
-                            Caption = 'Hide Tax Invoice'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            TabOrder = 1
-                            OnClick = cbHideTaxInvoiceClick
-                          end
-                          object cbCaptureRefundReference: TCheckBox
-                            Left = 11
-                            Top = 60
-                            Width = 351
-                            Height = 35
-                            BiDiMode = bdLeftToRight
-                            Caption = 'Capture Receipt No for Refund/Void Transaction'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentBiDiMode = False
-                            ParentFont = False
-                            TabOrder = 2
-                            WordWrap = True
-                            OnClick = cbCaptureRefundReferenceClick
-                          end
-                          object cbExportReprintReceipt: TCheckBox
-                            Left = 11
-                            Top = 107
-                            Width = 351
-                            Height = 20
-                            BiDiMode = bdLeftToRight
-                            Caption = 'Export Reprint Receipt'
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWindowText
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentBiDiMode = False
-                            ParentFont = False
-                            TabOrder = 3
-                            WordWrap = True
-                            OnClick = cbExportReprintReceiptClick
-                          end
-                          object TouchBtn3: TTouchBtn
-                            Left = 247
-                            Top = 203
-                            Width = 73
-                            Height = 42
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWhite
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            ParentColor = True
-                            Caption = 'Footer'
-                            ButtonColor = 6052441
-                            LatchedColor = clBtnFace
-                            DisabledButtonColor = clBtnFace
-                            LatchingProperties = [lkLatchColor, lkStayDown]
-                          end
-                          object tbtnReceiptNumber: TTouchBtn
-                            Left = 247
-                            Top = 140
-                            Width = 73
-                            Height = 42
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWhite
-                            Font.Height = -16
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            ParentColor = True
-                            Caption = '11'
-                            ButtonColor = 6052441
-                            LatchedColor = clBtnFace
-                            DisabledButtonColor = clBtnFace
-                            LatchingProperties = [lkLatchColor, lkStayDown]
-                            OnMouseClick = tbtnReceiptNumberMouseClick
-                          end
-                          object tbtnReceiptNumberLabel: TTouchBtn
-                            Left = 194
-                            Top = 415
-                            Width = 105
-                            Height = 70
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWhite
-                            Font.Height = -15
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            ParentColor = True
-                            Caption = 'Receipt Number Label'
-                            ButtonColor = 6052441
-                            LatchedColor = clBtnFace
-                            DisabledButtonColor = clBtnFace
-                            LatchingProperties = [lkLatchColor, lkStayDown]
-                            OnMouseClick = tbtnReceiptNumberLabelMouseClick
-                          end
-                          object tbtnReprintLabel: TTouchBtn
-                            Left = 34
-                            Top = 419
-                            Width = 105
-                            Height = 70
-                            Font.Charset = DEFAULT_CHARSET
-                            Font.Color = clWhite
-                            Font.Height = -15
-                            Font.Name = 'Tahoma'
-                            Font.Style = []
-                            ParentFont = False
-                            ParentColor = True
-                            Caption = 'Reprint Receipt Label'
-                            ButtonColor = 6052441
-                            LatchedColor = clBtnFace
-                            DisabledButtonColor = clBtnFace
-                            LatchingProperties = [lkLatchColor, lkStayDown]
-                            OnMouseClick = tbtnReprintLabelMouseClick
-                          end
-                          object memCustomizeFooter: TRichEdit
-                            Left = 22
-                            Top = 265
-                            Width = 323
-                            Height = 50
-                            Alignment = taCenter
-                            Color = clWhite
-                            Font.Charset = ANSI_CHARSET
-                            Font.Color = clBlack
                             Font.Height = -16
                             Font.Name = 'Tahoma'
                             Font.Style = [fsBold]
+                            ParentBackground = False
+                            ParentColor = False
+                            ParentCtl3D = False
                             ParentFont = False
-                            PlainText = True
-                            ReadOnly = True
                             TabOrder = 0
+                            object cbAlwaysPrintReceiptTenderedSales: TCheckBox
+                              Left = 11
+                              Top = 25
+                              Width = 315
+                              Height = 20
+                              Caption = 'Always print receipt on tendered sales'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 0
+                              OnClick = cbAlwaysPrintReceiptTenderedSalesClick
+                            end
+                            object cbReceiptBarCodes: TCheckBox
+                              Left = 11
+                              Top = 200
+                              Width = 289
+                              Height = 20
+                              Caption = 'Show bar codes on receipt.'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 1
+                              OnClick = cbReceiptBarCodesClick
+                            end
+                            object cbDoublePrint: TCheckBox
+                              Left = 11
+                              Top = 165
+                              Width = 315
+                              Height = 20
+                              Caption = 'Duplicate auto print receipts'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 2
+                              OnClick = cbDoublePrintClick
+                            end
+                            object cbAlwaysPrintCashSales: TCheckBox
+                              Left = 11
+                              Top = 60
+                              Width = 315
+                              Height = 20
+                              Caption = 'Always print receipt on cash sales'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 3
+                              OnClick = cbAlwaysPrintCashSalesClick
+                            end
+                            object cbDuplicateReceipts: TCheckBox
+                              Left = 11
+                              Top = 95
+                              Width = 315
+                              Height = 20
+                              Caption = 'Duplicate all receipts'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 4
+                              OnClick = cbDuplicateReceiptsClick
+                            end
+                            object cbAPTROS: TCheckBox
+                              Left = 11
+                              Top = 235
+                              Width = 315
+                              Height = 20
+                              Caption = 'Auto Print Tab Receipt On Save'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 5
+                              OnClick = cbAPTROSClick
+                            end
+                            object cbAPSROS: TCheckBox
+                              Left = 11
+                              Top = 270
+                              Width = 315
+                              Height = 20
+                              Caption = 'Auto Print Staff Receipt On Save'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 6
+                              OnClick = cbAPSROSClick
+                            end
+                            object cbAPMOS: TCheckBox
+                              Left = 11
+                              Top = 305
+                              Width = 315
+                              Height = 20
+                              Caption = 'Auto Print Member Receipt On Save'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 7
+                              OnClick = cbAPMOSClick
+                            end
+                            object cbAPTAROS: TCheckBox
+                              Left = 11
+                              Top = 340
+                              Width = 315
+                              Height = 20
+                              Caption = 'Auto Print Table Receipt On Save'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 8
+                              OnClick = cbAPTAROSClick
+                            end
+                            object cbAPCROS: TCheckBox
+                              Left = 11
+                              Top = 375
+                              Width = 315
+                              Height = 20
+                              Caption = 'Auto Print Cash Receipt On Save'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 9
+                              OnClick = cbAPCROSClick
+                            end
+                            object cbAPRROS: TCheckBox
+                              Left = 11
+                              Top = 410
+                              Width = 315
+                              Height = 20
+                              Caption = 'Auto Print Room Receipt On Save'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 10
+                              OnClick = cbAPRROSClick
+                            end
+                            object cbAPIROS: TCheckBox
+                              Left = 11
+                              Top = 445
+                              Width = 315
+                              Height = 20
+                              Caption = 'Auto Print Invoice On Save'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 11
+                              OnClick = cbAPIROSClick
+                            end
+                            object cbSaveAndPrint: TCheckBox
+                              Left = 11
+                              Top = 130
+                              Width = 340
+                              Height = 20
+                              Caption = #39'Save and Print'#39' prints only the new orders'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 12
+                              OnClick = cbSaveAndPrintClick
+                            end
+                            object cbAPWOOS: TCheckBox
+                              Left = 11
+                              Top = 480
+                              Width = 315
+                              Height = 20
+                              Caption = 'Auto Print Web Order On Save'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 13
+                              OnClick = cbAPWOOSClick
+                            end
+                            object cbPrintZeroTaxes: TCheckBox
+                              Left = 11
+                              Top = 515
+                              Width = 318
+                              Height = 20
+                              Caption = 'Print Taxes On Receipt When Zero'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 14
+                              OnClick = cbPrintZeroTaxesClick
+                            end
+                          end
+                        end
+                      end
+                      object TouchSheetCustomInfo: TTouchSheet
+                        Left = 2
+                        Top = 50
+                        Width = 367
+                        Height = 502
+                        Caption = 'Receipt Custom Info'
+                        object PanelCustomInfo: TPanel
+                          Left = 0
+                          Top = 0
+                          Width = 387
+                          Height = 537
+                          BevelOuter = bvNone
+                          BorderWidth = 4
+                          Color = 14342874
+                          Font.Charset = DEFAULT_CHARSET
+                          Font.Color = clWindowText
+                          Font.Height = -16
+                          Font.Name = 'Arial'
+                          Font.Style = [fsBold]
+                          ParentBackground = False
+                          ParentFont = False
+                          TabOrder = 0
+                          object GroupBoxCustom: TGroupBox
+                            Left = 4
+                            Top = 0
+                            Width = 365
+                            Height = 531
+                            Caption = 'Receipt Customize Information'
+                            Color = 14342874
+                            Ctl3D = True
+                            Font.Charset = DEFAULT_CHARSET
+                            Font.Color = clWindowText
+                            Font.Height = -16
+                            Font.Name = 'Tahoma'
+                            Font.Style = [fsBold]
+                            ParentBackground = False
+                            ParentColor = False
+                            ParentCtl3D = False
+                            ParentFont = False
+                            TabOrder = 0
+                            object LabelReceiptDigits: TLabel
+                              Left = 11
+                              Top = 155
+                              Width = 146
+                              Height = 19
+                              Caption = 'Digits for Receipt No'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                            end
+                            object cbHideTaxInvoice: TCheckBox
+                              Left = 11
+                              Top = 25
+                              Width = 315
+                              Height = 20
+                              Caption = 'Hide Tax Invoice'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 1
+                              OnClick = cbHideTaxInvoiceClick
+                            end
+                            object cbCaptureRefundReference: TCheckBox
+                              Left = 11
+                              Top = 60
+                              Width = 351
+                              Height = 35
+                              BiDiMode = bdLeftToRight
+                              Caption = 'Capture Receipt No for Refund/Void Transaction'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentBiDiMode = False
+                              ParentFont = False
+                              TabOrder = 2
+                              WordWrap = True
+                              OnClick = cbCaptureRefundReferenceClick
+                            end
+                            object cbExportReprintReceipt: TCheckBox
+                              Left = 11
+                              Top = 107
+                              Width = 351
+                              Height = 20
+                              BiDiMode = bdLeftToRight
+                              Caption = 'Export Reprint Receipt'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentBiDiMode = False
+                              ParentFont = False
+                              TabOrder = 3
+                              WordWrap = True
+                              OnClick = cbExportReprintReceiptClick
+                            end
+                            object tbtnReceiptNumber: TTouchBtn
+                              Left = 247
+                              Top = 140
+                              Width = 73
+                              Height = 42
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWhite
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              ParentColor = True
+                              Caption = '11'
+                              ButtonColor = 6052441
+                              LatchedColor = clBtnFace
+                              DisabledButtonColor = clBtnFace
+                              LatchingProperties = [lkLatchColor, lkStayDown]
+                            end
+                            object tbtnReceiptNumberLabel: TTouchBtn
+                              Left = 194
+                              Top = 415
+                              Width = 105
+                              Height = 70
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWhite
+                              Font.Height = -15
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              ParentColor = True
+                              Caption = 'Receipt Number Label'
+                              ButtonColor = 6052441
+                              LatchedColor = clBtnFace
+                              DisabledButtonColor = clBtnFace
+                              LatchingProperties = [lkLatchColor, lkStayDown]
+                              OnMouseClick = tbtnReceiptNumberLabelMouseClick
+                            end
+                            object tbtnReprintLabel: TTouchBtn
+                              Left = 34
+                              Top = 419
+                              Width = 105
+                              Height = 70
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWhite
+                              Font.Height = -15
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              ParentColor = True
+                              Caption = 'Reprint Receipt Label'
+                              ButtonColor = 6052441
+                              LatchedColor = clBtnFace
+                              DisabledButtonColor = clBtnFace
+                              LatchingProperties = [lkLatchColor, lkStayDown]
+                              OnMouseClick = tbtnReprintLabelMouseClick
+                            end
+                            object memCustomizeFooter: TRichEdit
+                              Left = 16
+                              Top = 231
+                              Width = 323
+                              Height = 50
+                              Alignment = taCenter
+                              Color = clWhite
+                              Font.Charset = ANSI_CHARSET
+                              Font.Color = clBlack
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = [fsBold]
+                              ParentFont = False
+                              PlainText = True
+                              ReadOnly = True
+                              TabOrder = 0
+                            end
+                            object cbSetFooter: TCheckBox
+                              Left = 13
+                              Top = 201
+                              Width = 351
+                              Height = 17
+                              Caption = 'Label Footer for Refund/Void Transaction'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 6
+                              OnClick = cbSetFooterClick
+                            end
                           end
                         end
                       end

@@ -3087,6 +3087,18 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "Hide Receipt Number when Refund Item"
                  "Default is False.",
                   vmgPOS, false);
+       SetVarBool(DBTransaction,vmCaptureRefundRefNo, "Capture Refund Ref. No",
+		"Capture Refund Ref. No.\r"
+		"Default is false",
+		vmgPrinting, false);
+		SetVarBool(DBTransaction,vmHideTaxInvoice, "Hide Tax Invoice",
+		"Hide Tax Invoice.\r"
+		"Default is false",
+		vmgPrinting, false);
+		SetVarBool(DBTransaction,vmExportReprintReceipt, "Export Reprint Receipt",
+		"Export Reprint Receipt.\r"
+		"Default is false",
+		vmgPrinting, false);
 	}
 	catch(Exception &E)
 	{
