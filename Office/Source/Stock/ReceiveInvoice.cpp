@@ -451,7 +451,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column,
 bool &Allowed)
 {
 	TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)Sender->GetNodeData(Node);
-	Allowed = ((Column == 4 && !IsPackingSlipUpdateMode) || (Column == 5 && NodeData->OrderQty > 0) || (Column == 3 && NodeData && NodeData->IsUnitEditable)|| (Column == 6 && NodeData->OrderQty > 0) || (Column == 2 && NodeData && NodeData->IsUnitEditable) || (Column == 7 && !IsPackingSlipUpdateMode) || (Column == 4 && !IsSavedPackingSlip));
+	Allowed = ((Column == 4 && !IsPackingSlipUpdateMode) || Column == 5  || (Column == 3 && NodeData && NodeData->IsUnitEditable) || (Column == 2 && NodeData && NodeData->IsUnitEditable) || (Column == 7 && !IsPackingSlipUpdateMode) || (Column == 4 && !IsSavedPackingSlip));
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::vtvStockQtyFocusChanged(
