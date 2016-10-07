@@ -366,5 +366,6 @@ TGlobalSettings::TGlobalSettings()
     ShowDarkBackground = false;
     OpenCashDrawer = false;
     HideReceiptNumberForRefundItem = false;
+    MergeSimilarItem = true;
 }
 
