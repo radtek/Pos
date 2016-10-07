@@ -89,7 +89,7 @@ namespace Chefmate.Infrastructure.Output
             if (!string.IsNullOrWhiteSpace(inOrder.CustomerAddress))
                 outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerAddress, inOrder.CustomerAddress)));
             // Expected Time   
-            if (inOrder.DeliveryTime.ToString("dd-MM-yyyy hh:mm:ss tt") != "01-01-0001 12:00:00 a.m.")
+            if (inOrder.DeliveryTime  != DateTime.MinValue)
                 outDocketLayout.AddInstruction(GetInstruction(string.Format(_expectedTime, inOrder.DeliveryTime.ToString("T"))));
             // Payment Status 
             if (!string.IsNullOrWhiteSpace(inOrder.PaymentStatus))
