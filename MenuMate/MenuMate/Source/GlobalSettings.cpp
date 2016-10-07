@@ -369,5 +369,7 @@ TGlobalSettings::TGlobalSettings()
     HideTaxInvoice = false;
     ExportReprintReceipt = false;
     CaptureRefundRefNo = false;
+    SaveVoidFooter = "";
+    SetVoidFooter = false;
 }
 

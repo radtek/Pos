@@ -455,6 +455,8 @@ public:
     bool HideTaxInvoice;
     bool ExportReprintReceipt;
     bool CaptureRefundRefNo;
+    UnicodeString SaveVoidFooter;
+    bool SetVoidFooter;
 };
 
 #endif

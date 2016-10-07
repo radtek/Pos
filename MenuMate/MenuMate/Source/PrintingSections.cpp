@@ -302,6 +302,9 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiCurrentYearPts, "Current Year Points");
 	DefaultCaption[epofiCurrentYearPts] = "Current Year Points";
+
+    Instructions[i++] = InstructionPair(epofiPrintReceiptVoidFooter, "Receipt Void Footer");
+	DefaultCaption[epofiPrintReceiptVoidFooter] = "Receipt Void Footer";
 }
 
 
@@ -477,6 +480,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
 	case epofiPrintZeroRated:
 	case epofiPrintRedeemableWeight:
     case epofiCurrentYearPts:
+    case epofiPrintReceiptVoidFooter:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -854,14 +858,8 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 		case epofiPrintReceiptHeader:
 			PrintReceiptHeader(PrintJob);
 			break;
-        case epofiPrintReceiptHeaderSecond:
-            PrintReceiptHeaderSecond(PrintJob);
-            break;
 		case epofiPrintReceiptFooter:
 			PrintReceiptFooter(PrintJob);
-			break;
-		case epofiPrintReceiptFooterSecond:
-			PrintReceiptFooterSecond(PrintJob);
 			break;
 		case epofiPrintPaymentTotals:
 			PrintPaymentTotals(PrintJob);
@@ -982,6 +980,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
             break;
         case epofiGroupItems:
 			PrintItemRavelled(PrintJob, true);
+			break;
+        case epofiPrintReceiptVoidFooter:
+			PrintReceiptFooterSecond(PrintJob);
 			break;
 		default:
 			break;
@@ -5971,7 +5972,7 @@ void TPrintSection::PrintItemRavelled(TReqPrintJob *PrintJob, bool groupItemsTem
 					pPrinter->Line->Columns[1]->Alignment = taRightJustify;
 					pPrinter->Line->Columns[0]->Kanji = pPrinter->KanjiPrinter;
 					//// add.....
-				
+
 					pPrinter->Line->Columns[0]->Text = CurrentOrderBundle->ItemLine;   // add..
 					pPrinter->Line->Columns[1]->Text = SeatsList;
 
@@ -6202,6 +6203,25 @@ void TPrintSection::PrintReceiptHeaderSecond(TReqPrintJob *PrintJob)
 void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
 {
    //TReceiptUtility::PrintReceiptFooterSecond(PrintJob,pPrinter);
+    if (PrintJob->ReceiptFooter->Count == 0)
+    {
+        Empty = true;
+    }
+    else
+    {
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->FontInfo.Bold = false;
+        pPrinter->Line->FontInfo.Height = fsNormalSize;
+        pPrinter->Line->FontInfo.Width = fsNormalSize;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taCenter;
+
+        for (int i = 0; i < PrintJob->ReceiptFooter->Count; i++)
+        {
+            pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptFooter->Strings[i];
+            pPrinter->AddLine();
+        }
+    }
 }
 //-----------------------------------------------------------------------------
 UnicodeString TPrintSection::LeftPadString(UnicodeString inString, UnicodeString inChar, int strLen)

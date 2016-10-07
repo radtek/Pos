@@ -432,6 +432,8 @@ __published:	// IDE-managed Components
     void __fastcall cbCaptureRefundReferenceClick(TObject *Sender);
     void __fastcall cbExportReprintReceiptClick(TObject *Sender);
     void __fastcall cbSetFooterClick(TObject *Sender);
+    void __fastcall memCustomizeFooterMouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y);
     //void __fastcall cbExportReprintReceiptClick(TObject *Sender);
    // void __fastcall cbCaptureRefundReferenceClick(TObject *Sender);
     //void __fastcall cbHideTaxInvoiceClick(TObject *Sender);
@@ -497,6 +499,7 @@ private:	// User declarations
 
 	void MMEnumPrinters(UnicodeString PrinterContainer, std::map<UnicodeString,DWORD> &PrinterData );
     bool IsDBRegistered;
+    void CheckVoidFooterSetting();
 public:		// User declarations
 	void DisplayKitchenPrinterInstructionSet();
     void DisplayReceiptPrinterInstructionSet();

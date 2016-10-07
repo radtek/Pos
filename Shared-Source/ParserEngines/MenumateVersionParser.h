@@ -73,6 +73,7 @@ namespace MenumateVersionParser
             pv6_26,
             pv6_27,
             pv6_28,
+            pv6_29,
     };
 
     class TApplyParser
@@ -146,6 +147,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_26( TDBControl* const inDBControl );
         PARSER_ERROR apply6_27( TDBControl* const inDBControl );
 		PARSER_ERROR apply6_28( TDBControl* const inDBControl );        // Members
+        PARSER_ERROR apply6_29( TDBControl* const inDBControl );        // Members
         TDBControl* _dbControl;
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::

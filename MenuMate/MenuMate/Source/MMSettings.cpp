@@ -357,6 +357,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().CaptureRefundRefNo = TManagerVariable::Instance().GetBool(DBTransaction, vmCaptureRefundRefNo, false);
         TGlobalSettings::Instance().HideTaxInvoice = TManagerVariable::Instance().GetBool(DBTransaction, vmHideTaxInvoice, false);
         TGlobalSettings::Instance().ExportReprintReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmExportReprintReceipt, false);
+        TGlobalSettings::Instance().SaveVoidFooter = TManagerVariable::Instance().GetStr(DBTransaction, vmSaveVoidFooter, "");
+        TGlobalSettings::Instance().SetVoidFooter = TManagerVariable::Instance().GetBool(DBTransaction, vmSetVoidFooter, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

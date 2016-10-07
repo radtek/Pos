@@ -60,6 +60,12 @@ void TApplyParser::upgrade6_28Tables()
     update6_28Tables();
 }
 
+//6.28
+void TApplyParser::upgrade6_29Tables()
+{
+    update6_29Tables();
+}
+
 
 //::::::::::::::::::::::::Version 6.20::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_20Tables()
@@ -1090,5 +1096,11 @@ void TApplyParser::CreateGenerators6_28( TDBControl* const inDBControl)
 
 }
 //---------------------------------------------------------------------------
+
+//::::::::::::::::::::::::Version 6.29:::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_29Tables()
+{
+    CreateGenerators6_29(_dbControl);
+}
 
 }

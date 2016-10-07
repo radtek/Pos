@@ -138,7 +138,7 @@ enum vmVariables
    vmAutoPrintCashReceipts, vmAutoPrintRoomReceipts, vmAutoPrintInvoiceReceipts, vm_PLACEHOLDER_SumDiscountsOnRecipt,
    vmSummariseDiscountOnZed, vm_PLACEHOLDER_HideMembershipDetialsOnReceipts, vmCreditPaymentGroupNumber, vmMembersNameOnReceipt,
    vmAutoPrintWebReceipts,vmReceiptNumberLabel,vmReprintReceiptLabel, vmShowSessionDateInZed,vmPrintZeroTaxes,vmPrintNoticeOnTransfer, vmShowPriceAdjustment, vmRevenueFiguresAreDiscountInclusive,
-   vmCaptureRefundRefNo, vmHideTaxInvoice, vmExportReprintReceipt,
+   vmCaptureRefundRefNo, vmHideTaxInvoice, vmExportReprintReceipt,vmSaveVoidFooter,vmSetVoidFooter,
    // Printers   ------------------------------------------------------------------
    vmPrinterModel = 7000, vmPrinterEmulationMode, vmNormalCPL, vmNormalBoldCPL, vmCutterGap, vmTopMargin, vmKitchenTopMargin,
    vmAlwaysUseFullCut, vmKanjiPrinter, vmSingleLineChar, vmDoubleLineChar, vmGraphicPrinter, vmGraphicFontName, vmGraphicFontSize,

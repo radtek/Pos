@@ -4530,7 +4530,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             VertScrollTime = 450
             VertScrollDistance = 400
             Buttons = {
-              040000003B000000DB537AB8A66208D9FB3F3B000000DB537AB8A66208D9FB3F
+              040000003A000000DB537AB8A66208D9FB3F3A000000DB537AB8A66208D9FB3F
               620100005996655996655996FD3F000080000080000000008000050000004100
               720069080000800C00000001000000000000000000000000000000080000FF05
               0000004100720069080000800C00000001000000000000000000000000000000
@@ -5130,7 +5130,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                       Color = 14342874
                       ParentFont = False
                       ParentColor = False
-                      ActivePage = TouchSheetCustomInfo
+                      ActivePage = TouchSheetGeneralInfo
                       TabColor = 6052441
                       object TouchSheetGeneralInfo: TTouchSheet
                         Left = 2
@@ -5576,6 +5576,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               PlainText = True
                               ReadOnly = True
                               TabOrder = 0
+                              OnMouseUp = memCustomizeFooterMouseUp
                             end
                             object cbSetFooter: TCheckBox
                               Left = 13

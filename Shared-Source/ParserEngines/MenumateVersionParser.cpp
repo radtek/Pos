@@ -88,6 +88,7 @@ PARSER_ERROR TApplyParser::Apply(
         case pv6_26 : return apply6_26( inDBControl );
         case pv6_27 : return apply6_27( inDBControl );
         case pv6_28 : return apply6_28( inDBControl );
+        case pv6_29 : return apply6_29( inDBControl );
 	default: return PE_UNKNOWN_VERSION;
     }
 }
@@ -2035,6 +2036,39 @@ PARSER_ERROR TApplyParser::apply6_28( TDBControl* const inDBControl )
 		return PE_VERSION_UPGRADE_FAILED;
 	}
 }
+////::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+PARSER_ERROR TApplyParser::apply6_29( TDBControl* const inDBControl )
+{
+  	_dbControl = inDBControl;
+	_errorMsg.clear();
+	current_version  = "6.29";
+	previous_version = "6.28";
+	// Previous Version.
+	if( !updateAlreadyApplied( previous_version,  _dbControl ) )
+	{
+		_errorMsg.append( "Version " + previous_version + " required." );
+		return PE_VERSION_PREVIOUS_NOT_APPLIED;
+	}
+	// Current Version.
+	if( updateAlreadyApplied( current_version,  _dbControl ) )
+	{
+		_errorMsg.append( "Updates already succesfully applied." );
+		return PE_VERSION_ALREADY_APPLIED;
+	}
+	try
+	{
+		upgrade6_29Tables();
+		updateVersionNumber( current_version, _dbControl );
+		_errorMsg.append( "Updates have been succesfully applied." );
+		return PE_VERSION_UPGRADE_SUCCEED;
+	}
+	catch( Exception& exc )
+	{
+		_errorMsg.append( exc.Message.t_str() );
+		return PE_VERSION_UPGRADE_FAILED;
+	}
+}
+
 }
 ////::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 

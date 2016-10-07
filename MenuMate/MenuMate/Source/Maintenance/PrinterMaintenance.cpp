@@ -311,9 +311,12 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 		 tbChefMateIP->Enabled = false;
 	  }
 	  DBTransaction.Commit();
-     cbCaptureRefundReference->Checked = TGlobalSettings::Instance().CaptureRefundRefNo;
-     cbHideTaxInvoice->Checked = TGlobalSettings::Instance().HideTaxInvoice;
-     cbExportReprintReceipt->Checked = TGlobalSettings::Instance().ExportReprintReceipt;
+      cbCaptureRefundReference->Checked = TGlobalSettings::Instance().CaptureRefundRefNo;
+      cbHideTaxInvoice->Checked = TGlobalSettings::Instance().HideTaxInvoice;
+      cbExportReprintReceipt->Checked = TGlobalSettings::Instance().ExportReprintReceipt;
+      memCustomizeFooter->Lines->Text = TGlobalSettings::Instance().SaveVoidFooter;
+      cbSetFooter->Checked = TGlobalSettings::Instance().SetVoidFooter;
+      CheckVoidFooterSetting();
    }
    }
    catch(Exception & E)
@@ -4151,6 +4154,11 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
+               Instruction = new TPSectionInstruction(epofiPrintReceiptVoidFooter);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
 			   ReceiptTemplateModified = true;
 			   DrawReceiptDocket();
 			}break;
@@ -4254,6 +4262,11 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
 			   Instruction = new TPSectionInstruction(epofiPrintReceiptFooter);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
+               Instruction = new TPSectionInstruction(epofiPrintReceiptVoidFooter);
 			   Instruction->GroupNo = 1;
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
@@ -4368,6 +4381,11 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
 			   Instruction = new TPSectionInstruction(epofiPrintReceiptFooter);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
+               Instruction = new TPSectionInstruction(epofiPrintReceiptVoidFooter);
 			   Instruction->GroupNo = 1;
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
@@ -5177,9 +5195,42 @@ void __fastcall TfrmPrinterMaintenance::cbSetFooterClick(TObject *Sender)
 {
    Database::TDBTransaction DBTransaction(DBControl);
    DBTransaction.StartTransaction();
-   TGlobalSettings::Instance().ExportReprintReceipt = cbExportReprintReceipt->Checked;
-   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmExportReprintReceipt, TGlobalSettings::Instance().ExportReprintReceipt);
+   TGlobalSettings::Instance().SetVoidFooter = cbSetFooter->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmSetVoidFooter, TGlobalSettings::Instance().SetVoidFooter);
    DBTransaction.Commit();
+   CheckVoidFooterSetting();
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TfrmPrinterMaintenance::memCustomizeFooterMouseUp(TObject *Sender,
+          TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+   frmTouchKeyboard->MaxLength = 0;
+   frmTouchKeyboard->AllowCarriageReturn = true;
+   frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
+   frmTouchKeyboard->StartWithShiftDown = false;
+   frmTouchKeyboard->KeyboardText = memCustomizeFooter->Lines->Text;
+   frmTouchKeyboard->Caption = "Enter void receipt footer";
+   if (frmTouchKeyboard->ShowModal() == mrOk)
+   {
+	  memCustomizeFooter->Lines->Text = frmTouchKeyboard->KeyboardText;
+      TGlobalSettings::Instance().SaveVoidFooter = memCustomizeFooter->Lines->Text;
+      TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmSaveVoidFooter, TGlobalSettings::Instance().SaveVoidFooter );
+   }
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+void TfrmPrinterMaintenance::CheckVoidFooterSetting()
+{
+    if(cbSetFooter->Checked)
+   {
+      memCustomizeFooter->Enabled = true;
+   }
+   else
+   {
+      memCustomizeFooter->Enabled = false;
+   }
+}
