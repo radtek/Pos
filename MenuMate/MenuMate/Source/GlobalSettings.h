@@ -457,6 +457,7 @@ public:
     bool CaptureRefundRefNo;
     UnicodeString SaveVoidFooter;
     bool SetVoidFooter;
+    UnicodeString ReceiptDigits;
 };
 
 #endif

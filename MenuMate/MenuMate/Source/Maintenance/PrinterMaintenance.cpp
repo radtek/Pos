@@ -37,6 +37,7 @@
 #include "SeatOrders.h"
 #include "ParkedSale.h"
 #include "DBOrder.h"
+#include "MMTouchNumpad.h"
 
 #include "ChefMateInterface.h"
 
@@ -316,6 +317,7 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
       cbExportReprintReceipt->Checked = TGlobalSettings::Instance().ExportReprintReceipt;
       memCustomizeFooter->Lines->Text = TGlobalSettings::Instance().SaveVoidFooter;
       cbSetFooter->Checked = TGlobalSettings::Instance().SetVoidFooter;
+      tbtnReceiptNumber->Caption = TGlobalSettings::Instance().ReceiptDigits;
       CheckVoidFooterSetting();
    }
    }
@@ -5226,11 +5228,29 @@ void __fastcall TfrmPrinterMaintenance::memCustomizeFooterMouseUp(TObject *Sende
 void TfrmPrinterMaintenance::CheckVoidFooterSetting()
 {
     if(cbSetFooter->Checked)
-   {
       memCustomizeFooter->Enabled = true;
-   }
    else
-   {
       memCustomizeFooter->Enabled = false;
-   }
 }
+//---------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberAutoRepeat(TObject *Sender)
+
+{
+	std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+	frmTouchNumpad->Caption = "Enter number of seconds of inactivity before auto logout.";
+	frmTouchNumpad->btnSurcharge->Caption = "Ok";
+	frmTouchNumpad->btnDiscount->Visible = false;
+	frmTouchNumpad->btnSurcharge->Visible = true;
+	frmTouchNumpad->Mode = pmNumber;
+	if (frmTouchNumpad->ShowModal() == mrOk)
+	{
+        tbtnReceiptNumber->Caption = frmTouchNumpad->INTResult;
+		Database::TDBTransaction DBTransaction(DBControl);
+		DBTransaction.StartTransaction();
+        TGlobalSettings::Instance().ReceiptDigits = frmTouchNumpad->INTResult;
+        TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmReceiptDigits, TGlobalSettings::Instance().ReceiptDigits );
+		DBTransaction.Commit();
+	}
+}
+//---------------------------------------------------------------------------
+

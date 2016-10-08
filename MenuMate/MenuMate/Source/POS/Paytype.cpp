@@ -2711,7 +2711,16 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 	    		CurrentTransaction.Patrons.clear();
 		    	tbPatronCount->Caption = "Patron Count \r" + IntToStr(0);
             }
-
+            std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+            frmTouchNumpad->Caption = "Enter Reference Receipt No for Refund";
+            frmTouchNumpad->btnSurcharge->Caption = "Ok";
+            frmTouchNumpad->btnDiscount->Visible = false;
+            frmTouchNumpad->btnSurcharge->Visible = true;
+            frmTouchNumpad->Mode = pmNumber;
+            if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0)
+            {
+               int i = frmTouchNumpad->INTResult;
+            }
 			AnsiString Note = "";
 			std::auto_ptr <TfrmMessage> frmMessage(TfrmMessage::Create <TfrmMessage> (this, TDeviceRealTerminal::Instance().DBControl));
 			frmMessage->MessageType = eCreditReason;

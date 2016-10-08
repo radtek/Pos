@@ -3095,6 +3095,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Hide Tax Invoice.\r"
 		"Default is false",
 		vmgPrinting, false);
+		SetVarStr(DBTransaction,vmReceiptDigits, "Digits for Receipts",
+		"Digits for Receipts.\r"
+		"Default is ",
+		vmgPrinting, "");
 		SetVarBool(DBTransaction,vmExportReprintReceipt, "Export Reprint Receipt",
 		"Export Reprint Receipt.\r"
 		"Default is false",

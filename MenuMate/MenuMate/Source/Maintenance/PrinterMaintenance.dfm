@@ -5,7 +5,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
   Anchors = [akLeft, akTop, akRight, akBottom]
   BorderIcons = []
   Caption = 'Printer Settings'
-  ClientHeight = 768
+  ClientHeight = 753
   ClientWidth = 1024
   Color = clBlack
   DefaultMonitor = dmPrimary
@@ -28,7 +28,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
     Top = 5
     Width = 865
     Height = 756
-    ActivePage = tsKitchenFormat
+    ActivePage = tsReceiptOptions
     TabOrder = 0
     object tsPrinting: TTabSheet
       Caption = 'tsPrinting'
@@ -4530,7 +4530,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             VertScrollTime = 450
             VertScrollDistance = 400
             Buttons = {
-              040000003A000000DB537AB8A66208D9FB3F3A000000DB537AB8A66208D9FB3F
+              040000003B000000DB537AB8A66208D9FB3F3B000000DB537AB8A66208D9FB3F
               620100005996655996655996FD3F000080000080000000008000050000004100
               720069080000800C00000001000000000000000000000000000000080000FF05
               0000004100720069080000800C00000001000000000000000000000000000000
@@ -4747,7 +4747,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
         Color = clBlack
         ParentFont = False
         ParentColor = False
-        ActivePage = TouchSheet3
+        ActivePage = TouchSheet1
         TabWidth = 200
         TabColor = 6052441
         object TouchSheet1: TTouchSheet
@@ -5523,6 +5523,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               LatchedColor = clBtnFace
                               DisabledButtonColor = clBtnFace
                               LatchingProperties = [lkLatchColor, lkStayDown]
+                              OnAutoRepeat = tbtnReceiptNumberAutoRepeat
                             end
                             object tbtnReceiptNumberLabel: TTouchBtn
                               Left = 194
@@ -5601,7 +5602,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                     end
                   end
                 end
-              end				
+              end
             end
           end
         end

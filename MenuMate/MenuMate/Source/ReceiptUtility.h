@@ -19,7 +19,9 @@ class TReceiptUtility
         static void ShowRefundReference(TReqPrintJob *PrintJob,TPrintFormat *pPrinter);
         static void CustomizeReceiptNoLabel(TReqPrintJob *PrintJob,TPrintFormat *pPrinter);
         static void PrintReceiptHeaderSecond(TReqPrintJob *PrintJob,TPrintFormat *pPrinter);
-        static void PrintReceiptFooterSecond(TReqPrintJob *PrintJob,TPrintFormat *pPrinter);
+        static bool PrintReceiptFooterSecond(TReqPrintJob *PrintJob,TPrintFormat *pPrinter);
+        static void ModifyInvoiceNumber(TReqPrintJob *PrintJob,TPrintFormat *pPrinter,int size);
+        static UnicodeString LeftPadString(UnicodeString inString, UnicodeString inChar, int strLen);
 };
 
 #endif

@@ -284,6 +284,7 @@ __published:	// IDE-managed Components
     TLabel *LabelReceiptDigits;
     TPageControl *pgControl123;
     TCheckBox *cbSetFooter;
+    TTouchBtn *tbtnReceiptNumber;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
@@ -434,6 +435,7 @@ __published:	// IDE-managed Components
     void __fastcall cbSetFooterClick(TObject *Sender);
     void __fastcall memCustomizeFooterMouseUp(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y);
+    void __fastcall tbtnReceiptNumberAutoRepeat(TObject *Sender);
     //void __fastcall cbExportReprintReceiptClick(TObject *Sender);
    // void __fastcall cbCaptureRefundReferenceClick(TObject *Sender);
     //void __fastcall cbHideTaxInvoiceClick(TObject *Sender);

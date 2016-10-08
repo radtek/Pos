@@ -359,6 +359,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().ExportReprintReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmExportReprintReceipt, false);
         TGlobalSettings::Instance().SaveVoidFooter = TManagerVariable::Instance().GetStr(DBTransaction, vmSaveVoidFooter, "");
         TGlobalSettings::Instance().SetVoidFooter = TManagerVariable::Instance().GetBool(DBTransaction, vmSetVoidFooter, false);
+        TGlobalSettings::Instance().ReceiptDigits = TManagerVariable::Instance().GetStr(DBTransaction, vmReceiptDigits, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

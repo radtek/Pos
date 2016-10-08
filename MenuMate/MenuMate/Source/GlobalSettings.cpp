@@ -371,5 +371,6 @@ TGlobalSettings::TGlobalSettings()
     CaptureRefundRefNo = false;
     SaveVoidFooter = "";
     SetVoidFooter = false;
+    ReceiptDigits = "";
 }
 
