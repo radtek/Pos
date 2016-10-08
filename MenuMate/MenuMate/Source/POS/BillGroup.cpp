@@ -2221,7 +2221,7 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
         {
             // Find the old Focused button and set it to just Selected
             CurrentSelectedTab = SelectedTab;
-            //SplitItemsInSet(DBTransaction, SelectedTab);
+            SplitItemsInSet(DBTransaction, SelectedTab);
         }
         else if (tgridContainerList->Col(GridButton) == CONTAINER_LIST_FUNC_COLUMN)
         {
@@ -2252,7 +2252,7 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
                         const int tab_key =reinterpret_cast<int>(TabList->Objects[i]);
                         if (AddToSelectedTabs(DBTransaction,tab_key)== true )
                         {
-                            //SplitItemsInSet(DBTransaction,tab_key);
+                            SplitItemsInSet(DBTransaction,tab_key);
                             ItemSetAddItems(DBTransaction,tab_key);
                         }
                     }
@@ -2269,7 +2269,7 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
 
                     if (AddToSelectedTabs(DBTransaction, SelectedTab))
                     {
-                        //SplitItemsInSet(DBTransaction, SelectedTab);
+                        SplitItemsInSet(DBTransaction, SelectedTab);
                         ItemSetAddItems(DBTransaction,SelectedTab);
                         CurrentSelectedTab = SelectedTab;
                     }
@@ -2429,7 +2429,10 @@ void __fastcall TfrmBillGroup::SplitTimerTick(TObject *Sender)
 void __fastcall TfrmBillGroup::tgridItemListMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, TGridButton *GridButton, int X, int Y)
 {
-   SplitTimer->Enabled = true;
+   if(TGlobalSettings::Instance().MergeSimilarItem)
+   {
+        SplitTimer->Enabled = true;
+   }
    SelectedItemKey = GridButton->Tag;
 }
 //---------------------------------------------------------------------------
@@ -2688,22 +2691,24 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
 void TfrmBillGroup::SplitItemsInSet(Database::TDBTransaction &transaction, int tab_key)
 {
 	//TIBSQL *query = transaction.Query(transaction.AddQuery());
-	std::map<__int64, TPnMOrder> orders;
-	double quantity = TDBOrder::LoadPickNMixOrdersAndGetQuantity(transaction, tab_key, orders);
-	bool orderSplit = false;
-    bool doSplit = quantity < 10;
-	std::map<__int64, TPnMOrder>::iterator i = orders.begin();
-	std::map<__int64, TPnMOrder>::iterator j = orders.end();
+    if(!TGlobalSettings::Instance().MergeSimilarItem)
+    {
+        std::map<__int64, TPnMOrder> orders;
+        double quantity = TDBOrder::LoadPickNMixOrdersAndGetQuantity(transaction, tab_key, orders);
+        bool orderSplit = false;
+        std::map<__int64, TPnMOrder>::iterator i = orders.begin();
+        std::map<__int64, TPnMOrder>::iterator j = orders.end();
 
-	for ( ; i != j; i++)
-	{
-	  	if ( doSplit && (i->second.IsParent || !i->second.GroupNumber)
-	  			&& !i->second.IsWeighted && i->second.Qty > 1)
-		{
-			TDBOrder::SplitOrder(transaction, i->second.Key, i->second.Qty);
-			orderSplit = true;
-		}
-	}
+        for ( ; i != j; i++)
+        {
+            if ( (i->second.IsParent || !i->second.GroupNumber)
+                    && !i->second.IsWeighted && i->second.Qty > 1)
+            {
+                TDBOrder::SplitOrder(transaction, i->second.Key, i->second.Qty);
+                orderSplit = true;
+            }
+        }
+    }
    //  delete query;
 }
 // ---------------------------------------------------------------------------

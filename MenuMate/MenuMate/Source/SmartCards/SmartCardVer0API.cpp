@@ -58,7 +58,7 @@ void TSmartCard::EncryptInPlace(TMemoryStream &Data)
    // has it inherently ( yea you cant see it but its there ).
    // BYTE Passwd[] = {"0123456789abcdefghijklmnopqrstuvwxyz0123456789"};
    // BF.Initialize(Passwd,sizeof(Passwd));
-   BF.Initialize(SyndCode.SyndCode.c_str(),SyndCode.SyndCode.Length()+1);
+   BF.Initialize(SyndCode.DecryptedSyndCode.c_str(),SyndCode.DecryptedSyndCode.Length()+1);
    BF.Encode((BYTE *)Data.Memory,(BYTE *)Data.Memory,Data.Size);
 }
 
@@ -81,10 +81,6 @@ void TSmartCard::ReassignHandle(SCARDHANDLE inhCard)
 
 LONG TSmartCard::CardInfoWrite(int BlockStart, int MaxBlockLength, TMemoryStream &Stream)
 {
-   #ifdef _DEBUG
-	__int64 start = ::GetTickCount();
-   #endif
-
    if(Stream.Size > MaxBlockLength) // Inclusive of Block Start Byte so +1.
    {
       throw TSCException(tsceToMuchCardData,"Too Much Data to fit on Memory Card");
@@ -101,13 +97,7 @@ LONG TSmartCard::CardInfoWrite(int BlockStart, int MaxBlockLength, TMemoryStream
       TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Writing Data Failed. : " + AnsiString(IntToHex(int(lReturn),2)));
    }
 
-   #ifdef _DEBUG
-   __int64 Time = ((::GetTickCount() - start));
-   TManagerLogs::Instance().Add(__FUNC__,DEBUGLOG,"--------------------------------");
-   TManagerLogs::Instance().Add(__FUNC__,DEBUGLOG,"SmartCard Write Time :" + IntToStr(Time));
-   #endif
-
-   return lReturn;
+  return lReturn;
 }
 
 bool TSmartCard::StreamCheckCRC(unsigned short &CRC,unsigned short &CalcCRC,TMemoryStream *Stream, int Begin, int End)
@@ -139,7 +129,7 @@ void TSmartCard::ReloadCardDetails()
     std::auto_ptr<TMemoryStream> PointsStream(new TMemoryStream);
     StreamGetPoints(*PointsStream.get());
 
-    DecryptInPlace(*PointsStream.get(),SyndCode.SyndCode);
+    DecryptInPlace(*PointsStream.get(),SyndCode.DecryptedSyndCode);
     ContactInfo.Points.LoadFromStream(BlockData.Version,PointsStream.get());
 
     ContactInfo.Points.PointsRules = pointsRules;

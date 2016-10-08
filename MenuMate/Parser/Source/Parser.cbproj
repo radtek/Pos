@@ -77,119 +77,41 @@
 			<ILINK_LibraryPath>$(BDS)\lib\release;$(ILINK_LibraryPath);$(ILINK_LibraryPath)</ILINK_LibraryPath>
 		</PropertyGroup>
 		<ItemGroup>
-			<None Include="..\..\..\Shared-Source\ParserEngines\VersionParser.h">
-				<BuildOrder>43</BuildOrder>
-			</None>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_4.cpp">
-				<DependentOn>..\..\MenuMate\Source\DB_5_4.h</DependentOn>
-				<BuildOrder>43</BuildOrder>
+			<CppCompile Include="..\..\MenuMate\Source\POS_XMLBase.cpp">
+				<BuildOrder>29</BuildOrder>
+				<DependentOn>..\..\MenuMate\Source\POS_XMLBase.h</DependentOn>
+				<BuildOrder>0</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="UpgradeVersions.cpp">
-				<DependentOn>UpgradeVersions.h</DependentOn>
-				<BuildOrder>37</BuildOrder>
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_2.cpp">
+				<BuildOrder>18</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\ParserEngine.cpp">
-				<DependentOn>..\..\..\Shared-Source\ParserEngines\ParserEngine.h</DependentOn>
-				<BuildOrder>42</BuildOrder>
+			<ResourceCompile Include="VersionRes.rc">
+				<Form>VersionRes.res</Form>
+				<BuildOrder>14</BuildOrder>
+			</ResourceCompile>
+			<CppCompile Include="..\..\..\Shared-Source\System\Core\MM_DBCore.cpp">
+				<DependentOn>..\..\..\Shared-Source\System\Core\MM_DBCore.h</DependentOn>
+				<BuildOrder>13</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Predicates.cpp">
-				<BuildOrder>41</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_12.cpp">
-				<DependentOn>..\..\MenuMate\Source\DB_5_12.h</DependentOn>
-				<BuildOrder>30</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\Version.cpp">
-				<BuildOrder>20</BuildOrder>
-				<DependentOn>..\..\MenuMate\Source\Version.h</DependentOn>
-				<BuildOrder>11</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DB_5_13_0_3_Hotfix.cpp">
-				<DependentOn>DB_5_13_0_3_Hotfix.h</DependentOn>
-				<BuildOrder>33</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_6.cpp">
-				<DependentOn>..\..\MenuMate\Source\DB_5_6.h</DependentOn>
-				<BuildOrder>24</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\StringTools.cpp">
-				<DependentOn>..\..\..\Shared-Source\StringTools.h</DependentOn>
-				<BuildOrder>38</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser.cpp">
-				<DependentOn>..\..\..\Shared-Source\ParserEngines\MenumateVersionParser.h</DependentOn>
-				<BuildOrder>41</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Registry\MMRegistry.cpp">
-				<DependentOn>..\..\..\Shared-Source\Registry\MMRegistry.h</DependentOn>
-				<BuildOrder>17</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\SimpleTCP\Stream.cpp">
-				<DependentOn>..\..\SimpleTCP\Stream.h</DependentOn>
-				<BuildOrder>43</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\SmartCards\blowfish.cpp">
-				<BuildOrder>42</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\PointsTransaction.cpp">
-				<DependentOn>..\..\MenuMate\Source\PointsTransaction.h</DependentOn>
-				<BuildOrder>41</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DB_5_16.cpp">
-				<DependentOn>DB_5_16.h</DependentOn>
-				<BuildOrder>40</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\TZForm\ZForm.cpp">
-				<DependentOn>..\..\..\Shared-Source\TZForm\ZForm.h</DependentOn>
-				<BuildOrder>39</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Touch Utils\MMMessageBox.cpp">
-				<Form>frmMessageBox</Form>
-				<DependentOn>..\..\..\Shared-Source\Touch Utils\MMMessageBox.h</DependentOn>
-				<BuildOrder>38</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser5.cpp">
-				<BuildOrder>40</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_7.cpp">
-				<DependentOn>..\..\MenuMate\Source\DB_5_7.h</DependentOn>
-				<BuildOrder>42</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DB_5_15.cpp">
-				<DependentOn>DB_5_15.h</DependentOn>
-				<BuildOrder>41</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Parser.cpp">
-				<BuildOrder>8</BuildOrder>
+			<ResFiles Include="Parser.res">
+				<BuildOrder>9</BuildOrder>
+				<BuildOrder>2</BuildOrder>
+			</ResFiles>
+			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinyxml.cpp">
 				<BuildOrder>5</BuildOrder>
+				<BuildOrder>38</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DB_5_17.cpp">
-				<DependentOn>DB_5_17.h</DependentOn>
-				<BuildOrder>36</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DB_5_12_0_0_ChitList.cpp">
-				<DependentOn>DB_5_12_0_0_ChitList.h</DependentOn>
-				<BuildOrder>32</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_5.cpp">
-				<DependentOn>..\..\MenuMate\Source\DB_5_5.h</DependentOn>
-				<BuildOrder>23</BuildOrder>
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_9.cpp">
+				<DependentOn>..\..\MenuMate\Source\DB_5_9.h</DependentOn>
+				<BuildOrder>27</BuildOrder>
 			</CppCompile>
 			<LibFiles Include="..\..\..\libs\TouchButtonsR.lib">
 				<IgnorePath>true</IgnorePath>
 				<BuildOrder>13</BuildOrder>
 			</LibFiles>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_9.cpp">
-				<DependentOn>..\..\MenuMate\Source\DB_5_9.h</DependentOn>
-				<BuildOrder>27</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinyxmlerror.cpp">
-				<BuildOrder>41</BuildOrder>
-				<BuildOrder>4</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_11.cpp">
-				<DependentOn>..\..\MenuMate\Source\DB_5_11.h</DependentOn>
-				<BuildOrder>29</BuildOrder>
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_5.cpp">
+				<DependentOn>..\..\MenuMate\Source\DB_5_5.h</DependentOn>
+				<BuildOrder>23</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="main.cpp">
 				<BuildOrder>8</BuildOrder>
@@ -197,75 +119,160 @@
 				<DependentOn>main.h</DependentOn>
 				<BuildOrder>7</BuildOrder>
 			</CppCompile>
-			<ResourceCompile Include="VersionRes.rc">
-				<Form>VersionRes.res</Form>
-				<BuildOrder>14</BuildOrder>
-			</ResourceCompile>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_2.cpp">
-				<BuildOrder>18</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\POS_XMLBase.cpp">
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_11.cpp">
+				<DependentOn>..\..\MenuMate\Source\DB_5_11.h</DependentOn>
 				<BuildOrder>29</BuildOrder>
-				<DependentOn>..\..\MenuMate\Source\POS_XMLBase.h</DependentOn>
-				<BuildOrder>0</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinyxml.cpp">
-				<BuildOrder>5</BuildOrder>
-				<BuildOrder>38</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinyxmlerror.cpp">
+				<BuildOrder>41</BuildOrder>
+				<BuildOrder>4</BuildOrder>
 			</CppCompile>
-			<ResFiles Include="Parser.res">
-				<BuildOrder>9</BuildOrder>
-				<BuildOrder>2</BuildOrder>
-			</ResFiles>
-			<CppCompile Include="..\..\..\Shared-Source\System\Core\MM_DBCore.cpp">
-				<DependentOn>..\..\..\Shared-Source\System\Core\MM_DBCore.h</DependentOn>
-				<BuildOrder>13</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_10.cpp">
-				<DependentOn>..\..\MenuMate\Source\DB_5_10.h</DependentOn>
-				<BuildOrder>28</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\ParserEngineMenumate.cpp">
-				<DependentOn>..\..\..\Shared-Source\ParserEngines\ParserEngineMenumate.h</DependentOn>
-				<BuildOrder>39</BuildOrder>
-			</CppCompile>
-			<None Include="..\..\Version\VersionRes.h">
-				<BuildOrder>17</BuildOrder>
-				<BuildOrder>12</BuildOrder>
-			</None>
-			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser6.cpp">
-				<BuildOrder>44</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_3.cpp">
-				<BuildOrder>21</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinystr.cpp">
-				<BuildOrder>6</BuildOrder>
-				<BuildOrder>35</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\DB_5_8.cpp">
-				<DependentOn>..\..\MenuMate\Source\DB_5_8.h</DependentOn>
-				<BuildOrder>26</BuildOrder>
+			<CppCompile Include="..\..\MenuMate\Source\IBLogs\LogsString.cpp">
+				<BuildOrder>20</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\MenuMate\Source\ManagerTimeClock.cpp">
 				<BuildOrder>23</BuildOrder>
 				<DependentOn>..\..\MenuMate\Source\ManagerTimeClock.h</DependentOn>
 				<BuildOrder>2</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\MenuMate\Source\IBLogs\LogsString.cpp">
-				<BuildOrder>20</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParserTools.cpp">
-				<BuildOrder>45</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser6_2.cpp">
-				<BuildOrder>46</BuildOrder>
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_8.cpp">
+				<DependentOn>..\..\MenuMate\Source\DB_5_8.h</DependentOn>
+				<BuildOrder>26</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser6_1.cpp">
 				<BuildOrder>47</BuildOrder>
 			</CppCompile>
-			<FormResources Include="..\..\..\Shared-Source\Touch Utils\MMMessageBox.dfm"/>
+			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser6_2.cpp">
+				<BuildOrder>46</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParserTools.cpp">
+				<BuildOrder>45</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\Version\VersionRes.h">
+				<BuildOrder>17</BuildOrder>
+				<BuildOrder>12</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\ParserEngineMenumate.cpp">
+				<DependentOn>..\..\..\Shared-Source\ParserEngines\ParserEngineMenumate.h</DependentOn>
+				<BuildOrder>39</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_10.cpp">
+				<DependentOn>..\..\MenuMate\Source\DB_5_10.h</DependentOn>
+				<BuildOrder>28</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinystr.cpp">
+				<BuildOrder>6</BuildOrder>
+				<BuildOrder>35</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_3.cpp">
+				<BuildOrder>21</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser6.cpp">
+				<BuildOrder>44</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_6.cpp">
+				<DependentOn>..\..\MenuMate\Source\DB_5_6.h</DependentOn>
+				<BuildOrder>24</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DB_5_13_0_3_Hotfix.cpp">
+				<DependentOn>DB_5_13_0_3_Hotfix.h</DependentOn>
+				<BuildOrder>33</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\Source\Version.cpp">
+				<BuildOrder>20</BuildOrder>
+				<DependentOn>..\..\MenuMate\Source\Version.h</DependentOn>
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\Registry\MMRegistry.cpp">
+				<DependentOn>..\..\..\Shared-Source\Registry\MMRegistry.h</DependentOn>
+				<BuildOrder>17</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser.cpp">
+				<DependentOn>..\..\..\Shared-Source\ParserEngines\MenumateVersionParser.h</DependentOn>
+				<BuildOrder>41</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\StringTools.cpp">
+				<DependentOn>..\..\..\Shared-Source\StringTools.h</DependentOn>
+				<BuildOrder>38</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="UpgradeVersions.cpp">
+				<DependentOn>UpgradeVersions.h</DependentOn>
+				<BuildOrder>37</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_4.cpp">
+				<DependentOn>..\..\MenuMate\Source\DB_5_4.h</DependentOn>
+				<BuildOrder>43</BuildOrder>
+			</CppCompile>
+			<None Include="..\..\..\Shared-Source\ParserEngines\VersionParser.h">
+				<BuildOrder>43</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_12.cpp">
+				<DependentOn>..\..\MenuMate\Source\DB_5_12.h</DependentOn>
+				<BuildOrder>30</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\Predicates.cpp">
+				<BuildOrder>41</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\ParserEngine.cpp">
+				<DependentOn>..\..\..\Shared-Source\ParserEngines\ParserEngine.h</DependentOn>
+				<BuildOrder>42</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DB_5_15.cpp">
+				<DependentOn>DB_5_15.h</DependentOn>
+				<BuildOrder>41</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\Source\DB_5_7.cpp">
+				<DependentOn>..\..\MenuMate\Source\DB_5_7.h</DependentOn>
+				<BuildOrder>42</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser5.cpp">
+				<BuildOrder>40</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DB_5_12_0_0_ChitList.cpp">
+				<DependentOn>DB_5_12_0_0_ChitList.h</DependentOn>
+				<BuildOrder>32</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DB_5_17.cpp">
+				<DependentOn>DB_5_17.h</DependentOn>
+				<BuildOrder>36</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Parser.cpp">
+				<BuildOrder>8</BuildOrder>
+				<BuildOrder>5</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\Source\PointsTransaction.cpp">
+				<DependentOn>..\..\MenuMate\Source\PointsTransaction.h</DependentOn>
+				<BuildOrder>41</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\SimpleTCP\Stream.cpp">
+				<DependentOn>..\..\SimpleTCP\Stream.h</DependentOn>
+				<BuildOrder>43</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\Touch Utils\MMMessageBox.cpp">
+				<Form>frmMessageBox</Form>
+				<DependentOn>..\..\..\Shared-Source\Touch Utils\MMMessageBox.h</DependentOn>
+				<BuildOrder>38</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\TZForm\ZForm.cpp">
+				<DependentOn>..\..\..\Shared-Source\TZForm\ZForm.h</DependentOn>
+				<BuildOrder>39</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DB_5_16.cpp">
+				<DependentOn>DB_5_16.h</DependentOn>
+				<BuildOrder>40</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\Source\SmartCards\blowfish.cpp">
+				<BuildOrder>47</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\MenuMate\Source\ManagerSyndCode.cpp">
+				<DependentOn>..\..\MenuMate\Source\ManagerSyndCode.h</DependentOn>
+				<BuildOrder>48</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser6_3.cpp">
+				<BuildOrder>49</BuildOrder>
+			</CppCompile>
 			<FormResources Include="main.dfm"/>
+			<FormResources Include="..\..\..\Shared-Source\Touch Utils\MMMessageBox.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

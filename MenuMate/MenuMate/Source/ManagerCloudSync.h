@@ -8,6 +8,7 @@ class TManagerCloudSync
 {
    public:
     void SyncCompanyDetails();
+    void CheckSyndCodes();
    private:
     TfrmLoyaltyMateOperationDialogBox* _lmOperationDialogBox;
     void __fastcall loyaltyMateOperationCompleted(TObject* sender);

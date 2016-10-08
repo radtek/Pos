@@ -54,7 +54,7 @@ object frmMemberCreation: TfrmMemberCreation
     end
     object lbeContactPhone: TLabel
       Left = 190
-      Top = 185
+      Top = 245
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET

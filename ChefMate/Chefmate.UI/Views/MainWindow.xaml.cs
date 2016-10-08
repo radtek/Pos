@@ -272,7 +272,7 @@ namespace Chefmate.UI.Views
         private void Setting(object sender, RoutedEventArgs e)
         {
             var displayType = ChefmateController.Instance.CurrentSettings.GroupType;
-            var settingView = new SettingView { ShowInTaskbar = false, Topmost = true};
+            var settingView = new SettingView { ShowInTaskbar = false, Topmost = true };
             settingView.ShowDialog();
             IsRecallEnabled = ChefmateController.Instance.CurrentSettings.TerminalType == TerminalType.Kitchen;
             Properties.Settings.Default.DatabasePath = ChefmateController.Instance.CurrentSettings.DbPath;
@@ -466,7 +466,7 @@ namespace Chefmate.UI.Views
         private Item GetItemForHeight(Item inItem, ref double height, OrderGuiIndex orderGuiIndex)
         {
             var itemHeight = inItem.GetItemActualHeight();
-            if (itemHeight <= height)
+            if (itemHeight <= height && !orderGuiIndex.IsLastItempartial)
             {
                 orderGuiIndex.IsLastItempartial = false;
                 orderGuiIndex.GroupItemIndex++;

@@ -366,6 +366,7 @@ TGlobalSettings::TGlobalSettings()
     ShowDarkBackground = false;
     OpenCashDrawer = false;
     HideReceiptNumberForRefundItem = false;
+    MergeSimilarItem = true;
     HideTaxInvoice = false;
     ExportReprintReceipt = false;
     CaptureRefundRefNo = false;

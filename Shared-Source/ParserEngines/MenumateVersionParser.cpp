@@ -2004,7 +2004,6 @@ PARSER_ERROR TApplyParser::apply6_27( TDBControl* const inDBControl )
 	}
 }
 ////::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-////::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 PARSER_ERROR TApplyParser::apply6_28( TDBControl* const inDBControl )
 {
   	_dbControl = inDBControl;

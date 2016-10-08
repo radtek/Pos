@@ -43,26 +43,9 @@ namespace AccountingIntegration.MYOB
         private string _failedFolder;
         private string FileName;
 
-        private MYOBInvoiceController()
+        public MYOBInvoiceController()
         {
 
-        }
-
-        public static MYOBInvoiceController Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (syncRoot)
-                    {
-                        if (_instance == null)
-                            _instance = new MYOBInvoiceController();
-                    }
-                }
-
-                return _instance;
-            }
         }
 
         #region Public

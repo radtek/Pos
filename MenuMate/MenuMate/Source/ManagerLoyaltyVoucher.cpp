@@ -24,12 +24,8 @@ void __fastcall TManagerLoyaltyVoucher::loyaltyMateOperationCompleted(TObject* s
 void TManagerLoyaltyVoucher::GetPocketVoucherDetail(AnsiString voucherCode,TVoucherDetail &VoucherDetail)
 {
     bool result = false;
-    TManagerSyndCode managerSyndCode;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
     if(syndicateCode.Valid())
      {
         TLoyaltyMatePocketVoucherThread* voucherThread = new TLoyaltyMatePocketVoucherThread(syndicateCode);
@@ -68,12 +64,8 @@ void TManagerLoyaltyVoucher::GetPocketVoucherDetail(AnsiString voucherCode,TVouc
 double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode,bool &isValidGiftCard)
 {
     double balance = 0;
-    TManagerSyndCode managerSyndCode;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
 
     if(syndicateCode.Valid())
      {
@@ -113,12 +105,8 @@ double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode,bool 
 bool TManagerLoyaltyVoucher::ProcessVouchers(TVoucherUsageDetail VoucherUsageDetail)
 {
     bool transactionStatus = false;
-    TManagerSyndCode managerSyndCode;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
 
     if(syndicateCode.Valid())
      {
@@ -152,12 +140,8 @@ bool TManagerLoyaltyVoucher::ProcessVouchers(TVoucherUsageDetail VoucherUsageDet
 bool TManagerLoyaltyVoucher::ReleaseVouchers(TReleasedVoucherDetail ReleasedVoucherDetail)
 {
     bool transactionStatus = false;
-    TManagerSyndCode managerSyndCode;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
 
     if(syndicateCode.Valid())
      {
