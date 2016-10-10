@@ -701,7 +701,7 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
                     }
                    else if(order1->TabType == TabInvoice)
                     {
-                       tabTableName =  order1->InvoiceNumber;
+                       tabTableName =  order1->InvoiceNumber + " : " + order1->TabName;
                     }
                    else if(order1->TabType != TabTableSeat)
                     {
