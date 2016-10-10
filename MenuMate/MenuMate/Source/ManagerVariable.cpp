@@ -3106,12 +3106,16 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Export Reprint Receipt.\r"
 		"Default is false",
 		vmgPrinting, false);
-      SetVarStr( DBTransaction, vmSaveVoidFooter, "Save Void Footer",
-        "Save Void Footer"
-        "Default is 200",
-        vmgPrinting, "");
 		SetVarBool(DBTransaction,vmSetVoidFooter, "Set For Void Footer",
 		"Set For Void Footer"
+		"Default is false",
+		vmgPrinting, false);
+		SetVarBool(DBTransaction,vmShowVoidOrRefund, "Show Void or Refund ",
+		"Show Void or Refund"
+		"Default is false",
+		vmgPrinting, false);
+ 		SetVarBool(DBTransaction,vmShowVoidNumber, "Show Void or Refund number",
+		"Show Void or Refund number"
 		"Default is false",
 		vmgPrinting, false);
 	}

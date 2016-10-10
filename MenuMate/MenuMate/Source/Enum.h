@@ -217,6 +217,7 @@
 #define RECEIPT_PRELIM_HEADER  "ReceiptP.hdr"
 #define RECEIPT_FOOTER "Receipt.ftr"
 #define RECEIPT_ZEDHEADER "Zed.hdr"
+#define RECEIPT_VOID_FOOTER "Void.hdr"
 // Paths
 #define ZDIR   "ZDir"
 #define LOGDIR "Logs"

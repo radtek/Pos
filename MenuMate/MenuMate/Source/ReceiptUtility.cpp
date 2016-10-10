@@ -59,8 +59,16 @@ bool TReceiptUtility::PrintReceiptFooterSecond(TReqPrintJob *PrintJob,TPrintForm
     }
     else
     {
-        pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().SaveVoidFooter;
-        pPrinter->AddLine();
+        pPrinter->Line->FontInfo.Bold = false;
+		pPrinter->Line->FontInfo.Height = fsNormalSize;
+		pPrinter->Line->FontInfo.Width = fsNormalSize;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+		pPrinter->Line->Columns[0]->Alignment = taCenter;
+		for (int i = 0; i < PrintJob->ReceiptVoidFooter->Count; i++)
+		{
+			pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptVoidFooter->Strings[i];
+			pPrinter->AddLine();
+		}
     }
     return empty;
 }

@@ -456,9 +456,11 @@ public:
     bool HideTaxInvoice;
     bool ExportReprintReceipt;
     bool CaptureRefundRefNo;
-    UnicodeString SaveVoidFooter;
     bool SetVoidFooter;
     UnicodeString ReceiptDigits;
+    std::auto_ptr<TStringList>VoidFooter;
+    bool ShowVoidOrRefund;
+    bool ShowVoidNumber;
 };
 
 #endif
