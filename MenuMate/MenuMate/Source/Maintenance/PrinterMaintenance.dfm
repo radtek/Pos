@@ -21,6 +21,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object pgControl: TPageControl
@@ -33,6 +35,10 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
     object tsPrinting: TTabSheet
       Caption = 'tsPrinting'
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel52: TPanel
         Left = 0
         Top = 0
@@ -1031,6 +1037,10 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
     object tsBreakdownCats: TTabSheet
       Caption = 'tsBreakdownCats'
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel521: TPanel
         Left = 0
         Top = 0
@@ -1881,6 +1891,10 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       Caption = 'tsKitchenFormat'
       ImageIndex = 1
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel6: TPanel
         Left = 0
         Top = 0
@@ -3361,6 +3375,10 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       Caption = 'tsPrinters'
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel5: TPanel
         Left = 0
         Top = 0
@@ -4017,6 +4035,10 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       Caption = 'tsServingCoursePrinting'
       ImageIndex = 3
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel8: TPanel
         Left = 0
         Top = 0
@@ -4400,6 +4422,10 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       Caption = 'tsDevicePrinterProfiles'
       ImageIndex = 4
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel28: TPanel
         Left = 0
         Top = 0
@@ -4733,6 +4759,10 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
       Caption = 'tsReceiptOptions'
       ImageIndex = 5
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object tpsReceipt: TTouchPages
         Left = 0
         Top = 0
@@ -5116,6 +5146,10 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                     Caption = 'tsReceiptOptionsInfo'
                     ImageIndex = 2
                     TabVisible = False
+                    ExplicitLeft = 0
+                    ExplicitTop = 0
+                    ExplicitWidth = 0
+                    ExplicitHeight = 0
                     object tpsReceiptInfo: TTouchPages
                       Left = 0
                       Top = 0

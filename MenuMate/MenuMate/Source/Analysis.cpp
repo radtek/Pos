@@ -2250,11 +2250,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"\"ARCBILL\".\"RECEIPT\", \"ARCBILL\".\"SECURITY_REF\", \"ARCBILL\".\"SALES_TYPE\", "
 			"\"ARCBILL\".\"BILLED_LOCATION\", \"ARCBILL\".\"INVOICE_NUMBER\", \"ARCBILL\".\"INVOICE_KEY\","
 			"\"ARCBILL\".\"ORDER_TYPE_MESSAGE\", \"ARCBILL\".\"CONTACTS_KEY\", \"ARCBILL\".\"ROUNDING_ADJUSTMENT\","
-            "\"ARCBILL\".\"ORDER_IDENTIFICATION_NUMBER\" ) " "values "
+            "\"ARCBILL\".\"ORDER_IDENTIFICATION_NUMBER\", \"ARCBILL\".\"REFUND_REFRECEIPT\" ) " "values "
 			"(:\"ARCBILL_KEY\", :\"TERMINAL_NAME\", :\"STAFF_NAME\", :\"TIME_STAMP\", :\"TOTAL\", "
 			":\"DISCOUNT\", :\"PATRON_COUNT\", :\"RECEIPT\", :\"SECURITY_REF\", :\"SALES_TYPE\", "
 			":\"BILLED_LOCATION\", :\"INVOICE_NUMBER\", :\"INVOICE_KEY\", :\"ORDER_TYPE_MESSAGE\","
-            " :\"CONTACTS_KEY\", :\"ROUNDING_ADJUSTMENT\", :\"ORDER_IDENTIFICATION_NUMBER\")";
+            " :\"CONTACTS_KEY\", :\"ROUNDING_ADJUSTMENT\", :\"ORDER_IDENTIFICATION_NUMBER\", :\"REFUND_REFRECEIPT\")";
 
 			IBArcBillPay->Close();
 			IBArcBillPay->SQL->Text = "insert into \"ARCBILLPAY\" ("
