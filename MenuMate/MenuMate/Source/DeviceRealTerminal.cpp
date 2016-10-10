@@ -124,7 +124,7 @@ void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TS
    TGlobalSettings::Instance().Header->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_HEADER);
    TGlobalSettings::Instance().PHeader->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_PRELIM_HEADER);
    TGlobalSettings::Instance().Footer->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_FOOTER);
-   TGlobalSettings::Instance().Footer->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_VOID_FOOTER);
+   TGlobalSettings::Instance().VoidFooter->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_VOID_FOOTER);
 }
 
 void TDeviceRealTerminal::SaveZedHeader(TStrings *inZedHeader)

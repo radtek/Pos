@@ -6208,25 +6208,29 @@ void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
 {
-	if (PrintJob->ReceiptFooter->Count == 0)
-	{
-		Empty = true;
-	}
-	else
-	{
-		pPrinter->Line->ColCount = 1;
-		pPrinter->Line->FontInfo.Bold = false;
-		pPrinter->Line->FontInfo.Height = fsNormalSize;
-		pPrinter->Line->FontInfo.Width = fsNormalSize;
-		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-		pPrinter->Line->Columns[0]->Alignment = taCenter;
 
-		for (int i = 0; i < PrintJob->ReceiptFooter->Count; i++)
-		{
-			pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptFooter->Strings[i];
-			pPrinter->AddLine();
-		}
-	}
+    if(!PrintJob->Transaction->CreditTransaction || !TGlobalSettings::Instance().SetVoidFooter)
+    {
+        if (PrintJob->ReceiptFooter->Count == 0)
+        {
+            Empty = true;
+        }
+        else
+        {
+            pPrinter->Line->ColCount = 1;
+            pPrinter->Line->FontInfo.Bold = false;
+            pPrinter->Line->FontInfo.Height = fsNormalSize;
+            pPrinter->Line->FontInfo.Width = fsNormalSize;
+            pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+            pPrinter->Line->Columns[0]->Alignment = taCenter;
+
+            for (int i = 0; i < PrintJob->ReceiptFooter->Count; i++)
+            {
+                pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptFooter->Strings[i];
+                pPrinter->AddLine();
+            }
+        }
+    }
 }
 
 
