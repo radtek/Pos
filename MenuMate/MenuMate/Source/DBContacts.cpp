@@ -600,11 +600,12 @@ void TDBContacts::SetContactCard(Database::TDBTransaction &DBTransaction, int in
 
           IBInternalQuery->Close();
           IBInternalQuery->SQL->Text =
-              "INSERT INTO CONTACTCARDS (" "CONTACTCARDS_KEY," "CONTACTS_KEY," "SWIPE_CARD) " "VALUES (" ":CONTACTCARDS_KEY,"
-              ":CONTACTS_KEY," ":SWIPE_CARD);";
+              "INSERT INTO CONTACTCARDS (" "CONTACTCARDS_KEY," "CONTACTS_KEY," "SWIPE_CARD,IS_ACTIVE) " "VALUES (" ":CONTACTCARDS_KEY,"
+              ":CONTACTS_KEY," ":SWIPE_CARD,:IS_ACTIVE);";
           IBInternalQuery->ParamByName("CONTACTCARDS_KEY")->AsInteger = RetVal;
           IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
           IBInternalQuery->ParamByName("SWIPE_CARD")->AsString = Card;
+          IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = 'T';
           IBInternalQuery->ExecQuery();
       }
    }

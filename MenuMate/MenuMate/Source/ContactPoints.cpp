@@ -283,13 +283,15 @@ Currency TContactPoints::GetCurrentPointsValue(TPointsTypePair type)
 
 Currency TContactPoints::getPointsBalance(TPointsTransactionAccountType Account)
 {
-	return GetPointsValue(TPointsTypePair(pttEarned, Account)) +
-    	   GetPointsValue(TPointsTypePair(pttPurchased, Account)) +
-	       GetPointsValue(TPointsTypePair(pttRedeemed, Account)) +
-           GetPointsValue(TPointsTypePair(pttRefund, Account)) +
-           GetPointsValue(TPointsTypePair(pttSync, Account))+
-           GetPointsValue(TPointsTypePair(pttRedeemedBD, Account))+
-           GetPointsValue(TPointsTypePair(pttRedeemedFV, Account));
+    return  GetPointsValue(TPointsTypePair(pttEarned, Account)) +
+            GetPointsValue(TPointsTypePair(pttFirstVisit, Account)) +
+            GetPointsValue(TPointsTypePair(pttBirthdayBonus, Account)) +
+            GetPointsValue(TPointsTypePair(pttPurchased, Account)) +
+            GetPointsValue(TPointsTypePair(pttRedeemed, Account)) +
+            GetPointsValue(TPointsTypePair(pttRefund, Account)) +
+            GetPointsValue(TPointsTypePair(pttSync, Account))+
+            GetPointsValue(TPointsTypePair(pttRedeemedBD, Account))+
+            GetPointsValue(TPointsTypePair(pttRedeemedFV, Account));
 }
 
 Currency TContactPoints::getPointsEarned(TPointsTransactionAccountType Account)
