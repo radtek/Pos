@@ -2872,23 +2872,34 @@ bool TfrmPaymentType::ValidateRefundReference(UnicodeString str)
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     IBInternalQuery->Close();
     IBInternalQuery->SQL->Text =		" SELECT "
-                                        " ARCBILL_KEY "
+                                        " a.ARCBILL_KEY "
                                         " FROM "
-                                        "  ARCBILL "
+                                        "  ARCBILL a"
+                                        " LEFT JOIN "
+                                        " SECURITY s"
+                                        " on s.SECURITY_REF = a.SECURITY_REF"
                                         " WHERE "
-                                        " INVOICE_NUMBER  = :INVOICE_NUMBER "
+                                        " a.INVOICE_NUMBER  = :INVOICE_NUMBER "
+                                        " and s.SECURITY_EVENT <> 'Credit' "
+                                        " and a.REFUND_REFRECEIPT <> :REFUND_REFRECEIPT "
 
                                         " UNION ALL "
 
                                         " SELECT "
                                         " ARCBILL_KEY "
                                         " FROM "
-                                        "  DAYARCBILL "
+                                        "  DAYARCBILL d"
+                                        " LEFT JOIN "
+                                        " SECURITY s"
+                                        " on s.SECURITY_REF = d.SECURITY_REF"
                                         " WHERE "
-                                        " INVOICE_NUMBER  = :INVOICE_NUMBER ";
+                                        " INVOICE_NUMBER  = :INVOICE_NUMBER "
+                                        " and s.SECURITY_EVENT <> 'Credit' "
+                                        " and d.REFUND_REFRECEIPT <> :REFUND_REFRECEIPT ";
 
 
     IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = str;
+    IBInternalQuery->ParamByName("REFUND_REFRECEIPT")->AsString = str;
     IBInternalQuery->ExecQuery();
     if(IBInternalQuery->RecordCount > 0)
     {
