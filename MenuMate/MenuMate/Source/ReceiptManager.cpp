@@ -615,6 +615,7 @@ void TManagerReceipt::Get(TStringList *Lines)
                  else
                   {
                      int InsertPosition =  (Lines->Strings[RowCount - 1].Length() - TGlobalSettings::Instance().ReprintReceiptLabel.Length())/2;
+                     InsertPosition+=2;
                      Lines->Strings[RowCount-1] = Lines->Strings[RowCount-1].SubString(TGlobalSettings::Instance().ReprintReceiptLabel.Length(),Lines->Strings[RowCount - 1].Length() - TGlobalSettings::Instance().ReprintReceiptLabel.Length());
                      Lines->Strings[RowCount-1] = Lines->Strings[RowCount-1].Insert(TGlobalSettings::Instance().ReprintReceiptLabel,InsertPosition);
                   }

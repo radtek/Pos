@@ -30,7 +30,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
     Top = 5
     Width = 865
     Height = 756
-    ActivePage = tsReceiptOptions
+    ActivePage = tsKitchenFormat
     TabOrder = 0
     object tsPrinting: TTabSheet
       Caption = 'tsPrinting'
@@ -559,7 +559,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Add / Edit Printer Profiles'
-            ButtonColor = clBtnFace
+            ButtonColor = clNavy
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -579,8 +579,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clBtnFace
-            DefaultButtonLatchedColor = clBtnFace
+            DefaultButtonColor = clNavy
+            DefaultButtonLatchedColor = clGreen
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridPrinterProfilesMouseClick
@@ -728,8 +728,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clBtnFace
-            DefaultButtonLatchedColor = clBtnFace
+            DefaultButtonColor = clNavy
+            DefaultButtonLatchedColor = clGreen
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridMenuMouseClick
@@ -877,8 +877,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clBtnFace
-            DefaultButtonLatchedColor = clBtnFace
+            DefaultButtonColor = clNavy
+            DefaultButtonLatchedColor = clGreen
             LatchingType = ltCheckbox
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridCourseMouseClick
@@ -1004,7 +1004,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Clear All'
-              ButtonColor = clBtnFace
+              ButtonColor = clInfoBk
               LatchedColor = clBtnFace
               DisabledButtonColor = clBtnFace
               LatchingProperties = [lkLatchColor, lkStayDown]
@@ -1024,7 +1024,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Select All'
-              ButtonColor = clBtnFace
+              ButtonColor = clNavy
               LatchedColor = clBtnFace
               DisabledButtonColor = clBtnFace
               LatchingProperties = [lkLatchColor, lkStayDown]
@@ -1561,7 +1561,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Add / Edit Printer Profiles'
-            ButtonColor = clBtnFace
+            ButtonColor = clNavy
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -1581,8 +1581,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clBtnFace
-            DefaultButtonLatchedColor = clBtnFace
+            DefaultButtonColor = clNavy
+            DefaultButtonLatchedColor = clGreen
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgPrnProfileBreakDwnMouseClick
@@ -1739,7 +1739,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Clear All'
-              ButtonColor = clBtnFace
+              ButtonColor = clInfoBk
               LatchedColor = clBtnFace
               DisabledButtonColor = clBtnFace
               LatchingProperties = [lkLatchColor, lkStayDown]
@@ -1759,7 +1759,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Select All'
-              ButtonColor = clBtnFace
+              ButtonColor = clNavy
               LatchedColor = clBtnFace
               DisabledButtonColor = clBtnFace
               LatchingProperties = [lkLatchColor, lkStayDown]
@@ -1780,8 +1780,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clBtnFace
-            DefaultButtonLatchedColor = clBtnFace
+            DefaultButtonColor = clNavy
+            DefaultButtonLatchedColor = clGreen
             LatchingType = ltCheckbox
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridBreakDwnMouseClick
@@ -1988,7 +1988,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             ParentFont = False
             ParentColor = True
-            ButtonColor = clBtnFace
+            ButtonColor = clNavy
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3163,7 +3163,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Test Print'
-            ButtonColor = clBtnFace
+            ButtonColor = clOlive
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3217,7 +3217,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = '<< Insert'
-            ButtonColor = clBtnFace
+            ButtonColor = clGreen
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3235,7 +3235,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Remove >>'
-            ButtonColor = clBtnFace
+            ButtonColor = clMaroon
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3253,7 +3253,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Section Properties'
-            ButtonColor = clBtnFace
+            ButtonColor = clNavy
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3362,7 +3362,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Templates'
-            ButtonColor = clBtnFace
+            ButtonColor = clTeal
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3465,7 +3465,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Colour'
-              ButtonColor = clBtnFace
+              ButtonColor = clNavy
               LatchedColor = clBtnFace
               DisabledButtonColor = clBtnFace
               LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3483,7 +3483,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Add ChefMate Printer'
-              ButtonColor = clBtnFace
+              ButtonColor = clNavy
               LatchedColor = clBtnFace
               DisabledButtonColor = clBtnFace
               LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3501,7 +3501,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Delete Chefmate Printer'
-              ButtonColor = clBtnFace
+              ButtonColor = clMaroon
               LatchedColor = clBtnFace
               DisabledButtonColor = clBtnFace
               LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3520,7 +3520,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Manually Add Printer'
-            ButtonColor = clBtnFace
+            ButtonColor = clMaroon
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3554,7 +3554,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Reload Printer Models'
-            ButtonColor = clBtnFace
+            ButtonColor = clNavy
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3572,7 +3572,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Delete Printer'
-            ButtonColor = clBtnFace
+            ButtonColor = clRed
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3721,7 +3721,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '\/'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3757,7 +3757,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '/\'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3793,7 +3793,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '\/'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3829,7 +3829,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '/\'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3849,7 +3849,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '/\'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3869,7 +3869,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '/\'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3889,7 +3889,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '\/'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3909,7 +3909,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '\/'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3929,7 +3929,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '/\'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3965,7 +3965,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = '\/'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -3984,7 +3984,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 ParentFont = False
                 ParentColor = True
                 Caption = 'Test Printer'
-                ButtonColor = clBtnFace
+                ButtonColor = clNavy
                 LatchedColor = clBtnFace
                 DisabledButtonColor = clBtnFace
                 LatchingProperties = [lkLatchColor, lkStayDown]
@@ -4022,7 +4022,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Load Printer Initialisation'
-            ButtonColor = clBtnFace
+            ButtonColor = clNavy
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -4092,7 +4092,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             ParentFont = False
             ParentColor = True
             Caption = 'Add / Edit Printer Profile'
-            ButtonColor = clBtnFace
+            ButtonColor = clNavy
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
@@ -4112,8 +4112,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clBtnFace
-            DefaultButtonLatchedColor = clBtnFace
+            DefaultButtonColor = clNavy
+            DefaultButtonLatchedColor = clGreen
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridSCPrinterProfilesMouseClick
@@ -4261,8 +4261,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clBtnFace
-            DefaultButtonLatchedColor = clBtnFace
+            DefaultButtonColor = clNavy
+            DefaultButtonLatchedColor = clGreen
             LatchingType = ltCheckbox
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridServingCoursesMouseClick
@@ -4388,7 +4388,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Clear All'
-              ButtonColor = clBtnFace
+              ButtonColor = clInfoBk
               LatchedColor = clBtnFace
               DisabledButtonColor = clBtnFace
               LatchingProperties = [lkLatchColor, lkStayDown]
@@ -4408,7 +4408,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
               ParentFont = False
               ParentColor = True
               Caption = 'Select All'
-              ButtonColor = clBtnFace
+              ButtonColor = clNavy
               LatchedColor = clBtnFace
               DisabledButtonColor = clBtnFace
               LatchingProperties = [lkLatchColor, lkStayDown]
@@ -4461,8 +4461,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clBtnFace
-            DefaultButtonLatchedColor = clBtnFace
+            DefaultButtonColor = clNavy
+            DefaultButtonLatchedColor = clGreen
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tgridDeviceListMouseClick
@@ -4630,8 +4630,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
             Font.Style = [fsBold]
             Color = 10011108
             ParentFont = False
-            DefaultButtonColor = clBtnFace
-            DefaultButtonLatchedColor = clBtnFace
+            DefaultButtonColor = clNavy
+            DefaultButtonLatchedColor = clGreen
             LatchingType = ltCheckbox
             LatchingProperties = [lkLatchColor]
             OnMouseClick = tgridProfileListMouseClick
@@ -4777,7 +4777,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
         Color = clBlack
         ParentFont = False
         ParentColor = False
-        ActivePage = TouchSheet1
+        ActivePage = TouchSheet3
         TabWidth = 200
         TabColor = 6052441
         object TouchSheet1: TTouchSheet
@@ -4842,7 +4842,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 Font.Style = []
                 ParentBackground = False
                 ParentFont = False
-                TabOrder = 2
+                TabOrder = 0
               end
               object Panel29: TPanel
                 Left = 4
@@ -4999,7 +4999,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 Font.Name = 'Tahoma'
                 Font.Style = []
                 ParentFont = False
-                ActivePage = tpFooter
+                ActivePage = tpHeader
                 TabColor = 6052441
                 object tpHeader: TTouchSheet
                   Left = 2
@@ -5042,6 +5042,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                   Height = 237
                   BorderWidth = 3
                   Caption = 'Preliminary Header'
+                  Color = clNavy
                   object memPHeader: TRichEdit
                     Left = 0
                     Top = 0
@@ -5070,6 +5071,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                   Height = 237
                   BorderWidth = 3
                   Caption = 'Footer'
+                  Color = clNavy
                   object memFooter: TRichEdit
                     Left = 0
                     Top = 0
@@ -5191,7 +5193,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                           object GroupBox2: TGroupBox
                             Left = 4
                             Top = 0
-                            Width = 365
+                            Width = 359
                             Height = 531
                             Caption = 'Receipt Information'
                             Color = 14342874
@@ -5444,7 +5446,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                           Left = 0
                           Top = 0
                           Width = 387
-                          Height = 537
+                          Height = 504
                           BevelOuter = bvNone
                           BorderWidth = 4
                           Color = 14342874
@@ -5459,8 +5461,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                           object GroupBoxCustom: TGroupBox
                             Left = 4
                             Top = 0
-                            Width = 365
-                            Height = 531
+                            Width = 360
+                            Height = 498
                             Caption = 'Receipt Customize Information'
                             Color = 14342874
                             Ctl3D = True
@@ -5505,7 +5507,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             object cbCaptureRefundReference: TCheckBox
                               Left = 16
                               Top = 57
-                              Width = 351
+                              Width = 315
                               Height = 35
                               BiDiMode = bdLeftToRight
                               Caption = 'Capture Receipt No for Refund/Void Transaction'
@@ -5526,7 +5528,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               Width = 315
                               Height = 20
                               BiDiMode = bdLeftToRight
-                              Caption = 'Export Reprint Receipt'
+                              Caption = 'Export Receipt'
                               Font.Charset = DEFAULT_CHARSET
                               Font.Color = clWindowText
                               Font.Height = -16
@@ -5651,7 +5653,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             object cbSetFooter: TCheckBox
                               Left = 16
                               Top = 241
-                              Width = 351
+                              Width = 315
                               Height = 17
                               Caption = 'Label Footer for Refund/Void Transaction'
                               Font.Charset = DEFAULT_CHARSET

@@ -2696,7 +2696,7 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
             {
                 if(!CaptureRefundReference())
                 {
-                    MessageBox("The Receipt No. is not valid. Please Enter a valid Receipt No.", "Error", MB_OK + MB_ICONINFORMATION);
+                    MessageBox("The Receipt No. is not valid. Either Refund is already taken or Receipt does not exist.", "Error", MB_OK + MB_ICONINFORMATION);
                     return;
                 }
             }
@@ -2901,11 +2901,42 @@ bool TfrmPaymentType::ValidateRefundReference(UnicodeString str)
     IBInternalQuery->ExecQuery();
     if(IBInternalQuery->RecordCount > 0)
     {
-        CurrentTransaction.RefundRefReceipt = str;
-        retValue = true;
+
+        if(ValidateAlreadyRefunded(DBTransaction,str))
+        {
+            CurrentTransaction.RefundRefReceipt = str;
+            retValue = true;
+        }
     }
     DBTransaction.Commit();
     return retValue;
+}
+//----------------------------------------------------------------------------
+bool TfrmPaymentType::ValidateAlreadyRefunded(Database::TDBTransaction &DBTransaction,UnicodeString str)
+{
+    TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery1->Close();
+    IBInternalQuery1->SQL->Text =	" SELECT "
+                                    " a.ARCBILL_KEY "
+                                    " FROM "
+                                    "  ARCBILL a"
+                                    " WHERE "
+                                    " a.REFUND_REFRECEIPT  = :REFUND_REFRECEIPT "
+
+                                    " UNION ALL "
+
+                                    " SELECT "
+                                    " d.ARCBILL_KEY "
+                                    " FROM "
+                                    "  DAYARCBILL d"
+                                    " WHERE "
+                                    " d.REFUND_REFRECEIPT  = :REFUND_REFRECEIPT ";
+    IBInternalQuery1->ParamByName("REFUND_REFRECEIPT")->AsString = str;
+    IBInternalQuery1->ExecQuery();
+    if(IBInternalQuery1->RecordCount == 0)
+        return true;
+    else
+        return false;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::tnWorkingAmountClick(TObject *Sender, TNumpadKey Key)

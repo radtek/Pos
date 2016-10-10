@@ -30,7 +30,7 @@ void TReceiptUtility::PrintVoidOnReceipt(TReqPrintJob *PrintJob,TPrintFormat *pP
 //-----------------------------------------------------------------------------
 void TReceiptUtility::ShowRefundReference(TReqPrintJob *PrintJob,TPrintFormat *pPrinter,int  size)
 {
-    if(PrintJob->Transaction->CreditTransaction && TGlobalSettings::Instance().CaptureRefundRefNo)
+    if((PrintJob->Transaction->CreditTransaction||IsCancelTransaction(PrintJob->Transaction)) && TGlobalSettings::Instance().CaptureRefundRefNo)
     {
         pPrinter->Line->ColCount = 1;
         pPrinter->Line->Columns[0]->Width = pPrinter->Width;
@@ -53,15 +53,17 @@ void TReceiptUtility::PrintReceiptHeaderSecond(TReqPrintJob *PrintJob,TPrintForm
 //-----------------------------------------------------------------------------
 bool TReceiptUtility::PrintReceiptFooterSecond(TReqPrintJob *PrintJob,TPrintFormat *pPrinter)
 {
-    bool empty;
-    if(PrintJob->Transaction->CreditTransaction && TGlobalSettings::Instance().SetVoidFooter)
+    bool empty = false;
+    if((PrintJob->Transaction->CreditTransaction||IsCancelTransaction(PrintJob->Transaction))
+                && TGlobalSettings::Instance().SetVoidFooter)
     {
-        if (PrintJob->ReceiptFooter->Count == 0)
+        if (PrintJob->ReceiptVoidFooter->Count == 0)
         {
             empty = true;
         }
         else
         {
+            pPrinter->Line->ColCount = 1;
             pPrinter->Line->FontInfo.Bold = false;
             pPrinter->Line->FontInfo.Height = fsNormalSize;
             pPrinter->Line->FontInfo.Width = fsNormalSize;
@@ -93,6 +95,34 @@ UnicodeString TReceiptUtility::LeftPadString(UnicodeString inString, UnicodeStri
 	for(int i = inString.Length(); i < strLen; i++)
 	inString = inChar + inString;
 	return inString;
+}
+//-----------------------------------------------------------------------------
+bool TReceiptUtility::IsCancelTransaction(TPaymentTransaction *PaymentTransaction)
+{
+    bool retValue = true;
+    for(int i = 0; i < PaymentTransaction->Orders->Count;i++)
+    {
+        if(((TItemComplete*)PaymentTransaction->Orders->Items[i])->OrderType != CanceledOrder)
+        {
+           retValue = false;
+           break;
+        }
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+bool TReceiptUtility::IsCancelTransaction(TPaymentTransaction PaymentTransaction)
+{
+    bool retValue = true;
+    for(int i = 0; i < PaymentTransaction.Orders->Count;i++)
+    {
+        if(((TItemComplete*)PaymentTransaction.Orders->Items[i])->OrderType != CanceledOrder)
+        {
+           retValue = false;
+           break;
+        }
+    }
+    return retValue;
 }
 //-----------------------------------------------------------------------------
 

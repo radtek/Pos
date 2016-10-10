@@ -66,6 +66,7 @@
 #include "InitializeDCSession.h"
 #include "MallExportRegenerateReport.h"
 #include "LoyaltyMateUtilities.h"
+#include "ReceiptUtility.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -2996,7 +2997,8 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 	ManagerReceipt->ReceiptToArchive->Clear();
 	ManagerReceipt->ReceiptToArchive->Position = 0;
 	StringReceipt->SaveToStream(ManagerReceipt->ReceiptToArchive);
-    ExportReceipt(StringReceipt.get(),PaymentTransaction);
+    if(TGlobalSettings::Instance().ExportReprintReceipt)
+     ExportReceipt(StringReceipt.get(),PaymentTransaction);
 	ManagerReceipt->ReceiptToArchive->Position = 0;
 
 	for (int i = 0; i < StringReceipt->Count; i++)
@@ -3027,22 +3029,22 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
     {
       if(PaymentTransaction.InvoiceNumber == "" || PaymentTransaction.InvoiceNumber == "Undefined")
       {
-            if(TGlobalSettings::Instance().ShowVoidNumber && PaymentTransaction.CreditTransaction)
+            if(TGlobalSettings::Instance().ShowVoidNumber &&
+               (PaymentTransaction.CreditTransaction||TReceiptUtility::IsCancelTransaction(PaymentTransaction)))
             {
                 PaymentTransaction.InvoiceNumber = Invoice->GetVoidInvoiceNumber(PaymentTransaction.DBTransaction);
             }
-
-         else
-         {
-             if(TGlobalSettings::Instance().HideReceiptNumberForRefundItem && PaymentTransaction.CreditTransaction)
-             {
-                PaymentTransaction.InvoiceNumber = "";
-             }
              else
              {
-                PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+                 if(TGlobalSettings::Instance().HideReceiptNumberForRefundItem && PaymentTransaction.CreditTransaction)
+                 {
+                    PaymentTransaction.InvoiceNumber = "";
+                 }
+                 else
+                 {
+                    PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+                 }
              }
-         }
 
       }
     }
