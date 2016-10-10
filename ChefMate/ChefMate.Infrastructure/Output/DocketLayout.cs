@@ -26,5 +26,12 @@ namespace Chefmate.Infrastructure.Output
         {
             return GetEnumerator();
         }
+
+        public PrinterInstruction GetLastInstruction()
+        {
+            return _printerInstructions[_printerInstructions.Count - 1];
+        }
+
+
     }
 }

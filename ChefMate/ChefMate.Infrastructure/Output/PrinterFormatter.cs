@@ -74,39 +74,31 @@ namespace Chefmate.Infrastructure.Output
             // Chit Information
             if (!string.IsNullOrWhiteSpace(inOrder.ChitValue))
                 outDocketLayout.AddInstruction(GetInstruction(string.Format(_chitValue, inOrder.ChitValue)));
-            if (inOrder.OrderAction == ChefmateConstants.WebOrderAction)
-            {
-                BuildDocketLayoutForWebOrder(outDocketLayout, inOrder);
-            }
-            else
-            {
-                // Kitchen Timings
-                outDocketLayout.AddInstruction(GetInstruction("IN  " + inOrder.ArrivalTime.ToString("T") + "\n" + "OUT " + DateTime.Now.ToString("T"), true));
-            }
-
-
-        }
-
-        private void BuildDocketLayoutForWebOrder(DocketLayout outDocketLayout, Order inOrder)
-        {
             // Kitchen Timings
             outDocketLayout.AddInstruction(GetInstruction("IN  " + inOrder.ArrivalTime.ToString("T") + "\n" + "OUT " + DateTime.Now.ToString("T")));
             // Customer Name
-            outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerName, inOrder.CustomerName)));
+            if (!string.IsNullOrWhiteSpace(inOrder.CustomerName))
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerName, inOrder.CustomerName)));
             // Customer Email
-            outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerEmail, inOrder.CustomerEmail)));
+            if (!string.IsNullOrWhiteSpace(inOrder.CustomerEmail))
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerEmail, inOrder.CustomerEmail)));
             // Customer Phone
-            outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerPhone, inOrder.CustomerPhone)));
+            if (!string.IsNullOrWhiteSpace(inOrder.CustomerPhone))
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerPhone, inOrder.CustomerPhone)));
             // Customer Address
             if (!string.IsNullOrWhiteSpace(inOrder.CustomerAddress))
-            {
                 outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerAddress, inOrder.CustomerAddress)));
-            }
-            // Expected Time 
-            outDocketLayout.AddInstruction(GetInstruction(string.Format(_expectedTime, inOrder.DeliveryTime.ToString("T"))));
+            // Expected Time   
+            if (inOrder.DeliveryTime  != DateTime.MinValue)
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_expectedTime, inOrder.DeliveryTime.ToString("T"))));
             // Payment Status 
-            outDocketLayout.AddInstruction(GetInstruction(string.Format(_paymentStatus, inOrder.PaymentStatus), true));
+            if (!string.IsNullOrWhiteSpace(inOrder.PaymentStatus))
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_paymentStatus, inOrder.PaymentStatus), true));
+
+            outDocketLayout.GetLastInstruction().DrawLineAfter = true;
+
         }
+
 
         private PrinterInstruction GetInstruction(string instructionText, bool addLineAfter = false, bool addLineBefore = false, bool cutAfter = false)
         {
