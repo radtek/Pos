@@ -2188,6 +2188,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 		TIBSQL *IBArcRef = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBPatronCount = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBWebArchive = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBZedQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
 		UnicodeString ExportFile = StockMasterPath + "MMTR_" + FormatFloat("00000",TGlobalSettings::Instance().SiteID) + "_" + DeviceName + ".csv";
 		try
@@ -2228,6 +2229,12 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			IBDayWebArchive->Close();
 			IBDayWebArchive->SQL->Text = "select * from DAYARCWEB where DAYARCWEB.ARCBILL_KEY = :ARCBILL_KEY";
 
+            int Zedkey;
+            IBZedQuery->Close();
+            IBZedQuery->SQL->Text = "SELECT GEN_ID(GEN_ZED, 0) FROM RDB$DATABASE";
+            IBZedQuery->ExecQuery();
+            Zedkey = IBZedQuery->Fields[0]->AsInteger;
+
 			IBArchive->Close();
 			IBArchive->SQL->Text = "insert into ARCHIVE " "(ARCHIVE.ARCHIVE_KEY, ARCHIVE.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME, "
 			"ARCHIVE.MENU_NAME, ARCHIVE.COURSE_NAME, ARCHIVE.ITEM_NAME, "
@@ -2250,11 +2257,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"\"ARCBILL\".\"RECEIPT\", \"ARCBILL\".\"SECURITY_REF\", \"ARCBILL\".\"SALES_TYPE\", "
 			"\"ARCBILL\".\"BILLED_LOCATION\", \"ARCBILL\".\"INVOICE_NUMBER\", \"ARCBILL\".\"INVOICE_KEY\","
 			"\"ARCBILL\".\"ORDER_TYPE_MESSAGE\", \"ARCBILL\".\"CONTACTS_KEY\", \"ARCBILL\".\"ROUNDING_ADJUSTMENT\","
-            "\"ARCBILL\".\"ORDER_IDENTIFICATION_NUMBER\" ) " "values "
+            "\"ARCBILL\".\"ORDER_IDENTIFICATION_NUMBER\", \"ARCBILL\".\"Z_KEY\" ) " "values "
 			"(:\"ARCBILL_KEY\", :\"TERMINAL_NAME\", :\"STAFF_NAME\", :\"TIME_STAMP\", :\"TOTAL\", "
 			":\"DISCOUNT\", :\"PATRON_COUNT\", :\"RECEIPT\", :\"SECURITY_REF\", :\"SALES_TYPE\", "
 			":\"BILLED_LOCATION\", :\"INVOICE_NUMBER\", :\"INVOICE_KEY\", :\"ORDER_TYPE_MESSAGE\","
-            " :\"CONTACTS_KEY\", :\"ROUNDING_ADJUSTMENT\", :\"ORDER_IDENTIFICATION_NUMBER\")";
+            " :\"CONTACTS_KEY\", :\"ROUNDING_ADJUSTMENT\", :\"ORDER_IDENTIFICATION_NUMBER\", :\"Z_KEY\")";
 
 			IBArcBillPay->Close();
 			IBArcBillPay->SQL->Text = "insert into \"ARCBILLPAY\" ("
@@ -2313,6 +2320,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 
 				// Copy all the daily ArcBill Fields to the main archive
 				IBArcBill->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                IBArcBill->ParamByName("Z_KEY")->AsInteger = Zedkey;
 				for (int i = 1; i < IBDayArcBill->FieldCount; i++)
 				{
 					UnicodeString FieldName = IBDayArcBill->Fields[i]->Name;
