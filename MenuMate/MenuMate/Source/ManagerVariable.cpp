@@ -3101,7 +3101,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarStr(DBTransaction,vmReceiptDigits, "Digits for Receipts",
 		"Digits for Receipts.\r"
 		"Default is ",
-		vmgPrinting, "");
+		vmgPrinting, "0");
 		SetVarBool(DBTransaction,vmExportReprintReceipt, "Export Reprint Receipt",
 		"Export Reprint Receipt.\r"
 		"Default is false",

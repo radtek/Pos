@@ -360,7 +360,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().HideTaxInvoice = TManagerVariable::Instance().GetBool(DBTransaction, vmHideTaxInvoice, false);
         TGlobalSettings::Instance().ExportReprintReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmExportReprintReceipt, false);
         TGlobalSettings::Instance().SetVoidFooter = TManagerVariable::Instance().GetBool(DBTransaction, vmSetVoidFooter, false);
-        TGlobalSettings::Instance().ReceiptDigits = TManagerVariable::Instance().GetStr(DBTransaction, vmReceiptDigits, "");
+        TGlobalSettings::Instance().ReceiptDigits = TManagerVariable::Instance().GetStr(DBTransaction, vmReceiptDigits, "0");
         TGlobalSettings::Instance().ShowVoidOrRefund = TManagerVariable::Instance().GetBool(DBTransaction, vmShowVoidOrRefund, false);
         TGlobalSettings::Instance().ShowVoidNumber = TManagerVariable::Instance().GetBool(DBTransaction, vmShowVoidNumber, false);
 }

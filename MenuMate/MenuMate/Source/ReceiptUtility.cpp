@@ -21,11 +21,11 @@ void TReceiptUtility::PrintTaxInvoice(TReqPrintJob *PrintJob, TPrintFormat *pPri
 //-----------------------------------------------------------------------------
 void TReceiptUtility::PrintVoidOnReceipt(TReqPrintJob *PrintJob,TPrintFormat *pPrinter)
 {
-        pPrinter->Line->ColCount = 1;
-        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-        pPrinter->Line->Columns[0]->Alignment = taCenter;
-        pPrinter->Line->Columns[0]->Text = "VOID";
-        pPrinter->AddLine();
+    pPrinter->Line->ColCount = 1;
+    pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+    pPrinter->Line->Columns[0]->Alignment = taCenter;
+    pPrinter->Line->Columns[0]->Text = "VOID";
+    pPrinter->AddLine();
 }
 //-----------------------------------------------------------------------------
 void TReceiptUtility::ShowRefundReference(TReqPrintJob *PrintJob,TPrintFormat *pPrinter,int  size)
@@ -75,11 +75,15 @@ bool TReceiptUtility::PrintReceiptFooterSecond(TReqPrintJob *PrintJob,TPrintForm
 //-----------------------------------------------------------------------------
 void TReceiptUtility::ModifyInvoiceNumber(AnsiString inInvoiceNumber,TPrintFormat *pPrinter,int size)
 {
-    if(StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
-        pPrinter->Line->Columns[0]->Text += LeftPadString( inInvoiceNumber, "0",
-                                                          StrToInt(TGlobalSettings::Instance().ReceiptDigits));
+    if(StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0 )
+    {
+        pPrinter->Line->Columns[0]->Text += LeftPadString( inInvoiceNumber, "0", StrToInt(TGlobalSettings::Instance().ReceiptDigits));
+    }
     else
+    {
         pPrinter->Line->Columns[0]->Text += LeftPadString( inInvoiceNumber, "0", size);
+    }
+
 }
 //-----------------------------------------------------------------------------
 UnicodeString TReceiptUtility::LeftPadString(UnicodeString inString, UnicodeString inChar, int strLen)

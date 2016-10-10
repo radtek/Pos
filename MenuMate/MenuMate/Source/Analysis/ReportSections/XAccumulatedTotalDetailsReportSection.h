@@ -18,6 +18,7 @@ public:
 private:
     AnsiString GetStartInvoiceNumber();
     AnsiString GetEndInvoiceNumber();
+    AnsiString GetLastEndInvoiceNumber();
     void FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber);
 
     DataFormatUtilities* dataFormatUtilities;

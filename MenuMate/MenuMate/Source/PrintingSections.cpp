@@ -6176,7 +6176,7 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 				pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptHeader->Strings[i];
 				pPrinter->AddLine();
 			}
-            if(PrintJob->Transaction->CreditTransaction)//ToDo add one more Setting
+            if(PrintJob->Transaction->CreditTransaction && TGlobalSettings::Instance().ShowVoidOrRefund)//ToDo add one more Setting
                 TReceiptUtility::PrintVoidOnReceipt(PrintJob, pPrinter);
 
             if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem || !PrintJob->Transaction->CreditTransaction)

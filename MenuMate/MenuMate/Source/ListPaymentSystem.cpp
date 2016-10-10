@@ -3010,13 +3010,21 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
     {
       if(PaymentTransaction.InvoiceNumber == "" || PaymentTransaction.InvoiceNumber == "Undefined")
       {
-         if(TGlobalSettings::Instance().HideReceiptNumberForRefundItem && PaymentTransaction.CreditTransaction)
-         {
-            PaymentTransaction.InvoiceNumber = "";
-         }
+            if(TGlobalSettings::Instance().ShowVoidNumber && PaymentTransaction.CreditTransaction)
+            {
+                PaymentTransaction.InvoiceNumber = Invoice->GetVoidInvoiceNumber(PaymentTransaction.DBTransaction);
+            }
+
          else
          {
-            PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+             if(TGlobalSettings::Instance().HideReceiptNumberForRefundItem && PaymentTransaction.CreditTransaction)
+             {
+                PaymentTransaction.InvoiceNumber = "";
+             }
+             else
+             {
+                PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+             }
          }
 
       }
