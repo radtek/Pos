@@ -501,7 +501,7 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
       TContactPoints dbPoints;
       TDBContacts::GetPointsBalances(DBTransaction, Info.ContactKey, dbPoints);
 
-      // sync the earned points
+     // sync the earned points
       if(Info.Points.getPointsBalance(ptstLoyalty) != (dbPoints.getPointsBalance(ptstLoyalty) +
                                                        dbPoints.getBirthDayRewardPoints() +
                                                        dbPoints.getFirstVisitPoints() ))

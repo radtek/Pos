@@ -187,7 +187,7 @@ void TContactPoints::SaveToStream(TMemoryStream *Stream)
 	StreamWrite(Stream,Value);
     Value = getPointsBalance(ptstAccount);
 	StreamWrite(Stream,Value);
-    Value = getPointsBalance(ptstLoyalty) + getBirthDayRewardPoints() + getFirstVisitPoints();
+    Value = getPointsBalance(ptstLoyalty);
 	StreamWrite(Stream,Value);
 }
 
