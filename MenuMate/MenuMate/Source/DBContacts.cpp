@@ -1086,7 +1086,7 @@ bool TDBContacts::GetContactCards(Database::TDBTransaction &DBTransaction,int in
 		// Contact Cards.
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
-		 "select SWIPE_CARD from CONTACTCARDS where CONTACTS_KEY = :CONTACTS_KEY ";
+		 "select SWIPE_CARD from CONTACTCARDS where CONTACTS_KEY = :CONTACTS_KEY AND IS_ACTIVE='T'";
 		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactsKey;
 		IBInternalQuery->ExecQuery();
 		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
