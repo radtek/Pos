@@ -101,8 +101,8 @@ void __fastcall TfrmEditCustomer::FormShow(TObject *Sender)
    {
      DateTimePicker1->Date = Now();
    }
-   btnSwipe->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled;
-   tbProximity->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled;
+   btnSwipe->Enabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
+   tbProximity->Enabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
 }
 // ---------------------------------------------------------------------------
 
