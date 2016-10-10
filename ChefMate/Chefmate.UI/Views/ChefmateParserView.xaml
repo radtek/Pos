@@ -6,7 +6,7 @@
         BorderThickness="3" BorderBrush="Gray" WindowStartupLocation="CenterScreen" Icon="../Images/C_Transparent.ico" FontFamily="Tahoma">
     <Window.Resources>
         <ResourceDictionary>
-            
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
@@ -20,13 +20,15 @@
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Style="{StaticResource WindowHeaderLabel}">Chefmate Parser</Label>
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="2">
-            <ItemsControl ItemsSource="{Binding ParserLogs}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Label Style="{StaticResource FormLabel}" Content="{Binding}"></Label>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
+                <ItemsControl ItemsSource="{Binding ParserLogs}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Label Style="{StaticResource FormLabel}" Content="{Binding}"></Label>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </Border>
         <StackPanel Grid.Row="2"  Orientation="Horizontal" HorizontalAlignment="Right">
             <Button  Margin="20,10,20,10" Command="{Binding ParserCommand}" Visibility="{Binding IsParseVisible, Converter={StaticResource BooleanToVisibilityConverter}}">Parse</Button>
