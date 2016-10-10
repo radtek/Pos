@@ -1588,6 +1588,8 @@ void TPrintSection::PrintReceiptInfo(TReqPrintJob *PrintJob)
 	pPrinter->Line->Columns[0]->Text = TimeString;
 	pPrinter->AddLine();
 
+    TReceiptUtility::ShowRefundReference(PrintJob,pPrinter,ReceiptLength) ;
+
 	// populate ReceiptDetails list
 	PrintJob->ReceiptDetails->Add( TerminalName + " " + PrintJob->Header.RequestingDevice->ID.ComputerName );
 	PrintJob->ReceiptDetails->Add( PrintJob->Waiter + " " + CurrentSeatCount );
@@ -6174,27 +6176,23 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 				pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptHeader->Strings[i];
 				pPrinter->AddLine();
 			}
-            // ToDo:- move the code after printing Second part of header
-//            if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem || !PrintJob->Transaction->CreditTransaction)
-//            {
-//                pPrinter->Line->Columns[0]->Text = "Tax Invoice";  // PrintTaxInvoice(PrintJob,pPrinter)
-//                pPrinter->AddLine();
+            if(PrintJob->Transaction->CreditTransaction)//ToDo add one more Setting
+                TReceiptUtility::PrintVoidOnReceipt(PrintJob, pPrinter);
+
+            if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem || !PrintJob->Transaction->CreditTransaction)
+            {
                 TReceiptUtility::PrintTaxInvoice(PrintJob, pPrinter);
                 pPrinter->Line->Columns[0]->Text    =   TGlobalSettings::Instance().ReceiptNumberLabel;
                 if(PrintJob->Transaction->TypeOfSale == RegularSale)
                 {
-//                     if(TGlobalSettings::Instance().ReceiptDigits.Length() == 0)
-//                        pPrinter->Line->Columns[0]->Text += LeftPadString( PrintJob->Transaction->InvoiceNumber, "0", ReceiptLength);
-//                     else
-//                        TReceiptUtility::PadInvoiceNumber(PrintJob, pPrinter);
-                     TReceiptUtility::ModifyInvoiceNumber(PrintJob, pPrinter,ReceiptLength);
+                     TReceiptUtility::ModifyInvoiceNumber(PrintJob->Transaction->InvoiceNumber, pPrinter,ReceiptLength);
                 }
                 else
                 {
                       pPrinter->Line->Columns[0]->Text += PrintJob->Transaction->InvoiceNumber;
                 }
                 pPrinter->AddLine();
-//            }
+            }
 		}
 	}
 }
@@ -6208,13 +6206,6 @@ void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
    Empty = TReceiptUtility::PrintReceiptFooterSecond(PrintJob,pPrinter);
 }
 //-----------------------------------------------------------------------------
-//UnicodeString TPrintSection::LeftPadString(UnicodeString inString, UnicodeString inChar, int strLen)
-//{
-//	for(int i = inString.Length(); i < strLen; i++)
-//	inString = inChar + inString;
-//	return inString;
-//}
-
 void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
 {
 	if (PrintJob->ReceiptFooter->Count == 0)

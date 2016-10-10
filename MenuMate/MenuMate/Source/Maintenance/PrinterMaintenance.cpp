@@ -5254,3 +5254,6 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberAutoRepeat(TObject *Sen
 }
 //---------------------------------------------------------------------------
 
+
+
+

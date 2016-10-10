@@ -19,12 +19,26 @@ void TReceiptUtility::PrintTaxInvoice(TReqPrintJob *PrintJob, TPrintFormat *pPri
     }
 }
 //-----------------------------------------------------------------------------
-void TReceiptUtility::CustomizeReceiptNo(TReqPrintJob *PrintJob,TPrintFormat *pPrinter)
+void TReceiptUtility::PrintVoidOnReceipt(TReqPrintJob *PrintJob,TPrintFormat *pPrinter)
 {
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taCenter;
+        pPrinter->Line->Columns[0]->Text = "VOID";
+        pPrinter->AddLine();
 }
 //-----------------------------------------------------------------------------
-void TReceiptUtility::ShowRefundReference(TReqPrintJob *PrintJob,TPrintFormat *pPrinter)
+void TReceiptUtility::ShowRefundReference(TReqPrintJob *PrintJob,TPrintFormat *pPrinter,int  size)
 {
+    if(PrintJob->Transaction->CreditTransaction && TGlobalSettings::Instance().CaptureRefundRefNo)
+    {
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taCenter;
+        pPrinter->Line->Columns[0]->Text = "OR No. ";
+        ModifyInvoiceNumber(PrintJob->Transaction->RefundRefReceipt,
+                                                   pPrinter,size);
+    }
 }
 //-----------------------------------------------------------------------------
 void TReceiptUtility::CustomizeReceiptNoLabel(TReqPrintJob *PrintJob,TPrintFormat *pPrinter)
@@ -51,13 +65,13 @@ bool TReceiptUtility::PrintReceiptFooterSecond(TReqPrintJob *PrintJob,TPrintForm
     return empty;
 }
 //-----------------------------------------------------------------------------
-void TReceiptUtility::ModifyInvoiceNumber(TReqPrintJob *PrintJob,TPrintFormat *pPrinter,int size)
+void TReceiptUtility::ModifyInvoiceNumber(AnsiString inInvoiceNumber,TPrintFormat *pPrinter,int size)
 {
     if(StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
-        pPrinter->Line->Columns[0]->Text += LeftPadString( PrintJob->Transaction->InvoiceNumber, "0",
+        pPrinter->Line->Columns[0]->Text += LeftPadString( inInvoiceNumber, "0",
                                                           StrToInt(TGlobalSettings::Instance().ReceiptDigits));
     else
-        pPrinter->Line->Columns[0]->Text += LeftPadString( PrintJob->Transaction->InvoiceNumber, "0", size);
+        pPrinter->Line->Columns[0]->Text += LeftPadString( inInvoiceNumber, "0", size);
 }
 //-----------------------------------------------------------------------------
 UnicodeString TReceiptUtility::LeftPadString(UnicodeString inString, UnicodeString inChar, int strLen)

@@ -3,6 +3,7 @@
 #include "SecurityReference.h"
 #include "ManagerReports.h"
 #include "GlobalSettings.h"
+#include "ReceiptUtility.h"
 
 XAccumulatedTotalDetailsReportSection::XAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	: BaseReportSection(mmXReport, mmAccumulatedTotalDetailsSection, dbTransaction, globalSettings)
@@ -25,8 +26,9 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
     const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
 	const Currency closingBalance = openingBalance + todaysEarnings;
 
-	const AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
-	const AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
+	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
+	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
+    FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
 
     AddTitle(printOut, "Site Accumulated Zed");
 	printOut->PrintFormat->NewLine();
@@ -66,6 +68,19 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 	printOut->PrintFormat->AddLine();
 }
 
+void XAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
+{
+    if(StrToInt(inStartInvoiceNumber) > 0 && StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+    {
+        int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+        inStartInvoiceNumber = TReceiptUtility::LeftPadString(inStartInvoiceNumber, "0", noOfDigits);
+    }
+    if(StrToInt(inEndInvoiceNumber) > 0 && StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+    {
+        int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+        inEndInvoiceNumber = TReceiptUtility::LeftPadString(inEndInvoiceNumber, "0", noOfDigits);
+    }
+}
 AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber()
 {
 	AnsiString beginInvoiceNum = 0;

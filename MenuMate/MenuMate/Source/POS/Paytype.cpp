@@ -2692,6 +2692,14 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 
 		if (Allowed)
 		{
+            if(TGlobalSettings::Instance().CaptureRefundRefNo)
+            {
+                if(!CaptureRefundReference())
+                {
+                    MessageBox("The Receipt No. is not valid. Please Enter a valid Receipt No.", "Error", MB_OK + MB_ICONINFORMATION);
+                    return;
+                }
+            }
 			CurrentTransaction.CreditTransaction = true;
 
 			TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(CurrentTransaction);
@@ -2710,16 +2718,6 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
     			PreCreditPatronCount = CurrentTransaction.Patrons;
 	    		CurrentTransaction.Patrons.clear();
 		    	tbPatronCount->Caption = "Patron Count \r" + IntToStr(0);
-            }
-            std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
-            frmTouchNumpad->Caption = "Enter Reference Receipt No for Refund";
-            frmTouchNumpad->btnSurcharge->Caption = "Ok";
-            frmTouchNumpad->btnDiscount->Visible = false;
-            frmTouchNumpad->btnSurcharge->Visible = true;
-            frmTouchNumpad->Mode = pmNumber;
-            if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0)
-            {
-               int i = frmTouchNumpad->INTResult;
             }
 			AnsiString Note = "";
 			std::auto_ptr <TfrmMessage> frmMessage(TfrmMessage::Create <TfrmMessage> (this, TDeviceRealTerminal::Instance().DBControl));
@@ -2845,6 +2843,60 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 			ShowPaymentTotals();
 		}
 	}
+}
+//---------------------------------------------------------------------------
+bool TfrmPaymentType::CaptureRefundReference()
+{
+    UnicodeString capturedValue = "";
+    bool retValue = false;
+    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+    frmTouchNumpad->Caption = "Enter Reference Receipt No for Refund";
+    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+    frmTouchNumpad->btnDiscount->Visible = false;
+    frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->Mode = pmNumber;
+    if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0)
+    {
+       UnicodeString capturedValue = frmTouchNumpad->INTResult;
+       // Validate Refund Reference
+       retValue = ValidateRefundReference(capturedValue);
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+bool TfrmPaymentType::ValidateRefundReference(UnicodeString str)
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text =		" SELECT "
+                                        " ARCBILL_KEY "
+                                        " FROM "
+                                        "  ARCBILL "
+                                        " WHERE "
+                                        " INVOICE_NUMBER  = :INVOICE_NUMBER "
+
+                                        " UNION ALL "
+
+                                        " SELECT "
+                                        " ARCBILL_KEY "
+                                        " FROM "
+                                        "  DAYARCBILL "
+                                        " WHERE "
+                                        " INVOICE_NUMBER  = :INVOICE_NUMBER ";
+
+
+    IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = str;
+    IBInternalQuery->ExecQuery();
+    if(IBInternalQuery->RecordCount > 0)
+    {
+        CurrentTransaction.RefundRefReceipt = str;
+        retValue = true;
+    }
+    DBTransaction.Commit();
+    return retValue;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::tnWorkingAmountClick(TObject *Sender, TNumpadKey Key)
