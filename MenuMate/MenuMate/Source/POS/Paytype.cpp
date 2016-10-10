@@ -2881,7 +2881,6 @@ bool TfrmPaymentType::ValidateRefundReference(UnicodeString str)
                                         " WHERE "
                                         " a.INVOICE_NUMBER  = :INVOICE_NUMBER "
                                         " and s.SECURITY_EVENT <> 'Credit' "
-                                        " and a.REFUND_REFRECEIPT <> :REFUND_REFRECEIPT "
 
                                         " UNION ALL "
 
@@ -2894,12 +2893,11 @@ bool TfrmPaymentType::ValidateRefundReference(UnicodeString str)
                                         " on s.SECURITY_REF = d.SECURITY_REF"
                                         " WHERE "
                                         " INVOICE_NUMBER  = :INVOICE_NUMBER "
-                                        " and s.SECURITY_EVENT <> 'Credit' "
-                                        " and d.REFUND_REFRECEIPT <> :REFUND_REFRECEIPT ";
+                                        " and s.SECURITY_EVENT <> 'Credit' ";
+
 
 
     IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = str;
-    IBInternalQuery->ParamByName("REFUND_REFRECEIPT")->AsString = str;
     IBInternalQuery->ExecQuery();
     if(IBInternalQuery->RecordCount > 0)
     {

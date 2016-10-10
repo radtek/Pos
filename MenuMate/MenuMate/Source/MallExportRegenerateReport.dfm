@@ -129,7 +129,7 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
         Width = 246
         Height = 183
         AutoSize = True
-        Date = 42200.818103009260000000
+        Date = 42200.926359722220000000
         DoubleBuffered = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -147,7 +147,7 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
         Width = 246
         Height = 183
         AutoSize = True
-        Date = 42200.818103009260000000
+        Date = 42200.926359722220000000
         DoubleBuffered = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -209,9 +209,9 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       ParentFont = False
       ParentColor = True
       Caption = 'Generate Report'
-      ButtonColor = clMaroon
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
+      ButtonColor = -16777201
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnGenerateMouseClick
     end
@@ -236,9 +236,9 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       ParentFont = False
       ParentColor = True
       Caption = 'Load Mall Path'
-      ButtonColor = clMaroon
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
+      ButtonColor = -16777201
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnLoadPathMouseClick
     end
@@ -266,8 +266,8 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       ParentColor = True
       Caption = 'Ok'
       ButtonColor = 18944
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnOkMouseClick
     end
@@ -285,8 +285,8 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       ParentColor = True
       Caption = 'Cancel'
       ButtonColor = 2200566
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnCancelMouseClick
     end

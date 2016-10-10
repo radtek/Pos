@@ -2996,6 +2996,7 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 	ManagerReceipt->ReceiptToArchive->Clear();
 	ManagerReceipt->ReceiptToArchive->Position = 0;
 	StringReceipt->SaveToStream(ManagerReceipt->ReceiptToArchive);
+    ExportReceipt(StringReceipt.get(),PaymentTransaction);
 	ManagerReceipt->ReceiptToArchive->Position = 0;
 
 	for (int i = 0; i < StringReceipt->Count; i++)
@@ -3003,7 +3004,23 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 		TDeviceRealTerminal::Instance().SecurityPort->SetData(StringReceipt->Strings[i]);
 	}
 }
-
+void TListPaymentSystem::ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction)
+{
+    AnsiString fileName = ExtractFilePath(Application->ExeName) +"Exports\\" ;
+    if(!DirectoryExists(fileName))
+    {
+        CreateDir(fileName);
+        fileName += "Receipts Export\\";
+        CreateDir(fileName);
+    }
+    else
+    {
+       fileName += "Receipts Export\\";
+    }
+    AnsiString date = Now().FormatString("yyyy-mm-dd - hh-mm-ss");
+    fileName += PaymentTransaction.InvoiceNumber+" "+date+" "+".txt";
+    StringReceipt->SaveToFile(fileName );
+}
 void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransaction)
 {
    if(!TManagerDelayedPayment::Instance().IsDelayedPayment(PaymentTransaction))

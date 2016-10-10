@@ -38,6 +38,7 @@ void TReceiptUtility::ShowRefundReference(TReqPrintJob *PrintJob,TPrintFormat *p
         pPrinter->Line->Columns[0]->Text = "OR No. ";
         ModifyInvoiceNumber(PrintJob->Transaction->RefundRefReceipt,
                                                    pPrinter,size);
+        pPrinter->AddLine();
     }
 }
 //-----------------------------------------------------------------------------
@@ -76,8 +77,10 @@ bool TReceiptUtility::PrintReceiptFooterSecond(TReqPrintJob *PrintJob,TPrintForm
 void TReceiptUtility::ModifyInvoiceNumber(AnsiString inInvoiceNumber,TPrintFormat *pPrinter,int size)
 {
     if(StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+    {
         pPrinter->Line->Columns[0]->Text += LeftPadString( inInvoiceNumber, "0",
                                                           StrToInt(TGlobalSettings::Instance().ReceiptDigits));
+    }
     else
         pPrinter->Line->Columns[0]->Text += LeftPadString( inInvoiceNumber, "0", size);
 }
