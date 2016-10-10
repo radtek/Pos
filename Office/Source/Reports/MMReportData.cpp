@@ -15849,7 +15849,11 @@ void TdmMMReportData::SetupBreakdownCategory(TStrings *Menus)
 		qrBreakdownCategory->ParamByName("MenuParam" + IntToStr(i))->AsString = Menus->Strings[i];
 	}
 }
+//-----------------------------------------------------------------------------------------------
+void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndDate)
+{
 
+}
 	
 
 

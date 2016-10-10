@@ -63,6 +63,7 @@ enum TTreeIndex {
                     CASHIER_INDEX                             ,
                     DEPT_SALES_SUMMARY                        ,
                     PROFIT_LOSS_REPORT                       ,
+                    SALES_SUMMARY_D_INDEX                     ,
 
 			SALES_INDEX													,
 					CONSUMPTION_INDEX									,
@@ -802,6 +803,7 @@ public:		// User declarations
     void PrintPointSpend(TReportControl *ReportControl);
    void PrintBreakdownCategory(TReportControl *ReportControl);
     void PrintStockReconcialation(TReportControl *ReportControl);
+    void PrintSalesSummaryD(TReportControl *ReportControl);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmReports *frmReports;

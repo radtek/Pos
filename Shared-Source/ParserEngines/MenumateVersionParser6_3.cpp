@@ -12,5 +12,25 @@
 #endif
 namespace MenumateVersionParser
 {
-//
+    //6.30
+    void TApplyParser::upgrade6_30Tables()
+    {
+        update6_30Tables();
+    }
+
+    //::::::::::::::::::::::::Version 6.30::::::::::::::::::::::::::::::::::::::::::
+    void TApplyParser::update6_30Tables()
+    {
+        UpdateArcBillTable6_30(_dbControl);
+    }
+    //-------------------------------------------------------------------------------------
+
+    void TApplyParser::UpdateArcBillTable6_30( TDBControl* const inDBControl )
+    {
+
+        if ( !fieldExists("ARCBILL", "Z_KEY", inDBControl ) )
+        {
+            executeQuery("ALTER TABLE ARCBILL ADD Z_KEY INTEGER;", inDBControl );
+        }
+    }
 }

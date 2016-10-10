@@ -408,6 +408,7 @@ public:		// User declarations
  void SetupPointSpend(TDateTime StartTime, TDateTime EndTime, TStrings *Categories, TStrings *payments);
   void SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDateTime EndDate, TStrings *Names) ;
   void SetupBreakdownCategory(TStrings *Menus);
+    void SetupSalesSummaryD(TDateTime StartTime, TDateTime EndDate);
 };
 
 
