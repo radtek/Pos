@@ -98,26 +98,6 @@ namespace Chefmate.Database.DbModels
             }
             return order;
         }
-        public static Order GetOrderFromTablename(string tableName)
-        {
-            var whereCondition = " WHERE TABLE_TAB_NAME=@TABLE_TAB_NAME";
-            var queryString = DatabaseCore.Instance.BuildSelectAllQuery("ORDERS", whereCondition);
-            var parameters = new List<QueryParameter>();
-            parameters.Add(new QueryParameter("TABLE_TAB_NAME", tableName));
-            var resultSet = DatabaseCore.Instance.ExecuteDataSetQuery(queryString, parameters);
-            if (resultSet.Rows.Count > 0)
-                return ExtractOrderInformation(resultSet.Rows[0]);
-            return null;
-        }
-        public static void UpdateOrderTableName(int orderKey, string tableName)
-        {
-            var whereCondition = " WHERE ORDER_KEY=@ORDER_KEY";
-            var parameters = new List<QueryParameter>();
-            parameters.Add(new QueryParameter("TABLE_TAB_NAME", tableName));
-            var queryString = DatabaseCore.Instance.BuildUpdateQuery("ORDERS", parameters, whereCondition);
-            parameters.Add(new QueryParameter("ORDER_KEY", orderKey));
-            DatabaseCore.Instance.ExecuteNonQuery(queryString, parameters);
-        }
         public static Order GetOrderFromOrderItemKey(int inOrderIemKey, int terminalKey)
         {
             var item = DbOrderItem.GetOrderItemFromItemKey(inOrderIemKey);
@@ -125,6 +105,8 @@ namespace Chefmate.Database.DbModels
             var courseGroup = DbOrderGroup.GetOrderGroup(item.CourseKey);
             var order = GetOrder(sCoursegroup.OrderKey);
             order.ServingCourseGroups.Add(sCoursegroup);
+            order.ServingCourseGroups.ForEach(s => s.Order = order);
+            order.CourseGroups.ForEach(s => s.Order = order);
             order.CourseGroups.Add(courseGroup);
             FilterItem(order, item);
             return order;
@@ -146,7 +128,7 @@ namespace Chefmate.Database.DbModels
             else
             {
                 order.CourseGroups.Add(group);
-                var items = GetItemsByGroups(order.ServingCourseGroups, GroupType.ServingCourse, terminalKey);
+                var items = GetItemsByGroups(order.CourseGroups, GroupType.Course, terminalKey);
                 List<int> sCourseGroupKeys = new List<int>();
                 items.ForEach(s => sCourseGroupKeys.Add(s.ServingCourseKey));
                 order.ServingCourseGroups = DbOrderGroup.GetOrderGroups(order, sCourseGroupKeys);
