@@ -14,15 +14,8 @@ class TReceiptUtility
     public:
         TReceiptUtility();
         ~TReceiptUtility();
-        static void PrintTaxInvoice(TReqPrintJob *PrintJob, TPrintFormat *pPrinter);
-        static void PrintVoidOnReceipt(TReqPrintJob *PrintJob,TPrintFormat *pPrinter);
-        static void ShowRefundReference(TReqPrintJob *PrintJob,TPrintFormat *pPrinter,int size);
-        static void CustomizeReceiptNoLabel(TReqPrintJob *PrintJob,TPrintFormat *pPrinter);
-        static void PrintReceiptHeaderSecond(TReqPrintJob *PrintJob,TPrintFormat *pPrinter);
-        static bool PrintReceiptFooterSecond(TReqPrintJob *PrintJob,TPrintFormat *pPrinter);
-        static void ModifyInvoiceNumber(AnsiString inInvoiceNumber,TPrintFormat *pPrinter,int size);
+        static AnsiString ModifyInvoiceNumber(AnsiString inInvoiceNumber,int size);
         static UnicodeString LeftPadString(UnicodeString inString, UnicodeString inChar, int strLen);
-        static bool IsCancelTransaction(TPaymentTransaction *PaymentTransaction);
         static bool IsCancelTransaction(TPaymentTransaction PaymentTransaction);
 };
 

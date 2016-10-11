@@ -329,6 +329,9 @@ private:
     void AddManuallyEnteredLineInReceipt(TPrintFormat*);
     void PrintNonFreeItemsOnly(TReqPrintJob *PrintJob);
     int GetItemLength(UnicodeString itemname, int length);
+    void PrintTaxInvoice(TReqPrintJob *PrintJob) ;
+    void PrintVoidOnReceipt(TReqPrintJob *PrintJob);
+    void ShowRefundReference(TReqPrintJob *PrintJob);
 };
 
 // ------------------------------------------------------------------------------

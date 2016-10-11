@@ -5241,7 +5241,7 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberAutoRepeat(TObject *Sen
 
 {
 	std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-	frmTouchNumpad->Caption = "Enter number of seconds of inactivity before auto logout.";
+	frmTouchNumpad->Caption = "Enter the number of digits for Receipt No.";
 	frmTouchNumpad->btnSurcharge->Caption = "Ok";
 	frmTouchNumpad->btnDiscount->Visible = false;
 	frmTouchNumpad->btnSurcharge->Visible = true;
