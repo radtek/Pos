@@ -254,6 +254,8 @@ TRvDataSetConnection *ravCheckRemoval;      //MM-4327
     TRvDataSetConnection *ravPointSpend;
     TIBQuery *qrBreakdownCategory;
     TRvDataSetConnection *ravBreakdownCategory;
+    TIBQuery *qrSalesSummaryD;
+    TRvDataSetConnection *ravSalesSummaryD;
 
 	void __fastcall qrMenuAfterScroll(TDataSet *DataSet);
 	void __fastcall qrAveSummaryAfterScroll(TDataSet *DataSet);
