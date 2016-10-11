@@ -619,6 +619,7 @@ __published:	// IDE-managed Components
 	TBitBtn *btnTreeFilterExcel;
 	TBitBtn *btnStringExcel;
 	TBitBtn *btnDateExcel;
+    TIBSQL *qrGetVersionInfo;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall tvReportsChange(TObject *Sender, TTreeNode *Node);

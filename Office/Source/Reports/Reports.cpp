@@ -11130,7 +11130,7 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 
                 AnsiString nameOfTaxPayer = "";
                 AnsiString addressOfTaxPayer = "";
-                AnsiString tillNumber = "";
+                AnsiString tinNumber = "";
                 std::auto_ptr <TStringList> CompanyData (new TStringList);
                 AnsiString filename = ExtractFilePath(Application->ExeName);
 
@@ -11145,15 +11145,25 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
                 {
                     nameOfTaxPayer = CompanyData->Strings[0].TrimLeft();
                     addressOfTaxPayer = CompanyData->Strings[1].TrimLeft();
-                    tillNumber = CompanyData->Strings[2].TrimLeft();
+                    tinNumber = CompanyData->Strings[2].TrimLeft();
                 }
+
+                if (qrGetVersionInfo->Database->Connected && !qrGetVersionInfo->Transaction->InTransaction)
+                {
+                    qrGetVersionInfo->Transaction->StartTransaction();
+
+                }
+                qrGetVersionInfo->Close();
+                qrGetVersionInfo->ExecQuery();
+                AnsiString versionInfo = qrGetVersionInfo->FieldByName("version_Number")->AsString;
+                
 				const AnsiString ReportName = "repSalesSummaryD";
 
 				dmMMReportData->SetupSalesSummaryD(ReportControl->Start, ReportControl->End);
 				if (ReportType == rtExcel)
 				{
 				    std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-					ExcelDataSetsList->AddObject("Profit Loss",(TObject *)dmMMReportData->qrProfiltLoss);
+					ExcelDataSetsList->AddObject("Sales Summary D",(TObject *)dmMMReportData->qrSalesSummaryD);
 					ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text ); 
 				}
 				else
@@ -11167,7 +11177,9 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
                         rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
                         rvMenuMate->SetParam("NameOfTaxPayer", nameOfTaxPayer);
                         rvMenuMate->SetParam("AddressOfTaxPayer", addressOfTaxPayer);
-                        rvMenuMate->SetParam("TillNumber", tillNumber);
+                        rvMenuMate->SetParam("TiNNumber", tinNumber);
+                        rvMenuMate->SetParam("TerminalName", dmMMData->GetTerminalName());
+                        rvMenuMate->SetParam("VersionInfo", versionInfo);
 						rvMenuMate->Execute();
 					}
 					else

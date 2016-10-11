@@ -55,7 +55,7 @@ __published:	// IDE-managed Components
 	void __fastcall IBSQLMonitor1SQL(AnsiString EventText,
           TDateTime EventTime);
 private:	// User declarations
-	AnsiString GetTerminalName();
+
 public:		// User declarations
 	__fastcall TdmMMData(TComponent* Owner);
 
@@ -63,7 +63,7 @@ public:		// User declarations
 	void CloseDB();
 	void Disconnect();
 	void Sweep(AnsiString DatabaseName);
-
+    AnsiString GetTerminalName();
 	void Registered(bool *pRegistered, unsigned int *pRegisteredModules=0, AnsiString *pRegisteredName=NULL);
 };
 //---------------------------------------------------------------------------
