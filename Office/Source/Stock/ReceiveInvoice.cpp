@@ -75,12 +75,14 @@ void __fastcall TfrmReceiveInvoice::FormShow(TObject *Sender)
 	neGST->DecimalPlaces= Decimalpalaces;
 	LoadForm();
 	qrSupplier->Close();
+    AllowNegativeValue = false;
 	if(OrderKey == 0)
 	{
 		qrSupplier->ParamByName("Supplier_Key")->AsInteger = SupplierKey;
 		qrSupplier->Open();
 		int ccc =  qrSupplier->FieldByName("Contact_LK")->AsInteger;
 		lbeTitle->Caption = "Invoice: " + InvoiceReference + " (" + qrSupplier->FieldByName("Company_Name")->AsString + ")";
+        AllowNegativeValue = true;
 	}
 
 	ShowTotals();
@@ -112,6 +114,14 @@ void __fastcall TfrmReceiveInvoice::FormShow(TObject *Sender)
         lblReceiptnumber->Caption=(qrBatchKey->Fields->Fields[0]->AsInteger+1);
         ReceiptNumber=qrBatchKey->Fields->Fields[0]->AsInteger+1;
   }
+  reGstValue->Enabled =  false;
+  if(!reGstValue->Enabled)
+  {
+     reGstValue->Color = clBtnFace;
+  }
+
+  //myEditBox->Enabled = false;
+  //neGst->Enabled = false;
 }
 
 void TfrmReceiveInvoice::LoadForm()
@@ -271,6 +281,7 @@ void TfrmReceiveInvoice::LoadForm()
         neBackOrder->Enabled = true;
         btnCommitPackingSlip->Enabled = true;
     }
+    //reGstValue->Enabled =  false;
 
 }
 
@@ -449,7 +460,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column,
 bool &Allowed)
 {
 	TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)Sender->GetNodeData(Node);
-	Allowed = ((Column == 4 && !IsPackingSlipUpdateMode) || Column == 5 || (Column == 3 && NodeData && NodeData->IsUnitEditable)|| Column == 6 || (Column == 2 && NodeData && NodeData->IsUnitEditable) || (Column == 7 && !IsPackingSlipUpdateMode) || (Column == 4 && !IsSavedPackingSlip));
+	Allowed = ((Column == 4 && !IsPackingSlipUpdateMode) || Column == 5  || (Column == 3 && NodeData && NodeData->IsUnitEditable) || (Column == 2 && NodeData && NodeData->IsUnitEditable) || (Column == 7 && !IsPackingSlipUpdateMode) || (Column == 4 && !IsSavedPackingSlip));
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::vtvStockQtyFocusChanged(
@@ -515,7 +526,10 @@ TVSTTextType TextType, WideString &CellText)
 			break;
 		case 5:	CellText = MMMath::FloatString(NodeData->SupplierUnitCost, neCost->DecimalPlaces, ffCurrency);
 			break;
-		case 6:	CellText = MMMath::FloatString(NodeData->SupplierTotalCost, neTotalCost->DecimalPlaces, ffCurrency);
+		case 6:
+            CellText = FormatFloat("0.0000", NodeData->SupplierTotalCost);;
+
+          //CellText = MMMath::FloatString(NodeData->SupplierTotalCost, neTotalCost->DecimalPlaces);
 			break;
 		case 7:  CellText = MMMath::FloatString(NodeData->BackOrder);  // Back Order
 			break;
@@ -551,10 +565,11 @@ void __fastcall TfrmReceiveInvoice::rbGSTClick(TObject *Sender)
 void TfrmReceiveInvoice::CalculateInvoiceTotals(TInvoiceSummary &InvoiceSummary)
 {
 	PVirtualNode node							= vtvStockQty->GetFirst();
-	Currency total								= 0;
+	double total								= 0.0;
 	InvoiceSummary.BackOrderWarning		= false;
-	InvoiceSummary.TotalGST					= 0;
-	Currency totalCalculatedGST			= 0;
+	InvoiceSummary.TotalGST					= 0.00;
+	//Currency totalCalculatedGST			= 0;
+    double totalCalculatedGST			= 0.0;
 	while (node)
 	{
 		TInvoiceItemNodeData *nodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(node);
@@ -576,12 +591,19 @@ void TfrmReceiveInvoice::CalculateInvoiceTotals(TInvoiceSummary &InvoiceSummary)
 		}
 		node = vtvStockQty->GetNext(node);
 	}
-	InvoiceSummary.TotalExcl	= 0;
-	InvoiceSummary.TotalInc		= 0;
+	InvoiceSummary.TotalExcl	= 0.0;
+	InvoiceSummary.TotalInc		= 0.0;
 
 	if (chbGSTOverride->Checked)
 	{
-		InvoiceSummary.TotalGST = neGST->Value;
+        if(reGstValue->Text == "")
+        {
+           InvoiceSummary.TotalGST = 0.0;
+        }
+        else
+        {
+           InvoiceSummary.TotalGST = StrToFloat(reGstValue->Text);
+        }
 	}
 	else
 	{
@@ -602,16 +624,20 @@ void TfrmReceiveInvoice::CalculateInvoiceTotals(TInvoiceSummary &InvoiceSummary)
 void TfrmReceiveInvoice::ShowTotals()
 {       Decimalpalaces=CurrentConnection.SettingDecimalPlaces;
 	TInvoiceSummary invoiceSummary;
+    //neGST->Value = 0.00;
 	CalculateInvoiceTotals(invoiceSummary);
 	imgWarning->Visible	= invoiceSummary.BackOrderWarning;
 	lbeWarning->Visible	= invoiceSummary.BackOrderWarning;
 	lbeTotalExc->Caption	= MMMath::FloatString(invoiceSummary.TotalExcl, Decimalpalaces);
 	lbeTotalInc->Caption	= MMMath::FloatString(invoiceSummary.TotalInc, Decimalpalaces);
-	neGST->Value			= invoiceSummary.TotalGST;
+    //myEditBox->Text =  FormatFloat("0.00",invoiceSummary.TotalGST) ;
+	//neGST->Value			= invoiceSummary.TotalGST;
 	if(Decimalpalaces==2)
 	{
 		lbeTotalExc->Caption= FormatFloat("0.00",invoiceSummary.TotalExcl);;
 		lbeTotalInc->Caption= FormatFloat("0.00",invoiceSummary.TotalInc);;
+        //myEditBox->Text =  FormatFloat("0.00",invoiceSummary.TotalGST);
+        reGstValue->Text = FormatFloat("0.00",invoiceSummary.TotalGST);
 
 		
 	}
@@ -619,6 +645,8 @@ void TfrmReceiveInvoice::ShowTotals()
 	{
 		lbeTotalExc->Caption= FormatFloat("0.0000",invoiceSummary.TotalExcl);;
 		lbeTotalInc->Caption= FormatFloat("0.0000",invoiceSummary.TotalInc);;
+        //myEditBox->Text =  FormatFloat("0.0000",invoiceSummary.TotalGST) ;
+        reGstValue->Text = FormatFloat("0.0000",invoiceSummary.TotalGST) ;
 	}
 
 }
@@ -874,6 +902,7 @@ void TfrmReceiveInvoice::ProcessPackingSlip()
 				InvoiceItemInfo.TransactionNumber = NodeData->TransactionNumber;
 				
 				InvoiceItemInfo.Supplier_Unit_Cost = (NodeData->OrderQty != 0) ? NodeData->SupplierTotalCost / NodeData->OrderQty : 0;
+                //}
 				// Temporarily store entered cost and unit cost. May need GST removed.
 				InvoiceItemInfo.Total_Cost = NodeData->SupplierTotalCost;
                 invoice_created_date = NodeData->Createdtime;
@@ -1236,7 +1265,7 @@ char &Key)
 	{
 		Key = NULL;
 	}
-    if (Key == '-')
+    if ((Key == '-') && !AllowNegativeValue)
 	{
 		Key = NULL;
 	}
@@ -1316,7 +1345,11 @@ void __fastcall TfrmReceiveInvoice::neGSTExit(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::chbGSTOverrideClick(TObject *Sender)
 {
-	neGST->Enabled = chbGSTOverride->Checked;
+    reGstValue->Enabled =  chbGSTOverride->Checked;
+    if(reGstValue->Enabled)
+    {
+      reGstValue->Color = clWindow;
+    }
 	ShowTotals();
 }
 
@@ -1856,7 +1889,8 @@ void  TfrmReceiveInvoice::CommitInvoice()
 
 				if (NodeData->OrderQty != 0)
 				{
-					InvoiceItemInfo.Supplier_Unit_Cost = NodeData->SupplierTotalCost / NodeData->OrderQty;
+
+				   InvoiceItemInfo.Supplier_Unit_Cost = NodeData->SupplierTotalCost / NodeData->OrderQty;
 				}
 				else
 				{
@@ -2108,7 +2142,7 @@ void TfrmReceiveInvoice::CommitPackingSlip(bool isCommitted)
 				InvoiceItemInfo.TransactionNumber = NodeData->TransactionNumber;
 				if (NodeData->OrderQty != 0)
 				{
-					InvoiceItemInfo.Supplier_Unit_Cost = NodeData->SupplierTotalCost / NodeData->OrderQty;
+				    InvoiceItemInfo.Supplier_Unit_Cost = NodeData->SupplierTotalCost / NodeData->OrderQty;
 				}
 				else
 				{
@@ -2498,24 +2532,135 @@ bool TfrmReceiveInvoice::CheckInvoiceQtyAndPrice()
 {
 	bool Continue  = true;
 	PVirtualNode Node = vtvStockQty->GetFirst();
-	while (Node && Continue)
-	{
-		TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(Node);
-
-        if((NodeData->OrderQty < 0) || (NodeData->SupplierUnitCost < 0))
+    if(!AllowNegativeValue)
+    {
+        while (Node && Continue)
         {
-           Continue = false;
-           break;
+            TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(Node);
+
+            if((NodeData->OrderQty < 0) || (NodeData->SupplierUnitCost < 0))
+            {
+               Continue = false;
+               break;
+            }
+            // All done. Get the next one.
+            Node = vtvStockQty->GetNext(Node);
         }
-		// All done. Get the next one.
-		Node = vtvStockQty->GetNext(Node);
-	}
-	if (!Continue)
-	{
-	   Application->MessageBox("You Cannot Process Negative Amount or Quantity", "Error", MB_ICONERROR);
-	}
+        if (!Continue)
+        {
+           Application->MessageBox("You Cannot Process Negative Amount or Quantity", "Error", MB_ICONERROR);
+        }
+    }
 	return Continue;
 }
 
+//---------------------------------------------------------------------------
+void __fastcall TfrmReceiveInvoice::neCostKeyPress(TObject *Sender,
+      char &Key)
+{
+	if (Key == VK_RETURN || Key == '-')
+	{
+		Key = NULL;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::neTotalCostKeyPress(TObject *Sender,
+      char &Key)
+{
+	if (Key == VK_RETURN || Key == '-')
+	{
+		Key = NULL;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::neBackOrderKeyPress(TObject *Sender,
+      char &Key)
+{
+	if (Key == VK_RETURN || Key == '-')
+	{
+		Key = NULL;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::myEditBoxKeyPress(TObject *Sender,
+      char &Key)
+{
+	if(Key == VK_RETURN || Key == '-')
+	{
+		Key = NULL;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::myEditBoxKeyDown(TObject *Sender,
+      WORD &Key, TShiftState Shift)
+{
+	if (Key == VK_RETURN)
+	{
+		btnOk->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::myEditBoxExit(TObject *Sender)
+{
+    ShowTotals();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::reGstValueKeyPress(TObject *Sender,
+      char &Key)
+{
+	if(Key == VK_RETURN || Key == '-' || (Key != '0' && Key != '1' && Key != '2' && Key != '3' && Key != '4' && Key != '5' && Key != '6' && Key != '7' && Key != '8' && Key != '9' && Key != '.'))
+	{
+        Key = NULL;
+	}
+    if(CheckPointEntered() && Key == '.')
+    {
+       Key = NULL;
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::reGstValueKeyDown(TObject *Sender,
+      WORD &Key, TShiftState Shift)
+{
+	if (Key == VK_RETURN)
+	{
+		btnOk->SetFocus();
+	}
+    if(Key > 10 && Key != 46)
+    {
+       Key = NULL;
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::reGstValueExit(TObject *Sender)
+{
+   reGstValue->Alignment = taRightJustify;
+   ShowTotals();
+}
+//---------------------------------------------------------------------------
+bool TfrmReceiveInvoice::CheckPointEntered()
+{
+   AnsiString value = reGstValue->Text;
+   bool point_value = value.Pos('.');
+   return point_value;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmReceiveInvoice::reGstValueMouseDown(TObject *Sender,
+      TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+   reGstValue->Alignment = taLeftJustify;
+   if(reGstValue->Text == "0.00" || reGstValue->Text == "0.0000")
+   {
+      reGstValue->Text = "";
+   }
+}
 //---------------------------------------------------------------------------
 
