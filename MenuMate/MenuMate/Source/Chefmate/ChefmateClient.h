@@ -139,6 +139,9 @@ private:
 	UnicodeString cmSaleStartTime( TItemComplete* inOrder );
     UnicodeString cmStaffName(TItemComplete* inOrder);
     TMMContactInfo cmCustomerDetails(TPaymentTransaction* inPaymentTransaction);
+    UnicodeString cmCustomerPhone( TPaymentTransaction* inPaymentTransaction );
+    UnicodeString cmCustomerEmail( TPaymentTransaction* inPaymentTransaction );
+    UnicodeString cmCustomerAddress( TPaymentTransaction* inPaymentTransaction );
 };
 
 //---------------------------------------------------------------------------

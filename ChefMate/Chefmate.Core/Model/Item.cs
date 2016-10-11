@@ -185,8 +185,9 @@ namespace Chefmate.Core.Model
 
         public double GetItemActualHeight()
         {
-            var itemHeight =  ChefmateConstants.UnitHeight + Sides.Count * ChefmateConstants.UnitHeight +
-                             Options.Count * ChefmateConstants.UnitHeight;
+            var itemHeight = DisplayAttributes.IsHeaderVisible ? ChefmateConstants.UnitHeight : 0;
+            itemHeight += (Sides.Count * ChefmateConstants.UnitHeight +
+                             Options.Count * ChefmateConstants.UnitHeight);
             return itemHeight;
         }
     }

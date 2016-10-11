@@ -171,7 +171,10 @@ public:
 			UnicodeString inPartyName,
 			UnicodeString inPatronCount,
 			UnicodeString inSaleStartTime,
-            UnicodeString inDeliveryTime );
+            UnicodeString inDeliveryTime,
+            UnicodeString inCustomerPhone,
+            UnicodeString inCustomerEmail,
+            UnicodeString inCustomerAddress );
 
     bool OpenTransferOrder(
 			__int32       inOrderDBKey,

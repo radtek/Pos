@@ -146,7 +146,7 @@ namespace Chefmate.Database.DbModels
             else
             {
                 order.CourseGroups.Add(group);
-                var items = GetItemsByGroups(order.ServingCourseGroups, GroupType.ServingCourse, terminalKey);
+                var items = GetItemsByGroups(order.CourseGroups, GroupType.Course, terminalKey);
                 List<int> sCourseGroupKeys = new List<int>();
                 items.ForEach(s => sCourseGroupKeys.Add(s.ServingCourseKey));
                 order.ServingCourseGroups = DbOrderGroup.GetOrderGroups(order, sCourseGroupKeys);
