@@ -5596,7 +5596,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object tbtnReceiptNumberLabel: TTouchBtn
                               Left = 194
-                              Top = 415
+                              Top = 419
                               Width = 105
                               Height = 70
                               Font.Charset = DEFAULT_CHARSET
