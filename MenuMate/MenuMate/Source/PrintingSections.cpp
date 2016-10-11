@@ -6180,7 +6180,7 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
                  TGlobalSettings::Instance().ShowVoidOrRefund )//ToDo add one more Setting
                 TReceiptUtility::PrintVoidOnReceipt(PrintJob, pPrinter);
 
-            if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem || !PrintJob->Transaction->CreditTransaction)
+            if((!TGlobalSettings::Instance().HideReceiptNumberForRefundItem || !PrintJob->Transaction->CreditTransaction) || TGlobalSettings::Instance().ShowVoidNumber)
             {
                 TReceiptUtility::PrintTaxInvoice(PrintJob, pPrinter);
                 if((PrintJob->Transaction->CreditTransaction || TReceiptUtility::IsCancelTransaction(PrintJob->Transaction))

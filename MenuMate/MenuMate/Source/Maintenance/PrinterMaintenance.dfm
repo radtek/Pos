@@ -5561,7 +5561,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             object cbShowVoidNumber: TCheckBox
                               Left = 16
                               Top = 155
-                              Width = 315
+                              Width = 340
                               Height = 20
                               BiDiMode = bdLeftToRight
                               Caption = 'Show Void No. For Refund/Void Transaction'
