@@ -11147,10 +11147,6 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
                     addressOfTaxPayer = CompanyData->Strings[1].TrimLeft();
                     tillNumber = CompanyData->Strings[2].TrimLeft();
                 }
-
-                delete FileStream;
-
-
 				const AnsiString ReportName = "repSalesSummaryD";
 
 				dmMMReportData->SetupSalesSummaryD(ReportControl->Start, ReportControl->End);
@@ -11179,6 +11175,7 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 						Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
 					}
 				}
+                delete FileStream;
 
 			}
 
