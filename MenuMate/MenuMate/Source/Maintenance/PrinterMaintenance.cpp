@@ -5220,7 +5220,7 @@ void __fastcall TfrmPrinterMaintenance::memCustomizeFooterMouseUp(TObject *Sende
    frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
    frmTouchKeyboard->StartWithShiftDown = false;
    frmTouchKeyboard->KeyboardText = memCustomizeFooter->Lines->Text;
-   frmTouchKeyboard->Caption = "Enter void receipt footer";
+   frmTouchKeyboard->Caption = "Enter Refund/Void Receipt Footer";
    if (frmTouchKeyboard->ShowModal() == mrOk)
    {
 	  memCustomizeFooter->Lines->Text = frmTouchKeyboard->KeyboardText;
@@ -5246,12 +5246,13 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberAutoRepeat(TObject *Sen
 	frmTouchNumpad->btnDiscount->Visible = false;
 	frmTouchNumpad->btnSurcharge->Visible = true;
 	frmTouchNumpad->Mode = pmNumber;
+	frmTouchNumpad->INTInitial = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
 	if (frmTouchNumpad->ShowModal() == mrOk)
 	{
-        tbtnReceiptNumber->Caption = frmTouchNumpad->INTResult;
+        tbtnReceiptNumber->Caption = frmTouchNumpad->INTResult > 20 ?20:frmTouchNumpad->INTResult;
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
-        TGlobalSettings::Instance().ReceiptDigits = frmTouchNumpad->INTResult;
+        TGlobalSettings::Instance().ReceiptDigits = frmTouchNumpad->INTResult > 20 ? 20: frmTouchNumpad->INTResult;
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmReceiptDigits, TGlobalSettings::Instance().ReceiptDigits );
 		DBTransaction.Commit();
 	}

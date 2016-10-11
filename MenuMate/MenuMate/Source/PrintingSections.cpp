@@ -6193,7 +6193,10 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 			}
             if((PrintJob->Transaction->CreditTransaction || TReceiptUtility::IsCancelTransaction(*PrintJob->Transaction))&&
                  TGlobalSettings::Instance().ShowVoidOrRefund )//ToDo add one more Setting
-                 PrintVoidOnReceipt(PrintJob);
+                 {
+                 pPrinter->Line->Columns[0]->Text = "VOID";//PrintVoidOnReceipt(PrintJob);
+                 pPrinter->AddLine();
+                 }
             if((!TGlobalSettings::Instance().HideReceiptNumberForRefundItem || !PrintJob->Transaction->CreditTransaction) || TGlobalSettings::Instance().ShowVoidNumber)
             {
                 PrintTaxInvoice(PrintJob);
@@ -6260,6 +6263,10 @@ void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
             }
         }
     }
+    else
+    {
+        Empty = true;
+    }
 }
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
@@ -6287,6 +6294,10 @@ void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
                 pPrinter->AddLine();
             }
         }
+    }
+    else
+    {
+        Empty = true;
     }
 }
 

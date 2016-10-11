@@ -378,7 +378,7 @@ bool TManagerReceipt::Get(Database::TDBTransaction &DBTransaction)
 		 IBInternalQuery->FieldByName("RECEIPT")->SaveToStream(Receipt);
                  ReceiptValue = IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
                  Sec_Ref= IBInternalQuery->FieldByName("SECURITY_REF")->AsInteger;
-                 InvoiceNumber = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsInteger;
+                 InvoiceNumber = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
 		 Receipt->Position = 0;
 		 retVal = true;
 	  }
@@ -802,6 +802,10 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt)
 {
     TPrintout *Printout = new TPrintout;
     Printout->Printer = TComms::Instance().ReceiptPrinter;
+    std::auto_ptr <TStringList> StringReceipt(new TStringList);
+    Get(StringReceipt.get());
+    DuplicateReceipt->Position = 0;
+    StringReceipt->SaveToStream(DuplicateReceipt);
     Printout->PrintToPrinterStream(DuplicateReceipt,TComms::Instance().ReceiptPrinter.UNCName());
     delete Printout;
 
