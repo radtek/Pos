@@ -46,8 +46,8 @@ object frmSelectDish: TfrmSelectDish
     ParentFont = False
     BevelOuter = bvNone
     BevelWidth = 0
-    DefaultButtonColor = -16777201
-    DefaultButtonLatchedColor = -16777201
+    DefaultButtonColor = clWhite
+    DefaultButtonLatchedColor = clNavy
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseClick = tgridSeatsMouseClick
     GridBorder = False
@@ -55,6 +55,7 @@ object frmSelectDish: TfrmSelectDish
     RowCount = 1
     ColCount = 99
     ParentGridColor = False
+    GridColor = clBlack
     DefaultColWidth = 100
     DefaultRowHeight = 55
     ButtonGapWidth = 4
@@ -626,9 +627,9 @@ object frmSelectDish: TfrmSelectDish
     Width = 100
     ParentColor = True
     Caption = 'Change Table'
-    ButtonColor = -16777201
-    LatchedColor = -16777201
-    DisabledButtonColor = -16777201
+    ButtonColor = clMaroon
+    LatchedColor = clBtnFace
+    DisabledButtonColor = clBtnFace
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseClick = tbtnChangeTableClick
   end
@@ -663,9 +664,9 @@ object frmSelectDish: TfrmSelectDish
       ParentColor = True
       Visible = False
       Caption = 'Happy Hour'
-      ButtonColor = -16777201
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      ButtonColor = clNavy
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
     end
     object stTime: TStaticText
@@ -700,7 +701,7 @@ object frmSelectDish: TfrmSelectDish
       ParentColor = True
       Caption = 'No Menus'
       ButtonColor = 2200566
-      LatchedColor = -16777201
+      LatchedColor = clBtnFace
       DisabledButtonColor = 6052441
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseDown = tbtnToggleMenusMouseDown
@@ -718,8 +719,8 @@ object frmSelectDish: TfrmSelectDish
       ParentFont = False
       ParentColor = True
       ButtonColor = 2200566
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseUp = tbtnUserNameMouseUp
     end
@@ -736,8 +737,8 @@ object frmSelectDish: TfrmSelectDish
       ParentColor = True
       Caption = 'Chit'
       ButtonColor = 2200566
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnChitNumberMouseClick
     end
@@ -759,8 +760,8 @@ object frmSelectDish: TfrmSelectDish
       ParentColor = True
       Caption = 'Function'
       ButtonColor = 2200566
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnFunctionsMouseClick
     end
@@ -781,9 +782,9 @@ object frmSelectDish: TfrmSelectDish
       ParentFont = False
       ParentColor = True
       Caption = 'Park Sales'
-      ButtonColor = -16777201
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      ButtonColor = clWhite
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnParkSalesMouseClick
     end
@@ -805,8 +806,8 @@ object frmSelectDish: TfrmSelectDish
       ParentColor = True
       Caption = 'Reprint Receipt'
       ButtonColor = 2200566
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnReprintReceiptsMouseClick
     end
@@ -828,8 +829,8 @@ object frmSelectDish: TfrmSelectDish
       ParentColor = True
       Caption = 'Open Drawer'
       ButtonColor = 2200566
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnOpenDrawerMouseClick
     end
@@ -852,8 +853,8 @@ object frmSelectDish: TfrmSelectDish
       ParentColor = True
       Caption = 'System'
       ButtonColor = 2200566
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnSystemMouseClick
     end
@@ -874,9 +875,9 @@ object frmSelectDish: TfrmSelectDish
       ParentFont = False
       ParentColor = True
       Caption = 'Web Orders'
-      ButtonColor = -16777201
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      ButtonColor = clWhite
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnWebOrdersMouseClick
     end
@@ -920,9 +921,9 @@ object frmSelectDish: TfrmSelectDish
         ParentFont = False
         ParentColor = True
         Caption = 'Ok'
-        ButtonColor = -16777201
-        LatchedColor = -16777201
-        DisabledButtonColor = -16777201
+        ButtonColor = clGreen
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btnOkMouseClick
       end
@@ -940,7 +941,7 @@ object frmSelectDish: TfrmSelectDish
         ParentColor = True
         BevelOuter = bvNone
         DefaultButtonColor = 12565947
-        DefaultButtonLatchedColor = -16777201
+        DefaultButtonLatchedColor = clNavy
         LatchingType = ltRadioButton
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btngridModifyMouseClick
@@ -1069,8 +1070,8 @@ object frmSelectDish: TfrmSelectDish
         Width = 57
         Color = 11587808
         ButtonColor = 11587808
-        LatchedColor = -16777201
-        DisabledButtonColor = -16777201
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
         ArrowType = atUp
         OnAutoRepeat = tbtnMemberDisplayPageUpMouseClick
@@ -1081,8 +1082,8 @@ object frmSelectDish: TfrmSelectDish
         Width = 57
         Color = 11587808
         ButtonColor = 11587808
-        LatchedColor = -16777201
-        DisabledButtonColor = -16777201
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
         ArrowType = atDown
         OnAutoRepeat = tbtnMemberDisplayPageDownMouseClick
@@ -1190,14 +1191,15 @@ object frmSelectDish: TfrmSelectDish
             ParentFont = False
             ParentColor = True
             BevelOuter = bvNone
-            DefaultButtonColor = -16777201
-            DefaultButtonLatchedColor = -16777201
+            DefaultButtonColor = clMaroon
+            DefaultButtonLatchedColor = clNavy
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tgridItemServingCourseMouseClick
             GridBorder = False
             RowCount = 1
             ColCount = 1
             ParentGridColor = False
+            GridColor = clBlack
             DefaultColWidth = 120
             DefaultRowHeight = 55
             ButtonGapWidth = 5
@@ -1465,6 +1467,7 @@ object frmSelectDish: TfrmSelectDish
         Width = 582
         Height = 608
         Caption = 'tsWebPage'
+        Color = clBlack
         Font.Charset = ANSI_CHARSET
         Font.Color = clWhite
         Font.Height = -16
@@ -1512,6 +1515,7 @@ object frmSelectDish: TfrmSelectDish
         Width = 582
         Height = 608
         Caption = 'tsSetMenu'
+        Color = clBlack
         Font.Charset = ANSI_CHARSET
         Font.Color = clWhite
         Font.Height = -16
@@ -1549,8 +1553,8 @@ object frmSelectDish: TfrmSelectDish
             Color = 14342874
             ParentFont = False
             BevelOuter = bvNone
-            DefaultButtonColor = -16777201
-            DefaultButtonLatchedColor = -16777201
+            DefaultButtonColor = clBtnFace
+            DefaultButtonLatchedColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tgridItemSetMenuItemsMouseClick
             GridBorderWidth = 2
@@ -1870,7 +1874,7 @@ object frmSelectDish: TfrmSelectDish
             ParentColor = True
             BevelOuter = bvNone
             DefaultButtonColor = 12565947
-            DefaultButtonLatchedColor = -16777201
+            DefaultButtonLatchedColor = clNavy
             LatchingType = ltRadioButton
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tgridItemSideCoursesMouseClick
@@ -1994,8 +1998,8 @@ object frmSelectDish: TfrmSelectDish
             ParentFont = False
             ParentColor = True
             BevelOuter = bvNone
-            DefaultButtonColor = -16777201
-            DefaultButtonLatchedColor = -16777201
+            DefaultButtonColor = clBtnFace
+            DefaultButtonLatchedColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tgridItemSideItemsMouseClick
             GridBorderWidth = 2
@@ -2245,6 +2249,7 @@ object frmSelectDish: TfrmSelectDish
         Width = 582
         Height = 608
         Caption = 'tsOptions'
+        Color = clBlack
         Font.Charset = ANSI_CHARSET
         Font.Color = clWhite
         Font.Height = -16
@@ -2275,8 +2280,8 @@ object frmSelectDish: TfrmSelectDish
             Align = alClient
             Color = 14342874
             BevelOuter = bvNone
-            DefaultButtonColor = -16777201
-            DefaultButtonLatchedColor = -16777201
+            DefaultButtonColor = clBtnFace
+            DefaultButtonLatchedColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tgridItemOptionsMouseClick
             AutoScale = True
@@ -2285,6 +2290,7 @@ object frmSelectDish: TfrmSelectDish
             RowCount = 8
             ColCount = 4
             ParentGridColor = False
+            GridColor = clBlack
             DefaultColWidth = 120
             DefaultRowHeight = 55
             ButtonGapWidth = 2
@@ -2548,7 +2554,7 @@ object frmSelectDish: TfrmSelectDish
       ParentColor = True
       BevelOuter = bvNone
       DefaultButtonColor = 12565947
-      DefaultButtonLatchedColor = -16777201
+      DefaultButtonLatchedColor = clNavy
       LatchingType = ltRadioButton
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tgridOrderCourseMouseClick
@@ -2673,12 +2679,13 @@ object frmSelectDish: TfrmSelectDish
         ParentFont = False
         ParentColor = True
         BevelOuter = bvNone
-        DefaultButtonColor = -16777201
-        DefaultButtonLatchedColor = -16777201
+        DefaultButtonColor = clBtnFace
+        DefaultButtonLatchedColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tgridOrderItemMouseClick
         GridBorderWidth = 2
         ParentGridColor = False
+        GridColor = clWhite
         DefaultColWidth = 110
         DefaultRowHeight = 72
         ButtonGapWidth = 2
@@ -2779,7 +2786,7 @@ object frmSelectDish: TfrmSelectDish
         ParentColor = True
         BevelOuter = bvNone
         DefaultButtonColor = 12565947
-        DefaultButtonLatchedColor = -16777201
+        DefaultButtonLatchedColor = clNavy
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tgridServingCourseMouseClick
         GridBorder = False
@@ -2897,7 +2904,7 @@ object frmSelectDish: TfrmSelectDish
     ParentColor = True
     Caption = 'Select Table'
     ButtonColor = 6052441
-    LatchedColor = -16777201
+    LatchedColor = clBtnFace
     DisabledButtonColor = 6052441
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseClick = tbtnSelectTableMouseClick
@@ -2915,8 +2922,8 @@ object frmSelectDish: TfrmSelectDish
     ParentColor = True
     Caption = 'Save'
     ButtonColor = 6052441
-    LatchedColor = -16777201
-    DisabledButtonColor = -16777201
+    LatchedColor = clBtnFace
+    DisabledButtonColor = clBtnFace
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseClick = tbtnSaveMouseClick
   end
@@ -2933,8 +2940,8 @@ object frmSelectDish: TfrmSelectDish
     ParentColor = True
     Caption = 'Tender'
     ButtonColor = 6052441
-    LatchedColor = -16777201
-    DisabledButtonColor = -16777201
+    LatchedColor = clBtnFace
+    DisabledButtonColor = clBtnFace
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseClick = tbtnTenderClick
   end
@@ -2951,8 +2958,8 @@ object frmSelectDish: TfrmSelectDish
     ParentColor = True
     Caption = 'Cash Sale'
     ButtonColor = 6052441
-    LatchedColor = -16777201
-    DisabledButtonColor = -16777201
+    LatchedColor = clBtnFace
+    DisabledButtonColor = clBtnFace
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseClick = tbtnCashSaleClick
   end
@@ -2969,8 +2976,8 @@ object frmSelectDish: TfrmSelectDish
     ParentColor = True
     Caption = '$2'
     ButtonColor = 9933970
-    LatchedColor = -16777201
-    DisabledButtonColor = -16777201
+    LatchedColor = clBtnFace
+    DisabledButtonColor = clBtnFace
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseDown = btnDollarMouseDown
     OnMouseUp = btnDollarMouseUp
@@ -2988,8 +2995,8 @@ object frmSelectDish: TfrmSelectDish
     ParentColor = True
     Caption = '$5'
     ButtonColor = 9933970
-    LatchedColor = -16777201
-    DisabledButtonColor = -16777201
+    LatchedColor = clBtnFace
+    DisabledButtonColor = clBtnFace
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseDown = btnDollarMouseDown
     OnMouseUp = btnDollarMouseUp
@@ -3007,8 +3014,8 @@ object frmSelectDish: TfrmSelectDish
     ParentColor = True
     Caption = '$10'
     ButtonColor = 9933970
-    LatchedColor = -16777201
-    DisabledButtonColor = -16777201
+    LatchedColor = clBtnFace
+    DisabledButtonColor = clBtnFace
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseDown = btnDollarMouseDown
     OnMouseUp = btnDollarMouseUp
@@ -3026,8 +3033,8 @@ object frmSelectDish: TfrmSelectDish
     ParentColor = True
     Caption = '$20'
     ButtonColor = 9933970
-    LatchedColor = -16777201
-    DisabledButtonColor = -16777201
+    LatchedColor = clBtnFace
+    DisabledButtonColor = clBtnFace
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseDown = btnDollarMouseDown
     OnMouseUp = btnDollarMouseUp
@@ -3045,8 +3052,8 @@ object frmSelectDish: TfrmSelectDish
     ParentColor = True
     Caption = '$1'
     ButtonColor = 9933970
-    LatchedColor = -16777201
-    DisabledButtonColor = -16777201
+    LatchedColor = clBtnFace
+    DisabledButtonColor = clBtnFace
     LatchingProperties = [lkLatchColor, lkStayDown]
     OnMouseDown = btnDollarMouseDown
     OnMouseUp = btnDollarMouseUp
@@ -3144,8 +3151,8 @@ object frmSelectDish: TfrmSelectDish
       ParentFont = False
       ParentColor = True
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       ArrowType = atUp
       OnMouseDown = btnUpMouseDown
@@ -3165,8 +3172,8 @@ object frmSelectDish: TfrmSelectDish
       ParentFont = False
       ParentColor = True
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       ArrowType = atDown
       OnMouseDown = btnDownMouseDown
@@ -3229,8 +3236,8 @@ object frmSelectDish: TfrmSelectDish
       ParentColor = True
       Caption = 'Remove'
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnRemoveMouseClick
     end
@@ -3247,9 +3254,9 @@ object frmSelectDish: TfrmSelectDish
       ParentFont = False
       ParentColor = True
       Caption = 'Membership'
-      ButtonColor = -16777201
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      ButtonColor = clNavy
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnMembershipMouseClick
     end
@@ -3267,8 +3274,8 @@ object frmSelectDish: TfrmSelectDish
       ParentColor = True
       Caption = 'Search'
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnSearchMouseClick
     end
