@@ -11128,6 +11128,29 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 	try
 	{
 
+                AnsiString nameOfTaxPayer = "";
+                AnsiString addressOfTaxPayer = "";
+                AnsiString tillNumber = "";
+                std::auto_ptr <TStringList> CompanyData (new TStringList);
+                AnsiString filename = ExtractFilePath(Application->ExeName);
+
+                TFileStream *FileStream;
+                if (FileExists(filename + "\\Owner Details.txt"))
+                {
+                    FileStream = new TFileStream(filename + "\\Owner Details.txt",  fmOpenRead | fmShareExclusive);
+                }
+                CompanyData->LoadFromStream(FileStream);
+
+                if(CompanyData->Count > 2)
+                {
+                    nameOfTaxPayer = CompanyData->Strings[0].TrimLeft();
+                    addressOfTaxPayer = CompanyData->Strings[1].TrimLeft();
+                    tillNumber = CompanyData->Strings[2].TrimLeft();
+                }
+
+                delete FileStream;
+
+
 				const AnsiString ReportName = "repSalesSummaryD";
 
 				dmMMReportData->SetupSalesSummaryD(ReportControl->Start, ReportControl->End);
@@ -11146,6 +11169,9 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 						rvMenuMate->SetParam("ReportRange", DateRange);
                         rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
                         rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
+                        rvMenuMate->SetParam("NameOfTaxPayer", nameOfTaxPayer);
+                        rvMenuMate->SetParam("AddressOfTaxPayer", addressOfTaxPayer);
+                        rvMenuMate->SetParam("TillNumber", tillNumber);
 						rvMenuMate->Execute();
 					}
 					else
