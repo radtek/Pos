@@ -209,6 +209,7 @@ void __fastcall TEftPosMMDPS::TransactionEvent(TObject *Sender)
                 EftTrans->Result = eAccepted;
                 EftTrans->ResultText = EftPosDPS->ResponseText;
                 EftTrans->CardType = EftPosDPS->CardType;
+                EftTrans->FinalAmount = EftPosDPS->AmountAuthOut;
             }
         }
         else

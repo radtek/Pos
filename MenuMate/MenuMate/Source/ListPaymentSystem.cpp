@@ -1167,6 +1167,13 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 								Payment->Result = EftTrans->Result;
 								Payment->CardType = EftTrans->CardType; // set the card type returned from eftpos transaction for future reference (tips)
 								Payment->EftposTransactionID = EftTrans->EftposTransactionID; // eftpos transaction id
+                                if(EftTrans->FinalAmount != "")
+                                {
+                                   Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
+                                   Payment->SetPay(FinalAmount);
+                                   Payment->SetAdjustment(FinalAmount-Pay);
+                                   Payment->AdjustmentReason = "Tip";
+                                }
 							}
 
                             if (Payment->Result != eAccepted)

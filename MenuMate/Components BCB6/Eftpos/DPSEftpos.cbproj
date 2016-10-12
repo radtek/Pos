@@ -19,6 +19,9 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<BPILibOutputDir>..\..\..\libs</BPILibOutputDir>
+			<DesignOnlyPackage>false</DesignOnlyPackage>
+			<FinalOutputDir>..\..\..\libs</FinalOutputDir>
 			<ProjectType>CppPackage</ProjectType>
 			<DCC_Description>DPSEftpos</DCC_Description>
 			<_TCHARMapping>wchar_t</_TCHARMapping>
@@ -30,8 +33,8 @@
 			<Defines>NO_STRICT</Defines>
 			<DynamicRTL>true</DynamicRTL>
 			<UsePackages>true</UsePackages>
-			<IncludePath>..\..\..\libs;$(CG_BOOST_ROOT)\boost\tr1\tr1;$(BDS)\include;$(BDS)\include\dinkumware;$(BDS)\include\vcl;$(CG_BOOST_ROOT)</IncludePath>
-			<ILINK_LibraryPath>..\..\..\libs;$(BDS)\lib;$(BDS)\lib\obj;$(BDS)\lib\psdk</ILINK_LibraryPath>
+			<IncludePath>..\..\..\libs\;..\..\..\libs;$(CG_BOOST_ROOT)\boost\tr1\tr1;$(BDS)\include;$(BDS)\include\dinkumware;$(BDS)\include\vcl;$(CG_BOOST_ROOT)</IncludePath>
+			<ILINK_LibraryPath>..\..\..\libs\;..\..\..\libs;$(BDS)\lib;$(BDS)\lib\obj;$(BDS)\lib\psdk</ILINK_LibraryPath>
 			<BCC_wpar>false</BCC_wpar>
 			<BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
 		</PropertyGroup>
@@ -61,28 +64,28 @@
 			<TASM_Debugging>None</TASM_Debugging>
 		</PropertyGroup>
 		<ItemGroup>
+			<CppCompile Include="DPSEFTXLib_TLB.cpp">
+				<DependentOn>DPSEFTXLib_TLB.h</DependentOn>
+				<BuildOrder>4</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DPSEFTXLib_OCX.cpp">
+				<DependentOn>DPSEFTXLib_OCX.h</DependentOn>
+				<BuildOrder>5</BuildOrder>
+			</CppCompile>
+			<ResFiles Include="c:\projects\v6-master\menumate\components bcb6\eftpos\DPSEFTXLib_OCX.dcr">
+				<BuildOrder>6</BuildOrder>
+			</ResFiles>
+			<ResFiles Include="DPSEftpos.res">
+				<BuildOrder>2</BuildOrder>
+			</ResFiles>
+			<PackageImport Include="vcl.bpi">
+				<BuildOrder>6</BuildOrder>
+			</PackageImport>
 			<CppCompile Include="DPSEftpos.cpp">
 				<BuildOrder>0</BuildOrder>
 			</CppCompile>
 			<PackageImport Include="rtl.bpi">
 				<BuildOrder>1</BuildOrder>
-			</PackageImport>
-			<ResFiles Include="DPSEftpos.res">
-				<BuildOrder>2</BuildOrder>
-			</ResFiles>
-			<CppCompile Include="..\..\..\libs\DPSEFTXLib_TLB.cpp">
-				<DependentOn>..\..\..\libs\DPSEFTXLib_TLB.h</DependentOn>
-				<BuildOrder>3</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\libs\DPSEFTXLib_OCX.cpp">
-				<DependentOn>..\..\..\libs\DPSEFTXLib_OCX.h</DependentOn>
-				<BuildOrder>4</BuildOrder>
-			</CppCompile>
-			<ResFiles Include="..\..\..\libs\DPSEFTXLib_OCX.dcr">
-				<BuildOrder>5</BuildOrder>
-			</ResFiles>
-			<PackageImport Include="vcl.bpi">
-				<BuildOrder>6</BuildOrder>
 			</PackageImport>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
