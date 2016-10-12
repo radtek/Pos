@@ -1715,6 +1715,12 @@ void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
             btnTransfer->Enabled = false;
             btnApplyMembership->Enabled = false;
         }
+        else if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+          AnsiString Data = *((AnsiString*)Message.WParam);
+          GetMemberByBarcode(DBTransaction,Data);
+          DBTransaction.Commit();
+        }
         else
         {
             TMMContactInfo TempUserInfo;
@@ -1735,14 +1741,31 @@ void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
             {
                 MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
             }
-            DBTransaction.Commit();
-            ShowReceipt();
 	    }
+        DBTransaction.Commit();
+        ShowReceipt();
     }
 	catch(Exception & E)
 	{
 		MessageBox("Unable to Apply Membership :" + E.Message, "Error", MB_OK + MB_ICONERROR);
 	}
+}
+// ---------------------------------------------------------------------------
+void TfrmBillGroup::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode)
+{
+ 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
+	TMMContactInfo info;
+    info.MemberCode = Barcode;
+    info.CardStr = Barcode;
+    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info);
+
+	if (info.Valid())
+     {
+        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+        ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
+		ApplyMembership(DBTransaction, info);
+	}
+
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)

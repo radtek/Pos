@@ -162,6 +162,7 @@ private:	// User declarations
     void ToggleItemState(TGridButton *GridButton);
     void SelectItem(TGridButton *GridButton);
     void DeselectItem(TGridButton *GridButton);
+    void GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);
