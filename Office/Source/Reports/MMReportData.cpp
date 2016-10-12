@@ -15876,7 +15876,7 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
             "CAST(sum(coalesce(AOT.VAT,0)) AS NUMERIC(17,4)) VAT, "
             "CAST(sum(coalesce(VAT_EXEMPT_SALE.price,0))as NUMERIC(17,4))  VAT_EXEMPT, "
             "CAST(SUM(coalesce(zero_rated.price,0)) AS NUMERIC(17,4)) ZERORATED,       "
-            "CAST(SUM((ROUNDING.rounding_amount)) AS NUMERIC(17,4)) SALES_OVERFLOW,   "
+            "CAST((ROUNDING.rounding_amount) AS NUMERIC(17,4)) SALES_OVERFLOW,   "
             "CAST('0000' AS VARCHAR(10)) RESET_COUNTER,		"
             "CAST('' AS VARCHAR(50)) REMARKS               "
 
