@@ -1159,7 +1159,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 								}
 								else
 								{
-									Payment->Result = eAccepted;
+                                    Payment->Result = eAccepted;
 								}
 							}
 							else
@@ -1167,12 +1167,17 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 								Payment->Result = EftTrans->Result;
 								Payment->CardType = EftTrans->CardType; // set the card type returned from eftpos transaction for future reference (tips)
 								Payment->EftposTransactionID = EftTrans->EftposTransactionID; // eftpos transaction id
+
                                 if(EftTrans->FinalAmount != "")
                                 {
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
-                                   Payment->SetPay(FinalAmount);
-                                   Payment->SetAdjustment(FinalAmount-Pay);
-                                   Payment->AdjustmentReason = "Eftpos Tip";
+                                   if(FinalAmount != Pay)
+                                   {
+                                       Payment->SetPay(FinalAmount);
+                                       Payment->SetAdjustment(FinalAmount - Pay);
+                                       Payment->TipAmount = FinalAmount - Pay;
+                                       Payment->AdjustmentReason = "Eftpos Tip";
+                                   }
                                 }
 							}
 
@@ -1213,7 +1218,12 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 	}
 	else
 	{
-		Payment->Result = eAccepted;
+        Currency FinalAmount = Payment->GetPayTendered() + 50.0;
+        Payment->SetAdjustment(FinalAmount - Payment->GetPayTendered());
+        Payment->AdjustmentReason = "Eftpos Tip";
+        Payment->TipAmount = FinalAmount - Payment->GetPayTendered();
+        Payment->SetPay(FinalAmount);
+        Payment->Result = eAccepted;
 	}
 }
 
@@ -1833,9 +1843,9 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->SQL->Text =
 		"INSERT INTO DAYARCBILLPAY (" "DAYARCBILLPAY_KEY, " "ARCBILL_KEY, " "PAY_TYPE, " "VOUCHER_NUMBER, "
 		"SUBTOTAL, " "ROUNDING, " "CASH_OUT, " "TAX_FREE, " "NOTE, PAY_TYPE_DETAILS," "PROPERTIES, "
-        "GROUP_NUMBER, PAYMENT_CARD_TYPE, PAY_GROUP,CHARGED_TO_XERO) " "VALUES ("
+        "GROUP_NUMBER, PAYMENT_CARD_TYPE, PAY_GROUP,CHARGED_TO_XERO,TIP_AMOUNT) " "VALUES ("
 		":DAYARCBILLPAY_KEY, " ":ARCBILL_KEY, " ":PAY_TYPE, " ":VOUCHER_NUMBER, " ":SUBTOTAL, " ":ROUNDING, " ":CASH_OUT, " ":TAX_FREE, "
-		":NOTE, :PAY_TYPE_DETAILS," ":PROPERTIES, " ":GROUP_NUMBER , :PAYMENT_CARD_TYPE, :PAY_GROUP,:CHARGED_TO_XERO) ";
+		":NOTE, :PAY_TYPE_DETAILS," ":PROPERTIES, " ":GROUP_NUMBER , :PAYMENT_CARD_TYPE, :PAY_GROUP,:CHARGED_TO_XERO,:TIP_AMOUNT) ";
 
         int paymentCounter = 0;
         bool changeIsChargerToXero = false;
@@ -1856,7 +1866,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				IBInternalQuery->Close();
 				IBInternalQuery->ParamByName("DAYARCBILLPAY_KEY")->AsInteger = PaymentKey;
 				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = Retval;
-
 				if (SubPayment->SysNameOveride != "")
 				{
 					IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->SysNameOveride;
@@ -1879,28 +1888,28 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				}
 
                 //checking clipp paytype
-            if( IBInternalQuery->ParamByName("PAY_TYPE")->AsString == "Clipp")
-                {
-                     isClippGroup = true;
-                }
+                if( IBInternalQuery->ParamByName("PAY_TYPE")->AsString == "Clipp")
+                    {
+                         isClippGroup = true;
+                    }
              
 
-                    if (!PaymentTransaction.CreditTransaction)
-                    {
-                        IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
-                        SubPayment->GetPayTendered(),
-                        0.01,
-                        TGlobalSettings::Instance().MidPointRoundsDown);
-                    }
-                    else
-                    {
-                        IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
-                        SubPayment->GetPayTendered(),
-                        0.01,
-                        TGlobalSettings::Instance().MidPointRoundsDown);
-                    }
-              
+                if (!PaymentTransaction.CreditTransaction)
+                {
+                    IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
+                    SubPayment->GetPayTendered(),
+                    0.01,
+                    TGlobalSettings::Instance().MidPointRoundsDown);
+                }
+                else
+                {
+                    IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
+                    SubPayment->GetPayTendered(),
+                    0.01,
+                    TGlobalSettings::Instance().MidPointRoundsDown);
+                }
 
+                IBInternalQuery->ParamByName("TIP_AMOUNT")->AsCurrency = SubPayment->TipAmount;
 				IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = SubPayment->GetPayRounding();
 				IBInternalQuery->ParamByName("CASH_OUT")->AsString = "F";
 				if (SubPayment->Properties & ePayTypeTaxFree)
@@ -1956,6 +1965,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				SubPayment->GetCashOut(),
 				0.01,
 				TGlobalSettings::Instance().MidPointRoundsDown);
+                IBInternalQuery->ParamByName("TIP_AMOUNT")->AsCurrency = 0;
 				IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = SubPayment->GetCashOutRounding();
 				IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = SubPayment->ReferenceNumber;
 				IBInternalQuery->ParamByName("CASH_OUT")->AsString = "T";
@@ -1994,6 +2004,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->ParamByName("PAY_TYPE")->AsString = CASH;
 		IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = "";
 		IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = "";
+         IBInternalQuery->ParamByName("TIP_AMOUNT")->AsCurrency = 0;
 		IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = 0;
 		IBInternalQuery->ParamByName("CASH_OUT")->AsString = "F";
 		IBInternalQuery->ParamByName("TAX_FREE")->AsString = "F";
@@ -2033,7 +2044,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				ValueRnd = SubPayment->GetSurchargeRounding();
 			}
 
-			if (Value != 0)
+			if (Value != 0 && SubPayment->AdjustmentReason != "Eftpos Tip")
 			{
 				// Get New Key
 				IBInternalQuery2->Close();

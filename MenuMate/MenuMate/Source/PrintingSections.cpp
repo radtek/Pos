@@ -6322,6 +6322,12 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
             }
 			else
 			{
+                AnsiString paymentName = SubPayment->Name;
+                if(SubPayment->CardType != "")
+                {
+                   paymentName = paymentName +"(" + SubPayment->CardType +")";
+                }
+
 				pPrinter->Add(SubPayment->Name + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,

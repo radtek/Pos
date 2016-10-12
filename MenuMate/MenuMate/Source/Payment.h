@@ -165,6 +165,7 @@ public:
    UnicodeString EftposTransactionID; // unique eftpos transaction id returned from the eftpos machine
    bool IsLoyaltyVoucher();
    bool IsLoyaltyGiftCard();
+   Currency TipAmount;
 };
 
 #endif

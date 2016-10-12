@@ -73,7 +73,7 @@ namespace MenumateVersionParser
             pv6_26,
             pv6_27,
             pv6_28,
-            pv6_29,
+            pv6_29,  pv6_30,
     };
 
     class TApplyParser
@@ -148,6 +148,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_27( TDBControl* const inDBControl );
 		PARSER_ERROR apply6_28( TDBControl* const inDBControl );
         PARSER_ERROR apply6_29( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_30( TDBControl* const inDBControl );
         TDBControl* _dbControl;
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -772,6 +773,11 @@ namespace MenumateVersionParser
         void UpdateSyndCodeTable6_29(TDBControl* const inDBControl);
         void UpdateSyndCodes6_29(TDBControl* const inDBControl);
         void UpdateContactCardsTable6_29(TDBControl* const inDBControl);
+
+        //6.30
+        void upgrade6_30Tables();
+        void update6_30Tables();
+        void UpdatePaymentTables6_30(TDBControl* const inDBControl);
 
     }; // class
 } // namespace
