@@ -161,6 +161,7 @@ private:	// User declarations
     bool CaptureRefundReference();
     bool ValidateRefundReference(UnicodeString str);
     bool ValidateAlreadyRefunded(Database::TDBTransaction &DBTransaction,UnicodeString str);
+    bool IsRefundReceipt(Database::TDBTransaction &DBTransaction,UnicodeString str);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);

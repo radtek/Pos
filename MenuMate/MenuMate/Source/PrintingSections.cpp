@@ -1598,7 +1598,7 @@ void TPrintSection::PrintReceiptInfo(TReqPrintJob *PrintJob)
 //---------------------------------------------------------------------------
 void TPrintSection::ShowRefundReference(TReqPrintJob *PrintJob)
 {
-    if((PrintJob->Transaction->CreditTransaction||TReceiptUtility::IsCancelTransaction(*PrintJob->Transaction))
+    if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
           && TGlobalSettings::Instance().CaptureRefundRefNo)
     {
         pPrinter->Line->ColCount = 1;
@@ -6191,24 +6191,29 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 				pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptHeader->Strings[i];
 				pPrinter->AddLine();
 			}
-            if((PrintJob->Transaction->CreditTransaction || TReceiptUtility::IsCancelTransaction(*PrintJob->Transaction))&&
-                 TGlobalSettings::Instance().ShowVoidOrRefund )//ToDo add one more Setting
-                 {
+            if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)&&
+                 TGlobalSettings::Instance().ShowVoidOrRefund)
+             {
                  pPrinter->Line->Columns[0]->Text = "VOID";//PrintVoidOnReceipt(PrintJob);
                  pPrinter->AddLine();
-                 }
-            if((!TGlobalSettings::Instance().HideReceiptNumberForRefundItem || !PrintJob->Transaction->CreditTransaction) || TGlobalSettings::Instance().ShowVoidNumber)
+             }
+            if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem ||
+                !(PrintJob->Transaction->CreditTransaction))
             {
                 PrintTaxInvoice(PrintJob);
-                if((PrintJob->Transaction->CreditTransaction || TReceiptUtility::IsCancelTransaction(*PrintJob->Transaction))
-                   && TGlobalSettings::Instance().ShowVoidNumber)
+                if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
+                    && TGlobalSettings::Instance().ShowVoidNumber)
+                {
                     pPrinter->Line->Columns[0]->Text    =   "Void No.";
+                }
                 else
                     pPrinter->Line->Columns[0]->Text    =   TGlobalSettings::Instance().ReceiptNumberLabel;
                 if(PrintJob->Transaction->TypeOfSale == RegularSale)
                 {
-                     pPrinter->Line->Columns[0]->Text +=
-                               TReceiptUtility::ModifyInvoiceNumber(PrintJob->Transaction->InvoiceNumber, ReceiptLength);
+                     AnsiString invoiceNumber = (AnsiString)PrintJob->Transaction->InvoiceNumber;
+                     AnsiString prefix = TReceiptUtility::ExtractInvoiceNumber(invoiceNumber);
+                     pPrinter->Line->Columns[0]->Text += prefix +
+                               TReceiptUtility::ModifyInvoiceNumber(invoiceNumber, ReceiptLength);
                 }
                 else
                 {
@@ -6241,7 +6246,7 @@ void TPrintSection::PrintVoidOnReceipt(TReqPrintJob *PrintJob)
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
 {
-    if((PrintJob->Transaction->CreditTransaction||TReceiptUtility::IsCancelTransaction(*PrintJob->Transaction))
+    if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
                 && TGlobalSettings::Instance().SetVoidFooter)
     {
         if (PrintJob->ReceiptVoidFooter->Count == 0)
@@ -6272,7 +6277,7 @@ void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
 void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
 {
 
-    if((!PrintJob->Transaction->CreditTransaction && !TReceiptUtility::IsCancelTransaction(*PrintJob->Transaction) )
+    if((!TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction))
          || !TGlobalSettings::Instance().SetVoidFooter)
     {
         if (PrintJob->ReceiptFooter->Count == 0)

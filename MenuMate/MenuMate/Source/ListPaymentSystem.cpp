@@ -3030,9 +3030,9 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
       if(PaymentTransaction.InvoiceNumber == "" || PaymentTransaction.InvoiceNumber == "Undefined")
       {
             if(TGlobalSettings::Instance().ShowVoidNumber &&
-               (PaymentTransaction.CreditTransaction||TReceiptUtility::IsCancelTransaction(PaymentTransaction)))
+               TReceiptUtility::CheckRefundCancelTransaction(PaymentTransaction))
             {
-                PaymentTransaction.InvoiceNumber = Invoice->GetVoidInvoiceNumber(PaymentTransaction.DBTransaction);
+                PaymentTransaction.InvoiceNumber = "RV " + Invoice->GetVoidInvoiceNumber(PaymentTransaction.DBTransaction);
             }
              else
              {

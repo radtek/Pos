@@ -48,4 +48,32 @@ bool TReceiptUtility::IsCancelTransaction(TPaymentTransaction PaymentTransaction
     return retValue;
 }
 //-----------------------------------------------------------------------------
+bool TReceiptUtility::CheckRefundCancelTransaction(TPaymentTransaction PaymentTransaction)
+{
+    bool retValue =  ((PaymentTransaction.Orders->Count > 0) && PaymentTransaction.CreditTransaction)
+         || IsCancelTransaction(PaymentTransaction);
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+AnsiString TReceiptUtility::ExtractInvoiceNumber(AnsiString &invoiceNumber)
+{
+    AnsiString prefix = "";
+    if(invoiceNumber.Pos("NC ") != 0)
+    {
+        invoiceNumber = invoiceNumber.SubString(4,invoiceNumber.Length()-3);
+        prefix = "NC ";
+    }
+    if(invoiceNumber.Pos("Comp ") != 0)
+    {
+        invoiceNumber = invoiceNumber.SubString(6,invoiceNumber.Length()-5);
+        prefix = "Comp ";
+    }
+    if(invoiceNumber.Pos("RV ") != 0)
+    {
+        invoiceNumber = invoiceNumber.SubString(4,invoiceNumber.Length()-3);
+        prefix = "RV ";
+    }
+    return prefix;
+}
+//-----------------------------------------------------------------------------
 

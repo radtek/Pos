@@ -2869,45 +2869,20 @@ bool TfrmPaymentType::ValidateRefundReference(UnicodeString str)
     bool retValue = false;
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
-    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    IBInternalQuery->Close();
-    IBInternalQuery->SQL->Text =		" SELECT "
-                                        " a.ARCBILL_KEY "
-                                        " FROM "
-                                        "  ARCBILL a"
-                                        " LEFT JOIN "
-                                        " SECURITY s"
-                                        " on s.SECURITY_REF = a.SECURITY_REF"
-                                        " WHERE "
-                                        " a.INVOICE_NUMBER  = :INVOICE_NUMBER "
-                                        " and s.SECURITY_EVENT <> 'Credit' "
 
-                                        " UNION ALL "
-
-                                        " SELECT "
-                                        " ARCBILL_KEY "
-                                        " FROM "
-                                        "  DAYARCBILL d"
-                                        " LEFT JOIN "
-                                        " SECURITY s"
-                                        " on s.SECURITY_REF = d.SECURITY_REF"
-                                        " WHERE "
-                                        " INVOICE_NUMBER  = :INVOICE_NUMBER "
-                                        " and s.SECURITY_EVENT <> 'Credit' ";
-
-
-
-    IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = str;
-    IBInternalQuery->ExecQuery();
-    if(IBInternalQuery->RecordCount > 0)
+    if(ValidateAlreadyRefunded(DBTransaction,str))
     {
-
-        if(ValidateAlreadyRefunded(DBTransaction,str))
+        if(!IsRefundReceipt(DBTransaction,str))
         {
             CurrentTransaction.RefundRefReceipt = str;
             retValue = true;
         }
     }
+    else
+    {
+        retValue = false;
+    }
+//    }
     DBTransaction.Commit();
     return retValue;
 }
@@ -2937,6 +2912,47 @@ bool TfrmPaymentType::ValidateAlreadyRefunded(Database::TDBTransaction &DBTransa
         return true;
     else
         return false;
+}
+//----------------------------------------------------------------------------
+bool TfrmPaymentType::IsRefundReceipt(Database::TDBTransaction &DBTransaction,UnicodeString str)
+{
+
+    bool retValue = false;
+    TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery1->Close();
+    IBInternalQuery1->SQL->Text =	" SELECT "
+                                    " a.ARCBILL_KEY, "
+                                    " REFUND_REFRECEIPT, "
+                                    " ORDER_TYPE_MESSAGE "
+                                    " FROM "
+                                    "  ARCBILL a"
+                                    " WHERE "
+                                    " a.INVOICE_NUMBER  = :INVOICE_NUMBER "
+
+                                    " UNION ALL "
+
+                                    " SELECT "
+                                    " d.ARCBILL_KEY, "
+                                    " REFUND_REFRECEIPT, "
+                                    " ORDER_TYPE_MESSAGE "
+                                    " FROM "
+                                    "  DAYARCBILL d"
+                                    " WHERE "
+                                    " d.INVOICE_NUMBER  = :INVOICE_NUMBER ";
+    IBInternalQuery1->ParamByName("INVOICE_NUMBER")->AsString = str;
+    IBInternalQuery1->ExecQuery();
+    if(IBInternalQuery1->RecordCount > 0)
+    {
+        if(IBInternalQuery1->FieldByName("REFUND_REFRECEIPT")->AsString != "")
+            retValue = true;
+        else
+            retValue = false;
+    }
+    else
+    {
+        retValue = true;
+    }
+    return retValue;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::tnWorkingAmountClick(TObject *Sender, TNumpadKey Key)
