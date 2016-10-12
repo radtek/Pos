@@ -1172,7 +1172,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
                                    Payment->SetPay(FinalAmount);
                                    Payment->SetAdjustment(FinalAmount-Pay);
-                                   Payment->AdjustmentReason = "Tip";
+                                   Payment->AdjustmentReason = "Eftpos Tip";
                                 }
 							}
 
