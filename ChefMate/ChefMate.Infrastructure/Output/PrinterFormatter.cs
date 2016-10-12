@@ -14,6 +14,7 @@ namespace Chefmate.Infrastructure.Output
         private string _customerAddress = "Address:  {0}";
         private string _expectedTime = "Expected Time:  {0}";
         private string _paymentStatus = "Payment Status:  {0}";
+        private string _tabname = "Table/Tab Name:  {0}";
 
         public PrinterFormatter()
         {
@@ -76,6 +77,9 @@ namespace Chefmate.Infrastructure.Output
                 outDocketLayout.AddInstruction(GetInstruction(string.Format(_chitValue, inOrder.ChitValue)));
             // Kitchen Timings
             outDocketLayout.AddInstruction(GetInstruction("IN  " + inOrder.ArrivalTime.ToString("T") + "\n" + "OUT " + DateTime.Now.ToString("T")));
+            // Table/Tab Name
+            if (!string.IsNullOrWhiteSpace(inOrder.TableTabName) && inOrder.TableTabName != "Sale")
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_tabname, inOrder.TableTabName)));
             // Customer Name
             if (!string.IsNullOrWhiteSpace(inOrder.CustomerName))
                 outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerName, inOrder.CustomerName)));

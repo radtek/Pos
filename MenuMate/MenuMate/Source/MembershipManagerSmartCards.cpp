@@ -2300,6 +2300,10 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
 				if (!TGlobalSettings::Instance().IsPOSOffline && TGlobalSettings::Instance().LoyaltyMateEnabled && !memberNotExist)
 				{
                    MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+                   if(UserInfo.CloudUUID.Length() == 0)
+                   {
+                      MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+                   }
                    DBTransaction.Commit();
                    DBTransaction.StartTransaction();
                    UserInfo = SmartCardContact;
@@ -2376,9 +2380,9 @@ void TManagerMembershipSmartCards::SyncBarcodeMemberDetailWithCloud(TMMContactIn
 {
      if(MMContactInfo.MemberCode != "" &&  TGlobalSettings::Instance().LoyaltyMateEnabled
                 && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(MMContactInfo.CloudUUID))
-                {
-                    TManagerLoyaltyMate::Instance()->SyncMemberDetailsWithCloud(ManagerSyndicateCode.GetCommunicationSyndCode(),MMContactInfo);
-                }
+    {
+        TManagerLoyaltyMate::Instance()->SyncMemberDetailsWithCloud(ManagerSyndicateCode.GetCommunicationSyndCode(),MMContactInfo);
+    }
 }
 
 bool TManagerMembershipSmartCards::UpdateMemberCardCode(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode)

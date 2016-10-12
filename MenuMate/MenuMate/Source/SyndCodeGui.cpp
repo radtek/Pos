@@ -109,14 +109,14 @@ void __fastcall TfrmSyndCodeGui::tbtnEncryptionMouseClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSyndCodeGui::btnUseForComMouseClick(TObject *Sender)
 {
-  if(ManagerSyndCode.CanUseForCommunication(SyndCode.SyndCodeKey))
+  if(SyndCode.UseForCom || ManagerSyndCode.CanUseForCommunication(SyndCode.SyndCodeKey))
   {
     SyndCode.UseForCom = !SyndCode.UseForCom;
     btnUseForCom->Caption = (SyndCode.UseForCom == true) ? " MM Cloud Communication : True" : " Use For Communication : False";
   }
   else
   {
-     MessageBox("You have setup a Syndicate Code for communication with Menumate Cloud already. This option can not be set this Syndicate Code.", "Warning", MB_OK);
+         MessageBox("You have setup a Syndicate Code for communication with Menumate Cloud already. This option can not be set this Syndicate Code.", "Warning", MB_OK);
   }
 }
 //---------------------------------------------------------------------------

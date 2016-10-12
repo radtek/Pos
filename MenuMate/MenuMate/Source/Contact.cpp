@@ -186,7 +186,7 @@ int TContact::GetContactByCard(Database::TDBTransaction &DBTransaction, TMMConta
 	  IBInternalQuery->Close();
 	  IBInternalQuery->SQL->Text = "SELECT " "CONTACTS.CONTACTS_KEY " "FROM "
 		  "CONTACTCARDS INNER JOIN CONTACTS ON CONTACTCARDS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY " "WHERE " "SWIPE_CARD = :SWIPE_CARD AND "
-		  "CONTACT_TYPE = :CONTACT_TYPE";
+		  "CONTACT_TYPE = :CONTACT_TYPE AND CONTACTCARDS.IS_ACTIVE = 'T'";
 	  IBInternalQuery->ParamByName("SWIPE_CARD")->AsString = Info.CardStr;
 	  IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = ContactType;
 	  IBInternalQuery->ExecQuery();

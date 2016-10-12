@@ -1097,6 +1097,7 @@ void TApplyParser::update6_29Tables()
 {
   UpdateSyndCodeTable6_29(_dbControl);
   UpdateSyndCodes6_29(_dbControl);
+  UpdateContactCardsTable6_29(_dbControl);
 }
 //---------------------------------------------------------------------------
 
@@ -1141,4 +1142,28 @@ void TApplyParser::UpdateSyndCodes6_29( TDBControl* const inDBControl)
 	}
 }
 //------------------------------------------------------------------------------
+void TApplyParser::UpdateContactCardsTable6_29( TDBControl* const inDBControl)
+{
+    if ( !fieldExists("CONTACTCARDS", "IS_ACTIVE", inDBControl ) )
+	{
+		executeQuery(
+		"ALTER TABLE CONTACTCARDS ADD IS_ACTIVE T_TRUEFALSE DEFAULT 'T';",
+		inDBControl );
+	}
+    TDBTransaction dbTransaction( *inDBControl );
+	try
+	{
+		dbTransaction.StartTransaction();
+		TIBSQL *getQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        getQuery->SQL->Text = "UPDATE CONTACTCARDS SET IS_ACTIVE = 'T'";
+        getQuery->ExecQuery();
+		dbTransaction.Commit();
+	}
+	catch( ... )
+	{
+		dbTransaction.Rollback();
+		throw;
+	}
+}
+
 }

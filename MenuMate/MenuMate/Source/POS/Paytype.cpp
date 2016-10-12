@@ -575,15 +575,17 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
         }
         else
         {
+
+            double points = GetAvailableRedeemPoints(CurrentTransaction);
             if(CurrentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0)
             {
                 lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " "+CurrentTransaction.Membership.Member.Surname + " (" + CurrentTransaction.Membership.Member.MembershipNumber +
-                ")" + " Points:" + FormatFloat("0.00", CurrentTransaction.Membership.Member.Points.getPointsBalance(pasDatabase) + CurrentTransaction.Membership.Member.Points.getCurrentPointsRefunded());
+                ")" + " Points:" + FormatFloat("0.00", points + CurrentTransaction.Membership.Member.Points.getCurrentPointsRefunded());
             }
             else
             {
                 lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " "+CurrentTransaction.Membership.Member.Surname + " (" + CurrentTransaction.Membership.Member.MembershipNumber +
-                ")" + " Points:" + FormatFloat("0.00", CurrentTransaction.Membership.Member.Points.getPointsBalance());
+                ")" + " Points:" + FormatFloat("0.00", points);
             }
          }
          memberNumber = CurrentTransaction.Membership.Member.MembershipNumber;
@@ -3039,7 +3041,12 @@ Currency TfrmPaymentType::GetAvailableRedeemPoints(TPaymentTransaction PointsTra
           // Putting in the Points Earned.
         TPointsTypePair typepair1( pttEarned,ptstLoyalty );
 	    TPointsType type1( pasDatabase, typepair1, pesExported);
-        PointsTransaction.Membership.Member.Points.Load( type1, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint );
+        double pointsEarned = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint -
+        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableBDPoint -
+        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableFVPoint;
+
+
+        PointsTransaction.Membership.Member.Points.Load( type1,pointsEarned  );
 
         // Putting in the Points Loaded ( Purchased ).
         TPointsTypePair typepair2( pttPurchased,ptstAccount );
