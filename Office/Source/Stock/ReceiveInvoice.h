@@ -97,7 +97,7 @@ __published:	// IDE-managed Components
     TRadioButton *rbExcludingGST;
     TRadioButton *rbIncludingGST;
     TNumericEdit *neCost;
-    TNumericEdit *neTotalCost;
+    TRichEdit *neTotalCost;
     TLabel *Label1;
     TLabel *Label2;
     TLabel *Label3;
@@ -193,6 +193,7 @@ __published:	// IDE-managed Components
     void __fastcall reGstValueExit(TObject *Sender);
     void __fastcall reGstValueMouseDown(TObject *Sender,
           TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall neCostChange(TObject *Sender);
     //void __fastcall neCostKeyPress(TObject *Sender, char &Key);
 
 private:	// User declarations
@@ -230,7 +231,11 @@ private:	// User declarations
     void UpdateUnitqty(TInvoiceItemNodeData *NodeData);
     double GetStockTakeUnitSize(int stock_key, int supplier_key);
     bool CheckInvoiceQtyAndPrice();
-    bool CheckPointEntered();    
+    bool CheckPointEntered(TRichEdit *reValue);
+    void CalculateQtyValue();
+    bool CheckNegativeEntered(TRichEdit *reValue);
+    void CheckNegativeValue(TNumericEdit *neCost);
+
 
 public:		// User declarations
 	__fastcall TfrmReceiveInvoice(TComponent* Owner);
@@ -247,7 +252,7 @@ public:		// User declarations
     int Decimalpalaces ;
     bool IsPrintReport;
     bool IsSavedPackingSlip;
-    bool AllowNegativeValue;
+    bool AllowNegativeValue; 
 
 };
 //---------------------------------------------------------------------------
