@@ -15872,11 +15872,11 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
             "CAST(ZEDS.TERMINAL_EARNINGS - SUM(COALESCE(DISCOUNT_QUERY.discount ,0)) - SUM(COALESCE(DISCOUNT_QUERY.SCD ,0)) - SUM(COALESCE(DISCOUNT_QUERY.PWD ,0)) AS NUMERIC(17,4)) AS GROSS_AMOUNT, "
           //  "CAST((ZEDS.TERMINAL_EARNINGS  - SUM(COALESCE(ARCORDERDISCOUNTS.DISCOUNTED_VALUE ,0))) -sum(coalesce(TAX_EXEMPT.tax_exempt_SALE,0))  - sum(coalesce(AOT.ServiceCharge,0))  - sum(coalesce(AOT.OtherServiceCharge,0)) "
           //      " - ((sum(coalesce(AOT.VAT,0)) + sum(coalesce(AOT.localTax,0))+ sum(coalesce(AOT.PROFITTAX,0)))) AS NUMERIC(17,4)) VATABLE,  "
-            "CAST((ZEDS.TERMINAL_EARNINGS - sum(coalesce(VAT_EXEMPT_SALE.price,0)) - SUM(coalesce(zero_rated.price,0))- sum(coalesce(AOT.VAT,0))) as NUMERIC(17,4)) VATABLE, "
+            "CAST((ZEDS.TERMINAL_EARNINGS - (ROUNDING.rounding_amount) - sum(coalesce(VAT_EXEMPT_SALE.price,0)) - SUM(coalesce(zero_rated.price,0))- sum(coalesce(AOT.VAT,0))) as NUMERIC(17,4)) VATABLE, "
             "CAST(sum(coalesce(AOT.VAT,0)) AS NUMERIC(17,4)) VAT, "
             "CAST(sum(coalesce(VAT_EXEMPT_SALE.price,0))as NUMERIC(17,4))  VAT_EXEMPT, "
             "CAST(SUM(coalesce(zero_rated.price,0)) AS NUMERIC(17,4)) ZERORATED,       "
-            "CAST(SUM(ARCBILL.ROUNDING_ADJUSTMENT) AS NUMERIC(17,4)) SALES_OVERFLOW,   "
+            "CAST(SUM((ROUNDING.rounding_amount)) AS NUMERIC(17,4)) SALES_OVERFLOW,   "
             "CAST('0000' AS VARCHAR(10)) RESET_COUNTER,		"
             "CAST('' AS VARCHAR(50)) REMARKS               "
 
@@ -15942,6 +15942,8 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                         "SELECT ARCHIVE_KEY "
                         "FROM ARCORDERTAXES "
                         "WHERE (TAX_TYPE = 0  and TAX_VALUE = 0 )))zero_rated on ARCHIVE.ARCHIVE_KEY = zero_rated.archive_key "
+        "left join(select cast(sum(coalesce(ARCBILLPAY.ROUNDING,0)) as numeric(17,4))rounding_amount, ARCBILL.Z_KEY from ARCBILLPAY inner join ARCBILL on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+                    "group by ARCBILL.Z_KEY)ROUNDING on ZEDS.Z_KEY = rounding.z_key "               
         "Where "
                         "((   "
                      "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
@@ -15949,7 +15951,7 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                      " and ZEDS.Time_Stamp >= :StartTime and ZEDS.Time_Stamp < :EndTime "
         "GROUP BY "
             "ZEDS.Z_KEY, ZEDS.TIME_STAMP, "
-            "ZEDS.ZED_TOTAL, ZEDS.TERMINAL_EARNINGS ,TOTALREFUNDS.Refund_Amount ";
+            "ZEDS.ZED_TOTAL, ZEDS.TERMINAL_EARNINGS ,TOTALREFUNDS.Refund_Amount,ROUNDING.rounding_amount ";
 
 
     qrSalesSummaryD->ParamByName("StartTime")->AsDateTime	= StartTime;
