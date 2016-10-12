@@ -83,16 +83,20 @@ namespace Chefmate.UI.Controller
         {
             try
             {
-                if (sender != null)
+                Task.Factory.StartNew(new Action(() =>
                 {
-                    if (sender.GetType() == typeof(Order))
-                        BumpOrder(sender as Order);
-                    if (sender.GetType() == typeof(Group))
-                        BumpGroup(sender as Group);
-                    if (sender.GetType() == typeof(Item))
-                        BumpItem(sender as Item);
-                    PublishRedrawEvent();
-                }
+                    if (sender != null)
+                    {
+                        if (sender.GetType() == typeof(Order))
+                            BumpOrder(sender as Order);
+                        if (sender.GetType() == typeof(Group))
+                            BumpGroup(sender as Group);
+                        if (sender.GetType() == typeof(Item))
+                            BumpItem(sender as Item);
+                        PublishRedrawEvent();
+                    }
+                }));
+
             }
             catch (Exception Ex)
             {
@@ -211,11 +215,7 @@ namespace Chefmate.UI.Controller
         }
         private void OutputOrder(Order inOrderToOutput)
         {
-            Task.Factory.StartNew(new Action(() =>
-            {
-                SendOrderToOutput(inOrderToOutput);
-            }));
-
+            SendOrderToOutput(inOrderToOutput);
         }
         private void OutputGroup(Group inGroupToOutput)
         {

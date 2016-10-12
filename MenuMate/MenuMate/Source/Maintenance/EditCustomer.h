@@ -62,6 +62,7 @@ __published: // IDE-managed Components
 	TLabel *Label7;
 	TGroupBox *GroupBox4;
 	TTouchBtn *btnSwipe;
+	TTouchBtn *tbProximity;
 	TLabel *Label10;
 	TLabel *Label11;
 	TLabel *Label12;
