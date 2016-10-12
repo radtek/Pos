@@ -13860,7 +13860,7 @@ void __fastcall TfrmSelectDish::tbtnMemberDisplayPageDownMouseClick(TObject *Sen
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::OnSmartCardInserted(TSystemEvents *Sender)
 {
-  if(!Membership.Applied())
+  if(!Membership.Applied() && Active)
   {
 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;

@@ -3840,7 +3840,6 @@ void TfrmBillGroup::ResetForm()
 	else
 	{
 	   OnSmartCardRemoved(NULL);
-       //TGlobalSettings::Instance().IsPOSOffline = true;
 	}
 }
 // ---------------------------------------------------------------------------
@@ -4636,8 +4635,8 @@ void TfrmBillGroup::RemoveMembershipFreeItems(Database::TDBTransaction &DBTransa
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::RemoveMembershipDiscounts(Database::TDBTransaction &DBTransaction)
 {
-  if(!Membership.Applied())
-     return;
+  //if(!Membership.Applied())
+  //   return;
    std::set <__int64> Items;
    std::auto_ptr <TList> OrdersList(new TList);
    for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
@@ -4668,6 +4667,15 @@ void TfrmBillGroup::CheckLoyalty()
                 (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
    {
       allow = true;
+   }
+   else
+   {
+        Database::TDBTransaction DBTransaction(DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+        DBTransaction.StartTransaction();
+        RemoveMembership(DBTransaction);
+        DBTransaction.Commit();
+
    }
    if (allow && !MembershipConfirmed)
 	{
@@ -4768,7 +4776,7 @@ void TfrmBillGroup::OnSmartCardInserted(TSystemEvents *Sender)
 {
 	TMMContactInfo TempUserInfo;
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->GetContactInfo(TempUserInfo);
-	if (TempUserInfo.Valid())
+	if (TempUserInfo.Valid() && !MembershipConfirmed)
 	{ // Restore Membership, Reminds the user to remove the smart card.
 		Database::TDBTransaction DBTransaction(DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -4811,33 +4819,16 @@ int TfrmBillGroup::extractPatronCountForMallExport(TPaymentTransaction &paymentT
 // ---------------------------------------------------------------------------
 Currency TfrmBillGroup::GetAvailableRedeemPoints(TMMContactInfo &Member)
 {
-
-    if(TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline)
-    {
-        Member.Points.ClearBySource(pasDatabase) ;
-          // Putting in the Points Earned.
-        TPointsTypePair typepair1( pttEarned,ptstLoyalty );
-	    TPointsType type1( pasDatabase, typepair1, pesExported);
-        double pointsEarned = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint -
-        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableBDPoint -
-        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableFVPoint;
-        Member.Points.Load( type1,pointsEarned  );
-
-        // Putting in the Points Loaded ( Purchased ).
-        TPointsTypePair typepair2( pttPurchased,ptstAccount );
-	    TPointsType type2( pasDatabase, typepair2, pesExported );
-        Member.Points.Load( type2, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableLoadedPoint );
-    }
-
-  Currency points = 0;
-  if (TGlobalSettings::Instance().EnableSeperateEarntPts)
+    Currency points = 0;
+    if (TGlobalSettings::Instance().EnableSeperateEarntPts)
     {
        points = Member.Points.getPointsBalance(pasDatabase,ptstAccount);
     }
     else
     {
-        points = Member.Points.getPointsBalance(pasDatabase);
+       points = Member.Points.getPointsBalance(pasDatabase);
     }
+
   return points;
 }
 

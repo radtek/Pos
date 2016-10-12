@@ -2456,7 +2456,7 @@ void TPrintSection::PrintPointsInformation(TReqPrintJob *PrintJob)
            ||PrintJob->Transaction->Membership.MemberSource ==  emsBarcode)
 		{
 
-             if(TGlobalSettings::Instance().LoyaltyMateEnabled &&
+             /*if(TGlobalSettings::Instance().LoyaltyMateEnabled &&
                 !TGlobalSettings::Instance().IsPOSOffline)
                 {
                     PrintJob->Transaction->Membership.Member.Points.ClearBySource(pasDatabase) ;
@@ -2472,7 +2472,7 @@ void TPrintSection::PrintPointsInformation(TReqPrintJob *PrintJob)
                     TPointsTypePair typepair2( pttPurchased,ptstAccount );
                     TPointsType type2( pasDatabase, typepair2, pesExported );
                     PrintJob->Transaction->Membership.Member.Points.Load( type2, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableLoadedPoint );
-                }
+                }*/
 			pPrinter->Add("Current Points|" + FormatFloat("0.00",PrintJob->Transaction->Membership.Member.Points.getPointsBalance(pasDatabase)));
 
 			if (PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRedeemed() != 0 || PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRefunded() != 0)
