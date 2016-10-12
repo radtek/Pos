@@ -163,6 +163,7 @@ private:	// User declarations
     void SelectItem(TGridButton *GridButton);
     void DeselectItem(TGridButton *GridButton);
     void GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode);
+    Currency GetAvailableRedeemPoints(TMMContactInfo &Member);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

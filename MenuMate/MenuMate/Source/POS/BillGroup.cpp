@@ -4573,7 +4573,7 @@ void TfrmBillGroup::ApplyMembership(Database::TDBTransaction &DBTransaction, TMM
             }
             else
             {
-			  lbeMembership->Caption = MembershipInfo.Name + " (" + MembershipInfo.MembershipNumber + ")" + " Points:" + FormatFloat("0.00", MembershipInfo.Points.getPointsBalance());
+			  lbeMembership->Caption = MembershipInfo.Name + " (" + MembershipInfo.MembershipNumber + ")" + " Points:" + FormatFloat("0.00", GetAvailableRedeemPoints(MembershipInfo));
             }
             // Strip any discounts that are membership based.
             std::set <__int64> SelectedItemKeys;
@@ -4807,6 +4807,38 @@ int TfrmBillGroup::extractPatronCountForMallExport(TPaymentTransaction &paymentT
         }
     }
     return result;
+}
+// ---------------------------------------------------------------------------
+Currency TfrmBillGroup::GetAvailableRedeemPoints(TMMContactInfo &Member)
+{
+
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline)
+    {
+        Member.Points.ClearBySource(pasDatabase) ;
+          // Putting in the Points Earned.
+        TPointsTypePair typepair1( pttEarned,ptstLoyalty );
+	    TPointsType type1( pasDatabase, typepair1, pesExported);
+        double pointsEarned = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint -
+        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableBDPoint -
+        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableFVPoint;
+        Member.Points.Load( type1,pointsEarned  );
+
+        // Putting in the Points Loaded ( Purchased ).
+        TPointsTypePair typepair2( pttPurchased,ptstAccount );
+	    TPointsType type2( pasDatabase, typepair2, pesExported );
+        Member.Points.Load( type2, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableLoadedPoint );
+    }
+
+  Currency points = 0;
+  if (TGlobalSettings::Instance().EnableSeperateEarntPts)
+    {
+       points = Member.Points.getPointsBalance(pasDatabase,ptstAccount);
+    }
+    else
+    {
+        points = Member.Points.getPointsBalance(pasDatabase);
+    }
+  return points;
 }
 
 
