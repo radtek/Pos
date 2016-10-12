@@ -193,10 +193,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
 	// Remove these to values in order to have page remember the last
 	// selected Tab Container. But beware the Member/Staff Picker will pop up before page shows.
 	btnApplyMembership->Enabled = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
-    if (!TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
-	{ // Restore Membership, Reminds the user to remove the smart card.
-		TGlobalSettings::Instance().IsPOSOffline = true;
-	}
+
     // apply waiter station settings if enabled in Maintainance area
     applyWaiterStationSettingsIfEnabled();
 	if (CurrentDisplayMode == eNoDisplayMode)
@@ -248,7 +245,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
             TabStateChanged(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
             DBTransaction.Commit();
 	}
-
+    TGlobalSettings::Instance().IsPOSOffline = true;
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
 	{ // Restore Membership, Reminds the user to remove the smart card.
 		OnSmartCardInserted(NULL);
@@ -1699,10 +1696,7 @@ void __fastcall TfrmBillGroup::tbtnCancelMouseClick(TObject *Sender)
 void __fastcall TfrmBillGroup::tbtnSelectZoneMouseClick(TObject *Sender)
 {
 	SelectedZone();
-    if (!TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
-	{ // Restore Membership, Reminds the user to remove the smart card.
-		TGlobalSettings::Instance().IsPOSOffline = true;
-	}
+    TGlobalSettings::Instance().IsPOSOffline = true;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
@@ -4005,6 +3999,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 		{
 			retVal  = PaymentTransaction.SplittedItemKey;
 			PaymentTransaction.DeleteOrders();
+            TGlobalSettings::Instance().IsPOSOffline = true;
 		}
 	}
 	catch(Exception & E)
