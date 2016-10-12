@@ -6207,7 +6207,7 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
                     pPrinter->Line->Columns[0]->Text    =   "Void No.";
                 }
                 else
-                    pPrinter->Line->Columns[0]->Text    =   TGlobalSettings::Instance().ReceiptNumberLabel;
+                    pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().ReceiptNumberLabel.Trim();
                 if(PrintJob->Transaction->TypeOfSale == RegularSale)
                 {
                      AnsiString invoiceNumber = (AnsiString)PrintJob->Transaction->InvoiceNumber;

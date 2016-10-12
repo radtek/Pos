@@ -70,20 +70,25 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 
 void XAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
 {
-    AnsiString prefix1 = TReceiptUtility::ExtractInvoiceNumber(inStartInvoiceNumber);
-    if(StrToInt(inStartInvoiceNumber) > 0 && StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+    if(inStartInvoiceNumber.Pos("RV") != 0)
     {
-        int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
-        inStartInvoiceNumber = TReceiptUtility::LeftPadString(inStartInvoiceNumber, "0", noOfDigits);
-        inStartInvoiceNumber = prefix1 + inStartInvoiceNumber;
+        AnsiString prefix1 = TReceiptUtility::ExtractInvoiceNumber(inStartInvoiceNumber);
+        if(StrToInt(inStartInvoiceNumber) > 0 && StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+        {
+            int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+            inStartInvoiceNumber = TReceiptUtility::LeftPadString(inStartInvoiceNumber, "0", noOfDigits);
+            inStartInvoiceNumber = prefix1 + inStartInvoiceNumber;
+        }
     }
-
-    AnsiString prefix2 = TReceiptUtility::ExtractInvoiceNumber(inEndInvoiceNumber);
-    if(StrToInt(inEndInvoiceNumber) > 0 && StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+    if(inEndInvoiceNumber.Pos("RV") != 0)
     {
-        int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
-        inEndInvoiceNumber = TReceiptUtility::LeftPadString(inEndInvoiceNumber, "0", noOfDigits);
-        inEndInvoiceNumber = prefix2 + inEndInvoiceNumber;
+        AnsiString prefix2 = TReceiptUtility::ExtractInvoiceNumber(inEndInvoiceNumber);
+        if(StrToInt(inEndInvoiceNumber) > 0 && StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+        {
+            int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+            inEndInvoiceNumber = TReceiptUtility::LeftPadString(inEndInvoiceNumber, "0", noOfDigits);
+            inEndInvoiceNumber = prefix2 + inEndInvoiceNumber;
+        }
     }
 }
 AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber()
