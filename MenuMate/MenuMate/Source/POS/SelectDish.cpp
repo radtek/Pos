@@ -879,7 +879,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 		{
 			DataType = eStaffCard;
 		}
-		else
+		else if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
 		{
 			LoginResult = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(DBTransaction, TempUserInfo);
 			if (LoginResult == lsAccepted || LoginResult == lsAccountBlocked)
@@ -904,8 +904,8 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 		{
 			DataType = eDiscountCard;
 		}
-		else if((TDeviceRealTerminal::Instance().ManagerMembership->IsCard(DBTransaction, TempUserInfo) == lsAccepted)&&
-                (!TGlobalSettings::Instance().IsThorlinkSelected))
+		else if(TDeviceRealTerminal::Instance().ManagerMembership->IsCard(DBTransaction, TempUserInfo) == lsAccepted &&
+                !TGlobalSettings::Instance().IsThorlinkSelected && !TGlobalSettings::Instance().LoyaltyMateEnabled)
 		{
 			LoginResult = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(DBTransaction, TempUserInfo);
 			if (LoginResult == lsAccepted || LoginResult == lsAccountBlocked)
@@ -922,16 +922,13 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
               TDeviceRealTerminal::Instance().ManagerMembership->AddMember(ContactInfo);
               newCard = true;
         }
-        else
+        else if(!TGlobalSettings::Instance().IsThorlinkSelected && !TGlobalSettings::Instance().LoyaltyMateEnabled)
 		{
-            if(!TGlobalSettings::Instance().IsThorlinkSelected)
+            LoginResult = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(DBTransaction, TempUserInfo);
+            if (LoginResult == lsAccepted || LoginResult == lsAccountBlocked)
             {
-                LoginResult = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(DBTransaction, TempUserInfo);
-                if (LoginResult == lsAccepted || LoginResult == lsAccountBlocked)
-                {
-                    DataType = eMemberCard;
-                    TabKey = TDBTab::GetTabByOwner(DBTransaction, TempUserInfo.ContactKey);
-                }
+                DataType = eMemberCard;
+                TabKey = TDBTab::GetTabByOwner(DBTransaction, TempUserInfo.ContactKey);
             }
 		}
 	}
@@ -1290,9 +1287,9 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
               }
               else
               {
-              DBTransaction.StartTransaction();
-              GetMemberByBarcode(DBTransaction,Data);
-              DBTransaction.Commit();
+                  DBTransaction.StartTransaction();
+                  GetMemberByBarcode(DBTransaction,Data);
+                  DBTransaction.Commit();
               }
 		}
 	}

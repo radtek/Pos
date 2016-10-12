@@ -235,6 +235,11 @@ namespace ChefMate.Database
         {
             if (_fbConnection.State == ConnectionState.Closed || _fbConnection.State == ConnectionState.Broken)
                 _fbConnection.Open();
+			else
+			{
+				CloseConnection();
+				_fbConnection.Open();
+			}
         }
         private void CloseConnection()
         {

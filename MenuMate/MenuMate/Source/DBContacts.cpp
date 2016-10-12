@@ -501,7 +501,7 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
       TContactPoints dbPoints;
       TDBContacts::GetPointsBalances(DBTransaction, Info.ContactKey, dbPoints);
 
-      // sync the earned points
+     // sync the earned points
       if(Info.Points.getPointsBalance(ptstLoyalty) != (dbPoints.getPointsBalance(ptstLoyalty) +
                                                        dbPoints.getBirthDayRewardPoints() +
                                                        dbPoints.getFirstVisitPoints() ))
@@ -600,11 +600,12 @@ void TDBContacts::SetContactCard(Database::TDBTransaction &DBTransaction, int in
 
           IBInternalQuery->Close();
           IBInternalQuery->SQL->Text =
-              "INSERT INTO CONTACTCARDS (" "CONTACTCARDS_KEY," "CONTACTS_KEY," "SWIPE_CARD) " "VALUES (" ":CONTACTCARDS_KEY,"
-              ":CONTACTS_KEY," ":SWIPE_CARD);";
+              "INSERT INTO CONTACTCARDS (" "CONTACTCARDS_KEY," "CONTACTS_KEY," "SWIPE_CARD,IS_ACTIVE) " "VALUES (" ":CONTACTCARDS_KEY,"
+              ":CONTACTS_KEY," ":SWIPE_CARD,:IS_ACTIVE);";
           IBInternalQuery->ParamByName("CONTACTCARDS_KEY")->AsInteger = RetVal;
           IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
           IBInternalQuery->ParamByName("SWIPE_CARD")->AsString = Card;
+          IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = 'T';
           IBInternalQuery->ExecQuery();
       }
    }
@@ -1086,7 +1087,7 @@ bool TDBContacts::GetContactCards(Database::TDBTransaction &DBTransaction,int in
 		// Contact Cards.
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
-		 "select SWIPE_CARD from CONTACTCARDS where CONTACTS_KEY = :CONTACTS_KEY ";
+		 "select SWIPE_CARD from CONTACTCARDS where CONTACTS_KEY = :CONTACTS_KEY AND IS_ACTIVE='T'";
 		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactsKey;
 		IBInternalQuery->ExecQuery();
 		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())

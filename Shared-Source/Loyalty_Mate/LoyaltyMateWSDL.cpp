@@ -30,6 +30,8 @@ _di_IWCFServiceLoyaltyMate GetIWCFServiceLoyaltyMate(bool useWSDL, AnsiString ad
   if (addr=="")
     addr = useWSDL ? defWSDL : defURL;
   THTTPRIO* rio = HTTPRIO ? HTTPRIO : new THTTPRIO(0);
+  rio->HTTPWebNode->SendTimeout = 120000;
+  rio->HTTPWebNode->ReceiveTimeout = 120000;
   if (useWSDL) {
     rio->WSDLLocation = addr;
     rio->Service = defSvc;

@@ -699,6 +699,10 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
                     {
                        tabTableName =  TDBWebUtil::GetOrderGUID(DBTransaction,order1->WebKey) + " : " + order1->TabName;
                     }
+                   else if(order1->TabType == TabInvoice)
+                    {
+                       tabTableName =  order1->InvoiceNumber + " : " + order1->TabName;
+                    }
                    else if(order1->TabType != TabTableSeat)
                     {
                        tabTableName =  order1->TabName + " : " + order1->TabName;

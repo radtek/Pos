@@ -2488,7 +2488,10 @@ void TPrintSection::PrintPointsInformation(TReqPrintJob *PrintJob)
                       // Putting in the Points Earned.
                     TPointsTypePair typepair1( pttEarned,ptstLoyalty );
                     TPointsType type1( pasDatabase, typepair1, pesExported);
-                    PrintJob->Transaction->Membership.Member.Points.Load( type1, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint );
+                    double pointsEarned = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint -
+                    TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableBDPoint -
+                    TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableFVPoint;
+                    PrintJob->Transaction->Membership.Member.Points.Load( type1,pointsEarned );
 
                     // Putting in the Points Loaded ( Purchased ).
                     TPointsTypePair typepair2( pttPurchased,ptstAccount );
