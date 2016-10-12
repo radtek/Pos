@@ -8791,6 +8791,7 @@ void TfrmSelectDish::ResetPOS()
 			tgridOrderCourseMouseClick(tgridOrderCourse, mbLeft, TShiftState(), tgridOrderCourse->Buttons[0][0]);
 		}
 	}
+
     TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
     Membership.Clear();
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)

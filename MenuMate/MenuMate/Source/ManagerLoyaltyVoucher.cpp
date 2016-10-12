@@ -224,6 +224,11 @@ void TManagerLoyaltyVoucher::DisplayMemberVouchers(Database::TDBTransaction &DBT
             MemberInfo.AutoAppliedDiscounts.insert(discountKey);
        }
     }
+    else
+    {
+            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount =  "";
+            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = "";
+    }
   }
 }
 
