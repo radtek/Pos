@@ -461,7 +461,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 	}
 	ShowTotals();
 }
-//---------------------------------------------------------------------------           //(Column == 4 && !IsPackingSlipUpdateMode)
+//--------------------------------------------------------------------------- 
 void __fastcall TfrmReceiveInvoice::vtvStockQtyEditing(
 TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column,
 bool &Allowed)
@@ -2536,6 +2536,7 @@ double TfrmReceiveInvoice::GetStockTakeUnitSize(int stock_key, int supplier_key)
 
 bool TfrmReceiveInvoice::CheckInvoiceQtyAndPrice()
 {
+    IsNegativeQtyOrCost = true;
 	PVirtualNode Node = vtvStockQty->GetFirst();
     if(!AllowNegativeValue)
     {
@@ -2694,17 +2695,29 @@ void TfrmReceiveInvoice::CalculateQtyValue()
 {
     vtvStockQty->EndEditNode();
     TInvoiceItemNodeData *NodeData	= (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
-    if(NodeData->SupplierTotalCost > 0)
+
+    if(IsPackingSlipUpdateMode)
     {
-       NodeData->OrderQty = fabs(NodeData->OrderQty);
-       neStockQty->Value = NodeData->OrderQty;
+       if(NodeData->OrderQty < 0)
+       {
+           NodeData->SupplierTotalCost = -fabs(NodeData->SupplierTotalCost);
+           neTotalCost->Text = FloatToStr(NodeData->SupplierTotalCost);
+       }
     }
     else
     {
-        if(NodeData->SupplierTotalCost < 0)
+        if(NodeData->SupplierTotalCost > 0)
         {
-           NodeData->OrderQty = -fabs(NodeData->OrderQty);
+           NodeData->OrderQty = fabs(NodeData->OrderQty);
            neStockQty->Value = NodeData->OrderQty;
+        }
+        else
+        {
+            if(NodeData->SupplierTotalCost < 0)
+            {
+               NodeData->OrderQty = -fabs(NodeData->OrderQty);
+               neStockQty->Value = NodeData->OrderQty;
+            }
         }
     }
 }
