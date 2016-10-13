@@ -11032,8 +11032,6 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
                 {
                     FileStream = new TFileStream(filename + "\\Owner Details.txt",  fmOpenRead | fmShareExclusive);
                 }
-                CompanyData->Add("Rupendra");
-                CompanyData->LoadFromStream(FileStream);
 
                 if(CompanyData->Count > 3)
                 {
