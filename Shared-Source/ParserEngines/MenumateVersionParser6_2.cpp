@@ -65,6 +65,11 @@ void TApplyParser::upgrade6_29Tables()
 {
     update6_29Tables();
 }
+//6.30
+void TApplyParser::upgrade6_30Tables()
+{
+    update6_30Tables();
+}
 
 //::::::::::::::::::::::::Version 6.20::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_20Tables()

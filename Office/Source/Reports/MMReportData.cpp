@@ -3,8 +3,8 @@
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
-
 #include "MMReportData.h"
+#include "Login.h"
 #include "MMData.h"
 #include <vcl\Clipbrd.hpp>
 #include <memory>
@@ -15813,15 +15813,15 @@ void TdmMMReportData::SetupBreakdownCategory(TStrings *Menus)
 	 qrBreakdownCategory->Close();
 	 qrBreakdownCategory->SQL->Text =
 	 	"select "
-"ARCCATEGORIES.CATEGORY, "
+            "ARCCATEGORIES.CATEGORY, "
 
-"ITEM.ITEM_NAME, "
-"ITEMSIZE.SIZE_NAME,ITEMSIZE.PRICE "
-"from ARCCATEGORIES right join ITEMSIZECATEGORY on ARCCATEGORIES.CATEGORY_KEY=ITEMSIZECATEGORY.CATEGORY_KEY " 
-"left join ITEMSIZE on ITEMSIZECATEGORY.ITEMSIZE_KEY=ITEMSIZE.ITEMSIZE_KEY "
-"left join ITEM on ITEMSIZE.ITEM_KEY=ITEM.ITEM_KEY  "
-"left join SIZES on ITEMSIZE.SIZES_KEY=SIZES.SIZES_KEY "
-"left join MENU on SIZES.MENU_KEY=MENU.MENU_KEY " ; 
+            "ITEM.ITEM_NAME, "
+            "ITEMSIZE.SIZE_NAME,ITEMSIZE.PRICE "
+            "from ARCCATEGORIES right join ITEMSIZECATEGORY on ARCCATEGORIES.CATEGORY_KEY=ITEMSIZECATEGORY.CATEGORY_KEY " 
+            "left join ITEMSIZE on ITEMSIZECATEGORY.ITEMSIZE_KEY=ITEMSIZE.ITEMSIZE_KEY "
+            "left join ITEM on ITEMSIZE.ITEM_KEY=ITEM.ITEM_KEY  "
+            "left join SIZES on ITEMSIZE.SIZES_KEY=SIZES.SIZES_KEY "
+            "left join MENU on SIZES.MENU_KEY=MENU.MENU_KEY " ;
 
          if (Menus->Count > 0)
 	 {
@@ -15832,11 +15832,11 @@ void TdmMMReportData::SetupBreakdownCategory(TStrings *Menus)
      
 
 		"group by "
-	"ARCCATEGORIES.CATEGORY, "
-	"MENU.MENU_NAME, "
-	"ITEM.ITEM_NAME, "
-	"ITEMSIZE.SIZE_NAME, "
-	"ITEMSIZE.PRICE " 
+            "ARCCATEGORIES.CATEGORY, "
+            "MENU.MENU_NAME, "
+            "ITEM.ITEM_NAME, "
+            "ITEMSIZE.SIZE_NAME, "
+            "ITEMSIZE.PRICE " 
         
         	"order by "
             "upper(ARCCATEGORIES.CATEGORY) asc , "
@@ -15849,8 +15849,182 @@ void TdmMMReportData::SetupBreakdownCategory(TStrings *Menus)
 		qrBreakdownCategory->ParamByName("MenuParam" + IntToStr(i))->AsString = Menus->Strings[i];
 	}
 }
+//-----------------------------------------------------------------------------------------------
+void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
+{
+    ////select report parameter
+    AnsiString name = "'" + nameOfTaxPayer + "'";
+    AnsiString address = "'" + addressOfTaxPayer + "'";
+    AnsiString tin = frmLogin->CurrentUser.UserID ;
+    qrSSDParemeter->Close();
+	qrSSDParemeter->SQL->Text =
+             "select  "
+                     "cast ( 'Name Of Tax Payer' as varchar(30)) Header, "
+                     "cast ( '" + nameOfTaxPayer + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+             "UNION ALL "
+             "select  "
+                      "cast ( 'Address Of Tax Payer' as varchar(30)) Header, "
+                     "cast ( '" + addressOfTaxPayer + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+             "UNION ALL "
+             "select  "
+                      "cast ( 'Tin No.' as varchar(30)) Header, "
+                     "cast ( '" + tinNumber + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+            "UNION ALL "
+             "select  "
+                      "cast ( 'Machine Name' as varchar(30)) Header, "
+                     "cast ( '" + dmMMData->GetTerminalName() + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+            "UNION ALL "
+             "select  "
+                      "cast ( 'Software Name & Version No.' as varchar(30)) Header, "
+                     "cast ( 'Menumate POS V6' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+              "UNION ALL "
+             "select  "
+                      "cast ( 'Serial Number' as varchar(30)) Header, "
+                     "cast ( '" + serialNo + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+             "UNION ALL "
+             "select  "
+                      "cast ( 'User ID' as varchar(30)) Header, "
+                     "cast ( '" + frmLogin->CurrentUser.UserID + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+             "UNION ALL "
+             "select  "
+                      "cast ( 'Date & Time Generated' as varchar(30)) Header, "
+                     "cast ( '" + Now().FormatString("ddddd 'at' hh:nn") + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data " ;
 
-	
+     qrSalesSummaryD->Close();
+	 qrSalesSummaryD->SQL->Text =
+
+        "Select "
+            "ZEDS.Z_KEY Z_Counter, "
+            "ZEDS.TIME_STAMP  ,     "
+            "MIN(ARCBILL.INVOICE_NUMBER) STARTING_INVOICE, "
+            "MAX(ARCBILL.INVOICE_NUMBER) END_INVOICE, "
+            "CAST(ZEDS.ZED_TOTAL AS NUMERIC(17,4)) ZED_TOTAL, 								 "
+            "CAST(ZEDS.TERMINAL_EARNINGS AS NUMERIC(17,4)) AS NET_BALANCE,                      "
+            "CAST(ZEDS.ZED_TOTAL - ZEDS.TERMINAL_EARNINGS AS NUMERIC(17,4)) OPENING_BALANCE, "
+            "CAST(SUM(COALESCE(DISCOUNT_QUERY.discount ,0)) AS NUMERIC(17,4)) OTHER_DISCOUNTS, "
+            "CAST((COALESCE(DISCOUNT_QUERY.PWD ,0)) AS NUMERIC(17,4)) PWD_Discount, "
+            "CAST((COALESCE(DISCOUNT_QUERY.SCD ,0)) AS NUMERIC(17,4)) SCD_Discount, "
+            "CAST((COALESCE(DISCOUNT_QUERY.SCD ,0)) + (COALESCE(DISCOUNT_QUERY.PWD ,0)) + (COALESCE(DISCOUNT_QUERY.discount ,0)) AS NUMERIC(17,4)) total_discount, "
+            "CAST((coalesce(TOTALREFUNDS.Refund_Amount,0)) AS NUMERIC(17,4)) RETURNS_AMOUNT,  "
+            "CAST(sum(coalesce(CANCEL_AMOUNT.CANCEL_TOTAL,0)) AS NUMERIC(17,4)) VOID_AMOUNT,     "
+            "CAST(ZEDS.TERMINAL_EARNINGS - (COALESCE(DISCOUNT_QUERY.discount ,0)) - (COALESCE(DISCOUNT_QUERY.SCD ,0)) - (COALESCE(DISCOUNT_QUERY.PWD ,0)) AS NUMERIC(17,4)) AS GROSS_AMOUNT, "
+          //  "CAST((ZEDS.TERMINAL_EARNINGS  - SUM(COALESCE(ARCORDERDISCOUNTS.DISCOUNTED_VALUE ,0))) -sum(coalesce(TAX_EXEMPT.tax_exempt_SALE,0))  - sum(coalesce(AOT.ServiceCharge,0))  - sum(coalesce(AOT.OtherServiceCharge,0)) "
+          //      " - ((sum(coalesce(AOT.VAT,0)) + sum(coalesce(AOT.localTax,0))+ sum(coalesce(AOT.PROFITTAX,0)))) AS NUMERIC(17,4)) VATABLE,  "
+            "CAST((ZEDS.TERMINAL_EARNINGS - (ROUNDING.rounding_amount) - sum(coalesce(VAT_EXEMPT_SALE.price,0)) - SUM(coalesce(zero_rated.price,0))- sum(coalesce(AOT.VAT,0))) as NUMERIC(17,4)) VATABLE, "
+            "CAST(sum(coalesce(AOT.VAT,0)) AS NUMERIC(17,4)) VAT, "
+            "CAST(sum(coalesce(VAT_EXEMPT_SALE.price,0))as NUMERIC(17,4))  VAT_EXEMPT, "
+            "CAST(SUM(coalesce(zero_rated.price,0)) AS NUMERIC(17,4)) ZERORATED,       "
+            "CAST((ROUNDING.rounding_amount) AS NUMERIC(17,4)) SALES_OVERFLOW,   "
+            "CAST('0000' AS VARCHAR(10)) RESET_COUNTER,		"
+            "CAST('' AS VARCHAR(50)) REMARKS               "
+
+        "FROM ZEDS "
+        "INNER join ARCBILL on ARCBILL.Z_KEY = ZEDS.Z_KEY "
+        "left join ARCHIVE on ARCHIVE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+        "LEFT JOIN ( "
+                         "SELECT "
+                                "ARCORDERTAXES.ARCHIVE_KEY, "
+                                "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS VAT                "
+
+                                ///FOR FUTURE
+                              /*  "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge,      "
+                                "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge, "
+                                "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 4 THEN ARCORDERTAXES.TAX_VALUE END) AS localTax,            "
+                                "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 5 THEN ARCORDERTAXES.TAX_VALUE END) AS PROFITTAX "   */
+
+                          "FROM (SELECT  a.ARCHIVE_KEY,a.TAX_TYPE,                   "
+                                "Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE  "
+                                "FROM ARCORDERTAXES a                                "
+                                "group by  a.TAX_TYPE  , a.ARCHIVE_KEY               "
+                                "order by 1 )  ARCORDERTAXES                         "
+                                "GROUP BY ARCORDERTAXES.ARCHIVE_KEY )                "
+                                "AOT ON Archive.ARCHIVE_KEY = AOT.ARCHIVE_KEY        "
+       "LEFT JOIN  (select discountsection.Z_KEY,                         "
+                            "    sum(COALESCE(discountsection.SCD,0)) SCD,         "
+                            "    sum(COALESCE(discountsection.PWD,0))PWD,          "
+                            "    sum(COALESCE(discountsection.discount,0)) DISCOUNT "
+                            "from                    "
+                            "(SELECT  ARCBILL.Z_KEY, "
+                            "        cast(case when a.DISCOUNT_GROUPNAME = 'Senior Citizen' then sum(COALESCE(a.DISCOUNTED_VALUE,0))end as NUMERIC(17,4)) SCD,         "
+                            "        cast(case when a.DISCOUNT_GROUPNAME = 'Person with Disability' then sum(COALESCE(a.DISCOUNTED_VALUE,0))end as NUMERIC(17,4)) PWD, "
+                            "        cast(case when a.DISCOUNT_GROUPNAME <> 'Person with Disability' AND a.DISCOUNT_GROUPNAME <> 'Senior Citizen' then sum(COALESCE(a.DISCOUNTED_VALUE,0))end as NUMERIC(17,4)) discount "
+                            "FROM ARCORDERDISCOUNTS a "
+                            "left join ARCHIVE on a.ARCHIVE_KEy = archive.ARCHIVE_KEY        "
+                            "left join ARCBILL on ARCHIVE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY  "
+                            "GROUP BY ARCBILL.Z_KEY,a.DISCOUNT_GROUPNAME) discountsection GROUP BY discountsection.Z_KEY) DISCOUNT_QUERY on ZEDS.Z_KEY = DISCOUNT_QUERY.Z_KEY "
+        "LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
+                    "FROM ARCORDERDISCOUNTS a "
+                    "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
+        "LEFT JOIN (SELECT SUM(CAST(COALESCE(ARCBILL.TOTAL,0)  AS NUMERIC(17,4))) Refund_Amount, ARCBILL.Z_KEY FROM ARCBILL "
+                    "WHERE ARCBILL.TOTAL < 0 GROUP BY ARCBILL.Z_KEY)TOTALREFUNDS ON TOTALREFUNDS.z_key = zeds.Z_KEY   " 
+        "LEFT JOIN( select SUM(CAST(COALESCE(ARCHIVE.PRICE_LEVEL0,0) * ARCHIVE.QTY AS NUMERIC(17,4))) CANCEL_TOTAL, ARCHIVE.ARCBILL_KEY  "
+                            "FROM ARCHIVE  "
+                            "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =ARCHIVE.SECURITY_REF  "
+                            "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY  "
+                         "WHERE   "
+                                "(SECURITY.SECURITY_EVENT = 'Cancel'  "
+                                "OR SECURITY.SECURITY_EVENT = 'CancelY' )   "
+                        "GROUP BY ARCHIVE.ARCBILL_KEY)CANCEL_AMOUNT on CANCEL_AMOUNT.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+        "LEFT JOIN ( "
+                    "SELECT DA.ARCHIVE_KEY, cast((coalesce(DA.BASE_PRICE,0) * DA.QTY)+ DA.DISCOUNT_WITHOUT_TAX + sum(coalesce(DAOT.TAX_VALUE,0)) as numeric(17,4))price "
+                    "FROM ARCHIVE DA  "               
+                    "LEFT JOIN ARCORDERTAXES DAOT ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                    "WHERE DA.ARCHIVE_KEY  not IN (  "
+                        "    SELECT ARCHIVE_KEY          "
+                        "    FROM ARCORDERTAXES          "
+                        "    WHERE (TAX_TYPE = 0 )       "
+                        ") group by da.ARCHIVE_KEY,da.DISCOUNT_WITHOUT_TAX,DAOT.TAX_VALUE,da.BASE_PRICE,da.QTY) VAT_EXEMPT_SALE ON ARCHIVE.ARCHIVE_KEY = VAT_EXEMPT_SALE.ARCHIVE_KEY "
+
+        "left join (SELECT DA.ARCHIVE_KEY, cast(coalesce(DA.BASE_PRICE,0)*da.QTY  + DA.DISCOUNT_WITHOUT_TAX + coalesce(AOT.TAX_VALUE,0) as numeric(17,4)) price  "
+                    "FROM ARCHIVE DA "
+                    "LEFT JOIN (SELECT  a.ARCHIVE_KEY, "
+                        "Cast(Sum(coalesce(a.TAX_VALUE,0) ) as Numeric(17,4)) TAX_VALUE "
+                        "FROM ARCORDERTAXES a "
+                        "group by  a.ARCHIVE_KEY "
+                        "order by 1 ) "
+                        "AOT ON  AOT.ARCHIVE_KEY = DA.ARCHIVE_KEY  " 
+                    "WHERE DA.ARCHIVE_KEY  IN ( "
+                        "SELECT ARCHIVE_KEY "
+                        "FROM ARCORDERTAXES "
+                        "WHERE (TAX_TYPE = 0  and TAX_VALUE = 0 )))zero_rated on ARCHIVE.ARCHIVE_KEY = zero_rated.archive_key "
+        "left join(select cast(sum(coalesce(ARCBILLPAY.ROUNDING,0)) as numeric(17,4))rounding_amount, ARCBILL.Z_KEY from ARCBILLPAY inner join ARCBILL on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+                    "group by ARCBILL.Z_KEY)ROUNDING on ZEDS.Z_KEY = rounding.z_key "               
+        "Where "
+                        "((   "
+                     "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
+                     "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary')) "
+                     " and ZEDS.Time_Stamp >= :StartTime and ZEDS.Time_Stamp < :EndTime "
+        "GROUP BY "
+            "ZEDS.Z_KEY, ZEDS.TIME_STAMP, "
+            "ZEDS.ZED_TOTAL, ZEDS.TERMINAL_EARNINGS , "
+            "TOTALREFUNDS.Refund_Amount, "
+            "ROUNDING.rounding_amount, "
+            "DISCOUNT_QUERY.SCD, "
+            "DISCOUNT_QUERY.PWD, "
+            "DISCOUNT_QUERY.discount ";
+
+
+    qrSalesSummaryD->ParamByName("StartTime")->AsDateTime	= StartTime;
+    qrSalesSummaryD->ParamByName("EndTime")->AsDateTime	= EndTime;
+
+}
+
 
 
 

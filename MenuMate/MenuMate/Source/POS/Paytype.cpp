@@ -2694,6 +2694,14 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 
 		if (Allowed)
 		{
+            if(TGlobalSettings::Instance().CaptureRefundRefNo)
+            {
+                if(!CaptureRefundReference())
+                {
+                    MessageBox("The Receipt No. is not valid. Either Refund is already taken or Receipt does not exist.", "Error", MB_OK + MB_ICONINFORMATION);
+                    return;
+                }
+            }
 			CurrentTransaction.CreditTransaction = true;
 
 			TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(CurrentTransaction);
@@ -2713,7 +2721,6 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 	    		CurrentTransaction.Patrons.clear();
 		    	tbPatronCount->Caption = "Patron Count \r" + IntToStr(0);
             }
-
 			AnsiString Note = "";
 			std::auto_ptr <TfrmMessage> frmMessage(TfrmMessage::Create <TfrmMessage> (this, TDeviceRealTerminal::Instance().DBControl));
 			frmMessage->MessageType = eCreditReason;
@@ -2838,6 +2845,116 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 			ShowPaymentTotals();
 		}
 	}
+}
+//---------------------------------------------------------------------------
+bool TfrmPaymentType::CaptureRefundReference()
+{
+    UnicodeString capturedValue = "";
+    bool retValue = false;
+    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+    frmTouchNumpad->Caption = "Enter Reference Receipt No for Refund";
+    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+    frmTouchNumpad->btnDiscount->Visible = false;
+    frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->Mode = pmNumber;
+    if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0)
+    {
+       UnicodeString capturedValue = frmTouchNumpad->INTResult;
+       // Validate Refund Reference
+       retValue = ValidateRefundReference(capturedValue);
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+bool TfrmPaymentType::ValidateRefundReference(UnicodeString str)
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    if(ValidateAlreadyRefunded(DBTransaction,str))
+    {
+        if(!IsRefundReceipt(DBTransaction,str))
+        {
+            CurrentTransaction.RefundRefReceipt = str;
+            retValue = true;
+        }
+    }
+    else
+    {
+        retValue = false;
+    }
+//    }
+    DBTransaction.Commit();
+    return retValue;
+}
+//----------------------------------------------------------------------------
+bool TfrmPaymentType::ValidateAlreadyRefunded(Database::TDBTransaction &DBTransaction,UnicodeString str)
+{
+    TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery1->Close();
+    IBInternalQuery1->SQL->Text =	" SELECT "
+                                    " a.ARCBILL_KEY "
+                                    " FROM "
+                                    "  ARCBILL a"
+                                    " WHERE "
+                                    " a.REFUND_REFRECEIPT  = :REFUND_REFRECEIPT "
+
+                                    " UNION ALL "
+
+                                    " SELECT "
+                                    " d.ARCBILL_KEY "
+                                    " FROM "
+                                    "  DAYARCBILL d"
+                                    " WHERE "
+                                    " d.REFUND_REFRECEIPT  = :REFUND_REFRECEIPT ";
+    IBInternalQuery1->ParamByName("REFUND_REFRECEIPT")->AsString = str;
+    IBInternalQuery1->ExecQuery();
+    if(IBInternalQuery1->RecordCount == 0)
+        return true;
+    else
+        return false;
+}
+//----------------------------------------------------------------------------
+bool TfrmPaymentType::IsRefundReceipt(Database::TDBTransaction &DBTransaction,UnicodeString str)
+{
+
+    bool retValue = false;
+    TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery1->Close();
+    IBInternalQuery1->SQL->Text =	" SELECT "
+                                    " a.ARCBILL_KEY, "
+                                    " REFUND_REFRECEIPT, "
+                                    " ORDER_TYPE_MESSAGE "
+                                    " FROM "
+                                    "  ARCBILL a"
+                                    " WHERE "
+                                    " a.INVOICE_NUMBER  = :INVOICE_NUMBER "
+
+                                    " UNION ALL "
+
+                                    " SELECT "
+                                    " d.ARCBILL_KEY, "
+                                    " REFUND_REFRECEIPT, "
+                                    " ORDER_TYPE_MESSAGE "
+                                    " FROM "
+                                    "  DAYARCBILL d"
+                                    " WHERE "
+                                    " d.INVOICE_NUMBER  = :INVOICE_NUMBER ";
+    IBInternalQuery1->ParamByName("INVOICE_NUMBER")->AsString = str;
+    IBInternalQuery1->ExecQuery();
+    if(IBInternalQuery1->RecordCount > 0)
+    {
+        if(IBInternalQuery1->FieldByName("REFUND_REFRECEIPT")->AsString != "")
+            retValue = true;
+        else
+            retValue = false;
+    }
+    else
+    {
+        retValue = true;
+    }
+    return retValue;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::tnWorkingAmountClick(TObject *Sender, TNumpadKey Key)
