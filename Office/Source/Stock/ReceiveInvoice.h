@@ -235,6 +235,7 @@ private:	// User declarations
     void CalculateQtyValue();
     bool CheckNegativeEntered(TRichEdit *reValue);
     void CheckNegativeValue(TNumericEdit *neCost);
+    bool IsNegativeQtyOrCost;
 
 
 public:		// User declarations

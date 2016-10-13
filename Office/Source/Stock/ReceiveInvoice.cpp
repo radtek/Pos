@@ -77,6 +77,7 @@ void __fastcall TfrmReceiveInvoice::FormShow(TObject *Sender)
 	LoadForm();
 	qrSupplier->Close();
     AllowNegativeValue = false;
+    IsNegativeQtyOrCost = true;
 	if(OrderKey == 0)
 	{
 		qrSupplier->ParamByName("Supplier_Key")->AsInteger = SupplierKey;
@@ -460,7 +461,7 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 	}
 	ShowTotals();
 }
-//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------           //(Column == 4 && !IsPackingSlipUpdateMode)
 void __fastcall TfrmReceiveInvoice::vtvStockQtyEditing(
 TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column,
 bool &Allowed)
@@ -1833,7 +1834,7 @@ void __fastcall TfrmReceiveInvoice::btnPrintCommitInvoiceClick(TObject *Sender)
             }
         }
 
-        	if (Transaction->InTransaction)
+        	if (Transaction->InTransaction && IsNegativeQtyOrCost)
 					Transaction->Commit();
 }
 //---------------------------------------------------------------------------
@@ -2285,7 +2286,7 @@ void TfrmReceiveInvoice::CommitPackingSlip(bool isCommitted)
 				BatchInfo.Export_1 = qrSupplier->FieldByName("MYOB1")->AsString;
 				BatchInfo.Export_2 = qrSupplier->FieldByName("MYOB2")->AsString;
 				BatchInfo.Export_3 = qrSupplier->FieldByName("MYOB3")->AsString;
-				BatchInfo.Order_Number = (OrderKey == 0)?AnsiString(""):qrPurchaseOrder->FieldByName("Order_Number")->AsString;
+    				BatchInfo.Order_Number = (OrderKey == 0)?AnsiString(""):qrPurchaseOrder->FieldByName("Order_Number")->AsString;
 				BatchInfo.Reference = InvoiceReference;
 				BatchInfo.Total_Cost = invoiceSummary.TotalExcl;//TotalCost;
 				BatchInfo.Total_GST = invoiceSummary.TotalGST;//neGST->Value;
@@ -2535,28 +2536,27 @@ double TfrmReceiveInvoice::GetStockTakeUnitSize(int stock_key, int supplier_key)
 
 bool TfrmReceiveInvoice::CheckInvoiceQtyAndPrice()
 {
-	bool Continue  = true;
 	PVirtualNode Node = vtvStockQty->GetFirst();
     if(!AllowNegativeValue)
     {
-        while (Node && Continue)
+        while (Node && IsNegativeQtyOrCost)
         {
             TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(Node);
 
             if((NodeData->OrderQty < 0) || (NodeData->SupplierUnitCost < 0))
             {
-               Continue = false;
+               IsNegativeQtyOrCost = false;
                break;
             }
             // All done. Get the next one.
             Node = vtvStockQty->GetNext(Node);
         }
-        if (!Continue)
+        if (!IsNegativeQtyOrCost)
         {
            Application->MessageBox("You Cannot Process Negative Amount or Quantity", "Error", MB_ICONERROR);
         }
     }
-	return Continue;
+	return IsNegativeQtyOrCost;
 }
 
 //---------------------------------------------------------------------------
