@@ -8791,6 +8791,7 @@ void TfrmSelectDish::ResetPOS()
 			tgridOrderCourseMouseClick(tgridOrderCourse, mbLeft, TShiftState(), tgridOrderCourse->Buttons[0][0]);
 		}
 	}
+
     TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
     Membership.Clear();
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
@@ -13859,7 +13860,7 @@ void __fastcall TfrmSelectDish::tbtnMemberDisplayPageDownMouseClick(TObject *Sen
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::OnSmartCardInserted(TSystemEvents *Sender)
 {
-  if(!Membership.Applied())
+  if(!Membership.Applied() && Active)
   {
 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;

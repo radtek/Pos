@@ -67,6 +67,7 @@ public:
 	std::map<UnicodeString, UnicodeString>MiscData;
 
 	TStringList *TabHistory;
+    TStringList *ReceiptVoidFooter;
 
 };
 #endif

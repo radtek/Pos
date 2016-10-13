@@ -341,6 +341,7 @@ _fastcall TReqPrintJob::TReqPrintJob(TDeviceDB *Device) : TRequest(Device)
 	WaitTime = 0;
 	BarCodeData = 0;
 	Transaction = NULL;
+    ReceiptVoidFooter = new TStringList;
 }
 // ---------------------------------------------------------------------------
 
@@ -369,4 +370,5 @@ _fastcall TReqPrintJob::~TReqPrintJob()
 	delete ReceiptPHeader;
 	delete ReceiptFooter;
     delete ReceiptDetails;
+    delete ReceiptVoidFooter;
 }

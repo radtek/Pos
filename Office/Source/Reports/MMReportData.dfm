@@ -4624,4 +4624,32 @@ object dmMMReportData: TdmMMReportData
     Left = 1440
     Top = 152
   end
+  object qrSalesSummaryD: TIBQuery
+    Database = dmMMData.dbMenuMate
+    Transaction = dmMMData.trMenuMate
+    SQL.Strings = (
+      '')
+    Left = 1229
+    Top = 480
+  end
+  object ravSalesSummaryD: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    DataSet = qrSalesSummaryD
+    Left = 1226
+    Top = 544
+  end
+  object qrSSDParemeter: TIBQuery
+    Database = dmMMData.dbMenuMate
+    Transaction = dmMMData.trMenuMate
+    SQL.Strings = (
+      '')
+    Left = 1301
+    Top = 488
+  end
+  object ravSSDParameter: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    DataSet = qrSSDParemeter
+    Left = 1314
+    Top = 544
+  end
 end

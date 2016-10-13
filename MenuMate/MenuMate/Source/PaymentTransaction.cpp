@@ -682,19 +682,35 @@ void TPaymentTransaction::BuildXMLPaymentTypes(TPOS_XMLBase &Data)
 
 void TPaymentTransaction::ApplyMembership(TMMContactInfo inMember, eMemberSource inMemberSource)
 {
-   ManagerDiscount->ClearMemberDiscounts(Orders);
-   ManagerDiscount->ClearThorVouchersDiscounts(Orders);
-   Membership.Assign(inMember, inMemberSource);
-   ApplyMembershipDiscounts();
-   Recalc();
+   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
+   {
+       ManagerDiscount->ClearMemberDiscounts(Orders);
+       ManagerDiscount->ClearThorVouchersDiscounts(Orders);
+       Membership.Assign(inMember, inMemberSource);
+       ApplyMembershipDiscounts();
+       Recalc();
+   }
+   else
+   {
+       ManagerDiscount->ClearMemberDiscounts(Orders);
+   }
 }
 
 void TPaymentTransaction::ApplyMembership(TContactMemberApplied inMemberApplied)
 {
-   ManagerDiscount->ClearMemberDiscounts(Orders);
-   Membership.Assign(inMemberApplied);
-   ApplyMembershipDiscounts();
-   Recalc();
+   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
+   {
+       ManagerDiscount->ClearMemberDiscounts(Orders);
+       Membership.Assign(inMemberApplied);
+       ApplyMembershipDiscounts();
+       Recalc();
+   }
+   else
+   {
+       ManagerDiscount->ClearMemberDiscounts(Orders);
+   }
 }
 
 void TPaymentTransaction::ApplyMembershipDiscounts()

@@ -188,7 +188,6 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
 {
 	FormResize(this);
 	InCheckFunc = false;
-
     ClipTabInTable =false;
 	// SelectedTabs.clear();
 	// Remove these to values in order to have page remember the last
@@ -196,8 +195,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
 	btnApplyMembership->Enabled = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
 
     // apply waiter station settings if enabled in Maintainance area
-        applyWaiterStationSettingsIfEnabled();
-
+    applyWaiterStationSettingsIfEnabled();
 	if (CurrentDisplayMode == eNoDisplayMode)
 	{
 		PostMessage(Handle, UWM_SHOWZONESELECT, 0, 0);
@@ -247,7 +245,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
             TabStateChanged(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
             DBTransaction.Commit();
 	}
-
+    TGlobalSettings::Instance().IsPOSOffline = true;
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
 	{ // Restore Membership, Reminds the user to remove the smart card.
 		OnSmartCardInserted(NULL);
@@ -255,6 +253,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
 	else
 	{
 		OnSmartCardRemoved(NULL);
+
 	}
 	SetGridColors(tgridContainerList);
 	SetGridColors(tgridItemList);
@@ -330,6 +329,7 @@ void __fastcall TfrmBillGroup::SelectZone(Messages::TMessage& Message)
 		DBTransaction.StartTransaction();
 		UpdateTableDetails(DBTransaction);
 		TabStateChanged(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
+        TMembership* memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
 		DBTransaction.Commit();
 
 	}
@@ -567,8 +567,6 @@ void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
                 }
 	}
 }
-// ---------------------------------------------------------------------------
-
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::set <__int64> ItemsToBeCanceled,
 	TMMContactInfo &CancelUserInfo)
@@ -1380,6 +1378,7 @@ void __fastcall TfrmBillGroup::btnTransferMouseClick(TObject *Sender)
 		UpdateSeatDetails(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
 		DBTransaction.Commit();
         delete Transfer;
+       TGlobalSettings::Instance().IsPOSOffline = true;
 		ShowReceipt();
 	}
 }
@@ -1698,6 +1697,7 @@ void __fastcall TfrmBillGroup::tbtnCancelMouseClick(TObject *Sender)
 void __fastcall TfrmBillGroup::tbtnSelectZoneMouseClick(TObject *Sender)
 {
 	SelectedZone();
+    TGlobalSettings::Instance().IsPOSOffline = true;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
@@ -1714,6 +1714,11 @@ void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
             btnTransfer->Color = clSilver;
             btnTransfer->Enabled = false;
             btnApplyMembership->Enabled = false;
+        }
+        else if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+          AnsiString Data = *((AnsiString*)Message.WParam);
+          GetMemberByBarcode(DBTransaction,Data);
         }
         else
         {
@@ -1735,14 +1740,31 @@ void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
             {
                 MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
             }
-            DBTransaction.Commit();
-            ShowReceipt();
 	    }
+        DBTransaction.Commit();
+        ShowReceipt();
     }
 	catch(Exception & E)
 	{
 		MessageBox("Unable to Apply Membership :" + E.Message, "Error", MB_OK + MB_ICONERROR);
 	}
+}
+// ---------------------------------------------------------------------------
+void TfrmBillGroup::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode)
+{
+ 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
+	TMMContactInfo info;
+    info.MemberCode = Barcode;
+    info.CardStr = Barcode;
+    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info);
+
+	if (info.Valid())
+     {
+        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+        ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
+		ApplyMembership(DBTransaction, info);
+	}
+
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
@@ -2578,6 +2600,7 @@ void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButto
         DBTransaction.Commit();
     }
 }
+//---------------------------------------------------------------------------
 void TfrmBillGroup::SplitItemOnClick(int itemSelected)
 {
     std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
@@ -3316,9 +3339,7 @@ void TfrmBillGroup::ShowReceipt()
 			std::auto_ptr <TReqPrintJob> TempReceipt(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
 			TPaymentTransaction ReceiptTransaction(DBTransaction);
 			ReceiptTransaction.ApplyMembership(Membership);
-
 			TempReceipt->Transaction = &ReceiptTransaction;
-
 			std::set <__int64> ReceiptItemKeys;
 			for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
 			{
@@ -3364,6 +3385,7 @@ void TfrmBillGroup::ShowReceipt()
 			}
 
 			ReceiptTransaction.Recalc();
+            ReceiptTransaction.ProcessPoints();
             bool isTable = false;
             int tabKey = 0;
 			TStringList *TabHistory = new TStringList;
@@ -3455,7 +3477,7 @@ void TfrmBillGroup::ShowReceipt()
 			Receipt->GetPrintouts(DBTransaction, TempReceipt.get(), DefaultScreenPrinter, eDispBCOff);
 			Memo1->Lines->Clear();
 			TempReceipt->Printouts->PrintToStrings(Memo1->Lines);
-                        ReceiptTransaction.DeleteOrders();
+            ReceiptTransaction.DeleteOrders();
 		}
 		else if (CurrentSelectedTab != 0)
 		{
@@ -3485,6 +3507,7 @@ void TfrmBillGroup::ShowReceipt()
 			}
 
 			ReceiptTransaction.Recalc();
+            ReceiptTransaction.ProcessPoints();
             bool isTable = false;
             int tabKey = 0;
 			TStringList *TabHistory = new TStringList;
@@ -3809,7 +3832,6 @@ void TfrmBillGroup::ResetForm()
 	UpdateSeatDetails(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
 	DBTransaction.Commit();
 	PatronCount = 1;
-
 	ShowReceipt();
 
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
@@ -3818,7 +3840,7 @@ void TfrmBillGroup::ResetForm()
 	}
 	else
 	{
-		OnSmartCardRemoved(NULL);
+	   OnSmartCardRemoved(NULL);
 	}
 }
 // ---------------------------------------------------------------------------
@@ -3977,6 +3999,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
 		{
 			retVal  = PaymentTransaction.SplittedItemKey;
 			PaymentTransaction.DeleteOrders();
+            TGlobalSettings::Instance().IsPOSOffline = true;
 		}
 	}
 	catch(Exception & E)
@@ -4072,43 +4095,43 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 			}break;
 		case TabMember:
 			{
-                if(!TGlobalSettings::Instance().IsThorlinkSelected)
+                if(!TGlobalSettings::Instance().IsThorlinkSelected )
                 {
-				if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-				{
-					CurrentDisplayMode = eTabs;
-					CurrentTabType = TabMember;
-					CurrentInvoiceKey = 0;
-					TempUserInfo.Clear();
-					Database::TDBTransaction DBTransaction(DBControl);
-					TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-					DBTransaction.StartTransaction();
-					eMemberSource MemberSource;
-					TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
-						MemberSource, true);
-					DBTransaction.Commit();
-					if (Result != lsAccepted)
-					{
-						TempUserInfo.Clear();
-					}
+                    if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+                    {
+                        CurrentDisplayMode = eTabs;
+                        CurrentTabType = TabMember;
+                        CurrentInvoiceKey = 0;
+                        TempUserInfo.Clear();
+                        Database::TDBTransaction DBTransaction(DBControl);
+                        TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+                        DBTransaction.StartTransaction();
+                        eMemberSource MemberSource;
+                        TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, TempUserInfo,
+                            MemberSource, true);
+                        DBTransaction.Commit();
+                        if (Result != lsAccepted)
+                        {
+                            TempUserInfo.Clear();
+                        }
 
-					/* We're "committing" to the member here. This is needed as
-					 * the form pulls all member details from it's "Membership"
-					 * field. ApplyMembership(...) handles adding discounts and
-					 * the copying of TempUserInfo to "Membership."
-					 */
-					DBTransaction.StartTransaction();
-					ApplyMembership(DBTransaction, TempUserInfo);
-					DBTransaction.Commit();
+                        /* We're "committing" to the member here. This is needed as
+                         * the form pulls all member details from it's "Membership"
+                         * field. ApplyMembership(...) handles adding discounts and
+                         * the copying of TempUserInfo to "Membership."
+                         */
+                        DBTransaction.StartTransaction();
+                        ApplyMembership(DBTransaction, TempUserInfo);
+                        DBTransaction.Commit();
 
-					UpdateRightButtonDisplay(NULL);
-					CurrentTable = 1;
+                        UpdateRightButtonDisplay(NULL);
+                        CurrentTable = 1;
 
-					/* ResetForm() used to remove the membership which was a little
-					 * paradoxical. It no longer removes the membership. It's
-					 * persistent while viewing the "Member" zone.
-                */
-					ResetForm();
+                        /* ResetForm() used to remove the membership which was a little
+                         * paradoxical. It no longer removes the membership. It's
+                         * persistent while viewing the "Member" zone.
+                    */
+                        ResetForm();
 				}
 				else
 				{
@@ -4550,7 +4573,7 @@ void TfrmBillGroup::ApplyMembership(Database::TDBTransaction &DBTransaction, TMM
             }
             else
             {
-			  lbeMembership->Caption = MembershipInfo.Name + " (" + MembershipInfo.MembershipNumber + ")" + " Points:" + FormatFloat("0.00", MembershipInfo.Points.getPointsBalance());
+			  lbeMembership->Caption = MembershipInfo.Name + " (" + MembershipInfo.MembershipNumber + ")" + " Points:" + FormatFloat("0.00", GetAvailableRedeemPoints(MembershipInfo));
             }
             // Strip any discounts that are membership based.
             std::set <__int64> SelectedItemKeys;
@@ -4563,7 +4586,6 @@ void TfrmBillGroup::ApplyMembership(Database::TDBTransaction &DBTransaction, TMM
              ManagerDiscount->ClearMemberExemtDiscounts(PaymentTransaction.Orders);
              PaymentTransaction.ApplyMembership(Membership);
              PaymentTransaction.DeleteOrders();
-             TMembership *membershipSystem = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
 	  }
 	}
 	catch(Exception & E)
@@ -4590,6 +4612,10 @@ void TfrmBillGroup::RemoveMembership(Database::TDBTransaction &DBTransaction)
 	lbeMembership->Caption = "";
     RemoveMembershipFreeItems(DBTransaction);
    	RemoveMembershipDiscounts(DBTransaction);
+    for (std::set <__int64> ::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end() ; advance(itTabs, 1))
+    {
+        TDBTab::SetTabOrdersLoyalty(DBTransaction,*itTabs,0);
+    }
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::RemoveMembershipFreeItems(Database::TDBTransaction &DBTransaction)
@@ -4614,8 +4640,8 @@ void TfrmBillGroup::RemoveMembershipFreeItems(Database::TDBTransaction &DBTransa
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::RemoveMembershipDiscounts(Database::TDBTransaction &DBTransaction)
 {
-  if(!Membership.Applied())
-     return;
+  //if(!Membership.Applied())
+  //   return;
    std::set <__int64> Items;
    std::auto_ptr <TList> OrdersList(new TList);
    for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
@@ -4641,7 +4667,22 @@ void TfrmBillGroup::SendPointValueToRunRate( TPaymentTransaction &inTransaction 
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::CheckLoyalty()
 {
-	if (!MembershipConfirmed)
+   bool allow = false;
+   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
+   {
+      allow = true;
+   }
+   else
+   {
+        Database::TDBTransaction DBTransaction(DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+        DBTransaction.StartTransaction();
+        RemoveMembership(DBTransaction);
+        DBTransaction.Commit();
+
+   }
+   if (allow && !MembershipConfirmed)
 	{
 		if (SelectedItems.size() == 0)
 		{
@@ -4740,7 +4781,7 @@ void TfrmBillGroup::OnSmartCardInserted(TSystemEvents *Sender)
 {
 	TMMContactInfo TempUserInfo;
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->GetContactInfo(TempUserInfo);
-	if (TempUserInfo.Valid())
+	if (TempUserInfo.Valid() && !MembershipConfirmed && Active)
 	{ // Restore Membership, Reminds the user to remove the smart card.
 		Database::TDBTransaction DBTransaction(DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -4779,6 +4820,21 @@ int TfrmBillGroup::extractPatronCountForMallExport(TPaymentTransaction &paymentT
         }
     }
     return result;
+}
+// ---------------------------------------------------------------------------
+Currency TfrmBillGroup::GetAvailableRedeemPoints(TMMContactInfo &Member)
+{
+    Currency points = 0;
+    if (TGlobalSettings::Instance().EnableSeperateEarntPts)
+    {
+       points = Member.Points.getPointsBalance(pasDatabase,ptstAccount);
+    }
+    else
+    {
+       points = Member.Points.getPointsBalance(pasDatabase);
+    }
+
+  return points;
 }
 
 

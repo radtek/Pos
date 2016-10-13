@@ -37,6 +37,7 @@
 #include "SeatOrders.h"
 #include "ParkedSale.h"
 #include "DBOrder.h"
+#include "MMTouchNumpad.h"
 
 #include "ChefMateInterface.h"
 
@@ -311,6 +312,15 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 		 tbChefMateIP->Enabled = false;
 	  }
 	  DBTransaction.Commit();
+      cbCaptureRefundReference->Checked = TGlobalSettings::Instance().CaptureRefundRefNo;
+      cbHideTaxInvoice->Checked = TGlobalSettings::Instance().HideTaxInvoice;
+      cbExportReprintReceipt->Checked = TGlobalSettings::Instance().ExportReprintReceipt;
+      memCustomizeFooter->Text = TGlobalSettings::Instance().VoidFooter->Text;
+      cbSetFooter->Checked = TGlobalSettings::Instance().SetVoidFooter;
+      tbtnReceiptNumber->Caption = TGlobalSettings::Instance().ReceiptDigits;
+      cbPrintVoid->Checked = TGlobalSettings::Instance().ShowVoidOrRefund;
+      cbShowVoidNumber->Checked = TGlobalSettings::Instance().ShowVoidNumber;
+      CheckVoidFooterSetting();
    }
    }
    catch(Exception & E)
@@ -2700,7 +2710,7 @@ void __fastcall TfrmPrinterMaintenance::memFooterMouseUp(TObject *Sender, TMouse
 void __fastcall TfrmPrinterMaintenance::btnHeaderFooterSaveMouseClick(TObject *Sender)
 {
    // Save to Text Files.
-   TDeviceRealTerminal::Instance().SaveHdrFtr(memHeader->Lines, memPHeader->Lines, memFooter->Lines);
+   TDeviceRealTerminal::Instance().SaveHdrFtr(memHeader->Lines, memPHeader->Lines, memFooter->Lines, memCustomizeFooter->Lines);
    memHeader->Modified = false;
    memPHeader->Modified = false;
    memFooter->Modified = false;
@@ -4148,6 +4158,11 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
+               Instruction = new TPSectionInstruction(epofiPrintReceiptVoidFooter);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
 			   ReceiptTemplateModified = true;
 			   DrawReceiptDocket();
 			}break;
@@ -4251,6 +4266,11 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
 			   Instruction = new TPSectionInstruction(epofiPrintReceiptFooter);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
+               Instruction = new TPSectionInstruction(epofiPrintReceiptVoidFooter);
 			   Instruction->GroupNo = 1;
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
@@ -4365,6 +4385,11 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
 			   Instruction = new TPSectionInstruction(epofiPrintReceiptFooter);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
+               Instruction = new TPSectionInstruction(epofiPrintReceiptVoidFooter);
 			   Instruction->GroupNo = 1;
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
@@ -5103,7 +5128,7 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberLabelMouseClick(TObject
 void __fastcall TfrmPrinterMaintenance::tbtnReprintLabelMouseClick(TObject *Sender)
 
 {
-     std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+   std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
    frmTouchKeyboard->MaxLength = 0;
    frmTouchKeyboard->AllowCarriageReturn = true;
    frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
@@ -5134,3 +5159,126 @@ void __fastcall TfrmPrinterMaintenance::cbPrintNoticeOnTransferClick(TObject *Se
    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintNoticeOnTransfer, TGlobalSettings::Instance().PrintNoticeOnTransfer);
    DBTransaction.Commit();
 }
+//---------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::cbHideTaxInvoiceClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().HideTaxInvoice = cbHideTaxInvoice->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmHideTaxInvoice, TGlobalSettings::Instance().HideTaxInvoice);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::cbCaptureRefundReferenceClick(TObject *Sender)
+
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().CaptureRefundRefNo = cbCaptureRefundReference->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmCaptureRefundRefNo, TGlobalSettings::Instance().CaptureRefundRefNo);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::cbExportReprintReceiptClick(TObject *Sender)
+
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().ExportReprintReceipt = cbExportReprintReceipt->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmExportReprintReceipt, TGlobalSettings::Instance().ExportReprintReceipt);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::cbSetFooterClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().SetVoidFooter = cbSetFooter->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmSetVoidFooter, TGlobalSettings::Instance().SetVoidFooter);
+   DBTransaction.Commit();
+   CheckVoidFooterSetting();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::memCustomizeFooterMouseUp(TObject *Sender,
+          TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+
+   TDeviceRealTerminal::Instance().LoadHdrFtr();
+   memCustomizeFooter->Lines = TGlobalSettings::Instance().VoidFooter.get();
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+   frmTouchKeyboard->MaxLength = 0;
+   frmTouchKeyboard->AllowCarriageReturn = true;
+   frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
+   frmTouchKeyboard->StartWithShiftDown = false;
+   frmTouchKeyboard->KeyboardText = memCustomizeFooter->Lines->Text;
+   frmTouchKeyboard->Caption = "Enter Refund/Void Receipt Footer";
+   if (frmTouchKeyboard->ShowModal() == mrOk)
+   {
+	  memCustomizeFooter->Lines->Text = frmTouchKeyboard->KeyboardText;
+      TDeviceRealTerminal::Instance().SaveHdrFtr(memHeader->Lines, memPHeader->Lines, memFooter->Lines, memCustomizeFooter->Lines);
+   }
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+void TfrmPrinterMaintenance::CheckVoidFooterSetting()
+{
+    if(cbSetFooter->Checked)
+      memCustomizeFooter->Enabled = true;
+   else
+      memCustomizeFooter->Enabled = false;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberAutoRepeat(TObject *Sender)
+
+{
+	std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+	frmTouchNumpad->Caption = "Enter the number of digits for Receipt No.";
+	frmTouchNumpad->btnSurcharge->Caption = "Ok";
+	frmTouchNumpad->btnDiscount->Visible = false;
+	frmTouchNumpad->btnSurcharge->Visible = true;
+	frmTouchNumpad->Mode = pmNumber;
+	frmTouchNumpad->INTInitial = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+	if (frmTouchNumpad->ShowModal() == mrOk)
+	{
+        tbtnReceiptNumber->Caption = frmTouchNumpad->INTResult > 20 ?20:frmTouchNumpad->INTResult;
+		Database::TDBTransaction DBTransaction(DBControl);
+		DBTransaction.StartTransaction();
+        TGlobalSettings::Instance().ReceiptDigits = frmTouchNumpad->INTResult > 20 ? 20: frmTouchNumpad->INTResult;
+        TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmReceiptDigits, TGlobalSettings::Instance().ReceiptDigits );
+		DBTransaction.Commit();
+	}
+}
+//---------------------------------------------------------------------------
+
+
+
+
+void __fastcall TfrmPrinterMaintenance::cbPrintVoidClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().ShowVoidOrRefund = cbPrintVoid->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmShowVoidOrRefund, TGlobalSettings::Instance().ShowVoidOrRefund);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::cbShowVoidNumberClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().ShowVoidNumber = cbShowVoidNumber->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmShowVoidNumber, TGlobalSettings::Instance().ShowVoidNumber);
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+
