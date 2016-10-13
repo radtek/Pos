@@ -3,8 +3,8 @@
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
-
 #include "MMReportData.h"
+#include "Login.h"
 #include "MMData.h"
 #include <vcl\Clipbrd.hpp>
 #include <memory>
@@ -15852,6 +15852,60 @@ void TdmMMReportData::SetupBreakdownCategory(TStrings *Menus)
 //-----------------------------------------------------------------------------------------------
 void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
 {
+    ////select report parameter
+    AnsiString name = "'" + nameOfTaxPayer + "'";
+    AnsiString address = "'" + addressOfTaxPayer + "'";
+    AnsiString tin = frmLogin->CurrentUser.UserID ;
+    qrSSDParemeter->Close();
+	qrSSDParemeter->SQL->Text =
+             "select  "
+                     "cast ( 'Name Of Tax Payer' as varchar(30)) Header, "
+                     "cast ( '" + nameOfTaxPayer + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+             "UNION ALL "
+             "select  "
+                      "cast ( 'Address Of Tax Payer' as varchar(30)) Header, "
+                     "cast ( '" + addressOfTaxPayer + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+             "UNION ALL "
+             "select  "
+                      "cast ( 'Tin No.' as varchar(30)) Header, "
+                     "cast ( '" + tinNumber + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+            "UNION ALL "
+             "select  "
+                      "cast ( 'Machine Name' as varchar(30)) Header, "
+                     "cast ( '" + dmMMData->GetTerminalName() + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+            "UNION ALL "
+             "select  "
+                      "cast ( 'Software Name & Version No.' as varchar(30)) Header, "
+                     "cast ( 'Menumate POS V6' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+              "UNION ALL "
+             "select  "
+                      "cast ( 'Serial Number' as varchar(30)) Header, "
+                     "cast ( '" + serialNo + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+             "UNION ALL "
+             "select  "
+                      "cast ( 'User ID' as varchar(30)) Header, "
+                     "cast ( '" + frmLogin->CurrentUser.UserID + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data "
+             "UNION ALL "
+             "select  "
+                      "cast ( 'Date & Time Generated' as varchar(30)) Header, "
+                     "cast ( '" + Now().FormatString("ddddd 'at' hh:nn") + "' as varchar(50)) Data "
+                     "from Arcbill "
+                     "GROUP BY Header, Data " ;
+
      qrSalesSummaryD->Close();
 	 qrSalesSummaryD->SQL->Text =
 

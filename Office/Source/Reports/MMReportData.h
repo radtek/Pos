@@ -256,6 +256,8 @@ TRvDataSetConnection *ravCheckRemoval;      //MM-4327
     TRvDataSetConnection *ravBreakdownCategory;
     TIBQuery *qrSalesSummaryD;
     TRvDataSetConnection *ravSalesSummaryD;
+    TIBQuery *qrSSDParemeter;
+    TRvDataSetConnection *ravSSDParameter;
 
 	void __fastcall qrMenuAfterScroll(TDataSet *DataSet);
 	void __fastcall qrAveSummaryAfterScroll(TDataSet *DataSet);
@@ -407,10 +409,15 @@ public:		// User declarations
     void SetupReprintOrder(TDateTime StartTime, TDateTime EndTime);
 
     void SetupProfiltLoss(TDateTime StartTime, TDateTime EndTime, TStrings *Locations);
- void SetupPointSpend(TDateTime StartTime, TDateTime EndTime, TStrings *Categories, TStrings *payments);
-  void SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDateTime EndDate, TStrings *Names) ;
-  void SetupBreakdownCategory(TStrings *Menus);
+    void SetupPointSpend(TDateTime StartTime, TDateTime EndTime, TStrings *Categories, TStrings *payments);
+    void SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDateTime EndDate, TStrings *Names) ;
+    void SetupBreakdownCategory(TStrings *Menus);
     void SetupSalesSummaryD(TDateTime StartTime, TDateTime EndDate);
+
+    AnsiString nameOfTaxPayer;
+    AnsiString addressOfTaxPayer;
+    AnsiString tinNumber;
+    AnsiString serialNo;
 };
 
 
