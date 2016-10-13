@@ -2703,6 +2703,12 @@ void TfrmReceiveInvoice::CalculateQtyValue()
            NodeData->SupplierTotalCost = -fabs(NodeData->SupplierTotalCost);
            neTotalCost->Text = FloatToStr(NodeData->SupplierTotalCost);
        }
+       else
+       {
+          NodeData->SupplierTotalCost = fabs(NodeData->SupplierTotalCost);
+          neTotalCost->Text = FloatToStr(NodeData->SupplierTotalCost);
+       }
+
     }
     else
     {
