@@ -1527,31 +1527,34 @@ void TListPaymentSystem::ArchivePoints(TPaymentTransaction &PaymentTransaction)
 
 void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransaction)
 {
+   if(PaymentTransaction.Membership.Member.ContactKey == 0)
+     return;
+
 	try
 	{
 
 		if(!TGlobalSettings::Instance().UseTierLevels || PaymentTransaction.Membership.Member.MemberType != 1 ||
 				(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().IsPOSOffline))
 		{
-                       if(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().IsPOSOffline)
-                       {
-                         MessageBox( "Unable to communicate with Cloud. Tier level will be updated on next visit.", "Message", MB_ICONINFORMATION + MB_OK);
-                       }
-                       else if(!TGlobalSettings::Instance().UseTierLevels)
-                       {
-                          double currentPoint = PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned();
-                          if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints == 0)
-                          {
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints =
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetEarnedPointsForCurrentYear(PaymentTransaction.DBTransaction, PaymentTransaction.Membership.Member);
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
-                          }
-                          else
-                          {
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
-                          }
-                       }
-                       return;
+           if(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().IsPOSOffline)
+           {
+             MessageBox( "Unable to communicate with Cloud. Tier level will be updated on next visit.", "Message", MB_ICONINFORMATION + MB_OK);
+           }
+           else if(!TGlobalSettings::Instance().UseTierLevels)
+           {
+              double currentPoint = PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned();
+              if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints == 0)
+              {
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints =
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetEarnedPointsForCurrentYear(PaymentTransaction.DBTransaction, PaymentTransaction.Membership.Member);
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
+              }
+              else
+              {
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
+              }
+           }
+           return;
 
 		}
 		TDBTierLevel::GetTierLevelOfMember(PaymentTransaction.DBTransaction,PaymentTransaction.Membership.Member);

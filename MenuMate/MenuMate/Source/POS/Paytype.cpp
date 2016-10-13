@@ -3154,7 +3154,7 @@ Currency TfrmPaymentType::GetAvailableRedeemPoints(TPaymentTransaction PointsTra
     if(PointsTransaction.Membership.Member.MemberCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled &&
     !TGlobalSettings::Instance().IsPOSOffline)
     {
-        PointsTransaction.Membership.Member.Points.ClearBySource(pasDatabase) ;
+        /*PointsTransaction.Membership.Member.Points.ClearBySource(pasDatabase) ;
           // Putting in the Points Earned.
         TPointsTypePair typepair1( pttEarned,ptstLoyalty );
 	    TPointsType type1( pasDatabase, typepair1, pesExported);
@@ -3169,6 +3169,7 @@ Currency TfrmPaymentType::GetAvailableRedeemPoints(TPaymentTransaction PointsTra
         TPointsTypePair typepair2( pttPurchased,ptstAccount );
 	    TPointsType type2( pasDatabase, typepair2, pesExported );
         PointsTransaction.Membership.Member.Points.Load( type2, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableLoadedPoint );
+      */
     }
 
   Currency points = 0;
