@@ -25,8 +25,7 @@ TfrmDBMod *frmDBMod;
 __fastcall TfrmDBMod::TfrmDBMod(TComponent* Owner)
 	: TZForm(Owner)
 {
-//	lbeVersion->Caption = GetFileVersion();
-    lbeVersion->Caption = GetFileVersionString();
+    lbeVersion->Caption = "Version " + IntToStr(GetFileVersionMajor());//GetFileVersionString();
 }
 //---------------------------------------------------------------------------
 
