@@ -40,7 +40,7 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         reportSectionDisplayTraits->ApplyTraits(printOut);
     }
 
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
 	printOut->PrintFormat->Line->FontInfo.Reset();
 
 	printOut->PrintFormat->Line->Columns[0]->Text = "Opening Balance:";
@@ -70,26 +70,23 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 
 void XAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
 {
-    if(inStartInvoiceNumber.Pos("RV") != 0)
+    AnsiString prefix1 = TReceiptUtility::ExtractInvoiceNumber(inStartInvoiceNumber);
+    if(StrToInt(inStartInvoiceNumber) > 0 )//&& StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
     {
-        AnsiString prefix1 = TReceiptUtility::ExtractInvoiceNumber(inStartInvoiceNumber);
-        if(StrToInt(inStartInvoiceNumber) > 0 && StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
-        {
-            int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
-            inStartInvoiceNumber = TReceiptUtility::LeftPadString(inStartInvoiceNumber, "0", noOfDigits);
-            inStartInvoiceNumber = prefix1 + inStartInvoiceNumber;
-        }
+        int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+        inStartInvoiceNumber = TReceiptUtility::LeftPadString(inStartInvoiceNumber, "0", noOfDigits);
+
     }
-    if(inEndInvoiceNumber.Pos("RV") != 0)
+    inStartInvoiceNumber = prefix1 + inStartInvoiceNumber;
+
+    AnsiString prefix2 = TReceiptUtility::ExtractInvoiceNumber(inEndInvoiceNumber);
+    if(StrToInt(inEndInvoiceNumber) > 0 )//&& StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
     {
-        AnsiString prefix2 = TReceiptUtility::ExtractInvoiceNumber(inEndInvoiceNumber);
-        if(StrToInt(inEndInvoiceNumber) > 0 && StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
-        {
-            int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
-            inEndInvoiceNumber = TReceiptUtility::LeftPadString(inEndInvoiceNumber, "0", noOfDigits);
-            inEndInvoiceNumber = prefix2 + inEndInvoiceNumber;
-        }
+        int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+        inEndInvoiceNumber = TReceiptUtility::LeftPadString(inEndInvoiceNumber, "0", noOfDigits);
+
     }
+    inEndInvoiceNumber = prefix2 + inEndInvoiceNumber;
 }
 AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber()
 {
@@ -153,32 +150,28 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetEndInvoiceNumber()
 AnsiString XAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
 {
 	AnsiString lastEndInvoiceNum = 0;
+    TIBSQL *qrEndInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
+    qrEndInvoiceNumber->SQL->Text = "SELECT "
+                                        "first 1 AB.INVOICE_NUMBER "
+                                    "FROM ARCBILL AB "
+                                    "LEFT JOIN ARCHIVE A on AB.ARCBILL_KEY = A.ARCBILL_KEY "
+                                    "LEFT JOIN ARCORDERDISCOUNTS AOD on A.ARCHIVE_KEY = AOD.ARCHIVE_KEY  "
+                                    "WHERE(COALESCE(AOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
+                                    "GROUP BY AB.ARCBILL_KEY, AB.INVOICE_NUMBER "
+                                    "ORDER BY AB.ARCBILL_KEY desc ";
 
-    if(StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+    qrEndInvoiceNumber->ExecQuery();
+
+    if(!qrEndInvoiceNumber->Eof)
     {
-        TIBSQL *qrEndInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
-        qrEndInvoiceNumber->SQL->Text = "SELECT "
-                                            "first 1 AB.INVOICE_NUMBER "
-                                        "FROM ARCBILL AB "
-                                        "LEFT JOIN ARCHIVE A on AB.ARCBILL_KEY = A.ARCBILL_KEY "
-                                        "LEFT JOIN ARCORDERDISCOUNTS AOD on A.ARCHIVE_KEY = AOD.ARCHIVE_KEY  "
-                                        "WHERE(COALESCE(AOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
-                                        "GROUP BY AB.ARCBILL_KEY, AB.INVOICE_NUMBER "
-                                        "ORDER BY AB.ARCBILL_KEY desc ";
-
-        qrEndInvoiceNumber->ExecQuery();
-
-        if(!qrEndInvoiceNumber->Eof)
+        for(; !qrEndInvoiceNumber->Eof; qrEndInvoiceNumber->Next())
         {
-            for(; !qrEndInvoiceNumber->Eof; qrEndInvoiceNumber->Next())
-            {
-                lastEndInvoiceNum = qrEndInvoiceNumber->Fields[0]->AsString;
-            }
+            lastEndInvoiceNum = qrEndInvoiceNumber->Fields[0]->AsString;
         }
-        else
-        {
-            lastEndInvoiceNum = "0";
-        }
+    }
+    else
+    {
+        lastEndInvoiceNum = "0";
     }
 	return lastEndInvoiceNum;
 }
