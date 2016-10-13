@@ -54,7 +54,8 @@ void TApplyParser::UpdateArcBillTable6_30(TDBControl* const inDBControl)
 	{
         executeQuery (
 		"ALTER TABLE ARCBILL ADD "
-        "REFUND_REFRECEIPT VARCHAR(50); ",
+        "REFUND_REFRECEIPT VARCHAR(50), "
+		"ADD Z_KEY INTEGER; ",
 		inDBControl);
 	}
 }

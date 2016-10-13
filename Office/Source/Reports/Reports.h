@@ -63,6 +63,7 @@ enum TTreeIndex {
                     CASHIER_INDEX                             ,
                     DEPT_SALES_SUMMARY                        ,
                     PROFIT_LOSS_REPORT                       ,
+                    SALES_SUMMARY_D_INDEX                     ,
 
 			SALES_INDEX													,
 					CONSUMPTION_INDEX									,
@@ -792,16 +793,15 @@ void PrintComplimentary(TReportControl *ReportControl);
     void PrintProfitLossSummary(TReportControl *ReportControl);
 public:		// User declarations
 	__fastcall TfrmReports(TComponent* Owner);
-	bool SaveReportToFile(AnsiString &EmailFileName );
-	void SetToPreview( );
-	void SendEmail( AnsiString EmailFileName, AnsiString EmailAddress, AnsiString EmailSubject, AnsiString ReceiverName );
-
-
+    bool SaveReportToFile(AnsiString &EmailFileName );
+    void SetToPreview( );
+    void SendEmail( AnsiString EmailFileName, AnsiString EmailAddress, AnsiString EmailSubject, AnsiString ReceiverName );
     void PrintInvoice(TReportControl *ReportControl);
     void GetInvoiceFilter(TReportFilter *ReportFilter);
     void PrintPointSpend(TReportControl *ReportControl);
-   void PrintBreakdownCategory(TReportControl *ReportControl);
+    void PrintBreakdownCategory(TReportControl *ReportControl);
     void PrintStockReconcialation(TReportControl *ReportControl);
+    void PrintSalesSummaryD(TReportControl *ReportControl); 
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmReports *frmReports;

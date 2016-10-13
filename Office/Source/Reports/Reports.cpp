@@ -4399,15 +4399,26 @@ case DAILY_SALES_REPORT:
 			ReportFilter2->SelectionField				= "Stock_Group";
             ReportFilter2->SelectionDateRange		    = true;
 			SubReport0->AddFilterIndex(FilterIndex);
+        	break;
+ 		}
+         case SALES_SUMMARY_D_INDEX:
+        {
+            requiredPermission = Security::FinancialReports;
 
-			
+			ReportControl									= new TReportControl;
+			ReportControl->PrintReport					= &TfrmReports::PrintSalesSummaryD;
+			TSubReport *SubReport1						= ReportControl->AddSubReport("Sales Summary D");
+
+			TReportDateFilter *ReportFilter1			= new TReportDateFilter(ReportControl, MMFilterTransaction);
+
+			ReportFilter1->Caption						= "Select the date range for the Sales Summary D report.";
+			ReportFilter1->ShowGST						= false;
+			ReportFilter1->GSTChecked					= false;
+  			SubReport1->AddFilterIndex(0);
+        	ReportControl->AddFilter(ReportFilter1);
 
 			break;
-		
-
-
-		}
-      
+        }
 }
  	if (ReportControl)
 	{
@@ -6804,42 +6815,6 @@ void TfrmReports::GetPriceAdjustmentsReceiptFilter(TReportFilter *ReportFilter)
 
 }
 //---------------------------------------------------------------------------
-/*void TfrmReports::GetBillPaymentsTabFilter(TReportFilter *ReportFilter)
-{
-	TIBSQL *Query	= ReportFilter->Query;
-	TStrings *SQL	= Query->SQL;
-
-	SQL->Text =
-		"Select Distinct "
-			"Archive.Tab_Name "
-		"From "
-			"Security Inner Join ArcBill on "
-				"Security.Security_Ref = ArcBill.Security_Ref "
-			"Left Join Archive on "
-				"ArcBill.ArcBill_Key = Archive.ArcBill_Key"
-		"Where "
-			"Security.Time_Stamp >= :StartTime and "
-			"Security.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Billed By' "
-
-		"Union All "
-
-		"Select Distinct "
-			"DayArchive.Tab_Name "
-		"From "
-			"Security Inner Join DayArcBill on "
-				"Security.Security_Ref = DayArcBill.Security_Ref "
-			"Left Join DayArchive on "
-				"DayArcBill.ArcBill_Key = DayArchive.ArcBill_Key"
-		"Where "
-			"Security.Time_Stamp >= :StartTime and "
-			"Security.Time_Stamp < :EndTime and "
-			"Security.Security_Event = 'Billed By' "
-
-		"Order By "
-			"1";
-}*/
-//---------------------------------------------------------------------------
 void TfrmReports::PrintBillPayments(TReportControl *ReportControl)
 {
 	const AnsiString ReportName = "repBillPayments";
@@ -6902,23 +6877,6 @@ void TfrmReports::PrintBillPayments(TReportControl *ReportControl)
 				}
 				break;
 			}
-/*			case 2:
-			{
-				TReportCheckboxFilter *TabFilter	= (TReportCheckboxFilter *)ReportControl->ReportFilter(4);
-				dmMMReportData->SetupBillPayments(ReportControl->Start, ReportControl->End, TabFilter->Selection);
-				if (rvMenuMate->SelectReport(ReportName, false))
-				{
-					AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-													"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-					rvMenuMate->SetParam("ReportRange", DateRange);
-					rvMenuMate->Execute();
-				}
-				else
-				{
-					Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-				}
-				break;
-			}*/
 		}
 	}
 	__finally
@@ -6945,9 +6903,9 @@ void TfrmReports::PrintBillTenders(TReportControl *ReportControl)
 		dmMMReportData->SetupBillTenders(ReportControl->Start, ReportControl->End, TenderFilter->Selection, TerminalFilter->Selection);
 		if (ReportType == rtExcel)
 		{
-
-        try{
-               	std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+        try
+        {
+             std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
 			ExcelDataSetsList->AddObject("Bill Tenders",(TObject *)dmMMReportData->qrBillTenders);
 			ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
         }
@@ -6964,9 +6922,6 @@ void TfrmReports::PrintBillTenders(TReportControl *ReportControl)
 												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
 				rvMenuMate->SetParam("ReportRange", DateRange);
 				rvMenuMate->Execute();
-
-
-
 			}
 			else
 			{
@@ -7204,58 +7159,6 @@ void TfrmReports::PrintInvoice(TReportControl *ReportControl)
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-/*{
-	const AnsiString ReportName = "repInvoice";
-
-	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
-	{
-		dmMMReportData->MMTrans->StartTransaction();
-	}
-	try
-	{
-		TReportCheckboxFilter *GroupsFilter	= (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
-		TReportCheckboxFilter *MembersFilter  	= (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
-		dmMMReportData->SetupInvoice(ReportControl->Start, ReportControl->End, MembersFilter->Selection, GroupsFilter->Selection);
-		if (ReportType == rtExcel)
-		{
-			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-			ExcelDataSetsList->AddObject("Invoice",(TObject *)dmMMReportData->qrInvoice);
-			ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
-		}
-		else
-		{
-			if (rvMenuMate->SelectReport(ReportName, false))
-			{
-				AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-				rvMenuMate->SetParam("ReportRange", DateRange);
-				rvMenuMate->Execute();
-			}
-			else
-			{
-				Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-			}
-		}
-	}
-	__finally
-	{
-		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
-		{
-			dmMMReportData->MMTrans->Commit();
-		}
-	}
-
-} */
 
 //---------------------------------------------------------------------------
 
@@ -9554,6 +9457,7 @@ void __fastcall TfrmReports::tsCheckFilterExit(TObject *Sender)
 void	TfrmReports::ExportToExcel( TStringList *ExcelDataSetsList,AnsiString ACaption )
 {
 	std::auto_ptr<TfrmExcel> frmExcel(new TfrmExcel(NULL));
+
 	frmExcel->ExportToExcel( ExcelDataSetsList,ACaption);
 	// When you close Excel you close  frmExcel
 	// try to have only 1 copy of Excel open, is tidier
@@ -11107,4 +11011,76 @@ void TfrmReports::PrintBreakdownCategory(TReportControl *ReportControl)
 		}
 	}
 }
+//----------------------------------------------------------------------------------------------------------------------
+void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
+{
+	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+	{
+		dmMMReportData->MMTrans->StartTransaction();
+	}
+	try
+	{
+                dmMMReportData->nameOfTaxPayer = "";
+                dmMMReportData->addressOfTaxPayer = "";
+                dmMMReportData->tinNumber = "";
+                dmMMReportData->serialNo = "";
+                std::auto_ptr <TStringList> CompanyData (new TStringList);
+                AnsiString filename = ExtractFilePath(Application->ExeName);
 
+                TFileStream *FileStream;
+                if (FileExists(filename + "\\Owner Details.txt"))
+                {
+                    FileStream = new TFileStream(filename + "\\Owner Details.txt",  fmOpenRead | fmShareExclusive);
+                }
+
+                if(CompanyData->Count > 3)
+                {
+                    dmMMReportData->nameOfTaxPayer = CompanyData->Strings[0].TrimLeft();
+                    dmMMReportData->addressOfTaxPayer = CompanyData->Strings[1].TrimLeft();
+                    dmMMReportData->tinNumber = CompanyData->Strings[2].TrimLeft();
+                    dmMMReportData->serialNo = CompanyData->Strings[3].TrimLeft();
+                }               
+				const AnsiString ReportName = "repSalesSummaryD";
+
+				dmMMReportData->SetupSalesSummaryD(ReportControl->Start, ReportControl->End);
+				if (ReportType == rtExcel)
+				{
+                    std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+                    ExcelDataSetsList->AddObject("Sales Summary Parameters",(TObject *)dmMMReportData->qrSSDParemeter);
+				   	ExcelDataSetsList->AddObject("Sales Summary D",(TObject *)dmMMReportData->qrSalesSummaryD);
+ 				  	ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
+				}
+				else
+				{
+					if (rvMenuMate->SelectReport(ReportName, false))
+					{
+						AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+						rvMenuMate->SetParam("ReportRange", DateRange);
+                        rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
+                        rvMenuMate->SetParam("NameOfTaxPayer", dmMMReportData->nameOfTaxPayer);
+                        rvMenuMate->SetParam("AddressOfTaxPayer", dmMMReportData->addressOfTaxPayer);
+                        rvMenuMate->SetParam("TiNNumber", dmMMReportData->tinNumber);
+                        rvMenuMate->SetParam("TerminalName", dmMMData->GetTerminalName());
+                        rvMenuMate->SetParam("SerialNo", dmMMReportData->serialNo);
+						rvMenuMate->Execute();
+					}
+					else
+					{
+						Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+					}
+				}
+                delete FileStream;
+
+			}
+
+
+	__finally
+	{
+		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+		{
+			dmMMReportData->MMTrans->Commit();
+		}
+	}
+}
