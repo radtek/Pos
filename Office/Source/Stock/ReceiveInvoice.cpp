@@ -2696,7 +2696,7 @@ void TfrmReceiveInvoice::CalculateQtyValue()
     vtvStockQty->EndEditNode();
     TInvoiceItemNodeData *NodeData	= (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
 
-    if(IsPackingSlipUpdateMode)
+    if(IsPackingSlipUpdateMode && IsSavedPackingSlip)
     {
        if(NodeData->OrderQty < 0)
        {
