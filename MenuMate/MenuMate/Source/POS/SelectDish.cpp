@@ -2276,7 +2276,7 @@ void __fastcall TfrmSelectDish::lbDisplayDrawItem(TWinControl *Control, int Inde
 		}
 		else if (ItemRedirector->ItemType.Contains(itMembershipDisplay))
 		{
-			DollarAmount = "Pts " + FormatFloat("0.00", ItemRedirector->CompressedContainer->Container->AppliedMembership.Points.getPointsBalance());
+			DollarAmount = "Pts " + FormatFloat("0.00", ItemRedirector->CompressedContainer->Container->AppliedMembership.Points.getPointsBalance(pasDatabase));
 			pCanvas->Font->Style = TFontStyles() << fsBold;
 			pCanvas->Font->Color = (TColor)CL_STANDARD_MEMBER_INFO;
 			pCanvas->Brush->Color = clGreen;
