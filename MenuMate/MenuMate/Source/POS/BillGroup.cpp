@@ -1378,6 +1378,7 @@ void __fastcall TfrmBillGroup::btnTransferMouseClick(TObject *Sender)
 		UpdateSeatDetails(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
 		DBTransaction.Commit();
         delete Transfer;
+       TGlobalSettings::Instance().IsPOSOffline = true;
 		ShowReceipt();
 	}
 }
@@ -4611,6 +4612,10 @@ void TfrmBillGroup::RemoveMembership(Database::TDBTransaction &DBTransaction)
 	lbeMembership->Caption = "";
     RemoveMembershipFreeItems(DBTransaction);
    	RemoveMembershipDiscounts(DBTransaction);
+    for (std::set <__int64> ::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end() ; advance(itTabs, 1))
+    {
+        TDBTab::SetTabOrdersLoyalty(DBTransaction,*itTabs,0);
+    }
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::RemoveMembershipFreeItems(Database::TDBTransaction &DBTransaction)
@@ -4776,7 +4781,7 @@ void TfrmBillGroup::OnSmartCardInserted(TSystemEvents *Sender)
 {
 	TMMContactInfo TempUserInfo;
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->GetContactInfo(TempUserInfo);
-	if (TempUserInfo.Valid() && !MembershipConfirmed)
+	if (TempUserInfo.Valid() && !MembershipConfirmed && Active)
 	{ // Restore Membership, Reminds the user to remove the smart card.
 		Database::TDBTransaction DBTransaction(DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
