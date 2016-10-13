@@ -11071,7 +11071,8 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 						Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
 					}
 				}
-                delete FileStream;
+                if(CompanyData->Count>0)
+                    delete FileStream;
 
 			}
 

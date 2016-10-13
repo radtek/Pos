@@ -1313,7 +1313,7 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"(Extract (Hour From ArcBill.Time_Stamp) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
 			"cast( ArcBill.Total as Numeric (17,4) ) Bill_Total,"
 			"ArcBill.Patron_Count, "
-		    "Cast(0.00 as numeric(17,4)) SalesQty, "
+		    "Cast(sum(archive.qty) as numeric(17,4)) SalesQty, "
             " Cast(0.00 as numeric(17,4)) SalesIncl "
 		"From "
 			"Security Left Join ARCBILL on  "
@@ -1328,7 +1328,7 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"ArcBill.Time_Stamp >= :StartTime and "
 			"ArcBill.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Billed By' "
-         " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14 ";
+         " group by 1,2,3,4,5,6,7,8,9,10,11,12,13 ";
 	if (Terminals->Count > 0)
 	{
 		qrHalfHoulrySummary->SQL->Text	=	qrHalfHoulrySummary->SQL->Text + "and (" +
@@ -1355,7 +1355,7 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"(Extract (Hour From DayArcBill.Time_Stamp) * 60 * 60) + 1800 As Double Precision) / 86400  as Time) End_Time,"
 			"cast( DayArcBill.Total as Numeric(17,4) ) Bill_Total,"
 			"DayArcBill.Patron_Count, "
-		    "Cast(0.00 as numeric(17,4)) SalesQty, "
+		    "Cast(sum(dayarchive.qty) as numeric(17,4)) SalesQty, "
             " Cast(0.00 as numeric(17,4)) SalesIncl "
 		"From "
 			"Security Left Join DAYARCBILL on  "
@@ -1371,7 +1371,7 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"DayArcBill.Time_Stamp >= :StartTime and "
 			"DayArcBill.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Billed By' "
-         " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14 " ;
+         " group by 1,2,3,4,5,6,7,8,9,10,11,12,13 " ;
 	if (Terminals->Count > 0)
 	{
 		qrHalfHoulrySummary->SQL->Text	=	qrHalfHoulrySummary->SQL->Text + "and (" +
@@ -5799,14 +5799,14 @@ void TdmMMReportData::SetupSalesJournal(bool includeSCTaxInTax, TDateTime StartT
    if( includeSCTaxInTax )
    {
       qrSalesJournal1->SQL->Text = qrSalesJournal1->SQL->Text +
-         "cast(Sum( T.ServiceCharge )as numeric(17, 4)) Scharge, "
-         "cast(Sum( T.Tax + COALESCE(T.ServiceChargeTax,0) )as numeric(17, 4)) Tax, ";
+         "cast(Sum(coalesce( T.ServiceCharge,0) )as numeric(17, 4)) Scharge, "
+         "cast(Sum( coalesce(T.Tax,0) + COALESCE(T.ServiceChargeTax,0) )as numeric(17, 4)) Tax, ";
    }
    else
    {
       qrSalesJournal1->SQL->Text = qrSalesJournal1->SQL->Text +
-         "cast(Sum( T.ServiceCharge + COALESCE(T.ServiceChargeTax,0) )as numeric(17, 4)) SCharge, "
-         "cast(Sum( T.Tax )as numeric(17, 4)) Tax, ";
+         "cast(Sum( coalesce(T.ServiceCharge,0) + COALESCE(T.ServiceChargeTax,0) )as numeric(17, 4)) SCharge, "
+         "cast(Sum( coalesce(T.Tax,0) )as numeric(17, 4)) Tax, ";
    }
    qrSalesJournal1->SQL->Text = qrSalesJournal1->SQL->Text +
          "Cast(Sum( DA.Qty * abs(DA.BASE_PRICE) ) as Numeric(17,4)) Price,  "
@@ -5872,14 +5872,14 @@ void TdmMMReportData::SetupSalesJournal(bool includeSCTaxInTax, TDateTime StartT
    if( includeSCTaxInTax )
    {
       qrSalesJournal1->SQL->Text = qrSalesJournal1->SQL->Text +
-         "cast(Sum( T.ServiceCharge )as numeric(17, 4)) SCharge, "
-         "cast(Sum( T.Tax + COALESCE(T.ServiceChargeTax,0) )as numeric(17, 4)) Tax, ";
+         "cast(Sum( coalesce(T.ServiceCharge,0) )as numeric(17, 4)) SCharge, "
+         "cast(Sum( coalesce(T.Tax,0) + COALESCE(T.ServiceChargeTax,0) )as numeric(17, 4)) Tax, ";
    }
    else
    {
       qrSalesJournal1->SQL->Text = qrSalesJournal1->SQL->Text +
-         "cast(Sum( T.ServiceCharge + COALESCE(T.ServiceChargeTax,0) )as numeric(17, 4)) SCharge, "
-         "cast(Sum( T.Tax )as numeric(17, 4)) Tax, ";
+         "cast(Sum( coalesce(T.ServiceCharge,0) + COALESCE(T.ServiceChargeTax,0) )as numeric(17, 4)) SCharge, "
+         "cast(Sum( coalesce(T.Tax,0) )as numeric(17, 4)) Tax, ";
    }
       qrSalesJournal1->SQL->Text = qrSalesJournal1->SQL->Text +
          "Cast(Sum( DA.Qty *  abs(DA.BASE_PRICE) ) as Numeric(17,4)) Price,  "
