@@ -30,7 +30,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
     Top = 5
     Width = 865
     Height = 756
-    ActivePage = tsKitchenFormat
+    ActivePage = tsReceiptOptions
     TabOrder = 0
     object tsPrinting: TTabSheet
       Caption = 'tsPrinting'
@@ -4842,7 +4842,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 Font.Style = []
                 ParentBackground = False
                 ParentFont = False
-                TabOrder = 0
+                TabOrder = 2
               end
               object Panel29: TPanel
                 Left = 4
@@ -5166,7 +5166,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                       Color = 14342874
                       ParentFont = False
                       ParentColor = False
-                      ActivePage = TouchSheetCustomInfo
+                      ActivePage = TouchSheetGeneralInfo
                       TabColor = 6052441
                       object TouchSheetGeneralInfo: TTouchSheet
                         Left = 2
@@ -5477,7 +5477,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             ParentFont = False
                             TabOrder = 0
                             object LabelReceiptDigits: TLabel
-                              Left = 41
+                              Left = 17
                               Top = 200
                               Width = 146
                               Height = 19
@@ -5510,7 +5510,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               Width = 315
                               Height = 35
                               BiDiMode = bdLeftToRight
-                              Caption = 'Capture Receipt No for Refund/Void Transaction'
+                              Caption = 'Capture Receipt No. for Refund/Void Transaction'
                               Font.Charset = DEFAULT_CHARSET
                               Font.Color = clWindowText
                               Font.Height = -16
@@ -5559,12 +5559,12 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               OnClick = cbPrintVoidClick
                             end
                             object cbShowVoidNumber: TCheckBox
-                              Left = 16
-                              Top = 155
+                              Left = 17
+                              Top = 159
                               Width = 340
-                              Height = 20
+                              Height = 35
                               BiDiMode = bdLeftToRight
-                              Caption = 'Show Void No. For Refund/Void Transaction'
+                              Caption = 'Show Void No. Label For Refund/Void Transaction'
                               Font.Charset = DEFAULT_CHARSET
                               Font.Color = clWindowText
                               Font.Height = -16
@@ -5573,6 +5573,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               ParentBiDiMode = False
                               ParentFont = False
                               TabOrder = 3
+                              WordWrap = True
                               OnClick = cbShowVoidNumberClick
                             end
                             object tbtnReceiptNumber: TTouchBtn
