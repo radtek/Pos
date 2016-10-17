@@ -745,7 +745,7 @@ void TPaymentTransaction::RemoveMembership()
 
    //Remove membership.
 	Membership.Clear();
-    Recalc();
+    //Recalc();
 }
 
 void TPaymentTransaction::DeleteOrders()

@@ -3915,7 +3915,8 @@ void TfrmPaymentType::ApplyMembership(TMMContactInfo &Member)
 	else if (Result == lsAccepted)
 	{
 		// Remove the old Member if any.
-		RemoveMembership();
+        //RemoveMembership();
+        CurrentTransaction.RemoveMembership();
 		CurrentTransaction.ApplyMembership(Member, MemberSource);
 		if (CurrentTransaction.Orders != NULL)
 		{
