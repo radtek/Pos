@@ -12,10 +12,9 @@
 #endif
 namespace MenumateVersionParser
 {
-// 6.30
 void TApplyParser::upgrade6_30Tables()
 {
-	update6_30Tables();
+    update6_30Tables();
 }
 // 6.31
 void TApplyParser::upgrade6_31Tables()

@@ -139,12 +139,21 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
                 {
                     printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name +
                                     " (" + IntToStr(ThisTransaction.Count) + ")";
-                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.Total );
+                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount);
                     printOut->PrintFormat->AddLine();
 
                     TCalculatedTotals Total(itCurrentPayment->second.Name, itCurrentPayment->second.Total,0,0, ThisTransaction.Count);
                     transactionInfo.CalculatedTotals[itCurrentPayment->second.Name] = Total;
                 }
+
+                if (itCurrentPayment->second.TipAmount != 0)
+                {
+                    printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name + " Tips" +
+                                    " (" + IntToStr(ThisTransaction.Count) + ")";
+                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.TipAmount );
+                    printOut->PrintFormat->AddLine();
+                }
+
 
                 if (itCurrentPayment->second.CashOut != 0)
                 {

@@ -2269,11 +2269,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"\"ARCBILLPAY\".\"SUBTOTAL\", \"ARCBILLPAY\".\"VOUCHER_NUMBER\", \"ARCBILLPAY\".\"CASH_OUT\", "
 			"\"ARCBILLPAY\".\"NOTE\", \"ARCBILLPAY\".\"TAX_FREE\", \"ARCBILLPAY\".\"GROUP_NUMBER\", "
 			"\"ARCBILLPAY\".\"PROPERTIES\", \"ARCBILLPAY\".\"PAY_TYPE_DETAILS\",\"ARCBILLPAY\".\"ROUNDING\", "
-            "\"ARCBILLPAY\".\"PAYMENT_CARD_TYPE\",\"ARCBILLPAY\".\"PAY_GROUP\",\"ARCBILLPAY\".\"CHARGED_TO_XERO\") "
+            "\"ARCBILLPAY\".\"PAYMENT_CARD_TYPE\",\"ARCBILLPAY\".\"PAY_GROUP\",\"ARCBILLPAY\".\"CHARGED_TO_XERO\",\"ARCBILLPAY\".\"TIP_AMOUNT\") "
             "values "
 			"(:\"ARCBILLPAY_KEY\", :\"ARCBILL_KEY\", :\"PAY_TYPE\", :\"SUBTOTAL\", :\"VOUCHER_NUMBER\", "
 			":\"CASH_OUT\", :\"NOTE\", :\"TAX_FREE\", :\"GROUP_NUMBER\", :\"PROPERTIES\", :\"PAY_TYPE_DETAILS\", :\"ROUNDING\", "
-            ":\"PAYMENT_CARD_TYPE\", :\"PAY_GROUP\", :\"CHARGED_TO_XERO\") ";
+            ":\"PAYMENT_CARD_TYPE\", :\"PAY_GROUP\", :\"CHARGED_TO_XERO\",:\"TIP_AMOUNT\") ";
 
 			IBArcSurcharge->Close();
 			IBArcSurcharge->SQL->Text = "insert into \"ARCSURCHARGE\" "
