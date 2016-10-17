@@ -3672,12 +3672,12 @@ void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message)
 	}
     else if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
     {
-        /*if(TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate
+        if(TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate
            && TGlobalSettings::Instance().LoyaltyMateEnabled)
         {
            GetMemberByBarcode(CurrentTransaction.DBTransaction,Data);
         }
-        else*/ if (TDeviceRealTerminal::Instance().ManagerMembership->IsCard(CurrentTransaction.DBTransaction, TempUserInfo) == lsAccepted || Data.Pos("MMPROX") != 0)
+        else if (TDeviceRealTerminal::Instance().ManagerMembership->IsCard(CurrentTransaction.DBTransaction, TempUserInfo) == lsAccepted || Data.Pos("MMPROX") != 0)
         {
             TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(CurrentTransaction.DBTransaction, TempUserInfo);
 
