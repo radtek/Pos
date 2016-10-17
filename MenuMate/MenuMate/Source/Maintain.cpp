@@ -3592,6 +3592,7 @@ void TfrmMaintain::SetupGLCodes()
   frmSetupGlCodes->TabDepositCreditReceived = TGlobalSettings::Instance().TabDepositCreditReceivedGLCode;
   frmSetupGlCodes->TabDepositCreditRefunded = TGlobalSettings::Instance().TabDepositCreditRefundedGLCode;
   frmSetupGlCodes->FloatGLCode = TGlobalSettings::Instance().FloatGLCode;
+  frmSetupGlCodes->EftPosTip = TGlobalSettings::Instance().EftPosTipGLCode;
   if(frmSetupGlCodes->ShowModal() == mrOk)
    {
         TGlobalSettings::Instance().PointsPurchasedGLCode = frmSetupGlCodes->PointsPurchased;
@@ -3603,6 +3604,7 @@ void TfrmMaintain::SetupGLCodes()
         TGlobalSettings::Instance().TabDepositCreditReceivedGLCode = frmSetupGlCodes->TabDepositCreditReceived ;
         TGlobalSettings::Instance().TabDepositCreditRefundedGLCode = frmSetupGlCodes->TabDepositCreditRefunded ;
         TGlobalSettings::Instance().FloatGLCode = frmSetupGlCodes->FloatGLCode ;
+        TGlobalSettings::Instance().EftPosTipGLCode = frmSetupGlCodes->EftPosTip;
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmPointsPurchasedGLCode, TGlobalSettings::Instance().PointsPurchasedGLCode );
@@ -3614,6 +3616,7 @@ void TfrmMaintain::SetupGLCodes()
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmTabDepositCreditReceivedGLCode, TGlobalSettings::Instance().TabDepositCreditReceivedGLCode );
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmTabDepositCreditRefundedGLCode, TGlobalSettings::Instance().TabDepositCreditRefundedGLCode );
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmFloatGLCode, TGlobalSettings::Instance().FloatGLCode );
+        TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmEftPosTipGLCode, TGlobalSettings::Instance().EftPosTipGLCode);
         DBTransaction.Commit();
    }
    delete frmSetupGlCodes;

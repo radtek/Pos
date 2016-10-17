@@ -4,8 +4,8 @@ object frmSetupGlCodes: TfrmSetupGlCodes
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Setup GL Codes'
-  ClientHeight = 695
-  ClientWidth = 526
+  ClientHeight = 413
+  ClientWidth = 829
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,17 +18,17 @@ object frmSetupGlCodes: TfrmSetupGlCodes
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 8
-    Top = 8
-    Width = 369
-    Height = 680
+    Left = 6
+    Top = 6
+    Width = 680
+    Height = 405
     Color = 14342874
     ParentBackground = False
     TabOrder = 0
     object btnPointPurchased: TTouchBtn
       Left = 15
-      Top = 30
-      Width = 337
+      Top = 15
+      Width = 300
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -37,6 +37,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       Font.Style = []
       ParentFont = False
       ParentColor = True
+      Caption = 'Point Purchased'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -44,9 +45,9 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       OnMouseClick = btnPointPurchasedMouseClick
     end
     object btnPointSpent: TTouchBtn
-      Left = 15
-      Top = 100
-      Width = 337
+      Left = 359
+      Top = 15
+      Width = 300
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -55,6 +56,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       Font.Style = []
       ParentFont = False
       ParentColor = True
+      Caption = 'Point Spent'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -63,8 +65,8 @@ object frmSetupGlCodes: TfrmSetupGlCodes
     end
     object btnVoucherPurchased: TTouchBtn
       Left = 15
-      Top = 170
-      Width = 337
+      Top = 90
+      Width = 300
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -73,6 +75,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       Font.Style = []
       ParentFont = False
       ParentColor = True
+      Caption = 'Voucher Purchased'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -80,9 +83,9 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       OnMouseClick = btnVoucherPurchasedMouseClick
     end
     object btnServiceCharge: TTouchBtn
-      Left = 15
-      Top = 240
-      Width = 337
+      Left = 359
+      Top = 90
+      Width = 300
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -91,6 +94,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       Font.Style = []
       ParentFont = False
       ParentColor = True
+      Caption = 'Service Charge'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -99,8 +103,8 @@ object frmSetupGlCodes: TfrmSetupGlCodes
     end
     object btnServiceChargeTax: TTouchBtn
       Left = 15
-      Top = 310
-      Width = 337
+      Top = 165
+      Width = 300
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -109,6 +113,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       Font.Style = []
       ParentFont = False
       ParentColor = True
+      Caption = 'Service Charge Tax'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -116,9 +121,9 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       OnMouseClick = btnServiceChargeTaxMouseClick
     end
     object btnRounding: TTouchBtn
-      Left = 15
-      Top = 380
-      Width = 337
+      Left = 359
+      Top = 165
+      Width = 300
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -127,6 +132,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       Font.Style = []
       ParentFont = False
       ParentColor = True
+      Caption = 'Rounding'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -135,8 +141,8 @@ object frmSetupGlCodes: TfrmSetupGlCodes
     end
     object btnTabAmountReceived: TTouchBtn
       Left = 15
-      Top = 450
-      Width = 337
+      Top = 240
+      Width = 300
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -145,6 +151,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       Font.Style = []
       ParentFont = False
       ParentColor = True
+      Caption = 'Tab Amount Received'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -152,9 +159,9 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       OnMouseClick = btnTabAmountReceivedClick
     end
     object btnTabAmountRefunded: TTouchBtn
-      Left = 15
-      Top = 520
-      Width = 337
+      Left = 359
+      Top = 240
+      Width = 300
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -163,6 +170,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       Font.Style = []
       ParentFont = False
       ParentColor = True
+      Caption = 'Tab Amount Refunded'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
@@ -171,8 +179,8 @@ object frmSetupGlCodes: TfrmSetupGlCodes
     end
     object btnFloatGlCode: TTouchBtn
       Left = 15
-      Top = 590
-      Width = 337
+      Top = 315
+      Width = 300
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -181,25 +189,45 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       Font.Style = []
       ParentFont = False
       ParentColor = True
+      Caption = 'Float'
       ButtonColor = clNavy
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnFloatGlCodeClick
     end
+    object btnEftPosTip: TTouchBtn
+      Left = 359
+      Top = 315
+      Width = 300
+      Height = 60
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindow
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'EftPos Tip'
+      ButtonColor = clNavy
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnEftPosTipMouseClick
+    end
   end
   object Panel2: TPanel
-    Left = 384
-    Top = 8
-    Width = 137
-    Height = 680
+    Left = 690
+    Top = 6
+    Width = 136
+    Height = 405
     Color = 14342874
     ParentBackground = False
     TabOrder = 1
     object btnOk: TTouchBtn
       Left = 8
       Top = 8
-      Width = 121
+      Width = 120
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -217,8 +245,8 @@ object frmSetupGlCodes: TfrmSetupGlCodes
     end
     object btnCancel: TTouchBtn
       Left = 8
-      Top = 610
-      Width = 121
+      Top = 337
+      Width = 120
       Height = 60
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
