@@ -1219,11 +1219,6 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 	}
 	else
 	{
-        Currency FinalAmount = Payment->GetPayTendered() + 50.0;
-        Payment->SetAdjustment(FinalAmount - Payment->GetPayTendered());
-        Payment->AdjustmentReason = "Eftpos Tip";
-        Payment->TipAmount = FinalAmount - Payment->GetPayTendered();
-        Payment->SetPay(FinalAmount);
         Payment->Result = eAccepted;
 	}
 }
