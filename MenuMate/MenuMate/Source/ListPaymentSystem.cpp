@@ -66,6 +66,7 @@
 #include "InitializeDCSession.h"
 #include "MallExportRegenerateReport.h"
 #include "LoyaltyMateUtilities.h"
+#include "ReceiptUtility.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -1543,31 +1544,34 @@ void TListPaymentSystem::ArchivePoints(TPaymentTransaction &PaymentTransaction)
 
 void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransaction)
 {
+   if(PaymentTransaction.Membership.Member.ContactKey == 0)
+     return;
+
 	try
 	{
 
 		if(!TGlobalSettings::Instance().UseTierLevels || PaymentTransaction.Membership.Member.MemberType != 1 ||
 				(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().IsPOSOffline))
 		{
-                       if(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().IsPOSOffline)
-                       {
-                         MessageBox( "Unable to communicate with Cloud. Tier level will be updated on next visit.", "Message", MB_ICONINFORMATION + MB_OK);
-                       }
-                       else if(!TGlobalSettings::Instance().UseTierLevels)
-                       {
-                          double currentPoint = PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned();
-                          if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints == 0)
-                          {
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints =
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetEarnedPointsForCurrentYear(PaymentTransaction.DBTransaction, PaymentTransaction.Membership.Member);
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
-                          }
-                          else
-                          {
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
-                          }
-                       }
-                       return;
+           if(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().IsPOSOffline)
+           {
+             MessageBox( "Unable to communicate with Cloud. Tier level will be updated on next visit.", "Message", MB_ICONINFORMATION + MB_OK);
+           }
+           else if(!TGlobalSettings::Instance().UseTierLevels)
+           {
+              double currentPoint = PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned();
+              if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints == 0)
+              {
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints =
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetEarnedPointsForCurrentYear(PaymentTransaction.DBTransaction, PaymentTransaction.Membership.Member);
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
+              }
+              else
+              {
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
+              }
+           }
+           return;
 
 		}
 		TDBTierLevel::GetTierLevelOfMember(PaymentTransaction.DBTransaction,PaymentTransaction.Membership.Member);
@@ -1790,10 +1794,10 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->SQL->Text =
 		"INSERT INTO DAYARCBILL (" "ARCBILL_KEY, " "TERMINAL_NAME, " "STAFF_NAME, " "TIME_STAMP, " "TOTAL, " "DISCOUNT, "
 		"PATRON_COUNT, " "RECEIPT, " "SECURITY_REF, " "BILLED_LOCATION, " "INVOICE_NUMBER, " "SALES_TYPE, " "INVOICE_KEY,"
-        "ROUNDING_ADJUSTMENT," "ORDER_IDENTIFICATION_NUMBER ) " "VALUES ("
+        "ROUNDING_ADJUSTMENT," "ORDER_IDENTIFICATION_NUMBER, " "REFUND_REFRECEIPT ) " "VALUES ("
 		":ARCBILL_KEY, " ":TERMINAL_NAME, " ":STAFF_NAME, " ":TIME_STAMP, " ":TOTAL, " ":DISCOUNT, " ":PATRON_COUNT, " ":RECEIPT, "
 		":SECURITY_REF, " ":BILLED_LOCATION," ":INVOICE_NUMBER, " ":SALES_TYPE, " ":INVOICE_KEY, "
-        ":ROUNDING_ADJUSTMENT," ":ORDER_IDENTIFICATION_NUMBER ) ";
+        ":ROUNDING_ADJUSTMENT," ":ORDER_IDENTIFICATION_NUMBER, " ":REFUND_REFRECEIPT ) ";
 		IBInternalQuery->ParamByName("ARCBILL_KEY")->AsString = Retval;
 		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 		IBInternalQuery->ParamByName("STAFF_NAME")->AsString = TDeviceRealTerminal::Instance().User.Name;
@@ -1824,6 +1828,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->ParamByName("SALES_TYPE")->AsInteger = PaymentTransaction.SalesType;
 		IBInternalQuery->ParamByName("BILLED_LOCATION")->AsString = TDeviceRealTerminal::Instance().ID.Location;
 		IBInternalQuery->ParamByName("INVOICE_KEY")->AsInteger = PaymentTransaction.InvoiceKey;
+		IBInternalQuery->ParamByName("REFUND_REFRECEIPT")->AsString = PaymentTransaction.RefundRefReceipt;
 
 		// set the receipt information if available, else insert null
 
@@ -3013,6 +3018,8 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 	ManagerReceipt->ReceiptToArchive->Clear();
 	ManagerReceipt->ReceiptToArchive->Position = 0;
 	StringReceipt->SaveToStream(ManagerReceipt->ReceiptToArchive);
+    if(TGlobalSettings::Instance().ExportReprintReceipt)
+     ExportReceipt(StringReceipt.get(),PaymentTransaction);
 	ManagerReceipt->ReceiptToArchive->Position = 0;
 
 	for (int i = 0; i < StringReceipt->Count; i++)
@@ -3020,21 +3027,45 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 		TDeviceRealTerminal::Instance().SecurityPort->SetData(StringReceipt->Strings[i]);
 	}
 }
-
+void TListPaymentSystem::ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction)
+{
+    AnsiString fileName = ExtractFilePath(Application->ExeName) +"Exports\\" ;
+    if(!DirectoryExists(fileName))
+    {
+        CreateDir(fileName);
+        fileName += "Receipts Export\\";
+        CreateDir(fileName);
+    }
+    else
+    {
+       fileName += "Receipts Export\\";
+    }
+    AnsiString date = Now().FormatString("yyyy-mm-dd - hh-mm-ss");
+    fileName += PaymentTransaction.InvoiceNumber+" "+date+" "+".txt";
+    StringReceipt->SaveToFile(fileName );
+}
 void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransaction)
 {
    if(!TManagerDelayedPayment::Instance().IsDelayedPayment(PaymentTransaction))
     {
       if(PaymentTransaction.InvoiceNumber == "" || PaymentTransaction.InvoiceNumber == "Undefined")
       {
-         if(TGlobalSettings::Instance().HideReceiptNumberForRefundItem && PaymentTransaction.CreditTransaction)
-         {
-            PaymentTransaction.InvoiceNumber = "";
-         }
-         else
-         {
-            PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
-         }
+            if(TReceiptUtility::CheckRefundCancelTransaction(PaymentTransaction) &&
+               TGlobalSettings::Instance().CaptureRefundRefNo)
+            {
+                PaymentTransaction.InvoiceNumber = "RV " + Invoice->GetVoidInvoiceNumber(PaymentTransaction.DBTransaction);
+            }
+             else
+             {
+                 if(TGlobalSettings::Instance().HideReceiptNumberForRefundItem && PaymentTransaction.CreditTransaction)
+                 {
+                    PaymentTransaction.InvoiceNumber = "";
+                 }
+                 else
+                 {
+                    PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+                 }
+             }
 
       }
     }

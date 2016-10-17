@@ -16,10 +16,13 @@ void TApplyParser::upgrade6_30Tables()
 {
     update6_30Tables();
 }
-//::::::::::::::::::::::::Version 6.20::::::::::::::::::::::::::::::::::::::::::
+//::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
     UpdatePaymentTables6_30(_dbControl);
+  Create6_30VoidInvoiceGenerator(_dbControl);
+  UpdateDayArcBillTable6_30(_dbControl);
+  UpdateArcBillTable6_30(_dbControl);
 }
 
 void TApplyParser::UpdatePaymentTables6_30( TDBControl* const inDBControl)
@@ -38,4 +41,41 @@ void TApplyParser::UpdatePaymentTables6_30( TDBControl* const inDBControl)
 	}
 }
 
+
+void TApplyParser::Create6_30VoidInvoiceGenerator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_VOIDINVOICENUMBER", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_VOIDINVOICENUMBER;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_VOIDINVOICENUMBER TO 0;", inDBControl
+        );
+    }
 }
+void TApplyParser::UpdateDayArcBillTable6_30(TDBControl* const inDBControl)
+{
+  if (!fieldExists( "DAYARCBILL", "REFUND_REFRECEIPT", _dbControl ) )
+	{
+        executeQuery (
+		"ALTER TABLE DAYARCBILL ADD "
+        "REFUND_REFRECEIPT VARCHAR(50); ",
+		inDBControl);
+	}
+}
+void TApplyParser::UpdateArcBillTable6_30(TDBControl* const inDBControl)
+{
+  if (!fieldExists( "ARCBILL", "REFUND_REFRECEIPT", _dbControl ) )
+	{
+        executeQuery (
+		"ALTER TABLE ARCBILL ADD "
+        "REFUND_REFRECEIPT VARCHAR(50), "
+		"ADD Z_KEY INTEGER; ",
+		inDBControl);
+	}
+}
+//----------------------------------------------------------------------------
+}
+

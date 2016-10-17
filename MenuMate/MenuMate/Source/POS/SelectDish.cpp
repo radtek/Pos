@@ -2276,7 +2276,7 @@ void __fastcall TfrmSelectDish::lbDisplayDrawItem(TWinControl *Control, int Inde
 		}
 		else if (ItemRedirector->ItemType.Contains(itMembershipDisplay))
 		{
-			DollarAmount = "Pts " + FormatFloat("0.00", ItemRedirector->CompressedContainer->Container->AppliedMembership.Points.getPointsBalance());
+			DollarAmount = "Pts " + FormatFloat("0.00", ItemRedirector->CompressedContainer->Container->AppliedMembership.Points.getPointsBalance(pasDatabase));
 			pCanvas->Font->Style = TFontStyles() << fsBold;
 			pCanvas->Font->Color = (TColor)CL_STANDARD_MEMBER_INFO;
 			pCanvas->Brush->Color = clGreen;
@@ -8791,6 +8791,7 @@ void TfrmSelectDish::ResetPOS()
 			tgridOrderCourseMouseClick(tgridOrderCourse, mbLeft, TShiftState(), tgridOrderCourse->Buttons[0][0]);
 		}
 	}
+
     TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
     Membership.Clear();
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
@@ -13859,7 +13860,7 @@ void __fastcall TfrmSelectDish::tbtnMemberDisplayPageDownMouseClick(TObject *Sen
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::OnSmartCardInserted(TSystemEvents *Sender)
 {
-  if(!Membership.Applied())
+  if(!Membership.Applied() && Active)
   {
 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
