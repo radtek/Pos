@@ -199,7 +199,7 @@ bool TImportMenu::menuExists( AnsiString inMenuName )
 
    //:::::::::::::::::::::::::::::::::::::::::::::::::
 
-	result = menuExistsInDB( inMenuName.Trim(), dbTransaction );
+	result = menuExistsInDB( inMenuName.TrimRight(), dbTransaction );
 
    //:::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -1403,7 +1403,7 @@ __int32 TImportMenu::InsertMenuInDB(
     //:::::::::::::::::::::::::::::::::::::::
 
     InsertMenuInDBWithKey(
-        key, inMenuName.Trim(), inMenuType, inAvailableOnPalm, inDBTransaction );
+        key, inMenuName.TrimRight(), inMenuType, inAvailableOnPalm, inDBTransaction );
 
     result = key;
 
