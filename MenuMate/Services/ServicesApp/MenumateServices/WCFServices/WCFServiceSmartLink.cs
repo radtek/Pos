@@ -254,8 +254,8 @@ namespace MenumateServices.WCFServices
         {
             try
             {
+                ParseResponse(e); 
                 _waitflag = false;
-                ParseResponse(e);
             }
             catch (Exception ex)
             {
@@ -271,7 +271,8 @@ namespace MenumateServices.WCFServices
         {
             try
             {
-                _response.TransactionResult = responseEventArgs.Response.Args["TransactionResult"];
+                if (responseEventArgs.Response.Args.ContainsKey("TransactionResult"))
+                    _response.TransactionResult = responseEventArgs.Response.Args["TransactionResult"];
                 if (responseEventArgs.Response.Args.ContainsKey("ResultText"))
                     _response.ResultText = responseEventArgs.Response.Args["ResultText"];
                 _response.ErrorText = _response.ResultText;

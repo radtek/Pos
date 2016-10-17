@@ -108,7 +108,7 @@ void TEftPosSmartLink::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPur
                    }    }
                   else
                    {
-                      MessageBox("Transaction Failed", "EFTPOS ",MB_OK + MB_ICONERROR);
+//                      MessageBox("Transaction Failed", "EFTPOS ",MB_OK + MB_ICONERROR);
                       TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
                       if(EftTrans != NULL)
                        {
