@@ -4942,7 +4942,8 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "            qpa.note ,                         "
 "            qpa.TABLE_NAME TABLE_NUMBER,       "
 "            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)  as numeric(17,4)))  "
-          "   else ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100) as numeric(17,4))) END price "
+          "   else ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100) as numeric(17,4))) END price, "
+          "cast(paymentPercent.tip as numeric(17,4)) tip "
 
 " from (	"
 "select   "
@@ -4994,13 +4995,14 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "           inner join    (SELECT                                                                                             "
 "        abp.ARCBILL_KEY,                                                                                              "
 "        abp.PAY_TYPE,                                                                                                 "
-"       cast((((100* COALESCE(sum(abp.SUBTOTAL),0))/Sum(ARCBILL.TOTAL))) as numeric(17, 4)) AS PayTypeTotal   "
+"       cast((((100* COALESCE(sum(abp.SUBTOTAL),0))/Sum(ARCBILL.TOTAL))) as numeric(17, 4)) AS PayTypeTotal,   "
+"       cast(coalesce(abp.TIP_AMOUNT,0) as numeric(17,4)) tip "
 "        FROM ARCBILLPAY abp                                                                                                                         "
 "        left join ARCBILL on ARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY                                                                          "
 "        where  abp.SUBTOTAL > 0 and abp.CASH_OUT<>'T'      "
  + selected_tenders +
 "                                                                                                                                                 "
-"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                      "
+"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT)paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                      "
 "                                                                                                                                                 "
 "inner join  (select count(*) TabCount,a.ARCBILL_key                                                                                              "
 "                             from                                                                                                                "
@@ -5021,7 +5023,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "                      qpa.billed_at,                                                                              "
 "                      qpa.receipt_no,                                                                             "
 "                      qpa.voucher_number,                                                                         "
-"                      qpa.note , qpb.change_recv ,  qpa.TABLE_NAME, qpa.price , paymentPercent.PayTypeTotal ,qpa.GiftCard_number ,aChange.Change,chkeftpos.IsCash,aChange.CASHOUT,aChange.CHANGE  "
+"                      qpa.note , qpb.change_recv ,  qpa.TABLE_NAME, qpa.price , paymentPercent.PayTypeTotal ,qpa.GiftCard_number ,aChange.Change,chkeftpos.IsCash,aChange.CASHOUT,aChange.CHANGE,paymentPercent.tip  "
 
 "UNION  all "
 
@@ -5038,7 +5040,8 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "            qpa.note ,                         "
 "            qpa.TABLE_NAME TABLE_NUMBER,       "
 "            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)  as numeric(17,4)))  "
-          "   else ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100) as numeric(17,4))) END price "
+          "   else ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100) as numeric(17,4))) END price, "
+          " cast(paymentPercent.tip as numeric(17,4)) tip "
 
 " from ( "
 	"select   "
@@ -5091,12 +5094,13 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "           inner join    (SELECT                                                                                                "
 "        abp.ARCBILL_KEY,                                                                                              "
 "        abp.PAY_TYPE,                                                                                                 "
-"     cast((((100* COALESCE(sum(abp.SUBTOTAL),0))/Sum(DAYARCBILL.TOTAL))) as numeric(17, 4)) AS PayTypeTotal        "
+"     cast((((100* COALESCE(sum(abp.SUBTOTAL),0))/Sum(DAYARCBILL.TOTAL))) as numeric(17, 4)) AS PayTypeTotal,        "
+"       cast(coalesce(abp.TIP_AMOUNT,0) as numeric(17,4)) tip "
 "        FROM DAYARCBILLPAY abp                                                                                                                               "
 "        left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY                                                                          "
 "        where  abp.SUBTOTAL > 0 and abp.CASH_OUT<>'T'   "
 + selected_tenders +
-"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                         "
+"        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT)paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                         "
 "                  inner join (select abp.arcbill_key,                                                             "
 "                                     abp.voucher_number,                                                          "
 "                                     abp.subtotal   change_recv                                                   "
@@ -5109,7 +5113,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "                      qpa.billed_at,                                                                              "
 "                      qpa.receipt_no,                                                                             "
 "                      qpa.voucher_number,                                                                         "
-"                      qpa.note , qpb.change_recv ,  qpa.TABLE_NAME, qpa.price , paymentPercent.PayTypeTotal ,qpa.GiftCard_number ,aChange.Change,chkeftpos.IsCash,aChange.CASHOUT,aChange.CHANGE  "
+"                      qpa.note , qpb.change_recv ,  qpa.TABLE_NAME, qpa.price , paymentPercent.PayTypeTotal ,qpa.GiftCard_number ,aChange.Change,chkeftpos.IsCash,aChange.CASHOUT,aChange.CHANGE,paymentPercent.tip  "
 
 "      order by 2,1, 5, 3, 4, 6, 7, 8 ,9  ;";
 
