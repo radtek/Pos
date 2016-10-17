@@ -374,5 +374,6 @@ TGlobalSettings::TGlobalSettings()
     ReceiptDigits = "";
     ShowVoidOrRefund = false;
     ShowVoidNumber = false;
+    EftPosTipGLCode = "";
 }
 

@@ -6426,6 +6426,20 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 				CurrencyDecimals));
 			}
 		}
+
+       if(SubPayment->TipAmount != 0)
+        {
+            AnsiString paymentName = SubPayment->Name;
+            AnsiString cardType = SubPayment->CardType;
+            if(cardType != "" && cardType != NULL)
+            {
+                paymentName = paymentName +"(" + cardType +")";
+            }
+            pPrinter->Add(paymentName + " Tip " + "|" + CurrToStrF(
+            RoundToNearest(SubPayment->TipAmount, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+            ffNumber,
+            CurrencyDecimals));
+        }
 	}
 
 	if (PrintJob->PaymentType != ptPreliminary)

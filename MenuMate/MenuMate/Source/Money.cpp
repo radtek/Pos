@@ -71,6 +71,7 @@ void TMoney::Clear()
     RoundedProductAmount = 0;
     RoundingAdjustment = 0;
     IsSCD = false;
+    PaymentTip = 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -125,6 +126,11 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
         PaymentSurchargesGSTContent += Payment->GetSurchargeGSTContent();
         PaymentDiscountsGSTContent  += Payment->GetDiscountGSTContent();
         PaymentDiscounts += Payment->GetDiscount();
+        if(Payment->TipAmount != 0)
+        {
+          PaymentTip += Payment->TipAmount;
+        }
+
     }
 
     TPayment *CashPayment = Transaction.PaymentFind(CASH);
@@ -177,7 +183,7 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
           TotalOwing = RoundToNearest(TotalOwing, TGlobalSettings::Instance().RoundOnBillingAmount, TGlobalSettings::Instance().MidPointRoundsDown);
           TotalRounding  += (TotalOwing - TempTotalOwing);
         }
-       TotalOwing  += (PaymentSurcharges + PaymentDiscounts - RefundPoints);
+       TotalOwing  += (PaymentSurcharges + PaymentDiscounts - RefundPoints + PaymentTip);
 
 
     }

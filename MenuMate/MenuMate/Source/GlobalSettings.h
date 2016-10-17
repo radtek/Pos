@@ -461,6 +461,7 @@ public:
     std::auto_ptr<TStringList>VoidFooter;
     bool ShowVoidOrRefund;
     bool ShowVoidNumber;
+    UnicodeString EftPosTipGLCode;
 };
 
 #endif
