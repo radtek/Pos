@@ -5366,8 +5366,19 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
      " Union All " +
      _arcBillSubQuery +
      "and ArcBill.Time_Stamp >= :StartTime And "
-	"	ArcBill.Time_Stamp < :EndTime    "
-     +  _groupingForArcbill +
+	"	ArcBill.Time_Stamp < :EndTime    ";
+     if (Invoices->Count)
+	{
+		qrBillPayments->SQL->Text =	qrBillPayments->SQL->Text + "And (" +
+												ParamString(Invoices->Count, "ArcBill.Invoice_Number", "InvoiceParam") + ")";
+	}
+	if (Terminals->Count > 0)
+	{
+		qrBillPayments->SQL->Text =	qrBillPayments->SQL->Text + "And (" +
+												ParamString(Terminals->Count, "Security.Terminal_Name", "TerminalParam") + ")";
+	}
+	qrBillPayments->SQL->Text =		qrBillPayments->SQL->Text +
+        _groupingForArcbill +
 
 	" Union All "
     " Select                                       "
@@ -5435,8 +5446,19 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
       " Union All "
     + _dayArcBillSubQuery  +
     " and	DayArcBill.Time_Stamp >= :StartTime And  "
-	"	DayArcBill.Time_Stamp < :EndTime    "
-    + _groupingForDayArcbill +
+	"	DayArcBill.Time_Stamp < :EndTime    " ;
+     if (Invoices->Count)
+	{
+		qrBillPayments->SQL->Text =	qrBillPayments->SQL->Text + "And (" +
+												ParamString(Invoices->Count, "DayArcBill.Invoice_Number", "InvoiceParam") + ")";
+	}
+	if (Terminals->Count > 0)
+	{
+		qrBillPayments->SQL->Text =	qrBillPayments->SQL->Text + "And (" +
+												ParamString(Terminals->Count, "Security.Terminal_Name", "TerminalParam") + ")";
+	}
+	qrBillPayments->SQL->Text =		qrBillPayments->SQL->Text +
+      _groupingForDayArcbill +
 
     " ORDER BY 1 asc, 11,12 DESC ";
 
