@@ -120,6 +120,74 @@ _groupByClause =
                 "TaxDetails.ServiceChargeTax,             "                                                                                                                                                                                               
                 "STAX.ServiceChargeTax ,                  "                                                                                                                                                                                           
                 "taxsetting.isRecalculateTaxAfterDiscount " ;
+
+
+_dayArcBillSubQuery =  	" Select "
+                                                "		DayArcBill.ArcBill_Key,               "
+                                                "		DayArcBill.Time_Stamp,                "
+                                                "		DayArcBill.Invoice_Number,            "
+                                                "		DayArcBill.Total,                     "
+                                                "		DayArcBill.Patron_Count,              "
+                                                "		Security.Terminal_Name,               "
+                                                "		Security.From_Val Staff_Name,         "
+                                                "		DayArcBillPay.Note,                   "
+                                                "        		ab.TABLE_NAME TABLE_NUMBER,   "
+                                                "        		ab.price,                     "
+                                                 "DayArcBillPAY.PAY_TYPE,        "
+                                                "DayArcBillPAY.TIP_AMOUNT price "
+                                    "From "
+                                        "DayArcBill Left Join Security On                      "
+                                        "	DayArcBill.Security_Ref = Security.Security_Ref    "
+                                        "Left Join DayArcBillPay On                            "
+                                        "	DayArcBill.ArcBill_Key = DayArcBillPay.ArcBill_Key "
+                                        "      left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM DayArchive a "
+                                        "     group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=DayArcBill.ARCBILL_KEY "
+                                     "Where "
+                                        "Security.Security_Event = 'Billed By' And coalesce(DayArcBillPAY.TIP_AMOUNT,0) > 0 ";
+
+
+
+_groupingForDayArcbill = "  GROUP BY DayArcBill.ARCBILL_KEY, DayArcBill.Time_Stamp,  "
+                                        "DayArcBill.Invoice_Number,                               "
+                                        "DayArcBill.Total,                                        "
+                                        "DayArcBill.Patron_Count,                                 "
+                                        "Security.Terminal_Name,                                  "
+                                        "Security.From_Val ,                                      "
+                                        "DayArcBillPay.Note,                                      "
+                                      " ab.TABLE_NAME, ab.price, DayArcBillPAY.PAY_TYPE, DayArcBillPAY.TIP_AMOUNT ";
+
+_arcBillSubQuery =      " Select   "
+                                                "		ArcBill.ArcBill_Key,              "
+                                                "		ArcBill.Time_Stamp,               "
+                                                "		ArcBill.Invoice_Number,           "
+                                                "		ArcBill.Total,                    "
+                                                "		ArcBill.Patron_Count,             "
+                                                "		Security.Terminal_Name,           "
+                                                "		Security.From_Val Staff_Name,     "
+                                                "		ArcBillPay.Note,                  "
+                                                "        ab.TABLE_NAME TABLE_NUMBER,      "
+                                                "        ab.price ,                        "
+                                                 "ArcBillPAY.PAY_TYPE,        "
+                                                "ArcBillPAY.TIP_AMOUNT price "
+                                    "From "
+                                                "ArcBill Left Join Security On                      "
+                                                "	ArcBill.Security_Ref = Security.Security_Ref    "
+                                                "Left Join ArcBillPay On                            "
+                                                "	ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
+                                                "      left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM Archive a "
+                                                "     group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=ArcBill.ARCBILL_KEY "
+                                      "Where "
+                                                "Security.Security_Event = 'Billed By'  And coalesce(ArcBillPAY.TIP_AMOUNT,0) > 0 ";
+
+_groupingForArcbill =
+                                              "  GROUP BY ArcBill.ARCBILL_KEY, ArcBill.Time_Stamp,  "
+                                                "ArcBill.Invoice_Number,                               "
+                                                "ArcBill.Total,                                        "
+                                                "ArcBill.Patron_Count,                                 "
+                                                "Security.Terminal_Name,                                  "
+                                                "Security.From_Val ,                                      "
+                                                "ArcBillPay.Note,                                      "
+                                              " ab.TABLE_NAME, ab.price, ArcBillPAY.PAY_TYPE, ArcBillPAY.TIP_AMOUNT ";
 }
 //---------------------------------------------------------------------------
 void __fastcall TdmMMReportData::DataModuleDestroy(TObject *Sender)
@@ -4806,15 +4874,16 @@ void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
 	qrBillPayments->Close();
 	qrBillPayments->AfterScroll = NULL;
 	qrBillPayments->SQL->Text =
-    	"Select                                   "
-	"		ArcBill.ArcBill_Key,              "
-	"		ArcBill.Time_Stamp,               "
-	"		ArcBill.Invoice_Number,           "
-	"		ArcBill.Total,                    "
-	"		ArcBill.Patron_Count,             "
-	"		Security.Terminal_Name,           "
-	"		Security.From_Val Staff_Name,     "
-	"		ArcBillPay.Note,                  "
+
+"Select   "
+    "		ArcBill.ArcBill_Key,              "
+    "		ArcBill.Time_Stamp,               "
+    "		ArcBill.Invoice_Number,           "
+    "		ArcBill.Total,                    "
+    "		ArcBill.Patron_Count,             "
+    "		Security.Terminal_Name,           "
+    "		Security.From_Val Staff_Name,     "
+    "		ArcBillPay.Note,                  "
     "        ab.TABLE_NAME TABLE_NUMBER,      "
     "        ab.price ,                        "
     "        paymentPercent.PAY_TYPE,         "
@@ -4852,18 +4921,27 @@ void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
     "        ab.TABLE_NAME,                                                                                                            "
     "        ab.price, paymentPercent.PayTypeTotal ,paymentPercent.PAY_TYPE                                                            "
 
+    " UNION ALL "
+
+    ///Query for adding Tip_Amount
+    + _arcBillSubQuery +
+    " AND ArcBill.Invoice_Number = :Invoice_Number "
+    + _groupingForArcbill +
+
 		"Union All "
-        	"Select                                       "
-	"		DayArcBill.ArcBill_Key,               "
-	"		DayArcBill.Time_Stamp,                "
-	"		DayArcBill.Invoice_Number,            "
-	"		DayArcBill.Total,                     "
-	"		DayArcBill.Patron_Count,              "
-	"		Security.Terminal_Name,               "
-	"		Security.From_Val Staff_Name,         "
-	"		DayArcBillPay.Note,                   "
+
+"Select "
+    "		DayArcBill.ArcBill_Key,               "
+    "		DayArcBill.Time_Stamp,                "
+    "		DayArcBill.Invoice_Number,            "
+    "		DayArcBill.Total,                     "
+    "		DayArcBill.Patron_Count,              "
+    "		Security.Terminal_Name,               "
+    "		Security.From_Val Staff_Name,         "
+    "		DayArcBillPay.Note,                   "
     "        		ab.TABLE_NAME TABLE_NUMBER,   "
     "        		ab.price,                     "
+
     "        paymentPercent.PAY_TYPE,             "
     "        case when DAYARCBILLPAY.NOTE <> 'Total Change.' then ((cast (ab.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100) "
     "                else 0 end price                                                                                                     "
@@ -4897,7 +4975,15 @@ void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
 	"		Security.From_Val ,                                                           "
 	"		DayArcBillPay.Note,                                                           "
     "        ab.TABLE_NAME,                                                               "
-    "        ab.price, paymentPercent.PayTypeTotal ,paymentPercent.PAY_TYPE               ";
+    "        ab.price, paymentPercent.PayTypeTotal ,paymentPercent.PAY_TYPE               "
+    "UNION ALL "
+
+     ///Query for adding Tip_Amount
+    + _dayArcBillSubQuery +
+    " AND DayArcBill.Invoice_Number = :Invoice_Number "
+    + _groupingForDayArcbill +
+    "ORDER BY 1 asc, 11,12 DESC ";
+
 	qrBillPayments->ParamByName("Invoice_Number")->AsString = InvoiceNumber;
 }
 
@@ -5216,7 +5302,7 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
 	qrBillPayments->AfterScroll = NULL;
 	qrBillPayments->SQL->Text =
 
-    	"Select                                         "
+    " Select                                         "
 	"		ArcBill.ArcBill_Key,                    "
 	"		ArcBill.Time_Stamp,                     "
 	"		ArcBill.Invoice_Number,                 "
@@ -5237,15 +5323,15 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
 	"			ArcBill.ArcBill_Key = ARCBILLPAY.ArcBill_Key                                                                              "
     "             left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME ,cast(sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM ARCHIVE a       "
     "             group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=ArcBill.ARCBILL_KEY                                           "
-	"	    inner join    (SELECT                                                                                                         "                        
-    "    ARCBILLPAY.ARCBILL_KEY,                                                                                                          "      
-    "    ARCBILLPAY.PAY_TYPE,                                                                                                             "      
+	"	    inner join    (SELECT                                                                                                         "
+    "    ARCBILLPAY.ARCBILL_KEY,                                                                                                          "
+    "    ARCBILLPAY.PAY_TYPE,                                                                                                             "
     "    cast((100* COALESCE(sum(ARCBILLPAY.SUBTOTAL),0))/                                                                                "
     "    Sum(ArcBill.TOTAL)                                                                                                               "
-    "     as numeric(17, 4)) AS PayTypeTotal                                                                                              "             
-    "    FROM ARCBILLPAY                                                                                                                  "               
-    "    left join ArcBill on ArcBill.ARCBILL_KEY=ARCBILLPAY.ARCBILL_KEY                                                                  "         
-    "    where  ARCBILLPAY.SUBTOTAL > 0 and ARCBILLPAY.CASH_OUT<>'T'                                                                      "               
+    "     as numeric(17, 4)) AS PayTypeTotal                                                                                              "
+    "    FROM ARCBILLPAY                                                                                                                  "
+    "    left join ArcBill on ArcBill.ARCBILL_KEY=ARCBILLPAY.ARCBILL_KEY                                                                  "
+    "    where  ARCBILLPAY.SUBTOTAL > 0 and ARCBILLPAY.CASH_OUT<>'T'                                                                      "
     "    group by ARCBILLPAY.PAY_TYPE ,ARCBILLPAY.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key               "
 	"	Where                                                                                                                             "
     "     ARCBILLPAY.SubTotal>0   and                                                                                                     "
@@ -5276,8 +5362,15 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
 
 	qrBillPayments->SQL->Text =		qrBillPayments->SQL->Text +
 
-		"Union All "
-      	"Select                                       "
+     ///Query for adding Tip_Amount
+     " Union All " +
+     _arcBillSubQuery +
+     "and ArcBill.Time_Stamp >= :StartTime And "
+	"	ArcBill.Time_Stamp < :EndTime    "
+     +  _groupingForArcbill +
+
+	" Union All "
+    " Select                                       "
 	"		DayArcBill.ArcBill_Key,               "
 	"		DayArcBill.Time_Stamp,                "
 	"		DayArcBill.Invoice_Number,            "
@@ -5299,16 +5392,16 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
 	"			DayArcBill.ArcBill_Key = DayArcBillPay.ArcBill_Key  "
     "             left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME ,cast(sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM DayARCHIVE a  "
     "             group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=DayArcBill.ARCBILL_KEY                                   "
-	"	    inner join    (SELECT                                                                                                    "                             
+	"	    inner join    (SELECT                                                                                                    "
     "    DAYARCBILLPAY.ARCBILL_KEY,                                                                                                  "              
-    "    DAYARCBILLPAY.PAY_TYPE,                                                                                                     "              
+    "    DAYARCBILLPAY.PAY_TYPE,                                                                                                     "
     "    cast((100* COALESCE(sum(DAYARCBILLPAY.SUBTOTAL),0))/                                                                        "     
     "    Sum(DAYARCBILL.TOTAL)                                                                                                       "     
-    "     as numeric(17, 4)) AS PayTypeTotal                                                                                         "                  
+    "     as numeric(17, 4)) AS PayTypeTotal                                                                                         "
     "    FROM DAYARCBILLPAY                                                                                                          "                       
-    "    left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=DAYARCBILLPAY.ARCBILL_KEY                                                    "                       
+    "    left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=DAYARCBILLPAY.ARCBILL_KEY                                                    "
     "    where  DAYARCBILLPAY.SUBTOTAL > 0 and DAYARCBILLPAY.CASH_OUT<>'T'                                                           "     
-    "                                                                                                                                "                       
+    "                                                                                                                                "
     "    group by DAYARCBILLPAY.PAY_TYPE ,DAYARCBILLPAY.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key    "  
 	"	Where                                                                                                                        "
     "     DayArcBillPay.SubTotal>0   and                                                                                             "
@@ -5327,16 +5420,25 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
 	}
 	qrBillPayments->SQL->Text =		qrBillPayments->SQL->Text +
 
-    " group by DayArcBill.ArcBill_Key,                                         "       
-	"		DayArcBill.Time_Stamp,                                             "          
-	"		DayArcBill.Invoice_Number,                                         "          
-	"		DayArcBill.Total,                                                  "          
-	"		DayArcBill.Patron_Count,                                           "          
-	"		Security.Terminal_Name,                                            "          
-	"		Security.From_Val ,                                                "          
-	"		DayArcBillPay.Note,                                                "          
-    "        ab.TABLE_NAME,                                                    "          
-    "        ab.price, paymentPercent.PayTypeTotal ,paymentPercent.PAY_TYPE    " ;     
+    " group by DayArcBill.ArcBill_Key,                                         "
+	"		DayArcBill.Time_Stamp,                                             "
+	"		DayArcBill.Invoice_Number,                                         "
+	"		DayArcBill.Total,                                                  "
+	"		DayArcBill.Patron_Count,                                           "
+	"		Security.Terminal_Name,                                            "
+	"		Security.From_Val ,                                                "
+	"		DayArcBillPay.Note,                                                "
+    "        ab.TABLE_NAME,                                                    "
+    "        ab.price, paymentPercent.PayTypeTotal ,paymentPercent.PAY_TYPE    "
+
+      ///Query for adding Tip_Amount
+      " Union All "
+    + _dayArcBillSubQuery  +
+    " and	DayArcBill.Time_Stamp >= :StartTime And  "
+	"	DayArcBill.Time_Stamp < :EndTime    "
+    + _groupingForDayArcbill +
+
+    " ORDER BY 1 asc, 11,12 DESC ";
 
 	for (int i=0; i<Invoices->Count; i++)
 	{
