@@ -452,7 +452,7 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 	  IBInternalQuery->ParamByName("MOBILE")->AsString = Info.Mobile.SubString(1, 25);
 	  IBInternalQuery->ParamByName("LOCATION_ADDRESS")->AsString = Info.LocationAddress.SubString(1, 250);
 	  IBInternalQuery->ParamByName("MAILING_ADDRESS")->AsString = Info.MailingAddress.SubString(1, 250);
-	  IBInternalQuery->ParamByName("EMAIL")->AsString = Info.EMail.SubString(1, 50);
+	  IBInternalQuery->ParamByName("EMAIL")->AsString = Info.EMail.SubString(1, 256);
 	  IBInternalQuery->ParamByName("PIN")->AsString = Info.PIN.SubString(1, PIN_Length);
 	  IBInternalQuery->ParamByName("ACCESS_LEVEL")->AsInt64 = Info.AccessLevel;
 	  IBInternalQuery->ParamByName("TAB_ENALBED")->AsString = Info.TabEnabled ? "T" : "F";
