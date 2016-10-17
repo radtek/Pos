@@ -5029,6 +5029,8 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "            qpa.TABLE_NAME TABLE_NUMBER,       "
 "            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)-coalesce(paymentPercent.tip,0)  as numeric(17,4)))  "
           "   else ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100)-coalesce(paymentPercent.tip,0) as numeric(17,4))) END price, "
+"            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)  as numeric(17,4)))  "
+          "   else ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100) as numeric(17,4))) END paid_Excl_Change, "
           "cast(paymentPercent.tip as numeric(17,4)) tip "
 
 " from (	"
@@ -5125,8 +5127,10 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
             "  else 0 END change_recv,   "
 "            qpa.note ,                         "
 "            qpa.TABLE_NAME TABLE_NUMBER,       "
-"            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)  as numeric(17,4)))  "
-          "   else ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100) as numeric(17,4))) END price, "
+"            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)-coalesce(paymentPercent.tip,0)  as numeric(17,4)))  "
+          "   else ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100)-coalesce(paymentPercent.tip,0) as numeric(17,4))) END price, "
+          "            CASE WHEN (paymentPercent.pay_type = 'Cash' and chkeftpos.IsCash>1) THEN ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100)+coalesce(aChange.Change,0)+coalesce(aChange.CASHOUT,0)  as numeric(17,4)))  "
+          "   else ( cast(((cast (qpa.price* paymentPercent.PayTypeTotal as numeric(17,4))) / 100) as numeric(17,4))) END paid_Excl_Change, "
           " cast(paymentPercent.tip as numeric(17,4)) tip "
 
 " from ( "
