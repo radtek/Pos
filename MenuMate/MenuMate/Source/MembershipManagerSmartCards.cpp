@@ -1864,9 +1864,7 @@ eMemberSource &MemberSource, bool AllowDB)
         if(UserInfo.MemberCode != "" && UserInfo.ContactKey != 0)
         {
             MemberSource = emsBarcode;
-            TContactPoints Points = UserInfo.Points;
 			LoginSuccess = MembershipSystem->Login(DBTransaction, UserInfo);
-            UserInfo.Points = Points;
         }
        else  if (ManagerSmartCards->Enabled)
 		{
@@ -1876,26 +1874,9 @@ eMemberSource &MemberSource, bool AllowDB)
 				{
 					if (!ManagerSmartCards->CardUnknown)
 					{
-						/*TMMContactInfo SmartCardContact;
-						ManagerSmartCards->GetContactInfo(SmartCardContact);
-                        UserInfo = SmartCardContact;
-                        SmartCardContact.MemberVouchers = UserInfo.MemberVouchers;
-                        UserInfo.Points = SmartCardContact.Points;
-                        LoginSuccess = MembershipSystem->Login(DBTransaction, SmartCardContact);
-                        UserInfo.Name = SmartCardContact.Name;
-                        UserInfo.AccountInfo = SmartCardContact.AccountInfo;
-						UserInfo.MemberType =  SmartCardContact.MemberType;
-						UserInfo.TierLevel =  SmartCardContact.TierLevel;
-                        UserInfo.ContactKey = SmartCardContact.ContactKey;
-						MemberSource = emsSmartCard;*/
                         MemberSource = emsSmartCard;
-                        TContactPoints Points = UserInfo.Points;
                         LoginSuccess = MembershipSystem->Login(DBTransaction, UserInfo);
-                        UserInfo.Points = Points;
-						//ManagerDiscount->DiscountCodeToKey(DBTransaction, SmartCardContact.AutoAppliedDiscountsID, UserInfo.AutoAppliedDiscounts);
-						// Add any Member Auto Discounts that are in the DB against this Member.
-						//UserInfo.AutoAppliedDiscounts.insert(SmartCardContact.AutoAppliedDiscounts.begin(),SmartCardContact.AutoAppliedDiscounts.end());
-					}
+                    }
 				}
 			}
 			else if (AllowSmartCardNotPresentMemberTransactions || AllowDB)

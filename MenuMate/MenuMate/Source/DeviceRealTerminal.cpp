@@ -79,7 +79,7 @@ void TDeviceRealTerminal::LoadPrinterGraphic()
    }
 }
 
-void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TStrings *inFooter)
+void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TStrings *inFooter, TStrings *inVoidFooter)
 {
    bool Registered = false;
    UnicodeString pRegisteredName = "";
@@ -101,7 +101,7 @@ void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TS
 			ShowMessage = true;
 		 }
 
-		 Receipt->SetHeaderFooter(inHeader, inPHeader, inFooter);
+		 Receipt->SetHeaderFooter(inHeader, inPHeader, inFooter, inVoidFooter);
 		 if (ShowMessage)
 		 {
 			UnicodeString Message = "You must include your registered company name " + pRegisteredName +
@@ -114,14 +114,17 @@ void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TS
    TGlobalSettings::Instance().Header->Clear();
    TGlobalSettings::Instance().PHeader->Clear();
    TGlobalSettings::Instance().Footer->Clear();
+   TGlobalSettings::Instance().VoidFooter->Clear();
 
    TGlobalSettings::Instance().Header->AddStrings(inHeader);
    TGlobalSettings::Instance().PHeader->AddStrings(inPHeader);
    TGlobalSettings::Instance().Footer->AddStrings(inFooter);
+   TGlobalSettings::Instance().VoidFooter->AddStrings(inVoidFooter);
 
    TGlobalSettings::Instance().Header->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_HEADER);
    TGlobalSettings::Instance().PHeader->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_PRELIM_HEADER);
    TGlobalSettings::Instance().Footer->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_FOOTER);
+   TGlobalSettings::Instance().VoidFooter->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_VOID_FOOTER);
 }
 
 void TDeviceRealTerminal::SaveZedHeader(TStrings *inZedHeader)

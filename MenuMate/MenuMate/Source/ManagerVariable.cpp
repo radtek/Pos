@@ -3090,7 +3090,34 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
        SetVarBool(DBTransaction, vmMergeSimilarItem, "Merge Similar item",
                  "Merge Similar item"
                  "Default is True.",
-                  vmgPOS, true);
+                  vmgPOS, true);       SetVarBool(DBTransaction,vmCaptureRefundRefNo, "Capture Refund Ref. No",
+		"Capture Refund Ref. No.\r"
+		"Default is false",
+		vmgPrinting, false);
+		SetVarBool(DBTransaction,vmHideTaxInvoice, "Hide Tax Invoice",
+		"Hide Tax Invoice.\r"
+		"Default is false",
+		vmgPrinting, false);
+		SetVarStr(DBTransaction,vmReceiptDigits, "Digits for Receipts",
+		"Digits for Receipts.\r"
+		"Default is ",
+		vmgPrinting, "0");
+		SetVarBool(DBTransaction,vmExportReprintReceipt, "Export Reprint Receipt",
+		"Export Reprint Receipt.\r"
+		"Default is false",
+		vmgPrinting, false);
+		SetVarBool(DBTransaction,vmSetVoidFooter, "Set For Void Footer",
+		"Set For Void Footer"
+		"Default is false",
+		vmgPrinting, false);
+		SetVarBool(DBTransaction,vmShowVoidOrRefund, "Show Void or Refund ",
+		"Show Void or Refund"
+		"Default is false",
+		vmgPrinting, false);
+ 		SetVarBool(DBTransaction,vmShowVoidNumber, "Show Void or Refund number",
+		"Show Void or Refund number"
+		"Default is false",
+		vmgPrinting, false);
 	}
 	catch(Exception &E)
 	{

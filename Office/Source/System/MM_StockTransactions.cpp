@@ -791,8 +791,15 @@ bool TReceiveInvoice::fReceivePackingSlipItem(TTransactionBatchInfo const& Batch
                         else
                         {
 
-                      	    NewAverage	= fabs(((StockDetails.Average_Cost * (StockDetails.On_Hand - double(TransactionInfo.Qty))) +
+                            if(NewOnHand != 0)
+                            {
+                          	    NewAverage	= fabs(((StockDetails.Average_Cost * (StockDetails.On_Hand - double(TransactionInfo.Qty))) +
 										(double(InvoiceItemInfo->Supplier_Unit_Cost) * double(TransactionInfo.Order_Qty))) / NewOnHand);
+                            }
+                            else
+                            {
+                        	    NewAverage	= fabs(TransactionInfo.Unit_Cost);
+                            }
                         }
 
                     }

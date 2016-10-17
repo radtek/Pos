@@ -397,24 +397,22 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         FixedPoint = True
         TabOrder = 4
         Visible = False
+        OnChange = neCostChange
         OnExit = neCostExit
         OnKeyDown = neStockQtyKeyDown
         OnKeyPress = neCostKeyPress
         DecimalPlaces = 4
       end
-      object neTotalCost: TNumericEdit
+      object neTotalCost: TRichEdit
         Left = 588
         Top = 104
         Width = 69
         Height = 21
-        Precision = 5
-        FixedPoint = True
         TabOrder = 5
         Visible = False
         OnExit = neTotalCostExit
         OnKeyDown = neStockQtyKeyDown
         OnKeyPress = neTotalCostKeyPress
-        DecimalPlaces = 4
       end
       object btnAdd: TBitBtn
         Left = 8

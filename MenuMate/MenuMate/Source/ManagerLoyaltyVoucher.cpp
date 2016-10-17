@@ -173,7 +173,7 @@ bool TManagerLoyaltyVoucher::ReleaseVouchers(TReleasedVoucherDetail ReleasedVouc
 // ---------------------------------------------------------------------------
 void TManagerLoyaltyVoucher::DisplayMemberVouchers(Database::TDBTransaction &DBTransaction,TMMContactInfo &MemberInfo)
 {
-  if( TGlobalSettings::Instance().LoyaltyMateEnabled
+  if( TGlobalSettings::Instance().LoyaltyMateEnabled  && !TGlobalSettings::Instance().IsPOSOffline
      && TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers.size() > 0)
   {
 	// Display Reports List
@@ -223,6 +223,11 @@ void TManagerLoyaltyVoucher::DisplayMemberVouchers(Database::TDBTransaction &DBT
             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = SelectedItem.Title;
             MemberInfo.AutoAppliedDiscounts.insert(discountKey);
        }
+    }
+    else
+    {
+            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount =  "";
+            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = "";
     }
   }
 }

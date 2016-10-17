@@ -11,7 +11,7 @@
 using Database::TDBTransaction;
 
 TGlobalSettings::TGlobalSettings()
-	: Header(new TStringList),PHeader(new TStringList),Footer(new TStringList),ZedHeader(new TStringList)
+	: Header(new TStringList),PHeader(new TStringList),Footer(new TStringList),ZedHeader(new TStringList), VoidFooter(new TStringList)
 {
     InfoSync = 1;
     KitchenOrderNumber = 0;
@@ -367,5 +367,12 @@ TGlobalSettings::TGlobalSettings()
     OpenCashDrawer = false;
     HideReceiptNumberForRefundItem = false;
     MergeSimilarItem = true;
+    HideTaxInvoice = false;
+    ExportReprintReceipt = false;
+    CaptureRefundRefNo = false;
+    SetVoidFooter = false;
+    ReceiptDigits = "";
+    ShowVoidOrRefund = false;
+    ShowVoidNumber = false;
 }
 

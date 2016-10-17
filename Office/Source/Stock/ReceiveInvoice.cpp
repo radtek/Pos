@@ -26,6 +26,7 @@
 #include "Consts.h"
 #include "RemoteHostManager.h"
 #include "XeroInvoiceBuilder.h"
+#include <Math.h>
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -76,6 +77,7 @@ void __fastcall TfrmReceiveInvoice::FormShow(TObject *Sender)
 	LoadForm();
 	qrSupplier->Close();
     AllowNegativeValue = false;
+    IsNegativeQtyOrCost = true;
 	if(OrderKey == 0)
 	{
 		qrSupplier->ParamByName("Supplier_Key")->AsInteger = SupplierKey;
@@ -351,7 +353,7 @@ void __fastcall TfrmReceiveInvoice::vtvStockQtyCreateEditor(TBaseVirtualTree *Se
 	else if (Node && Column == 6) // Total Cost
 	{
 		TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)Sender->GetNodeData(Node);
-		neTotalCost->Value = NodeData->SupplierTotalCost;
+		neTotalCost->Text = FloatToStr(NodeData->SupplierTotalCost);
 		TPropertyEdit* PropertyLink = new TPropertyEdit(Sender, Node, Column, neTotalCost);
 		PropertyLink->QueryInterface(__uuidof(IVTEditLink), (void**)EditLink);
 		PostMessage(neTotalCost->Handle, EM_SETSEL, 0, -1);
@@ -418,10 +420,15 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 			TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
 			if (NodeData->OrderQty != 0)
 			{
+                if(neTotalCost->Text == "")
+                {
+                   neTotalCost->Text = "0";
+                }
+                double totalcost = StrToFloat(neTotalCost->Text);
 				// Total Cost
-				NodeData->SupplierTotalCost = neTotalCost->Value;
+				NodeData->SupplierTotalCost = totalcost;
 				// work out unit cost
-				NodeData->SupplierUnitCost = neTotalCost->Value / NodeData->OrderQty;
+				NodeData->SupplierUnitCost = totalcost / NodeData->OrderQty;
 			}
 		}
 		if (Column == 7)  // Back Order
@@ -454,13 +461,13 @@ TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column)
 	}
 	ShowTotals();
 }
-//---------------------------------------------------------------------------
+//--------------------------------------------------------------------------- 
 void __fastcall TfrmReceiveInvoice::vtvStockQtyEditing(
 TBaseVirtualTree *Sender, PVirtualNode Node, TColumnIndex Column,
 bool &Allowed)
 {
 	TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)Sender->GetNodeData(Node);
-	Allowed = ((Column == 4 && !IsPackingSlipUpdateMode) || Column == 5  || (Column == 3 && NodeData && NodeData->IsUnitEditable) || (Column == 2 && NodeData && NodeData->IsUnitEditable) || (Column == 7 && !IsPackingSlipUpdateMode) || (Column == 4 && !IsSavedPackingSlip));
+	Allowed = ((Column == 4 && !IsPackingSlipUpdateMode) || Column == 5 || Column == 6 || (Column == 3 && NodeData && NodeData->IsUnitEditable) || (Column == 2 && NodeData && NodeData->IsUnitEditable) || (Column == 7 && !IsPackingSlipUpdateMode) || (Column == 4 && !IsSavedPackingSlip));
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmReceiveInvoice::vtvStockQtyFocusChanged(
@@ -527,9 +534,7 @@ TVSTTextType TextType, WideString &CellText)
 		case 5:	CellText = MMMath::FloatString(NodeData->SupplierUnitCost, neCost->DecimalPlaces, ffCurrency);
 			break;
 		case 6:
-            CellText = FormatFloat("0.0000", NodeData->SupplierTotalCost);;
-
-          //CellText = MMMath::FloatString(NodeData->SupplierTotalCost, neTotalCost->DecimalPlaces);
+             CellText = FormatFloat("0.0000", NodeData->SupplierTotalCost);
 			break;
 		case 7:  CellText = MMMath::FloatString(NodeData->BackOrder);  // Back Order
 			break;
@@ -1278,6 +1283,7 @@ void __fastcall TfrmReceiveInvoice::neTotalCostExit(TObject *Sender)
 	try
 	{
 		vtvStockQty->EndEditNode();
+        CalculateQtyValue();
 	}
 	__finally
 	{
@@ -1295,7 +1301,8 @@ void __fastcall TfrmReceiveInvoice::neCostExit(TObject *Sender)
 		// if they alter the supplier cost on the way thru then alter the total cost accordingly
 		// Total Cost
 		NodeData->SupplierTotalCost = NodeData->SupplierUnitCost  * NodeData->OrderQty;
-		neTotalCost->Value = NodeData->SupplierTotalCost;
+		neTotalCost->Text = FloatToStr(NodeData->SupplierTotalCost);
+        //RichEdit1->Text = NodeData->SupplierTotalCost;
 	}
 	__finally
 	{
@@ -1313,7 +1320,6 @@ void __fastcall TfrmReceiveInvoice::neStockQtyExit(TObject *Sender)
 		TInvoiceItemNodeData *NodeData	= (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
 		// Total Cost
 		NodeData->SupplierTotalCost = NodeData->SupplierUnitCost  * NodeData->OrderQty;
-		neTotalCost->Value = NodeData->SupplierTotalCost;
 	}
 	__finally
 	{
@@ -1828,7 +1834,7 @@ void __fastcall TfrmReceiveInvoice::btnPrintCommitInvoiceClick(TObject *Sender)
             }
         }
 
-        	if (Transaction->InTransaction)
+        	if (Transaction->InTransaction && IsNegativeQtyOrCost)
 					Transaction->Commit();
 }
 //---------------------------------------------------------------------------
@@ -2280,7 +2286,7 @@ void TfrmReceiveInvoice::CommitPackingSlip(bool isCommitted)
 				BatchInfo.Export_1 = qrSupplier->FieldByName("MYOB1")->AsString;
 				BatchInfo.Export_2 = qrSupplier->FieldByName("MYOB2")->AsString;
 				BatchInfo.Export_3 = qrSupplier->FieldByName("MYOB3")->AsString;
-				BatchInfo.Order_Number = (OrderKey == 0)?AnsiString(""):qrPurchaseOrder->FieldByName("Order_Number")->AsString;
+    				BatchInfo.Order_Number = (OrderKey == 0)?AnsiString(""):qrPurchaseOrder->FieldByName("Order_Number")->AsString;
 				BatchInfo.Reference = InvoiceReference;
 				BatchInfo.Total_Cost = invoiceSummary.TotalExcl;//TotalCost;
 				BatchInfo.Total_GST = invoiceSummary.TotalGST;//neGST->Value;
@@ -2475,7 +2481,7 @@ void TfrmReceiveInvoice::UpdateNodeQty(TInvoiceItemNodeData *NodeData, double Qt
     NodeData->SupplierUnitsToReceive = QtyToReceive;
     neStockQty->Value = NodeData->OrderQty;
     NodeData->SupplierTotalCost = NodeData->SupplierUnitCost  * NodeData->OrderQty;
-    neTotalCost->Value = NodeData->SupplierTotalCost;
+    neTotalCost->Text = FloatToStr(NodeData->SupplierTotalCost);
     NodeData->BackOrder	= NodeData->SupplierUnitsToReceive - NodeData->OrderQty;
 }
 
@@ -2530,28 +2536,28 @@ double TfrmReceiveInvoice::GetStockTakeUnitSize(int stock_key, int supplier_key)
 
 bool TfrmReceiveInvoice::CheckInvoiceQtyAndPrice()
 {
-	bool Continue  = true;
+    IsNegativeQtyOrCost = true;
 	PVirtualNode Node = vtvStockQty->GetFirst();
     if(!AllowNegativeValue)
     {
-        while (Node && Continue)
+        while (Node && IsNegativeQtyOrCost)
         {
             TInvoiceItemNodeData *NodeData = (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(Node);
 
             if((NodeData->OrderQty < 0) || (NodeData->SupplierUnitCost < 0))
             {
-               Continue = false;
+               IsNegativeQtyOrCost = false;
                break;
             }
             // All done. Get the next one.
             Node = vtvStockQty->GetNext(Node);
         }
-        if (!Continue)
+        if (!IsNegativeQtyOrCost)
         {
            Application->MessageBox("You Cannot Process Negative Amount or Quantity", "Error", MB_ICONERROR);
         }
     }
-	return Continue;
+	return IsNegativeQtyOrCost;
 }
 
 //---------------------------------------------------------------------------
@@ -2568,10 +2574,28 @@ void __fastcall TfrmReceiveInvoice::neCostKeyPress(TObject *Sender,
 void __fastcall TfrmReceiveInvoice::neTotalCostKeyPress(TObject *Sender,
       char &Key)
 {
-	if (Key == VK_RETURN || Key == '-')
+	if (Key == VK_RETURN )
 	{
 		Key = NULL;
 	}
+    if(Key != '0' && Key != '1' && Key != '2' && Key != '3' && Key != '4' && Key != '5' && Key != '6' && Key != '7' && Key != '8' && Key != '9' && Key != '.' && Key != '-')
+    {
+       Key = NULL;
+    }
+    if ((Key == '-') && !AllowNegativeValue)
+	{
+		Key = NULL;
+	}
+    if(CheckPointEntered(neTotalCost) && Key == '.')
+    {
+       Key = NULL;
+    }
+    if(CheckNegativeEntered(neTotalCost) && Key == '-')
+    {
+      Key = NULL;
+    }
+
+
 }
 //---------------------------------------------------------------------------
 
@@ -2618,7 +2642,11 @@ void __fastcall TfrmReceiveInvoice::reGstValueKeyPress(TObject *Sender,
 	{
         Key = NULL;
 	}
-    if(CheckPointEntered() && Key == '.')
+    if(CheckPointEntered(reGstValue) && Key == '.')
+    {
+       Key = NULL;
+    }
+    if(CheckNegativeEntered(reGstValue) && Key == '-')
     {
        Key = NULL;
     }
@@ -2645,9 +2673,9 @@ void __fastcall TfrmReceiveInvoice::reGstValueExit(TObject *Sender)
    ShowTotals();
 }
 //---------------------------------------------------------------------------
-bool TfrmReceiveInvoice::CheckPointEntered()
+bool TfrmReceiveInvoice::CheckPointEntered(TRichEdit *reValue)
 {
-   AnsiString value = reGstValue->Text;
+   AnsiString value = reValue->Text;
    bool point_value = value.Pos('.');
    return point_value;
 }
@@ -2663,4 +2691,66 @@ void __fastcall TfrmReceiveInvoice::reGstValueMouseDown(TObject *Sender,
    }
 }
 //---------------------------------------------------------------------------
+void TfrmReceiveInvoice::CalculateQtyValue()
+{
+    vtvStockQty->EndEditNode();
+    TInvoiceItemNodeData *NodeData	= (TInvoiceItemNodeData *)vtvStockQty->GetNodeData(vtvStockQty->FocusedNode);
 
+    if(IsPackingSlipUpdateMode && IsSavedPackingSlip)
+    {
+       if(NodeData->OrderQty < 0)
+       {
+           NodeData->SupplierTotalCost = -fabs(NodeData->SupplierTotalCost);
+           neTotalCost->Text = FloatToStr(NodeData->SupplierTotalCost);
+       }
+       else
+       {
+          NodeData->SupplierTotalCost = fabs(NodeData->SupplierTotalCost);
+          neTotalCost->Text = FloatToStr(NodeData->SupplierTotalCost);
+       }
+
+    }
+    else
+    {
+        if(NodeData->SupplierTotalCost > 0)
+        {
+           NodeData->OrderQty = fabs(NodeData->OrderQty);
+           neStockQty->Value = NodeData->OrderQty;
+        }
+        else
+        {
+            if(NodeData->SupplierTotalCost < 0)
+            {
+               NodeData->OrderQty = -fabs(NodeData->OrderQty);
+               neStockQty->Value = NodeData->OrderQty;
+            }
+        }
+    }
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+bool TfrmReceiveInvoice::CheckNegativeEntered(TRichEdit *reValue)
+{
+   AnsiString value = reValue->Text;
+   bool point_value = value.Pos('-');
+   return point_value;
+}
+
+void __fastcall TfrmReceiveInvoice::neCostChange(TObject *Sender)
+{
+   CheckNegativeValue(neCost);
+}
+//---------------------------------------------------------------------------
+void TfrmReceiveInvoice::CheckNegativeValue(TNumericEdit *neCost)
+{
+   AnsiString value = FloatToStr(neCost->Value);
+   if(value.Trim().Length() > 0)
+   {
+      AnsiString cost = value.TrimLeft();
+      cost = cost.SubString(0, 1);
+       if(cost == '-')
+       {
+          neCost->Value = 0;
+       }
+   }
+}
