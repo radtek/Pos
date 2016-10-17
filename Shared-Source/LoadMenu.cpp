@@ -979,7 +979,7 @@ AnsiString TLoadMenu::GetMenuVersion()
 
 AnsiString TLoadMenu::GetMenuName()
 {
-	return AnsiString( _rootElem->Attribute( "name" ) ).TrimRight();
+	return AnsiString( _rootElem->Attribute( "name" ) ).Trim();
 }                                                                     
 //---------------------------------------------------------------------------
 
