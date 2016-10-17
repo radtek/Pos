@@ -11028,11 +11028,6 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
                 AnsiString filename = ExtractFilePath(Application->ExeName);
 
                 std::auto_ptr<TFileStream> FileStream(new TFileStream(filename + "\\Owner Details.txt",  fmOpenRead | fmShareExclusive));
-                //TFileStream *FileStream;
-                //if (FileExists(filename + "\Owner Details.txt"))
-                //{
-                //    FileStream = new TFileStream(filename + "\\Owner Details.txt",  fmOpenRead | fmShareExclusive);
-               // }
 
                 if(CompanyData->Count > 3)
                 {
@@ -11072,10 +11067,6 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 						Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
 					}
 				}
-                //FileClose(FileStream->hHandle);
-                //if(CompanyData->Count>0)
-                    //delete FileStream;
-
 
 			}
 
