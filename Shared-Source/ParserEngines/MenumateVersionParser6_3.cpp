@@ -17,6 +17,12 @@ void TApplyParser::upgrade6_30Tables()
 {
 	update6_30Tables();
 }
+// 6.31
+void TApplyParser::upgrade6_31Tables()
+{
+	update6_31Tables();
+}
+
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -38,6 +44,7 @@ void TApplyParser::Create6_30VoidInvoiceGenerator(TDBControl* const inDBControl)
         );
     }
 }
+
 void TApplyParser::UpdateDayArcBillTable6_30(TDBControl* const inDBControl)
 {
   if (!fieldExists( "DAYARCBILL", "REFUND_REFRECEIPT", _dbControl ) )
@@ -48,6 +55,7 @@ void TApplyParser::UpdateDayArcBillTable6_30(TDBControl* const inDBControl)
 		inDBControl);
 	}
 }
+
 void TApplyParser::UpdateArcBillTable6_30(TDBControl* const inDBControl)
 {
   if (!fieldExists( "ARCBILL", "REFUND_REFRECEIPT", _dbControl ) )
@@ -59,6 +67,37 @@ void TApplyParser::UpdateArcBillTable6_30(TDBControl* const inDBControl)
 		inDBControl);
 	}
 }
-//----------------------------------------------------------------------------
+
+
+//::::::::::::::::::::::::Version 6.31:::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_31Tables()
+{
+    UpdatePaymentTables6_31(_dbControl);
+    UpdateContactTable6_31(_dbControl);
+}
+
+void TApplyParser::UpdatePaymentTables6_31( TDBControl* const inDBControl)
+{
+    if ( !fieldExists("DAYARCBILLPAY", "TIP_AMOUNT", inDBControl ) )
+	{
+		executeQuery(
+		"ALTER TABLE DAYARCBILLPAY ADD TIP_AMOUNT NUMERIC(15,4) DEFAULT 0;",
+		inDBControl );
+	}
+    if ( !fieldExists("ARCBILLPAY", "TIP_AMOUNT", inDBControl ) )
+	{
+		executeQuery(
+		"ALTER TABLE ARCBILLPAY ADD TIP_AMOUNT NUMERIC(15,4) DEFAULT 0;",
+		inDBControl );
+	}
+}
+
+void TApplyParser::UpdateContactTable6_31( TDBControl* const inDBControl)
+{
+   executeQuery (
+   "ALTER TABLE CONTACTS ALTER EMAIL TYPE VARCHAR(256);",
+   inDBControl);
+}
+
 }
 

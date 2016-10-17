@@ -79,6 +79,7 @@ __published: // IDE-managed Components
 	TTabSheet *tsProfile;
 	TPanel *Panel10;
 	TCheckBox *CheckBoxCharges;
+    TCheckBox *cbNoEmail;
 	TPanel *Panel11;
 	TPanel *Panel13;
     TTouchBtn *btnName;
@@ -121,7 +122,7 @@ __published: // IDE-managed Components
 	void __fastcall btnAccountProfileMouseClick(TObject *Sender);
 	void __fastcall CheckBoxChargesMouseClick(TObject *Sender);
 	void __fastcall tbProximityMouseClick(TObject *Sender);
-	//void __fastcall EditCustomerBasicDetails(TObject *Sender);  cbForcedReasonsClick
+	void __fastcall cbNoEmailMouseClick(TObject *Sender);
 
 
     TLabel *lblFirstname;
