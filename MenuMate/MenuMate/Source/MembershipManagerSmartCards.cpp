@@ -2045,7 +2045,9 @@ bool TManagerMembershipSmartCards::createMemberOnLoyaltyMate(TSyndCode syndicate
 	result = memberCreationThread->OperationSuccessful;
 
 	if(!result)
-	MessageBox(memberCreationThread->ErrorMessage,"Failed to create member", MB_ICONERROR + MB_OK);
+	  MessageBox(memberCreationThread->ErrorMessage,"Failed to create member", MB_ICONERROR + MB_OK);
+    else
+      MessageBox("Member created. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
 
 	// cleanup
 	delete _lmOperationDialogBox;
