@@ -76,6 +76,7 @@ void __fastcall TfrmSetupGlCodes::FormShow(TObject *Sender)
   btnTabAmountReceived->Caption = "Tab Deposit/Credit Received \r" + TabDepositCreditReceived;
   btnTabAmountRefunded->Caption = "Tab Deposit/Credit Refunded \r" + TabDepositCreditRefunded;
   btnFloatGlCode->Caption = "Float \r" + FloatGLCode;
+  btnEftPosTip->Caption = "EftPos Tip \r" + EftPosTip;
 }
 //---------------------------------------------------------------------------
 void TfrmSetupGlCodes::ShowKeyBoard(AnsiString KeyBoardCaption,AnsiString& KeyBoardText)
@@ -115,4 +116,11 @@ void __fastcall TfrmSetupGlCodes::btnFloatGlCodeClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+
+void __fastcall TfrmSetupGlCodes::btnEftPosTipMouseClick(TObject *Sender)
+{
+  ShowKeyBoard("Enter GL Code for EftPos Tip ",EftPosTip);
+  btnEftPosTip->Caption = "EftPos Tip \r" + EftPosTip;
+}
+//---------------------------------------------------------------------------
 

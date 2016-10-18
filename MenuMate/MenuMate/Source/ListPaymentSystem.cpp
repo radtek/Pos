@@ -1174,10 +1174,8 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
                                    if(FinalAmount != Pay)
                                    {
-                                       Payment->SetPay(FinalAmount);
-                                       Payment->SetAdjustment(FinalAmount - Pay);
                                        Payment->TipAmount = FinalAmount - Pay;
-                                       Payment->AdjustmentReason = "Eftpos Tip";
+                                       Payment->SetPay(FinalAmount);
                                    }
                                 }
 							}
@@ -2044,7 +2042,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				ValueRnd = SubPayment->GetSurchargeRounding();
 			}
 
-			if (Value != 0 && SubPayment->AdjustmentReason != "Eftpos Tip")
+			if (Value != 0)
 			{
 				// Get New Key
 				IBInternalQuery2->Close();
