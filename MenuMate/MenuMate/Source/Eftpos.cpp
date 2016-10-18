@@ -200,6 +200,7 @@ TEftPosTransaction::TEftPosTransaction(AnsiString inID,eEFTTransactionType inTra
 	EventCompleted = false;
 	CardType = "";
 	EftposTransactionID = "";
+    TimeOut = true;
 }
 
 __fastcall TListEftPosTransContainer::~TListEftPosTransContainer()

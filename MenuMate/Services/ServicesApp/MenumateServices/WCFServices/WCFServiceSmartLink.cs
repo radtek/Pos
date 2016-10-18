@@ -224,6 +224,7 @@ namespace MenumateServices.WCFServices
                         _response.Successful = false;
                         _response.ResultText = "Time-Out";
                         _response.ErrorText = "Time-Out";
+                        _response.TimeOut = true;
                     }
                 }
             }
@@ -280,6 +281,10 @@ namespace MenumateServices.WCFServices
                 _response.AcquirerRef = responseEventArgs.Response.Args["AcquirerRef"];
                 if (_response.TransactionResult == "OK-ACCEPTED")
                     _response.Successful = true;
+                if ((_response.TransactionResult != null) && (_response.ResultText == null) && (_response.AcquirerRef == null)
+                    && (_response.Successful == false))
+                    _response.TimeOut = true;
+
             }
             catch (Exception ex)
             {

@@ -53,6 +53,7 @@ public:
 	bool EventCompleted;
 	WideString CardType;
 	AnsiString EftposTransactionID;
+    bool TimeOut;
 };
 
 class TListEftPosTransContainer : public TList
