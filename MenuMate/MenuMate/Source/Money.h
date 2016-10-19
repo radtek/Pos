@@ -99,6 +99,7 @@ public:
     Currency RoundedTotalAdjustment;
     Currency RoundedProductAmount;
     Currency RoundingAdjustment;
+    Currency PaymentTip;
     bool IsBilling;
     bool IsSCD;
    void Recalc(TPaymentTransaction &Transaction, bool isBilling = true);

@@ -6413,12 +6413,33 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
             }
 			else
 			{
-				pPrinter->Add(SubPayment->Name + "|" + CurrToStrF(
+                AnsiString paymentName = SubPayment->Name;
+                AnsiString cardType = SubPayment->CardType;
+                if(cardType != "" && cardType != NULL)
+                {
+                   paymentName = paymentName +"(" + cardType +")";
+                }
+
+				pPrinter->Add(paymentName + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
 		}
+
+       if(SubPayment->TipAmount != 0)
+        {
+            AnsiString paymentName = SubPayment->Name;
+            AnsiString cardType = SubPayment->CardType;
+            if(cardType != "" && cardType != NULL)
+            {
+                paymentName = paymentName +"(" + cardType +")";
+            }
+            pPrinter->Add(paymentName + " Tip " + "|" + CurrToStrF(
+            RoundToNearest(SubPayment->TipAmount, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+            ffNumber,
+            CurrencyDecimals));
+        }
 	}
 
 	if (PrintJob->PaymentType != ptPreliminary)

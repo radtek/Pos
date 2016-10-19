@@ -3118,6 +3118,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Show Void or Refund number"
 		"Default is false",
 		vmgPrinting, false);
+        SetVarStr( DBTransaction, vmEftPosTipGLCode, "EftPos Tip GLCode",
+            "EftPos Tip GLCode."
+            "Default is 860",
+            vmg3rdPartyInterface, "860" );
 	}
 	catch(Exception &E)
 	{

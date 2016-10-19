@@ -39,6 +39,7 @@ class TSumPayments
         Currency Rounding;
         std::map<int, Currency> Points;
         bool IsLoyaltyVoucher();
+        Currency TipAmount;
 };
 
 //<Cobb Loaf (small)> <Totals for this Item>

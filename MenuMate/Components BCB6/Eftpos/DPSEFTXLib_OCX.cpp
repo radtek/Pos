@@ -178,10 +178,10 @@ void __fastcall TDpsEftX::DoAddProductLine(void)
   GetDefaultInterface()->DoAddProductLine();
 }
 
-void __fastcall TDpsEftX::DoreservedMethod11(void)
+/*void __fastcall TDpsEftX::DoreservedMethod11(void)
 {
   GetDefaultInterface()->DoreservedMethod11();
-}
+}*/
 
 void __fastcall TDpsEftX::DoReservedMethod5(void)
 {

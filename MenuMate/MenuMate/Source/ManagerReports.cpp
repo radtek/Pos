@@ -26,6 +26,7 @@ TSumPayments::TSumPayments()
  Surcharge = 0;
  Properties = 0;
  Qty = 0;
+ TipAmount = 0;
 }
 
 bool TSumPayments::IsLoyaltyVoucher()
@@ -872,7 +873,6 @@ void TManagerReports::PrintConsumptionByMenu(Database::TDBTransaction &DBTransac
 		//throw;
 	}
 }
-
 
 void TManagerReports::AddSectionTitle(TPrintout *Printout,AnsiString Title)
 {

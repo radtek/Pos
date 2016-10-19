@@ -53,6 +53,7 @@ public:
 	bool EventCompleted;
 	WideString CardType;
 	AnsiString EftposTransactionID;
+    AnsiString FinalAmount;
 };
 
 class TListEftPosTransContainer : public TList

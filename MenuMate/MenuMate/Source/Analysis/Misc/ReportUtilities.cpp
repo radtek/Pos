@@ -356,7 +356,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
            // before = Now();    //arun
             qrXArcPay->Close();
             qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                                    "GROUP_NUMBER, PROPERTIES,ROUNDING from DAYARCBILLPAY "
+                                    "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
                                     "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
             qrXArcPay->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
             qrXArcPay->ExecQuery();
@@ -386,6 +386,11 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                 else
                 {
                     paymentName = qrXArcPay->FieldByName("PAY_TYPE")->AsString;
+                    AnsiString cardType = qrXArcPay->FieldByName("PAYMENT_CARD_TYPE")->AsString;
+                    if(cardType != "" && cardType != NULL)
+                    {
+                       paymentName = paymentName + "(" + cardType + ")";
+                    }
                 }
 
                 std::map <UnicodeString, TSumPayments> PaymentValues = TransactionInfo->Payments[groupNumber];
@@ -396,17 +401,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                 std::map<int, Currency> Points = CurrentPayment.Points;
                 //Removing EnableSeperateEarntPts condition as discussed with ravish
                 if(loop)
-                //if(TGlobalSettings::Instance().EnableSeperateEarntPts && loop)
                 {
-                  /*  qXArcPoints->Close();
-                    qXArcPoints->SQL->Text = "select * from POINTSTRANSACTIONS "
-                                                "where INVOICE_NUMBER = :INVOICE_NUMBER and NOT (ADJUSTMENT_TYPE = 3 AND ADJUSTMENT_SUBTYPE = 1);";
-                    qXArcPoints->ParamByName("INVOICE_NUMBER")->AsString = qrXArcBill->FieldByName("INVOICE_NUMBER")->AsString;
-                    qXArcPoints->ExecQuery(); */
-
-
-
-
                  AnsiString invoiceNumber = qrXArcBill->FieldByName("INVOICE_NUMBER")->AsString;
                  std::map<AnsiString, TPointTransactions>::iterator iter  = pointTransaction.find(invoiceNumber);
                  if(iter != pointTransaction.end())
@@ -443,6 +438,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                     CurrentPayment.CashOut += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
                     IsCashOut = true;
                 }
+                CurrentPayment.TipAmount += qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency;
                 CurrentPayment.Rounding -= qrXArcPay->FieldByName("ROUNDING")->AsCurrency;
                 CurrentPayment.Properties = qrXArcPay->FieldByName("PROPERTIES")->AsInteger;
 
@@ -686,6 +682,7 @@ UnicodeString DataFormatUtilities::FormatMMReportRedeemPoints(double inValue)
 {
 	return FormatFloat( "(-) 0.00", inValue );
 }
+
 void TTransactionInfoProcessor::RemoveEntryFromMap(UnicodeString deviceName)
 {
      if(deviceTransactions[deviceName])
