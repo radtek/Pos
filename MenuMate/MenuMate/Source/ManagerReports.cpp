@@ -27,6 +27,7 @@ TSumPayments::TSumPayments()
  Properties = 0;
  Qty = 0;
  TipAmount = 0;
+ TipQty = 0;
 }
 
 bool TSumPayments::IsLoyaltyVoucher()

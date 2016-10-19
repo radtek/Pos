@@ -9,6 +9,7 @@
 #include "MMLogging.h"
 #include "PaymentTypeGroupsGUI.h"
 #include "GlobalSettings.h"
+#include "StringTools.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "touchbtn"
@@ -307,8 +308,10 @@ bool TfrmPaymentMaintenance::IsPaymentExist(Database::TDBTransaction &DBTransact
 {
     bool retVal = false;
     TIBSQL *IBInternalQuery = DBTransaction.Query( DBTransaction.AddQuery() );
-    IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE PAYMENT_NAME = :PAYMENT_NAME";
-    IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = PaymentName;
+    IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE UPPER(PAYMENT_NAME) = :PAYMENT_NAME"
+                                  " OR PAYMENT_NAME = :MODIFIEDPAYMENTNAME ";
+    IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = PaymentName.UpperCase();
+    IBInternalQuery->ParamByName("MODIFIEDPAYMENTNAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(PaymentName);
     IBInternalQuery->ExecQuery();
     if(!IBInternalQuery->Eof)
     {

@@ -2038,7 +2038,8 @@ void TfrmMaintain::UpgradeLocalMembersCode(Database::TDBTransaction &DBTransacti
 	getQuery->Close();
 	getQuery->SQL->Text = "SELECT b.CONTACTS_KEY, b.PROX_CARD,b.CONTACT_Type, a.CONTACTCARDS_KEY,a.SWIPE_CARD  "
                           "FROM CONTACTS b  left join CONTACTCARDS a on a.CONTACTS_KEY = b.CONTACTS_KEY "
-                          "WHERE B.CONTACT_TYPE = 2 and b.MEMBER_CARD_CODE = '' and (b.PROX_CARD <> '' or a.SWIPE_CARD <> '') " ;
+                          "WHERE B.CONTACT_TYPE = 2 and (b.MEMBER_CARD_CODE = '' or b.MEMBER_CARD_CODE is null) "
+                           "and (b.PROX_CARD <> '' or a.SWIPE_CARD <> '') " ;
 	getQuery->ExecQuery();
     if(!getQuery->Eof)
     {

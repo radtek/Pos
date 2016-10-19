@@ -67,6 +67,7 @@
 #include "MallExportRegenerateReport.h"
 #include "LoyaltyMateUtilities.h"
 #include "ReceiptUtility.h"
+#include "StringTools.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -249,9 +250,11 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 		if (PaymentKey != 0)
 		{
             IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE UPPER(PAYMENT_NAME) = :PAYMENT_NAME "
-                                          " AND  PAYMENT_KEY <> :PAYMENT_KEY";
+            IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE PAYMENT_KEY <> :PAYMENT_KEY "
+                                          " AND (UPPER(PAYMENT_NAME) = :PAYMENT_NAME "
+                                          " OR PAYMENT_NAME = :MODIFIEDPAYMENTNAME ) ";
             IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name.UpperCase();
+            IBInternalQuery->ParamByName("MODIFIEDPAYMENTNAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
             IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
             IBInternalQuery->ExecQuery();
             if(!IBInternalQuery->Eof)
@@ -269,7 +272,14 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			" VOUCHER_USER = :VOUCHER_USER, VOUCHER_PASS = :VOUCHER_PASS, CSV_READ_LOCATION = :CSV_READ_LOCATION, "
 			" CSV_WRITE_LOCATION = :CSV_WRITE_LOCATION ,TABKEY = :TABKEY, GL_CODE = :GL_CODE "
             " WHERE  PAYMENT_KEY = :PAYMENT_KEY  " ;
-			IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
+            if(Payment.Properties & ePayTypeElectronicTransaction)
+            {
+               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+            }
+            else
+            {
+			  IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
+            }
 			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Payment.Properties;
 			IBInternalQuery->ParamByName("EXCHANGE_RATE")->AsCurrency = 0.0;
 			IBInternalQuery->ParamByName("COLOUR")->AsInteger = Payment.Colour;
@@ -290,6 +300,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             IBInternalQuery->ParamByName("TABKEY")->AsInteger = Payment.TabKey;
             IBInternalQuery->ParamByName("GL_CODE")->AsString = Payment.GLCode;
 			IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = Payment.TaxRate;
+
 			if (Payment.PaymentThirdPartyID != "")
 			{
 				int ThirdPartyCodeKey = TDBThirdPartyCodes::SetThirdPartyCode(DBTransaction, Payment.PaymentThirdPartyID, "Payment Type Code",
@@ -306,8 +317,10 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 		else
 		{
             IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE UPPER(PAYMENT_NAME) = :PAYMENT_NAME";
+            IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE UPPER(PAYMENT_NAME) = :PAYMENT_NAME "
+                                           " OR PAYMENT_NAME = :MODIFIEDPAYMENTNAME ";
             IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name.UpperCase();
+            IBInternalQuery->ParamByName("MODIFIEDPAYMENTNAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
             IBInternalQuery->ExecQuery();
             if(!IBInternalQuery->Eof)
             {
@@ -330,7 +343,14 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			":CSV_READ_LOCATION,:CSV_WRITE_LOCATION,:TABKEY,:GL_CODE ) ";
 
 			IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
-			IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
+            if(Payment.Properties & ePayTypeElectronicTransaction)
+            {
+               IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
+            }
+            else
+            {
+			  IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
+            }
 			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Payment.Properties;
 			IBInternalQuery->ParamByName("EXCHANGE_RATE")->AsCurrency = 0.0;
 			IBInternalQuery->ParamByName("COLOUR")->AsInteger = Payment.Colour;
@@ -1166,7 +1186,8 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 							else
 							{
 								Payment->Result = EftTrans->Result;
-								Payment->CardType = EftTrans->CardType; // set the card type returned from eftpos transaction for future reference (tips)
+                                AnsiString cardtype = EftTrans->CardType;
+								Payment->CardType = TStringTools::Instance()->UpperCaseWithNoSpace(cardtype); // set the card type returned from eftpos transaction for future reference (tips)
 								Payment->EftposTransactionID = EftTrans->EftposTransactionID; // eftpos transaction id
 
                                 if(EftTrans->FinalAmount != "")
@@ -1765,13 +1786,13 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
     bool isClippGroup = false;
     try
     {
-                int identificationNumber = 0;
+        int identificationNumber = 0;
 
-                if(PaymentTransaction.Orders->Count > 0)
-                {
-                   TItemComplete *item = (TItemComplete*)(PaymentTransaction.Orders->Items[0]);
-                   identificationNumber = item->OrderIdentificationNo;
-                }
+        if(PaymentTransaction.Orders->Count > 0)
+        {
+           TItemComplete *item = (TItemComplete*)(PaymentTransaction.Orders->Items[0]);
+           identificationNumber = item->OrderIdentificationNo;
+        }
 		Currency Total = PaymentTransaction.Money.RoundedGrandTotal;
 		Currency Discount = PaymentTransaction.Money.TotalAdjustment;
 		TIBSQL *IBInternalQuery = PaymentTransaction.DBTransaction.Query(PaymentTransaction.DBTransaction.AddQuery());
@@ -1864,21 +1885,32 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				IBInternalQuery->Close();
 				IBInternalQuery->ParamByName("DAYARCBILLPAY_KEY")->AsInteger = PaymentKey;
 				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = Retval;
-				if (SubPayment->SysNameOveride != "")
-				{
-					IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->SysNameOveride;
-				}
-				else
-				{
-					if (SubPayment->NameOveride == "")
-					{
-						IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->Name;
-					}
-					else
-					{
-						IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->NameOveride;
-					}
-				}
+                AnsiString payTypeName = "";
+                AnsiString cardType = SubPayment->CardType;
+                if( cardType != "" && cardType != NULL)
+                {
+                  payTypeName =  cardType;
+                }
+                else
+                {
+                    if (SubPayment->SysNameOveride != "")
+                    {
+                        payTypeName = SubPayment->SysNameOveride;
+                    }
+                    else
+                    {
+                        if (SubPayment->NameOveride == "")
+                        {
+                            payTypeName = SubPayment->Name;
+                        }
+                        else
+                        {
+                            payTypeName = SubPayment->NameOveride;
+                        }
+                    }
+                }
+
+                IBInternalQuery->ParamByName("PAY_TYPE")->AsString = payTypeName;
 
 				if (SubPayment->Properties & ePayTypeGetVoucherDetails)
 				{
@@ -1886,7 +1918,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				}
 
                 //checking clipp paytype
-                if( IBInternalQuery->ParamByName("PAY_TYPE")->AsString == "Clipp")
+                if( payTypeName == "Clipp")
                     {
                          isClippGroup = true;
                     }
@@ -3020,6 +3052,7 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 		TDeviceRealTerminal::Instance().SecurityPort->SetData(StringReceipt->Strings[i]);
 	}
 }
+
 void TListPaymentSystem::ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction)
 {
     AnsiString fileName = ExtractFilePath(Application->ExeName) +"Exports\\" ;
@@ -3037,6 +3070,7 @@ void TListPaymentSystem::ExportReceipt(TStringList *StringReceipt,TPaymentTransa
     fileName += PaymentTransaction.InvoiceNumber+" "+date+" "+".txt";
     StringReceipt->SaveToFile(fileName );
 }
+
 void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransaction)
 {
    if(!TManagerDelayedPayment::Instance().IsDelayedPayment(PaymentTransaction))
@@ -5012,8 +5046,6 @@ void TListPaymentSystem::generateTransactionExportFile()
 		MEM->IMallManager->TransactionExport();
 	}
 }
-
-
 
 int TListPaymentSystem::GetPaymentTabName(Database::TDBTransaction &DBTransaction,AnsiString PAYMENT_NAME)
 {

@@ -77,3 +77,18 @@ AnsiString TStringTools::StripSpecialChars_ANSI( AnsiString inStr )
     return inStr;
 }
 // ---------------------------------------------------------------------------
+AnsiString TStringTools::UpperCaseWithNoSpace(AnsiString string)
+{
+    AnsiString retVal = "";
+    bool active = true;
+    const char* line = string.c_str();
+    for(int i = 0; line[i] != '\0'; i++)
+    {
+        if(line[i] != ' ')
+        {
+            retVal += (char)toupper(line[i]);
+        }
+    }
+    return retVal;
+}
+
