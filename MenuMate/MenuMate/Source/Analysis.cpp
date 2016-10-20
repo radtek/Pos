@@ -2269,11 +2269,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"\"ARCBILLPAY\".\"SUBTOTAL\", \"ARCBILLPAY\".\"VOUCHER_NUMBER\", \"ARCBILLPAY\".\"CASH_OUT\", "
 			"\"ARCBILLPAY\".\"NOTE\", \"ARCBILLPAY\".\"TAX_FREE\", \"ARCBILLPAY\".\"GROUP_NUMBER\", "
 			"\"ARCBILLPAY\".\"PROPERTIES\", \"ARCBILLPAY\".\"PAY_TYPE_DETAILS\",\"ARCBILLPAY\".\"ROUNDING\", "
-            "\"ARCBILLPAY\".\"PAYMENT_CARD_TYPE\",\"ARCBILLPAY\".\"PAY_GROUP\",\"ARCBILLPAY\".\"CHARGED_TO_XERO\") "
+            "\"ARCBILLPAY\".\"PAYMENT_CARD_TYPE\",\"ARCBILLPAY\".\"PAY_GROUP\",\"ARCBILLPAY\".\"CHARGED_TO_XERO\",\"ARCBILLPAY\".\"TIP_AMOUNT\") "
             "values "
 			"(:\"ARCBILLPAY_KEY\", :\"ARCBILL_KEY\", :\"PAY_TYPE\", :\"SUBTOTAL\", :\"VOUCHER_NUMBER\", "
 			":\"CASH_OUT\", :\"NOTE\", :\"TAX_FREE\", :\"GROUP_NUMBER\", :\"PROPERTIES\", :\"PAY_TYPE_DETAILS\", :\"ROUNDING\", "
-            ":\"PAYMENT_CARD_TYPE\", :\"PAY_GROUP\", :\"CHARGED_TO_XERO\") ";
+            ":\"PAYMENT_CARD_TYPE\", :\"PAY_GROUP\", :\"CHARGED_TO_XERO\",:\"TIP_AMOUNT\") ";
 
 			IBArcSurcharge->Close();
 			IBArcSurcharge->SQL->Text = "insert into \"ARCSURCHARGE\" "
@@ -3587,6 +3587,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
       double floatAmount = 0;
       double PurchasedPoints = 0;
       double PurchasedVoucher = 0;
+      double TipAmount = 0;
       UnicodeString floatGlCode = "";
       UnicodeString tabCreditReceivedGLCode = "200";
       UnicodeString tabCreditRefundGlCode = "200";
@@ -3717,7 +3718,17 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
                              -1 * RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4), AccountCode,0);
               }
            }
+
+           if(IBInternalQuery->FieldByName("Tip")->AsFloat != 0)
+            TipAmount += RoundTo(IBInternalQuery->FieldByName("Tip")->AsFloat, -4);
       }
+
+     //Add payment Tip for DPS EftPOS
+     if(TipAmount != 0)
+     {
+       AddInvoiceItem(XeroInvoiceDetail,"EftPos Tip",TipAmount,TGlobalSettings::Instance().EftPosTipGLCode,0);
+       catTotal += TipAmount;
+     }
 
      if(addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment)
          AddInvoicePayment(XeroInvoiceDetail,"Cash", ( payTotal + floatAmount) , cashGlCode,0);
@@ -3752,6 +3763,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
     }
     return XeroInvoiceDetails;
 }
+
 void TfrmAnalysis::GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiString terminalNamePredicate)
 {
     AnsiString fetchCategory =
@@ -3771,10 +3783,11 @@ void TfrmAnalysis::GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiStr
      Tax = fetchCategory + nonZeroTaxFilter + groupBy;
      zeroTax = fetchCategory + ZeroTaxFilter + groupBy;
 }
+
 void TfrmAnalysis::GetPaymentDetails(AnsiString &paymentDetails, AnsiString terminalNamePredicate)
 {
     AnsiString paymentDetailsPrimitive =
-         " SELECT  b.PAY_TYPE,cast( Sum(b.SUBTOTAL) as numeric(17,4)) Amount,c.GL_CODE  From DAYARCBILL a "
+         " SELECT  b.PAY_TYPE,cast( Sum(b.SUBTOTAL) as numeric(17,4)) Amount,cast(Sum(b.TIP_AMOUNT) as numeric(17,4)) Tip,c.GL_CODE  From DAYARCBILL a "
          " Left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
          " Left join PAYMENTTYPES c on b.PAY_TYPE = c.PAYMENT_NAME "
          " where "
@@ -3810,6 +3823,7 @@ void TfrmAnalysis::CalculateNextday(TDateTime &nextDay)
        nextDay =   RecodeTime(nextDay,23,59,59,999);
     }
 }
+
 std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTransaction &DBTransaction)
 {
     try
@@ -3857,6 +3871,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
           double floatAmount = 0;
           double PurchasedPoints = 0;
           double PurchasedVoucher = 0;
+          double TipAmount = 0;
           UnicodeString AccountCode = "";
 
           TMYOBInvoiceDetail MYOBInvoiceDetail;
@@ -4012,8 +4027,20 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
               {
                  AddMYOBInvoiceItem(MYOBInvoiceDetail,AccountCode,IBInternalQuery->FieldByName("PAY_TYPE")->AsString, amountValue ,0.0,jobCode,"ZeroTax");
               }
+
+              if(IBInternalQuery->FieldByName("Tip")->AsFloat != 0)
+                 TipAmount += RoundTo(IBInternalQuery->FieldByName("Tip")->AsFloat, -2);
+
               IBInternalQuery->Next();
           }
+
+         //Add payment Tip for DPS EftPOS
+         if(TipAmount != 0)
+         {
+           AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().EftPosTipGLCode,"EftPos Tip",TipAmount,0.0,jobCode,"ZeroTax");
+           catTotal += TipAmount;
+         }
+
          if(addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment)
            AddMYOBInvoiceItem(MYOBInvoiceDetail,cashGlCode,"Cash", ( payTotal + floatAmount) ,0.0,jobCode,"ZeroTax");
 
@@ -4067,8 +4094,6 @@ void TfrmAnalysis::AddInvoiceItem(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiStri
     XeroInvoiceDetail.XeroCategoryDetails.push_back(XeroCategoryDetail);
 }
 
-
-
 void TfrmAnalysis::AddInvoicePayment(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiString Description,double unitAmount,AnsiString AccountCode,
                   double taxAmount)
 {
@@ -4090,6 +4115,7 @@ void TfrmAnalysis::AddMYOBInvoiceItem(TMYOBInvoiceDetail &MYOBInvoiceDetail,Ansi
     MYOBCategoryDetail.TaxStatus = taxStatus;
     MYOBInvoiceDetail.MYOBCategoryDetails.push_back(MYOBCategoryDetail);
 }
+
 void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransaction,double &PurchasedPoints, double &PurchasedVoucher,
                                  TDateTime startTime,TDateTime endTime)
 {

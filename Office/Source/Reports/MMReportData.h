@@ -280,6 +280,10 @@ private:	// User declarations
     AnsiString _taxJoins;
     AnsiString _selectSalesIncl;
     AnsiString _groupByClause;
+    AnsiString _dayArcBillSubQuery;
+    AnsiString _groupingForDayArcbill;
+    AnsiString _arcBillSubQuery;
+    AnsiString _groupingForArcbill;
 
 public:		// User declarations
 	__fastcall TdmMMReportData(TComponent* Owner);

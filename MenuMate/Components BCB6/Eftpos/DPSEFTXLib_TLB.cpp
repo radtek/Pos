@@ -9,15 +9,15 @@
 // manual modifications will be lost.                                         
 // ************************************************************************ //
 
-// $Rev: 17252 $
-// File generated on 15/06/2009 11:35:39 a.m. from Type Library described below.
+// $Rev: 18756 $
+// File generated on 12/10/2016 6:36:14 p.m. from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: C:\Program Files\DPS\Eftpos\DPSEFTX.OCX (1)
+// Type Lib: C:\Program Files\DPS\Eftpos_scr\dpseftx.ocx (1)
 // LIBID: {A9EA3083-C360-4817-B2FD-0527DC103656}
 // LCID: 0
-// Helpfile: C:\Program Files\DPS\Eftpos\DpsEftX.hlp
-// HelpString: DpsEftX ActiveX Control module
+// Helpfile: 
+// HelpString: 
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\WINDOWS\system32\stdole2.tlb)
 // ************************************************************************ //
