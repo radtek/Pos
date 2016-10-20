@@ -9,6 +9,7 @@ using System.Globalization;
 
 using XMLManager;
 using MenumateServices.WebMate.DTO;
+using System.Diagnostics;
 
 namespace MenumateServices.WebMate.InternalClasses
 {
@@ -90,7 +91,10 @@ namespace MenumateServices.WebMate.InternalClasses
         {
             outOrder.SetHandle(inWebOrderHandle);
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-            loadWebOrder(xmlDoc, outOrder);
+            if (xmlDoc.ChildNodes.Count > 0)
+            {
+                loadWebOrder(xmlDoc, outOrder);
+            }           
            
         }
 
@@ -109,7 +113,6 @@ namespace MenumateServices.WebMate.InternalClasses
             string completeURL = createCompleteOrderURL(
                                      inWebOrder.FromSection.SiteName,
                                      inWebOrder.HeaderSection.StoreName);
-
             // Creates the "SiteName\StoreName" folder where the complete order will be saved
             // and notifies to be monitored
             checkURL(completeURL, out justCreated);
@@ -117,7 +120,6 @@ namespace MenumateServices.WebMate.InternalClasses
             {
                 notifyCompleteOrderURLCreated(completeURL);
             }
-
             xmlDoc.Save(fileURI);
 
             return fileURI;
@@ -130,10 +132,16 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="outWebOrder"></param>
         public void LoadComplete(XmlDocument xmlDoc, WebOrder outOrder)
         {
-            XmlNode root = xmlDoc.DocumentElement;
-
-            outOrder.SetHandle(root.Attributes["handle"].Value);
-            loadWebOrderComplete(xmlDoc, outOrder);
+            try
+            {
+                XmlNode root = xmlDoc.DocumentElement;
+                outOrder.SetHandle(root.Attributes["handle"].Value);
+                loadWebOrderComplete(xmlDoc, outOrder);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 670, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -143,11 +151,9 @@ namespace MenumateServices.WebMate.InternalClasses
         public void RemoveComplete(WebOrder inWebOrder)
         {
             string fileName = @"";
-
             try
             {
                 fileName = createXMLCompleteOrderURI(inWebOrder);
-
                 File.Delete(fileName);
             }
             catch (Exception exc)
@@ -167,7 +173,6 @@ namespace MenumateServices.WebMate.InternalClasses
             try
             {
                 fileName = createXMLIncompleteOrderURI(inWebOrder.Handle);
-
                 File.Delete(fileName);
             }
             catch (Exception exc)
@@ -184,13 +189,13 @@ namespace MenumateServices.WebMate.InternalClasses
         public void SetIncompleteHeaderSection(string inWebOrderHandle, DTO_WebOrderHeader inOrderHeaderSection)
         {
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-
-            updateHeaderNode(xmlDoc, inOrderHeaderSection);
-
-            //.....................................................
-
-            string fileName = createXMLIncompleteOrderURI(inWebOrderHandle);
-            xmlDoc.Save(fileName);
+            if (xmlDoc.ChildNodes.Count > 0)
+            {
+                updateHeaderNode(xmlDoc, inOrderHeaderSection);
+                //.............................................................
+                string fileName = createXMLIncompleteOrderURI(inWebOrderHandle);
+                xmlDoc.Save(fileName);
+            }
         }
 
         /// <summary>
@@ -201,9 +206,12 @@ namespace MenumateServices.WebMate.InternalClasses
         public void LoadIncompleteHeaderSection(string inWebOrderHandle, DTO_WebOrderHeader outOrderHeaderSection)
         {
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-            XmlNode headerSectionNode = XMLDocManager.GetNode(xmlDoc, @"Header");
+            if (xmlDoc.ChildNodes.Count > 0)
+            {
+                XmlNode headerSectionNode = XMLDocManager.GetNode(xmlDoc, @"Header");
+                outOrderHeaderSection = readHeaderSection(headerSectionNode);
+            }
 
-            outOrderHeaderSection = readHeaderSection(headerSectionNode);
         }
 
         /// <summary>
@@ -214,13 +222,14 @@ namespace MenumateServices.WebMate.InternalClasses
         public void SetIncompleteFromSection(string inWebOrderHandle, DTO_WebOrderFrom inOrderFromSection)
         {
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
+            if (xmlDoc.ChildNodes.Count > 0)
+            {
+                updateFromNode(xmlDoc, inOrderFromSection);
+                //.....................................................
+                string fileName = createXMLIncompleteOrderURI(inWebOrderHandle);
+                xmlDoc.Save(fileName);
+            }
 
-            updateFromNode(xmlDoc, inOrderFromSection);
-
-            //.....................................................
-
-            string fileName = createXMLIncompleteOrderURI(inWebOrderHandle);
-            xmlDoc.Save(fileName);
         }
 
         /// <summary>
@@ -231,9 +240,11 @@ namespace MenumateServices.WebMate.InternalClasses
         public void LoadIncompleteFromSection(string inWebOrderHandle, DTO_WebOrderFrom outOrderFromSection)
         {
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-            XmlNode fromSectionNode = XMLDocManager.GetNode(xmlDoc, @"From");
-
-            outOrderFromSection = readFromSection(fromSectionNode);
+            if (xmlDoc.ChildNodes.Count > 0)
+            {
+                XmlNode fromSectionNode = XMLDocManager.GetNode(xmlDoc, @"From");
+                outOrderFromSection = readFromSection(fromSectionNode);
+            }            
         }
 
         /// <summary>
@@ -244,13 +255,14 @@ namespace MenumateServices.WebMate.InternalClasses
         public void SetIncompleteAccountSection(string inWebOrderHandle, DTO_WebOrderAccount intOrderAccountSection)
         {
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
+            if (xmlDoc.ChildNodes.Count > 0)
+            {
+                updateAccountNode(xmlDoc, intOrderAccountSection);
+                //.....................................................
+                string fileName = createXMLIncompleteOrderURI(inWebOrderHandle);
+                xmlDoc.Save(fileName);
+            }
 
-            updateAccountNode(xmlDoc, intOrderAccountSection);
-
-            //.....................................................
-
-            string fileName = createXMLIncompleteOrderURI(inWebOrderHandle);
-            xmlDoc.Save(fileName);
         }
 
         /// <summary>
@@ -260,10 +272,20 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="outOrderAccountSection"></param>
         public void LoadIncompleteAccountSection(string inWebOrderHandle, DTO_WebOrderAccount outOrderAccountSection)
         {
-            XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-            XmlNode accountSectionNode = XMLDocManager.GetNode(xmlDoc, @"Account");
+            try
+            {
+                XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
+                if(xmlDoc.ChildNodes.Count > 0)
+                {
+                    XmlNode accountSectionNode = XMLDocManager.GetNode(xmlDoc, @"Account");
+                    outOrderAccountSection = readAccountSection(accountSectionNode);
+                }
 
-            outOrderAccountSection = readAccountSection(accountSectionNode);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 600, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -441,7 +463,6 @@ namespace MenumateServices.WebMate.InternalClasses
         {
             string fileName = createXMLIncompleteOrderURI(inWebOrderHandle);
             XmlDocument result = loadXMLOrderDocument(fileName);
-
             return result;
         }
 
@@ -749,7 +770,6 @@ namespace MenumateServices.WebMate.InternalClasses
             XMLDocManager.AddAttribute(summaryXML, summaryEntry, @"handle", inOrderHandle);
             XMLDocManager.AddAttribute(summaryXML, summaryEntry, @"errorMessage", inFailedMessage);
             XMLDocManager.AddAttribute(summaryXML, summaryEntry, @"dateTime", DateTime.Now.ToString(DATE_TIME_FORMAT_STRING));
-
             summaryXML.Save(summaryURI);
         }
 
@@ -796,18 +816,13 @@ namespace MenumateServices.WebMate.InternalClasses
             else // Create a new summary
             {
                 result = new XmlDocument();
-
                 //.................................................................
-
                 // Create the XML Declaration, and append it to XML document
                 XmlDeclaration xmlDeclaration = result.CreateXmlDeclaration("1.0", @"UTF-8", @"yes");
                 result.AppendChild(xmlDeclaration);
-
                 setSummaryRootNode(result, inStoreName);
-
                 //....................................................................
             }
-
             return result;
         }
 
@@ -820,13 +835,9 @@ namespace MenumateServices.WebMate.InternalClasses
         XmlElement setSummaryRootNode(XmlDocument inXMLDocument, string inStoreName)
         {
             XmlElement result = XMLDocManager.CreateRoot(inXMLDocument, @"FailedSummary");
-
             //....................................................................................
-
             XMLDocManager.AddAttribute(inXMLDocument, result, @"storeName", inStoreName);
-
             //....................................................................................
-
             return result;
         }
 
@@ -987,9 +998,7 @@ namespace MenumateServices.WebMate.InternalClasses
             // Create the XML Declaration, and append it to XML document
             XmlDeclaration xmlDeclaration = result.CreateXmlDeclaration("1.0", @"UTF-8", @"yes");
             result.AppendChild(xmlDeclaration);
-
             setOrderNotificationRootNode(result, inOrderGUID);
-
             //.................................................................
 
             return result;
@@ -1002,13 +1011,12 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <returns></returns>
         XmlDocument loadXMLOrderDocument(string inFileName)
         {
-            XmlDocument result = XMLDocManager.CreateXMLDoc(inFileName);
-
-            //.................................................................
-
-            //.................................................................
-
-            return result;
+            if (File.Exists(inFileName))
+            {
+                XmlDocument result = XMLDocManager.CreateXMLDoc(inFileName);
+                return result;
+            }
+            return null;
         }
 
         /// <summary>
@@ -1017,9 +1025,16 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="outOrder"></param>
         void loadEmptyWebOrder(WebOrder outOrder)
         {
-            outOrder.HeaderSection = outOrder.EmptyHeaderSection;
-            outOrder.FromSection = outOrder.EmptyFromSection;
-            outOrder.AccountSection = outOrder.EmptyAccountSection;
+            try
+            {
+                outOrder.HeaderSection = outOrder.EmptyHeaderSection;
+                outOrder.FromSection = outOrder.EmptyFromSection;
+                outOrder.AccountSection = outOrder.EmptyAccountSection;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 500, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -1029,25 +1044,39 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inOrder"></param>
         void loadWebOrder(XmlDocument inXmlDoc, WebOrder outOrder)
         {
-            XmlNode headerNode = XMLDocManager.GetNode(inXmlDoc, @"Header");
-            XmlNode fromNode = XMLDocManager.GetNode(inXmlDoc, @"From");
-            XmlNode accountNode = XMLDocManager.GetNode(inXmlDoc, @"Account");
+            try
+            {
+                XmlNode headerNode = XMLDocManager.GetNode(inXmlDoc, @"Header");
+                XmlNode fromNode = XMLDocManager.GetNode(inXmlDoc, @"From");
+                XmlNode accountNode = XMLDocManager.GetNode(inXmlDoc, @"Account");
 
-            outOrder.HeaderSection = readHeaderSection(headerNode);
-            outOrder.FromSection = readFromSection(fromNode);
-            outOrder.AccountSection = readAccountSection(accountNode);
+                outOrder.HeaderSection = readHeaderSection(headerNode);
+                outOrder.FromSection = readFromSection(fromNode);
+                outOrder.AccountSection = readAccountSection(accountNode);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 501, short.MaxValue);
+            }
         }
 
         ///
         void loadWebOrderComplete(XmlDocument inXmlDoc, WebOrder outOrder)
         {
-            XmlNode headerNode = XMLDocManager.GetNode(inXmlDoc, @"Header");
-            XmlNode fromNode = XMLDocManager.GetNode(inXmlDoc, @"From");
-            XmlNode accountNode = XMLDocManager.GetNode(inXmlDoc, @"Account");
+            try
+            {
+                XmlNode headerNode = XMLDocManager.GetNode(inXmlDoc, @"Header");
+                XmlNode fromNode = XMLDocManager.GetNode(inXmlDoc, @"From");
+                XmlNode accountNode = XMLDocManager.GetNode(inXmlDoc, @"Account");
 
-            outOrder.SetCompleteHeaderSection(headerNode);
-            outOrder.SetCompleteFromSection(fromNode);
-            outOrder.SetCompleteAccountSection(accountNode);
+                outOrder.SetCompleteHeaderSection(headerNode);
+                outOrder.SetCompleteFromSection(fromNode);
+                outOrder.SetCompleteAccountSection(accountNode);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 502, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -1060,7 +1089,14 @@ namespace MenumateServices.WebMate.InternalClasses
         {
             XmlElement result = XMLDocManager.CreateRoot(inXMLDocument, @"WebOrder");
 
-            XMLDocManager.AddAttribute(inXMLDocument, result, @"handle", inOrderHandle);
+            try
+            {
+                XMLDocManager.AddAttribute(inXMLDocument, result, @"handle", inOrderHandle);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 503, short.MaxValue);
+            }
 
             //....................................................................................
 
@@ -1100,13 +1136,20 @@ namespace MenumateServices.WebMate.InternalClasses
 
             XmlNode result = XMLDocManager.AddNode(inXMLDocument, root, @"Header");
 
-            addXMLOrderAttribute(inXMLDocument, result, @"storeName", inOrderHeaderSection.StoreName);
-            addXMLOrderAttribute(inXMLDocument, result, @"guid", inOrderHeaderSection.GUID);
-            addXMLOrderAttribute(inXMLDocument, result, @"respond", inOrderHeaderSection.Respond.ToString());
-            addXMLOrderAttribute(inXMLDocument, result, @"schedule", inOrderHeaderSection.Scheduled.ToString());
-            addXMLOrderAttribute(inXMLDocument, result, @"orderTotal", inOrderHeaderSection.OrderTotal.ToString());
-            addXMLOrderAttribute(inXMLDocument, result, @"orderDate", inOrderHeaderSection.OrderDate.ToString(DATE_TIME_FORMAT_STRING));
-            addXMLOrderAttribute(inXMLDocument, result, @"expectedDate", inOrderHeaderSection.ExpectedDate.ToString(DATE_TIME_FORMAT_STRING));
+            try
+            {
+                addXMLOrderAttribute(inXMLDocument, result, @"storeName", inOrderHeaderSection.StoreName);
+                addXMLOrderAttribute(inXMLDocument, result, @"guid", inOrderHeaderSection.GUID);
+                addXMLOrderAttribute(inXMLDocument, result, @"respond", inOrderHeaderSection.Respond.ToString());
+                addXMLOrderAttribute(inXMLDocument, result, @"schedule", inOrderHeaderSection.Scheduled.ToString());
+                addXMLOrderAttribute(inXMLDocument, result, @"orderTotal", inOrderHeaderSection.OrderTotal.ToString());
+                addXMLOrderAttribute(inXMLDocument, result, @"orderDate", inOrderHeaderSection.OrderDate.ToString(DATE_TIME_FORMAT_STRING));
+                addXMLOrderAttribute(inXMLDocument, result, @"expectedDate", inOrderHeaderSection.ExpectedDate.ToString(DATE_TIME_FORMAT_STRING));
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 504, short.MaxValue);
+            }
 
             //....................................................................................
 
@@ -1129,8 +1172,15 @@ namespace MenumateServices.WebMate.InternalClasses
 
             XmlNode result = XMLDocManager.AddNode(inXMLDocument, root, @"From");
 
-            addXMLOrderAttribute(inXMLDocument, result, @"siteID", service_info.NotNullString(inOrderFromSection.SiteID));
-            addXMLOrderAttribute(inXMLDocument, result, @"siteName", service_info.NotNullString(inOrderFromSection.SiteName));
+            try
+            {
+                addXMLOrderAttribute(inXMLDocument, result, @"siteID", service_info.NotNullString(inOrderFromSection.SiteID));
+                addXMLOrderAttribute(inXMLDocument, result, @"siteName", service_info.NotNullString(inOrderFromSection.SiteName));
+            }
+            catch (Exception e)
+            {
+               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 505, short.MaxValue);
+            }
 
             //....................................................................................
 
@@ -1153,22 +1203,29 @@ namespace MenumateServices.WebMate.InternalClasses
 
             XmlNode result = XMLDocManager.AddNode(inXMLDocument, root, @"Account");
 
-            string covers = inOrderAccountSection.Covers.ToString();
-            string name = service_info.NotNullString(inOrderAccountSection.Name);
-            string memberNumber = service_info.NotNullString(inOrderAccountSection.MemberNumber);
-            string email = service_info.NotNullString(inOrderAccountSection.Email);
-            string ordertype = service_info.NotNullString(inOrderAccountSection.OrderType);
+            try
+            {
+                string covers = inOrderAccountSection.Covers.ToString();
+                string name = service_info.NotNullString(inOrderAccountSection.Name);
+                string memberNumber = service_info.NotNullString(inOrderAccountSection.MemberNumber);
+                string email = service_info.NotNullString(inOrderAccountSection.Email);
+                string ordertype = service_info.NotNullString(inOrderAccountSection.OrderType);
 
-            addXMLOrderAttribute(inXMLDocument, result, @"covers", covers);
-            addXMLOrderAttribute(inXMLDocument, result, @"name", name);
-            addXMLOrderAttribute(inXMLDocument, result, @"memberNumber", memberNumber);
-            addXMLOrderAttribute(inXMLDocument, result, @"email", email);
-            addXMLOrderAttribute(inXMLDocument, result, @"ordertype", ordertype);
+                addXMLOrderAttribute(inXMLDocument, result, @"covers", covers);
+                addXMLOrderAttribute(inXMLDocument, result, @"name", name);
+                addXMLOrderAttribute(inXMLDocument, result, @"memberNumber", memberNumber);
+                addXMLOrderAttribute(inXMLDocument, result, @"email", email);
+                addXMLOrderAttribute(inXMLDocument, result, @"ordertype", ordertype);
 
-            addDeliveryNode(inXMLDocument, result, inOrderAccountSection.Delivery);
-            addPaymentsNode(inXMLDocument, result, inOrderAccountSection.Payments);
-            addCommentsNode(inXMLDocument, result, inOrderAccountSection.Comments);            
-            addItemsNode(inXMLDocument, result, inOrderAccountSection.OrderItems);
+                addDeliveryNode(inXMLDocument, result, inOrderAccountSection.Delivery);
+                addPaymentsNode(inXMLDocument, result, inOrderAccountSection.Payments);
+                addCommentsNode(inXMLDocument, result, inOrderAccountSection.Comments);
+                addItemsNode(inXMLDocument, result, inOrderAccountSection.OrderItems);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 506, short.MaxValue);
+            }
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -1191,23 +1248,30 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-            string recipient = service_info.NotNullString(inOrderDelivery.Recipient);
-            string streetNo = service_info.NotNullString(inOrderDelivery.StreetNo);
-            string streetName = service_info.NotNullString(inOrderDelivery.StreetName);
-            string suburb = service_info.NotNullString(inOrderDelivery.Suburb);
-            string city = service_info.NotNullString(inOrderDelivery.City);
-            string country = service_info.NotNullString(inOrderDelivery.Country);
-            string note = service_info.NotNullString(inOrderDelivery.Note);
-            string phone = service_info.NotNullString(inOrderDelivery.Phone);
+            try
+            {
+                string recipient = service_info.NotNullString(inOrderDelivery.Recipient);
+                string streetNo = service_info.NotNullString(inOrderDelivery.StreetNo);
+                string streetName = service_info.NotNullString(inOrderDelivery.StreetName);
+                string suburb = service_info.NotNullString(inOrderDelivery.Suburb);
+                string city = service_info.NotNullString(inOrderDelivery.City);
+                string country = service_info.NotNullString(inOrderDelivery.Country);
+                string note = service_info.NotNullString(inOrderDelivery.Note);
+                string phone = service_info.NotNullString(inOrderDelivery.Phone);
 
-            addXMLOrderAttribute(inXMLDocument, result, @"recipient", recipient);
-            addXMLOrderAttribute(inXMLDocument, result, @"streetNo", streetNo);
-            addXMLOrderAttribute(inXMLDocument, result, @"streetName", streetName);
-            addXMLOrderAttribute(inXMLDocument, result, @"suburb", suburb);
-            addXMLOrderAttribute(inXMLDocument, result, @"city", city);
-            addXMLOrderAttribute(inXMLDocument, result, @"country", country);
-            addXMLOrderAttribute(inXMLDocument, result, @"note", note);
-            addXMLOrderAttribute(inXMLDocument, result, @"phone", phone);
+                addXMLOrderAttribute(inXMLDocument, result, @"recipient", recipient);
+                addXMLOrderAttribute(inXMLDocument, result, @"streetNo", streetNo);
+                addXMLOrderAttribute(inXMLDocument, result, @"streetName", streetName);
+                addXMLOrderAttribute(inXMLDocument, result, @"suburb", suburb);
+                addXMLOrderAttribute(inXMLDocument, result, @"city", city);
+                addXMLOrderAttribute(inXMLDocument, result, @"country", country);
+                addXMLOrderAttribute(inXMLDocument, result, @"note", note);
+                addXMLOrderAttribute(inXMLDocument, result, @"phone", phone);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 507, short.MaxValue);
+            }
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -1255,12 +1319,19 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-            for (int i = 0; i < inOrderComments.Length; i++)
+            try
             {
-                XmlNode commentNode = XMLDocManager.AddNode(inXMLDocument, result, @"Comment");
-                commentNode.InnerText = inOrderComments[i];
+                for (int i = 0; i < inOrderComments.Length; i++)
+                {
+                    XmlNode commentNode = XMLDocManager.AddNode(inXMLDocument, result, @"Comment");
+                    commentNode.InnerText = inOrderComments[i];
 
-                //addXMLOrderAttribute(inXMLDocument, commentNode, @"text", inOrderComments[i]);
+                    //addXMLOrderAttribute(inXMLDocument, commentNode, @"text", inOrderComments[i]);
+                }
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 508, short.MaxValue);
             }
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1310,15 +1381,22 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-            string uid = service_info.NotNullString(inOrderItem.UID);
+            try
+            {
+                string uid = service_info.NotNullString(inOrderItem.UID);
 
-            addXMLOrderAttribute(inXMLDocument, result, @"uid", uid);
-            addXMLOrderAttribute(inXMLDocument, result, @"basePrice", string.Format("{0:#.00}", inOrderItem.BasePrice));
-            addXMLOrderAttribute(inXMLDocument, result, @"quantity", string.Format("{0:#.00}", inOrderItem.Qty));
-            addXMLOrderAttribute(inXMLDocument, result, @"note", inOrderItem.Note);
+                addXMLOrderAttribute(inXMLDocument, result, @"uid", uid);
+                addXMLOrderAttribute(inXMLDocument, result, @"basePrice", string.Format("{0:#.00}", inOrderItem.BasePrice));
+                addXMLOrderAttribute(inXMLDocument, result, @"quantity", string.Format("{0:#.00}", inOrderItem.Qty));
+                addXMLOrderAttribute(inXMLDocument, result, @"note", inOrderItem.Note);
 
-            addOptionsNode(inXMLDocument, result, inOrderItem.ItemOptions);
-            addSidesNode(inXMLDocument, result, inOrderItem.ItemSides);
+                addOptionsNode(inXMLDocument, result, inOrderItem.ItemOptions);
+                addSidesNode(inXMLDocument, result, inOrderItem.ItemSides);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 509, short.MaxValue);
+            }
 
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1342,11 +1420,18 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-            for (int i = 0; i < inOrderItemOptions.Length; i++)
+            try
             {
-                addItemOptionNode(inXMLDocument, result, inOrderItemOptions[i]);
-            }
+                for (int i = 0; i < inOrderItemOptions.Length; i++)
+                {
+                    addItemOptionNode(inXMLDocument, result, inOrderItemOptions[i]);
+                }
 
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 510, short.MaxValue);
+            }
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
             return result;
@@ -1368,9 +1453,16 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-            for (int i = 0; i < inOrderItemSides.Length; i++)
+            try
             {
-                addItemSideNode(inXMLDocument, result, inOrderItemSides[i]);
+                for (int i = 0; i < inOrderItemSides.Length; i++)
+                {
+                    addItemSideNode(inXMLDocument, result, inOrderItemSides[i]);
+                }
+            }
+            catch (Exception e)
+            {
+               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 511, short.MaxValue);
             }
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1394,12 +1486,19 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-            string uid = service_info.NotNullString(inOrderItemOption.UID);
+            try
+            {
+                string uid = service_info.NotNullString(inOrderItemOption.UID);
 
-            addXMLOrderAttribute(inXMLDocument, result, @"uid", uid);
-            addXMLOrderAttribute(inXMLDocument, result, @"basePrice", string.Format("{0:#.00}", inOrderItemOption.BasePrice));
-            addXMLOrderAttribute(inXMLDocument, result, @"quantity", string.Format("{0:#.00}", inOrderItemOption.Qty));
-            addXMLOrderAttribute(inXMLDocument, result, @"note", inOrderItemOption.Note);
+                addXMLOrderAttribute(inXMLDocument, result, @"uid", uid);
+                addXMLOrderAttribute(inXMLDocument, result, @"basePrice", string.Format("{0:#.00}", inOrderItemOption.BasePrice));
+                addXMLOrderAttribute(inXMLDocument, result, @"quantity", string.Format("{0:#.00}", inOrderItemOption.Qty));
+                addXMLOrderAttribute(inXMLDocument, result, @"note", inOrderItemOption.Note);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 512, short.MaxValue);
+            }
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -1422,13 +1521,20 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-            string uid = service_info.NotNullString(inOrderItemSide.UID);
+            try
+            {
+                string uid = service_info.NotNullString(inOrderItemSide.UID);
 
-            addXMLOrderAttribute(inXMLDocument, result, @"uid", uid);
-            addXMLOrderAttribute(inXMLDocument, result, @"basePrice", string.Format("{0:#.00}", inOrderItemSide.BasePrice));
-            addXMLOrderAttribute(inXMLDocument, result, @"quantity", string.Format("{0:#.00}", inOrderItemSide.Qty));
-            addXMLOrderAttribute(inXMLDocument, result, @"note", inOrderItemSide.Note);
+                addXMLOrderAttribute(inXMLDocument, result, @"uid", uid);
+                addXMLOrderAttribute(inXMLDocument, result, @"basePrice", string.Format("{0:#.00}", inOrderItemSide.BasePrice));
+                addXMLOrderAttribute(inXMLDocument, result, @"quantity", string.Format("{0:#.00}", inOrderItemSide.Qty));
+                addXMLOrderAttribute(inXMLDocument, result, @"note", inOrderItemSide.Note);
 
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 513, short.MaxValue);
+            }
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
             return result;
@@ -1445,20 +1551,27 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //............................................................
 
-            string defaulDateTimeStr = DateTime.Now.ToString(DATE_TIME_FORMAT_STRING);
+            try
+            {
+                string defaulDateTimeStr = DateTime.Now.ToString(DATE_TIME_FORMAT_STRING);
 
-            string orderDateStr = getXMLOrderAttribute(inHeaderSectionNode, @"orderDate", defaulDateTimeStr);
-            string expectedDateStr = getXMLOrderAttribute(inHeaderSectionNode, @"expectedDate", defaulDateTimeStr);
+                string orderDateStr = getXMLOrderAttribute(inHeaderSectionNode, @"orderDate", defaulDateTimeStr);
+                string expectedDateStr = getXMLOrderAttribute(inHeaderSectionNode, @"expectedDate", defaulDateTimeStr);
 
-            //....................................................................................
+                //....................................................................................
 
-            result.StoreName = getXMLOrderAttribute(inHeaderSectionNode, @"storeName", @"");
-            result.GUID = getXMLOrderAttribute(inHeaderSectionNode, @"guid", Guid.Empty.ToString());
-            result.Respond = Convert.ToBoolean(getXMLOrderAttribute(inHeaderSectionNode, @"respond", "false"));
-            result.Scheduled = Convert.ToUInt16(getXMLOrderAttribute(inHeaderSectionNode, @"schedule", @"1"));
-            result.OrderTotal = Convert.ToDecimal(getXMLOrderAttribute(inHeaderSectionNode, @"orderTotal", "0.00"));
-            result.OrderDate = DateTime.Parse(orderDateStr, CultureInfo.CreateSpecificCulture("en-NZ"));
-            result.ExpectedDate = DateTime.Parse(expectedDateStr, CultureInfo.CreateSpecificCulture("en-NZ"));
+                result.StoreName = getXMLOrderAttribute(inHeaderSectionNode, @"storeName", @"");
+                result.GUID = getXMLOrderAttribute(inHeaderSectionNode, @"guid", Guid.Empty.ToString());
+                result.Respond = Convert.ToBoolean(getXMLOrderAttribute(inHeaderSectionNode, @"respond", "false"));
+                result.Scheduled = Convert.ToUInt16(getXMLOrderAttribute(inHeaderSectionNode, @"schedule", @"1"));
+                result.OrderTotal = Convert.ToDecimal(getXMLOrderAttribute(inHeaderSectionNode, @"orderTotal", "0.00"));
+                result.OrderDate = DateTime.Parse(orderDateStr, CultureInfo.CreateSpecificCulture("en-NZ"));
+                result.ExpectedDate = DateTime.Parse(expectedDateStr, CultureInfo.CreateSpecificCulture("en-NZ"));
+            }
+            catch (Exception e)
+            {
+               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 514, short.MaxValue);
+            }
 
             //............................................................
 
@@ -1475,9 +1588,16 @@ namespace MenumateServices.WebMate.InternalClasses
             DTO_WebOrderFrom result = new DTO_WebOrderFrom();
 
             //............................................................
+            try
+            {
 
-            result.SiteID = getXMLOrderAttribute(inFromSectionNode, @"siteID", "");
-            result.SiteName = getXMLOrderAttribute(inFromSectionNode, @"siteName", "");
+                result.SiteID = getXMLOrderAttribute(inFromSectionNode, @"siteID", "");
+                result.SiteName = getXMLOrderAttribute(inFromSectionNode, @"siteName", "");
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 515, short.MaxValue);
+            }
 
             //............................................................
 
@@ -1495,37 +1615,44 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //............................................................
 
-            result.Covers = Convert.ToUInt32(getXMLOrderAttribute(inAccountSectionNode, @"covers", @"0"));
-            result.Name = getXMLOrderAttribute(inAccountSectionNode, @"name", @"");
-            result.MemberNumber = getXMLOrderAttribute(inAccountSectionNode, @"memberNumber", @"");
-            result.Email = getXMLOrderAttribute(inAccountSectionNode, @"email", @"");
-            result.OrderType = getXMLOrderAttribute(inAccountSectionNode, @"ordertype", @"");
+            try
+            {
+                result.Covers = Convert.ToUInt32(getXMLOrderAttribute(inAccountSectionNode, @"covers", @"0"));
+                result.Name = getXMLOrderAttribute(inAccountSectionNode, @"name", @"");
+                result.MemberNumber = getXMLOrderAttribute(inAccountSectionNode, @"memberNumber", @"");
+                result.Email = getXMLOrderAttribute(inAccountSectionNode, @"email", @"");
+                result.OrderType = getXMLOrderAttribute(inAccountSectionNode, @"ordertype", @"");
 
-            //............................................................
+                //............................................................
 
-            result.Delivery = new DTO_WebOrderDelivery();
-            result.Delivery.Recipient = @"";
-            result.Delivery.StreetNo = @"";
-            result.Delivery.StreetName = @"";
-            result.Delivery.Suburb = @"";
-            result.Delivery.City = @"";
-            result.Delivery.Country = @"";
-            result.Delivery.Note = @"";
-            result.Delivery.Phone = @"";
+                result.Delivery = new DTO_WebOrderDelivery();
+                result.Delivery.Recipient = @"";
+                result.Delivery.StreetNo = @"";
+                result.Delivery.StreetName = @"";
+                result.Delivery.Suburb = @"";
+                result.Delivery.City = @"";
+                result.Delivery.Country = @"";
+                result.Delivery.Note = @"";
+                result.Delivery.Phone = @"";
 
-            List<string> commentList = new List<string>();
-            List<DTO_WebOrderItem> itemList = new List<DTO_WebOrderItem>();
+                List<string> commentList = new List<string>();
+                List<DTO_WebOrderItem> itemList = new List<DTO_WebOrderItem>();
 
-            result.Comments = commentList.ToArray();
-            result.Payments = new DTO_WebOrderPayments();
-            result.OrderItems = itemList.ToArray();
+                result.Comments = commentList.ToArray();
+                result.Payments = new DTO_WebOrderPayments();
+                result.OrderItems = itemList.ToArray();
 
-            //............................................................
+                //............................................................
 
-            readWebOrderDelivery(inAccountSectionNode.FirstChild, result);
-            readWebOrderPayments(inAccountSectionNode.FirstChild.NextSibling, result);
-            readWebOrderComments(inAccountSectionNode.FirstChild.NextSibling.NextSibling, result);
-            readWebOrderItems(inAccountSectionNode.FirstChild.NextSibling.NextSibling.NextSibling, result);
+                readWebOrderDelivery(inAccountSectionNode.FirstChild, result);
+                readWebOrderPayments(inAccountSectionNode.FirstChild.NextSibling, result);
+                readWebOrderComments(inAccountSectionNode.FirstChild.NextSibling.NextSibling, result);
+                readWebOrderItems(inAccountSectionNode.FirstChild.NextSibling.NextSibling.NextSibling, result);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 516, short.MaxValue);
+            }
 
             //............................................................
 
@@ -1541,22 +1668,29 @@ namespace MenumateServices.WebMate.InternalClasses
                     XmlNode inDeliverySectionNode,
                     DTO_WebOrderAccount outOrderHeaderAccount)
         {
-            outOrderHeaderAccount.Delivery.Recipient =
-                    getXMLOrderAttribute(inDeliverySectionNode, @"recipient", @"");
-            outOrderHeaderAccount.Delivery.StreetNo =
-                    getXMLOrderAttribute(inDeliverySectionNode, @"streetNo", @"");
-            outOrderHeaderAccount.Delivery.StreetName =
-                    getXMLOrderAttribute(inDeliverySectionNode, @"streetName", @"");
-            outOrderHeaderAccount.Delivery.Suburb =
-                    getXMLOrderAttribute(inDeliverySectionNode, @"suburb", @"");
-            outOrderHeaderAccount.Delivery.City =
-                    getXMLOrderAttribute(inDeliverySectionNode, @"city", @"");
-            outOrderHeaderAccount.Delivery.Country =
-                    getXMLOrderAttribute(inDeliverySectionNode, @"country", @"");
-            outOrderHeaderAccount.Delivery.Note =
-                    getXMLOrderAttribute(inDeliverySectionNode, @"note", @"");
-            outOrderHeaderAccount.Delivery.Phone =
-                    getXMLOrderAttribute(inDeliverySectionNode, @"phone", @"");
+            try
+            {
+                outOrderHeaderAccount.Delivery.Recipient =
+                            getXMLOrderAttribute(inDeliverySectionNode, @"recipient", @"");
+                outOrderHeaderAccount.Delivery.StreetNo =
+                        getXMLOrderAttribute(inDeliverySectionNode, @"streetNo", @"");
+                outOrderHeaderAccount.Delivery.StreetName =
+                        getXMLOrderAttribute(inDeliverySectionNode, @"streetName", @"");
+                outOrderHeaderAccount.Delivery.Suburb =
+                        getXMLOrderAttribute(inDeliverySectionNode, @"suburb", @"");
+                outOrderHeaderAccount.Delivery.City =
+                        getXMLOrderAttribute(inDeliverySectionNode, @"city", @"");
+                outOrderHeaderAccount.Delivery.Country =
+                        getXMLOrderAttribute(inDeliverySectionNode, @"country", @"");
+                outOrderHeaderAccount.Delivery.Note =
+                        getXMLOrderAttribute(inDeliverySectionNode, @"note", @"");
+                outOrderHeaderAccount.Delivery.Phone =
+                        getXMLOrderAttribute(inDeliverySectionNode, @"phone", @"");
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 517, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -1568,8 +1702,15 @@ namespace MenumateServices.WebMate.InternalClasses
                     XmlNode inPaymentsSectionNode,
                     DTO_WebOrderAccount outOrderHeaderAccount)
         {
-            outOrderHeaderAccount.Payments.PaymentRequired =
-                    stringToBool(getXMLOrderAttribute(inPaymentsSectionNode, @"required", @"yes"));
+            try
+            {
+                outOrderHeaderAccount.Payments.PaymentRequired =
+                            stringToBool(getXMLOrderAttribute(inPaymentsSectionNode, @"required", @"yes"));
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 518, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -1583,13 +1724,20 @@ namespace MenumateServices.WebMate.InternalClasses
         {
             XmlNodeList commentNodeList = XMLDocManager.GetNodeList(inCommentsSectionNode, @"Comment");
 
-            List<string> commentList = new List<string>();
-            foreach (XmlNode commentNode in commentNodeList)
+            try
             {
-                commentList.Add(commentNode.InnerText);
-            }
+                List<string> commentList = new List<string>();
+                foreach (XmlNode commentNode in commentNodeList)
+                {
+                    commentList.Add(commentNode.InnerText);
+                }
 
-            outOrderHeaderAccount.Comments = commentList.ToArray();
+                outOrderHeaderAccount.Comments = commentList.ToArray();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 519, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -1603,23 +1751,30 @@ namespace MenumateServices.WebMate.InternalClasses
         {
             XmlNodeList itemNodeList = XMLDocManager.GetNodeList(inItemsSectionNode, @"Item");
 
-            List<DTO_WebOrderItem> itemList = new List<DTO_WebOrderItem>();
-            foreach (XmlNode itemNode in itemNodeList)
+            try
             {
-                DTO_WebOrderItem item = new DTO_WebOrderItem();
+                List<DTO_WebOrderItem> itemList = new List<DTO_WebOrderItem>();
+                foreach (XmlNode itemNode in itemNodeList)
+                {
+                    DTO_WebOrderItem item = new DTO_WebOrderItem();
 
-                item.UID = getXMLOrderAttribute(itemNode, @"uid", @"");
-                item.BasePrice = Convert.ToDecimal(getXMLOrderAttribute(itemNode, @"basePrice", @"0.00"));
-                item.Qty = Convert.ToSingle(getXMLOrderAttribute(itemNode, @"quantity", @"0.0"));
-                item.DiscountID = Convert.ToUInt32(getXMLOrderAttribute(itemNode, @"discountID", @"0"));
-                item.Note = getXMLOrderAttribute(itemNode, @"note", @"");
-                item.ItemOptions = readWebOrderItemOptions(itemNode.FirstChild); // Options node
-                item.ItemSides = readWebOrderItemSides(itemNode.FirstChild.NextSibling); // Sides node
+                    item.UID = getXMLOrderAttribute(itemNode, @"uid", @"");
+                    item.BasePrice = Convert.ToDecimal(getXMLOrderAttribute(itemNode, @"basePrice", @"0.00"));
+                    item.Qty = Convert.ToSingle(getXMLOrderAttribute(itemNode, @"quantity", @"0.0"));
+                    item.DiscountID = Convert.ToUInt32(getXMLOrderAttribute(itemNode, @"discountID", @"0"));
+                    item.Note = getXMLOrderAttribute(itemNode, @"note", @"");
+                    item.ItemOptions = readWebOrderItemOptions(itemNode.FirstChild); // Options node
+                    item.ItemSides = readWebOrderItemSides(itemNode.FirstChild.NextSibling); // Sides node
 
-                itemList.Add(item);
+                    itemList.Add(item);
+                }
+
+                outOrderHeaderAccount.OrderItems = itemList.ToArray();
             }
-
-            outOrderHeaderAccount.OrderItems = itemList.ToArray();
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 520, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -1700,6 +1855,7 @@ namespace MenumateServices.WebMate.InternalClasses
                     XmlDocument inXMLDocument,
                     DTO_WebOrderFrom inOrderFromSection)
         {
+            
             XmlNode orderNode = XMLDocManager.GetRoot(inXMLDocument);
             orderNode.RemoveChild(XMLDocManager.GetNode(inXMLDocument, @"From"));
 

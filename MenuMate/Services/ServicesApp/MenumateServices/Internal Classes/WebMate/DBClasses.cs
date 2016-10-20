@@ -206,7 +206,7 @@ namespace MenumateServices.WebMate.InternalClasses.Database
 
             //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-            inCommand.CommandTimeout = Convert.ToInt32(DBTimeOuts.Command);
+            //inCommand.CommandTimeout = Convert.ToInt32(DBTimeOuts.Command);
 
             using(FbDataReader reader = inCommand.ExecuteReader())
             {
