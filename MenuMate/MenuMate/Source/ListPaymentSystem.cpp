@@ -1183,6 +1183,8 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                  }
                                  else
                                  {
+                                    if(EftTrans->ResultText == "")
+                                        EftTrans->ResultText = "Transaction Failed.";
                                     MessageBox(EftTrans->ResultText, "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
                                  }
                             }
