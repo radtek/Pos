@@ -184,8 +184,8 @@ void __fastcall TfrmEditCustomer::btnOkClick(TObject *Sender)
         Info.Name = edFirstName->Text;
         Info.Surname = edLastName->Text;
 
-        AnsiString firstNameMessage = "First Name should be ";
-        AnsiString lastNameMessage = "Last Name should be ";
+        AnsiString firstNameMessage = "First Name ";
+        AnsiString lastNameMessage = "Last Name ";
         if (edFirstName->Text.Trim() == "")
         {
               MessageBox("You must enter a First Name.", "Error", MB_OK + MB_ICONERROR);

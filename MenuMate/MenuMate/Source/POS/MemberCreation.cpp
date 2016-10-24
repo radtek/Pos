@@ -107,8 +107,8 @@ void __fastcall TfrmMemberCreation::btnOkMouseClick(TObject *Sender)
     IBInternalQuery->ExecQuery();
     DBTransaction.Commit();
     int	emailcount = IBInternalQuery->Fields[0]->AsInteger;
-    AnsiString firstNameMessage = "First Name should be ";
-    AnsiString lastNameMessage = "Last Name should be ";
+    AnsiString firstNameMessage = "First Name ";
+    AnsiString lastNameMessage = "Last Name ";
     if (TGlobalSettings::Instance().LoyaltyMateEnabled &&
         Info.CloudUUID != TLoyaltyMateUtilities::GetLoyaltyMateDisabledCloudUUID()  &&
        !Info.ValidEmail())
