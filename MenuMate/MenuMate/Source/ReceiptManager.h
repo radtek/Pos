@@ -15,6 +15,8 @@ class TManagerReceipt : public TManager
 	typedef std::pair<int,int> TableKeyPair;
 	std::vector<TableKeyPair> Array;
 	int ArrayIndex;
+    bool IsStartOfReceiptInfo(TStringList *Lines);
+    void InsertReprintLabel(TStringList *Lines,bool &IsFirstOccurance);
 
 	void SetCurrentDate(TDateTime SelectedDate);
 	bool Get(Database::TDBTransaction &DBTransaction);

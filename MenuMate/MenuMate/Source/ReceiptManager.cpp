@@ -604,22 +604,11 @@ void TManagerReceipt::Get(TStringList *Lines)
 		 }
 		 else
 		 {
-            if((!IsFirstOccurance) && ((int)Line[j]>32))
+            if((!IsFirstOccurance)  && ((int)Line[j]>32) &&(TGlobalSettings::Instance().ReprintReceiptLabel != "")
+                && IsStartOfReceiptInfo(Lines))
              {
-                IsFirstOccurance = true;
-                int RowCount =  Lines->Count;
-                if(RowCount == 0)
-                  {
-                     Lines->Add(TGlobalSettings::Instance().ReprintReceiptLabel);
-                  }
-                 else
-                  {
-                     int InsertPosition =  (Lines->Strings[RowCount - 1].Length() - TGlobalSettings::Instance().ReprintReceiptLabel.Length())/2;
-                     InsertPosition+=2;
-                     Lines->Strings[RowCount-1] = Lines->Strings[RowCount-1].SubString(TGlobalSettings::Instance().ReprintReceiptLabel.Length(),Lines->Strings[RowCount - 1].Length() - TGlobalSettings::Instance().ReprintReceiptLabel.Length());
-                     Lines->Strings[RowCount-1] = Lines->Strings[RowCount-1].Insert(TGlobalSettings::Instance().ReprintReceiptLabel,InsertPosition);
-                  }
-              }
+                 InsertReprintLabel(Lines,IsFirstOccurance);
+             }
 
 			if (Line[j] == char(196))
 			{
@@ -627,6 +616,11 @@ void TManagerReceipt::Get(TStringList *Lines)
 			}
 			else
 			{
+               AnsiString check = "";
+               if(Lines->Count == 4)
+               {
+                  check += Line[j];
+               }
 			   TrimmedLine += Line[j];
 			}
 		 }
@@ -639,6 +633,43 @@ void TManagerReceipt::Get(TStringList *Lines)
 	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
    }
 }
+//------------------------------------------------------------------------------
+bool TManagerReceipt::IsStartOfReceiptInfo(TStringList *Lines)
+{
+    bool retValue = true;
+    for(int i = 0; i < Lines->Strings[Lines->Count -1].Length(); i++)
+    {
+        if(Lines->Strings[Lines->Count - 1].SubString(i,1) != '_' )
+        {
+            retValue = false;
+            break;
+        }
+    }
+    return retValue;
+}
+//------------------------------------------------------------------------------
+void TManagerReceipt::InsertReprintLabel(TStringList *Lines,bool &IsFirstOccurance)
+{
+    IsFirstOccurance = true;
+    AnsiString newLine = "";
+    for(int i = 0; i < Lines->Strings[Lines->Count -1].Length(); i++)
+    {
+        newLine += " ";
+    }
+    Lines->Add(newLine);
+    int RowCount =  Lines->Count;
+    if(RowCount == 0)
+      {
+         Lines->Add(TGlobalSettings::Instance().ReprintReceiptLabel);
+      }
+     else
+      {
+         int InsertPosition =  (Lines->Strings[RowCount-1].Length() - TGlobalSettings::Instance().ReprintReceiptLabel.Length())/2;
+         Lines->Strings[RowCount-1] = Lines->Strings[RowCount-1].SubString(TGlobalSettings::Instance().ReprintReceiptLabel.Length(),Lines->Strings[RowCount - 1].Length() - TGlobalSettings::Instance().ReprintReceiptLabel.Length());
+         Lines->Strings[RowCount-1] = Lines->Strings[RowCount-1].Insert(TGlobalSettings::Instance().ReprintReceiptLabel,InsertPosition);
+      }
+}
+//------------------------------------------------------------------------------
 
 void TManagerReceipt::AddDuplicateLabel(TMemoryStream* ReceiptToEdit,TStringList *Lines)
 {
@@ -702,18 +733,10 @@ void TManagerReceipt::AddDuplicateLabel(TMemoryStream* ReceiptToEdit,TStringList
 		 }
 		 else
 		 {
-            if((!IsFirstOccurance) && ((int)Line[j]>32))
+            if((!IsFirstOccurance)  && ((int)Line[j]>32) &&(TGlobalSettings::Instance().ReprintReceiptLabel != "")
+                && IsStartOfReceiptInfo(Lines))
              {
-                IsFirstOccurance = true;
-                int RowCount =  Lines->Count;
-                if(RowCount == 0)
-                  {
-                     Lines->Add(TGlobalSettings::Instance().ReprintReceiptLabel);
-                  }
-                 else
-                  {
-                     Lines->Strings[RowCount-1] =   TGlobalSettings::Instance().ReprintReceiptLabel;
-                  }
+                 InsertReprintLabel(Lines,IsFirstOccurance);
              }
 			if (Line[j] == char(196))
 			{
@@ -808,35 +831,6 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt)
     StringReceipt->SaveToStream(DuplicateReceipt);
     Printout->PrintToPrinterStream(DuplicateReceipt,TComms::Instance().ReceiptPrinter.UNCName());
     delete Printout;
-
-
-     /*TStringList *Lines = new TStringList;
-     AddDuplicateLabel(DuplicateReceipt,Lines);
-     Database::TDBTransaction DBTransaction(DBControl);
-     DBTransaction.StartTransaction();
-     TPrintout *Printout = new TPrintout;
-     Printout->Printer = TComms::Instance().ReceiptPrinter;
-     try
-       {
-         Printout->PrintFormat->PrintGraphic();
-         for(int i =0 ; i<Lines->Count;i++)
-            {
-              Printout->PrintFormat->Line->ColCount = 1;
-              Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-              Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
-              Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-              Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-              Printout->PrintFormat->Line->FontInfo.Width = fsNormalSize;
-              Printout->PrintFormat->Line->Columns[0]->Text = Lines->Strings[i];
-              Printout->PrintFormat->AddLine();
-            }
-          Printout->PrintFormat->Cut();
-          Printout->PrintFormat->Print(Printout->Printer.UNCName(), "");
-       }
-      __finally
-      {
-         delete Printout;
-      } */
 }
 
 bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(
