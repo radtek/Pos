@@ -1604,7 +1604,10 @@ void TPrintSection::ShowRefundReference(TReqPrintJob *PrintJob)
         pPrinter->Line->ColCount = 1;
         pPrinter->Line->Columns[0]->Width = pPrinter->Width;
         pPrinter->Line->Columns[0]->Alignment = taCenter;
-        pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().RefundReferenceLabel;
+        if(TGlobalSettings::Instance().RefundReferenceLabel != "")
+            pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().RefundReferenceLabel;
+        else
+            pPrinter->Line->Columns[0]->Text = "OR NO.";
         pPrinter->Line->Columns[0]->Text += TReceiptUtility::ModifyInvoiceNumber(PrintJob->Transaction->RefundRefReceipt,
                                                    ReceiptLength);
         pPrinter->AddLine();
