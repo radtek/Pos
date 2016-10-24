@@ -357,29 +357,40 @@ bool TMMContactInfo::ValidateMandatoryField(AnsiString& message)
 
 bool TMMContactInfo::ValidateFirstName(AnsiString& message)
 {
-    bool isvalid = false;
+    bool isValid = false;
+    AnsiString firstName = Name;
+    isValid = ValidateName(firstName,message);
+    return isValid;
+}
+
+bool TMMContactInfo::ValidateLastName(AnsiString& message)
+{
+    bool isValid = false;
+    AnsiString surname = Surname;
+    isValid = ValidateName(surname,message);
+    return isValid;
+}
+
+bool TMMContactInfo::ValidateName(AnsiString& name,AnsiString& message)
+{
+    bool isValid = false;
     int nameCounter = 0;
-    int fCount = 0;
+    int specialCharacterCounter = 0;
+    int lCount = 0;
     int asciiValues[] = { 33,34,35,36,37,40,41,42,43,47,58,59,60,61,62,63,64,91,92,93,94,123,124,125,126 };
-    std::vector<int> AsciiValuesFNException(asciiValues, asciiValues+25);
-    UnicodeString name = Name;
-    AnsiString strName = name;
-	int name_len = name.Length();
+    std::vector<int> AsciiValuesException(asciiValues, asciiValues+25);
 
-    char* temp_char = new char[strName.Length()+1];
-   	strcpy(temp_char, strName.c_str());
-
-    for(int char_index = 0; char_index < name_len; char_index++)
+    const char* temp_name_char = name.c_str();
+    for(int char_index = 0; char_index < name.Length(); char_index++)
     {
-        int charAscii = temp_char[char_index];
-        if(find(AsciiValuesFNException.begin(),AsciiValuesFNException.end(),charAscii) != AsciiValuesFNException.end())
-        {
+        int charAscii = temp_name_char[char_index];
+        if(find(AsciiValuesException.begin(),AsciiValuesException.end(),charAscii) != AsciiValuesException.end())        {
                 nameCounter++;
                 break;
         }
-        if(charAscii == 32 && (char_index+1) < name_len)
+        if(charAscii == 32 && (char_index+1) < name.Length())
         {
-             if(temp_char[char_index+1] == 32)
+             if(temp_name_char[char_index+1] == 32)
              {
                 nameCounter++;
                 break;
@@ -389,67 +400,11 @@ bool TMMContactInfo::ValidateFirstName(AnsiString& message)
     if(nameCounter > 0)
     {
         message = message + "can contain [a-z], [0-9], [space], [-], [_], ['], [`], [,], [&] only";
-        fCount++;
-    }
-    if(name_len > 20)
-    {
-       if(nameCounter == 0)
-       {
-       message = message + "should be less than 21 characters";
-       }
-       else
-       {
-         message = message + " and should be less than 21 characters";
-       }
-       fCount++;
-    }
-    if(fCount == 0)
-    {
-         isvalid = true;
-    }
-    return isvalid;
-}
-
-bool TMMContactInfo::ValidateLastName(AnsiString& message)
-{
-    bool isvalid = false;
-    int lastNameCounter = 0;
-    int specialCharacterCounter = 0;
-    int lCount = 0;
-    int asciiValues[] = { 33,34,35,36,37,40,41,42,43,47,58,59,60,61,62,63,64,91,92,93,94,123,124,125,126 };
-    std::vector<int> AsciiValuesLNException(asciiValues, asciiValues+25);
-    UnicodeString surname = Surname;
-    AnsiString strLastName = surname;
-	int last_name_len = surname.Length();
-
-    char* temp_lname_char = new char[strLastName.Length()+1];
-   	strcpy(temp_lname_char, strLastName.c_str());
-
-    for(int char_index = 0; char_index < last_name_len; char_index++)
-    {
-    int charAscii = temp_lname_char[char_index];
-    if(find(AsciiValuesLNException.begin(),AsciiValuesLNException.end(),charAscii) != AsciiValuesLNException.end())
-        {
-                lastNameCounter++;
-                break;
-        }
-        if(charAscii == 32 && (char_index+1) < last_name_len)
-        {
-             if(temp_lname_char[char_index+1] == 32)
-             {
-                lastNameCounter++;
-                break;
-             }
-        }
-    }
-    if(lastNameCounter > 0)
-    {
-        message = message + "can contain [a-z], [0-9], [space], [-], [_], ['], [`], [,], [&] only";
         lCount++;
     }
-    if(last_name_len > 20)
+    if(name.Length() > 20)
     {
-       if(lastNameCounter == 0)
+       if(nameCounter == 0)
        {
              message = message + "should be less than 21 characters";
        }
@@ -461,7 +416,7 @@ bool TMMContactInfo::ValidateLastName(AnsiString& message)
     }
     if(lCount == 0)
     {
-         isvalid = true;
+         isValid = true;
     }
-    return isvalid;
+    return isValid;
 }
