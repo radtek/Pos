@@ -11,6 +11,7 @@ using XMLManager;
 using MenumateServices.WebMate.DTO;
 using System.Diagnostics;
 
+
 namespace MenumateServices.WebMate.InternalClasses
 {
     /// <summary>
@@ -91,11 +92,11 @@ namespace MenumateServices.WebMate.InternalClasses
         {
             outOrder.SetHandle(inWebOrderHandle);
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-            if (xmlDoc.ChildNodes.Count > 0)
+            if (xmlDoc != null)
             {
                 loadWebOrder(xmlDoc, outOrder);
-            }           
-           
+            }
+
         }
 
         /// <summary>
@@ -189,7 +190,7 @@ namespace MenumateServices.WebMate.InternalClasses
         public void SetIncompleteHeaderSection(string inWebOrderHandle, DTO_WebOrderHeader inOrderHeaderSection)
         {
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-            if (xmlDoc.ChildNodes.Count > 0)
+            if (xmlDoc != null)
             {
                 updateHeaderNode(xmlDoc, inOrderHeaderSection);
                 //.............................................................
@@ -206,7 +207,7 @@ namespace MenumateServices.WebMate.InternalClasses
         public void LoadIncompleteHeaderSection(string inWebOrderHandle, DTO_WebOrderHeader outOrderHeaderSection)
         {
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-            if (xmlDoc.ChildNodes.Count > 0)
+            if (xmlDoc != null)
             {
                 XmlNode headerSectionNode = XMLDocManager.GetNode(xmlDoc, @"Header");
                 outOrderHeaderSection = readHeaderSection(headerSectionNode);
@@ -222,7 +223,7 @@ namespace MenumateServices.WebMate.InternalClasses
         public void SetIncompleteFromSection(string inWebOrderHandle, DTO_WebOrderFrom inOrderFromSection)
         {
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-            if (xmlDoc.ChildNodes.Count > 0)
+            if (xmlDoc != null)
             {
                 updateFromNode(xmlDoc, inOrderFromSection);
                 //.....................................................
@@ -240,11 +241,11 @@ namespace MenumateServices.WebMate.InternalClasses
         public void LoadIncompleteFromSection(string inWebOrderHandle, DTO_WebOrderFrom outOrderFromSection)
         {
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-            if (xmlDoc.ChildNodes.Count > 0)
+            if (xmlDoc != null)
             {
                 XmlNode fromSectionNode = XMLDocManager.GetNode(xmlDoc, @"From");
                 outOrderFromSection = readFromSection(fromSectionNode);
-            }            
+            }
         }
 
         /// <summary>
@@ -255,7 +256,7 @@ namespace MenumateServices.WebMate.InternalClasses
         public void SetIncompleteAccountSection(string inWebOrderHandle, DTO_WebOrderAccount intOrderAccountSection)
         {
             XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-            if (xmlDoc.ChildNodes.Count > 0)
+            if (xmlDoc != null)
             {
                 updateAccountNode(xmlDoc, intOrderAccountSection);
                 //.....................................................
@@ -275,7 +276,7 @@ namespace MenumateServices.WebMate.InternalClasses
             try
             {
                 XmlDocument xmlDoc = createIncompleteOrderXmlDoc(inWebOrderHandle);
-                if(xmlDoc.ChildNodes.Count > 0)
+                if(xmlDoc != null)
                 {
                     XmlNode accountSectionNode = XMLDocManager.GetNode(xmlDoc, @"Account");
                     outOrderAccountSection = readAccountSection(accountSectionNode);
