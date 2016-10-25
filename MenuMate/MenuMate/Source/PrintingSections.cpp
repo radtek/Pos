@@ -2349,6 +2349,7 @@ void TPrintSection::PrintMemberNameInformation(TReqPrintJob *PrintJob)
 {
 	if (PrintJob->Transaction->Membership.Member.ContactKey != 0)
 	{
+        UnicodeString title = "Membership";
 		UnicodeString Member = PrintJob->Transaction->Membership.Member.Alias + " ( " + PrintJob->Transaction->Membership.Member.MembershipNumber + " ) ";
 		switch(PrintJob->MembershipNameDisplay)
 		{
@@ -2415,14 +2416,13 @@ void TPrintSection::PrintMemberNameInformation(TReqPrintJob *PrintJob)
 				}
 			}
 		}
-
 		pPrinter->Line->ColCount = 2;
-		pPrinter->Line->Columns[0]->Width = pPrinter->Width - Member.Length();
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width - Member.Length() < 0 ?  title.Length() + 1 : pPrinter->Width - Member.Length();
 		pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
 		pPrinter->Line->Columns[1]->Width = Member.Length();
 		pPrinter->Line->Columns[1]->Alignment = taRightJustify;
 		pPrinter->Line->Columns[0]->Kanji = pPrinter->KanjiPrinter;
-		pPrinter->Line->Columns[0]->Text = "Membership";
+		pPrinter->Line->Columns[0]->Text = title;
 		pPrinter->Line->Columns[1]->Text = Member;
 		pPrinter->AddLine();
 	}
