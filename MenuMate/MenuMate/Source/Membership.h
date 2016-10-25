@@ -40,6 +40,9 @@ class TVoucherUsageDetail
     //Gift Card
     AnsiString GiftCardNumber;
     double PointsRedeemed;
+     //Puchased Gift Card
+    AnsiString PurchasedGiftCardNumber;
+    double PointsPurchased;
     //Member Voucher
     AnsiString VoucherName;
     double MemberVoucherDiscountAmount;
@@ -65,6 +68,7 @@ public :
    AnsiString PocketVoucherNumber;
    std::vector<AnsiString> DiscountUsage;
 };
+
 // ---------------------------------------------------------------------------
 enum eMemberNameOnPoleDisplay
 {

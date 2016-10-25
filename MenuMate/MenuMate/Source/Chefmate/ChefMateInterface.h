@@ -171,7 +171,10 @@ public:
 			UnicodeString inPartyName,
 			UnicodeString inPatronCount,
 			UnicodeString inSaleStartTime,
-                        UnicodeString inDeliveryTime );
+            UnicodeString inDeliveryTime,
+            UnicodeString inCustomerPhone,
+            UnicodeString inCustomerEmail,
+            UnicodeString inCustomerAddress );
 
     bool OpenTransferOrder(
 			__int32       inOrderDBKey,
@@ -244,6 +247,20 @@ public:
 			UnicodeString inOptionName,
 			UnicodeString inOptionKitchenName,
 			bool          inIsPlusPlus );
+
+    bool OpenWebOrder(
+			__int32       inOrderDBKey,
+			UnicodeString inServerName,
+			__int32       inOrderNumber,
+			UnicodeString inChitValue,
+			UnicodeString inTableTabName,
+			UnicodeString inOrderType,
+			TMMContactInfo inCustomerInfo,
+			UnicodeString inPartyName,
+			UnicodeString inPatronCount,
+			UnicodeString inSaleStartTime,
+            UnicodeString inDeliveryTime,
+			UnicodeString inPaymentStatus = "" );
 
 	OERROR CommitOrder();
 

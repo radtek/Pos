@@ -53,6 +53,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Model\AnalyticalData.cs" />
     <Compile Include="Model\Group.cs" />
+    <Compile Include="Model\GuiStyles.cs" />
     <Compile Include="Model\Item.cs" />
     <Compile Include="Model\ModelBase.cs" />
     <Compile Include="Model\Option.cs" />

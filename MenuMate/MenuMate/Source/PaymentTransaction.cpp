@@ -57,6 +57,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
 	RedeemWeightInformation = new TRedeemPointsInformation;
     RedeemPocketVoucherInformation = new TRedeemPocketVoucherInformation;
     RedeemGiftVoucherInformation = new TRedeemGiftVoucherInformation;
+    PurchasedGiftVoucherInformation = new TRedeemGiftVoucherInformation;
 	IsQuickPayTransaction = false;
 	QuickPaymentName = "";
 	SplittedItemKey = 0;
@@ -116,6 +117,7 @@ TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransac
     PartyName =  OtherTransaction.PartyName;
     RedeemPocketVoucherInformation =  OtherTransaction.RedeemPocketVoucherInformation;
     RedeemGiftVoucherInformation = OtherTransaction.RedeemGiftVoucherInformation;
+    PurchasedGiftVoucherInformation = OtherTransaction.PurchasedGiftVoucherInformation;
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
 }
 
@@ -163,6 +165,7 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
     PartyName = OtherTransaction.PartyName;
     RedeemPocketVoucherInformation =  OtherTransaction.RedeemPocketVoucherInformation;
     RedeemGiftVoucherInformation = OtherTransaction.RedeemGiftVoucherInformation;
+    PurchasedGiftVoucherInformation = OtherTransaction.PurchasedGiftVoucherInformation;
     IsVouchersProcessed = OtherTransaction.IsVouchersProcessed;
 }
 
@@ -386,7 +389,7 @@ bool TPaymentTransaction::TransOpenCashDraw()
 	for ( int i = 0 ; i <  PaymentsCount(); i++ )
 	{
 		TPayment *Payment = PaymentGet(i);
-		if((Payment->Properties & ePayTypeOpensCashDrawer) && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0) || Payment->RefundPoints)
+		if((Payment->Properties & ePayTypeOpensCashDrawer) && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0))
 		{
 			return true;
 		}
@@ -679,19 +682,35 @@ void TPaymentTransaction::BuildXMLPaymentTypes(TPOS_XMLBase &Data)
 
 void TPaymentTransaction::ApplyMembership(TMMContactInfo inMember, eMemberSource inMemberSource)
 {
-   ManagerDiscount->ClearMemberDiscounts(Orders);
-   ManagerDiscount->ClearThorVouchersDiscounts(Orders);
-   Membership.Assign(inMember, inMemberSource);
-   ApplyMembershipDiscounts();
-   Recalc();
+   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
+   {
+       ManagerDiscount->ClearMemberDiscounts(Orders);
+       ManagerDiscount->ClearThorVouchersDiscounts(Orders);
+       Membership.Assign(inMember, inMemberSource);
+       ApplyMembershipDiscounts();
+       Recalc();
+   }
+   else
+   {
+       ManagerDiscount->ClearMemberDiscounts(Orders);
+   }
 }
 
 void TPaymentTransaction::ApplyMembership(TContactMemberApplied inMemberApplied)
 {
-   ManagerDiscount->ClearMemberDiscounts(Orders);
-   Membership.Assign(inMemberApplied);
-   ApplyMembershipDiscounts();
-   Recalc();
+   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
+   {
+       ManagerDiscount->ClearMemberDiscounts(Orders);
+       Membership.Assign(inMemberApplied);
+       ApplyMembershipDiscounts();
+       Recalc();
+   }
+   else
+   {
+       ManagerDiscount->ClearMemberDiscounts(Orders);
+   }
 }
 
 void TPaymentTransaction::ApplyMembershipDiscounts()
@@ -726,7 +745,7 @@ void TPaymentTransaction::RemoveMembership()
 
    //Remove membership.
 	Membership.Clear();
-    Recalc();
+    //Recalc();
 }
 
 void TPaymentTransaction::DeleteOrders()
@@ -912,6 +931,9 @@ void TPaymentTransaction::copyBasicDetailsFrom( const TPaymentTransaction *Other
     ChitNumber              = OtherTransaction->ChitNumber;
     PartyName = OtherTransaction->PartyName;
     IsVouchersProcessed = OtherTransaction->IsVouchersProcessed;
+    RedeemPocketVoucherInformation =  OtherTransaction->RedeemPocketVoucherInformation;
+    RedeemGiftVoucherInformation = OtherTransaction->RedeemGiftVoucherInformation;
+    PurchasedGiftVoucherInformation = OtherTransaction->PurchasedGiftVoucherInformation;
     IsCopy					= true;
 }
 //---------------------------------------------------------------------------
@@ -967,5 +989,15 @@ bool TPaymentTransaction::CheckThorVoucherExistAsDiscount(AnsiString voucher_cod
 }
 
 //---------------------------------------------------------------------------
-
+void TPaymentTransaction::makeLogFile(UnicodeString str)
+{
+    AnsiString fileName = ExtractFilePath(Application->ExeName) + "EFTPOSCashDrawer_Logs.txt" ;
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+    List->Add(" "+ str +  "\n");
+    List->SaveToFile(fileName );
+}
 

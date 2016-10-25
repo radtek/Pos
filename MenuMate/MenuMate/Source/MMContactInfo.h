@@ -31,7 +31,7 @@ public:
    void SaveToStream(int CardVersion, TMemoryStream *Stream);
 
    UnicodeString RefreshPoleDisplayName(eMemberNameOnPoleDisplay inNameOnPoleDisplay );
-
+   void ExtractNames(AnsiString memberFullName);
    bool HasHotelNumber( void );
    bool IsCodePresent();
 
@@ -115,6 +115,10 @@ public:
     UnicodeString LatestLoginName;
     int PointRule;
     bool IsFirstVisitRewarded;
+
+    bool ValidateMandatoryField(AnsiString& message);
+    bool ValidateLastName(AnsiString& message);
+    bool ValidateFirstName(AnsiString& message);
 protected:
 	TMMContactInfo( UnicodeString inName );
 };

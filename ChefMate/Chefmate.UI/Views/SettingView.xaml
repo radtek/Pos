@@ -1,14 +1,12 @@
 ﻿<Window x:Class="Chefmate.UI.Views.SettingView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:converter="clr-namespace:Chefmate.UI.Converters"
-        xmlns:Enums ="clr-namespace:Chefmate.Core.Enums;assembly=Chefmate.Core"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" WindowState="Maximized"  Icon="../Images/C_Transparent.ico"
-        ResizeMode="NoResize" BorderThickness="3" BorderBrush="Gray" WindowStyle="None" Background="White">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:Enums="clr-namespace:Chefmate.Core.Enums;assembly=Chefmate.Core"
+        WindowState="Maximized"  Icon="../Images/C_Transparent.ico"
+        ResizeMode="NoResize" BorderThickness="3" BorderBrush="Gray" WindowStyle="None" Background="White" FontFamily="Tahoma">
     <Window.Resources>
         <ResourceDictionary>
-            <converter:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
-            <converter:RecallValueConverter x:Key="RecallValueConverter"/>
-            <converter:VolumeStringConverters x:Key="VolumeStringConverters"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Themes/MenumateTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
@@ -55,7 +53,7 @@
                                     <TextBox.InputBindings>
                                         <MouseBinding MouseAction="LeftClick" Command="{Binding Path=DatabaseAddressPreviewMouseUpCommand}"/>
                                     </TextBox.InputBindings>
-                                </TextBox> 
+                                </TextBox>
                                 <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Database Path :</Label>
                                 <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormTextBox}" IsReadOnly="True"
                                          Text="{Binding CurrentSettings.DbPath}">
@@ -137,10 +135,27 @@
                                     <MouseBinding MouseAction="LeftClick" Command="{Binding Path=SecondWarningPreviewMouseUpCommand}"/>
                                 </TextBox.InputBindings>
                             </TextBox>
+              
                         </Grid>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="1" Style="{StaticResource MarginalGroupBorder}">
-                        <CheckBox Content="Bump Only" IsChecked="{Binding CurrentSettings.BumpOnly}"></CheckBox>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition  />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox Grid.Row="0" Content="Bump Only" IsChecked="{Binding CurrentSettings.BumpOnly}"></CheckBox>
+                            <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Display Web Order Time :</Label>
+                            <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormTextBox}" Text="{Binding CurrentSettings.WebOrderTime}">
+                                <TextBox.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding Path=WebOrderTimePreviewMouseUpCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </Grid>
                     </Border>
                     <Border Grid.Row="5" Grid.Column="2" Style="{StaticResource MarginalGroupBorder}">
                         <StackPanel Orientation="Vertical">
@@ -150,10 +165,8 @@
                     </Border>
                     <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="6" Grid.Column="0"></Label>
                     <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="6" Grid.Column="1"></Label>
-                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="6" Grid.Column="2"></Label>
                     <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="7" Grid.Column="0" Content="Layout (Restart Required)"></Label>
                     <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="7" Grid.Column="1" Content="Recall Order Count"></Label>
-                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="7" Grid.Column="2" Content="Font Size"></Label>
                     <Border Grid.Row="8" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
                         <StackPanel>
                             <RadioButton GroupName="Layout" IsChecked="{Binding Path=CurrentSettings.OrderLayout, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static Enums:OrderLayout.TwoByFour}}">4 Columns</RadioButton>
@@ -170,12 +183,146 @@
                             <RadioButton GroupName="Recall" IsChecked="{Binding Path=CurrentSettings.RecallCount, Converter={StaticResource RecallValueConverter}, ConverterParameter=5}">5</RadioButton>
                             <RadioButton GroupName="Recall" IsChecked="{Binding Path=CurrentSettings.RecallCount, Converter={StaticResource RecallValueConverter}, ConverterParameter=10}">10</RadioButton>
                             <RadioButton GroupName="Recall" IsChecked="{Binding Path=CurrentSettings.RecallCount, Converter={StaticResource RecallValueConverter}, ConverterParameter=15}">15</RadioButton>
-                           
+
                         </StackPanel>
                     </Border>
-                    <Border Grid.Row="8" Grid.Column="2" Style="{StaticResource MarginalGroupBorder}">
-                        <ComboBox ItemsSource="{Binding FontSizes}" SelectedValue="{Binding CurrentSettings.CmFontSize}" MinWidth="150"
-                                  VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Font/Color">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=".33*"/>
+                        <ColumnDefinition Width=".33*"/>
+                        <ColumnDefinition Width=".33*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="0"/>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="1"/>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="0" Grid.Column="2"/>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="0" Content="Order"/>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="1" Content="Serving Courses"/>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="1" Grid.Column="2" Content="Items"/>
+                    <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">New Order : </Label>
+                            <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">First Warning :</Label>
+                            <Label Grid.Row="2" Grid.Column="0" Style="{StaticResource FormLabel}">Second Warning :</Label>
+                            <xctk:ColorPicker Grid.Row="0" Grid.Column="1" SelectedColor="{Binding CurrentSettings.NewOrderColor , Converter={StaticResource StringToColorConverter}}"></xctk:ColorPicker>
+                            <xctk:ColorPicker Grid.Row="1" Grid.Column="1" SelectedColor="{Binding CurrentSettings.FirstWarningColor , Converter={StaticResource StringToColorConverter}}"></xctk:ColorPicker>
+                            <xctk:ColorPicker Grid.Row="2" Grid.Column="1" SelectedColor="{Binding CurrentSettings.SecondWarningColor, Converter={StaticResource StringToColorConverter}}"></xctk:ColorPicker>
+                        </Grid>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="1" Style="{StaticResource MarginalGroupBorder}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">Font Size :</Label>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontSizes}" SelectedValue="{Binding CurrentSettings.GroupFontSize}" MinWidth="150"
+                                   HorizontalAlignment="Left"  />
+                            <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Font Family :</Label>
+                            <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontFamiles}" SelectedValue="{Binding CurrentSettings.GroupFontFamily}" MinWidth="150"
+                                   HorizontalAlignment="Left" />
+                            <Label Grid.Row="2" Grid.Column="0" Style="{StaticResource FormLabel}">Font Weight :</Label>
+                            <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding CurrentSettings.GroupFontBold}">Bold</CheckBox>
+                        </Grid>
+                    </Border>
+                    <Border Grid.Row="2" Grid.Column="2" Style="{StaticResource MarginalGroupBorder}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">Font Size :</Label>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontSizes}" SelectedValue="{Binding CurrentSettings.CmFontSize}" MinWidth="150"
+                                   HorizontalAlignment="Left" />
+                            <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Font Family :</Label>
+                            <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontFamiles}" SelectedValue="{Binding CurrentSettings.ItemFontFamily}" MinWidth="150"
+                                   HorizontalAlignment="Left" />
+
+                        </Grid>
+
+                    </Border>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="0"/>
+                    <Label Style="{StaticResource HeaderTopStyle}" Grid.Row="3" Grid.Column="1"/>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="0" Content="Chefmate Header"/>
+                    <Label Style="{StaticResource GroupHeaderStyle}" Grid.Row="4" Grid.Column="1" Content="Order Header"/>
+                    <Border Grid.Row="5" Grid.Column="0" Style="{StaticResource MarginalGroupBorder}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">Font Size :</Label>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontSizes}" SelectedValue="{Binding CurrentSettings.AnalysisFontSize}" MinWidth="150"
+                                   HorizontalAlignment="Left"  />
+                            <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Font Family :</Label>
+                            <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontFamiles}" SelectedValue="{Binding CurrentSettings.AnalysisFontFamily}" MinWidth="150"
+                                   HorizontalAlignment="Left" />
+                            <Label Grid.Row="2" Grid.Column="0" Style="{StaticResource FormLabel}">Background :</Label>
+                            <xctk:ColorPicker Grid.Row="2" Grid.Column="1" SelectedColor="{Binding CurrentSettings.HeaderBackgroundColor , Converter={StaticResource StringToColorConverter}}"></xctk:ColorPicker>
+                            <Label Grid.Row="3" Grid.Column="0" Style="{StaticResource FormLabel}">Font Color :</Label>
+                            <xctk:ColorPicker Grid.Row="3" Grid.Column="1" SelectedColor="{Binding CurrentSettings.HeaderForegroundColor, Converter={StaticResource StringToColorConverter}}"></xctk:ColorPicker>
+                            <Label Grid.Row="4" Grid.Column="0" Style="{StaticResource FormLabel}">Font Weight :</Label>
+
+                            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding CurrentSettings.AnalysisFontBold}">Bold</CheckBox>
+                        </Grid>
+                    </Border>
+                    <Border Grid.Row="5" Grid.Column="1" Style="{StaticResource MarginalGroupBorder}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource FormLabel}">Font Size :</Label>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontSizes}" SelectedValue="{Binding CurrentSettings.OrderHeaderFontSize}" MinWidth="150"
+                                   HorizontalAlignment="Left" />
+                            <Label Grid.Row="1" Grid.Column="0" Style="{StaticResource FormLabel}">Font Family :</Label>
+                            <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource FormComboBox}" ItemsSource="{Binding FontFamiles}" SelectedValue="{Binding CurrentSettings.OrderFontFamily}" MinWidth="150"
+                                   HorizontalAlignment="Left" />
+                        </Grid>
                     </Border>
                 </Grid>
             </TabItem>

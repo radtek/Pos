@@ -3,6 +3,7 @@
 #include "SecurityReference.h"
 #include "ManagerReports.h"
 #include "GlobalSettings.h"
+#include "ReceiptUtility.h"
 
 XAccumulatedTotalDetailsReportSection::XAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	: BaseReportSection(mmXReport, mmAccumulatedTotalDetailsSection, dbTransaction, globalSettings)
@@ -25,8 +26,9 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
     const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
 	const Currency closingBalance = openingBalance + todaysEarnings;
 
-	const AnsiString startInvoiceNumber = GetStartInvoiceNumber();
-	const AnsiString endInvoiceNumber = GetEndInvoiceNumber();
+	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
+	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
+    FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
 
     AddTitle(printOut, "Site Accumulated Zed");
 	printOut->PrintFormat->NewLine();
@@ -38,7 +40,7 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         reportSectionDisplayTraits->ApplyTraits(printOut);
     }
 
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
 	printOut->PrintFormat->Line->FontInfo.Reset();
 
 	printOut->PrintFormat->Line->Columns[0]->Text = "Opening Balance:";
@@ -66,6 +68,26 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 	printOut->PrintFormat->AddLine();
 }
 
+void XAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
+{
+    AnsiString prefix1 = TReceiptUtility::ExtractInvoiceNumber(inStartInvoiceNumber);
+    if(StrToInt(inStartInvoiceNumber) > 0 )//&& StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+    {
+        int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+        inStartInvoiceNumber = TReceiptUtility::LeftPadString(inStartInvoiceNumber, "0", noOfDigits);
+
+    }
+    inStartInvoiceNumber = prefix1 + inStartInvoiceNumber;
+
+    AnsiString prefix2 = TReceiptUtility::ExtractInvoiceNumber(inEndInvoiceNumber);
+    if(StrToInt(inEndInvoiceNumber) > 0 )//&& StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+    {
+        int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+        inEndInvoiceNumber = TReceiptUtility::LeftPadString(inEndInvoiceNumber, "0", noOfDigits);
+
+    }
+    inEndInvoiceNumber = prefix2 + inEndInvoiceNumber;
+}
 AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber()
 {
 	AnsiString beginInvoiceNum = 0;
@@ -88,7 +110,7 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber()
 	}
 	else
 	{
-		beginInvoiceNum = "0";
+		beginInvoiceNum = GetLastEndInvoiceNumber();
 	}
 
 	return beginInvoiceNum;
@@ -119,8 +141,37 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetEndInvoiceNumber()
 	}
 	else
 	{
-		endInvoiceNum = "0";
+		endInvoiceNum = GetLastEndInvoiceNumber();
 	}
 
 	return endInvoiceNum;
+}
+
+AnsiString XAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
+{
+	AnsiString lastEndInvoiceNum = 0;
+    TIBSQL *qrEndInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
+    qrEndInvoiceNumber->SQL->Text = "SELECT "
+                                        "first 1 AB.INVOICE_NUMBER "
+                                    "FROM ARCBILL AB "
+                                    "LEFT JOIN ARCHIVE A on AB.ARCBILL_KEY = A.ARCBILL_KEY "
+                                    "LEFT JOIN ARCORDERDISCOUNTS AOD on A.ARCHIVE_KEY = AOD.ARCHIVE_KEY  "
+                                    "WHERE(COALESCE(AOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
+                                    "GROUP BY AB.ARCBILL_KEY, AB.INVOICE_NUMBER "
+                                    "ORDER BY AB.ARCBILL_KEY desc ";
+
+    qrEndInvoiceNumber->ExecQuery();
+
+    if(!qrEndInvoiceNumber->Eof)
+    {
+        for(; !qrEndInvoiceNumber->Eof; qrEndInvoiceNumber->Next())
+        {
+            lastEndInvoiceNum = qrEndInvoiceNumber->Fields[0]->AsString;
+        }
+    }
+    else
+    {
+        lastEndInvoiceNum = "0";
+    }
+	return lastEndInvoiceNum;
 }

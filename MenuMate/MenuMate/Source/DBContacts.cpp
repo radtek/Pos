@@ -179,6 +179,7 @@ void TDBContacts::GetContactDetails(Database::TDBTransaction &DBTransaction, int
          Info.IsFirstVisitRewarded = IBInternalQuery->FieldByName("IS_FIRSTVISIT_REWARDED")->AsString == 'T' ? true : false;
 		 int PointsRules = IBInternalQuery->FieldByName("POINTS_RULES")->AsInteger;
          TPointsRulesSetUtils().Expand(PointsRules, Info.Points.PointsRules);
+         Info.Points.Clear();
          GetPointsBalances(DBTransaction,inContactKey,Info.Points);
          GetContactCards(DBTransaction,inContactKey,Info.Cards);
 		 GetDiscountDetails(DBTransaction, Info.ContactKey, Info);
@@ -451,7 +452,7 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 	  IBInternalQuery->ParamByName("MOBILE")->AsString = Info.Mobile.SubString(1, 25);
 	  IBInternalQuery->ParamByName("LOCATION_ADDRESS")->AsString = Info.LocationAddress.SubString(1, 250);
 	  IBInternalQuery->ParamByName("MAILING_ADDRESS")->AsString = Info.MailingAddress.SubString(1, 250);
-	  IBInternalQuery->ParamByName("EMAIL")->AsString = Info.EMail.SubString(1, 50);
+	  IBInternalQuery->ParamByName("EMAIL")->AsString = Info.EMail.SubString(1, 256);
 	  IBInternalQuery->ParamByName("PIN")->AsString = Info.PIN.SubString(1, PIN_Length);
 	  IBInternalQuery->ParamByName("ACCESS_LEVEL")->AsInt64 = Info.AccessLevel;
 	  IBInternalQuery->ParamByName("TAB_ENALBED")->AsString = Info.TabEnabled ? "T" : "F";
@@ -501,7 +502,7 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
       TContactPoints dbPoints;
       TDBContacts::GetPointsBalances(DBTransaction, Info.ContactKey, dbPoints);
 
-      // sync the earned points
+     // sync the earned points
       if(Info.Points.getPointsBalance(ptstLoyalty) != (dbPoints.getPointsBalance(ptstLoyalty) +
                                                        dbPoints.getBirthDayRewardPoints() +
                                                        dbPoints.getFirstVisitPoints() ))
@@ -600,11 +601,12 @@ void TDBContacts::SetContactCard(Database::TDBTransaction &DBTransaction, int in
 
           IBInternalQuery->Close();
           IBInternalQuery->SQL->Text =
-              "INSERT INTO CONTACTCARDS (" "CONTACTCARDS_KEY," "CONTACTS_KEY," "SWIPE_CARD) " "VALUES (" ":CONTACTCARDS_KEY,"
-              ":CONTACTS_KEY," ":SWIPE_CARD);";
+              "INSERT INTO CONTACTCARDS (" "CONTACTCARDS_KEY," "CONTACTS_KEY," "SWIPE_CARD,IS_ACTIVE) " "VALUES (" ":CONTACTCARDS_KEY,"
+              ":CONTACTS_KEY," ":SWIPE_CARD,:IS_ACTIVE);";
           IBInternalQuery->ParamByName("CONTACTCARDS_KEY")->AsInteger = RetVal;
           IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
           IBInternalQuery->ParamByName("SWIPE_CARD")->AsString = Card;
+          IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = 'T';
           IBInternalQuery->ExecQuery();
       }
    }
@@ -1086,7 +1088,7 @@ bool TDBContacts::GetContactCards(Database::TDBTransaction &DBTransaction,int in
 		// Contact Cards.
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
-		 "select SWIPE_CARD from CONTACTCARDS where CONTACTS_KEY = :CONTACTS_KEY ";
+		 "select SWIPE_CARD from CONTACTCARDS where CONTACTS_KEY = :CONTACTS_KEY AND IS_ACTIVE='T'";
 		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactsKey;
 		IBInternalQuery->ExecQuery();
 		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())

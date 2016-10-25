@@ -27,7 +27,7 @@ object frmMemberCreation: TfrmMemberCreation
     TabOrder = 0
     object lbeEmail: TLabel
       Left = 190
-      Top = 65
+      Top = 45
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -38,9 +38,9 @@ object frmMemberCreation: TfrmMemberCreation
       ParentFont = False
     end
     object lbeHeader: TLabel
-      Left = 20
+      Left = 10
       Top = 4
-      Width = 395
+      Width = 400
       Height = 16
       Caption = 
         'Fields marked with * are mandatory to be entered to create membe' +
@@ -48,13 +48,13 @@ object frmMemberCreation: TfrmMemberCreation
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clMaroon
       Font.Height = -13
-      Font.Name = 'Arial'
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
     end
     object lbeContactPhone: TLabel
       Left = 190
-      Top = 185
+      Top = 255
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -66,7 +66,7 @@ object frmMemberCreation: TfrmMemberCreation
     end
     object lbeName: TLabel
       Left = 190
-      Top = 125
+      Top = 135
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -78,7 +78,7 @@ object frmMemberCreation: TfrmMemberCreation
     end
     object lbeLastName: TLabel
       Left = 190
-      Top = 185
+      Top = 195
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -128,7 +128,7 @@ object frmMemberCreation: TfrmMemberCreation
     end
     object btnEmail: TTouchBtn
       Left = 28
-      Top = 50
+      Top = 30
       Width = 150
       Height = 53
       Font.Charset = DEFAULT_CHARSET
@@ -145,10 +145,25 @@ object frmMemberCreation: TfrmMemberCreation
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = EditCustomerBasicDetails
     end
+    object cbNoEmail: TCheckBox
+      Left = 28
+      Top = 89
+      Width = 167
+      Height = 25
+      Caption = 'Email not available'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 3
+      OnClick = cbNoEmailMouseClick
+    end
     object btnLastName: TTouchBtn
       Tag = 2
       Left = 28
-      Top = 170
+      Top = 180
       Width = 150
       Height = 53
       Font.Charset = DEFAULT_CHARSET
@@ -168,7 +183,7 @@ object frmMemberCreation: TfrmMemberCreation
     object btnContactPhone: TTouchBtn
       Tag = 3
       Left = 28
-      Top = 230
+      Top = 240
       Width = 150
       Height = 53
       Font.Charset = DEFAULT_CHARSET
@@ -354,7 +369,7 @@ object frmMemberCreation: TfrmMemberCreation
     object btnName: TTouchBtn
       Tag = 1
       Left = 28
-      Top = 110
+      Top = 120
       Width = 150
       Height = 53
       Font.Charset = DEFAULT_CHARSET

@@ -226,13 +226,11 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::imgExitClick(TObject *Sender)
 {
 	Close();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::btnPrinterMaintenanceClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -256,7 +254,6 @@ void __fastcall TfrmMaintain::btnPrinterMaintenanceClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::btnUsersClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -497,6 +494,11 @@ void __fastcall TfrmMaintain::BitBtn2Click(TObject *Sender)
 			frmMessageMaintenance->MessageType = ePatronTypes;
 			frmMessageMaintenance->ShowModal();
 		}
+		else if (Sender == tbtnCashDrawer)
+		{
+			frmMessageMaintenance->MessageType = eCashDrawer;
+			frmMessageMaintenance->ShowModal();
+		}
 	}
 	else if (Result == lsDenied)
 	{
@@ -508,7 +510,6 @@ void __fastcall TfrmMaintain::BitBtn2Click(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::BtnPaymentClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -571,7 +572,6 @@ void __fastcall TfrmMaintain::btnChangeRoomsClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::btnDiscountsClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -597,7 +597,6 @@ void __fastcall TfrmMaintain::btnDiscountsClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::tbtnLocationsClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -636,7 +635,6 @@ void __fastcall TfrmMaintain::tbtnLocationsClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::tbPHSInterfaceClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -670,12 +668,10 @@ void __fastcall TfrmMaintain::tbPHSInterfaceClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::TouchBtn3MouseClick(TObject *Sender)
 {
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::tbtnSmartCardsMouseClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -699,8 +695,6 @@ void __fastcall TfrmMaintain::tbtnSmartCardsMouseClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmMaintain::TouchBtn1MouseClick(TObject *Sender)
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -710,7 +704,6 @@ void __fastcall TfrmMaintain::TouchBtn1MouseClick(TObject *Sender)
 	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::tbIntaMateMouseClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -817,7 +810,6 @@ void __fastcall TfrmMaintain::tbIntaMateMouseClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::ExportIntaMateData()
 {
 	// Display Launch List
@@ -1035,7 +1027,6 @@ void __fastcall TfrmMaintain::ExportIntaMateListStaff()
 	frmProcessing->Close();
 }
 
-
 void __fastcall TfrmMaintain::ExportIntaMatePatronCounts()
 {
 	std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
@@ -1128,14 +1119,12 @@ void __fastcall TfrmMaintain::ExportIntaMateFixed()
 	frmProcessing->Close();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::ResetWebMate()
 {
 	TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
 	TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::RefreshWebMateBtnColor()
 {
 	if( TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
@@ -1161,7 +1150,6 @@ void __fastcall TfrmMaintain::RefreshWebMateBtnColor()
 
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::tbtnPocketVouchersMouseClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -1194,7 +1182,6 @@ void __fastcall TfrmMaintain::tbtnPocketVouchersMouseClick(TObject *Sender)
 	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::tbtnEBetMouseClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -1260,7 +1247,6 @@ void __fastcall TfrmMaintain::tbtnEBetMouseClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 const SELDIRHELP = 1000;
 void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 {
@@ -1557,7 +1543,6 @@ void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::btnGUIMouseClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -1608,7 +1593,6 @@ void __fastcall TfrmMaintain::btnSkimMouseclick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::WriteOffMouseClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -1634,7 +1618,6 @@ void __fastcall TfrmMaintain::WriteOffMouseClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::TouchBtnReservationsMouseClick(TObject *Sender)
 {
 	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
@@ -1906,7 +1889,6 @@ void __fastcall TfrmMaintain::RefreshReservationBtnColor()
 
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmMaintain::TouchBtnLoyaltyMateMouseClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
@@ -1928,7 +1910,6 @@ void __fastcall TfrmMaintain::TouchBtnLoyaltyMateMouseClick(TObject *Sender)
 		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 	}
 }
-
 //---------------------------------------------------------------------------
 bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransaction)
 {
@@ -1963,43 +1944,13 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 
 	Item1.CloseSelection = true;
 	SelectionForm->Items.push_back(Item1);
-
-	TVerticalSelection Item2;
-	Item2.Title = "Service URL \r" + TGlobalSettings::Instance().ServiceURL;
-	Item2.Properties["Action"] = IntToStr(2);
-	Item2.Properties["Color"] = IntToStr(clNavy);
-	Item2.CloseSelection = true;
-	SelectionForm->Items.push_back(Item2);
-
-	TVerticalSelection Item3;
-
-	Item3.Title = "Member Activation URL \r" + TGlobalSettings::Instance().MemberActivationURL;
-	Item3.Properties["Action"] = IntToStr(3);
-	Item3.CloseSelection = true;
-	SelectionForm->Items.push_back(Item3);
-
-	TVerticalSelection Item4;
-
-	Item4.Title = "Activation Token Print \r" + UnicodeString(TGlobalSettings::Instance().EnableActivationTokenPrint ? "Enabled" : "Disabled");
-	Item4.Properties["Action"] = IntToStr(4);
-	if( TGlobalSettings::Instance().EnableActivationTokenPrint)
-	{
-		Item4.Properties["Color"] = IntToStr(clGreen);
-	}
-	else
-	{
-		Item4.Properties["Color"] = IntToStr(clRed);
-	}
-	Item4.CloseSelection = true;
-	SelectionForm->Items.push_back(Item4);
-
-	TVerticalSelection Item5;
-
-	Item5.Title = "Activation Token Greeting \r" + TGlobalSettings::Instance().ActivationTokenGreeting;
-	Item5.Properties["Action"] = IntToStr(5);
-	Item5.CloseSelection = true;
-	SelectionForm->Items.push_back(Item5);
-
+    TVerticalSelection Item2;
+    Item2.Title = "Upgrade Local Members";
+    Item2.Properties["Action"] = IntToStr(2);
+    Item2.Properties["Color"] = IntToStr(clNavy);
+    Item2.CloseSelection = true;
+    Item2.IsDisabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
+    SelectionForm->Items.push_back(Item2);
 	SelectionForm->ShowModal();
 	TVerticalSelection SelectedItem;
 	if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -2007,7 +1958,7 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 		int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
 		switch(Action)
 		{
-		case 1 :
+		  case 1 :
 			{
 				std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
 
@@ -2057,106 +2008,72 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 			}  break;
 		case 2 :
 			{
-				std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-				frmTouchKeyboard->MaxLength = 200;
-				frmTouchKeyboard->AllowCarriageReturn = false;
-				frmTouchKeyboard->StartWithShiftDown = false;
-				frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().ServiceURL;
-				frmTouchKeyboard->Caption = "LoyaltyMate Service URL";
-				if (frmTouchKeyboard->ShowModal() == mrOk)
-				{
-					TGlobalSettings::Instance().ServiceURL = frmTouchKeyboard->KeyboardText;
-					DBTransaction.StartTransaction();
-					TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmServiceURL,TGlobalSettings::Instance().ServiceURL);
-					DBTransaction.Commit();
-					MessageBox("MenuMate Restart Required.", "Info", MB_OK + MB_ICONINFORMATION);
-				}
+
+                if (MessageBox("This will setup all local members for Loyaltymate and this action is irrevocable. Please confirm that you wish to proceed?",
+									"Upgrade Local Members", MB_YESNO + MB_ICONQUESTION) == IDYES)
+                {
+                    std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
+                    frmProcessing->CanCancel = false;
+                    frmProcessing->Message = "Upgrading Members...";
+                    frmProcessing->ShowProgress = false;
+                    frmProcessing->Show();
+                    DBTransaction.StartTransaction();
+                    UpgradeLocalMembersCode(DBTransaction);
+                    DBTransaction.Commit();
+                    frmProcessing->Close();
+                }
+
 			}  break;
-		case 3 :
-			{
-				std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-				frmTouchKeyboard->MaxLength = 200;
-				frmTouchKeyboard->AllowCarriageReturn = false;
-				frmTouchKeyboard->StartWithShiftDown = false;
-				frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().MemberActivationURL;
-				frmTouchKeyboard->Caption = "Member Activation URL";
-				if (frmTouchKeyboard->ShowModal() == mrOk)
-				{
-					TGlobalSettings::Instance().MemberActivationURL = frmTouchKeyboard->KeyboardText;
-					DBTransaction.StartTransaction();
-					TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmMemberActivationURL,TGlobalSettings::Instance().MemberActivationURL);
-					DBTransaction.Commit();
-				}
-			} break;
-		case 4 :
-			{
-				std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-				TVerticalSelection Item;
-				Item.Title = "Cancel";
-				Item.Properties["Color"] = "0x000098F5";
-				Item.Properties["FontColor"] = IntToStr(clWhite);
-				Item.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item);
-
-				TVerticalSelection Item1;
-				Item1.Title = "Enable";
-				Item1.Properties["Action"] = IntToStr(1);
-				Item1.Properties["Color"] = IntToStr(clGreen);
-				Item1.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item1);
-
-				TVerticalSelection Item2;
-				Item2.Title = "Disable";
-				Item2.Properties["Action"] = IntToStr(2);
-				Item2.Properties["Color"] = IntToStr(clRed);
-				Item2.CloseSelection = true;
-				SelectionForm1->Items.push_back(Item2);
-
-				SelectionForm1->ShowModal();
-				TVerticalSelection SelectedItem1;
-				if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
-				{
-					int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
-					switch(Action)
-					{
-					case 1 :
-						{
-							TGlobalSettings::Instance().EnableActivationTokenPrint = true;
-						}  break;
-					case 2 :
-						{
-							TGlobalSettings::Instance().EnableActivationTokenPrint = false;
-						}  break;
-					}
-
-					DBTransaction.StartTransaction();
-					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableActivationTokenPrint,TGlobalSettings::Instance().EnableActivationTokenPrint);
-					DBTransaction.Commit();
-				}
-			} break;
-		case 5 :
-			{
-				std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-				frmTouchKeyboard->MaxLength = 200;
-				frmTouchKeyboard->AllowCarriageReturn = false;
-				frmTouchKeyboard->StartWithShiftDown = false;
-				frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().ActivationTokenGreeting;
-				frmTouchKeyboard->Caption = "Activation Receipt Greeting";
-				if (frmTouchKeyboard->ShowModal() == mrOk)
-				{
-					TGlobalSettings::Instance().ActivationTokenGreeting = frmTouchKeyboard->KeyboardText;
-					DBTransaction.StartTransaction();
-					TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmActivationTokenGreeting,TGlobalSettings::Instance().ActivationTokenGreeting);
-					DBTransaction.Commit();
-				}
-			} break;
 		}
 	}
 	else
-	keepFormAlive = false;
+	  keepFormAlive = false;
 
 	return keepFormAlive;
+}
+
+void TfrmMaintain::UpgradeLocalMembersCode(Database::TDBTransaction &DBTransaction)
+{
+    TIBSQL *getQuery = DBTransaction.Query(DBTransaction.AddQuery());
+ getQuery->Close();
+ getQuery->SQL->Text = "SELECT b.CONTACTS_KEY, b.PROX_CARD,b.CONTACT_Type, a.CONTACTCARDS_KEY,a.SWIPE_CARD  "
+                          "FROM CONTACTS b  left join CONTACTCARDS a on a.CONTACTS_KEY = b.CONTACTS_KEY "
+                          "WHERE B.CONTACT_TYPE = 2 and (b.MEMBER_CARD_CODE = '' or b.MEMBER_CARD_CODE is null) "
+                           "and (b.PROX_CARD <> '' or a.SWIPE_CARD <> '') " ;
+ getQuery->ExecQuery();
+    if(!getQuery->Eof)
+    {
+       TIBSQL *updateSwipeCardQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       TIBSQL *updateCardCodeQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       updateSwipeCardQuery->SQL->Text =" UPDATE CONTACTCARDS SET IS_ACTIVE = 'F' WHERE CONTACTS_KEY=:CONTACTS_KEY ";
+       updateCardCodeQuery->SQL->Text = " UPDATE CONTACTS SET MEMBER_CARD_CODE = :MEMBER_CARD_CODE,PROX_CARD ='' "
+                                        " WHERE CONTACTS_KEY=:CONTACTS_KEY";
+       for(; !getQuery->Eof; getQuery->Next())
+        {
+
+            bool updateSwipe = false;
+            AnsiString cardCode = getQuery->FieldByName("SWIPE_CARD")->AsString;
+            if(cardCode == NULL || cardCode == "")
+            {
+                cardCode = getQuery->FieldByName("PROX_CARD")->AsString;
+            }
+            else
+            {
+                updateSwipe = true;
+            }
+            updateSwipeCardQuery->Close();
+            updateCardCodeQuery->Close();
+            updateCardCodeQuery->ParamByName("MEMBER_CARD_CODE")->AsString = cardCode;
+            updateCardCodeQuery->ParamByName("CONTACTS_KEY")->AsInteger = getQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            updateSwipeCardQuery->ParamByName("CONTACTS_KEY")->AsInteger = getQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            updateCardCodeQuery->ExecQuery();
+            if(updateSwipe)
+                updateSwipeCardQuery->ExecQuery();
+        }
+    }
+
+
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshLoyaltyMateBtnColor()
@@ -2211,7 +2128,6 @@ TLoginSuccess __fastcall TfrmMaintain::CheckAccess(SecurityCheck AccessCheck)
 	return Result;
 }
 //---------------------------------------------------------------------------
-
 void TfrmMaintain::CustomerOrderTypes(void)
 {
 	TMMContactInfo TempUserInfo;
@@ -2238,8 +2154,6 @@ void TfrmMaintain::CustomerOrderTypes(void)
 
 }
 //---------------------------------------------------------------------------
-//add frn
-
 void __fastcall TfrmMaintain::tbMaintenanceClick(TObject *Sender)
 {
 	Pages->ActivePage = tsMaintenance;
@@ -2258,7 +2172,6 @@ void __fastcall TfrmMaintain::tbInterfacesClick(TObject *Sender)
 	RedrawButtons(Sender);
 }
 //---------------------------------------------------------------------------
-
 void TfrmMaintain::RedrawButtons(TObject * Sender)
 {
 	TTouchBtn* CurrentButton = (TTouchBtn*) Sender;
@@ -2408,8 +2321,6 @@ void __fastcall TfrmMaintain::tchbtnDrinkCommandMouseClick(TObject *Sender)
         }
     }
 }
-
-// To handle the interface of ThorLink
 
 void __fastcall TfrmMaintain::TouchBtnThorlinkClick(TObject *Sender)
 {
@@ -2646,6 +2557,7 @@ bool TfrmMaintain::ShowThorlinkSettings(Database::TDBTransaction & DBTransaction
 
     return keepFormAlive;
 }
+
 void __fastcall TfrmMaintain::RefreshThorlinkButtonColor()
 {
 
@@ -2677,7 +2589,6 @@ void __fastcall TfrmMaintain::RefreshThorlinkButtonColor()
     }
 
 }
-
 
 TVerticalSelection TfrmMaintain::CreateSelectionItem(UnicodeString title, UnicodeString color, bool isCloseSelectionAllowed, int fontColor,
                                                 int action)
@@ -3120,7 +3031,7 @@ bool TfrmMaintain::DisplayBarExchangeSettings(Database::TDBTransaction &DBTransa
 
 	return keepFormAlive;
 }
-//----------------------RunRateBoard-------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool TfrmMaintain::DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransaction)
 {
    bool keepFormAlive = true;
@@ -3310,7 +3221,6 @@ bool TfrmMaintain::DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransa
 
 	return keepFormAlive;
 }
-
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshBarExchangeBtnColor()
 {
@@ -3335,7 +3245,7 @@ void __fastcall TfrmMaintain::RefreshBarExchangeBtnColor()
 		TouchBtnBarExchange->Caption = "Bar Exchange \r[Unregistered]";
 	}
 }
-//--------------------------RunRateBoard------------------------------------
+//--------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshRunRateBoard()
 {
 	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
@@ -3389,7 +3299,6 @@ void __fastcall TfrmMaintain::RefreshDrinkCommandButtonColor()
         tchbtnDrinkCommand->Enabled = TDeviceRealTerminal::Instance().IMManager->Registered;
     }
 }
-
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::SaveServerCheck()
 {
@@ -3418,6 +3327,7 @@ void __fastcall TfrmMaintain::SaveServerCheck()
 		ServerEnable=true;
 	}
 }
+
 void __fastcall TfrmMaintain::TouchBtnClipInterfaceMouseClick(TObject *Sender)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -3660,6 +3570,7 @@ void TfrmMaintain::SaveAccountingConfig(AccountingType accountingType)
 		MessageBox("Failed to save Xero Integration configuration. " + Exc.Message, "Error", MB_OK);
 	}
 }
+
 void __fastcall TfrmMaintain::TouchBtnRunRateBoardMouseClick(TObject *Sender)
 {
      TMMContactInfo TempUserInfo;
@@ -3695,6 +3606,7 @@ void TfrmMaintain::SetupGLCodes()
   frmSetupGlCodes->TabDepositCreditReceived = TGlobalSettings::Instance().TabDepositCreditReceivedGLCode;
   frmSetupGlCodes->TabDepositCreditRefunded = TGlobalSettings::Instance().TabDepositCreditRefundedGLCode;
   frmSetupGlCodes->FloatGLCode = TGlobalSettings::Instance().FloatGLCode;
+  frmSetupGlCodes->EftPosTip = TGlobalSettings::Instance().EftPosTipGLCode;
   if(frmSetupGlCodes->ShowModal() == mrOk)
    {
         TGlobalSettings::Instance().PointsPurchasedGLCode = frmSetupGlCodes->PointsPurchased;
@@ -3706,6 +3618,7 @@ void TfrmMaintain::SetupGLCodes()
         TGlobalSettings::Instance().TabDepositCreditReceivedGLCode = frmSetupGlCodes->TabDepositCreditReceived ;
         TGlobalSettings::Instance().TabDepositCreditRefundedGLCode = frmSetupGlCodes->TabDepositCreditRefunded ;
         TGlobalSettings::Instance().FloatGLCode = frmSetupGlCodes->FloatGLCode ;
+        TGlobalSettings::Instance().EftPosTipGLCode = frmSetupGlCodes->EftPosTip;
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmPointsPurchasedGLCode, TGlobalSettings::Instance().PointsPurchasedGLCode );
@@ -3717,6 +3630,7 @@ void TfrmMaintain::SetupGLCodes()
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmTabDepositCreditReceivedGLCode, TGlobalSettings::Instance().TabDepositCreditReceivedGLCode );
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmTabDepositCreditRefundedGLCode, TGlobalSettings::Instance().TabDepositCreditRefundedGLCode );
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmFloatGLCode, TGlobalSettings::Instance().FloatGLCode );
+        TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmEftPosTipGLCode, TGlobalSettings::Instance().EftPosTipGLCode);
         DBTransaction.Commit();
    }
    delete frmSetupGlCodes;
@@ -3855,4 +3769,5 @@ void TfrmMaintain::PeachTreeSettings()
     }
 }
 //------------------------------------------------------------------------------------------
+
 

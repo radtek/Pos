@@ -71,23 +71,30 @@ void __fastcall TfrmDeleteRecipe::vtvStockGetText(TBaseVirtualTree *Sender,
 
 void __fastcall TfrmDeleteRecipe::DeleteRecipeOnClick(TObject *Sender)
 {
-		if (vtvStock->IsEditing())
-			vtvStock->EndEditNode();
+    if (vtvStock->IsEditing())
+        vtvStock->EndEditNode();
+
+    if(checkIsRecipeSelectedOrNot())
+    {
 
         if(Application->MessageBox("Are you sure you want to delete the selected recipes", "", MB_YESNO + MB_ICONQUESTION) == ID_NO)
             return;
 
-		PVirtualNode Node = vtvStock->GetFirst();
-		while (Node)
-		{
-			TDeleteRecipeNodeData *NodeData = (TDeleteRecipeNodeData *)vtvStock->GetNodeData(Node);
-
+        PVirtualNode Node = vtvStock->GetFirst();
+        while (Node)
+        {
+            TDeleteRecipeNodeData *NodeData = (TDeleteRecipeNodeData *)vtvStock->GetNodeData(Node); 
             if(vtvStock->Selected[Node])
                 DeleteRecipe(NodeData->Recipe_ID);
 
-			Node = vtvStock->GetNext(Node);
-		}
-    DisplayRecipes();
+            Node = vtvStock->GetNext(Node);
+        }
+        DisplayRecipes();
+    }
+    else
+    {
+        Application->MessageBox("Select a recipe to delete", "Information", MB_OK + MB_ICONINFORMATION);
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -102,4 +109,24 @@ void TfrmDeleteRecipe::DeleteRecipe(int Recipe_ID)
 
 }
 //---------------------------------------------------------------------------
-
+bool TfrmDeleteRecipe::checkIsRecipeSelectedOrNot()
+{
+    bool isRecipeSelected = true;
+    PVirtualNode Node = vtvStock->GetFirst();
+    while(Node)
+    {
+        TDeleteRecipeNodeData *NodeData = (TDeleteRecipeNodeData *)vtvStock->GetNodeData(Node);
+        if(!vtvStock->Selected[Node])
+        {
+           isRecipeSelected = false;
+        }
+        else
+        {
+           isRecipeSelected = true;
+           break;
+        }
+        Node = vtvStock->GetNext(Node);
+    }
+    return isRecipeSelected;
+}
+//---------------------------------------------------------------------------

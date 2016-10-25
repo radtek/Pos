@@ -74,11 +74,11 @@ struct TInvoiceItemSummary
 //---------------------------------------------------------------------------
 struct TInvoiceSummary
 {
-	TInvoiceSummary() : BackOrderWarning(false), TotalExcl(0), TotalInc(0), TotalGST(0) {}
+	TInvoiceSummary() : BackOrderWarning(false), TotalExcl(0), TotalInc(0), TotalGST(0.0) {}
 	bool			BackOrderWarning;
-	Currency		TotalExcl;
-	Currency		TotalInc;
-	Currency		TotalGST;
+	double	    	TotalExcl;
+	double  		TotalInc;
+	float		    TotalGST;
 };
 //---------------------------------------------------------------------------
 class TfrmReceiveInvoice : public TForm
@@ -97,7 +97,7 @@ __published:	// IDE-managed Components
     TRadioButton *rbExcludingGST;
     TRadioButton *rbIncludingGST;
     TNumericEdit *neCost;
-    TNumericEdit *neTotalCost;
+    TRichEdit *neTotalCost;
     TLabel *Label1;
     TLabel *Label2;
     TLabel *Label3;
@@ -143,6 +143,8 @@ __published:	// IDE-managed Components
     TIBQuery *qrGetStockUnitSize;
     TIBQuery *qrUpdateDateInStockTrans;
     TIBQuery *qrUpdateDateInTransactionBatch;
+    TEdit *myEditBox;
+    TRichEdit *reGstValue;
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
     void __fastcall vtvStockQtyAfterPaint(TBaseVirtualTree *Sender, TCanvas *TargetCanvas);
@@ -178,6 +180,20 @@ __published:	// IDE-managed Components
     void __fastcall btnPrintCommitInvoiceClick(TObject *Sender);
     void __fastcall btnSaveClick(TObject *Sender);
     void __fastcall btnCommitPackingSlipClick(TObject *Sender);
+    void __fastcall neCostKeyPress(TObject *Sender, char &Key);
+    void __fastcall neTotalCostKeyPress(TObject *Sender, char &Key);
+    void __fastcall neBackOrderKeyPress(TObject *Sender, char &Key);
+    void __fastcall myEditBoxKeyPress(TObject *Sender, char &Key);
+    void __fastcall myEditBoxKeyDown(TObject *Sender, WORD &Key,
+          TShiftState Shift);
+    void __fastcall myEditBoxExit(TObject *Sender);
+    void __fastcall reGstValueKeyPress(TObject *Sender, char &Key);
+    void __fastcall reGstValueKeyDown(TObject *Sender, WORD &Key,
+          TShiftState Shift);
+    void __fastcall reGstValueExit(TObject *Sender);
+    void __fastcall reGstValueMouseDown(TObject *Sender,
+          TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall neCostChange(TObject *Sender);
     //void __fastcall neCostKeyPress(TObject *Sender, char &Key);
 
 private:	// User declarations
@@ -214,7 +230,13 @@ private:	// User declarations
     void UpdateSupplierUnitCost(int order_key, TInvoiceItemNodeData *NodeData);
     void UpdateUnitqty(TInvoiceItemNodeData *NodeData);
     double GetStockTakeUnitSize(int stock_key, int supplier_key);
-    bool CheckInvoiceQtyAndPrice();    
+    bool CheckInvoiceQtyAndPrice();
+    bool CheckPointEntered(TRichEdit *reValue);
+    void CalculateQtyValue();
+    bool CheckNegativeEntered(TRichEdit *reValue);
+    void CheckNegativeValue(TNumericEdit *neCost);
+    bool IsNegativeQtyOrCost;
+
 
 public:		// User declarations
 	__fastcall TfrmReceiveInvoice(TComponent* Owner);
@@ -231,6 +253,7 @@ public:		// User declarations
     int Decimalpalaces ;
     bool IsPrintReport;
     bool IsSavedPackingSlip;
+    bool AllowNegativeValue; 
 
 };
 //---------------------------------------------------------------------------

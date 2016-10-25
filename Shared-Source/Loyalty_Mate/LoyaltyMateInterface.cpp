@@ -54,7 +54,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicate
         wcfInfo->LoadedPoints =  contactInfo.Points.getPointsBalance(ptstAccount);
         CoInitialize(NULL);
 
-        wcfResponse = loyaltymateClient->SaveMember(syndicateCode.SyndCode,wcfInfo );
+        wcfResponse = loyaltymateClient->SaveMember(syndicateCode.GetSyndCode(),wcfInfo );
 
         if( FAutoSync && wcfResponse->Successful)
         {
@@ -80,7 +80,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMember(TSyndCode syndicate
         CreateWcfContactInfo(wcfInfo,contact_Info);
         wcfInfo->UniqueId = uuid;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->SaveMember(syndicateCode.SyndCode,wcfInfo);
+        wcfResponse = loyaltymateClient->SaveMember(syndicateCode.GetSyndCode(),wcfInfo);
         delete wcfInfo;
         return CreateMMResponse( wcfResponse );
     }
@@ -96,7 +96,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(TSyndCode syndi
     {
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse =  loyaltymateClient->GetMemberByUniqueId(syndicateCode.SyndCode,CreateRequest(uuid));
+        wcfResponse =  loyaltymateClient->GetMemberByUniqueId(syndicateCode.GetSyndCode(),CreateRequest(uuid));
         if(wcfResponse->Successful)
             ReadContactInfo(wcfResponse,outContactInfo,replacePoints );
         return CreateMMResponse( wcfResponse );
@@ -113,7 +113,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByCode(TSyndCode
     {
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->GetMemberByCardCode(syndicateCode.SyndCode, CreateRequest(memberCode));
+        wcfResponse = loyaltymateClient->GetMemberByCardCode(syndicateCode.GetSyndCode(), CreateRequest(memberCode));
         if(wcfResponse->Successful)
             ReadContactInfo(wcfResponse, outContactInfo, replacePoints );
         return CreateMMResponse( wcfResponse );
@@ -131,7 +131,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByEmail(TSyndCod
     {
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->GetMemberByEmail(syndicateCode.SyndCode, CreateRequest(memberEmail));
+        wcfResponse = loyaltymateClient->GetMemberByEmail(syndicateCode.GetSyndCode(), CreateRequest(memberEmail));
         if(wcfResponse->Successful)
             ReadContactInfo(wcfResponse, contactInfo, replacePoints );
         return CreateMMResponse( wcfResponse );
@@ -157,7 +157,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostTransaction(TSyndCode syndic
         wcfInfo->SiteCode = siteId;
         wcfInfo->InvoiceNumber = inInvoiceNumber;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->PostTransaction(syndicateCode.SyndCode,wcfInfo);
+        wcfResponse = loyaltymateClient->PostTransaction(syndicateCode.GetSyndCode(),wcfInfo);
         delete wcfInfo;
         return CreateMMResponse( wcfResponse );
     }
@@ -173,7 +173,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SyncCompanyDetails(TSyndCode syn
     {
         LoyaltyCompanyResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->GetCompanyInformation(syndicateCode.SyndCode);
+        wcfResponse = loyaltymateClient->GetCompanyInformation(syndicateCode.GetSyndCode());
         if(wcfResponse->Successful)
          {
             SyncCompanyInfo(wcfResponse->CompanyInfo);
@@ -192,7 +192,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMemberCardCode(TSyndCode s
     {
         LoyaltyResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->UpdateMemberCardCode(syndicateCode.SyndCode,uniqueId,memberCardCode);
+        wcfResponse = loyaltymateClient->UpdateMemberCardCode(syndicateCode.GetSyndCode(),uniqueId,memberCardCode);
         return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
@@ -207,7 +207,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetGiftVoucherBalance(TSyndCode 
     {
         LoyaltyGiftCardResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->GetGiftCardBalance(syndicateCode.SyndCode,CreateRequest(giftVoucherNumber));
+        wcfResponse = loyaltymateClient->GetGiftCardBalance(syndicateCode.GetSyndCode(),CreateRequest(giftVoucherNumber));
         if(wcfResponse->Successful)
            balance = wcfResponse->GiftCardBalance;
 
@@ -225,7 +225,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetPocketVoucherDetail(TSyndCode
     {
         LoyaltyVoucherResponse *wcfResponse;
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->GetPocketVoucherDetail(syndicateCode.SyndCode, CreateRequest(pocketVoucherNumber));
+        wcfResponse = loyaltymateClient->GetPocketVoucherDetail(syndicateCode.GetSyndCode(), CreateRequest(pocketVoucherNumber));
         if(wcfResponse->Successful)
         {
             VoucherDetail.VoucherNumber = pocketVoucherNumber;
@@ -249,8 +249,10 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndC
         wcfInfo->TransactionReferenceNumber = inVoucherUsageDetail.ReferenceNumber;
         wcfInfo->GiftCardNumber = inVoucherUsageDetail.GiftCardNumber;
         wcfInfo->PointsRedeemed = inVoucherUsageDetail.PointsRedeemed;
+        wcfInfo->PurchasedGiftCardNumber = inVoucherUsageDetail.PurchasedGiftCardNumber;
+        wcfInfo->PointsPurchased = inVoucherUsageDetail.PointsPurchased;
         wcfInfo->VoucherName = inVoucherUsageDetail.VoucherName;
-        wcfInfo->MemberVoucherDiscountAmount = inVoucherUsageDetail.MemberVoucherDiscountAmount;
+        wcfInfo->MemberVoucherDiscountAmount = RoundToNearest(inVoucherUsageDetail.MemberVoucherDiscountAmount,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
         wcfInfo->PocketVoucherNumber = inVoucherUsageDetail.PocketVoucherNumber;
         wcfInfo->PocketVoucherDiscountAmount = inVoucherUsageDetail.PocketVoucherDiscountAmount;
         wcfInfo->TotalSaleAmount = inVoucherUsageDetail.TotalSaleAmount;
@@ -268,7 +270,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndC
             {
                DiscountUsageInfo* discountUsageInfo = new DiscountUsageInfo;
                discountUsageInfo->DiscountCode = itDiscount->first;
-               discountUsageInfo->DiscountAmount = itDiscount->second;
+               discountUsageInfo->DiscountAmount = RoundToNearest(itDiscount->second,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
                DiscountUsageArray.Length = DiscountUsageArray.Length + 1;
                DiscountUsageArray[DiscountUsageArray.Length - 1] = discountUsageInfo;
             }
@@ -276,7 +278,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndC
         }
 
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->ProcessVoucherTransaction(syndicateCode.SyndCode,wcfInfo);
+        wcfResponse = loyaltymateClient->ProcessVoucherTransaction(syndicateCode.GetSyndCode(),wcfInfo);
         return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
@@ -309,7 +311,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ReleaseVouchers(TSyndCode syndic
            wcfInfo->DiscountCodes = DiscountUsageArray;
         }
         CoInitialize(NULL);
-        wcfResponse = loyaltymateClient->ReleaseVouchers(syndicateCode.SyndCode,wcfInfo);
+        wcfResponse = loyaltymateClient->ReleaseVouchers(syndicateCode.GetSyndCode(),wcfInfo);
         return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
@@ -928,6 +930,7 @@ void  TLoyaltyMateInterface::DisableSyncSetting(Database::TDBTransaction &DBTran
 RequestInfo* TLoyaltyMateInterface::CreateRequest(AnsiString requestKey)
 {
    RequestInfo* requestInfo = new RequestInfo();
+   requestInfo->SiteCode = GetCurrentSiteId();
    requestInfo->RequestKey = requestKey;
    requestInfo->RequestTime = new TXSDateTime();
    TDateTime requestDate = Now();

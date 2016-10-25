@@ -164,6 +164,8 @@ public:
    WideString CardType; // when used an eftpos machine (specially dps) this property will be set to actual card type used. Visa, Mastercard, BankCard etc
    UnicodeString EftposTransactionID; // unique eftpos transaction id returned from the eftpos machine
    bool IsLoyaltyVoucher();
+   bool IsLoyaltyGiftCard();
+   Currency TipAmount;
 };
 
 #endif

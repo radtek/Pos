@@ -183,7 +183,7 @@ private:
 	{
 	public:
 		TStockLocationDetails() :
-			GST_Percent(0), Latest_Cost(0), Average_Cost(0), On_Hand(0), Transfer(0), Inwards(0) {}
+			GST_Percent(0), Latest_Cost(0), Average_Cost(0), On_Hand(0), Transfer(0), Inwards(0), Last_latest_cost(0) {}
 		AnsiString	StockCode;
 		AnsiString	Description;
 		Currency		GST_Percent;
@@ -207,6 +207,7 @@ private:
 		double		Stocktake;
 		double		Transfer;
 		double		Inwards;
+        double      Last_latest_cost;
 
         
 

@@ -269,6 +269,16 @@ private:
     TMemoryStream* FormattedZed(TMemoryStream *ZedToArchive);
     void CheckPocketVoucherPaymentType();
     void SyncCompanyDetails();
+    void UpdateSalesForce();
+    void EmailZedReport(int z_key);
+    void UpdateMallExportDetails();
+    void ClearParkedSale(Database::TDBTransaction &DBTransaction);
+    void UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransaction &DBTransaction, UnicodeString DeviceName);
+    void UpdateStock(bool UpdateingStock);
+    void ResetPoints();
+    void OpenCashDrawer();
+    void PostDataToXeroAndMyOB(std::vector<TXeroInvoiceDetail>  &XeroInvoiceDetails, std::vector<TMYOBInvoiceDetail>  &MYOBInvoiceDetails, bool CompleteZed);
+    void UpdateDLFMall();
 
 };
 

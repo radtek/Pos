@@ -38,7 +38,7 @@ namespace AccountingIntegration.MYOB
         string _successfulFolder;
         string _failedFolder;
         List<XMLFileObject> _xmlObjectList;
-        Int16 _processXmlFileTime = 1000; // 2000 mSec
+        Int16 _processXmlFileTime = 3500; // 2000 mSec
         private IApiConfiguration _configurationCloud;
         private IOAuthKeyService _oAuthKeyService;
         private Credentials credentials;
@@ -49,7 +49,7 @@ namespace AccountingIntegration.MYOB
             InitFolderVars();
             _retryTimer = createRetryTimer();
             _xmlObjectList = new List<XMLFileObject>();
-            CheckOnFolders();           
+            CheckOnFolders();
             FetchRetryInvoices();
             SendOldCachedInvoices(_cacheFolder);
             StartMonitoring(_cacheFolder);
@@ -65,7 +65,7 @@ namespace AccountingIntegration.MYOB
             StopMonitoring();
         }
 
-        public void GetToken(Credentials inCredentials , string inFilename)
+        public void GetToken(Credentials inCredentials, string inFilename)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace AccountingIntegration.MYOB
             catch (Exception exception)
             {
                 ServiceLogger.LogException("Exception in GetTokens", exception);
-            } 
+            }
         }
 
         #region Private
@@ -311,15 +311,19 @@ namespace AccountingIntegration.MYOB
 
         void processXmlFileTimer_Tick(object obj)
         {
-            KillFileTimerFromList();
+            lock (lockObject)
+            {
+                KillFileTimerFromList();
 
-            try
-            {
-                ProcessXmlFile(PopXMLFileFromList());
+                try
+                {
+                    ProcessXmlFile(PopXMLFileFromList());
+                }
+                catch (Exception)
+                {
+                }
             }
-            catch (Exception)
-            {
-            }
+           
         }
 
         void KillFileTimerFromList()
@@ -378,7 +382,7 @@ namespace AccountingIntegration.MYOB
                 throw;
             }
         }
-
+        private static volatile object lockObject = new object();
         private void ProcessXmlFile(string inFilename)
         {
             try
@@ -387,8 +391,9 @@ namespace AccountingIntegration.MYOB
             }
             catch (Exception exc)
             {
-                ServiceLogger.Log("Error in ProcessXmlFile "+exc.Message);
+                ServiceLogger.Log("Error in ProcessXmlFile " + exc.Message);
             }
+           
         }
 
         #endregion

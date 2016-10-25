@@ -80,6 +80,7 @@ class TServingCourseNode;
 class TPriceLevelsName;
 
 class i_generator;
+class TAvailableMenuSize;
 
 //class TSizesNode;
 //---------------------------------------------------------------------------
@@ -980,6 +981,7 @@ private:
     void LoadPriceLevelNames();
     void LoadRecipeLocations(AnsiString stockcode);
     bool CheckIfNumeric(AnsiString Value);
+    int UpdateSizeItem(AnsiString SizeName);
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);
@@ -1012,6 +1014,8 @@ public:		// User declarations
        int allPriceLevels;
     std::map<int,Menu::TPriceLevelsName> PriceLevelsName;
     void UpdateItemForForcedOptions();
+    std::map<AnsiString, TAvailableMenuSize > AllSizesForMenu;
+    TStringList *ServingCoursesList; 
 };
 //---------------------------------------------------------------------------
 struct TPrinterOptions
@@ -1468,6 +1472,21 @@ public:
 	int MaxSelect;
 	bool OptionGroupSkip;
 };
+
+
+class TAvailableMenuSize
+{
+public:
+	__int32    Key;               // DB Key
+	AnsiString LongDescription;
+	WideString KitchenName;
+    AnsiString HandheldName;
+    AnsiString ReceiptName;
+	bool       Weighed;
+	int		   Size_ID;
+	int		   PalmID;
+};
+
 
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmMenuEdit *frmMenuEdit;

@@ -10,6 +10,7 @@
 #include "MMLogging.h"
 #include "DeviceRealTerminal.h"
 #include "ManagerSyndCode.h"
+#include "SyndCodeController.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -18,15 +19,26 @@ void __fastcall TManagerCloudSync::loyaltyMateOperationCompleted(TObject* sender
     _lmOperationDialogBox->Close();
 }
 
-void TManagerCloudSync::SyncCompanyDetails()
+void TManagerCloudSync::CheckSyndCodes()
 {
-    TManagerSyndCode managerSyndCode;
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    AnsiString errorMessage = "";
+    bool syndCodesValid = managerSyndCode.ValidateSyndCodes(errorMessage);
+    if(!syndCodesValid)
+    {
+       MessageBox(errorMessage, "Warning", MB_OK);
+       TSyndCodeController SyndCodeController(Screen->ActiveForm,DBTransaction,managerSyndCode);
+       SyndCodeController.Run();
+    }
+   DBTransaction.Commit();
+}
 
+void TManagerCloudSync::SyncCompanyDetails()
+{
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
     if(syndicateCode.Valid())
      {
         // initiate loyaltymate member create thread and create member

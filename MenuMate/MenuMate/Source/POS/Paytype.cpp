@@ -280,8 +280,10 @@ void TfrmPaymentType::Reset()
 
            if(Payment->Properties & ePayTypeGetVoucherDetails && Payment->IsLoyaltyVoucher())
              {
-               tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
+               tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
+               tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = Payment->IsLoyaltyGiftCard();
                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
+               CopyPaymentColor(ButtonPos);
              }
            else if (Payment->Properties & ePayTypeAllowCashOut || Payment->Properties & ePayTypePoints || (Payment->Properties & ePayTypeGetVoucherDetails && !Payment->IsLoyaltyVoucher()))
             {
@@ -406,8 +408,7 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
 		{
 			if (Payment->GetPay() == 0)
 			{
-				if (Payment->GetAdjustment() != 0 && !(Payment->Properties & ePayTypeGetVoucherDetails) && !
-						(Payment->Properties & ePayTypePoints))
+				if (Payment->GetAdjustment() != 0 && !(Payment->Properties & ePayTypeGetVoucherDetails) && !(Payment->Properties & ePayTypePoints))
 				{
 					tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + CurrToStrF(Payment->GetAdjustment(), ffNumber,
 					CurrencyDecimals);
@@ -423,20 +424,29 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
 				(Payment->GetPay() + Payment->GetAdjustment(), ffNumber, CurrencyDecimals);
 			}
 
-            if ((Payment->Properties & ePayTypeGetVoucherDetails && ! Payment->IsLoyaltyVoucher()) || Payment->Properties & ePayTypePoints)
-			{
-
-				if (Payment->GetAdjustment() == 0)
+            if(Payment->Properties & ePayTypeGetVoucherDetails && Payment->IsLoyaltyGiftCard())
+            {
+                if (Payment->GetAdjustment() == 0)
 				{
-
-                        tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
-
+                   tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
 				}
 				else
 				{
 				   	tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase\r" + CurrToStrF(Payment->GetAdjustment(), ffNumber,
 					CurrencyDecimals);
+				}
+            }
+            else if ((Payment->Properties & ePayTypeGetVoucherDetails && ! Payment->IsLoyaltyVoucher()) || Payment->Properties & ePayTypePoints)
+			{
 
+				if (Payment->GetAdjustment() == 0)
+				{
+                   tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
+				}
+				else
+				{
+				   	tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase\r" + CurrToStrF(Payment->GetAdjustment(), ffNumber,
+					CurrencyDecimals);
 				}
 
 			}
@@ -565,15 +575,17 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
         }
         else
         {
+
+            double points = GetAvailableRedeemPoints(CurrentTransaction);
             if(CurrentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0)
             {
                 lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " "+CurrentTransaction.Membership.Member.Surname + " (" + CurrentTransaction.Membership.Member.MembershipNumber +
-                ")" + " Points:" + FormatFloat("0.00", CurrentTransaction.Membership.Member.Points.getPointsBalance(pasDatabase) + CurrentTransaction.Membership.Member.Points.getCurrentPointsRefunded());
+                ")" + " Points:" + FormatFloat("0.00", points + CurrentTransaction.Membership.Member.Points.getCurrentPointsRefunded());
             }
             else
             {
                 lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " "+CurrentTransaction.Membership.Member.Surname + " (" + CurrentTransaction.Membership.Member.MembershipNumber +
-                ")" + " Points:" + FormatFloat("0.00", CurrentTransaction.Membership.Member.Points.getPointsBalance());
+                ")" + " Points:" + FormatFloat("0.00", points);
             }
          }
          memberNumber = CurrentTransaction.Membership.Member.MembershipNumber;
@@ -2092,7 +2104,15 @@ void TfrmPaymentType::ProcessLoyaltyVoucher(TPayment *Payment)
       AnsiString voucherCode =  frmTouchKeyboard->KeyboardText.Trim();
       if(Payment->Name == "Gift Card")
       {
-        ProcessLoyaltyGiftVoucherVoucher(voucherCode,Payment);
+        if(DoLoyaltyGiftCardValidation(voucherCode,CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber))
+        {
+           ProcessLoyaltyGiftVoucherVoucher(voucherCode,Payment);
+        }
+        else
+        {
+           CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
+           Payment->SetPay(0);
+        }
       }
       else if(Payment->Name == "Voucher")
       {
@@ -2109,8 +2129,7 @@ void TfrmPaymentType::ProcessLoyaltyVoucher(TPayment *Payment)
       {
         CurrentTransaction.RedeemPocketVoucherInformation->VoucherNumber = "";
       }
-
-       Payment->SetPay(0);
+      Payment->SetPay(0);
     }
 
 }
@@ -2118,7 +2137,8 @@ void TfrmPaymentType::ProcessLoyaltyVoucher(TPayment *Payment)
 void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TPayment *Payment)
 {
     TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
-    double balance = ManagerLoyaltyVoucher.GetGiftVoucherDetail(voucherCode);
+    bool isValidGiftCard = true;
+    double balance = ManagerLoyaltyVoucher.GetGiftVoucherDetail(voucherCode,isValidGiftCard);
     if(balance > 0)
     {
        Currency amountToPay = 0;
@@ -2143,6 +2163,7 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
             }
            Payment->SetPay(amountToPay);
         }
+        CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
         CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = voucherCode;
         CurrentTransaction.RedeemGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
         CurrentTransaction.RedeemGiftVoucherInformation->RedeemedAmount = amountToPay;
@@ -2150,6 +2171,9 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
     }
     else
     {
+      if(isValidGiftCard)
+         MessageBox("The gift card with code " + voucherCode + " has zero balance.", "Warning", MB_OK + MB_ICONINFORMATION);
+
       CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
       Payment->SetPay(0);
     }
@@ -2189,6 +2213,22 @@ void TfrmPaymentType::ProcessLoyaltyPocketVoucher(AnsiString voucherCode,TPaymen
        CurrentTransaction.RedeemPocketVoucherInformation->VoucherNumber = "";
        Payment->SetPay(0);
     }
+}
+// ---------------------------------------------------------------------------
+bool TfrmPaymentType::DoLoyaltyGiftCardValidation(AnsiString redeemedGiftCard,AnsiString purchasedGiftcard)
+{
+   bool retVal = false;
+   if(redeemedGiftCard == "" && purchasedGiftcard == "")
+      retVal = true;
+   else if(redeemedGiftCard != "" && purchasedGiftcard != "")
+      retVal = false;
+   else
+     retVal = true;
+    if(!retVal)
+    {
+      MessageBox(AnsiString("You cannot purchase and redeem gift card at same time.").c_str(), "Warning", MB_OK + MB_ICONINFORMATION);
+    }
+    return retVal;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
@@ -2255,23 +2295,46 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
             }
         }
 		else if (Payment->Properties & ePayTypeGetVoucherDetails)
-		{ // Vouchers are not cash out.
-			std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-			frmTouchKeyboard->MaxLength = 50;
-			frmTouchKeyboard->AllowCarriageReturn = false;
-			frmTouchKeyboard->StartWithShiftDown = false;
-			frmTouchKeyboard->MustHaveValue = true;
-			frmTouchKeyboard->KeyboardText = Payment->ReferenceNumber;
-			frmTouchKeyboard->Caption = "Enter " + Payment->Name + " Number";
-			if (frmTouchKeyboard->ShowModal() == mrOk)
-			{
-				Payment->ReferenceNumber = frmTouchKeyboard->KeyboardText;
-			}
-			else
-			{
-				Payment->Reset();
-				return;
-			}
+		{
+
+           // Vouchers are not cash out.
+            std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+            frmTouchKeyboard->MaxLength = 50;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = false;
+            frmTouchKeyboard->MustHaveValue = true;
+            frmTouchKeyboard->KeyboardText = Payment->ReferenceNumber;
+            frmTouchKeyboard->Caption = "Enter " + Payment->Name + " Number";
+            if (frmTouchKeyboard->ShowModal() == mrOk)
+            {
+                Payment->ReferenceNumber = frmTouchKeyboard->KeyboardText;
+            }
+            else
+            {
+                Payment->Reset();
+                return;
+            }
+
+            if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
+            {
+               TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+               bool isValidGiftCard = true;
+               double balance = ManagerLoyaltyVoucher.GetGiftVoucherDetail(Payment->ReferenceNumber,isValidGiftCard);
+               if(isValidGiftCard && DoLoyaltyGiftCardValidation(CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber,Payment->ReferenceNumber))
+                {
+                    CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
+                    CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = Payment->ReferenceNumber;
+                    CurrentTransaction.PurchasedGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
+                    CurrentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount = wrkPayAmount;
+                    CurrentTransaction.PurchasedGiftVoucherInformation->GiftVoucherAmount = balance;
+                }
+                else
+                {
+                   CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
+                   Payment->Reset();
+                   return;
+                }
+            }
 
 			if (CurrentTransaction.CreditTransaction)
 			{
@@ -2283,7 +2346,6 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 			{
 				Payment->SetAdjustment(wrkPayAmount);
 				Payment->AdjustmentReason = "Purchased " + Payment->Name;
-				//Payment->SysNameOveride = "Purchased " + Payment->Name;
                 Payment->SysNameOveride = Payment->Name;
 			}
 			Payment->SetPay(0);
@@ -2632,6 +2694,14 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 
 		if (Allowed)
 		{
+            if(TGlobalSettings::Instance().CaptureRefundRefNo)
+            {
+                if(!CaptureRefundReference())
+                {
+                    MessageBox("The Receipt No. is not valid. Either Refund is already taken or Receipt does not exist.", "Error", MB_OK + MB_ICONINFORMATION);
+                    return;
+                }
+            }
 			CurrentTransaction.CreditTransaction = true;
 
 			TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(CurrentTransaction);
@@ -2651,7 +2721,6 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 	    		CurrentTransaction.Patrons.clear();
 		    	tbPatronCount->Caption = "Patron Count \r" + IntToStr(0);
             }
-
 			AnsiString Note = "";
 			std::auto_ptr <TfrmMessage> frmMessage(TfrmMessage::Create <TfrmMessage> (this, TDeviceRealTerminal::Instance().DBControl));
 			frmMessage->MessageType = eCreditReason;
@@ -2777,6 +2846,116 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 		}
 	}
 }
+//---------------------------------------------------------------------------
+bool TfrmPaymentType::CaptureRefundReference()
+{
+    UnicodeString capturedValue = "";
+    bool retValue = false;
+    std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (this));
+    frmTouchNumpad->Caption = "Enter Reference Receipt No for Refund";
+    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+    frmTouchNumpad->btnDiscount->Visible = false;
+    frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->Mode = pmNumber;
+    if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->INTResult > 0)
+    {
+       UnicodeString capturedValue = frmTouchNumpad->INTResult;
+       // Validate Refund Reference
+       retValue = ValidateRefundReference(capturedValue);
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+bool TfrmPaymentType::ValidateRefundReference(UnicodeString str)
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    if(ValidateAlreadyRefunded(DBTransaction,str))
+    {
+        if(!IsRefundReceipt(DBTransaction,str))
+        {
+            CurrentTransaction.RefundRefReceipt = str;
+            retValue = true;
+        }
+    }
+    else
+    {
+        retValue = false;
+    }
+//    }
+    DBTransaction.Commit();
+    return retValue;
+}
+//----------------------------------------------------------------------------
+bool TfrmPaymentType::ValidateAlreadyRefunded(Database::TDBTransaction &DBTransaction,UnicodeString str)
+{
+    TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery1->Close();
+    IBInternalQuery1->SQL->Text =	" SELECT "
+                                    " a.ARCBILL_KEY "
+                                    " FROM "
+                                    "  ARCBILL a"
+                                    " WHERE "
+                                    " a.REFUND_REFRECEIPT  = :REFUND_REFRECEIPT "
+
+                                    " UNION ALL "
+
+                                    " SELECT "
+                                    " d.ARCBILL_KEY "
+                                    " FROM "
+                                    "  DAYARCBILL d"
+                                    " WHERE "
+                                    " d.REFUND_REFRECEIPT  = :REFUND_REFRECEIPT ";
+    IBInternalQuery1->ParamByName("REFUND_REFRECEIPT")->AsString = str;
+    IBInternalQuery1->ExecQuery();
+    if(IBInternalQuery1->RecordCount == 0)
+        return true;
+    else
+        return false;
+}
+//----------------------------------------------------------------------------
+bool TfrmPaymentType::IsRefundReceipt(Database::TDBTransaction &DBTransaction,UnicodeString str)
+{
+
+    bool retValue = false;
+    TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery1->Close();
+    IBInternalQuery1->SQL->Text =	" SELECT "
+                                    " a.ARCBILL_KEY, "
+                                    " REFUND_REFRECEIPT, "
+                                    " ORDER_TYPE_MESSAGE "
+                                    " FROM "
+                                    "  ARCBILL a"
+                                    " WHERE "
+                                    " a.INVOICE_NUMBER  = :INVOICE_NUMBER "
+
+                                    " UNION ALL "
+
+                                    " SELECT "
+                                    " d.ARCBILL_KEY, "
+                                    " REFUND_REFRECEIPT, "
+                                    " ORDER_TYPE_MESSAGE "
+                                    " FROM "
+                                    "  DAYARCBILL d"
+                                    " WHERE "
+                                    " d.INVOICE_NUMBER  = :INVOICE_NUMBER ";
+    IBInternalQuery1->ParamByName("INVOICE_NUMBER")->AsString = str;
+    IBInternalQuery1->ExecQuery();
+    if(IBInternalQuery1->RecordCount > 0)
+    {
+        if(IBInternalQuery1->FieldByName("REFUND_REFRECEIPT")->AsString != "")
+            retValue = true;
+        else
+            retValue = false;
+    }
+    else
+    {
+        retValue = true;
+    }
+    return retValue;
+}
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::tnWorkingAmountClick(TObject *Sender, TNumpadKey Key)
 {
@@ -2789,6 +2968,13 @@ void __fastcall TfrmPaymentType::tgPaymentsMouseClick(TObject *Sender, TMouseBut
 	TPayment *Payment = CurrentTransaction.PaymentGet(GridButton->Tag);
 	int  tabkey=    TDeviceRealTerminal::Instance().PaymentSystem->GetPaymentTabName(CurrentTransaction.DBTransaction,Payment->Name);
 	AnsiString  tabName   = TDBTab::GetTabName(CurrentTransaction.DBTransaction,tabkey);
+    AnsiString str = Payment->Name;
+    if(Payment->Properties & ePayTypeOpensCashDrawer)
+    {
+        str += " true for Open Cash Drawer";
+    }
+    str += " "+Now();
+    makeLogFile(str);
 
 	if(tabkey>0 && tabName!="")
 	{
@@ -2968,16 +3154,22 @@ Currency TfrmPaymentType::GetAvailableRedeemPoints(TPaymentTransaction PointsTra
     if(PointsTransaction.Membership.Member.MemberCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled &&
     !TGlobalSettings::Instance().IsPOSOffline)
     {
-        PointsTransaction.Membership.Member.Points.ClearBySource(pasDatabase) ;
+        /*PointsTransaction.Membership.Member.Points.ClearBySource(pasDatabase) ;
           // Putting in the Points Earned.
         TPointsTypePair typepair1( pttEarned,ptstLoyalty );
 	    TPointsType type1( pasDatabase, typepair1, pesExported);
-        PointsTransaction.Membership.Member.Points.Load( type1, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint );
+        double pointsEarned = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint -
+        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableBDPoint -
+        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableFVPoint;
+
+
+        PointsTransaction.Membership.Member.Points.Load( type1,pointsEarned  );
 
         // Putting in the Points Loaded ( Purchased ).
         TPointsTypePair typepair2( pttPurchased,ptstAccount );
 	    TPointsType type2( pasDatabase, typepair2, pesExported );
         PointsTransaction.Membership.Member.Points.Load( type2, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableLoadedPoint );
+      */
     }
 
   Currency points = 0;
@@ -3480,12 +3672,12 @@ void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message)
 	}
     else if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
     {
-        /*if(TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate
+        if(TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate
            && TGlobalSettings::Instance().LoyaltyMateEnabled)
         {
            GetMemberByBarcode(CurrentTransaction.DBTransaction,Data);
         }
-        else*/ if (TDeviceRealTerminal::Instance().ManagerMembership->IsCard(CurrentTransaction.DBTransaction, TempUserInfo) == lsAccepted || Data.Pos("MMPROX") != 0)
+        else if (TDeviceRealTerminal::Instance().ManagerMembership->IsCard(CurrentTransaction.DBTransaction, TempUserInfo) == lsAccepted || Data.Pos("MMPROX") != 0)
         {
             TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(CurrentTransaction.DBTransaction, TempUserInfo);
 
@@ -3723,7 +3915,8 @@ void TfrmPaymentType::ApplyMembership(TMMContactInfo &Member)
 	else if (Result == lsAccepted)
 	{
 		// Remove the old Member if any.
-		RemoveMembership();
+        //RemoveMembership();
+        CurrentTransaction.RemoveMembership();
 		CurrentTransaction.ApplyMembership(Member, MemberSource);
 		if (CurrentTransaction.Orders != NULL)
 		{
@@ -3931,5 +4124,17 @@ bool TfrmPaymentType::ThorMemberIsUnregistered()
         }
     }
     return retValue;
+}
+
+void TfrmPaymentType::makeLogFile(UnicodeString str)
+{
+    AnsiString fileName = ExtractFilePath(Application->ExeName) + "EFTPOSCashDrawer_Logs.txt" ;
+    std::auto_ptr<TStringList> List(new TStringList);
+    if (FileExists(fileName) )
+    {
+      List->LoadFromFile(fileName);
+    }
+    List->Add(" "+ str +  "\n");
+    List->SaveToFile(fileName );
 }
 

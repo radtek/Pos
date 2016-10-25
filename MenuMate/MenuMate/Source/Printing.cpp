@@ -285,6 +285,7 @@ __fastcall TReceipt::TReceipt()
    AlwaysPrintReceiptTenderedSales = false;
    AlwaysPrintReceiptCashSales = false;
    RavellItemsWithPriceAdjusts = false;
+   VoidFooter = new TStringList;
 }
 
 __fastcall TReceipt::~TReceipt()
@@ -295,13 +296,19 @@ __fastcall TReceipt::~TReceipt()
    PHeader = NULL;
    delete Footer;
    Footer = NULL;
+   delete VoidFooter;
+   VoidFooter = NULL;
 }
 
-void TReceipt::SetHeaderFooter(TStrings *inHeader, TStrings *inPHeader, TStrings *inFooter)
+void TReceipt::SetHeaderFooter(TStrings *inHeader, TStrings *inPHeader, TStrings *inFooter, TStrings *inVoidFooter)
 {
    Header->Text = inHeader->Text;
    PHeader->Text = inPHeader->Text;
    Footer->Text = inFooter->Text;
+   //if(inVoidFooter->Count > 0)
+   //{
+      VoidFooter->Text = inVoidFooter->Text;
+   //}
 }
 
 // ------------------------------------------------------------------------------
@@ -376,6 +383,7 @@ bool TReceipt::GetPrintoutsPreview(Database::TDBTransaction &DBTransaction, TReq
    Request->ReceiptHeader->Assign(Header);
    Request->ReceiptPHeader->Assign(PHeader);
    Request->ReceiptFooter->Assign(Footer);
+   Request->ReceiptVoidFooter->Assign(VoidFooter);
 
    while (Request->Printouts->Count != 0)
    {
@@ -459,6 +467,7 @@ void _fastcall TReceipt::GetPrintouts(Database::TDBTransaction &DBTransaction, T
    Request->ReceiptHeader->Assign(Header);
    Request->ReceiptPHeader->Assign(PHeader);
    Request->ReceiptFooter->Assign(Footer);
+   Request->ReceiptVoidFooter->Assign(VoidFooter);
 
    while (Request->Printouts->Count != 0)
    {

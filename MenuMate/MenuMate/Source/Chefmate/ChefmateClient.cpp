@@ -17,6 +17,7 @@
 #include "DocketManager.h"
 #include "VirtualPrinterManager.h"
 #include "ListSecurityRefContainer.h"
+#include "MMContactInfo.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -68,7 +69,7 @@ CMC_ERROR TChefmateClient::Close()
 	return result;
 }
 //---------------------------------------------------------------------------
-CMC_ERROR TChefmateClient::SendCompleteOrder( TPaymentTransaction* inTransaction )
+CMC_ERROR TChefmateClient::SendCompleteOrder( TPaymentTransaction* inTransaction)
 {
 	CMC_ERROR result = CMC_ERROR_FAILED;
 
@@ -79,18 +80,22 @@ CMC_ERROR TChefmateClient::SendCompleteOrder( TPaymentTransaction* inTransaction
 
     TItemComplete *order = ( TItemComplete* )inTransaction->Orders->Items[0];
     //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	if( ChefmateInterface.OpenCompleteOrder(
-			cmOrderDBKey( order ),              // Order Key
-			cmStaffName(order),                     // Server Name
-			cmOrderNumber(),                    // Order Number
-			cmChitValue(     inTransaction ),   // Chit Value
-			cmTableTabName(  order ),           // Table/Tab Name
-			cmOrderType(     inTransaction ),   // Order Type
-			cmCustomerName(  inTransaction ),   // Customer Name
-			cmPartyName(     order ),           // Party Name
-			cmPatronCount(   inTransaction ),	// Patron Count
-			cmSaleStartTime( order ),           // Sale Start Time
-            cmDeliveryTime(inTransaction) ) )   // Delivery Time
+
+	if(ChefmateInterface.OpenCompleteOrder(
+                            cmOrderDBKey( order ),              // Order Key
+                            cmStaffName(order),                     // Server Name
+                            cmOrderNumber(),                    // Order Number
+                            cmChitValue(     inTransaction ),   // Chit Value
+                            cmTableTabName(  order ),           // Table/Tab Name
+                            cmOrderType(     inTransaction ),   // Order Type
+                            cmCustomerName(  inTransaction ),   // Customer Name
+                            cmPartyName(     order ),           // Party Name
+                            cmPatronCount(   inTransaction ),	// Patron Count
+                            cmSaleStartTime( order ),           // Sale Start Time
+                            cmDeliveryTime(inTransaction),      // Delivery Time
+                            cmCustomerPhone(  inTransaction ),   // Phone no
+                            "",  //Email //if we want to send email then  send  cmCustomerEmail(  inTransaction )
+                            cmCustomerAddress(  inTransaction )  )) // Customer Address
 	{
     	for( int i = 0; i < inTransaction->Orders->Count; i++ )
 		{
@@ -206,7 +211,10 @@ CMC_ERROR TChefmateClient::SendCompleteEmptyOrder()
 			"",                // Party Name
 			"",                // Patron Count
 			"",                // Sale Start Time
-            cmDeliveryTime() ) )//Delivery Time
+            cmDeliveryTime() ,  //Delivery Time
+            "",   // Phone no
+            "", //Email
+            "" ))  //Customer Address
 	{
 		commitOrder();
 		result = CMC_ERROR_EMPTY_ORDER_SENT;
@@ -1038,16 +1046,27 @@ UnicodeString TChefmateClient::cmCustomerName( TPaymentTransaction* inTransactio
 {
 	try
 	{
-		TCustNameAndOrderType *cusNameAndOrderType = TCustNameAndOrderType::Instance();
+         UnicodeString customerName = "";
+         TItemComplete *order = ( TItemComplete* )inTransaction->Orders->Items[0];
+         if(inTransaction->ChitNumber.IsCaptureCustomerDetails)
+         {
+            customerName =  inTransaction->Membership.Member.Name + " "+ inTransaction->Membership.Member.Surname;
+         }
+         else if(inTransaction->ChitNumber.IsCaptureCustomerNameAndPhone)
+         {
+            customerName =  order->IdName;
+         }
+         else
+         {
 
-		if( cusNameAndOrderType->NameAndOrderTypeLoaded() )
-		{
-			return cusNameAndOrderType->GetStringPair().first;
-		}
-		else
-		{
-			return "";
+            TCustNameAndOrderType *cusNameAndOrderType = TCustNameAndOrderType::Instance();
+
+            if( cusNameAndOrderType->NameAndOrderTypeLoaded() )
+            {
+                customerName = cusNameAndOrderType->GetStringPair().first;
+            }
         }
+        return customerName;
 	}
 	catch( ... )
 	{
@@ -1158,12 +1177,13 @@ UnicodeString TChefmateClient::cmDeliveryTime( TPaymentTransaction* inTransactio
 {
     try
     {
-       if((double)inTransaction->ChitNumber.DeliveryTime <= 0)
+       if(((double)inTransaction->ChitNumber.DeliveryTime <= 0) )
        {
          return "";
        }
        else
        {
+
           return inTransaction->ChitNumber.DeliveryTime.FormatString("dd/mm/yyyy hh:nn:ss ");
        }
     }
@@ -1175,7 +1195,7 @@ UnicodeString TChefmateClient::cmDeliveryTime( TPaymentTransaction* inTransactio
 //---------------------------------------------------------------------------
 UnicodeString TChefmateClient::cmDeliveryTime()
 {
-	if((double)_chitNumber->DeliveryTime <= 0)
+       if((double)_chitNumber->DeliveryTime <= 0)
        {
          return "";
        }
@@ -1184,4 +1204,99 @@ UnicodeString TChefmateClient::cmDeliveryTime()
           return _chitNumber->DeliveryTime.FormatString("dd/mm/yyyy hh:nn:ss ");
        }
 }
-//---------------------------------------
+//---------------------------------------------------------------------------
+CMC_ERROR TChefmateClient::SendCompleteWebOrder( TPaymentTransaction* inTransaction, UnicodeString paymentStatus, TMMContactInfo customerDetails )
+{
+	CMC_ERROR result = CMC_ERROR_FAILED;
+
+	if( inTransaction->Orders->Count == 0 )
+	{
+		return SendCompleteEmptyOrder();
+	}
+
+    TItemComplete *order = ( TItemComplete* )inTransaction->Orders->Items[0];
+    //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+	if(ChefmateInterface.OpenWebOrder(
+                            cmOrderDBKey( order ),              // Order Key
+                            cmStaffName(order),                     // Server Name
+                            cmOrderNumber(),                    // Order Number
+                            cmChitValue(     inTransaction ),   // Chit Value
+                            cmTableTabName(  order ),           // Table/Tab Name
+                            cmOrderType(     inTransaction ),   // Order Type
+                            customerDetails,   // Customer Details
+                            cmPartyName(     order ),           // Party Name
+                            cmPatronCount(   inTransaction ),	// Patron Count
+                            cmSaleStartTime( order ),           // Sale Start Time
+                            cmDeliveryTime(inTransaction),       // Delivery Time
+							paymentStatus ))
+	{
+    	for( int i = 0; i < inTransaction->Orders->Count; i++ )
+		{
+			TItemComplete *order1 = ( TItemComplete* )inTransaction->Orders->Items[i];
+			orderItemToChefmate( order1 );
+		}
+    	commitOrder();
+		TChefmateOrderNumberGenerator::Instance().NextOrderNumber();
+		result = CMC_ERROR_SUCCESSFUL;
+	}
+
+	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+	return result;
+}
+//---------------------------------------------------------------------------
+UnicodeString TChefmateClient::cmCustomerPhone( TPaymentTransaction* inTransaction )
+{
+	try
+	{
+         TItemComplete *order = ( TItemComplete* )inTransaction->Orders->Items[0];
+         UnicodeString customerPhone = "";
+         if(inTransaction->ChitNumber.IsCaptureCustomerDetails)
+         {
+            customerPhone =  inTransaction->Membership.Member.Phone;
+         }
+         else if(inTransaction->ChitNumber.IsCaptureCustomerNameAndPhone)
+         {
+            customerPhone = order->IdNumber;
+         }
+         return customerPhone;
+	}
+	catch( ... )
+	{
+		return "";
+	}
+}
+//---------------------------------------------------------------------------
+UnicodeString TChefmateClient::cmCustomerEmail( TPaymentTransaction* inTransaction )
+{
+	try
+	{
+         UnicodeString customerEmail = "";
+         if(inTransaction->ChitNumber.IsCaptureCustomerDetails)
+         {
+            customerEmail =  inTransaction->Membership.Member.EMail;
+         }
+         return customerEmail;
+	}
+	catch( ... )
+	{
+		return "";
+	}
+}
+//---------------------------------------------------------------------------
+UnicodeString TChefmateClient::cmCustomerAddress( TPaymentTransaction* inTransaction )
+{
+	try
+	{
+         UnicodeString customerAddress = "";
+         if(inTransaction->ChitNumber.IsCaptureCustomerDetails)
+         {
+            customerAddress =  inTransaction->Membership.Member.LocationAddress;
+         }
+         return customerAddress;
+	}
+	catch( ... )
+	{
+		return "";
+	}
+}

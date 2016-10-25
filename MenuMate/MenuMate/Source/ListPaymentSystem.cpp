@@ -66,6 +66,7 @@
 #include "InitializeDCSession.h"
 #include "MallExportRegenerateReport.h"
 #include "LoyaltyMateUtilities.h"
+#include "ReceiptUtility.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -1159,7 +1160,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 								}
 								else
 								{
-									Payment->Result = eAccepted;
+                                    Payment->Result = eAccepted;
 								}
 							}
 							else
@@ -1167,6 +1168,16 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 								Payment->Result = EftTrans->Result;
 								Payment->CardType = EftTrans->CardType; // set the card type returned from eftpos transaction for future reference (tips)
 								Payment->EftposTransactionID = EftTrans->EftposTransactionID; // eftpos transaction id
+
+                                if(EftTrans->FinalAmount != "")
+                                {
+                                   Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
+                                   if(FinalAmount != Pay)
+                                   {
+                                       Payment->TipAmount = FinalAmount - Pay;
+                                       Payment->SetPay(FinalAmount);
+                                   }
+                                }
 							}
 
                             if (Payment->Result != eAccepted)
@@ -1206,7 +1217,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 	}
 	else
 	{
-		Payment->Result = eAccepted;
+        Payment->Result = eAccepted;
 	}
 }
 
@@ -1526,31 +1537,34 @@ void TListPaymentSystem::ArchivePoints(TPaymentTransaction &PaymentTransaction)
 
 void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransaction)
 {
+   if(PaymentTransaction.Membership.Member.ContactKey == 0)
+     return;
+
 	try
 	{
 
 		if(!TGlobalSettings::Instance().UseTierLevels || PaymentTransaction.Membership.Member.MemberType != 1 ||
 				(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().IsPOSOffline))
 		{
-                       if(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().IsPOSOffline)
-                       {
-                         MessageBox( "Unable to communicate with Cloud. Tier level will be updated on next visit.", "Message", MB_ICONINFORMATION + MB_OK);
-                       }
-                       else if(!TGlobalSettings::Instance().UseTierLevels)
-                       {
-                          double currentPoint = PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned();
-                          if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints == 0)
-                          {
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints =
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetEarnedPointsForCurrentYear(PaymentTransaction.DBTransaction, PaymentTransaction.Membership.Member);
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
-                          }
-                          else
-                          {
-                             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
-                          }
-                       }
-                       return;
+           if(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().IsPOSOffline)
+           {
+             MessageBox( "Unable to communicate with Cloud. Tier level will be updated on next visit.", "Message", MB_ICONINFORMATION + MB_OK);
+           }
+           else if(!TGlobalSettings::Instance().UseTierLevels)
+           {
+              double currentPoint = PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned();
+              if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints == 0)
+              {
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints =
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetEarnedPointsForCurrentYear(PaymentTransaction.DBTransaction, PaymentTransaction.Membership.Member);
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
+              }
+              else
+              {
+                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
+              }
+           }
+           return;
 
 		}
 		TDBTierLevel::GetTierLevelOfMember(PaymentTransaction.DBTransaction,PaymentTransaction.Membership.Member);
@@ -1773,10 +1787,10 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->SQL->Text =
 		"INSERT INTO DAYARCBILL (" "ARCBILL_KEY, " "TERMINAL_NAME, " "STAFF_NAME, " "TIME_STAMP, " "TOTAL, " "DISCOUNT, "
 		"PATRON_COUNT, " "RECEIPT, " "SECURITY_REF, " "BILLED_LOCATION, " "INVOICE_NUMBER, " "SALES_TYPE, " "INVOICE_KEY,"
-        "ROUNDING_ADJUSTMENT," "ORDER_IDENTIFICATION_NUMBER ) " "VALUES ("
+        "ROUNDING_ADJUSTMENT," "ORDER_IDENTIFICATION_NUMBER, " "REFUND_REFRECEIPT ) " "VALUES ("
 		":ARCBILL_KEY, " ":TERMINAL_NAME, " ":STAFF_NAME, " ":TIME_STAMP, " ":TOTAL, " ":DISCOUNT, " ":PATRON_COUNT, " ":RECEIPT, "
 		":SECURITY_REF, " ":BILLED_LOCATION," ":INVOICE_NUMBER, " ":SALES_TYPE, " ":INVOICE_KEY, "
-        ":ROUNDING_ADJUSTMENT," ":ORDER_IDENTIFICATION_NUMBER ) ";
+        ":ROUNDING_ADJUSTMENT," ":ORDER_IDENTIFICATION_NUMBER, " ":REFUND_REFRECEIPT ) ";
 		IBInternalQuery->ParamByName("ARCBILL_KEY")->AsString = Retval;
 		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 		IBInternalQuery->ParamByName("STAFF_NAME")->AsString = TDeviceRealTerminal::Instance().User.Name;
@@ -1807,6 +1821,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->ParamByName("SALES_TYPE")->AsInteger = PaymentTransaction.SalesType;
 		IBInternalQuery->ParamByName("BILLED_LOCATION")->AsString = TDeviceRealTerminal::Instance().ID.Location;
 		IBInternalQuery->ParamByName("INVOICE_KEY")->AsInteger = PaymentTransaction.InvoiceKey;
+		IBInternalQuery->ParamByName("REFUND_REFRECEIPT")->AsString = PaymentTransaction.RefundRefReceipt;
 
 		// set the receipt information if available, else insert null
 
@@ -1826,9 +1841,9 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->SQL->Text =
 		"INSERT INTO DAYARCBILLPAY (" "DAYARCBILLPAY_KEY, " "ARCBILL_KEY, " "PAY_TYPE, " "VOUCHER_NUMBER, "
 		"SUBTOTAL, " "ROUNDING, " "CASH_OUT, " "TAX_FREE, " "NOTE, PAY_TYPE_DETAILS," "PROPERTIES, "
-        "GROUP_NUMBER, PAYMENT_CARD_TYPE, PAY_GROUP,CHARGED_TO_XERO) " "VALUES ("
+        "GROUP_NUMBER, PAYMENT_CARD_TYPE, PAY_GROUP,CHARGED_TO_XERO,TIP_AMOUNT) " "VALUES ("
 		":DAYARCBILLPAY_KEY, " ":ARCBILL_KEY, " ":PAY_TYPE, " ":VOUCHER_NUMBER, " ":SUBTOTAL, " ":ROUNDING, " ":CASH_OUT, " ":TAX_FREE, "
-		":NOTE, :PAY_TYPE_DETAILS," ":PROPERTIES, " ":GROUP_NUMBER , :PAYMENT_CARD_TYPE, :PAY_GROUP,:CHARGED_TO_XERO) ";
+		":NOTE, :PAY_TYPE_DETAILS," ":PROPERTIES, " ":GROUP_NUMBER , :PAYMENT_CARD_TYPE, :PAY_GROUP,:CHARGED_TO_XERO,:TIP_AMOUNT) ";
 
         int paymentCounter = 0;
         bool changeIsChargerToXero = false;
@@ -1849,7 +1864,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				IBInternalQuery->Close();
 				IBInternalQuery->ParamByName("DAYARCBILLPAY_KEY")->AsInteger = PaymentKey;
 				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = Retval;
-
 				if (SubPayment->SysNameOveride != "")
 				{
 					IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->SysNameOveride;
@@ -1872,28 +1886,28 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				}
 
                 //checking clipp paytype
-            if( IBInternalQuery->ParamByName("PAY_TYPE")->AsString == "Clipp")
-                {
-                     isClippGroup = true;
-                }
+                if( IBInternalQuery->ParamByName("PAY_TYPE")->AsString == "Clipp")
+                    {
+                         isClippGroup = true;
+                    }
              
 
-                    if (!PaymentTransaction.CreditTransaction)
-                    {
-                        IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
-                        SubPayment->GetPayTendered(),
-                        0.01,
-                        TGlobalSettings::Instance().MidPointRoundsDown);
-                    }
-                    else
-                    {
-                        IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
-                        SubPayment->GetPayTendered(),
-                        0.01,
-                        TGlobalSettings::Instance().MidPointRoundsDown);
-                    }
-              
+                if (!PaymentTransaction.CreditTransaction)
+                {
+                    IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
+                    SubPayment->GetPayTendered(),
+                    0.01,
+                    TGlobalSettings::Instance().MidPointRoundsDown);
+                }
+                else
+                {
+                    IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
+                    SubPayment->GetPayTendered(),
+                    0.01,
+                    TGlobalSettings::Instance().MidPointRoundsDown);
+                }
 
+                IBInternalQuery->ParamByName("TIP_AMOUNT")->AsCurrency = SubPayment->TipAmount;
 				IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = SubPayment->GetPayRounding();
 				IBInternalQuery->ParamByName("CASH_OUT")->AsString = "F";
 				if (SubPayment->Properties & ePayTypeTaxFree)
@@ -1949,6 +1963,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				SubPayment->GetCashOut(),
 				0.01,
 				TGlobalSettings::Instance().MidPointRoundsDown);
+                IBInternalQuery->ParamByName("TIP_AMOUNT")->AsCurrency = 0;
 				IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = SubPayment->GetCashOutRounding();
 				IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = SubPayment->ReferenceNumber;
 				IBInternalQuery->ParamByName("CASH_OUT")->AsString = "T";
@@ -1987,6 +2002,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->ParamByName("PAY_TYPE")->AsString = CASH;
 		IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = "";
 		IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = "";
+         IBInternalQuery->ParamByName("TIP_AMOUNT")->AsCurrency = 0;
 		IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = 0;
 		IBInternalQuery->ParamByName("CASH_OUT")->AsString = "F";
 		IBInternalQuery->ParamByName("TAX_FREE")->AsString = "F";
@@ -2995,6 +3011,8 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 	ManagerReceipt->ReceiptToArchive->Clear();
 	ManagerReceipt->ReceiptToArchive->Position = 0;
 	StringReceipt->SaveToStream(ManagerReceipt->ReceiptToArchive);
+    if(TGlobalSettings::Instance().ExportReprintReceipt)
+     ExportReceipt(StringReceipt.get(),PaymentTransaction);
 	ManagerReceipt->ReceiptToArchive->Position = 0;
 
 	for (int i = 0; i < StringReceipt->Count; i++)
@@ -3002,13 +3020,47 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 		TDeviceRealTerminal::Instance().SecurityPort->SetData(StringReceipt->Strings[i]);
 	}
 }
-
+void TListPaymentSystem::ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction)
+{
+    AnsiString fileName = ExtractFilePath(Application->ExeName) +"Exports\\" ;
+    if(!DirectoryExists(fileName))
+    {
+        CreateDir(fileName);
+        fileName += "Receipts Export\\";
+        CreateDir(fileName);
+    }
+    else
+    {
+       fileName += "Receipts Export\\";
+    }
+    AnsiString date = Now().FormatString("yyyy-mm-dd - hh-mm-ss");
+    fileName += PaymentTransaction.InvoiceNumber+" "+date+" "+".txt";
+    StringReceipt->SaveToFile(fileName );
+}
 void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransaction)
 {
    if(!TManagerDelayedPayment::Instance().IsDelayedPayment(PaymentTransaction))
     {
       if(PaymentTransaction.InvoiceNumber == "" || PaymentTransaction.InvoiceNumber == "Undefined")
-         PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+      {
+            if(TReceiptUtility::CheckRefundCancelTransaction(PaymentTransaction) &&
+               TGlobalSettings::Instance().CaptureRefundRefNo)
+            {
+                PaymentTransaction.InvoiceNumber = "RV " + Invoice->GetVoidInvoiceNumber(PaymentTransaction.DBTransaction);
+            }
+             else
+             {
+                 if(TGlobalSettings::Instance().HideReceiptNumberForRefundItem && PaymentTransaction.CreditTransaction)
+                 {
+                    PaymentTransaction.InvoiceNumber = "";
+                 }
+                 else
+                 {
+                    PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
+                 }
+             }
+
+      }
     }
    else
    {
@@ -3521,6 +3573,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
                                                        PaymentTransaction.Membership.Member.ContactKey);
   }
 
+  //Loyalty Pocket Voucher
   if(PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber != NULL &&
      PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber !="")
   {
@@ -3529,6 +3582,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
     VoucherUsageDetail.PocketVoucherNumber = PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber;
   }
 
+  //Loyalty Gift Card redemtion
   if(paymentComplete && PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber != NULL &&
      PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber !="")
   {
@@ -3537,6 +3591,16 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
     VoucherUsageDetail.GiftCardNumber = PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber;
   }
 
+  //Loyalty gift card point purchase
+  if(paymentComplete && PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber != NULL &&
+     PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber !="")
+  {
+    isVoucherPresent = true;
+    VoucherUsageDetail.PointsPurchased = PaymentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount;
+    VoucherUsageDetail.PurchasedGiftCardNumber = PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber;
+  }
+
+  //Loyalty member voucher
    if(paymentComplete && TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName != NULL &&
      TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName !="")
   {
@@ -3544,6 +3608,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
     VoucherUsageDetail.MemberVoucherDiscountAmount = 0;
     VoucherUsageDetail.VoucherName = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName;
   }
+  //Loyalty members only discounts
   for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
   {
     TItemComplete *Order = (TItemComplete*)(PaymentTransaction.Orders->Items[i]);
@@ -3552,7 +3617,10 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
     {
         TDiscount CurrentDiscount;
         ManagerDiscount->GetDiscount(PaymentTransaction.DBTransaction,(*it_discount).DiscountKey,CurrentDiscount);
-        double discountAmount = RoundToNearest((*it_discount).Value,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+
+        double discountAmount = (*it_discount).Value;
+        if(it_discount->DiscountType == BillCalculator::dtDiscount)
+           discountAmount = -1.0 * discountAmount;
         if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
            && CurrentDiscount.DiscountCode  == TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount)
         {

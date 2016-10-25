@@ -213,7 +213,8 @@ TStockTransaction::TStockTransaction(TIBDatabase *IBDatabase) : TStockControl(IB
 			"StockLocation.Opening,"
 			"StockLocation.Writeoff,"
 			"StockLocation.Sales,"
-			"StockLocation.Stocktake "
+			"StockLocation.Stocktake, "
+            "SUPPLIERSTOCK.LATEST_COST Last_Cost "
 		"From "
 			"Stock Left Join StockLocation On "
 				"Stock.Stock_Key = StockLocation.Stock_Key "
@@ -221,6 +222,7 @@ TStockTransaction::TStockTransaction(TIBDatabase *IBDatabase) : TStockControl(IB
 				"Stock.Stock_Group_Key = StockGroup.Stock_Group_Key "
 			"Left Join StockCategory On "
 				"StockGroup.Stock_Category_Key = StockCategory.Stock_Category_Key "
+                " left join SUPPLIERSTOCK on SUPPLIERSTOCK.STOCK_KEY = STOCK.STOCK_KEY "
 		"Where "
 			"Stock.Stock_Key = :Stock_Key And "
 			"Upper(Location) = :UpperLocation";
@@ -314,7 +316,9 @@ void TStockTransaction::fReadStockDetails(TStockLocationDetails& StockLocationDe
 	StockLocationDetails.Opening				= sqlStockDetails->FieldByName("Opening")->AsDouble;
 	StockLocationDetails.Writeoff				= sqlStockDetails->FieldByName("Writeoff")->AsDouble;
 	StockLocationDetails.Sales					= sqlStockDetails->FieldByName("Sales")->AsDouble;
-	StockLocationDetails.Stocktake			= sqlStockDetails->FieldByName("Stocktake")->AsDouble;
+	StockLocationDetails.Stocktake			= sqlStockDetails->FieldByName("Stocktake")->AsDouble;   //
+    StockLocationDetails.Last_latest_cost	= sqlStockDetails->FieldByName("Last_Cost")->AsDouble;
+
  }
 //---------------------------------------------------------------------------
 bool TStockTransaction::fCreateBatch(TTransactionBatchInfo& BatchInfo)
@@ -780,9 +784,23 @@ bool TReceiveInvoice::fReceivePackingSlipItem(TTransactionBatchInfo const& Batch
                     
 
 
-                 
-                      	NewAverage	= fabs(((StockDetails.Average_Cost * (StockDetails.On_Hand - double(TransactionInfo.Qty))) +
+                        if (TransactionInfo.Qty <= 0)
+                        {
+                            NewAverage = fabs(StockDetails.Average_Cost);
+                        }
+                        else
+                        {
+
+                            if(NewOnHand != 0)
+                            {
+                          	    NewAverage	= fabs(((StockDetails.Average_Cost * (StockDetails.On_Hand - double(TransactionInfo.Qty))) +
 										(double(InvoiceItemInfo->Supplier_Unit_Cost) * double(TransactionInfo.Order_Qty))) / NewOnHand);
+                            }
+                            else
+                            {
+                        	    NewAverage	= fabs(TransactionInfo.Unit_Cost);
+                            }
+                        }
 
                     }
 
@@ -796,13 +814,22 @@ bool TReceiveInvoice::fReceivePackingSlipItem(TTransactionBatchInfo const& Batch
 				   {
                     //update supplier cost
                     Currency costUpdated  ;
-                    if(TransactionInfo.Order_Unit!=InvoiceItemInfo->Supplier_Unit)
+                    if(TransactionInfo.Qty <= 0)
                     {
-                      costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost*InvoiceItemInfo->Supplier_Unit_Qty);
+                       costUpdated = fabs(StockDetails.Last_latest_cost);
                     }
                     else
                     {
-                      costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost);
+                        if(TransactionInfo.Order_Unit!=InvoiceItemInfo->Supplier_Unit)
+                        {
+
+                            costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost*InvoiceItemInfo->Supplier_Unit_Qty);
+
+                        }
+                        else
+                        {
+                            costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost);
+                        }
                     }
 					fSetSupplierStockCost(
 							InvoiceItemInfo->Stock_Key,
@@ -883,6 +910,7 @@ bool TReceiveInvoice::fReceiveInvoiceItem(TTransactionBatchInfo const& BatchInfo
 			{
 				NewLatestCost	= fabs(StockDetails.Latest_Cost);
 				NewAverage		= fabs(StockDetails.Average_Cost);
+                //TransactionInfo.Unit_Cost = fabs(StockDetails.Latest_Cost) / InvoiceItemInfo->Supplier_Unit_Size;
 			}
 			else
 			{
@@ -951,14 +979,23 @@ bool TReceiveInvoice::fReceiveInvoiceItem(TTransactionBatchInfo const& BatchInfo
 				   {
 
                    Currency costUpdated  ;
-                   if(TransactionInfo.Order_Unit!=InvoiceItemInfo->Supplier_Unit)
-                   {
-                       costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost*InvoiceItemInfo->Supplier_Unit_Qty);
-                   }
-                   else
-                   {
-                       costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost);
-                   }
+                    if(TransactionInfo.Qty <= 0)
+                    {
+                       costUpdated = fabs(StockDetails.Last_latest_cost);
+                    }
+                    else
+                    {
+                        if(TransactionInfo.Order_Unit!=InvoiceItemInfo->Supplier_Unit)
+                        {
+
+                            costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost*InvoiceItemInfo->Supplier_Unit_Qty);
+
+                        }
+                        else
+                        {
+                            costUpdated = fabs(InvoiceItemInfo->Supplier_Unit_Cost);
+                        }
+                    }
                    fSetSupplierStockCost(
 							InvoiceItemInfo->Stock_Key,
 							BatchInfo.Supplier_Key,

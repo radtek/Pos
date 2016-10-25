@@ -3129,23 +3129,15 @@ int TMallExportUpdateAdaptor::getRegularDiscountGroupCountPerTransaction( )
 
 void TMallExportUpdateAdaptor::extractBeginingAndEndingInvoiceNumbers( AnsiString &beginInvoiceNum, AnsiString &endInvoiceNum )
 {
-    TIBSQL *query = dbTransaction->Query( dbTransaction->AddQuery());
-    //query->SQL->Text = "SELECT INVOICE_NUMBER FROM DAYARCBILL WHERE TYPE_OF_SALE = 0 ORDER BY ARCBILL_KEY";
-    //query->SQL->Text = "SELECT INVOICE_NUMBER FROM DAYARCBILL ORDER BY ARCBILL_KEY";
-//      query->SQL->Text = " select a.INVOICE_NUMBER  from DAYARCBILL a "
-//                                   " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-//                                   " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-//                                   " where a.DISCOUNT = 0  or c.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and c.DISCOUNT_GROUPNAME <> 'Complimentary' "
-//                                   " and c.DISCOUNT_KEY > 0 "
-//                                   " group by 1 ";
+     TIBSQL *query = dbTransaction->Query( dbTransaction->AddQuery());
 
-      query->SQL->Text = "SELECT INVOICE_NUMBER FROM (select DISTINCT a.INVOICE_NUMBER, b.ARCBILL_KEY  from DAYARCBILL a "
-                         "left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-                         "left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-                         "where a.DISCOUNT = 0  or c.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and c.DISCOUNT_GROUPNAME <> 'Complimentary' "
+     query->SQL->Text = "SELECT INVOICE_NUMBER FROM (select DISTINCT a.INVOICE_NUMBER, b.ARCBILL_KEY  from DAYARCBILL a "
+                     "left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                     "left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                     "where a.DISCOUNT >= 0  or c.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and c.DISCOUNT_GROUPNAME <> 'Complimentary' "
 
-                         "and c.DISCOUNT_KEY > 0 "
-                         "ORDER BY b.ARCBILL_KEY) ";
+                     "and c.DISCOUNT_KEY > 0 "
+                     "ORDER BY b.ARCBILL_KEY) ";
 
 
     query->ExecQuery();

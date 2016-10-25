@@ -11,6 +11,7 @@
 #include "ItemSizeCategory.h"
 #include "ItemRecipe.h"
 #include "DeviceRealTerminal.h"
+#include "MMContactInfo.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -231,12 +232,14 @@ void TDBWebUtil::ProcessWebOrderData(Database::TDBTransaction &DBTransaction,int
         {
             category = DeliveryInfo->NodeName;
          	_di_IXMLNodeList List = DeliveryInfo->GetChildNodes();
+
             for(int i = 0; i < List->Count; i++)
             {
                 _di_IXMLNode Node = List->Get(i);
                 element = Node->NodeName;
                 value = Node->Text;
                 ProcessWebOrderElement(DBTransaction,WebKey,category,element,value);
+
             }
         }
 
@@ -1554,6 +1557,119 @@ void TDBWebUtil::AssignChitNumber(Database::TDBTransaction &DBTransaction, TChit
    {
          WebOrderChitNumber = chit_number;
    }
+}
+//---------------------------------------------------------------------------------------------------------
+TMMContactInfo TDBWebUtil::LoadMemberDetails(Database::TDBTransaction &DBTransaction, int webKey)
+{
+    try
+    {
+        if(webKey != 0)
+        {
+            UnicodeString Address = "";
+            TMMContactInfo memberInfo;
+            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Clear();
+            AnsiString selectQuery = "SELECT a.WEBORDER_KEY, a.CATEGORY, a.ELEMENT, a.DATA "
+                                     "FROM WEBDATA a "
+                                     "WHERE a.WEBORDER_KEY = :WEBORDER_KEY and a.ELEMENT ";
+            IBInternalQuery->SQL->Text = selectQuery +
+                                            "in ('Recipient','StreetNo','StreetName','City','Country')";
+
+            IBInternalQuery->ParamByName("WEBORDER_KEY")->AsString = webKey;
+            IBInternalQuery->ExecQuery();
+
+            for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
+            {
+                 Address += IBInternalQuery->FieldByName("DATA")->AsString;
+            }
+
+            memberInfo.MailingAddress = Address;
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Clear();
+            IBInternalQuery->SQL->Text = selectQuery +  " = 'OrderType'";
+            IBInternalQuery->ParamByName("WEBORDER_KEY")->AsString = webKey;
+            IBInternalQuery->ExecQuery();
+            AnsiString OrderType = IBInternalQuery->FieldByName("DATA")->AsString;
+
+            if(OrderType == "Pick up")
+                memberInfo.MailingAddress = "";
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Clear();
+            IBInternalQuery->SQL->Text = selectQuery +  " = 'Email'";
+            IBInternalQuery->ParamByName("WEBORDER_KEY")->AsString = webKey;
+            IBInternalQuery->ExecQuery();
+            memberInfo.EMail = IBInternalQuery->FieldByName("DATA")->AsString;
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Clear();
+            IBInternalQuery->SQL->Text = "SELECT a.NAME FROM WEBORDERS a where a.WEBORDER_KEY = :WEBORDER_KEY ";
+            IBInternalQuery->ParamByName("WEBORDER_KEY")->AsString = webKey;
+            IBInternalQuery->ExecQuery();
+            memberInfo.Name = IBInternalQuery->FieldByName("NAME")->AsString;
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Clear();
+            IBInternalQuery->SQL->Text = selectQuery +  " = 'Phone'";
+            IBInternalQuery->ParamByName("WEBORDER_KEY")->AsString = webKey;
+            IBInternalQuery->ExecQuery();
+            memberInfo.Phone = IBInternalQuery->FieldByName("DATA")->AsString;
+
+            return memberInfo;
+        }
+    }
+    catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
+	}
+
+}//-----------------------------------------------------------------------------------------------
+UnicodeString TDBWebUtil::LoadPaymentStatus(Database::TDBTransaction &DBTransaction, int webKey)
+{
+    try
+    {
+        if(webKey != 0)
+        {
+            Currency prepaidAmount = 0.0;
+            UnicodeString paidStatus = "";
+            TMMContactInfo memberInfo;
+            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Clear();
+            IBInternalQuery->SQL->Text = "SELECT a.PREPAID "
+                                         "FROM WEBORDERS a "
+                                         "WHERE a.WEBORDER_KEY = :WEBORDER_KEY ";
+
+            IBInternalQuery->ParamByName("WEBORDER_KEY")->AsString = webKey;
+            IBInternalQuery->ExecQuery();
+
+            if(IBInternalQuery->RecordCount)
+            {
+                prepaidAmount = IBInternalQuery->FieldByName("PREPAID")->AsCurrency;
+            }
+
+            if(prepaidAmount > 0)
+            {
+                paidStatus = "PAID";
+            }
+            else
+            {
+                paidStatus = "TO BE PAID FOR";
+            }
+            return paidStatus;
+        }
+    }
+    catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
+	}
+
 }
 
 

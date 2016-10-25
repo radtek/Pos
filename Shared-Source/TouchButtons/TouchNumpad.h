@@ -22,17 +22,7 @@ class TTouchNumpad;
 class PACKAGE TNumpadDisplay : public TCustomPanel
 {
 friend TTouchNumpad;
-public:
-	__fastcall TNumpadDisplay(TComponent* Owner);
 
-	TTime										Time();
-	TNumeric									Numeric();
-	TPIN										PIN();
-
-	void										SetTime(TTime Time);
-	void										SetNumeric(TNumeric Numeric);
-	void										SetPIN(TPIN Pin);
-	void										Clear();
 
 __published:
 	__property								Align;
@@ -57,7 +47,17 @@ __published:
 	__property TNumpadDisplayMode			NumpadDisplayMode				= { read=FNumpadDisplayMode, write=SetNumpadDisplayMode };
 	__property int							DecimalPlaces					= { read=FDecimalPlaces, write=SetDecimalPlaces, default=2 };
 
-protected:
+public:
+	__fastcall TNumpadDisplay(TComponent* Owner);
+
+	TTime										Time();
+	TNumeric									Numeric();
+	TPIN										PIN();
+
+	void										SetTime(TTime Time);
+	void										SetNumeric(TNumeric Numeric);
+	void										SetPIN(TPIN Pin);
+	void                                        Clear();
 	TTouchNumpad *							FTouchNumpad;
 	void										SetTouchNumpad(TTouchNumpad *TouchNumpad);
 	void										KeyPressed(TNumpadKey Key);
@@ -117,7 +117,7 @@ __published:
 	__property TNumpadDisplay *		NumpadDisplay					= { read=FNumpadDisplay, write=SetNumpadDisplay };
 
 	__property TKeyboardMouseEvent	OnClick							= { read=FOnClick, write=FOnClick };
-protected:
+public:
 	TGridButton								*GetButtonXY(int X, int Y);
 	TRect										GetButtonRect(const TGridButton *Button);
 	void __fastcall						Paint(void);

@@ -30,6 +30,10 @@ class TSmartOrderDocHeader
 		AnsiString FSaleStartTime;
         AnsiString FDeliveryTime;
         AnsiString FSourceTableName;
+        AnsiString FPhone;
+        AnsiString FEmail;
+        AnsiString FAddress;
+        AnsiString FPaymentStatus;
 
 	public:
 		 TSmartOrderDocHeader(
@@ -46,6 +50,10 @@ class TSmartOrderDocHeader
 			AnsiString inPatronCount,
 			AnsiString inSaleStartTime,
             AnsiString inDeliveryTime,
+            AnsiString phone,
+            AnsiString email,
+            AnsiString address,
+            AnsiString paymentStatus,
             AnsiString inSourceTableName = "");
 
 		~TSmartOrderDocHeader();
@@ -62,8 +70,12 @@ class TSmartOrderDocHeader
 		__property AnsiString PartyName     = { read = FPartyName    };
 		__property AnsiString PatronCount   = { read = FPatronCount  };
 		__property AnsiString SaleStartTime = { read = FSaleStartTime  };
-                __property AnsiString DeliveryTime = { read = FDeliveryTime  };
-       __property AnsiString SourceTableName = { read = FSourceTableName  };
+        __property AnsiString DeliveryTime    = { read = FDeliveryTime  };
+        __property AnsiString SourceTableName = { read = FSourceTableName  };
+        __property AnsiString phone           = { read = FPhone  };
+        __property AnsiString email           = { read = FEmail  };
+        __property AnsiString address         = { read = FAddress  };
+        __property AnsiString paymentStatus   = { read = FPaymentStatus  };
 };
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -116,7 +128,11 @@ class TXMLOrderSmartManager
 				    AnsiString inPartyName,
 					AnsiString inPatronCount,
 					AnsiString inSaleStartTime,
-                                        AnsiString inDeliveryTime );
+                    AnsiString inDeliveryTime,
+                    AnsiString phone,
+                    AnsiString email,
+                    AnsiString address,
+                    AnsiString paymentStatus );
 
 		// Opens an Incomplete Order
 		// Order's components must be added afterwards

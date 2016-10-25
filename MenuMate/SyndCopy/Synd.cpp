@@ -89,7 +89,7 @@ void __fastcall TForm1::btnDisplayClick(TObject *Sender)
       {
          for (ManagerSyndicateCode.First(false);!ManagerSyndicateCode.Eof();ManagerSyndicateCode.Next())
          {
-            Application->MessageBox(UnicodeString(ManagerSyndicateCode.SyndCode().SyndCode).w_str(),UnicodeString(ManagerSyndicateCode.SyndCode().Name).w_str(),MB_OK + MB_ICONINFORMATION);
+            Application->MessageBox(UnicodeString(ManagerSyndicateCode.SyndCode().DecryptedSyndCode).w_str(),UnicodeString(ManagerSyndicateCode.SyndCode().Name).w_str(),MB_OK + MB_ICONINFORMATION);
          }
       }
       else

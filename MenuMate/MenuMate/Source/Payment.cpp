@@ -56,6 +56,7 @@ TPayment::TPayment(TPaymentTransaction *inOwner) : Owner(inOwner)
    TabName="";
    GLCode = "";
    _assignedPaymentGroups.clear();
+   TipAmount = 0;
 }
 
 void TPayment:: operator = (const TPayment & Data)
@@ -99,6 +100,7 @@ void TPayment:: operator = (const TPayment & Data)
    TabKey=Data.TabKey;
    TabName= Data.TabName;
    GLCode = Data.GLCode;
+   TipAmount = Data.TipAmount;
    SetAssignedGroups( Data.GetAssignedGroups() );
 }
 
@@ -119,6 +121,7 @@ void TPayment::Reset()
    VoucherCode = "";
    CreditTransaction = false;
    SuppressEftPosReceipt = false;
+   TipAmount = 0;
 }
 
 void TPayment::Failed()
@@ -134,6 +137,7 @@ void TPayment::Failed()
    NameOveride = "";
    ReferenceNumber = "";
    ExternalReferenceNumber = "";
+   TipAmount = 0;
 }
 
 void __fastcall TPayment::SetPay(Currency value)
@@ -420,4 +424,9 @@ void TPayment::SetAssignedGroups( TPaymentTypeGroup group )
 bool TPayment::IsLoyaltyVoucher()
 {
    return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card" || Name == "Voucher" );
+}
+
+bool TPayment::IsLoyaltyGiftCard()
+{
+   return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card");
 }

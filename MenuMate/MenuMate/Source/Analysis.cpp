@@ -2189,6 +2189,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 		TIBSQL *IBArcRef = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBPatronCount = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBWebArchive = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBZedQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
 		UnicodeString ExportFile = StockMasterPath + "MMTR_" + FormatFloat("00000",TGlobalSettings::Instance().SiteID) + "_" + DeviceName + ".csv";
 		try
@@ -2229,6 +2230,12 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			IBDayWebArchive->Close();
 			IBDayWebArchive->SQL->Text = "select * from DAYARCWEB where DAYARCWEB.ARCBILL_KEY = :ARCBILL_KEY";
 
+            int Zedkey;
+            IBZedQuery->Close();
+            IBZedQuery->SQL->Text = "SELECT GEN_ID(GEN_ZED, 0) FROM RDB$DATABASE";
+            IBZedQuery->ExecQuery();
+            Zedkey = IBZedQuery->Fields[0]->AsInteger;
+
 			IBArchive->Close();
 			IBArchive->SQL->Text = "insert into ARCHIVE " "(ARCHIVE.ARCHIVE_KEY, ARCHIVE.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME, "
 			"ARCHIVE.MENU_NAME, ARCHIVE.COURSE_NAME, ARCHIVE.ITEM_NAME, "
@@ -2251,11 +2258,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"\"ARCBILL\".\"RECEIPT\", \"ARCBILL\".\"SECURITY_REF\", \"ARCBILL\".\"SALES_TYPE\", "
 			"\"ARCBILL\".\"BILLED_LOCATION\", \"ARCBILL\".\"INVOICE_NUMBER\", \"ARCBILL\".\"INVOICE_KEY\","
 			"\"ARCBILL\".\"ORDER_TYPE_MESSAGE\", \"ARCBILL\".\"CONTACTS_KEY\", \"ARCBILL\".\"ROUNDING_ADJUSTMENT\","
-            "\"ARCBILL\".\"ORDER_IDENTIFICATION_NUMBER\" ) " "values "
+            "\"ARCBILL\".\"ORDER_IDENTIFICATION_NUMBER\", \"ARCBILL\".\"Z_KEY\" , \"ARCBILL\".\"REFUND_REFRECEIPT\") " "values "
 			"(:\"ARCBILL_KEY\", :\"TERMINAL_NAME\", :\"STAFF_NAME\", :\"TIME_STAMP\", :\"TOTAL\", "
 			":\"DISCOUNT\", :\"PATRON_COUNT\", :\"RECEIPT\", :\"SECURITY_REF\", :\"SALES_TYPE\", "
 			":\"BILLED_LOCATION\", :\"INVOICE_NUMBER\", :\"INVOICE_KEY\", :\"ORDER_TYPE_MESSAGE\","
-            " :\"CONTACTS_KEY\", :\"ROUNDING_ADJUSTMENT\", :\"ORDER_IDENTIFICATION_NUMBER\")";
+            " :\"CONTACTS_KEY\", :\"ROUNDING_ADJUSTMENT\", :\"ORDER_IDENTIFICATION_NUMBER\", :\"Z_KEY\", :\"REFUND_REFRECEIPT\")";
 
 			IBArcBillPay->Close();
 			IBArcBillPay->SQL->Text = "insert into \"ARCBILLPAY\" ("
@@ -2263,11 +2270,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"\"ARCBILLPAY\".\"SUBTOTAL\", \"ARCBILLPAY\".\"VOUCHER_NUMBER\", \"ARCBILLPAY\".\"CASH_OUT\", "
 			"\"ARCBILLPAY\".\"NOTE\", \"ARCBILLPAY\".\"TAX_FREE\", \"ARCBILLPAY\".\"GROUP_NUMBER\", "
 			"\"ARCBILLPAY\".\"PROPERTIES\", \"ARCBILLPAY\".\"PAY_TYPE_DETAILS\",\"ARCBILLPAY\".\"ROUNDING\", "
-            "\"ARCBILLPAY\".\"PAYMENT_CARD_TYPE\",\"ARCBILLPAY\".\"PAY_GROUP\",\"ARCBILLPAY\".\"CHARGED_TO_XERO\") "
+            "\"ARCBILLPAY\".\"PAYMENT_CARD_TYPE\",\"ARCBILLPAY\".\"PAY_GROUP\",\"ARCBILLPAY\".\"CHARGED_TO_XERO\",\"ARCBILLPAY\".\"TIP_AMOUNT\") "
             "values "
 			"(:\"ARCBILLPAY_KEY\", :\"ARCBILL_KEY\", :\"PAY_TYPE\", :\"SUBTOTAL\", :\"VOUCHER_NUMBER\", "
 			":\"CASH_OUT\", :\"NOTE\", :\"TAX_FREE\", :\"GROUP_NUMBER\", :\"PROPERTIES\", :\"PAY_TYPE_DETAILS\", :\"ROUNDING\", "
-            ":\"PAYMENT_CARD_TYPE\", :\"PAY_GROUP\", :\"CHARGED_TO_XERO\") ";
+            ":\"PAYMENT_CARD_TYPE\", :\"PAY_GROUP\", :\"CHARGED_TO_XERO\",:\"TIP_AMOUNT\") ";
 
 			IBArcSurcharge->Close();
 			IBArcSurcharge->SQL->Text = "insert into \"ARCSURCHARGE\" "
@@ -2314,6 +2321,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 
 				// Copy all the daily ArcBill Fields to the main archive
 				IBArcBill->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                IBArcBill->ParamByName("Z_KEY")->AsInteger = Zedkey;
 				for (int i = 1; i < IBDayArcBill->FieldCount; i++)
 				{
 					UnicodeString FieldName = IBDayArcBill->Fields[i]->Name;
@@ -3175,6 +3183,7 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 			if (CompleteZed)
 			{
 
+              OpenCashDrawer();
               if(TGlobalSettings::Instance().EnableBlindBalances)
                 {
                    Balances = TBlindBalanceControllerInterface::Instance()->GetBalances();
@@ -3250,8 +3259,6 @@ Zed:
                         UpdateCancelItemsTable();
                         ///changes here for staff hour...
                         UpdateZedStaffHoursEnable(DBTransaction, Zedkey);
-
-
 					}
 					else
 					{
@@ -3288,22 +3295,9 @@ Zed:
 					TManagerChitNumber::Instance().ResetChitNumber(DBTransaction);
 				}
 				PatronCountXML->Clear();
-
                 Processing->Message = "Processing End Of Day...";
-                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-                DBTransaction1.StartTransaction();
-                AnsiString CompanyName = GetCompanyName(DBTransaction1);
-                DBTransaction1.Commit();
-                std::auto_ptr<TSalesForceCommAtZed> sfComm(new TSalesForceCommAtZed());
-                sfComm->PVCommunication(CompanyName);
-                sfComm->SalesForceCommunication(CompanyName);
-
-				if ((frmSelectDish->ParkedSales->GetCount(DBTransaction) > 0) &&
-                    (MessageBox("There are currently parked sales. Do you wish to remove them?", "Clear all parked sales.", MB_YESNO + MB_ICONQUESTION) == IDYES))
-				{
-					frmSelectDish->ClearAllParkedSales(DBTransaction);
-				}
-
+                UpdateSalesForce(); //update sales force
+                ClearParkedSale(DBTransaction); // clear parked sale
                 Processing->Close();
 				Processing->Message = "Updating Clock...";
 				Processing->Show();
@@ -3313,18 +3307,7 @@ Zed:
 				Processing->Message = "Updating Archives...";
 				Processing->Show();
 
-				if(TGlobalSettings::Instance().EnableDepositBagNum)
-				{
-					IBInternalQuery->Close();
-					IBInternalQuery->SQL->Text = "SELECT * FROM DEVICES WHERE PRODUCT = 'MenuMate';";
-					IBInternalQuery->ExecQuery();
-					for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-					{
-						UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), IBInternalQuery->FieldByName("DEVICE_NAME")->AsString);
-					}
-				}
-				else
-                UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), DeviceName);
+                UpdateArchive(IBInternalQuery, DBTransaction, DeviceName);  // update archive..
 
                 Processing->Close();
 				Processing->Message = "Archiving Report...";
@@ -3332,19 +3315,7 @@ Zed:
                 Processing->Close();
 				Processing->Message = "Updating Stock...";
 			  	Processing->Show();
-				Database::TDBTransaction DBStockTransaction(TDeviceRealTerminal::Instance().DBControl);
-				TDeviceRealTerminal::Instance().RegisterTransaction(DBStockTransaction);
-				DBStockTransaction.StartTransaction();
-
-				if (UpdateStockAllowed(DBStockTransaction))
-				{
-					UpdateingStock = true;
-					ProcessStock(DBStockTransaction);
-					UpdateStockComplete(DBStockTransaction);
-					UpdateingStock = false;
-				}
-
-				DBStockTransaction.Commit();
+                UpdateStock(UpdateingStock);  //update stock.
 			}
             Processing->Close();
 			Processing->Message = "Committing Data...";
@@ -3367,33 +3338,8 @@ Zed:
             }
 
 			DBTransaction.Commit();
-            if(TGlobalSettings::Instance().PostZToAccountingSystem && CompleteZed && XeroInvoiceDetails.size() > 0 )
-             {
-                 CreateXeroInvoiceAndSend(XeroInvoiceDetails);
-             }
-            else if(TGlobalSettings::Instance().PostZToAccountingSystem && CompleteZed && MYOBInvoiceDetails.size() > 0 )
-             {
-                 CreateMYOBInvoiceAndSend(MYOBInvoiceDetails);
-             }
-			if(TDeviceRealTerminal::Instance().IMManager->Registered && CompleteZed)
-			{
-				ExportIntaMateVersion();
-				ExportIntaMateListPaymentTypes();
-				ExportIntaMatePaymentTotals();
-				ExportIntaMateGroupTotals();
-				ExportIntaMateCategoriesTotals();
-				ExportIntaMateListDiscounts();
-				ExportIntaMateDiscountTotals();
-				ExportIntaMateListCalculated();
-				ExportIntaMateCalculatedTotals();
-				ExportIntaMateProductTotals();
-				ExportIntaMateListStaff();
-				ExportIntaMateStaffTotals();
-				ExportIntaMateHourlyTotals();
-				ExportIntaMatePatronCounts();
-				ExportIntaMateListGroups();
-				ExportIntaMateListCategories();
-			}
+            PostDataToXeroAndMyOB(XeroInvoiceDetails, MYOBInvoiceDetails, CompleteZed); //post data to xero and Myob
+
             Processing->Close();
             //Processing->Refresh();
 			Processing->Message = "Completed.";
@@ -3417,104 +3363,16 @@ Zed:
                 {
                     Processing->Message = "Resetting Points";
                     Processing->Refresh();
-                    Database::TDBTransaction DBTransactionResetPoints(TDeviceRealTerminal::Instance().DBControl);
-                    DBTransactionResetPoints.StartTransaction();
-                    try
-                    {
-                        TResetPoints check;
-                        TIBSQL *IBInternalQuery1 = DBTransactionResetPoints.Query(DBTransactionResetPoints.AddQuery());
-                        IBInternalQuery1->SQL->Text="select count(a.CONTACTS_KEY) from resetpoints a ";
-                        IBInternalQuery1->ExecQuery();
-                        ResetKey= IBInternalQuery1->FieldByName("COUNT")->AsInteger;
-                        IBInternalQuery1->Close();
-                        IBInternalQuery1->SQL->Text="select distinct a.CONTACTS_KEY from pointstransactions a ";
-                        IBInternalQuery1->ExecQuery();
-
-                        for (; !IBInternalQuery1->Eof; IBInternalQuery1->Next())
-                        {
-                            if(TGlobalSettings::Instance().PointPurchased)
-                            {
-                                if(TGlobalSettings::Instance().PointEarned)
-                                {
-                                    if(TGlobalSettings::Instance().PointRedeem)
-                                    {
-                                        check = All;
-
-                                    }
-                                    else
-                                    {
-                                        check =PurchaseEarn;
-                                    }
-                                }
-                                else
-                                {
-                                     if(TGlobalSettings::Instance().PointRedeem)
-                                    {
-                                        check = PurchaseRedeem;
-                                    }
-                                    else
-                                    {
-                                        check = Purchase;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if(TGlobalSettings::Instance().PointEarned)
-                                {
-                                    if(TGlobalSettings::Instance().PointRedeem)
-                                    {
-                                        check = EarnRedeem;
-                                    }
-                                    else
-                                    {
-                                        check = Earn;
-                                    }
-                                }
-                                else
-                                {
-                                   if(TGlobalSettings::Instance().PointRedeem)
-                                    {
-                                        check = Redeem;
-
-                                    }
-
-                                }
-                            }
-                            if(TGlobalSettings::Instance().PointRedeem || TGlobalSettings::Instance().PointEarned || TGlobalSettings::Instance().PointPurchased)
-                            {
-                                ResetPoint(DBTransactionResetPoints, IBInternalQuery1->FieldByName("CONTACTS_KEY")->AsInteger,check);
-                            }
-                        }
-                        DBTransactionResetPoints.Commit();
-                    }
-                    catch(Exception &E)
-                    {
-                       DBTransactionResetPoints.Rollback();
-                    }
+                    ResetPoints();
                 }
                 if(TGlobalSettings::Instance().EmailZedReports)
                 {
-                      bool SendEmailStatus = false;
+
                       //Processing->Refresh();
                       Processing->Close();
                       Processing->Message = "Sending Emails...";
                       Processing->Show();
-                      GetReportData(z_key);
-                      UnicodeString Dir = ExtractFilePath(Application->ExeName) + ZDIR;
-                      if (!DirectoryExists(Dir))
-                      {
-                        CreateDir(Dir);
-                      }
-                      UnicodeString filename = Dir + "\\" + "ZReport" +"-" + date_time.FormatString("yyyy-mm-dd - hh-mm-ss") +".txt";
-                      ZedToMail->SaveToFile(filename);
-                      ZedToMail->Clear();
-                      AnsiString emailIds = TGlobalSettings::Instance().SaveEmailId;
-                      SendEmailStatus = SendEmail::Send(filename, "Zed Report", emailIds, "");
-                      if(SendEmailStatus)
-                      {
-                         UpdateEmailstatus(z_key);
-                      }
+                      EmailZedReport(z_key);
                       //Processing->Refresh();
                       Processing->Close();
                       Processing->Message = "Completed";
@@ -3524,28 +3382,8 @@ Zed:
 
 			if(CompleteZed)
 			{
-                // For Mall Export
-                if(TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9)
-                {
-                    std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
-                    MEM->IMallManager->ZExport();
-                }
-                else
-                {
-                    TGlobalSettings::Instance().ZCount += 1;
-                    SaveVariable(vmZCount, TGlobalSettings::Instance().ZCount);
-                }
-
-                TMallExportUpdateAdaptor exportUpdateAdaptor;
-                TMallExportHourlyUpdate exportHourlyUpdate;
-                TMallExportTransactionUpdate exportTransactionUpdate;
-                TMallExportOtherDetailsUpdate exportOtherDetailsUpdate;
-                exportUpdateAdaptor.ResetExportTables();
-                exportHourlyUpdate.ResetHourlyExportTablesOnZed();
-                exportTransactionUpdate.ResetTransactionExportTablesOnZed();
-                exportOtherDetailsUpdate.ResetOtherDetailsExportTablesOnZed();
+                UpdateMallExportDetails();
             }
-
             //
       }
       catch(Exception & E)
@@ -3564,17 +3402,13 @@ Zed:
        "Please write down and report the following message to your service provider. \r\r " + E.Message, "Error",
         MB_OK + MB_ICONERROR);
       }
-      if(CompleteZed)
+        if(CompleteZed)
         {
+            // For Mall Export
             SyncCompanyDetails();
+            // For Mall Export
+            UpdateDLFMall();
         }
-      if(TGlobalSettings::Instance().MallIndex == DLFMALL )
-        {
-            CompleteDLFMallExport();
-            TGlobalSettings::Instance().DLFMallFileName ="";
-            SaveCompValueinDBStrUnique(vmDLFMallFileName, TGlobalSettings::Instance().DLFMallFileName); // See Function Description
-        }
-            /**********************DLF MALL END****************************************/
         frmSecurity->LogOut();
         Processing->Close();
 	}
@@ -3761,6 +3595,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
       double floatAmount = 0;
       double PurchasedPoints = 0;
       double PurchasedVoucher = 0;
+      double TipAmount = 0;
       UnicodeString floatGlCode = "";
       UnicodeString tabCreditReceivedGLCode = "200";
       UnicodeString tabCreditRefundGlCode = "200";
@@ -3891,7 +3726,17 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
                              -1 * RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4), AccountCode,0);
               }
            }
+
+           if(IBInternalQuery->FieldByName("Tip")->AsFloat != 0)
+            TipAmount += RoundTo(IBInternalQuery->FieldByName("Tip")->AsFloat, -4);
       }
+
+     //Add payment Tip for DPS EftPOS
+     if(TipAmount != 0)
+     {
+       AddInvoiceItem(XeroInvoiceDetail,"EftPos Tip",TipAmount,TGlobalSettings::Instance().EftPosTipGLCode,0);
+       catTotal += TipAmount;
+     }
 
      if(addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment)
          AddInvoicePayment(XeroInvoiceDetail,"Cash", ( payTotal + floatAmount) , cashGlCode,0);
@@ -3926,6 +3771,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
     }
     return XeroInvoiceDetails;
 }
+
 void TfrmAnalysis::GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiString terminalNamePredicate)
 {
     AnsiString fetchCategory =
@@ -3945,10 +3791,11 @@ void TfrmAnalysis::GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiStr
      Tax = fetchCategory + nonZeroTaxFilter + groupBy;
      zeroTax = fetchCategory + ZeroTaxFilter + groupBy;
 }
+
 void TfrmAnalysis::GetPaymentDetails(AnsiString &paymentDetails, AnsiString terminalNamePredicate)
 {
     AnsiString paymentDetailsPrimitive =
-         " SELECT  b.PAY_TYPE,cast( Sum(b.SUBTOTAL) as numeric(17,4)) Amount,c.GL_CODE  From DAYARCBILL a "
+         " SELECT  b.PAY_TYPE,cast( Sum(b.SUBTOTAL) as numeric(17,4)) Amount,cast(Sum(b.TIP_AMOUNT) as numeric(17,4)) Tip,c.GL_CODE  From DAYARCBILL a "
          " Left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
          " Left join PAYMENTTYPES c on b.PAY_TYPE = c.PAYMENT_NAME "
          " where "
@@ -3984,6 +3831,7 @@ void TfrmAnalysis::CalculateNextday(TDateTime &nextDay)
        nextDay =   RecodeTime(nextDay,23,59,59,999);
     }
 }
+
 std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTransaction &DBTransaction)
 {
     try
@@ -4031,6 +3879,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
           double floatAmount = 0;
           double PurchasedPoints = 0;
           double PurchasedVoucher = 0;
+          double TipAmount = 0;
           UnicodeString AccountCode = "";
 
           TMYOBInvoiceDetail MYOBInvoiceDetail;
@@ -4186,8 +4035,20 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
               {
                  AddMYOBInvoiceItem(MYOBInvoiceDetail,AccountCode,IBInternalQuery->FieldByName("PAY_TYPE")->AsString, amountValue ,0.0,jobCode,"ZeroTax");
               }
+
+              if(IBInternalQuery->FieldByName("Tip")->AsFloat != 0)
+                 TipAmount += RoundTo(IBInternalQuery->FieldByName("Tip")->AsFloat, -2);
+
               IBInternalQuery->Next();
           }
+
+         //Add payment Tip for DPS EftPOS
+         if(TipAmount != 0)
+         {
+           AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().EftPosTipGLCode,"EftPos Tip",TipAmount,0.0,jobCode,"ZeroTax");
+           catTotal += TipAmount;
+         }
+
          if(addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment)
            AddMYOBInvoiceItem(MYOBInvoiceDetail,cashGlCode,"Cash", ( payTotal + floatAmount) ,0.0,jobCode,"ZeroTax");
 
@@ -4241,8 +4102,6 @@ void TfrmAnalysis::AddInvoiceItem(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiStri
     XeroInvoiceDetail.XeroCategoryDetails.push_back(XeroCategoryDetail);
 }
 
-
-
 void TfrmAnalysis::AddInvoicePayment(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiString Description,double unitAmount,AnsiString AccountCode,
                   double taxAmount)
 {
@@ -4264,6 +4123,7 @@ void TfrmAnalysis::AddMYOBInvoiceItem(TMYOBInvoiceDetail &MYOBInvoiceDetail,Ansi
     MYOBCategoryDetail.TaxStatus = taxStatus;
     MYOBInvoiceDetail.MYOBCategoryDetails.push_back(MYOBCategoryDetail);
 }
+
 void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransaction,double &PurchasedPoints, double &PurchasedVoucher,
                                  TDateTime startTime,TDateTime endTime)
 {
@@ -4348,7 +4208,7 @@ void TfrmAnalysis::CreateMYOBInvoiceAndSend(std::vector<TMYOBInvoiceDetail>  &TM
             }
      }
 }
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool TfrmAnalysis::SendInvoiceToXero( TXeroInvoice* inXeroInvoice )
 {
    bool result =  TXeroIntegration::Instance().SendInvoice( inXeroInvoice );
@@ -9252,9 +9112,321 @@ TDateTime TfrmAnalysis::GetMinDayArchiveTime(Database::TDBTransaction &DBTransac
 
 void TfrmAnalysis::SyncCompanyDetails()
 {
-   if (TGlobalSettings::Instance().LoyaltyMateEnabled)
-         {
-           TManagerCloudSync ManagerCloudSync;
-           ManagerCloudSync.SyncCompanyDetails();
-         }
+   try
+   {
+        if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+            TManagerCloudSync ManagerCloudSync;
+            ManagerCloudSync.SyncCompanyDetails();
+        }
+   }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+
+}
+
+void TfrmAnalysis::UpdateSalesForce()
+{
+   try
+   {
+        Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction1.StartTransaction();
+        AnsiString CompanyName = GetCompanyName(DBTransaction1);
+        DBTransaction1.Commit();
+        std::auto_ptr<TSalesForceCommAtZed> sfComm(new TSalesForceCommAtZed());
+        sfComm->PVCommunication(CompanyName);
+        sfComm->SalesForceCommunication(CompanyName);
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+
+void TfrmAnalysis::ClearParkedSale(Database::TDBTransaction &DBTransaction)
+{
+   try
+   {
+        if ((frmSelectDish->ParkedSales->GetCount(DBTransaction) > 0) &&
+            (MessageBox("There are currently parked sales. Do you wish to remove them?", "Clear all parked sales.", MB_YESNO + MB_ICONQUESTION) == IDYES))
+        {
+            frmSelectDish->ClearAllParkedSales(DBTransaction);
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+
+void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransaction &DBTransaction, UnicodeString DeviceName)
+{
+   try
+   {
+        if(TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text = "SELECT * FROM DEVICES WHERE PRODUCT = 'MenuMate';";
+            IBInternalQuery->ExecQuery();
+            for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+            {
+                UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), IBInternalQuery->FieldByName("DEVICE_NAME")->AsString);
+            }
+        }
+        else
+        UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), DeviceName);
+   }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+
+void TfrmAnalysis::UpdateStock(bool UpdateingStock)
+{
+    try
+    {
+        Database::TDBTransaction DBStockTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(DBStockTransaction);
+        DBStockTransaction.StartTransaction();
+
+        if (UpdateStockAllowed(DBStockTransaction))
+        {
+            UpdateingStock = true;
+            ProcessStock(DBStockTransaction);
+            UpdateStockComplete(DBStockTransaction);
+            UpdateingStock = false;
+        }
+
+        DBStockTransaction.Commit();
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+
+void TfrmAnalysis::ResetPoints()
+{
+    Database::TDBTransaction DBTransactionResetPoints(TDeviceRealTerminal::Instance().DBControl);
+    DBTransactionResetPoints.StartTransaction();
+    try
+    {
+        TResetPoints check;
+        TIBSQL *IBInternalQuery1 = DBTransactionResetPoints.Query(DBTransactionResetPoints.AddQuery());
+        IBInternalQuery1->SQL->Text="select count(a.CONTACTS_KEY) from resetpoints a ";
+        IBInternalQuery1->ExecQuery();
+        ResetKey= IBInternalQuery1->FieldByName("COUNT")->AsInteger;
+        IBInternalQuery1->Close();
+        IBInternalQuery1->SQL->Text="select distinct a.CONTACTS_KEY from pointstransactions a ";
+        IBInternalQuery1->ExecQuery();
+
+        for (; !IBInternalQuery1->Eof; IBInternalQuery1->Next())
+        {
+            if(TGlobalSettings::Instance().PointPurchased)
+            {
+                if(TGlobalSettings::Instance().PointEarned)
+                {
+                    if(TGlobalSettings::Instance().PointRedeem)
+                    {
+                        check = All;
+
+                    }
+                    else
+                    {
+                        check =PurchaseEarn;
+                    }
+                }
+                else
+                {
+                     if(TGlobalSettings::Instance().PointRedeem)
+                    {
+                        check = PurchaseRedeem;
+                    }
+                    else
+                    {
+                        check = Purchase;
+                    }
+                }
+            }
+            else
+            {
+                if(TGlobalSettings::Instance().PointEarned)
+                {
+                    if(TGlobalSettings::Instance().PointRedeem)
+                    {
+                        check = EarnRedeem;
+                    }
+                    else
+                    {
+                        check = Earn;
+                    }
+                }
+                else
+                {
+                   if(TGlobalSettings::Instance().PointRedeem)
+                    {
+                        check = Redeem;
+
+                    }
+
+                }
+            }
+            if(TGlobalSettings::Instance().PointRedeem || TGlobalSettings::Instance().PointEarned || TGlobalSettings::Instance().PointPurchased)
+            {
+                ResetPoint(DBTransactionResetPoints, IBInternalQuery1->FieldByName("CONTACTS_KEY")->AsInteger,check);
+            }
+        }
+        DBTransactionResetPoints.Commit();
+    }
+    catch(Exception &E)
+    {
+        DBTransactionResetPoints.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+
+void TfrmAnalysis::EmailZedReport(int z_key)
+{
+    try
+    {
+        bool SendEmailStatus = false;
+        GetReportData(z_key);
+        UnicodeString Dir = ExtractFilePath(Application->ExeName) + ZDIR;
+        if (!DirectoryExists(Dir))
+        {
+            CreateDir(Dir);
+        }
+        UnicodeString filename = Dir + "\\" + "ZReport" +"-" + date_time.FormatString("yyyy-mm-dd - hh-mm-ss") +".txt";
+        ZedToMail->SaveToFile(filename);
+        ZedToMail->Clear();
+        AnsiString emailIds = TGlobalSettings::Instance().SaveEmailId;
+        SendEmailStatus = SendEmail::Send(filename, "Zed Report", emailIds, "");
+        if(SendEmailStatus)
+        {
+            UpdateEmailstatus(z_key);
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+
+void TfrmAnalysis::UpdateMallExportDetails()
+{
+
+    try
+    {
+        // For Mall Export
+        if(TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9)
+        {
+            std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
+            MEM->IMallManager->ZExport();
+        }
+        else
+        {
+            TGlobalSettings::Instance().ZCount += 1;
+            SaveVariable(vmZCount, TGlobalSettings::Instance().ZCount);
+        }
+        TMallExportUpdateAdaptor exportUpdateAdaptor;
+        TMallExportHourlyUpdate exportHourlyUpdate;
+        TMallExportTransactionUpdate exportTransactionUpdate;
+        TMallExportOtherDetailsUpdate exportOtherDetailsUpdate;
+        exportUpdateAdaptor.ResetExportTables();
+        exportHourlyUpdate.ResetHourlyExportTablesOnZed();
+        exportTransactionUpdate.ResetTransactionExportTablesOnZed();
+        exportOtherDetailsUpdate.ResetOtherDetailsExportTablesOnZed();
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+
+void TfrmAnalysis::OpenCashDrawer()
+{
+    try
+    {
+        if(TGlobalSettings::Instance().OpenCashDrawer)
+        {
+            Database::TDBTransaction OpenCashDrawerTransaction(TDeviceRealTerminal::Instance().DBControl);
+            TDeviceRealTerminal::Instance().RegisterTransaction(OpenCashDrawerTransaction);
+            OpenCashDrawerTransaction.StartTransaction();
+            TComms::Instance().KickLocalDraw(OpenCashDrawerTransaction);
+            OpenCashDrawerTransaction.Commit();
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+
+void TfrmAnalysis::PostDataToXeroAndMyOB(std::vector<TXeroInvoiceDetail>  &XeroInvoiceDetails, std::vector<TMYOBInvoiceDetail>  &MYOBInvoiceDetails, bool CompleteZed)
+{
+    try
+    {
+        if(TGlobalSettings::Instance().PostZToAccountingSystem && CompleteZed && XeroInvoiceDetails.size() > 0 )
+        {
+             CreateXeroInvoiceAndSend(XeroInvoiceDetails);
+        }
+        else if(TGlobalSettings::Instance().PostZToAccountingSystem && CompleteZed && MYOBInvoiceDetails.size() > 0 )
+        {
+             CreateMYOBInvoiceAndSend(MYOBInvoiceDetails);
+        }
+        if(TDeviceRealTerminal::Instance().IMManager->Registered && CompleteZed)
+        {
+            ExportIntaMateVersion();
+            ExportIntaMateListPaymentTypes();
+            ExportIntaMatePaymentTotals();
+            ExportIntaMateGroupTotals();
+            ExportIntaMateCategoriesTotals();
+            ExportIntaMateListDiscounts();
+            ExportIntaMateDiscountTotals();
+            ExportIntaMateListCalculated();
+            ExportIntaMateCalculatedTotals();
+            ExportIntaMateProductTotals();
+            ExportIntaMateListStaff();
+            ExportIntaMateStaffTotals();
+            ExportIntaMateHourlyTotals();
+            ExportIntaMatePatronCounts();
+            ExportIntaMateListGroups();
+            ExportIntaMateListCategories();
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+
+void TfrmAnalysis::UpdateDLFMall()
+{
+    try
+    {
+      if(TGlobalSettings::Instance().MallIndex == DLFMALL )
+      {
+            CompleteDLFMallExport();
+            TGlobalSettings::Instance().DLFMallFileName ="";
+            SaveCompValueinDBStrUnique(vmDLFMallFileName, TGlobalSettings::Instance().DLFMallFileName); // See Function Description
+      }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
 }

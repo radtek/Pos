@@ -98,7 +98,8 @@ class TPaymentTransaction
         std::vector<TDiscount> Discounts;
         Currency TotalAdjustment;
         UnicodeString DiscountReason;
-        UnicodeString InvoiceNumber; 	// Receipt Number
+        UnicodeString InvoiceNumber;    // Receipt Number
+        UnicodeString RefundRefReceipt;  // Refund Reference Receipt Number
         int InvoiceKey;            // Key of invoice this payment pays for if applicable.
         int RoomNumber;
         int BookingID;
@@ -163,6 +164,7 @@ class TPaymentTransaction
         TRedeemPointsInformation *RedeemWeightInformation;
         TRedeemPocketVoucherInformation *RedeemPocketVoucherInformation;
         TRedeemGiftVoucherInformation  *RedeemGiftVoucherInformation;
+        TRedeemGiftVoucherInformation  *PurchasedGiftVoucherInformation;
         bool HasOrders();			// whether this transaction has orders in it
         void ReCalculateAmounts();	// recalculate TMoney instance
         bool CopyFrom( const TPaymentTransaction *inOtherTransaction );
@@ -174,6 +176,7 @@ class TPaymentTransaction
         Currency ServiceChargeWithTax;
         bool CheckDiscountApplied(TDiscount CurrentDiscount);
         bool IsVouchersProcessed;
+        void makeLogFile(UnicodeString str);
 };
 
 #endif

@@ -16,10 +16,26 @@ namespace Chefmate.Core.Model
         private string _dbPath;
         private string _terminalIpAddress;
         private string _displayName;
+        private string _groupFontFamily;
+        private string _itemFontFamily;
+        private string _orderFontFamily;
+        private string _analysisFontFamily;
+        private string _firstWarningColor;
+        private string _secondWarningColor;
+        private string _newOrderColor;
+        private string _headerBackgroundColor;
+        private string _headerForegroundColor;
         private int _outputTerminal;
         private int _firstWarningTime;
         private int _secondWarningTime;
         private int _recallCount;
+        private int _webOrderTime;
+        private int _cmFontSize;
+        private int _groupFontSize;
+        private int _orderHeaderFontSize;
+        private int _analysisFontSize;
+        private bool _groupFontBold;
+        private bool _analysisFontBold;
         private bool _autoHide;
         private bool _bumpOnly;
         private bool _confirmOnRefund;
@@ -31,7 +47,6 @@ namespace Chefmate.Core.Model
         private OutputScope _outputScope;
         private KeypadOperation _keypadOperation;
         private OrderLayout _orderLayout;
-        private int _cmFontSize;
         public Settings()
         {
             GroupType = GroupType.ServingCourse;
@@ -44,6 +59,31 @@ namespace Chefmate.Core.Model
             OrderLayout = OrderLayout.TwoByFour;
             FirstWarningTime = 100;
             SecondWarningTime = 200;
+            WebOrderTime = 20;
+            RecallCount = 5;
+            CmFontSize = 15;
+            ItemFontFamily = "Tahoma";
+            GroupFontSize = 18;
+            GroupFontFamily = "Tahoma";
+            GroupFontBold = true;
+            OrderHeaderFontSize = 15;
+            OrderFontFamily = "Tahoma";
+            AnalysisFontSize = 18;
+            AnalysisFontFamily = "Tahoma";
+            NewOrderColor = "#FFB4C7B4";
+            FirstWarningColor = "#FFF1DAB4";
+            SecondWarningColor = "#FFF4B4B4";
+            HeaderBackgroundColor = "#F09422";
+            HeaderForegroundColor = "#FFFFFF";
+        }
+        public Settings(TerminalType terminalType, string dbAddress, string dbPath, string terminalAddress, string terminalDisplayName)
+            : this()
+        {
+            TerminalType = terminalType;
+            DbIpAddress = dbAddress;
+            DbPath = dbPath;
+            TerminalIpAddress = terminalAddress;
+            DisplayName = terminalDisplayName;
         }
         public bool AutoHide
         {
@@ -79,6 +119,24 @@ namespace Chefmate.Core.Model
             {
                 _confirmOnTransfer = value;
                 OnPropertyChanged("ConfirmOnTransfer");
+            }
+        }
+        public bool GroupFontBold
+        {
+            get { return _groupFontBold; }
+            set
+            {
+                _groupFontBold = value;
+                OnPropertyChanged("GroupFontBold");
+            }
+        }
+        public bool AnalysisFontBold
+        {
+            get { return _analysisFontBold; }
+            set
+            {
+                _analysisFontBold = value;
+                OnPropertyChanged("AnalysisFontBold");
             }
         }
         public int FirstWarningTime
@@ -117,6 +175,51 @@ namespace Chefmate.Core.Model
                 OnPropertyChanged("CmFontSize");
             }
         }
+        public int WebOrderTime
+        {
+            get { return _webOrderTime; }
+            set
+            {
+                _webOrderTime = value;
+                OnPropertyChanged("WebOrderTime");
+            }
+        }
+        public int OutputTerminal
+        {
+            get { return _outputTerminal; }
+            set
+            {
+                _outputTerminal = value;
+                OnPropertyChanged("OutputTerminal");
+            }
+        }
+        public int GroupFontSize
+        {
+            get { return _groupFontSize; }
+            set
+            {
+                _groupFontSize = value;
+                OnPropertyChanged("GroupFontSize");
+            }
+        }
+        public int OrderHeaderFontSize
+        {
+            get { return _orderHeaderFontSize; }
+            set
+            {
+                _orderHeaderFontSize = value;
+                OnPropertyChanged("OrderHeaderFontSize");
+            }
+        }
+        public int AnalysisFontSize
+        {
+            get { return _analysisFontSize; }
+            set
+            {
+                _analysisFontSize = value;
+                OnPropertyChanged("AnalysisFontSize");
+            }
+        }
         public string DbIpAddress
         {
             get { return _dbIpAddress; }
@@ -142,15 +245,6 @@ namespace Chefmate.Core.Model
             {
                 _terminalIpAddress = value;
                 OnPropertyChanged("TerminalIpAddress");
-            }
-        }
-        public int OutputTerminal
-        {
-            get { return _outputTerminal; }
-            set
-            {
-                _outputTerminal = value;
-                OnPropertyChanged("OutputTerminal");
             }
         }
         public string NewOrderMmSound
@@ -214,6 +308,87 @@ namespace Chefmate.Core.Model
             {
                 _displayName = value;
                 OnPropertyChanged("DisplayName");
+            }
+        }
+        public string GroupFontFamily
+        {
+            get { return _groupFontFamily; }
+            set
+            {
+                _groupFontFamily = value;
+                OnPropertyChanged("GroupFontFamily");
+            }
+        }
+        public string ItemFontFamily
+        {
+            get { return _itemFontFamily; }
+            set
+            {
+                _itemFontFamily = value;
+                OnPropertyChanged("ItemFontFamily");
+            }
+        }
+        public string AnalysisFontFamily
+        {
+            get { return _analysisFontFamily; }
+            set
+            {
+                _analysisFontFamily = value;
+                OnPropertyChanged("AnalysisFontFamily");
+            }
+        }
+        public string OrderFontFamily
+        {
+            get { return _orderFontFamily; }
+            set
+            {
+                _orderFontFamily = value;
+                OnPropertyChanged("OrderFontFamily");
+            }
+        }
+        public string FirstWarningColor
+        {
+            get { return _firstWarningColor; }
+            set
+            {
+                _firstWarningColor = value;
+                OnPropertyChanged("FirstWarningColor");
+            }
+        }
+        public string SecondWarningColor
+        {
+            get { return _secondWarningColor; }
+            set
+            {
+                _secondWarningColor = value;
+                OnPropertyChanged("SecondWarningColor");
+            }
+        }
+        public string NewOrderColor
+        {
+            get { return _newOrderColor; }
+            set
+            {
+                _newOrderColor = value;
+                OnPropertyChanged("NewOrderColor");
+            }
+        }
+        public string HeaderBackgroundColor
+        {
+            get { return _headerBackgroundColor; }
+            set
+            {
+                _headerBackgroundColor = value;
+                OnPropertyChanged("HeaderBackgroundColor");
+            }
+        }
+        public string HeaderForegroundColor
+        {
+            get { return _headerForegroundColor; }
+            set
+            {
+                _headerForegroundColor = value;
+                OnPropertyChanged("HeaderForegroundColor");
             }
         }
         public OutputTime OutputTime
@@ -297,7 +472,6 @@ namespace Chefmate.Core.Model
                     break;
             }
         }
-
         public object Clone()
         {
             return this.MemberwiseClone();

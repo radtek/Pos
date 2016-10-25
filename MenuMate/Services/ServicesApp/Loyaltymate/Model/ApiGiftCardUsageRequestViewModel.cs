@@ -1,4 +1,5 @@
 ﻿using System;
+using Loyaltymate.Enum;
 
 namespace Loyaltymate.Model
 {
@@ -11,5 +12,7 @@ namespace Loyaltymate.Model
         public long SiteCode { get; set; }
         public DateTime Date { get; set; }
         public string InvoiceNumber { get; set; }
+        public GiftCardVoucherTransactionType TransactionType { get; set; }
     }
+
 }

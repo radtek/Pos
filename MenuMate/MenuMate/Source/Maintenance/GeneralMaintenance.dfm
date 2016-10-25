@@ -20,6 +20,8 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
   WindowState = wsMaximized
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   DesignSize = (
     1009
     768)
@@ -221,11 +223,15 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsPointOfSaleDisplay
+    ActivePage = tsPointOfSale
     TabOrder = 1
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
@@ -239,10 +245,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 49
           Width = 433
-          Height = 670
+          Height = 695
           Caption = 'P.O.S Options'
           ParentBackground = False
-          TabOrder = 11
+          TabOrder = 5
           object Label4: TLabel
             Left = 16
             Top = 154
@@ -544,8 +550,17 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Width = 412
             Height = 25
             Caption = 'Notify for Manually Entered Weight'
-            TabOrder = 21
+            TabOrder = 23
             OnClick = cbNotifyForManuallyEnteredWeightClicked
+          end
+          object cbHideReceiptNumber: TCheckBox
+            Left = 8
+            Top = 660
+            Width = 412
+            Height = 25
+            Caption = 'Hide Receipt Number for Refund Order'
+            TabOrder = 21
+            OnClick = cbHideReceiptNumberClick
           end
         end
         object GroupBox5: TGroupBox
@@ -615,7 +630,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Width = 401
           Height = 49
           Caption = 'Invoicing'
-          TabOrder = 4
+          TabOrder = 3
           object cbDisableInternalInvoicing: TCheckBox
             Left = 8
             Top = 21
@@ -625,70 +640,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             TabOrder = 0
             OnClick = cbDisableInternalInvoicingClick
           end
-        end
-        object cbDisplayTaxExempt: TCheckBox
-          Left = 455
-          Top = 270
-          Width = 377
-          Height = 25
-          Caption = 'Enable Tax Removal'
-          TabOrder = 3
-          OnClick = cbDisplayTaxExemptClick
-        end
-        object cbSkipConfirmationOnFastTender: TCheckBox
-          Left = 455
-          Top = 295
-          Width = 412
-          Height = 25
-          Caption = 'Skip Confirmation on Fast Tender Shortcuts'
-          TabOrder = 7
-          OnClick = cbSkipConfirmationOnFastTenderClick
-        end
-        object cbRoundOnBilling: TCheckBox
-          Left = 455
-          Top = 370
-          Width = 412
-          Height = 25
-          Caption = 'Round On Billing'
-          TabOrder = 9
-          OnClick = cbRoundOnBillingClick
-        end
-        object tbRoundingOnBilling: TTouchBtn
-          Left = 768
-          Top = 370
-          Width = 80
-          Height = 33
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clBlack
-          Font.Height = -15
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          ParentColor = True
-          Caption = '0.01'
-          ButtonColor = 9933970
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
-          LatchingProperties = [lkLatchColor, lkStayDown]
-          OnMouseClick = tbRoundingOnBillingClick
-        end
-        object cbTransferTableOnPrintPrelim: TCheckBox
-          Left = 455
-          Top = 320
-          Width = 412
-          Height = 25
-          Caption = 'Delayed Payment'
-          TabOrder = 8
-          OnClick = cbTransferTableOnPrintPrelimClick
-        end
-        object cbEnableCancelCheckRemoval: TCheckBox
-          Left = 455
-          Top = 345
-          Width = 454
-          Height = 25
-          Caption = 'Enable Security Check on Cancel at Payment Tender'
-          TabOrder = 6
-          OnClick = cbEnableCancelCheckRemovalClick
         end
         object Panel2: TPanel
           Left = 1
@@ -709,12 +660,12 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox19: TGroupBox
           Left = 447
-          Top = 410
+          Top = 480
           Width = 401
           Height = 117
           Caption = 'Scales'
           ParentBackground = False
-          TabOrder = 5
+          TabOrder = 4
           object setWeightLimit: TLabel
             Left = 27
             Top = 85
@@ -769,30 +720,13 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             OnMouseClick = tbEnterWeightClick
           end
         end
-        object GroupBox22: TGroupBox
-          Left = 447
-          Top = 535
-          Width = 401
-          Height = 49
-          Caption = 'Bike Shop'
-          TabOrder = 13
-          object cbDeleteItemSizeAfterSale: TCheckBox
-            Left = 8
-            Top = 21
-            Width = 250
-            Height = 20
-            Caption = 'Delete ItemSize After Sale'
-            TabOrder = 0
-            OnClick = cbDeleteItemSizeAfterSaleClick
-          end
-        end
         object GroupBox23: TGroupBox
           Left = 447
           Top = 600
           Width = 401
           Height = 49
           Caption = 'Item Search'
-          TabOrder = 10
+          TabOrder = 7
           object cbItemSearch: TCheckBox
             Left = 8
             Top = 21
@@ -803,11 +737,105 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             OnClick = cbItemSearchClick
           end
         end
+        object gbItemBilling: TGroupBox
+          Left = 447
+          Top = 270
+          Width = 401
+          Height = 200
+          Caption = 'Item Billing'
+          TabOrder = 6
+          object cbDisplayTaxExempt: TCheckBox
+            Left = 8
+            Top = 21
+            Width = 377
+            Height = 25
+            Caption = 'Enable Tax Removal'
+            TabOrder = 6
+            OnClick = cbDisplayTaxExemptClick
+          end
+          object cbSkipConfirmationOnFastTender: TCheckBox
+            Left = 8
+            Top = 46
+            Width = 350
+            Height = 25
+            Caption = 'Skip Confirmation on Fast Tender Shortcuts'
+            TabOrder = 1
+            OnClick = cbSkipConfirmationOnFastTenderClick
+          end
+          object cbTransferTableOnPrintPrelim: TCheckBox
+            Left = 8
+            Top = 71
+            Width = 320
+            Height = 25
+            Caption = 'Delayed Payment'
+            TabOrder = 2
+            OnClick = cbTransferTableOnPrintPrelimClick
+          end
+          object cbEnableCancelCheckRemoval: TCheckBox
+            Left = 8
+            Top = 96
+            Width = 370
+            Height = 25
+            Caption = 'Enable Security Check on Cancel at Payment Tender'
+            TabOrder = 3
+            OnClick = cbEnableCancelCheckRemovalClick
+          end
+          object cbRoundOnBilling: TCheckBox
+            Left = 8
+            Top = 121
+            Width = 250
+            Height = 25
+            Caption = 'Round On Billing'
+            TabOrder = 5
+            OnClick = cbRoundOnBillingClick
+          end
+          object tbRoundingOnBilling: TTouchBtn
+            Left = 313
+            Top = 121
+            Width = 80
+            Height = 33
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clBlack
+            Font.Height = -15
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ParentColor = True
+            Caption = '0.01'
+            ButtonColor = 9933970
+            LatchedColor = clBtnFace
+            DisabledButtonColor = clBtnFace
+            LatchingProperties = [lkLatchColor, lkStayDown]
+            OnMouseClick = tbRoundingOnBillingClick
+          end
+          object cbDeleteItemSizeAfterSale: TCheckBox
+            Left = 8
+            Top = 147
+            Width = 250
+            Height = 20
+            Caption = 'Delete ItemSize After Sale'
+            TabOrder = 0
+            OnClick = cbDeleteItemSizeAfterSaleClick
+          end
+          object cbMergeSimilarItem: TCheckBox
+            Left = 8
+            Top = 171
+            Width = 250
+            Height = 25
+            Caption = 'Merge Similar Items for Billing'
+            TabOrder = 4
+            OnClick = cbMergeSimilarItemClick
+          end
+        end
       end
     end
     object tsPointOfSaleDisplay: TTabSheet
       Caption = 'Point Of Sale Display.'
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel14: TPanel
         Left = 0
         Top = 0
@@ -1033,6 +1061,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Staff Options.'
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel4: TPanel
         Left = 0
         Top = 0
@@ -1368,6 +1400,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Membership Options.'
       ImageIndex = 3
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel5: TPanel
         Left = 0
         Top = 0
@@ -2049,6 +2085,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'EFTPos.'
       ImageIndex = 4
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel6: TPanel
         Left = 0
         Top = 0
@@ -2309,6 +2349,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Logging'
       ImageIndex = 5
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel7: TPanel
         Left = 0
         Top = 0
@@ -2524,6 +2568,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Magic Memories'
       ImageIndex = 6
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel3: TPanel
         Left = 0
         Top = 0
@@ -2570,8 +2618,8 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         object GroupBox25: TGroupBox
           Left = 400
           Top = 49
-          Width = 450
-          Height = 698
+          Width = 475
+          Height = 700
           Caption = 'Zed Print'
           ParentBackground = False
           TabOrder = 15
@@ -2900,6 +2948,15 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           TabOrder = 12
           OnClick = cbHideCredsCancelsClick
         end
+        object cbOpenCashDrawer: TCheckBox
+          Left = 8
+          Top = 489
+          Width = 329
+          Height = 25
+          Caption = 'Open Cash Drawer'
+          TabOrder = 20
+          OnClick = cbOpenCashDrawerClick
+        end
         object cbSummariseDiscountsonZed: TCheckBox
           Left = 8
           Top = 514
@@ -3113,6 +3170,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     object tsCustomerDisplay: TTabSheet
       Caption = 'Customer Display.'
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel16: TPanel
         Left = 0
         Top = 0

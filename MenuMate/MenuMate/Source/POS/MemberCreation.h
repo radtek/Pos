@@ -47,6 +47,7 @@ __published:	// IDE-managed Components
     TLabel *lbeLoyaltyMateActive;
     TTouchBtn *btnActivateLoyaltyMate;
     TLabel *lbeHeader;
+    TCheckBox *cbNoEmail;
     void __fastcall EditCustomerBasicDetails(TObject *Sender);
     void __fastcall btnOkMouseClick(TObject *Sender);
     void __fastcall FormShow(TObject *Sender);
@@ -59,7 +60,8 @@ __published:	// IDE-managed Components
     void __fastcall tbtnClearBirthdayMouseClick(TObject *Sender);
     void __fastcall tbtnSetBirthdayMouseClick(TObject *Sender);
     void __fastcall btnActivateLoyaltyMateMouseClick(TObject *Sender);
-       void SetupCustomerInfoPointers();
+    void __fastcall cbNoEmailMouseClick(TObject *Sender);
+    void SetupCustomerInfoPointers();
     void DisplayCustomerDataFromPointers();
     void getMemberDetailsFromActivationEmail();
     void toggleActivateAccountButton();

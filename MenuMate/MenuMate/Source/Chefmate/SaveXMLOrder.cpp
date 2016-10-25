@@ -61,7 +61,11 @@ HORDER TSaveXMLOrder::OpenCompleteOrder( __int32    inDBKey,
 										 AnsiString inPartyName,
 										 AnsiString inPatronCount,
 										 AnsiString inSaleStartTime,
-                                                                                 AnsiString inDeliveryTime
+                                         AnsiString inDeliveryTime,
+                                         AnsiString inPhone,
+                                         AnsiString inEmail,
+                                         AnsiString inAddress,
+                                         AnsiString inPaymentStatus
 									   )
 {
 	HORDER result = 0;
@@ -73,8 +77,11 @@ HORDER TSaveXMLOrder::OpenCompleteOrder( __int32    inDBKey,
 		TiXmlElement *orderElem = _rootElem;
 
 		//::::::::::::::::::::::::::::
+        AnsiString actionType = "order";
+        if(inPaymentStatus != "")
+            actionType = "webOrder";
 
-		setNodeAttr( orderElem, "action",         "order" );
+		setNodeAttr( orderElem, "action",         actionType );
 		setNodeAttr( orderElem, "type",           "complete" );
 		setNodeAttr( orderElem, "dbKey",          IntToStr( inDBKey ) );
 		setNodeAttr( orderElem, "serverName",     inServerName );
@@ -87,7 +94,14 @@ HORDER TSaveXMLOrder::OpenCompleteOrder( __int32    inDBKey,
 		setNodeAttr( orderElem, "patronCount",    inPatronCount );
 		setNodeAttr( orderElem, "saleStartTime",  inSaleStartTime );
 		setNodeAttr( orderElem, "saleFinishTime", xmlDateToStr( Now() ) );
-                setNodeAttr( orderElem, "deliveryTime",  inDeliveryTime );
+        setNodeAttr( orderElem, "deliveryTime",   inDeliveryTime );
+        setNodeAttr( orderElem, "customerPhone",   inPhone );
+        setNodeAttr( orderElem, "customerEmail",  inEmail);
+        setNodeAttr( orderElem, "customerAddress", inAddress );
+        if(actionType == "webOrder")
+        {
+            setNodeAttr( orderElem, "paymentStatus", inPaymentStatus );
+        }
 		//::::::::::::::::::::::::::::
 
 		result = ( HORDER )orderElem;
@@ -137,7 +151,7 @@ HORDER TSaveXMLOrder::OpenIncompleteOrder( __int32    inDBKey,
 		setNodeAttr( orderElem, "customerName", inCustomerName );
 		setNodeAttr( orderElem, "partyName",    inPartyName );
 		setNodeAttr( orderElem, "saleFinishTime", xmlDateToStr( Now() ) );
-                setNodeAttr( orderElem, "deliveryTime",  xmlDateToStr( Now() ) );
+        setNodeAttr( orderElem, "deliveryTime",  "");
 		//::::::::::::::::::::::::::::
 
 		result = ( HORDER )orderElem;
@@ -183,7 +197,7 @@ HORDER TSaveXMLOrder::OpenCancelOrder( __int32 inDBKey,
 		setNodeAttr( orderElem, "patronCount",    "0" );
 		setNodeAttr( orderElem, "saleStartTime",  xmlDateToStr( Now() ) );
 		setNodeAttr( orderElem, "saleFinishTime", xmlDateToStr( Now() ) );
-                setNodeAttr( orderElem, "deliveryTime",  xmlDateToStr( Now() ) );
+        setNodeAttr( orderElem, "deliveryTime",  "" );
 		//::::::::::::::::::::::::::::
 
 		result = ( HORDER )orderElem;
@@ -225,7 +239,7 @@ HORDER TSaveXMLOrder::OpenCreditOrder()
 		setNodeAttr( orderElem, "customerName", "" );
 		setNodeAttr( orderElem, "partyName",    "" );
 		setNodeAttr( orderElem, "saleFinishTime",     xmlDateToStr( Now() ) );
-                setNodeAttr( orderElem, "deliveryTime",  xmlDateToStr( Now() ) );
+        setNodeAttr( orderElem, "deliveryTime",  "" );
 		//::::::::::::::::::::::::::::
 
 		result = ( HORDER )orderElem;
@@ -270,7 +284,7 @@ HORDER TSaveXMLOrder::OpenReplacementOrder( __int32    inDBKey,
 		setNodeAttr( orderElem, "partyName",    "" );
 		setNodeAttr( orderElem, "patronCount",  "0" );
 		setNodeAttr( orderElem, "saleFinishTime", xmlDateToStr( Now() ) );
-                setNodeAttr( orderElem, "deliveryTime",  xmlDateToStr( Now() ) );
+        setNodeAttr( orderElem, "deliveryTime",  xmlDateToStr( Now() ) );
 		//::::::::::::::::::::::::::::
 
 		result = ( HORDER )orderElem;
@@ -314,7 +328,7 @@ HORDER TSaveXMLOrder::OpenCallAwayOrder( __int32    inOrderNumber,
 		setNodeAttr( orderElem, "partyName",    "" );
 		setNodeAttr( orderElem, "patronCount",  "0" );
 		setNodeAttr( orderElem, "saleFinishTime", xmlDateToStr( Now() ) );
-                setNodeAttr( orderElem, "deliveryTime",  xmlDateToStr( Now() ) );
+        setNodeAttr( orderElem, "deliveryTime",  xmlDateToStr( Now() ) );
 		//::::::::::::::::::::::::::::
 
 		result = ( HORDER )orderElem;
@@ -363,7 +377,7 @@ HORDER TSaveXMLOrder::OpenTransferOrder( __int32    inDBKey,
 		setNodeAttr( orderElem, "partyName",    "" );
         setNodeAttr( orderElem, "saleStartTime",  inSaleStartTime);
 		setNodeAttr( orderElem, "saleFinishTime", xmlDateToStr( Now() ) );
-        setNodeAttr( orderElem, "deliveryTime",  xmlDateToStr( Now() ) );
+        setNodeAttr( orderElem, "deliveryTime",  ""  );
         setNodeAttr( orderElem, "sourceTableName",  inSourceTableName  );
 		//::::::::::::::::::::::::::::
 

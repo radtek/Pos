@@ -9,6 +9,8 @@
 #pragma package(smart_init)
 #pragma link "TouchBtn"
 #pragma link "TouchControls"
+#pragma link "TouchNumpad"
+#pragma link "TouchPages"
 #pragma resource "*.dfm"
 
 // ---------------------------------------------------------------------------
@@ -24,10 +26,19 @@ void __fastcall TfrmTouchNumpad::FormShow(TObject *Sender)
 {
    FormResize(NULL);
    BtnExit = -1;
-
+   if(View == viewQuantity)
+   {
+       pcItemModify->ActivePage = tsQuantity;
+   }
+   else
+   {
+       pcItemModify->ActivePage = tsGeneral;
+   }
    // Set the Foramt for currency and decimal formatting.
    TFloatFormat Format = (Mode == pmCurrency) ? ffCurrency : ffFixed;
 
+   if(pcItemModify->ActivePage != tsQuantity)
+   {
    if (Mode == pmCurrency || Mode == pmDecimal || Mode == pmWeight)
    {
 	  pnl00->Visible = true;
@@ -93,6 +104,7 @@ void __fastcall TfrmTouchNumpad::FormShow(TObject *Sender)
 		 lbeEnteredValue->Font->Color = clHighlightText;
 	  }
    }
+ }
 }
 
 void __fastcall TfrmTouchNumpad::UpdateDisplay()
@@ -374,12 +386,11 @@ void __fastcall TfrmTouchNumpad::FormResize(TObject *Sender)
    {
 	  int Temp = Tag;
 	  Tag = Screen->Width;
-          if((double)Screen->Width / Screen->Height)
-          {
-	  	ScaleBy(Screen->Width, Temp);
-          }
+      if((double)Screen->Width / Screen->Height)
+      {
+         ScaleBy(Screen->Width, Temp);
+      }
    }
-
    Panel5->Width = Panel2->BorderWidth;
    ClientWidth = Panel2->Width;
    ClientHeight = Panel2->Height;
@@ -410,19 +421,25 @@ void __fastcall TfrmTouchNumpad::btnDiscountClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmTouchNumpad::btnSurchargeClick(TObject *Sender)
 {
-   if (Mode == pmCurrency || Mode == pmDecimal || Mode == pmWeight)
-   {
-	  CURResult = wrkPayAmount;
+    if(View == viewGeneral)
+    {
+       if (Mode == pmCurrency || Mode == pmDecimal || Mode == pmWeight)
+       {
+          CURResult = wrkPayAmount;
+       }
+       else if (Mode == pmNumber)
+       {
+          INTResult = wrkIntAmount;
+       }
+       else if (Mode == pmPIN)
+       {
+          STRResult = wrkStrAmount;
+       }
    }
-   else if (Mode == pmNumber)
+   else
    {
-	  INTResult = wrkIntAmount;
+        CURResult = splitValue;
    }
-   else if (Mode == pmPIN)
-   {
-	  STRResult = wrkStrAmount;
-   }
-
    BtnExit = 1;
    ModalResult = mrOk;
 }
@@ -434,141 +451,159 @@ void __fastcall TfrmTouchNumpad::FormKeyDown(TObject *Sender, WORD &Key, TShiftS
    {
 	  btnSurchargeClick(Sender);
    }
-   if ((Key >= VK_NUMPAD0 && Key <= VK_NUMPAD9) || (char(Key) >= '0' && char(Key) <= '9'))
+   if(View == viewGeneral)
    {
-	  int KeyPressed = 0;
-	  if (Key >= VK_NUMPAD0 && Key <= VK_NUMPAD9)
-	  {
-		 KeyPressed = Key - VK_NUMPAD0;
-	  }
-	  else if (char(Key) >= '0' && char(Key) <= '9')
-	  {
-		 KeyPressed = char(Key) - 0x30;
-	  }
+       if ((Key >= VK_NUMPAD0 && Key <= VK_NUMPAD9) || (char(Key) >= '0' && char(Key) <= '9'))
+       {
+          int KeyPressed = 0;
+          if (Key >= VK_NUMPAD0 && Key <= VK_NUMPAD9)
+          {
+             KeyPressed = Key - VK_NUMPAD0;
+          }
+          else if (char(Key) >= '0' && char(Key) <= '9')
+          {
+             KeyPressed = char(Key) - 0x30;
+          }
 
-	  if (Mode == pmCurrency || Mode == pmDecimal)
-	  {
-		 if (long(double(wrkPayAmount)) / 100000 != 0)
-		 {
-			return;
-		 }
-		 if (lbeEnteredValue->Color == clHighlight)
-		 {
-			wrkPayAmount = double(KeyPressed) / double(100.0);
-			if (ForcedNegitive)
-			{
-			   if (wrkPayAmount > 0)
-			   {
-				  wrkPayAmount = -wrkPayAmount;
-			   }
-			}
-			UpdateDisplay();
-			lbeEnteredValue->ParentColor = true;
-			lbeEnteredValue->Font->Color = clBlack;
+          if (Mode == pmCurrency || Mode == pmDecimal)
+          {
+             if (long(double(wrkPayAmount)) / 100000 != 0)
+             {
+                return;
+             }
+             if (lbeEnteredValue->Color == clHighlight)
+             {
+                wrkPayAmount = double(KeyPressed) / double(100.0);
+                if (ForcedNegitive)
+                {
+                   if (wrkPayAmount > 0)
+                   {
+                      wrkPayAmount = -wrkPayAmount;
+                   }
+                }
+                UpdateDisplay();
+                lbeEnteredValue->ParentColor = true;
+                lbeEnteredValue->Font->Color = clBlack;
 
-		 }
-		 else
-		 {
-			if (ForcedNegitive && wrkPayAmount < 0) // Do the Math on + Numbers
-			{
-			   wrkPayAmount = -wrkPayAmount;
-			}
+             }
+             else
+             {
+                if (ForcedNegitive && wrkPayAmount < 0) // Do the Math on + Numbers
+                {
+                   wrkPayAmount = -wrkPayAmount;
+                }
 
-			wrkPayAmount = wrkPayAmount * 10.0;
-			wrkPayAmount += double(KeyPressed) / double(100.0);
+                wrkPayAmount = wrkPayAmount * 10.0;
+                wrkPayAmount += double(KeyPressed) / double(100.0);
 
-			if (ForcedNegitive)
-			{
-			   if (wrkPayAmount > 0)
-			   {
-				  wrkPayAmount = -wrkPayAmount;
-			   }
-			}
-			UpdateDisplay();
-		 }
-	  }
-	  else if (Mode == pmNumber)
-	  {
-		 if (lbeEnteredValue->Color == clHighlight)
-		 {
-			wrkIntAmount = KeyPressed;
-			if (ForcedNegitive)
-			{
-			   if (wrkIntAmount > 0)
-			   {
-				  wrkIntAmount = -wrkIntAmount;
-			   }
-			}
-			UpdateDisplay();
-			lbeEnteredValue->ParentColor = true;
-			lbeEnteredValue->Font->Color = clBlack;
-		 }
-		 else
-		 {
-			if (IntToStr(wrkIntAmount).Length() < MaxLength)
-			{
-			   if (ForcedNegitive && wrkIntAmount < 0) // Do the Math on + Numbers
-			   {
-				  wrkIntAmount = -wrkIntAmount;
-			   }
-			   wrkIntAmount = wrkIntAmount * 10 + KeyPressed;
-			   if (ForcedNegitive)
-			   {
-				  if (wrkIntAmount > 0)
-				  {
-					 wrkIntAmount = -wrkIntAmount;
-				  }
-			   }
-			   UpdateDisplay();
-			}
-		 }
-	  }
-	  else if (Mode == pmPIN)
-	  {
-		 wrkStrAmount = wrkStrAmount + IntToStr(KeyPressed);
-		 UpdateDisplay();
-	  }
-      else if (Mode == pmSTR)
-      {
-		 if (lbeEnteredValue->Color == clHighlight)
-		 {
-			wrkNumStrAmount = KeyPressed;
-			UpdateDisplay();
-			lbeEnteredValue->ParentColor = true;
-			lbeEnteredValue->Font->Color = clBlack;
-		 }
-		 else
-		 {
-			if (wrkNumStrAmount.Length() < MaxLength)
-			{
-			   wrkNumStrAmount = wrkNumStrAmount+KeyPressed;
-			   UpdateDisplay();
-			}
-		 }
-	  }
+                if (ForcedNegitive)
+                {
+                   if (wrkPayAmount > 0)
+                   {
+                      wrkPayAmount = -wrkPayAmount;
+                   }
+                }
+                UpdateDisplay();
+             }
+          }
+          else if (Mode == pmNumber)
+          {
+             if (lbeEnteredValue->Color == clHighlight)
+             {
+                wrkIntAmount = KeyPressed;
+                if (ForcedNegitive)
+                {
+                   if (wrkIntAmount > 0)
+                   {
+                      wrkIntAmount = -wrkIntAmount;
+                   }
+                }
+                UpdateDisplay();
+                lbeEnteredValue->ParentColor = true;
+                lbeEnteredValue->Font->Color = clBlack;
+             }
+             else
+             {
+                if (IntToStr(wrkIntAmount).Length() < MaxLength)
+                {
+                   if (ForcedNegitive && wrkIntAmount < 0) // Do the Math on + Numbers
+                   {
+                      wrkIntAmount = -wrkIntAmount;
+                   }
+                   wrkIntAmount = wrkIntAmount * 10 + KeyPressed;
+                   if (ForcedNegitive)
+                   {
+                      if (wrkIntAmount > 0)
+                      {
+                         wrkIntAmount = -wrkIntAmount;
+                      }
+                   }
+                   UpdateDisplay();
+                }
+             }
+          }
+          else if (Mode == pmPIN)
+          {
+             wrkStrAmount = wrkStrAmount + IntToStr(KeyPressed);
+             UpdateDisplay();
+          }
+          else if (Mode == pmSTR)
+          {
+             if (lbeEnteredValue->Color == clHighlight)
+             {
+                wrkNumStrAmount = KeyPressed;
+                UpdateDisplay();
+                lbeEnteredValue->ParentColor = true;
+                lbeEnteredValue->Font->Color = clBlack;
+             }
+             else
+             {
+                if (wrkNumStrAmount.Length() < MaxLength)
+                {
+                   wrkNumStrAmount = wrkNumStrAmount+KeyPressed;
+                   UpdateDisplay();
+                }
+             }
+          }
+       }
+   }
+   else if(View == viewQuantity)
+   {
+        if ((char(Key) >= '0' && char(Key) <= '9') || Key == 190)
+        {
+           AnsiString text = char(Key);
+           TNumpadKey NumpadKey;
+           if(Key == 190)
+            NumpadKey = nkCustom;
+           else
+            NumpadKey  = static_cast<TNumpadKey>(StrToInt(text));
+           QtyDisplay->KeyPressed(NumpadKey) ;
+           QtyDisplay->Invalidate();
+           splitValue = QtyDisplay->Numeric();
+        }
    }
 }
+
 // ---------------------------------------------------------------------------
 
 void __fastcall TfrmTouchNumpad::btnOkMouseClick(TObject *Sender)
 {
    if (Mode == pmCurrency || Mode == pmDecimal || Mode == pmWeight)
    {
-	  CURResult = wrkPayAmount;
+      CURResult = wrkPayAmount;
    }
    else if (Mode == pmNumber)
    {
-	  INTResult = wrkIntAmount;
+      INTResult = wrkIntAmount;
    }
    else if (Mode == pmPIN)
    {
-	  STRResult = wrkStrAmount;
+      STRResult = wrkStrAmount;
    }
    else if (Mode == pmSTR)
    {
       NUMSTRResult = wrkNumStrAmount;
    }
-
    BtnExit = 1;
    ModalResult = mrOk;
 }
@@ -578,3 +613,13 @@ void TfrmTouchNumpad::SetMaxLengthValue(int Length)
 {
     MaxLength = Length;
 }
+//---------------------------------------------------------------------------
+void __fastcall TfrmTouchNumpad::tnpQuantityClick(TObject *Sender, TNumpadKey Key)
+{
+   static const double maximum_quantity = 9999.0;
+   if (QtyDisplay->Numeric() > maximum_quantity)
+      QtyDisplay->SetNumeric(static_cast<int>(QtyDisplay->Numeric()) / 10);
+   splitValue = QtyDisplay->Numeric();
+}
+//---------------------------------------------------------------------------
+

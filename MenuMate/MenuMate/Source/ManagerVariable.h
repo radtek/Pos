@@ -115,6 +115,9 @@ enum vmVariables
     vmPontsSpentCountedAsRevenue,
     vmShowDarkBackgroundInPOS,
     vmIsCloudSynced,
+    vmOpenCashDrawer,
+    vmHideReceiptNumberForRefundItem,
+    vmMergeSimilarItem,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
@@ -136,6 +139,8 @@ enum vmVariables
    vmAutoPrintCashReceipts, vmAutoPrintRoomReceipts, vmAutoPrintInvoiceReceipts, vm_PLACEHOLDER_SumDiscountsOnRecipt,
    vmSummariseDiscountOnZed, vm_PLACEHOLDER_HideMembershipDetialsOnReceipts, vmCreditPaymentGroupNumber, vmMembersNameOnReceipt,
    vmAutoPrintWebReceipts,vmReceiptNumberLabel,vmReprintReceiptLabel, vmShowSessionDateInZed,vmPrintZeroTaxes,vmPrintNoticeOnTransfer, vmShowPriceAdjustment, vmRevenueFiguresAreDiscountInclusive,
+   vmCaptureRefundRefNo, vmHideTaxInvoice, vmExportReprintReceipt, vmSetVoidFooter,
+   vmReceiptDigits, vmShowVoidOrRefund, vmShowVoidNumber,
    // Printers   ------------------------------------------------------------------
    vmPrinterModel = 7000, vmPrinterEmulationMode, vmNormalCPL, vmNormalBoldCPL, vmCutterGap, vmTopMargin, vmKitchenTopMargin,
    vmAlwaysUseFullCut, vmKanjiPrinter, vmSingleLineChar, vmDoubleLineChar, vmGraphicPrinter, vmGraphicFontName, vmGraphicFontSize,
@@ -152,7 +157,7 @@ enum vmVariables
    //GlCodes
    vmPointsPurchasedGLCode,vmPointsSpentGLCode,
    vmVoucherPurchasedGLCode, vmServiceChargeGLCode, vmServiceChargeTaxGLCode,vmRoundingGLCode, vmTabDepositCreditReceivedGLCode,
-   vmTabDepositCreditRefundedGLCode, vmFloatGLCode,
+   vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode,
     //Tax
     vmItemPriceIncludeTax = 8000, vmItemPriceIncludeServiceCharge, vmCalculateTaxPostDiscount, vmCalculateServiceChargePostDiscount,
     vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate,

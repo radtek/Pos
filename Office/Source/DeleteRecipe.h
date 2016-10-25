@@ -50,6 +50,7 @@ __published:	// IDE-managed Components
 private:	// User declarations
     void DisplayRecipes(void);
     void DeleteRecipe(int Recipe_ID);
+    bool checkIsRecipeSelectedOrNot();
 public:		// User declarations
     __fastcall TfrmDeleteRecipe(TComponent* Owner);
 };

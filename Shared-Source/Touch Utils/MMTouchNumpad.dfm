@@ -13,8 +13,9 @@ object frmTouchNumpad: TfrmTouchNumpad
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
   OnHide = FormHide
@@ -71,15 +72,15 @@ object frmTouchNumpad: TfrmTouchNumpad
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWhite
           Font.Height = -17
-          Font.Name = 'Arial'
+          Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
           ParentColor = True
           Visible = False
           Caption = 'Surcharge'
           ButtonColor = 9933970
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnSurchargeClick
         end
@@ -91,15 +92,15 @@ object frmTouchNumpad: TfrmTouchNumpad
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWhite
           Font.Height = -17
-          Font.Name = 'Arial'
+          Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
           ParentColor = True
           Visible = False
           Caption = 'Discount'
           ButtonColor = 9933970
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnDiscountClick
         end
@@ -108,12 +109,18 @@ object frmTouchNumpad: TfrmTouchNumpad
           Top = 354
           Width = 132
           Align = alBottom
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -17
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
           ParentColor = True
           Visible = False
           Caption = 'Cancel'
           ButtonColor = 2200566
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnCancelClick
         end
@@ -122,12 +129,18 @@ object frmTouchNumpad: TfrmTouchNumpad
           Top = 5
           Width = 132
           Align = alTop
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -17
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
           ParentColor = True
           Visible = False
           Caption = 'Ok'
           ButtonColor = 18944
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnOkMouseClick
         end
@@ -151,188 +164,372 @@ object frmTouchNumpad: TfrmTouchNumpad
         ParentCtl3D = False
         ParentFont = False
         TabOrder = 1
-        object Panel6: TPanel
-          Left = 16
-          Top = 96
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '7'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 0
-          OnMouseDown = btnNumberMouseDown
-        end
-        object Panel10: TPanel
-          Left = 112
-          Top = 96
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '8'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 1
-          OnMouseDown = btnNumberMouseDown
-        end
-        object Panel15: TPanel
-          Left = 208
-          Top = 96
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '9'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 2
-          OnMouseDown = btnNumberMouseDown
-        end
-        object Panel20: TPanel
-          Left = 16
-          Top = 176
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '4'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 3
-          OnMouseDown = btnNumberMouseDown
-        end
-        object Panel21: TPanel
-          Left = 112
-          Top = 176
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '5'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 4
-          OnMouseDown = btnNumberMouseDown
-        end
-        object Panel22: TPanel
-          Left = 208
-          Top = 176
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '6'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 5
-          OnMouseDown = btnNumberMouseDown
-        end
-        object Panel23: TPanel
-          Left = 16
-          Top = 256
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '1'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 6
-          OnMouseDown = btnNumberMouseDown
-        end
-        object pnl2: TPanel
-          Left = 112
-          Top = 256
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '2'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 7
-          OnMouseDown = btnNumberMouseDown
-        end
-        object pnl3: TPanel
-          Left = 208
-          Top = 256
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '3'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 8
-          OnMouseDown = btnNumberMouseDown
-        end
-        object Panel26: TPanel
-          Left = 16
-          Top = 336
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '0'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 9
-          OnMouseDown = btnNumberMouseDown
-        end
-        object pnl00: TPanel
-          Left = 112
-          Top = 336
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = '00'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 10
-          OnMouseDown = btnNumberMouseDown
-        end
-        object btnCLR: TPanel
-          Left = 208
-          Top = 336
-          Width = 81
-          Height = 65
-          BevelInner = bvRaised
-          BorderStyle = bsSingle
-          Caption = 'CLR'
-          Color = 6052441
-          ParentBackground = False
-          TabOrder = 11
-          OnMouseDown = btnCLRMouseUp
-        end
-        object Panel1: TPanel
-          Left = 16
-          Top = 16
-          Width = 273
-          Height = 65
+        object pcItemModify: TTouchPages
+          Left = 1
+          Top = 1
+          Width = 303
+          Height = 414
+          Align = alClient
+          Font.Charset = CHINESEBIG5_CHARSET
+          Font.Color = clWhite
+          Font.Height = -17
+          Font.Name = 'Arial'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ActivePage = tsGeneral
+          TabHeight = 0
+          TabWidth = 0
+          TabColor = 14342874
           BevelOuter = bvNone
-          BorderStyle = bsSingle
-          ParentColor = True
-          TabOrder = 12
-          object lbeEnteredValue: TLabel
-            Left = 0
-            Top = 0
-            Width = 271
-            Height = 63
-            Align = alClient
-            Alignment = taCenter
-            Caption = '$0.00'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clBlack
-            Font.Height = -32
-            Font.Name = 'Arial'
-            Font.Style = []
+          object tsGeneral: TTouchSheet
+            Left = 2
+            Top = 2
+            Width = 299
+            Height = 410
+            Caption = 'tsGeneral'
+            Color = 14342874
+            ParentColor = True
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -17
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
             ParentFont = False
-            Layout = tlCenter
-            ExplicitWidth = 81
-            ExplicitHeight = 36
+            object Panel6: TPanel
+              Left = 16
+              Top = 96
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '7'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 0
+              OnMouseDown = btnNumberMouseDown
+            end
+            object Panel10: TPanel
+              Left = 112
+              Top = 96
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '8'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 1
+              OnMouseDown = btnNumberMouseDown
+            end
+            object Panel15: TPanel
+              Left = 208
+              Top = 96
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '9'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 2
+              OnMouseDown = btnNumberMouseDown
+            end
+            object Panel20: TPanel
+              Left = 16
+              Top = 176
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '4'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 3
+              OnMouseDown = btnNumberMouseDown
+            end
+            object Panel21: TPanel
+              Left = 112
+              Top = 176
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '5'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 4
+              OnMouseDown = btnNumberMouseDown
+            end
+            object Panel22: TPanel
+              Left = 208
+              Top = 176
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '6'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 5
+              OnMouseDown = btnNumberMouseDown
+            end
+            object Panel23: TPanel
+              Left = 16
+              Top = 256
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '1'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 6
+              OnMouseDown = btnNumberMouseDown
+            end
+            object pnl2: TPanel
+              Left = 112
+              Top = 256
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '2'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 7
+              OnMouseDown = btnNumberMouseDown
+            end
+            object pnl3: TPanel
+              Left = 208
+              Top = 256
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '3'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 8
+              OnMouseDown = btnNumberMouseDown
+            end
+            object Panel26: TPanel
+              Left = 16
+              Top = 336
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '0'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 9
+              OnMouseDown = btnNumberMouseDown
+            end
+            object pnl00: TPanel
+              Left = 112
+              Top = 336
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = '00'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 10
+              OnMouseDown = btnNumberMouseDown
+            end
+            object btnCLR: TPanel
+              Left = 208
+              Top = 336
+              Width = 81
+              Height = 65
+              BevelInner = bvRaised
+              BorderStyle = bsSingle
+              Caption = 'CLR'
+              Color = 6052441
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWhite
+              Font.Height = -17
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentBackground = False
+              ParentFont = False
+              TabOrder = 11
+              OnMouseDown = btnCLRMouseUp
+            end
+            object Panel1: TPanel
+              Left = 16
+              Top = 16
+              Width = 273
+              Height = 65
+              BevelOuter = bvNone
+              BorderStyle = bsSingle
+              ParentColor = True
+              TabOrder = 12
+              object lbeEnteredValue: TLabel
+                Left = 0
+                Top = 0
+                Width = 271
+                Height = 63
+                Align = alClient
+                Alignment = taCenter
+                Caption = '$0.00'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clBlack
+                Font.Height = -32
+                Font.Name = 'Tahoma'
+                Font.Style = []
+                ParentFont = False
+                Layout = tlCenter
+                ExplicitWidth = 78
+                ExplicitHeight = 39
+              end
+            end
+          end
+          object tsQuantity: TTouchSheet
+            Left = 2
+            Top = 2
+            Width = 299
+            Height = 410
+            Caption = 'tsQuantity'
+            Color = 14342874
+            ParentColor = True
+            object pnlQuantity: TPanel
+              Left = 0
+              Top = 0
+              Width = 299
+              Height = 410
+              Align = alClient
+              BevelOuter = bvNone
+              BevelWidth = 6
+              BorderWidth = 100
+              Color = clSilver
+              ParentBackground = False
+              TabOrder = 0
+              object tnpQuantity: TTouchNumpad
+                Left = 16
+                Top = 120
+                Width = 265
+                Height = 281
+                Align = alCustom
+                Font.Charset = ANSI_CHARSET
+                Font.Color = clWhite
+                Font.Height = -16
+                Font.Name = 'Tahoma'
+                Font.Style = []
+                ParentFont = False
+                ParentColor = True
+                BorderStyle = bsNone
+                GridBorderWidth = 0
+                ButtonGapWidth = 10
+                ButtonGapHeight = 10
+                ButtonColor = 6052441
+                CustomKey = True
+                CustomKeyCaption = '.'
+                NumpadDisplay = QtyDisplay
+                OnClick = tnpQuantityClick
+              end
+              object QtyDisplay: TNumpadDisplay
+                Left = 16
+                Top = 12
+                Width = 265
+                Height = 65
+                Align = alCustom
+                Font.Charset = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -37
+                Font.Name = 'Tahoma'
+                Font.Style = []
+                Color = 14342874
+                ParentFont = False
+                BorderWidth = 8
+                NumpadDisplayMode = dmNumeric
+              end
+              object Panel18: TPanel
+                Left = 32
+                Top = 80
+                Width = 241
+                Height = 17
+                Align = alCustom
+                BevelOuter = bvNone
+                BorderWidth = 20
+                Color = clSilver
+                Font.Charset = ANSI_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -16
+                Font.Name = 'Arial'
+                Font.Style = [fsBold]
+                ParentBackground = False
+                ParentFont = False
+                TabOrder = 2
+              end
+            end
           end
         end
       end

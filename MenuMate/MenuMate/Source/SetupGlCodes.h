@@ -27,6 +27,7 @@ __published:	// IDE-managed Components
     TTouchBtn *btnTabAmountReceived;
     TTouchBtn *btnTabAmountRefunded;
     TTouchBtn *btnFloatGlCode;
+    TTouchBtn *btnEftPosTip;
     void __fastcall btnOkMouseClick(TObject *Sender);
     void __fastcall btnCancelMouseClick(TObject *Sender);
     void __fastcall btnPointPurchasedMouseClick(TObject *Sender);
@@ -39,6 +40,7 @@ __published:	// IDE-managed Components
     void __fastcall btnTabAmountReceivedClick(TObject *Sender);
     void __fastcall btnTabAmountRefundedClick(TObject *Sender);
     void __fastcall btnFloatGlCodeClick(TObject *Sender);
+    void __fastcall btnEftPosTipMouseClick(TObject *Sender);
 
 private:	// User declarations
    void ShowKeyBoard(AnsiString KeyBoardCaption,AnsiString& KeyBoardText);
@@ -53,6 +55,7 @@ public:		// User declarations
     AnsiString TabDepositCreditReceived;
     AnsiString TabDepositCreditRefunded;
     AnsiString FloatGLCode;
+    AnsiString EftPosTip;
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TfrmSetupGlCodes *frmSetupGlCodes;

@@ -73,6 +73,9 @@ namespace MenumateVersionParser
             pv6_26,
             pv6_27,
             pv6_28,
+            pv6_29,
+            pv6_30,
+            pv6_31,
     };
 
     class TApplyParser
@@ -145,7 +148,11 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_25( TDBControl* const inDBControl );
         PARSER_ERROR apply6_26( TDBControl* const inDBControl );
         PARSER_ERROR apply6_27( TDBControl* const inDBControl );
-		PARSER_ERROR apply6_28( TDBControl* const inDBControl );        // Members
+		PARSER_ERROR apply6_28( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_29( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_30( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_31( TDBControl* const inDBControl );
+       // Members
         TDBControl* _dbControl;
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -763,6 +770,25 @@ namespace MenumateVersionParser
         void create6_28ArcMallExportOtherDetails(TDBControl* const inDBControl);
         void CreateGenerators6_28(TDBControl* const inDBControl);
 		void Create6_28MYOBInvoiceNumberGenerator(TDBControl* const inDBControl);
+
+        //6.29
+        void upgrade6_29Tables();
+        void update6_29Tables();
+        void UpdateSyndCodeTable6_29(TDBControl* const inDBControl);
+        void UpdateSyndCodes6_29(TDBControl* const inDBControl);
+        void UpdateContactCardsTable6_29(TDBControl* const inDBControl);
+
+        //6.30
+        void upgrade6_30Tables();
+        void update6_30Tables();
+        void Create6_30VoidInvoiceGenerator(TDBControl* const inDBControl);
+        void UpdateDayArcBillTable6_30(TDBControl* const inDBControl);
+        void UpdateArcBillTable6_30(TDBControl* const inDBControl);
+        //6.30
+        void upgrade6_31Tables();
+        void update6_31Tables();
+        void UpdatePaymentTables6_31(TDBControl* const inDBControl);
+        void UpdateContactTable6_31(TDBControl* const inDBControl);
     }; // class
 } // namespace
 

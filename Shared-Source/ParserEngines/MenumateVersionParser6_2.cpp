@@ -1,5 +1,6 @@
 #pragma hdrstop
 #include "MenumateVersionParser.h"
+#include "ManagerSyndCode.h"
 #include <sstream>
 #include <Predicates.h>
 #include <DateUtils.hpp>
@@ -59,7 +60,16 @@ void TApplyParser::upgrade6_28Tables()
 {
     update6_28Tables();
 }
-
+//6.29
+void TApplyParser::upgrade6_29Tables()
+{
+    update6_29Tables();
+}
+//6.30
+void TApplyParser::upgrade6_30Tables()
+{
+    update6_30Tables();
+}
 
 //::::::::::::::::::::::::Version 6.20::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_20Tables()
@@ -858,6 +868,7 @@ void TApplyParser::UpdateLoyaltyTransactionTable6_26(TDBControl* const inDBContr
 		inDBControl);
 	}
 }
+
 void TApplyParser::UpdateArcCateoriesTable6_26(TDBControl* const inDBControl)
 {
   executeQuery ("ALTER TABLE ARCCATEGORIES ALTER CATEGORY TYPE Varchar(50); ",inDBControl);
@@ -875,6 +886,7 @@ void TApplyParser::UpdatePrnorderTable6_27(TDBControl* const inDBControl)
     "ALTER TABLE PRNORDER ALTER COURSE_NAME TYPE VARCHAR(50); ",
     inDBControl);
 }
+
 //::::::::::::::::::::::::Version 6.28:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_28Tables()
 {
@@ -949,7 +961,6 @@ void TApplyParser::create6_28MallViews( TDBControl* const inDBControl )
 	}
 }
 //---------------------------------------------------------------------------
-
 void TApplyParser::update6_28MallExportHourly( TDBControl* const inDBControl )
 {   if ( !fieldExists("MALLEXPORT_HOURLY", "MINUTE_VALUE", inDBControl ) )
 	{
@@ -984,7 +995,6 @@ void TApplyParser::UpdateItemSizeTable6_28(TDBControl* const inDBControl)
     " UPDATE ORDERS a SET A.COST = 0 WHERE A.COST < 0 ; ",
     inDBControl);
 }
-
 //---------------------------------------------------------------------------
 void TApplyParser::update6_28ArcMallExportHourly(TDBControl* const inDBControl)
 {
@@ -1003,7 +1013,6 @@ void TApplyParser::update6_28ArcMallExportHourly(TDBControl* const inDBControl)
 	}
 }
 //---------------------------------------------------------------------------
-
 void TApplyParser::create6_28MallExportOtherDetails(TDBControl* const inDBControl)
 {
     if ( !tableExists( "MALLEXPORTOTHERDETAILS", inDBControl ) )
@@ -1034,7 +1043,6 @@ void TApplyParser::create6_28MallExportOtherDetails(TDBControl* const inDBContro
 	}
 }
 //---------------------------------------------------------------------------
-
 void TApplyParser::create6_28ArcMallExportOtherDetails(TDBControl* const inDBControl)
 {
     if ( !tableExists( "ARCMALLEXPORTOTHERDETAILS", inDBControl ) )
@@ -1065,7 +1073,6 @@ void TApplyParser::create6_28ArcMallExportOtherDetails(TDBControl* const inDBCon
 	}
 }
 //---------------------------------------------------------------------------
-
 void TApplyParser::CreateGenerators6_28( TDBControl* const inDBControl)
 {
     if(!generatorExists("GEN_MEOD_OD_KEY", _dbControl))
@@ -1089,6 +1096,79 @@ void TApplyParser::CreateGenerators6_28( TDBControl* const inDBControl)
     }
 
 }
+
+//::::::::::::::::::::::::Version 6.29:::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_29Tables()
+{
+  UpdateSyndCodeTable6_29(_dbControl);
+  UpdateSyndCodes6_29(_dbControl);
+  UpdateContactCardsTable6_29(_dbControl);
+}
 //---------------------------------------------------------------------------
+
+void TApplyParser::UpdateSyndCodeTable6_29( TDBControl* const inDBControl)
+{
+    if ( !fieldExists("SYNDCODES", "USE_FOR_LM_CLOUD", inDBControl ) )
+	{
+		executeQuery(
+		"ALTER TABLE SYNDCODES ADD USE_FOR_LM_CLOUD T_TRUEFALSE DEFAULT 'F';",
+		inDBControl );
+	}
+}
+//---------------------------------------------------------------------------
+void TApplyParser::UpdateSyndCodes6_29( TDBControl* const inDBControl)
+{
+   TDBTransaction dbTransaction( *inDBControl );
+	try
+	{
+		dbTransaction.StartTransaction();
+		TIBSQL *getQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        getQuery->SQL->Text = "select syndcodes_key, syndcode from syndcodes";
+        getQuery->ExecQuery();
+        if(!getQuery->Eof)
+        {
+           TManagerSyndCode managerSyndCode;
+           TIBSQL *updateQuery = dbTransaction.Query(dbTransaction.AddQuery());
+           updateQuery->SQL->Text = "update syndcodes set replacementcode=:replacementcode where syndcodes_key=:syndcodes_key";
+           for(; !getQuery->Eof; getQuery->Next())
+            {
+                updateQuery->Close();
+                updateQuery->ParamByName("replacementcode")->AsString = managerSyndCode.Decrypt(AnsiString(getQuery->FieldByName("syndcode")->AsString));
+                updateQuery->ParamByName("syndcodes_key")->AsInteger = getQuery->FieldByName("syndcodes_key")->AsInteger;
+                updateQuery->ExecQuery();
+            }
+        }
+		dbTransaction.Commit();
+	}
+	catch( ... )
+	{
+		dbTransaction.Rollback();
+		throw;
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::UpdateContactCardsTable6_29( TDBControl* const inDBControl)
+{
+    if ( !fieldExists("CONTACTCARDS", "IS_ACTIVE", inDBControl ) )
+	{
+		executeQuery(
+		"ALTER TABLE CONTACTCARDS ADD IS_ACTIVE T_TRUEFALSE DEFAULT 'T';",
+		inDBControl );
+	}
+    TDBTransaction dbTransaction( *inDBControl );
+	try
+	{
+		dbTransaction.StartTransaction();
+		TIBSQL *getQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        getQuery->SQL->Text = "UPDATE CONTACTCARDS SET IS_ACTIVE = 'T'";
+        getQuery->ExecQuery();
+		dbTransaction.Commit();
+	}
+	catch( ... )
+	{
+		dbTransaction.Rollback();
+		throw;
+	}
+}
 
 }

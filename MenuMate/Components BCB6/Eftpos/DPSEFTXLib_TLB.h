@@ -9,15 +9,15 @@
 // manual modifications will be lost.                                         
 // ************************************************************************ //
 
-// $Rev: 17252 $
-// File generated on 15/06/2009 11:35:39 a.m. from Type Library described below.
+// $Rev: 18756 $
+// File generated on 12/10/2016 6:36:14 p.m. from Type Library described below.
 
 // ************************************************************************  //
-// Type Lib: C:\Program Files\DPS\Eftpos\DPSEFTX.OCX (1)
+// Type Lib: C:\Program Files\DPS\Eftpos_scr\dpseftx.ocx (1)
 // LIBID: {A9EA3083-C360-4817-B2FD-0527DC103656}
 // LCID: 0
-// Helpfile: C:\Program Files\DPS\Eftpos\DpsEftX.hlp
-// HelpString: DpsEftX ActiveX Control module
+// Helpfile: 
+// HelpString: 
 // DepndLst: 
 //   (1) v2.0 stdole, (C:\WINDOWS\system32\stdole2.tlb)
 // ************************************************************************ //
@@ -60,7 +60,7 @@ namespace Dpseftxlib_tlb
 {
 
 // *********************************************************************//
-// HelpString: DpsEftX ActiveX Control module
+// HelpString: 
 // Version:    1.0
 // *********************************************************************//
 
@@ -191,9 +191,9 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     OleProcedure(_dispid);
   }
 
-  void __fastcall DoreservedMethod11()
+  void __fastcall DoGetXmlLinkStatus()
   {
-    _TDispID _dispid(/* DoreservedMethod11 */ DISPID(126));
+    _TDispID _dispid(/* DoGetXmlLinkStatus */ DISPID(126));
     OleProcedure(_dispid);
   }
 
@@ -281,225 +281,49 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     OleProcedure(_dispid);
   }
 
-  void __fastcall set_DocketNo(long /*[VT_I4:0]*/ Value)
+  void __fastcall set_EnablePrintReceipt(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* DocketNo */ DISPID(13));
+    _TDispID _dispid(/* EnablePrintReceipt */ DISPID(24));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  long /*[VT_I4:0]*/ __fastcall get_DocketNo()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnablePrintReceipt()
   {
-    _TDispID _dispid(/* DocketNo */ DISPID(13));
+    _TDispID _dispid(/* EnablePrintReceipt */ DISPID(24));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Capabilities(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_ReceiptHeader(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* Capabilities */ DISPID(20));
+    _TDispID _dispid(/* ReceiptHeader */ DISPID(25));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Capabilities()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptHeader()
   {
-    _TDispID _dispid(/* Capabilities */ DISPID(20));
+    _TDispID _dispid(/* ReceiptHeader */ DISPID(25));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_PersonalPurchase(long /*[VT_I4:0]*/ Value)
+  void __fastcall set_OutputParameter1(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* PersonalPurchase */ DISPID(14));
+    _TDispID _dispid(/* OutputParameter1 */ DISPID(23));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  long /*[VT_I4:0]*/ __fastcall get_PersonalPurchase()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputParameter1()
   {
-    _TDispID _dispid(/* PersonalPurchase */ DISPID(14));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnableManualPan(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnableManualPan */ DISPID(12));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_EnableManualPan()
-  {
-    _TDispID _dispid(/* EnableManualPan */ DISPID(12));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_DateSettlement(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* DateSettlement */ DISPID(21));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DateSettlement()
-  {
-    _TDispID _dispid(/* DateSettlement */ DISPID(21));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Rrn(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* Rrn */ DISPID(18));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Rrn()
-  {
-    _TDispID _dispid(/* Rrn */ DISPID(18));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_VersionPos(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* VersionPos */ DISPID(11));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_VersionPos()
-  {
-    _TDispID _dispid(/* VersionPos */ DISPID(11));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_AuthCode(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* AuthCode */ DISPID(19));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_AuthCode()
-  {
-    _TDispID _dispid(/* AuthCode */ DISPID(19));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Pix(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* Pix */ DISPID(17));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Pix()
-  {
-    _TDispID _dispid(/* Pix */ DISPID(17));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ClientId(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* ClientId */ DISPID(74));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ClientId()
-  {
-    _TDispID _dispid(/* ClientId */ DISPID(74));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_DeviceId(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* DeviceId */ DISPID(75));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DeviceId()
-  {
-    _TDispID _dispid(/* DeviceId */ DISPID(75));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ReadyLink(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* ReadyLink */ DISPID(66));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReadyLink()
-  {
-    _TDispID _dispid(/* ReadyLink */ DISPID(66));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_TxnRef(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* TxnRef */ DISPID(67));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_TxnRef()
-  {
-    _TDispID _dispid(/* TxnRef */ DISPID(67));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_DpsBillingId(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* DpsBillingId */ DISPID(73));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DpsBillingId()
-  {
-    _TDispID _dispid(/* DpsBillingId */ DISPID(73));
+    _TDispID _dispid(/* OutputParameter1 */ DISPID(23));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
@@ -537,209 +361,17 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_DialogType(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_Capabilities(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* DialogType */ DISPID(71));
+    _TDispID _dispid(/* Capabilities */ DISPID(20));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DialogType()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Capabilities()
   {
-    _TDispID _dispid(/* DialogType */ DISPID(71));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_BillingId(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* BillingId */ DISPID(72));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_BillingId()
-  {
-    _TDispID _dispid(/* BillingId */ DISPID(72));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_OutputTrack2(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* OutputTrack2 */ DISPID(37));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputTrack2()
-  {
-    _TDispID _dispid(/* OutputTrack2 */ DISPID(37));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Authorized(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* Authorized */ DISPID(38));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_Authorized()
-  {
-    _TDispID _dispid(/* Authorized */ DISPID(38));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_AmountCashOut(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* AmountCashOut */ DISPID(7));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_AmountCashOut()
-  {
-    _TDispID _dispid(/* AmountCashOut */ DISPID(7));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_DateTimeTransaction(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* DateTimeTransaction */ DISPID(22));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DateTimeTransaction()
-  {
-    _TDispID _dispid(/* DateTimeTransaction */ DISPID(22));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_OutputTrack1(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* OutputTrack1 */ DISPID(36));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputTrack1()
-  {
-    _TDispID _dispid(/* OutputTrack1 */ DISPID(36));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnableTrainingMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnableTrainingMode */ DISPID(42));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableTrainingMode()
-  {
-    _TDispID _dispid(/* EnableTrainingMode */ DISPID(42));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnableCurrencyConversionPrompt(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnableCurrencyConversionPrompt */ DISPID(43));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableCurrencyConversionPrompt()
-  {
-    _TDispID _dispid(/* EnableCurrencyConversionPrompt */ DISPID(43));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ReceiptSeparatorCommand(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* ReceiptSeparatorCommand */ DISPID(34));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptSeparatorCommand()
-  {
-    _TDispID _dispid(/* ReceiptSeparatorCommand */ DISPID(34));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ReceiptWidth(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* ReceiptWidth */ DISPID(35));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_ReceiptWidth()
-  {
-    _TDispID _dispid(/* ReceiptWidth */ DISPID(35));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_TxnType(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* TxnType */ DISPID(3));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_TxnType()
-  {
-    _TDispID _dispid(/* TxnType */ DISPID(3));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ReCo(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* ReCo */ DISPID(1));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReCo()
-  {
-    _TDispID _dispid(/* ReCo */ DISPID(1));
+    _TDispID _dispid(/* Capabilities */ DISPID(20));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
@@ -777,369 +409,65 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Success(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  void __fastcall set_DocketNo(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* Success */ DISPID(2));
+    _TDispID _dispid(/* DocketNo */ DISPID(13));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_Success()
+  long /*[VT_I4:0]*/ __fastcall get_DocketNo()
   {
-    _TDispID _dispid(/* Success */ DISPID(2));
+    _TDispID _dispid(/* DocketNo */ DISPID(13));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Track1(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_DateSettlement(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* Track1 */ DISPID(8));
+    _TDispID _dispid(/* DateSettlement */ DISPID(21));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Track1()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DateSettlement()
   {
-    _TDispID _dispid(/* Track1 */ DISPID(8));
+    _TDispID _dispid(/* DateSettlement */ DISPID(21));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Amount(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_DateTimeTransaction(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* Amount */ DISPID(6));
+    _TDispID _dispid(/* DateTimeTransaction */ DISPID(22));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Amount()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DateTimeTransaction()
   {
-    _TDispID _dispid(/* Amount */ DISPID(6));
+    _TDispID _dispid(/* DateTimeTransaction */ DISPID(22));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_UnitId(long /*[VT_I4:0]*/ Value)
+  void __fastcall set_AcquirerPort(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* UnitId */ DISPID(9));
+    _TDispID _dispid(/* AcquirerPort */ DISPID(80));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  long /*[VT_I4:0]*/ __fastcall get_UnitId()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_AcquirerPort()
   {
-    _TDispID _dispid(/* UnitId */ DISPID(9));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_VersionEft(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* VersionEft */ DISPID(10));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_VersionEft()
-  {
-    _TDispID _dispid(/* VersionEft */ DISPID(10));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnablePrintSlip(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnablePrintSlip */ DISPID(47));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnablePrintSlip()
-  {
-    _TDispID _dispid(/* EnablePrintSlip */ DISPID(47));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnableBlockingMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnableBlockingMode */ DISPID(48));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableBlockingMode()
-  {
-    _TDispID _dispid(/* EnableBlockingMode */ DISPID(48));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_PrinterName(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* PrinterName */ DISPID(61));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrinterName()
-  {
-    _TDispID _dispid(/* PrinterName */ DISPID(61));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_OrderNumberRequired(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* OrderNumberRequired */ DISPID(54));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_OrderNumberRequired()
-  {
-    _TDispID _dispid(/* OrderNumberRequired */ DISPID(54));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EovOffline(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* EovOffline */ DISPID(46));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EovOffline()
-  {
-    _TDispID _dispid(/* EovOffline */ DISPID(46));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_RegNumberRequired(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* RegNumberRequired */ DISPID(52));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_RegNumberRequired()
-  {
-    _TDispID _dispid(/* RegNumberRequired */ DISPID(52));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_PersonalPurchaseRequired(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* PersonalPurchaseRequired */ DISPID(53));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_PersonalPurchaseRequired()
-  {
-    _TDispID _dispid(/* PersonalPurchaseRequired */ DISPID(53));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnableInvisible(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnableInvisible */ DISPID(44));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableInvisible()
-  {
-    _TDispID _dispid(/* EnableInvisible */ DISPID(44));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnableCurrencyConversion(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnableCurrencyConversion */ DISPID(45));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableCurrencyConversion()
-  {
-    _TDispID _dispid(/* EnableCurrencyConversion */ DISPID(45));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_DisplayTimeout(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* DisplayTimeout */ DISPID(57));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_DisplayTimeout()
-  {
-    _TDispID _dispid(/* DisplayTimeout */ DISPID(57));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_OdometerReading(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* OdometerReading */ DISPID(55));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_OdometerReading()
-  {
-    _TDispID _dispid(/* OdometerReading */ DISPID(55));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_PosName(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* PosName */ DISPID(58));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_PosName()
-  {
-    _TDispID _dispid(/* PosName */ DISPID(58));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_OutputDisplayLine2(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* OutputDisplayLine2 */ DISPID(59));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputDisplayLine2()
-  {
-    _TDispID _dispid(/* OutputDisplayLine2 */ DISPID(59));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnableCheckAccount(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnableCheckAccount */ DISPID(56));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_EnableCheckAccount()
-  {
-    _TDispID _dispid(/* EnableCheckAccount */ DISPID(56));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_StatusText(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* StatusText */ DISPID(62));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_StatusText()
-  {
-    _TDispID _dispid(/* StatusText */ DISPID(62));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_OutputDisplayLine1(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* OutputDisplayLine1 */ DISPID(60));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputDisplayLine1()
-  {
-    _TDispID _dispid(/* OutputDisplayLine1 */ DISPID(60));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Ready(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* Ready */ DISPID(63));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_Ready()
-  {
-    _TDispID _dispid(/* Ready */ DISPID(63));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EftStatus(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* EftStatus */ DISPID(64));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_EftStatus()
-  {
-    _TDispID _dispid(/* EftStatus */ DISPID(64));
+    _TDispID _dispid(/* AcquirerPort */ DISPID(80));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
@@ -1161,17 +489,49 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Enabled(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  void __fastcall set_ReceiptIsSeparate(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* Enabled */ DISPID(-514));
+    _TDispID _dispid(/* ReceiptIsSeparate */ DISPID(79));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_Enabled()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReceiptIsSeparate()
   {
-    _TDispID _dispid(/* Enabled */ DISPID(-514));
+    _TDispID _dispid(/* ReceiptIsSeparate */ DISPID(79));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_BorderStyle(short /*[VT_I2:0]*/ Value)
+  {
+    _TDispID _dispid(/* BorderStyle */ DISPID(-504));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  short /*[VT_I2:0]*/ __fastcall get_BorderStyle()
+  {
+    _TDispID _dispid(/* BorderStyle */ DISPID(-504));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_DpsTxnRef(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* DpsTxnRef */ DISPID(78));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DpsTxnRef()
+  {
+    _TDispID _dispid(/* DpsTxnRef */ DISPID(78));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
@@ -1193,6 +553,54 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     return _args.GetRetVariant();
   }
 
+  void __fastcall set_AuthCode(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* AuthCode */ DISPID(19));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_AuthCode()
+  {
+    _TDispID _dispid(/* AuthCode */ DISPID(19));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PersonalPurchase(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* PersonalPurchase */ DISPID(14));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_PersonalPurchase()
+  {
+    _TDispID _dispid(/* PersonalPurchase */ DISPID(14));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Rrn(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Rrn */ DISPID(18));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Rrn()
+  {
+    _TDispID _dispid(/* Rrn */ DISPID(18));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
   void __fastcall set_ReadyState(long /*[VT_I4:0]*/ Value)
   {
     _TDispID _dispid(/* ReadyState */ DISPID(-525));
@@ -1209,113 +617,145 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Font(IFontDisp* /*[VT_USERDEFINED:1]*/ Value)
+  void __fastcall set_Pix(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* Font */ DISPID(-512));
-    TAutoArgs<1> _args;
-    _args[1] = (LPDISPATCH) /*[VT_DISPATCH:1]*/ (IFontDisp* /*[C2]*/)Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  IFontDisp* /*[VT_USERDEFINED:1]*/ __fastcall get_Font()
-  {
-    _TDispID _dispid(/* Font */ DISPID(-512));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return (IFontDisp* /*[C3]*/)(LPDISPATCH)_args.GetRetVariant();
-  }
-
-  void __fastcall set_DialogY(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* DialogY */ DISPID(70));
+    _TDispID _dispid(/* Pix */ DISPID(17));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DialogY()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Pix()
   {
-    _TDispID _dispid(/* DialogY */ DISPID(70));
+    _TDispID _dispid(/* Pix */ DISPID(17));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_ClientType(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_DateExpiry(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* ClientType */ DISPID(68));
+    _TDispID _dispid(/* DateExpiry */ DISPID(40));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ClientType()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DateExpiry()
   {
-    _TDispID _dispid(/* ClientType */ DISPID(68));
+    _TDispID _dispid(/* DateExpiry */ DISPID(40));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_ClientIp(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_EnableTestMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* ClientIp */ DISPID(76));
+    _TDispID _dispid(/* EnableTestMode */ DISPID(41));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ClientIp()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableTestMode()
   {
-    _TDispID _dispid(/* ClientIp */ DISPID(76));
+    _TDispID _dispid(/* EnableTestMode */ DISPID(41));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_DialogX(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_EnableCurrencyConversion(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* DialogX */ DISPID(69));
+    _TDispID _dispid(/* EnableCurrencyConversion */ DISPID(45));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DialogX()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableCurrencyConversion()
   {
-    _TDispID _dispid(/* DialogX */ DISPID(69));
+    _TDispID _dispid(/* EnableCurrencyConversion */ DISPID(45));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_EnableBackLight(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  void __fastcall set_EnableCurrencyConversionPrompt(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* EnableBackLight */ DISPID(50));
+    _TDispID _dispid(/* EnableCurrencyConversionPrompt */ DISPID(43));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableBackLight()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableCurrencyConversionPrompt()
   {
-    _TDispID _dispid(/* EnableBackLight */ DISPID(50));
+    _TDispID _dispid(/* EnableCurrencyConversionPrompt */ DISPID(43));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_ReadyPinPad(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  void __fastcall set_EnableInvisible(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* ReadyPinPad */ DISPID(65));
+    _TDispID _dispid(/* EnableInvisible */ DISPID(44));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReadyPinPad()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableInvisible()
   {
-    _TDispID _dispid(/* ReadyPinPad */ DISPID(65));
+    _TDispID _dispid(/* EnableInvisible */ DISPID(44));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EnableTrainingMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* EnableTrainingMode */ DISPID(42));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableTrainingMode()
+  {
+    _TDispID _dispid(/* EnableTrainingMode */ DISPID(42));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EovOffline(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* EovOffline */ DISPID(46));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EovOffline()
+  {
+    _TDispID _dispid(/* EovOffline */ DISPID(46));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EnablePrintSlip(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* EnablePrintSlip */ DISPID(47));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnablePrintSlip()
+  {
+    _TDispID _dispid(/* EnablePrintSlip */ DISPID(47));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
@@ -1353,865 +793,129 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_BorderStyle(short /*[VT_I2:0]*/ Value)
+  void __fastcall set_EnableBackLight(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* BorderStyle */ DISPID(-504));
+    _TDispID _dispid(/* EnableBackLight */ DISPID(50));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  short /*[VT_I2:0]*/ __fastcall get_BorderStyle()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableBackLight()
   {
-    _TDispID _dispid(/* BorderStyle */ DISPID(-504));
+    _TDispID _dispid(/* EnableBackLight */ DISPID(50));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_MerchantReference(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_TxnType(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* MerchantReference */ DISPID(77));
+    _TDispID _dispid(/* TxnType */ DISPID(3));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_MerchantReference()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_TxnType()
   {
-    _TDispID _dispid(/* MerchantReference */ DISPID(77));
+    _TDispID _dispid(/* TxnType */ DISPID(3));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Appearance(short /*[VT_I2:0]*/ Value)
+  void __fastcall set_VersionEft(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* Appearance */ DISPID(-520));
+    _TDispID _dispid(/* VersionEft */ DISPID(10));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  short /*[VT_I2:0]*/ __fastcall get_Appearance()
+  long /*[VT_I4:0]*/ __fastcall get_VersionEft()
   {
-    _TDispID _dispid(/* Appearance */ DISPID(-520));
+    _TDispID _dispid(/* VersionEft */ DISPID(10));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Caption(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_Success(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* Caption */ DISPID(-518));
+    _TDispID _dispid(/* Success */ DISPID(2));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Caption()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_Success()
   {
-    _TDispID _dispid(/* Caption */ DISPID(-518));
+    _TDispID _dispid(/* Success */ DISPID(2));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_BackColor(::OLE_COLOR /*[VT_UI4:0]*/ Value)
+  void __fastcall set_Amount(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* BackColor */ DISPID(-501));
+    _TDispID _dispid(/* Amount */ DISPID(6));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  ::OLE_COLOR /*[VT_UI4:0]*/ __fastcall get_BackColor()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Amount()
   {
-    _TDispID _dispid(/* BackColor */ DISPID(-501));
+    _TDispID _dispid(/* Amount */ DISPID(6));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_EnableCreditAccount(long /*[VT_I4:0]*/ Value)
+  void __fastcall set_ReCo(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* EnableCreditAccount */ DISPID(91));
+    _TDispID _dispid(/* ReCo */ DISPID(1));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  long /*[VT_I4:0]*/ __fastcall get_EnableCreditAccount()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReCo()
   {
-    _TDispID _dispid(/* EnableCreditAccount */ DISPID(91));
+    _TDispID _dispid(/* ReCo */ DISPID(1));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_EnableSavingAccount(long /*[VT_I4:0]*/ Value)
+  void __fastcall set_VersionPos(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* EnableSavingAccount */ DISPID(90));
+    _TDispID _dispid(/* VersionPos */ DISPID(11));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  long /*[VT_I4:0]*/ __fastcall get_EnableSavingAccount()
+  long /*[VT_I4:0]*/ __fastcall get_VersionPos()
   {
-    _TDispID _dispid(/* EnableSavingAccount */ DISPID(90));
+    _TDispID _dispid(/* VersionPos */ DISPID(11));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Track3(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_UnitId(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* Track3 */ DISPID(85));
+    _TDispID _dispid(/* UnitId */ DISPID(9));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Track3()
+  long /*[VT_I4:0]*/ __fastcall get_UnitId()
   {
-    _TDispID _dispid(/* Track3 */ DISPID(85));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Parameter1(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* Parameter1 */ DISPID(88));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Parameter1()
-  {
-    _TDispID _dispid(/* Parameter1 */ DISPID(88));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_AmountCreditLimit(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* AmountCreditLimit */ DISPID(89));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_AmountCreditLimit()
-  {
-    _TDispID _dispid(/* AmountCreditLimit */ DISPID(89));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_DpsTxnRef(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* DpsTxnRef */ DISPID(78));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DpsTxnRef()
-  {
-    _TDispID _dispid(/* DpsTxnRef */ DISPID(78));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Amount2(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* Amount2 */ DISPID(81));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Amount2()
-  {
-    _TDispID _dispid(/* Amount2 */ DISPID(81));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_AcquirerPort(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* AcquirerPort */ DISPID(80));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_AcquirerPort()
-  {
-    _TDispID _dispid(/* AcquirerPort */ DISPID(80));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ReceiptIsSeparate(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* ReceiptIsSeparate */ DISPID(79));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReceiptIsSeparate()
-  {
-    _TDispID _dispid(/* ReceiptIsSeparate */ DISPID(79));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ProductRestricts(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* ProductRestricts */ DISPID(148));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ProductRestricts()
-  {
-    _TDispID _dispid(/* ProductRestricts */ DISPID(148));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_FuelCardType(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* FuelCardType */ DISPID(151));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_FuelCardType()
-  {
-    _TDispID _dispid(/* FuelCardType */ DISPID(151));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_RegNumber(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* RegNumber */ DISPID(150));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_RegNumber()
-  {
-    _TDispID _dispid(/* RegNumber */ DISPID(150));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Track2Mac(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* Track2Mac */ DISPID(149));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Track2Mac()
-  {
-    _TDispID _dispid(/* Track2Mac */ DISPID(149));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_PreSelectAccount(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* PreSelectAccount */ DISPID(154));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_PreSelectAccount()
-  {
-    _TDispID _dispid(/* PreSelectAccount */ DISPID(154));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Parameter2(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* Parameter2 */ DISPID(87));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Parameter2()
-  {
-    _TDispID _dispid(/* Parameter2 */ DISPID(87));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_OutputTrack3(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* OutputTrack3 */ DISPID(86));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputTrack3()
-  {
-    _TDispID _dispid(/* OutputTrack3 */ DISPID(86));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_OrderNumber(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* OrderNumber */ DISPID(153));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_OrderNumber()
-  {
-    _TDispID _dispid(/* OrderNumber */ DISPID(153));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Company(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* Company */ DISPID(152));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Company()
-  {
-    _TDispID _dispid(/* Company */ DISPID(152));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Stan(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* Stan */ DISPID(95));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_Stan()
-  {
-    _TDispID _dispid(/* Stan */ DISPID(95));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EmvFileUpdating(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* EmvFileUpdating */ DISPID(94));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_EmvFileUpdating()
-  {
-    _TDispID _dispid(/* EmvFileUpdating */ DISPID(94));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_PrivateData6(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* PrivateData6 */ DISPID(105));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData6()
-  {
-    _TDispID _dispid(/* PrivateData6 */ DISPID(105));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_PrivateData5(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* PrivateData5 */ DISPID(104));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData5()
-  {
-    _TDispID _dispid(/* PrivateData5 */ DISPID(104));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_UserEnterMode(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* UserEnterMode */ DISPID(93));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_UserEnterMode()
-  {
-    _TDispID _dispid(/* UserEnterMode */ DISPID(93));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Account2(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* Account2 */ DISPID(98));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_Account2()
-  {
-    _TDispID _dispid(/* Account2 */ DISPID(98));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_CurrencyId(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* CurrencyId */ DISPID(97));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_CurrencyId()
-  {
-    _TDispID _dispid(/* CurrencyId */ DISPID(97));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_AccountSelected(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* AccountSelected */ DISPID(96));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_AccountSelected()
-  {
-    _TDispID _dispid(/* AccountSelected */ DISPID(96));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_SelectAccount(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* SelectAccount */ DISPID(99));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_SelectAccount()
-  {
-    _TDispID _dispid(/* SelectAccount */ DISPID(99));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_CurrencyRate(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* CurrencyRate */ DISPID(82));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_CurrencyRate()
-  {
-    _TDispID _dispid(/* CurrencyRate */ DISPID(82));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnterDataLen(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnterDataLen */ DISPID(92));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_EnterDataLen()
-  {
-    _TDispID _dispid(/* EnterDataLen */ DISPID(92));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_KeyMask(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* KeyMask */ DISPID(84));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_KeyMask()
-  {
-    _TDispID _dispid(/* KeyMask */ DISPID(84));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_InputMask(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* InputMask */ DISPID(83));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_InputMask()
-  {
-    _TDispID _dispid(/* InputMask */ DISPID(83));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Account(long /*[VT_I4:0]*/ Value)
-  {
-    _TDispID _dispid(/* Account */ DISPID(102));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  long /*[VT_I4:0]*/ __fastcall get_Account()
-  {
-    _TDispID _dispid(/* Account */ DISPID(102));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_PrivateData4(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* PrivateData4 */ DISPID(103));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData4()
-  {
-    _TDispID _dispid(/* PrivateData4 */ DISPID(103));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_PrivateData7(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* PrivateData7 */ DISPID(106));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData7()
-  {
-    _TDispID _dispid(/* PrivateData7 */ DISPID(106));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_Cvc2(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* Cvc2 */ DISPID(101));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Cvc2()
-  {
-    _TDispID _dispid(/* Cvc2 */ DISPID(101));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnableAddBillCard(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnableAddBillCard */ DISPID(100));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableAddBillCard()
-  {
-    _TDispID _dispid(/* EnableAddBillCard */ DISPID(100));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_CardType(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* CardType */ DISPID(30));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_CardType()
-  {
-    _TDispID _dispid(/* CardType */ DISPID(30));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_PrivateData2(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* PrivateData2 */ DISPID(28));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData2()
-  {
-    _TDispID _dispid(/* PrivateData2 */ DISPID(28));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ResponseText(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* ResponseText */ DISPID(31));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ResponseText()
-  {
-    _TDispID _dispid(/* ResponseText */ DISPID(31));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ReceiptEjectCommand(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* ReceiptEjectCommand */ DISPID(32));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptEjectCommand()
-  {
-    _TDispID _dispid(/* ReceiptEjectCommand */ DISPID(32));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ReceiptLineTerminator(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* ReceiptLineTerminator */ DISPID(29));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptLineTerminator()
-  {
-    _TDispID _dispid(/* ReceiptLineTerminator */ DISPID(29));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_DpsLinkText(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* DpsLinkText */ DISPID(140));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DpsLinkText()
-  {
-    _TDispID _dispid(/* DpsLinkText */ DISPID(140));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_AmountAuthOut(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* AmountAuthOut */ DISPID(143));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_AmountAuthOut()
-  {
-    _TDispID _dispid(/* AmountAuthOut */ DISPID(143));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_OutputEkTrack2(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* OutputEkTrack2 */ DISPID(142));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputEkTrack2()
-  {
-    _TDispID _dispid(/* OutputEkTrack2 */ DISPID(142));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EkTrack2(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* EkTrack2 */ DISPID(141));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_EkTrack2()
-  {
-    _TDispID _dispid(/* EkTrack2 */ DISPID(141));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_DateExpiry(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* DateExpiry */ DISPID(40));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DateExpiry()
-  {
-    _TDispID _dispid(/* DateExpiry */ DISPID(40));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_ReceiptResetCommand(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* ReceiptResetCommand */ DISPID(33));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptResetCommand()
-  {
-    _TDispID _dispid(/* ReceiptResetCommand */ DISPID(33));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_EnableTestMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-  {
-    _TDispID _dispid(/* EnableTestMode */ DISPID(41));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableTestMode()
-  {
-    _TDispID _dispid(/* EnableTestMode */ DISPID(41));
-    TAutoArgs<0> _args;
-    OlePropertyGet(_dispid, _args);
-    return _args.GetRetVariant();
-  }
-
-  void __fastcall set_CardNumber(BSTR /*[VT_BSTR:0]*/ Value)
-  {
-    _TDispID _dispid(/* CardNumber */ DISPID(39));
-    TAutoArgs<1> _args;
-    _args[1] = Value;
-    OlePropertyPut(_dispid, _args);
-  }
-
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_CardNumber()
-  {
-    _TDispID _dispid(/* CardNumber */ DISPID(39));
+    _TDispID _dispid(/* UnitId */ DISPID(9));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
@@ -2233,273 +937,753 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_OutputParameter1(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_Track1(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* OutputParameter1 */ DISPID(23));
+    _TDispID _dispid(/* Track1 */ DISPID(8));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputParameter1()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Track1()
   {
-    _TDispID _dispid(/* OutputParameter1 */ DISPID(23));
+    _TDispID _dispid(/* Track1 */ DISPID(8));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_EnablePrintReceipt(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  void __fastcall set_EnableManualPan(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* EnablePrintReceipt */ DISPID(24));
+    _TDispID _dispid(/* EnableManualPan */ DISPID(12));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnablePrintReceipt()
+  long /*[VT_I4:0]*/ __fastcall get_EnableManualPan()
   {
-    _TDispID _dispid(/* EnablePrintReceipt */ DISPID(24));
+    _TDispID _dispid(/* EnableManualPan */ DISPID(12));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_PrivateData1(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_AmountCashOut(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* PrivateData1 */ DISPID(27));
+    _TDispID _dispid(/* AmountCashOut */ DISPID(7));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData1()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_AmountCashOut()
   {
-    _TDispID _dispid(/* PrivateData1 */ DISPID(27));
+    _TDispID _dispid(/* AmountCashOut */ DISPID(7));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_ReceiptHeader(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_EnableCheckAccount(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* ReceiptHeader */ DISPID(25));
+    _TDispID _dispid(/* EnableCheckAccount */ DISPID(56));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptHeader()
+  long /*[VT_I4:0]*/ __fastcall get_EnableCheckAccount()
   {
-    _TDispID _dispid(/* ReceiptHeader */ DISPID(25));
+    _TDispID _dispid(/* EnableCheckAccount */ DISPID(56));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_ReserveString1(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_DisplayTimeout(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* ReserveString1 */ DISPID(158));
+    _TDispID _dispid(/* DisplayTimeout */ DISPID(57));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReserveString1()
+  long /*[VT_I4:0]*/ __fastcall get_DisplayTimeout()
   {
-    _TDispID _dispid(/* ReserveString1 */ DISPID(158));
+    _TDispID _dispid(/* DisplayTimeout */ DISPID(57));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Cvm(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_OdometerReading(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* Cvm */ DISPID(157));
+    _TDispID _dispid(/* OdometerReading */ DISPID(55));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Cvm()
+  long /*[VT_I4:0]*/ __fastcall get_OdometerReading()
   {
-    _TDispID _dispid(/* Cvm */ DISPID(157));
+    _TDispID _dispid(/* OdometerReading */ DISPID(55));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_DisplayLine2(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_DpsBillingId(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* DisplayLine2 */ DISPID(111));
+    _TDispID _dispid(/* DpsBillingId */ DISPID(73));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_DisplayLine2()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DpsBillingId()
   {
-    _TDispID _dispid(/* DisplayLine2 */ DISPID(111));
+    _TDispID _dispid(/* DpsBillingId */ DISPID(73));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_OutputProducts(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_EftStatus(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* OutputProducts */ DISPID(147));
+    _TDispID _dispid(/* EftStatus */ DISPID(64));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputProducts()
+  long /*[VT_I4:0]*/ __fastcall get_EftStatus()
   {
-    _TDispID _dispid(/* OutputProducts */ DISPID(147));
+    _TDispID _dispid(/* EftStatus */ DISPID(64));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_ReceiptNo(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_RegNumberRequired(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* ReceiptNo */ DISPID(156));
+    _TDispID _dispid(/* RegNumberRequired */ DISPID(52));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptNo()
+  long /*[VT_I4:0]*/ __fastcall get_RegNumberRequired()
   {
-    _TDispID _dispid(/* ReceiptNo */ DISPID(156));
+    _TDispID _dispid(/* RegNumberRequired */ DISPID(52));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_EmvResult(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_StatusText(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* EmvResult */ DISPID(161));
+    _TDispID _dispid(/* StatusText */ DISPID(62));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_EmvResult()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_StatusText()
   {
-    _TDispID _dispid(/* EmvResult */ DISPID(161));
+    _TDispID _dispid(/* StatusText */ DISPID(62));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_EmvLibVersion(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_Ready(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* EmvLibVersion */ DISPID(160));
+    _TDispID _dispid(/* Ready */ DISPID(63));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_EmvLibVersion()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_Ready()
   {
-    _TDispID _dispid(/* EmvLibVersion */ DISPID(160));
+    _TDispID _dispid(/* Ready */ DISPID(63));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_EmvLibHash(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_PrinterName(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* EmvLibHash */ DISPID(159));
+    _TDispID _dispid(/* PrinterName */ DISPID(61));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_EmvLibHash()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrinterName()
   {
-    _TDispID _dispid(/* EmvLibHash */ DISPID(159));
+    _TDispID _dispid(/* PrinterName */ DISPID(61));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_ProcessedOffline(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  void __fastcall set_PersonalPurchaseRequired(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* ProcessedOffline */ DISPID(162));
+    _TDispID _dispid(/* PersonalPurchaseRequired */ DISPID(53));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ProcessedOffline()
+  long /*[VT_I4:0]*/ __fastcall get_PersonalPurchaseRequired()
   {
-    _TDispID _dispid(/* ProcessedOffline */ DISPID(162));
+    _TDispID _dispid(/* PersonalPurchaseRequired */ DISPID(53));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_Quantity(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_OrderNumberRequired(long /*[VT_I4:0]*/ Value)
   {
-    _TDispID _dispid(/* Quantity */ DISPID(144));
+    _TDispID _dispid(/* OrderNumberRequired */ DISPID(54));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_Quantity()
+  long /*[VT_I4:0]*/ __fastcall get_OrderNumberRequired()
   {
-    _TDispID _dispid(/* Quantity */ DISPID(144));
+    _TDispID _dispid(/* OrderNumberRequired */ DISPID(54));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_PrivateData10(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_ReadyPinPad(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* PrivateData10 */ DISPID(109));
+    _TDispID _dispid(/* ReadyPinPad */ DISPID(65));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData10()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReadyPinPad()
   {
-    _TDispID _dispid(/* PrivateData10 */ DISPID(109));
+    _TDispID _dispid(/* ReadyPinPad */ DISPID(65));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_ProductCode(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_ReadyLink(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
   {
-    _TDispID _dispid(/* ProductCode */ DISPID(146));
+    _TDispID _dispid(/* ReadyLink */ DISPID(66));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_ProductCode()
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReadyLink()
   {
-    _TDispID _dispid(/* ProductCode */ DISPID(146));
+    _TDispID _dispid(/* ReadyLink */ DISPID(66));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_LineAmount(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_DialogY(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* LineAmount */ DISPID(145));
+    _TDispID _dispid(/* DialogY */ DISPID(70));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_LineAmount()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DialogY()
   {
-    _TDispID _dispid(/* LineAmount */ DISPID(145));
+    _TDispID _dispid(/* DialogY */ DISPID(70));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ClientType(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ClientType */ DISPID(68));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ClientType()
+  {
+    _TDispID _dispid(/* ClientType */ DISPID(68));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_DialogX(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* DialogX */ DISPID(69));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DialogX()
+  {
+    _TDispID _dispid(/* DialogX */ DISPID(69));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_TxnRef(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* TxnRef */ DISPID(67));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_TxnRef()
+  {
+    _TDispID _dispid(/* TxnRef */ DISPID(67));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_DialogType(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* DialogType */ DISPID(71));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DialogType()
+  {
+    _TDispID _dispid(/* DialogType */ DISPID(71));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_BillingId(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* BillingId */ DISPID(72));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_BillingId()
+  {
+    _TDispID _dispid(/* BillingId */ DISPID(72));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ClientIp(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ClientIp */ DISPID(76));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ClientIp()
+  {
+    _TDispID _dispid(/* ClientIp */ DISPID(76));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ClientId(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ClientId */ DISPID(74));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ClientId()
+  {
+    _TDispID _dispid(/* ClientId */ DISPID(74));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_DeviceId(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* DeviceId */ DISPID(75));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DeviceId()
+  {
+    _TDispID _dispid(/* DeviceId */ DISPID(75));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_AmountCreditLimit(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* AmountCreditLimit */ DISPID(89));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_AmountCreditLimit()
+  {
+    _TDispID _dispid(/* AmountCreditLimit */ DISPID(89));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EnableSavingAccount(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* EnableSavingAccount */ DISPID(90));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_EnableSavingAccount()
+  {
+    _TDispID _dispid(/* EnableSavingAccount */ DISPID(90));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Parameter1(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Parameter1 */ DISPID(88));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Parameter1()
+  {
+    _TDispID _dispid(/* Parameter1 */ DISPID(88));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EnterDataLen(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* EnterDataLen */ DISPID(92));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_EnterDataLen()
+  {
+    _TDispID _dispid(/* EnterDataLen */ DISPID(92));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_UserEnterMode(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* UserEnterMode */ DISPID(93));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_UserEnterMode()
+  {
+    _TDispID _dispid(/* UserEnterMode */ DISPID(93));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Amount2(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Amount2 */ DISPID(81));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Amount2()
+  {
+    _TDispID _dispid(/* Amount2 */ DISPID(81));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Appearance(short /*[VT_I2:0]*/ Value)
+  {
+    _TDispID _dispid(/* Appearance */ DISPID(-520));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  short /*[VT_I2:0]*/ __fastcall get_Appearance()
+  {
+    _TDispID _dispid(/* Appearance */ DISPID(-520));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_BackColor(::OLE_COLOR /*[VT_UI4:0]*/ Value)
+  {
+    _TDispID _dispid(/* BackColor */ DISPID(-501));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  ::OLE_COLOR /*[VT_UI4:0]*/ __fastcall get_BackColor()
+  {
+    _TDispID _dispid(/* BackColor */ DISPID(-501));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Font(IFontDisp* /*[VT_USERDEFINED:1]*/ Value)
+  {
+    _TDispID _dispid(/* Font */ DISPID(-512));
+    TAutoArgs<1> _args;
+    _args[1] = (LPDISPATCH) /*[VT_DISPATCH:1]*/ (IFontDisp* /*[C2]*/)Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  IFontDisp* /*[VT_USERDEFINED:1]*/ __fastcall get_Font()
+  {
+    _TDispID _dispid(/* Font */ DISPID(-512));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return (IFontDisp* /*[C3]*/)(LPDISPATCH)_args.GetRetVariant();
+  }
+
+  void __fastcall set_Caption(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Caption */ DISPID(-518));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Caption()
+  {
+    _TDispID _dispid(/* Caption */ DISPID(-518));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Enabled(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* Enabled */ DISPID(-514));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_Enabled()
+  {
+    _TDispID _dispid(/* Enabled */ DISPID(-514));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_MerchantReference(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* MerchantReference */ DISPID(77));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_MerchantReference()
+  {
+    _TDispID _dispid(/* MerchantReference */ DISPID(77));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Track3(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Track3 */ DISPID(85));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Track3()
+  {
+    _TDispID _dispid(/* Track3 */ DISPID(85));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_OutputDisplayLine1(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* OutputDisplayLine1 */ DISPID(60));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputDisplayLine1()
+  {
+    _TDispID _dispid(/* OutputDisplayLine1 */ DISPID(60));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PosName(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* PosName */ DISPID(58));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PosName()
+  {
+    _TDispID _dispid(/* PosName */ DISPID(58));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_OutputDisplayLine2(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* OutputDisplayLine2 */ DISPID(59));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputDisplayLine2()
+  {
+    _TDispID _dispid(/* OutputDisplayLine2 */ DISPID(59));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_OutputTrack3(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* OutputTrack3 */ DISPID(86));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputTrack3()
+  {
+    _TDispID _dispid(/* OutputTrack3 */ DISPID(86));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_KeyMask(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* KeyMask */ DISPID(84));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_KeyMask()
+  {
+    _TDispID _dispid(/* KeyMask */ DISPID(84));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EnableCreditAccount(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* EnableCreditAccount */ DISPID(91));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_EnableCreditAccount()
+  {
+    _TDispID _dispid(/* EnableCreditAccount */ DISPID(91));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_InputMask(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* InputMask */ DISPID(83));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_InputMask()
+  {
+    _TDispID _dispid(/* InputMask */ DISPID(83));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Parameter2(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Parameter2 */ DISPID(87));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Parameter2()
+  {
+    _TDispID _dispid(/* Parameter2 */ DISPID(87));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_CurrencyRate(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* CurrencyRate */ DISPID(82));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_CurrencyRate()
+  {
+    _TDispID _dispid(/* CurrencyRate */ DISPID(82));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
@@ -2521,33 +1705,33 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_ReadyDpsLink(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  void __fastcall set_PrivateData10(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* ReadyDpsLink */ DISPID(139));
+    _TDispID _dispid(/* PrivateData10 */ DISPID(109));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReadyDpsLink()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData10()
   {
-    _TDispID _dispid(/* ReadyDpsLink */ DISPID(139));
+    _TDispID _dispid(/* PrivateData10 */ DISPID(109));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
   }
 
-  void __fastcall set_LoyaltyRecipient(BSTR /*[VT_BSTR:0]*/ Value)
+  void __fastcall set_DisplayLine2(BSTR /*[VT_BSTR:0]*/ Value)
   {
-    _TDispID _dispid(/* LoyaltyRecipient */ DISPID(138));
+    _TDispID _dispid(/* DisplayLine2 */ DISPID(111));
     TAutoArgs<1> _args;
     _args[1] = Value;
     OlePropertyPut(_dispid, _args);
   }
 
-  BSTR /*[VT_BSTR:0]*/ __fastcall get_LoyaltyRecipient()
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DisplayLine2()
   {
-    _TDispID _dispid(/* LoyaltyRecipient */ DISPID(138));
+    _TDispID _dispid(/* DisplayLine2 */ DISPID(111));
     TAutoArgs<0> _args;
     OlePropertyGet(_dispid, _args);
     return _args.GetRetVariant();
@@ -2585,151 +1769,1511 @@ interface _DDpsEftX : public TDispWrapper<IDispatch>
     return _args.GetRetVariant();
   }
 
+  void __fastcall set_AccountSelected(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* AccountSelected */ DISPID(96));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
 
-  __property   long            DocketNo = {read = get_DocketNo, write = set_DocketNo};
-  __property   BSTR            Capabilities = {read = get_Capabilities, write = set_Capabilities};
-  __property   long            PersonalPurchase = {read = get_PersonalPurchase, write = set_PersonalPurchase};
-  __property   long            EnableManualPan = {read = get_EnableManualPan, write = set_EnableManualPan};
-  __property   BSTR            DateSettlement = {read = get_DateSettlement, write = set_DateSettlement};
-  __property   BSTR            Rrn = {read = get_Rrn, write = set_Rrn};
-  __property   long            VersionPos = {read = get_VersionPos, write = set_VersionPos};
-  __property   BSTR            AuthCode = {read = get_AuthCode, write = set_AuthCode};
-  __property   BSTR            Pix = {read = get_Pix, write = set_Pix};
-  __property   BSTR            ClientId = {read = get_ClientId, write = set_ClientId};
-  __property   BSTR            DeviceId = {read = get_DeviceId, write = set_DeviceId};
-  __property   VARIANT_BOOL    ReadyLink = {read = get_ReadyLink, write = set_ReadyLink};
-  __property   BSTR            TxnRef = {read = get_TxnRef, write = set_TxnRef};
-  __property   BSTR            DpsBillingId = {read = get_DpsBillingId, write = set_DpsBillingId};
+  long /*[VT_I4:0]*/ __fastcall get_AccountSelected()
+  {
+    _TDispID _dispid(/* AccountSelected */ DISPID(96));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Account2(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* Account2 */ DISPID(98));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_Account2()
+  {
+    _TDispID _dispid(/* Account2 */ DISPID(98));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Cvc2(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Cvc2 */ DISPID(101));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Cvc2()
+  {
+    _TDispID _dispid(/* Cvc2 */ DISPID(101));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Stan(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* Stan */ DISPID(95));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_Stan()
+  {
+    _TDispID _dispid(/* Stan */ DISPID(95));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_CurrencyId(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* CurrencyId */ DISPID(97));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_CurrencyId()
+  {
+    _TDispID _dispid(/* CurrencyId */ DISPID(97));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EmvFileUpdating(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* EmvFileUpdating */ DISPID(94));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_EmvFileUpdating()
+  {
+    _TDispID _dispid(/* EmvFileUpdating */ DISPID(94));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedL10(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedL10 */ DISPID(184));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_ReservedL10()
+  {
+    _TDispID _dispid(/* ReservedL10 */ DISPID(184));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedB1(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedB1 */ DISPID(185));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReservedB1()
+  {
+    _TDispID _dispid(/* ReservedB1 */ DISPID(185));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedL7(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedL7 */ DISPID(181));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_ReservedL7()
+  {
+    _TDispID _dispid(/* ReservedL7 */ DISPID(181));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedL3(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedL3 */ DISPID(177));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_ReservedL3()
+  {
+    _TDispID _dispid(/* ReservedL3 */ DISPID(177));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedL4(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedL4 */ DISPID(178));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_ReservedL4()
+  {
+    _TDispID _dispid(/* ReservedL4 */ DISPID(178));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedL8(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedL8 */ DISPID(182));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_ReservedL8()
+  {
+    _TDispID _dispid(/* ReservedL8 */ DISPID(182));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PrivateData4(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* PrivateData4 */ DISPID(103));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData4()
+  {
+    _TDispID _dispid(/* PrivateData4 */ DISPID(103));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PrivateData5(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* PrivateData5 */ DISPID(104));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData5()
+  {
+    _TDispID _dispid(/* PrivateData5 */ DISPID(104));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PrivateData7(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* PrivateData7 */ DISPID(106));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData7()
+  {
+    _TDispID _dispid(/* PrivateData7 */ DISPID(106));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedL9(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedL9 */ DISPID(183));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_ReservedL9()
+  {
+    _TDispID _dispid(/* ReservedL9 */ DISPID(183));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PrivateData6(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* PrivateData6 */ DISPID(105));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData6()
+  {
+    _TDispID _dispid(/* PrivateData6 */ DISPID(105));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_OutputEkTrack2(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* OutputEkTrack2 */ DISPID(142));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputEkTrack2()
+  {
+    _TDispID _dispid(/* OutputEkTrack2 */ DISPID(142));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReadyDpsLink(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReadyDpsLink */ DISPID(139));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReadyDpsLink()
+  {
+    _TDispID _dispid(/* ReadyDpsLink */ DISPID(139));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EkTrack2(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* EkTrack2 */ DISPID(141));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_EkTrack2()
+  {
+    _TDispID _dispid(/* EkTrack2 */ DISPID(141));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_OrderNumber(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* OrderNumber */ DISPID(153));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_OrderNumber()
+  {
+    _TDispID _dispid(/* OrderNumber */ DISPID(153));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PreSelectAccount(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* PreSelectAccount */ DISPID(154));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_PreSelectAccount()
+  {
+    _TDispID _dispid(/* PreSelectAccount */ DISPID(154));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_DpsLinkText(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* DpsLinkText */ DISPID(140));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_DpsLinkText()
+  {
+    _TDispID _dispid(/* DpsLinkText */ DISPID(140));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Quantity(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Quantity */ DISPID(144));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Quantity()
+  {
+    _TDispID _dispid(/* Quantity */ DISPID(144));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_LineAmount(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* LineAmount */ DISPID(145));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_LineAmount()
+  {
+    _TDispID _dispid(/* LineAmount */ DISPID(145));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_OutputProducts(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* OutputProducts */ DISPID(147));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputProducts()
+  {
+    _TDispID _dispid(/* OutputProducts */ DISPID(147));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_AmountAuthOut(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* AmountAuthOut */ DISPID(143));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_AmountAuthOut()
+  {
+    _TDispID _dispid(/* AmountAuthOut */ DISPID(143));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ProductCode(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ProductCode */ DISPID(146));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ProductCode()
+  {
+    _TDispID _dispid(/* ProductCode */ DISPID(146));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_LoyaltyRecipient(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* LoyaltyRecipient */ DISPID(138));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_LoyaltyRecipient()
+  {
+    _TDispID _dispid(/* LoyaltyRecipient */ DISPID(138));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_RegNumber(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* RegNumber */ DISPID(150));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_RegNumber()
+  {
+    _TDispID _dispid(/* RegNumber */ DISPID(150));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EnableAddBillCard(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* EnableAddBillCard */ DISPID(100));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableAddBillCard()
+  {
+    _TDispID _dispid(/* EnableAddBillCard */ DISPID(100));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Account(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* Account */ DISPID(102));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_Account()
+  {
+    _TDispID _dispid(/* Account */ DISPID(102));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_SelectAccount(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* SelectAccount */ DISPID(99));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_SelectAccount()
+  {
+    _TDispID _dispid(/* SelectAccount */ DISPID(99));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_FuelCardType(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* FuelCardType */ DISPID(151));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_FuelCardType()
+  {
+    _TDispID _dispid(/* FuelCardType */ DISPID(151));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReceiptNo(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReceiptNo */ DISPID(156));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptNo()
+  {
+    _TDispID _dispid(/* ReceiptNo */ DISPID(156));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Cvm(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Cvm */ DISPID(157));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Cvm()
+  {
+    _TDispID _dispid(/* Cvm */ DISPID(157));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Company(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Company */ DISPID(152));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Company()
+  {
+    _TDispID _dispid(/* Company */ DISPID(152));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ProductRestricts(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ProductRestricts */ DISPID(148));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ProductRestricts()
+  {
+    _TDispID _dispid(/* ProductRestricts */ DISPID(148));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Track2Mac(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* Track2Mac */ DISPID(149));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_Track2Mac()
+  {
+    _TDispID _dispid(/* Track2Mac */ DISPID(149));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedS5(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedS5 */ DISPID(169));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReservedS5()
+  {
+    _TDispID _dispid(/* ReservedS5 */ DISPID(169));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedS6(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedS6 */ DISPID(170));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReservedS6()
+  {
+    _TDispID _dispid(/* ReservedS6 */ DISPID(170));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReceiptWidth(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReceiptWidth */ DISPID(35));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_ReceiptWidth()
+  {
+    _TDispID _dispid(/* ReceiptWidth */ DISPID(35));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReceiptResetCommand(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReceiptResetCommand */ DISPID(33));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptResetCommand()
+  {
+    _TDispID _dispid(/* ReceiptResetCommand */ DISPID(33));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReceiptSeparatorCommand(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReceiptSeparatorCommand */ DISPID(34));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptSeparatorCommand()
+  {
+    _TDispID _dispid(/* ReceiptSeparatorCommand */ DISPID(34));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PrivateCardData(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* PrivateCardData */ DISPID(167));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateCardData()
+  {
+    _TDispID _dispid(/* PrivateCardData */ DISPID(167));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_SignatureState(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* SignatureState */ DISPID(175));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_SignatureState()
+  {
+    _TDispID _dispid(/* SignatureState */ DISPID(175));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedS8(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedS8 */ DISPID(172));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReservedS8()
+  {
+    _TDispID _dispid(/* ReservedS8 */ DISPID(172));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedS10(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedS10 */ DISPID(174));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReservedS10()
+  {
+    _TDispID _dispid(/* ReservedS10 */ DISPID(174));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedS4(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedS4 */ DISPID(168));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReservedS4()
+  {
+    _TDispID _dispid(/* ReservedS4 */ DISPID(168));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedS7(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedS7 */ DISPID(171));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReservedS7()
+  {
+    _TDispID _dispid(/* ReservedS7 */ DISPID(171));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ResponseText(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ResponseText */ DISPID(31));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ResponseText()
+  {
+    _TDispID _dispid(/* ResponseText */ DISPID(31));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReceiptEjectCommand(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReceiptEjectCommand */ DISPID(32));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptEjectCommand()
+  {
+    _TDispID _dispid(/* ReceiptEjectCommand */ DISPID(32));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_CardType(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* CardType */ DISPID(30));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_CardType()
+  {
+    _TDispID _dispid(/* CardType */ DISPID(30));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EnableBlockingMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* EnableBlockingMode */ DISPID(48));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_EnableBlockingMode()
+  {
+    _TDispID _dispid(/* EnableBlockingMode */ DISPID(48));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_CardNumber(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* CardNumber */ DISPID(39));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_CardNumber()
+  {
+    _TDispID _dispid(/* CardNumber */ DISPID(39));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PrivateData1(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* PrivateData1 */ DISPID(27));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData1()
+  {
+    _TDispID _dispid(/* PrivateData1 */ DISPID(27));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_OutputTrack2(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* OutputTrack2 */ DISPID(37));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputTrack2()
+  {
+    _TDispID _dispid(/* OutputTrack2 */ DISPID(37));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_Authorized(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* Authorized */ DISPID(38));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_Authorized()
+  {
+    _TDispID _dispid(/* Authorized */ DISPID(38));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_OutputTrack1(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* OutputTrack1 */ DISPID(36));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_OutputTrack1()
+  {
+    _TDispID _dispid(/* OutputTrack1 */ DISPID(36));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PrivateData2(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* PrivateData2 */ DISPID(28));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData2()
+  {
+    _TDispID _dispid(/* PrivateData2 */ DISPID(28));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReceiptLineTerminator(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReceiptLineTerminator */ DISPID(29));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReceiptLineTerminator()
+  {
+    _TDispID _dispid(/* ReceiptLineTerminator */ DISPID(29));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedB3(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedB3 */ DISPID(187));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReservedB3()
+  {
+    _TDispID _dispid(/* ReservedB3 */ DISPID(187));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedB6(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedB6 */ DISPID(190));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReservedB6()
+  {
+    _TDispID _dispid(/* ReservedB6 */ DISPID(190));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedB2(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedB2 */ DISPID(186));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReservedB2()
+  {
+    _TDispID _dispid(/* ReservedB2 */ DISPID(186));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedB4(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedB4 */ DISPID(188));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReservedB4()
+  {
+    _TDispID _dispid(/* ReservedB4 */ DISPID(188));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedB5(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedB5 */ DISPID(189));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReservedB5()
+  {
+    _TDispID _dispid(/* ReservedB5 */ DISPID(189));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedB9(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedB9 */ DISPID(193));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReservedB9()
+  {
+    _TDispID _dispid(/* ReservedB9 */ DISPID(193));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedL5(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedL5 */ DISPID(179));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_ReservedL5()
+  {
+    _TDispID _dispid(/* ReservedL5 */ DISPID(179));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedL6(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedL6 */ DISPID(180));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_ReservedL6()
+  {
+    _TDispID _dispid(/* ReservedL6 */ DISPID(180));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedB8(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedB8 */ DISPID(192));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReservedB8()
+  {
+    _TDispID _dispid(/* ReservedB8 */ DISPID(192));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedB10(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedB10 */ DISPID(194));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReservedB10()
+  {
+    _TDispID _dispid(/* ReservedB10 */ DISPID(194));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedB7(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedB7 */ DISPID(191));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ReservedB7()
+  {
+    _TDispID _dispid(/* ReservedB7 */ DISPID(191));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_PrivateData3(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* PrivateData3 */ DISPID(158));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_PrivateData3()
+  {
+    _TDispID _dispid(/* PrivateData3 */ DISPID(158));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EmvLibHash(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* EmvLibHash */ DISPID(159));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_EmvLibHash()
+  {
+    _TDispID _dispid(/* EmvLibHash */ DISPID(159));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EmvResult(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* EmvResult */ DISPID(161));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_EmvResult()
+  {
+    _TDispID _dispid(/* EmvResult */ DISPID(161));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedS9(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedS9 */ DISPID(173));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_ReservedS9()
+  {
+    _TDispID _dispid(/* ReservedS9 */ DISPID(173));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_EmvLibVersion(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* EmvLibVersion */ DISPID(160));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_EmvLibVersion()
+  {
+    _TDispID _dispid(/* EmvLibVersion */ DISPID(160));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ProcessedOffline(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+  {
+    _TDispID _dispid(/* ProcessedOffline */ DISPID(162));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall get_ProcessedOffline()
+  {
+    _TDispID _dispid(/* ProcessedOffline */ DISPID(162));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_CardNumber2(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* CardNumber2 */ DISPID(164));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_CardNumber2()
+  {
+    _TDispID _dispid(/* CardNumber2 */ DISPID(164));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_ReservedL2(long /*[VT_I4:0]*/ Value)
+  {
+    _TDispID _dispid(/* ReservedL2 */ DISPID(176));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  long /*[VT_I4:0]*/ __fastcall get_ReservedL2()
+  {
+    _TDispID _dispid(/* ReservedL2 */ DISPID(176));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_RefundDpsTxnRef(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* RefundDpsTxnRef */ DISPID(163));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_RefundDpsTxnRef()
+  {
+    _TDispID _dispid(/* RefundDpsTxnRef */ DISPID(163));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_AmountTip(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* AmountTip */ DISPID(165));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_AmountTip()
+  {
+    _TDispID _dispid(/* AmountTip */ DISPID(165));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+  void __fastcall set_AmountSurcharge(BSTR /*[VT_BSTR:0]*/ Value)
+  {
+    _TDispID _dispid(/* AmountSurcharge */ DISPID(166));
+    TAutoArgs<1> _args;
+    _args[1] = Value;
+    OlePropertyPut(_dispid, _args);
+  }
+
+  BSTR /*[VT_BSTR:0]*/ __fastcall get_AmountSurcharge()
+  {
+    _TDispID _dispid(/* AmountSurcharge */ DISPID(166));
+    TAutoArgs<0> _args;
+    OlePropertyGet(_dispid, _args);
+    return _args.GetRetVariant();
+  }
+
+
+  __property   VARIANT_BOOL    EnablePrintReceipt = {read = get_EnablePrintReceipt, write = set_EnablePrintReceipt};
+  __property   BSTR            ReceiptHeader = {read = get_ReceiptHeader, write = set_ReceiptHeader};
+  __property   BSTR            OutputParameter1 = {read = get_OutputParameter1, write = set_OutputParameter1};
   __property   long            OdometerRequired = {read = get_OdometerRequired, write = set_OdometerRequired};
   __property   BSTR            Rid = {read = get_Rid, write = set_Rid};
-  __property   BSTR            DialogType = {read = get_DialogType, write = set_DialogType};
-  __property   BSTR            BillingId = {read = get_BillingId, write = set_BillingId};
-  __property   BSTR            OutputTrack2 = {read = get_OutputTrack2, write = set_OutputTrack2};
-  __property   VARIANT_BOOL    Authorized = {read = get_Authorized, write = set_Authorized};
-  __property   BSTR            AmountCashOut = {read = get_AmountCashOut, write = set_AmountCashOut};
-  __property   BSTR            DateTimeTransaction = {read = get_DateTimeTransaction, write = set_DateTimeTransaction};
-  __property   BSTR            OutputTrack1 = {read = get_OutputTrack1, write = set_OutputTrack1};
-  __property   VARIANT_BOOL    EnableTrainingMode = {read = get_EnableTrainingMode, write = set_EnableTrainingMode};
-  __property   VARIANT_BOOL    EnableCurrencyConversionPrompt = {read = get_EnableCurrencyConversionPrompt, write = set_EnableCurrencyConversionPrompt};
-  __property   BSTR            ReceiptSeparatorCommand = {read = get_ReceiptSeparatorCommand, write = set_ReceiptSeparatorCommand};
-  __property   long            ReceiptWidth = {read = get_ReceiptWidth, write = set_ReceiptWidth};
-  __property   BSTR            TxnType = {read = get_TxnType, write = set_TxnType};
-  __property   BSTR            ReCo = {read = get_ReCo, write = set_ReCo};
+  __property   BSTR            Capabilities = {read = get_Capabilities, write = set_Capabilities};
   __property   BSTR            Track2 = {read = get_Track2, write = set_Track2};
   __property   BSTR            Receipt = {read = get_Receipt, write = set_Receipt};
-  __property   VARIANT_BOOL    Success = {read = get_Success, write = set_Success};
-  __property   BSTR            Track1 = {read = get_Track1, write = set_Track1};
-  __property   BSTR            Amount = {read = get_Amount, write = set_Amount};
-  __property   long            UnitId = {read = get_UnitId, write = set_UnitId};
-  __property   long            VersionEft = {read = get_VersionEft, write = set_VersionEft};
-  __property   VARIANT_BOOL    EnablePrintSlip = {read = get_EnablePrintSlip, write = set_EnablePrintSlip};
-  __property   VARIANT_BOOL    EnableBlockingMode = {read = get_EnableBlockingMode, write = set_EnableBlockingMode};
-  __property   BSTR            PrinterName = {read = get_PrinterName, write = set_PrinterName};
-  __property   long            OrderNumberRequired = {read = get_OrderNumberRequired, write = set_OrderNumberRequired};
-  __property   VARIANT_BOOL    EovOffline = {read = get_EovOffline, write = set_EovOffline};
-  __property   long            RegNumberRequired = {read = get_RegNumberRequired, write = set_RegNumberRequired};
-  __property   long            PersonalPurchaseRequired = {read = get_PersonalPurchaseRequired, write = set_PersonalPurchaseRequired};
-  __property   VARIANT_BOOL    EnableInvisible = {read = get_EnableInvisible, write = set_EnableInvisible};
-  __property   VARIANT_BOOL    EnableCurrencyConversion = {read = get_EnableCurrencyConversion, write = set_EnableCurrencyConversion};
-  __property   long            DisplayTimeout = {read = get_DisplayTimeout, write = set_DisplayTimeout};
-  __property   long            OdometerReading = {read = get_OdometerReading, write = set_OdometerReading};
-  __property   BSTR            PosName = {read = get_PosName, write = set_PosName};
-  __property   BSTR            OutputDisplayLine2 = {read = get_OutputDisplayLine2, write = set_OutputDisplayLine2};
-  __property   long            EnableCheckAccount = {read = get_EnableCheckAccount, write = set_EnableCheckAccount};
-  __property   BSTR            StatusText = {read = get_StatusText, write = set_StatusText};
-  __property   BSTR            OutputDisplayLine1 = {read = get_OutputDisplayLine1, write = set_OutputDisplayLine1};
-  __property   VARIANT_BOOL    Ready = {read = get_Ready, write = set_Ready};
-  __property   long            EftStatus = {read = get_EftStatus, write = set_EftStatus};
+  __property   long            DocketNo = {read = get_DocketNo, write = set_DocketNo};
+  __property   BSTR            DateSettlement = {read = get_DateSettlement, write = set_DateSettlement};
+  __property   BSTR            DateTimeTransaction = {read = get_DateTimeTransaction, write = set_DateTimeTransaction};
+  __property   BSTR            AcquirerPort = {read = get_AcquirerPort, write = set_AcquirerPort};
   __property   ::OLE_COLOR     ForeColor = {read = get_ForeColor, write = set_ForeColor};
-  __property   VARIANT_BOOL    Enabled = {read = get_Enabled, write = set_Enabled};
+  __property   VARIANT_BOOL    ReceiptIsSeparate = {read = get_ReceiptIsSeparate, write = set_ReceiptIsSeparate};
+  __property   short           BorderStyle = {read = get_BorderStyle, write = set_BorderStyle};
+  __property   BSTR            DpsTxnRef = {read = get_DpsTxnRef, write = set_DpsTxnRef};
   __property   OLE_HANDLE      hWnd = {read = get_hWnd, write = set_hWnd};
+  __property   BSTR            AuthCode = {read = get_AuthCode, write = set_AuthCode};
+  __property   long            PersonalPurchase = {read = get_PersonalPurchase, write = set_PersonalPurchase};
+  __property   BSTR            Rrn = {read = get_Rrn, write = set_Rrn};
   __property   long            ReadyState = {read = get_ReadyState};
-  __property   IFontDisp*      Font = {read = get_Font, write = set_Font};
-  __property   BSTR            DialogY = {read = get_DialogY, write = set_DialogY};
-  __property   BSTR            ClientType = {read = get_ClientType, write = set_ClientType};
-  __property   BSTR            ClientIp = {read = get_ClientIp, write = set_ClientIp};
-  __property   BSTR            DialogX = {read = get_DialogX, write = set_DialogX};
-  __property   VARIANT_BOOL    EnableBackLight = {read = get_EnableBackLight, write = set_EnableBackLight};
-  __property   VARIANT_BOOL    ReadyPinPad = {read = get_ReadyPinPad, write = set_ReadyPinPad};
+  __property   BSTR            Pix = {read = get_Pix, write = set_Pix};
+  __property   BSTR            DateExpiry = {read = get_DateExpiry, write = set_DateExpiry};
+  __property   VARIANT_BOOL    EnableTestMode = {read = get_EnableTestMode, write = set_EnableTestMode};
+  __property   VARIANT_BOOL    EnableCurrencyConversion = {read = get_EnableCurrencyConversion, write = set_EnableCurrencyConversion};
+  __property   VARIANT_BOOL    EnableCurrencyConversionPrompt = {read = get_EnableCurrencyConversionPrompt, write = set_EnableCurrencyConversionPrompt};
+  __property   VARIANT_BOOL    EnableInvisible = {read = get_EnableInvisible, write = set_EnableInvisible};
+  __property   VARIANT_BOOL    EnableTrainingMode = {read = get_EnableTrainingMode, write = set_EnableTrainingMode};
+  __property   VARIANT_BOOL    EovOffline = {read = get_EovOffline, write = set_EovOffline};
+  __property   VARIANT_BOOL    EnablePrintSlip = {read = get_EnablePrintSlip, write = set_EnablePrintSlip};
   __property   VARIANT_BOOL    InProgress = {read = get_InProgress, write = set_InProgress};
   __property   VARIANT_BOOL    EnableIgnoreCardReadError = {read = get_EnableIgnoreCardReadError, write = set_EnableIgnoreCardReadError};
-  __property   short           BorderStyle = {read = get_BorderStyle, write = set_BorderStyle};
-  __property   BSTR            MerchantReference = {read = get_MerchantReference, write = set_MerchantReference};
-  __property   short           Appearance = {read = get_Appearance, write = set_Appearance};
-  __property   BSTR            Caption = {read = get_Caption, write = set_Caption};
-  __property   ::OLE_COLOR     BackColor = {read = get_BackColor, write = set_BackColor};
-  __property   long            EnableCreditAccount = {read = get_EnableCreditAccount, write = set_EnableCreditAccount};
-  __property   long            EnableSavingAccount = {read = get_EnableSavingAccount, write = set_EnableSavingAccount};
-  __property   BSTR            Track3 = {read = get_Track3, write = set_Track3};
-  __property   BSTR            Parameter1 = {read = get_Parameter1, write = set_Parameter1};
-  __property   BSTR            AmountCreditLimit = {read = get_AmountCreditLimit, write = set_AmountCreditLimit};
-  __property   BSTR            DpsTxnRef = {read = get_DpsTxnRef, write = set_DpsTxnRef};
-  __property   BSTR            Amount2 = {read = get_Amount2, write = set_Amount2};
-  __property   BSTR            AcquirerPort = {read = get_AcquirerPort, write = set_AcquirerPort};
-  __property   VARIANT_BOOL    ReceiptIsSeparate = {read = get_ReceiptIsSeparate, write = set_ReceiptIsSeparate};
-  __property   BSTR            ProductRestricts = {read = get_ProductRestricts, write = set_ProductRestricts};
-  __property   BSTR            FuelCardType = {read = get_FuelCardType, write = set_FuelCardType};
-  __property   BSTR            RegNumber = {read = get_RegNumber, write = set_RegNumber};
-  __property   BSTR            Track2Mac = {read = get_Track2Mac, write = set_Track2Mac};
-  __property   long            PreSelectAccount = {read = get_PreSelectAccount, write = set_PreSelectAccount};
-  __property   BSTR            Parameter2 = {read = get_Parameter2, write = set_Parameter2};
-  __property   BSTR            OutputTrack3 = {read = get_OutputTrack3, write = set_OutputTrack3};
-  __property   BSTR            OrderNumber = {read = get_OrderNumber, write = set_OrderNumber};
-  __property   BSTR            Company = {read = get_Company, write = set_Company};
-  __property   long            Stan = {read = get_Stan, write = set_Stan};
-  __property   long            EmvFileUpdating = {read = get_EmvFileUpdating, write = set_EmvFileUpdating};
-  __property   BSTR            PrivateData6 = {read = get_PrivateData6, write = set_PrivateData6};
-  __property   BSTR            PrivateData5 = {read = get_PrivateData5, write = set_PrivateData5};
-  __property   long            UserEnterMode = {read = get_UserEnterMode, write = set_UserEnterMode};
-  __property   long            Account2 = {read = get_Account2, write = set_Account2};
-  __property   long            CurrencyId = {read = get_CurrencyId, write = set_CurrencyId};
-  __property   long            AccountSelected = {read = get_AccountSelected, write = set_AccountSelected};
-  __property   long            SelectAccount = {read = get_SelectAccount, write = set_SelectAccount};
-  __property   BSTR            CurrencyRate = {read = get_CurrencyRate, write = set_CurrencyRate};
-  __property   long            EnterDataLen = {read = get_EnterDataLen, write = set_EnterDataLen};
-  __property   BSTR            KeyMask = {read = get_KeyMask, write = set_KeyMask};
-  __property   BSTR            InputMask = {read = get_InputMask, write = set_InputMask};
-  __property   long            Account = {read = get_Account, write = set_Account};
-  __property   BSTR            PrivateData4 = {read = get_PrivateData4, write = set_PrivateData4};
-  __property   BSTR            PrivateData7 = {read = get_PrivateData7, write = set_PrivateData7};
-  __property   BSTR            Cvc2 = {read = get_Cvc2, write = set_Cvc2};
-  __property   VARIANT_BOOL    EnableAddBillCard = {read = get_EnableAddBillCard, write = set_EnableAddBillCard};
-  __property   BSTR            CardType = {read = get_CardType, write = set_CardType};
-  __property   BSTR            PrivateData2 = {read = get_PrivateData2, write = set_PrivateData2};
-  __property   BSTR            ResponseText = {read = get_ResponseText, write = set_ResponseText};
-  __property   BSTR            ReceiptEjectCommand = {read = get_ReceiptEjectCommand, write = set_ReceiptEjectCommand};
-  __property   BSTR            ReceiptLineTerminator = {read = get_ReceiptLineTerminator, write = set_ReceiptLineTerminator};
-  __property   BSTR            DpsLinkText = {read = get_DpsLinkText, write = set_DpsLinkText};
-  __property   BSTR            AmountAuthOut = {read = get_AmountAuthOut, write = set_AmountAuthOut};
-  __property   BSTR            OutputEkTrack2 = {read = get_OutputEkTrack2, write = set_OutputEkTrack2};
-  __property   BSTR            EkTrack2 = {read = get_EkTrack2, write = set_EkTrack2};
-  __property   BSTR            DateExpiry = {read = get_DateExpiry, write = set_DateExpiry};
-  __property   BSTR            ReceiptResetCommand = {read = get_ReceiptResetCommand, write = set_ReceiptResetCommand};
-  __property   VARIANT_BOOL    EnableTestMode = {read = get_EnableTestMode, write = set_EnableTestMode};
-  __property   BSTR            CardNumber = {read = get_CardNumber, write = set_CardNumber};
+  __property   VARIANT_BOOL    EnableBackLight = {read = get_EnableBackLight, write = set_EnableBackLight};
+  __property   BSTR            TxnType = {read = get_TxnType, write = set_TxnType};
+  __property   long            VersionEft = {read = get_VersionEft, write = set_VersionEft};
+  __property   VARIANT_BOOL    Success = {read = get_Success, write = set_Success};
+  __property   BSTR            Amount = {read = get_Amount, write = set_Amount};
+  __property   BSTR            ReCo = {read = get_ReCo, write = set_ReCo};
+  __property   long            VersionPos = {read = get_VersionPos, write = set_VersionPos};
+  __property   long            UnitId = {read = get_UnitId, write = set_UnitId};
   __property   BSTR            ReceiptTrailer = {read = get_ReceiptTrailer, write = set_ReceiptTrailer};
-  __property   BSTR            OutputParameter1 = {read = get_OutputParameter1, write = set_OutputParameter1};
-  __property   VARIANT_BOOL    EnablePrintReceipt = {read = get_EnablePrintReceipt, write = set_EnablePrintReceipt};
-  __property   BSTR            PrivateData1 = {read = get_PrivateData1, write = set_PrivateData1};
-  __property   BSTR            ReceiptHeader = {read = get_ReceiptHeader, write = set_ReceiptHeader};
-  __property   BSTR            ReserveString1 = {read = get_ReserveString1, write = set_ReserveString1};
-  __property   BSTR            Cvm = {read = get_Cvm, write = set_Cvm};
-  __property   BSTR            DisplayLine2 = {read = get_DisplayLine2, write = set_DisplayLine2};
-  __property   BSTR            OutputProducts = {read = get_OutputProducts, write = set_OutputProducts};
-  __property   BSTR            ReceiptNo = {read = get_ReceiptNo, write = set_ReceiptNo};
-  __property   BSTR            EmvResult = {read = get_EmvResult, write = set_EmvResult};
-  __property   BSTR            EmvLibVersion = {read = get_EmvLibVersion, write = set_EmvLibVersion};
-  __property   BSTR            EmvLibHash = {read = get_EmvLibHash, write = set_EmvLibHash};
-  __property   VARIANT_BOOL    ProcessedOffline = {read = get_ProcessedOffline, write = set_ProcessedOffline};
-  __property   BSTR            Quantity = {read = get_Quantity, write = set_Quantity};
-  __property   BSTR            PrivateData10 = {read = get_PrivateData10, write = set_PrivateData10};
-  __property   BSTR            ProductCode = {read = get_ProductCode, write = set_ProductCode};
-  __property   BSTR            LineAmount = {read = get_LineAmount, write = set_LineAmount};
+  __property   BSTR            Track1 = {read = get_Track1, write = set_Track1};
+  __property   long            EnableManualPan = {read = get_EnableManualPan, write = set_EnableManualPan};
+  __property   BSTR            AmountCashOut = {read = get_AmountCashOut, write = set_AmountCashOut};
+  __property   long            EnableCheckAccount = {read = get_EnableCheckAccount, write = set_EnableCheckAccount};
+  __property   long            DisplayTimeout = {read = get_DisplayTimeout, write = set_DisplayTimeout};
+  __property   long            OdometerReading = {read = get_OdometerReading, write = set_OdometerReading};
+  __property   BSTR            DpsBillingId = {read = get_DpsBillingId, write = set_DpsBillingId};
+  __property   long            EftStatus = {read = get_EftStatus, write = set_EftStatus};
+  __property   long            RegNumberRequired = {read = get_RegNumberRequired, write = set_RegNumberRequired};
+  __property   BSTR            StatusText = {read = get_StatusText, write = set_StatusText};
+  __property   VARIANT_BOOL    Ready = {read = get_Ready, write = set_Ready};
+  __property   BSTR            PrinterName = {read = get_PrinterName, write = set_PrinterName};
+  __property   long            PersonalPurchaseRequired = {read = get_PersonalPurchaseRequired, write = set_PersonalPurchaseRequired};
+  __property   long            OrderNumberRequired = {read = get_OrderNumberRequired, write = set_OrderNumberRequired};
+  __property   VARIANT_BOOL    ReadyPinPad = {read = get_ReadyPinPad, write = set_ReadyPinPad};
+  __property   VARIANT_BOOL    ReadyLink = {read = get_ReadyLink, write = set_ReadyLink};
+  __property   BSTR            DialogY = {read = get_DialogY, write = set_DialogY};
+  __property   BSTR            ClientType = {read = get_ClientType, write = set_ClientType};
+  __property   BSTR            DialogX = {read = get_DialogX, write = set_DialogX};
+  __property   BSTR            TxnRef = {read = get_TxnRef, write = set_TxnRef};
+  __property   BSTR            DialogType = {read = get_DialogType, write = set_DialogType};
+  __property   BSTR            BillingId = {read = get_BillingId, write = set_BillingId};
+  __property   BSTR            ClientIp = {read = get_ClientIp, write = set_ClientIp};
+  __property   BSTR            ClientId = {read = get_ClientId, write = set_ClientId};
+  __property   BSTR            DeviceId = {read = get_DeviceId, write = set_DeviceId};
+  __property   BSTR            AmountCreditLimit = {read = get_AmountCreditLimit, write = set_AmountCreditLimit};
+  __property   long            EnableSavingAccount = {read = get_EnableSavingAccount, write = set_EnableSavingAccount};
+  __property   BSTR            Parameter1 = {read = get_Parameter1, write = set_Parameter1};
+  __property   long            EnterDataLen = {read = get_EnterDataLen, write = set_EnterDataLen};
+  __property   long            UserEnterMode = {read = get_UserEnterMode, write = set_UserEnterMode};
+  __property   BSTR            Amount2 = {read = get_Amount2, write = set_Amount2};
+  __property   short           Appearance = {read = get_Appearance, write = set_Appearance};
+  __property   ::OLE_COLOR     BackColor = {read = get_BackColor, write = set_BackColor};
+  __property   IFontDisp*      Font = {read = get_Font, write = set_Font};
+  __property   BSTR            Caption = {read = get_Caption, write = set_Caption};
+  __property   VARIANT_BOOL    Enabled = {read = get_Enabled, write = set_Enabled};
+  __property   BSTR            MerchantReference = {read = get_MerchantReference, write = set_MerchantReference};
+  __property   BSTR            Track3 = {read = get_Track3, write = set_Track3};
+  __property   BSTR            OutputDisplayLine1 = {read = get_OutputDisplayLine1, write = set_OutputDisplayLine1};
+  __property   BSTR            PosName = {read = get_PosName, write = set_PosName};
+  __property   BSTR            OutputDisplayLine2 = {read = get_OutputDisplayLine2, write = set_OutputDisplayLine2};
+  __property   BSTR            OutputTrack3 = {read = get_OutputTrack3, write = set_OutputTrack3};
+  __property   BSTR            KeyMask = {read = get_KeyMask, write = set_KeyMask};
+  __property   long            EnableCreditAccount = {read = get_EnableCreditAccount, write = set_EnableCreditAccount};
+  __property   BSTR            InputMask = {read = get_InputMask, write = set_InputMask};
+  __property   BSTR            Parameter2 = {read = get_Parameter2, write = set_Parameter2};
+  __property   BSTR            CurrencyRate = {read = get_CurrencyRate, write = set_CurrencyRate};
   __property   BSTR            PrivateData9 = {read = get_PrivateData9, write = set_PrivateData9};
-  __property   VARIANT_BOOL    ReadyDpsLink = {read = get_ReadyDpsLink, write = set_ReadyDpsLink};
-  __property   BSTR            LoyaltyRecipient = {read = get_LoyaltyRecipient, write = set_LoyaltyRecipient};
+  __property   BSTR            PrivateData10 = {read = get_PrivateData10, write = set_PrivateData10};
+  __property   BSTR            DisplayLine2 = {read = get_DisplayLine2, write = set_DisplayLine2};
   __property   BSTR            PrivateData8 = {read = get_PrivateData8, write = set_PrivateData8};
   __property   BSTR            DisplayLine1 = {read = get_DisplayLine1, write = set_DisplayLine1};
+  __property   long            AccountSelected = {read = get_AccountSelected, write = set_AccountSelected};
+  __property   long            Account2 = {read = get_Account2, write = set_Account2};
+  __property   BSTR            Cvc2 = {read = get_Cvc2, write = set_Cvc2};
+  __property   long            Stan = {read = get_Stan, write = set_Stan};
+  __property   long            CurrencyId = {read = get_CurrencyId, write = set_CurrencyId};
+  __property   long            EmvFileUpdating = {read = get_EmvFileUpdating, write = set_EmvFileUpdating};
+  __property   long            ReservedL10 = {read = get_ReservedL10, write = set_ReservedL10};
+  __property   VARIANT_BOOL    ReservedB1 = {read = get_ReservedB1, write = set_ReservedB1};
+  __property   long            ReservedL7 = {read = get_ReservedL7, write = set_ReservedL7};
+  __property   long            ReservedL3 = {read = get_ReservedL3, write = set_ReservedL3};
+  __property   long            ReservedL4 = {read = get_ReservedL4, write = set_ReservedL4};
+  __property   long            ReservedL8 = {read = get_ReservedL8, write = set_ReservedL8};
+  __property   BSTR            PrivateData4 = {read = get_PrivateData4, write = set_PrivateData4};
+  __property   BSTR            PrivateData5 = {read = get_PrivateData5, write = set_PrivateData5};
+  __property   BSTR            PrivateData7 = {read = get_PrivateData7, write = set_PrivateData7};
+  __property   long            ReservedL9 = {read = get_ReservedL9, write = set_ReservedL9};
+  __property   BSTR            PrivateData6 = {read = get_PrivateData6, write = set_PrivateData6};
+  __property   BSTR            OutputEkTrack2 = {read = get_OutputEkTrack2, write = set_OutputEkTrack2};
+  __property   VARIANT_BOOL    ReadyDpsLink = {read = get_ReadyDpsLink, write = set_ReadyDpsLink};
+  __property   BSTR            EkTrack2 = {read = get_EkTrack2, write = set_EkTrack2};
+  __property   BSTR            OrderNumber = {read = get_OrderNumber, write = set_OrderNumber};
+  __property   long            PreSelectAccount = {read = get_PreSelectAccount, write = set_PreSelectAccount};
+  __property   BSTR            DpsLinkText = {read = get_DpsLinkText, write = set_DpsLinkText};
+  __property   BSTR            Quantity = {read = get_Quantity, write = set_Quantity};
+  __property   BSTR            LineAmount = {read = get_LineAmount, write = set_LineAmount};
+  __property   BSTR            OutputProducts = {read = get_OutputProducts, write = set_OutputProducts};
+  __property   BSTR            AmountAuthOut = {read = get_AmountAuthOut, write = set_AmountAuthOut};
+  __property   BSTR            ProductCode = {read = get_ProductCode, write = set_ProductCode};
+  __property   BSTR            LoyaltyRecipient = {read = get_LoyaltyRecipient, write = set_LoyaltyRecipient};
+  __property   BSTR            RegNumber = {read = get_RegNumber, write = set_RegNumber};
+  __property   VARIANT_BOOL    EnableAddBillCard = {read = get_EnableAddBillCard, write = set_EnableAddBillCard};
+  __property   long            Account = {read = get_Account, write = set_Account};
+  __property   long            SelectAccount = {read = get_SelectAccount, write = set_SelectAccount};
+  __property   BSTR            FuelCardType = {read = get_FuelCardType, write = set_FuelCardType};
+  __property   BSTR            ReceiptNo = {read = get_ReceiptNo, write = set_ReceiptNo};
+  __property   BSTR            Cvm = {read = get_Cvm, write = set_Cvm};
+  __property   BSTR            Company = {read = get_Company, write = set_Company};
+  __property   BSTR            ProductRestricts = {read = get_ProductRestricts, write = set_ProductRestricts};
+  __property   BSTR            Track2Mac = {read = get_Track2Mac, write = set_Track2Mac};
+  __property   BSTR            ReservedS5 = {read = get_ReservedS5, write = set_ReservedS5};
+  __property   BSTR            ReservedS6 = {read = get_ReservedS6, write = set_ReservedS6};
+  __property   long            ReceiptWidth = {read = get_ReceiptWidth, write = set_ReceiptWidth};
+  __property   BSTR            ReceiptResetCommand = {read = get_ReceiptResetCommand, write = set_ReceiptResetCommand};
+  __property   BSTR            ReceiptSeparatorCommand = {read = get_ReceiptSeparatorCommand, write = set_ReceiptSeparatorCommand};
+  __property   BSTR            PrivateCardData = {read = get_PrivateCardData, write = set_PrivateCardData};
+  __property   long            SignatureState = {read = get_SignatureState, write = set_SignatureState};
+  __property   BSTR            ReservedS8 = {read = get_ReservedS8, write = set_ReservedS8};
+  __property   BSTR            ReservedS10 = {read = get_ReservedS10, write = set_ReservedS10};
+  __property   BSTR            ReservedS4 = {read = get_ReservedS4, write = set_ReservedS4};
+  __property   BSTR            ReservedS7 = {read = get_ReservedS7, write = set_ReservedS7};
+  __property   BSTR            ResponseText = {read = get_ResponseText, write = set_ResponseText};
+  __property   BSTR            ReceiptEjectCommand = {read = get_ReceiptEjectCommand, write = set_ReceiptEjectCommand};
+  __property   BSTR            CardType = {read = get_CardType, write = set_CardType};
+  __property   VARIANT_BOOL    EnableBlockingMode = {read = get_EnableBlockingMode, write = set_EnableBlockingMode};
+  __property   BSTR            CardNumber = {read = get_CardNumber, write = set_CardNumber};
+  __property   BSTR            PrivateData1 = {read = get_PrivateData1, write = set_PrivateData1};
+  __property   BSTR            OutputTrack2 = {read = get_OutputTrack2, write = set_OutputTrack2};
+  __property   VARIANT_BOOL    Authorized = {read = get_Authorized, write = set_Authorized};
+  __property   BSTR            OutputTrack1 = {read = get_OutputTrack1, write = set_OutputTrack1};
+  __property   BSTR            PrivateData2 = {read = get_PrivateData2, write = set_PrivateData2};
+  __property   BSTR            ReceiptLineTerminator = {read = get_ReceiptLineTerminator, write = set_ReceiptLineTerminator};
+  __property   VARIANT_BOOL    ReservedB3 = {read = get_ReservedB3, write = set_ReservedB3};
+  __property   VARIANT_BOOL    ReservedB6 = {read = get_ReservedB6, write = set_ReservedB6};
+  __property   VARIANT_BOOL    ReservedB2 = {read = get_ReservedB2, write = set_ReservedB2};
+  __property   VARIANT_BOOL    ReservedB4 = {read = get_ReservedB4, write = set_ReservedB4};
+  __property   VARIANT_BOOL    ReservedB5 = {read = get_ReservedB5, write = set_ReservedB5};
+  __property   VARIANT_BOOL    ReservedB9 = {read = get_ReservedB9, write = set_ReservedB9};
+  __property   long            ReservedL5 = {read = get_ReservedL5, write = set_ReservedL5};
+  __property   long            ReservedL6 = {read = get_ReservedL6, write = set_ReservedL6};
+  __property   VARIANT_BOOL    ReservedB8 = {read = get_ReservedB8, write = set_ReservedB8};
+  __property   VARIANT_BOOL    ReservedB10 = {read = get_ReservedB10, write = set_ReservedB10};
+  __property   VARIANT_BOOL    ReservedB7 = {read = get_ReservedB7, write = set_ReservedB7};
+  __property   BSTR            PrivateData3 = {read = get_PrivateData3, write = set_PrivateData3};
+  __property   BSTR            EmvLibHash = {read = get_EmvLibHash, write = set_EmvLibHash};
+  __property   BSTR            EmvResult = {read = get_EmvResult, write = set_EmvResult};
+  __property   BSTR            ReservedS9 = {read = get_ReservedS9, write = set_ReservedS9};
+  __property   BSTR            EmvLibVersion = {read = get_EmvLibVersion, write = set_EmvLibVersion};
+  __property   VARIANT_BOOL    ProcessedOffline = {read = get_ProcessedOffline, write = set_ProcessedOffline};
+  __property   BSTR            CardNumber2 = {read = get_CardNumber2, write = set_CardNumber2};
+  __property   long            ReservedL2 = {read = get_ReservedL2, write = set_ReservedL2};
+  __property   BSTR            RefundDpsTxnRef = {read = get_RefundDpsTxnRef, write = set_RefundDpsTxnRef};
+  __property   BSTR            AmountTip = {read = get_AmountTip, write = set_AmountTip};
+  __property   BSTR            AmountSurcharge = {read = get_AmountSurcharge, write = set_AmountSurcharge};
 };
 // *********************************************************************//
 // Interface: _DDpsEftXEvents
@@ -2941,7 +3485,7 @@ public:
   void            __fastcall DoEditTender();
   void            __fastcall DoPrintPendingReceipt();
   void            __fastcall DoAddProductLine();
-  void            __fastcall DoreservedMethod11();
+  void            __fastcall DoGetXmlLinkStatus();
   void            __fastcall DoReservedMethod5();
   void            __fastcall ResetLineItems();
   void            __fastcall DoPinPadDisplay();
@@ -2956,439 +3500,535 @@ public:
   void            __fastcall DoMaint();
   void            __fastcall DoConfig();
   void            __fastcall DoAuthorize();
-  void            __fastcall set_DocketNo(long Value);
-  long            __fastcall get_DocketNo();
-  void            __fastcall set_Capabilities(BSTR Value);
-  BSTR            __fastcall get_Capabilities();
-  void            __fastcall set_PersonalPurchase(long Value);
-  long            __fastcall get_PersonalPurchase();
-  void            __fastcall set_EnableManualPan(long Value);
-  long            __fastcall get_EnableManualPan();
-  void            __fastcall set_DateSettlement(BSTR Value);
-  BSTR            __fastcall get_DateSettlement();
-  void            __fastcall set_Rrn(BSTR Value);
-  BSTR            __fastcall get_Rrn();
-  void            __fastcall set_VersionPos(long Value);
-  long            __fastcall get_VersionPos();
-  void            __fastcall set_AuthCode(BSTR Value);
-  BSTR            __fastcall get_AuthCode();
-  void            __fastcall set_Pix(BSTR Value);
-  BSTR            __fastcall get_Pix();
-  void            __fastcall set_ClientId(BSTR Value);
-  BSTR            __fastcall get_ClientId();
-  void            __fastcall set_DeviceId(BSTR Value);
-  BSTR            __fastcall get_DeviceId();
-  void            __fastcall set_ReadyLink(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_ReadyLink();
-  void            __fastcall set_TxnRef(BSTR Value);
-  BSTR            __fastcall get_TxnRef();
-  void            __fastcall set_DpsBillingId(BSTR Value);
-  BSTR            __fastcall get_DpsBillingId();
+  void            __fastcall set_EnablePrintReceipt(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EnablePrintReceipt();
+  void            __fastcall set_ReceiptHeader(BSTR Value);
+  BSTR            __fastcall get_ReceiptHeader();
+  void            __fastcall set_OutputParameter1(BSTR Value);
+  BSTR            __fastcall get_OutputParameter1();
   void            __fastcall set_OdometerRequired(long Value);
   long            __fastcall get_OdometerRequired();
   void            __fastcall set_Rid(BSTR Value);
   BSTR            __fastcall get_Rid();
-  void            __fastcall set_DialogType(BSTR Value);
-  BSTR            __fastcall get_DialogType();
-  void            __fastcall set_BillingId(BSTR Value);
-  BSTR            __fastcall get_BillingId();
-  void            __fastcall set_OutputTrack2(BSTR Value);
-  BSTR            __fastcall get_OutputTrack2();
-  void            __fastcall set_Authorized(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_Authorized();
-  void            __fastcall set_AmountCashOut(BSTR Value);
-  BSTR            __fastcall get_AmountCashOut();
-  void            __fastcall set_DateTimeTransaction(BSTR Value);
-  BSTR            __fastcall get_DateTimeTransaction();
-  void            __fastcall set_OutputTrack1(BSTR Value);
-  BSTR            __fastcall get_OutputTrack1();
-  void            __fastcall set_EnableTrainingMode(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EnableTrainingMode();
-  void            __fastcall set_EnableCurrencyConversionPrompt(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EnableCurrencyConversionPrompt();
-  void            __fastcall set_ReceiptSeparatorCommand(BSTR Value);
-  BSTR            __fastcall get_ReceiptSeparatorCommand();
-  void            __fastcall set_ReceiptWidth(long Value);
-  long            __fastcall get_ReceiptWidth();
-  void            __fastcall set_TxnType(BSTR Value);
-  BSTR            __fastcall get_TxnType();
-  void            __fastcall set_ReCo(BSTR Value);
-  BSTR            __fastcall get_ReCo();
+  void            __fastcall set_Capabilities(BSTR Value);
+  BSTR            __fastcall get_Capabilities();
   void            __fastcall set_Track2(BSTR Value);
   BSTR            __fastcall get_Track2();
   void            __fastcall set_Receipt(BSTR Value);
   BSTR            __fastcall get_Receipt();
-  void            __fastcall set_Success(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_Success();
-  void            __fastcall set_Track1(BSTR Value);
-  BSTR            __fastcall get_Track1();
-  void            __fastcall set_Amount(BSTR Value);
-  BSTR            __fastcall get_Amount();
-  void            __fastcall set_UnitId(long Value);
-  long            __fastcall get_UnitId();
-  void            __fastcall set_VersionEft(long Value);
-  long            __fastcall get_VersionEft();
-  void            __fastcall set_EnablePrintSlip(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EnablePrintSlip();
-  void            __fastcall set_EnableBlockingMode(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EnableBlockingMode();
-  void            __fastcall set_PrinterName(BSTR Value);
-  BSTR            __fastcall get_PrinterName();
-  void            __fastcall set_OrderNumberRequired(long Value);
-  long            __fastcall get_OrderNumberRequired();
-  void            __fastcall set_EovOffline(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EovOffline();
-  void            __fastcall set_RegNumberRequired(long Value);
-  long            __fastcall get_RegNumberRequired();
-  void            __fastcall set_PersonalPurchaseRequired(long Value);
-  long            __fastcall get_PersonalPurchaseRequired();
-  void            __fastcall set_EnableInvisible(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EnableInvisible();
-  void            __fastcall set_EnableCurrencyConversion(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EnableCurrencyConversion();
-  void            __fastcall set_DisplayTimeout(long Value);
-  long            __fastcall get_DisplayTimeout();
-  void            __fastcall set_OdometerReading(long Value);
-  long            __fastcall get_OdometerReading();
-  void            __fastcall set_PosName(BSTR Value);
-  BSTR            __fastcall get_PosName();
-  void            __fastcall set_OutputDisplayLine2(BSTR Value);
-  BSTR            __fastcall get_OutputDisplayLine2();
-  void            __fastcall set_EnableCheckAccount(long Value);
-  long            __fastcall get_EnableCheckAccount();
-  void            __fastcall set_StatusText(BSTR Value);
-  BSTR            __fastcall get_StatusText();
-  void            __fastcall set_OutputDisplayLine1(BSTR Value);
-  BSTR            __fastcall get_OutputDisplayLine1();
-  void            __fastcall set_Ready(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_Ready();
-  void            __fastcall set_EftStatus(long Value);
-  long            __fastcall get_EftStatus();
+  void            __fastcall set_DocketNo(long Value);
+  long            __fastcall get_DocketNo();
+  void            __fastcall set_DateSettlement(BSTR Value);
+  BSTR            __fastcall get_DateSettlement();
+  void            __fastcall set_DateTimeTransaction(BSTR Value);
+  BSTR            __fastcall get_DateTimeTransaction();
+  void            __fastcall set_AcquirerPort(BSTR Value);
+  BSTR            __fastcall get_AcquirerPort();
   void            __fastcall set_ForeColor(::OLE_COLOR Value);
   ::OLE_COLOR     __fastcall get_ForeColor();
-  void            __fastcall set_Enabled(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_Enabled();
+  void            __fastcall set_ReceiptIsSeparate(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReceiptIsSeparate();
+  void            __fastcall set_BorderStyle(short Value);
+  short           __fastcall get_BorderStyle();
+  void            __fastcall set_DpsTxnRef(BSTR Value);
+  BSTR            __fastcall get_DpsTxnRef();
   void            __fastcall set_hWnd(OLE_HANDLE Value);
   OLE_HANDLE      __fastcall get_hWnd();
+  void            __fastcall set_AuthCode(BSTR Value);
+  BSTR            __fastcall get_AuthCode();
+  void            __fastcall set_PersonalPurchase(long Value);
+  long            __fastcall get_PersonalPurchase();
+  void            __fastcall set_Rrn(BSTR Value);
+  BSTR            __fastcall get_Rrn();
   void            __fastcall set_ReadyState(long Value);
   long            __fastcall get_ReadyState();
-  void            __fastcall set_Font(IFontDisp* Value);
-  IFontDisp*      __fastcall get_Font();
-  void            __fastcall set_DialogY(BSTR Value);
-  BSTR            __fastcall get_DialogY();
-  void            __fastcall set_ClientType(BSTR Value);
-  BSTR            __fastcall get_ClientType();
-  void            __fastcall set_ClientIp(BSTR Value);
-  BSTR            __fastcall get_ClientIp();
-  void            __fastcall set_DialogX(BSTR Value);
-  BSTR            __fastcall get_DialogX();
-  void            __fastcall set_EnableBackLight(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EnableBackLight();
-  void            __fastcall set_ReadyPinPad(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_ReadyPinPad();
+  void            __fastcall set_Pix(BSTR Value);
+  BSTR            __fastcall get_Pix();
+  void            __fastcall set_DateExpiry(BSTR Value);
+  BSTR            __fastcall get_DateExpiry();
+  void            __fastcall set_EnableTestMode(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EnableTestMode();
+  void            __fastcall set_EnableCurrencyConversion(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EnableCurrencyConversion();
+  void            __fastcall set_EnableCurrencyConversionPrompt(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EnableCurrencyConversionPrompt();
+  void            __fastcall set_EnableInvisible(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EnableInvisible();
+  void            __fastcall set_EnableTrainingMode(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EnableTrainingMode();
+  void            __fastcall set_EovOffline(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EovOffline();
+  void            __fastcall set_EnablePrintSlip(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EnablePrintSlip();
   void            __fastcall set_InProgress(VARIANT_BOOL Value);
   VARIANT_BOOL    __fastcall get_InProgress();
   void            __fastcall set_EnableIgnoreCardReadError(VARIANT_BOOL Value);
   VARIANT_BOOL    __fastcall get_EnableIgnoreCardReadError();
-  void            __fastcall set_BorderStyle(short Value);
-  short           __fastcall get_BorderStyle();
-  void            __fastcall set_MerchantReference(BSTR Value);
-  BSTR            __fastcall get_MerchantReference();
-  void            __fastcall set_Appearance(short Value);
-  short           __fastcall get_Appearance();
-  void            __fastcall set_Caption(BSTR Value);
-  BSTR            __fastcall get_Caption();
-  void            __fastcall set_BackColor(::OLE_COLOR Value);
-  ::OLE_COLOR     __fastcall get_BackColor();
-  void            __fastcall set_EnableCreditAccount(long Value);
-  long            __fastcall get_EnableCreditAccount();
-  void            __fastcall set_EnableSavingAccount(long Value);
-  long            __fastcall get_EnableSavingAccount();
-  void            __fastcall set_Track3(BSTR Value);
-  BSTR            __fastcall get_Track3();
-  void            __fastcall set_Parameter1(BSTR Value);
-  BSTR            __fastcall get_Parameter1();
-  void            __fastcall set_AmountCreditLimit(BSTR Value);
-  BSTR            __fastcall get_AmountCreditLimit();
-  void            __fastcall set_DpsTxnRef(BSTR Value);
-  BSTR            __fastcall get_DpsTxnRef();
-  void            __fastcall set_Amount2(BSTR Value);
-  BSTR            __fastcall get_Amount2();
-  void            __fastcall set_AcquirerPort(BSTR Value);
-  BSTR            __fastcall get_AcquirerPort();
-  void            __fastcall set_ReceiptIsSeparate(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_ReceiptIsSeparate();
-  void            __fastcall set_ProductRestricts(BSTR Value);
-  BSTR            __fastcall get_ProductRestricts();
-  void            __fastcall set_FuelCardType(BSTR Value);
-  BSTR            __fastcall get_FuelCardType();
-  void            __fastcall set_RegNumber(BSTR Value);
-  BSTR            __fastcall get_RegNumber();
-  void            __fastcall set_Track2Mac(BSTR Value);
-  BSTR            __fastcall get_Track2Mac();
-  void            __fastcall set_PreSelectAccount(long Value);
-  long            __fastcall get_PreSelectAccount();
-  void            __fastcall set_Parameter2(BSTR Value);
-  BSTR            __fastcall get_Parameter2();
-  void            __fastcall set_OutputTrack3(BSTR Value);
-  BSTR            __fastcall get_OutputTrack3();
-  void            __fastcall set_OrderNumber(BSTR Value);
-  BSTR            __fastcall get_OrderNumber();
-  void            __fastcall set_Company(BSTR Value);
-  BSTR            __fastcall get_Company();
-  void            __fastcall set_Stan(long Value);
-  long            __fastcall get_Stan();
-  void            __fastcall set_EmvFileUpdating(long Value);
-  long            __fastcall get_EmvFileUpdating();
-  void            __fastcall set_PrivateData6(BSTR Value);
-  BSTR            __fastcall get_PrivateData6();
-  void            __fastcall set_PrivateData5(BSTR Value);
-  BSTR            __fastcall get_PrivateData5();
-  void            __fastcall set_UserEnterMode(long Value);
-  long            __fastcall get_UserEnterMode();
-  void            __fastcall set_Account2(long Value);
-  long            __fastcall get_Account2();
-  void            __fastcall set_CurrencyId(long Value);
-  long            __fastcall get_CurrencyId();
-  void            __fastcall set_AccountSelected(long Value);
-  long            __fastcall get_AccountSelected();
-  void            __fastcall set_SelectAccount(long Value);
-  long            __fastcall get_SelectAccount();
-  void            __fastcall set_CurrencyRate(BSTR Value);
-  BSTR            __fastcall get_CurrencyRate();
-  void            __fastcall set_EnterDataLen(long Value);
-  long            __fastcall get_EnterDataLen();
-  void            __fastcall set_KeyMask(BSTR Value);
-  BSTR            __fastcall get_KeyMask();
-  void            __fastcall set_InputMask(BSTR Value);
-  BSTR            __fastcall get_InputMask();
-  void            __fastcall set_Account(long Value);
-  long            __fastcall get_Account();
-  void            __fastcall set_PrivateData4(BSTR Value);
-  BSTR            __fastcall get_PrivateData4();
-  void            __fastcall set_PrivateData7(BSTR Value);
-  BSTR            __fastcall get_PrivateData7();
-  void            __fastcall set_Cvc2(BSTR Value);
-  BSTR            __fastcall get_Cvc2();
-  void            __fastcall set_EnableAddBillCard(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EnableAddBillCard();
-  void            __fastcall set_CardType(BSTR Value);
-  BSTR            __fastcall get_CardType();
-  void            __fastcall set_PrivateData2(BSTR Value);
-  BSTR            __fastcall get_PrivateData2();
-  void            __fastcall set_ResponseText(BSTR Value);
-  BSTR            __fastcall get_ResponseText();
-  void            __fastcall set_ReceiptEjectCommand(BSTR Value);
-  BSTR            __fastcall get_ReceiptEjectCommand();
-  void            __fastcall set_ReceiptLineTerminator(BSTR Value);
-  BSTR            __fastcall get_ReceiptLineTerminator();
-  void            __fastcall set_DpsLinkText(BSTR Value);
-  BSTR            __fastcall get_DpsLinkText();
-  void            __fastcall set_AmountAuthOut(BSTR Value);
-  BSTR            __fastcall get_AmountAuthOut();
-  void            __fastcall set_OutputEkTrack2(BSTR Value);
-  BSTR            __fastcall get_OutputEkTrack2();
-  void            __fastcall set_EkTrack2(BSTR Value);
-  BSTR            __fastcall get_EkTrack2();
-  void            __fastcall set_DateExpiry(BSTR Value);
-  BSTR            __fastcall get_DateExpiry();
-  void            __fastcall set_ReceiptResetCommand(BSTR Value);
-  BSTR            __fastcall get_ReceiptResetCommand();
-  void            __fastcall set_EnableTestMode(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EnableTestMode();
-  void            __fastcall set_CardNumber(BSTR Value);
-  BSTR            __fastcall get_CardNumber();
+  void            __fastcall set_EnableBackLight(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EnableBackLight();
+  void            __fastcall set_TxnType(BSTR Value);
+  BSTR            __fastcall get_TxnType();
+  void            __fastcall set_VersionEft(long Value);
+  long            __fastcall get_VersionEft();
+  void            __fastcall set_Success(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_Success();
+  void            __fastcall set_Amount(BSTR Value);
+  BSTR            __fastcall get_Amount();
+  void            __fastcall set_ReCo(BSTR Value);
+  BSTR            __fastcall get_ReCo();
+  void            __fastcall set_VersionPos(long Value);
+  long            __fastcall get_VersionPos();
+  void            __fastcall set_UnitId(long Value);
+  long            __fastcall get_UnitId();
   void            __fastcall set_ReceiptTrailer(BSTR Value);
   BSTR            __fastcall get_ReceiptTrailer();
-  void            __fastcall set_OutputParameter1(BSTR Value);
-  BSTR            __fastcall get_OutputParameter1();
-  void            __fastcall set_EnablePrintReceipt(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_EnablePrintReceipt();
-  void            __fastcall set_PrivateData1(BSTR Value);
-  BSTR            __fastcall get_PrivateData1();
-  void            __fastcall set_ReceiptHeader(BSTR Value);
-  BSTR            __fastcall get_ReceiptHeader();
-  void            __fastcall set_ReserveString1(BSTR Value);
-  BSTR            __fastcall get_ReserveString1();
-  void            __fastcall set_Cvm(BSTR Value);
-  BSTR            __fastcall get_Cvm();
-  void            __fastcall set_DisplayLine2(BSTR Value);
-  BSTR            __fastcall get_DisplayLine2();
-  void            __fastcall set_OutputProducts(BSTR Value);
-  BSTR            __fastcall get_OutputProducts();
-  void            __fastcall set_ReceiptNo(BSTR Value);
-  BSTR            __fastcall get_ReceiptNo();
-  void            __fastcall set_EmvResult(BSTR Value);
-  BSTR            __fastcall get_EmvResult();
-  void            __fastcall set_EmvLibVersion(BSTR Value);
-  BSTR            __fastcall get_EmvLibVersion();
-  void            __fastcall set_EmvLibHash(BSTR Value);
-  BSTR            __fastcall get_EmvLibHash();
-  void            __fastcall set_ProcessedOffline(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_ProcessedOffline();
-  void            __fastcall set_Quantity(BSTR Value);
-  BSTR            __fastcall get_Quantity();
-  void            __fastcall set_PrivateData10(BSTR Value);
-  BSTR            __fastcall get_PrivateData10();
-  void            __fastcall set_ProductCode(BSTR Value);
-  BSTR            __fastcall get_ProductCode();
-  void            __fastcall set_LineAmount(BSTR Value);
-  BSTR            __fastcall get_LineAmount();
+  void            __fastcall set_Track1(BSTR Value);
+  BSTR            __fastcall get_Track1();
+  void            __fastcall set_EnableManualPan(long Value);
+  long            __fastcall get_EnableManualPan();
+  void            __fastcall set_AmountCashOut(BSTR Value);
+  BSTR            __fastcall get_AmountCashOut();
+  void            __fastcall set_EnableCheckAccount(long Value);
+  long            __fastcall get_EnableCheckAccount();
+  void            __fastcall set_DisplayTimeout(long Value);
+  long            __fastcall get_DisplayTimeout();
+  void            __fastcall set_OdometerReading(long Value);
+  long            __fastcall get_OdometerReading();
+  void            __fastcall set_DpsBillingId(BSTR Value);
+  BSTR            __fastcall get_DpsBillingId();
+  void            __fastcall set_EftStatus(long Value);
+  long            __fastcall get_EftStatus();
+  void            __fastcall set_RegNumberRequired(long Value);
+  long            __fastcall get_RegNumberRequired();
+  void            __fastcall set_StatusText(BSTR Value);
+  BSTR            __fastcall get_StatusText();
+  void            __fastcall set_Ready(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_Ready();
+  void            __fastcall set_PrinterName(BSTR Value);
+  BSTR            __fastcall get_PrinterName();
+  void            __fastcall set_PersonalPurchaseRequired(long Value);
+  long            __fastcall get_PersonalPurchaseRequired();
+  void            __fastcall set_OrderNumberRequired(long Value);
+  long            __fastcall get_OrderNumberRequired();
+  void            __fastcall set_ReadyPinPad(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReadyPinPad();
+  void            __fastcall set_ReadyLink(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReadyLink();
+  void            __fastcall set_DialogY(BSTR Value);
+  BSTR            __fastcall get_DialogY();
+  void            __fastcall set_ClientType(BSTR Value);
+  BSTR            __fastcall get_ClientType();
+  void            __fastcall set_DialogX(BSTR Value);
+  BSTR            __fastcall get_DialogX();
+  void            __fastcall set_TxnRef(BSTR Value);
+  BSTR            __fastcall get_TxnRef();
+  void            __fastcall set_DialogType(BSTR Value);
+  BSTR            __fastcall get_DialogType();
+  void            __fastcall set_BillingId(BSTR Value);
+  BSTR            __fastcall get_BillingId();
+  void            __fastcall set_ClientIp(BSTR Value);
+  BSTR            __fastcall get_ClientIp();
+  void            __fastcall set_ClientId(BSTR Value);
+  BSTR            __fastcall get_ClientId();
+  void            __fastcall set_DeviceId(BSTR Value);
+  BSTR            __fastcall get_DeviceId();
+  void            __fastcall set_AmountCreditLimit(BSTR Value);
+  BSTR            __fastcall get_AmountCreditLimit();
+  void            __fastcall set_EnableSavingAccount(long Value);
+  long            __fastcall get_EnableSavingAccount();
+  void            __fastcall set_Parameter1(BSTR Value);
+  BSTR            __fastcall get_Parameter1();
+  void            __fastcall set_EnterDataLen(long Value);
+  long            __fastcall get_EnterDataLen();
+  void            __fastcall set_UserEnterMode(long Value);
+  long            __fastcall get_UserEnterMode();
+  void            __fastcall set_Amount2(BSTR Value);
+  BSTR            __fastcall get_Amount2();
+  void            __fastcall set_Appearance(short Value);
+  short           __fastcall get_Appearance();
+  void            __fastcall set_BackColor(::OLE_COLOR Value);
+  ::OLE_COLOR     __fastcall get_BackColor();
+  void            __fastcall set_Font(IFontDisp* Value);
+  IFontDisp*      __fastcall get_Font();
+  void            __fastcall set_Caption(BSTR Value);
+  BSTR            __fastcall get_Caption();
+  void            __fastcall set_Enabled(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_Enabled();
+  void            __fastcall set_MerchantReference(BSTR Value);
+  BSTR            __fastcall get_MerchantReference();
+  void            __fastcall set_Track3(BSTR Value);
+  BSTR            __fastcall get_Track3();
+  void            __fastcall set_OutputDisplayLine1(BSTR Value);
+  BSTR            __fastcall get_OutputDisplayLine1();
+  void            __fastcall set_PosName(BSTR Value);
+  BSTR            __fastcall get_PosName();
+  void            __fastcall set_OutputDisplayLine2(BSTR Value);
+  BSTR            __fastcall get_OutputDisplayLine2();
+  void            __fastcall set_OutputTrack3(BSTR Value);
+  BSTR            __fastcall get_OutputTrack3();
+  void            __fastcall set_KeyMask(BSTR Value);
+  BSTR            __fastcall get_KeyMask();
+  void            __fastcall set_EnableCreditAccount(long Value);
+  long            __fastcall get_EnableCreditAccount();
+  void            __fastcall set_InputMask(BSTR Value);
+  BSTR            __fastcall get_InputMask();
+  void            __fastcall set_Parameter2(BSTR Value);
+  BSTR            __fastcall get_Parameter2();
+  void            __fastcall set_CurrencyRate(BSTR Value);
+  BSTR            __fastcall get_CurrencyRate();
   void            __fastcall set_PrivateData9(BSTR Value);
   BSTR            __fastcall get_PrivateData9();
-  void            __fastcall set_ReadyDpsLink(VARIANT_BOOL Value);
-  VARIANT_BOOL    __fastcall get_ReadyDpsLink();
-  void            __fastcall set_LoyaltyRecipient(BSTR Value);
-  BSTR            __fastcall get_LoyaltyRecipient();
+  void            __fastcall set_PrivateData10(BSTR Value);
+  BSTR            __fastcall get_PrivateData10();
+  void            __fastcall set_DisplayLine2(BSTR Value);
+  BSTR            __fastcall get_DisplayLine2();
   void            __fastcall set_PrivateData8(BSTR Value);
   BSTR            __fastcall get_PrivateData8();
   void            __fastcall set_DisplayLine1(BSTR Value);
   BSTR            __fastcall get_DisplayLine1();
+  void            __fastcall set_AccountSelected(long Value);
+  long            __fastcall get_AccountSelected();
+  void            __fastcall set_Account2(long Value);
+  long            __fastcall get_Account2();
+  void            __fastcall set_Cvc2(BSTR Value);
+  BSTR            __fastcall get_Cvc2();
+  void            __fastcall set_Stan(long Value);
+  long            __fastcall get_Stan();
+  void            __fastcall set_CurrencyId(long Value);
+  long            __fastcall get_CurrencyId();
+  void            __fastcall set_EmvFileUpdating(long Value);
+  long            __fastcall get_EmvFileUpdating();
+  void            __fastcall set_ReservedL10(long Value);
+  long            __fastcall get_ReservedL10();
+  void            __fastcall set_ReservedB1(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReservedB1();
+  void            __fastcall set_ReservedL7(long Value);
+  long            __fastcall get_ReservedL7();
+  void            __fastcall set_ReservedL3(long Value);
+  long            __fastcall get_ReservedL3();
+  void            __fastcall set_ReservedL4(long Value);
+  long            __fastcall get_ReservedL4();
+  void            __fastcall set_ReservedL8(long Value);
+  long            __fastcall get_ReservedL8();
+  void            __fastcall set_PrivateData4(BSTR Value);
+  BSTR            __fastcall get_PrivateData4();
+  void            __fastcall set_PrivateData5(BSTR Value);
+  BSTR            __fastcall get_PrivateData5();
+  void            __fastcall set_PrivateData7(BSTR Value);
+  BSTR            __fastcall get_PrivateData7();
+  void            __fastcall set_ReservedL9(long Value);
+  long            __fastcall get_ReservedL9();
+  void            __fastcall set_PrivateData6(BSTR Value);
+  BSTR            __fastcall get_PrivateData6();
+  void            __fastcall set_OutputEkTrack2(BSTR Value);
+  BSTR            __fastcall get_OutputEkTrack2();
+  void            __fastcall set_ReadyDpsLink(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReadyDpsLink();
+  void            __fastcall set_EkTrack2(BSTR Value);
+  BSTR            __fastcall get_EkTrack2();
+  void            __fastcall set_OrderNumber(BSTR Value);
+  BSTR            __fastcall get_OrderNumber();
+  void            __fastcall set_PreSelectAccount(long Value);
+  long            __fastcall get_PreSelectAccount();
+  void            __fastcall set_DpsLinkText(BSTR Value);
+  BSTR            __fastcall get_DpsLinkText();
+  void            __fastcall set_Quantity(BSTR Value);
+  BSTR            __fastcall get_Quantity();
+  void            __fastcall set_LineAmount(BSTR Value);
+  BSTR            __fastcall get_LineAmount();
+  void            __fastcall set_OutputProducts(BSTR Value);
+  BSTR            __fastcall get_OutputProducts();
+  void            __fastcall set_AmountAuthOut(BSTR Value);
+  BSTR            __fastcall get_AmountAuthOut();
+  void            __fastcall set_ProductCode(BSTR Value);
+  BSTR            __fastcall get_ProductCode();
+  void            __fastcall set_LoyaltyRecipient(BSTR Value);
+  BSTR            __fastcall get_LoyaltyRecipient();
+  void            __fastcall set_RegNumber(BSTR Value);
+  BSTR            __fastcall get_RegNumber();
+  void            __fastcall set_EnableAddBillCard(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EnableAddBillCard();
+  void            __fastcall set_Account(long Value);
+  long            __fastcall get_Account();
+  void            __fastcall set_SelectAccount(long Value);
+  long            __fastcall get_SelectAccount();
+  void            __fastcall set_FuelCardType(BSTR Value);
+  BSTR            __fastcall get_FuelCardType();
+  void            __fastcall set_ReceiptNo(BSTR Value);
+  BSTR            __fastcall get_ReceiptNo();
+  void            __fastcall set_Cvm(BSTR Value);
+  BSTR            __fastcall get_Cvm();
+  void            __fastcall set_Company(BSTR Value);
+  BSTR            __fastcall get_Company();
+  void            __fastcall set_ProductRestricts(BSTR Value);
+  BSTR            __fastcall get_ProductRestricts();
+  void            __fastcall set_Track2Mac(BSTR Value);
+  BSTR            __fastcall get_Track2Mac();
+  void            __fastcall set_ReservedS5(BSTR Value);
+  BSTR            __fastcall get_ReservedS5();
+  void            __fastcall set_ReservedS6(BSTR Value);
+  BSTR            __fastcall get_ReservedS6();
+  void            __fastcall set_ReceiptWidth(long Value);
+  long            __fastcall get_ReceiptWidth();
+  void            __fastcall set_ReceiptResetCommand(BSTR Value);
+  BSTR            __fastcall get_ReceiptResetCommand();
+  void            __fastcall set_ReceiptSeparatorCommand(BSTR Value);
+  BSTR            __fastcall get_ReceiptSeparatorCommand();
+  void            __fastcall set_PrivateCardData(BSTR Value);
+  BSTR            __fastcall get_PrivateCardData();
+  void            __fastcall set_SignatureState(long Value);
+  long            __fastcall get_SignatureState();
+  void            __fastcall set_ReservedS8(BSTR Value);
+  BSTR            __fastcall get_ReservedS8();
+  void            __fastcall set_ReservedS10(BSTR Value);
+  BSTR            __fastcall get_ReservedS10();
+  void            __fastcall set_ReservedS4(BSTR Value);
+  BSTR            __fastcall get_ReservedS4();
+  void            __fastcall set_ReservedS7(BSTR Value);
+  BSTR            __fastcall get_ReservedS7();
+  void            __fastcall set_ResponseText(BSTR Value);
+  BSTR            __fastcall get_ResponseText();
+  void            __fastcall set_ReceiptEjectCommand(BSTR Value);
+  BSTR            __fastcall get_ReceiptEjectCommand();
+  void            __fastcall set_CardType(BSTR Value);
+  BSTR            __fastcall get_CardType();
+  void            __fastcall set_EnableBlockingMode(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_EnableBlockingMode();
+  void            __fastcall set_CardNumber(BSTR Value);
+  BSTR            __fastcall get_CardNumber();
+  void            __fastcall set_PrivateData1(BSTR Value);
+  BSTR            __fastcall get_PrivateData1();
+  void            __fastcall set_OutputTrack2(BSTR Value);
+  BSTR            __fastcall get_OutputTrack2();
+  void            __fastcall set_Authorized(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_Authorized();
+  void            __fastcall set_OutputTrack1(BSTR Value);
+  BSTR            __fastcall get_OutputTrack1();
+  void            __fastcall set_PrivateData2(BSTR Value);
+  BSTR            __fastcall get_PrivateData2();
+  void            __fastcall set_ReceiptLineTerminator(BSTR Value);
+  BSTR            __fastcall get_ReceiptLineTerminator();
+  void            __fastcall set_ReservedB3(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReservedB3();
+  void            __fastcall set_ReservedB6(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReservedB6();
+  void            __fastcall set_ReservedB2(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReservedB2();
+  void            __fastcall set_ReservedB4(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReservedB4();
+  void            __fastcall set_ReservedB5(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReservedB5();
+  void            __fastcall set_ReservedB9(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReservedB9();
+  void            __fastcall set_ReservedL5(long Value);
+  long            __fastcall get_ReservedL5();
+  void            __fastcall set_ReservedL6(long Value);
+  long            __fastcall get_ReservedL6();
+  void            __fastcall set_ReservedB8(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReservedB8();
+  void            __fastcall set_ReservedB10(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReservedB10();
+  void            __fastcall set_ReservedB7(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ReservedB7();
+  void            __fastcall set_PrivateData3(BSTR Value);
+  BSTR            __fastcall get_PrivateData3();
+  void            __fastcall set_EmvLibHash(BSTR Value);
+  BSTR            __fastcall get_EmvLibHash();
+  void            __fastcall set_EmvResult(BSTR Value);
+  BSTR            __fastcall get_EmvResult();
+  void            __fastcall set_ReservedS9(BSTR Value);
+  BSTR            __fastcall get_ReservedS9();
+  void            __fastcall set_EmvLibVersion(BSTR Value);
+  BSTR            __fastcall get_EmvLibVersion();
+  void            __fastcall set_ProcessedOffline(VARIANT_BOOL Value);
+  VARIANT_BOOL    __fastcall get_ProcessedOffline();
+  void            __fastcall set_CardNumber2(BSTR Value);
+  BSTR            __fastcall get_CardNumber2();
+  void            __fastcall set_ReservedL2(long Value);
+  long            __fastcall get_ReservedL2();
+  void            __fastcall set_RefundDpsTxnRef(BSTR Value);
+  BSTR            __fastcall get_RefundDpsTxnRef();
+  void            __fastcall set_AmountTip(BSTR Value);
+  BSTR            __fastcall get_AmountTip();
+  void            __fastcall set_AmountSurcharge(BSTR Value);
+  BSTR            __fastcall get_AmountSurcharge();
 
-  __property   long            DocketNo = {read = get_DocketNo, write = set_DocketNo};
-  __property   BSTR            Capabilities = {read = get_Capabilities, write = set_Capabilities};
-  __property   long            PersonalPurchase = {read = get_PersonalPurchase, write = set_PersonalPurchase};
-  __property   long            EnableManualPan = {read = get_EnableManualPan, write = set_EnableManualPan};
-  __property   BSTR            DateSettlement = {read = get_DateSettlement, write = set_DateSettlement};
-  __property   BSTR            Rrn = {read = get_Rrn, write = set_Rrn};
-  __property   long            VersionPos = {read = get_VersionPos, write = set_VersionPos};
-  __property   BSTR            AuthCode = {read = get_AuthCode, write = set_AuthCode};
-  __property   BSTR            Pix = {read = get_Pix, write = set_Pix};
-  __property   BSTR            ClientId = {read = get_ClientId, write = set_ClientId};
-  __property   BSTR            DeviceId = {read = get_DeviceId, write = set_DeviceId};
-  __property   VARIANT_BOOL    ReadyLink = {read = get_ReadyLink, write = set_ReadyLink};
-  __property   BSTR            TxnRef = {read = get_TxnRef, write = set_TxnRef};
-  __property   BSTR            DpsBillingId = {read = get_DpsBillingId, write = set_DpsBillingId};
+  __property   VARIANT_BOOL    EnablePrintReceipt = {read = get_EnablePrintReceipt, write = set_EnablePrintReceipt};
+  __property   BSTR            ReceiptHeader = {read = get_ReceiptHeader, write = set_ReceiptHeader};
+  __property   BSTR            OutputParameter1 = {read = get_OutputParameter1, write = set_OutputParameter1};
   __property   long            OdometerRequired = {read = get_OdometerRequired, write = set_OdometerRequired};
   __property   BSTR            Rid = {read = get_Rid, write = set_Rid};
-  __property   BSTR            DialogType = {read = get_DialogType, write = set_DialogType};
-  __property   BSTR            BillingId = {read = get_BillingId, write = set_BillingId};
-  __property   BSTR            OutputTrack2 = {read = get_OutputTrack2, write = set_OutputTrack2};
-  __property   VARIANT_BOOL    Authorized = {read = get_Authorized, write = set_Authorized};
-  __property   BSTR            AmountCashOut = {read = get_AmountCashOut, write = set_AmountCashOut};
-  __property   BSTR            DateTimeTransaction = {read = get_DateTimeTransaction, write = set_DateTimeTransaction};
-  __property   BSTR            OutputTrack1 = {read = get_OutputTrack1, write = set_OutputTrack1};
-  __property   VARIANT_BOOL    EnableTrainingMode = {read = get_EnableTrainingMode, write = set_EnableTrainingMode};
-  __property   VARIANT_BOOL    EnableCurrencyConversionPrompt = {read = get_EnableCurrencyConversionPrompt, write = set_EnableCurrencyConversionPrompt};
-  __property   BSTR            ReceiptSeparatorCommand = {read = get_ReceiptSeparatorCommand, write = set_ReceiptSeparatorCommand};
-  __property   long            ReceiptWidth = {read = get_ReceiptWidth, write = set_ReceiptWidth};
-  __property   BSTR            TxnType = {read = get_TxnType, write = set_TxnType};
-  __property   BSTR            ReCo = {read = get_ReCo, write = set_ReCo};
+  __property   BSTR            Capabilities = {read = get_Capabilities, write = set_Capabilities};
   __property   BSTR            Track2 = {read = get_Track2, write = set_Track2};
   __property   BSTR            Receipt = {read = get_Receipt, write = set_Receipt};
-  __property   VARIANT_BOOL    Success = {read = get_Success, write = set_Success};
-  __property   BSTR            Track1 = {read = get_Track1, write = set_Track1};
-  __property   BSTR            Amount = {read = get_Amount, write = set_Amount};
-  __property   long            UnitId = {read = get_UnitId, write = set_UnitId};
-  __property   long            VersionEft = {read = get_VersionEft, write = set_VersionEft};
-  __property   VARIANT_BOOL    EnablePrintSlip = {read = get_EnablePrintSlip, write = set_EnablePrintSlip};
-  __property   VARIANT_BOOL    EnableBlockingMode = {read = get_EnableBlockingMode, write = set_EnableBlockingMode};
-  __property   BSTR            PrinterName = {read = get_PrinterName, write = set_PrinterName};
-  __property   long            OrderNumberRequired = {read = get_OrderNumberRequired, write = set_OrderNumberRequired};
-  __property   VARIANT_BOOL    EovOffline = {read = get_EovOffline, write = set_EovOffline};
-  __property   long            RegNumberRequired = {read = get_RegNumberRequired, write = set_RegNumberRequired};
-  __property   long            PersonalPurchaseRequired = {read = get_PersonalPurchaseRequired, write = set_PersonalPurchaseRequired};
-  __property   VARIANT_BOOL    EnableInvisible = {read = get_EnableInvisible, write = set_EnableInvisible};
-  __property   VARIANT_BOOL    EnableCurrencyConversion = {read = get_EnableCurrencyConversion, write = set_EnableCurrencyConversion};
-  __property   long            DisplayTimeout = {read = get_DisplayTimeout, write = set_DisplayTimeout};
-  __property   long            OdometerReading = {read = get_OdometerReading, write = set_OdometerReading};
-  __property   BSTR            PosName = {read = get_PosName, write = set_PosName};
-  __property   BSTR            OutputDisplayLine2 = {read = get_OutputDisplayLine2, write = set_OutputDisplayLine2};
-  __property   long            EnableCheckAccount = {read = get_EnableCheckAccount, write = set_EnableCheckAccount};
-  __property   BSTR            StatusText = {read = get_StatusText, write = set_StatusText};
-  __property   BSTR            OutputDisplayLine1 = {read = get_OutputDisplayLine1, write = set_OutputDisplayLine1};
-  __property   VARIANT_BOOL    Ready = {read = get_Ready, write = set_Ready};
-  __property   long            EftStatus = {read = get_EftStatus, write = set_EftStatus};
+  __property   long            DocketNo = {read = get_DocketNo, write = set_DocketNo};
+  __property   BSTR            DateSettlement = {read = get_DateSettlement, write = set_DateSettlement};
+  __property   BSTR            DateTimeTransaction = {read = get_DateTimeTransaction, write = set_DateTimeTransaction};
+  __property   BSTR            AcquirerPort = {read = get_AcquirerPort, write = set_AcquirerPort};
   __property   ::OLE_COLOR     ForeColor = {read = get_ForeColor, write = set_ForeColor};
-  __property   VARIANT_BOOL    Enabled = {read = get_Enabled, write = set_Enabled};
+  __property   VARIANT_BOOL    ReceiptIsSeparate = {read = get_ReceiptIsSeparate, write = set_ReceiptIsSeparate};
+  __property   short           BorderStyle = {read = get_BorderStyle, write = set_BorderStyle};
+  __property   BSTR            DpsTxnRef = {read = get_DpsTxnRef, write = set_DpsTxnRef};
   __property   OLE_HANDLE      hWnd = {read = get_hWnd, write = set_hWnd};
+  __property   BSTR            AuthCode = {read = get_AuthCode, write = set_AuthCode};
+  __property   long            PersonalPurchase = {read = get_PersonalPurchase, write = set_PersonalPurchase};
+  __property   BSTR            Rrn = {read = get_Rrn, write = set_Rrn};
   __property   long            ReadyState = {read = get_ReadyState};
-  __property   IFontDisp*      Font = {read = get_Font, write = set_Font};
-  __property   BSTR            DialogY = {read = get_DialogY, write = set_DialogY};
-  __property   BSTR            ClientType = {read = get_ClientType, write = set_ClientType};
-  __property   BSTR            ClientIp = {read = get_ClientIp, write = set_ClientIp};
-  __property   BSTR            DialogX = {read = get_DialogX, write = set_DialogX};
-  __property   VARIANT_BOOL    EnableBackLight = {read = get_EnableBackLight, write = set_EnableBackLight};
-  __property   VARIANT_BOOL    ReadyPinPad = {read = get_ReadyPinPad, write = set_ReadyPinPad};
+  __property   BSTR            Pix = {read = get_Pix, write = set_Pix};
+  __property   BSTR            DateExpiry = {read = get_DateExpiry, write = set_DateExpiry};
+  __property   VARIANT_BOOL    EnableTestMode = {read = get_EnableTestMode, write = set_EnableTestMode};
+  __property   VARIANT_BOOL    EnableCurrencyConversion = {read = get_EnableCurrencyConversion, write = set_EnableCurrencyConversion};
+  __property   VARIANT_BOOL    EnableCurrencyConversionPrompt = {read = get_EnableCurrencyConversionPrompt, write = set_EnableCurrencyConversionPrompt};
+  __property   VARIANT_BOOL    EnableInvisible = {read = get_EnableInvisible, write = set_EnableInvisible};
+  __property   VARIANT_BOOL    EnableTrainingMode = {read = get_EnableTrainingMode, write = set_EnableTrainingMode};
+  __property   VARIANT_BOOL    EovOffline = {read = get_EovOffline, write = set_EovOffline};
+  __property   VARIANT_BOOL    EnablePrintSlip = {read = get_EnablePrintSlip, write = set_EnablePrintSlip};
   __property   VARIANT_BOOL    InProgress = {read = get_InProgress, write = set_InProgress};
   __property   VARIANT_BOOL    EnableIgnoreCardReadError = {read = get_EnableIgnoreCardReadError, write = set_EnableIgnoreCardReadError};
-  __property   short           BorderStyle = {read = get_BorderStyle, write = set_BorderStyle};
-  __property   BSTR            MerchantReference = {read = get_MerchantReference, write = set_MerchantReference};
-  __property   short           Appearance = {read = get_Appearance, write = set_Appearance};
-  __property   BSTR            Caption = {read = get_Caption, write = set_Caption};
-  __property   ::OLE_COLOR     BackColor = {read = get_BackColor, write = set_BackColor};
-  __property   long            EnableCreditAccount = {read = get_EnableCreditAccount, write = set_EnableCreditAccount};
-  __property   long            EnableSavingAccount = {read = get_EnableSavingAccount, write = set_EnableSavingAccount};
-  __property   BSTR            Track3 = {read = get_Track3, write = set_Track3};
-  __property   BSTR            Parameter1 = {read = get_Parameter1, write = set_Parameter1};
-  __property   BSTR            AmountCreditLimit = {read = get_AmountCreditLimit, write = set_AmountCreditLimit};
-  __property   BSTR            DpsTxnRef = {read = get_DpsTxnRef, write = set_DpsTxnRef};
-  __property   BSTR            Amount2 = {read = get_Amount2, write = set_Amount2};
-  __property   BSTR            AcquirerPort = {read = get_AcquirerPort, write = set_AcquirerPort};
-  __property   VARIANT_BOOL    ReceiptIsSeparate = {read = get_ReceiptIsSeparate, write = set_ReceiptIsSeparate};
-  __property   BSTR            ProductRestricts = {read = get_ProductRestricts, write = set_ProductRestricts};
-  __property   BSTR            FuelCardType = {read = get_FuelCardType, write = set_FuelCardType};
-  __property   BSTR            RegNumber = {read = get_RegNumber, write = set_RegNumber};
-  __property   BSTR            Track2Mac = {read = get_Track2Mac, write = set_Track2Mac};
-  __property   long            PreSelectAccount = {read = get_PreSelectAccount, write = set_PreSelectAccount};
-  __property   BSTR            Parameter2 = {read = get_Parameter2, write = set_Parameter2};
-  __property   BSTR            OutputTrack3 = {read = get_OutputTrack3, write = set_OutputTrack3};
-  __property   BSTR            OrderNumber = {read = get_OrderNumber, write = set_OrderNumber};
-  __property   BSTR            Company = {read = get_Company, write = set_Company};
-  __property   long            Stan = {read = get_Stan, write = set_Stan};
-  __property   long            EmvFileUpdating = {read = get_EmvFileUpdating, write = set_EmvFileUpdating};
-  __property   BSTR            PrivateData6 = {read = get_PrivateData6, write = set_PrivateData6};
-  __property   BSTR            PrivateData5 = {read = get_PrivateData5, write = set_PrivateData5};
-  __property   long            UserEnterMode = {read = get_UserEnterMode, write = set_UserEnterMode};
-  __property   long            Account2 = {read = get_Account2, write = set_Account2};
-  __property   long            CurrencyId = {read = get_CurrencyId, write = set_CurrencyId};
-  __property   long            AccountSelected = {read = get_AccountSelected, write = set_AccountSelected};
-  __property   long            SelectAccount = {read = get_SelectAccount, write = set_SelectAccount};
-  __property   BSTR            CurrencyRate = {read = get_CurrencyRate, write = set_CurrencyRate};
-  __property   long            EnterDataLen = {read = get_EnterDataLen, write = set_EnterDataLen};
-  __property   BSTR            KeyMask = {read = get_KeyMask, write = set_KeyMask};
-  __property   BSTR            InputMask = {read = get_InputMask, write = set_InputMask};
-  __property   long            Account = {read = get_Account, write = set_Account};
-  __property   BSTR            PrivateData4 = {read = get_PrivateData4, write = set_PrivateData4};
-  __property   BSTR            PrivateData7 = {read = get_PrivateData7, write = set_PrivateData7};
-  __property   BSTR            Cvc2 = {read = get_Cvc2, write = set_Cvc2};
-  __property   VARIANT_BOOL    EnableAddBillCard = {read = get_EnableAddBillCard, write = set_EnableAddBillCard};
-  __property   BSTR            CardType = {read = get_CardType, write = set_CardType};
-  __property   BSTR            PrivateData2 = {read = get_PrivateData2, write = set_PrivateData2};
-  __property   BSTR            ResponseText = {read = get_ResponseText, write = set_ResponseText};
-  __property   BSTR            ReceiptEjectCommand = {read = get_ReceiptEjectCommand, write = set_ReceiptEjectCommand};
-  __property   BSTR            ReceiptLineTerminator = {read = get_ReceiptLineTerminator, write = set_ReceiptLineTerminator};
-  __property   BSTR            DpsLinkText = {read = get_DpsLinkText, write = set_DpsLinkText};
-  __property   BSTR            AmountAuthOut = {read = get_AmountAuthOut, write = set_AmountAuthOut};
-  __property   BSTR            OutputEkTrack2 = {read = get_OutputEkTrack2, write = set_OutputEkTrack2};
-  __property   BSTR            EkTrack2 = {read = get_EkTrack2, write = set_EkTrack2};
-  __property   BSTR            DateExpiry = {read = get_DateExpiry, write = set_DateExpiry};
-  __property   BSTR            ReceiptResetCommand = {read = get_ReceiptResetCommand, write = set_ReceiptResetCommand};
-  __property   VARIANT_BOOL    EnableTestMode = {read = get_EnableTestMode, write = set_EnableTestMode};
-  __property   BSTR            CardNumber = {read = get_CardNumber, write = set_CardNumber};
+  __property   VARIANT_BOOL    EnableBackLight = {read = get_EnableBackLight, write = set_EnableBackLight};
+  __property   BSTR            TxnType = {read = get_TxnType, write = set_TxnType};
+  __property   long            VersionEft = {read = get_VersionEft, write = set_VersionEft};
+  __property   VARIANT_BOOL    Success = {read = get_Success, write = set_Success};
+  __property   BSTR            Amount = {read = get_Amount, write = set_Amount};
+  __property   BSTR            ReCo = {read = get_ReCo, write = set_ReCo};
+  __property   long            VersionPos = {read = get_VersionPos, write = set_VersionPos};
+  __property   long            UnitId = {read = get_UnitId, write = set_UnitId};
   __property   BSTR            ReceiptTrailer = {read = get_ReceiptTrailer, write = set_ReceiptTrailer};
-  __property   BSTR            OutputParameter1 = {read = get_OutputParameter1, write = set_OutputParameter1};
-  __property   VARIANT_BOOL    EnablePrintReceipt = {read = get_EnablePrintReceipt, write = set_EnablePrintReceipt};
-  __property   BSTR            PrivateData1 = {read = get_PrivateData1, write = set_PrivateData1};
-  __property   BSTR            ReceiptHeader = {read = get_ReceiptHeader, write = set_ReceiptHeader};
-  __property   BSTR            ReserveString1 = {read = get_ReserveString1, write = set_ReserveString1};
-  __property   BSTR            Cvm = {read = get_Cvm, write = set_Cvm};
-  __property   BSTR            DisplayLine2 = {read = get_DisplayLine2, write = set_DisplayLine2};
-  __property   BSTR            OutputProducts = {read = get_OutputProducts, write = set_OutputProducts};
-  __property   BSTR            ReceiptNo = {read = get_ReceiptNo, write = set_ReceiptNo};
-  __property   BSTR            EmvResult = {read = get_EmvResult, write = set_EmvResult};
-  __property   BSTR            EmvLibVersion = {read = get_EmvLibVersion, write = set_EmvLibVersion};
-  __property   BSTR            EmvLibHash = {read = get_EmvLibHash, write = set_EmvLibHash};
-  __property   VARIANT_BOOL    ProcessedOffline = {read = get_ProcessedOffline, write = set_ProcessedOffline};
-  __property   BSTR            Quantity = {read = get_Quantity, write = set_Quantity};
-  __property   BSTR            PrivateData10 = {read = get_PrivateData10, write = set_PrivateData10};
-  __property   BSTR            ProductCode = {read = get_ProductCode, write = set_ProductCode};
-  __property   BSTR            LineAmount = {read = get_LineAmount, write = set_LineAmount};
+  __property   BSTR            Track1 = {read = get_Track1, write = set_Track1};
+  __property   long            EnableManualPan = {read = get_EnableManualPan, write = set_EnableManualPan};
+  __property   BSTR            AmountCashOut = {read = get_AmountCashOut, write = set_AmountCashOut};
+  __property   long            EnableCheckAccount = {read = get_EnableCheckAccount, write = set_EnableCheckAccount};
+  __property   long            DisplayTimeout = {read = get_DisplayTimeout, write = set_DisplayTimeout};
+  __property   long            OdometerReading = {read = get_OdometerReading, write = set_OdometerReading};
+  __property   BSTR            DpsBillingId = {read = get_DpsBillingId, write = set_DpsBillingId};
+  __property   long            EftStatus = {read = get_EftStatus, write = set_EftStatus};
+  __property   long            RegNumberRequired = {read = get_RegNumberRequired, write = set_RegNumberRequired};
+  __property   BSTR            StatusText = {read = get_StatusText, write = set_StatusText};
+  __property   VARIANT_BOOL    Ready = {read = get_Ready, write = set_Ready};
+  __property   BSTR            PrinterName = {read = get_PrinterName, write = set_PrinterName};
+  __property   long            PersonalPurchaseRequired = {read = get_PersonalPurchaseRequired, write = set_PersonalPurchaseRequired};
+  __property   long            OrderNumberRequired = {read = get_OrderNumberRequired, write = set_OrderNumberRequired};
+  __property   VARIANT_BOOL    ReadyPinPad = {read = get_ReadyPinPad, write = set_ReadyPinPad};
+  __property   VARIANT_BOOL    ReadyLink = {read = get_ReadyLink, write = set_ReadyLink};
+  __property   BSTR            DialogY = {read = get_DialogY, write = set_DialogY};
+  __property   BSTR            ClientType = {read = get_ClientType, write = set_ClientType};
+  __property   BSTR            DialogX = {read = get_DialogX, write = set_DialogX};
+  __property   BSTR            TxnRef = {read = get_TxnRef, write = set_TxnRef};
+  __property   BSTR            DialogType = {read = get_DialogType, write = set_DialogType};
+  __property   BSTR            BillingId = {read = get_BillingId, write = set_BillingId};
+  __property   BSTR            ClientIp = {read = get_ClientIp, write = set_ClientIp};
+  __property   BSTR            ClientId = {read = get_ClientId, write = set_ClientId};
+  __property   BSTR            DeviceId = {read = get_DeviceId, write = set_DeviceId};
+  __property   BSTR            AmountCreditLimit = {read = get_AmountCreditLimit, write = set_AmountCreditLimit};
+  __property   long            EnableSavingAccount = {read = get_EnableSavingAccount, write = set_EnableSavingAccount};
+  __property   BSTR            Parameter1 = {read = get_Parameter1, write = set_Parameter1};
+  __property   long            EnterDataLen = {read = get_EnterDataLen, write = set_EnterDataLen};
+  __property   long            UserEnterMode = {read = get_UserEnterMode, write = set_UserEnterMode};
+  __property   BSTR            Amount2 = {read = get_Amount2, write = set_Amount2};
+  __property   short           Appearance = {read = get_Appearance, write = set_Appearance};
+  __property   ::OLE_COLOR     BackColor = {read = get_BackColor, write = set_BackColor};
+  __property   IFontDisp*      Font = {read = get_Font, write = set_Font};
+  __property   BSTR            Caption = {read = get_Caption, write = set_Caption};
+  __property   VARIANT_BOOL    Enabled = {read = get_Enabled, write = set_Enabled};
+  __property   BSTR            MerchantReference = {read = get_MerchantReference, write = set_MerchantReference};
+  __property   BSTR            Track3 = {read = get_Track3, write = set_Track3};
+  __property   BSTR            OutputDisplayLine1 = {read = get_OutputDisplayLine1, write = set_OutputDisplayLine1};
+  __property   BSTR            PosName = {read = get_PosName, write = set_PosName};
+  __property   BSTR            OutputDisplayLine2 = {read = get_OutputDisplayLine2, write = set_OutputDisplayLine2};
+  __property   BSTR            OutputTrack3 = {read = get_OutputTrack3, write = set_OutputTrack3};
+  __property   BSTR            KeyMask = {read = get_KeyMask, write = set_KeyMask};
+  __property   long            EnableCreditAccount = {read = get_EnableCreditAccount, write = set_EnableCreditAccount};
+  __property   BSTR            InputMask = {read = get_InputMask, write = set_InputMask};
+  __property   BSTR            Parameter2 = {read = get_Parameter2, write = set_Parameter2};
+  __property   BSTR            CurrencyRate = {read = get_CurrencyRate, write = set_CurrencyRate};
   __property   BSTR            PrivateData9 = {read = get_PrivateData9, write = set_PrivateData9};
-  __property   VARIANT_BOOL    ReadyDpsLink = {read = get_ReadyDpsLink, write = set_ReadyDpsLink};
-  __property   BSTR            LoyaltyRecipient = {read = get_LoyaltyRecipient, write = set_LoyaltyRecipient};
+  __property   BSTR            PrivateData10 = {read = get_PrivateData10, write = set_PrivateData10};
+  __property   BSTR            DisplayLine2 = {read = get_DisplayLine2, write = set_DisplayLine2};
   __property   BSTR            PrivateData8 = {read = get_PrivateData8, write = set_PrivateData8};
   __property   BSTR            DisplayLine1 = {read = get_DisplayLine1, write = set_DisplayLine1};
+  __property   long            AccountSelected = {read = get_AccountSelected, write = set_AccountSelected};
+  __property   long            Account2 = {read = get_Account2, write = set_Account2};
+  __property   BSTR            Cvc2 = {read = get_Cvc2, write = set_Cvc2};
+  __property   long            Stan = {read = get_Stan, write = set_Stan};
+  __property   long            CurrencyId = {read = get_CurrencyId, write = set_CurrencyId};
+  __property   long            EmvFileUpdating = {read = get_EmvFileUpdating, write = set_EmvFileUpdating};
+  __property   long            ReservedL10 = {read = get_ReservedL10, write = set_ReservedL10};
+  __property   VARIANT_BOOL    ReservedB1 = {read = get_ReservedB1, write = set_ReservedB1};
+  __property   long            ReservedL7 = {read = get_ReservedL7, write = set_ReservedL7};
+  __property   long            ReservedL3 = {read = get_ReservedL3, write = set_ReservedL3};
+  __property   long            ReservedL4 = {read = get_ReservedL4, write = set_ReservedL4};
+  __property   long            ReservedL8 = {read = get_ReservedL8, write = set_ReservedL8};
+  __property   BSTR            PrivateData4 = {read = get_PrivateData4, write = set_PrivateData4};
+  __property   BSTR            PrivateData5 = {read = get_PrivateData5, write = set_PrivateData5};
+  __property   BSTR            PrivateData7 = {read = get_PrivateData7, write = set_PrivateData7};
+  __property   long            ReservedL9 = {read = get_ReservedL9, write = set_ReservedL9};
+  __property   BSTR            PrivateData6 = {read = get_PrivateData6, write = set_PrivateData6};
+  __property   BSTR            OutputEkTrack2 = {read = get_OutputEkTrack2, write = set_OutputEkTrack2};
+  __property   VARIANT_BOOL    ReadyDpsLink = {read = get_ReadyDpsLink, write = set_ReadyDpsLink};
+  __property   BSTR            EkTrack2 = {read = get_EkTrack2, write = set_EkTrack2};
+  __property   BSTR            OrderNumber = {read = get_OrderNumber, write = set_OrderNumber};
+  __property   long            PreSelectAccount = {read = get_PreSelectAccount, write = set_PreSelectAccount};
+  __property   BSTR            DpsLinkText = {read = get_DpsLinkText, write = set_DpsLinkText};
+  __property   BSTR            Quantity = {read = get_Quantity, write = set_Quantity};
+  __property   BSTR            LineAmount = {read = get_LineAmount, write = set_LineAmount};
+  __property   BSTR            OutputProducts = {read = get_OutputProducts, write = set_OutputProducts};
+  __property   BSTR            AmountAuthOut = {read = get_AmountAuthOut, write = set_AmountAuthOut};
+  __property   BSTR            ProductCode = {read = get_ProductCode, write = set_ProductCode};
+  __property   BSTR            LoyaltyRecipient = {read = get_LoyaltyRecipient, write = set_LoyaltyRecipient};
+  __property   BSTR            RegNumber = {read = get_RegNumber, write = set_RegNumber};
+  __property   VARIANT_BOOL    EnableAddBillCard = {read = get_EnableAddBillCard, write = set_EnableAddBillCard};
+  __property   long            Account = {read = get_Account, write = set_Account};
+  __property   long            SelectAccount = {read = get_SelectAccount, write = set_SelectAccount};
+  __property   BSTR            FuelCardType = {read = get_FuelCardType, write = set_FuelCardType};
+  __property   BSTR            ReceiptNo = {read = get_ReceiptNo, write = set_ReceiptNo};
+  __property   BSTR            Cvm = {read = get_Cvm, write = set_Cvm};
+  __property   BSTR            Company = {read = get_Company, write = set_Company};
+  __property   BSTR            ProductRestricts = {read = get_ProductRestricts, write = set_ProductRestricts};
+  __property   BSTR            Track2Mac = {read = get_Track2Mac, write = set_Track2Mac};
+  __property   BSTR            ReservedS5 = {read = get_ReservedS5, write = set_ReservedS5};
+  __property   BSTR            ReservedS6 = {read = get_ReservedS6, write = set_ReservedS6};
+  __property   long            ReceiptWidth = {read = get_ReceiptWidth, write = set_ReceiptWidth};
+  __property   BSTR            ReceiptResetCommand = {read = get_ReceiptResetCommand, write = set_ReceiptResetCommand};
+  __property   BSTR            ReceiptSeparatorCommand = {read = get_ReceiptSeparatorCommand, write = set_ReceiptSeparatorCommand};
+  __property   BSTR            PrivateCardData = {read = get_PrivateCardData, write = set_PrivateCardData};
+  __property   long            SignatureState = {read = get_SignatureState, write = set_SignatureState};
+  __property   BSTR            ReservedS8 = {read = get_ReservedS8, write = set_ReservedS8};
+  __property   BSTR            ReservedS10 = {read = get_ReservedS10, write = set_ReservedS10};
+  __property   BSTR            ReservedS4 = {read = get_ReservedS4, write = set_ReservedS4};
+  __property   BSTR            ReservedS7 = {read = get_ReservedS7, write = set_ReservedS7};
+  __property   BSTR            ResponseText = {read = get_ResponseText, write = set_ResponseText};
+  __property   BSTR            ReceiptEjectCommand = {read = get_ReceiptEjectCommand, write = set_ReceiptEjectCommand};
+  __property   BSTR            CardType = {read = get_CardType, write = set_CardType};
+  __property   VARIANT_BOOL    EnableBlockingMode = {read = get_EnableBlockingMode, write = set_EnableBlockingMode};
+  __property   BSTR            CardNumber = {read = get_CardNumber, write = set_CardNumber};
+  __property   BSTR            PrivateData1 = {read = get_PrivateData1, write = set_PrivateData1};
+  __property   BSTR            OutputTrack2 = {read = get_OutputTrack2, write = set_OutputTrack2};
+  __property   VARIANT_BOOL    Authorized = {read = get_Authorized, write = set_Authorized};
+  __property   BSTR            OutputTrack1 = {read = get_OutputTrack1, write = set_OutputTrack1};
+  __property   BSTR            PrivateData2 = {read = get_PrivateData2, write = set_PrivateData2};
+  __property   BSTR            ReceiptLineTerminator = {read = get_ReceiptLineTerminator, write = set_ReceiptLineTerminator};
+  __property   VARIANT_BOOL    ReservedB3 = {read = get_ReservedB3, write = set_ReservedB3};
+  __property   VARIANT_BOOL    ReservedB6 = {read = get_ReservedB6, write = set_ReservedB6};
+  __property   VARIANT_BOOL    ReservedB2 = {read = get_ReservedB2, write = set_ReservedB2};
+  __property   VARIANT_BOOL    ReservedB4 = {read = get_ReservedB4, write = set_ReservedB4};
+  __property   VARIANT_BOOL    ReservedB5 = {read = get_ReservedB5, write = set_ReservedB5};
+  __property   VARIANT_BOOL    ReservedB9 = {read = get_ReservedB9, write = set_ReservedB9};
+  __property   long            ReservedL5 = {read = get_ReservedL5, write = set_ReservedL5};
+  __property   long            ReservedL6 = {read = get_ReservedL6, write = set_ReservedL6};
+  __property   VARIANT_BOOL    ReservedB8 = {read = get_ReservedB8, write = set_ReservedB8};
+  __property   VARIANT_BOOL    ReservedB10 = {read = get_ReservedB10, write = set_ReservedB10};
+  __property   VARIANT_BOOL    ReservedB7 = {read = get_ReservedB7, write = set_ReservedB7};
+  __property   BSTR            PrivateData3 = {read = get_PrivateData3, write = set_PrivateData3};
+  __property   BSTR            EmvLibHash = {read = get_EmvLibHash, write = set_EmvLibHash};
+  __property   BSTR            EmvResult = {read = get_EmvResult, write = set_EmvResult};
+  __property   BSTR            ReservedS9 = {read = get_ReservedS9, write = set_ReservedS9};
+  __property   BSTR            EmvLibVersion = {read = get_EmvLibVersion, write = set_EmvLibVersion};
+  __property   VARIANT_BOOL    ProcessedOffline = {read = get_ProcessedOffline, write = set_ProcessedOffline};
+  __property   BSTR            CardNumber2 = {read = get_CardNumber2, write = set_CardNumber2};
+  __property   long            ReservedL2 = {read = get_ReservedL2, write = set_ReservedL2};
+  __property   BSTR            RefundDpsTxnRef = {read = get_RefundDpsTxnRef, write = set_RefundDpsTxnRef};
+  __property   BSTR            AmountTip = {read = get_AmountTip, write = set_AmountTip};
+  __property   BSTR            AmountSurcharge = {read = get_AmountSurcharge, write = set_AmountSurcharge};
 };
 typedef _DDpsEftXDispT<_DDpsEftX> _DDpsEftXDisp;
 
@@ -3538,9 +4178,9 @@ _DDpsEftXDispT<T>::DoAddProductLine()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::DoreservedMethod11()
+_DDpsEftXDispT<T>::DoGetXmlLinkStatus()
 {
-  _TDispID _dispid(*this, OLETEXT("DoreservedMethod11"), DISPID(126));
+  _TDispID _dispid(*this, OLETEXT("DoGetXmlLinkStatus"), DISPID(126));
   OleProcedure(_dispid);
 }
 
@@ -3643,252 +4283,54 @@ _DDpsEftXDispT<T>::DoAuthorize()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DocketNo(long /*[VT_I4:0]*/ Value)
+_DDpsEftXDispT<T>::set_EnablePrintReceipt(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("DocketNo"), DISPID(13));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DocketNo()
-{
-  _TDispID _dispid(*this, OLETEXT("DocketNo"), DISPID(13));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Capabilities(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Capabilities"), DISPID(20));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Capabilities()
-{
-  _TDispID _dispid(*this, OLETEXT("Capabilities"), DISPID(20));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PersonalPurchase(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("PersonalPurchase"), DISPID(14));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PersonalPurchase()
-{
-  _TDispID _dispid(*this, OLETEXT("PersonalPurchase"), DISPID(14));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableManualPan(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnableManualPan"), DISPID(12));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableManualPan()
-{
-  _TDispID _dispid(*this, OLETEXT("EnableManualPan"), DISPID(12));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DateSettlement(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("DateSettlement"), DISPID(21));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DateSettlement()
-{
-  _TDispID _dispid(*this, OLETEXT("DateSettlement"), DISPID(21));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Rrn(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Rrn"), DISPID(18));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Rrn()
-{
-  _TDispID _dispid(*this, OLETEXT("Rrn"), DISPID(18));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_VersionPos(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("VersionPos"), DISPID(11));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_VersionPos()
-{
-  _TDispID _dispid(*this, OLETEXT("VersionPos"), DISPID(11));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_AuthCode(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("AuthCode"), DISPID(19));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_AuthCode()
-{
-  _TDispID _dispid(*this, OLETEXT("AuthCode"), DISPID(19));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Pix(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Pix"), DISPID(17));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Pix()
-{
-  _TDispID _dispid(*this, OLETEXT("Pix"), DISPID(17));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ClientId(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("ClientId"), DISPID(74));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ClientId()
-{
-  _TDispID _dispid(*this, OLETEXT("ClientId"), DISPID(74));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DeviceId(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("DeviceId"), DISPID(75));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DeviceId()
-{
-  _TDispID _dispid(*this, OLETEXT("DeviceId"), DISPID(75));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReadyLink(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("ReadyLink"), DISPID(66));
+  _TDispID _dispid(*this, OLETEXT("EnablePrintReceipt"), DISPID(24));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReadyLink()
+_DDpsEftXDispT<T>::get_EnablePrintReceipt()
 {
-  _TDispID _dispid(*this, OLETEXT("ReadyLink"), DISPID(66));
+  _TDispID _dispid(*this, OLETEXT("EnablePrintReceipt"), DISPID(24));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_TxnRef(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_ReceiptHeader(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("TxnRef"), DISPID(67));
+  _TDispID _dispid(*this, OLETEXT("ReceiptHeader"), DISPID(25));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_TxnRef()
+_DDpsEftXDispT<T>::get_ReceiptHeader()
 {
-  _TDispID _dispid(*this, OLETEXT("TxnRef"), DISPID(67));
+  _TDispID _dispid(*this, OLETEXT("ReceiptHeader"), DISPID(25));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DpsBillingId(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_OutputParameter1(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("DpsBillingId"), DISPID(73));
+  _TDispID _dispid(*this, OLETEXT("OutputParameter1"), DISPID(23));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DpsBillingId()
+_DDpsEftXDispT<T>::get_OutputParameter1()
 {
-  _TDispID _dispid(*this, OLETEXT("DpsBillingId"), DISPID(73));
+  _TDispID _dispid(*this, OLETEXT("OutputParameter1"), DISPID(23));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -3931,234 +4373,18 @@ _DDpsEftXDispT<T>::get_Rid()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DialogType(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_Capabilities(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("DialogType"), DISPID(71));
+  _TDispID _dispid(*this, OLETEXT("Capabilities"), DISPID(20));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DialogType()
+_DDpsEftXDispT<T>::get_Capabilities()
 {
-  _TDispID _dispid(*this, OLETEXT("DialogType"), DISPID(71));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_BillingId(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("BillingId"), DISPID(72));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_BillingId()
-{
-  _TDispID _dispid(*this, OLETEXT("BillingId"), DISPID(72));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OutputTrack2(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("OutputTrack2"), DISPID(37));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OutputTrack2()
-{
-  _TDispID _dispid(*this, OLETEXT("OutputTrack2"), DISPID(37));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Authorized(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Authorized"), DISPID(38));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Authorized()
-{
-  _TDispID _dispid(*this, OLETEXT("Authorized"), DISPID(38));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_AmountCashOut(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("AmountCashOut"), DISPID(7));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_AmountCashOut()
-{
-  _TDispID _dispid(*this, OLETEXT("AmountCashOut"), DISPID(7));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DateTimeTransaction(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("DateTimeTransaction"), DISPID(22));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DateTimeTransaction()
-{
-  _TDispID _dispid(*this, OLETEXT("DateTimeTransaction"), DISPID(22));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OutputTrack1(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("OutputTrack1"), DISPID(36));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OutputTrack1()
-{
-  _TDispID _dispid(*this, OLETEXT("OutputTrack1"), DISPID(36));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableTrainingMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnableTrainingMode"), DISPID(42));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableTrainingMode()
-{
-  _TDispID _dispid(*this, OLETEXT("EnableTrainingMode"), DISPID(42));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableCurrencyConversionPrompt(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnableCurrencyConversionPrompt"), DISPID(43));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableCurrencyConversionPrompt()
-{
-  _TDispID _dispid(*this, OLETEXT("EnableCurrencyConversionPrompt"), DISPID(43));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReceiptSeparatorCommand(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("ReceiptSeparatorCommand"), DISPID(34));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReceiptSeparatorCommand()
-{
-  _TDispID _dispid(*this, OLETEXT("ReceiptSeparatorCommand"), DISPID(34));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReceiptWidth(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("ReceiptWidth"), DISPID(35));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReceiptWidth()
-{
-  _TDispID _dispid(*this, OLETEXT("ReceiptWidth"), DISPID(35));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_TxnType(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("TxnType"), DISPID(3));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_TxnType()
-{
-  _TDispID _dispid(*this, OLETEXT("TxnType"), DISPID(3));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReCo(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("ReCo"), DISPID(1));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReCo()
-{
-  _TDispID _dispid(*this, OLETEXT("ReCo"), DISPID(1));
+  _TDispID _dispid(*this, OLETEXT("Capabilities"), DISPID(20));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -4201,414 +4427,72 @@ _DDpsEftXDispT<T>::get_Receipt()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Success(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+_DDpsEftXDispT<T>::set_DocketNo(long /*[VT_I4:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Success"), DISPID(2));
+  _TDispID _dispid(*this, OLETEXT("DocketNo"), DISPID(13));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Success()
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DocketNo()
 {
-  _TDispID _dispid(*this, OLETEXT("Success"), DISPID(2));
+  _TDispID _dispid(*this, OLETEXT("DocketNo"), DISPID(13));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Track1(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_DateSettlement(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Track1"), DISPID(8));
+  _TDispID _dispid(*this, OLETEXT("DateSettlement"), DISPID(21));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Track1()
+_DDpsEftXDispT<T>::get_DateSettlement()
 {
-  _TDispID _dispid(*this, OLETEXT("Track1"), DISPID(8));
+  _TDispID _dispid(*this, OLETEXT("DateSettlement"), DISPID(21));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Amount(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_DateTimeTransaction(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Amount"), DISPID(6));
+  _TDispID _dispid(*this, OLETEXT("DateTimeTransaction"), DISPID(22));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Amount()
+_DDpsEftXDispT<T>::get_DateTimeTransaction()
 {
-  _TDispID _dispid(*this, OLETEXT("Amount"), DISPID(6));
+  _TDispID _dispid(*this, OLETEXT("DateTimeTransaction"), DISPID(22));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_UnitId(long /*[VT_I4:0]*/ Value)
+_DDpsEftXDispT<T>::set_AcquirerPort(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("UnitId"), DISPID(9));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_UnitId()
-{
-  _TDispID _dispid(*this, OLETEXT("UnitId"), DISPID(9));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_VersionEft(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("VersionEft"), DISPID(10));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_VersionEft()
-{
-  _TDispID _dispid(*this, OLETEXT("VersionEft"), DISPID(10));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnablePrintSlip(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnablePrintSlip"), DISPID(47));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnablePrintSlip()
-{
-  _TDispID _dispid(*this, OLETEXT("EnablePrintSlip"), DISPID(47));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableBlockingMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnableBlockingMode"), DISPID(48));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableBlockingMode()
-{
-  _TDispID _dispid(*this, OLETEXT("EnableBlockingMode"), DISPID(48));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PrinterName(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("PrinterName"), DISPID(61));
+  _TDispID _dispid(*this, OLETEXT("AcquirerPort"), DISPID(80));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PrinterName()
+_DDpsEftXDispT<T>::get_AcquirerPort()
 {
-  _TDispID _dispid(*this, OLETEXT("PrinterName"), DISPID(61));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OrderNumberRequired(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("OrderNumberRequired"), DISPID(54));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OrderNumberRequired()
-{
-  _TDispID _dispid(*this, OLETEXT("OrderNumberRequired"), DISPID(54));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EovOffline(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EovOffline"), DISPID(46));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EovOffline()
-{
-  _TDispID _dispid(*this, OLETEXT("EovOffline"), DISPID(46));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_RegNumberRequired(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("RegNumberRequired"), DISPID(52));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_RegNumberRequired()
-{
-  _TDispID _dispid(*this, OLETEXT("RegNumberRequired"), DISPID(52));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PersonalPurchaseRequired(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("PersonalPurchaseRequired"), DISPID(53));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PersonalPurchaseRequired()
-{
-  _TDispID _dispid(*this, OLETEXT("PersonalPurchaseRequired"), DISPID(53));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableInvisible(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnableInvisible"), DISPID(44));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableInvisible()
-{
-  _TDispID _dispid(*this, OLETEXT("EnableInvisible"), DISPID(44));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableCurrencyConversion(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnableCurrencyConversion"), DISPID(45));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableCurrencyConversion()
-{
-  _TDispID _dispid(*this, OLETEXT("EnableCurrencyConversion"), DISPID(45));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DisplayTimeout(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("DisplayTimeout"), DISPID(57));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DisplayTimeout()
-{
-  _TDispID _dispid(*this, OLETEXT("DisplayTimeout"), DISPID(57));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OdometerReading(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("OdometerReading"), DISPID(55));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OdometerReading()
-{
-  _TDispID _dispid(*this, OLETEXT("OdometerReading"), DISPID(55));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PosName(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("PosName"), DISPID(58));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PosName()
-{
-  _TDispID _dispid(*this, OLETEXT("PosName"), DISPID(58));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OutputDisplayLine2(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("OutputDisplayLine2"), DISPID(59));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OutputDisplayLine2()
-{
-  _TDispID _dispid(*this, OLETEXT("OutputDisplayLine2"), DISPID(59));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableCheckAccount(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnableCheckAccount"), DISPID(56));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableCheckAccount()
-{
-  _TDispID _dispid(*this, OLETEXT("EnableCheckAccount"), DISPID(56));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_StatusText(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("StatusText"), DISPID(62));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_StatusText()
-{
-  _TDispID _dispid(*this, OLETEXT("StatusText"), DISPID(62));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OutputDisplayLine1(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("OutputDisplayLine1"), DISPID(60));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OutputDisplayLine1()
-{
-  _TDispID _dispid(*this, OLETEXT("OutputDisplayLine1"), DISPID(60));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Ready(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Ready"), DISPID(63));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Ready()
-{
-  _TDispID _dispid(*this, OLETEXT("Ready"), DISPID(63));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EftStatus(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EftStatus"), DISPID(64));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EftStatus()
-{
-  _TDispID _dispid(*this, OLETEXT("EftStatus"), DISPID(64));
+  _TDispID _dispid(*this, OLETEXT("AcquirerPort"), DISPID(80));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -4633,18 +4517,54 @@ _DDpsEftXDispT<T>::get_ForeColor()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Enabled(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+_DDpsEftXDispT<T>::set_ReceiptIsSeparate(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Enabled"), DISPID(-514));
+  _TDispID _dispid(*this, OLETEXT("ReceiptIsSeparate"), DISPID(79));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Enabled()
+_DDpsEftXDispT<T>::get_ReceiptIsSeparate()
 {
-  _TDispID _dispid(*this, OLETEXT("Enabled"), DISPID(-514));
+  _TDispID _dispid(*this, OLETEXT("ReceiptIsSeparate"), DISPID(79));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_BorderStyle(short /*[VT_I2:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("BorderStyle"), DISPID(-504));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> short /*[VT_I2:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_BorderStyle()
+{
+  _TDispID _dispid(*this, OLETEXT("BorderStyle"), DISPID(-504));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_DpsTxnRef(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("DpsTxnRef"), DISPID(78));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DpsTxnRef()
+{
+  _TDispID _dispid(*this, OLETEXT("DpsTxnRef"), DISPID(78));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -4669,6 +4589,60 @@ _DDpsEftXDispT<T>::get_hWnd()
 }
 
 template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_AuthCode(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("AuthCode"), DISPID(19));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_AuthCode()
+{
+  _TDispID _dispid(*this, OLETEXT("AuthCode"), DISPID(19));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PersonalPurchase(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PersonalPurchase"), DISPID(14));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PersonalPurchase()
+{
+  _TDispID _dispid(*this, OLETEXT("PersonalPurchase"), DISPID(14));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Rrn(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Rrn"), DISPID(18));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Rrn()
+{
+  _TDispID _dispid(*this, OLETEXT("Rrn"), DISPID(18));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
 _DDpsEftXDispT<T>::set_ReadyState(long /*[VT_I4:0]*/ Value)
 {
   _TDispID _dispid(*this, OLETEXT("ReadyState"), DISPID(-525));
@@ -4687,126 +4661,162 @@ _DDpsEftXDispT<T>::get_ReadyState()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Font(IFontDisp* /*[VT_USERDEFINED:1]*/ Value)
+_DDpsEftXDispT<T>::set_Pix(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Font"), DISPID(-512));
-  TAutoArgs<1> _args;
-  _args[1] = (LPDISPATCH) /*[VT_DISPATCH:1]*/ (IFontDisp* /*[C2]*/)Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> IFontDisp* /*[VT_USERDEFINED:1]*/ __fastcall
-_DDpsEftXDispT<T>::get_Font()
-{
-  _TDispID _dispid(*this, OLETEXT("Font"), DISPID(-512));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return (IFontDisp* /*[C3]*/)(LPDISPATCH)_args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DialogY(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("DialogY"), DISPID(70));
+  _TDispID _dispid(*this, OLETEXT("Pix"), DISPID(17));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DialogY()
+_DDpsEftXDispT<T>::get_Pix()
 {
-  _TDispID _dispid(*this, OLETEXT("DialogY"), DISPID(70));
+  _TDispID _dispid(*this, OLETEXT("Pix"), DISPID(17));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ClientType(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_DateExpiry(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("ClientType"), DISPID(68));
+  _TDispID _dispid(*this, OLETEXT("DateExpiry"), DISPID(40));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ClientType()
+_DDpsEftXDispT<T>::get_DateExpiry()
 {
-  _TDispID _dispid(*this, OLETEXT("ClientType"), DISPID(68));
+  _TDispID _dispid(*this, OLETEXT("DateExpiry"), DISPID(40));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ClientIp(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_EnableTestMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("ClientIp"), DISPID(76));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ClientIp()
-{
-  _TDispID _dispid(*this, OLETEXT("ClientIp"), DISPID(76));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DialogX(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("DialogX"), DISPID(69));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DialogX()
-{
-  _TDispID _dispid(*this, OLETEXT("DialogX"), DISPID(69));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableBackLight(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnableBackLight"), DISPID(50));
+  _TDispID _dispid(*this, OLETEXT("EnableTestMode"), DISPID(41));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableBackLight()
+_DDpsEftXDispT<T>::get_EnableTestMode()
 {
-  _TDispID _dispid(*this, OLETEXT("EnableBackLight"), DISPID(50));
+  _TDispID _dispid(*this, OLETEXT("EnableTestMode"), DISPID(41));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReadyPinPad(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+_DDpsEftXDispT<T>::set_EnableCurrencyConversion(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("ReadyPinPad"), DISPID(65));
+  _TDispID _dispid(*this, OLETEXT("EnableCurrencyConversion"), DISPID(45));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReadyPinPad()
+_DDpsEftXDispT<T>::get_EnableCurrencyConversion()
 {
-  _TDispID _dispid(*this, OLETEXT("ReadyPinPad"), DISPID(65));
+  _TDispID _dispid(*this, OLETEXT("EnableCurrencyConversion"), DISPID(45));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EnableCurrencyConversionPrompt(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EnableCurrencyConversionPrompt"), DISPID(43));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EnableCurrencyConversionPrompt()
+{
+  _TDispID _dispid(*this, OLETEXT("EnableCurrencyConversionPrompt"), DISPID(43));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EnableInvisible(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EnableInvisible"), DISPID(44));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EnableInvisible()
+{
+  _TDispID _dispid(*this, OLETEXT("EnableInvisible"), DISPID(44));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EnableTrainingMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EnableTrainingMode"), DISPID(42));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EnableTrainingMode()
+{
+  _TDispID _dispid(*this, OLETEXT("EnableTrainingMode"), DISPID(42));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EovOffline(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EovOffline"), DISPID(46));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EovOffline()
+{
+  _TDispID _dispid(*this, OLETEXT("EovOffline"), DISPID(46));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EnablePrintSlip(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EnablePrintSlip"), DISPID(47));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EnablePrintSlip()
+{
+  _TDispID _dispid(*this, OLETEXT("EnablePrintSlip"), DISPID(47));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -4849,162 +4859,612 @@ _DDpsEftXDispT<T>::get_EnableIgnoreCardReadError()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_BorderStyle(short /*[VT_I2:0]*/ Value)
+_DDpsEftXDispT<T>::set_EnableBackLight(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("BorderStyle"), DISPID(-504));
+  _TDispID _dispid(*this, OLETEXT("EnableBackLight"), DISPID(50));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
-template <class T> short /*[VT_I2:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_BorderStyle()
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EnableBackLight()
 {
-  _TDispID _dispid(*this, OLETEXT("BorderStyle"), DISPID(-504));
+  _TDispID _dispid(*this, OLETEXT("EnableBackLight"), DISPID(50));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_MerchantReference(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_TxnType(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("MerchantReference"), DISPID(77));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_MerchantReference()
-{
-  _TDispID _dispid(*this, OLETEXT("MerchantReference"), DISPID(77));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Appearance(short /*[VT_I2:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Appearance"), DISPID(-520));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> short /*[VT_I2:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Appearance()
-{
-  _TDispID _dispid(*this, OLETEXT("Appearance"), DISPID(-520));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Caption(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Caption"), DISPID(-518));
+  _TDispID _dispid(*this, OLETEXT("TxnType"), DISPID(3));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Caption()
+_DDpsEftXDispT<T>::get_TxnType()
 {
-  _TDispID _dispid(*this, OLETEXT("Caption"), DISPID(-518));
+  _TDispID _dispid(*this, OLETEXT("TxnType"), DISPID(3));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_BackColor(::OLE_COLOR /*[VT_UI4:0]*/ Value)
+_DDpsEftXDispT<T>::set_VersionEft(long /*[VT_I4:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("BackColor"), DISPID(-501));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> ::OLE_COLOR /*[VT_UI4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_BackColor()
-{
-  _TDispID _dispid(*this, OLETEXT("BackColor"), DISPID(-501));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableCreditAccount(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnableCreditAccount"), DISPID(91));
+  _TDispID _dispid(*this, OLETEXT("VersionEft"), DISPID(10));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableCreditAccount()
+_DDpsEftXDispT<T>::get_VersionEft()
 {
-  _TDispID _dispid(*this, OLETEXT("EnableCreditAccount"), DISPID(91));
+  _TDispID _dispid(*this, OLETEXT("VersionEft"), DISPID(10));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableSavingAccount(long /*[VT_I4:0]*/ Value)
+_DDpsEftXDispT<T>::set_Success(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("EnableSavingAccount"), DISPID(90));
+  _TDispID _dispid(*this, OLETEXT("Success"), DISPID(2));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Success()
+{
+  _TDispID _dispid(*this, OLETEXT("Success"), DISPID(2));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Amount(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Amount"), DISPID(6));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Amount()
+{
+  _TDispID _dispid(*this, OLETEXT("Amount"), DISPID(6));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReCo(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReCo"), DISPID(1));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReCo()
+{
+  _TDispID _dispid(*this, OLETEXT("ReCo"), DISPID(1));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_VersionPos(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("VersionPos"), DISPID(11));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableSavingAccount()
+_DDpsEftXDispT<T>::get_VersionPos()
 {
-  _TDispID _dispid(*this, OLETEXT("EnableSavingAccount"), DISPID(90));
+  _TDispID _dispid(*this, OLETEXT("VersionPos"), DISPID(11));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Track3(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_UnitId(long /*[VT_I4:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Track3"), DISPID(85));
+  _TDispID _dispid(*this, OLETEXT("UnitId"), DISPID(9));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Track3()
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_UnitId()
 {
-  _TDispID _dispid(*this, OLETEXT("Track3"), DISPID(85));
+  _TDispID _dispid(*this, OLETEXT("UnitId"), DISPID(9));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Parameter1(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_ReceiptTrailer(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Parameter1"), DISPID(88));
+  _TDispID _dispid(*this, OLETEXT("ReceiptTrailer"), DISPID(26));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Parameter1()
+_DDpsEftXDispT<T>::get_ReceiptTrailer()
 {
-  _TDispID _dispid(*this, OLETEXT("Parameter1"), DISPID(88));
+  _TDispID _dispid(*this, OLETEXT("ReceiptTrailer"), DISPID(26));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Track1(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Track1"), DISPID(8));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Track1()
+{
+  _TDispID _dispid(*this, OLETEXT("Track1"), DISPID(8));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EnableManualPan(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EnableManualPan"), DISPID(12));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EnableManualPan()
+{
+  _TDispID _dispid(*this, OLETEXT("EnableManualPan"), DISPID(12));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_AmountCashOut(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("AmountCashOut"), DISPID(7));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_AmountCashOut()
+{
+  _TDispID _dispid(*this, OLETEXT("AmountCashOut"), DISPID(7));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EnableCheckAccount(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EnableCheckAccount"), DISPID(56));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EnableCheckAccount()
+{
+  _TDispID _dispid(*this, OLETEXT("EnableCheckAccount"), DISPID(56));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_DisplayTimeout(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("DisplayTimeout"), DISPID(57));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DisplayTimeout()
+{
+  _TDispID _dispid(*this, OLETEXT("DisplayTimeout"), DISPID(57));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_OdometerReading(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("OdometerReading"), DISPID(55));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_OdometerReading()
+{
+  _TDispID _dispid(*this, OLETEXT("OdometerReading"), DISPID(55));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_DpsBillingId(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("DpsBillingId"), DISPID(73));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DpsBillingId()
+{
+  _TDispID _dispid(*this, OLETEXT("DpsBillingId"), DISPID(73));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EftStatus(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EftStatus"), DISPID(64));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EftStatus()
+{
+  _TDispID _dispid(*this, OLETEXT("EftStatus"), DISPID(64));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_RegNumberRequired(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("RegNumberRequired"), DISPID(52));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_RegNumberRequired()
+{
+  _TDispID _dispid(*this, OLETEXT("RegNumberRequired"), DISPID(52));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_StatusText(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("StatusText"), DISPID(62));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_StatusText()
+{
+  _TDispID _dispid(*this, OLETEXT("StatusText"), DISPID(62));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Ready(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Ready"), DISPID(63));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Ready()
+{
+  _TDispID _dispid(*this, OLETEXT("Ready"), DISPID(63));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PrinterName(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PrinterName"), DISPID(61));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PrinterName()
+{
+  _TDispID _dispid(*this, OLETEXT("PrinterName"), DISPID(61));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PersonalPurchaseRequired(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PersonalPurchaseRequired"), DISPID(53));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PersonalPurchaseRequired()
+{
+  _TDispID _dispid(*this, OLETEXT("PersonalPurchaseRequired"), DISPID(53));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_OrderNumberRequired(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("OrderNumberRequired"), DISPID(54));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_OrderNumberRequired()
+{
+  _TDispID _dispid(*this, OLETEXT("OrderNumberRequired"), DISPID(54));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReadyPinPad(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReadyPinPad"), DISPID(65));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReadyPinPad()
+{
+  _TDispID _dispid(*this, OLETEXT("ReadyPinPad"), DISPID(65));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReadyLink(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReadyLink"), DISPID(66));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReadyLink()
+{
+  _TDispID _dispid(*this, OLETEXT("ReadyLink"), DISPID(66));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_DialogY(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("DialogY"), DISPID(70));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DialogY()
+{
+  _TDispID _dispid(*this, OLETEXT("DialogY"), DISPID(70));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ClientType(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ClientType"), DISPID(68));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ClientType()
+{
+  _TDispID _dispid(*this, OLETEXT("ClientType"), DISPID(68));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_DialogX(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("DialogX"), DISPID(69));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DialogX()
+{
+  _TDispID _dispid(*this, OLETEXT("DialogX"), DISPID(69));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_TxnRef(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("TxnRef"), DISPID(67));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_TxnRef()
+{
+  _TDispID _dispid(*this, OLETEXT("TxnRef"), DISPID(67));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_DialogType(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("DialogType"), DISPID(71));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DialogType()
+{
+  _TDispID _dispid(*this, OLETEXT("DialogType"), DISPID(71));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_BillingId(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("BillingId"), DISPID(72));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_BillingId()
+{
+  _TDispID _dispid(*this, OLETEXT("BillingId"), DISPID(72));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ClientIp(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ClientIp"), DISPID(76));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ClientIp()
+{
+  _TDispID _dispid(*this, OLETEXT("ClientIp"), DISPID(76));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ClientId(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ClientId"), DISPID(74));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ClientId()
+{
+  _TDispID _dispid(*this, OLETEXT("ClientId"), DISPID(74));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_DeviceId(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("DeviceId"), DISPID(75));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DeviceId()
+{
+  _TDispID _dispid(*this, OLETEXT("DeviceId"), DISPID(75));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -5029,414 +5489,36 @@ _DDpsEftXDispT<T>::get_AmountCreditLimit()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DpsTxnRef(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_EnableSavingAccount(long /*[VT_I4:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("DpsTxnRef"), DISPID(78));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DpsTxnRef()
-{
-  _TDispID _dispid(*this, OLETEXT("DpsTxnRef"), DISPID(78));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Amount2(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Amount2"), DISPID(81));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Amount2()
-{
-  _TDispID _dispid(*this, OLETEXT("Amount2"), DISPID(81));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_AcquirerPort(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("AcquirerPort"), DISPID(80));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_AcquirerPort()
-{
-  _TDispID _dispid(*this, OLETEXT("AcquirerPort"), DISPID(80));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReceiptIsSeparate(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("ReceiptIsSeparate"), DISPID(79));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReceiptIsSeparate()
-{
-  _TDispID _dispid(*this, OLETEXT("ReceiptIsSeparate"), DISPID(79));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ProductRestricts(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("ProductRestricts"), DISPID(148));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ProductRestricts()
-{
-  _TDispID _dispid(*this, OLETEXT("ProductRestricts"), DISPID(148));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_FuelCardType(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("FuelCardType"), DISPID(151));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_FuelCardType()
-{
-  _TDispID _dispid(*this, OLETEXT("FuelCardType"), DISPID(151));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_RegNumber(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("RegNumber"), DISPID(150));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_RegNumber()
-{
-  _TDispID _dispid(*this, OLETEXT("RegNumber"), DISPID(150));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Track2Mac(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Track2Mac"), DISPID(149));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Track2Mac()
-{
-  _TDispID _dispid(*this, OLETEXT("Track2Mac"), DISPID(149));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PreSelectAccount(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("PreSelectAccount"), DISPID(154));
+  _TDispID _dispid(*this, OLETEXT("EnableSavingAccount"), DISPID(90));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PreSelectAccount()
+_DDpsEftXDispT<T>::get_EnableSavingAccount()
 {
-  _TDispID _dispid(*this, OLETEXT("PreSelectAccount"), DISPID(154));
+  _TDispID _dispid(*this, OLETEXT("EnableSavingAccount"), DISPID(90));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Parameter2(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_Parameter1(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Parameter2"), DISPID(87));
+  _TDispID _dispid(*this, OLETEXT("Parameter1"), DISPID(88));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Parameter2()
+_DDpsEftXDispT<T>::get_Parameter1()
 {
-  _TDispID _dispid(*this, OLETEXT("Parameter2"), DISPID(87));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OutputTrack3(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("OutputTrack3"), DISPID(86));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OutputTrack3()
-{
-  _TDispID _dispid(*this, OLETEXT("OutputTrack3"), DISPID(86));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OrderNumber(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("OrderNumber"), DISPID(153));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OrderNumber()
-{
-  _TDispID _dispid(*this, OLETEXT("OrderNumber"), DISPID(153));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Company(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Company"), DISPID(152));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Company()
-{
-  _TDispID _dispid(*this, OLETEXT("Company"), DISPID(152));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Stan(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Stan"), DISPID(95));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Stan()
-{
-  _TDispID _dispid(*this, OLETEXT("Stan"), DISPID(95));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EmvFileUpdating(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EmvFileUpdating"), DISPID(94));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EmvFileUpdating()
-{
-  _TDispID _dispid(*this, OLETEXT("EmvFileUpdating"), DISPID(94));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PrivateData6(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("PrivateData6"), DISPID(105));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PrivateData6()
-{
-  _TDispID _dispid(*this, OLETEXT("PrivateData6"), DISPID(105));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PrivateData5(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("PrivateData5"), DISPID(104));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PrivateData5()
-{
-  _TDispID _dispid(*this, OLETEXT("PrivateData5"), DISPID(104));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_UserEnterMode(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("UserEnterMode"), DISPID(93));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_UserEnterMode()
-{
-  _TDispID _dispid(*this, OLETEXT("UserEnterMode"), DISPID(93));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Account2(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("Account2"), DISPID(98));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Account2()
-{
-  _TDispID _dispid(*this, OLETEXT("Account2"), DISPID(98));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_CurrencyId(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("CurrencyId"), DISPID(97));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_CurrencyId()
-{
-  _TDispID _dispid(*this, OLETEXT("CurrencyId"), DISPID(97));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_AccountSelected(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("AccountSelected"), DISPID(96));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_AccountSelected()
-{
-  _TDispID _dispid(*this, OLETEXT("AccountSelected"), DISPID(96));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_SelectAccount(long /*[VT_I4:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("SelectAccount"), DISPID(99));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_SelectAccount()
-{
-  _TDispID _dispid(*this, OLETEXT("SelectAccount"), DISPID(99));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_CurrencyRate(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("CurrencyRate"), DISPID(82));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_CurrencyRate()
-{
-  _TDispID _dispid(*this, OLETEXT("CurrencyRate"), DISPID(82));
+  _TDispID _dispid(*this, OLETEXT("Parameter1"), DISPID(88));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -5461,6 +5543,240 @@ _DDpsEftXDispT<T>::get_EnterDataLen()
 }
 
 template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_UserEnterMode(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("UserEnterMode"), DISPID(93));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_UserEnterMode()
+{
+  _TDispID _dispid(*this, OLETEXT("UserEnterMode"), DISPID(93));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Amount2(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Amount2"), DISPID(81));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Amount2()
+{
+  _TDispID _dispid(*this, OLETEXT("Amount2"), DISPID(81));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Appearance(short /*[VT_I2:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Appearance"), DISPID(-520));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> short /*[VT_I2:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Appearance()
+{
+  _TDispID _dispid(*this, OLETEXT("Appearance"), DISPID(-520));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_BackColor(::OLE_COLOR /*[VT_UI4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("BackColor"), DISPID(-501));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> ::OLE_COLOR /*[VT_UI4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_BackColor()
+{
+  _TDispID _dispid(*this, OLETEXT("BackColor"), DISPID(-501));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Font(IFontDisp* /*[VT_USERDEFINED:1]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Font"), DISPID(-512));
+  TAutoArgs<1> _args;
+  _args[1] = (LPDISPATCH) /*[VT_DISPATCH:1]*/ (IFontDisp* /*[C2]*/)Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> IFontDisp* /*[VT_USERDEFINED:1]*/ __fastcall
+_DDpsEftXDispT<T>::get_Font()
+{
+  _TDispID _dispid(*this, OLETEXT("Font"), DISPID(-512));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return (IFontDisp* /*[C3]*/)(LPDISPATCH)_args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Caption(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Caption"), DISPID(-518));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Caption()
+{
+  _TDispID _dispid(*this, OLETEXT("Caption"), DISPID(-518));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Enabled(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Enabled"), DISPID(-514));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Enabled()
+{
+  _TDispID _dispid(*this, OLETEXT("Enabled"), DISPID(-514));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_MerchantReference(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("MerchantReference"), DISPID(77));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_MerchantReference()
+{
+  _TDispID _dispid(*this, OLETEXT("MerchantReference"), DISPID(77));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Track3(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Track3"), DISPID(85));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Track3()
+{
+  _TDispID _dispid(*this, OLETEXT("Track3"), DISPID(85));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_OutputDisplayLine1(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("OutputDisplayLine1"), DISPID(60));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_OutputDisplayLine1()
+{
+  _TDispID _dispid(*this, OLETEXT("OutputDisplayLine1"), DISPID(60));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PosName(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PosName"), DISPID(58));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PosName()
+{
+  _TDispID _dispid(*this, OLETEXT("PosName"), DISPID(58));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_OutputDisplayLine2(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("OutputDisplayLine2"), DISPID(59));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_OutputDisplayLine2()
+{
+  _TDispID _dispid(*this, OLETEXT("OutputDisplayLine2"), DISPID(59));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_OutputTrack3(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("OutputTrack3"), DISPID(86));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_OutputTrack3()
+{
+  _TDispID _dispid(*this, OLETEXT("OutputTrack3"), DISPID(86));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
 _DDpsEftXDispT<T>::set_KeyMask(BSTR /*[VT_BSTR:0]*/ Value)
 {
   _TDispID _dispid(*this, OLETEXT("KeyMask"), DISPID(84));
@@ -5473,6 +5789,24 @@ template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
 _DDpsEftXDispT<T>::get_KeyMask()
 {
   _TDispID _dispid(*this, OLETEXT("KeyMask"), DISPID(84));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EnableCreditAccount(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EnableCreditAccount"), DISPID(91));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EnableCreditAccount()
+{
+  _TDispID _dispid(*this, OLETEXT("EnableCreditAccount"), DISPID(91));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -5497,54 +5831,162 @@ _DDpsEftXDispT<T>::get_InputMask()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Account(long /*[VT_I4:0]*/ Value)
+_DDpsEftXDispT<T>::set_Parameter2(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Account"), DISPID(102));
+  _TDispID _dispid(*this, OLETEXT("Parameter2"), DISPID(87));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Parameter2()
+{
+  _TDispID _dispid(*this, OLETEXT("Parameter2"), DISPID(87));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_CurrencyRate(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("CurrencyRate"), DISPID(82));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_CurrencyRate()
+{
+  _TDispID _dispid(*this, OLETEXT("CurrencyRate"), DISPID(82));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PrivateData9(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData9"), DISPID(108));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PrivateData9()
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData9"), DISPID(108));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PrivateData10(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData10"), DISPID(109));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PrivateData10()
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData10"), DISPID(109));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_DisplayLine2(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("DisplayLine2"), DISPID(111));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DisplayLine2()
+{
+  _TDispID _dispid(*this, OLETEXT("DisplayLine2"), DISPID(111));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PrivateData8(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData8"), DISPID(107));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PrivateData8()
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData8"), DISPID(107));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_DisplayLine1(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("DisplayLine1"), DISPID(110));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DisplayLine1()
+{
+  _TDispID _dispid(*this, OLETEXT("DisplayLine1"), DISPID(110));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_AccountSelected(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("AccountSelected"), DISPID(96));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> long /*[VT_I4:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Account()
+_DDpsEftXDispT<T>::get_AccountSelected()
 {
-  _TDispID _dispid(*this, OLETEXT("Account"), DISPID(102));
+  _TDispID _dispid(*this, OLETEXT("AccountSelected"), DISPID(96));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PrivateData4(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_Account2(long /*[VT_I4:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("PrivateData4"), DISPID(103));
+  _TDispID _dispid(*this, OLETEXT("Account2"), DISPID(98));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PrivateData4()
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Account2()
 {
-  _TDispID _dispid(*this, OLETEXT("PrivateData4"), DISPID(103));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PrivateData7(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("PrivateData7"), DISPID(106));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PrivateData7()
-{
-  _TDispID _dispid(*this, OLETEXT("PrivateData7"), DISPID(106));
+  _TDispID _dispid(*this, OLETEXT("Account2"), DISPID(98));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -5569,6 +6011,492 @@ _DDpsEftXDispT<T>::get_Cvc2()
 }
 
 template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Stan(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Stan"), DISPID(95));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Stan()
+{
+  _TDispID _dispid(*this, OLETEXT("Stan"), DISPID(95));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_CurrencyId(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("CurrencyId"), DISPID(97));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_CurrencyId()
+{
+  _TDispID _dispid(*this, OLETEXT("CurrencyId"), DISPID(97));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EmvFileUpdating(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EmvFileUpdating"), DISPID(94));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EmvFileUpdating()
+{
+  _TDispID _dispid(*this, OLETEXT("EmvFileUpdating"), DISPID(94));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedL10(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL10"), DISPID(184));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedL10()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL10"), DISPID(184));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedB1(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB1"), DISPID(185));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedB1()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB1"), DISPID(185));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedL7(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL7"), DISPID(181));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedL7()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL7"), DISPID(181));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedL3(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL3"), DISPID(177));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedL3()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL3"), DISPID(177));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedL4(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL4"), DISPID(178));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedL4()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL4"), DISPID(178));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedL8(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL8"), DISPID(182));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedL8()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL8"), DISPID(182));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PrivateData4(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData4"), DISPID(103));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PrivateData4()
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData4"), DISPID(103));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PrivateData5(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData5"), DISPID(104));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PrivateData5()
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData5"), DISPID(104));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PrivateData7(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData7"), DISPID(106));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PrivateData7()
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData7"), DISPID(106));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedL9(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL9"), DISPID(183));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedL9()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL9"), DISPID(183));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PrivateData6(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData6"), DISPID(105));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PrivateData6()
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData6"), DISPID(105));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_OutputEkTrack2(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("OutputEkTrack2"), DISPID(142));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_OutputEkTrack2()
+{
+  _TDispID _dispid(*this, OLETEXT("OutputEkTrack2"), DISPID(142));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReadyDpsLink(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReadyDpsLink"), DISPID(139));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReadyDpsLink()
+{
+  _TDispID _dispid(*this, OLETEXT("ReadyDpsLink"), DISPID(139));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EkTrack2(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EkTrack2"), DISPID(141));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EkTrack2()
+{
+  _TDispID _dispid(*this, OLETEXT("EkTrack2"), DISPID(141));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_OrderNumber(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("OrderNumber"), DISPID(153));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_OrderNumber()
+{
+  _TDispID _dispid(*this, OLETEXT("OrderNumber"), DISPID(153));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PreSelectAccount(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PreSelectAccount"), DISPID(154));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PreSelectAccount()
+{
+  _TDispID _dispid(*this, OLETEXT("PreSelectAccount"), DISPID(154));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_DpsLinkText(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("DpsLinkText"), DISPID(140));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_DpsLinkText()
+{
+  _TDispID _dispid(*this, OLETEXT("DpsLinkText"), DISPID(140));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Quantity(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Quantity"), DISPID(144));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Quantity()
+{
+  _TDispID _dispid(*this, OLETEXT("Quantity"), DISPID(144));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_LineAmount(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("LineAmount"), DISPID(145));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_LineAmount()
+{
+  _TDispID _dispid(*this, OLETEXT("LineAmount"), DISPID(145));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_OutputProducts(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("OutputProducts"), DISPID(147));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_OutputProducts()
+{
+  _TDispID _dispid(*this, OLETEXT("OutputProducts"), DISPID(147));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_AmountAuthOut(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("AmountAuthOut"), DISPID(143));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_AmountAuthOut()
+{
+  _TDispID _dispid(*this, OLETEXT("AmountAuthOut"), DISPID(143));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ProductCode(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ProductCode"), DISPID(146));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ProductCode()
+{
+  _TDispID _dispid(*this, OLETEXT("ProductCode"), DISPID(146));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_LoyaltyRecipient(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("LoyaltyRecipient"), DISPID(138));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_LoyaltyRecipient()
+{
+  _TDispID _dispid(*this, OLETEXT("LoyaltyRecipient"), DISPID(138));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_RegNumber(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("RegNumber"), DISPID(150));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_RegNumber()
+{
+  _TDispID _dispid(*this, OLETEXT("RegNumber"), DISPID(150));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
 _DDpsEftXDispT<T>::set_EnableAddBillCard(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
   _TDispID _dispid(*this, OLETEXT("EnableAddBillCard"), DISPID(100));
@@ -5587,36 +6515,342 @@ _DDpsEftXDispT<T>::get_EnableAddBillCard()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_CardType(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_Account(long /*[VT_I4:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("CardType"), DISPID(30));
+  _TDispID _dispid(*this, OLETEXT("Account"), DISPID(102));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_CardType()
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Account()
 {
-  _TDispID _dispid(*this, OLETEXT("CardType"), DISPID(30));
+  _TDispID _dispid(*this, OLETEXT("Account"), DISPID(102));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PrivateData2(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_SelectAccount(long /*[VT_I4:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("PrivateData2"), DISPID(28));
+  _TDispID _dispid(*this, OLETEXT("SelectAccount"), DISPID(99));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_SelectAccount()
+{
+  _TDispID _dispid(*this, OLETEXT("SelectAccount"), DISPID(99));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_FuelCardType(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("FuelCardType"), DISPID(151));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PrivateData2()
+_DDpsEftXDispT<T>::get_FuelCardType()
 {
-  _TDispID _dispid(*this, OLETEXT("PrivateData2"), DISPID(28));
+  _TDispID _dispid(*this, OLETEXT("FuelCardType"), DISPID(151));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReceiptNo(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReceiptNo"), DISPID(156));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReceiptNo()
+{
+  _TDispID _dispid(*this, OLETEXT("ReceiptNo"), DISPID(156));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Cvm(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Cvm"), DISPID(157));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Cvm()
+{
+  _TDispID _dispid(*this, OLETEXT("Cvm"), DISPID(157));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Company(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Company"), DISPID(152));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Company()
+{
+  _TDispID _dispid(*this, OLETEXT("Company"), DISPID(152));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ProductRestricts(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ProductRestricts"), DISPID(148));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ProductRestricts()
+{
+  _TDispID _dispid(*this, OLETEXT("ProductRestricts"), DISPID(148));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_Track2Mac(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("Track2Mac"), DISPID(149));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Track2Mac()
+{
+  _TDispID _dispid(*this, OLETEXT("Track2Mac"), DISPID(149));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedS5(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS5"), DISPID(169));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedS5()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS5"), DISPID(169));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedS6(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS6"), DISPID(170));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedS6()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS6"), DISPID(170));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReceiptWidth(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReceiptWidth"), DISPID(35));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReceiptWidth()
+{
+  _TDispID _dispid(*this, OLETEXT("ReceiptWidth"), DISPID(35));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReceiptResetCommand(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReceiptResetCommand"), DISPID(33));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReceiptResetCommand()
+{
+  _TDispID _dispid(*this, OLETEXT("ReceiptResetCommand"), DISPID(33));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReceiptSeparatorCommand(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReceiptSeparatorCommand"), DISPID(34));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReceiptSeparatorCommand()
+{
+  _TDispID _dispid(*this, OLETEXT("ReceiptSeparatorCommand"), DISPID(34));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PrivateCardData(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateCardData"), DISPID(167));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_PrivateCardData()
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateCardData"), DISPID(167));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_SignatureState(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("SignatureState"), DISPID(175));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_SignatureState()
+{
+  _TDispID _dispid(*this, OLETEXT("SignatureState"), DISPID(175));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedS8(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS8"), DISPID(172));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedS8()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS8"), DISPID(172));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedS10(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS10"), DISPID(174));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedS10()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS10"), DISPID(174));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedS4(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS4"), DISPID(168));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedS4()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS4"), DISPID(168));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedS7(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS7"), DISPID(171));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedS7()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS7"), DISPID(171));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -5659,144 +6893,36 @@ _DDpsEftXDispT<T>::get_ReceiptEjectCommand()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReceiptLineTerminator(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_CardType(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("ReceiptLineTerminator"), DISPID(29));
+  _TDispID _dispid(*this, OLETEXT("CardType"), DISPID(30));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReceiptLineTerminator()
+_DDpsEftXDispT<T>::get_CardType()
 {
-  _TDispID _dispid(*this, OLETEXT("ReceiptLineTerminator"), DISPID(29));
+  _TDispID _dispid(*this, OLETEXT("CardType"), DISPID(30));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DpsLinkText(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_EnableBlockingMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("DpsLinkText"), DISPID(140));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DpsLinkText()
-{
-  _TDispID _dispid(*this, OLETEXT("DpsLinkText"), DISPID(140));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_AmountAuthOut(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("AmountAuthOut"), DISPID(143));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_AmountAuthOut()
-{
-  _TDispID _dispid(*this, OLETEXT("AmountAuthOut"), DISPID(143));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OutputEkTrack2(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("OutputEkTrack2"), DISPID(142));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OutputEkTrack2()
-{
-  _TDispID _dispid(*this, OLETEXT("OutputEkTrack2"), DISPID(142));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EkTrack2(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EkTrack2"), DISPID(141));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EkTrack2()
-{
-  _TDispID _dispid(*this, OLETEXT("EkTrack2"), DISPID(141));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DateExpiry(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("DateExpiry"), DISPID(40));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DateExpiry()
-{
-  _TDispID _dispid(*this, OLETEXT("DateExpiry"), DISPID(40));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReceiptResetCommand(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("ReceiptResetCommand"), DISPID(33));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReceiptResetCommand()
-{
-  _TDispID _dispid(*this, OLETEXT("ReceiptResetCommand"), DISPID(33));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnableTestMode(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnableTestMode"), DISPID(41));
+  _TDispID _dispid(*this, OLETEXT("EnableBlockingMode"), DISPID(48));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnableTestMode()
+_DDpsEftXDispT<T>::get_EnableBlockingMode()
 {
-  _TDispID _dispid(*this, OLETEXT("EnableTestMode"), DISPID(41));
+  _TDispID _dispid(*this, OLETEXT("EnableBlockingMode"), DISPID(48));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -5821,60 +6947,6 @@ _DDpsEftXDispT<T>::get_CardNumber()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReceiptTrailer(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("ReceiptTrailer"), DISPID(26));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReceiptTrailer()
-{
-  _TDispID _dispid(*this, OLETEXT("ReceiptTrailer"), DISPID(26));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OutputParameter1(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("OutputParameter1"), DISPID(23));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OutputParameter1()
-{
-  _TDispID _dispid(*this, OLETEXT("OutputParameter1"), DISPID(23));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EnablePrintReceipt(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("EnablePrintReceipt"), DISPID(24));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EnablePrintReceipt()
-{
-  _TDispID _dispid(*this, OLETEXT("EnablePrintReceipt"), DISPID(24));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
 _DDpsEftXDispT<T>::set_PrivateData1(BSTR /*[VT_BSTR:0]*/ Value)
 {
   _TDispID _dispid(*this, OLETEXT("PrivateData1"), DISPID(27));
@@ -5893,144 +6965,306 @@ _DDpsEftXDispT<T>::get_PrivateData1()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReceiptHeader(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_OutputTrack2(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("ReceiptHeader"), DISPID(25));
+  _TDispID _dispid(*this, OLETEXT("OutputTrack2"), DISPID(37));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReceiptHeader()
+_DDpsEftXDispT<T>::get_OutputTrack2()
 {
-  _TDispID _dispid(*this, OLETEXT("ReceiptHeader"), DISPID(25));
+  _TDispID _dispid(*this, OLETEXT("OutputTrack2"), DISPID(37));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReserveString1(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_Authorized(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("ReserveString1"), DISPID(158));
+  _TDispID _dispid(*this, OLETEXT("Authorized"), DISPID(38));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReserveString1()
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_Authorized()
 {
-  _TDispID _dispid(*this, OLETEXT("ReserveString1"), DISPID(158));
+  _TDispID _dispid(*this, OLETEXT("Authorized"), DISPID(38));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Cvm(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_OutputTrack1(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Cvm"), DISPID(157));
+  _TDispID _dispid(*this, OLETEXT("OutputTrack1"), DISPID(36));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Cvm()
+_DDpsEftXDispT<T>::get_OutputTrack1()
 {
-  _TDispID _dispid(*this, OLETEXT("Cvm"), DISPID(157));
+  _TDispID _dispid(*this, OLETEXT("OutputTrack1"), DISPID(36));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DisplayLine2(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_PrivateData2(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("DisplayLine2"), DISPID(111));
+  _TDispID _dispid(*this, OLETEXT("PrivateData2"), DISPID(28));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DisplayLine2()
+_DDpsEftXDispT<T>::get_PrivateData2()
 {
-  _TDispID _dispid(*this, OLETEXT("DisplayLine2"), DISPID(111));
+  _TDispID _dispid(*this, OLETEXT("PrivateData2"), DISPID(28));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_OutputProducts(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_ReceiptLineTerminator(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("OutputProducts"), DISPID(147));
+  _TDispID _dispid(*this, OLETEXT("ReceiptLineTerminator"), DISPID(29));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_OutputProducts()
+_DDpsEftXDispT<T>::get_ReceiptLineTerminator()
 {
-  _TDispID _dispid(*this, OLETEXT("OutputProducts"), DISPID(147));
+  _TDispID _dispid(*this, OLETEXT("ReceiptLineTerminator"), DISPID(29));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReceiptNo(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_ReservedB3(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("ReceiptNo"), DISPID(156));
+  _TDispID _dispid(*this, OLETEXT("ReservedB3"), DISPID(187));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReceiptNo()
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedB3()
 {
-  _TDispID _dispid(*this, OLETEXT("ReceiptNo"), DISPID(156));
+  _TDispID _dispid(*this, OLETEXT("ReservedB3"), DISPID(187));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EmvResult(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_ReservedB6(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("EmvResult"), DISPID(161));
+  _TDispID _dispid(*this, OLETEXT("ReservedB6"), DISPID(190));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EmvResult()
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedB6()
 {
-  _TDispID _dispid(*this, OLETEXT("EmvResult"), DISPID(161));
+  _TDispID _dispid(*this, OLETEXT("ReservedB6"), DISPID(190));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_EmvLibVersion(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_ReservedB2(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("EmvLibVersion"), DISPID(160));
+  _TDispID _dispid(*this, OLETEXT("ReservedB2"), DISPID(186));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedB2()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB2"), DISPID(186));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedB4(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB4"), DISPID(188));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedB4()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB4"), DISPID(188));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedB5(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB5"), DISPID(189));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedB5()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB5"), DISPID(189));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedB9(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB9"), DISPID(193));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedB9()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB9"), DISPID(193));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedL5(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL5"), DISPID(179));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedL5()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL5"), DISPID(179));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedL6(long /*[VT_I4:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL6"), DISPID(180));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedL6()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL6"), DISPID(180));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedB8(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB8"), DISPID(192));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedB8()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB8"), DISPID(192));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedB10(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB10"), DISPID(194));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedB10()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB10"), DISPID(194));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedB7(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB7"), DISPID(191));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedB7()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedB7"), DISPID(191));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_PrivateData3(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("PrivateData3"), DISPID(158));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_EmvLibVersion()
+_DDpsEftXDispT<T>::get_PrivateData3()
 {
-  _TDispID _dispid(*this, OLETEXT("EmvLibVersion"), DISPID(160));
+  _TDispID _dispid(*this, OLETEXT("PrivateData3"), DISPID(158));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
@@ -6055,6 +7289,60 @@ _DDpsEftXDispT<T>::get_EmvLibHash()
 }
 
 template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EmvResult(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EmvResult"), DISPID(161));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EmvResult()
+{
+  _TDispID _dispid(*this, OLETEXT("EmvResult"), DISPID(161));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_ReservedS9(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS9"), DISPID(173));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedS9()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedS9"), DISPID(173));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_EmvLibVersion(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("EmvLibVersion"), DISPID(160));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_EmvLibVersion()
+{
+  _TDispID _dispid(*this, OLETEXT("EmvLibVersion"), DISPID(160));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
 _DDpsEftXDispT<T>::set_ProcessedOffline(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
 {
   _TDispID _dispid(*this, OLETEXT("ProcessedOffline"), DISPID(162));
@@ -6073,162 +7361,90 @@ _DDpsEftXDispT<T>::get_ProcessedOffline()
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_Quantity(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_CardNumber2(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("Quantity"), DISPID(144));
+  _TDispID _dispid(*this, OLETEXT("CardNumber2"), DISPID(164));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_Quantity()
+_DDpsEftXDispT<T>::get_CardNumber2()
 {
-  _TDispID _dispid(*this, OLETEXT("Quantity"), DISPID(144));
+  _TDispID _dispid(*this, OLETEXT("CardNumber2"), DISPID(164));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PrivateData10(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_ReservedL2(long /*[VT_I4:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("PrivateData10"), DISPID(109));
+  _TDispID _dispid(*this, OLETEXT("ReservedL2"), DISPID(176));
+  TAutoArgs<1> _args;
+  _args[1] = Value;
+  OlePropertyPut(_dispid, _args);
+}
+
+template <class T> long /*[VT_I4:0]*/ __fastcall
+_DDpsEftXDispT<T>::get_ReservedL2()
+{
+  _TDispID _dispid(*this, OLETEXT("ReservedL2"), DISPID(176));
+  TAutoArgs<0> _args;
+  OlePropertyGet(_dispid, _args);
+  return _args.GetRetVariant();
+}
+
+template <class T> void __fastcall
+_DDpsEftXDispT<T>::set_RefundDpsTxnRef(BSTR /*[VT_BSTR:0]*/ Value)
+{
+  _TDispID _dispid(*this, OLETEXT("RefundDpsTxnRef"), DISPID(163));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PrivateData10()
+_DDpsEftXDispT<T>::get_RefundDpsTxnRef()
 {
-  _TDispID _dispid(*this, OLETEXT("PrivateData10"), DISPID(109));
+  _TDispID _dispid(*this, OLETEXT("RefundDpsTxnRef"), DISPID(163));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ProductCode(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_AmountTip(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("ProductCode"), DISPID(146));
+  _TDispID _dispid(*this, OLETEXT("AmountTip"), DISPID(165));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ProductCode()
+_DDpsEftXDispT<T>::get_AmountTip()
 {
-  _TDispID _dispid(*this, OLETEXT("ProductCode"), DISPID(146));
+  _TDispID _dispid(*this, OLETEXT("AmountTip"), DISPID(165));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();
 }
 
 template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_LineAmount(BSTR /*[VT_BSTR:0]*/ Value)
+_DDpsEftXDispT<T>::set_AmountSurcharge(BSTR /*[VT_BSTR:0]*/ Value)
 {
-  _TDispID _dispid(*this, OLETEXT("LineAmount"), DISPID(145));
+  _TDispID _dispid(*this, OLETEXT("AmountSurcharge"), DISPID(166));
   TAutoArgs<1> _args;
   _args[1] = Value;
   OlePropertyPut(_dispid, _args);
 }
 
 template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_LineAmount()
+_DDpsEftXDispT<T>::get_AmountSurcharge()
 {
-  _TDispID _dispid(*this, OLETEXT("LineAmount"), DISPID(145));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PrivateData9(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("PrivateData9"), DISPID(108));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PrivateData9()
-{
-  _TDispID _dispid(*this, OLETEXT("PrivateData9"), DISPID(108));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_ReadyDpsLink(VARIANT_BOOL /*[VT_BOOL:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("ReadyDpsLink"), DISPID(139));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> VARIANT_BOOL /*[VT_BOOL:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_ReadyDpsLink()
-{
-  _TDispID _dispid(*this, OLETEXT("ReadyDpsLink"), DISPID(139));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_LoyaltyRecipient(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("LoyaltyRecipient"), DISPID(138));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_LoyaltyRecipient()
-{
-  _TDispID _dispid(*this, OLETEXT("LoyaltyRecipient"), DISPID(138));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_PrivateData8(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("PrivateData8"), DISPID(107));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_PrivateData8()
-{
-  _TDispID _dispid(*this, OLETEXT("PrivateData8"), DISPID(107));
-  TAutoArgs<0> _args;
-  OlePropertyGet(_dispid, _args);
-  return _args.GetRetVariant();
-}
-
-template <class T> void __fastcall
-_DDpsEftXDispT<T>::set_DisplayLine1(BSTR /*[VT_BSTR:0]*/ Value)
-{
-  _TDispID _dispid(*this, OLETEXT("DisplayLine1"), DISPID(110));
-  TAutoArgs<1> _args;
-  _args[1] = Value;
-  OlePropertyPut(_dispid, _args);
-}
-
-template <class T> BSTR /*[VT_BSTR:0]*/ __fastcall
-_DDpsEftXDispT<T>::get_DisplayLine1()
-{
-  _TDispID _dispid(*this, OLETEXT("DisplayLine1"), DISPID(110));
+  _TDispID _dispid(*this, OLETEXT("AmountSurcharge"), DISPID(166));
   TAutoArgs<0> _args;
   OlePropertyGet(_dispid, _args);
   return _args.GetRetVariant();

@@ -1,10 +1,10 @@
 object dmMMReportData: TdmMMReportData
   OldCreateOrder = False
   OnDestroy = DataModuleDestroy
-  Left = 3
-  Top = 2
-  Height = 448
-  Width = 638
+  Left = 65532
+  Top = 65532
+  Height = 953
+  Width = 1928
   object qrMenu: TIBQuery
     Database = dmMMData.dbMenuMate
     Transaction = MMTrans
@@ -4623,5 +4623,33 @@ object dmMMReportData: TdmMMReportData
     DataSet = qrBreakdownCategory
     Left = 1440
     Top = 152
+  end
+  object qrSalesSummaryD: TIBQuery
+    Database = dmMMData.dbMenuMate
+    Transaction = dmMMData.trMenuMate
+    SQL.Strings = (
+      '')
+    Left = 1229
+    Top = 480
+  end
+  object ravSalesSummaryD: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    DataSet = qrSalesSummaryD
+    Left = 1226
+    Top = 544
+  end
+  object qrSSDParemeter: TIBQuery
+    Database = dmMMData.dbMenuMate
+    Transaction = dmMMData.trMenuMate
+    SQL.Strings = (
+      '')
+    Left = 1301
+    Top = 488
+  end
+  object ravSSDParameter: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    DataSet = qrSSDParemeter
+    Left = 1314
+    Top = 544
   end
 end

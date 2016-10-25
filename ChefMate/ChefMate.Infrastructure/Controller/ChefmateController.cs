@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Chefmate.Core;
 using Chefmate.Core.Enums;
 using Chefmate.Core.Extensions;
 using Chefmate.Core.Model;
@@ -24,6 +25,7 @@ namespace Chefmate.Infrastructure.Controller
         public static volatile object _syncRoot = new object();
         private ChefmateController()
         {
+            WebOrders = new ObservableCollection<Order>();
         }
         public static ChefmateController Instance
         {
@@ -47,6 +49,7 @@ namespace Chefmate.Infrastructure.Controller
         public AnalyticalData AnalyticalData { get; set; }
         public ObservableCollection<Order> TotalOrders { get; set; }
         public ObservableCollection<Order> CurrentDisplayOrders { get; set; }
+        public ObservableCollection<Order> WebOrders { get; set; }
         public int PageColumns { get; set; }
 
         #endregion
@@ -105,7 +108,19 @@ namespace Chefmate.Infrastructure.Controller
                 var orders = DatabaseOrderBuilder.Instance.GetAllOrders(CurrenTerminal.TerminalId);
                 foreach (var order in orders)
                 {
-                    TotalOrders.Add(order);
+                    if (order.Items.Count > 0)
+                    {
+                        if (order.OrderAction == ChefmateConstants.WebOrderAction &&
+                                        order.DeliveryTime.Subtract(DateTime.Now).TotalMinutes > CurrentSettings.WebOrderTime)
+                        {
+                            WebOrders.Add(order);
+                        }
+                        else
+                        {
+                            TotalOrders.Add(order);
+                        }
+                    }
+
                 }
             }
             catch (Exception ex)
@@ -121,6 +136,7 @@ namespace Chefmate.Infrastructure.Controller
         }
         private void PublishRedrawEvent()
         {
+            TotalOrders.RemoveAll(s => s.Items.Count == 0);
             if (OrderRedrawEvent != null)
                 OrderRedrawEvent();
         }
@@ -191,7 +207,7 @@ namespace Chefmate.Infrastructure.Controller
             {
                 ShowMessageBox("Order Transferred", order.SourceTableName + " is transferred to " + order.TableTabName);
             }
-            TotalOrders.RemoveAll(s => s.Items.Count == 0);
+
             PublishRedrawEvent();
         }
         private void ProcessTransferWhenDestinationExist(List<Order> existingOrders, Order newOrder, Order destinationOrder)
@@ -308,17 +324,24 @@ namespace Chefmate.Infrastructure.Controller
                 DbOrder.AddOrder(order, CurrenTerminal.TerminalId);
             if (OutputTime.Immediately == CurrentSettings.OutputTime)
             {
-                OutputController.Instance.OutputOrder(order);
+                DoImmediateBump(order);
             }
             else
             {
-                if (order.OrderState == OrderState.Complete || order.OrderState == OrderState.Runner)
+                if (order.OrderAction == ChefmateConstants.OrderAction)
                 {
-                    AnalyticalData.TotalOrdersCount++;
-                    AnalyticalData.CurrentOrdersCount++;
-                    AnalyticalData.CurrentItems += order.Items.Count;
+                    if (order.OrderState == OrderState.Complete || order.OrderState == OrderState.Runner)
+                    {
+                        AnalyticalData.TotalOrdersCount++;
+                        AnalyticalData.CurrentOrdersCount++;
+                        AnalyticalData.CurrentItems += order.Items.Count;
+                    }
+                    TotalOrders.Add(order);
                 }
-                TotalOrders.Add(order);
+                else
+                {
+                    WebOrders.Add(order);
+                }
             }
         }
 
@@ -346,53 +369,60 @@ namespace Chefmate.Infrastructure.Controller
         #region Runner Order
         private void AddRunnerOrder(Order inOrder)
         {
-            var order = TotalOrders.FirstOrDefault(s => s.OrderKey == inOrder.OrderKey);
-            if (order != null)
+            if (OutputTime.Immediately == CurrentSettings.OutputTime)
             {
-                foreach (var item in inOrder.Items)
-                {
-                    if (order.Items.FirstOrDefault(s => s.OrderItemKey == item.OrderItemKey) == null)
-                    {
-                        var servigCourseGroup =
-                            order.ServingCourseGroups.FirstOrDefault(
-                                s => s.OrderGroupKey == item.SCourseGroup.OrderGroupKey);
-                        if (servigCourseGroup != null)
-                        {
-                            item.SCourseGroup = servigCourseGroup;
-                        }
-                        else
-                        {
-                            item.SCourseGroup.Order = order;
-                            order.ServingCourseGroups.Add(item.SCourseGroup);
-                        }
-
-                        var courseGroup =
-                            order.CourseGroups.FirstOrDefault(
-                                s => s.OrderGroupKey == item.CourseGroup.OrderGroupKey);
-                        if (courseGroup != null)
-                        {
-                            item.CourseGroup = courseGroup;
-                        }
-                        else
-                        {
-                            item.CourseGroup.Order = order;
-                            order.CourseGroups.Add(item.CourseGroup);
-                        }
-
-                        order.Items.Add(item);
-                        AnalyticalData.CurrentItems++;
-                    }
-                }
-
+                DoImmediateBump(inOrder);
             }
             else
             {
-                AnalyticalData.TotalOrdersCount++;
-                AnalyticalData.CurrentOrdersCount++;
-                inOrder.ServingCourseGroups.ToList().ForEach(s => AnalyticalData.CurrentItems += s.Items.Count);
-                TotalOrders.Add(inOrder);
+                var order = TotalOrders.FirstOrDefault(s => s.OrderKey == inOrder.OrderKey);
+                if (order != null)
+                {
+                    foreach (var item in inOrder.Items)
+                    {
+                        if (order.Items.FirstOrDefault(s => s.OrderItemKey == item.OrderItemKey) == null)
+                        {
+                            var servigCourseGroup =
+                                order.ServingCourseGroups.FirstOrDefault(
+                                    s => s.OrderGroupKey == item.SCourseGroup.OrderGroupKey);
+                            if (servigCourseGroup != null)
+                            {
+                                item.SCourseGroup = servigCourseGroup;
+                            }
+                            else
+                            {
+                                item.SCourseGroup.Order = order;
+                                order.ServingCourseGroups.Add(item.SCourseGroup);
+                            }
+
+                            var courseGroup =
+                                order.CourseGroups.FirstOrDefault(
+                                    s => s.OrderGroupKey == item.CourseGroup.OrderGroupKey);
+                            if (courseGroup != null)
+                            {
+                                item.CourseGroup = courseGroup;
+                            }
+                            else
+                            {
+                                item.CourseGroup.Order = order;
+                                order.CourseGroups.Add(item.CourseGroup);
+                            }
+
+                            order.Items.Add(item);
+                            AnalyticalData.CurrentItems++;
+                        }
+                    }
+
+                }
+                else
+                {
+                    AnalyticalData.TotalOrdersCount++;
+                    AnalyticalData.CurrentOrdersCount++;
+                    inOrder.ServingCourseGroups.ToList().ForEach(s => AnalyticalData.CurrentItems += s.Items.Count);
+                    TotalOrders.Add(inOrder);
+                }
+                PublishRedrawEvent();
             }
-            PublishRedrawEvent();
         }
         #endregion
 
@@ -437,16 +467,7 @@ namespace Chefmate.Infrastructure.Controller
                 TerminalType = TerminalType.Kitchen
             };
             DbTerminal.AddTerminal(CurrenTerminal);
-            CurrentSettings = new Settings
-            {
-                TerminalType = TerminalType.Kitchen,
-                DbIpAddress = dbAddress,
-                DbPath = dbPath,
-                TerminalIpAddress = terminalAddress,
-                DisplayName = terminalDisplayName,
-                RecallCount = 5,
-                CmFontSize = 15
-            };
+            CurrentSettings = new Settings(TerminalType.Kitchen, dbAddress, dbPath, terminalAddress, terminalDisplayName);
             DbSettings.AddSettings(CurrentSettings, CurrenTerminal.TerminalId);
             LoadSettings();
             CurrentSettings.TerminalType = TerminalType.Kitchen;
@@ -517,6 +538,19 @@ namespace Chefmate.Infrastructure.Controller
         }
         #endregion
 
+        private void DoImmediateBump(Order inOrder)
+        {
+            inOrder.FilterOrders(CurrentSettings.GroupType, CurrentSettings.OrderInfoDisplay);
+            if (CurrentSettings.OutputTerminal < 0)
+            {
+                foreach (var item in inOrder.Items)
+                {
+                    if (item.OrderItemKey > 0)
+                        DbOrderItem.UpdateOrderItemTerminalKey(item.OrderItemKey, 0);
+                }
+            }
+            OutputController.Instance.OutputOrder(inOrder);
+        }
 
     }
 }

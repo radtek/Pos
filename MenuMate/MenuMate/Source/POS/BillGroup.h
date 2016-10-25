@@ -157,6 +157,13 @@ private:	// User declarations
     bool ClipOptionSelected;
     bool ClipTabInTable;
     bool DoSplit(Database::TDBTransaction &transaction,std::map<__int64, TPnMOrder> orders);
+    void SplitItemOnClick(int itemSelected);
+    void RefreshItemStatus(Currency splitValue,int itemSelected,Database::TDBTransaction &DBTransaction);
+    void ToggleItemState(TGridButton *GridButton);
+    void SelectItem(TGridButton *GridButton);
+    void DeselectItem(TGridButton *GridButton);
+    void GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode);
+    Currency GetAvailableRedeemPoints(TMMContactInfo &Member);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

@@ -1,10 +1,21 @@
 ﻿using System;
+using System.Windows.Navigation;
+using Chefmate.Core;
 using Chefmate.Core.Model;
 
 namespace Chefmate.Infrastructure.Output
 {
     class PrinterFormatter
     {
+        private string _chitValue = "Chit:  {0}";
+        private string _customerName = "Name:  {0}";
+        private string _customerEmail = "Email:  {0}";
+        private string _customerPhone = "Phone:  {0}";
+        private string _customerAddress = "Address:  {0}";
+        private string _expectedTime = "Expected Time:  {0}";
+        private string _paymentStatus = "Payment Status:  {0}";
+        private string _tabname = "Table/Tab Name:  {0}";
+
         public PrinterFormatter()
         {
         }
@@ -56,23 +67,53 @@ namespace Chefmate.Infrastructure.Output
             BuildHeader(docketLayout, inItem.SCourseGroup.Order);
             BuildItem(docketLayout, inItem);
             BuildFooter(docketLayout, inItem.SCourseGroup.Order);
-
             return docketLayout;
         }
 
         private void BuildHeader(DocketLayout outDocketLayout, Order inOrder)
         {
-            PrinterInstruction currentInstruction;
             // Chit Information
-            currentInstruction = new PrinterInstruction();
-            currentInstruction.Value = inOrder.ChitValue;
-            outDocketLayout.AddInstruction(currentInstruction);
+            if (!string.IsNullOrWhiteSpace(inOrder.ChitValue))
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_chitValue, inOrder.ChitValue)));
             // Kitchen Timings
-            currentInstruction = new PrinterInstruction();
-            currentInstruction.Value = "IN  " + inOrder.SaleStartTime.ToString("T") + "\n" + "OUT " + DateTime.Now.ToString("T");
-            currentInstruction.DrawLineAfter = true;
-            outDocketLayout.AddInstruction(currentInstruction);
+            outDocketLayout.AddInstruction(GetInstruction("IN  " + inOrder.ArrivalTime.ToString("T") + "\n" + "OUT " + DateTime.Now.ToString("T")));
+            // Table/Tab Name
+            if (!string.IsNullOrWhiteSpace(inOrder.TableTabName) && inOrder.TableTabName != "Sale")
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_tabname, inOrder.TableTabName)));
+            // Customer Name
+            if (!string.IsNullOrWhiteSpace(inOrder.CustomerName))
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerName, inOrder.CustomerName)));
+            // Customer Email
+            if (!string.IsNullOrWhiteSpace(inOrder.CustomerEmail))
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerEmail, inOrder.CustomerEmail)));
+            // Customer Phone
+            if (!string.IsNullOrWhiteSpace(inOrder.CustomerPhone))
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerPhone, inOrder.CustomerPhone)));
+            // Customer Address
+            if (!string.IsNullOrWhiteSpace(inOrder.CustomerAddress))
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_customerAddress, inOrder.CustomerAddress)));
+            // Expected Time   
+            if (inOrder.DeliveryTime  != DateTime.MinValue)
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_expectedTime, inOrder.DeliveryTime.ToString("T"))));
+            // Payment Status 
+            if (!string.IsNullOrWhiteSpace(inOrder.PaymentStatus))
+                outDocketLayout.AddInstruction(GetInstruction(string.Format(_paymentStatus, inOrder.PaymentStatus), true));
+
+            outDocketLayout.GetLastInstruction().DrawLineAfter = true;
+
         }
+
+
+        private PrinterInstruction GetInstruction(string instructionText, bool addLineAfter = false, bool addLineBefore = false, bool cutAfter = false)
+        {
+            var currentInstruction = new PrinterInstruction();
+            currentInstruction.Value = instructionText;
+            currentInstruction.DrawLineAfter = addLineAfter;
+            currentInstruction.DrawLineBefore = addLineBefore;
+            currentInstruction.CutAfter = cutAfter;
+            return currentInstruction;
+        }
+
 
         private void BuildItem(DocketLayout outDocketLayout, Item inItem)
         {
@@ -98,17 +139,10 @@ namespace Chefmate.Infrastructure.Output
 
         private void BuildFooter(DocketLayout outDocketLayout, Order inOrder)
         {
-            PrinterInstruction currentInstruction;
             // Server Name
-            currentInstruction = new PrinterInstruction();
-            currentInstruction.Value = inOrder.ServerName;
-            currentInstruction.DrawLineBefore = true;
-            outDocketLayout.AddInstruction(currentInstruction);
+            outDocketLayout.AddInstruction(GetInstruction(inOrder.ServerName, addLineBefore: true));
             // Date
-            currentInstruction = new PrinterInstruction();
-            currentInstruction.Value = DateTime.Now.Date.ToString("d");
-            currentInstruction.CutAfter = true;
-            outDocketLayout.AddInstruction(currentInstruction);
+            outDocketLayout.AddInstruction(GetInstruction(DateTime.Now.Date.ToString("d"), cutAfter: true));
         }
     }
 }

@@ -133,6 +133,7 @@
 #include "ManagerLoyaltyVoucher.h"
 #include "ProductSearch.h"
 #include "OrderUtils.h"
+#include "MessageManager.h"
 using SfIntegration::Sf_svc_iface;
 using SfIntegration::Sf_svc_iface_params;//
 
@@ -878,7 +879,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 		{
 			DataType = eStaffCard;
 		}
-		else
+		else if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
 		{
 			LoginResult = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(DBTransaction, TempUserInfo);
 			if (LoginResult == lsAccepted || LoginResult == lsAccountBlocked)
@@ -903,8 +904,8 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 		{
 			DataType = eDiscountCard;
 		}
-		else if((TDeviceRealTerminal::Instance().ManagerMembership->IsCard(DBTransaction, TempUserInfo) == lsAccepted)&&
-                (!TGlobalSettings::Instance().IsThorlinkSelected))
+		else if(TDeviceRealTerminal::Instance().ManagerMembership->IsCard(DBTransaction, TempUserInfo) == lsAccepted &&
+                !TGlobalSettings::Instance().IsThorlinkSelected && !TGlobalSettings::Instance().LoyaltyMateEnabled)
 		{
 			LoginResult = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(DBTransaction, TempUserInfo);
 			if (LoginResult == lsAccepted || LoginResult == lsAccountBlocked)
@@ -921,16 +922,13 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
               TDeviceRealTerminal::Instance().ManagerMembership->AddMember(ContactInfo);
               newCard = true;
         }
-        else
+        else if(!TGlobalSettings::Instance().IsThorlinkSelected && !TGlobalSettings::Instance().LoyaltyMateEnabled)
 		{
-            if(!TGlobalSettings::Instance().IsThorlinkSelected)
+            LoginResult = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(DBTransaction, TempUserInfo);
+            if (LoginResult == lsAccepted || LoginResult == lsAccountBlocked)
             {
-                LoginResult = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(DBTransaction, TempUserInfo);
-                if (LoginResult == lsAccepted || LoginResult == lsAccountBlocked)
-                {
-                    DataType = eMemberCard;
-                    TabKey = TDBTab::GetTabByOwner(DBTransaction, TempUserInfo.ContactKey);
-                }
+                DataType = eMemberCard;
+                TabKey = TDBTab::GetTabByOwner(DBTransaction, TempUserInfo.ContactKey);
             }
 		}
 	}
@@ -1283,9 +1281,16 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 
 		if(!ItemFound && !(TGlobalSettings::Instance().IsThorlinkSelected))
 		{
-              DBTransaction.StartTransaction();
-              GetMemberByBarcode(DBTransaction,Data);
-              DBTransaction.Commit();
+              if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
+              {
+                 MessageBox("No Item Found, Press OK to continue.", "No Item Found", MB_OK + MB_ICONWARNING);
+              }
+              else
+              {
+                  DBTransaction.StartTransaction();
+                  GetMemberByBarcode(DBTransaction,Data);
+                  DBTransaction.Commit();
+              }
 		}
 	}
 }
@@ -2271,7 +2276,7 @@ void __fastcall TfrmSelectDish::lbDisplayDrawItem(TWinControl *Control, int Inde
 		}
 		else if (ItemRedirector->ItemType.Contains(itMembershipDisplay))
 		{
-			DollarAmount = "Pts " + FormatFloat("0.00", ItemRedirector->CompressedContainer->Container->AppliedMembership.Points.getPointsBalance());
+			DollarAmount = "Pts " + FormatFloat("0.00", ItemRedirector->CompressedContainer->Container->AppliedMembership.Points.getPointsBalance(pasDatabase));
 			pCanvas->Font->Style = TFontStyles() << fsBold;
 			pCanvas->Font->Color = (TColor)CL_STANDARD_MEMBER_INFO;
 			pCanvas->Brush->Color = clGreen;
@@ -7730,20 +7735,44 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
 {
 	TMMContactInfo TempUserInfo;
 	frmSelectDish->PreUserInfo = TDeviceRealTerminal::Instance().User;
+    bool openCashDrawer = false;
 
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
 	std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
 	TLoginSuccess Result = Staff->Login(this, DBTransaction, TempUserInfo, CheckOpenDrawer);
 	DBTransaction.Commit();
+    UnicodeString quickMessage = "";
 	if (Result == lsAccepted)
 	{
 		DBTransaction.StartTransaction();
 		TDeviceRealTerminal::Instance().User = TempUserInfo;
-		TDBSecurity::ProcessSecurity(DBTransaction, TDBSecurity::GetNextSecurityRef(DBTransaction), TDeviceRealTerminal::Instance().User.ContactKey, SecurityTypes[secOpenDraw],
-			TDeviceRealTerminal::Instance().User.Name, TDeviceRealTerminal::Instance().User.Initials, Now(), TDeviceRealTerminal::Instance().ID.Name);
-
-		TComms::Instance().KickLocalDraw(DBTransaction);
+        TStringList *MessageList = new TStringList;
+        ManagerMessage->GetListTitle(DBTransaction, MessageList, eCashDrawer);
+        if(MessageList->Count == 1)
+        {
+            delete MessageList;
+        }
+        else
+        {
+            delete MessageList;
+            std::auto_ptr <TfrmMessage> frmMessage(TfrmMessage::Create <TfrmMessage> (this, TDeviceRealTerminal::Instance().DBControl));
+            frmMessage->MessageType = eCashDrawer;
+            if(frmMessage->ShowModal() == mrOk)
+            {
+               quickMessage = frmMessage->TextResult;
+            }
+            else
+            {
+               openCashDrawer = true;
+            }
+        }
+        if(!openCashDrawer)
+        {
+            TComms::Instance().KickLocalDraw(DBTransaction);
+            TDBSecurity::ProcessSecurity(DBTransaction, TDBSecurity::GetNextSecurityRef(DBTransaction), TDeviceRealTerminal::Instance().User.ContactKey, SecurityTypes[secOpenDraw],
+            TDeviceRealTerminal::Instance().User.Name, TDeviceRealTerminal::Instance().User.Initials, Now(), TDeviceRealTerminal::Instance().ID.Name, quickMessage);
+        }
 		DBTransaction.Commit();
 	}
 	else if (Result == lsDenied)
@@ -7755,7 +7784,6 @@ void __fastcall TfrmSelectDish::tbtnOpenDrawerMouseClick(TObject *Sender)
 		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 	}
       AutoLogOut();
-
     //MM-1647: Ask for chit if it is enabled for every order.
     NagUserToSelectChit();
 }
@@ -8763,6 +8791,7 @@ void TfrmSelectDish::ResetPOS()
 			tgridOrderCourseMouseClick(tgridOrderCourse, mbLeft, TShiftState(), tgridOrderCourse->Buttons[0][0]);
 		}
 	}
+
     TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
     Membership.Clear();
 	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
@@ -8794,7 +8823,7 @@ void TfrmSelectDish::ResetPOS()
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()
 {
-    bool enableQuickPayment = !TGlobalSettings::Instance().EnableWaiterStation && !IsWaiterLogged && !TGlobalSettings::Instance().PointOnly;
+    bool enableQuickPayment = !TGlobalSettings::Instance().EnableWaiterStation && !IsWaiterLogged && !TGlobalSettings::Instance().PointOnly && !TDeviceRealTerminal::Instance().PaymentSystem->ForceTender;
     bool enableCashSale = !TGlobalSettings::Instance().PointOnly && !TGlobalSettings::Instance().EnableWaiterStation  &&  !IsWaiterLogged
                            && !TDeviceRealTerminal::Instance().PaymentSystem->ForceTender;
     tbtnCashSale->Enabled = enableCashSale;
@@ -12595,30 +12624,38 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
 	if (Order != NULL)
 	{
        bool itemAdded = false;
-       for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
-        {
-           TItemComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
-           double currentQty  = Item->GetQty();
-           Item->SetQtyCustom(1);
-           if(TOrderUtils::Match(Item,Order) && !TOrderUtils::SoloItem(Order))
+
+       if(TGlobalSettings::Instance().MergeSimilarItem)
+       {
+           for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
            {
-              itemAdded = true;
-              Item->SetQtyCustom(currentQty + 1);
-              break;
-           }
-           else
-           {
-             Item->SetQtyCustom(currentQty);
-           }
-        }
-        if(!itemAdded)
+               TItemComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
+               double currentQty  = Item->GetQty();
+               Item->SetQtyCustom(1);
+               if(TOrderUtils::Match(Item,Order) && !TOrderUtils::SoloItem(Order))
+               {
+                  itemAdded = true;
+                  Item->SetQtyCustom(currentQty + 1);
+                  break;
+               }
+               else
+               {
+                   Item->SetQtyCustom(currentQty);
+               }
+            }
+            if(!itemAdded)
+              SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
+       }
+       else
+       {
           SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
+       }
+        //if(!itemAdded)
+        //  SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
 		TManagerFreebie::IsPurchasing(inDBTransaction, SeatOrders[SelectedSeat]->Orders->List);
 		CheckDeals(inDBTransaction);
 		ApplyMemberDiscounts(inDBTransaction,false);
 	}
-
-
 
 	RedrawSeatOrders();
 	TotalCosts();
@@ -13823,7 +13860,7 @@ void __fastcall TfrmSelectDish::tbtnMemberDisplayPageDownMouseClick(TObject *Sen
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::OnSmartCardInserted(TSystemEvents *Sender)
 {
-  if(!Membership.Applied())
+  if(!Membership.Applied() && Active)
   {
 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;

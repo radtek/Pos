@@ -12,8 +12,9 @@
 #pragma link "TouchControls"
 #pragma resource "*.dfm"
 //---------------------------------------------------------------------------
-__fastcall TfrmSyndCodeGui::TfrmSyndCodeGui(TComponent* Owner)
-   : TZForm(Owner)
+__fastcall TfrmSyndCodeGui::TfrmSyndCodeGui(TComponent* Owner,TManagerSyndCode &inManagerSyndCode)
+   : TZForm(Owner),
+   ManagerSyndCode(inManagerSyndCode)
 {
 
 }
@@ -34,11 +35,10 @@ void __fastcall TfrmSyndCodeGui::tbtnNameMouseClick(TObject *Sender)
    tbtnName->Caption = SyndCode.Name;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmSyndCodeGui::TouchBtn3MouseClick(TObject *Sender)
 {
    // Run the Controller.
-  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+   std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
    frmTouchKeyboard->MaxLength = 50;
    frmTouchKeyboard->AllowCarriageReturn = false;
    frmTouchKeyboard->StartWithShiftDown = false;
@@ -48,7 +48,7 @@ void __fastcall TfrmSyndCodeGui::TouchBtn3MouseClick(TObject *Sender)
    {
       if(frmTouchKeyboard->KeyboardText.Length() > 7  || frmTouchKeyboard->KeyboardText.Length() == 0)
       {
-         SyndCode.SyndCode = frmTouchKeyboard->KeyboardText;
+         SyndCode.OriginalSyndCode = SyndCode.DecryptedSyndCode = frmTouchKeyboard->KeyboardText;
          tbtnName->Caption = "Name : " + SyndCode.Name;         
       }
       else
@@ -63,13 +63,11 @@ void __fastcall TfrmSyndCodeGui::tbtnEnabledMouseClick(TObject *Sender)
    SyndCode.Enabled = !SyndCode.Enabled;
    tbtnEnabled->Caption = (SyndCode.Enabled == true) ? "Enabled" : "Disabled";
 }
-
 //---------------------------------------------------------------------------
 void __fastcall TfrmSyndCodeGui::btnCloseMouseClick(TObject *Sender)
 {
    ModalResult = mrOk;
 }
-
 //---------------------------------------------------------------------------
 void __fastcall TfrmSyndCodeGui::TouchBtn4MouseClick(TObject *Sender)
 {
@@ -83,6 +81,7 @@ void __fastcall TfrmSyndCodeGui::FormShow(TObject *Sender)
    tbtnName->Caption = "Name : " + SyndCode.Name;
    tbtnEnabled->Caption = (SyndCode.Enabled == true) ? "Enabled" : "Disabled";
    tbtnEncryption->Caption = (SyndCode.DefaultEncryptCode == true) ? " Use For Encryption Code : True" : " Use For Encryption Code : False";
+   btnUseForCom->Caption = (SyndCode.UseForCom == true) ? " MM Cloud Communication : True" : " MM Cloud Communication : False";
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSyndCodeGui::FormResize(TObject *Sender)
@@ -106,6 +105,19 @@ void __fastcall TfrmSyndCodeGui::tbtnEncryptionMouseClick(TObject *Sender)
 {
    SyndCode.DefaultEncryptCode = !SyndCode.DefaultEncryptCode;
    tbtnEncryption->Caption = (SyndCode.DefaultEncryptCode == true) ? " Use For Encryption Code : True" : " Use For Encryption Code : False";
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmSyndCodeGui::btnUseForComMouseClick(TObject *Sender)
+{
+  if(SyndCode.UseForCom || ManagerSyndCode.CanUseForCommunication(SyndCode.SyndCodeKey))
+  {
+    SyndCode.UseForCom = !SyndCode.UseForCom;
+    btnUseForCom->Caption = (SyndCode.UseForCom == true) ? " MM Cloud Communication : True" : " Use For Communication : False";
+  }
+  else
+  {
+         MessageBox("You have setup a Syndicate Code for communication with Menumate Cloud already. This option can not be set this Syndicate Code.", "Warning", MB_OK);
+  }
 }
 //---------------------------------------------------------------------------
 

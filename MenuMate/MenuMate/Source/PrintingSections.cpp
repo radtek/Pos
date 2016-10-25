@@ -26,6 +26,7 @@
 #include "DiscountGroup.h"
 #include "MMTouchKeyboard.h"
 #include "ZForm.h"
+#include "ReceiptUtility.h"
 //#include <wchar.h>
 
 
@@ -301,6 +302,9 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiCurrentYearPts, "Current Year Points");
 	DefaultCaption[epofiCurrentYearPts] = "Current Year Points";
+
+    Instructions[i++] = InstructionPair(epofiPrintReceiptVoidFooter, "Receipt Void Footer");
+	DefaultCaption[epofiPrintReceiptVoidFooter] = "Receipt Void Footer";
 }
 
 
@@ -476,6 +480,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
 	case epofiPrintZeroRated:
 	case epofiPrintRedeemableWeight:
     case epofiCurrentYearPts:
+    case epofiPrintReceiptVoidFooter:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -975,6 +980,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
             break;
         case epofiGroupItems:
 			PrintItemRavelled(PrintJob, true);
+			break;
+        case epofiPrintReceiptVoidFooter:
+			PrintReceiptFooterSecond(PrintJob);
 			break;
 		default:
 			break;
@@ -1580,12 +1588,29 @@ void TPrintSection::PrintReceiptInfo(TReqPrintJob *PrintJob)
 	pPrinter->Line->Columns[0]->Text = TimeString;
 	pPrinter->AddLine();
 
+    ShowRefundReference(PrintJob) ;
+
 	// populate ReceiptDetails list
 	PrintJob->ReceiptDetails->Add( TerminalName + " " + PrintJob->Header.RequestingDevice->ID.ComputerName );
 	PrintJob->ReceiptDetails->Add( PrintJob->Waiter + " " + CurrentSeatCount );
 	PrintJob->ReceiptDetails->Add( TimeString );
 }
-
+//---------------------------------------------------------------------------
+void TPrintSection::ShowRefundReference(TReqPrintJob *PrintJob)
+{
+    if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
+          && TGlobalSettings::Instance().CaptureRefundRefNo)
+    {
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taCenter;
+        pPrinter->Line->Columns[0]->Text = "OR No. ";
+        pPrinter->Line->Columns[0]->Text += TReceiptUtility::ModifyInvoiceNumber(PrintJob->Transaction->RefundRefReceipt,
+                                                   ReceiptLength);
+        pPrinter->AddLine();
+    }
+}
+//---------------------------------------------------------------------------
 void TPrintSection::PrintSessionDate(TReqPrintJob *PrintJob)
 {
 	UnicodeString CurrentDate = Date();
@@ -2456,20 +2481,23 @@ void TPrintSection::PrintPointsInformation(TReqPrintJob *PrintJob)
            ||PrintJob->Transaction->Membership.MemberSource ==  emsBarcode)
 		{
 
-             if(TGlobalSettings::Instance().LoyaltyMateEnabled &&
+             /*if(TGlobalSettings::Instance().LoyaltyMateEnabled &&
                 !TGlobalSettings::Instance().IsPOSOffline)
                 {
                     PrintJob->Transaction->Membership.Member.Points.ClearBySource(pasDatabase) ;
                       // Putting in the Points Earned.
                     TPointsTypePair typepair1( pttEarned,ptstLoyalty );
                     TPointsType type1( pasDatabase, typepair1, pesExported);
-                    PrintJob->Transaction->Membership.Member.Points.Load( type1, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint );
+                    double pointsEarned = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint -
+                    TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableBDPoint -
+                    TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableFVPoint;
+                    PrintJob->Transaction->Membership.Member.Points.Load( type1,pointsEarned );
 
                     // Putting in the Points Loaded ( Purchased ).
                     TPointsTypePair typepair2( pttPurchased,ptstAccount );
                     TPointsType type2( pasDatabase, typepair2, pesExported );
                     PrintJob->Transaction->Membership.Member.Points.Load( type2, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableLoadedPoint );
-                }
+                }*/
 			pPrinter->Add("Current Points|" + FormatFloat("0.00",PrintJob->Transaction->Membership.Member.Points.getPointsBalance(pasDatabase)));
 
 			if (PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRedeemed() != 0 || PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRefunded() != 0)
@@ -5964,7 +5992,7 @@ void TPrintSection::PrintItemRavelled(TReqPrintJob *PrintJob, bool groupItemsTem
 					pPrinter->Line->Columns[1]->Alignment = taRightJustify;
 					pPrinter->Line->Columns[0]->Kanji = pPrinter->KanjiPrinter;
 					//// add.....
-				
+
 					pPrinter->Line->Columns[0]->Text = CurrentOrderBundle->ItemLine;   // add..
 					pPrinter->Line->Columns[1]->Text = SeatsList;
 
@@ -6166,53 +6194,121 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 				pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptHeader->Strings[i];
 				pPrinter->AddLine();
 			}
-
-			pPrinter->Line->Columns[0]->Text = "Tax Invoice";
-			pPrinter->AddLine();
-            pPrinter->Line->Columns[0]->Text    =   TGlobalSettings::Instance().ReceiptNumberLabel;
-            if(PrintJob->Transaction->TypeOfSale == RegularSale)
-               {
-                 pPrinter->Line->Columns[0]->Text += LeftPadString( PrintJob->Transaction->InvoiceNumber, "0", ReceiptLength);
-               }
-            else
-               {
-                  pPrinter->Line->Columns[0]->Text += PrintJob->Transaction->InvoiceNumber;
-               }
-			pPrinter->AddLine();
-
+            if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)&&
+                 TGlobalSettings::Instance().ShowVoidOrRefund)
+             {
+                 pPrinter->Line->Columns[0]->Text = "VOID";//PrintVoidOnReceipt(PrintJob);
+                 pPrinter->AddLine();
+             }
+            if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem ||
+                !(PrintJob->Transaction->CreditTransaction))
+            {
+                PrintTaxInvoice(PrintJob);
+                if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
+                    && TGlobalSettings::Instance().ShowVoidNumber)
+                {
+                    pPrinter->Line->Columns[0]->Text    =   "Void No.";
+                }
+                else
+                    pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().ReceiptNumberLabel.Trim();
+                if(PrintJob->Transaction->TypeOfSale == RegularSale)
+                {
+                     AnsiString invoiceNumber = (AnsiString)PrintJob->Transaction->InvoiceNumber;
+                     AnsiString prefix = TReceiptUtility::ExtractInvoiceNumber(invoiceNumber);
+                     pPrinter->Line->Columns[0]->Text += prefix +
+                               TReceiptUtility::ModifyInvoiceNumber(invoiceNumber, ReceiptLength);
+                }
+                else
+                {
+                      pPrinter->Line->Columns[0]->Text += PrintJob->Transaction->InvoiceNumber;
+                }
+                pPrinter->AddLine();
+            }
 		}
 	}
 }
 
-UnicodeString TPrintSection::LeftPadString(UnicodeString inString, UnicodeString inChar, int strLen)
+//-----------------------------------------------------------------------------
+void TPrintSection::PrintTaxInvoice(TReqPrintJob *PrintJob)
 {
-	for(int i = inString.Length(); i < strLen; i++)
-	inString = inChar + inString;
-	return inString;
+    if(!TGlobalSettings::Instance().HideTaxInvoice)
+    {
+        pPrinter->Line->Columns[0]->Text = "Tax Invoice";
+        pPrinter->AddLine();
+    }
 }
-
+//-----------------------------------------------------------------------------
+void TPrintSection::PrintVoidOnReceipt(TReqPrintJob *PrintJob)
+{
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taCenter;
+        pPrinter->Line->Columns[0]->Text = "VOID";
+        pPrinter->AddLine();
+}
+//-----------------------------------------------------------------------------
+void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
+{
+    if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
+                && TGlobalSettings::Instance().SetVoidFooter)
+    {
+        if (PrintJob->ReceiptVoidFooter->Count == 0)
+        {
+            Empty = true;
+        }
+        else
+        {
+            pPrinter->Line->ColCount = 1;
+            pPrinter->Line->FontInfo.Bold = false;
+            pPrinter->Line->FontInfo.Height = fsNormalSize;
+            pPrinter->Line->FontInfo.Width = fsNormalSize;
+            pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+            pPrinter->Line->Columns[0]->Alignment = taCenter;
+            for (int i = 0; i < PrintJob->ReceiptVoidFooter->Count; i++)
+            {
+                pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptVoidFooter->Strings[i];
+                pPrinter->AddLine();
+            }
+        }
+    }
+    else
+    {
+        Empty = true;
+    }
+}
+//-----------------------------------------------------------------------------
 void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
 {
-	if (PrintJob->ReceiptFooter->Count == 0)
-	{
-		Empty = true;
-	}
-	else
-	{
-		pPrinter->Line->ColCount = 1;
-		pPrinter->Line->FontInfo.Bold = false;
-		pPrinter->Line->FontInfo.Height = fsNormalSize;
-		pPrinter->Line->FontInfo.Width = fsNormalSize;
-		pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-		pPrinter->Line->Columns[0]->Alignment = taCenter;
 
-		for (int i = 0; i < PrintJob->ReceiptFooter->Count; i++)
-		{
-			pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptFooter->Strings[i];
-			pPrinter->AddLine();
-		}
-	}
+    if((!TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction))
+         || !TGlobalSettings::Instance().SetVoidFooter)
+    {
+        if (PrintJob->ReceiptFooter->Count == 0)
+        {
+            Empty = true;
+        }
+        else
+        {
+            pPrinter->Line->ColCount = 1;
+            pPrinter->Line->FontInfo.Bold = false;
+            pPrinter->Line->FontInfo.Height = fsNormalSize;
+            pPrinter->Line->FontInfo.Width = fsNormalSize;
+            pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+            pPrinter->Line->Columns[0]->Alignment = taCenter;
+
+            for (int i = 0; i < PrintJob->ReceiptFooter->Count; i++)
+            {
+                pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptFooter->Strings[i];
+                pPrinter->AddLine();
+            }
+        }
+    }
+    else
+    {
+        Empty = true;
+    }
 }
+
 
 void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 {
@@ -6317,12 +6413,33 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
             }
 			else
 			{
-				pPrinter->Add(SubPayment->Name + "|" + CurrToStrF(
+                AnsiString paymentName = SubPayment->Name;
+                AnsiString cardType = SubPayment->CardType;
+                if(cardType != "" && cardType != NULL)
+                {
+                   paymentName = paymentName +"(" + cardType +")";
+                }
+
+				pPrinter->Add(paymentName + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
 		}
+
+       if(SubPayment->TipAmount != 0)
+        {
+            AnsiString paymentName = SubPayment->Name;
+            AnsiString cardType = SubPayment->CardType;
+            if(cardType != "" && cardType != NULL)
+            {
+                paymentName = paymentName +"(" + cardType +")";
+            }
+            pPrinter->Add(paymentName + " Tip " + "|" + CurrToStrF(
+            RoundToNearest(SubPayment->TipAmount, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+            ffNumber,
+            CurrencyDecimals));
+        }
 	}
 
 	if (PrintJob->PaymentType != ptPreliminary)
@@ -6360,18 +6477,30 @@ void TPrintSection::PrintPaymentSurcharges(TReqPrintJob *PrintJob)
 
 		if (SubPayment->GetAdjustment() != 0)
 		{
-			pPrinter->Line->Columns[1]->Width = CurrToStrF(
-			RoundToNearest(SubPayment->GetAdjustment(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
-			ffNumber,
-			CurrencyDecimals).Length() + 1;
-			pPrinter->Line->Columns[0]->Width = pPrinter->Width - pPrinter->Line->Columns[1]->Width;
-			pPrinter->Line->Columns[0]->Text = SubPayment->AdjustmentReason;
-			pPrinter->Line->Columns[1]->Text = CurrToStrF(
-			RoundToNearest(SubPayment->GetAdjustment(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
-			ffNumber,
-			CurrencyDecimals);
-			pPrinter->AddLine();
-			Empty = false;
+            AnsiString text = SubPayment->AdjustmentReason;
+            if(SubPayment->IsLoyaltyGiftCard())
+            {
+               text = "Purchased Gift Card #" + PrintJob->Transaction->PurchasedGiftVoucherInformation->VoucherNumber;
+            }
+            pPrinter->Line->Columns[1]->Width = CurrToStrF(RoundToNearest(SubPayment->GetAdjustment(), 0.01,
+                                               TGlobalSettings::Instance().MidPointRoundsDown),ffNumber,CurrencyDecimals).Length() + 1;
+            pPrinter->Line->Columns[0]->Width = pPrinter->Width - pPrinter->Line->Columns[1]->Width;
+            pPrinter->Line->Columns[0]->Text = text;
+            pPrinter->Line->Columns[1]->Text = CurrToStrF(
+            RoundToNearest(SubPayment->GetAdjustment(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),ffNumber,CurrencyDecimals);
+            pPrinter->AddLine();
+
+            if(SubPayment->IsLoyaltyGiftCard())
+            {
+                AnsiString balance = CurrToStr(RoundToNearest(PrintJob->Transaction->PurchasedGiftVoucherInformation->GiftVoucherAmount +
+                                                           PrintJob->Transaction->PurchasedGiftVoucherInformation->RedeemedAmount,0.01,
+                                                           TGlobalSettings::Instance().MidPointRoundsDown));
+                pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+                pPrinter->Line->Columns[0]->Text = "Balance " + balance;
+                pPrinter->Line->Columns[1]->Text = "";
+                pPrinter->AddLine();
+            }
+            Empty = false;
 		}
 		if (SubPayment->GetRefundPointsValue() != 0)
 		{

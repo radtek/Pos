@@ -24,12 +24,8 @@ void __fastcall TManagerLoyaltyVoucher::loyaltyMateOperationCompleted(TObject* s
 void TManagerLoyaltyVoucher::GetPocketVoucherDetail(AnsiString voucherCode,TVoucherDetail &VoucherDetail)
 {
     bool result = false;
-    TManagerSyndCode managerSyndCode;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
     if(syndicateCode.Valid())
      {
         TLoyaltyMatePocketVoucherThread* voucherThread = new TLoyaltyMatePocketVoucherThread(syndicateCode);
@@ -65,15 +61,11 @@ void TManagerLoyaltyVoucher::GetPocketVoucherDetail(AnsiString voucherCode,TVouc
     }
 }
 //------------------------------------------------------------------------------
-double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode)
+double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode,bool &isValidGiftCard)
 {
     double balance = 0;
-    TManagerSyndCode managerSyndCode;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
 
     if(syndicateCode.Valid())
      {
@@ -99,6 +91,7 @@ double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode)
                MessageBox("Supplied voucher is not valid. please use another voucher or payment method.","Menumate", MB_ICONERROR + MB_OK);
             else
                MessageBox(voucherThread->ErrorMessage,"Menumate", MB_ICONERROR + MB_OK);
+            isValidGiftCard = false;
         }
         else
             balance = voucherThread->GiftCardBalance;
@@ -112,12 +105,8 @@ double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode)
 bool TManagerLoyaltyVoucher::ProcessVouchers(TVoucherUsageDetail VoucherUsageDetail)
 {
     bool transactionStatus = false;
-    TManagerSyndCode managerSyndCode;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
 
     if(syndicateCode.Valid())
      {
@@ -151,12 +140,8 @@ bool TManagerLoyaltyVoucher::ProcessVouchers(TVoucherUsageDetail VoucherUsageDet
 bool TManagerLoyaltyVoucher::ReleaseVouchers(TReleasedVoucherDetail ReleasedVoucherDetail)
 {
     bool transactionStatus = false;
-    TManagerSyndCode managerSyndCode;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    managerSyndCode.Initialise(DBTransaction);
-    TSyndCode syndicateCode =  managerSyndCode.GetDefaultSyndCode();
-    DBTransaction.Commit();
+    TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
+    TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
 
     if(syndicateCode.Valid())
      {
@@ -188,7 +173,7 @@ bool TManagerLoyaltyVoucher::ReleaseVouchers(TReleasedVoucherDetail ReleasedVouc
 // ---------------------------------------------------------------------------
 void TManagerLoyaltyVoucher::DisplayMemberVouchers(Database::TDBTransaction &DBTransaction,TMMContactInfo &MemberInfo)
 {
-  if( TGlobalSettings::Instance().LoyaltyMateEnabled
+  if( TGlobalSettings::Instance().LoyaltyMateEnabled  && !TGlobalSettings::Instance().IsPOSOffline
      && TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers.size() > 0)
   {
 	// Display Reports List
@@ -238,6 +223,11 @@ void TManagerLoyaltyVoucher::DisplayMemberVouchers(Database::TDBTransaction &DBT
             TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = SelectedItem.Title;
             MemberInfo.AutoAppliedDiscounts.insert(discountKey);
        }
+    }
+    else
+    {
+            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount =  "";
+            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName = "";
     }
   }
 }

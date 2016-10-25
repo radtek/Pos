@@ -254,10 +254,10 @@ TRvDataSetConnection *ravCheckRemoval;      //MM-4327
     TRvDataSetConnection *ravPointSpend;
     TIBQuery *qrBreakdownCategory;
     TRvDataSetConnection *ravBreakdownCategory;
-
-   
-
-
+    TIBQuery *qrSalesSummaryD;
+    TRvDataSetConnection *ravSalesSummaryD;
+    TIBQuery *qrSSDParemeter;
+    TRvDataSetConnection *ravSSDParameter;
 
 	void __fastcall qrMenuAfterScroll(TDataSet *DataSet);
 	void __fastcall qrAveSummaryAfterScroll(TDataSet *DataSet);
@@ -276,8 +276,14 @@ private:	// User declarations
 	TDateTime FixHalfHour(TDateTime HalfHour);
 	void  GetRoundedTime(TDateTime theTime, Word &theHour, Word &theMin, Word &theSec,Word &theMSec );
 	void  AdjustHalfHour( bool IncreaseHalfHour, Word &theHour, Word &theMin, bool &AfterMidnight );
-
     void ShowSql(AnsiString &s);
+    AnsiString _taxJoins;
+    AnsiString _selectSalesIncl;
+    AnsiString _groupByClause;
+    AnsiString _dayArcBillSubQuery;
+    AnsiString _groupingForDayArcbill;
+    AnsiString _arcBillSubQuery;
+    AnsiString _groupingForArcbill;
 
 public:		// User declarations
 	__fastcall TdmMMReportData(TComponent* Owner);
@@ -407,9 +413,15 @@ public:		// User declarations
     void SetupReprintOrder(TDateTime StartTime, TDateTime EndTime);
 
     void SetupProfiltLoss(TDateTime StartTime, TDateTime EndTime, TStrings *Locations);
- void SetupPointSpend(TDateTime StartTime, TDateTime EndTime, TStrings *Categories, TStrings *payments);
-  void SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDateTime EndDate, TStrings *Names) ;
-  void SetupBreakdownCategory(TStrings *Menus);
+    void SetupPointSpend(TDateTime StartTime, TDateTime EndTime, TStrings *Categories, TStrings *payments);
+    void SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDateTime EndDate, TStrings *Names) ;
+    void SetupBreakdownCategory(TStrings *Menus);
+    void SetupSalesSummaryD(TDateTime StartTime, TDateTime EndDate);
+
+    AnsiString nameOfTaxPayer;
+    AnsiString addressOfTaxPayer;
+    AnsiString tinNumber;
+    AnsiString serialNo;
 };
 
 

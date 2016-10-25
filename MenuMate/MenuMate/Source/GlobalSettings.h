@@ -449,6 +449,19 @@ public:
     bool ItemSearch;
     bool IsCloudSyncedForDiscount;
     bool ShowDarkBackground;
+    bool OpenCashDrawer;
+    bool HideReceiptNumberForRefundItem;
+    bool MergeSimilarItem;
+
+    bool HideTaxInvoice;
+    bool ExportReprintReceipt;
+    bool CaptureRefundRefNo;
+    bool SetVoidFooter;
+    UnicodeString ReceiptDigits;
+    std::auto_ptr<TStringList>VoidFooter;
+    bool ShowVoidOrRefund;
+    bool ShowVoidNumber;
+    UnicodeString EftPosTipGLCode;
     UnicodeString CSVPath;
     bool IsEnabledPeachTree;
     UnicodeString CSVExportIP;

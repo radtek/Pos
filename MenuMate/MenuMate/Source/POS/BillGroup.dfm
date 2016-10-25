@@ -102,8 +102,8 @@ object frmBillGroup: TfrmBillGroup
         ParentColor = True
         Caption = 'Print Prelim Receipt'
         ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
+        LatchedColor = -16777201
+        DisabledButtonColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tbtnReprintReceiptsMouseClick
       end
@@ -123,8 +123,8 @@ object frmBillGroup: TfrmBillGroup
         ParentColor = True
         Caption = 'Bill Entire Table'
         ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
+        LatchedColor = -16777201
+        DisabledButtonColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btnBillTableMouseClick
       end
@@ -144,8 +144,8 @@ object frmBillGroup: TfrmBillGroup
         ParentColor = True
         Caption = 'Bill Selected'
         ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
+        LatchedColor = -16777201
+        DisabledButtonColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btnBillSelectedMouseClick
       end
@@ -165,8 +165,8 @@ object frmBillGroup: TfrmBillGroup
         ParentColor = True
         Caption = 'Partial Payment'
         ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
+        LatchedColor = -16777201
+        DisabledButtonColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btnPartialPaymentMouseClick
       end
@@ -186,8 +186,8 @@ object frmBillGroup: TfrmBillGroup
         ParentColor = True
         Caption = 'Split Payment'
         ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
+        LatchedColor = -16777201
+        DisabledButtonColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btnSplitPaymentMouseClick
       end
@@ -207,8 +207,8 @@ object frmBillGroup: TfrmBillGroup
         ParentColor = True
         Caption = 'Transfer'
         ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
+        LatchedColor = -16777201
+        DisabledButtonColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btnTransferMouseClick
       end
@@ -228,8 +228,8 @@ object frmBillGroup: TfrmBillGroup
         ParentColor = True
         Caption = 'Membership'
         ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
+        LatchedColor = -16777201
+        DisabledButtonColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btnApplyMembershipMouseClick
       end
@@ -249,8 +249,8 @@ object frmBillGroup: TfrmBillGroup
         ParentColor = True
         Caption = 'Ok'
         ButtonColor = 18944
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
+        LatchedColor = -16777201
+        DisabledButtonColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btnCloseMouseClick
       end
@@ -270,8 +270,8 @@ object frmBillGroup: TfrmBillGroup
         ParentColor = True
         Caption = 'Discount'
         ButtonColor = 6052441
-        LatchedColor = clBtnFace
-        DisabledButtonColor = clBtnFace
+        LatchedColor = -16777201
+        DisabledButtonColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tbtnDiscountMouseClick
       end
@@ -336,8 +336,8 @@ object frmBillGroup: TfrmBillGroup
           Align = alLeft
           Color = 11587808
           ButtonColor = 9933970
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           ArrowType = atUp
           OnAutoRepeat = btnScrollBillUpAutoRepeat
@@ -350,8 +350,8 @@ object frmBillGroup: TfrmBillGroup
           Align = alRight
           Color = 11587808
           ButtonColor = 9933970
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           ArrowType = atDown
           OnAutoRepeat = btnScrollBillDownAutoRepeat
@@ -430,21 +430,20 @@ object frmBillGroup: TfrmBillGroup
           ParentFont = False
           ParentColor = True
           BevelOuter = bvNone
-          DefaultButtonColor = clInfoBk
-          DefaultButtonLatchedColor = clNavy
+          DefaultButtonColor = -16777201
+          DefaultButtonLatchedColor = -16777201
           LatchingProperties = [lkIndicator]
           OnMouseDown = tgridItemListMouseDown
           OnMouseUp = tgridItemListMouseUp
           AutoScale = True
           GridBorder = False
           RowCount = 1
-          ColCount = 1
+          ColCount = 2
           ParentGridColor = False
           GridColor = 14342874
           DefaultColWidth = 240
           DefaultRowHeight = 55
           ButtonGapHeight = 5
-          AutoButtonWidth = True
           VertScrollButtonPos = vsBelow
           VertScrollButtonHeight = 55
           HorizScrollButtonWidth = 70
@@ -525,12 +524,17 @@ object frmBillGroup: TfrmBillGroup
           ScrollBtnRight.DisabledColor = -2147483633
           ScrollBtnRight.LatchedFontColor = -2147483640
           Buttons = {
-            04000000400000008A213ADC9F9D77F1FB3FF700000059AB884EA9EE62ADFE3F
-            000080000080000000008000050000004100720069080000800C000000010000
-            00000000000000000000000000080000FF050000004100720069080000800C00
-            000001000000000000000000000000000000080000FF00000000010000000100
-            000001000000010000000100000001000000FF00000064000000010000000000
-            0000010000000000000000000000}
+            040000003F000000EF80234543FC71EBFB3F3B000000499649CF886499F4FC3F
+            B80000007145EB8B0F57B4BEFE3F00008000720069080000800C050000004100
+            720069080000FF0C00000001000000000000000000000000000000080000FF05
+            0000004100720069080000FF0C00000001000000000000000000000000000000
+            080000FF00000000010000000100000001000000010000000100000001000000
+            FF000000640000000100000000000000010000000000000000000000FFFFFF00
+            00008000180000FF050000004100720069080000FF0C00000001000000000000
+            000000000000000000080000FF050000004100720069080000FF0C0000000100
+            0000000000000000000000000000080000FF0000000001000000010000000100
+            0000010000000100000001000000FF0000006400000001000000000000000100
+            00000000000000000000}
         end
       end
       object pnlgridContainerListBoarder: TPanel
@@ -559,8 +563,8 @@ object frmBillGroup: TfrmBillGroup
           ParentFont = False
           ParentColor = True
           BevelOuter = bvNone
-          DefaultButtonColor = clWhite
-          DefaultButtonLatchedColor = clBtnFace
+          DefaultButtonColor = -16777201
+          DefaultButtonLatchedColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = tgridContainerListMouseClick
           AutoScale = True
@@ -652,7 +656,7 @@ object frmBillGroup: TfrmBillGroup
           ScrollBtnRight.DisabledColor = -2147483633
           ScrollBtnRight.LatchedFontColor = -2147483640
           Buttons = {
-            04000000330000005CF3C32265E0E9D6FB3F4800000089DA95A85D89DA95FD3F
+            040000003200000022D3B0DD2C4F22D3FB3F4800000089DA95A85D89DA95FD3F
             AD00000053083485405308B4FE3F000080000080000000008000050000004100
             720069080000FF0C00000001000000000000000000000000000000080000FF05
             0000004100720069080000FF0C00000001000000000000000000000000000000
@@ -698,8 +702,8 @@ object frmBillGroup: TfrmBillGroup
             ParentColor = True
             Caption = 'Select All'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnSelectAllMouseClick
           end
@@ -719,8 +723,8 @@ object frmBillGroup: TfrmBillGroup
             ParentColor = True
             Caption = 'Clear All'
             ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnClearAllMouseClick
           end
@@ -752,8 +756,8 @@ object frmBillGroup: TfrmBillGroup
           ParentFont = False
           Caption = 'Cancel Items'
           ButtonColor = 2200566
-          LatchedColor = clMaroon
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = tbtnCancelMouseClick
         end
@@ -773,8 +777,8 @@ object frmBillGroup: TfrmBillGroup
           ParentColor = True
           Caption = 'Split Items'
           ButtonColor = 6052441
-          LatchedColor = clMaroon
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = tbtnSplitMouseClick
         end
@@ -794,8 +798,8 @@ object frmBillGroup: TfrmBillGroup
           ParentColor = True
           Caption = 'Move Items'
           ButtonColor = 6052441
-          LatchedColor = clMaroon
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = tbtnMoveMouseClick
         end
@@ -815,8 +819,8 @@ object frmBillGroup: TfrmBillGroup
           ParentColor = True
           Caption = 'Select'
           ButtonColor = 6052441
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = tbtnSelectZoneMouseClick
         end
