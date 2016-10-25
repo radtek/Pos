@@ -1,11 +1,11 @@
 ::
 ::
-set sv_version=6.31.0.0
+set sv_version=6.31.0.1
 SET TAGLABEL=%sv_version%
 SET VERLABEL=%sv_version%
 SET MMVERSION=%sv_version%
 SET UPDATE=FALSE
-REM SET BASEDIR=C:\GitCloud\%BASEDIR%
+REM SET BASEDIR=C:\CloudGit\%BASEDIR%
 call SetPath.local.bat
 
 ::
