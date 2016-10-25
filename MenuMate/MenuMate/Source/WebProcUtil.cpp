@@ -338,6 +338,7 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
 
      	ProcessKitchenMod(true, PaymentTransaction);
 
+        //MessageBox( "Kitchen Docket Prepared ", "Pos droid", MB_OK + MB_ICONWARNING);
         if(PaymentTransaction.Orders->Count > 0 && TDeviceRealTerminal::Instance().KitchenMod->Enabled)
         {
             for (int i = 0; i <PaymentTransaction.Orders->Count; i++)
@@ -348,7 +349,7 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
                     Order->ItemOrderedFrom = TDeviceRealTerminal::Instance().Menus->FetchItemByKey(Order->OriginalItemKey);
                 }
             }
-            completeOrderToChefMate(&PaymentTransaction);
+            //completeOrderToChefMate(&PaymentTransaction);
         }
 
 
@@ -427,8 +428,10 @@ void __fastcall TWebProcUtil::ProcessWebOrder(Database::TDBTransaction &DBTransa
 		// Stock
 		ProcessStock(PaymentTransaction);
 		// Print the Order to the Kitchen.
-      
+
 		PrintKitchenDockets(PaymentTransaction, WebKey,IntToStr(WebKey),"");
+        MessageBox( "PrintKitchenDockets(PaymentTransaction, WebKey,IntToStr(WebKey),"");", "ProcessWebOrder", MB_OK + MB_ICONWARNING);
+
 		// Print the Receipts.
 		AutoPrintReceipts(TabWeb, PaymentTransaction);
 
@@ -514,6 +517,7 @@ void __fastcall TWebProcUtil::ProcessPrintJob(Database::TDBTransaction &DBTransa
           	PrintKitchenDockets(PaymentTransaction, 0,TransNo,DeviceName);
 			// Print the Receipts.
 			AutoPrintReceipts(PaymentTransaction.SalesType, PaymentTransaction);
+            //MessageBox( "PrintKitchenDockets(PaymentTransaction, 0,TransNo,DeviceName);", "ProcessPrintJob", MB_OK + MB_ICONWARNING);
 
 		}
 		else
@@ -686,6 +690,7 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
             PrintTransaction->ChitNumber = PaymentTransaction.ChitNumber;
             Request->MiscData["PartyName"] = Order->PartyName;
 
+            MessageBox( IntToStr(PaymentTransaction.Orders->Count), "Pos droid", MB_OK + MB_ICONWARNING);
             for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
             {
                 TSecurityReference *OldSecRef = Order->Security->SecurityGetType(secCredit);
@@ -718,6 +723,7 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
             PrintTransaction->WebOrderKey =  WebKey;
 
             Request->Transaction->Money.Recalc(*Request->Transaction);
+            MessageBox( IntToStr(PrintTransaction->Orders->Count), "Pos droid", MB_OK + MB_ICONWARNING);
             if (PrintTransaction->Orders->Count > 0)
             {
 	            std::auto_ptr<TKitchen> Kitchen(new TKitchen());
@@ -729,6 +735,7 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
                     throw Exception("Printing Some Orders Failed, Please Check Printer.");
                 }
                 ManagerDockets->Archive(Request.get());
+                completeOrderToChefMate(PrintTransaction.get());
             }
         }
     }
@@ -982,24 +989,17 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 //---------------------------------------------------------------------------
 void __fastcall TWebProcUtil::completeOrderToChefMate(TPaymentTransaction* inTransaction)
 {
-    std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    TMMContactInfo memberInfo = TDBWebUtil::LoadMemberDetails(DBTransaction, inTransaction->WebOrderKey);
-    UnicodeString paymentStatus = TDBWebUtil::LoadPaymentStatus(DBTransaction, inTransaction->WebOrderKey);
-       ///todo
-    if( ChefMateClientManager->ChefMateEnabled() )
-	{
-        CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
-        if( error == CMC_ERROR_FAILED )
-        {
-            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to send an complete order to Chefmate");
-        }
+
+    if(inTransaction->WebOrderKey > 0)
+    {
+        //MessageBox( "Start WebOrders ", "Pos droid", MB_OK + MB_ICONWARNING);
+        sendWebOrderToChefmate(inTransaction);
     }
     else
     {
-    	TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to Open Chefmate Interface");
-    }
+        //MessageBox( "Start Posdroid Orders ", "Pos droid", MB_OK + MB_ICONWARNING);
+        sendPosDroidOrderToChefmate(inTransaction);
+    }   ///todo
 }
 
 //---------------------------------------------------------------------------
@@ -1074,3 +1074,52 @@ UnicodeString TWebProcUtil::checkWebOrderType(Database::TDBTransaction &DBTransa
     }
     return orderType;
 }
+
+void TWebProcUtil::sendWebOrderToChefmate(TPaymentTransaction* inTransaction)
+{
+    try
+    {
+        std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
+        if( ChefMateClientManager->ChefMateEnabled() )
+        {
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TMMContactInfo memberInfo = TDBWebUtil::LoadMemberDetails(DBTransaction, inTransaction->WebOrderKey);
+            UnicodeString paymentStatus = TDBWebUtil::LoadPaymentStatus(DBTransaction, inTransaction->WebOrderKey);
+            //MessageBox( "Send Posdroid Orders ", "Pos droid", MB_OK + MB_ICONWARNING);
+            //MessageBox( IntToStr(inTransaction->WebOrderKey), "paymentStatus", MB_OK + MB_ICONWARNING);
+            CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
+            if( error == CMC_ERROR_FAILED )
+            {
+                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to send an complete order to Chefmate");
+            }
+            DBTransaction.Commit();
+        }
+    }
+    catch(Exception & E)
+    {
+       TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to Open Chefmate Interface");
+    }
+}
+
+void TWebProcUtil::sendPosDroidOrderToChefmate(TPaymentTransaction* inTransaction)
+{
+   try
+    {
+        std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
+        if( ChefMateClientManager->ChefMateEnabled() )
+        {
+            MessageBox( "Send POSDroid  Order ", "Pos Droid", MB_OK + MB_ICONWARNING);
+            CMC_ERROR error =  ChefMateClientManager->SendCompleteOrder(inTransaction);
+            if( error == CMC_ERROR_FAILED )
+            {
+                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Pos Droid failed to send an complete order to Chefmate");
+            }
+        }
+    }
+    catch(Exception & E)
+    {
+       TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Pos Droid failed to Open Chefmate Interface");
+    }
+}
+

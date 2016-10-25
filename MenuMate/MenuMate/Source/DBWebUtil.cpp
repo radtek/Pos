@@ -457,7 +457,7 @@ bool TDBWebUtil::LoadItemComplete(Database::TDBTransaction &DBTransaction, TItem
 			Order->ItemType = static_cast <TItemType> (IBInternalQuery->FieldByName("Menu_Type")->AsInteger);
 			Order->OrderType = NormalOrder;
 			Order->Course = IBInternalQuery->FieldByName("Course_Name")->AsString;
-			Order->CourseKitchenName = UTF8ToUnicodeString((AnsiString)IBInternalQuery->FieldByName("Course_Kitchen_Name")->AsString);
+			Order->CourseKitchenName = IBInternalQuery->FieldByName("Course_Kitchen_Name")->AsString;
 
 			if (Order->CourseKitchenName == "")
 				Order->CourseKitchenName = Order->Course;
@@ -472,7 +472,7 @@ bool TDBWebUtil::LoadItemComplete(Database::TDBTransaction &DBTransaction, TItem
 			Order->ItemKey = IBInternalQuery->FieldByName("Item_Key")->AsInteger;
 			Order->ItemAppearanceOrder = IBInternalQuery->FieldByName("IAO")->AsInteger;
 			Order->Item = IBInternalQuery->FieldByName("Item_Name")->AsString;
-			Order->ItemKitchenName = UTF8ToUnicodeString((AnsiString)IBInternalQuery->FieldByName("Item_Kitchen_Name")->AsString);
+			Order->ItemKitchenName = IBInternalQuery->FieldByName("Item_Kitchen_Name")->AsString;
 			Order->OriginalItemKey = IBInternalQuery->FieldByName("Item_Key")->AsInteger;
 
 			if (Order->ItemKitchenName == "")
@@ -488,7 +488,7 @@ bool TDBWebUtil::LoadItemComplete(Database::TDBTransaction &DBTransaction, TItem
 			Order->FontInfo.Height = (IBInternalQuery->FieldByName("Print_Double_Height")->AsString == "T") ? fsDoubleSize : fsNormalSize;
 
 			Order->Size = IBInternalQuery->FieldByName("Size_Name")->AsString;
-			Order->SizeKitchenName = UTF8ToUnicodeString((AnsiString)IBInternalQuery->FieldByName("Size_Kitchen_Name")->AsString);
+			Order->SizeKitchenName = IBInternalQuery->FieldByName("Size_Kitchen_Name")->AsString;
 			if (Order->SizeKitchenName == "")
 				Order->SizeKitchenName = Order->Size;
 
@@ -664,7 +664,7 @@ bool TDBWebUtil::LoadItemComplete(Database::TDBTransaction &DBTransaction, TItem
 			Order->MenuName = IBInternalQuery->FieldByName("Menu_Name")->AsString;
 			Order->OrderType = NormalOrder;
 			Order->Course = IBInternalQuery->FieldByName("Course_Name")->AsString;
-			Order->CourseKitchenName = UTF8ToUnicodeString((AnsiString)IBInternalQuery->FieldByName("Course_Kitchen_Name")->AsString);
+			Order->CourseKitchenName = IBInternalQuery->FieldByName("Course_Kitchen_Name")->AsString;
 
 			if (Order->CourseKitchenName == "")
 				Order->CourseKitchenName = Order->Course;
@@ -679,7 +679,7 @@ bool TDBWebUtil::LoadItemComplete(Database::TDBTransaction &DBTransaction, TItem
 			Order->ItemKey = IBInternalQuery->FieldByName("Item_Key")->AsInteger;
 			Order->ItemAppearanceOrder = IBInternalQuery->FieldByName("IAO")->AsInteger;
 			Order->Item = IBInternalQuery->FieldByName("Item_Name")->AsString;
-			Order->ItemKitchenName = UTF8ToUnicodeString((AnsiString)IBInternalQuery->FieldByName("Item_Kitchen_Name")->AsString);
+			Order->ItemKitchenName = IBInternalQuery->FieldByName("Item_Kitchen_Name")->AsString;
 
 			if (Order->ItemKitchenName == "")
 				Order->ItemKitchenName = Order->Item;
@@ -753,7 +753,7 @@ bool TDBWebUtil::LoadItemOption(Database::TDBTransaction &DBTransaction, TItemOp
 		{ // If you find more than one product load them all?
       	Retval = true;
          Option.Name = IBInternalQuery->FieldByName("Option_Name")->AsString;
-         Option.KitchenName = UTF8ToUnicodeString((AnsiString)IBInternalQuery->FieldByName("Option_Kitchen_Name")->AsString);
+         Option.KitchenName = IBInternalQuery->FieldByName("Option_Kitchen_Name")->AsString;
          if(Option.KitchenName == "")
          {
 				Option.KitchenName = Option.Name;
