@@ -374,6 +374,11 @@ bool TMMContactInfo::ValidateLastName(AnsiString& message)
 bool TMMContactInfo::ValidateName(AnsiString& name,AnsiString& message)
 {
     bool isValid = false;
+    if(name.Length() < 2)
+    {
+             message = message + "must be at least two characters long";
+             return isValid;
+    }
     int nameCounter = 0;
     int specialCharacterCounter = 0;
     int lCount = 0;
