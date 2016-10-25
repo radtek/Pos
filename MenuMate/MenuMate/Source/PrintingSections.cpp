@@ -6325,6 +6325,11 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 	for (int i = 0; i < PrintJob->Transaction->PaymentsCount(); i++)
 	{
 		TPayment *SubPayment = PrintJob->Transaction->PaymentGet(i);
+        AnsiString paymentName = SubPayment->Name;
+        AnsiString cardType = SubPayment->CardType;
+        if(cardType != NULL && cardType != "")
+           paymentName = cardType;
+
 
 		if (SubPayment->GetCashOutTotal() != 0)
 		{
@@ -6337,28 +6342,28 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 
 			if (SubPayment->Properties & ePayTypeCSV)
 			{
-				pPrinter->Add(SubPayment->Name + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
 			else if (SubPayment->Properties & ePayTypePocketVoucher)
 			{
-				pPrinter->Add(SubPayment->Name + " " + SubPayment->VoucherCode + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " " + SubPayment->VoucherCode + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
 			else if (SubPayment->Properties & ePayTypePoints)
 			{
-				pPrinter->Add(SubPayment->Name + " Points Purchase" + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " Points Purchase" + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
 			else
 			{
-				pPrinter->Add(SubPayment->Name + " Cash Out" + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " Cash Out" + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
 				ffNumber,
 				CurrencyDecimals));
@@ -6376,21 +6381,21 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 
 			if (SubPayment->Properties & ePayTypeCSV)
 			{
-				pPrinter->Add(SubPayment->Name + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
 			else if (SubPayment->Properties & ePayTypePocketVoucher)
 			{
-				pPrinter->Add(SubPayment->Name + " " + SubPayment->VoucherCode + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " " + SubPayment->VoucherCode + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
 				ffNumber,
 				CurrencyDecimals));
 			}
             else if(SubPayment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled)
             {
-                pPrinter->Add(SubPayment->Name + "|" + CurrToStrF(
+                pPrinter->Add(paymentName + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
@@ -6413,7 +6418,7 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
             }
 			else
 			{
-				pPrinter->Add(SubPayment->Name + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
@@ -6422,7 +6427,7 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 
        if(SubPayment->TipAmount != 0)
         {
-            pPrinter->Add(SubPayment->Name + " Tip " + "|" + CurrToStrF(
+            pPrinter->Add(paymentName + " Tip " + "|" + CurrToStrF(
             RoundToNearest(SubPayment->TipAmount, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
             ffNumber,
             CurrencyDecimals));
