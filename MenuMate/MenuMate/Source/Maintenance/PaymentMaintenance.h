@@ -49,9 +49,9 @@ private:	// User declarations
 	Database::TDBControl &DBControl;
 	TListPaymentSystem *PaymentSystem;
 	int PaymentKey;
-    bool IsPaymentExist(Database::TDBTransaction &DBTransaction,AnsiString PaymentName);
 public:		// User declarations
 	TfrmPaymentMaintenance static *Create(TForm* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem);
+    bool IsPaymentExist(Database::TDBTransaction &DBTransaction,AnsiString PaymentName);
 
 };
 //---------------------------------------------------------------------------

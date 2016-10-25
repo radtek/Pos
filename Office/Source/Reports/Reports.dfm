@@ -367,7 +367,7 @@ object frmReports: TfrmReports
             Height = 153
             AutoSize = True
             CalColors.TitleBackColor = clNavy
-            Date = 37581.8198103588
+            Date = 37581.8390718403
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -386,7 +386,7 @@ object frmReports: TfrmReports
             Height = 153
             AutoSize = True
             CalColors.TitleBackColor = clMaroon
-            Date = 36795.8198103588
+            Date = 36795.8390718403
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
