@@ -1157,15 +1157,19 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
         {
            SmartCardContact.EMail = GetActivationEmailFromUser();
         }
-        int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,SmartCardContact.EMail);
-        if(localEmailContactKey != 0 && localEmailContactKey != SmartCardContact.ContactKey)
+
+        if(SmartCardContact.EMail != "" && SmartCardContact.EMail != NULL)
         {
-            LinkSmartCard(DBTransaction,localEmailContactKey,SmartCardContact);
-            TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,SmartCardContact);
-            existInLocalDb = true;
+            int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,SmartCardContact.EMail);
+            if(localEmailContactKey != 0 && localEmailContactKey != SmartCardContact.ContactKey)
+            {
+                LinkSmartCard(DBTransaction,localEmailContactKey,SmartCardContact);
+                TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,SmartCardContact);
+                existInLocalDb = true;
+            }
+            addDefaultPoints = true;
+            memberNotExist = GetMemberDetailFromEmail(SmartCardContact);
         }
-        addDefaultPoints = true;
-        memberNotExist = GetMemberDetailFromEmail(SmartCardContact);
     }
 
     if(!existInLocalDb && !memberNotExist && !TGlobalSettings::Instance().IsPOSOffline)
@@ -2412,14 +2416,21 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
        if(UserInfo.EMail == "" || UserInfo.EMail == NULL)
        {
           UserInfo.EMail = GetActivationEmailFromUser();
-          int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,UserInfo.EMail);
-          if(localEmailContactKey != 0 && localEmailContactKey != UserInfo.ContactKey && !HasCard(DBTransaction,localEmailContactKey))
+          if(UserInfo.EMail != "" && UserInfo.EMail != NULL)
           {
-            LinkMembers(DBTransaction, UserInfo.ContactKey, localEmailContactKey);
-            TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,UserInfo);
-            addDefaultPoints = true;
+              int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,UserInfo.EMail);
+              if(localEmailContactKey != 0 && localEmailContactKey != UserInfo.ContactKey && !HasCard(DBTransaction,localEmailContactKey))
+              {
+                LinkMembers(DBTransaction, UserInfo.ContactKey, localEmailContactKey);
+                TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,UserInfo);
+                addDefaultPoints = true;
+              }
+              memberNotExist = GetMemberDetailFromEmail(UserInfo);
           }
-          memberNotExist = GetMemberDetailFromEmail(UserInfo);
+          else
+          {
+             memberNotExist = GetMemberDetailFromBarcode(UserInfo,memberCardCode);
+          }
        }
      }
      else
