@@ -24,6 +24,8 @@ private:
 	static void __fastcall callAwayToChefMate(Database::TDBTransaction &DBTransaction,TCallAwayComplete* inCallAway);
     static bool __fastcall checkAutoPrintReceipts(TMMTabType TabType);
     static UnicodeString checkWebOrderType(Database::TDBTransaction &DBTransaction, int key);
+    static void sendWebOrderToChefmate(TPaymentTransaction* inTransaction);
+    static void sendPosDroidOrderToChefmate(TPaymentTransaction* inTransaction);
 
 public:
 	static void __fastcall ProcessWebOrder(TForm *inDisplayOwner, Database::TDBTransaction &DBTransaction, TWebOrder &WebOrder, TChitNumber &WebOrderChitNumber);
@@ -36,3 +38,4 @@ public:
 
 };
 #endif
+
