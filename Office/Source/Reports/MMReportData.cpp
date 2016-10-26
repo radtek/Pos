@@ -1599,7 +1599,7 @@ void TdmMMReportData::SetupTipsAndVouchers(TDateTime StartTime, TDateTime EndTim
 		"Select "
 			"ArcBill.Time_Stamp,"
 			"Contacts.Name,"
-			"ArcSurcharge.Pay_Type,"
+			"UPPER(ArcSurcharge.Pay_Type) Pay_Type ,"
 			"ArcSurcharge.Pay_Type_Details,"
 			"ArcSurcharge.SubTotal,"
 			"ArcBill.Invoice_Number "
@@ -1621,7 +1621,7 @@ void TdmMMReportData::SetupTipsAndVouchers(TDateTime StartTime, TDateTime EndTim
 	}
 	qrTipsVouchers->SQL->Text		=			qrTipsVouchers->SQL->Text +
 		"Order By "
-			"ArcSurcharge.Pay_Type,"
+			"UPPER(ArcSurcharge.Pay_Type),"
 			"ArcBill.Time_Stamp";
 
 	for (int i=0; i<PayTypes->Count; i++)
@@ -12354,7 +12354,7 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
     }
 
     qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
-    "ARCBILLPAY.PAY_GROUP PAYMENTGROUP_NAME, ARCBILLPAY.PAY_TYPE PAYMENT_NAME, SUM(ARCBILLPAY.SUBTOTAL) SUBTOTAL "
+    "ARCBILLPAY.PAY_GROUP PAYMENTGROUP_NAME, UPPER(ARCBILLPAY.PAY_TYPE) PAYMENT_NAME, SUM(ARCBILLPAY.SUBTOTAL) SUBTOTAL "
     "FROM ARCBILLPAY LEFT JOIN ARCBILL ON ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
 
     "WHERE ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime";
@@ -12364,7 +12364,7 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
         qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text + "AND (" + ParamString(Locations->Count, "ARCBILL.BILLED_LOCATION", "LocationParam") + ")";
     }
     qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
-    "GROUP BY ARCBILLPAY.PAY_GROUP, ARCBILLPAY.PAY_TYPE ";
+    "GROUP BY ARCBILLPAY.PAY_GROUP, UPPER(ARCBILLPAY.PAY_TYPE) ";
 
     if (Locations)
     {
