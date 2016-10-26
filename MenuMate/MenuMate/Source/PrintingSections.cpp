@@ -1604,7 +1604,10 @@ void TPrintSection::ShowRefundReference(TReqPrintJob *PrintJob)
         pPrinter->Line->ColCount = 1;
         pPrinter->Line->Columns[0]->Width = pPrinter->Width;
         pPrinter->Line->Columns[0]->Alignment = taCenter;
-        pPrinter->Line->Columns[0]->Text = "OR No. ";
+        if(TGlobalSettings::Instance().RefundReferenceLabel != "")
+            pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().RefundReferenceLabel;
+        else
+            pPrinter->Line->Columns[0]->Text = "OR NO.";
         pPrinter->Line->Columns[0]->Text += TReceiptUtility::ModifyInvoiceNumber(PrintJob->Transaction->RefundRefReceipt,
                                                    ReceiptLength);
         pPrinter->AddLine();
@@ -6194,10 +6197,19 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 				pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptHeader->Strings[i];
 				pPrinter->AddLine();
 			}
+            if(TGlobalSettings::Instance().SetSubHeader &&
+                (!TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)))
+            {
+                for (int i = 0; i < TGlobalSettings::Instance().SubHeader->Count; i++)
+                {
+                    pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().SubHeader->Strings[i];
+                    pPrinter->AddLine();
+                }
+            }
             if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)&&
                  TGlobalSettings::Instance().ShowVoidOrRefund)
              {
-                 pPrinter->Line->Columns[0]->Text = "VOID";//PrintVoidOnReceipt(PrintJob);
+                 pPrinter->Line->Columns[0]->Text = "VOID";
                  pPrinter->AddLine();
              }
             if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem ||

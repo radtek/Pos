@@ -21,8 +21,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
   OnDestroy = FormDestroy
   OnResize = FormResize
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object pgControl: TPageControl
@@ -35,10 +33,6 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
     object tsPrinting: TTabSheet
       Caption = 'tsPrinting'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel52: TPanel
         Left = 0
         Top = 0
@@ -5114,7 +5108,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 Left = 456
                 Top = 44
                 Width = 387
-                Height = 572
+                Height = 580
                 BevelOuter = bvNone
                 BorderWidth = 4
                 Color = 14342874
@@ -5130,7 +5124,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                   Left = 0
                   Top = 0
                   Width = 379
-                  Height = 564
+                  Height = 580
                   Margins.Left = 0
                   Margins.Top = 0
                   Margins.Right = 0
@@ -5156,7 +5150,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                       Left = 0
                       Top = 0
                       Width = 371
-                      Height = 554
+                      Height = 570
                       Align = alClient
                       Font.Charset = DEFAULT_CHARSET
                       Font.Color = clWindow
@@ -5172,7 +5166,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                         Left = 2
                         Top = 50
                         Width = 367
-                        Height = 502
+                        Height = 518
                         Caption = 'Receipt General Info'
                         object PanelGeneralInfo: TPanel
                           Left = 0
@@ -5440,13 +5434,13 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                         Left = 2
                         Top = 50
                         Width = 367
-                        Height = 502
+                        Height = 518
                         Caption = 'Receipt Custom Info'
                         object PanelCustomInfo: TPanel
                           Left = 0
                           Top = 0
                           Width = 387
-                          Height = 504
+                          Height = 520
                           BevelOuter = bvNone
                           BorderWidth = 4
                           Color = 14342874
@@ -5462,7 +5456,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             Left = 4
                             Top = 0
                             Width = 360
-                            Height = 498
+                            Height = 514
                             Caption = 'Receipt Customize Information'
                             Color = 14342874
                             Ctl3D = True
@@ -5477,8 +5471,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             ParentFont = False
                             TabOrder = 0
                             object LabelReceiptDigits: TLabel
-                              Left = 17
-                              Top = 200
+                              Left = 16
+                              Top = 193
                               Width = 146
                               Height = 19
                               Caption = 'Digits for Receipt No'
@@ -5524,7 +5518,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbExportReprintReceipt: TCheckBox
                               Left = 16
-                              Top = 104
+                              Top = 98
                               Width = 315
                               Height = 20
                               BiDiMode = bdLeftToRight
@@ -5542,7 +5536,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbPrintVoid: TCheckBox
                               Left = 16
-                              Top = 130
+                              Top = 124
                               Width = 315
                               Height = 20
                               BiDiMode = bdLeftToRight
@@ -5560,7 +5554,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbShowVoidNumber: TCheckBox
                               Left = 17
-                              Top = 159
+                              Top = 152
                               Width = 340
                               Height = 35
                               BiDiMode = bdLeftToRight
@@ -5577,8 +5571,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               OnClick = cbShowVoidNumberClick
                             end
                             object tbtnReceiptNumber: TTouchBtn
-                              Left = 247
-                              Top = 193
+                              Left = 200
+                              Top = 175
                               Width = 73
                               Height = 42
                               Font.Charset = DEFAULT_CHARSET
@@ -5596,8 +5590,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               OnAutoRepeat = tbtnReceiptNumberAutoRepeat
                             end
                             object tbtnReceiptNumberLabel: TTouchBtn
-                              Left = 194
-                              Top = 419
+                              Left = 128
+                              Top = 436
                               Width = 105
                               Height = 70
                               Font.Charset = DEFAULT_CHARSET
@@ -5615,8 +5609,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               OnMouseClick = tbtnReceiptNumberLabelMouseClick
                             end
                             object tbtnReprintLabel: TTouchBtn
-                              Left = 34
-                              Top = 419
+                              Left = 16
+                              Top = 436
                               Width = 105
                               Height = 70
                               Font.Charset = DEFAULT_CHARSET
@@ -5635,9 +5629,9 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object memCustomizeFooter: TRichEdit
                               Left = 16
-                              Top = 271
-                              Width = 323
-                              Height = 80
+                              Top = 246
+                              Width = 313
+                              Height = 70
                               Alignment = taCenter
                               Color = clWhite
                               Font.Charset = ANSI_CHARSET
@@ -5653,7 +5647,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbSetFooter: TCheckBox
                               Left = 16
-                              Top = 241
+                              Top = 223
                               Width = 315
                               Height = 17
                               Caption = 'Label Footer for Refund/Void Transaction'
@@ -5665,6 +5659,58 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               ParentFont = False
                               TabOrder = 6
                               OnClick = cbSetFooterClick
+                            end
+                            object tbtnRefundReferenceLabel: TTouchBtn
+                              Left = 239
+                              Top = 436
+                              Width = 101
+                              Height = 70
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWhite
+                              Font.Height = -15
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              ParentColor = True
+                              Caption = 'Refund Reference Label'
+                              ButtonColor = 6052441
+                              LatchedColor = -16777201
+                              DisabledButtonColor = -16777201
+                              LatchingProperties = [lkLatchColor, lkStayDown]
+                              OnMouseClick = tbtnRefundReferenceLabelMouseClick
+                            end
+                            object cbSetSubHeader: TCheckBox
+                              Left = 16
+                              Top = 322
+                              Width = 315
+                              Height = 17
+                              Caption = 'Label Sub Header'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 11
+                              OnClick = cbSetSubHeaderClick
+                            end
+                            object memCustomizeSubHeader: TRichEdit
+                              Left = 16
+                              Top = 345
+                              Width = 313
+                              Height = 70
+                              Alignment = taCenter
+                              Color = clWhite
+                              Font.Charset = ANSI_CHARSET
+                              Font.Color = clBlack
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = [fsBold]
+                              ParentFont = False
+                              PlainText = True
+                              ReadOnly = True
+                              TabOrder = 12
+                              OnMouseUp = memSubHeaderMouseUp
                             end
                           end
                         end
@@ -7019,7 +7065,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
     end
   end
   object pnlButtons: TPanel
-    Left = 879
+    Left = 882
     Top = 8
     Width = 134
     Height = 756

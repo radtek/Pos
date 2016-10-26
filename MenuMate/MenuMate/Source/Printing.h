@@ -103,7 +103,7 @@ public:
 	TStringList *Header;
 	TStringList *PHeader;
 	TStringList *Footer;
-	void SetHeaderFooter(TStrings *inHeader ,TStrings *inPHeader,TStrings *inFooter, TStrings *inVoidFooter);
+	void SetHeaderFooter(TStrings *inHeader ,TStrings *inPHeader,TStrings *inFooter, TStrings *inVoidFooter,TStrings * inSubHeader);
 	// Printing a list of selected Seats.
 	Currency GrandTotal;
 	Currency TotalChange;
@@ -129,6 +129,7 @@ public:
 	UnicodeString BulletOpt;
 	UnicodeString NoteHeader;
     TStringList *VoidFooter;
+    TStringList *SubHeader;
 };
 
 //---------------------------------------------------------------------------

@@ -52,6 +52,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().MinRedemptionPoint = TManagerVariable::Instance().GetInt(DBTransaction, vmMinRedemptionPoint, 0);
         //Added a new filed for receipt number label.
         TGlobalSettings::Instance().ReceiptNumberLabel  =   TManagerVariable::Instance().GetStr(DBTransaction,vmReceiptNumberLabel,"");
+        TGlobalSettings::Instance().RefundReferenceLabel  =   TManagerVariable::Instance().GetStr(DBTransaction,vmRefundReferenceLabel,"");
         //Added a new filed for reprint receipt label.
         TGlobalSettings::Instance().ReprintReceiptLabel  =   TManagerVariable::Instance().GetStr(DBTransaction,vmReprintReceiptLabel,"");
         TGlobalSettings::Instance().PrintStockWeborders =
@@ -360,6 +361,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().HideTaxInvoice = TManagerVariable::Instance().GetBool(DBTransaction, vmHideTaxInvoice, false);
         TGlobalSettings::Instance().ExportReprintReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmExportReprintReceipt, false);
         TGlobalSettings::Instance().SetVoidFooter = TManagerVariable::Instance().GetBool(DBTransaction, vmSetVoidFooter, false);
+        TGlobalSettings::Instance().SetSubHeader = TManagerVariable::Instance().GetBool(DBTransaction, vmSetSubHeader, false);
         TGlobalSettings::Instance().ReceiptDigits = TManagerVariable::Instance().GetStr(DBTransaction, vmReceiptDigits, "0");
         TGlobalSettings::Instance().ShowVoidOrRefund = TManagerVariable::Instance().GetBool(DBTransaction, vmShowVoidOrRefund, false);
         TGlobalSettings::Instance().ShowVoidNumber = TManagerVariable::Instance().GetBool(DBTransaction, vmShowVoidNumber, false);
