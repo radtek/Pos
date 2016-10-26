@@ -14738,9 +14738,9 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 	qrCashup->SQL->Text =
 		"Select "
 			"Security.Terminal_Name,"
-			"ArcBillPay.Pay_Type,"
+			"UPPER(ArcBillPay.Pay_Type) Pay_Type,"
 			"ArcBillPay.Group_number,"
-			"ArcBillPay.Properties,"
+		 //	"ArcBillPay.Properties,"
 			"Sum (ArcBillPay.SubTotal) SubTotal,"
           "ARCBILL.BILLED_LOCATION, "
          "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
@@ -14771,8 +14771,8 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 			"Security.Terminal_Name,"
 			"ArcBillPay.Tax_Free,"
 			"ArcBillPay.Group_number,"
-			"ArcBillPay.Pay_Type,"
-			"ArcBillPay.Properties, "
+			"UPPER(ArcBillPay.Pay_Type),"
+		 //	"ArcBillPay.Properties, "
          "ARCBILL.BILLED_LOCATION "
 		"Having "
 			"Count (ArcBillPay.ArcBillPay_Key) > 0 "
@@ -14781,7 +14781,7 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 			"ArcBillPay.Tax_Free Desc, "
 			"ArcBillPay.Group_number,"
          "ARCBILL.BILLED_LOCATION, "
-			"ArcBillPay.Pay_Type Asc";
+			"UPPER(ArcBillPay.Pay_Type)  Asc";
 	for (int i=0; i<Terminals->Count; i++)
 	{
 		qrCashup->ParamByName("TerminalParam" + IntToStr(i))->AsString = Terminals->Strings[i];
@@ -14800,9 +14800,9 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 	qrCashupTotal->Close();
 	qrCashupTotal->SQL->Text =
 		"Select "
-			"ArcBillPay.Pay_Type,"
+			"UPPER(ArcBillPay.Pay_Type) Pay_Type,"
 			"ArcBillPay.Group_number,"
-			"ArcBillPay.Properties,"
+		   //	"ArcBillPay.Properties,"
 			"Sum (ArcBillPay.SubTotal) SubTotal,"
 			"cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count ,"
          "ARCBILL.BILLED_LOCATION "
@@ -14832,15 +14832,15 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 		"Group By "
 			"ArcBillPay.Tax_Free,"
 			"ArcBillPay.Group_number,"
-			"ArcBillPay.Pay_Type,"
-			"ArcBillPay.Properties, "
+			"UPPER(ArcBillPay.Pay_Type),"
+		   //	"ArcBillPay.Properties, "
          "ARCBILL.BILLED_LOCATION "
 		"Having "
 			"Count (ArcBillPay.ArcBillPay_Key) > 0 "
 		"Order By "
 			"ArcBillPay.Tax_Free Desc,"
 			"ArcBillPay.Group_number,"
-			"ArcBillPay.Pay_Type Asc, "
+			"UPPER(ArcBillPay.Pay_Type) Asc, "
          "ARCBILL.BILLED_LOCATION " ;
 
 	for (int i=0; i<Terminals->Count; i++)
@@ -15167,10 +15167,10 @@ void TdmMMReportData::SetupCheckRemoval(TDateTime StartTime, TDateTime EndTime) 
 		qrDSRPay->Close();
 		qrDSRPay->SQL->Text =
 		"select  "
-		"ARCBILLPAY.PAY_TYPE PAYMENT_NAME, cast(SUM(ARCBILLPAY.SUBTOTAL)as numeric(17,4)) SUBTOTAL  "
+		"UPPER(ARCBILLPAY.PAY_TYPE) PAYMENT_NAME, cast(SUM(ARCBILLPAY.SUBTOTAL)as numeric(17,4)) SUBTOTAL  "
 		"FROM ARCBILLPAY inner JOIN ARCBILL ON ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY inner join security on security.SECURITY_REF=ARCBILL.SECURITY_REF "
 		"WHERE ArcBillPay.Properties != 131072 and Security.Security_Event = 'Billed By' and ARCBILL.TIME_STAMP >=:StartTime AND ARCBILL.TIME_STAMP <:EndTime "
-		"GROUP BY ARCBILLPAY.PAY_TYPE ";
+		"GROUP BY UPPER(ARCBILLPAY.PAY_TYPE) ";
 		qrDSRPay->ParamByName("StartTime")->AsDateTime	= StartTime;
 		qrDSRPay->ParamByName("EndTime")->AsDateTime	= EndTime;
 
