@@ -690,7 +690,7 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
             PrintTransaction->ChitNumber = PaymentTransaction.ChitNumber;
             Request->MiscData["PartyName"] = Order->PartyName;
 
-            MessageBox( IntToStr(PaymentTransaction.Orders->Count), "Pos droid", MB_OK + MB_ICONWARNING);
+            //MessageBox( IntToStr(PaymentTransaction.Orders->Count), "Pos droid", MB_OK + MB_ICONWARNING);
             for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
             {
                 TSecurityReference *OldSecRef = Order->Security->SecurityGetType(secCredit);
@@ -723,7 +723,7 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
             PrintTransaction->WebOrderKey =  WebKey;
 
             Request->Transaction->Money.Recalc(*Request->Transaction);
-            MessageBox( IntToStr(PrintTransaction->Orders->Count), "Pos droid", MB_OK + MB_ICONWARNING);
+            //MessageBox( IntToStr(PrintTransaction->Orders->Count), "Pos droid", MB_OK + MB_ICONWARNING);
             if (PrintTransaction->Orders->Count > 0)
             {
 	            std::auto_ptr<TKitchen> Kitchen(new TKitchen());
@@ -989,15 +989,12 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 //---------------------------------------------------------------------------
 void __fastcall TWebProcUtil::completeOrderToChefMate(TPaymentTransaction* inTransaction)
 {
-
     if(inTransaction->WebOrderKey > 0)
     {
-        //MessageBox( "Start WebOrders ", "Pos droid", MB_OK + MB_ICONWARNING);
         sendWebOrderToChefmate(inTransaction);
     }
     else
     {
-        //MessageBox( "Start Posdroid Orders ", "Pos droid", MB_OK + MB_ICONWARNING);
         sendPosDroidOrderToChefmate(inTransaction);
     }   ///todo
 }
@@ -1109,7 +1106,6 @@ void TWebProcUtil::sendPosDroidOrderToChefmate(TPaymentTransaction* inTransactio
         std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
         if( ChefMateClientManager->ChefMateEnabled() )
         {
-            MessageBox( "Send POSDroid  Order ", "Pos Droid", MB_OK + MB_ICONWARNING);
             CMC_ERROR error =  ChefMateClientManager->SendCompleteOrder(inTransaction);
             if( error == CMC_ERROR_FAILED )
             {
