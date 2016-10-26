@@ -1183,13 +1183,18 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                             if (Payment->Result != eAccepted)
                             {
                                  Payment->Result = eFailed;
+                                 transactionRecovery.ClearRecoveryInfo();
                                  AnsiString unhandledState = "HANDLE IS IN THE WRONG";
-                                 if(EftTrans->ResultText.UpperCase().Pos(unhandledState) != 0)
+                                 if((EftTrans->ResultText.UpperCase().Pos(unhandledState) != 0)
+                                    ||  EftTrans->TimeOut)
                                  {
-                                    MessageBox("Timed Out. Please try again after some time", "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
+                                    if(MessageBox("Transaction Cancelled/Timed-Out.", "EFTPOS Response",MB_RETRYCANCEL) == IDRETRY)
+                                       TransRetriveElectronicResult(PaymentTransaction, Payment);
                                  }
                                  else
                                  {
+                                    if(EftTrans->ResultText == "")
+                                        EftTrans->ResultText = "Transaction Failed.";
                                     MessageBox(EftTrans->ResultText, "EFTPOS Response", MB_OK + MB_ICONINFORMATION);
                                  }
                             }

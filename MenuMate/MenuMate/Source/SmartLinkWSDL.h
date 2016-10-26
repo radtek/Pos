@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8738/MenumateServices/SmartLink/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (9/08/2016 6:07:10 p.m. - - $Rev: 25127 $)
+// (18/10/2016 6:56:37 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   SmartLinkWSDLH
@@ -68,6 +68,8 @@ private:
   bool            FResultText_Specified;
   bool            FSuccessful;
   bool            FSuccessful_Specified;
+  bool            FTimeOut;
+  bool            FTimeOut_Specified;
   UnicodeString   FTransactionResult;
   bool            FTransactionResult_Specified;
   void __fastcall SetAcquirerRef(int Index, UnicodeString _prop_val)
@@ -90,6 +92,10 @@ private:
   {  FSuccessful = _prop_val; FSuccessful_Specified = true;  }
   bool __fastcall Successful_Specified(int Index)
   {  return FSuccessful_Specified;  } 
+  void __fastcall SetTimeOut(int Index, bool _prop_val)
+  {  FTimeOut = _prop_val; FTimeOut_Specified = true;  }
+  bool __fastcall TimeOut_Specified(int Index)
+  {  return FTimeOut_Specified;  } 
   void __fastcall SetTransactionResult(int Index, UnicodeString _prop_val)
   {  FTransactionResult = _prop_val; FTransactionResult_Specified = true;  }
   bool __fastcall TransactionResult_Specified(int Index)
@@ -100,6 +106,7 @@ __published:
   __property UnicodeString     Result = { index=(IS_OPTN|IS_NLBL), read=FResult, write=SetResult, stored = Result_Specified };
   __property UnicodeString ResultText = { index=(IS_OPTN|IS_NLBL), read=FResultText, write=SetResultText, stored = ResultText_Specified };
   __property bool       Successful = { index=(IS_OPTN), read=FSuccessful, write=SetSuccessful, stored = Successful_Specified };
+  __property bool          TimeOut = { index=(IS_OPTN), read=FTimeOut, write=SetTimeOut, stored = TimeOut_Specified };
   __property UnicodeString TransactionResult = { index=(IS_OPTN|IS_NLBL), read=FTransactionResult, write=SetTransactionResult, stored = TransactionResult_Specified };
 };
 
