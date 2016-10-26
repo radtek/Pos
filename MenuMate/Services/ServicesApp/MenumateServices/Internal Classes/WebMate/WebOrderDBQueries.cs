@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using FirebirdSql.Data.FirebirdClient;
+using System.Diagnostics;
 
 namespace MenumateServices.WebMate.InternalClasses
 {
@@ -55,15 +56,17 @@ namespace MenumateServices.WebMate.InternalClasses
         public FbCommand CreateSaveWebOrderCmd(
                                 int inWebOrderKey,
                                 WebOrderDBInfo inInfo,
-                                FbConnection   inConnection_,
-                                FbTransaction  inTransaction_)
+                                FbConnection inConnection_,
+                                FbTransaction inTransaction_)
         {
             FbCommand result = new FbCommand(@"", inConnection_, inTransaction_);
 
             //....................................................
 
-            result.CommandText =
-              @"INSERT INTO WEBORDERS
+            try
+            {
+                result.CommandText =
+                     @"INSERT INTO WEBORDERS
                 (
                     WebOrder_Key,
                     GUID,
@@ -92,17 +95,22 @@ namespace MenumateServices.WebMate.InternalClasses
                     @contactskey
                 )";
 
-            result.Parameters.AddWithValue("@weborderKey",  inWebOrderKey);
-            result.Parameters.AddWithValue("@guid",         inInfo.GUID);
-            result.Parameters.AddWithValue("@name",         inInfo.Name);
-            result.Parameters.AddWithValue("@storeName",    inInfo.StoreName);
-            result.Parameters.AddWithValue("@orderDate",    inInfo.OrderDate);
-            result.Parameters.AddWithValue("@expectedDate", inInfo.ExpectedDate);
-            result.Parameters.AddWithValue("@tabKey",       inInfo.TabKey);
-            result.Parameters.AddWithValue("@timeKey",      inInfo.TimeKey);
-            result.Parameters.AddWithValue("@status",       inInfo.Status);
-            result.Parameters.AddWithValue("@prepaid",      inInfo.PaymentRequired ? 0 : inInfo.OrderTotal);   //!inInfo.PaymentRequired
-            result.Parameters.AddWithValue("@contactskey",  inInfo.ContactKey);
+                result.Parameters.AddWithValue("@weborderKey", inWebOrderKey);
+                result.Parameters.AddWithValue("@guid", inInfo.GUID);
+                result.Parameters.AddWithValue("@name", inInfo.Name);
+                result.Parameters.AddWithValue("@storeName", inInfo.StoreName);
+                result.Parameters.AddWithValue("@orderDate", inInfo.OrderDate);
+                result.Parameters.AddWithValue("@expectedDate", inInfo.ExpectedDate);
+                result.Parameters.AddWithValue("@tabKey", inInfo.TabKey);
+                result.Parameters.AddWithValue("@timeKey", inInfo.TimeKey);
+                result.Parameters.AddWithValue("@status", inInfo.Status);
+                result.Parameters.AddWithValue("@prepaid", inInfo.PaymentRequired ? 0 : inInfo.OrderTotal);   //!inInfo.PaymentRequired
+                result.Parameters.AddWithValue("@contactskey", inInfo.ContactKey);
+            }
+            catch (Exception e)
+            {                
+              EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 260, short.MaxValue);
+            }
 
             //....................................................
 
@@ -119,20 +127,22 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inTransaction_"></param>
         /// <returns></returns>
         public FbCommand CreateSaveWebDataCmd(
-                        int    inWebDataKey,
-                        int    inWebOrderKey,
-                        string inDataCategory, 
-                        string inDataInfo, 
+                        int inWebDataKey,
+                        int inWebOrderKey,
+                        string inDataCategory,
+                        string inDataInfo,
                         string inDataValue,
-                        FbConnection  inConnection_,
+                        FbConnection inConnection_,
                         FbTransaction inTransaction_)
         {
             FbCommand result = new FbCommand(@"", inConnection_, inTransaction_);
 
             //....................................................
+            try
+            {
 
-            result.CommandText =
-              @"INSERT INTO WEBDATA
+                result.CommandText =
+                  @"INSERT INTO WEBDATA
                 (
                     WebData_Key,
                     WebOrder_Key,
@@ -149,17 +159,22 @@ namespace MenumateServices.WebMate.InternalClasses
                     @data
                 )";
 
-            result.Parameters.AddWithValue("@webdataKey",  inWebDataKey);
-            result.Parameters.AddWithValue("@weborderKey", inWebOrderKey);
-            result.Parameters.AddWithValue("@category",    inDataCategory);
-            result.Parameters.AddWithValue("@element",     inDataInfo);
-            result.Parameters.AddWithValue("@data",        inDataValue);
+                result.Parameters.AddWithValue("@webdataKey", inWebDataKey);
+                result.Parameters.AddWithValue("@weborderKey", inWebOrderKey);
+                result.Parameters.AddWithValue("@category", inDataCategory);
+                result.Parameters.AddWithValue("@element", inDataInfo);
+                result.Parameters.AddWithValue("@data", inDataValue);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 172, short.MaxValue);
+            }
 
             //....................................................
 
             return result;
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -176,11 +191,13 @@ namespace MenumateServices.WebMate.InternalClasses
             FbCommand command = new FbCommand(@"", connection, transaction);
 
             //....................................................
-            string _menukey = "";
-            if (inMenuKey > 0)
+            try
             {
-                _menukey = " Menu.Menu_Key = @menu_key and ";
-            }
+                string _menukey = "";
+                if (inMenuKey > 0)
+                {
+                    _menukey = " Menu.Menu_Key = @menu_key and ";
+                }
 
                 command.CommandText = @"
                                     SELECT
@@ -200,9 +217,14 @@ namespace MenumateServices.WebMate.InternalClasses
                 if (inMenuKey > 0)
                 {
                     command.Parameters.AddWithValue("@menu_key", inMenuKey); //make changes here for chit..   
-                }                
+                }
                 command.Parameters.AddWithValue("@THIRD_PARTY_CODE_KEY", thirdPartyCodeKey);
 
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 171, short.MaxValue);
+            }
             //....................................................
 
             return command;
@@ -224,7 +246,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //....................................................
 
-            result.CommandText = @"
+            try
+            {
+                result.CommandText = @"
                                 SELECT 
                                     Item.Enabled 
                                 FROM 
@@ -236,7 +260,12 @@ namespace MenumateServices.WebMate.InternalClasses
                                     Item.IAO
                                 ";
 
-            result.Parameters.AddWithValue("ITEMSIZE_KEY", itemSizeKey);
+                result.Parameters.AddWithValue("ITEMSIZE_KEY", itemSizeKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 173, short.MaxValue);
+            }
 
             //....................................................
 
@@ -259,7 +288,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //....................................................
 
-            result.CommandText = @"
+            try
+            {
+                result.CommandText = @"
                                     SELECT
                                         Menu.Menu_Key, 
                                         Menu.Menu_Name, 
@@ -328,7 +359,12 @@ namespace MenumateServices.WebMate.InternalClasses
                                         ItemSize.ISAO
                                     ";
 
-            result.Parameters.AddWithValue("@ITEMSIZE_KEY", itemSizeKey);
+                result.Parameters.AddWithValue("@ITEMSIZE_KEY", itemSizeKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 174, short.MaxValue);
+            }
 
             //....................................................
 
@@ -351,7 +387,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //.....................................................
 
-            result.CommandText = @"
+            try
+            {
+                result.CommandText = @"
                                     SELECT
                                         ItemSizeCategory.ItemSize_Key,
                                         ArcCategories.Category_Key,
@@ -365,7 +403,12 @@ namespace MenumateServices.WebMate.InternalClasses
                                         ArcCategories.Category
                                     ";
 
-            result.Parameters.AddWithValue("@ITEMSIZE_KEY", itemSizeKey);
+                result.Parameters.AddWithValue("@ITEMSIZE_KEY", itemSizeKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 175, short.MaxValue);
+            }
 
             //.......................................................
 
@@ -388,7 +431,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //.....................................................
 
-            result.CommandText = @"
+            try
+            {
+                result.CommandText = @"
                                     SELECT
                                         Recipe.Recipe_Key,
                                         Recipe.Stock_Code,
@@ -404,7 +449,12 @@ namespace MenumateServices.WebMate.InternalClasses
                                         Recipe.ITEMSIZE_KEY = @ITEMSIZE_KEY
                                     ";
 
-            result.Parameters.AddWithValue("@ITEMSIZE_KEY", itemSizeKey);
+                result.Parameters.AddWithValue("@ITEMSIZE_KEY", itemSizeKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 176, short.MaxValue);
+            }
 
             //.......................................................
 
@@ -427,7 +477,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //.....................................................
 
-            result.CommandText = @"
+            try
+            {
+                result.CommandText = @"
                                     SELECT 
                                         OPTIONS_KEY, 
                                         COURSE_KEY, 
@@ -454,7 +506,12 @@ namespace MenumateServices.WebMate.InternalClasses
                                         OPTIONS_KEY = @OPTIONS_KEY
                                     ";
 
-            result.Parameters.AddWithValue("@OPTIONS_KEY", optionKey);
+                result.Parameters.AddWithValue("@OPTIONS_KEY", optionKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 177, short.MaxValue);
+            }
 
             //.......................................................
 
@@ -477,7 +534,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //........................................................
 
-            result.CommandText = @"
+            try
+            {
+                result.CommandText = @"
                                  INSERT INTO TURNAROUNDTIMES(
                                     TIME_KEY,
                                     SALE_START_TIME)
@@ -486,8 +545,13 @@ namespace MenumateServices.WebMate.InternalClasses
                                     @SALE_START_TIME)
                                  ";
 
-            result.Parameters.AddWithValue("@TIME_KEY", currentTimeKey);
-            result.Parameters.AddWithValue("@SALE_START_TIME", DateTime.Now);
+                result.Parameters.AddWithValue("@TIME_KEY", currentTimeKey);
+                result.Parameters.AddWithValue("@SALE_START_TIME", DateTime.Now);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 178, short.MaxValue);
+            }
 
             //.........................................................
 
@@ -510,7 +574,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //........................................................
 
-            result.CommandText = @"
+            try
+            {
+                result.CommandText = @"
                                  UPDATE TURNAROUNDTIMES
                                  SET 
                                     SALE_END_TIME = @SALE_END_TIME,
@@ -519,9 +585,14 @@ namespace MenumateServices.WebMate.InternalClasses
                                     TIME_KEY = @TIME_KEY
                                  ";
 
-            result.Parameters.AddWithValue("@TIME_KEY", timeKey);
-            result.Parameters.AddWithValue("@SALE_END_TIME", DateTime.Now);
-            result.Parameters.AddWithValue("@MAKE_START_TIME", DateTime.Now);
+                result.Parameters.AddWithValue("@TIME_KEY", timeKey);
+                result.Parameters.AddWithValue("@SALE_END_TIME", DateTime.Now);
+                result.Parameters.AddWithValue("@MAKE_START_TIME", DateTime.Now);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 179, short.MaxValue);
+            }
 
             //.........................................................
 
@@ -547,7 +618,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     UPDATE WEBORDERS 
                                     SET 
                                         TIME_KEY = @TIME_KEY 
@@ -555,8 +628,13 @@ namespace MenumateServices.WebMate.InternalClasses
                                         WEBORDER_KEY = @WEBORDER_KEY
                                     ";
 
-            command.Parameters.AddWithValue("@TIME_KEY", timeKey);
-            command.Parameters.AddWithValue("@WEBORDER_KEY", webOrderKey);
+                command.Parameters.AddWithValue("@TIME_KEY", timeKey);
+                command.Parameters.AddWithValue("@WEBORDER_KEY", webOrderKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 180, short.MaxValue);
+            }
 
             //............................................
 
@@ -580,7 +658,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     SELECT 
                                         TAB_KEY 
                                     FROM 
@@ -589,7 +669,12 @@ namespace MenumateServices.WebMate.InternalClasses
                                         WEBORDER_KEY = @WEBORDER_KEY
                                     ";
 
-            command.Parameters.AddWithValue("@WEBORDER_KEY", webOrderKey);
+                command.Parameters.AddWithValue("@WEBORDER_KEY", webOrderKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
 
             //............................................
 
@@ -617,7 +702,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     INSERT INTO TAB 
                                     (
                                         TAB_KEY,
@@ -638,12 +725,17 @@ namespace MenumateServices.WebMate.InternalClasses
                                     )
                                     ";
 
-            command.Parameters.AddWithValue("@TAB_KEY", tabKey);
-            command.Parameters.AddWithValue("@CREDIT_LIMIT", -1);
-            command.Parameters.AddWithValue("@TAB_PERMANENT", 'F');
-            command.Parameters.AddWithValue("@TAB_TYPE", tabType);
-            command.Parameters.AddWithValue("@TAB_NAME", tabName);
-            command.Parameters.AddWithValue("@ID_NUMBER", id_number);
+                command.Parameters.AddWithValue("@TAB_KEY", tabKey);
+                command.Parameters.AddWithValue("@CREDIT_LIMIT", -1);
+                command.Parameters.AddWithValue("@TAB_PERMANENT", 'F');
+                command.Parameters.AddWithValue("@TAB_TYPE", tabType);
+                command.Parameters.AddWithValue("@TAB_NAME", tabName);
+                command.Parameters.AddWithValue("@ID_NUMBER", id_number);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 182, short.MaxValue);
+            }
 
             //............................................
 
@@ -668,7 +760,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     UPDATE TAB
                                     SET
                                         CREDIT = @CREDIT
@@ -676,8 +770,13 @@ namespace MenumateServices.WebMate.InternalClasses
                                         TAB_KEY = @TAB_KEY
                                     ";
 
-            command.Parameters.AddWithValue("@CREDIT", credit);
-            command.Parameters.AddWithValue("@TAB_KEY", tabKey);
+                command.Parameters.AddWithValue("@CREDIT", credit);
+                command.Parameters.AddWithValue("@TAB_KEY", tabKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 183, short.MaxValue);
+            }
 
             //............................................
 
@@ -701,7 +800,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     UPDATE WEBORDERS 
                                     SET 
                                         TAB_KEY = @TAB_KEY 
@@ -709,8 +810,13 @@ namespace MenumateServices.WebMate.InternalClasses
                                         WEBORDER_KEY = @WEBORDER_KEY
                                     ";
 
-            command.Parameters.AddWithValue("@TAB_KEY", tabKey);
-            command.Parameters.AddWithValue("@WEBORDER_KEY", webOrderKey);
+                command.Parameters.AddWithValue("@TAB_KEY", tabKey);
+                command.Parameters.AddWithValue("@WEBORDER_KEY", webOrderKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 184, short.MaxValue);
+            }
 
             //............................................
 
@@ -725,7 +831,7 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="webOrderKey"></param>
         /// <returns></returns>
         public FbCommand GetTimeKeyByWebOrderKeyCmd(
-                            FbConnection  inConnection,
+                            FbConnection inConnection,
                             FbTransaction inTransaction,
                             int inWebOrderKey)
         {
@@ -733,7 +839,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     SELECT 
                                         TIME_KEY 
                                     FROM 
@@ -742,11 +850,17 @@ namespace MenumateServices.WebMate.InternalClasses
                                         WEBORDER_KEY = @WEBORDER_KEY
                                     ";
 
-            command.Parameters.AddWithValue("@WEBORDER_KEY", inWebOrderKey);
-
+                command.Parameters.AddWithValue("@WEBORDER_KEY", inWebOrderKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 185, short.MaxValue);
+                
+            }
+            return command;
             //............................................
 
-            return command;
+            
         }
 
         /// <summary>
@@ -757,15 +871,17 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inTimeKey"></param>
         /// <returns></returns>
         public FbCommand CreateTimeCmd(
-                                FbConnection  inConnection,
+                                FbConnection inConnection,
                                 FbTransaction inTransaction,
                                 int inTimeKey)
         {
             FbCommand command = new FbCommand(@"", inConnection, inTransaction);
+            try
+            {            
 
-            //...........................................
+                //...........................................
 
-            command.CommandText = @"
+                command.CommandText = @"
                                     INSERT INTO TURNAROUDTIMES 
                                     (
                                         TIME_KEY,
@@ -778,12 +894,19 @@ namespace MenumateServices.WebMate.InternalClasses
                                     )
                                     ";
 
-            command.Parameters.AddWithValue("@timeKey",       inTimeKey);
-            command.Parameters.AddWithValue("@makeStartTime", DateTime.Now);
+                command.Parameters.AddWithValue("@timeKey", inTimeKey);
+                command.Parameters.AddWithValue("@makeStartTime", DateTime.Now);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 186, short.MaxValue);
+                
+            }
 
             //............................................
-
             return command;
+
+            
         }
 
         /// <summary>
@@ -795,16 +918,16 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inTimeKey"></param>
         /// <returns></returns>
         public FbCommand SetTimeKeyForWebOrderCmd(
-                            FbConnection  inConnection,
+                            FbConnection inConnection,
                             FbTransaction inTransaction,
                             int inWebOrderKey,
                             int inTimeKey)
         {
             FbCommand command = new FbCommand(@"", inConnection, inTransaction);
-
-            //...........................................
-
-            command.CommandText = @"
+            try
+            {
+                //...........................................
+                command.CommandText = @"
                                     UPDATE WEBORDERS 
                                     SET 
                                         TIME_KEY = @timekey 
@@ -812,8 +935,13 @@ namespace MenumateServices.WebMate.InternalClasses
                                         WEBORDER_KEY = @webOrderKey
                                     ";
 
-            command.Parameters.AddWithValue("@timekey",     inTimeKey);
-            command.Parameters.AddWithValue("@webOrderKey", inWebOrderKey);
+                command.Parameters.AddWithValue("@timekey", inTimeKey);
+                command.Parameters.AddWithValue("@webOrderKey", inWebOrderKey);
+            }
+            catch (Exception e)
+            {                
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 187, short.MaxValue);
+            }
 
             //............................................
 
@@ -828,7 +956,7 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inWebOrderKey"></param>
         /// <returns></returns>
         public FbCommand GetContactKeyByWebOrderKeyCmd(
-                            FbConnection  inConnection,
+                            FbConnection inConnection,
                             FbTransaction inTransaction,
                             int inWebOrderKey)
         {
@@ -836,7 +964,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     SELECT 
                                         CONTACTS_KEY 
                                     FROM 
@@ -845,7 +975,12 @@ namespace MenumateServices.WebMate.InternalClasses
                                         WEBORDER_KEY = @WEBORDER_KEY
                                     ";
 
-            command.Parameters.AddWithValue("@WEBORDER_KEY", inWebOrderKey);
+                command.Parameters.AddWithValue("@WEBORDER_KEY", inWebOrderKey);
+            }
+            catch (Exception e)
+            {
+               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 188, short.MaxValue);
+            }
 
             //............................................
 
@@ -861,7 +996,7 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inInfo"></param>
         /// <returns></returns>
         public FbCommand CreateContactCmd(
-                               FbConnection  inConnection,
+                               FbConnection inConnection,
                                FbTransaction inTransaction,
                                int inContactsKey,
                                WebOrderDBInfo inInfo)
@@ -870,8 +1005,10 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //....................................................
 
-            result.CommandText =
-              @"INSERT INTO CONTACTS
+            try
+            {
+                result.CommandText =
+                      @"INSERT INTO CONTACTS
                 (
                     Contacts_Key,
                     Contact_ID,
@@ -929,33 +1066,38 @@ namespace MenumateServices.WebMate.InternalClasses
                     @earntPoints,
                     @loadedPoints
                )";
-            
-            result.Parameters.AddWithValue("@contactsKey",  inContactsKey);
-            result.Parameters.AddWithValue("@contactID",  0);
-            result.Parameters.AddWithValue("@contactType",  0);
-            result.Parameters.AddWithValue("@initials",  @"");
-            result.Parameters.AddWithValue("@locationAddress", addressFromWebInfo(inInfo));
-            result.Parameters.AddWithValue("@phone", inInfo.Phone);
-            result.Parameters.AddWithValue("@totalSpent", 0.00);
-            result.Parameters.AddWithValue("@pin",  @"");
-            result.Parameters.AddWithValue("@accessLevel",  0);
-            result.Parameters.AddWithValue("@palmLargeFont",  false);
-            result.Parameters.AddWithValue("@palmAdvancedUser",  false);
-            result.Parameters.AddWithValue("@palmTimeout",  30);
-            result.Parameters.AddWithValue("@tabEnabled",  false);
-            result.Parameters.AddWithValue("@payrollID",  0);
-            result.Parameters.AddWithValue("@contacts3rsPartyKey",  0);
-            result.Parameters.AddWithValue("@palmScreenLock",  true);
-            result.Parameters.AddWithValue("@palmClassicMode",  false);
-            result.Parameters.AddWithValue("@palmSoundLevel",  2);
-            result.Parameters.AddWithValue("@palmGetAllTables",  true);
-            result.Parameters.AddWithValue("@siteID",  0);
-            result.Parameters.AddWithValue("@knownAs",  inInfo.Name);
-            result.Parameters.AddWithValue("@pointRules",  0);
-            result.Parameters.AddWithValue("@accountProfile",  0);
-            result.Parameters.AddWithValue("@horlyRate",  0.00);
-            result.Parameters.AddWithValue("@earntPoints",  0.00);
-            result.Parameters.AddWithValue("@loadedPoints",  0.00);
+
+                result.Parameters.AddWithValue("@contactsKey", inContactsKey);
+                result.Parameters.AddWithValue("@contactID", 0);
+                result.Parameters.AddWithValue("@contactType", 0);
+                result.Parameters.AddWithValue("@initials", @"");
+                result.Parameters.AddWithValue("@locationAddress", addressFromWebInfo(inInfo));
+                result.Parameters.AddWithValue("@phone", inInfo.Phone);
+                result.Parameters.AddWithValue("@totalSpent", 0.00);
+                result.Parameters.AddWithValue("@pin", @"");
+                result.Parameters.AddWithValue("@accessLevel", 0);
+                result.Parameters.AddWithValue("@palmLargeFont", false);
+                result.Parameters.AddWithValue("@palmAdvancedUser", false);
+                result.Parameters.AddWithValue("@palmTimeout", 30);
+                result.Parameters.AddWithValue("@tabEnabled", false);
+                result.Parameters.AddWithValue("@payrollID", 0);
+                result.Parameters.AddWithValue("@contacts3rsPartyKey", 0);
+                result.Parameters.AddWithValue("@palmScreenLock", true);
+                result.Parameters.AddWithValue("@palmClassicMode", false);
+                result.Parameters.AddWithValue("@palmSoundLevel", 2);
+                result.Parameters.AddWithValue("@palmGetAllTables", true);
+                result.Parameters.AddWithValue("@siteID", 0);
+                result.Parameters.AddWithValue("@knownAs", inInfo.Name);
+                result.Parameters.AddWithValue("@pointRules", 0);
+                result.Parameters.AddWithValue("@accountProfile", 0);
+                result.Parameters.AddWithValue("@horlyRate", 0.00);
+                result.Parameters.AddWithValue("@earntPoints", 0.00);
+                result.Parameters.AddWithValue("@loadedPoints", 0.00);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 189, short.MaxValue);
+            }
 
             //....................................................
 
@@ -978,7 +1120,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            result.CommandText = @"
+            try
+            {
+                result.CommandText = @"
                                     SELECT 
                                         COUNT(Contacts_key) 
                                     FROM 
@@ -987,9 +1131,14 @@ namespace MenumateServices.WebMate.InternalClasses
                                         Phone = @phone OR KnownAs = @knownAs OR Location_Address like @CATEGORY
                                     ";
 
-            result.Parameters.AddWithValue("@locationAddress", addressFromWebInfo(inInfo));
-            result.Parameters.AddWithValue("@phone", inInfo.Phone);
-            result.Parameters.AddWithValue("@knownAs", inInfo.Name);
+                result.Parameters.AddWithValue("@locationAddress", addressFromWebInfo(inInfo));
+                result.Parameters.AddWithValue("@phone", inInfo.Phone);
+                result.Parameters.AddWithValue("@knownAs", inInfo.Name);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 190, short.MaxValue);
+            }
 
             //............................................
 
@@ -1005,7 +1154,7 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inContactsKey"></param>
         /// <returns></returns>
         public FbCommand SetContactsKeyForWebOrderCmd(
-                               FbConnection  inConnection,
+                               FbConnection inConnection,
                                FbTransaction inTransaction,
                                int inWebOrderKey,
                                int inContactsKey)
@@ -1014,7 +1163,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     UPDATE WEBORDERS 
                                     SET 
                                         CONTACTS_KEY = @contactskey 
@@ -1022,8 +1173,13 @@ namespace MenumateServices.WebMate.InternalClasses
                                         WEBORDER_KEY = @webOrderKey
                                     ";
 
-            command.Parameters.AddWithValue("@contactskey", inContactsKey);
-            command.Parameters.AddWithValue("@webOrderKey", inWebOrderKey);
+                command.Parameters.AddWithValue("@contactskey", inContactsKey);
+                command.Parameters.AddWithValue("@webOrderKey", inWebOrderKey);
+            }
+            catch (Exception e)
+            {
+               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 191, short.MaxValue);
+            }
 
             //............................................
 
@@ -1046,7 +1202,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     SELECT 
                                         CATEGORY_KEY,
                                         CATEGORY 
@@ -1056,10 +1214,13 @@ namespace MenumateServices.WebMate.InternalClasses
                                         CATEGORY = @CATEGORY
                                     ";
 
-            command.Parameters.AddWithValue("@CATEGORY", categoryName);
-
+                command.Parameters.AddWithValue("@CATEGORY", categoryName);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 192, short.MaxValue);
+            }
             //............................................
-
             return command;
         }
 
@@ -1079,7 +1240,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     SELECT 
                                         GUID 
                                     FROM 
@@ -1088,7 +1251,12 @@ namespace MenumateServices.WebMate.InternalClasses
                                         WEBORDER_KEY = @WEBORDER_KEY
                                     ";
 
-            command.Parameters.AddWithValue("@WEBORDER_KEY", webOrderKey);
+                command.Parameters.AddWithValue("@WEBORDER_KEY", webOrderKey);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 193, short.MaxValue);
+            }
 
             //............................................
 
@@ -1116,8 +1284,10 @@ namespace MenumateServices.WebMate.InternalClasses
             FbCommand command = new FbCommand(@"", connection, transaction);
 
             //...........................................
+            try
+            {
 
-            command.CommandText = @"
+                command.CommandText = @"
                                     SELECT 
                                         ORDER_KEY 
                                     FROM 
@@ -1129,16 +1299,21 @@ namespace MenumateServices.WebMate.InternalClasses
                                         AND TRANSNO = @TRANSNO
                                     ";
 
-            command.Parameters.AddWithValue("@ITEM_ID", itemId);
-            command.Parameters.AddWithValue("@SIZE_NAME", sizeName);
-            command.Parameters.AddWithValue("@TERMINAL_NAME", terminalName);
-            command.Parameters.AddWithValue("@TRANSNO", transactionNumber);
+                command.Parameters.AddWithValue("@ITEM_ID", itemId);
+                command.Parameters.AddWithValue("@SIZE_NAME", sizeName);
+                command.Parameters.AddWithValue("@TERMINAL_NAME", terminalName);
+                command.Parameters.AddWithValue("@TRANSNO", transactionNumber);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 194, short.MaxValue);
+            }
 
             //............................................
 
             return command;
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -1155,7 +1330,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //...........................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     INSERT INTO ORDERS 
                                     (
                                         ORDER_KEY,
@@ -1278,69 +1455,74 @@ namespace MenumateServices.WebMate.InternalClasses
                                         @PATRON_COUNT)
                                     ";
 
-            command.Parameters.AddWithValue("@ORDER_KEY", orderDbItem.OrderKey);
-            command.Parameters.AddWithValue("@TAB_KEY", orderDbItem.TabKey);
-            command.Parameters.AddWithValue("@ITEM_NAME", orderDbItem.ItemName);
-            command.Parameters.AddWithValue("@ITEM_ID", orderDbItem.ItemId);
-            command.Parameters.AddWithValue("@SIZE_NAME", orderDbItem.SizeName);
-            command.Parameters.AddWithValue("@NOTE", orderDbItem.Note);
-            command.Parameters.AddWithValue("@PARTY_NAME", orderDbItem.PartyName);
-            command.Parameters.AddWithValue("@TABLE_NUMBER", orderDbItem.TableNumber);
-            command.Parameters.AddWithValue("@TABLE_NAME", QueryUtilities.GetSubstring(orderDbItem.TabContainerName, 1, 25));
-            command.Parameters.AddWithValue("@SEATNO", orderDbItem.SeatNumber);
-            command.Parameters.AddWithValue("@PRICE", orderDbItem.Price);
-            command.Parameters.AddWithValue("@PRINTED", 'F');
-            command.Parameters.AddWithValue("@TRANSNO", orderDbItem.TransactionNumber);
-            command.Parameters.AddWithValue("@ORDER_TYPE", orderDbItem.OrderType);
-            command.Parameters.AddWithValue("@TERMINAL_NAME", orderDbItem.TerminalName);
-            command.Parameters.AddWithValue("@MENU_NAME", orderDbItem.MenuName);
-            command.Parameters.AddWithValue("@TAB_NAME", QueryUtilities.GetSubstring(orderDbItem.TabName, 1, 32));
-            command.Parameters.AddWithValue("@COURSE_NAME", orderDbItem.CourseName);
-            command.Parameters.AddWithValue("@HAPPYHOUR", orderDbItem.HappyHour ? 'T' : 'F');
-            command.Parameters.AddWithValue("@ORDER_LOCATION", orderDbItem.OrderLocation);
-            command.Parameters.AddWithValue("@TAB_TYPE", orderDbItem.TabType);
-            command.Parameters.AddWithValue("@TIME_STAMP", orderDbItem.TimeStamp);
-            command.Parameters.AddWithValue("@COST", orderDbItem.Cost);
-            command.Parameters.AddWithValue("@LOYALTY_KEY", orderDbItem.LoyaltyKey);
-            command.Parameters.AddWithValue("@MASTER_CONTAINER", orderDbItem.MasterContainer);
-            command.Parameters.AddWithValue("@SETMENU_MASK", orderDbItem.SetMenuMask);
-            command.Parameters.AddWithValue("@SETMENU_GROUP", orderDbItem.SetMenuGroup);
-            command.Parameters.AddWithValue("@ITEM_CATEGORY", "");
-            command.Parameters.AddWithValue("@SECURITY_REF", orderDbItem.SecurityRef);
-            command.Parameters.AddWithValue("@TIME_KEY", orderDbItem.TimeKey);
-            command.Parameters.AddWithValue("@GST_PERCENT", orderDbItem.GSTPercent);
-            command.Parameters.AddWithValue("@COST_GST_PERCENT", orderDbItem.CostGSTPercent);
-            command.Parameters.AddWithValue("@QTY", orderDbItem.Qty);
-            command.Parameters.AddWithValue("@DISCOUNT", orderDbItem.Discount);
-            command.Parameters.AddWithValue("@DISCOUNT_REASON", QueryUtilities.GetSubstring(orderDbItem.DiscountReason, 1, 40));
-            command.Parameters.AddWithValue("@REDEEMED", 0.0f);
-            command.Parameters.AddWithValue("@ITEM_KITCHEN_NAME", orderDbItem.ItemKitchenName);
-            command.Parameters.AddWithValue("@SIZE_KITCHEN_NAME", orderDbItem.SizeKitchenName);
-            command.Parameters.AddWithValue("@COURSE_KITCHEN_NAME", orderDbItem.CourseKitchenName);
-            command.Parameters.AddWithValue("@POINTS_PERCENT", orderDbItem.PointsPercent);
-            command.Parameters.AddWithValue("@CATEGORY_KEY", orderDbItem.Categories.PrimaryArcCategoryKey);
-            command.Parameters.AddWithValue("@THIRDPARTYCODES_KEY", orderDbItem.ThirdPartyCodeKey);
-            command.Parameters.AddWithValue("@MEMBER_FREE_SALE_COUNT", orderDbItem.MemberFreeSaleCount);
-            command.Parameters.AddWithValue("@MEMBER_FREE_SALE_DISCOUNT", orderDbItem.MemberFreeSaleDiscount);
-            command.Parameters.AddWithValue("@LOCATION_FREE_SALE_COUNT", orderDbItem.LocationFreeSaleCount);
-            command.Parameters.AddWithValue("@LOCATION_FREE_SALE_DISCOUNT", orderDbItem.LocationFreeSaleDiscount);
-            command.Parameters.AddWithValue("@IS_FREE", orderDbItem.IsFree ? 'T' : 'F');
-            command.Parameters.AddWithValue("@SERVINGCOURSES_KEY", orderDbItem.ServingCoursesKey);
-            command.Parameters.AddWithValue("@PRICE_LEVEL0", orderDbItem.PriceLevel0);
-            command.Parameters.AddWithValue("@PRICE_LEVEL1", orderDbItem.PriceLevel1);
-            command.Parameters.AddWithValue("@ITEM_TYPE", orderDbItem.ItemType);
-            command.Parameters.AddWithValue("@MENU_ITEM_KEY", orderDbItem.MenuItemKey); // ItemOrderedFrom->ItemKey
-            command.Parameters.AddWithValue("@PLU", orderDbItem.PLU);
-            command.Parameters.AddWithValue("@ORDER_TYPE_MESSAGE", orderDbItem.OrderTypeMessage);
-            command.Parameters.AddWithValue("@CONTACTS_KEY", orderDbItem.ContactsKey);
-            command.Parameters.AddWithValue("@ACTIVECHITNUMBER_KEY", DBNull.Value);
-            command.Parameters.AddWithValue("@PATRON_COUNT", orderDbItem.PatronCount);
+                command.Parameters.AddWithValue("@ORDER_KEY", orderDbItem.OrderKey);
+                command.Parameters.AddWithValue("@TAB_KEY", orderDbItem.TabKey);
+                command.Parameters.AddWithValue("@ITEM_NAME", orderDbItem.ItemName);
+                command.Parameters.AddWithValue("@ITEM_ID", orderDbItem.ItemId);
+                command.Parameters.AddWithValue("@SIZE_NAME", orderDbItem.SizeName);
+                command.Parameters.AddWithValue("@NOTE", orderDbItem.Note);
+                command.Parameters.AddWithValue("@PARTY_NAME", orderDbItem.PartyName);
+                command.Parameters.AddWithValue("@TABLE_NUMBER", orderDbItem.TableNumber);
+                command.Parameters.AddWithValue("@TABLE_NAME", QueryUtilities.GetSubstring(orderDbItem.TabContainerName, 1, 25));
+                command.Parameters.AddWithValue("@SEATNO", orderDbItem.SeatNumber);
+                command.Parameters.AddWithValue("@PRICE", orderDbItem.Price);
+                command.Parameters.AddWithValue("@PRINTED", 'F');
+                command.Parameters.AddWithValue("@TRANSNO", orderDbItem.TransactionNumber);
+                command.Parameters.AddWithValue("@ORDER_TYPE", orderDbItem.OrderType);
+                command.Parameters.AddWithValue("@TERMINAL_NAME", orderDbItem.TerminalName);
+                command.Parameters.AddWithValue("@MENU_NAME", orderDbItem.MenuName);
+                command.Parameters.AddWithValue("@TAB_NAME", QueryUtilities.GetSubstring(orderDbItem.TabName, 1, 32));
+                command.Parameters.AddWithValue("@COURSE_NAME", orderDbItem.CourseName);
+                command.Parameters.AddWithValue("@HAPPYHOUR", orderDbItem.HappyHour ? 'T' : 'F');
+                command.Parameters.AddWithValue("@ORDER_LOCATION", orderDbItem.OrderLocation);
+                command.Parameters.AddWithValue("@TAB_TYPE", orderDbItem.TabType);
+                command.Parameters.AddWithValue("@TIME_STAMP", orderDbItem.TimeStamp);
+                command.Parameters.AddWithValue("@COST", orderDbItem.Cost);
+                command.Parameters.AddWithValue("@LOYALTY_KEY", orderDbItem.LoyaltyKey);
+                command.Parameters.AddWithValue("@MASTER_CONTAINER", orderDbItem.MasterContainer);
+                command.Parameters.AddWithValue("@SETMENU_MASK", orderDbItem.SetMenuMask);
+                command.Parameters.AddWithValue("@SETMENU_GROUP", orderDbItem.SetMenuGroup);
+                command.Parameters.AddWithValue("@ITEM_CATEGORY", "");
+                command.Parameters.AddWithValue("@SECURITY_REF", orderDbItem.SecurityRef);
+                command.Parameters.AddWithValue("@TIME_KEY", orderDbItem.TimeKey);
+                command.Parameters.AddWithValue("@GST_PERCENT", orderDbItem.GSTPercent);
+                command.Parameters.AddWithValue("@COST_GST_PERCENT", orderDbItem.CostGSTPercent);
+                command.Parameters.AddWithValue("@QTY", orderDbItem.Qty);
+                command.Parameters.AddWithValue("@DISCOUNT", orderDbItem.Discount);
+                command.Parameters.AddWithValue("@DISCOUNT_REASON", QueryUtilities.GetSubstring(orderDbItem.DiscountReason, 1, 40));
+                command.Parameters.AddWithValue("@REDEEMED", 0.0f);
+                command.Parameters.AddWithValue("@ITEM_KITCHEN_NAME", orderDbItem.ItemKitchenName);
+                command.Parameters.AddWithValue("@SIZE_KITCHEN_NAME", orderDbItem.SizeKitchenName);
+                command.Parameters.AddWithValue("@COURSE_KITCHEN_NAME", orderDbItem.CourseKitchenName);
+                command.Parameters.AddWithValue("@POINTS_PERCENT", orderDbItem.PointsPercent);
+                command.Parameters.AddWithValue("@CATEGORY_KEY", orderDbItem.Categories.PrimaryArcCategoryKey);
+                command.Parameters.AddWithValue("@THIRDPARTYCODES_KEY", orderDbItem.ThirdPartyCodeKey);
+                command.Parameters.AddWithValue("@MEMBER_FREE_SALE_COUNT", orderDbItem.MemberFreeSaleCount);
+                command.Parameters.AddWithValue("@MEMBER_FREE_SALE_DISCOUNT", orderDbItem.MemberFreeSaleDiscount);
+                command.Parameters.AddWithValue("@LOCATION_FREE_SALE_COUNT", orderDbItem.LocationFreeSaleCount);
+                command.Parameters.AddWithValue("@LOCATION_FREE_SALE_DISCOUNT", orderDbItem.LocationFreeSaleDiscount);
+                command.Parameters.AddWithValue("@IS_FREE", orderDbItem.IsFree ? 'T' : 'F');
+                command.Parameters.AddWithValue("@SERVINGCOURSES_KEY", orderDbItem.ServingCoursesKey);
+                command.Parameters.AddWithValue("@PRICE_LEVEL0", orderDbItem.PriceLevel0);
+                command.Parameters.AddWithValue("@PRICE_LEVEL1", orderDbItem.PriceLevel1);
+                command.Parameters.AddWithValue("@ITEM_TYPE", orderDbItem.ItemType);
+                command.Parameters.AddWithValue("@MENU_ITEM_KEY", orderDbItem.MenuItemKey); // ItemOrderedFrom->ItemKey
+                command.Parameters.AddWithValue("@PLU", orderDbItem.PLU);
+                command.Parameters.AddWithValue("@ORDER_TYPE_MESSAGE", orderDbItem.OrderTypeMessage);
+                command.Parameters.AddWithValue("@CONTACTS_KEY", orderDbItem.ContactsKey);
+                command.Parameters.AddWithValue("@ACTIVECHITNUMBER_KEY", DBNull.Value);
+                command.Parameters.AddWithValue("@PATRON_COUNT", orderDbItem.PatronCount);
 
 
-            if (orderDbItem.SideOrderKey > 0)
-                command.Parameters.AddWithValue("@SIDE_ORDER_KEY", orderDbItem.SideOrderKey);
-            else
-                command.Parameters.AddWithValue("@SIDE_ORDER_KEY", DBNull.Value);
+                if (orderDbItem.SideOrderKey > 0)
+                    command.Parameters.AddWithValue("@SIDE_ORDER_KEY", orderDbItem.SideOrderKey);
+                else
+                    command.Parameters.AddWithValue("@SIDE_ORDER_KEY", DBNull.Value);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 195, short.MaxValue);
+            }
 
             //............................................
 
@@ -1365,7 +1547,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //......................................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     INSERT INTO ORDERCATEGORY 
                                     (
 						                ORDER_KEY,
@@ -1378,8 +1562,13 @@ namespace MenumateServices.WebMate.InternalClasses
                                     )
                                     ";
 
-            command.Parameters.AddWithValue("@ORDER_KEY", orderKey);
-            command.Parameters.AddWithValue("@CATEGORY_KEY", category.CategoryKey);
+                command.Parameters.AddWithValue("@ORDER_KEY", orderKey);
+                command.Parameters.AddWithValue("@CATEGORY_KEY", category.CategoryKey);
+            }
+            catch (Exception e)
+            {                
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 196, short.MaxValue);
+            }
 
             //......................................................
 
@@ -1404,7 +1593,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //......................................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     INSERT INTO ORDERRECIPE 
                                     (
 						                ORDERRECIPE_KEY,
@@ -1425,12 +1616,17 @@ namespace MenumateServices.WebMate.InternalClasses
                                     )
                                     ";
 
-            command.Parameters.AddWithValue("@ORDERRECIPE_KEY", recipe.RecipeKey);
-            command.Parameters.AddWithValue("@ORDER_KEY", orderKey);
-            command.Parameters.AddWithValue("@STOCK_CODE", recipe.StockCode);
-            command.Parameters.AddWithValue("@QTY", recipe.Quantity);
-            command.Parameters.AddWithValue("@COST", recipe.Cost);
-            command.Parameters.AddWithValue("@STOCK_LOCATION", recipe.StockLocation);
+                command.Parameters.AddWithValue("@ORDERRECIPE_KEY", recipe.RecipeKey);
+                command.Parameters.AddWithValue("@ORDER_KEY", orderKey);
+                command.Parameters.AddWithValue("@STOCK_CODE", recipe.StockCode);
+                command.Parameters.AddWithValue("@QTY", recipe.Quantity);
+                command.Parameters.AddWithValue("@COST", recipe.Cost);
+                command.Parameters.AddWithValue("@STOCK_LOCATION", recipe.StockLocation);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 215, short.MaxValue);
+            }
 
             //......................................................
 
@@ -1455,7 +1651,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //......................................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     INSERT INTO ORDEROPTION 
                                     (
 					                    ORDEROPTION_KEY,
@@ -1476,12 +1674,17 @@ namespace MenumateServices.WebMate.InternalClasses
                                     )
                                     ";
 
-            command.Parameters.AddWithValue("@ORDEROPTION_KEY", option.OptionKey);
-            command.Parameters.AddWithValue("@ORDER_KEY", orderKey);
-            command.Parameters.AddWithValue("@OPTION_NAME", option.Name);
-            command.Parameters.AddWithValue("@OPTION_ID", option.OptionID);
-            command.Parameters.AddWithValue("@PLUS", option.IsPlus ? 'T' : 'F');
-            command.Parameters.AddWithValue("@OPTION_KITCHEN_NAME", option.KitchenName);
+                command.Parameters.AddWithValue("@ORDEROPTION_KEY", option.OptionKey);
+                command.Parameters.AddWithValue("@ORDER_KEY", orderKey);
+                command.Parameters.AddWithValue("@OPTION_NAME", option.Name);
+                command.Parameters.AddWithValue("@OPTION_ID", option.OptionID);
+                command.Parameters.AddWithValue("@PLUS", option.IsPlus ? 'T' : 'F');
+                command.Parameters.AddWithValue("@OPTION_KITCHEN_NAME", option.KitchenName);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 216, short.MaxValue);
+            }
 
             //......................................................
 
@@ -1489,7 +1692,7 @@ namespace MenumateServices.WebMate.InternalClasses
         }
 
         public FbCommand CreateWebOrderAcceptedCmd(
-                                                FbConnection  inConnection,
+                                                FbConnection inConnection,
                                                 FbTransaction inTransaction,
                                                        string inOrderHandle)
         {
@@ -1497,14 +1700,21 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //......................................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     SELECT COUNT(WebOrder_Key) as orderCount
                                     FROM WEBORDERS
                                     WHERE guid = @orderHandle
                                     ";
 
-            command.Parameters.AddWithValue("@orderHandle", inOrderHandle);
- 
+                command.Parameters.AddWithValue("@orderHandle", inOrderHandle);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 217, short.MaxValue);
+            }
+
             //......................................................
 
             return command;
@@ -1518,20 +1728,22 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inThirdPartyCode"></param>
         /// <returns></returns>
         public FbCommand CreateReadThirdPartyCodeKeyCmd(
-                                   FbConnection  inConnection,
-                                   FbTransaction inTransaction, 
-                                   string         inThirdPartyCode,
-                                   int            inMenukey)  //changes for menu_key
+                                   FbConnection inConnection,
+                                   FbTransaction inTransaction,
+                                   string inThirdPartyCode,
+                                   int inMenukey)  //changes for menu_key
         {
             FbCommand command = new FbCommand(@"", inConnection, inTransaction);
 
             //......................................................
 
-            string _menukey = "";
-            if (inMenukey > 0)
+            try
             {
-                _menukey = " Menu.Menu_Key = @menu_key and ";
-            }
+                string _menukey = "";
+                if (inMenukey > 0)
+                {
+                    _menukey = " Menu.Menu_Key = @menu_key and ";
+                }
                 command.CommandText = @"
                                     SELECT                                        
                                         ItemSize.ThirdPartyCodes_Key as tpcKey                                        
@@ -1551,8 +1763,13 @@ namespace MenumateServices.WebMate.InternalClasses
                 {
                     command.Parameters.AddWithValue("@menu_key", inMenukey);
                 }
-                command.Parameters.AddWithValue("@code", inThirdPartyCode);  
-                        
+                command.Parameters.AddWithValue("@code", inThirdPartyCode);
+
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 218, short.MaxValue);
+            }
             //......................................................
 
             return command;
@@ -1567,17 +1784,26 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //......................................................
 
-            if (orderType == "Delivery")
+            try
             {
-                command.CommandText = @" SELECT CHITNUMBER_KEY, DEFAULT_MENU FROM CHITNUMBER WHERE ONLINE_DELIVERY_ORDER = @value ";
-                  
+
+                string order_type = "";
+                if (orderType == "Delivery")
+                {
+                    order_type = " ONLINE_DELIVERY_ORDER = @value ";
+                }
+                else
+                {
+                    order_type = " ONLINE_PICKUP_ORDER = @value ";  
+                }
+                command.CommandText = @" SELECT CHITNUMBER_KEY, DEFAULT_MENU FROM CHITNUMBER WHERE " + order_type  ;
+                //......................................................
+                command.Parameters.AddWithValue("@value", "T");
             }
-            if (orderType == "Pickup")
+            catch (Exception e)
             {
-                command.CommandText = @" SELECT CHITNUMBER_KEY, DEFAULT_MENU FROM CHITNUMBER WHERE ONLINE_PICKUP_ORDER = @value ";
+               EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 219, short.MaxValue);
             }
-            //......................................................
-            command.Parameters.AddWithValue("@value", "T");
 
             return command;
         }
@@ -1591,13 +1817,20 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //......................................................
 
-            command.CommandText = @"
+            try
+            {
+                command.CommandText = @"
                                     SELECT a.MENU_KEY
                                     FROM MENU a
                                     Where a.MENU_NAME = @menu_name
                                     ";
 
-            command.Parameters.AddWithValue("@menu_name", menuName);
+                command.Parameters.AddWithValue("@menu_name", menuName);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 220, short.MaxValue);
+            }
             //......................................................
 
             return command;
@@ -1609,11 +1842,18 @@ namespace MenumateServices.WebMate.InternalClasses
         {
             FbCommand command = new FbCommand(@"", inConnection, inTransaction);
 
-            int value = 2117;
-            //......................................................
-            command.CommandText = @" SELECT a.VARIABLES_KEY, a.INTEGER_VAL FROM VARSPROFILE a where a.VARIABLES_KEY = @value ";            
-            //......................................................
-            command.Parameters.AddWithValue("@value", value);
+            try
+            {
+                int value = 2117;
+                //......................................................
+                command.CommandText = @" SELECT a.VARIABLES_KEY, a.INTEGER_VAL FROM VARSPROFILE a where a.VARIABLES_KEY = @value ";
+                //......................................................
+                command.Parameters.AddWithValue("@value", value);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 221, short.MaxValue);
+            }
 
             return command;
         }
@@ -1624,13 +1864,20 @@ namespace MenumateServices.WebMate.InternalClasses
         {
             FbCommand command = new FbCommand(@"", inConnection, inTransaction);
 
-            int value = 4133;
-            int int_val = 1;
-            //......................................................
-            command.CommandText = @" UPDATE VARSPROFILE a SET a.INTEGER_VAL = @int_val WHERE a.VARIABLES_KEY = @value ";
-            //......................................................
-            command.Parameters.AddWithValue("@value", value);
-            command.Parameters.AddWithValue("@int_val", int_val);
+            try
+            {
+                int value = 4133;
+                int int_val = 1;
+                //......................................................
+                command.CommandText = @" UPDATE VARSPROFILE a SET a.INTEGER_VAL = @int_val WHERE a.VARIABLES_KEY = @value ";
+                //......................................................
+                command.Parameters.AddWithValue("@value", value);
+                command.Parameters.AddWithValue("@int_val", int_val);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 222, short.MaxValue);
+            }
             return command;
         }
 
