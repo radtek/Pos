@@ -48,8 +48,6 @@ TMembership::TMembership(TModules &Modules)
    PreviousYearPoints = 0;
    AvailableBDPoint = 0;
    AvailableFVPoint = 0;
-   AvailableEarnedPoint = 0;
-   AvailableLoadedPoint = 0;
 }
 
 TMembership::~TMembership()
@@ -623,9 +621,6 @@ void TMembership::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 	  return;
    try
    {
-#ifdef _DEBUG
-	  __int64 start = ::GetTickCount();
-#endif
 	  // Update Member Number if Blank.
 	  if (Info.MembershipNumber == NULL   || Info.MembershipNumber == "")
 	  {
@@ -641,15 +636,8 @@ void TMembership::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 
 	  // Proform Unique checks here so no indexes are Violated.
 	  CheckSiteIndex(DBTransaction, inContactKey, Info);
-
 	  OnBeforeSaveMember.Occured(Info);
-
-	  TContact::SetContactDetails(DBTransaction, inContactKey, Info);
-#ifdef _DEBUG
-	  __int64 Time = ((::GetTickCount() - start));
-	  TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "--------------------------------");
-	  TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "Member Save Time :" + IntToStr(Time));
-#endif
+ 	  TContact::SetContactDetails(DBTransaction, inContactKey, Info);
    }
    catch(Exception & E)
    {
@@ -662,7 +650,21 @@ void TMembership::SetContactLoyaltyAttributes(Database::TDBTransaction &DBTransa
 {
    try
    {
-          TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT ATTRIB_KEY FROM LOYALTYATTRIBUTES WHERE CONTACTS_KEY=:CONTACTS_KEY";
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
+      IBInternalQuery->ExecQuery();
+      bool createRecord = true;
+      int attrKey = 0;
+      if(!IBInternalQuery->Eof)
+      {
+         createRecord = false;
+         attrKey = IBInternalQuery->FieldByName("ATTRIB_KEY")->AsInteger;
+      }
+
+      if(createRecord)
+      {
           IBInternalQuery->Close();
           IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_LOYALTYATTRIBUTES, 1) FROM RDB$DATABASE";
           IBInternalQuery->ExecQuery();
@@ -679,6 +681,26 @@ void TMembership::SetContactLoyaltyAttributes(Database::TDBTransaction &DBTransa
           IBInternalQuery->ParamByName("CREATION_TIME")->AsDateTime = Now();
           IBInternalQuery->ExecQuery();
           IBInternalQuery->Close();
+      }
+      else
+      {
+          IBInternalQuery->Close();
+          IBInternalQuery->SQL->Text = "UPDATE LOYALTYATTRIBUTES SET "
+                                       "UUID = :UUID, "
+                                       "SITE_ID = :SITE_ID, "
+                                       "CONTACTS_KEY = :CONTACTS_KEY, "
+                                       "ACTIVATION_TOKEN = :ACTIVATION_TOKEN, "
+                                       "CREATION_TIME = :CREATION_TIME "
+                                       "WHERE  ATTRIB_KEY =:ATTRIB_KEY";
+          IBInternalQuery->ParamByName("ATTRIB_KEY")->AsInteger = attrKey;
+          IBInternalQuery->ParamByName("UUID")->AsString = Info.CloudUUID;
+          IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Info.SiteID;
+          IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
+          IBInternalQuery->ParamByName("ACTIVATION_TOKEN")->AsString = Info.ActivationToken;
+          IBInternalQuery->ParamByName("CREATION_TIME")->AsDateTime = Now();
+          IBInternalQuery->ExecQuery();
+          IBInternalQuery->Close();
+      }
     }
    catch(Exception & E)
    {
@@ -3005,9 +3027,9 @@ AnsiString TMembership::SendRequestForRefund(TRefundTransaction refundTransactio
 bool TMembership::CallInitMethod()
 {}
 
-bool TMembership::MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo)
+bool TMembership::MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode)
 {
-  return MemberCodeScanned(DBTransaction, UserInfo);
+  return MemberCodeScanned(DBTransaction, UserInfo, memberCardCode);
 }
 
 bool TMembership::UpdateMemberCardCode(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode)
@@ -3021,8 +3043,6 @@ void TMembership::ResetPoints()
    PreviousYearPoints = 0;
    AvailableBDPoint = 0;
    AvailableFVPoint = 0;
-   AvailableEarnedPoint = 0;
-   AvailableLoadedPoint = 0;
    RedeemedVoucherName = "";
    RedeemedVoucherDiscount = "";
    MemberVouchers.clear();

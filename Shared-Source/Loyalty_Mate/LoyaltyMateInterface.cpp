@@ -434,6 +434,7 @@ void TLoyaltyMateInterface::ReadContactInfo(MemberInfo* inMemberInfo,TMMContactI
     inContactInfo.MembershipNumber = inMemberInfo->MembershipNumber;
 	inContactInfo.PointRule = inMemberInfo->PointRule;
     inContactInfo.IsFirstVisitRewarded = inMemberInfo->IsFirstVisitRewarded;
+    inContactInfo.HasTransactions = inMemberInfo->HasTransactions;
     if(inMemberInfo->LastVisitDate != NULL)
     {
        inContactInfo.LastVisit = inMemberInfo->LastVisitDate->AsUTCDateTime;

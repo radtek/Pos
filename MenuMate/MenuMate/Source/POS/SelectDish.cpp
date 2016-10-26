@@ -14082,9 +14082,7 @@ void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
-    info.MemberCode = Barcode;
-    info.CardStr = Barcode;
-    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info);
+    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info,Barcode);
 
 	if (info.Valid())
      {

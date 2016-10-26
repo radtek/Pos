@@ -257,6 +257,8 @@ private:
   bool            FFirstName_Specified;
   int             FGender;
   bool            FGender_Specified;
+  bool            FHasTransactions;
+  bool            FHasTransactions_Specified;
   __int64         FHomeSiteId;
   bool            FHomeSiteId_Specified;
   bool            FIsFirstVisitRewarded;
@@ -359,6 +361,10 @@ private:
   {  FGender = _prop_val; FGender_Specified = true;  }
   bool __fastcall Gender_Specified(int Index)
   {  return FGender_Specified;  }
+  void __fastcall SetHasTransactions(int Index, bool _prop_val)
+  {  FHasTransactions = _prop_val; FHasTransactions_Specified = true;  }
+  bool __fastcall HasTransactions_Specified(int Index)
+  {  return FHasTransactions_Specified;  }
   void __fastcall SetHomeSiteId(int Index, __int64 _prop_val)
   {  FHomeSiteId = _prop_val; FHomeSiteId_Specified = true;  }
   bool __fastcall HomeSiteId_Specified(int Index)
@@ -462,6 +468,7 @@ __published:
   __property UnicodeString      Email = { index=(IS_OPTN|IS_NLBL), read=FEmail, write=SetEmail, stored = Email_Specified };
   __property UnicodeString  FirstName = { index=(IS_OPTN|IS_NLBL), read=FFirstName, write=SetFirstName, stored = FirstName_Specified };
   __property int            Gender = { index=(IS_OPTN), read=FGender, write=SetGender, stored = Gender_Specified };
+  __property bool       HasTransactions = { index=(IS_OPTN), read=FHasTransactions, write=SetHasTransactions, stored = HasTransactions_Specified };
   __property __int64    HomeSiteId = { index=(IS_OPTN), read=FHomeSiteId, write=SetHomeSiteId, stored = HomeSiteId_Specified };
   __property bool       IsFirstVisitRewarded = { index=(IS_OPTN), read=FIsFirstVisitRewarded, write=SetIsFirstVisitRewarded, stored = IsFirstVisitRewarded_Specified };
   __property TXSDateTime* LastModified = { index=(IS_OPTN), read=FLastModified, write=SetLastModified, stored = LastModified_Specified };

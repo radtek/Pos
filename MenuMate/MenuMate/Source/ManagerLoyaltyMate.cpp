@@ -313,17 +313,18 @@ void TLoyaltyMateDownloadMemberThread::DownloadMemberFromCloudUsingEmail()
         }
         MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetMemberDetailsByEmail(syndicateCode, MemberEmail, contactInfo, replacePoints);
         OperationSuccessful = response.IsSuccesful;
-        if(!response.IsSuccesful)
+        if(response.ResponseCode == MemberNotExist)
         {
-                throw Exception(response.Message);
+            ErrorMessage = "Member Not Exist.";
+            throw Exception(ErrorMessage);
         }
-		if(OperationSuccessful)
-		{
-                   ReturnContactInfo = contactInfo;
+        if(OperationSuccessful)
+        {
+           ReturnContactInfo = contactInfo;
         }
 		else
 		{
-			throw new Exception("Failed to get member with UUID.");
+			throw new Exception("Failed to get member with Email.");
         }
     }
     catch(Exception &E)

@@ -71,6 +71,7 @@ TMMContactInfo::TMMContactInfo()
     PointRule = 0;
     IsFirstVisitRewarded = false;
     MemberVouchers.clear();
+    HasTransactions = false;
 }
 
 TMMContactInfo::TMMContactInfo( UnicodeString inName)
