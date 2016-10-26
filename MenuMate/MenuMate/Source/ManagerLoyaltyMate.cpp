@@ -34,6 +34,12 @@ TManagerLoyaltyMate::~TManagerLoyaltyMate()
     delete loyaltyThreadTimer;
 }
 //---------------------------------------------------------------------------
+void TManagerLoyaltyMate::TriggerPointSync()
+{
+    InitiateLoyaltyThread();
+    StartLoyaltyThread();
+}
+//---------------------------------------------------------------------------
 void TManagerLoyaltyMate::SyncMemberDetailsWithCloud(TSyndCode syndicateCode, TMMContactInfo info)
 {
     TLoyaltyMateMemberOperation operation(syndicateCode,info);

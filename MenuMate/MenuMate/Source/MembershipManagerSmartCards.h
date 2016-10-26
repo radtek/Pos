@@ -101,7 +101,7 @@ private:
 	void __fastcall loyaltyMateMemberCreationCompleted(TObject* sender);
     void GetMemberDetail(TMMContactInfo &MMContactInfo);
     void SaveTransactionInvoiceDetail(TPaymentTransaction &PaymentTransaction);
-    void LinkMembers(Database::TDBTransaction &DBTransaction, int contactToReplace, int contactKey, MemberMode memberMode);
+    void LinkMembers(Database::TDBTransaction &DBTransaction, int contactToReplace, int contactKey);
     bool LinkSmartCard(Database::TDBTransaction &DBTransaction,int contactKey,TMMContactInfo &SmartCardContact);
     bool HasCard(Database::TDBTransaction &DBTransaction,int contactKey);
 protected:

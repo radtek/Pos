@@ -14216,6 +14216,10 @@ void TfrmSelectDish::DoCloundSync()
      {
         TManagerCloudSync ManagerCloudSync;
         ManagerCloudSync.SyncCompanyDetails();
+        ManageDiscounts();
+        TotalCosts();
+        RedrawSeatOrders();
+        HighlightSelectedItem();
      }
 }
 //----------------------------------------------------------------------------------------------------------------------

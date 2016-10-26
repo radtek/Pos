@@ -2120,7 +2120,7 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
     loyaltyMemberDownloadThread->MemberCode = SmartCardContact.MemberCode;
 	loyaltyMemberDownloadThread->DownLoadFromCode = useMemberCode;
     loyaltyMemberDownloadThread->MemberEmail = SmartCardContact.EMail;
-	loyaltyMemberDownloadThread->DownLoadFromEmail = useMemberCode;
+	loyaltyMemberDownloadThread->DownLoadFromEmail = useEmail;
 	//display the dialog box
 	std::auto_ptr<TfrmLoyaltyMateOperationDialogBox> loyaltyMateOperationDialogBox = std::auto_ptr<TfrmLoyaltyMateOperationDialogBox>(TfrmLoyaltyMateOperationDialogBox::Create<TfrmLoyaltyMateOperationDialogBox>(Screen->ActiveForm));
 	loyaltyMateOperationDialogBox->OperationDescription = "Downloading member information from LoyaltyMate... Please Wait.";
@@ -2415,7 +2415,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
           int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,UserInfo.EMail);
           if(localEmailContactKey != 0 && localEmailContactKey != UserInfo.ContactKey && !HasCard(DBTransaction,localEmailContactKey))
           {
-            LinkMembers(DBTransaction, UserInfo.ContactKey, localEmailContactKey, memberMode);
+            LinkMembers(DBTransaction, UserInfo.ContactKey, localEmailContactKey);
             TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,UserInfo);
             addDefaultPoints = true;
           }
@@ -2491,12 +2491,12 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
            }
          }
             //Member not exist in local DB and check that email member is not smartcard member
-         MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
          int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,UserInfo.EMail);
+         MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
          if(localEmailContactKey != 0 && localEmailContactKey != UserInfo.ContactKey && !HasCard(DBTransaction,localEmailContactKey))
           {
             TDBContacts::GetPointsBalances(DBTransaction, localEmailContactKey, pointsToSync);
-            LinkMembers(DBTransaction, localEmailContactKey, UserInfo.ContactKey, memberMode);
+            LinkMembers(DBTransaction, localEmailContactKey, UserInfo.ContactKey);
             addDefaultPoints = true;
           }
          MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, UserInfo.ContactKey, UserInfo);
@@ -2643,8 +2643,7 @@ void TManagerMembershipSmartCards::UpdateMemberCardCodeToDB(Database::TDBTransac
 	}
 }
 
-void TManagerMembershipSmartCards::LinkMembers(Database::TDBTransaction &DBTransaction, int contactToReplace, int contactKey,
-                                                                                                    MemberMode memberMode)
+void TManagerMembershipSmartCards::LinkMembers(Database::TDBTransaction &DBTransaction, int contactToReplace, int contactKey)
 {
    try
 	{
@@ -2656,26 +2655,24 @@ void TManagerMembershipSmartCards::LinkMembers(Database::TDBTransaction &DBTrans
 		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
         IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = contactToReplace;
 		IBInternalQuery->ExecQuery();
-        if(memberMode == eSwipeCardMode)
-        {
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =
-            "UPDATE CONTACTCARDS SET CONTACTS_KEY = :CONTACTS_KEY "
-            "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
-            IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
-            IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = contactToReplace;
-            IBInternalQuery->ExecQuery();
-        }
-        else if(memberMode == eProxCardMode)
-        {
-           IBInternalQuery->Close();
-           IBInternalQuery->SQL->Text =
-           "UPDATE CONTACTS SET PROX_CARD = :PROX_CARD "
-           "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
-           IBInternalQuery->ParamByName("PROX_CARD")->AsString = TDBContacts::GetContactProxCard(DBTransaction,contactToReplace);
-           IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = contactKey;
-           IBInternalQuery->ExecQuery();
-        }
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "UPDATE CONTACTCARDS SET CONTACTS_KEY = :CONTACTS_KEY "
+        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+        IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = contactToReplace;
+        IBInternalQuery->ExecQuery();
+
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "UPDATE CONTACTS SET PROX_CARD = :PROX_CARD "
+        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+        IBInternalQuery->ParamByName("PROX_CARD")->AsString = TDBContacts::GetContactProxCard(DBTransaction,contactToReplace);
+        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = contactKey;
+        IBInternalQuery->ExecQuery();
+
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
         "DELETE FROM CONTACTS "
@@ -2790,7 +2787,7 @@ void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DB
         transaction.SyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
         transaction.OccurredDate = Now();
         transaction.PointsDelta = Points.getPointsBalance(ptstLoyalty);
-        transaction.PointsType = pttEarned;
+        transaction.PointsType = 1;
         TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
    }
 
@@ -2801,10 +2798,10 @@ void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DB
         transaction.SyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
         transaction.OccurredDate = Now();
         transaction.PointsDelta = Points.getPointsBalance(ptstAccount);
-        transaction.PointsType = pttPurchased;
+        transaction.PointsType = 8;
         TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
    }
-
+   TManagerLoyaltyMate::Instance()->TriggerPointSync();
    MessageBox("Points restored. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
 }
 
