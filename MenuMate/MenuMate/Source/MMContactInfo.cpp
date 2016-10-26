@@ -358,7 +358,7 @@ bool TMMContactInfo::ValidateMandatoryField(AnsiString& message)
 bool TMMContactInfo::ValidateFirstName(AnsiString& message)
 {
     bool isValid = false;
-    AnsiString firstName = Name;
+    AnsiString firstName = Name.Trim();
     isValid = ValidateName(firstName,message);
     return isValid;
 }
@@ -366,7 +366,7 @@ bool TMMContactInfo::ValidateFirstName(AnsiString& message)
 bool TMMContactInfo::ValidateLastName(AnsiString& message)
 {
     bool isValid = false;
-    AnsiString surname = Surname;
+    AnsiString surname = Surname.Trim();
     isValid = ValidateName(surname,message);
     return isValid;
 }

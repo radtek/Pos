@@ -41,8 +41,8 @@ __fastcall TfrmMemberCreation::TfrmMemberCreation(TComponent* Owner, TMMContactI
 void TfrmMemberCreation::DisplayCustomerDataFromPointers()
 {
      lbeEmail->Caption = CustomerInfoPointers[0];
-     lbeName->Caption = CustomerInfoPointers[1];
-     lbeLastName->Caption = CustomerInfoPointers[2];
+     lbeName->Caption = CustomerInfoPointers[1].Trim();
+     lbeLastName->Caption = CustomerInfoPointers[2].Trim();
      lbeContactPhone->Caption = CustomerInfoPointers[3];
 
 }
@@ -88,8 +88,8 @@ void __fastcall TfrmMemberCreation::EditCustomerBasicDetails(TObject *Sender)
     {
          CustomerInfoPointers[btn->Tag] =  frmTouchKeyboard->KeyboardText;
          Info.EMail=  CustomerInfoPointers[0];
-         Info.Name=  CustomerInfoPointers[1];
-         Info.Surname = CustomerInfoPointers[2];
+         Info.Name=  CustomerInfoPointers[1].Trim();
+         Info.Surname = CustomerInfoPointers[2].Trim();
          Info.Phone =  CustomerInfoPointers[3];
 		 DisplayCustomerDataFromPointers();
 	}
