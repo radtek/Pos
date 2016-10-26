@@ -236,7 +236,7 @@ Currency TMallExportHourlyUpdate::extractTotalGrossSales()
             grossPrice += order->BillCalcResult.ServiceCharge.Value;
             grossPrice += order->BillCalcResult.ServiceCharge.TaxValue;
         }
-        else if(TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL)
+        else if(TGlobalSettings::Instance().MallIndex == FEDERALLANDMALL || TGlobalSettings::Instance().MallIndex == AYALAMALL)
         {
             grossPrice += order->BillCalcResult.FinalPrice;
         }

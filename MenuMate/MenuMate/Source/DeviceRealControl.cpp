@@ -651,6 +651,11 @@ void TDeviceRealControl::LoadHdrFtr()
 		TGlobalSettings::Instance().VoidFooter->Clear();
 		TGlobalSettings::Instance().VoidFooter->LoadFromFile(ExtractFilePath(Application->ExeName) + RECEIPT_VOID_FOOTER);
 	}
+    if (FileExists(ExtractFilePath(Application->ExeName) + RECEIPT_SUBHEADER))
+	{
+		TGlobalSettings::Instance().SubHeader->Clear();
+		TGlobalSettings::Instance().SubHeader->LoadFromFile(ExtractFilePath(Application->ExeName) + RECEIPT_SUBHEADER);
+	}
 
 	bool IsRegistered = false;
 	UnicodeString pRegisteredName = "";
@@ -668,7 +673,8 @@ void TDeviceRealControl::LoadHdrFtr()
 			{
 				TGlobalSettings::Instance().PHeader->Insert(0, pRegisteredName);
 			}
-			Receipt->SetHeaderFooter(TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().PHeader.get(), TGlobalSettings::Instance().Footer.get(), TGlobalSettings::Instance().VoidFooter.get());
+			Receipt->SetHeaderFooter(TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().PHeader.get(), TGlobalSettings::Instance().Footer.get(), TGlobalSettings::Instance().VoidFooter.get(),
+                                    TGlobalSettings::Instance().SubHeader.get());
 		}
 	}
 	else
@@ -686,7 +692,7 @@ void TDeviceRealControl::LoadHdrFtr()
 		}
 		if (Receipt)
 		{
-			Receipt->SetHeaderFooter(TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().Header.get());
+			Receipt->SetHeaderFooter(TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().Header.get(),TGlobalSettings::Instance().Header.get());
 		}
 	}
 

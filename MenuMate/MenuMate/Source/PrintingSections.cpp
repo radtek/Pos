@@ -1604,7 +1604,10 @@ void TPrintSection::ShowRefundReference(TReqPrintJob *PrintJob)
         pPrinter->Line->ColCount = 1;
         pPrinter->Line->Columns[0]->Width = pPrinter->Width;
         pPrinter->Line->Columns[0]->Alignment = taCenter;
-        pPrinter->Line->Columns[0]->Text = "OR No. ";
+        if(TGlobalSettings::Instance().RefundReferenceLabel != "")
+            pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().RefundReferenceLabel;
+        else
+            pPrinter->Line->Columns[0]->Text = "OR NO.";
         pPrinter->Line->Columns[0]->Text += TReceiptUtility::ModifyInvoiceNumber(PrintJob->Transaction->RefundRefReceipt,
                                                    ReceiptLength);
         pPrinter->AddLine();
@@ -2349,6 +2352,7 @@ void TPrintSection::PrintMemberNameInformation(TReqPrintJob *PrintJob)
 {
 	if (PrintJob->Transaction->Membership.Member.ContactKey != 0)
 	{
+        UnicodeString title = "Membership";
 		UnicodeString Member = PrintJob->Transaction->Membership.Member.Alias + " ( " + PrintJob->Transaction->Membership.Member.MembershipNumber + " ) ";
 		switch(PrintJob->MembershipNameDisplay)
 		{
@@ -2415,14 +2419,13 @@ void TPrintSection::PrintMemberNameInformation(TReqPrintJob *PrintJob)
 				}
 			}
 		}
-
 		pPrinter->Line->ColCount = 2;
-		pPrinter->Line->Columns[0]->Width = pPrinter->Width - Member.Length();
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width - Member.Length() < 0 ?  title.Length() + 1 : pPrinter->Width - Member.Length();
 		pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
 		pPrinter->Line->Columns[1]->Width = Member.Length();
 		pPrinter->Line->Columns[1]->Alignment = taRightJustify;
 		pPrinter->Line->Columns[0]->Kanji = pPrinter->KanjiPrinter;
-		pPrinter->Line->Columns[0]->Text = "Membership";
+		pPrinter->Line->Columns[0]->Text = title;
 		pPrinter->Line->Columns[1]->Text = Member;
 		pPrinter->AddLine();
 	}
@@ -6194,10 +6197,19 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 				pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptHeader->Strings[i];
 				pPrinter->AddLine();
 			}
+            if(TGlobalSettings::Instance().SetSubHeader &&
+                (!TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)))
+            {
+                for (int i = 0; i < TGlobalSettings::Instance().SubHeader->Count; i++)
+                {
+                    pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().SubHeader->Strings[i];
+                    pPrinter->AddLine();
+                }
+            }
             if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)&&
                  TGlobalSettings::Instance().ShowVoidOrRefund)
              {
-                 pPrinter->Line->Columns[0]->Text = "VOID";//PrintVoidOnReceipt(PrintJob);
+                 pPrinter->Line->Columns[0]->Text = "VOID";
                  pPrinter->AddLine();
              }
             if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem ||

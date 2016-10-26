@@ -982,23 +982,26 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 //---------------------------------------------------------------------------
 void __fastcall TWebProcUtil::completeOrderToChefMate(TPaymentTransaction* inTransaction)
 {
-    std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    TMMContactInfo memberInfo = TDBWebUtil::LoadMemberDetails(DBTransaction, inTransaction->WebOrderKey);
-    UnicodeString paymentStatus = TDBWebUtil::LoadPaymentStatus(DBTransaction, inTransaction->WebOrderKey);
-       ///todo
-    if( ChefMateClientManager->ChefMateEnabled() )
-	{
-        CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
-        if( error == CMC_ERROR_FAILED )
+    try
+    {
+        std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
+        if( ChefMateClientManager->ChefMateEnabled() )
         {
-            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to send an complete order to Chefmate");
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TMMContactInfo memberInfo = TDBWebUtil::LoadMemberDetails(DBTransaction, inTransaction->WebOrderKey);
+            UnicodeString paymentStatus = TDBWebUtil::LoadPaymentStatus(DBTransaction, inTransaction->WebOrderKey);
+            CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
+            if( error == CMC_ERROR_FAILED )
+            {
+                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to send an complete order to Chefmate");
+            }
         }
     }
-    else
+    catch(Exception & E)
     {
     	TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to Open Chefmate Interface");
+        throw;
     }
 }
 

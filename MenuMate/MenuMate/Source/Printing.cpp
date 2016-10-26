@@ -286,6 +286,7 @@ __fastcall TReceipt::TReceipt()
    AlwaysPrintReceiptCashSales = false;
    RavellItemsWithPriceAdjusts = false;
    VoidFooter = new TStringList;
+   SubHeader = new TStringList;
 }
 
 __fastcall TReceipt::~TReceipt()
@@ -298,9 +299,11 @@ __fastcall TReceipt::~TReceipt()
    Footer = NULL;
    delete VoidFooter;
    VoidFooter = NULL;
+   delete SubHeader;
+   SubHeader = NULL;
 }
 
-void TReceipt::SetHeaderFooter(TStrings *inHeader, TStrings *inPHeader, TStrings *inFooter, TStrings *inVoidFooter)
+void TReceipt::SetHeaderFooter(TStrings *inHeader ,TStrings *inPHeader,TStrings *inFooter, TStrings *inVoidFooter,TStrings * inSubHeader)
 {
    Header->Text = inHeader->Text;
    PHeader->Text = inPHeader->Text;
@@ -308,6 +311,7 @@ void TReceipt::SetHeaderFooter(TStrings *inHeader, TStrings *inPHeader, TStrings
    //if(inVoidFooter->Count > 0)
    //{
       VoidFooter->Text = inVoidFooter->Text;
+      SubHeader->Text = inSubHeader->Text;
    //}
 }
 

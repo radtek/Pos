@@ -54,6 +54,7 @@ public:
 	WideString CardType;
 	AnsiString EftposTransactionID;
     AnsiString FinalAmount;
+    bool TimeOut;
 };
 
 class TListEftPosTransContainer : public TList

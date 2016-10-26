@@ -86,7 +86,7 @@ public:
 //   TTimer *TerminalTick;
    TDeviceRealTerminal();
    virtual __fastcall ~TDeviceRealTerminal();
-   void SaveHdrFtr(TStrings *inHeader ,TStrings *inPHeader,TStrings *inFooter, TStrings *inVoidFooter);
+   void SaveHdrFtr(TStrings *inHeader ,TStrings *inPHeader,TStrings *inFooter, TStrings *inVoidFooter,TStrings *inSubHeader);
    void SaveZedHeader(TStrings *inZedHeader);
    void LoadPrinterGraphic();
 	void UpdateCurrentRecipes(UnicodeString Code,UnicodeString Location,Currency Cost, double CostGSTPercent);
