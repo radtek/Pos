@@ -11028,7 +11028,7 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
                 AnsiString filename = ExtractFilePath(Application->ExeName);
 
                 std::auto_ptr<TFileStream> FileStream(new TFileStream(filename + "\\Owner Details.txt",  fmOpenRead | fmShareExclusive));
-
+                CompanyData->LoadFromStream(FileStream.get());
                 if(CompanyData->Count > 3)
                 {
                     dmMMReportData->nameOfTaxPayer = CompanyData->Strings[0].TrimLeft();
