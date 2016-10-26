@@ -13946,12 +13946,12 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
      customerDisp.FirstVisit = false;
 	 eMemberSource MemberSource = emsManual;
 	 TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, Member, MemberSource);
-	if (Result == lsAccountBlocked)
-	{
-		MessageBox("Account Blocked " + Member.Name + " " + Member.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
-	}
-	else if (Result == lsAccepted)
-	{
+     if (Result == lsAccountBlocked)
+      {
+            MessageBox("Account Blocked " + Member.Name + " " + Member.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
+      }
+	 else if (Result == lsAccepted)
+	  {
 
 		bool ApplyToAllSeats = false;
 		if (SelectedTable != 0 && !LoyaltyPending())
@@ -13961,7 +13961,11 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 				ApplyToAllSeats = true;
 			}
 		}
-
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+           TManagerDiscount managerDiscount;
+           managerDiscount.GetMembershipDiscounts(DBTransaction,Member.AutoAppliedDiscounts);
+        }
 		SeatOrders[SelectedSeat]->Orders->AppliedMembership = Member;
 		Membership.Assign(Member, MemberSource);
 		// Sort out Free Drinks and stuff.

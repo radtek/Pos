@@ -30,6 +30,7 @@ public:
    void SaveContactInfoReassignedToSmartCard(TMMContactInfo &inContactInfo);
    bool SavePointsTransactionsToSmartCard(TContactPoints &Points,AnsiString inInvoiceNumber,bool PointsFromCloud = false);
    bool SavePointsTransactionsForBarcodeCard(TContactPoints &Points,TMMContactInfo &UserInfo,AnsiString inInvoiceNumber, bool PointsFromCloud = false);
+   void AddDefaultPoints(Database::TDBTransaction &DBTransaction,TContactPoints &Points,int contactkey);
    void BlockAllOfContactsSmartCards(Database::TDBTransaction &DBTransaction, int contactKey);
    void SetSmartCardRestorePoint(Database::TDBTransaction &DBTransaction, TMMContactInfo &MMContactInfo, TSmartCardBlock *RestorePoint,
 	  TSyndCode &SyndCode);
@@ -49,6 +50,9 @@ public:
    std::auto_ptr <TManagerSmartCard> ManagerSmartCards;
 
    void OnCardInserted(TSystemEvents *Sender);
+   void LocalCardInsertedHandler(TSystemEvents *Sender);
+   void LoyaltymateCardInsertedHandler(TSystemEvents *Sender);
+
    void OnUnknownCardInserted(TSystemEvents *Sender);
    void OnUnableToDecodeCard(TSystemEvents *Sender);
    void OnBlankCardInserted(TSystemEvents *Sender);

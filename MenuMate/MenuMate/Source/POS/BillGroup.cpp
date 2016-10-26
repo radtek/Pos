@@ -4565,6 +4565,11 @@ void TfrmBillGroup::ApplyMembership(Database::TDBTransaction &DBTransaction, TMM
             btnApplyMembership->ButtonColor = clPurple;
 			RemoveMembershipDiscounts(DBTransaction);
 			MembershipConfirmed = true;
+            if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+            {
+               TManagerDiscount managerDiscount;
+               managerDiscount.GetMembershipDiscounts(DBTransaction,MembershipInfo.AutoAppliedDiscounts);
+            }
 			Membership.Assign(MembershipInfo, MemberSource);
 			lbeMembership->Visible = true;
             if(TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected)

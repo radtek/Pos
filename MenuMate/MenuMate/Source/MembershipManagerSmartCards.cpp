@@ -769,7 +769,7 @@ void TManagerMembershipSmartCards::OnUpDateRestorePoint(TSystemEvents *Sender)
 
 				SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
 				/* If its a new Member then while the member has been saved to the DB his transaction hasnt been commited yet.
-			prior to this even firing so no Contact key will be returned. */
+			    prior to this even firing so no Contact key will be returned. */
 				if (SmartCardContact.ContactKey != 0)
 				{
 					isMemberInDatabase = true;
@@ -778,8 +778,7 @@ void TManagerMembershipSmartCards::OnUpDateRestorePoint(TSystemEvents *Sender)
 			}
 			DBTransaction.Commit();
 
-			if(isMemberInDatabase
-					&& TGlobalSettings::Instance().LoyaltyMateEnabled)
+			if(isMemberInDatabase && TGlobalSettings::Instance().LoyaltyMateEnabled)
 			{
 				performLoyaltyMateOperations();
 			}
@@ -982,185 +981,10 @@ void TManagerMembershipSmartCards::OnCardInserted(TSystemEvents *Sender)
 		ManagerSmartCards->OnCardUpdated.Sleep();
 		try
 		{
-           	Database::TDBTransaction DBTransaction(DBControl);
-			RegisterTransaction(DBTransaction);
-			DBTransaction.StartTransaction();
-			TMMContactInfo SmartCardContact;
-			ManagerSmartCards->GetContactInfo(SmartCardContact);
-			if (TSmartcard_Preloader::is_preloaded_card(SmartCardContact))
-            {
-				DBTransaction.Commit();
-				return;
-			}
-			SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
-            // Hold the current smart card last modified time in case there
-            // are held points to be saved to the card.
-			TDateTime SmartCardLastModified = SmartCardContact.LastModified;
-            MembershipSystem->ResetPoints();
-			if (TGlobalSettings::Instance().LoyaltyMateEnabled && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
-			{
-		       GetMemberDetail(SmartCardContact);
-			}
-
-
-			if (SmartCardContact.ContactKey == 0)
-			{
-
-				bool immediatelyBlockCard = false;
-				if (TGlobalSettings::Instance().LoyaltyMateEnabled && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
-				{
-					int existingContactKey;
-					int existingSiteId;
-
-					TLoyaltyMateUtilities::GetContactByCloudUUID(DBTransaction, SmartCardContact.CloudUUID, existingContactKey, existingSiteId);
-					if (existingContactKey != 0)
-					{
-						TDateTime existingCardCreationDate = GetCardCreationDateFromContactKey(DBTransaction, existingContactKey);
-						if (SmartCardContact.CardCreationDate >= existingCardCreationDate)
-						{
-							TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->DeleteContact(DBTransaction, existingContactKey);
-							BlockAllOfContactsSmartCards(DBTransaction, existingContactKey);
-						}
-						else
-						{
-							immediatelyBlockCard = true;
-						}
-					}
-				}
-                if(SmartCardContact.MemberType == 0)
-                {
-                   if(SmartCardContact.EMail.Pos("GiftCard") == 1)
-                    {
-                      SmartCardContact.MemberType = 2;
-                    }
-                    else
-                    {
-                       SmartCardContact.MemberType = 1;
-                    }
-                }
-
-				MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
-				DBTransaction.Commit();
-                if (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
-                   SavePointsTransactionsToSmartCard(SmartCardContact.Points,"",true);
-				DBTransaction.StartTransaction();
-				MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
-				if (immediatelyBlockCard)
-				{
-					TSyndCode SyndCode;
-					ManagerSmartCards->GetSyndCodeInfo(SyndCode);
-					BlockNewSmartCard(DBTransaction, SmartCardContact, SyndCode);
-				}
-			}
-			else
-			{
-               if (TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsPOSOffline)
-                {
-                   if(SmartCardContact.Surname != "")
-                   MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
-                   SavePointsTransactionsToSmartCard(SmartCardContact.Points,"",true);
-                }
-               // Check for deleted status.
-				bool CheckForCardInDB 	 = true;
-				bool UpdateMemberDetails = false;
-				bool CardNewToDB		 = false;
-
-				if (MembershipSystem->GetContactType(DBTransaction, SmartCardContact.ContactKey) == eDeletedMember)
-				{
-					if (CustomMessageBox("This Member is Deleted.\rDo you wish to undelete them.", "Member is deleted.", MB_ICONQUESTION,
-								"Undelete", "Leave Deleted") == IDOK)
-					{
-						MembershipSystem->UndeleteContact(DBTransaction, SmartCardContact.ContactKey);
-					}
-					else
-					{
-						CheckForCardInDB = false;
-					}
-				}
-
-				if (CheckForCardInDB)
-				{
-					switch(GetSmartCardStatus(DBTransaction, SmartCardContact.ContactKey, SmartCardContact.ATRStr))
-					{
-					case SMARTCARD_CARD_STATUS_BANNED:
-						break;
-					case SMARTCARD_CARD_STATUS_ACTIVE:
-						UpdateMemberDetails = true;
-						break;
-					case SMARTCARD_CARD_STATUS_UNKNOWN:
-					default:
-						CardNewToDB = true;
-						if (SmartCardContact.CardCreationDate < TDBContacts::GetCardCreationDate(DBTransaction, SmartCardContact.ContactKey))
-						{
-							TSyndCode SyndCode;
-							ManagerSmartCards->GetSyndCodeInfo(SyndCode);
-							BlockNewSmartCard(DBTransaction, SmartCardContact, SyndCode);
-						}
-						else
-						{
-							UpdateMemberDetails = true;
-						}
-						break;
-					}
-				}
-				if (UpdateMemberDetails)
-				{
-					// Update the Card with Held Points Transactions.
-					// This will trigger a card update when the card events system is woken up again.
-					TPointsTransactionContainer PointsTransactions;
-					GetValidPointsTransactions(DBTransaction, SmartCardContact.ContactKey, PointsTransactions);
-					SmartCardContact.Points.Add(PointsTransactions);
-					if (PointsTransactions.size() != 0 && SavePointsTransactionsToSmartCard(SmartCardContact.Points,""))
-					{
-						UpdatePointsTransactions(DBTransaction, PointsTransactions);
-					}
-
-					// DB Is More up to date.
-					TMMContactInfo TempUserDataBaseInfo;
-					// We need to get the Cloud GUID from the smart card in case it is zero and not stored in the database
-					TempUserDataBaseInfo.CloudUUID = SmartCardContact.CloudUUID;
-					MembershipSystem->GetContactDetails(DBTransaction, SmartCardContact.ContactKey, TempUserDataBaseInfo);
-
-					//Assign the tier level to smart card, for safer side lets not do a blunder by letting it remain 0
-                    if(SmartCardContact.TierLevel < TempUserDataBaseInfo.TierLevel)
-					       SmartCardContact.TierLevel = TempUserDataBaseInfo.TierLevel;
-
-                    if(SmartCardContact.LastVisit < TempUserDataBaseInfo.LastVisit)
-					       SmartCardContact.LastVisit = TempUserDataBaseInfo.LastVisit;
-
-                    if(SmartCardContact.LastBirthdayProcessed < TempUserDataBaseInfo.LastBirthdayProcessed)
-					       SmartCardContact.LastBirthdayProcessed = TempUserDataBaseInfo.LastBirthdayProcessed;
-
-
-                    //If loyaltymate is not enabled then copy information required for b'day benifit and first visit reward
-                    if (!TGlobalSettings::Instance().LoyaltyMateEnabled)
-                      {
-                         SmartCardContact.MemberType = TempUserDataBaseInfo.MemberType;
-                         SmartCardContact.LastVisit =  TempUserDataBaseInfo.LastVisit;
-                         SmartCardContact.LastBirthdayProcessed = TempUserDataBaseInfo.LastBirthdayProcessed;
-                         SmartCardContact.DateOfBirth = TempUserDataBaseInfo.DateOfBirth;
-                         SmartCardContact.IsFirstVisitRewarded = TempUserDataBaseInfo.IsFirstVisitRewarded;
-                      }
-
-					if (TempUserDataBaseInfo.LastModified > SmartCardLastModified && !CardNewToDB)
-					{
-						// Save any discounts applied in the DB to the cards.
-						ManagerDiscount->DiscountKeyToCode(DBTransaction, SmartCardContact.AutoAppliedDiscountsID,
-						TempUserDataBaseInfo.AutoAppliedDiscounts);
-						SaveContactInfoEditedToSmartCard(TempUserDataBaseInfo);
-						SaveContactInfoOnDownload(DBTransaction,SmartCardContact);
-					}
-					else if (TempUserDataBaseInfo.LastModified < SmartCardLastModified || CardNewToDB)
-					{
-						// Preserve and Discounts on the Card.
-						ManagerDiscount->DiscountCodeToKey(DBTransaction, SmartCardContact.AutoAppliedDiscountsID,
-						SmartCardContact.AutoAppliedDiscounts);
-					}
-
-				}
-			}
-
-			DBTransaction.Commit();
+           if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+             LoyaltymateCardInsertedHandler(Sender);
+           else
+             LocalCardInsertedHandler(Sender);
 		}
 		__finally
 		{
@@ -1171,6 +995,400 @@ void TManagerMembershipSmartCards::OnCardInserted(TSystemEvents *Sender)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}	//
+}
+
+void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sender)
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+    RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    TMMContactInfo SmartCardContact;
+    ManagerSmartCards->GetContactInfo(SmartCardContact);
+    if (TSmartcard_Preloader::is_preloaded_card(SmartCardContact))
+    {
+        DBTransaction.Commit();
+        return;
+    }
+    SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
+    // Hold the current smart card last modified time in case there
+    // are held points to be saved to the card.
+    TDateTime SmartCardLastModified = SmartCardContact.LastModified;
+    MembershipSystem->ResetPoints();
+    if (SmartCardContact.ContactKey == 0)
+    {
+        if(SmartCardContact.MemberType == 0)
+        {
+           if(SmartCardContact.EMail.Pos("GiftCard") == 1)
+            {
+              SmartCardContact.MemberType = 2;
+            }
+            else
+            {
+               SmartCardContact.MemberType = 1;
+            }
+        }
+        MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+        DBTransaction.Commit();
+        DBTransaction.StartTransaction();
+    }
+    else
+    {
+       // Check for deleted status.
+        bool CheckForCardInDB 	 = true;
+        bool UpdateMemberDetails = false;
+        bool CardNewToDB		 = false;
+
+        if (MembershipSystem->GetContactType(DBTransaction, SmartCardContact.ContactKey) == eDeletedMember)
+        {
+            if (CustomMessageBox("This Member is Deleted.\rDo you wish to undelete them.", "Member is deleted.", MB_ICONQUESTION,
+                        "Undelete", "Leave Deleted") == IDOK)
+            {
+                MembershipSystem->UndeleteContact(DBTransaction, SmartCardContact.ContactKey);
+            }
+            else
+            {
+                CheckForCardInDB = false;
+            }
+        }
+
+        if (CheckForCardInDB)
+        {
+            switch(GetSmartCardStatus(DBTransaction, SmartCardContact.ContactKey, SmartCardContact.ATRStr))
+            {
+            case SMARTCARD_CARD_STATUS_BANNED:
+                break;
+            case SMARTCARD_CARD_STATUS_ACTIVE:
+                UpdateMemberDetails = true;
+                break;
+            case SMARTCARD_CARD_STATUS_UNKNOWN:
+            default:
+                CardNewToDB = true;
+                if (SmartCardContact.CardCreationDate < TDBContacts::GetCardCreationDate(DBTransaction, SmartCardContact.ContactKey))
+                {
+                    TSyndCode SyndCode;
+                    ManagerSmartCards->GetSyndCodeInfo(SyndCode);
+                    BlockNewSmartCard(DBTransaction, SmartCardContact, SyndCode);
+                }
+                else
+                {
+                    UpdateMemberDetails = true;
+                }
+                break;
+            }
+        }
+        if (UpdateMemberDetails)
+        {
+            // Update the Card with Held Points Transactions.
+            // This will trigger a card update when the card events system is woken up again.
+            TPointsTransactionContainer PointsTransactions;
+            GetValidPointsTransactions(DBTransaction, SmartCardContact.ContactKey, PointsTransactions);
+            SmartCardContact.Points.Add(PointsTransactions);
+            if (PointsTransactions.size() != 0 && SavePointsTransactionsToSmartCard(SmartCardContact.Points,""))
+            {
+                UpdatePointsTransactions(DBTransaction, PointsTransactions);
+            }
+
+            // DB Is More up to date.
+            TMMContactInfo TempUserDataBaseInfo;
+            // We need to get the Cloud GUID from the smart card in case it is zero and not stored in the database
+            MembershipSystem->GetContactDetails(DBTransaction, SmartCardContact.ContactKey, TempUserDataBaseInfo);
+
+            SmartCardContact.TierLevel = TempUserDataBaseInfo.TierLevel;
+            SmartCardContact.MemberType = TempUserDataBaseInfo.MemberType;
+            SmartCardContact.LastVisit =  TempUserDataBaseInfo.LastVisit;
+            SmartCardContact.LastBirthdayProcessed = TempUserDataBaseInfo.LastBirthdayProcessed;
+            SmartCardContact.DateOfBirth = TempUserDataBaseInfo.DateOfBirth;
+            SmartCardContact.IsFirstVisitRewarded = TempUserDataBaseInfo.IsFirstVisitRewarded;
+
+            if (TempUserDataBaseInfo.LastModified > SmartCardLastModified && !CardNewToDB)
+            {
+                // Save any discounts applied in the DB to the cards.
+                ManagerDiscount->DiscountKeyToCode(DBTransaction, SmartCardContact.AutoAppliedDiscountsID,
+                TempUserDataBaseInfo.AutoAppliedDiscounts);
+                SaveContactInfoEditedToSmartCard(TempUserDataBaseInfo);
+                SaveContactInfoOnDownload(DBTransaction,SmartCardContact);
+            }
+            else if (TempUserDataBaseInfo.LastModified < SmartCardLastModified || CardNewToDB)
+            {
+                // Preserve and Discounts on the Card.
+                ManagerDiscount->DiscountCodeToKey(DBTransaction, SmartCardContact.AutoAppliedDiscountsID,
+                SmartCardContact.AutoAppliedDiscounts);
+            }
+
+        }
+    }
+
+    DBTransaction.Commit();
+}
+
+void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents *Sender)
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+    RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    TMMContactInfo SmartCardContact;
+    ManagerSmartCards->GetContactInfo(SmartCardContact);
+    if (TSmartcard_Preloader::is_preloaded_card(SmartCardContact))
+    {
+        DBTransaction.Commit();
+        return;
+    }
+    TDateTime SmartCardLastModified = SmartCardContact.LastModified;
+    MembershipSystem->ResetPoints();
+    SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
+    if (TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
+    {
+       GetMemberDetail(SmartCardContact);
+    }
+
+    if (SmartCardContact.ContactKey == 0)
+    {
+        bool immediatelyBlockCard = false;
+        if (TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
+        {
+            int existingContactKey;
+            int existingSiteId;
+            TLoyaltyMateUtilities::GetContactByCloudUUID(DBTransaction, SmartCardContact.CloudUUID, existingContactKey, existingSiteId);
+            if (existingContactKey != 0)
+            {
+                TDateTime existingCardCreationDate = GetCardCreationDateFromContactKey(DBTransaction, existingContactKey);
+                if (SmartCardContact.CardCreationDate >= existingCardCreationDate)
+                {
+                    TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->DeleteContact(DBTransaction, existingContactKey);
+                    BlockAllOfContactsSmartCards(DBTransaction, existingContactKey);
+                }
+                else
+                {
+                    immediatelyBlockCard = true;
+                }
+            }
+        }
+
+        if (immediatelyBlockCard)
+        {
+            TSyndCode SyndCode;
+            ManagerSmartCards->GetSyndCodeInfo(SyndCode);
+            BlockNewSmartCard(DBTransaction, SmartCardContact, SyndCode);
+        }
+        else
+        {
+           if(SmartCardContact.MemberType == 0)
+            {
+               if(SmartCardContact.EMail.Pos("GiftCard") == 1)
+                {
+                  SmartCardContact.MemberType = 2;
+                }
+                else
+                {
+                   SmartCardContact.MemberType = 1;
+                }
+            }
+            MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+            DBTransaction.Commit();
+            if (!TGlobalSettings::Instance().IsPOSOffline)
+               SavePointsTransactionsToSmartCard(SmartCardContact.Points,"",true);
+            DBTransaction.StartTransaction();
+            MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+        }
+    }
+    else
+    {
+       if (!TGlobalSettings::Instance().IsPOSOffline)
+        {
+           if(SmartCardContact.Surname != "")
+             MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+           SavePointsTransactionsToSmartCard(SmartCardContact.Points,"",true);
+        }
+       // Check for deleted status.
+        bool CheckForCardInDB 	 = true;
+        bool UpdateMemberDetails = false;
+        bool CardNewToDB		 = false;
+
+        if (MembershipSystem->GetContactType(DBTransaction, SmartCardContact.ContactKey) == eDeletedMember)
+        {
+            if (CustomMessageBox("This Member is Deleted.\rDo you wish to undelete them.", "Member is deleted.", MB_ICONQUESTION,
+                        "Undelete", "Leave Deleted") == IDOK)
+            {
+                MembershipSystem->UndeleteContact(DBTransaction, SmartCardContact.ContactKey);
+            }
+            else
+            {
+                CheckForCardInDB = false;
+            }
+        }
+
+        if (CheckForCardInDB)
+        {
+            switch(GetSmartCardStatus(DBTransaction, SmartCardContact.ContactKey, SmartCardContact.ATRStr))
+            {
+            case SMARTCARD_CARD_STATUS_BANNED:
+                break;
+            case SMARTCARD_CARD_STATUS_ACTIVE:
+                UpdateMemberDetails = true;
+                break;
+            case SMARTCARD_CARD_STATUS_UNKNOWN:
+            default:
+                CardNewToDB = true;
+                if (SmartCardContact.CardCreationDate < TDBContacts::GetCardCreationDate(DBTransaction, SmartCardContact.ContactKey))
+                {
+                    TSyndCode SyndCode;
+                    ManagerSmartCards->GetSyndCodeInfo(SyndCode);
+                    BlockNewSmartCard(DBTransaction, SmartCardContact, SyndCode);
+                }
+                else
+                {
+                    UpdateMemberDetails = true;
+                }
+                break;
+            }
+        }
+        if (UpdateMemberDetails)
+        {
+            // Update the Card with Held Points Transactions.
+            // This will trigger a card update when the card events system is woken up again.
+            TPointsTransactionContainer PointsTransactions;
+            GetValidPointsTransactions(DBTransaction, SmartCardContact.ContactKey, PointsTransactions);
+            SmartCardContact.Points.Add(PointsTransactions);
+            if (PointsTransactions.size() != 0 && SavePointsTransactionsToSmartCard(SmartCardContact.Points,""))
+            {
+                UpdatePointsTransactions(DBTransaction, PointsTransactions);
+            }
+
+            // DB Is More up to date.
+            TMMContactInfo TempUserDataBaseInfo;
+            MembershipSystem->GetContactDetails(DBTransaction, SmartCardContact.ContactKey, TempUserDataBaseInfo);
+            TempUserDataBaseInfo.CloudUUID = SmartCardContact.CloudUUID;
+
+
+
+            //Assign the tier level to smart card, for safer side lets not do a blunder by letting it remain 0
+            if(SmartCardContact.TierLevel < TempUserDataBaseInfo.TierLevel)
+                   SmartCardContact.TierLevel = TempUserDataBaseInfo.TierLevel;
+
+            if(SmartCardContact.LastVisit < TempUserDataBaseInfo.LastVisit)
+                   SmartCardContact.LastVisit = TempUserDataBaseInfo.LastVisit;
+
+            if(SmartCardContact.LastBirthdayProcessed < TempUserDataBaseInfo.LastBirthdayProcessed)
+                   SmartCardContact.LastBirthdayProcessed = TempUserDataBaseInfo.LastBirthdayProcessed;
+
+            if (TempUserDataBaseInfo.LastModified > SmartCardLastModified && !CardNewToDB)
+            {
+                // Save any discounts applied in the DB to the cards.
+                SaveContactInfoEditedToSmartCard(TempUserDataBaseInfo);
+                SaveContactInfoOnDownload(DBTransaction,SmartCardContact);
+            }
+        }
+    }
+
+    DBTransaction.Commit();
+}
+
+void TManagerMembershipSmartCards::performLoyaltyMateOperations()
+{
+	bool smartCardUpdateRequired = false;
+	bool storeCloudUUIDInDB = false;
+    bool memberCreationSuccess = false;
+	TMMContactInfo SmartCardContact;
+	ManagerSmartCards->GetContactInfo(SmartCardContact);
+    TContactPoints Points =  SmartCardContact.Points;
+	TSyndCode currentSyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
+
+	Database::TDBTransaction DBTransaction(DBControl);
+	RegisterTransaction(DBTransaction);
+	DBTransaction.StartTransaction();
+
+	SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
+	AnsiString DbUUID = TLoyaltyMateUtilities::GetMemberCloudIdIfRegistered(DBTransaction, SmartCardContact.ContactKey, SmartCardContact.SiteID);
+    TDBContacts::GetContactDetails(DBTransaction,SmartCardContact.ContactKey,SmartCardContact);
+    SmartCardContact.Points = Points;
+
+	if(SmartCardContact.CloudUUID.Length() == 0 && TGlobalSettings::Instance().LoyaltyMateEnabled)
+	{
+       AnsiString message = "For Loyaltymate, you will need to update your ";
+       bool updateMember = false;
+       if(SmartCardContact.ValidateMandatoryField(message))
+       {
+          updateMember = true;
+       }
+       else
+       {
+           MessageBox(message.SubString(1, message.Length()-1) + ".", "Message", MB_ICONINFORMATION + MB_OK);
+           std::auto_ptr < TfrmEditCustomer >
+           frmEditCustomer(TfrmEditCustomer::Create(Screen->ActiveForm));
+           frmEditCustomer->Editing = true;
+           frmEditCustomer->Info = SmartCardContact;
+           frmEditCustomer->MemberType = SmartCardContact.MemberType;
+           if(frmEditCustomer->ShowModal() == mrOk)
+           {
+              updateMember = true;
+              TContactPoints points = SmartCardContact.Points;
+              SmartCardContact = frmEditCustomer->Info;
+              SmartCardContact.Points =  points;
+              MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+              DBTransaction.Commit();
+              DBTransaction.StartTransaction();
+           }
+       }
+
+       if(updateMember)
+       {
+           if(SmartCardContact.EMail.Pos("GiftCard") == 1)
+            {
+              SmartCardContact.MemberType = 2;
+            }
+            else
+            {
+               SmartCardContact.MemberType = 1;
+            }
+
+            memberCreationSuccess = createMemberOnLoyaltyMate(currentSyndicateCode,SmartCardContact);
+            if(memberCreationSuccess && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
+            {
+                smartCardUpdateRequired = true;
+                storeCloudUUIDInDB = true;
+            }
+       }
+	}
+    else
+    {
+        storeCloudUUIDInDB = true;
+    }
+
+	if(storeCloudUUIDInDB)
+	{
+		TLoyaltyMateUtilities::SetMemberCloudId(DBTransaction,SmartCardContact.ContactKey,SmartCardContact.SiteID,
+		SmartCardContact.CloudUUID,SmartCardContact.ActivationToken);
+	}
+
+    if(memberCreationSuccess)
+    {
+       AddDefaultPoints(DBTransaction,Points,SmartCardContact.ContactKey);
+    }
+
+	if(smartCardUpdateRequired)
+	{
+		// update the membership's contact details. performing the operation here
+		// because as soon as we update the card it will throw events which prevents us from committing the transaction
+		MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+	}
+
+	DBTransaction.Commit();
+
+	if(smartCardUpdateRequired)
+	  SaveContactInfoEditedToSmartCard(SmartCardContact);
+
+	/* we execute this operation if we don't have a pending smart card update.
+	* because as soon as we update the smart card it will fire events which brings us to this same piece of code twice.
+	* to prevent calling the cloud two times, this condition need to be added
+	*/
+	if(!smartCardUpdateRequired && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
+	{
+		DBTransaction.StartTransaction();
+		TDBContacts::GetContactDetails(DBTransaction,SmartCardContact.ContactKey,SmartCardContact);
+		DBTransaction.Commit();
+		// sync member information with cloud
+		TManagerLoyaltyMate::Instance()->SyncMemberDetailsWithCloud(currentSyndicateCode,SmartCardContact);
+	}
 }
 
 void TManagerMembershipSmartCards::SetSmartCardRestorePoint(Database::TDBTransaction &DBTransaction, TMMContactInfo &MMContactInfo,
@@ -1739,117 +1957,6 @@ void TManagerMembershipSmartCards::SaveContactInfoReassignedToSmartCard(TMMConta
 //Member Operation
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-void TManagerMembershipSmartCards::performLoyaltyMateOperations()
-{
-	bool smartCardUpdateRequired = false;
-	bool storeCloudUUIDInDB = false;
-
-	TMMContactInfo SmartCardContact;
-	ManagerSmartCards->GetContactInfo(SmartCardContact);
-    TContactPoints Points =  SmartCardContact.Points;
-	TSyndCode currentSyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
-
-	Database::TDBTransaction DBTransaction(DBControl);
-	RegisterTransaction(DBTransaction);
-	DBTransaction.StartTransaction();
-
-	SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
-	AnsiString DbUUID = TLoyaltyMateUtilities::GetMemberCloudIdIfRegistered(DBTransaction, SmartCardContact.ContactKey, SmartCardContact.SiteID);
-    TDBContacts::GetContactDetails(DBTransaction,SmartCardContact.ContactKey,SmartCardContact);
-    SmartCardContact.Points = Points;
-
-	if(SmartCardContact.CloudUUID.Length() == 0 && TGlobalSettings::Instance().LoyaltyMateEnabled)
-	{
-               AnsiString message = "For Loyaltymate, you will need to update your ";
-               bool updateMember = false;
-               if(SmartCardContact.ValidateMandatoryField(message))
-               {
-                  updateMember = true;
-               }
-               else
-               {
-                   MessageBox(message.SubString(1, message.Length()-1) + ".", "Message", MB_ICONINFORMATION + MB_OK);
-                   std::auto_ptr < TfrmEditCustomer >
-                   frmEditCustomer(TfrmEditCustomer::Create(Screen->ActiveForm));
-                   frmEditCustomer->Editing = true;
-                   frmEditCustomer->Info = SmartCardContact;
-                   frmEditCustomer->MemberType = SmartCardContact.MemberType;
-                   if(frmEditCustomer->ShowModal() == mrOk)
-                   {
-                      updateMember = true;
-                      TContactPoints points = SmartCardContact.Points;
-                      SmartCardContact = frmEditCustomer->Info;
-                      SmartCardContact.Points =  points;
-                      MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
-                      DBTransaction.Commit();
-                      DBTransaction.StartTransaction();
-                   }
-               }
-               if(updateMember)
-               {
-                   if(SmartCardContact.EMail.Pos("GiftCard") == 1)
-                    {
-                      SmartCardContact.MemberType = 2;
-                    }
-                    else
-                    {
-                       SmartCardContact.MemberType = 1;
-                    }
-
-					bool memberCreationSuccess = createMemberOnLoyaltyMate(
-					currentSyndicateCode,
-					SmartCardContact);
-					if(memberCreationSuccess && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
-					{
-						smartCardUpdateRequired = true;
-						storeCloudUUIDInDB = true;
-					}
-               }
-	}
-    else
-    {
-        storeCloudUUIDInDB = true;
-    }
-
-	if(storeCloudUUIDInDB)
-	{
-		TLoyaltyMateUtilities::SetMemberCloudId(
-		DBTransaction,
-		SmartCardContact.ContactKey,
-		SmartCardContact.SiteID,
-		SmartCardContact.CloudUUID,
-		SmartCardContact.ActivationToken);
-	}
-
-	if(smartCardUpdateRequired)
-	{
-		// update the membership's contact details. performing the operation here
-		// because as soon as we update the card it will throw events which prevents us from committing the transaction
-		MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
-	}
-
-	DBTransaction.Commit();
-
-	if(smartCardUpdateRequired)
-	SaveContactInfoEditedToSmartCard(SmartCardContact);
-
-	/* we execute this operation if we don't have a pending smart card update.
-	* because as soon as we update the smart card it will fire events which brings us to this same piece of code twice.
-	* to prevent calling the cloud two times, this condition need to be added
-	*/
-	if(!smartCardUpdateRequired
-			&& TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
-	{
-		DBTransaction.StartTransaction();
-		TDBContacts::GetContactDetails(DBTransaction,SmartCardContact.ContactKey,SmartCardContact);
-		DBTransaction.Commit();
-		// sync member information with cloud
-		TManagerLoyaltyMate::Instance()->SyncMemberDetailsWithCloud(
-		currentSyndicateCode,
-		SmartCardContact);
-	}
-}
-
 TManagerSyndCode& TManagerMembershipSmartCards::GetSyndicateCodeManager()
 {
 	return ManagerSyndicateCode;
@@ -2006,7 +2113,10 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
         SmartCardContact.AvailableBDPoint       = loyaltyMateOperationDialogBox->Info.AvailableBDPoint;
         SmartCardContact.AvailableFVPoint       = loyaltyMateOperationDialogBox->Info.AvailableFVPoint;
         SmartCardContact.MemberCode       = loyaltyMateOperationDialogBox->Info.MemberCode;
-        SmartCardContact.MembershipNumber  = loyaltyMateOperationDialogBox->Info.MembershipNumber;
+        if(loyaltyMateOperationDialogBox->Info.MembershipNumber != NULL && loyaltyMateOperationDialogBox->Info.MembershipNumber != "")
+        {
+           SmartCardContact.MembershipNumber  = loyaltyMateOperationDialogBox->Info.MembershipNumber;
+        }
         SmartCardContact.SiteID  = loyaltyMateOperationDialogBox->Info.SiteID;
         SmartCardContact.LastModified  = loyaltyMateOperationDialogBox->Info.LastModified;
         SmartCardContact.IsFirstVisitRewarded  = loyaltyMateOperationDialogBox->Info.IsFirstVisitRewarded;
@@ -2071,13 +2181,13 @@ void TManagerMembershipSmartCards::GetMemberDetail(TMMContactInfo &MMContactInfo
    {
      MessageBox( "Unable to read data from server. Members may not be able to spend their points for the time being.", "Message", MB_ICONINFORMATION + MB_OK);
    }
-       MembershipSystem->CurrentYearPoints  = MMContactInfo.CurrentYearPoint;
-       MembershipSystem->PreviousYearPoints = MMContactInfo.PreviousYearPoint;
-       MembershipSystem->AvailableBDPoint  = MMContactInfo.AvailableBDPoint;
-       MembershipSystem->AvailableFVPoint = MMContactInfo.AvailableFVPoint;
-       MembershipSystem->AvailableEarnedPoint = MMContactInfo.Points.getPointsBalance(ptstLoyalty) + MembershipSystem->AvailableBDPoint +  MembershipSystem->AvailableFVPoint;
-       MembershipSystem->AvailableLoadedPoint = MMContactInfo.Points.getPointsBalance(ptstAccount);
-       MembershipSystem->MemberVouchers = MMContactInfo.MemberVouchers;
+   MembershipSystem->CurrentYearPoints  = MMContactInfo.CurrentYearPoint;
+   MembershipSystem->PreviousYearPoints = MMContactInfo.PreviousYearPoint;
+   MembershipSystem->AvailableBDPoint  = MMContactInfo.AvailableBDPoint;
+   MembershipSystem->AvailableFVPoint = MMContactInfo.AvailableFVPoint;
+   MembershipSystem->AvailableEarnedPoint = MMContactInfo.Points.getPointsBalance(ptstLoyalty) + MembershipSystem->AvailableBDPoint +  MembershipSystem->AvailableFVPoint;
+   MembershipSystem->AvailableLoadedPoint = MMContactInfo.Points.getPointsBalance(ptstAccount);
+   MembershipSystem->MemberVouchers = MMContactInfo.MemberVouchers;
 }
 
 void TManagerMembershipSmartCards::SaveContactProfileOnDownload(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
@@ -2194,21 +2304,21 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromBarcode(TMMContactInfo &MM
 
 bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo)
 {
-	try
-		{
+    try
+        {
+            MembershipSystem->ResetPoints();
             bool isCancel = false;
+            bool memberNotExist = false ;
+            TContactPoints dbPoints;
 			TMMContactInfo SmartCardContact;
+            TDBContacts::GetContactDetailsByMemberCode(DBTransaction,UserInfo);
 			SmartCardContact.MemberCode = UserInfo.MemberCode;
             TDBContacts::GetContactDetailsByMemberCode(DBTransaction,SmartCardContact);
+            dbPoints = SmartCardContact.Points;
             SmartCardContact.Points.Clear();
-            TDBContacts::GetContactDetailsByMemberCode(DBTransaction,UserInfo);
-            bool memberNotExist = false ;
-            MembershipSystem->ResetPoints();
-            if (TGlobalSettings::Instance().LoyaltyMateEnabled)
-			{
-				//Get information from cloud
-			   memberNotExist = GetMemberDetailFromBarcode(SmartCardContact);
-			}
+            bool isLoyaltyMember = TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID);
+            memberNotExist = GetMemberDetailFromBarcode(SmartCardContact);
+
             if(memberNotExist)
             {
                 if(MessageBox("No Item/Member found, Press Ok to create a new member or Cancel to continue.","Member Not Exist", MB_OKCANCEL + MB_ICONQUESTION) == ID_CANCEL)
@@ -2218,7 +2328,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
 			}
             if (SmartCardContact.ContactKey == 0)
             {
-                if(memberNotExist || !TGlobalSettings::Instance().LoyaltyMateEnabled)
+                if(memberNotExist)
                  {
                     bool canAddMember = false;
                     if(TGlobalSettings::Instance().GiftCardOnly)
@@ -2278,12 +2388,12 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
 
                 }
             }
-			if(SmartCardContact.ContactKey != 0)
+			else
 			{
-				if (!TGlobalSettings::Instance().IsPOSOffline && TGlobalSettings::Instance().LoyaltyMateEnabled && !memberNotExist)
+				if (!TGlobalSettings::Instance().IsPOSOffline && !memberNotExist)
 				{
                    MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
-                   if(UserInfo.CloudUUID.Length() == 0)
+                   if(TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
                    {
                       MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
                    }
@@ -2294,41 +2404,46 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
                 else
                 {
                    TDBContacts::GetContactDetailsByMemberCode(DBTransaction,UserInfo);
-                   if (TGlobalSettings::Instance().LoyaltyMateEnabled && UserInfo.CloudUUID.Length() == 0 && memberNotExist)
+                   if (TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID) && memberNotExist)
 		            {
-                           AnsiString message = "For Loyaltymate, you will need to update your ";
-                           bool updateMember = false;
-                           if(UserInfo.ValidateMandatoryField(message))
+                       AnsiString message = "For Loyaltymate, you will need to update your ";
+                       bool updateMember = false;
+                       if(UserInfo.ValidateMandatoryField(message))
+                       {
+                          updateMember = true;
+                       }
+                       else
+                       {
+                           MessageBox(message.SubString(1, message.Length()-1) + ".", "Message", MB_ICONINFORMATION + MB_OK);
+                           std::auto_ptr < TfrmEditCustomer >
+                           frmEditCustomer(TfrmEditCustomer::Create(Screen->ActiveForm));
+                           frmEditCustomer->Editing = true;
+                           frmEditCustomer->Info = UserInfo;
+                           frmEditCustomer->MemberType = UserInfo.MemberType;
+                           if(frmEditCustomer->ShowModal() == mrOk)
                            {
                               updateMember = true;
+                              TContactPoints points = UserInfo.Points;
+                              UserInfo = frmEditCustomer->Info;
+                              UserInfo.Points =  points;
+                              MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
+                              DBTransaction.Commit();
+                              DBTransaction.StartTransaction();
                            }
-                           else
-                           {
-                               MessageBox(message.SubString(1, message.Length()-1) + ".", "Message", MB_ICONINFORMATION + MB_OK);
-                               std::auto_ptr < TfrmEditCustomer >
-                               frmEditCustomer(TfrmEditCustomer::Create(Screen->ActiveForm));
-                               frmEditCustomer->Editing = true;
-                               frmEditCustomer->Info = UserInfo;
-                               frmEditCustomer->MemberType = UserInfo.MemberType;
-                               if(frmEditCustomer->ShowModal() == mrOk)
-                               {
-                                  updateMember = true;
-                                  TContactPoints points = UserInfo.Points;
-                                  UserInfo = frmEditCustomer->Info;
-                                  UserInfo.Points =  points;
-                                  MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
-                                  DBTransaction.Commit();
-                                  DBTransaction.StartTransaction();
-                               }
-                           }
-                           if(updateMember)
-                           {
-                               bool memberCreationSuccess = createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(),UserInfo);
-                           }
+                       }
+                       if(updateMember)
+                       {
+                           bool memberCreationSuccess = createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(),UserInfo);
+                       }
                     }
                 }
 			}
-
+            if(!isLoyaltyMember && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
+            {
+               AddDefaultPoints(DBTransaction,dbPoints,UserInfo.ContactKey);
+               DBTransaction.Commit();
+               DBTransaction.StartTransaction();
+            }
     	}
 	catch(Exception & E)
 	{
@@ -2439,15 +2554,13 @@ bool TManagerMembershipSmartCards::ProcessPoints(TPaymentTransaction &PaymentTra
 		RewardFirstVisitPoints(PaymentTransaction);
         SaveTransactionInvoiceDetail(PaymentTransaction);
 	}
-	if (PaymentTransaction.Membership.Member.ContactKey != 0 &&
-			PaymentTransaction.Membership.Member.Points.HasTransactions())
+	if (PaymentTransaction.Membership.Member.ContactKey != 0 && PaymentTransaction.Membership.Member.Points.HasTransactions())
 	{
-
-        if(PaymentTransaction.Membership.Member.MemberCode != "")
-          Complete = SavePointsTransactionsForBarcodeCard(PaymentTransaction.Membership.Member.Points,PaymentTransaction.Membership.Member,invoiceNumber) ;
-        else
+        if(ManagerSmartCards->CardOk)
 		// Update SmartCard system.
 		  Complete = SavePointsTransactionsToSmartCard(PaymentTransaction.Membership.Member.Points,invoiceNumber);
+        else
+          Complete = SavePointsTransactionsForBarcodeCard(PaymentTransaction.Membership.Member.Points,PaymentTransaction.Membership.Member,invoiceNumber) ;
 	}
 	else
 	{
@@ -2470,6 +2583,31 @@ void TManagerMembershipSmartCards::SaveTransactionInvoiceDetail(TPaymentTransact
         transaction.InvoiceNumber = PaymentTransaction.InvoiceNumber;
         TLoyaltyMateUtilities::SetTransaction(PaymentTransaction.DBTransaction,transaction);
     }
+}
+
+void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DBTransaction,TContactPoints &Points,int contactkey)
+{
+   if(Points.getPointsBalance(ptstLoyalty) > 0)
+   {
+        TLoyaltyMateTransaction transaction;
+        transaction.ContactKey = contactkey;
+        transaction.SyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
+        transaction.OccurredDate = Now();
+        transaction.PointsDelta = Points.getPointsBalance(ptstLoyalty);
+        transaction.PointsType = pttEarned;
+        TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
+   }
+
+   if(Points.getPointsBalance(ptstAccount) > 0)
+   {
+        TLoyaltyMateTransaction transaction;
+        transaction.ContactKey = contactkey;
+        transaction.SyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
+        transaction.OccurredDate = Now();
+        transaction.PointsDelta = Points.getPointsBalance(ptstAccount);
+        transaction.PointsType = pttPurchased;
+        TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
+   }
 }
 
 void TManagerMembershipSmartCards::RewardBirthdaybenefit(TPaymentTransaction &PaymentTransaction)

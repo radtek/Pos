@@ -35,7 +35,6 @@ namespace Loyaltymate.Model
         public double PointBalance { get; set; }
         public bool IsFirstVisitRewarded { get; set; }
         public DateTime LastModified { get; set; }
-
         public IList<ApiVoucherViewModel> Vouchers { get; set; }
     }
 }

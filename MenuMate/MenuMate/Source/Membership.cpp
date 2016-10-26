@@ -666,9 +666,9 @@ void TMembership::SetContactLoyaltyAttributes(Database::TDBTransaction &DBTransa
           IBInternalQuery->Close();
           IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_LOYALTYATTRIBUTES, 1) FROM RDB$DATABASE";
           IBInternalQuery->ExecQuery();
-	  int key = IBInternalQuery->Fields[0]->AsInteger;
-	  IBInternalQuery->Close();
-	  IBInternalQuery->SQL->Text = "INSERT INTO LOYALTYATTRIBUTES "
+          int key = IBInternalQuery->Fields[0]->AsInteger;
+          IBInternalQuery->Close();
+          IBInternalQuery->SQL->Text = "INSERT INTO LOYALTYATTRIBUTES "
                                          "(ATTRIB_KEY, UUID, SITE_ID, CONTACTS_KEY, ACTIVATION_TOKEN,CREATION_TIME ) VALUES "
                                          "(:ATTRIB_KEY, :UUID, :SITE_ID, :CONTACTS_KEY, :ACTIVATION_TOKEN,:CREATION_TIME)";
           IBInternalQuery->ParamByName("ATTRIB_KEY")->AsInteger = key;

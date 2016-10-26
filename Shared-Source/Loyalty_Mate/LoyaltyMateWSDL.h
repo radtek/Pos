@@ -760,8 +760,8 @@ private:
   bool            FDisplayAs_Specified;
   ImplicationType FImplicationType;
   bool            FImplicationType_Specified;
-  bool            FIsActive;
-  bool            FIsActive_Specified;
+  bool            FIsAutoMembersDiscount;
+  bool            FIsAutoMembersDiscount_Specified;
   bool            FIsCategoryFilterApplicable;
   bool            FIsCategoryFilterApplicable_Specified;
   bool            FIsMemberExemptDiscount;
@@ -820,10 +820,10 @@ private:
   {  FImplicationType = _prop_val; FImplicationType_Specified = true;  }
   bool __fastcall ImplicationType_Specified(int Index)
   {  return FImplicationType_Specified;  }
-  void __fastcall SetIsActive(int Index, bool _prop_val)
-  {  FIsActive = _prop_val; FIsActive_Specified = true;  }
-  bool __fastcall IsActive_Specified(int Index)
-  {  return FIsActive_Specified;  }
+  void __fastcall SetIsAutoMembersDiscount(int Index, bool _prop_val)
+  {  FIsAutoMembersDiscount = _prop_val; FIsAutoMembersDiscount_Specified = true;  }
+  bool __fastcall IsAutoMembersDiscount_Specified(int Index)
+  {  return FIsAutoMembersDiscount_Specified;  }
   void __fastcall SetIsCategoryFilterApplicable(int Index, bool _prop_val)
   {  FIsCategoryFilterApplicable = _prop_val; FIsCategoryFilterApplicable_Specified = true;  }
   bool __fastcall IsCategoryFilterApplicable_Specified(int Index)
@@ -881,7 +881,7 @@ __published:
   __property DiscountType DiscountType = { index=(IS_OPTN), read=FDiscountType, write=SetDiscountType, stored = DiscountType_Specified };
   __property DisplayOption  DisplayAs = { index=(IS_OPTN), read=FDisplayAs, write=SetDisplayAs, stored = DisplayAs_Specified };
   __property ImplicationType ImplicationType = { index=(IS_OPTN), read=FImplicationType, write=SetImplicationType, stored = ImplicationType_Specified };
-  __property bool         IsActive = { index=(IS_OPTN), read=FIsActive, write=SetIsActive, stored = IsActive_Specified };
+  __property bool       IsAutoMembersDiscount = { index=(IS_OPTN), read=FIsAutoMembersDiscount, write=SetIsAutoMembersDiscount, stored = IsAutoMembersDiscount_Specified };
   __property bool       IsCategoryFilterApplicable = { index=(IS_OPTN), read=FIsCategoryFilterApplicable, write=SetIsCategoryFilterApplicable, stored = IsCategoryFilterApplicable_Specified };
   __property bool       IsMemberExemptDiscount = { index=(IS_OPTN), read=FIsMemberExemptDiscount, write=SetIsMemberExemptDiscount, stored = IsMemberExemptDiscount_Specified };
   __property bool       IsMembersOnlyDiscount = { index=(IS_OPTN), read=FIsMembersOnlyDiscount, write=SetIsMembersOnlyDiscount, stored = IsMembersOnlyDiscount_Specified };

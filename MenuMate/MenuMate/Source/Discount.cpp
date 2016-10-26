@@ -48,6 +48,7 @@ void TDiscount::Clear()
    IsCloudDiscount = false;
    DailyUsageAllowedPerMember = 0;
    ProductPriority = ppCheapest;
+   IsMembershipDiscount = false;
 }
 
 bool

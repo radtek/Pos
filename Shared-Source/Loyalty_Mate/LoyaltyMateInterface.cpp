@@ -50,12 +50,11 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicate
             wcfInfo->Activated    = false;     //trip
 	
 
-        wcfInfo->EarnedPoints =  contactInfo.Points.getPointsBalance(ptstLoyalty);
-        wcfInfo->LoadedPoints =  contactInfo.Points.getPointsBalance(ptstAccount);
+        //wcfInfo->EarnedPoints =  contactInfo.Points.getPointsBalance(ptstLoyalty);
+        //wcfInfo->LoadedPoints =  contactInfo.Points.getPointsBalance(ptstAccount);
+
         CoInitialize(NULL);
-
         wcfResponse = loyaltymateClient->SaveMember(syndicateCode.GetSyndCode(),wcfInfo );
-
         if( FAutoSync && wcfResponse->Successful)
         {
             contactInfo.CloudUUID = AnsiString(wcfResponse->MemberInfo->UniqueId);
@@ -353,8 +352,6 @@ void TLoyaltyMateInterface::CreateWcfContactInfo(MemberInfo* inMemberInfo,TMMCon
     inMemberInfo->Mobile    = inContactInfo.Mobile;
     inMemberInfo->PhoneNumber    = inContactInfo.Phone;
     inMemberInfo->Email = inContactInfo.EMail;
-    inMemberInfo->EarnedPoints = inContactInfo.Points.getPointsEarned();
-    inMemberInfo->LoadedPoints = inContactInfo.Points.getPointsPurchased();
     inMemberInfo->Address1 = inContactInfo.LocationAddress;
     inMemberInfo->Title = inContactInfo.Title;
     inMemberInfo->HomeSiteId = inContactInfo.SiteID;
@@ -546,6 +543,7 @@ void TLoyaltyMateInterface::ReadDiscountInfo(Database::TDBTransaction &DBTransac
   discount.MinItemRequired = inDiscountInfo->MinimumNumberOfItemsAllowed;
   discount.IsCloudDiscount = true;
   discount.DailyUsageAllowedPerMember = inDiscountInfo->DailyUsageAllowedPerMember;
+  discount.IsMembershipDiscount = inDiscountInfo->IsAutoMembersDiscount;
   switch((MMProductPriority)inDiscountInfo->ProductPriority)
   {
     case LowestPriceFirst:

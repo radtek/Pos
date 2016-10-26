@@ -3917,6 +3917,11 @@ void TfrmPaymentType::ApplyMembership(TMMContactInfo &Member)
 		// Remove the old Member if any.
         //RemoveMembership();
         CurrentTransaction.RemoveMembership();
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+           TManagerDiscount managerDiscount;
+           managerDiscount.GetMembershipDiscounts(CurrentTransaction.DBTransaction,Member.AutoAppliedDiscounts);
+        }
 		CurrentTransaction.ApplyMembership(Member, MemberSource);
 		if (CurrentTransaction.Orders != NULL)
 		{

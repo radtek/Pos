@@ -22,6 +22,12 @@ void TApplyParser::upgrade6_31Tables()
 	update6_31Tables();
 }
 
+// 6.32
+void TApplyParser::upgrade6_32Tables()
+{
+	update6_32Tables();
+}
+
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -102,6 +108,23 @@ void TApplyParser::UpdateContactTable6_31( TDBControl* const inDBControl)
    executeQuery (
    "ALTER TABLE CONTACTS ALTER EMAIL TYPE VARCHAR(256);",
    inDBControl);
+}
+
+//::::::::::::::::::::::::Version 6.32::::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_32Tables()
+{
+    UpdateDiscountsTable6_32(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::UpdateDiscountsTable6_32(TDBControl* const inDBControl)
+{
+   if ( !fieldExists( "DISCOUNTS", "IS_MEMBERSHIP_DISCOUNT", _dbControl ) )
+	{
+		executeQuery (
+		"ALTER TABLE DISCOUNTS ADD "
+        "IS_MEMBERSHIP_DISCOUNT T_TRUEFALSE DEFAULT 'F'; ",
+		inDBControl);
+	}
 }
 
 }
