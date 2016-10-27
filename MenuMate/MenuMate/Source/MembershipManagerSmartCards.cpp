@@ -1141,8 +1141,10 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
     }
     TContactPoints pointsToSync = SmartCardContact.Points;
     TDateTime SmartCardLastModified = SmartCardContact.LastModified;
+
     SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
     bool existInLocalDb = SmartCardContact.ContactKey != 0;
+
     if (TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
     {
        GetMemberDetail(SmartCardContact);
@@ -2157,11 +2159,14 @@ bool useUUID,bool useMemberCode, bool useEmail,bool &memberNotExist)
         SmartCardContact.AvailableBDPoint       = loyaltyMateOperationDialogBox->Info.AvailableBDPoint;
         SmartCardContact.AvailableFVPoint       = loyaltyMateOperationDialogBox->Info.AvailableFVPoint;
         SmartCardContact.MemberCode       = loyaltyMateOperationDialogBox->Info.MemberCode;
-        if(loyaltyMateOperationDialogBox->Info.MembershipNumber != NULL && loyaltyMateOperationDialogBox->Info.MembershipNumber != "")
+        if(SmartCardContact.MembershipNumber == NULL || SmartCardContact.MembershipNumber == "")
         {
            SmartCardContact.MembershipNumber  = loyaltyMateOperationDialogBox->Info.MembershipNumber;
         }
-        SmartCardContact.SiteID  = loyaltyMateOperationDialogBox->Info.SiteID;
+        if(SmartCardContact.SiteID == 0)
+        {
+           SmartCardContact.SiteID  = loyaltyMateOperationDialogBox->Info.SiteID;
+        }
         SmartCardContact.LastModified  = loyaltyMateOperationDialogBox->Info.LastModified;
         SmartCardContact.IsFirstVisitRewarded  = loyaltyMateOperationDialogBox->Info.IsFirstVisitRewarded;
         SmartCardContact.MemberCode  = loyaltyMateOperationDialogBox->Info.MemberCode;
@@ -2718,6 +2723,12 @@ bool TManagerMembershipSmartCards::LinkSmartCard(Database::TDBTransaction &DBTra
         IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
         IBInternalQuery->ExecQuery();
 
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "DELETE FROM CONTACTS "
+        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
+        IBInternalQuery->ExecQuery();
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
@@ -2729,12 +2740,6 @@ bool TManagerMembershipSmartCards::LinkSmartCard(Database::TDBTransaction &DBTra
         IBInternalQuery->ExecQuery();
 
 
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-        "DELETE FROM CONTACTS "
-        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
-        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
-        IBInternalQuery->ExecQuery();
 	}
 	catch(Exception & E)
 	{
