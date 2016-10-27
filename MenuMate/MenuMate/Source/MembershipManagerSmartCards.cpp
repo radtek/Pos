@@ -1145,7 +1145,6 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
     SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
     bool existInLocalDb = SmartCardContact.ContactKey != 0;
     bool smartCardHasUUID = TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID);
-
     if (smartCardHasUUID)
     {
        GetMemberDetail(SmartCardContact);
@@ -1174,6 +1173,7 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
                 if(localEmailContactKey != 0)
                 {
                     LinkSmartCard(DBTransaction,localEmailContactKey,SmartCardContact);
+                    SmartCardContact.ContactKey = localEmailContactKey;
                     TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,SmartCardContact);
                     existInLocalDb = true;
                 }
@@ -2433,29 +2433,31 @@ bool TManagerMembershipSmartCards::LinkSmartCard(Database::TDBTransaction &DBTra
    try
 	{
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		"UPDATE POINTSTRANSACTIONS SET CONTACTS_KEY = :CONTACTS_KEY "
-		"WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
-		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
-        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
-		IBInternalQuery->ExecQuery();
+        if(SmartCardContact.ContactKey != 0)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            "UPDATE POINTSTRANSACTIONS SET CONTACTS_KEY = :CONTACTS_KEY "
+            "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+            IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+            IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
+            IBInternalQuery->ExecQuery();
 
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-        "UPDATE SMARTCARDS SET CONTACTS_KEY = :CONTACTS_KEY "
-        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
-        IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
-        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
-        IBInternalQuery->ExecQuery();
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            "UPDATE SMARTCARDS SET CONTACTS_KEY = :CONTACTS_KEY "
+            "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+            IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+            IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
+            IBInternalQuery->ExecQuery();
 
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-        "DELETE FROM CONTACTS "
-        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
-        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
-        IBInternalQuery->ExecQuery();
-
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            "DELETE FROM CONTACTS "
+            "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+            IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
+            IBInternalQuery->ExecQuery();
+        }
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
         "UPDATE CONTACTS SET SITE_ID = :SITE_ID, MEMBER_NUMBER=:MEMBER_NUMBER "
