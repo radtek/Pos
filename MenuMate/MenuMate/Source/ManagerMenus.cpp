@@ -511,7 +511,7 @@ TServingCourse TManagerMenus::LoadDefaultServingCourse(Database::TDBTransaction 
 		  ":COLOUR);";
 	  IBQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = ServingCourse.ServingCourseKey;
 	  IBQuery->ParamByName("SERVINGCOURSE_NAME")->AsString = ServingCourse.Name;
-	  IBQuery->ParamByName("SERVINGCOURSE_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(ServingCourse.KitchenName);
+	  IBQuery->ParamByName("SERVINGCOURSE_KITCHEN_NAME")->AsString = ServingCourse.KitchenName;
 	  IBQuery->ParamByName("DELETED")->AsString = ServingCourse.Deleted ? "T" : "F";
 	  IBQuery->ParamByName("SELECTABLE")->AsString = ServingCourse.Selectable ? "T" : "F";
 	  IBQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 0;
@@ -522,7 +522,7 @@ TServingCourse TManagerMenus::LoadDefaultServingCourse(Database::TDBTransaction 
    {
 	  ServingCourse.ServingCourseKey = IBInternalQuery->FieldByName("ServingCourses_Key")->AsInteger;
 	  ServingCourse.Name = IBInternalQuery->FieldByName("ServingCourse_Name")->AsString;
-	  ServingCourse.KitchenName = UTF8ToUnicodeString((AnsiString)IBInternalQuery->FieldByName("ServingCourse_Kitchen_Name")->AsString);
+	  ServingCourse.KitchenName = IBInternalQuery->FieldByName("ServingCourse_Kitchen_Name")->AsString;
 	  ServingCourse.Colour = (TColor)IBInternalQuery->FieldByName("Colour")->AsInteger;
 	  ServingCourse.Deleted = false;
 	  ServingCourse.Selectable = false;

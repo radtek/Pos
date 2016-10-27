@@ -348,7 +348,6 @@ void __fastcall TWebProcUtil::ProcessWebOrder(TForm *inDisplayOwner, Database::T
                     Order->ItemOrderedFrom = TDeviceRealTerminal::Instance().Menus->FetchItemByKey(Order->OriginalItemKey);
                 }
             }
-            completeOrderToChefMate(&PaymentTransaction);
         }
 
 
@@ -427,7 +426,7 @@ void __fastcall TWebProcUtil::ProcessWebOrder(Database::TDBTransaction &DBTransa
 		// Stock
 		ProcessStock(PaymentTransaction);
 		// Print the Order to the Kitchen.
-      
+
 		PrintKitchenDockets(PaymentTransaction, WebKey,IntToStr(WebKey),"");
 		// Print the Receipts.
 		AutoPrintReceipts(TabWeb, PaymentTransaction);
@@ -514,7 +513,6 @@ void __fastcall TWebProcUtil::ProcessPrintJob(Database::TDBTransaction &DBTransa
           	PrintKitchenDockets(PaymentTransaction, 0,TransNo,DeviceName);
 			// Print the Receipts.
 			AutoPrintReceipts(PaymentTransaction.SalesType, PaymentTransaction);
-
 		}
 		else
 		{
@@ -729,6 +727,7 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
                     throw Exception("Printing Some Orders Failed, Please Check Printer.");
                 }
                 ManagerDockets->Archive(Request.get());
+                completeOrderToChefMate(PrintTransaction.get());
             }
         }
     }
@@ -982,27 +981,14 @@ void __fastcall TWebProcUtil::ProcessKitchenMod(bool Finial, TPaymentTransaction
 //---------------------------------------------------------------------------
 void __fastcall TWebProcUtil::completeOrderToChefMate(TPaymentTransaction* inTransaction)
 {
-    try
+    if(inTransaction->WebOrderKey > 0)
     {
-        std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
-        if( ChefMateClientManager->ChefMateEnabled() )
-        {
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction.StartTransaction();
-            TMMContactInfo memberInfo = TDBWebUtil::LoadMemberDetails(DBTransaction, inTransaction->WebOrderKey);
-            UnicodeString paymentStatus = TDBWebUtil::LoadPaymentStatus(DBTransaction, inTransaction->WebOrderKey);
-            CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
-            if( error == CMC_ERROR_FAILED )
-            {
-                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to send an complete order to Chefmate");
-            }
-        }
+        sendWebOrderToChefmate(inTransaction);
     }
-    catch(Exception & E)
+    else
     {
-    	TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to Open Chefmate Interface");
-        throw;
-    }
+        sendPosDroidOrderToChefmate(inTransaction);
+    }   ///todo
 }
 
 //---------------------------------------------------------------------------
@@ -1077,3 +1063,49 @@ UnicodeString TWebProcUtil::checkWebOrderType(Database::TDBTransaction &DBTransa
     }
     return orderType;
 }
+
+void TWebProcUtil::sendWebOrderToChefmate(TPaymentTransaction* inTransaction)
+{
+    try
+    {
+        std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
+        if( ChefMateClientManager->ChefMateEnabled() )
+        {
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TMMContactInfo memberInfo = TDBWebUtil::LoadMemberDetails(DBTransaction, inTransaction->WebOrderKey);
+            UnicodeString paymentStatus = TDBWebUtil::LoadPaymentStatus(DBTransaction, inTransaction->WebOrderKey);
+            CMC_ERROR error =  ChefMateClientManager->SendWebOrder(inTransaction, paymentStatus, memberInfo );
+            if( error == CMC_ERROR_FAILED )
+            {
+                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to send an complete order to Chefmate");
+            }
+            DBTransaction.Commit();
+        }
+    }
+    catch(Exception & E)
+    {
+       TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate WebMate failed to Open Chefmate Interface");
+    }
+}
+
+void TWebProcUtil::sendPosDroidOrderToChefmate(TPaymentTransaction* inTransaction)
+{
+   try
+    {
+        std::auto_ptr<TChefmateClientManager> ChefMateClientManager( new TChefmateClientManager() );
+        if( ChefMateClientManager->ChefMateEnabled() )
+        {
+            CMC_ERROR error =  ChefMateClientManager->SendCompleteOrder(inTransaction);
+            if( error == CMC_ERROR_FAILED )
+            {
+                TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Pos Droid failed to send an complete order to Chefmate");
+            }
+        }
+    }
+    catch(Exception & E)
+    {
+       TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Pos Droid failed to Open Chefmate Interface");
+    }
+}
+

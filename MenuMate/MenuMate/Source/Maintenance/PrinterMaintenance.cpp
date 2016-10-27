@@ -2417,7 +2417,7 @@ void TfrmPrinterMaintenance::GetCourseInfo(Database::TDBTransaction &DBTransacti
 		 TempCourseInfo.CourseKey = IBInternalQuery->FieldByName("COURSE_KEY")->AsInteger;
 
 		 TempCourseInfo.CourseName = IBInternalQuery->FieldByName("COURSE_NAME")->AsString;
-		 TempCourseInfo.CourseKitchenName = UTF8ToUnicodeString((AnsiString)IBInternalQuery->FieldByName("COURSE_KITCHEN_NAME")->AsString);
+		 TempCourseInfo.CourseKitchenName = IBInternalQuery->FieldByName("COURSE_KITCHEN_NAME")->AsString;
 		 if (TempCourseInfo.CourseKitchenName == UnicodeString(""))
 		 {
 			TempCourseInfo.CourseKitchenName = TempCourseInfo.CourseName;
