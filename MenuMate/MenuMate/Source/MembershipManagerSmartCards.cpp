@@ -1144,40 +1144,71 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
 
     SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
     bool existInLocalDb = SmartCardContact.ContactKey != 0;
+    bool smartCardHasUUID = TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID);
 
-    if (TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
+    if (smartCardHasUUID)
     {
        GetMemberDetail(SmartCardContact);
+       if(!existInLocalDb)
+       {
+          SmartCardContact.ContactKey =  TDBContacts::GetContactByEmail(DBTransaction,SmartCardContact.EMail);
+          existInLocalDb = SmartCardContact.ContactKey != 0;;
+       }
+       else
+       {
+         ValidateCardExistance(DBTransaction,SmartCardContact);
+       }
     }
-    else if(existInLocalDb)
+    else
     {
-        //check for email. If email is not present then ask user for email
-        //if an email exist it is sure that member has scanned his barcode already on that site
-        //and corresponding email must have UUID
-        if(SmartCardContact.EMail == "" || SmartCardContact.EMail == NULL)
-        {
-           SmartCardContact.EMail = GetActivationEmailFromUser();
-        }
-
-        if(SmartCardContact.EMail != "" && SmartCardContact.EMail != NULL)
-        {
-            int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,SmartCardContact.EMail,SmartCardContact.ContactKey);
-            if(localEmailContactKey != 0 && localEmailContactKey != SmartCardContact.ContactKey)
+       //check that card is used here or not
+       if(!existInLocalDb)
+       {
+            if(SmartCardContact.EMail == "" || SmartCardContact.EMail == NULL)
             {
-                LinkSmartCard(DBTransaction,localEmailContactKey,SmartCardContact);
-                TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,SmartCardContact);
-                existInLocalDb = true;
-                addDefaultPoints = true;
+               SmartCardContact.EMail = GetActivationEmailFromUser();
             }
-            memberNotExist = GetMemberDetailFromEmail(SmartCardContact);
+            if(SmartCardContact.EMail != "" && SmartCardContact.EMail != NULL)
+            {
+                int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,SmartCardContact.EMail);
+                if(localEmailContactKey != 0)
+                {
+                    LinkSmartCard(DBTransaction,localEmailContactKey,SmartCardContact);
+                    TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,SmartCardContact);
+                    existInLocalDb = true;
+                }
+                memberNotExist = GetMemberDetailFromEmail(SmartCardContact);
+            }
+        }
+        else
+        {
+          //check here that card has ever inserted in this site
+          int registerdContactKey = ValidateCardExistanceUsingUUID(DBTransaction,SmartCardContact);
+          if(registerdContactKey == 0)
+          {
+            if(SmartCardContact.EMail == "" || SmartCardContact.EMail == NULL)
+            {
+               SmartCardContact.EMail = GetActivationEmailFromUser();
+            }
+            if(SmartCardContact.EMail != "" && SmartCardContact.EMail != NULL)
+            {
+                int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,SmartCardContact.EMail,SmartCardContact.ContactKey);
+                if(localEmailContactKey != 0)
+                {
+                    LinkSmartCard(DBTransaction,localEmailContactKey,SmartCardContact);
+                    TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,SmartCardContact);
+                }
+               memberNotExist = GetMemberDetailFromEmail(SmartCardContact);
+            }
+          }
+          else
+          {
+            LinkSmartCard(DBTransaction,registerdContactKey,SmartCardContact);
+            TDBContacts::GetContactDetails(DBTransaction,registerdContactKey,SmartCardContact);
+            GetMemberDetail(SmartCardContact);
+          }
         }
     }
-
-    if(!existInLocalDb && !memberNotExist && !TGlobalSettings::Instance().IsPOSOffline)
-    {
-       addDefaultPoints = true;
-    }
-
 
     if (!existInLocalDb)
     {
@@ -1322,7 +1353,7 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
         }
     }
 
-   if(addDefaultPoints && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
+   if(!smartCardHasUUID && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
    {
      AddDefaultPoints(DBTransaction,pointsToSync,SmartCardContact.ContactKey);
    }
@@ -1589,9 +1620,9 @@ bool TManagerMembershipSmartCards::SavePointsTransactionsToSmartCard(TContactPoi
 						TMMContactInfo SmartCardContact;
 						ManagerSmartCards->GetContactInfo(SmartCardContact);
 						SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
-
+                        UnicodeString UUID = TDBContacts::GetMemberCloudId(DBTransaction,SmartCardContact.ContactKey);
                          if(TGlobalSettings::Instance().LoyaltyMateEnabled
-                             && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID)
+                             && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UUID)
                              && !PointsFromCloud)
                                 {
                                     TLoyaltyMateUtilities::SetLoyaltymateTransactions(
@@ -2322,6 +2353,143 @@ bool TManagerMembershipSmartCards::HasCard(Database::TDBTransaction &DBTransacti
     return !IBInternalQuery->Eof;
 }
 
+void TManagerMembershipSmartCards::ValidateCardExistance(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
+{
+   try
+   {
+	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	  IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE SITE_ID = :SITE_ID AND  MEMBER_NUMBER = :MEMBER_NUMBER";
+      IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Info.SiteID;
+      IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsString = Info.MembershipNumber;
+	  IBInternalQuery->ExecQuery();
+      for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
+      {
+        int contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+        if(Info.ContactKey != contactKey)
+        {
+          ReverseLinkSmartCard(DBTransaction,contactKey,Info);
+          break;
+        }
+      }
+
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+   }
+}
+
+int TManagerMembershipSmartCards::ValidateCardExistanceUsingUUID(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
+{
+   int retVal = 0;
+   try
+   {
+	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	  IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text ="SELECT a.CONTACTS_KEY  "
+                                  "FROM LOYALTYATTRIBUTES A LEFT JOIN "
+                                  "CONTACTS B ON A.CONTACTS_KEY = B.CONTACTS_KEY "
+                                  "WHERE B.SITE_ID = :SITE_ID AND B.MEMBER_NUMBER = :MEMBER_NUMBER "
+                                  "AND a.CONTACTS_KEY <> :CONTACTS_KEY";
+      IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Info.SiteID;
+      IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsString = Info.MembershipNumber;
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = Info.ContactKey;
+	  IBInternalQuery->ExecQuery();
+      if(!IBInternalQuery->Eof)
+         retVal = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+   }
+    return retVal;
+}
+
+bool TManagerMembershipSmartCards::LinkSmartCard(Database::TDBTransaction &DBTransaction,int contactKey,TMMContactInfo &SmartCardContact)
+{
+   try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+		"UPDATE POINTSTRANSACTIONS SET CONTACTS_KEY = :CONTACTS_KEY "
+		"WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
+		IBInternalQuery->ExecQuery();
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "UPDATE SMARTCARDS SET CONTACTS_KEY = :CONTACTS_KEY "
+        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+        IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
+        IBInternalQuery->ExecQuery();
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "DELETE FROM CONTACTS "
+        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
+        IBInternalQuery->ExecQuery();
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "UPDATE CONTACTS SET SITE_ID = :SITE_ID, MEMBER_NUMBER=:MEMBER_NUMBER "
+        "WHERE CONTACTS_KEY = :CONTACTS_KEY";
+        IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+        IBInternalQuery->ParamByName("SITE_ID")->AsInteger = SmartCardContact.SiteID;
+        IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsString = SmartCardContact.MembershipNumber;
+        IBInternalQuery->ExecQuery();
+
+
+	}
+	catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+		throw;
+	}
+}
+
+bool TManagerMembershipSmartCards::ReverseLinkSmartCard(Database::TDBTransaction &DBTransaction,int contactKey,TMMContactInfo &SmartCardContact)
+{
+   try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+		"UPDATE POINTSTRANSACTIONS SET CONTACTS_KEY = :CONTACTS_KEY "
+		"WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
+        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = contactKey;
+		IBInternalQuery->ExecQuery();
+
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "UPDATE LOYALTYATTRIBUTES SET CONTACTS_KEY = :CONTACTS_KEY "
+		"WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
+        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = contactKey;
+        IBInternalQuery->ExecQuery();
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "DELETE FROM CONTACTS "
+        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
+        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = contactKey;
+        IBInternalQuery->ExecQuery();
+
+	}
+	catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+		throw;
+	}
+}
+
+
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::      163
 //Barcode
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2702,51 +2870,8 @@ void TManagerMembershipSmartCards::LinkMembers(Database::TDBTransaction &DBTrans
 	}
 }
 
-bool TManagerMembershipSmartCards::LinkSmartCard(Database::TDBTransaction &DBTransaction,int contactKey,TMMContactInfo &SmartCardContact)
-{
-   try
-	{
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		"UPDATE POINTSTRANSACTIONS SET CONTACTS_KEY = :CONTACTS_KEY "
-		"WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
-		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
-        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
-		IBInternalQuery->ExecQuery();
-
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-        "UPDATE SMARTCARDS SET CONTACTS_KEY = :CONTACTS_KEY "
-        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
-        IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
-        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
-        IBInternalQuery->ExecQuery();
-
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-        "DELETE FROM CONTACTS "
-        "WHERE CONTACTS_KEY = :MODIFIED_CONTACTS_KEY";
-        IBInternalQuery->ParamByName("MODIFIED_CONTACTS_KEY")->AsInteger = SmartCardContact.ContactKey;
-        IBInternalQuery->ExecQuery();
-
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-        "UPDATE CONTACTS SET SITE_ID = :SITE_ID, MEMBER_NUMBER=:MEMBER_NUMBER "
-        "WHERE CONTACTS_KEY = :CONTACTS_KEY";
-        IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
-        IBInternalQuery->ParamByName("SITE_ID")->AsInteger = SmartCardContact.SiteID;
-        IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsString = SmartCardContact.MembershipNumber;
-        IBInternalQuery->ExecQuery();
 
 
-	}
-	catch(Exception & E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
-		throw;
-	}
-}
 
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //Points Processing

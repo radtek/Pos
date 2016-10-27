@@ -103,7 +103,10 @@ private:
     void SaveTransactionInvoiceDetail(TPaymentTransaction &PaymentTransaction);
     void LinkMembers(Database::TDBTransaction &DBTransaction, int contactToReplace, int contactKey);
     bool LinkSmartCard(Database::TDBTransaction &DBTransaction,int contactKey,TMMContactInfo &SmartCardContact);
+    bool ReverseLinkSmartCard(Database::TDBTransaction &DBTransaction,int contactKey,TMMContactInfo &SmartCardContact);
     bool HasCard(Database::TDBTransaction &DBTransaction,int contactKey);
+    void ValidateCardExistance(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
+    int ValidateCardExistanceUsingUUID(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
 protected:
     bool createMemberOnLoyaltyMate(TSyndCode syndicateCode, TMMContactInfo &inContactInfo);   //this method is protected so it can be called from ManagerMembershipGUI
     void UpdateMemberCardCodeToDB(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode);

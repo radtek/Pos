@@ -77,6 +77,7 @@ class TDBContacts
         static bool IsFirstVisitRewarded(Database::TDBTransaction &DBTransaction,int ContactKey);
         static void SetFirstVisitRewardStatus(Database::TDBTransaction &DBTransaction,int ContactKey);
         static AnsiString GetContactProxCard(Database::TDBTransaction &DBTransaction,int ContactKey);
+        static UnicodeString GetMemberCloudId(Database::TDBTransaction &DBTransaction,int contactKey);
 };
 
 #endif
