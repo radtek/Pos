@@ -1100,7 +1100,7 @@ void TManagerMembershipSmartCards::LocalCardInsertedHandler(TSystemEvents *Sende
             SmartCardContact.LastBirthdayProcessed = TempUserDataBaseInfo.LastBirthdayProcessed;
             SmartCardContact.DateOfBirth = TempUserDataBaseInfo.DateOfBirth;
             SmartCardContact.IsFirstVisitRewarded = TempUserDataBaseInfo.IsFirstVisitRewarded;
-
+            MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
             if (TempUserDataBaseInfo.LastModified > SmartCardLastModified && !CardNewToDB)
             {
                 // Save any discounts applied in the DB to the cards.
@@ -2357,22 +2357,44 @@ void TManagerMembershipSmartCards::ValidateCardExistance(Database::TDBTransactio
 {
    try
    {
+      int contactKeyToRetain = 0;
+      int contactKeyToReplace = 0;
+
 	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 	  IBInternalQuery->Close();
-	  IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE SITE_ID = :SITE_ID AND  MEMBER_NUMBER = :MEMBER_NUMBER";
+	  IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE SITE_ID = :SITE_ID AND  MEMBER_NUMBER = :MEMBER_NUMBER ";
       IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Info.SiteID;
       IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsString = Info.MembershipNumber;
 	  IBInternalQuery->ExecQuery();
-      for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
-      {
-        int contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
-        if(Info.ContactKey != contactKey)
-        {
-          ReverseLinkSmartCard(DBTransaction,contactKey,Info);
-          break;
-        }
-      }
 
+      if(IBInternalQuery->RecordCount == 1)
+      {
+         contactKeyToReplace =  TDBContacts::GetContactByEmail(DBTransaction,Info.EMail,Info.ContactKey);
+         if(contactKeyToReplace != 0)
+         {
+             ReverseLinkSmartCard(DBTransaction,contactKeyToReplace,Info);
+         }
+      }
+      else
+      {
+          IBInternalQuery->Close();
+          IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE SITE_ID = :SITE_ID AND  MEMBER_NUMBER = :MEMBER_NUMBER "
+                                       "AND  MEMBER_CARD_CODE IS NOT NULL AND MEMBER_CARD_CODE <> ''";
+          IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Info.SiteID;
+          IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsString = Info.MembershipNumber;
+          IBInternalQuery->ExecQuery();
+          contactKeyToReplace =  IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+
+          IBInternalQuery->Close();
+          IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE SITE_ID = :SITE_ID AND  MEMBER_NUMBER = :MEMBER_NUMBER "
+                                       "AND  ( MEMBER_CARD_CODE IS NULL OR MEMBER_CARD_CODE = '' )";
+          IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Info.SiteID;
+          IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsString = Info.MembershipNumber;
+          IBInternalQuery->ExecQuery();
+          contactKeyToRetain = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+          Info.ContactKey = contactKeyToRetain;
+          ReverseLinkSmartCard(DBTransaction,contactKeyToReplace,Info);
+      }
    }
    catch(Exception & E)
    {
