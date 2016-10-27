@@ -592,6 +592,7 @@ void __fastcall TfrmNewPaymentType::btnNameClick(TObject *Sender)
                     MessageBox("This Payment Name already Exist", "Error", MB_OK);
                 }
            }
+           DBTransaction.Commit();
     }
 }
 // ---------------------------------------------------------------------------
