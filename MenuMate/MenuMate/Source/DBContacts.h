@@ -34,6 +34,7 @@ class TDBContacts
         static bool GetContactDetailsBySwipeCard(Database::TDBTransaction &DBTransaction,AnsiString cardCode,TMMContactInfo &Info);
         static bool GetContactDetailsByProxCard(Database::TDBTransaction &DBTransaction,AnsiString cardCode,TMMContactInfo &Info);
         static int GetContactByEmail(Database::TDBTransaction &DBTransaction,AnsiString Email);
+        static int GetContactByEmail(Database::TDBTransaction &DBTransaction,AnsiString Email,int contactKey);
         static int GetContactByNamePhone(Database::TDBTransaction &DBTransaction,UnicodeString Name, UnicodeString Phone);
         static void GetContactDetails(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info);
         static void GetDiscountDetails(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info);

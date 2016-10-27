@@ -141,6 +141,35 @@ int TDBContacts::GetContactByEmail(Database::TDBTransaction &DBTransaction,AnsiS
 	return RetVal;
 }
 
+int TDBContacts::GetContactByEmail(Database::TDBTransaction &DBTransaction,AnsiString Email,int contactKey)
+{
+   int RetVal = 0;
+   if(Email == "" || Email == NULL)
+     return 0;
+   try
+   {
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE UPPER(EMAIL) = :EMAIL and CONTACTS_KEY <> :RESTRICTED_CONTACTS_KEY";
+      IBInternalQuery->ParamByName("EMAIL")->AsString = Email.UpperCase();
+      IBInternalQuery->ParamByName("RESTRICTED_CONTACTS_KEY")->AsInteger = contactKey;
+      IBInternalQuery->ExecQuery();
+
+	  if(IBInternalQuery->RecordCount)
+      {
+         RetVal = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+      }
+   }
+	catch(Exception &E)
+   {
+		TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+      throw;
+   }
+
+	return RetVal;
+}
+
+
 AnsiString TDBContacts::GetContactProxCard(Database::TDBTransaction &DBTransaction,int ContactKey)
 {
    AnsiString RetVal = 0;

@@ -1126,7 +1126,6 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
 {
     MembershipSystem->ResetPoints();
     bool addDefaultPoints = false;
-    bool isCancel = false;
     bool memberNotExist = false ;
 
     MemberMode memberMode = eSmartCardMode;
@@ -1160,14 +1159,14 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
 
         if(SmartCardContact.EMail != "" && SmartCardContact.EMail != NULL)
         {
-            int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,SmartCardContact.EMail);
+            int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,SmartCardContact.EMail,SmartCardContact.ContactKey);
             if(localEmailContactKey != 0 && localEmailContactKey != SmartCardContact.ContactKey)
             {
                 LinkSmartCard(DBTransaction,localEmailContactKey,SmartCardContact);
                 TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,SmartCardContact);
                 existInLocalDb = true;
+                addDefaultPoints = true;
             }
-            addDefaultPoints = true;
             memberNotExist = GetMemberDetailFromEmail(SmartCardContact);
         }
     }
