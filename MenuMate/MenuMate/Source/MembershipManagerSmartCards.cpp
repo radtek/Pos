@@ -1224,7 +1224,10 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
             MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
             DBTransaction.Commit();
             if (!TGlobalSettings::Instance().IsPOSOffline)
+            {
                SavePointsTransactionsToSmartCard(SmartCardContact.Points,"",true);
+               SaveContactInfoEditedToSmartCard(SmartCardContact);
+            }
             DBTransaction.StartTransaction();
             if(TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
                MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
@@ -1313,12 +1316,9 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
             if(SmartCardContact.LastBirthdayProcessed < TempUserDataBaseInfo.LastBirthdayProcessed)
                    SmartCardContact.LastBirthdayProcessed = TempUserDataBaseInfo.LastBirthdayProcessed;
 
-            if (TempUserDataBaseInfo.LastModified > SmartCardLastModified && !CardNewToDB)
-            {
-                // Save any discounts applied in the DB to the cards.
-                SaveContactInfoEditedToSmartCard(TempUserDataBaseInfo);
-                SaveContactInfoOnDownload(DBTransaction,SmartCardContact);
-            }
+            // Save any discounts applied in the DB to the cards.
+            SaveContactInfoEditedToSmartCard(TempUserDataBaseInfo);
+            SaveContactInfoOnDownload(DBTransaction,SmartCardContact);
         }
     }
 
