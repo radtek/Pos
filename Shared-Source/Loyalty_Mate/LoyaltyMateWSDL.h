@@ -257,6 +257,8 @@ private:
   bool            FFirstName_Specified;
   int             FGender;
   bool            FGender_Specified;
+  bool            FHasTransactions;
+  bool            FHasTransactions_Specified;
   __int64         FHomeSiteId;
   bool            FHomeSiteId_Specified;
   bool            FIsFirstVisitRewarded;
@@ -359,6 +361,10 @@ private:
   {  FGender = _prop_val; FGender_Specified = true;  }
   bool __fastcall Gender_Specified(int Index)
   {  return FGender_Specified;  }
+  void __fastcall SetHasTransactions(int Index, bool _prop_val)
+  {  FHasTransactions = _prop_val; FHasTransactions_Specified = true;  }
+  bool __fastcall HasTransactions_Specified(int Index)
+  {  return FHasTransactions_Specified;  }
   void __fastcall SetHomeSiteId(int Index, __int64 _prop_val)
   {  FHomeSiteId = _prop_val; FHomeSiteId_Specified = true;  }
   bool __fastcall HomeSiteId_Specified(int Index)
@@ -462,6 +468,7 @@ __published:
   __property UnicodeString      Email = { index=(IS_OPTN|IS_NLBL), read=FEmail, write=SetEmail, stored = Email_Specified };
   __property UnicodeString  FirstName = { index=(IS_OPTN|IS_NLBL), read=FFirstName, write=SetFirstName, stored = FirstName_Specified };
   __property int            Gender = { index=(IS_OPTN), read=FGender, write=SetGender, stored = Gender_Specified };
+  __property bool       HasTransactions = { index=(IS_OPTN), read=FHasTransactions, write=SetHasTransactions, stored = HasTransactions_Specified };
   __property __int64    HomeSiteId = { index=(IS_OPTN), read=FHomeSiteId, write=SetHomeSiteId, stored = HomeSiteId_Specified };
   __property bool       IsFirstVisitRewarded = { index=(IS_OPTN), read=FIsFirstVisitRewarded, write=SetIsFirstVisitRewarded, stored = IsFirstVisitRewarded_Specified };
   __property TXSDateTime* LastModified = { index=(IS_OPTN), read=FLastModified, write=SetLastModified, stored = LastModified_Specified };
@@ -760,8 +767,8 @@ private:
   bool            FDisplayAs_Specified;
   ImplicationType FImplicationType;
   bool            FImplicationType_Specified;
-  bool            FIsActive;
-  bool            FIsActive_Specified;
+  bool            FIsAutoMembersDiscount;
+  bool            FIsAutoMembersDiscount_Specified;
   bool            FIsCategoryFilterApplicable;
   bool            FIsCategoryFilterApplicable_Specified;
   bool            FIsMemberExemptDiscount;
@@ -820,10 +827,10 @@ private:
   {  FImplicationType = _prop_val; FImplicationType_Specified = true;  }
   bool __fastcall ImplicationType_Specified(int Index)
   {  return FImplicationType_Specified;  }
-  void __fastcall SetIsActive(int Index, bool _prop_val)
-  {  FIsActive = _prop_val; FIsActive_Specified = true;  }
-  bool __fastcall IsActive_Specified(int Index)
-  {  return FIsActive_Specified;  }
+  void __fastcall SetIsAutoMembersDiscount(int Index, bool _prop_val)
+  {  FIsAutoMembersDiscount = _prop_val; FIsAutoMembersDiscount_Specified = true;  }
+  bool __fastcall IsAutoMembersDiscount_Specified(int Index)
+  {  return FIsAutoMembersDiscount_Specified;  }
   void __fastcall SetIsCategoryFilterApplicable(int Index, bool _prop_val)
   {  FIsCategoryFilterApplicable = _prop_val; FIsCategoryFilterApplicable_Specified = true;  }
   bool __fastcall IsCategoryFilterApplicable_Specified(int Index)
@@ -881,7 +888,7 @@ __published:
   __property DiscountType DiscountType = { index=(IS_OPTN), read=FDiscountType, write=SetDiscountType, stored = DiscountType_Specified };
   __property DisplayOption  DisplayAs = { index=(IS_OPTN), read=FDisplayAs, write=SetDisplayAs, stored = DisplayAs_Specified };
   __property ImplicationType ImplicationType = { index=(IS_OPTN), read=FImplicationType, write=SetImplicationType, stored = ImplicationType_Specified };
-  __property bool         IsActive = { index=(IS_OPTN), read=FIsActive, write=SetIsActive, stored = IsActive_Specified };
+  __property bool       IsAutoMembersDiscount = { index=(IS_OPTN), read=FIsAutoMembersDiscount, write=SetIsAutoMembersDiscount, stored = IsAutoMembersDiscount_Specified };
   __property bool       IsCategoryFilterApplicable = { index=(IS_OPTN), read=FIsCategoryFilterApplicable, write=SetIsCategoryFilterApplicable, stored = IsCategoryFilterApplicable_Specified };
   __property bool       IsMemberExemptDiscount = { index=(IS_OPTN), read=FIsMemberExemptDiscount, write=SetIsMemberExemptDiscount, stored = IsMemberExemptDiscount_Specified };
   __property bool       IsMembersOnlyDiscount = { index=(IS_OPTN), read=FIsMembersOnlyDiscount, write=SetIsMembersOnlyDiscount, stored = IsMembersOnlyDiscount_Specified };

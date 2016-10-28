@@ -20,14 +20,7 @@ int TDBContacts::GetContactByMemberNumberSiteID(Database::TDBTransaction &DBTran
       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
       IBInternalQuery->Close();
-      IBInternalQuery->SQL->Text =
-      "SELECT "
-         "CONTACTS_KEY "
-      "FROM "
-         "CONTACTS "
-      "WHERE "
-			"MEMBER_NUMBER = :MEMBER_NUMBER AND "
-         "SITE_ID = :SITE_ID";
+      IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE MEMBER_NUMBER = :MEMBER_NUMBER AND SITE_ID = :SITE_ID";
       IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsString = MemberNumber;
       IBInternalQuery->ParamByName("SITE_ID")->AsInteger = SiteID;
       IBInternalQuery->ExecQuery();
@@ -40,6 +33,162 @@ int TDBContacts::GetContactByMemberNumberSiteID(Database::TDBTransaction &DBTran
 	catch(Exception &E)
    {
 		TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+      throw;
+   }
+
+	return RetVal;
+}
+
+bool TDBContacts::GetContactDetailsByCode(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info, AnsiString cardCode, MemberMode &inMemberMode)
+{
+    bool RetVal = false;
+    inMemberMode = eInvalidMode;
+    if(GetContactDetailsByMemberCode(DBTransaction,cardCode,Info))
+    {
+       RetVal = true;
+       inMemberMode = eMemberCodeMode;
+    }
+
+    if(!RetVal && GetContactDetailsBySwipeCard(DBTransaction,cardCode,Info))
+    {
+       RetVal = true;
+       inMemberMode = eSwipeCardMode;
+    }
+
+    if(!RetVal && GetContactDetailsByProxCard(DBTransaction,cardCode,Info))
+    {
+       RetVal = true;
+       inMemberMode = eProxCardMode;
+    }
+    return RetVal;
+}
+
+bool TDBContacts::GetContactDetailsByMemberCode(Database::TDBTransaction &DBTransaction,AnsiString cardCode,TMMContactInfo &Info)
+{
+    bool RetVal = false;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE MEMBER_CARD_CODE = :MEMBER_CARD_CODE";
+    IBInternalQuery->ParamByName("MEMBER_CARD_CODE")->AsString = cardCode;
+    IBInternalQuery->ExecQuery();
+    if(IBInternalQuery->RecordCount)
+    {
+      int contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+      GetContactDetails(DBTransaction,contactKey,Info);
+      RetVal = true;
+    }
+    return RetVal;
+}
+
+bool TDBContacts::GetContactDetailsBySwipeCard(Database::TDBTransaction &DBTransaction,AnsiString cardCode,TMMContactInfo &Info)
+{
+    bool RetVal = false;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTCARDS WHERE SWIPE_CARD = :SWIPE_CARD";
+    IBInternalQuery->ParamByName("SWIPE_CARD")->AsString = cardCode;
+    IBInternalQuery->ExecQuery();
+    if(IBInternalQuery->RecordCount)
+    {
+      int contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+      GetContactDetails(DBTransaction,contactKey,Info);
+      RetVal = true;
+    }
+    return RetVal;
+}
+
+bool TDBContacts::GetContactDetailsByProxCard(Database::TDBTransaction &DBTransaction,AnsiString cardCode,TMMContactInfo &Info)
+{
+    bool RetVal = false;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE PROX_CARD = :PROX_CARD";
+    IBInternalQuery->ParamByName("PROX_CARD")->AsString = cardCode;
+    IBInternalQuery->ExecQuery();
+    if(IBInternalQuery->RecordCount)
+    {
+      int contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+      GetContactDetails(DBTransaction,contactKey,Info);
+      RetVal = true;
+    }
+    return RetVal;
+}
+
+int TDBContacts::GetContactByEmail(Database::TDBTransaction &DBTransaction,AnsiString Email)
+{
+   int RetVal = 0;
+   if(Email == "" || Email == NULL)
+     return 0;
+   try
+   {
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE UPPER(EMAIL) = :EMAIL";
+      IBInternalQuery->ParamByName("EMAIL")->AsString = Email.UpperCase();
+      IBInternalQuery->ExecQuery();
+
+	  if(IBInternalQuery->RecordCount)
+      {
+         RetVal = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+      }
+   }
+	catch(Exception &E)
+   {
+		TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+      throw;
+   }
+
+	return RetVal;
+}
+
+int TDBContacts::GetContactByEmail(Database::TDBTransaction &DBTransaction,AnsiString Email,int contactKey)
+{
+   int RetVal = 0;
+   if(Email == "" || Email == NULL)
+     return 0;
+   try
+   {
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE UPPER(EMAIL) = :EMAIL and CONTACTS_KEY <> :RESTRICTED_CONTACTS_KEY";
+      IBInternalQuery->ParamByName("EMAIL")->AsString = Email.UpperCase();
+      IBInternalQuery->ParamByName("RESTRICTED_CONTACTS_KEY")->AsInteger = contactKey;
+      IBInternalQuery->ExecQuery();
+
+	  if(IBInternalQuery->RecordCount)
+      {
+         RetVal = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+      }
+   }
+	catch(Exception &E)
+   {
+		TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+      throw;
+   }
+
+	return RetVal;
+}
+
+
+AnsiString TDBContacts::GetContactProxCard(Database::TDBTransaction &DBTransaction,int ContactKey)
+{
+   AnsiString RetVal = 0;
+   try
+   {
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT PROX_CARD FROM CONTACTS WHERE CONTACTS_KEY = :CONTACTS_KEY";
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = ContactKey;
+      IBInternalQuery->ExecQuery();
+
+	  if(IBInternalQuery->RecordCount)
+      {
+         RetVal = IBInternalQuery->FieldByName("PROX_CARD")->AsString;
+      }
+   }
+   catch(Exception &E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
       throw;
    }
 
@@ -64,38 +213,6 @@ int TDBContacts::GetContactByNamePhone(Database::TDBTransaction &DBTransaction,U
 			"NAME = :NAME AND PHONE = :PHONE";
       IBInternalQuery->ParamByName("NAME")->AsString = Name;
       IBInternalQuery->ParamByName("PHONE")->AsString = Phone;
-      IBInternalQuery->ExecQuery();
-
-	  if(IBInternalQuery->RecordCount)
-      {
-         RetVal = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
-      }
-   }
-	catch(Exception &E)
-   {
-		TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
-      throw;
-   }
-
-	return RetVal;
-}
-
-int TDBContacts::GetContactByEmail(Database::TDBTransaction &DBTransaction,UnicodeString Email)
-{
-   int RetVal = 0;
-   try
-   {
-      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-      IBInternalQuery->Close();
-      IBInternalQuery->SQL->Text =
-      "SELECT "
-         "CONTACTS_KEY "
-      "FROM "
-         "CONTACTS "
-      "WHERE "
-			"EMAIL = :EMAIL";
-      IBInternalQuery->ParamByName("EMAIL")->AsString = Email;
       IBInternalQuery->ExecQuery();
 
 	  if(IBInternalQuery->RecordCount)
@@ -617,7 +734,6 @@ void TDBContacts::SetContactCard(Database::TDBTransaction &DBTransaction, int in
    }
 }
 
-
 void TDBContacts::GetStaff(Database::TDBTransaction &DBTransaction, std::vector<TCommission> &inStaff)
 {
 	try
@@ -698,7 +814,6 @@ void TDBContacts::GetStaff(Database::TDBTransaction &DBTransaction, std::vector<
 	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
 	}
 }
-
 
 void TDBContacts::DeleteContactCard(Database::TDBTransaction &DBTransaction, UnicodeString Card, int inContactKey)
 {
@@ -796,7 +911,6 @@ void TDBContacts::SetContactDiscounts(Database::TDBTransaction &DBTransaction, i
    }
 }
 //-----------------------------------------------------------------------
-
 void TDBContacts::GetContactNameList(Database::TDBTransaction &DBTransaction, std::vector<ContactGroup> &vectorMembers, bool inProfile)
 {
 
@@ -848,7 +962,6 @@ int TDBContacts::HasAccountProfile(Database::TDBTransaction &DBTransaction, int 
 	}
 
 }
-
 
 int TDBContacts::GetCurrentGroups(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info)
 {
@@ -1026,7 +1139,6 @@ void TDBContacts::GetAllTypes(Database::TDBTransaction &DBTransaction, std::vect
    }
 }
 
-
 void TDBContacts::RemoveDefaultGroup(Database::TDBTransaction &DBTransaction, int inContactKey)
 {
 	try
@@ -1076,9 +1188,7 @@ AnsiString TDBContacts::GetContactName(Database::TDBTransaction &DBTransaction, 
    }
    return RetVal;
 }
-
 //----------------------------------------------------------------------------
-
 bool TDBContacts::GetContactCards(Database::TDBTransaction &DBTransaction,int inContactsKey, std::set <UnicodeString> &Cards)
 {
    bool RetVal = false;
@@ -1153,7 +1263,6 @@ AnsiString TDBContacts::GetPIN(Database::TDBTransaction &DBTransaction, int Cont
    }
    return RetVal;
 }
-
 //-------------------------------------------------------------------------
 int TDBContacts::getNextPointTransactionID(Database::TDBTransaction &DBTransaction)
 {
@@ -1166,7 +1275,6 @@ int TDBContacts::getNextPointTransactionID(Database::TDBTransaction &DBTransacti
      return IBInternalQuery->Fields[0]->AsInteger;
 }
 //-------------------------------------------------------------------------
-
 void TDBContacts::setPointsTransactionEntry(
                                 Database::TDBTransaction &DBTransaction,
                                 int contactKey,
@@ -1195,7 +1303,6 @@ void TDBContacts::setPointsTransactionEntry(
      IBInternalQuery->ExecQuery();
 }
 //-------------------------------------------------------------------------
-
 UnicodeString TDBContacts::getPointsTransactionInsertQuery()
 {
     UnicodeString query="INSERT INTO POINTSTRANSACTIONS "
@@ -1230,7 +1337,6 @@ UnicodeString TDBContacts::getPointsTransactionInsertQuery()
     return query;
 }
 //-------------------------------------------------------------------------
-
 UnicodeString TDBContacts::GetMemberCloudIdIfRegistered(
 										Database::TDBTransaction &DBTransaction,
                                         int contactKey,
@@ -1258,6 +1364,31 @@ UnicodeString TDBContacts::GetMemberCloudIdIfRegistered(
    }
    return result;
 }
+
+UnicodeString TDBContacts::GetMemberCloudId(Database::TDBTransaction &DBTransaction,int contactKey)
+{
+   UnicodeString result = "";
+   try
+   {
+	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	  IBInternalQuery->Close();
+	  IBInternalQuery->SQL->Text = "SELECT UUID FROM LOYALTYATTRIBUTES WHERE CONTACTS_KEY=:CONTACTS_KEY";
+      IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+	  IBInternalQuery->ExecQuery();
+
+      if(!IBInternalQuery->Eof)
+      {
+        result = IBInternalQuery->Fields[0]->AsString;
+      }
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+	  throw;
+   }
+   return result;
+}
+
 
 void TDBContacts::SaveCustomerAndNumber( Database::TDBTransaction &DBTransaction, TCustomer Customer )
 {
@@ -1402,24 +1533,6 @@ int TDBContacts::GenerateLoyaltymateKey(Database::TDBTransaction &DBTransaction)
         result = IBInternalQuery->Fields[0]->AsInteger;
       }
     return result;
-}
-
-bool TDBContacts::GetContactDetailsByMemberCode(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
-{
-    bool RetVal = false;
-    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    IBInternalQuery->Close();
-    IBInternalQuery->SQL->Text =
-    "SELECT CONTACTS_KEY FROM CONTACTS WHERE MEMBER_CARD_CODE = :MEMBER_CARD_CODE";
-    IBInternalQuery->ParamByName("MEMBER_CARD_CODE")->AsString = Info.MemberCode;
-    IBInternalQuery->ExecQuery();
-    if(IBInternalQuery->RecordCount)
-    {
-      int contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
-      GetContactDetails(DBTransaction,contactKey,Info);
-      RetVal = true;
-    }
-    return RetVal;
 }
 
 int TDBContacts::GetLoyaltyKey(Database::TDBTransaction &dBTransaction, int tabKey )

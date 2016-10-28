@@ -101,15 +101,10 @@ class TManagerDiscount
     TManagerDiscount();
     ~TManagerDiscount();
 
-    TDiscountMode GetDiscountMode(Database::TDBTransaction &DBTransaction,long DiscountKey);
-    TDiscountType GetDiscountType(Database::TDBTransaction &DBTransaction,long DiscountKey);
     void GetVoucherListThor(Database::TDBTransaction &,TStringList *destination_list,bool ShowPointsAsDiscount = true);
     void GetDiscountList(Database::TDBTransaction &,TStringList *destination_list,std::vector<eDiscountFilter> filters, bool ShowPointsAsDiscount = true);
     void GetDiscountListByPriority(Database::TDBTransaction &, TStringList *);
     UnicodeString GetDiscountDescription(Database::TDBTransaction &DBTransaction,long DiscountKey);
-    double GetDiscountPercent(Database::TDBTransaction &DBTransaction,long DiscountKey);
-    Currency GetDiscountAmount(Database::TDBTransaction &DBTransaction,long DiscountKey);
-    Currency GetDiscountAmount(TDiscount DiscountToApply, double Amount, TList * DiscountItems);
     bool GetDiscount(Database::TDBTransaction &DBTransaction,long DiscountKey, TDiscount &Discount);
     bool GetThorlinkDiscount(Database::TDBTransaction &DBTransaction, TDiscount &Discount);
     bool SetAmountDB(Database::TDBTransaction &DBTransaction,long DiscountKey, Currency Amount);
@@ -125,10 +120,6 @@ class TManagerDiscount
     void DiscountCodeToKey(Database::TDBTransaction &DBTransaction,std::set<AnsiString> &AutoAppliedDiscountsID, std::set<int> &AutoAppliedDiscounts);
     void DiscountKeyToCode(Database::TDBTransaction &DBTransaction,std::set<AnsiString> &AutoAppliedDiscountsID, std::set<int> &AutoAppliedDiscounts);
     void DeleteDiscount(Database::TDBTransaction &DBTransaction,long DiscountKey);
-    void SetDiscountName(Database::TDBTransaction &DBTransaction,long DiscountKey,UnicodeString inName);
-    void SetDiscountDescription(Database::TDBTransaction &DBTransaction,long DiscountKey,UnicodeString inDescription);
-    void SetDiscountPercent(Database::TDBTransaction &DBTransaction,long DiscountKey, double inPercent);
-    void SetDiscountAmount(Database::TDBTransaction &DBTransaction,long DiscountKey, Currency inAmount);
     void SetDiscount(Database::TDBTransaction &DBTransaction,long DiscountKey,TDiscount Discount);
     void AddDiscount(TList * DiscountItems,TDiscount DiscountToBeApplied);
     void DeleteDiscountTime(Database::TDBTransaction &DBTransaction,TDiscountTimes &DiscountTime);
@@ -149,7 +140,6 @@ class TManagerDiscount
     void SetCard(Database::TDBTransaction &DBTransaction,int DiscountKey, UnicodeString Card);
     int GetDiscount(Database::TDBTransaction &DBTransaction,UnicodeString Card);
     int GetDiscountCard(Database::TDBTransaction &DBTransaction,UnicodeString Card);
-    Currency GetDiscountRounding(Database::TDBTransaction &DBTransaction,long DiscountKey);
     Currency GetDiscountTotal(TList * DiscountItems);
 
     /*This function is broken for getting a $ value discount.
@@ -166,7 +156,8 @@ class TManagerDiscount
     bool IsCloudDiscount(Database::TDBTransaction &DBTransaction,long discountKey);
     void DeleteDiscounts(Database::TDBTransaction &DBTransaction);
     void ClearMemberExemtDiscounts(TList * DiscountItems);
-   bool IsVouchersAvailable();
+    bool IsVouchersAvailable();
+    void GetMembershipDiscounts(Database::TDBTransaction &DBTransaction,std::set<int> &discountKeys);
 };
 
 extern TManagerDiscount *ManagerDiscount;

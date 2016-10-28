@@ -1754,9 +1754,7 @@ void TfrmBillGroup::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,A
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
-    info.MemberCode = Barcode;
-    info.CardStr = Barcode;
-    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info);
+    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info,Barcode);
 
 	if (info.Valid())
      {
@@ -4566,6 +4564,11 @@ void TfrmBillGroup::ApplyMembership(Database::TDBTransaction &DBTransaction, TMM
             btnApplyMembership->ButtonColor = clPurple;
 			RemoveMembershipDiscounts(DBTransaction);
 			MembershipConfirmed = true;
+            if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+            {
+               TManagerDiscount managerDiscount;
+               managerDiscount.GetMembershipDiscounts(DBTransaction,MembershipInfo.AutoAppliedDiscounts);
+            }
 			Membership.Assign(MembershipInfo, MemberSource);
 			lbeMembership->Visible = true;
             if(TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected)

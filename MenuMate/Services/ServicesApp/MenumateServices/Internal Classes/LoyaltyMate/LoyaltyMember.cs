@@ -209,6 +209,23 @@ namespace MenumateServices.LoyaltyMate
                 var response = loyaltymateService.GetMemberByEmail(CreateRequest(requestInfo), inSyndicateCode);
                 return CreateMemberResponseNoError(createMemberInfo(response));
             }
+            catch (LoyaltymateOperationException ex)
+            {
+                if (ex.Message.Contains("Member Not"))
+                {
+                    return CreateMemberResponseError(ex.Message,
+                            @"Member Not Exist.",
+                            LoyaltyResponseCode.MemberNotExist,
+                            new MemberInfo() { MemberCardCode = requestInfo.RequestKey });
+                }
+                else
+                {
+                    return CreateMemberResponseError(ex.Message,
+                            @"Loyaltymate error.",
+                            LoyaltyResponseCode.GetMemberFailed,
+                            new MemberInfo() { MemberCardCode = requestInfo.RequestKey });
+                }
+            }
             catch (AuthenticationFailedException ex)
             {
                 return CreateMemberResponseError(
@@ -219,10 +236,10 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (Exception exc)
             {
-                return CreateMemberResponseError(@"Failed to request member's info from the Cloud",
+                return CreateMemberResponseError(@"Failed to request member's info from the server",
                              exc.Message,
                              LoyaltyResponseCode.GetMemberFailed,
-                             CreateMemberInfoByEmail(requestInfo.RequestKey));
+                             CreateMemberInfoByCode(requestInfo.RequestKey));
             }
         }
 
@@ -327,6 +344,7 @@ namespace MenumateServices.LoyaltyMate
                     result.EarnedPoints = membershipProfile.EarnedPoints;
                     result.LoadedPoints = membershipProfile.LoadedPoints;
                     result.IsFirstVisitRewarded = membershipProfile.IsFirstVisitRewarded;
+                    result.HasTransactions = membershipProfile.HasTransactions;
                     if (membershipProfile.LastModified > lastModified)
                         lastModified = membershipProfile.LastModified;
                     result.MemberVouchers = new List<VoucherInfo>();

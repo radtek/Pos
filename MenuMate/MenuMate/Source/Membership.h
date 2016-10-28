@@ -143,8 +143,6 @@ public:
     double PreviousYearPoints;
     double AvailableBDPoint;
     double AvailableFVPoint;
-    double AvailableEarnedPoint;
-    double AvailableLoadedPoint;
     AnsiString RedeemedVoucherName;
     AnsiString RedeemedVoucherDiscount;
     std::vector<TVoucherDetail> MemberVouchers;
@@ -234,7 +232,7 @@ public:
     bool DisplayBirthDayNotification(Database::TDBTransaction &DBTransaction,TMMContactInfo &Member);
     bool DisplayFirstVisitNotification(Database::TDBTransaction &DBTransaction,TMMContactInfo &Member);
     double GetEarnedPointsForCurrentYear(Database::TDBTransaction &DBTransaction,TMMContactInfo &Member);
-    virtual bool MemberCodeScanned(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo);
+    virtual bool MemberCodeScanned(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode);
     virtual bool UpdateMemberCardCode(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode);
     virtual AnsiString SendRequestForPay(std::vector<TTenderDetails> tenderDetailsList,std::vector<TItemDetailsThor> itemsList);
    virtual AnsiString SendRequestForRefund(TRefundTransaction refundTransaction);

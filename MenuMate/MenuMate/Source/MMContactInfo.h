@@ -115,10 +115,11 @@ public:
     UnicodeString LatestLoginName;
     int PointRule;
     bool IsFirstVisitRewarded;
-
+    bool HasTransactions;
     bool ValidateMandatoryField(AnsiString& message);
     bool ValidateLastName(AnsiString& message);
     bool ValidateFirstName(AnsiString& message);
+    bool ValidateName(AnsiString& name,AnsiString& message);
 protected:
 	TMMContactInfo( UnicodeString inName );
 };

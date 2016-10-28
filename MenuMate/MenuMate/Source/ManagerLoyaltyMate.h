@@ -220,6 +220,7 @@ class TManagerLoyaltyMate
         void SyncMemberDetailsWithCloud(TSyndCode syndicateCode,TMMContactInfo info);
         // creates the member on the cloud.
         bool CreateMemberOnCloud(TSyndCode syndicateCode,TMMContactInfo &info);
+        void TriggerPointSync();
 };
 //--------------------------------------------------------------------------
 #endif

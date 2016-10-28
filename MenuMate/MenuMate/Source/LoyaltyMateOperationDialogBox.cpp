@@ -76,6 +76,7 @@ void __fastcall TfrmLoyaltyMateOperationDialogBox::loyaltyMateDownloadMemberThre
         Info.IsFirstVisitRewarded = loyaltyMemberDownloadThread->ReturnContactInfo.IsFirstVisitRewarded;
         Info.MemberVouchers = loyaltyMemberDownloadThread->ReturnContactInfo.MemberVouchers;
         Info.MemberCode = loyaltyMemberDownloadThread->ReturnContactInfo.MemberCode;
+        Info.HasTransactions = loyaltyMemberDownloadThread->ReturnContactInfo.HasTransactions;
 		ModalResult = mrOk;
 	}
 	else
