@@ -187,7 +187,8 @@ _groupingForArcbill =
                                                 "Security.Terminal_Name,                                  "
                                                 "Security.From_Val ,                                      "
                                                 "ArcBillPay.Note,                                      "
-                                              " ab.TABLE_NAME, ab.price, ArcBillPAY.PAY_TYPE, ArcBillPAY.TIP_AMOUNT ";
+                                              " ab.TABLE_NAME, ab.price, ArcBillPAY.PAY_TYPE, ArcBillPAY.TIP_AMOUNT "; 
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TdmMMReportData::DataModuleDestroy(TObject *Sender)
@@ -16151,9 +16152,9 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
 
         "Select "
             "ZEDS.Z_KEY Z_Counter, "
-            "ZEDS.TIME_STAMP  ,     "             
-            "MIN(LPAD(ARCBILL.INVOICE_NUMBER,11,0)) STARTING_INVOICE, "
-            "MAX(LPAD(ARCBILL.INVOICE_NUMBER,11,0)) END_INVOICE, "
+            "ZEDS.TIME_STAMP  ,     "
+            "MIN(LPAD(BEGINV.INVOICE_NUMBER,11,0)) STARTING_INVOICE, "
+            "MIN(LPAD(ENDINV.INVOICE_NUMBER,11,0)) END_INVOICE, "
             "CAST(ZEDS.ZED_TOTAL AS NUMERIC(17,4)) ZED_TOTAL, 								 "
             "CAST(ZEDS.TERMINAL_EARNINGS AS NUMERIC(17,4)) AS NET_BALANCE,                      "
             "CAST(ZEDS.ZED_TOTAL - ZEDS.TERMINAL_EARNINGS AS NUMERIC(17,4)) OPENING_BALANCE, "
@@ -16242,9 +16243,11 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                     "WHERE DA.ARCHIVE_KEY  IN ( "
                         "SELECT ARCHIVE_KEY "
                         "FROM ARCORDERTAXES "
-                        "WHERE (TAX_TYPE = 0  and TAX_VALUE = 0 )))zero_rated on ARCHIVE.ARCHIVE_KEY = zero_rated.archive_key "
+                        "WHERE (TAX_TYPE = 0  and TAX_VALUE = 0 ) AND ARCORDERTAXES.ARCHIVE_KEY NOT IN (SELECT a.ARCHIVE_KEY FROM ARCORDERDISCOUNTS a WHERE A.DISCOUNT_GROUPNAME = 'Senior Citizen')))zero_rated on ARCHIVE.ARCHIVE_KEY = zero_rated.archive_key "
         "left join(select cast(sum(coalesce(ARCBILLPAY.ROUNDING,0)) as numeric(17,4))rounding_amount, ARCBILL.Z_KEY from ARCBILLPAY inner join ARCBILL on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
-                    "group by ARCBILL.Z_KEY)ROUNDING on ZEDS.Z_KEY = rounding.z_key "               
+                    "group by ARCBILL.Z_KEY)ROUNDING on ZEDS.Z_KEY = rounding.z_key "
+        "LEFT JOIN( SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY FROM ARCBILL where ARCBILL.ARCBILL_KEY IN(SELECT    MIN(ARCBILL.ARCBILL_KEY) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ) BEGINV ON BEGINV.Z_KEY = ARCBILL.Z_KEY "
+        "LEFT JOIN( SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY FROM ARCBILL where ARCBILL.ARCBILL_KEY IN(SELECT    MAX(ARCBILL.ARCBILL_KEY) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ) ENDINV ON ENDINV.Z_KEY = ARCBILL.Z_KEY "   
         "Where "
                         "((   "
                      "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
