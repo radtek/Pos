@@ -19,6 +19,9 @@
 #include "LoyaltyMateWSDL.h"
 #endif
 
+
+
+
 namespace NS_LoyaltyMateWSDL {
 
 _di_IWCFServiceLoyaltyMate GetIWCFServiceLoyaltyMate(bool useWSDL, AnsiString addr, THTTPRIO* HTTPRIO)

@@ -7,6 +7,7 @@
 #include "SmartCardAPI.h"
 #include "PaymentTransaction.h"
 #include "DBTierLevel.h"
+#include "DBContacts.h"
 #include <Dateutils.hpp>
 // ---------------------------------------------------------------------------
 class TfrmLoyaltyMateOperationDialogBox;
@@ -30,6 +31,7 @@ public:
    void SaveContactInfoReassignedToSmartCard(TMMContactInfo &inContactInfo);
    bool SavePointsTransactionsToSmartCard(TContactPoints &Points,AnsiString inInvoiceNumber,bool PointsFromCloud = false);
    bool SavePointsTransactionsForBarcodeCard(TContactPoints &Points,TMMContactInfo &UserInfo,AnsiString inInvoiceNumber, bool PointsFromCloud = false);
+   void AddDefaultPoints(Database::TDBTransaction &DBTransaction,TContactPoints &Points,int contactkey);
    void BlockAllOfContactsSmartCards(Database::TDBTransaction &DBTransaction, int contactKey);
    void SetSmartCardRestorePoint(Database::TDBTransaction &DBTransaction, TMMContactInfo &MMContactInfo, TSmartCardBlock *RestorePoint,
 	  TSyndCode &SyndCode);
@@ -49,6 +51,9 @@ public:
    std::auto_ptr <TManagerSmartCard> ManagerSmartCards;
 
    void OnCardInserted(TSystemEvents *Sender);
+   void LocalCardInsertedHandler(TSystemEvents *Sender);
+   void LoyaltymateCardInsertedHandler(TSystemEvents *Sender);
+
    void OnUnknownCardInserted(TSystemEvents *Sender);
    void OnUnableToDecodeCard(TSystemEvents *Sender);
    void OnBlankCardInserted(TSystemEvents *Sender);
@@ -75,9 +80,10 @@ public:
    virtual Currency GetValue(Database::TDBTransaction &DBTransaction, int inContactKey);
    TManagerMembershipSmartCards(Database::TDBControl &inDBControl, TModules &inModules);
    ~TManagerMembershipSmartCards();
-   bool MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo);
+   bool MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode);
    bool UpdateMemberCardCode(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode);
-   bool GetMemberDetailFromBarcode(TMMContactInfo &MMContactInfo);
+   bool GetMemberDetailFromBarcode(TMMContactInfo &MMContactInfo,AnsiString memberCode);
+   bool GetMemberDetailFromEmail(TMMContactInfo &MMContactInfo);
    void SyncBarcodeMemberDetailWithCloud(TMMContactInfo &MMContactInfo);
    void RewardBirthdaybenefit(TPaymentTransaction &PaymentTransaction);
    void RewardFirstVisitPoints(TPaymentTransaction &PaymentTransaction);
@@ -95,6 +101,12 @@ private:
 	void __fastcall loyaltyMateMemberCreationCompleted(TObject* sender);
     void GetMemberDetail(TMMContactInfo &MMContactInfo);
     void SaveTransactionInvoiceDetail(TPaymentTransaction &PaymentTransaction);
+    void LinkMembers(Database::TDBTransaction &DBTransaction, int contactToReplace, int contactKey);
+    bool LinkSmartCard(Database::TDBTransaction &DBTransaction,int contactKey,TMMContactInfo &SmartCardContact);
+    bool ReverseLinkSmartCard(Database::TDBTransaction &DBTransaction,int contactKey,TMMContactInfo &SmartCardContact);
+    bool HasCard(Database::TDBTransaction &DBTransaction,int contactKey);
+    void ValidateCardExistance(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
+    int ValidateCardExistanceUsingUUID(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
 protected:
     bool createMemberOnLoyaltyMate(TSyndCode syndicateCode, TMMContactInfo &inContactInfo);   //this method is protected so it can be called from ManagerMembershipGUI
     void UpdateMemberCardCodeToDB(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode);

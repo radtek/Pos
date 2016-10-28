@@ -51,6 +51,6 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public ProductPriority ProductPriority { get; set; }
         [DataMember]
-        public bool IsActive { get; set; }
+        public bool IsAutoMembersDiscount { get; set; }
     }
 }

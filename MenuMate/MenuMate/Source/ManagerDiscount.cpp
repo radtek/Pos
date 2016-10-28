@@ -56,18 +56,7 @@ bool __fastcall TManagerDiscount::GetEnabled()
 {
 	return fEnabled;
 }
-//---------------------------------------------------------------------------
-TDiscountMode TManagerDiscount::GetDiscountMode(Database::TDBTransaction &DBTransaction,long DiscountKey)
-{
-	if(GetDiscountPercent(DBTransaction,DiscountKey) != 0 )
-	{
-		return DiscModePercent;
-	}
-	else
-	{
-		return DiscModeCurrency;
-	}
-}
+
 //---------------------------------------------------------------------------
 void TManagerDiscount::GetVoucherListThor(Database::TDBTransaction &tr,TStringList *destination_list,bool ShowPointsAsDiscount)
 {
@@ -299,6 +288,7 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
             Discount.MinItemRequired  = IBInternalQuery->FieldByName("MIN_ITEMS_REQUIRED")->AsInteger;
             Discount.DailyUsageAllowedPerMember  = IBInternalQuery->FieldByName("DAILY_USE_PER_MEMBER")->AsInteger;
             Discount.IsCloudDiscount = IBInternalQuery->FieldByName("IS_CLOUD_DISCOUNT")->AsString == "T";
+            Discount.IsMembershipDiscount = IBInternalQuery->FieldByName("IS_MEMBERSHIP_DISCOUNT")->AsString == "T";
 			GetDiscountCategories(DBTransaction,DiscountKey,Discount);
 			ReturnVal = true;
 		}
@@ -494,30 +484,6 @@ void TManagerDiscount::DiscountKeyToCode(Database::TDBTransaction &DBTransaction
 	}
 };
 //---------------------------------------------------------------------------
-TDiscountType TManagerDiscount::GetDiscountType(Database::TDBTransaction &DBTransaction,long DiscountKey)
-{
-	if( !fEnabled )return dtFixed;
-
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	TDiscountType ReturnVal = dtFixed;
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	" SELECT DISCOUNT_TYPE"
-	" FROM"
-	"  DISCOUNTS"
-	" WHERE"
-	" DISCOUNT_KEY = :DISCOUNT_KEY";
-	IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
-	IBInternalQuery->ExecQuery();
-	if(IBInternalQuery->RecordCount)
-	{
-		ReturnVal = static_cast<TDiscountType>(IBInternalQuery->FieldByName("DISCOUNT_TYPE")->AsInteger);
-	}
-
-	return ReturnVal;
-}
-//---------------------------------------------------------------------------
 UnicodeString TManagerDiscount::GetDiscountDescription(Database::TDBTransaction &DBTransaction,long DiscountKey)
 {
 	if( !fEnabled )return "";
@@ -540,163 +506,6 @@ UnicodeString TManagerDiscount::GetDiscountDescription(Database::TDBTransaction 
 	}
 
 	return ReturnVal;
-}
-//---------------------------------------------------------------------------
-double TManagerDiscount::GetDiscountPercent(Database::TDBTransaction &DBTransaction,long DiscountKey)
-{
-	if( !fEnabled )return 0;
-
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	double ReturnVal = 0;
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	" SELECT PERCENTAGE"
-	" FROM"
-	"  DISCOUNTS"
-	" WHERE"
-	" DISCOUNT_KEY = :DISCOUNT_KEY";
-	IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
-	IBInternalQuery->ExecQuery();
-	if(IBInternalQuery->RecordCount)
-	{
-		ReturnVal = IBInternalQuery->FieldByName("PERCENTAGE")->AsFloat;
-	}
-
-	return ReturnVal;
-
-}
-//---------------------------------------------------------------------------
-Currency TManagerDiscount::GetDiscountAmount(Database::TDBTransaction &DBTransaction,long DiscountKey)
-{
-	if( !fEnabled )return 0;
-
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	Currency ReturnVal = 0;
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	" SELECT AMOUNT"
-	" FROM"
-	"  DISCOUNTS"
-	" WHERE"
-	" DISCOUNT_KEY = :DISCOUNT_KEY";
-	IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
-	IBInternalQuery->ExecQuery();
-	if(IBInternalQuery->RecordCount)
-	{
-		ReturnVal = IBInternalQuery->FieldByName("AMOUNT")->AsCurrency;
-	}
-
-	return ReturnVal;
-}
-//---------------------------------------------------------------------------
-Currency TManagerDiscount::GetDiscountRounding(Database::TDBTransaction &DBTransaction,long DiscountKey)
-{
-	if( !fEnabled )return 0;
-
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	Currency ReturnVal = 0;
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	" SELECT ROUNDING"
-	" FROM"
-	"  DISCOUNTS"
-	" WHERE"
-	" DISCOUNT_KEY = :DISCOUNT_KEY";
-	IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
-	IBInternalQuery->ExecQuery();
-	if(IBInternalQuery->RecordCount)
-	{
-		ReturnVal = IBInternalQuery->FieldByName("ROUNDING")->AsCurrency;
-	}
-
-	return ReturnVal;
-}
-//---------------------------------------------------------------------------
-void TManagerDiscount::SetDiscountName(Database::TDBTransaction &DBTransaction,long DiscountKey,UnicodeString inName)
-{
-	if( !fEnabled )return ;
-
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	"UPDATE "
-	" DISCOUNTS"
-	" SET"
-	" NAME = :NAME"
-	" WHERE"
-	" DISCOUNT_KEY = :DISCOUNT_KEY";
-	IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
-	IBInternalQuery->ParamByName("NAME")->AsString = inName;
-	IBInternalQuery->ExecQuery();
-}
-//---------------------------------------------------------------------------
-void TManagerDiscount::SetDiscountDescription(Database::TDBTransaction &DBTransaction,long DiscountKey,UnicodeString inDescription)
-{
-	if( !fEnabled )return ;
-
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	"UPDATE "
-	" DISCOUNTS"
-	" SET"
-	" DESCRIPTION = :DESCRIPTION"
-	" WHERE"
-	" DISCOUNT_KEY = :DISCOUNT_KEY";
-
-	IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
-	IBInternalQuery->ParamByName("DESCRIPTION")->AsString = inDescription;
-	IBInternalQuery->ExecQuery();
-
-
-}
-//---------------------------------------------------------------------------
-void TManagerDiscount::SetDiscountPercent(Database::TDBTransaction &DBTransaction,long DiscountKey, double inPercent)
-{
-	if( !fEnabled )return ;
-
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	"UPDATE "
-	" DISCOUNTS"
-	" SET"
-	" PERCENTAGE = :PERCENTAGE"
-	" WHERE"
-	" DISCOUNT_KEY = :DISCOUNT_KEY";
-
-	IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
-	IBInternalQuery->ParamByName("PERCENTAGE")->AsFloat = inPercent;
-	IBInternalQuery->ExecQuery();
-
-
-}
-//---------------------------------------------------------------------------
-void TManagerDiscount::SetDiscountAmount(Database::TDBTransaction &DBTransaction,long DiscountKey, Currency inAmount)
-{
-	if( !fEnabled )return ;
-
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	"UPDATE "
-	" DISCOUNTS"
-	" SET"
-	" AMOUNT = :AMOUNT"
-	" WHERE"
-	" DISCOUNT_KEY = :DISCOUNT_KEY";
-
-	IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
-	IBInternalQuery->ParamByName("AMOUNT")->AsCurrency = inAmount;
-	IBInternalQuery->ExecQuery();
-
 }
 //---------------------------------------------------------------------------
 void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long DiscountKey, TDiscount Discount)
@@ -747,7 +556,8 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
         "DAILY_USE_PER_MEMBER,"
         "MAX_ITEM_AFFECTED,"
         "MIN_ITEMS_REQUIRED,"
-        "IS_CLOUD_DISCOUNT) "
+        "IS_CLOUD_DISCOUNT, "
+        "IS_MEMBERSHIP_DISCOUNT) "
 		"VALUES ("
 		":DISCOUNT_KEY,"
 		":NAME,"
@@ -767,7 +577,8 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
         ":DAILY_USE_PER_MEMBER,"
         ":MAX_ITEM_AFFECTED,"
         ":MIN_ITEMS_REQUIRED,"
-        ":IS_CLOUD_DISCOUNT);";
+        ":IS_CLOUD_DISCOUNT,"
+        ":IS_MEMBERSHIP_DISCOUNT);";
 		IBInternalQuery->ParamByName("DISCOUNT_KEY")->AsInteger = DiscountKey;
 		IBInternalQuery->ParamByName("NAME")->AsString = Discount.Name;
 		IBInternalQuery->ParamByName("DESCRIPTION")->AsString = Discount.Description;
@@ -785,6 +596,7 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
 		IBInternalQuery->ParamByName("MAX_ITEM_AFFECTED")->AsInteger = Discount.MaxItemAffected;
 		IBInternalQuery->ParamByName("MIN_ITEMS_REQUIRED")->AsInteger = Discount.MinItemRequired;
         IBInternalQuery->ParamByName("IS_CLOUD_DISCOUNT")->AsString = Discount.IsCloudDiscount ? "T" : "F";
+        IBInternalQuery->ParamByName("IS_MEMBERSHIP_DISCOUNT")->AsString = Discount.IsMembershipDiscount ? "T" : "F";
 		if(Discount.DiscountCode == "")
 		{
 			IBInternalQuery->ParamByName("DISCOUNT_ID")->Clear();
@@ -820,7 +632,8 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
         " DAILY_USE_PER_MEMBER=:DAILY_USE_PER_MEMBER,"
         " MAX_ITEM_AFFECTED=:MAX_ITEM_AFFECTED,"
         " MIN_ITEMS_REQUIRED=:MIN_ITEMS_REQUIRED,"
-        " IS_CLOUD_DISCOUNT = :IS_CLOUD_DISCOUNT"
+        " IS_CLOUD_DISCOUNT = :IS_CLOUD_DISCOUNT,"
+        " IS_MEMBERSHIP_DISCOUNT = :IS_MEMBERSHIP_DISCOUNT"
 		" WHERE"
 		" DISCOUNT_KEY = :DISCOUNT_KEY";
 
@@ -843,6 +656,7 @@ void TManagerDiscount::SetDiscount(Database::TDBTransaction &DBTransaction,long 
 		IBInternalQuery->ParamByName("MAX_ITEM_AFFECTED")->AsInteger = Discount.MaxItemAffected;
 		IBInternalQuery->ParamByName("MIN_ITEMS_REQUIRED")->AsInteger = Discount.MinItemRequired;
         IBInternalQuery->ParamByName("IS_CLOUD_DISCOUNT")->AsString = Discount.IsCloudDiscount ? "T" : "F";
+        IBInternalQuery->ParamByName("IS_MEMBERSHIP_DISCOUNT")->AsString = Discount.IsMembershipDiscount ? "T" : "F";
 		if(Discount.DiscountCode == "")
 		{
 			IBInternalQuery->ParamByName("DISCOUNT_ID")->Clear();
@@ -1842,68 +1656,6 @@ void TManagerDiscount::GetDiscountTimes(Database::TDBTransaction &DBTransaction,
 	}
 }
 //---------------------------------------------------------------------------
-Currency TManagerDiscount::GetDiscountAmount(TDiscount DiscountToApply, double Amount, TList * DiscountItems)
-{
-	Currency RetVal = 0;
-	Currency OrdersTotal = 0;
-	for (int i = 0; i < DiscountItems->Count ; i++)
-	{
-		TItemMinorComplete *Order = (TItemMinorComplete *) DiscountItems->Items[i];
-		if((!DiscountToApply.CategoryFilterKeys.empty() && DiscountToApply.ContainsCatKey(Order->Categories)) || DiscountToApply.CategoryFilterKeys.empty())
-		{
-			// Add up the Total Value.
-			OrdersTotal += Order->Price();
-		}
-
-		for (int j = 0; j < Order->SubOrders->Count  ; j++)
-		{
-			TItemMinorComplete *SubOrder = (TItemMinorComplete *)Order->SubOrders->Items[j];
-			if((!DiscountToApply.CategoryFilterKeys.empty() && DiscountToApply.ContainsCatKey(SubOrder->Categories)) || DiscountToApply.CategoryFilterKeys.empty())
-			{
-				OrdersTotal += SubOrder->Price();
-			}
-		}
-
-	}
-
-	if (DiscountToApply.Mode == DiscModePercent)
-	{
-		RetVal = RoundToNearest(Amount * double(OrdersTotal) / double(100.0),DiscountToApply.Rounding,TGlobalSettings::Instance().MidPointRoundsDown);
-	}
-	else if (DiscountToApply.Mode == DiscModeSetPrice)
-	{
-		RetVal = RoundToNearest(Amount,DiscountToApply.Rounding,TGlobalSettings::Instance().MidPointRoundsDown);
-	}
-	//************4278*********************/
-	else if (DiscountToApply.Mode == DiscModeItem)
-	{   /*
-		for (int i = 0; i < DiscountItems->Count ; i++)
-	{
-		TItemMinorComplete *Order = (TItemMinorComplete *) DiscountItems->Items[i];
-		Amount+=Amount;
-		for (int j = 0; j < Order->SubOrders->Count  ; j++)
-		{
-			TItemMinorComplete *SubOrder = (TItemMinorComplete *)Order->SubOrders->Items[j];
-		Amount+=Amount;
-		}
-	} */
-		RetVal = RoundToNearest(Amount , DiscountToApply.Rounding,TGlobalSettings::Instance().MidPointRoundsDown);
-	}
-	//************4278*********************/
-	else if (DiscountToApply.Mode == DiscModeCurrency)
-	{
-		if(Amount > OrdersTotal)
-		{
-			RetVal = OrdersTotal;
-		}
-		else
-		{
-			RetVal = Amount;
-		}
-	}
-	return RetVal;
-}
-//---------------------------------------------------------------------------
 void TManagerDiscount::DeleteCard(Database::TDBTransaction &DBTransaction,UnicodeString Card)
 {
 	if( !fEnabled )return;
@@ -2626,7 +2378,6 @@ void TManagerDiscount::DeleteCloudDiscounts(Database::TDBTransaction &DBTransact
     IBInternalQuery->SQL->Text  = query;
 	IBInternalQuery->ExecQuery();
 }
-
 //---------------------------------------------------------------------------
 void TManagerDiscount::DeleteDiscounts(Database::TDBTransaction &DBTransaction)
 {
@@ -2639,7 +2390,6 @@ void TManagerDiscount::DeleteDiscounts(Database::TDBTransaction &DBTransaction)
 	"DELETE FROM DISCOUNTS";
 	IBInternalQuery->ExecQuery();
 }
-
 //---------------------------------------------------------------------------
 bool TManagerDiscount::IsCloudDiscount(Database::TDBTransaction &DBTransaction,long discountKey)
 {
@@ -2694,3 +2444,18 @@ bool TManagerDiscount::IsVouchersAvailable()
 	}
 }
 //-----------------------------------------------------------------------------------------------------------------------------
+void TManagerDiscount::GetMembershipDiscounts(Database::TDBTransaction &DBTransaction,std::set<int> &discountKeys)
+{
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+	IBInternalQuery->Close();
+	IBInternalQuery->SQL->Text =
+	"SELECT DISCOUNT_KEY FROM "
+	"DISCOUNTS "
+	"WHERE "
+	"IS_MEMBERSHIP_DISCOUNT = 'T'";
+	IBInternalQuery->ExecQuery();
+    for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+       discountKeys.insert(IBInternalQuery->FieldByName("DISCOUNT_KEY")->AsInteger);
+	}
+}

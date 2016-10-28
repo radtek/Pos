@@ -79,5 +79,7 @@ namespace MenumateServices.DTO.LoyaltyMate
         public bool IsFirstVisitRewarded { get; set; }
         [DataMember]
         public List<VoucherInfo> MemberVouchers { get; set; }
+        [DataMember]
+        public bool HasTransactions { get; set; }
     }
 }

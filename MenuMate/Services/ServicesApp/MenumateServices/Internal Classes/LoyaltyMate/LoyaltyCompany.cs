@@ -130,6 +130,7 @@ namespace MenumateServices.LoyaltyMate
             result.MaximumNumberOfItemsAllowed = inDiscountInfo.MaximumNumberOfItemsAllowed.HasValue ? inDiscountInfo.MaximumNumberOfItemsAllowed.Value : default(int);
             result.DailyUsageAllowedPerMember = inDiscountInfo.DailyUsageAllowedPerMember.HasValue ? inDiscountInfo.DailyUsageAllowedPerMember.Value : default(int);
             result.ProductPriority = inDiscountInfo.ProductPriority;
+            result.IsAutoMembersDiscount = inDiscountInfo.IsAutoMembersDiscount;
             return result;
         }
 
