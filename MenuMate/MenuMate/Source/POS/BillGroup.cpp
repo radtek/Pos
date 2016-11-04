@@ -43,7 +43,7 @@
 #include "ManagerPatron.h"
 #include "GUIScale.h"
 #include "FreebieManager.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 #include "SelectDish.h"
 #include "MMInvoicePaymentSystem.h"
 #include "ManagerDelayedPayment.h"
@@ -1914,7 +1914,7 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 						TPaymentTransaction PaymentTransaction(DBTransaction);
 						TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, OrderKeySet);
 						TDiscount CurrentDiscount;
-                        TSeniorCitizenDiscountChecker SCDChecker;
+                        TSCDPWDChecker SCDChecker;
 						CurrentDiscount.DiscountKey = SelectDiscount->Key;
 						ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
                         applyDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders)  &&
@@ -2055,7 +2055,7 @@ void __fastcall TfrmBillGroup::ProcessBillThorVouchers(Database::TDBTransaction 
                             ManagerDiscount->GetDiscount(DBTransaction, SelectedDiscount.DiscountKey, SelectedDiscount);
                             TPaymentTransaction PaymentTransaction(DBTransaction);
                             TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, OrderKeySet);
-                            TSeniorCitizenDiscountChecker SCDChecker;
+                            TSCDPWDChecker SCDChecker;
                             ManagerDiscount->ClearThorVouchersDiscounts(PaymentTransaction.Orders);
                             if(SCDChecker.SeniorCitizensCheck(SelectedDiscount, PaymentTransaction.Orders)
                               && SCDChecker.PWDCheck(SelectedDiscount, PaymentTransaction.Orders))
@@ -2356,7 +2356,7 @@ void __fastcall TfrmBillGroup::tgridItemListMouseClick(TObject *Sender, TMouseBu
 
 	if (SelectedItems.find(GridButton->Tag) == SelectedItems.end())
 	{ // Not Found add it.
-        TSeniorCitizenDiscountChecker SCDChecker;
+        TSCDPWDChecker SCDChecker;
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
 
@@ -2488,7 +2488,7 @@ void TfrmBillGroup::ToggleItemState(TGridButton *GridButton)
 //---------------------------------------------------------------------------
 void TfrmBillGroup::SelectItem(TGridButton *GridButton)
 {
-    TSeniorCitizenDiscountChecker SCDChecker;
+    TSCDPWDChecker SCDChecker;
     Database::TDBTransaction DBTransaction(DBControl);
     DBTransaction.StartTransaction();
 

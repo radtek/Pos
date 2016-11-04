@@ -40,7 +40,7 @@
 #include "DBSecurity.h"
 #include "DBClippTab.h"
 #include "ManagerClippIntegration.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 #include "ManagerDiscount.h"
 
 // ---------------------------------------------------------------------------
@@ -4124,7 +4124,7 @@ bool TfrmTransfer::CheckSecurityEvent(Database::TDBTransaction &DBTransaction, i
 bool TfrmTransfer::IsSCDAppliedOnDest(TList* Orders)
 {
     bool isSCDApplied = false;
-    TSeniorCitizenDiscountChecker SCDChecker;
+    TSCDPWDChecker SCDChecker;
 
      for(int i = 0 ; i < Orders->Count; i++)
     {
@@ -4147,7 +4147,7 @@ bool TfrmTransfer::IsSCDAppliedOnDest(TList* Orders)
 bool TfrmTransfer::IsPWDAppliedOnDest(TList* Orders)
 {
     bool IsPWDApplied = false;
-    TSeniorCitizenDiscountChecker SCDChecker;
+    TSCDPWDChecker SCDChecker;
 
      for(int i = 0 ; i < Orders->Count; i++)
     {

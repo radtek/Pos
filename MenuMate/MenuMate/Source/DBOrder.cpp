@@ -23,7 +23,7 @@
 #include "ItemRecipe.h"
 #include "enumMenu.h"
 #include "EnumOrderStatus.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 #include "Invoice.h"
 //---------------------------------------------------------------------------
 // Only used to reload items for paarked sales.
@@ -2379,7 +2379,7 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 		IBInternalQuery->ExecQuery();
 		std::set<__int64> ValidOrderKeys;
 		std::set<__int64> OrderKeysThatHaveSides;
-		TSeniorCitizenDiscountChecker SCDChecker;
+		TSCDPWDChecker SCDChecker;
 		for (; !IBInternalQuery->Eof  ;IBInternalQuery->Next())
 		{
 			TPnMOrder Order;

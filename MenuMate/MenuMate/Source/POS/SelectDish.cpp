@@ -111,7 +111,7 @@
 #include "HoldSend.h"
 #include "DealManager.h"
 #include "ItemSizeCategory.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 #include "MMCustomerDisplayManager.h"
 #include "ReportUtilities.h"
 #include "CaptNamePhone.h"
@@ -9237,7 +9237,7 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
                 {
                     if(SelectionForm->SelectedTabType ==13)
                     {
-                        TSeniorCitizenDiscountChecker SCDChecker;
+                        TSCDPWDChecker SCDChecker;
                          std::auto_ptr<TList> allOrders(new TList());
                            GetAllOrders(allOrders.get());
 
@@ -13195,7 +13195,7 @@ void TfrmSelectDish::AssignDiscountLists()
    std::auto_ptr<TList> allOrders(new TList());
    GetAllOrders(allOrders.get());
    TDiscount CurrentDiscount;
-   TSeniorCitizenDiscountChecker SCDChecker;
+   TSCDPWDChecker SCDChecker;
    isChitDiscountExist = false;
 
    for(int i=0; i < ChitNumber.DiscountList.size(); i++)
@@ -13313,7 +13313,7 @@ void TfrmSelectDish::GetThorVouchers()
                    {
                         RemoveMembershipDiscounts();
                         SeatOrders[SelectedSeat]->Orders->AppliedMembership.AutoAppliedDiscounts.clear();
-                        TSeniorCitizenDiscountChecker SCDChecker;
+                        TSCDPWDChecker SCDChecker;
                         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
                         DBTransaction.StartTransaction();
                         std::auto_ptr<TList> allOrders(new TList());
@@ -13402,7 +13402,7 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
 			else
 			{
                TDiscount CurrentDiscount;
-               TSeniorCitizenDiscountChecker SCDChecker;
+               TSCDPWDChecker SCDChecker;
                std::auto_ptr<TList> allOrders(new TList());
                GetAllOrders(allOrders.get());
                CurrentDiscount.DiscountKey = frmMessage->Key;

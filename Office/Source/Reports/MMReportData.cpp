@@ -16231,7 +16231,7 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                         "    FROM ARCORDERTAXES          "
                         "    WHERE (TAX_TYPE = 0 AND TAX_VALUE <> 0)       "
                         ")  AND (UPPER(DA.DISCOUNT_REASON) NOT LIKE '%DIPLOMAT%')  "
-                        " group by da.ARCHIVE_KEY,da.DISCOUNT_WITHOUT_TAX,DAOT.TAX_VALUE,da.BASE_PRICE,da.QTY) VAT_EXEMPT_SALE ON ARCHIVE.ARCHIVE_KEY = VAT_EXEMPT_SALE.ARCHIVE_KEY "
+                        " group by da.ARCHIVE_KEY,da.DISCOUNT_WITHOUT_TAX,da.BASE_PRICE,da.QTY) VAT_EXEMPT_SALE ON ARCHIVE.ARCHIVE_KEY = VAT_EXEMPT_SALE.ARCHIVE_KEY "
 
         "left join (SELECT DA.ARCHIVE_KEY, cast(coalesce(DA.BASE_PRICE,0)*da.QTY  + DA.DISCOUNT_WITHOUT_TAX + coalesce(AOT.TAX_VALUE,0) as numeric(17,4)) price  "
                     "FROM ARCHIVE DA "

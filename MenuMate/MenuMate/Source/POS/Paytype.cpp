@@ -36,7 +36,7 @@
 #include "DBContacts.h"
 #include "GroupGUI.h"
 #include "SelectRMSRoom.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 #include "TaxRemoval.h"
 #include "DBTables.h"
 #include "VerticalSelect.h"
@@ -3916,7 +3916,7 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 {
 	bool ProcessDiscount = true;
 	TDiscount CurrentDiscount;
-	TSeniorCitizenDiscountChecker SCDChecker;
+	TSCDPWDChecker SCDChecker;
 
 	bool bailout = false;
 	CurrentDiscount.DiscountKey = DiscountKey;
