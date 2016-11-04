@@ -17,6 +17,7 @@
 #include "PreviewData.h"
 #include <IBSQL.hpp>
 #include <DBClient.hpp>
+#include <SysUtils.hpp>
 
 
 //---------------------------------------------------------------------------
@@ -258,6 +259,9 @@ TRvDataSetConnection *ravCheckRemoval;      //MM-4327
     TRvDataSetConnection *ravSalesSummaryD;
     TIBQuery *qrSSDParemeter;
     TRvDataSetConnection *ravSSDParameter;
+    TIBQuery *qrEJournal;
+    TRvDataSetConnection *ravESalesJournal;
+    TClientDataSet *cdsReceipt;
 
 	void __fastcall qrMenuAfterScroll(TDataSet *DataSet);
 	void __fastcall qrAveSummaryAfterScroll(TDataSet *DataSet);
@@ -422,6 +426,7 @@ public:		// User declarations
     AnsiString addressOfTaxPayer;
     AnsiString tinNumber;
     AnsiString serialNo;
+    void SetupEJournal(TDateTime StartTime, TDateTime EndTime, TMemo *memReceipt);
 };
 
 

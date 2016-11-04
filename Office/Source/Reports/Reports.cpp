@@ -1535,6 +1535,7 @@ static AnsiString PaymentTypeList =
 
 
 	Security::PermissionAccess requiredPermission = Security::None;
+    bool isEJournalReport = false;
 
 	switch (Node->AbsoluteIndex)
 	{
@@ -4234,7 +4235,7 @@ case DAILY_SALES_REPORT:
 
 			ReportControl->AddFilter(ReportFilter3);
 
-       
+
 			break;
 		}
 //-------------------------------
@@ -4401,7 +4402,7 @@ case DAILY_SALES_REPORT:
 			SubReport0->AddFilterIndex(FilterIndex);
         	break;
  		}
-         case SALES_SUMMARY_D_INDEX:
+        case SALES_SUMMARY_D_INDEX:
         {
             requiredPermission = Security::FinancialReports;
 
@@ -4418,6 +4419,22 @@ case DAILY_SALES_REPORT:
         	ReportControl->AddFilter(ReportFilter1);
 
 			break;
+        }
+        case E_JOURNAL_INDEX:
+        {
+            isEJournalReport = true;
+
+   			requiredPermission = Security::SecurityReports;
+			ReportControl									= new TReportControl;
+			ReportControl->PrintReport					= &TfrmReports::PrintEJournalReport;
+			TSubReport *SubReport0						= ReportControl->AddSubReport("E-Journal Report");
+
+			// Dates
+			TReportDateFilter *ReportFilter0			= new TReportDateFilter(ReportControl, MMFilterTransaction);
+			ReportFilter0->Caption						= "Select the date range for the Reprint Receipt.";
+			SubReport0->AddFilterIndex(0);
+			ReportControl->AddFilter(ReportFilter0);
+        	break;
         }
 }
  	if (ReportControl)
@@ -4438,11 +4455,11 @@ case DAILY_SALES_REPORT:
 			}
 		}
 
-		ShowCurrentFilter();
+		ShowCurrentFilter(isEJournalReport);
 	}
 }
 //---------------------------------------------------------------------------
-void TfrmReports::ShowCurrentFilter()
+void TfrmReports::ShowCurrentFilter(bool isEJournalReport)
 {
 	if (ReportControl)
 	{
@@ -4606,6 +4623,13 @@ void TfrmReports::ShowCurrentFilter()
 					chbStringGST->Checked								= ReportStringFilter->GSTChecked;
 					break;
 				}
+			}
+			if(isEJournalReport)
+			{
+			   btnDateExcel->Visible = false;  
+               //btnStringBack->Visible	= false;
+               //btnTreeFilterBack->Visible = false;
+               btnBackFromDate->Visible = false;
 			}
 		}
 		__finally
@@ -11035,7 +11059,7 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
                     dmMMReportData->addressOfTaxPayer = CompanyData->Strings[1].TrimLeft();
                     dmMMReportData->tinNumber = CompanyData->Strings[2].TrimLeft();
                     dmMMReportData->serialNo = CompanyData->Strings[3].TrimLeft();
-                }               
+                }
 				const AnsiString ReportName = "repSalesSummaryD";
 
 				dmMMReportData->SetupSalesSummaryD(ReportControl->Start, ReportControl->End);
@@ -11076,6 +11100,53 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
 		{
 			dmMMReportData->MMTrans->Commit();
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void TfrmReports::PrintEJournalReport(TReportControl *ReportControl)
+{
+    TMemo *memReceipt;
+	const AnsiString ReportName = "repESalesJournal";
+	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+	{
+		dmMMReportData->MMTrans->StartTransaction();
+	}
+	try
+	{
+
+		dmMMReportData->SetupEJournal(ReportControl->Start, ReportControl->End, memReceipt);
+		if (ReportType == rtExcel)
+		{
+			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+			ExcelDataSetsList->AddObject("Sales",(TObject *)dmMMReportData->qrEJournal);
+			ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
+		}
+		else
+		{
+			if (rvMenuMate->SelectReport(ReportName, false))
+			{
+				AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+				rvMenuMate->SetParam("ReportRange", DateRange);
+                //rvMenuMate->ReportDescToMemo(memReceipt);
+                //dmMMReportData->qrEJournal->
+                //rvMenuMate->()
+				rvMenuMate->Execute();
+			}
+			else
+			{
+				Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+			}
+		}
+	}
+	__finally
+	{
+		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+		{
+			dmMMReportData->MMTrans->Commit();
+            //AllowNext = false;
 		}
 	}
 }

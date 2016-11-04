@@ -6027,6 +6027,7 @@ void TdmMMReportData::SetupTabDetails(TStrings *TabTypes,TStrings *Tabs)
 
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 void TdmMMReportData::SetupSalesJournal(bool includeSCTaxInTax, TDateTime StartTime, TDateTime EndTime, TStrings *Terminals)
 {
    qrSalesJournal1->Close();
@@ -6184,6 +6185,7 @@ void TdmMMReportData::SetupSalesJournal(bool includeSCTaxInTax, TDateTime StartT
    qrSalesJournal1->ParamByName("StartTime")->AsDateTime	= StartTime;
    qrSalesJournal1->ParamByName("EndTime")->AsDateTime	= EndTime;
 }
+
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStrings *Discounts,TStrings *Locations)
 {
@@ -16268,7 +16270,153 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
 
 }
 
+//---------------------------------------------------------------------------
+void TdmMMReportData::SetupEJournal(TDateTime StartTime, TDateTime EndTime, TMemo *memReceipt)
+{
 
+    /* if (cdsReceipt->Active)
+	{  // already Used
+		cdsReceipt->EmptyDataSet();
+	}
+	else
+	{
+		try
+		{
+			cdsReceipt->FieldDefs->Clear();
+			cdsReceipt->FieldDefs->Add("time_stamp", ftDateTime, 0);
+			cdsReceipt->FieldDefs->Add("RECEIPT", ftBlob, 0);
+			cdsReceipt->FieldDefs->Add("INVOICE_NUMBER", ftInteger, 0);
+			cdsReceipt->CreateDataSet();
+		 }
+		 catch (Exception &E)
+		 {
+			Application->MessageBox(("Create cdsMenu table failed, procedure SetupMenuProfit.\r " +  E.Message ).c_str(), "Error", MB_ICONERROR + MB_OK);
+			return;
+		 }
+	 }
+	 cdsReceipt->LogChanges = false;*/
+
+   qrEJournal->Close();
+   qrEJournal->SQL->Text =
+      "SELECT "
+         "DAB.time_stamp datetime, "
+         "DAB.RECEIPT receipt, "
+         "DAB.INVOICE_NUMBER "
+         "From "
+			"DAYARCBILL DAB "
+      "WHERE "
+         "DAB.Time_Stamp >= :StartTime and "
+         "DAB.Time_Stamp < :EndTime "
+         
+        " UNION ALL "
+
+      "SELECT "
+         "AB.time_stamp datetime, "
+         "AB.RECEIPT receipt, "
+         "AB.INVOICE_NUMBER " 
+         "From "
+			"ARCBILL AB "
+      "WHERE "
+         "AB.Time_Stamp >= :StartTime and "
+         "AB.Time_Stamp < :EndTime "
+
+         "order by 1 ";
+
+   qrEJournal->ParamByName("StartTime")->AsDateTime	= StartTime;
+   qrEJournal->ParamByName("EndTime")->AsDateTime	= EndTime;
+
+   /*while ( !qrEJournal->Eof )
+   {
+        memReceipt->Clear();
+        const char ESC       = 0x1B;
+        const char GS        = 0x1D;
+        const char CR       = 0x0D; // Carriage Return
+	    const char LF       = 0x0A; // Line Feed
+	    const char FF       = 0x0C; // Form Feed
+        TMemoryStream *ReceiptStream = new TMemoryStream;
+        try
+        {
+            TBlobField *ReceiptBlob = (TBlobField *)qrEJournal->FieldByName("RECEIPT");
+            ReceiptBlob->SaveToStream(ReceiptStream);
+
+            TStringList *Lines = new TStringList;
+            try
+            {
+                ReceiptStream->Position = 0;
+                AnsiString TrimmedLine;
+                char *Line = (char *)ReceiptStream->Memory;
+                for(int j=0; j<ReceiptStream->Size; j++)
+                {
+                    if (Line[j] == ESC)
+                    {
+//										if (Line[j+1] == PRINT_MODE)
+                        {
+                            j += 2;
+                        }
+                    }
+                    else if (Line[j] == GS)
+                    {
+//										if (Line[j+1] == CUT_MODE)     ]
+                        {
+                            j += 2;
+                        }
+//										else if (Line[j+1] == PRINT_GRAPHIC)
+//										{
+//											j += 2;
+//										}
+                    }
+                    else if (Line[j] ==CR )
+                    {
+                        if (Line[j+1] == LF)
+                        {
+                            j += 1;
+                        }
+                        Lines->Add(TrimmedLine);
+                        TrimmedLine = "";
+                    }
+                    else if (Line[j] == LF)
+                    {
+                        if (Line[j+1] == CR)
+                        {
+                            j += 1;
+                        }
+                        Lines->Add(TrimmedLine);
+                        TrimmedLine = "";
+                    }
+                    else
+                    {
+                        if(Line[j] == char(196))
+                        {
+                            TrimmedLine += "-";
+                        }
+                        else
+                        {
+                            TrimmedLine += Line[j];
+                        }
+                    }
+                }
+                if(TrimmedLine != "")
+                Lines->Add(TrimmedLine);
+                memReceipt->Lines->Assign(Lines);
+            }
+            __finally
+            {
+				 // only write one record as the details are the same
+                cdsReceipt->Append();
+                cdsReceipt->FieldByName("time_stamp")->AsDateTime      = qrEJournal->FieldByName("time_stamp")->AsDateTime;
+                cdsReceipt->FieldByName("RECEIPT")->AsString           = memReceipt->Text;
+                cdsReceipt->FieldByName("INVOICE_NUMBER")->AsInteger         = qrEJournal->FieldByName("INVOICE_NUMBER")->AsInteger;
+                delete Lines;
+            }
+        }
+        __finally
+        {
+            delete ReceiptStream;
+        }
+        qrMenu->Next();
+   }
+   cdsReceipt->Post();*/
+}
 
 
 
