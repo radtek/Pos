@@ -28,6 +28,12 @@ void TApplyParser::upgrade6_32Tables()
 	update6_32Tables();
 }
 
+// 6.33
+void TApplyParser::upgrade6_33Tables()
+{
+	update6_33Tables();
+}
+
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -127,5 +133,101 @@ void TApplyParser::UpdateDiscountsTable6_32(TDBControl* const inDBControl)
 	}
 }
 
+//----------------------------------------------------------------------------------------
+void TApplyParser::update6_33Tables()
+{
+    Create6_33Malls(_dbControl);
+    Create6_33MallExportSettings(_dbControl);
+    Create6_33MallTransaction(_dbControl);
+}
+
+//----------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33Malls(TDBControl* const inDBControl)
+{
+     if ( !tableExists( "Malls", inDBControl ) )
+     {
+		executeQuery(
+                "CREATE TABLE MALLS "
+                "( "
+                "   MALL_ID INTEGER NOT NULL PRIMARY KEY, "
+                "   MALL_NAME VARCHAR(50), "
+                "   IS_ACTIVE VARCHAR(10) "
+                ");",
+			inDBControl );
+
+        }
+ }
+
+//----------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33MallExportSettings(TDBControl* const inDBControl)
+{
+     if ( !tableExists( "MallExportSettings", inDBControl ) )
+     {
+		executeQuery(
+                "CREATE TABLE MallExportSettings "
+                "( "
+                "   ID INTEGER NOT NULL PRIMARY KEY, "
+                "   NAME VARCHAR(50), "
+                "   DISPLAY_NAME(100) "
+                ");",
+			inDBControl );
+
+     }
+}
+
+//----------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBControl)
+{
+     if ( !tableExists( "MallExportSettingsMapping", inDBControl ) )
+     {
+		executeQuery(
+                "CREATE TABLE MallExportSettingsMapping"
+                "( "
+                "   ID INTEGER NOT NULL PRIMARY KEY, "
+                "   MALL_ID ADD CONSTRAINT MALL_ID FOREIGN KEY (MALL_ID) REFERENCES "
+                "   MALLS (MALL_ID) ON UPDATE CASCADE ON DELETE CASCADE, "
+                "   MALLEXPORT_SETTING_ID INTEGER "
+                ");",
+			inDBControl );
+
+        }
+}
+//----------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBControl)
+{
+     if ( !tableExists( "MallExportSettingsValues", inDBControl ) )
+     {
+		executeQuery(
+                "CREATE TABLE MallExportSettingsValues"
+                "( "
+                "   MALLEXPORTSETTING_KEY INTEGER NOT NULL PRIMARY KEY, "
+                "   MALLEXPORTSETTING_ID INTEGER NOT NULL , "
+                "   VALUE VARCHAR(50), "
+                "   VALUE_TYPE VARCHAR(50) "
+                ");",
+			inDBControl );
+     }
+}
+//----------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBControl)
+{
+     if ( !tableExists( "MallEXPORT_SALES", inDBControl ) )
+     {
+		executeQuery(
+                "CREATE TABLE MallEXPORT_SALES"
+                "( "
+                "   ID INTEGER NOT NULL PRIMARY KEY, "
+                "   MALL_KEY ADD CONSTRAINT MALL_KEY FOREIGN KEY (MALL_KEY) REFERENCES "
+                "   MALLS (MALL_ID) ON UPDATE CASCADE ON DELETE CASCADE, " "
+                "   FIELD VARCHAR(50), "
+                "   VALUE_GROUP VARCHAR(50), "
+                "   VALUE VARCHAR(50),
+                "   VALUE_TYPE VARCHAR(50), "
+                "   ENUM_TYPE , "
+                "   DATE_CREATED
+                ");",
+			inDBControl );
+     }
+}
 }
 
