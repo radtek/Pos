@@ -268,7 +268,8 @@ AnsiString TfrmSelectDiscounts::DiscountSingleItem(Database::TDBTransaction &DBT
 
          TSeniorCitizenDiscountChecker SCDChecker;
 
-         if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, Orders) && SelectedItem->DiscountApplies(CurrentDiscount))
+         if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, Orders) && SCDChecker.PWDCheck(CurrentDiscount, Orders)
+             && SelectedItem->DiscountApplies(CurrentDiscount))
          {
              if (SelectedItem->DiscountApplied(DiscountKey))
              {

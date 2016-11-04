@@ -2701,13 +2701,19 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
             TMMTabType TabType = TDBTab::GetTabType(*DBTransaction, dest_tabkey);
             TList *Orders = OrdersList.get();
             bool isSCDApplied = false;
+            bool isPWDAppplied = false;
             if(TabType == 13)
             {
                 isSCDApplied = IsSCDAppliedOnDest(Orders);
+                isPWDAppplied = IsPWDAppliedOnDest(Orders);
             }
             if(isSCDApplied )
             {
                 MessageBox("Order with SCD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
+            }
+            else if(isPWDAppplied)
+            {
+                MessageBox("Order with PWD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
             }
             else
             {
@@ -2848,13 +2854,19 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
             TMMTabType TabType = TDBTab::GetTabType(*DBTransaction, dest_tabkey);
             TList *Orders = OrdersList.get();
             bool isSCDApplied = false;
+            bool isPWDAppplied = false;
             if(TabType == 13)
             {
                 isSCDApplied = IsSCDAppliedOnDest(Orders);
+                isPWDAppplied = IsPWDAppliedOnDest(Orders);
             }
             if(isSCDApplied )
             {
                 MessageBox("Order with SCD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
+            }
+            else if(isPWDAppplied)
+            {
+                MessageBox("Order with PWD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
             }
             else
             {
@@ -3013,6 +3025,7 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
 
                    TMMTabType TabType = TDBTab::GetTabType(DBTransaction, dest_key);
                    bool isSCDApplied = false;
+                   bool isPWDApplied = false;
 
                    if(CurrentSourceDisplayMode == eTables)
                    {
@@ -3031,10 +3044,15 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                             if(TabType == 13)
                             {
                                 isSCDApplied = IsSCDAppliedOnDest(OrdersList.get());
+                                isPWDApplied = IsPWDAppliedOnDest(OrdersList.get());
                             }
                             if(isSCDApplied )
                             {
                                 MessageBox("Order with SCD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
+                            }
+                            else if(isPWDApplied)
+                            {
+                                MessageBox("Order with PWD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
                             }
                             else
                             {
@@ -3067,10 +3085,15 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                         if(TabType == 13)
                         {
                             isSCDApplied = IsSCDAppliedOnDest(OrdersList.get());
+                            isPWDApplied = IsPWDAppliedOnDest(OrdersList.get());
                         }
                         if(isSCDApplied )
                         {
                             MessageBox("Order with SCD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
+                        }
+                        else if(isPWDApplied)
+                        {
+                            MessageBox("Order with PWD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
                         }
                         else
                         {
@@ -4119,6 +4142,29 @@ bool TfrmTransfer::IsSCDAppliedOnDest(TList* Orders)
         }
     }
     return isSCDApplied;
+}
+//------------------------------------------------------------------------------------------------------
+bool TfrmTransfer::IsPWDAppliedOnDest(TList* Orders)
+{
+    bool IsPWDApplied = false;
+    TSeniorCitizenDiscountChecker SCDChecker;
+
+     for(int i = 0 ; i < Orders->Count; i++)
+    {
+        TItemMinorComplete *order = reinterpret_cast<TItemMinorComplete *>(Orders->Items[i]);
+        for(std::vector<TDiscount>::iterator it = order->Discounts.begin(); it != order->Discounts.end(); ++it)
+        {
+            TDiscount CurrentDiscount;
+            CurrentDiscount.DiscountKey =  it->DiscountKey;
+             ManagerDiscount->GetDiscount(*DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
+
+              if(SCDChecker.PWDCheck(CurrentDiscount, Orders, true))
+              {
+                  IsPWDApplied = true;
+              }
+        }
+    }
+    return IsPWDApplied;
 }
 //------------------------------------------------------------------------------------------------------
 void TfrmTransfer::SaveClipItemsInStructure(Database::TDBTransaction &DBTransaction)

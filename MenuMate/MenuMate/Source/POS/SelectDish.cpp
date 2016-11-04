@@ -9250,7 +9250,8 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
                                 CurrentDiscount.DiscountKey =  it->DiscountKey;
                                  ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
 
-                                  if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get(), true))
+                                  if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get(), true))
+                                       && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get(), true)))
                                   {
                                       isSCDApplied = true;
                                   }
@@ -13208,7 +13209,9 @@ void TfrmSelectDish::AssignDiscountLists()
              TypeOfSale = NonChargableSale;
           }
           ManagerDiscount->ClearDiscount(SeatOrders[SelectedSeat]->Orders->List, ChitNumber.DiscountList[i]);
-          if(SCDChecker.SeniorCitizensCheck(ChitNumber.DiscountList[i], allOrders.get()))
+//          if(SCDChecker.SeniorCitizensCheck(ChitNumber.DiscountList[i], allOrders.get()))
+          if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+               && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
           {
                bool isDiscountApplied = ApplyDiscount(DBTransaction, ChitNumber.DiscountList[i], SeatOrders[SelectedSeat]->Orders->List);
               if(isDiscountApplied && SeatOrders[SelectedSeat]->Orders->List->Count >0 )
@@ -13326,7 +13329,9 @@ void TfrmSelectDish::GetThorVouchers()
                           TypeOfSale = NonChargableSale;
                         }
 
-                        if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+//                        if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+                        if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+                            && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
                         {
                           SeatOrders[SelectedSeat]->Orders->AppliedMembership.AutoAppliedDiscounts.insert(CurrentDiscount.DiscountKey);
                           ApplyDiscount(DBTransaction, CurrentDiscount.DiscountKey, SeatOrders[SelectedSeat]->Orders->List,dsMMMembership);
@@ -13412,7 +13417,9 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                  TypeOfSale = NonChargableSale;
                }
 
-              if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+//              if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+              if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+                  && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
               {
                  ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
               }

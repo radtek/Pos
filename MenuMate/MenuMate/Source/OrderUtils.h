@@ -30,6 +30,7 @@ class TOrderUtils
    static Currency GrandTotalGSTContentSides(TList *Orders);
 
    static bool SeniorCitizensDiscountApplied(TList *Orders);
+   static bool PWDDiscountApplied(TList *Orders);
    static bool AnyDiscountsApplied(TList *Orders);
    static Currency FinalPriceAdjustmentSides(TList *Orders);
    static bool SeperateNmiPriceBarcodedItem( TItemMinorComplete* CurrentItem );
