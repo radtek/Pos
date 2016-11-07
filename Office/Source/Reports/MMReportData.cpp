@@ -16241,7 +16241,7 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                         "group by  a.ARCHIVE_KEY "
                         "order by 1 ) "
                         "AOT ON  AOT.ARCHIVE_KEY = DA.ARCHIVE_KEY  "
-                    "WHERE DA.ARCHIVE_KEY  IN ( "
+                    "WHERE DA.DISCOUNT_REASON <> '' AND DA.ARCHIVE_KEY  IN ( "
                         "SELECT ARCHIVE_KEY "
                         "FROM ARCORDERTAXES "
                         "WHERE (TAX_TYPE = 0  and TAX_VALUE = 0 ) AND "
