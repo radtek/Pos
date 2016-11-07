@@ -11116,26 +11116,17 @@ void TfrmReports::PrintEJournalReport(TReportControl *ReportControl)
 	{
 
 		dmMMReportData->SetupEJournal(ReportControl->Start, ReportControl->End);
-		if (ReportType == rtExcel)
-		{
-			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-			ExcelDataSetsList->AddObject("Sales",(TObject *)dmMMReportData->qrEJournal);
-			ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
-		}
-		else
-		{
-			if (rvMenuMate->SelectReport(ReportName, false))
-			{
-				AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-				rvMenuMate->SetParam("ReportRange", DateRange);
-				rvMenuMate->Execute();
-			}
-			else
-			{
-				Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-			}
-		}
+        if (rvMenuMate->SelectReport(ReportName, false))
+        {
+            AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+                                            "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+            rvMenuMate->SetParam("ReportRange", DateRange);
+            rvMenuMate->Execute();
+        }
+        else
+        {
+            Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+        }
 	}
 	__finally
 	{
