@@ -6027,6 +6027,7 @@ void TdmMMReportData::SetupTabDetails(TStrings *TabTypes,TStrings *Tabs)
 
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 void TdmMMReportData::SetupSalesJournal(bool includeSCTaxInTax, TDateTime StartTime, TDateTime EndTime, TStrings *Terminals)
 {
    qrSalesJournal1->Close();
@@ -6184,6 +6185,7 @@ void TdmMMReportData::SetupSalesJournal(bool includeSCTaxInTax, TDateTime StartT
    qrSalesJournal1->ParamByName("StartTime")->AsDateTime	= StartTime;
    qrSalesJournal1->ParamByName("EndTime")->AsDateTime	= EndTime;
 }
+
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStrings *Discounts,TStrings *Locations)
 {
@@ -16270,7 +16272,37 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
 
 }
 
+//---------------------------------------------------------------------------
+void TdmMMReportData::SetupEJournal(TDateTime StartTime, TDateTime EndTime)
+{
+   qrEJournal->Close();
+   qrEJournal->SQL->Text =
+      "SELECT "
+         "DAB.time_stamp datetime, "
+         "DAB.RECEIPT receipt, "
+         "DAB.INVOICE_NUMBER "
+         "From "
+			"DAYARCBILL DAB "
+      "WHERE "
+         "DAB.Time_Stamp >= :StartTime and "
+         "DAB.Time_Stamp < :EndTime "
+         
+        " UNION ALL "
 
+      "SELECT "
+         "AB.time_stamp datetime, "
+         "AB.RECEIPT receipt, "
+         "AB.INVOICE_NUMBER " 
+         "From "
+			"ARCBILL AB "
+      "WHERE "
+         "AB.Time_Stamp >= :StartTime and "
+         "AB.Time_Stamp < :EndTime "
+
+         "order by 1 ";
+   qrEJournal->ParamByName("StartTime")->AsDateTime	= StartTime;
+   qrEJournal->ParamByName("EndTime")->AsDateTime	= EndTime;
+}
 
 
 
