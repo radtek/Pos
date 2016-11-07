@@ -799,6 +799,11 @@ namespace MenumateVersionParser
         //6.32
 		void upgrade6_33Tables();
         void update6_33Tables();
+        void Create6_33Malls(TDBControl* const inDBControl);
+        void Create6_33MallExportSettings(TDBControl* const inDBControl);
+        void Create6_33MallExportSettingsMapping(TDBControl* const inDBControl);
+        void Create6_33MallExportSettingsMappingValues(TDBControl* const inDBControl);
+        void Create6_33MallExportSales(TDBControl* const inDBControl);
 
     }; // class
 } // namespace

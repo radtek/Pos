@@ -146,7 +146,7 @@ void TApplyParser::update6_33Tables()
 //----------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33Malls(TDBControl* const inDBControl)
 {
-     if ( !tableExists( "Malls", inDBControl ) )
+     if ( !tableExists( "MALLS", inDBControl ) )
      {
 		executeQuery(
                 "CREATE TABLE MALLS "
@@ -156,39 +156,37 @@ void TApplyParser::Create6_33Malls(TDBControl* const inDBControl)
                 "   IS_ACTIVE VARCHAR(10) "
                 ");",
 			inDBControl );
-
-        }
+     }
  }
 
 //----------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33MallExportSettings(TDBControl* const inDBControl)
 {
-     if ( !tableExists( "MallExportSettings", inDBControl ) )
+     if ( !tableExists( "MALLEXPORT_SETTINGS", inDBControl ) )
      {
 		executeQuery(
-                "CREATE TABLE MallExportSettings "
+                "CREATE TABLE MALLEXPORT_SETTINGS "
                 "( "
                 "   ID INTEGER NOT NULL PRIMARY KEY, "
                 "   NAME VARCHAR(50), "
-                "   DISPLAY_NAME(100) "
+                "   DISPLAY_NAME VARCHAR(100) "
                 ");",
 			inDBControl );
-
      }
 }
 
 //----------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBControl)
 {
-     if ( !tableExists( "MallExportSettingsMapping", inDBControl ) )
+     if ( !tableExists( "MALLEXPORT_SETTINGS_MAPPING", inDBControl ) )
      {
 		executeQuery(
-                "CREATE TABLE MallExportSettingsMapping"
+                "CREATE TABLE MALLEXPORT_SETTINGS_MAPPING"
                 "( "
                 "   ID INTEGER NOT NULL PRIMARY KEY, "
-                "   MALL_ID ADD CONSTRAINT MALL_ID FOREIGN KEY (MALL_ID) REFERENCES "
-                "   MALLS (MALL_ID) ON UPDATE CASCADE ON DELETE CASCADE, "
-                "   MALLEXPORT_SETTING_ID INTEGER "
+                "   MALLEXPORT_SETTING_ID INTEGER, "
+                "   MALL_ID INTEGER, "
+                " FOREIGN KEY (MALL_ID) REFERENCES MALLS (MALL_ID) ON UPDATE CASCADE ON DELETE CASCADE "
                 ");",
 			inDBControl );
 
@@ -197,15 +195,15 @@ void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBCon
 //----------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33MallExportSettingsMappingValues(TDBControl* const inDBControl)
 {
-     if ( !tableExists( "MallExportSettingsValues", inDBControl ) )
+     if ( !tableExists( "MALLEXPORT_SETTINGS_VALUES", inDBControl ) )
      {
 		executeQuery(
-                "CREATE TABLE MallExportSettingsValues"
+                "CREATE TABLE MALLEXPORT_SETTINGS_VALUES"
                 "( "
                 "   MALLEXPORTSETTING_KEY INTEGER NOT NULL PRIMARY KEY, "
                 "   MALLEXPORTSETTING_ID INTEGER NOT NULL , "
-                "   VALUE VARCHAR(50), "
-                "   VALUE_TYPE VARCHAR(50) "
+                "   FIELDS VARCHAR(50), "
+                "   FIELD_TYPE VARCHAR(50) "
                 ");",
 			inDBControl );
      }
@@ -213,22 +211,23 @@ void TApplyParser::Create6_33MallExportSettingsMappingValues(TDBControl* const i
 //----------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
 {
-     if ( !tableExists( "MallEXPORT_SALES", inDBControl ) )
+     if ( !tableExists( "MALLEXPORT_SALES", inDBControl ) )
      {
 		executeQuery(
-                "CREATE TABLE MallEXPORT_SALES"
+                "CREATE TABLE MALLEXPORT_SALES"
                 "( "
                 "   ID INTEGER NOT NULL PRIMARY KEY, "
-                "   MALL_KEY ADD CONSTRAINT MALL_KEY FOREIGN KEY (MALL_KEY) REFERENCES MALLS (MALL_ID) ON UPDATE CASCADE ON DELETE CASCADE, "
+                "   MALL_KEY INTEGER , "
                 "   FIELD VARCHAR(50), "
                 "   VALUE_GROUP VARCHAR(50), "
-                "   VALUE VARCHAR(50),
+                "   FIELD_VALUE VARCHAR(50), "
                 "   VALUE_TYPE VARCHAR(50), "
                 "   ENUM_TYPE INTEGER , "
                 "   DATE_CREATED  Timestamp, "
-                "   CREATED BY VARCHAR(50), "
-                "   Z_KEY, "
-                "   ARCBILL_KEY "
+                "   CREATED_BY VARCHAR(50), "
+                "   Z_KEY INTEGER, "
+                "   ARCBILL_KEY INTEGER, "
+                "   FOREIGN KEY (MALL_KEY) REFERENCES MALLS (MALL_ID) ON UPDATE CASCADE ON DELETE CASCADE "
                 ");",
 			inDBControl );
      }
