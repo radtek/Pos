@@ -138,7 +138,9 @@ void TApplyParser::update6_33Tables()
 {
     Create6_33Malls(_dbControl);
     Create6_33MallExportSettings(_dbControl);
-    Create6_33MallTransaction(_dbControl);
+    Create6_33MallExportSettingsMapping(_dbControl);
+    Create6_33MallExportSettingsMappingValues(_dbControl);
+    Create6_33MallExportSales(_dbControl);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -193,7 +195,7 @@ void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBCon
         }
 }
 //----------------------------------------------------------------------------------------------------------
-void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBControl)
+void TApplyParser::Create6_33MallExportSettingsMappingValues(TDBControl* const inDBControl)
 {
      if ( !tableExists( "MallExportSettingsValues", inDBControl ) )
      {
@@ -209,7 +211,7 @@ void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBCon
      }
 }
 //----------------------------------------------------------------------------------------------------------
-void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBControl)
+void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
 {
      if ( !tableExists( "MallEXPORT_SALES", inDBControl ) )
      {
@@ -217,14 +219,16 @@ void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBCon
                 "CREATE TABLE MallEXPORT_SALES"
                 "( "
                 "   ID INTEGER NOT NULL PRIMARY KEY, "
-                "   MALL_KEY ADD CONSTRAINT MALL_KEY FOREIGN KEY (MALL_KEY) REFERENCES "
-                "   MALLS (MALL_ID) ON UPDATE CASCADE ON DELETE CASCADE, " "
+                "   MALL_KEY ADD CONSTRAINT MALL_KEY FOREIGN KEY (MALL_KEY) REFERENCES MALLS (MALL_ID) ON UPDATE CASCADE ON DELETE CASCADE, "
                 "   FIELD VARCHAR(50), "
                 "   VALUE_GROUP VARCHAR(50), "
                 "   VALUE VARCHAR(50),
                 "   VALUE_TYPE VARCHAR(50), "
-                "   ENUM_TYPE , "
-                "   DATE_CREATED
+                "   ENUM_TYPE INTEGER , "
+                "   DATE_CREATED  Timestamp, "
+                "   CREATED BY VARCHAR(50), "
+                "   Z_KEY, "
+                "   ARCBILL_KEY "
                 ");",
 			inDBControl );
      }
