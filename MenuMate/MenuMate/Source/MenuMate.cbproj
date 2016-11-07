@@ -1090,8 +1090,8 @@
 				<DependentOn>CashDrawerPortsList.h</DependentOn>
 				<BuildOrder>624</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="SeniorCitizenDiscountChecker.cpp">
-				<DependentOn>SeniorCitizenDiscountChecker.h</DependentOn>
+			<CppCompile Include="SCDPWDChecker.cpp">
+				<DependentOn>SCDPWDChecker.h</DependentOn>
 				<BuildOrder>546</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSectionStrategies\ReportSectionDisplayStrategy.cpp">

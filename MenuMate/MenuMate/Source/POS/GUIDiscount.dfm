@@ -133,9 +133,9 @@ object frmDiscount: TfrmDiscount
           ParentFont = False
           ParentColor = True
           Caption = 'Doing a Discount'
-          ButtonColor = clNavy
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
+          ButtonColor = -16777201
+          LatchedColor = -16777201
+          DisabledButtonColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = tbToggleAmountClick
         end

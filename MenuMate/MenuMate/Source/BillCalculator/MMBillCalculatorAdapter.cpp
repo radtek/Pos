@@ -193,7 +193,7 @@ TDiscountInfo TMMBillCalculatorAdapter::ConvertDiscountToDiscountInfo( TDiscount
     discountInfo.Description          = inDiscount->GetDescription();
     discountInfo.Percentage           = fabs(inDiscount->PercentAmount);
     discountInfo.Priority             = inDiscount->Priority;
-    discountInfo.RecalcPriceWithTaxAfterDiscount = false;//inDiscount->IsPersonWithDisabilityDiscount();
+    discountInfo.RecalcPriceWithTaxAfterDiscount = false;//inDiscount->IsPersonWithDisabilityDiscount();   Changed on account of change in behaviour of PWD discount
     discountInfo.DiscountCode = inDiscount->DiscountCode;
     discountInfo.IsCloudDiscount = inDiscount->IsCloudDiscount;
     discountInfo.DailyUsageAllowedPerMember = inDiscount->DailyUsageAllowedPerMember;

@@ -3,8 +3,8 @@ object dmMMReportData: TdmMMReportData
   OnDestroy = DataModuleDestroy
   Left = 65532
   Top = 65532
-  Height = 953
-  Width = 1928
+  Height = 715
+  Width = 1378
   object qrMenu: TIBQuery
     Database = dmMMData.dbMenuMate
     Transaction = MMTrans
