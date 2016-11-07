@@ -42,6 +42,7 @@
 #include "MallExportRegenerateReport.h"
 #include "PhoenixHotelSystem.h"
 #include "MallExportSalesTypeAssignment.h"
+#include "ManagerMallSetup.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -108,30 +109,30 @@ void __fastcall TfrmSetup::FormResize(TObject *Sender)
 
 void __fastcall TfrmSetup::FormShow(TObject *Sender)
 {
-   // Load up the Header & footers for the printers...
-   FormResize(Sender);
-	RestaurantLayoutsChanged = false;
-	PageControl->ActivePage = tsPrinters;
-   PageControlChange(Sender);
+    // Load up the Header & footers for the printers...
+    FormResize(Sender);
+    RestaurantLayoutsChanged = false;
+    PageControl->ActivePage = tsPrinters;
+    PageControlChange(Sender);
     loadCashDrawerPorts();
-   UpdateLists();
+    UpdateLists();
 
-	bool SecondarySwipe = false;
+    bool SecondarySwipe = false;
 
     // For Mall Export
     InitializeMallExport();
 
-	edTopLine->Text = TGlobalSettings::Instance().PoleDisplayTopLine;
-	edBottomLine->Text = TGlobalSettings::Instance().PoleDisplayBottomLine;
+    edTopLine->Text = TGlobalSettings::Instance().PoleDisplayTopLine;
+    edBottomLine->Text = TGlobalSettings::Instance().PoleDisplayBottomLine;
 
-	rgMembershipType->ItemIndex = TGlobalSettings::Instance().MembershipType;
+    rgMembershipType->ItemIndex = TGlobalSettings::Instance().MembershipType;
     cbBarcodeFormat->ItemIndex =  TGlobalSettings::Instance().BarcodeFormat;
-	Database::TDBTransaction DBTransaction(IBDatabase);
-	DBTransaction.StartTransaction();
-	edSerialKickCharsCount->Text = IntToStr(TManagerVariable::Instance().GetInt(DBTransaction,vmSerialKickPortLength,30));
-	cbUseHighChars->Checked =  TManagerVariable::Instance().GetBool(DBTransaction,vmSerialKickPortHighChars);
+    Database::TDBTransaction DBTransaction(IBDatabase);
+    DBTransaction.StartTransaction();
+    edSerialKickCharsCount->Text = IntToStr(TManagerVariable::Instance().GetInt(DBTransaction,vmSerialKickPortLength,30));
+    cbUseHighChars->Checked =  TManagerVariable::Instance().GetBool(DBTransaction,vmSerialKickPortHighChars);
 
-	DBTransaction.Commit();
+    DBTransaction.Commit();
 
     lbVersion->Caption = "Version : " + GetFileVersionString();
 
@@ -244,6 +245,9 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 		DBTransaction.Commit();
     }
       cbNewbookType->ItemIndex =   TGlobalSettings::Instance().NewBook;
+
+    ///Estancia
+    SetupNewMalls();
 
 }
 
@@ -2168,3 +2172,183 @@ UnicodeString TfrmSetup::RenameTenantNumber()
     return Caption;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmSetup::cbMallLoc1Change(TObject *Sender)
+{
+    edBranchCode1->Enabled = false;
+    btnResendReport->Visible = false;
+    btnRegenReport->Visible = false;
+    btnAssignSalesType->Enabled = false;
+
+    // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
+    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
+    if(cbMallLoc->ItemIndex == 1)
+    {
+        EnableFieldComponents(true, true, false, false, false, false, true, false,
+                         false, false, false, false, false, false);
+    }
+    else
+    {
+        EnableFieldComponents(false, false, false, false, false, false, false, false,
+                         false, false, false, false, false, false);
+    }
+}
+//------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------
+void __fastcall TfrmSetup::edMallPath1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+    SetupMallPath();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmSetup::edTenantNo1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+    SetupTenantNumber();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmSetup::edClassCode1MouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupClassCode();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::edTradeCode1MouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupTradeCode();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::edOutletCode1MouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupOutletCode();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::edBranchCode1MouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupBranchCode();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::edTerminalNo1MouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupTerminalNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::edSerialNo1MouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupSerialNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::edFTPServer1MouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupFTPServer();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::edFTPPath1MouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupFTPPath();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::edFTPUserName1MouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupFTPUserName();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::edFTPPassword1MouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+    SetupFTPPassword();
+}
+//---------------------------------------------------------------------------
+
+//void __fastcall TfrmSetup::edConsolidatedDBPaths1MouseUp(TObject *Sender, TMouseButton Button,
+//          TShiftState Shift, int X, int Y)
+//{
+//    SetupConsolidatedPaths();
+//}
+//---------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnResendReport1MouseClick(TObject *Sender)
+{
+    //----------------
+}
+//----------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnRegenerateReport1MouseClick(TObject *Sender)
+{
+
+}
+//----------------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnAssignSalesType1MouseClick(TObject *Sender)
+{
+}
+//-------------------------------------------------------------------------------------
+void  TfrmSetup::SetupNewMalls()
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    cbMallLoc1->Clear();
+    std::vector<UnicodeString> malllist;
+    cbMallLoc1->AddItem("None",NULL);
+
+    TManagerMallSetup mallSetUp;
+    malllist = mallSetUp.LoadAllMalls(dbTransaction);
+    for (int index = 0; index < malllist.size() ; index++)
+    {
+        cbMallLoc1->AddItem(malllist[index],NULL);
+    }
+}
+//----------------------------------------------------------------------------------------------
+void TfrmSetup::EnableFieldComponents(bool isMallPathSet, bool isTerminalNoSet, bool isClassCodeSet, bool isTradeCodeSet,
+                                     bool isOutletCodeSet, bool isSerialNoSet, bool isTenantNoSet, bool isBranchCodeSet,
+                                     bool isFTPServerSet, bool isFTPPathSet, bool isFTPUserNameSet, bool isFTPPasswordSet,
+                                     bool isConsolidatedRepSet, bool isEnableConsolidatedRepSet)
+{
+    edMallPath1->Enabled = isMallPathSet;
+    edMallPath1->Color = edMallPath1->Enabled ? clWindow : clInactiveCaptionText;
+    edTerminalNo1->Enabled = isTerminalNoSet;
+    edTerminalNo1->Color = edTerminalNo1->Enabled ? clWindow : clInactiveCaptionText;
+
+    edClassCode1->Enabled = isClassCodeSet;
+    edClassCode1->Color = edClassCode1->Enabled ? clWindow : clInactiveCaptionText;
+    edTradeCode1->Enabled = isTradeCodeSet;
+    edTradeCode1->Color = edTradeCode1->Enabled ? clWindow : clInactiveCaptionText;
+    edOutletCode1->Enabled = isOutletCodeSet;
+    edOutletCode1->Color = edOutletCode->Enabled ? clWindow : clInactiveCaptionText;
+    edSerialNo1->Enabled = isSerialNoSet;
+    edSerialNo1->Color = edSerialNo1->Enabled ? clWindow : clInactiveCaptionText;
+
+    edTenantNo1->Enabled = isTenantNoSet;
+    edTenantNo1->Color = edTenantNo1->Enabled ? clWindow : clInactiveCaptionText;
+    edBranchCode1->Enabled = isBranchCodeSet;
+    edBranchCode1->Color = edBranchCode1->Enabled ? clWindow : clInactiveCaptionText;
+
+    edFTPServer1->Enabled = isFTPServerSet;
+    edFTPServer1->Color = edFTPServer1->Enabled ? clWindow : clInactiveCaptionText;
+    edFTPPath1->Enabled = isFTPPathSet;
+    edFTPPath1->Color = edFTPPath1->Enabled ? clWindow : clInactiveCaptionText;
+    edFTPUserName1->Enabled = isFTPUserNameSet;
+    edFTPUserName1->Color = edFTPUserName->Enabled ? clWindow : clInactiveCaptionText;
+    edFTPPassword1->Enabled = isFTPPasswordSet;
+    edFTPPassword1->Color = edFTPPassword1->Enabled ? clWindow : clInactiveCaptionText;
+
+    edConsolidatedDBPaths1->Enabled = isConsolidatedRepSet;
+    edConsolidatedDBPaths1->Color = edConsolidatedDBPaths1->Enabled ? clWindow : clInactiveCaptionText;
+    cbEnableConsolidatedRep1->Enabled = isEnableConsolidatedRepSet;
+    cbEnableConsolidatedRep1->Color = cbEnableConsolidatedRep1->Enabled ? clBtnFace : clInactiveCaptionText;
+}
+//--------------------------------------------------------------------------------------------------
