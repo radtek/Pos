@@ -11107,7 +11107,6 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 //----------------------------------------------------------------------------------------------------------------------
 void TfrmReports::PrintEJournalReport(TReportControl *ReportControl)
 {
-    TMemo *memReceipt;
 	const AnsiString ReportName = "repESalesJournal";
 	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
 	{
@@ -11116,7 +11115,7 @@ void TfrmReports::PrintEJournalReport(TReportControl *ReportControl)
 	try
 	{
 
-		dmMMReportData->SetupEJournal(ReportControl->Start, ReportControl->End, memReceipt);
+		dmMMReportData->SetupEJournal(ReportControl->Start, ReportControl->End);
 		if (ReportType == rtExcel)
 		{
 			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
@@ -11130,9 +11129,6 @@ void TfrmReports::PrintEJournalReport(TReportControl *ReportControl)
 				AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
 												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
 				rvMenuMate->SetParam("ReportRange", DateRange);
-                //rvMenuMate->ReportDescToMemo(memReceipt);
-                //dmMMReportData->qrEJournal->
-                //rvMenuMate->()
 				rvMenuMate->Execute();
 			}
 			else
@@ -11146,7 +11142,6 @@ void TfrmReports::PrintEJournalReport(TReportControl *ReportControl)
 		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
 		{
 			dmMMReportData->MMTrans->Commit();
-            //AllowNext = false;
 		}
 	}
 }

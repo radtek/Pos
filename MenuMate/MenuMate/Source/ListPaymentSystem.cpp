@@ -3043,13 +3043,16 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 		LastReceipt->Printouts->Add(Printout);
 	}
 	std::auto_ptr <TStringList> StringReceipt(new TStringList);
+    std::auto_ptr <TStringList> ModifiedStringReceipt(new TStringList);
 	LastReceipt->Printouts->PrintToStrings(StringReceipt.get());
-
+    ManagerReceipt->Get(ModifiedStringReceipt.get());
 	ManagerReceipt->ReceiptToArchive->Clear();
 	ManagerReceipt->ReceiptToArchive->Position = 0;
-	StringReceipt->SaveToStream(ManagerReceipt->ReceiptToArchive);
+    ModifiedStringReceipt->SaveToStream(ManagerReceipt->ReceiptToArchive);
+	//StringReceipt->SaveToStream(ManagerReceipt->ReceiptToArchive);
     if(TGlobalSettings::Instance().ExportReprintReceipt)
-     ExportReceipt(StringReceipt.get(),PaymentTransaction);
+     //ExportReceipt(StringReceipt.get(),PaymentTransaction);
+     ExportReceipt(ModifiedStringReceipt.get(),PaymentTransaction);
 	ManagerReceipt->ReceiptToArchive->Position = 0;
 
 	for (int i = 0; i < StringReceipt->Count; i++)

@@ -426,7 +426,7 @@ public:		// User declarations
     AnsiString addressOfTaxPayer;
     AnsiString tinNumber;
     AnsiString serialNo;
-    void SetupEJournal(TDateTime StartTime, TDateTime EndTime, TMemo *memReceipt);
+    void SetupEJournal(TDateTime StartTime, TDateTime EndTime);
 };
 
 
