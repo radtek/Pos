@@ -1148,7 +1148,7 @@ object frmSetup: TfrmSetup
       end
     end
     object tsMallSettings: TTabSheet
-      Caption = 'Mall Settings'
+      Caption = 'Mall Export Settings'
       ImageIndex = 2
       object gbMalls1: TGroupBox
         Left = 16
@@ -1438,6 +1438,35 @@ object frmSetup: TfrmSetup
         Height = 26
         TabOrder = 15
       end
+    end
+  end
+  object pnlButtons: TPanel
+    Left = 918
+    Top = 8
+    Width = 112
+    Height = 719
+    Anchors = [akTop, akRight, akBottom]
+    BevelOuter = bvNone
+    BorderWidth = 5
+    UseDockManager = False
+    TabOrder = 1
+    object btnClose: TTouchBtn
+      Left = 6
+      Top = 18
+      Width = 100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -15
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Close'
+      ButtonColor = 18944
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnAutoRepeat = imgCloseClick
     end
   end
 end

@@ -1,0 +1,39 @@
+//---------------------------------------------------------------------------
+
+#ifndef SetupMallExportH
+#define SetupMallExportH
+//---------------------------------------------------------------------------
+
+#include "MallExportSettings.h"
+#include <list>
+
+class TSetupMallExport
+{
+    public:
+    void SetupMall();
+    void CheckAndCreatePath();
+    virtual void SetupMallsOtherDetails() = 0;
+    void InsertDataInToMallTable();
+};
+
+class TMall
+{
+private:
+    int _mallId;
+    UnicodeString _mallName;
+    bool _isActive;
+    std::list<TMallExportSettings> _mallSettings;
+
+    void SetMallId(int mallID);
+    void SetMallName(UnicodeString mallName);
+    void SetActiveMall(bool isActive);
+    void SetMallSettings(std::list<TMallExportSettings> mallSettings);
+
+public:
+    __property int MallId = {read = _mallId, write = SetMallId};
+    __property UnicodeString MallName = {read = _mallName, write = SetMallName};
+    __property bool IsActive = {read = _isActive, write = SetActiveMall};
+    __property std::list<TMallExportSettings> MallSettings ={read = _mallSettings, write = SetMallSettings};
+};
+
+#endif

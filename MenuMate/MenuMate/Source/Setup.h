@@ -25,6 +25,8 @@
 #include "TouchBtn.h"
 #include "TouchControls.h"
 #include "ManagerVariable.h"
+#include <list>
+#include "ManagerMallSetup.h"
 //---------------------------------------------------------------------------
 class TfrmSetup : public TZForm
 {
@@ -275,10 +277,9 @@ private:	// User declarations
     void refreshCustomerDisplay();
     void loadCashDrawerPorts();
     void setCashDrawerPort();
-
 	Database::TDBControl &IBDatabase;
-
     bool invalid_id;//MM-4104
+    std::list<TMallExportSettings> settings;
 
 public:		// User declarations
 

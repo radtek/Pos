@@ -141,8 +141,9 @@ void TApplyParser::update6_33Tables()
     Create6_33MallExportSettingsMapping(_dbControl);
     Create6_33MallExportSettingsMappingValues(_dbControl);
     Create6_33MallExportSales(_dbControl);
-     Insert6_33Malls(_dbControl);
+    Insert6_33Malls(_dbControl);
     Insert6_33MallExport_Settings(_dbControl);
+    Insert6_33MallExport_Settings_Mapping(_dbControl);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -171,7 +172,7 @@ void TApplyParser::Create6_33MallExportSettings(TDBControl* const inDBControl)
                 "( "
                 "   ID INTEGER NOT NULL PRIMARY KEY, "
                 "   NAME VARCHAR(50), "
-                "   DISPLAY_NAME VARCHAR(100) "
+                "   CONTROL_NAME VARCHAR(100) "
                 ");",
 			inDBControl );
      }
@@ -188,7 +189,7 @@ void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBCon
                 "   ID INTEGER NOT NULL PRIMARY KEY, "
                 "   MALLEXPORT_SETTING_ID INTEGER, "
                 "   MALL_ID INTEGER, "
-                " FOREIGN KEY (MALL_ID) REFERENCES MALLS (MALL_ID) ON UPDATE CASCADE ON DELETE CASCADE "
+                " FOREIGN KEY (MALL_ID) REFERENCES MALLS (MALL_ID)  ON DELETE CASCADE "
                 ");",
 			inDBControl );
 
@@ -204,7 +205,7 @@ void TApplyParser::Create6_33MallExportSettingsMappingValues(TDBControl* const i
                 "( "
                 "   MALLEXPORTSETTING_KEY INTEGER NOT NULL PRIMARY KEY, "
                 "   MALLEXPORTSETTING_ID INTEGER NOT NULL , "
-                "   FIELDS VARCHAR(50), "
+                "   FIELD_VALUE VARCHAR(50), "
                 "   FIELD_TYPE VARCHAR(50) "
                 ");",
 			inDBControl );
@@ -229,7 +230,7 @@ void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
                 "   CREATED_BY VARCHAR(50), "
                 "   Z_KEY INTEGER, "
                 "   ARCBILL_KEY INTEGER, "
-                "   FOREIGN KEY (MALL_KEY) REFERENCES MALLS (MALL_ID) ON UPDATE CASCADE ON DELETE CASCADE "
+                "   FOREIGN KEY (MALL_KEY) REFERENCES MALLS (MALL_ID) ON DELETE CASCADE "
                 ");",
 			inDBControl );
      }
@@ -247,6 +248,7 @@ void TApplyParser::Insert6_33Malls(TDBControl* const inDBControl)
         InsertQuery->SQL->Text =
                     "INSERT INTO MALLS VALUES (1,'Estancia','F') ";
         InsertQuery->ExecQuery();
+        transaction.Commit();
     }
     catch( Exception &E )
     {
@@ -264,63 +266,63 @@ void TApplyParser::Insert6_33MallExport_Settings(TDBControl* const inDBControl)
 
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES (1,'TENANT_NUMBER','Tenant Number') ";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES (1,'TENANT_NUMBER','edTenantNo1') ";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(2,'FILE_LOCATION','File Location') ";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(2,'FILE_LOCATION','edMallPath1') ";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES (3,'CLASS_CODE','Class Code')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES (3,'CLASS_CODE','edClassCode1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(4,'TRADE_CODE','Trade Code')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(4,'TRADE_CODE','edTradeCode1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(5,'OUTLET_NUMBER','Outlet Number') ";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(5,'OUTLET_NUMBER','edOutletCode1') ";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(6,'BRANCH_CODE','Branch_Code')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(6,'BRANCH_CODE','edBranchCode1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(7,'TERMINAL_NUMBER','Terminal Number')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(7,'TERMINAL_NUMBER','edTerminalNo1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(8,'SERIAL_NUMBER','Serial Number') ";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(8,'SERIAL_NUMBER','edSerialNo1') ";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(9,'ASSIGN_SALES_TYPE','Assign_Sales_Type')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(9,'ASSIGN_SALES_TYPE','btnAssignSalesType1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(10,'FTP_SERVER','FTP SERVER')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(10,'FTP_SERVER','edFTPServer1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(11,'FTP_PATH','FTP PATH')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(11,'FTP_PATH','edFTPPath1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(12,'FTP_USER_NAME','FTP USER NAME')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(12,'FTP_USER_NAME','edFTPUserName1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(13,'FTP_PASSWORD','FTP Password')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(13,'FTP_PASSWORD','edFTPPassword1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(14,'Enable_Consolidated_Report','Enable_Consolidated_Report')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(14,'Enable_Consolidated_Report','cbEnableConsolidatedRep1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(15,'Consolidated_DB_Paths','Consolidated DB Path')";
+                    "INSERT INTO MALLEXPORT_SETTINGS VALUES(15,'Consolidated_DB_Paths','edConsolidatedDBPaths1')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         transaction.Commit();
@@ -331,5 +333,33 @@ void TApplyParser::Insert6_33MallExport_Settings(TDBControl* const inDBControl)
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------------------
+void TApplyParser::Insert6_33MallExport_Settings_Mapping(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+
+        InsertQuery->Close();
+        InsertQuery->SQL->Text =
+                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (1,1,1) ";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text =
+                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES(2,2,1) ";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text =
+                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (3,7,1)";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
 }
 

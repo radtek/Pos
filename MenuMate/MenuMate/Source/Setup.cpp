@@ -42,7 +42,7 @@
 #include "MallExportRegenerateReport.h"
 #include "PhoenixHotelSystem.h"
 #include "MallExportSalesTypeAssignment.h"
-#include "ManagerMallSetup.h"
+#include "SetupMallExport.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -69,6 +69,15 @@ void __fastcall TfrmSetup::FormCreate(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::imgCloseClick(TObject *Sender)
 {
+    if(cbMallLoc1->ItemIndex== 1)
+    {
+         //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+        TManagerMallSetup::InsertOrUpdateMallExportSettingValues(dbTransaction, edTenantNo1->Text, edMallPath1->Text, edTerminalNo1->Text);
+        dbTransaction.Commit();
+    }
 	Close();
 }
 //---------------------------------------------------------------------------
@@ -248,6 +257,7 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 
     ///Estancia
     SetupNewMalls();
+    //LoadActiveMall();
 
 }
 
@@ -2179,12 +2189,32 @@ void __fastcall TfrmSetup::cbMallLoc1Change(TObject *Sender)
     btnRegenReport->Visible = false;
     btnAssignSalesType->Enabled = false;
 
-    // MallPath, TerminalNo, ClassCode, TradeCode, OutletCode, SerialNo, TenantNo, BranchCode
-    // FTPServer, FTPPath, FTPUserName, FTPPassword, ConsolidatedPath, EnableConsolidatedRep
-    if(cbMallLoc->ItemIndex == 1)
+    if(cbMallLoc1->ItemIndex == 1)
     {
+        //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+        TManagerMallSetup::UpdateActiveMall(dbTransaction, cbMallLoc1->ItemIndex);
+
+        TMall mallInfo;
+        //load all mall settings info
+        mallInfo = TManagerMallSetup::LoadActiveMallSettings(dbTransaction);
+        std::list<TMallExportSettings>::iterator it;
+
+        for(it = settings.begin(); it != settings.end(); it++)
+        {
+            //todo
+//           if(it->ControlName == edTenantNo1)
+//           {
+//                edTenantNo1->Enabled = true;
+//                edTenantNo1->Text = it->Values;
+//           }
+        }
+        dbTransaction.Commit();
         EnableFieldComponents(true, true, false, false, false, false, true, false,
                          false, false, false, false, false, false);
+
     }
     else
     {
@@ -2197,12 +2227,35 @@ void __fastcall TfrmSetup::cbMallLoc1Change(TObject *Sender)
 //----------------------------------------------------------------------------------
 void __fastcall TfrmSetup::edMallPath1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
-    SetupMallPath();
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+	frmTouchKeyboard->MaxLength = 100;
+	frmTouchKeyboard->AllowCarriageReturn = false;
+	frmTouchKeyboard->StartWithShiftDown = false;
+	frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().MallPath;
+	frmTouchKeyboard->Caption = "Enter File Location";
+	if (frmTouchKeyboard->ShowModal() == mrOk)
+	{
+        edMallPath1->Text = frmTouchKeyboard->KeyboardText;
+        TGlobalSettings::Instance().MallPath = frmTouchKeyboard->KeyboardText;
+        CheckMallPath();
+        SaveCompValueinDBStrUnique(vmMallPath, TGlobalSettings::Instance().MallPath); // See Function Description
+	}
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::edTenantNo1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
-    SetupTenantNumber();
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+	frmTouchKeyboard->MaxLength = 50;
+	frmTouchKeyboard->AllowCarriageReturn = false;
+	frmTouchKeyboard->StartWithShiftDown = false;
+	frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().TenantNo;
+	frmTouchKeyboard->Caption = "Enter " + RenameTenantNumber();
+	if (frmTouchKeyboard->ShowModal() == mrOk)
+	{
+        edTenantNo1->Text = frmTouchKeyboard->KeyboardText;
+        TGlobalSettings::Instance().TenantNo = frmTouchKeyboard->KeyboardText;
+        SaveCompValueinDBStrUnique(vmTenantNo, TGlobalSettings::Instance().TenantNo); // See Function Description
+	}
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::edClassCode1MouseUp(TObject *Sender, TMouseButton Button,
@@ -2236,7 +2289,18 @@ void __fastcall TfrmSetup::edBranchCode1MouseUp(TObject *Sender, TMouseButton Bu
 void __fastcall TfrmSetup::edTerminalNo1MouseUp(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
 {
-    SetupTerminalNumber();
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+	frmTouchKeyboard->MaxLength = 20;
+	frmTouchKeyboard->AllowCarriageReturn = false;
+	frmTouchKeyboard->StartWithShiftDown = false;
+	frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().TerminalNo;
+	frmTouchKeyboard->Caption = "Enter Terminal Number";
+	if (frmTouchKeyboard->ShowModal() == mrOk)
+	{
+        edTerminalNo1->Text = frmTouchKeyboard->KeyboardText;
+        TGlobalSettings::Instance().TerminalNo = frmTouchKeyboard->KeyboardText;
+        SaveCompValueinDBStrUnique(vmTerminalNo, TGlobalSettings::Instance().TerminalNo); // See Function Description
+	}
 }
 //---------------------------------------------------------------------------
 
@@ -2305,8 +2369,7 @@ void  TfrmSetup::SetupNewMalls()
     std::vector<UnicodeString> malllist;
     cbMallLoc1->AddItem("None",NULL);
 
-    TManagerMallSetup mallSetUp;
-    malllist = mallSetUp.LoadAllMalls(dbTransaction);
+    malllist = TManagerMallSetup::LoadAllMalls(dbTransaction);
     for (int index = 0; index < malllist.size() ; index++)
     {
         cbMallLoc1->AddItem(malllist[index],NULL);
