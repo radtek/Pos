@@ -156,7 +156,7 @@ TMall TManagerMallSetup::LoadActiveMallSettings(Database::TDBTransaction &dbTran
         ibInternalQuery->ExecQuery();
         mallProperties.MallId = ibInternalQuery->FieldByName("MALL_ID")->AsInteger;
         mallProperties.MallName = ibInternalQuery->FieldByName("MALL_NAME")->AsString;
-        mallProperties.IsActive = ibInternalQuery->FieldByName("IS_ACTIVE")->AsBoolean;
+        mallProperties.IsActive = ibInternalQuery->FieldByName("IS_ACTIVE")->AsString;
 
         ibInternalQuery->Close();
         ibInternalQuery->SQL->Clear();
@@ -167,15 +167,14 @@ TMall TManagerMallSetup::LoadActiveMallSettings(Database::TDBTransaction &dbTran
         ibInternalQuery->ExecQuery();
         for(; !ibInternalQuery->Eof; ibInternalQuery->Next())
         {
-            TMallExportSettings mallExportSetting
-
+            TMallExportSettings settings;
             settings.MallExportSettingMappingId = ibInternalQuery->FieldByName("MALLEXPORTSETTING_KEY")->AsInteger;
             settings.MallExportSettingId =  ibInternalQuery->FieldByName("MALLEXPORTSETTING_ID")->AsInteger;
             settings.Name =  ibInternalQuery->FieldByName("NAME")->AsString;
             settings.ControlName = ibInternalQuery->FieldByName("CONTROL_NAME")->AsString;
             settings.Value =  ibInternalQuery->FieldByName("FIELD_VALUE")->AsString;
             settings.ValueType = ibInternalQuery->FieldByName("FIELD_TYPE")->AsString;
-            mallSettings.push_back(settings);
+            mallProperties.MallSettings.push_back(settings);
         }
     }
      catch(Exception &E)

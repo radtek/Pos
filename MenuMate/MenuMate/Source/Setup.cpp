@@ -2202,14 +2202,13 @@ void __fastcall TfrmSetup::cbMallLoc1Change(TObject *Sender)
         mallInfo = TManagerMallSetup::LoadActiveMallSettings(dbTransaction);
         std::list<TMallExportSettings>::iterator it;
 
-        for(it = settings.begin(); it != settings.end(); it++)
+        for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
         {
-            //todo
-//           if(it->ControlName == edTenantNo1)
-//           {
-//                edTenantNo1->Enabled = true;
-//                edTenantNo1->Text = it->Values;
-//           }
+           if(it->ControlName == edTenantNo1)
+           {
+                edTenantNo1->Enabled = true;
+                edTenantNo1->Text = it->Value;
+           }
         }
         dbTransaction.Commit();
         EnableFieldComponents(true, true, false, false, false, false, true, false,

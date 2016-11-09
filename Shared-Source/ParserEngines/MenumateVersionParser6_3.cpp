@@ -156,7 +156,7 @@ void TApplyParser::Create6_33Malls(TDBControl* const inDBControl)
                 "( "
                 "   MALL_ID INTEGER NOT NULL PRIMARY KEY, "
                 "   MALL_NAME VARCHAR(50), "
-                "   IS_ACTIVE VARCHAR(10) "
+                "   IS_ACTIVE char(1) default 'F' "
                 ");",
 			inDBControl );
      }

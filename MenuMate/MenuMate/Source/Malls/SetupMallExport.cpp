@@ -19,7 +19,7 @@ void TMall::SetMallName(UnicodeString mallName)
     _mallName = mallName;
 }
 //---------------------------------------------------------------------------
-void TMall::SetActiveMall(bool isActive)
+void TMall::SetActiveMall(UnicodeString isActive)
 {
     _isActive = isActive;
 }
