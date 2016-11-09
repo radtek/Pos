@@ -2191,15 +2191,12 @@ void __fastcall TfrmSetup::edMallPath1MouseUp(TObject *Sender, TMouseButton Butt
 	frmTouchKeyboard->MaxLength = 100;
 	frmTouchKeyboard->AllowCarriageReturn = false;
 	frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().MallPath;
+	frmTouchKeyboard->KeyboardText = edMallPath1->Text;
 	frmTouchKeyboard->Caption = "Enter File Location";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
         edMallPath1->Text = frmTouchKeyboard->KeyboardText;
-        TGlobalSettings::Instance().MallPath = frmTouchKeyboard->KeyboardText;
-        CheckMallPath();
-        SaveCompValueinDBStrUnique(vmMallPath, TGlobalSettings::Instance().MallPath); // See Function Description
-	}
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::edTenantNo1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
@@ -2208,58 +2205,49 @@ void __fastcall TfrmSetup::edTenantNo1MouseUp(TObject *Sender, TMouseButton Butt
 	frmTouchKeyboard->MaxLength = 50;
 	frmTouchKeyboard->AllowCarriageReturn = false;
 	frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().TenantNo;
-	frmTouchKeyboard->Caption = "Enter " + RenameTenantNumber();
+	frmTouchKeyboard->KeyboardText = edTenantNo1->Text;
+	frmTouchKeyboard->Caption = "Enter Tenant Code";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
         edTenantNo1->Text = frmTouchKeyboard->KeyboardText;
-        TGlobalSettings::Instance().TenantNo = frmTouchKeyboard->KeyboardText;
-        SaveCompValueinDBStrUnique(vmTenantNo, TGlobalSettings::Instance().TenantNo); // See Function Description
 	}
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmSetup::edClassCode1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
+void __fastcall TfrmSetup::edClassCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
     SetupClassCode();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmSetup::edTradeCode1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
+void __fastcall TfrmSetup::edTradeCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
     SetupTradeCode();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmSetup::edOutletCode1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
+void __fastcall TfrmSetup::edOutletCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
     SetupOutletCode();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmSetup::edBranchCode1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
+void __fastcall TfrmSetup::edBranchCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
     SetupBranchCode();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TfrmSetup::edTerminalNo1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
+void __fastcall TfrmSetup::edTerminalNo1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
     std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
 	frmTouchKeyboard->MaxLength = 20;
 	frmTouchKeyboard->AllowCarriageReturn = false;
 	frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().TerminalNo;
+	frmTouchKeyboard->KeyboardText = edTerminalNo1->Text;
 	frmTouchKeyboard->Caption = "Enter Terminal Number";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
         edTerminalNo1->Text = frmTouchKeyboard->KeyboardText;
-        TGlobalSettings::Instance().TerminalNo = frmTouchKeyboard->KeyboardText;
-        SaveCompValueinDBStrUnique(vmTerminalNo, TGlobalSettings::Instance().TerminalNo); // See Function Description
 	}
 }
 //---------------------------------------------------------------------------

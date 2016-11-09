@@ -1208,7 +1208,7 @@ object frmSetup: TfrmSetup
           Left = 14
           Top = 94
           Width = 85
-          Height = 16
+          Height = 18
           Caption = 'Tenant Code'
         end
         object lbBranchCode1: TLabel
