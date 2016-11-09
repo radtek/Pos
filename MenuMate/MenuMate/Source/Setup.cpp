@@ -71,12 +71,7 @@ void __fastcall TfrmSetup::imgCloseClick(TObject *Sender)
 {
     if(cbMallLoc1->ItemIndex== 1)
     {
-         //Register the database transaction..
-        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-        dbTransaction.StartTransaction();
-        TManagerMallSetup::InsertOrUpdateMallExportSettingValues(dbTransaction, edTenantNo1->Text, edMallPath1->Text, edTerminalNo1->Text);
-        dbTransaction.Commit();
+        UpdateMallInfo();
     }
 	Close();
 }
@@ -254,10 +249,8 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 		DBTransaction.Commit();
     }
       cbNewbookType->ItemIndex =   TGlobalSettings::Instance().NewBook;
-
-    ///Estancia
-    SetupNewMalls();
-    //LoadActiveMall();
+   //load new malls
+   SetupNewMalls();
 
 }
 
@@ -2184,41 +2177,9 @@ UnicodeString TfrmSetup::RenameTenantNumber()
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::cbMallLoc1Change(TObject *Sender)
 {
-    edBranchCode1->Enabled = false;
-    btnResendReport->Visible = false;
-    btnRegenReport->Visible = false;
-    btnAssignSalesType->Enabled = false;
-
-    if(cbMallLoc1->ItemIndex == 1)
+    if(cbMallLoc1->ItemIndex != 0)
     {
-        //Register the database transaction..
-        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-        dbTransaction.StartTransaction();
-        TManagerMallSetup::UpdateActiveMall(dbTransaction, cbMallLoc1->ItemIndex);
-
-        TMall mallInfo;
-        //load all mall settings info
-        mallInfo = TManagerMallSetup::LoadActiveMallSettings(dbTransaction);
-        std::list<TMallExportSettings>::iterator it;
-
-        for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
-        {
-           if(it->ControlName == edTenantNo1)
-           {
-                edTenantNo1->Enabled = true;
-                edTenantNo1->Text = it->Value;
-           }
-        }
-        dbTransaction.Commit();
-        EnableFieldComponents(true, true, false, false, false, false, true, false,
-                         false, false, false, false, false, false);
-
-    }
-    else
-    {
-        EnableFieldComponents(false, false, false, false, false, false, false, false,
-                         false, false, false, false, false, false);
+        LoadMallSettingInfo();
     }
 }
 //------------------------------------------------------------------------------
@@ -2373,44 +2334,68 @@ void  TfrmSetup::SetupNewMalls()
     {
         cbMallLoc1->AddItem(malllist[index],NULL);
     }
+    int mallIndex = TManagerMallSetup::CheckActiveMallExist(dbTransaction);
+    cbMallLoc1->ItemIndex = mallIndex;
+    if(cbMallLoc1->ItemIndex != 0)
+        LoadMallSettingInfo();
+
 }
 //----------------------------------------------------------------------------------------------
-void TfrmSetup::EnableFieldComponents(bool isMallPathSet, bool isTerminalNoSet, bool isClassCodeSet, bool isTradeCodeSet,
-                                     bool isOutletCodeSet, bool isSerialNoSet, bool isTenantNoSet, bool isBranchCodeSet,
-                                     bool isFTPServerSet, bool isFTPPathSet, bool isFTPUserNameSet, bool isFTPPasswordSet,
-                                     bool isConsolidatedRepSet, bool isEnableConsolidatedRepSet)
+void TfrmSetup::LoadMallSettingInfo()
 {
-    edMallPath1->Enabled = isMallPathSet;
-    edMallPath1->Color = edMallPath1->Enabled ? clWindow : clInactiveCaptionText;
-    edTerminalNo1->Enabled = isTerminalNoSet;
-    edTerminalNo1->Color = edTerminalNo1->Enabled ? clWindow : clInactiveCaptionText;
+       //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+        TManagerMallSetup::UpdateActiveMall(dbTransaction, cbMallLoc1->ItemIndex);
 
-    edClassCode1->Enabled = isClassCodeSet;
-    edClassCode1->Color = edClassCode1->Enabled ? clWindow : clInactiveCaptionText;
-    edTradeCode1->Enabled = isTradeCodeSet;
-    edTradeCode1->Color = edTradeCode1->Enabled ? clWindow : clInactiveCaptionText;
-    edOutletCode1->Enabled = isOutletCodeSet;
-    edOutletCode1->Color = edOutletCode->Enabled ? clWindow : clInactiveCaptionText;
-    edSerialNo1->Enabled = isSerialNoSet;
-    edSerialNo1->Color = edSerialNo1->Enabled ? clWindow : clInactiveCaptionText;
-
-    edTenantNo1->Enabled = isTenantNoSet;
-    edTenantNo1->Color = edTenantNo1->Enabled ? clWindow : clInactiveCaptionText;
-    edBranchCode1->Enabled = isBranchCodeSet;
-    edBranchCode1->Color = edBranchCode1->Enabled ? clWindow : clInactiveCaptionText;
-
-    edFTPServer1->Enabled = isFTPServerSet;
-    edFTPServer1->Color = edFTPServer1->Enabled ? clWindow : clInactiveCaptionText;
-    edFTPPath1->Enabled = isFTPPathSet;
-    edFTPPath1->Color = edFTPPath1->Enabled ? clWindow : clInactiveCaptionText;
-    edFTPUserName1->Enabled = isFTPUserNameSet;
-    edFTPUserName1->Color = edFTPUserName->Enabled ? clWindow : clInactiveCaptionText;
-    edFTPPassword1->Enabled = isFTPPasswordSet;
-    edFTPPassword1->Color = edFTPPassword1->Enabled ? clWindow : clInactiveCaptionText;
-
-    edConsolidatedDBPaths1->Enabled = isConsolidatedRepSet;
-    edConsolidatedDBPaths1->Color = edConsolidatedDBPaths1->Enabled ? clWindow : clInactiveCaptionText;
-    cbEnableConsolidatedRep1->Enabled = isEnableConsolidatedRepSet;
-    cbEnableConsolidatedRep1->Color = cbEnableConsolidatedRep1->Enabled ? clBtnFace : clInactiveCaptionText;
+        //load all mall settings info
+        mallInfo = TManagerMallSetup::LoadActiveMallSettings(dbTransaction);
+        std::list<TMallExportSettings>::iterator it;
+        TControl *ChildControl;
+        TEdit* editBox;
+        for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
+        {
+            for (int i = 0; i < gbMalls1->ControlCount; i++)
+            {
+                ChildControl = gbMalls1->Controls[i];
+                editBox = (TEdit*)ChildControl;
+                if(it->ControlName == editBox->Name)
+                {
+                    ChildControl->Enabled = true;
+                    editBox->Text = it->Value;
+                    editBox->Color = clWindow;
+                }
+            }
+        }
+        dbTransaction.Commit();
 }
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
+void TfrmSetup::UpdateMallInfo()
+{
+     //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+        mallInfo.MallId = cbMallLoc1->ItemIndex;
+        mallInfo.MallName = cbMallLoc1->Text;
+        TMallExportSettings mallSetting;
+
+        std::list<TMallExportSettings>::iterator it;
+        TControl *ChildControl;
+        TEdit* editBox;
+        for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
+        {
+            for (int i = 0; i < gbMalls1->ControlCount; i++)
+            {
+                ChildControl = gbMalls1->Controls[i];
+                editBox = (TEdit*)ChildControl;
+                if(it->ControlName == editBox->Name)
+                {
+                    it->Value = editBox->Text;
+                }
+            }
+        }
+        TManagerMallSetup::UpdateMallExportSettingValues(dbTransaction, mallInfo);
+        dbTransaction.Commit();
+}

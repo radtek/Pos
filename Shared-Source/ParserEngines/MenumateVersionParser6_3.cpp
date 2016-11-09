@@ -144,6 +144,7 @@ void TApplyParser::update6_33Tables()
     Insert6_33Malls(_dbControl);
     Insert6_33MallExport_Settings(_dbControl);
     Insert6_33MallExport_Settings_Mapping(_dbControl);
+    Insert6_33MallExport_Settings_Values(_dbControl);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -352,6 +353,35 @@ void TApplyParser::Insert6_33MallExport_Settings_Mapping(TDBControl* const inDBC
         InsertQuery->Close();
         InsertQuery->SQL->Text =
                     "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (3,7,1)";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::Insert6_33MallExport_Settings_Values(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+
+        InsertQuery->Close();
+        InsertQuery->SQL->Text =
+                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (1,1,'','UnicodeString') ";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text =
+                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES(2,2,'','UnicodeString') ";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text =
+                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (3,7,'','Integer')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         transaction.Commit();

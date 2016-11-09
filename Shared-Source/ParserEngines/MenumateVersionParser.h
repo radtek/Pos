@@ -807,6 +807,7 @@ namespace MenumateVersionParser
         void Insert6_33Malls(TDBControl* const inDBControl);
         void Insert6_33MallExport_Settings(TDBControl* const inDBControl);
         void Insert6_33MallExport_Settings_Mapping(TDBControl* const inDBControl);
+        void Insert6_33MallExport_Settings_Values(TDBControl* const inDBControl);
     }; // class
 } // namespace
 

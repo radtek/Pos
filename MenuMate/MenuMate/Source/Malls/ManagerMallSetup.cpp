@@ -160,10 +160,8 @@ TMall TManagerMallSetup::LoadActiveMallSettings(Database::TDBTransaction &dbTran
 
         ibInternalQuery->Close();
         ibInternalQuery->SQL->Clear();
-        ibInternalQuery->SQL->Text = "SELECT * FROM MALLEXPORT_SETTINGS a "
-                                        "LEFT JOIN MALLEXPORT_SETTINGS_VALUES msv on a.ID = msv.MALLEXPORTSETTING_ID "
-                                        //"left join MALLEXPORT_SETTINGS_MAPPING msp on msp.MALLEXPORT_SETTING_ID = a.ID "
-                                      "WHERE a.ID = 1 OR a.ID = 2 OR a.ID = 7 ORDER BY a.ID asc ";
+        ibInternalQuery->SQL->Text = "SELECT * FROM MALLEXPORT_SETTINGS_VALUES msv "
+                                        "INNER JOIN MALLEXPORT_SETTINGS a   on a.ID = msv.MALLEXPORTSETTING_ID ";
         ibInternalQuery->ExecQuery();
         for(; !ibInternalQuery->Eof; ibInternalQuery->Next())
         {
@@ -182,5 +180,53 @@ TMall TManagerMallSetup::LoadActiveMallSettings(Database::TDBTransaction &dbTran
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-   // return mallSettings;
+    return mallProperties;
+}
+//------------------------------------------------------------------------------------------
+void TManagerMallSetup::UpdateMallExportSettingValues(Database::TDBTransaction &dbTransaction, TMall &mallInfo)
+{
+    TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+    TIBSQL *ibUpdateQuery = dbTransaction.Query(dbTransaction.AddQuery());
+    ibInternalQuery->Close();
+
+    try
+    {
+        std::list<TMallExportSettings>::iterator it;
+        for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
+        {
+            ibInternalQuery->SQL->Text = " UPDATE MALLEXPORT_SETTINGS_VALUES SET FIELD_VALUE = :FIELD_VALUE WHERE MALLEXPORTSETTING_ID = :MALLEXPORTSETTING_ID  ";
+            ibInternalQuery->ParamByName("MALLEXPORTSETTING_ID")->AsInteger = it->MallExportSettingId;
+            ibInternalQuery->ParamByName("FIELD_VALUE")->AsString = it->Value;
+            ibInternalQuery->ExecQuery();
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//-----------------------------------------------------------------------------------------------------------
+int  TManagerMallSetup::CheckActiveMallExist(Database::TDBTransaction &dbTransaction)
+{
+    TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+    ibInternalQuery->Close();
+    int mallId = 0;
+
+    try
+	{
+        ibInternalQuery->SQL->Text = " SELECT MALL_ID FROM MALLS WHERE IS_ACTIVE = :IS_ACTIVE ";
+
+        ibInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+            mallId =  ibInternalQuery->FieldByName("MALL_ID")->AsInteger;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return mallId;
 }

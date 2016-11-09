@@ -155,6 +155,7 @@ __published:	// IDE-managed Components
     TEdit *edConsolidatedDBPaths1;
     TCheckBox *cbEnableConsolidatedRep1;
     TEdit *edTenantNo1;
+    TGroupBox *gbMalls1;
    void __fastcall imgCloseClick(TObject *Sender);
    void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
    void __fastcall FormCreate(TObject *Sender);
@@ -280,6 +281,9 @@ private:	// User declarations
 	Database::TDBControl &IBDatabase;
     bool invalid_id;//MM-4104
     std::list<TMallExportSettings> settings;
+    void LoadMallSettingInfo();
+    void UpdateMallInfo();
+    TMall mallInfo;
 
 public:		// User declarations
 
@@ -338,10 +342,6 @@ public:		// User declarations
     UnicodeString RenameSerialNumber();
     UnicodeString RenameTenantNumber();
     void SetupNewMalls();
-    void EnableFieldComponents(bool isMallPathSet, bool isTerminalNoSet, bool isClassCodeSet, bool isTradeCodeSet,
-                              bool isOutletCodeSet, bool isSerialNoSet, bool isTenantNoSet, bool isBranchCodeSet,
-                              bool isFTPServerSet, bool isFTPPathSet, bool isFTPUserNameSet, bool isFTPPasswordSet,
-                              bool isConsolidatedRepSet, bool isEnableConsolidatedRepSet);
 };
 //---------------------------------------------------------------------------
 #endif
