@@ -42,7 +42,7 @@
 #include "MallExportRegenerateReport.h"
 #include "PhoenixHotelSystem.h"
 #include "MallExportSalesTypeAssignment.h"
-#include "SetupMallExport.h"
+#include "Mall.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -2181,6 +2181,10 @@ void __fastcall TfrmSetup::cbMallLoc1Change(TObject *Sender)
     {
         LoadMallSettingInfo();
     }
+    else
+    {
+        UpdateNoMallUI();
+    }
 }
 //------------------------------------------------------------------------------
 
@@ -2326,6 +2330,10 @@ void  TfrmSetup::SetupNewMalls()
     cbMallLoc1->ItemIndex = mallIndex;
     if(cbMallLoc1->ItemIndex != 0)
         LoadMallSettingInfo();
+    else
+    {
+        UpdateNoMallUI();
+    }
 
 }
 //----------------------------------------------------------------------------------------------
@@ -2386,4 +2394,23 @@ void TfrmSetup::UpdateMallInfo()
         }
         TManagerMallSetup::UpdateMallExportSettingValues(dbTransaction, mallInfo);
         dbTransaction.Commit();
+}
+//--------------------------------------------------------------------------------------
+void TfrmSetup::UpdateNoMallUI()
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    TManagerMallSetup::UpdateINActiveMall(dbTransaction);
+    edTenantNo1->Text = "";
+    edMallPath1->Text = "";
+    edTerminalNo1->Text = "";
+    edTenantNo1->Enabled = false;
+    edMallPath1->Enabled = false;
+    edTerminalNo1->Enabled = false;
+    edTenantNo1->Color = clInactiveCaptionText;
+    edMallPath1->Color = clInactiveCaptionText;
+    edTerminalNo1->Color = clInactiveCaptionText;
+    dbTransaction.Commit();
 }

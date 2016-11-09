@@ -284,6 +284,8 @@ private:	// User declarations
     void LoadMallSettingInfo();
     void UpdateMallInfo();
     TMall mallInfo;
+    void SetupNewMalls();
+    void UpdateNoMallUI();
 
 public:		// User declarations
 
@@ -341,7 +343,6 @@ public:		// User declarations
     UnicodeString RenameBranchCode();
     UnicodeString RenameSerialNumber();
     UnicodeString RenameTenantNumber();
-    void SetupNewMalls();
 };
 //---------------------------------------------------------------------------
 #endif

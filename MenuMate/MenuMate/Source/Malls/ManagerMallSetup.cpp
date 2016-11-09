@@ -41,9 +41,10 @@ void TManagerMallSetup::UpdateActiveMall(Database::TDBTransaction &dbTransaction
 
     try
 	{
-        ibInternalQuery->SQL->Text = " UPDATE MALLS SET IS_ACTIVE = 'T' WHERE MALL_ID = :MALL_ID ";
+        ibInternalQuery->SQL->Text = " UPDATE MALLS SET IS_ACTIVE = :IS_ACTIVE WHERE MALL_ID = :MALL_ID ";
 
         ibInternalQuery->ParamByName("MALL_ID")->AsInteger = mallKey;
+        ibInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         ibInternalQuery->ExecQuery();
     }
     catch(Exception &E)
@@ -229,4 +230,23 @@ int  TManagerMallSetup::CheckActiveMallExist(Database::TDBTransaction &dbTransac
 		throw;
 	}
     return mallId;
+}
+//---------------------------------------------------------------------------------------------------------
+void TManagerMallSetup::UpdateINActiveMall(Database::TDBTransaction &dbTransaction)
+{
+    TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+    ibInternalQuery->Close();
+
+    try
+	{
+        ibInternalQuery->SQL->Text = " UPDATE MALLS SET IS_ACTIVE = :IS_ACTIVE ";
+
+        ibInternalQuery->ParamByName("IS_ACTIVE")->AsString = "F";
+        ibInternalQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }
