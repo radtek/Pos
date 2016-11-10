@@ -36,7 +36,7 @@
 #include "DBContacts.h"
 #include "GroupGUI.h"
 #include "SelectRMSRoom.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 #include "TaxRemoval.h"
 #include "DBTables.h"
 #include "VerticalSelect.h"
@@ -3916,12 +3916,13 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 {
 	bool ProcessDiscount = true;
 	TDiscount CurrentDiscount;
-	TSeniorCitizenDiscountChecker SCDChecker;
+	TSCDPWDChecker SCDChecker;
 
 	bool bailout = false;
 	CurrentDiscount.DiscountKey = DiscountKey;
 	ManagerDiscount->GetDiscount(CurrentTransaction.DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-    ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, CurrentTransaction.Orders);
+    ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, CurrentTransaction.Orders) &&
+                      SCDChecker.PWDCheck(CurrentDiscount, CurrentTransaction.Orders);
     if(DiscountSource == dsMMMembership)
     {
        CurrentDiscount.IsThorBill = TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected;

@@ -3044,7 +3044,6 @@ void TListPaymentSystem::ReceiptPrepare(TPaymentTransaction &PaymentTransaction,
 	}
 	std::auto_ptr <TStringList> StringReceipt(new TStringList);
 	LastReceipt->Printouts->PrintToStrings(StringReceipt.get());
-
 	ManagerReceipt->ReceiptToArchive->Clear();
 	ManagerReceipt->ReceiptToArchive->Position = 0;
 	StringReceipt->SaveToStream(ManagerReceipt->ReceiptToArchive);

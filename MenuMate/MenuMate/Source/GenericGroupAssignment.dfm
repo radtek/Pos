@@ -6,8 +6,8 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
   BorderStyle = bsNone
   BorderWidth = 5
   Caption = 'Manage PaymentGroup Types'
-  ClientHeight = 513
-  ClientWidth = 855
+  ClientHeight = 503
+  ClientWidth = 845
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,8 +26,8 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
     AlignWithMargins = True
     Left = 3
     Top = 0
-    Width = 719
-    Height = 513
+    Width = 709
+    Height = 503
     Margins.Top = 0
     Margins.Bottom = 0
     Align = alClient
@@ -43,7 +43,7 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
       Left = 3
       Top = 8
       Width = 279
-      Height = 495
+      Height = 485
       Margins.Top = 8
       Margins.Right = 8
       Margins.Bottom = 8
@@ -55,7 +55,7 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
         Left = 1
         Top = 46
         Width = 277
-        Height = 448
+        Height = 438
         Align = alClient
         BorderWidth = 0
         Font.Charset = DEFAULT_CHARSET
@@ -65,8 +65,8 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
         Font.Style = [fsBold]
         ParentFont = False
         ParentColor = True
-        DefaultButtonColor = clBtnFace
-        DefaultButtonLatchedColor = clBtnShadow
+        DefaultButtonColor = -16777201
+        DefaultButtonLatchedColor = -16777201
         LatchingType = ltRadioButton
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = GroupListMouseClick
@@ -170,7 +170,7 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
       Left = 293
       Top = 8
       Width = 279
-      Height = 495
+      Height = 485
       Margins.Top = 8
       Margins.Right = 8
       Margins.Bottom = 8
@@ -198,7 +198,7 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
         Left = 1
         Top = 46
         Width = 277
-        Height = 448
+        Height = 438
         Align = alClient
         BorderWidth = 0
         Font.Charset = DEFAULT_CHARSET
@@ -208,8 +208,8 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
         Font.Style = [fsBold]
         Color = 14342874
         ParentFont = False
-        DefaultButtonColor = clBtnFace
-        DefaultButtonLatchedColor = clBtnFace
+        DefaultButtonColor = -16777201
+        DefaultButtonLatchedColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = MembersGridMouseClick
         ParentGridColor = False
@@ -293,10 +293,10 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
     end
     object Panel4: TPanel
       AlignWithMargins = True
-      Left = 430
+      Left = 420
       Top = 8
       Width = 279
-      Height = 495
+      Height = 485
       Margins.Top = 8
       Margins.Right = 8
       Margins.Bottom = 8
@@ -308,7 +308,7 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
         Left = 1
         Top = 46
         Width = 277
-        Height = 448
+        Height = 438
         Align = alClient
         BorderWidth = 0
         Font.Charset = DEFAULT_CHARSET
@@ -318,8 +318,8 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
         Font.Style = [fsBold]
         Color = 14342874
         ParentFont = False
-        DefaultButtonColor = clBtnFace
-        DefaultButtonLatchedColor = clBtnShadow
+        DefaultButtonColor = -16777201
+        DefaultButtonLatchedColor = -16777201
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = GroupMembersMouseClick
         ParentGridColor = False
@@ -419,10 +419,10 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
     end
   end
   object Panel5: TPanel
-    Left = 725
+    Left = 715
     Top = 0
     Width = 130
-    Height = 513
+    Height = 503
     Align = alRight
     BevelInner = bvRaised
     BevelOuter = bvNone
@@ -431,7 +431,7 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
     TabOrder = 1
     DesignSize = (
       130
-      513)
+      503)
     object btnClose: TTouchBtn
       Left = 6
       Top = 14
@@ -441,18 +441,18 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
       Font.Height = -19
       Font.Name = 'Arial'
       Font.Style = []
-      Color = clLime
       ParentFont = False
+      ParentColor = True
       Caption = 'Ok'
       ButtonColor = 18944
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnCloseMouseClick
     end
     object btinGGA_Cancel: TTouchBtn
       Left = 6
-      Top = 446
+      Top = 436
       Width = 118
       Anchors = [akRight, akBottom]
       Font.Charset = ANSI_CHARSET
@@ -460,12 +460,12 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
-      Color = clWhite
       ParentFont = False
+      ParentColor = True
       Caption = 'Cancel'
       ButtonColor = 2200566
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btinGGA_CancelMouseClick
     end
@@ -478,13 +478,13 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
       Font.Height = -19
       Font.Name = 'Arial'
       Font.Style = []
-      Color = clLime
       ParentFont = False
+      ParentColor = True
       Visible = False
       Caption = 'Assign All'
-      ButtonColor = clMaroon
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
+      ButtonColor = -16777201
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnAssignAllMouseClick
     end
@@ -497,13 +497,13 @@ object frmGenericGroupAssignment: TfrmGenericGroupAssignment
       Font.Height = -19
       Font.Name = 'Arial'
       Font.Style = []
-      Color = clLime
       ParentFont = False
+      ParentColor = True
       Visible = False
       Caption = 'Remove All'
-      ButtonColor = clMaroon
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
+      ButtonColor = -16777201
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnRemoveAllMouseClick
     end

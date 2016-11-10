@@ -48,8 +48,8 @@ object frmAnalysis: TfrmAnalysis
       Height = 720
       Color = 14342874
       BevelOuter = bvNone
-      DefaultButtonColor = clBtnFace
-      DefaultButtonLatchedColor = clBtnFace
+      DefaultButtonColor = -16777201
+      DefaultButtonLatchedColor = -16777201
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = GridMouseClick
       RowCount = 10

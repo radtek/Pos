@@ -3,8 +3,8 @@ object dmMMReportData: TdmMMReportData
   OnDestroy = DataModuleDestroy
   Left = 65532
   Top = 65532
-  Height = 953
-  Width = 1928
+  Height = 715
+  Width = 1378
   object qrMenu: TIBQuery
     Database = dmMMData.dbMenuMate
     Transaction = MMTrans
@@ -4651,5 +4651,26 @@ object dmMMReportData: TdmMMReportData
     DataSet = qrSSDParemeter
     Left = 1314
     Top = 544
+  end
+  object qrEJournal: TIBQuery
+    Database = dmMMData.dbMenuMate
+    Transaction = dmMMData.trMenuMate
+    Left = 1616
+    Top = 464
+  end
+  object ravESalesJournal: TRvDataSetConnection
+    RuntimeVisibility = rtEndUser
+    DataSet = qrEJournal
+    Left = 1288
+    Top = 256
+  end
+  object cdsReceipt: TClientDataSet
+    Aggregates = <>
+    FieldDefs = <>
+    IndexDefs = <>
+    Params = <>
+    StoreDefs = True
+    Left = 1616
+    Top = 128
   end
 end
