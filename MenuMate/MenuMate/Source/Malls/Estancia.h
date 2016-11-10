@@ -2,9 +2,12 @@
 
 #ifndef EstanciaH
 #define EstanciaH
+
 //---------------------------------------------------------------------------
-#endif
+
 
 class TEstancia : public TMallExport
 {
+//
 };
+#endif

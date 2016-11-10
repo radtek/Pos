@@ -6,7 +6,7 @@
 class TMallExportData
 {
     public:
-    std::list<TMallExportSettings> _mallSettings;
+    //std::list<TMallExportSettings> _mallSettings;
 
 }
 #endif
