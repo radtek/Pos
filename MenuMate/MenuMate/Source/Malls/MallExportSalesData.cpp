@@ -3,8 +3,13 @@
 
 #pragma hdrstop
 
-#include "ExportData.h"
+#include "MallExportSalesData.h"
 
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
+
+void TDBMalls::UpdateZ_Key()
+{
+
+}

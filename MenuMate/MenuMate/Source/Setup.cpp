@@ -2347,6 +2347,7 @@ void TfrmSetup::LoadMallSettingInfo()
 
         //load all mall settings info
         mallInfo = TManagerMallSetup::LoadActiveMallSettings(dbTransaction);
+        TGlobalSettings::Instance().mallInfo = mallInfo;
         std::list<TMallExportSettings>::iterator it;
         TControl *ChildControl;
         TEdit* editBox;
@@ -2392,6 +2393,7 @@ void TfrmSetup::UpdateMallInfo()
                 }
             }
         }
+        TGlobalSettings::Instance().mallInfo =  mallInfo;
         TManagerMallSetup::UpdateMallExportSettingValues(dbTransaction, mallInfo);
         dbTransaction.Commit();
 }
@@ -2402,6 +2404,8 @@ void TfrmSetup::UpdateNoMallUI()
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
+    TMall mallDetails;
+    TGlobalSettings::Instance().mallInfo = mallDetails;
     TManagerMallSetup::UpdateINActiveMall(dbTransaction);
     edTenantNo1->Text = "";
     edMallPath1->Text = "";

@@ -3,13 +3,8 @@
 
 #pragma hdrstop
 
-#include "DBMalls.h"
+#include "MallTextFile.h"
 
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
-
-void TDBMalls::UpdateZ_Key()
-{
-
-}

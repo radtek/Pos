@@ -5,6 +5,7 @@
 #include "MMSettings.h"
 #include "GlobalSettings.h"
 #include "ManagerVariable.h"
+#include "ManagerMallSetup.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -366,6 +367,9 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().ShowVoidOrRefund = TManagerVariable::Instance().GetBool(DBTransaction, vmShowVoidOrRefund, false);
         TGlobalSettings::Instance().ShowVoidNumber = TManagerVariable::Instance().GetBool(DBTransaction, vmShowVoidNumber, false);
          TGlobalSettings::Instance().EftPosTipGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTipGLCode, "860");
+         int mallIndex = TManagerMallSetup::CheckActiveMallExist(DBTransaction);
+         if(mallIndex != 0)
+            TGlobalSettings::Instance().mallInfo = TManagerMallSetup::LoadActiveMallSettings(DBTransaction);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

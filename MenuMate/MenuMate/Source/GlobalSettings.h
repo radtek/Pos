@@ -7,7 +7,7 @@
 #include <memory>
 #include <Classes.hpp>
 #include <Graphics.hpp>
-
+#include "Mall.h"
 // ---------------------------------------------------------------------------
 enum eDayTimes {
 	eSunday = 0, eMonday, eTuesday, eWednesday, eThursday, eFriday, eSaturday,
@@ -465,6 +465,7 @@ public:
     bool ShowVoidOrRefund;
     bool ShowVoidNumber;
     UnicodeString EftPosTipGLCode;
+    TMall mallInfo;
 };
 
 #endif

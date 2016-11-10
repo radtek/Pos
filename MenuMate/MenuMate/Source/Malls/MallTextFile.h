@@ -1,11 +1,11 @@
 //---------------------------------------------------------------------------
 
-#ifndef SetupEstanciaH
-#define SetupEstanciaH
+#ifndef MallTextFileH
+#define MallTextFileH
 //---------------------------------------------------------------------------
 #endif
-#include "Mall.h"
-class TSetupEstancia : public TSetupMallExport
+
+class TMallTextFile: public IExporterInterface
 {
 
 };

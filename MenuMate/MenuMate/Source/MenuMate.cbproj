@@ -3206,6 +3206,14 @@
 				<DependentOn>SCDPWDChecker.h</DependentOn>
 				<BuildOrder>726</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="Malls\MallExportInterface.cpp">
+				<DependentOn>Malls\MallExportInterface.h</DependentOn>
+				<BuildOrder>726</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Malls\MallExport.cpp">
+				<DependentOn>Malls\MallExport.h</DependentOn>
+				<BuildOrder>727</BuildOrder>
+			</CppCompile>
 			<FormResources Include="PHSConfiguration.dfm"/>
 			<FormResources Include="PrinterRedirect.dfm"/>
 			<FormResources Include="POS\ShowPrintout.dfm"/>

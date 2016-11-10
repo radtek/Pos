@@ -3,7 +3,7 @@
 
 #pragma hdrstop
 
-#include "SetupEstancia.h"
+#include "Estancia.h"
 
 //---------------------------------------------------------------------------
 
