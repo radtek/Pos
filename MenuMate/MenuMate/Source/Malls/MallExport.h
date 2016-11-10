@@ -7,7 +7,7 @@
 class TMallExport: public TMallExportInterface
 {
     protected:
-    virtual void PrepareDataForDB() = 0;
+    virtual void PrepareDataForDatabase() = 0;
     virtual void PrepareDataForExport() = 0;
     virtual void CreateExportMedium() = 0;
 }
