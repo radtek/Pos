@@ -1177,10 +1177,6 @@
 				<DependentOn>Malls\MallTextFile.h</DependentOn>
 				<BuildOrder>724</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Malls\Mall.cpp">
-				<DependentOn>Malls\Mall.h</DependentOn>
-				<BuildOrder>720</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="ManagerVoucherElectronic.cpp">
 				<DependentOn>ManagerVoucherElectronic.h</DependentOn>
 				<BuildOrder>713</BuildOrder>
@@ -3220,6 +3216,10 @@
 			</CppCompile>
 			<CppCompile Include="Malls\MallExportData.cpp">
 				<DependentOn>Malls\MallExportData.h</DependentOn>
+				<BuildOrder>729</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Mall.cpp">
+				<DependentOn>Mall.h</DependentOn>
 				<BuildOrder>729</BuildOrder>
 			</CppCompile>
 			<FormResources Include="PHSConfiguration.dfm"/>

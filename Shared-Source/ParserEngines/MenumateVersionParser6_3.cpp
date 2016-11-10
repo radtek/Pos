@@ -141,7 +141,8 @@ void TApplyParser::update6_33Tables()
     Create6_33MallExportSettingsMapping(_dbControl);
     Create6_33MallExportSettingsMappingValues(_dbControl);
     Create6_33MallExportSales(_dbControl);
-   // Create6_33MallExportSettingValuesAttributes(_dbControl);
+    Create6_33GeneratorMallExportSaleKey(_dbControl);
+    Create6_33MallExportSettingValuesAttributes(_dbControl);
     Insert6_33Malls(_dbControl);
     Insert6_33MallExport_Settings(_dbControl);
     Insert6_33MallExport_Settings_Mapping(_dbControl);
@@ -220,7 +221,7 @@ void TApplyParser::Create6_33MallExportSettingValuesAttributes(TDBControl* const
      if ( !tableExists( "MALLEXPORT_SETTING_VALUES_ATTRIBUTES", inDBControl ) )
      {
 		executeQuery(
-                "CREATE TABLE MALLEXPORT_SETTING_VALUES_ATTRIBUTES"
+                "CREATE TABLE MALLEXPORT_SETTING_VALUES_ATTR"
                 "( "
                 "   MALLEXPORT_ATTRIBUTE_KEY INTEGER NOT NULL PRIMARY KEY, "
                 "   MALLEXPORT_VALUES_KEY INTEGER NOT NULL , "
@@ -232,6 +233,19 @@ void TApplyParser::Create6_33MallExportSettingValuesAttributes(TDBControl* const
      }
 }
 //----------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33GeneratorMallExportSaleKey(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MALLEXPORT_SALE_KEY", _dbControl) )
+        {
+            executeQuery(
+            "CREATE GENERATOR GEN_MALLEXPORT_SALE_KEY;",
+            inDBControl);
+            executeQuery(
+            "SET GENERATOR GEN_MALLEXPORT_SALE_KEY TO 0; ",
+            inDBControl );
+        }
+}
+//----------------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
 {
      if ( !tableExists( "MALLEXPORT_SALES", inDBControl ) )
@@ -239,7 +253,7 @@ void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
 		executeQuery(
                 "CREATE TABLE MALLEXPORT_SALES"
                 "( "
-                "   ID INTEGER NOT NULL PRIMARY KEY, "
+                "   MALLEXPORT_SALE_KEY INTEGER NOT NULL PRIMARY KEY, "
                 "   MALL_KEY INTEGER , "
                 "   FIELD VARCHAR(50), "
                 "   VALUE_GROUP VARCHAR(50), "
