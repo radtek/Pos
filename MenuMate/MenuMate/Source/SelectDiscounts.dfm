@@ -96,8 +96,8 @@ object frmSelectDiscounts: TfrmSelectDiscounts
           ParentFont = False
           ParentColor = True
           BevelOuter = bvNone
-          DefaultButtonColor = clMaroon
-          DefaultButtonLatchedColor = clNavy
+          DefaultButtonColor = -16777201
+          DefaultButtonLatchedColor = -16777201
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = tgridItemPriceMouseClick
           GridBorder = False
@@ -284,9 +284,9 @@ object frmSelectDiscounts: TfrmSelectDiscounts
               ParentFont = False
               ParentColor = True
               Caption = 'Click here to enter a reason'
-              ButtonColor = clNavy
-              LatchedColor = clBtnFace
-              DisabledButtonColor = clBtnFace
+              ButtonColor = -16777201
+              LatchedColor = -16777201
+              DisabledButtonColor = -16777201
               LatchingProperties = [lkLatchColor, lkStayDown]
               OnMouseClick = ItemPriceDescriptionClick
             end
@@ -342,7 +342,7 @@ object frmSelectDiscounts: TfrmSelectDiscounts
               GridBorderWidth = 0
               ButtonGapWidth = 5
               ButtonGapHeight = 5
-              ButtonColor = clMaroon
+              ButtonColor = -16777201
               CustomKey = True
               CustomKeyCaption = '00'
               NumpadDisplay = NumpadDisplayItemPrice
@@ -420,9 +420,9 @@ object frmSelectDiscounts: TfrmSelectDiscounts
             ParentFont = False
             ParentColor = True
             Caption = 'Ok'
-            ButtonColor = clGreen
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            ButtonColor = -16777201
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnOkMouseClick
           end
@@ -441,8 +441,8 @@ object frmSelectDiscounts: TfrmSelectDiscounts
             ParentFont = False
             Caption = 'Clear Discount'
             ButtonColor = 2200566
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
+            LatchedColor = -16777201
+            DisabledButtonColor = -16777201
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnItemPriceDiscountClearMouseClick
           end

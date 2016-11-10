@@ -43,7 +43,7 @@
 #include "ManagerPatron.h"
 #include "GUIScale.h"
 #include "FreebieManager.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 #include "SelectDish.h"
 #include "MMInvoicePaymentSystem.h"
 #include "ManagerDelayedPayment.h"
@@ -1884,6 +1884,7 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 			SelectDiscount->MessageType = eDiscountReason;
             SelectDiscount->ShowPointsAsDiscount = false;
             bool isSCDAppliedOnClipp = false;
+            bool isPWDAppliedOnClipp = false;
 			if (SelectDiscount->ShowModal() == mrOk)
 			{
                 ManagerDiscount->GetDiscount(DBTransaction, SelectDiscount->Key, SelectedDiscount);
@@ -1913,13 +1914,20 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 						TPaymentTransaction PaymentTransaction(DBTransaction);
 						TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, OrderKeySet);
 						TDiscount CurrentDiscount;
-                        TSeniorCitizenDiscountChecker SCDChecker;
+                        TSCDPWDChecker SCDChecker;
 						CurrentDiscount.DiscountKey = SelectDiscount->Key;
 						ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-                        applyDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders);
-                        if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders, true) && applyDiscount && CurrentTabType == TabClipp)
+                        applyDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders)  &&
+                                        SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders);
+                        if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders, true)
+                          && applyDiscount && CurrentTabType == TabClipp)
                         {
                            isSCDAppliedOnClipp = true;
+                        }
+                        if(SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders, true)
+                          && applyDiscount && CurrentTabType == TabClipp)
+                        {
+                           isPWDAppliedOnClipp = true;
                         }
                         /*if(applyDiscount)
                         {
@@ -1938,6 +1946,11 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 
 				}
                 if(isSCDAppliedOnClipp )
+                {
+                     MessageBox("Order with SCD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
+                     return;
+                }
+                else if(isPWDAppliedOnClipp)
                 {
                      MessageBox("Order with SCD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
                      return;
@@ -2042,9 +2055,10 @@ void __fastcall TfrmBillGroup::ProcessBillThorVouchers(Database::TDBTransaction 
                             ManagerDiscount->GetDiscount(DBTransaction, SelectedDiscount.DiscountKey, SelectedDiscount);
                             TPaymentTransaction PaymentTransaction(DBTransaction);
                             TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, OrderKeySet);
-                            TSeniorCitizenDiscountChecker SCDChecker;
+                            TSCDPWDChecker SCDChecker;
                             ManagerDiscount->ClearThorVouchersDiscounts(PaymentTransaction.Orders);
-                            if(SCDChecker.SeniorCitizensCheck(SelectedDiscount, PaymentTransaction.Orders))
+                            if(SCDChecker.SeniorCitizensCheck(SelectedDiscount, PaymentTransaction.Orders)
+                              && SCDChecker.PWDCheck(SelectedDiscount, PaymentTransaction.Orders))
                             {
                               Membership.Member.AutoAppliedDiscounts.clear();
                               Membership.Member.AutoAppliedDiscounts.insert(SelectedDiscount.DiscountKey);
@@ -2231,7 +2245,6 @@ void __fastcall TfrmBillGroup::tbtnShowItemsMouseClick(TObject *Sender)
 void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMouseButton Button, TShiftState Shift,
 	TGridButton *GridButton)
 {
-
     TMMProcessingState State(Screen->ActiveForm, "Loading Items Please Wait...", "Loading Items");
     TDeviceRealTerminal::Instance().ProcessingController.Push(State);
     try
@@ -2343,7 +2356,7 @@ void __fastcall TfrmBillGroup::tgridItemListMouseClick(TObject *Sender, TMouseBu
 
 	if (SelectedItems.find(GridButton->Tag) == SelectedItems.end())
 	{ // Not Found add it.
-        TSeniorCitizenDiscountChecker SCDChecker;
+        TSCDPWDChecker SCDChecker;
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
 
@@ -2353,7 +2366,8 @@ void __fastcall TfrmBillGroup::tgridItemListMouseClick(TObject *Sender, TMouseBu
             SelectedItemKeys.insert(itItem->first);
         }
 
-        bool canAddItem = SCDChecker.ItemSelectionCheck(DBTransaction, GridButton->Tag, SelectedItemKeys);
+        bool canAddItem = SCDChecker.ItemSelectionCheck(DBTransaction, GridButton->Tag, SelectedItemKeys) &&
+                          SCDChecker.ItemSelectionCheckPWD(DBTransaction, GridButton->Tag, SelectedItemKeys) ;
 
 		if (canAddItem && AddToSelectedTabs(DBTransaction, VisibleItems[GridButton->Tag].TabKey))
 		{
@@ -2474,7 +2488,7 @@ void TfrmBillGroup::ToggleItemState(TGridButton *GridButton)
 //---------------------------------------------------------------------------
 void TfrmBillGroup::SelectItem(TGridButton *GridButton)
 {
-    TSeniorCitizenDiscountChecker SCDChecker;
+    TSCDPWDChecker SCDChecker;
     Database::TDBTransaction DBTransaction(DBControl);
     DBTransaction.StartTransaction();
 
@@ -2484,7 +2498,8 @@ void TfrmBillGroup::SelectItem(TGridButton *GridButton)
         SelectedItemKeys.insert(itItem->first);
     }
 
-    bool canAddItem = SCDChecker.ItemSelectionCheck(DBTransaction, GridButton->Tag, SelectedItemKeys);
+    bool canAddItem = SCDChecker.ItemSelectionCheck(DBTransaction, GridButton->Tag, SelectedItemKeys) &&
+                      SCDChecker.ItemSelectionCheckPWD(DBTransaction, GridButton->Tag, SelectedItemKeys);
 
     if (canAddItem && AddToSelectedTabs(DBTransaction, VisibleItems[GridButton->Tag].TabKey))
     {

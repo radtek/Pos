@@ -3870,15 +3870,15 @@ void TPrintSection::PrintTotalDicountsName(TReqPrintJob *PrintJob)
 			ffNumber,
 			CurrencyDecimals);
 
-            if(Adjustment != "0.00")
-            {
+//            if(Adjustment != "0.00")
+//            {
                 pPrinter->Line->Columns[1]->Width = Adjustment.Length() + 1;
                 pPrinter->Line->Columns[0]->Width = pPrinter->Width - Adjustment.Length() - 1;
 
                 pPrinter->Line->Columns[0]->Text = itDiscountTotals->first;
                 pPrinter->Line->Columns[1]->Text = Adjustment;
                 pPrinter->AddLine();
-            }
+//            }
 		}
 
 		// Senior Citizen Discount (SCD) applied

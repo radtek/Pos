@@ -10,7 +10,7 @@
 #include "DeviceRealTerminal.h"
 #include "ManagerDiscount.h"
 #include "DBSecurity.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 // ---------------------------------------------------------------------------
 #include <mshtml.h>
 // #include <oleacc.h>
@@ -266,9 +266,10 @@ AnsiString TfrmSelectDiscounts::DiscountSingleItem(Database::TDBTransaction &DBT
 		 CurrentDiscount.DiscountKey = DiscountKey;
 		 ManagerDiscount->GetDiscount(DBTransaction, DiscountKey, CurrentDiscount);
 
-         TSeniorCitizenDiscountChecker SCDChecker;
+         TSCDPWDChecker SCDChecker;
 
-         if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, Orders) && SelectedItem->DiscountApplies(CurrentDiscount))
+         if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, Orders) && SCDChecker.PWDCheck(CurrentDiscount, Orders)
+             && SelectedItem->DiscountApplies(CurrentDiscount))
          {
              if (SelectedItem->DiscountApplied(DiscountKey))
              {

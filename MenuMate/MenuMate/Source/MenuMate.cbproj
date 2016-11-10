@@ -3,7 +3,7 @@
 			<ProjectGuid>{192EBDBE-B1AC-4977-ACF9-0BDD61E6D32A}</ProjectGuid>
 			<ProjectType>CppVCLApplication</ProjectType>
 			<MainSource>MenuMate.cpp</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -1045,10 +1045,6 @@
 			<CppCompile Include="Analysis\ReportSections\XReportDetailsReportSection.cpp">
 				<DependentOn>Analysis\ReportSections\XReportDetailsReportSection.h</DependentOn>
 				<BuildOrder>598</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="SeniorCitizenDiscountChecker.cpp">
-				<DependentOn>SeniorCitizenDiscountChecker.h</DependentOn>
-				<BuildOrder>546</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSectionStrategies\BaseReportSectionDisplayStrategy.cpp">
 				<DependentOn>Analysis\ReportSectionStrategies\BaseReportSectionDisplayStrategy.h</DependentOn>
@@ -3205,6 +3201,10 @@
 			<CppCompile Include="ManagerCloudSync.cpp">
 				<DependentOn>ManagerCloudSync.h</DependentOn>
 				<BuildOrder>717</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="SCDPWDChecker.cpp">
+				<DependentOn>SCDPWDChecker.h</DependentOn>
+				<BuildOrder>726</BuildOrder>
 			</CppCompile>
 			<FormResources Include="PHSConfiguration.dfm"/>
 			<FormResources Include="PrinterRedirect.dfm"/>

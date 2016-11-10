@@ -251,6 +251,7 @@ private:	// User declarations
     TMMContactInfo SourceTempUserInfo;
     bool CheckSecurityEvent(Database::TDBTransaction &DBTransaction, int sec_ref);
     bool IsSCDAppliedOnDest(TList* Orders);
+    bool IsPWDAppliedOnDest(TList* Orders);
 
    ///clips functions
     void SaveClipItemsInStructure();
