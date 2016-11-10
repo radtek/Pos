@@ -6027,6 +6027,7 @@ void TdmMMReportData::SetupTabDetails(TStrings *TabTypes,TStrings *Tabs)
 
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 void TdmMMReportData::SetupSalesJournal(bool includeSCTaxInTax, TDateTime StartTime, TDateTime EndTime, TStrings *Terminals)
 {
    qrSalesJournal1->Close();
@@ -6184,6 +6185,7 @@ void TdmMMReportData::SetupSalesJournal(bool includeSCTaxInTax, TDateTime StartT
    qrSalesJournal1->ParamByName("StartTime")->AsDateTime	= StartTime;
    qrSalesJournal1->ParamByName("EndTime")->AsDateTime	= EndTime;
 }
+
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStrings *Discounts,TStrings *Locations)
 {
@@ -16248,8 +16250,8 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                         "ARCORDERTAXES.ARCHIVE_KEY NOT IN (SELECT a.ARCHIVE_KEY FROM ARCORDERDISCOUNTS a WHERE (A.DISCOUNT_GROUPNAME = 'Senior Citizen' AND A.DISCOUNTED_VALUE <> 0) OR (A.DISCOUNT_GROUPNAME = 'Person with Disability'))))zero_rated on ARCHIVE.ARCHIVE_KEY = zero_rated.archive_key "
         "left join(select cast(sum(coalesce(ARCBILLPAY.ROUNDING,0)) as numeric(17,4))rounding_amount, ARCBILL.Z_KEY from ARCBILLPAY inner join ARCBILL on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
                     "group by ARCBILL.Z_KEY)ROUNDING on ZEDS.Z_KEY = rounding.z_key "
-        "LEFT JOIN( SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY FROM ARCBILL where ARCBILL.ARCBILL_KEY IN(SELECT    MIN(ARCBILL.ARCBILL_KEY) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ) BEGINV ON BEGINV.Z_KEY = ARCBILL.Z_KEY "
-        "LEFT JOIN( SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY FROM ARCBILL where ARCBILL.ARCBILL_KEY IN(SELECT    MAX(ARCBILL.ARCBILL_KEY) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ) ENDINV ON ENDINV.Z_KEY = ARCBILL.Z_KEY "   
+        "LEFT JOIN( SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY FROM ARCBILL where ARCBILL.TIME_STAMP IN(SELECT    MIN(ARCBILL.TIME_STAMP) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ) BEGINV ON BEGINV.Z_KEY = ARCBILL.Z_KEY "
+        "LEFT JOIN( SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY FROM ARCBILL where ARCBILL.TIME_STAMP IN(SELECT    MAX(ARCBILL.TIME_STAMP) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ) ENDINV ON ENDINV.Z_KEY = ARCBILL.Z_KEY "
         "Where "
                         "((   "
                      "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
@@ -16270,7 +16272,39 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
 
 }
 
+//---------------------------------------------------------------------------
+void TdmMMReportData::SetupEJournal(TDateTime StartTime, TDateTime EndTime)
+{
+   qrEJournal->Close();
+   qrEJournal->SQL->Text =
+      "SELECT "
+         "DAB.ARCBILL_KEY, "
+         "DAB.time_stamp datetime, "
+         "DAB.RECEIPT receipt, "
+         "DAB.INVOICE_NUMBER "
+         "From "
+			"DAYARCBILL DAB "
+      "WHERE "
+         "DAB.Time_Stamp >= :StartTime and "
+         "DAB.Time_Stamp < :EndTime "
 
+        " UNION ALL "
+
+      "SELECT "
+         "AB.ARCBILL_KEY, "
+         "AB.time_stamp datetime, "
+         "AB.RECEIPT receipt, "
+         "AB.INVOICE_NUMBER " 
+         "From "
+			"ARCBILL AB "
+      "WHERE "
+         "AB.Time_Stamp >= :StartTime and "
+         "AB.Time_Stamp < :EndTime "
+
+         "order by 1 ";
+   qrEJournal->ParamByName("StartTime")->AsDateTime	= StartTime;
+   qrEJournal->ParamByName("EndTime")->AsDateTime	= EndTime;
+}
 
 
 

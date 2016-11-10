@@ -96,7 +96,8 @@ enum TTreeIndex {
                     FLOATAUDIT_INDEX                                      ,
                     CHECK_REMOVAL_INDEX  ,
                     REPRINT_RECEIPT_INDEX   ,
-                     REPRINT_ORDER_INDEX   ,
+                    REPRINT_ORDER_INDEX   ,
+                    E_JOURNAL_INDEX,
 			LOYALTY_INDEX												,
 					LOYALTY_BIRTHDAYS_INDEX							,
 					LOYALTY_DISC_PRODUCTS_INDEX	    			,
@@ -670,7 +671,7 @@ private:	// User declarations
 	void SetupFilterDisplay();
 
 	TReportControl *ReportControl;
-	void ShowCurrentFilter();
+	void ShowCurrentFilter(bool isEJournalReport = false);
 	void SaveCurrentFilter();
 	void AddFilterStringParams(TStrings *SQL, TStrings *Values, AnsiString FieldName, AnsiString Operator="And");
 	void AddFilterNumericParams(TStrings *SQL, TStrings *Values, AnsiString FieldName);
@@ -801,7 +802,8 @@ public:		// User declarations
     void PrintPointSpend(TReportControl *ReportControl);
     void PrintBreakdownCategory(TReportControl *ReportControl);
     void PrintStockReconcialation(TReportControl *ReportControl);
-    void PrintSalesSummaryD(TReportControl *ReportControl); 
+    void PrintSalesSummaryD(TReportControl *ReportControl);
+    void PrintEJournalReport(TReportControl *ReportControl);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmReports *frmReports;
