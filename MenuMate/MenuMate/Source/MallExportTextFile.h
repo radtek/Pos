@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
-#ifndef MallTextFileH
-#define MallTextFileH
+#ifndef MallExportTextFileH
+#define MallExportTextFileH
 //---------------------------------------------------------------------------
 class TMallTextFile: public IExporterInterface
 {
