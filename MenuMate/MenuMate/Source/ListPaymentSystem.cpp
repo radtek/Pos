@@ -68,6 +68,7 @@
 #include "LoyaltyMateUtilities.h"
 #include "ReceiptUtility.h"
 #include "StringTools.h"
+#include "EstanciaMall.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -1434,7 +1435,8 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
     if(TGlobalSettings::Instance().mallInfo.MallId != 0 && TGlobalSettings::Instance().mallInfo.IsActive != "F")
     {
-
+        TEstanciaMall estanciaMall;
+        estanciaMall.PrepareDataForDatabase(PaymentTransaction, ArcBillKey);
     }
 
 }

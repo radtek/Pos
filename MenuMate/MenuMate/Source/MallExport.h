@@ -11,5 +11,9 @@ class TMallExport: public TMallExportInterface
     virtual void PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey) = 0;
     virtual void PrepareDataForExport() = 0;
     virtual void CreateExportMedium() = 0;
+
+    public:
+    bool PushToDatabase();
+    bool Export();
 };
 #endif
