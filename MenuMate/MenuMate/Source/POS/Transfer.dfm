@@ -81,8 +81,8 @@ object frmTransfer: TfrmTransfer
       ParentColor = True
       Caption = 'Select'
       ButtonColor = 6052441
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnTransferFromClick
     end
@@ -99,8 +99,8 @@ object frmTransfer: TfrmTransfer
       ParentColor = True
       Caption = 'Select'
       ButtonColor = 6052441
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnTransferToClick
     end
@@ -179,8 +179,8 @@ object frmTransfer: TfrmTransfer
       ParentFont = False
       ParentColor = True
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       ArrowType = atUp
       OnMouseDown = btnUpMouseDown
@@ -200,8 +200,8 @@ object frmTransfer: TfrmTransfer
       ParentFont = False
       ParentColor = True
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       ArrowType = atDown
       OnMouseDown = btnDownMouseDown
@@ -221,8 +221,8 @@ object frmTransfer: TfrmTransfer
       ParentFont = False
       ParentColor = True
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       ArrowType = atUp
       OnMouseDown = btnSourceUpMouseDown
@@ -242,8 +242,8 @@ object frmTransfer: TfrmTransfer
       ParentFont = False
       ParentColor = True
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       ArrowType = atDown
       OnMouseDown = btnSourceDownMouseDown
@@ -273,8 +273,8 @@ object frmTransfer: TfrmTransfer
       ParentColor = True
       Caption = 'Cancel'
       ButtonColor = 2200566
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnCloseClick
     end
@@ -292,8 +292,8 @@ object frmTransfer: TfrmTransfer
       ParentColor = True
       Caption = 'Ok'
       ButtonColor = 18944
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnOKClick
     end
