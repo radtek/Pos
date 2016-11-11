@@ -1,12 +1,12 @@
 //---------------------------------------------------------------------------
 
-#ifndef EstanciaH
-#define EstanciaH
+#ifndef EstanciaMallH
+#define EstanciaMallH
 
 //---------------------------------------------------------------------------
 
 
-class TEstancia : public TMallExport
+class TEstanciaMall : public TMallExport
 {
 //
 };

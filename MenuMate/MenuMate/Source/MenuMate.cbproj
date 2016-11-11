@@ -1157,26 +1157,6 @@
 				<DependentOn>RunRateTcpStreamSender.h</DependentOn>
 				<BuildOrder>716</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Malls\ManagerMallSetup.cpp">
-				<DependentOn>Malls\ManagerMallSetup.h</DependentOn>
-				<BuildOrder>722</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Malls\MallExportSalesData.cpp">
-				<DependentOn>Malls\MallExportSalesData.h</DependentOn>
-				<BuildOrder>721</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Malls\Estancia.cpp">
-				<DependentOn>Malls\Estancia.h</DependentOn>
-				<BuildOrder>723</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Malls\MallExportSettings.cpp">
-				<DependentOn>Malls\MallExportSettings.h</DependentOn>
-				<BuildOrder>725</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Malls\MallTextFile.cpp">
-				<DependentOn>Malls\MallTextFile.h</DependentOn>
-				<BuildOrder>724</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="ManagerVoucherElectronic.cpp">
 				<DependentOn>ManagerVoucherElectronic.h</DependentOn>
 				<BuildOrder>713</BuildOrder>
@@ -3202,21 +3182,41 @@
 				<DependentOn>SCDPWDChecker.h</DependentOn>
 				<BuildOrder>726</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Malls\MallExportInterface.cpp">
-				<DependentOn>Malls\MallExportInterface.h</DependentOn>
-				<BuildOrder>726</BuildOrder>
+			<CppCompile Include="MallExportSettings.cpp">
+				<DependentOn>MallExportSettings.h</DependentOn>
+				<BuildOrder>720</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Malls\MallExport.cpp">
-				<DependentOn>Malls\MallExport.h</DependentOn>
-				<BuildOrder>727</BuildOrder>
+			<CppCompile Include="MallExport.cpp">
+				<DependentOn>MallExport.h</DependentOn>
+				<BuildOrder>721</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportSalesData.cpp">
+				<DependentOn>MallExportSalesData.h</DependentOn>
+				<BuildOrder>722</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportData.cpp">
+				<DependentOn>MallExportData.h</DependentOn>
+				<BuildOrder>723</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="EstanciaMall.cpp">
+				<DependentOn>EstanciaMall.h</DependentOn>
+				<BuildOrder>724</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="IExporterInterface.cpp">
 				<DependentOn>IExporterInterface.h</DependentOn>
-				<BuildOrder>728</BuildOrder>
+				<BuildOrder>725</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Malls\MallExportData.cpp">
-				<DependentOn>Malls\MallExportData.h</DependentOn>
-				<BuildOrder>729</BuildOrder>
+			<CppCompile Include="MallExportInterface.cpp">
+				<DependentOn>MallExportInterface.h</DependentOn>
+				<BuildOrder>726</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallTextFile.cpp">
+				<DependentOn>MallTextFile.h</DependentOn>
+				<BuildOrder>727</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ManagerMallSetup.cpp">
+				<DependentOn>ManagerMallSetup.h</DependentOn>
+				<BuildOrder>728</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Mall.cpp">
 				<DependentOn>Mall.h</DependentOn>
