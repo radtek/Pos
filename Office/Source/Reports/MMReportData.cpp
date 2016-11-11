@@ -5617,22 +5617,21 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
 		"From "
 			"ArcBill Inner Join Security On "
 				"ArcBill.Security_Ref = Security.Security_Ref "
-			"left Join Archive On "
+			"inner Join Archive On "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
 			"left join POINTSTRANSACTIONS on "
 			    "POINTSTRANSACTIONS.INVOICE_NUMBER = ArcBill.INVOICE_NUMBER "
-            "left join contacts c on "
-                 "c.contacts_key = POINTSTRANSACTIONS.CONTACTS_KEY "
             //"left join contacts c on "
-            //"     c.contacts_key = archive.loyalty_key "
+                // "c.contacts_key = POINTSTRANSACTIONS.CONTACTS_KEY "
+            "left join contacts c on "
+            "     c.contacts_key = archive.loyalty_key "
            " LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
 		"FROM ARCORDERDISCOUNTS a "
 		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 
-
 		"Where "
-
+        
 		    "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and  "
 		    "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and  "
 			"ArcBill.Invoice_Number = :in and "
@@ -5646,6 +5645,46 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
 			"Security.Terminal_Name,"
 			"Security.From_Val, "
             "billed_to "
+
+
+ 			"union all "
+            
+            "Select "
+			"ArcBill.ArcBill_Key, "
+			"Security.Time_Stamp, "
+			"ArcBill.Invoice_Number, "
+			"cast(ArcBill.Total as numeric(17, 4)) Total, "
+			"ArcBill.Patron_Count, "
+			"Security.Terminal_Name, "
+			"Security.From_Val Staff_Name, "
+			"Cast(0 As Numeric(17, 4))  Discount, "
+			"Cast(Null As VarChar(50)) Pay_Type, "
+			"Cast(0 As Numeric(17, 4)) SubTotal, "
+            "case when (c.name is null) then 'Non-member transaction' "
+                                       "else (c.name ||' '|| c.LAST_NAME) "
+                 "end billed_to "
+		"From "
+		"POINTSTRANSACTIONS "
+		"inner join ArcBill on "
+			    "POINTSTRANSACTIONS.INVOICE_NUMBER = ArcBill.INVOICE_NUMBER "
+			 " left Join Security On "
+				"ArcBill.Security_Ref = Security.Security_Ref "
+
+            "left join contacts c on c.contacts_key = POINTSTRANSACTIONS.CONTACTS_KEY "
+
+		"Where "
+            "ArcBill.Invoice_Number = :in and "
+			"Security.Security_Event = 'Billed By' "
+		"Group By "
+			"ArcBill.ArcBill_Key, "
+			"Security.Time_Stamp, "
+			"ArcBill.Invoice_Number, "
+			"ArcBill.Total, "
+			"ArcBill.Patron_Count, "
+			"Security.Terminal_Name, "
+			"Security.From_Val, "
+            "billed_to "
+
 		"Order By "
 			"4 Asc;";
 	qrBillPayments->ParamByName("in")->AsString = InvoiceNumber;
@@ -5754,20 +5793,17 @@ void TdmMMReportData::SetupBillDetails(TDateTime StartTime, TDateTime EndTime, T
 		"From "
 			"ArcBill Left Join Security On "
 				"ArcBill.Security_Ref = Security.Security_Ref "
-			"Left Join Archive On "
+			"inner Join Archive On "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
-			"left join POINTSTRANSACTIONS on "
-			    "POINTSTRANSACTIONS.INVOICE_NUMBER = ArcBill.INVOICE_NUMBER "
+            //"left join contacts c on "
+                // "c.contacts_key = POINTSTRANSACTIONS.CONTACTS_KEY "                
             "left join contacts c on "
-                 "c.contacts_key = POINTSTRANSACTIONS.CONTACTS_KEY "                
-           // "left join contacts c on "
-              //  "c.contacts_key = archive.loyalty_key "
+                "c.contacts_key = archive.loyalty_key "
        " LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
 		"FROM ARCORDERDISCOUNTS a "
 		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
-	"Where "
-
+	"Where "  
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and "
 			"Security.Time_Stamp >= :StartTime And "
@@ -5784,17 +5820,71 @@ void TdmMMReportData::SetupBillDetails(TDateTime StartTime, TDateTime EndTime, T
 												ParamString(Terminals->Count, "Security.Terminal_Name", "TerminalParam") + ")";
 	}
 	qrBillPayments->SQL->Text		=	qrBillPayments->SQL->Text +
-		"Group By "
-			"ArcBill.ArcBill_Key,"
-			"Security.Time_Stamp,"
-			"ArcBill.Invoice_Number,"
-			"ArcBill.Total,"
-			"ArcBill.Patron_Count,"
-			"Security.Terminal_Name,"
+
+    		"Group By "
+			"ArcBill.ArcBill_Key, "
+			"Security.Time_Stamp, "
+			"ArcBill.Invoice_Number, "
+			"ArcBill.Total, "
+			"ArcBill.Patron_Count, "
+			"Security.Terminal_Name, "
 			"Security.From_Val, "
             "billed_to "
+
+ 			"union all "
+            
+            "Select "
+			"ArcBill.ArcBill_Key, "
+            "0 as DayArcBill_Key,"
+			"Security.Time_Stamp, "
+			"ArcBill.Invoice_Number, "
+			"cast(ArcBill.Total as numeric(17, 4)) Total, "
+			"ArcBill.Patron_Count, "
+			"Security.Terminal_Name, "
+			"Security.From_Val Staff_Name, "
+			"Cast(0 As Numeric(17, 4))  Discount, "
+			"Cast(Null As VarChar(50)) Pay_Type, "
+			"Cast(0 As Numeric(17, 4)) SubTotal, "
+            "case when (c.name is null) then 'Non-member transaction' "
+                                       "else (c.name ||' '|| c.LAST_NAME) "
+                 "end billed_to "
+		"From "
+		"POINTSTRANSACTIONS "
+		"inner join ArcBill on "
+			    "POINTSTRANSACTIONS.INVOICE_NUMBER = ArcBill.INVOICE_NUMBER "
+			 " left Join Security On "
+				"ArcBill.Security_Ref = Security.Security_Ref "
+
+            "left join contacts c on c.contacts_key = POINTSTRANSACTIONS.CONTACTS_KEY "
+
+	"Where "
+			"Security.Time_Stamp >= :StartTime And "
+			"Security.Time_Stamp < :EndTime And "
+			"Security.Security_Event = 'Billed By' ";
+        if (Invoices->Count)
+        {
+            qrBillPayments->SQL->Text	=	qrBillPayments->SQL->Text + "And (" +
+                                                    ParamString(Invoices->Count, "ArcBill.Invoice_Number", "InvoiceParam") + ")";
+        }
+        if (Terminals->Count)
+        {
+            qrBillPayments->SQL->Text	=	qrBillPayments->SQL->Text + "And (" +
+                                                    ParamString(Terminals->Count, "Security.Terminal_Name", "TerminalParam") + ")";
+        }
+        qrBillPayments->SQL->Text		=	qrBillPayments->SQL->Text +
+		"Group By "
+			"ArcBill.ArcBill_Key, "
+			"Security.Time_Stamp, "
+			"ArcBill.Invoice_Number, "
+			"ArcBill.Total, "
+			"ArcBill.Patron_Count, "
+			"Security.Terminal_Name, "
+			"Security.From_Val, "
+            "billed_to "
+
 		"Order By "
-			"4 Asc";
+			"4 Asc;";
+
 	for (int i=0; i<Invoices->Count; i++)
 	{
 		qrBillPayments->ParamByName("InvoiceParam" + IntToStr(i))->AsString = Invoices->Strings[i];
