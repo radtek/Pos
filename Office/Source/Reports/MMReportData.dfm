@@ -4,7 +4,7 @@ object dmMMReportData: TdmMMReportData
   Left = 65532
   Top = 65532
   Height = 715
-  Width = 1378
+  Width = 1292
   object qrMenu: TIBQuery
     Database = dmMMData.dbMenuMate
     Transaction = MMTrans
