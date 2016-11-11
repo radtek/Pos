@@ -137,11 +137,15 @@ void TApplyParser::UpdateDiscountsTable6_32(TDBControl* const inDBControl)
 void TApplyParser::update6_33Tables()
 {
     Create6_33Malls(_dbControl);
+    Create6_33GeneratorMallExportMallId(_dbControl);
     Create6_33MallExportSettings(_dbControl);
     Create6_33MallExportSettingsMapping(_dbControl);
     Create6_33MallExportSettingsMappingValues(_dbControl);
     Create6_33MallExportSales(_dbControl);
     Create6_33GeneratorMallExportSaleKey(_dbControl);
+    Create6_33GeneratorMallExportsSettingKey(_dbControl);
+    Create6_33GeneratorMallExportsSettingMappingKey(_dbControl);
+    Create6_33GeneratorMallExportsSettingValueAttributes(_dbControl);
     Create6_33MallExportSettingValuesAttributes(_dbControl);
     Insert6_33Malls(_dbControl);
     Insert6_33MallExport_Settings(_dbControl);
@@ -173,7 +177,7 @@ void TApplyParser::Create6_33MallExportSettings(TDBControl* const inDBControl)
 		executeQuery(
                 "CREATE TABLE MALLEXPORT_SETTINGS "
                 "( "
-                "   ID INTEGER NOT NULL PRIMARY KEY, "
+                "   MALLEXPORT_SETTING_KEY INTEGER NOT NULL PRIMARY KEY, "
                 "   NAME VARCHAR(50), "
                 "   CONTROL_NAME VARCHAR(100), "
                 "   IS_UI_REQUIRED char(1) default 'F' "
@@ -190,7 +194,7 @@ void TApplyParser::Create6_33MallExportSettingsMapping(TDBControl* const inDBCon
 		executeQuery(
                 "CREATE TABLE MALLEXPORT_SETTINGS_MAPPING"
                 "( "
-                "   ID INTEGER NOT NULL PRIMARY KEY, "
+                "   MALLEXPORT_SETTING_MAP_KEY INTEGER NOT NULL PRIMARY KEY, "
                 "   MALLEXPORT_SETTING_ID INTEGER, "
                 "   MALL_ID INTEGER, "
                 " FOREIGN KEY (MALL_ID) REFERENCES MALLS (MALL_ID)  ON DELETE CASCADE "
@@ -207,7 +211,7 @@ void TApplyParser::Create6_33MallExportSettingsMappingValues(TDBControl* const i
 		executeQuery(
                 "CREATE TABLE MALLEXPORT_SETTINGS_VALUES"
                 "( "
-                "   MALLEXPORTSETTING_KEY INTEGER NOT NULL PRIMARY KEY, "
+                "   MALLEXPORT_SETTING_VALUE_KEY INTEGER NOT NULL PRIMARY KEY, "
                 "   MALLEXPORTSETTING_ID INTEGER NOT NULL , "
                 "   FIELD_VALUE VARCHAR(50), "
                 "   FIELD_TYPE VARCHAR(50) "
@@ -227,25 +231,12 @@ void TApplyParser::Create6_33MallExportSettingValuesAttributes(TDBControl* const
                 "   MALLEXPORT_VALUES_KEY INTEGER NOT NULL , "
                 "   ATTRIBUTE_NAME VARCHAR(50), "
                 "   ATTRIBUTE_VALUE VARCHAR(50), "
-                "   FOREIGN KEY (MALLEXPORT_VALUES_KEY) REFERENCES MALLEXPORT_SETTINGS_VALUES (MALLEXPORTSETTING_KEY)  ON DELETE CASCADE "
+                "   FOREIGN KEY (MALLEXPORT_VALUES_KEY) REFERENCES MALLEXPORT_SETTINGS_VALUES (MALLEXPORT_SETTING_VALUE_KEY)  ON DELETE CASCADE "
                 ");",
 			inDBControl );
      }
 }
 //----------------------------------------------------------------------------------------------------------
-void TApplyParser::Create6_33GeneratorMallExportSaleKey(TDBControl* const inDBControl)
-{
-    if( !generatorExists("GEN_MALLEXPORT_SALE_KEY", _dbControl) )
-        {
-            executeQuery(
-            "CREATE GENERATOR GEN_MALLEXPORT_SALE_KEY;",
-            inDBControl);
-            executeQuery(
-            "SET GENERATOR GEN_MALLEXPORT_SALE_KEY TO 0; ",
-            inDBControl );
-        }
-}
-//----------------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
 {
      if ( !tableExists( "MALLEXPORT_SALES", inDBControl ) )
@@ -270,6 +261,84 @@ void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
      }
 }
 //-------------------------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33GeneratorMallExportMallId(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MALLEXPORT_MALL_ID", _dbControl) )
+        {
+            executeQuery(
+            "CREATE GENERATOR GEN_MALLEXPORT_MALL_ID;",
+            inDBControl);
+            executeQuery(
+            "SET GENERATOR GEN_MALLEXPORT_MALL_ID TO 0; ",
+            inDBControl );
+        }
+}
+//----------------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33GeneratorMallExportsSettingKey(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MALLEXPORT_SETTING_KEY", _dbControl) )
+        {
+            executeQuery(
+            "CREATE GENERATOR GEN_MALLEXPORT_SETTING_KEY;",
+            inDBControl);
+            executeQuery(
+            "SET GENERATOR GEN_MALLEXPORT_SETTING_KEY TO 0; ",
+            inDBControl );
+        }
+}
+//----------------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33GeneratorMallExportsSettingMappingKey(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MALLEXPORT_SETTING_MAP_KEY", _dbControl) )
+        {
+            executeQuery(
+            "CREATE GENERATOR GEN_MALLEXPORT_SETTING_MAP_KEY;",
+            inDBControl);
+            executeQuery(
+            "SET GENERATOR GEN_MALLEXPORT_SETTING_MAP_KEY TO 0; ",
+            inDBControl );
+        }
+}
+//----------------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33GeneratorMallExportsSettingValues(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MALLEXPORT_SETTING_VAL_KEY", _dbControl) )
+        {
+            executeQuery(
+            "CREATE GENERATOR GEN_MALLEXPORT_SETTING_VAL_KEY;",
+            inDBControl);
+            executeQuery(
+            "SET GENERATOR GEN_MALLEXPORT_SETTING_VAL_KEY TO 0; ",
+            inDBControl );
+        }
+}
+//----------------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33GeneratorMallExportsSettingValueAttributes(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MALLEXPORT_ATTRIBUTE_KEY", _dbControl) )
+        {
+            executeQuery(
+            "CREATE GENERATOR GEN_MALLEXPORT_ATTRIBUTE_KEY;",
+            inDBControl);
+            executeQuery(
+            "SET GENERATOR GEN_MALLEXPORT_ATTRIBUTE_KEY TO 0; ",
+            inDBControl );
+        }
+}
+//----------------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33GeneratorMallExportSaleKey(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MALLEXPORT_SALE_KEY", _dbControl) )
+        {
+            executeQuery(
+            "CREATE GENERATOR GEN_MALLEXPORT_SALE_KEY;",
+            inDBControl);
+            executeQuery(
+            "SET GENERATOR GEN_MALLEXPORT_SALE_KEY TO 0; ",
+            inDBControl );
+        }
+}
+//----------------------------------------------------------------------------------------------------------------
 void TApplyParser::Insert6_33Malls(TDBControl* const inDBControl)
 {
     TDBTransaction transaction( *_dbControl );
@@ -297,94 +366,101 @@ void TApplyParser::Insert6_33MallExport_Settings(TDBControl* const inDBControl)
     try
     {
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+        TIBSQL *SelectGenQuery    = transaction.Query( transaction.AddQuery() );
+        int generator_Val;
+
+        SelectGenQuery->Close();
+        SelectGenQuery->SQL->Text = "SELECT GEN_ID(GEN_MALLEXPORT_SETTING_KEY, 1) FROM RDB$DATABASE";
+        SelectGenQuery->ExecQuery();
+        generator_Val = SelectGenQuery->Fields[0]->AsInteger;
 
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES (1,'TENANT_NUMBER','edTenantNo1','T') ";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES (1,'TENANT_NUMBER','edTenantNo1','T') ";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(2,'FILE_LOCATION','edMallPath1','T') ";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(2,'FILE_LOCATION','edMallPath1','T') ";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES (3,'CLASS_CODE','edClassCode1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES (3,'CLASS_CODE','edClassCode1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(4,'TRADE_CODE','edTradeCode1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(4,'TRADE_CODE','edTradeCode1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(5,'OUTLET_NUMBER','edOutletCode1','T') ";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(5,'OUTLET_NUMBER','edOutletCode1','T') ";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(6,'BRANCH_CODE','edBranchCode1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(6,'BRANCH_CODE','edBranchCode1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(7,'TERMINAL_NUMBER','edTerminalNo1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(7,'TERMINAL_NUMBER','edTerminalNo1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(8,'SERIAL_NUMBER','edSerialNo1','T') ";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(8,'SERIAL_NUMBER','edSerialNo1','T') ";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(9,'ASSIGN_SALES_TYPE','btnAssignSalesType1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(9,'ASSIGN_SALES_TYPE','btnAssignSalesType1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(10,'FTP_SERVER','edFTPServer1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(10,'FTP_SERVER','edFTPServer1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(11,'FTP_PATH','edFTPPath1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(11,'FTP_PATH','edFTPPath1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(12,'FTP_USER_NAME','edFTPUserName1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(12,'FTP_USER_NAME','edFTPUserName1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(13,'FTP_PASSWORD','edFTPPassword1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(13,'FTP_PASSWORD','edFTPPassword1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(14,'Enable_Consolidated_Report','cbEnableConsolidatedRep1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(14,'Enable_Consolidated_Report','cbEnableConsolidatedRep1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(15,'Consolidated_DB_Paths','edConsolidatedDBPaths1','T')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(15,'Consolidated_DB_Paths','edConsolidatedDBPaths1','T')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(16,'Type_Of_File','File Type','F')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(16,'Type_Of_File','File Type','F')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(17,'Header_Width','Header Width','F')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(17,'Header_Width','Header Width','F')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(18,'File_Creation_Period','File Creation','F')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(18,'File_Creation_Period','File Creation','F')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(19,'Required_On_FTP_Server','Load TO FTP Server','F')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(19,'Required_On_FTP_Server','Load TO FTP Server','F')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(20,'Include_In_Existing','Append File','F')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(20,'Include_In_Existing','Append File','F')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(21,'File_Naming_Convention','File Name','F')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(21,'File_Naming_Convention','File Name','F')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(ID,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(22,'File_Header','File Header','F')";
+                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(22,'File_Header','File Header','F')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         transaction.Commit();

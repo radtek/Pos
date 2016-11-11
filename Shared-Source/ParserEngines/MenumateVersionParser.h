@@ -800,12 +800,17 @@ namespace MenumateVersionParser
 		void upgrade6_33Tables();
         void update6_33Tables();
         void Create6_33Malls(TDBControl* const inDBControl);
+        void Create6_33GeneratorMallExportMallId(TDBControl* const inDBControl);
         void Create6_33MallExportSettings(TDBControl* const inDBControl);
         void Create6_33MallExportSettingsMapping(TDBControl* const inDBControl);
         void Create6_33MallExportSettingsMappingValues(TDBControl* const inDBControl);
         void Create6_33MallExportSales(TDBControl* const inDBControl);
         void Create6_33MallExportSettingValuesAttributes(TDBControl* const inDBControl);
         void Create6_33GeneratorMallExportSaleKey(TDBControl* const inDBControl);
+        void Create6_33GeneratorMallExportsSettingKey(TDBControl* const inDBControl);
+        void Create6_33GeneratorMallExportsSettingMappingKey(TDBControl* const inDBControl);
+        void Create6_33GeneratorMallExportsSettingValues(TDBControl* const inDBControl);
+        void Create6_33GeneratorMallExportsSettingValueAttributes(TDBControl* const inDBControl);
         void Insert6_33Malls(TDBControl* const inDBControl);
         void Insert6_33MallExport_Settings(TDBControl* const inDBControl);
         void Insert6_33MallExport_Settings_Mapping(TDBControl* const inDBControl);
