@@ -5,8 +5,8 @@
 //---------------------------------------------------------------------------
 class IExporterInterface
 {
-    protected:
+    public:
     virtual void WriteToFile()=0;
 
-}
+};
 #endif

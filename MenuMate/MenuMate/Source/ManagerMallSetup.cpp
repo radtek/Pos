@@ -162,12 +162,12 @@ TMall TManagerMallSetup::LoadActiveMallSettings(Database::TDBTransaction &dbTran
         ibInternalQuery->Close();
         ibInternalQuery->SQL->Clear();
         ibInternalQuery->SQL->Text = "SELECT * FROM MALLEXPORT_SETTINGS_VALUES msv "
-                                        "INNER JOIN MALLEXPORT_SETTINGS a   on a.ID = msv.MALLEXPORTSETTING_ID ";
+                                        "INNER JOIN MALLEXPORT_SETTINGS a   on a.MALLEXPORT_SETTING_KEY = msv.MALLEXPORTSETTING_ID ";
         ibInternalQuery->ExecQuery();
         for(; !ibInternalQuery->Eof; ibInternalQuery->Next())
         {
             TMallExportSettings settings;
-            settings.MallExportSettingMappingId = ibInternalQuery->FieldByName("MALLEXPORTSETTING_KEY")->AsInteger;
+            settings.MallExportSettingMappingId = ibInternalQuery->FieldByName("MALLEXPORT_SETTING_VALUE_KEY")->AsInteger;
             settings.MallExportSettingId =  ibInternalQuery->FieldByName("MALLEXPORTSETTING_ID")->AsInteger;
             settings.Name =  ibInternalQuery->FieldByName("NAME")->AsString;
             settings.ControlName = ibInternalQuery->FieldByName("CONTROL_NAME")->AsString;

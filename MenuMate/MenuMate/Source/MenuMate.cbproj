@@ -3,7 +3,7 @@
 			<ProjectGuid>{192EBDBE-B1AC-4977-ACF9-0BDD61E6D32A}</ProjectGuid>
 			<ProjectType>CppVCLApplication</ProjectType>
 			<MainSource>MenuMate.cpp</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -3210,8 +3210,8 @@
 				<DependentOn>MallExportInterface.h</DependentOn>
 				<BuildOrder>726</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallTextFile.cpp">
-				<DependentOn>MallTextFile.h</DependentOn>
+			<CppCompile Include="MallExportTextFile.cpp">
+				<DependentOn>MallExportTextFile.h</DependentOn>
 				<BuildOrder>727</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ManagerMallSetup.cpp">
