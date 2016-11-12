@@ -20,6 +20,7 @@ UnicodeString fieldNames[NUMBER_OF_FIELDS] =
             "Store Specific Discount 2" , "Store Specific Discount 3" , "Store Specific Discount 4" , "Store Specific Discount 5" ,"Total VAT/Tax Amount" ,
             "Total Net Sales Amount" ,"Grand Total Net Sales"
         };
+
 //enum ExportValueType {STRING, INTEGER, CURRENCY, TIMESTAMP};
 
 
