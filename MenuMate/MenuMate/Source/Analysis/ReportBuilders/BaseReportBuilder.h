@@ -36,6 +36,7 @@ private:
 
 	TGlobalSettings* _globalSettings;
 	Database::TDBTransaction*  _dbTransaction;
+    bool ValidateReportSection(ReportSectionType reportSectionType);
 };
 
 #endif

@@ -18,10 +18,6 @@
 __fastcall TfrmReports::TfrmReports(TComponent* Owner)
 	: TZForm(Owner)
 {
-	if(TGlobalSettings::Instance().EnableBlindBalances)
-	{
-		btnXReport->Visible = false;
-	}
 
 }
 
