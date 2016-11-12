@@ -276,11 +276,11 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
             {
                 //OldAccumulatedSalesVatable
                 NewAccumulatedSalesVatable +=
-                TotalGrossAmountVatable += Order->PriceLevelCustom > 0 ? Order->PriceLevelCustom + fabs(Order->TotalAdjustment()) : Order->PriceLevel1 + fabs(Order->TotalAdjustment());
+                TotalGrossAmountVatable += Order->PriceEach_BillCalc() + fabs(Order->TotalAdjustment());
                 TotalDeductionsVatable +=  ;
                 TotalPromoSalesAmountVatable += promoDiscount;
                 TotalPWDDiscountVatable += pwsDiscount;
-                TotalRefundAmountVatable += Order->GetQty() < 0?
+                TotalRefundAmountVatable += Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;
                 TotalReturnedItemsAmountVatable +=
                 TotalOtherTaxesVatable +=
                 TotalServiceChargeAmountVatable +=
