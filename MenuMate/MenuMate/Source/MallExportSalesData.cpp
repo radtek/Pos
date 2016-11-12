@@ -9,9 +9,9 @@
 
 #pragma package(smart_init)
 
-void TMallExportSalesData::SetMallExportSalesId(int mallExportSalesId)
+void TMallExportSalesData::SetMallExportSalesKey(int mallExportSaleKey)
 {
-    _mallExportSalesId = mallExportSalesId;
+    _mallExportSaleKey = mallExportSaleKey;
 }
 //---------------------------------------------------------------------------
 void TMallExportSalesData::SetMallKey(int mallKey)

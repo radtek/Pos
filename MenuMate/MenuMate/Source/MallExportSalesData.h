@@ -7,7 +7,7 @@
 class TMallExportSalesData
 {
     private:
-    int _mallExportSalesId;
+    int _mallExportSaleKey;
     int _mallKey;
     UnicodeString _field;
     UnicodeString _dataValue;
@@ -18,7 +18,7 @@ class TMallExportSalesData
     int _arcBillKey;
     int _zKey;
 
-    void SetMallExportSalesId(int mallexportSalesId);
+    void SetMallExportSalesKey(int mallexportSalesId);
     void SetMallKey(int mallKey);
     void SetField(UnicodeString field);
     void SetDataValue(UnicodeString dataValue);
@@ -30,7 +30,7 @@ class TMallExportSalesData
     void SetZKey(int zKey);
 
     public:
-    __property int MallExportSalesId = {read = _mallExportSalesId, write = SetMallExportSalesId};
+    __property int MallExportSalesId = {read = _mallExportSaleKey, write = SetMallExportSalesKey};
     __property int MallKey = {read = _mallKey, write = SetMallKey};
     __property UnicodeString Field = {read = _field, write = SetField};
     __property UnicodeString DataValue = {read = _dataValue, write = SetDataValue};
