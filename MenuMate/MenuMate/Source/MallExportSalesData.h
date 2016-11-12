@@ -10,6 +10,7 @@ class TMallExportSalesData
     int _mallExportSaleKey;
     int _mallKey;
     UnicodeString _field;
+    int _fieldIndex;
     UnicodeString _dataValue;
     UnicodeString _dataValueType;
     int _enumType;
@@ -21,6 +22,7 @@ class TMallExportSalesData
     void SetMallExportSalesKey(int mallexportSalesId);
     void SetMallKey(int mallKey);
     void SetField(UnicodeString field);
+    void SetFieldIndex(int fieldIndex);
     void SetDataValue(UnicodeString dataValue);
     void SetDataValueType(UnicodeString dataValueType);
     void SetEnumType(int enumType);
@@ -33,6 +35,7 @@ class TMallExportSalesData
     __property int MallExportSalesId = {read = _mallExportSaleKey, write = SetMallExportSalesKey};
     __property int MallKey = {read = _mallKey, write = SetMallKey};
     __property UnicodeString Field = {read = _field, write = SetField};
+    __property int FieldIndex = {read = _fieldIndex, write = SetFieldIndex};
     __property UnicodeString DataValue = {read = _dataValue, write = SetDataValue};
     __property UnicodeString DataValueType = {read = _dataValueType, write = SetDataValueType};
     __property int enumType = {read = _enumType, write = SetEnumType};

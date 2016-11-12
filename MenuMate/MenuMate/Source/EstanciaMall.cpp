@@ -43,6 +43,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     }
     salesData.Field = "Tenant Code";
     salesData.DataValueType = "UnicodeString";
+    salesData.FieldIndex = 1;
     salesData.enumType = 10;
     salesData.DateCreated = Now();
     salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
@@ -54,6 +55,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
     salesData.DataValue = terminalNumber;
+    salesData.FieldIndex = 2;
     salesData.Field = "POS Terminal Number";
     salesData.DataValueType = "Integer";
     salesData.enumType = 10;
@@ -68,6 +70,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
     salesData.DataValue = Now().FormatString("mmddyyyy");
     salesData.Field = "Date (mmddyyyy)";
+    salesData.FieldIndex = 3;
     salesData.DataValueType = "TDateTime";
     salesData.enumType = 10;
     salesData.DateCreated = Now();
@@ -81,6 +84,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
     salesData.DataValue = Now().FormatString("mmddyyyy");
     salesData.Field = "Date (mmddyyyy)";
+    salesData.FieldIndex = 4;
     salesData.DataValueType = "TDateTime";
     salesData.enumType = 10;
     salesData.DateCreated = Now();
@@ -94,6 +98,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
     salesData.DataValue = Now().FormatString("mmddyyyy");
     salesData.Field = "Old Accumulated Sales";
+    salesData.FieldIndex = 5;
     salesData.DataValueType = "Currency";
     salesData.enumType = 10;
     salesData.DateCreated = Now();
@@ -107,6 +112,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
     salesData.DataValue = Now().FormatString("mmddyyyy");
     salesData.Field = "New Accumulated Sales";
+    salesData.FieldIndex = 6;
     salesData.DataValueType = "Currency";
     salesData.enumType = 10;
     salesData.DateCreated = Now();
@@ -120,6 +126,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
     salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal + fabs(paymentTransaction.Money.TotalAdjustment);
     salesData.Field = "Total Gross Amount";
+    salesData.FieldIndex = 7;
     salesData.DataValueType = "Currency";
     salesData.enumType = 10;
     salesData.DateCreated = Now();
@@ -133,6 +140,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
     salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal + fabs(paymentTransaction.Money.TotalAdjustment);
     salesData.Field = "Total Gross Amount";
+    salesData.FieldIndex = 8;
     salesData.DataValueType = "Currency";
     salesData.enumType = 10;
     salesData.DateCreated = Now();

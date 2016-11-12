@@ -246,6 +246,7 @@ void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
                 "( "
                 "   MALLEXPORT_SALE_KEY INTEGER NOT NULL PRIMARY KEY, "
                 "   MALL_KEY INTEGER , "
+                "   FIELD_INDEX INTEGER, "
                 "   FIELD VARCHAR(50), "
                 "   VALUE_GROUP VARCHAR(50), "
                 "   FIELD_VALUE VARCHAR(50), "

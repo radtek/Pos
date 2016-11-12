@@ -24,6 +24,11 @@ void TMallExportSalesData::SetField(UnicodeString field)
     _field = field;
 }
 //---------------------------------------------------------------------------
+void TMallExportSalesData::SetFieldIndex(int fieldIndex)
+{
+    _fieldIndex = fieldIndex;
+}
+//---------------------------------------------------------------------------
  void TMallExportSalesData::SetDataValue(UnicodeString dataValue)
 {
     _dataValue = dataValue;
