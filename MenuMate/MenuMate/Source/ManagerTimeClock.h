@@ -42,6 +42,8 @@ class TManagerTimeClock
    void ConvertTo(int &in);
 	void GetLoggedInDetails(Database::TDBTransaction &DBTransaction,TDateTime LogInTime, std::vector<TStaffHours> &inStaffHours,UnicodeString inDevicename);
 	void SetLoggedInOutDetails(Database::TDBTransaction &DBTransaction, TStaffHoursContainer::iterator inStaffHours);
+    TDateTime GetRoundedLoginTime(Database::TDBTransaction &DBTransaction, TDateTime loginTime, int contact_time_key);
+    TDateTime GetRoundedLogOutTime(Database::TDBTransaction &DBTransaction, TDateTime loginTime, int contact_time_key);
 };
 
 

@@ -517,8 +517,8 @@ void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransacti
 
 			TStaffHours sh("",
 				IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger,
-				IBInternalQuery->FieldByName("LOGIN_DATETIME")->AsDateTime,
-				IBInternalQuery->FieldByName("LOGOUT_DATETIME")->AsDateTime,
+                GetRoundedLoginTime(DBTransaction, IBInternalQuery->FieldByName("LOGIN_DATETIME")->AsDateTime, IBInternalQuery->FieldByName("CONTACTTIME_KEY")->AsInteger),
+                GetRoundedLogOutTime(DBTransaction, IBInternalQuery->FieldByName("LOGIN_DATETIME")->AsDateTime, IBInternalQuery->FieldByName("CONTACTTIME_KEY")->AsInteger),
 				IBInternalQuery->FieldByName("TIMECLOCKLOCATIONS_KEY")->AsInteger,
 				NULL,
 				IBInternalQuery->FieldByName("CONTACTTIME_KEY")->AsInteger,
@@ -535,6 +535,62 @@ void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransacti
 	{
 		throw;
 	}
+}
+
+
+
+TDateTime TManagerTimeClock::GetRoundedLoginTime(Database::TDBTransaction &DBTransaction, TDateTime loginTime, int contact_time_key)
+{
+   TDateTime RetVal = 0;
+   try
+   {
+		Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+		DBTransaction.RegisterQuery(IBInternalQuery);
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+         "SELECT ROUNDED_LOGIN_DATETIME FROM ROUNDEDCONTACTTIME "
+         " WHERE LOGIN_DATETIME = :LOGIN_DATETIME AND CONTACTTIME_KEY = :CONTACTTIME_KEY;";
+		IBInternalQuery->ParamByName("LOGIN_DATETIME")->AsDateTime = loginTime;
+		IBInternalQuery->ParamByName("CONTACTTIME_KEY")->AsInteger = contact_time_key;
+		IBInternalQuery->ExecQuery();
+      if(IBInternalQuery->RecordCount)
+      {
+			RetVal = IBInternalQuery->FieldByName("ROUNDED_LOGIN_DATETIME")->AsDateTime;
+      }
+	}
+	catch (Exception &E)
+	{
+		throw;
+	}
+   return RetVal;
+}
+
+TDateTime TManagerTimeClock::GetRoundedLogOutTime(Database::TDBTransaction &DBTransaction, TDateTime loginTime, int contact_time_key)
+{
+   TDateTime RetVal = 0;
+   try
+   {
+		Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+		DBTransaction.RegisterQuery(IBInternalQuery);
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+         "SELECT ROUNDED_LOGOUT_DATETIME FROM ROUNDEDCONTACTTIME "
+         " WHERE LOGIN_DATETIME = :LOGIN_DATETIME AND CONTACTTIME_KEY = :CONTACTTIME_KEY;";
+		IBInternalQuery->ParamByName("LOGIN_DATETIME")->AsDateTime = loginTime;
+		IBInternalQuery->ParamByName("CONTACTTIME_KEY")->AsInteger = contact_time_key;
+		IBInternalQuery->ExecQuery();
+      if(IBInternalQuery->RecordCount)
+      {
+			RetVal = IBInternalQuery->FieldByName("ROUNDED_LOGOUT_DATETIME")->AsDateTime;
+      }
+	}
+	catch (Exception &E)
+	{
+		throw;
+	}
+   return RetVal;
 }
 
 void TManagerTimeClock::SetLoggedInOutDetails(Database::TDBTransaction &DBTransaction, TStaffHoursContainer::iterator inStaffHours)
@@ -555,14 +611,10 @@ void TManagerTimeClock::SetLoggedInOutDetails(Database::TDBTransaction &DBTransa
 				"UPDATE "
 				" CONTACTTIME"
 				" SET"
-				" LOGIN_DATETIME = :LOGIN_DATETIME, "
-				" LOGOUT_DATETIME = :LOGOUT_DATETIME,"
 				" TOTALHOURS = :TOTALHOURS, "
 				" BREAKS = :BREAKS "
 				" WHERE CONTACTTIME_KEY = :CONTACTTIME_KEY";
 			IBInternalQuery->ParamByName("CONTACTTIME_KEY")->AsInteger = inStaffHours->second.GetContactTimeKey();
-			IBInternalQuery->ParamByName("LOGIN_DATETIME")->AsDateTime = inStaffHours->second.GetLoggedIn();
-			IBInternalQuery->ParamByName("LOGOUT_DATETIME")->AsDateTime = inStaffHours->second.GetLoggedOut();
 			IBInternalQuery->ParamByName("TOTALHOURS")->AsFloat = inStaffHours->second.GetHoursWorked();
 			IBInternalQuery->ParamByName("BREAKS")->AsTime = temp;
 			IBInternalQuery->ExecQuery();

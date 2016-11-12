@@ -1638,7 +1638,8 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
 {
 	qrWages->Close();
 	qrWages->SQL->Text =
-        "select "
+
+"select "
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
@@ -1650,29 +1651,31 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
            "Department, "
            "Zone, "
            "Modified "
-           "from (select (ct.logout_datetime - ct.login_datetime) tt, "
+           "from (select (ct.rounded_logout_datetime - ct.rounded_login_datetime) tt, "
                         "(cast(ct.breaks as timestamp) "
                         " - cast((current_date || ', 00:00:00.000') as timestamp)) bd, "
                         "C.Contact_Type, "
                         "C.Name, "
                         "C.Payroll_ID, "
-                        "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
-                        "cast(ct.Logout_DateTime as timestamp) Logout_DateTime, "
+                        "cast(ct.Rounded_Login_DateTime as timestamp) Login_DateTime, "
+                        "cast(ct.Rounded_Logout_DateTime as timestamp) Logout_DateTime, "
                         "ct.Breaks, "
                         "TCL.Name Department, "
                         "TCL.Code Zone, "
                         "ct.Modified "
-                        "from contacttime ct "
+                        "from roundedcontacttime ct "
                             "Inner Join Contacts C On "
                                 "C.Contacts_Key = ct.Contacts_Key "
                             "Left Join TimeClockLocations TCL On "
                                 "ct.TimeClockLocations_Key = TCL.TimeClockLocations_Key "
                         "where ct.breaks is not null "
-        			          "and ct.Logout_DateTime >= :StartTime "
-                              "and ct.Logout_DateTime < :EndTime "
-                              "and ct.logout_datetime is not null "
+                     "and ct.Rounded_Logout_DateTime >= :StartTime "
+                              "and ct.Rounded_Logout_DateTime < :EndTime "
+                              "and ct.rounded_logout_datetime is not null "
                               "and (C.Contact_Type = 0 "
                               "or C.Contact_Type = 1) ";
+
+        
 
     if (Names && Names->Count > 0)
 	{
