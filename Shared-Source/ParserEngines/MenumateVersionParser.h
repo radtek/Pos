@@ -77,6 +77,7 @@ namespace MenumateVersionParser
             pv6_30,
             pv6_31,
             pv6_32,
+            pv6_33,
     };
 
     class TApplyParser
@@ -154,6 +155,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_30( TDBControl* const inDBControl );
         PARSER_ERROR apply6_31( TDBControl* const inDBControl );
         PARSER_ERROR apply6_32( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_33( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -794,6 +796,11 @@ namespace MenumateVersionParser
 		void upgrade6_32Tables();
         void update6_32Tables();
 		void UpdateDiscountsTable6_32(TDBControl* const inDBControl);
+        //
+
+        void upgrade6_33Tables();
+        void update6_33Tables();
+		void AlterRoundTimeProcedure6_33( TDBControl* const inDBControl );
 
     }; // class
 } // namespace

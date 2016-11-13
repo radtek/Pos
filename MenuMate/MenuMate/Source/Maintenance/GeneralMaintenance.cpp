@@ -279,7 +279,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 
 	int RoundedTime = 0;
 	TManagerVariable::Instance().GetProfileInt( DBTransaction, GlobalProfileKey, vmRoundingTime, RoundedTime );
-	rgRoundingTimes->ItemIndex = RoundedTime;
+	rgRoundingTimes->ItemIndex = RoundedTime - 1;
 
 	//	int g = 0;
 	//	TManagerVariable::Instance().GetProfileIntDB(DBTransaction, TManagerVariable::Instance().DeviceProfileKey,vmDepositBagNum, g);
@@ -2481,7 +2481,7 @@ void __fastcall TfrmGeneralMaintenance::rgRoundingTimesClick(TObject *Sender)
 #pragma warn .pia
 	tr.Commit();
 
-	ref_gs.RoundingTime = rgRoundingTimes->ItemIndex;
+	ref_gs.RoundingTime = rgRoundingTimes->ItemIndex + 1;
 
 	tr.StartTransaction();
 	ref_mv.SetProfileInt(tr, prof_key, vmRoundingTime,
