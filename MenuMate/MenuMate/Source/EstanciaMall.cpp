@@ -1174,6 +1174,34 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     salesData.ArcBillKey = arcBillKey;
     //Now push salesdata to Mallexportdata 's list;
     mallExportData.SalesData.push_back(salesData);
+
+     //66 Hour code //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = HourOf(Now().FormatString("dd-mm-yy HH:nn:ss"));
+    salesData.Field = "Hour Code";
+    salesData.FieldIndex = 66;
+    salesData.DataValueType = "int";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //67 Status //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = 1;
+    salesData.Field = "Status";
+    salesData.FieldIndex = 67;
+    salesData.DataValueType = "int";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
 }
 //-----------------------------------------------------------------------------------------------
 void TEstanciaMall::PrepareDataForExport()
@@ -1209,5 +1237,6 @@ long TEstanciaMall::GenerateSaleKey(Database::TDBTransaction &dbTransaction)
 	}
     return saleKey;
 }
+
 
 
