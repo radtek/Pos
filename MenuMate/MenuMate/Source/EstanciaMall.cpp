@@ -292,6 +292,15 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
 
 
     }
+
+    //patron count
+    int totalPatronCount = 0;
+    std::vector <TPatronType> ::iterator ptrPatronTypes;
+    for (ptrPatronTypes = paymentTransaction.Patrons.begin(); ptrPatronTypes != paymentTransaction.Patrons.end(); ptrPatronTypes++)
+    {
+        totalPatronCount += ptrPatronTypes->Count;
+    }
+
     ///7
     TotalDeductionVatable = TotalPromoSalesAmountVatable + TotalPWDDiscountVatable + TotalRefundAmountVatable + TotalReturnedItemsAmountVatable +
                             TotalOtherTaxesVatable + TotalServiceChargeAmountVatable + TotalAdjustmentDiscountVatable + TotalVoidAmountVatable +
@@ -689,10 +698,10 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     //Now push salesdata to Mallexportdata 's list;
     mallExportData.SalesData.push_back(salesData);
 
-     //32 Total Cover Count //todo;
+     //32 Total Cover Count  ;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalNetSalesAmountVatable;
+    salesData.DataValue = totalPatronCount;
     salesData.Field = "Total Cover Count";
     salesData.FieldIndex = 32 ;
     salesData.DataValueType = "int";

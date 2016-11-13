@@ -2407,14 +2407,18 @@ void TfrmSetup::UpdateNoMallUI()
     TMall mallDetails;
     TGlobalSettings::Instance().mallInfo = mallDetails;
     TManagerMallSetup::UpdateINActiveMall(dbTransaction);
-    edTenantNo1->Text = "";
-    edMallPath1->Text = "";
-    edTerminalNo1->Text = "";
-    edTenantNo1->Enabled = false;
-    edMallPath1->Enabled = false;
-    edTerminalNo1->Enabled = false;
-    edTenantNo1->Color = clInactiveCaptionText;
-    edMallPath1->Color = clInactiveCaptionText;
-    edTerminalNo1->Color = clInactiveCaptionText;
+    TControl *ChildControl;
+    TEdit* editBox;
+     for (int i = 0; i < gbMalls1->ControlCount; i++)
+    {
+        ChildControl = gbMalls1->Controls[i];
+        editBox = (TEdit*)ChildControl;
+        if(editBox->Name != "cbMallLoc1")
+        {
+            editBox->Text = "";
+            editBox->Enabled = false;
+            editBox->Color = clInactiveCaptionText;
+        }
+    }
     dbTransaction.Commit();
 }

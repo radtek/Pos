@@ -543,7 +543,7 @@ void TApplyParser::Insert6_33MallExport_Settings_Values(TDBControl* const inDBCo
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (3,7,'','Integer')";
+                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (3,7,'','int')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
@@ -555,7 +555,7 @@ void TApplyParser::Insert6_33MallExport_Settings_Values(TDBControl* const inDBCo
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (6,17,'2','Integer')";
+                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (6,17,'2','int')";
         InsertQuery->ExecQuery();
         InsertQuery->Close();
         InsertQuery->SQL->Text =
