@@ -5,6 +5,8 @@
 #include "EstanciaMall.h"
 #include "MallExportData.h"
 #include "GlobalSettings.h"
+#include "IBillCalculator.h"
+#include "Comms.h"
 #include "DeviceRealTerminal.h"
 #include <Math.h>
 //---------------------------------------------------------------------------
@@ -23,6 +25,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     Currency discountGroup2 = 0.00;
     Currency discountGroup3 = 0.00;
     Currency discountGroup4 = 0.00;
+    Currency discountGroup5 = 0.00;
     Currency totalNonApprovedDiscount = 0.00;
     Currency salesTax = 0.00;
     Currency serviceCharge = 0.00;
@@ -33,7 +36,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     Currency OldAccumulatedSalesVatable;
     Currency NewAccumulatedSalesVatable;
     Currency TotalGrossAmountVatable;
-    Currency TotalDeductionsVatable;
+    Currency TotalDeductionVatable;
     Currency TotalPromoSalesAmountVatable;
     Currency TotalPWDDiscountVatable;
     Currency TotalRefundAmountVatable;
@@ -62,9 +65,9 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     Currency OldAccumulatedSalesNonVatable;
     Currency NewAccumulatedSalesNonVatable;
     Currency TotalGrossAmountNonVatable;
-    Currency TotalDeductionsNonVatable;
+    Currency TotalDeductionNonVatable;
     Currency TotalPromoSalesAmountNonVatable;
-    Currency TotalPWDDiscountNonVatable;
+    Currency TotalSCDDiscountNonVatable;
     Currency TotalRefundAmountNonVatable;
     Currency TotalReturnedItemsAmountNonVatable;
     Currency TotalOtherTaxesNonVatable;
@@ -165,56 +168,14 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     //Now push salesdata to Mallexportdata 's list;
     mallExportData.SalesData.push_back(salesData);
 
-     //05 Load New Accumulated Sale Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = Now().FormatString("mmddyyyy");
-    salesData.Field = "New Accumulated Sales";
-    salesData.FieldIndex = 5;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-
-    //06 Total Gross Amount Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal + fabs(paymentTransaction.Money.TotalAdjustment);
-    salesData.Field = "Total Gross Amount";
-    salesData.FieldIndex = 6;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //07 Total Deductions Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal + fabs(paymentTransaction.Money.TotalAdjustment);
-    salesData.Field = "Total Deductions";
-    salesData.FieldIndex = 7;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    for (int CurrentIndex = 0; CurrentIndex < PaymentTransaction.Orders->Count; CurrentIndex++)
+    for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
     {
-			TItemComplete *Order = (TItemComplete*)(PaymentTransaction.Orders->Items[CurrentIndex]);
+			TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
 
             std::vector<BillCalculator::TTaxResult> taxInfomation = Order->BillCalcResult.Tax;
             bool isVatable = false;
-
+            salesTax = localTax = profitTax = serviceCharge = serviceChargeTax = 0.00;
+            promoDiscount = scdDiscount =  pwdDiscount = discountGroup1 = discountGroup2 = discountGroup3 = discountGroup4 = discountGroup5 = totalNonApprovedDiscount = 0.00;
             ///load all taxes value seperate
             for (std::vector<BillCalculator::TTaxResult>::iterator itTaxes = taxInfomation.begin(); itTaxes != taxInfomation.end(); itTaxes++)
 	        {
@@ -225,11 +186,11 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
                         salesTax = itTaxes->Value;
                         break;
                     case TTaxType::ttLocal:
-                        localTax = itTaxes->Value;
-                        break;
+                         localTax = itTaxes->Value;
+                         break;
                     case TTaxType::ttProfit:
-                        profitTax = itTaxes->Value;
-                        break;
+                         profitTax = itTaxes->Value;
+                         break;
                 }
                 if (Order->BillCalcResult.ServiceCharge.Percentage != 0)
 	            {
@@ -250,23 +211,23 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
                 if(ptrDiscounts->DiscountGroupList.size())
                 {
                     if(ptrDiscounts->DiscountGroupList[0].Name == "Promo Discount")
-                        promoDiscount + = Order->DiscountValue_BillCalc(ptrDiscounts);
+                        promoDiscount += Order->DiscountValue_BillCalc(ptrDiscounts);
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Senior Citizen")
-                        scdDiscount + = Order->DiscountValue_BillCalc(ptrDiscounts);
+                        scdDiscount += Order->DiscountValue_BillCalc(ptrDiscounts);
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
-                        pwdDiscount + = Order->DiscountValue_BillCalc(ptrDiscounts);
+                        pwdDiscount += Order->DiscountValue_BillCalc(ptrDiscounts);
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Discount 1")
-                        discountGroup1 + = Order->DiscountValue_BillCalc(ptrDiscounts);
+                        discountGroup1 += Order->DiscountValue_BillCalc(ptrDiscounts);
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Discount 2")
-                        discountGroup2 + = Order->DiscountValue_BillCalc(ptrDiscounts);
+                        discountGroup2 += Order->DiscountValue_BillCalc(ptrDiscounts);
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Discount 3")
-                        discountGroup3 + = Order->DiscountValue_BillCalc(ptrDiscounts);
+                        discountGroup3 += Order->DiscountValue_BillCalc(ptrDiscounts);
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Discount 4")
-                        discountGroup4 + = Order->DiscountValue_BillCalc(ptrDiscounts);
+                        discountGroup4 += Order->DiscountValue_BillCalc(ptrDiscounts);
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Discount 5")
-                        discountGroup5 + = Order->DiscountValue_BillCalc(ptrDiscounts);
+                        discountGroup5 += Order->DiscountValue_BillCalc(ptrDiscounts);
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Other Discount")
-                        totalNonApprovedDiscount + = Order->DiscountValue_BillCalc(ptrDiscounts);
+                        totalNonApprovedDiscount += Order->DiscountValue_BillCalc(ptrDiscounts);
                 }
             }
 
@@ -275,73 +236,127 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
             if(isVatable)
             {
                 //OldAccumulatedSalesVatable
-                NewAccumulatedSalesVatable +=
-                TotalGrossAmountVatable += Order->PriceEach_BillCalc() + fabs(Order->TotalAdjustment());
-                TotalDeductionsVatable +=  ;
-                TotalPromoSalesAmountVatable += promoDiscount;
-                TotalPWDDiscountVatable += pwsDiscount;
-                TotalRefundAmountVatable += Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;
-                TotalReturnedItemsAmountVatable +=
-                TotalOtherTaxesVatable +=
-                TotalServiceChargeAmountVatable +=
-                TotalAdjustmentDiscountVatable +=
-                TotalVoidAmountVatable +=
-                TotalDiscountCardsVatable +=
-                TotalDeliveryChargesVatable +=
-                TotalGiftCertificatesChecksRedeemedVatable +=
-                StoreSpecificDiscount1Vatable += discountGroup1;
-                StoreSpecificDiscount2Vatable += discountGroup2;
-                StoreSpecificDiscount3Vatable += discountGroup3;
-                StoreSpecificDiscount4Vatable += discountGroup4;
-                StoreSpecificDiscount5Vatable += discountGroup5;
-                TotalofallNonApprovedStoreDiscountsVatable += totalNonApprovedDiscount;
-                StoreSpecificDiscount1NonApprovedVatable +=
-                StoreSpecificDiscount2NonApprovedVatable +=
-                StoreSpecificDiscount3NonApprovedVatable +=
-                StoreSpecificDiscount4NonApprovedVatable  +=
-                StoreSpecificDiscount5NonApprovedVatable +=
-                TotalVATTaxAmountVatable +=
-                TotalNetSalesAmountVatable +=
+                   //5
+                TotalGrossAmountVatable += Order->PriceEach_BillCalc() + fabs(Order->TotalAdjustment());   //6
+                TotalPromoSalesAmountVatable += promoDiscount; //8
+                TotalPWDDiscountVatable += pwdDiscount;  //9
+                TotalRefundAmountVatable += Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;   //10
+                TotalReturnedItemsAmountVatable += 0;                //11
+                TotalOtherTaxesVatable +=  localTax;                        //12
+                TotalServiceChargeAmountVatable +=  serviceCharge;  //13
+                TotalAdjustmentDiscountVatable += 0;  //14
+                TotalVoidAmountVatable += 0;//todo          //15
+                TotalDiscountCardsVatable += 0;//todo         //16
+                TotalDeliveryChargesVatable += 0;//todo       //17
+                TotalGiftCertificatesChecksRedeemedVatable +=  0;//todo  //18
+                StoreSpecificDiscount1Vatable += discountGroup1;  //19
+                StoreSpecificDiscount2Vatable += discountGroup2;  //20
+                StoreSpecificDiscount3Vatable += discountGroup3;  //21
+                StoreSpecificDiscount4Vatable += discountGroup4;  //22
+                StoreSpecificDiscount5Vatable += discountGroup5;  //23
+                TotalofallNonApprovedStoreDiscountsVatable += totalNonApprovedDiscount;  //24
+                StoreSpecificDiscount1NonApprovedVatable += 0;//todo       //25
+                StoreSpecificDiscount2NonApprovedVatable +=  0;//todo      //26
+                StoreSpecificDiscount3NonApprovedVatable +=  0;//todo      //27
+                StoreSpecificDiscount4NonApprovedVatable  += 0;//todo      //28
+                StoreSpecificDiscount5NonApprovedVatable +=  0;//todo      //29
             }
             else
             {
-                //OldAccumulatedSalesNonVatable
-                NewAccumulatedSalesNonVatable
-                TotalGrossAmountNonVatable += Order->PriceLevelCustom > 0 ? Order->PriceLevelCustom + fabs(Order->TotalAdjustment()) : Order->PriceLevel1 + fabs(Order->TotalAdjustment());
-                TotalDeductionsNonVatable +=  ;
-                TotalPromoSalesAmountNonVatable += promoDiscount;
-                TotalPWDDiscountNonVatable +=
-                TotalRefundAmountNonVatable +=
-                TotalReturnedItemsAmountNonVatable +=
-                TotalOtherTaxesNonVatable +=
-                TotalServiceChargeAmountNonVatable +=
-                TotalAdjustmentDiscountNonVatable  +=
-                TotalVoidAmountNonVatable +=
-                TotalDiscountCardsNonVatable +=
-                TotalDeliveryChargesNonVatable +=
-                TotalGiftCertificatesChecksRedeemedNonVatable +=
-                StoreSpecificDiscount1NonVatable += discountGroup1;
-                StoreSpecificDiscount2NonVatable += discountGroup2;
-                StoreSpecificDiscount3NonVatable += discountGroup3;
-                StoreSpecificDiscount4NonVatable += discountGroup4;
-                StoreSpecificDiscount5NonVatable += discountGroup5;
-                TotalofallNonApprovedStoreDiscountsNonVatable += totalNonApprovedDiscount;
-                StoreSpecificDiscount1NonApprovedNonVatable +=
-                StoreSpecificDiscount2NonApprovedNonVatable +=
-                StoreSpecificDiscount3NonApprovedNonVatable +=
-                StoreSpecificDiscount4NonApprovedNonVatable +=
-                StoreSpecificDiscount5NonApprovedNonVatable +=
-                TotalVATTaxAmountNonVatable +=
-                TotalNetSalesAmountNonVatable +=
+                //
+                     ////38
+                TotalGrossAmountNonVatable += Order->PriceLevelCustom > 0 ? Order->PriceLevelCustom + fabs(Order->TotalAdjustment()) : Order->PriceLevel1 + fabs(Order->TotalAdjustment());   ////39
+                TotalPromoSalesAmountNonVatable += promoDiscount;    ///41
+                TotalSCDDiscountNonVatable += scdDiscount;      //42
+                TotalRefundAmountNonVatable += Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;     //43
+                TotalReturnedItemsAmountNonVatable += 0;     //44
+                TotalOtherTaxesNonVatable += localTax;     //45
+                TotalServiceChargeAmountNonVatable +=  serviceCharge;   //46
+                TotalAdjustmentDiscountNonVatable  += 0;      //47
+                TotalVoidAmountNonVatable += 0;//todo             //48
+                TotalDiscountCardsNonVatable +=  0;//todo         //49
+                TotalDeliveryChargesNonVatable +=  0;//todo       //50
+                TotalGiftCertificatesChecksRedeemedNonVatable +=  0;//todo   //51
+                StoreSpecificDiscount1NonVatable += discountGroup1;  //52
+                StoreSpecificDiscount2NonVatable += discountGroup2;  //53
+                StoreSpecificDiscount3NonVatable += discountGroup3;  //54
+                StoreSpecificDiscount4NonVatable += discountGroup4;  //55
+                StoreSpecificDiscount5NonVatable += discountGroup5;  //56
+                TotalofallNonApprovedStoreDiscountsNonVatable += totalNonApprovedDiscount;    //57
+                StoreSpecificDiscount1NonApprovedNonVatable += 0;//todo         ///58
+                StoreSpecificDiscount2NonApprovedNonVatable += 0;//todo         //59
+                StoreSpecificDiscount3NonApprovedNonVatable += 0;//todo         //60
+                StoreSpecificDiscount4NonApprovedNonVatable += 0;//todo        //61
+                StoreSpecificDiscount5NonApprovedNonVatable += 0;//todo        ///62
             }
 
 
     }
+    ///7
+    TotalDeductionVatable = TotalPromoSalesAmountVatable + TotalPWDDiscountVatable + TotalRefundAmountVatable + TotalReturnedItemsAmountVatable +
+                            TotalOtherTaxesVatable + TotalServiceChargeAmountVatable + TotalAdjustmentDiscountVatable + TotalVoidAmountVatable +
+                            TotalDiscountCardsVatable + TotalDeliveryChargesVatable + TotalGiftCertificatesChecksRedeemedVatable + StoreSpecificDiscount1Vatable +
+                            StoreSpecificDiscount2Vatable + StoreSpecificDiscount3Vatable + StoreSpecificDiscount4Vatable + StoreSpecificDiscount5Vatable;
+    TotalVATTaxAmountVatable = (((TotalGrossAmountVatable - TotalDeductionVatable)*.12)/1.12);        //30
+    TotalNetSalesAmountVatable = TotalGrossAmountVatable - TotalDeductionVatable - TotalVATTaxAmountVatable;  ////31
+
+    ///40
+    TotalDeductionNonVatable = TotalPromoSalesAmountNonVatable + TotalSCDDiscountNonVatable + TotalRefundAmountNonVatable + TotalReturnedItemsAmountNonVatable +
+                            TotalOtherTaxesNonVatable + TotalServiceChargeAmountNonVatable + TotalAdjustmentDiscountNonVatable + TotalVoidAmountNonVatable +
+                            TotalDiscountCardsNonVatable + TotalDeliveryChargesNonVatable + TotalGiftCertificatesChecksRedeemedNonVatable + StoreSpecificDiscount1NonVatable +
+                            StoreSpecificDiscount2NonVatable + StoreSpecificDiscount3NonVatable + StoreSpecificDiscount4NonVatable + StoreSpecificDiscount5NonVatable;
+    TotalVATTaxAmountNonVatable = 0;  ///63
+    TotalNetSalesAmountNonVatable = TotalGrossAmountVatable - TotalDeductionVatable ;  //64
+    NewAccumulatedSalesVatable  = OldAccumulatedSalesVatable + TotalNetSalesAmountVatable; //5
+    NewAccumulatedSalesNonVatable  = OldAccumulatedSalesNonVatable + TotalNetSalesAmountNonVatable; //38
+
+     //05 Load New Accumulated Sale Row;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = NewAccumulatedSalesVatable;
+    salesData.Field = "New Accumulated Sales";
+    salesData.FieldIndex = 5;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+
+    //06 Total Gross Amount Row;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalGrossAmountVatable;
+    salesData.Field = "Total Gross Amount";
+    salesData.FieldIndex = 6;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //07 Total Deductions Row;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalDeductionVatable;
+    salesData.Field = "Total Deductions";
+    salesData.FieldIndex = 7;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
 
     //08 Total Promo Sale Amount Row;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = promoDiscount;
+    salesData.DataValue = TotalPromoSalesAmountVatable;
     salesData.Field = "Total Promo Sale Amount";
     salesData.FieldIndex = 8;
     salesData.DataValueType = "Currency";
@@ -355,7 +370,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     //09 Total PWD Discount Row;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = pwdDiscount;
+    salesData.DataValue = TotalPWDDiscountVatable;
     salesData.Field = "Total PWD Discount";
     salesData.FieldIndex = 9;
     salesData.DataValueType = "Currency";
@@ -369,7 +384,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     //10 Total Refund Amount;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal < 0 ? paymentTransaction.Money.RoundedGrandTotal: 0.00;
+    salesData.DataValue = TotalRefundAmountVatable;
     salesData.Field = "Total Refund Amount ";
     salesData.FieldIndex = 10;
     salesData.DataValueType = "Currency";
@@ -383,7 +398,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
      //11 Total Refund Amount;    //todo
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal < 0 ? paymentTransaction.Money.RoundedGrandTotal: 0.00;
+    salesData.DataValue = TotalReturnedItemsAmountVatable;
     salesData.Field = "Total Returned Items Amount";
     salesData.FieldIndex = 11;
     salesData.DataValueType = "Currency";
@@ -397,7 +412,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     //12 Total Other taxes //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal < 0 ? paymentTransaction.Money.RoundedGrandTotal: 0.00;
+    salesData.DataValue = TotalOtherTaxesVatable;
     salesData.Field = "Total Other Taxes";
     salesData.FieldIndex = 12;
     salesData.DataValueType = "Currency";
@@ -411,7 +426,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
      //13 Total Service Charge Amount //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal < 0 ? paymentTransaction.Money.RoundedGrandTotal: 0.00;
+    salesData.DataValue = TotalServiceChargeAmountVatable;
     salesData.Field = "Total Service Charge Amount ";
     salesData.FieldIndex = 13;
     salesData.DataValueType = "Currency";
@@ -425,7 +440,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
      //14 Total Adjustment Discount //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal < 0 ? paymentTransaction.Money.RoundedGrandTotal: 0.00;
+    salesData.DataValue = TotalAdjustmentDiscountVatable;
     salesData.Field = "Total Adjustment Discount";
     salesData.FieldIndex = 14;
     salesData.DataValueType = "Currency";
@@ -439,7 +454,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
       //15 Total Void Amount //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal < 0 ? paymentTransaction.Money.RoundedGrandTotal: 0.00;
+    salesData.DataValue = TotalVoidAmountVatable;
     salesData.Field = "Total Void Amount";
     salesData.FieldIndex = 15;
     salesData.DataValueType = "Currency";
@@ -453,7 +468,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
       //16 Total Discount Cards  //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal < 0 ? paymentTransaction.Money.RoundedGrandTotal: 0.00;
+    salesData.DataValue = TotalDiscountCardsVatable;
     salesData.Field = "Total Discount Cards";
     salesData.FieldIndex = 16;
     salesData.DataValueType = "Currency";
@@ -467,7 +482,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     //17 Total Delivery Charges  //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = paymentTransaction.Money.RoundedGrandTotal < 0 ? paymentTransaction.Money.RoundedGrandTotal: 0.00;
+    salesData.DataValue = TotalDeliveryChargesVatable;
     salesData.Field = "Total Delivery Charges";
     salesData.FieldIndex = 17;
     salesData.DataValueType = "Currency";
@@ -481,7 +496,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     //18 Total Gift Cards  //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = 0;
+    salesData.DataValue = TotalGiftCertificatesChecksRedeemedVatable;
     salesData.Field = "Total Gift Certificates/Checks Redeemed";
     salesData.FieldIndex = 18;
     salesData.DataValueType = "Currency";
@@ -495,7 +510,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     //19 Store Specific Discount 1  //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = discountGroup1;
+    salesData.DataValue = StoreSpecificDiscount1Vatable;
     salesData.Field = "Store Specific Discount 1";
     salesData.FieldIndex = 19;
     salesData.DataValueType = "Currency";
@@ -509,7 +524,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
      //20 Store Specific Discount 2  //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = discountGroup2;
+    salesData.DataValue = StoreSpecificDiscount2Vatable;
     salesData.Field = "Store Specific Discount 2";
     salesData.FieldIndex = 20;
     salesData.DataValueType = "Currency";
@@ -523,7 +538,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
      //21 Store Specific Discount 3  //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = discountGroup3;
+    salesData.DataValue = StoreSpecificDiscount3Vatable;
     salesData.Field = "Store Specific Discount 3";
     salesData.FieldIndex = 21;
     salesData.DataValueType = "Currency";
@@ -537,7 +552,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
      //22 Store Specific Discount 4 //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = discountGroup4;
+    salesData.DataValue = StoreSpecificDiscount4Vatable;
     salesData.Field = "Store Specific Discount 4";
     salesData.FieldIndex = 22;
     salesData.DataValueType = "Currency";
@@ -551,7 +566,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
      //23 Store Specific Discount 5 //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = discountGroup5;
+    salesData.DataValue = StoreSpecificDiscount5Vatable;
     salesData.Field = "Store Specific Discount 5";
     salesData.FieldIndex = 23;
     salesData.DataValueType = "Currency";
@@ -565,7 +580,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     //24 Total of all Non-Approved Store Discounts //todo;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = totalNonApprovedDiscount;
+    salesData.DataValue = TotalofallNonApprovedStoreDiscountsVatable;
     salesData.Field = "Total of all Non-Approved Store Discounts";
     salesData.FieldIndex = 24;
     salesData.DataValueType = "Currency";
@@ -576,8 +591,580 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     //Now push salesdata to Mallexportdata 's list;
     mallExportData.SalesData.push_back(salesData);
 
+     //25 Store Specific Discount1//todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount1Vatable;
+    salesData.Field = "Store Specific Discount 1";
+    salesData.FieldIndex = 25 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //26 Store Specific Discount2//todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount2Vatable;
+    salesData.Field = "Store Specific Discount 2";
+    salesData.FieldIndex = 26 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //27 Store Specific Discount3//todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount3Vatable;
+    salesData.Field = "Store Specific Discount 3";
+    salesData.FieldIndex = 27 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //28 Store Specific Discount4//todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount4Vatable;
+    salesData.Field = "Store Specific Discount 4";
+    salesData.FieldIndex = 28 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //29 Store Specific Discount5//todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount5Vatable;
+    salesData.Field = "Store Specific Discount 5";
+    salesData.FieldIndex = 29 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //30 Total VAT/Tax Amount//todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalVATTaxAmountVatable;
+    salesData.Field = "Total VAT/Tax Amount";
+    salesData.FieldIndex = 30 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //31 Total Net Sales Amount ;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalNetSalesAmountVatable;
+    salesData.Field = "Total Net Sales Amount";
+    salesData.FieldIndex = 31 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //32 Total Cover Count //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalNetSalesAmountVatable;
+    salesData.Field = "Total Cover Count";
+    salesData.FieldIndex = 32 ;
+    salesData.DataValueType = "int";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //33 Control Number //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalNetSalesAmountVatable;
+    salesData.Field = "Control Number";
+    salesData.FieldIndex = 33 ;
+    salesData.DataValueType = "int";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+      //34 Total Number of Sales Transaction //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalRefundAmountVatable < 0 ? 0 :1;
+    salesData.Field = "Total Number of Sales Transaction";
+    salesData.FieldIndex = 34 ;
+    salesData.DataValueType = "int";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //35 Sales Type //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = 1;
+    salesData.Field = "Sales Type";
+    salesData.FieldIndex = 35 ;
+    salesData.DataValueType = "int";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //36 Sales Type //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalNetSalesAmountVatable;
+    salesData.Field = "Sales Type";
+    salesData.FieldIndex = 36 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //37 Old Accumulated Sales //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = 0;///todo
+    salesData.Field = "Old Accumulated Sales";
+    salesData.FieldIndex = 36 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //38 Load New Accumulated Sale Row;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = NewAccumulatedSalesNonVatable;
+    salesData.Field = "New Accumulated Sales";
+    salesData.FieldIndex = 38;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
 
 
+    //39 Total Gross Amount Row;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalGrossAmountNonVatable;
+    salesData.Field = "Total Gross Amount";
+    salesData.FieldIndex = 39;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //40 Total Deductions Row;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalDeductionNonVatable;
+    salesData.Field = "Total Deductions";
+    salesData.FieldIndex = 40;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //41 Total Promo Sale Amount Row;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalPromoSalesAmountNonVatable;
+    salesData.Field = "Total Promo Sale Amount";
+    salesData.FieldIndex = 41;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //42 Total SCDDiscount Row;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = scdDiscount;
+    salesData.Field = "Total SCD Discount";
+    salesData.FieldIndex = 42;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //43 Total Refund Amount;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalRefundAmountNonVatable;
+    salesData.Field = "Total Refund Amount ";
+    salesData.FieldIndex = 43;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //44 Total Returned Items Amount;    //todo
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalReturnedItemsAmountNonVatable;
+    salesData.Field = "Total Returned Items Amount";
+    salesData.FieldIndex = 44;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //45 Total Other taxes //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalOtherTaxesNonVatable;
+    salesData.Field = "Total Other Taxes";
+    salesData.FieldIndex = 45;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //46 Total Service Charge Amount //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalServiceChargeAmountNonVatable;
+    salesData.Field = "Total Service Charge Amount ";
+    salesData.FieldIndex = 46;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //47 Total Adjustment Discount //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalAdjustmentDiscountNonVatable;
+    salesData.Field = "Total Adjustment Discount";
+    salesData.FieldIndex = 47;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+      //48 Total Void Amount //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalVoidAmountNonVatable;
+    salesData.Field = "Total Void Amount";
+    salesData.FieldIndex = 48;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+      //49 Total Discount Cards  //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalDiscountCardsNonVatable;
+    salesData.Field = "Total Discount Cards";
+    salesData.FieldIndex = 49;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //50 Total Delivery Charges  //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalDeliveryChargesNonVatable;
+    salesData.Field = "Total Delivery Charges";
+    salesData.FieldIndex = 50;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //51 Total Gift Cards  //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalGiftCertificatesChecksRedeemedNonVatable;
+    salesData.Field = "Total Gift Certificates/Checks Redeemed";
+    salesData.FieldIndex = 51;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //52 Store Specific Discount 1  //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount1NonVatable;
+    salesData.Field = "Store Specific Discount 1";
+    salesData.FieldIndex = 52;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //53 Store Specific Discount 2  //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount2NonVatable;
+    salesData.Field = "Store Specific Discount 2";
+    salesData.FieldIndex = 53;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //54 Store Specific Discount 3  //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount3NonVatable;
+    salesData.Field = "Store Specific Discount 3";
+    salesData.FieldIndex = 54;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //55 Store Specific Discount 4 //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount4NonVatable;
+    salesData.Field = "Store Specific Discount 4";
+    salesData.FieldIndex = 55;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //56 Store Specific Discount 5 //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount5NonVatable;
+    salesData.Field = "Store Specific Discount 5";
+    salesData.FieldIndex = 56;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //57 Total of all Non-Approved Store Discounts //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalofallNonApprovedStoreDiscountsNonVatable;
+    salesData.Field = "Total of all Non-Approved Store Discounts";
+    salesData.FieldIndex = 57;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //58 Store Specific Discount1;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount1NonVatable;
+    salesData.Field = "Store Specific Discount 1";
+    salesData.FieldIndex = 58;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //59 Store Specific Discount2//todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount2NonVatable;
+    salesData.Field = "Store Specific Discount 2";
+    salesData.FieldIndex = 59;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //60 Store Specific Discount3//todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount3NonVatable;
+    salesData.Field = "Store Specific Discount 3";
+    salesData.FieldIndex = 60;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //61 Store Specific Discount4;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount4NonVatable;
+    salesData.Field = "Store Specific Discount 4";
+    salesData.FieldIndex = 27 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //62 Store Specific Discount5;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = StoreSpecificDiscount5NonVatable;
+    salesData.Field = "Store Specific Discount 5";
+    salesData.FieldIndex = 62;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //63 Total VAT/Tax Amount//todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalVATTaxAmountNonVatable;
+    salesData.Field = "Total VAT/Tax Amount";
+    salesData.FieldIndex = 63 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //64 Total Net Sales Amount ;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalNetSalesAmountNonVatable;
+    salesData.Field = "Total Net Sales Amount";
+    salesData.FieldIndex = 31 ;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //65 Grand Total Net Sales //todo;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = TotalNetSalesAmountVatable + TotalNetSalesAmountNonVatable;
+    salesData.Field = "Grand Total Net Sales";
+    salesData.FieldIndex = 65;
+    salesData.DataValueType = "Currency";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
 }
 //-----------------------------------------------------------------------------------------------
 void TEstanciaMall::PrepareDataForExport()
