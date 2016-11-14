@@ -2,11 +2,12 @@
 
 #ifndef MallExportInterfaceH
 #define MallExportInterfaceH
+#include "PaymentTransaction.h"
 //---------------------------------------------------------------------------
 class TMallExportInterface
 {
     public:
-    virtual bool PushToDatabase() = 0;
+    virtual bool PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey) = 0;
     virtual bool Export() = 0;
 };
 #endif

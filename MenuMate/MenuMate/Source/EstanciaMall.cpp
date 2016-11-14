@@ -13,10 +13,289 @@
 
 #pragma package(smart_init)
 
-TEstanciaMall::TEstanciaMall()
+void TEstanciaMallField::SetOldAccSalesVatable(Currency oldAccSalesVatable)
 {
+    _oldAccSalesVatable = oldAccSalesVatable;
 }
-void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetNewAccSalesVatable(Currency newAccSaleVatable)
+{
+    _newAccSalesVatable = newAccSaleVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetGrossAmountVatable(Currency grossAmountVatable)
+{
+    _grossAmountVatable = grossAmountVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetDeductionVatable(Currency deductionVatable)
+{
+    _deductionVatable = deductionVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetPromoSalesAmountVatable(Currency promoSaleAmountVatable)
+{
+    _promoSalesAmountVatable = promoSaleAmountVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetPWDDiscountVatable(Currency pWDDiscountVatable)
+{
+    _pWDDiscountVatable = pWDDiscountVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetRefundAmountVatable(Currency refundAmountVatable)
+{
+    _refundAmountVatable = refundAmountVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetReturnedItemsAmountVatable(Currency returnedItemsAmountVatable)
+{
+    _returnedItemsAmountVatable = returnedItemsAmountVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetOtherTaxesVatable(Currency otherTaxesVatable)
+{
+    _otherTaxesVatable = otherTaxesVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetServiceChargeAmountVatable(Currency serviceChargeAmountVatable)
+{
+    _serviceChargeAmountVatable = serviceChargeAmountVatable;
+}
+//----------------------------------------------------------------------------------------)
+void TEstanciaMallField::SetAdjustmentDiscountVatable(Currency adjustmentDiscountVatable)
+{
+    _adjustmentDiscountVatable = adjustmentDiscountVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetVoidAmountVatable(Currency voidAmountVatable)
+{
+    _voidAmountVatable = voidAmountVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetDiscountCardsVatable(Currency discountCardsVatable)
+{
+    _discountCardsVatable = discountCardsVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetDeliveryChargesVatable(Currency deliveryChargesVatable)
+{
+    _deliveryChargesVatable = deliveryChargesVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetGiftCertificatesChecksRedeemedVatable(Currency giftCertificatesChecksRedeemedVatable)
+{
+    _giftCertificatesChecksRedeemedVatable = giftCertificatesChecksRedeemedVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount1Vatable(Currency sSDiscount1Vatable)
+{
+    _sSDiscount1Vatable = sSDiscount1Vatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount2Vatable(Currency sSDiscount2Vatable)
+{
+    _sSDiscount2Vatable = sSDiscount2Vatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount3Vatable(Currency sSDiscount3Vatable)
+{
+    _sSDiscount3Vatable = sSDiscount3Vatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount4Vatable(Currency sSDiscount4Vatable)
+{
+    _sSDiscount4Vatable = sSDiscount4Vatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount5Vatable(Currency sSDiscount5Vatable)
+{
+    _sSDiscount5Vatable = sSDiscount5Vatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetTotalOfallNonApprovedStoreDiscountsVatable(Currency totalOfallNonApprovedStoreDiscountsVatable)
+{
+    _totalOfallNonApprovedStoreDiscountsVatable = totalOfallNonApprovedStoreDiscountsVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount1NonApprovedVatable(Currency sSDiscount1NonApprovedVatable)
+{
+    _sSDiscount1NonApprovedVatable = sSDiscount1NonApprovedVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount2NonApprovedVatable(Currency sSDiscount2NonApprovedVatable)
+{
+    _sSDiscount2NonApprovedVatable = sSDiscount2NonApprovedVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount3NonApprovedVatable(Currency sSDiscount3NonApprovedVatable)
+{
+    _sSDiscount3NonApprovedVatable = sSDiscount3NonApprovedVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount4NonApprovedVatable(Currency sSDiscount4NonApprovedVatable)
+{
+    _sSDiscount4NonApprovedVatable = sSDiscount4NonApprovedVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount5NonApprovedVatable(Currency sSDiscount5NonApprovedVatable)
+{
+    _sSDiscount5NonApprovedVatable = sSDiscount5NonApprovedVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetVATAmountVatable(Currency vATAmountVatable)
+{
+    _vATAmountVatable = vATAmountVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetNetSalesAmountVatable(Currency netSalesAmountVatable)
+{
+    _netSalesAmountVatable = netSalesAmountVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetOldAccSalesNonVatable(Currency oldAccSalesNonVatable)
+{
+    _oldAccSalesNonVatable = oldAccSalesNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetNewAccSalesNonVatable(Currency newAccSalesNonVatable)
+{
+    _newAccSalesNonVatable = newAccSalesNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetGrossAmountNonVatable(Currency grossAmountNonVatable)
+{
+    _grossAmountNonVatable = grossAmountNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetDeductionNonVatable(Currency deductionNonVatable)
+{
+    _deductionNonVatable = deductionNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetPromoSalesAmountNonVatable(Currency promoSalesAmountNonVatable)
+{
+    _promoSalesAmountNonVatable = promoSalesAmountNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSCDDiscountNonVatable(Currency sCDDiscountNonVatable)
+{
+    _sCDDiscountNonVatable = sCDDiscountNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetRefundAmountNonVatable(Currency refundAmountNonVatable)
+{
+    _refundAmountNonVatable = refundAmountNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetReturnedItemsAmountNonVatable(Currency returnedItemsAmountNonVatable)
+{
+    _returnedItemsAmountNonVatable = returnedItemsAmountNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetOtherTaxesNonVatable(Currency otherTaxesNonVatable)
+{
+    _otherTaxesNonVatable = otherTaxesNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetServiceChargeAmountNonVatable(Currency serviceChargeAmountNonVatable)
+{
+    _serviceChargeAmountNonVatable = serviceChargeAmountNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetAdjustmentDiscountNonVatable(Currency adjustmentDiscountNonVatable)
+{
+    _adjustmentDiscountNonVatable = adjustmentDiscountNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetVoidAmountNonVatable(Currency voidAmountNonVatable)
+{
+    _voidAmountNonVatable = voidAmountNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetDiscountCardsNonVatable(Currency discountCardsNonVatable)
+{
+    _discountCardsNonVatable = discountCardsNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetDeliveryChargesNonVatable(Currency deliveryChargesNonVatable)
+{
+    _deliveryChargesNonVatable = deliveryChargesNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetGiftCertificatesChecksRedeemedNonVatable(Currency giftCertificatesChecksRedeemedNonVatable)
+{
+    _giftCertificatesChecksRedeemedNonVatable = giftCertificatesChecksRedeemedNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount1NonVatable(Currency sSDiscount1NonVatable)
+{
+    _sSDiscount1NonVatable = sSDiscount1NonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount2NonVatable(Currency sSDiscount2NonVatable)
+{
+    _sSDiscount2NonVatable = sSDiscount2NonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount3NonVatable(Currency sSDiscount3NonVatable)
+{
+    _sSDiscount3NonVatable = sSDiscount3NonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount4NonVatable(Currency sSDiscount4NonVatable)
+{
+    _sSDiscount4NonVatable = sSDiscount4NonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount5NonVatable(Currency sSDiscount5NonVatable)
+{
+    _sSDiscount5NonVatable = sSDiscount5NonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetTotalOfallNonApprovedStoreDiscountsNonVatable(Currency totalOfallNonApprovedStoreDiscountsNonVatable)
+{
+    _totalOfallNonApprovedStoreDiscountsNonVatable = totalOfallNonApprovedStoreDiscountsNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount1NonApprovedNonVatable(Currency sSDiscount1NonApprovedNonVatable)
+{
+    _sSDiscount1NonApprovedNonVatable = sSDiscount1NonApprovedNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount2NonApprovedNonVatable(Currency sSDiscount2NonApprovedNonVatable)
+{
+    _sSDiscount2NonApprovedNonVatable = sSDiscount2NonApprovedNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount3NonApprovedNonVatable(Currency sSDiscount3NonApprovedNonVatable)
+{
+    _sSDiscount3NonApprovedNonVatable = sSDiscount3NonApprovedNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount4NonApprovedNonVatable(Currency sSDiscount4NonApprovedNonVatable)
+{
+    _sSDiscount4NonApprovedNonVatable = sSDiscount4NonApprovedNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSSDiscount5NonApprovedNonVatable(Currency sSDiscount5NonApprovedNonVatable)
+{
+    _sSDiscount5NonApprovedNonVatable = sSDiscount5NonApprovedNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetVATAmountNonVatable(Currency vATAmountNonVatable)
+{
+    _vATAmountNonVatable = vATAmountNonVatable;
+}
+//----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetNetSalesAmountNonVatable(Currency netSalesAmountNonVatable)
+{
+    _netSalesAmountNonVatable = netSalesAmountNonVatable;
+}
+//----------------------------------------------------------------------------------------
+
+
+TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
 {
     Currency promoDiscount = 0.00;
     Currency scdDiscount = 0.00;
@@ -33,70 +312,14 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     Currency localTax = 0.00;
     Currency profitTax = 0.00;
 
-    Currency OldAccumulatedSalesVatable;
-    Currency NewAccumulatedSalesVatable;
-    Currency TotalGrossAmountVatable;
-    Currency TotalDeductionVatable;
-    Currency TotalPromoSalesAmountVatable;
-    Currency TotalPWDDiscountVatable;
-    Currency TotalRefundAmountVatable;
-    Currency TotalReturnedItemsAmountVatable;
-    Currency TotalOtherTaxesVatable;
-    Currency TotalServiceChargeAmountVatable;
-    Currency TotalAdjustmentDiscountVatable;
-    Currency TotalVoidAmountVatable;
-    Currency TotalDiscountCardsVatable;
-    Currency TotalDeliveryChargesVatable;
-    Currency TotalGiftCertificatesChecksRedeemedVatable;
-    Currency StoreSpecificDiscount1Vatable;
-    Currency StoreSpecificDiscount2Vatable;
-    Currency StoreSpecificDiscount3Vatable;
-    Currency StoreSpecificDiscount4Vatable;
-    Currency StoreSpecificDiscount5Vatable;
-    Currency TotalofallNonApprovedStoreDiscountsVatable;
-    Currency StoreSpecificDiscount1NonApprovedVatable;
-    Currency StoreSpecificDiscount2NonApprovedVatable;
-    Currency StoreSpecificDiscount3NonApprovedVatable;
-    Currency StoreSpecificDiscount4NonApprovedVatable;
-    Currency StoreSpecificDiscount5NonApprovedVatable;
-    Currency TotalVATTaxAmountVatable;
-    Currency TotalNetSalesAmountVatable;
-
-    Currency OldAccumulatedSalesNonVatable;
-    Currency NewAccumulatedSalesNonVatable;
-    Currency TotalGrossAmountNonVatable;
-    Currency TotalDeductionNonVatable;
-    Currency TotalPromoSalesAmountNonVatable;
-    Currency TotalSCDDiscountNonVatable;
-    Currency TotalRefundAmountNonVatable;
-    Currency TotalReturnedItemsAmountNonVatable;
-    Currency TotalOtherTaxesNonVatable;
-    Currency TotalServiceChargeAmountNonVatable;
-    Currency TotalAdjustmentDiscountNonVatable;
-    Currency TotalVoidAmountNonVatable;
-    Currency TotalDiscountCardsNonVatable;
-    Currency TotalDeliveryChargesNonVatable;
-    Currency TotalGiftCertificatesChecksRedeemedNonVatable;
-    Currency StoreSpecificDiscount1NonVatable;
-    Currency StoreSpecificDiscount2NonVatable;
-    Currency StoreSpecificDiscount3NonVatable;
-    Currency StoreSpecificDiscount4NonVatable;
-    Currency StoreSpecificDiscount5NonVatable;
-    Currency TotalofallNonApprovedStoreDiscountsNonVatable;
-    Currency StoreSpecificDiscount1NonApprovedNonVatable;
-    Currency StoreSpecificDiscount2NonApprovedNonVatable;
-    Currency StoreSpecificDiscount3NonApprovedNonVatable;
-    Currency StoreSpecificDiscount4NonApprovedNonVatable;
-    Currency StoreSpecificDiscount5NonApprovedNonVatable;
-    Currency TotalVATTaxAmountNonVatable;
-    Currency TotalNetSalesAmountNonVatable;
+    TEstanciaMallField fieldData;
 
     //Register the database transaction..
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
 
-    TMallExportData mallExportData;
+    TMallExportPrepareData mallExportData;
     TMallExportSalesData salesData;
     int terminalNumber;
     std::list<TMallExportSettings>::iterator it;
@@ -211,9 +434,14 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
                 if(ptrDiscounts->DiscountGroupList.size())
                 {
                     if(ptrDiscounts->DiscountGroupList[0].Name == "Promo Discount")
+                    {
                         promoDiscount += Order->DiscountValue_BillCalc(ptrDiscounts);
+                    }
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Senior Citizen")
+                    {
                         scdDiscount += Order->DiscountValue_BillCalc(ptrDiscounts);
+                        isVatable = false;
+                    }
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
                         pwdDiscount += Order->DiscountValue_BillCalc(ptrDiscounts);
                     else if(ptrDiscounts->DiscountGroupList[0].Name == "Discount 1")
@@ -233,74 +461,74 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
 
             if(isVatable)
             {
-                TotalGrossAmountVatable += Order->PriceEach_BillCalc() + fabs(Order->TotalAdjustment());   //6
-                TotalPromoSalesAmountVatable += promoDiscount; //8
-                TotalPWDDiscountVatable += pwdDiscount;  //9
-                TotalRefundAmountVatable += Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;   //10
-                TotalReturnedItemsAmountVatable += 0;                //11
-                TotalOtherTaxesVatable +=  localTax;                        //12
-                TotalServiceChargeAmountVatable +=  serviceCharge;  //13
-                TotalAdjustmentDiscountVatable += 0;  //14
-                TotalVoidAmountVatable += 0;//todo          //15
-                TotalDiscountCardsVatable += 0;//todo         //16
-                TotalDeliveryChargesVatable += 0;//todo       //17
-                TotalGiftCertificatesChecksRedeemedVatable +=  0;//todo  //18
-                StoreSpecificDiscount1Vatable += discountGroup1;  //19
-                StoreSpecificDiscount2Vatable += discountGroup2;  //20
-                StoreSpecificDiscount3Vatable += discountGroup3;  //21
-                StoreSpecificDiscount4Vatable += discountGroup4;  //22
-                StoreSpecificDiscount5Vatable += discountGroup5;  //23
-                TotalofallNonApprovedStoreDiscountsVatable += totalNonApprovedDiscount;  //24
-                StoreSpecificDiscount1NonApprovedVatable += 0;//todo       //25
-                StoreSpecificDiscount2NonApprovedVatable +=  0;//todo      //26
-                StoreSpecificDiscount3NonApprovedVatable +=  0;//todo      //27
-                StoreSpecificDiscount4NonApprovedVatable  += 0;//todo      //28
-                StoreSpecificDiscount5NonApprovedVatable +=  0;//todo      //29
+                fieldData.GrossAmountVatable += Order->PriceEach_BillCalc() + fabs(Order->TotalAdjustment());   //6
+                fieldData.PromoSalesAmountVatable += promoDiscount; //8
+                fieldData.PWDDiscountVatable += pwdDiscount;  //9
+                fieldData.RefundAmountVatable += Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;   //10
+                fieldData.ReturnedItemsAmountVatable += 0;                //11
+                fieldData.OtherTaxesVatable +=  localTax;                        //12
+                fieldData.ServiceChargeAmountVatable +=  serviceCharge;  //13
+                fieldData.AdjustmentDiscountVatable += 0;  //14
+                fieldData.VoidAmountVatable += 0;//todo          //15
+                fieldData.DiscountCardsVatable += 0;//todo         //16
+                fieldData.DeliveryChargesVatable += 0;//todo       //17
+                fieldData.GiftCertificatesChecksRedeemedVatable +=  0;//todo  //18
+                fieldData.SSDiscount1Vatable += discountGroup1;  //19
+                fieldData.SSDiscount2Vatable += discountGroup2;  //20
+                fieldData.SSDiscount3Vatable += discountGroup3;  //21
+                fieldData.SSDiscount4Vatable += discountGroup4;  //22
+                fieldData.SSDiscount5Vatable += discountGroup5;  //23
+                fieldData.TotalOfallNonApprovedSDVatable += totalNonApprovedDiscount;  //24
+                fieldData.SSDiscount1NonApprovedVatable += 0;//todo       //25
+                fieldData.SSDiscount2NonApprovedVatable +=  0;//todo      //26
+                fieldData.SSDiscount3NonApprovedVatable +=  0;//todo      //27
+                fieldData.SSDiscount4NonApprovedVatable  += 0;//todo      //28
+                fieldData.SSDiscount5NonApprovedVatable +=  0;//todo      //29
             }
             else
             {
-                TotalGrossAmountNonVatable += Order->PriceLevelCustom > 0 ? Order->PriceLevelCustom + fabs(Order->TotalAdjustment()) : Order->PriceLevel1 + fabs(Order->TotalAdjustment());   ////39
-                TotalPromoSalesAmountNonVatable += promoDiscount;    ///41
-                TotalSCDDiscountNonVatable += scdDiscount;      //42
-                TotalRefundAmountNonVatable += Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;     //43
-                TotalReturnedItemsAmountNonVatable += 0;     //44
-                TotalOtherTaxesNonVatable += localTax;     //45
-                TotalServiceChargeAmountNonVatable +=  serviceCharge;   //46
-                TotalAdjustmentDiscountNonVatable  += 0;      //47
-                TotalVoidAmountNonVatable += 0;//todo             //48
-                TotalDiscountCardsNonVatable +=  0;//todo         //49
-                TotalDeliveryChargesNonVatable +=  0;//todo       //50
-                TotalGiftCertificatesChecksRedeemedNonVatable +=  0;//todo   //51
-                StoreSpecificDiscount1NonVatable += discountGroup1;  //52
-                StoreSpecificDiscount2NonVatable += discountGroup2;  //53
-                StoreSpecificDiscount3NonVatable += discountGroup3;  //54
-                StoreSpecificDiscount4NonVatable += discountGroup4;  //55
-                StoreSpecificDiscount5NonVatable += discountGroup5;  //56
-                TotalofallNonApprovedStoreDiscountsNonVatable += totalNonApprovedDiscount;    //57
-                StoreSpecificDiscount1NonApprovedNonVatable += 0;//todo         ///58
-                StoreSpecificDiscount2NonApprovedNonVatable += 0;//todo         //59
-                StoreSpecificDiscount3NonApprovedNonVatable += 0;//todo         //60
-                StoreSpecificDiscount4NonApprovedNonVatable += 0;//todo        //61
-                StoreSpecificDiscount5NonApprovedNonVatable += 0;//todo        ///62
+                fieldData.GrossAmountNonVatable += Order->PriceLevelCustom > 0 ? Order->PriceLevelCustom + fabs(Order->TotalAdjustment()) : Order->PriceLevel1 + fabs(Order->TotalAdjustment());   ////39
+                fieldData.PromoSalesAmountNonVatable += promoDiscount;    ///41
+                fieldData.SCDDiscountNonVatable += scdDiscount;      //42
+                fieldData.RefundAmountNonVatable += Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;     //43
+                fieldData.ReturnedItemsAmountNonVatable += 0;     //44
+                fieldData.OtherTaxesNonVatable += localTax;     //45
+                fieldData.ServiceChargeAmountNonVatable +=  serviceCharge;   //46
+                fieldData.AdjustmentDiscountNonVatable  += 0;      //47
+                fieldData.VoidAmountNonVatable += 0;//todo             //48
+                fieldData.DiscountCardsNonVatable +=  0;//todo         //49
+                fieldData.DeliveryChargesNonVatable +=  0;//todo       //50
+                fieldData.GiftCertificatesChecksRedeemedNonVatable +=  0;//todo   //51
+                fieldData.SSDiscount1NonVatable += discountGroup1;  //52
+                fieldData.SSDiscount2NonVatable += discountGroup2;  //53
+                fieldData.SSDiscount3NonVatable += discountGroup3;  //54
+                fieldData.SSDiscount4NonVatable += discountGroup4;  //55
+                fieldData.SSDiscount5NonVatable += discountGroup5;  //56
+                fieldData.TotalOfallNonApprovedSDiscountsNonVatable += totalNonApprovedDiscount;    //57
+                fieldData.SSDiscount1NonApprovedNonVatable += 0;//todo         ///58
+                fieldData.SSDiscount2NonApprovedNonVatable += 0;//todo         //59
+                fieldData.SSDiscount3NonApprovedNonVatable += 0;//todo         //60
+                fieldData.SSDiscount4NonApprovedNonVatable += 0;//todo        //61
+                fieldData.SSDiscount5NonApprovedNonVatable += 0;//todo        ///62
             }
     }
     ///7
-    TotalDeductionVatable = TotalPromoSalesAmountVatable + TotalPWDDiscountVatable + TotalRefundAmountVatable + TotalReturnedItemsAmountVatable +
-                            TotalOtherTaxesVatable + TotalServiceChargeAmountVatable + TotalAdjustmentDiscountVatable + TotalVoidAmountVatable +
-                            TotalDiscountCardsVatable + TotalDeliveryChargesVatable + TotalGiftCertificatesChecksRedeemedVatable + StoreSpecificDiscount1Vatable +
-                            StoreSpecificDiscount2Vatable + StoreSpecificDiscount3Vatable + StoreSpecificDiscount4Vatable + StoreSpecificDiscount5Vatable;
-    TotalVATTaxAmountVatable = (((TotalGrossAmountVatable - TotalDeductionVatable)*.12)/1.12);        //30
-    TotalNetSalesAmountVatable = TotalGrossAmountVatable - TotalDeductionVatable - TotalVATTaxAmountVatable;  ////31
+    fieldData.DeductionVatable = fieldData.PromoSalesAmountVatable + fieldData.PWDDiscountVatable + fieldData.RefundAmountVatable + fieldData.ReturnedItemsAmountVatable +
+                            fieldData.OtherTaxesVatable + fieldData.ServiceChargeAmountVatable + fieldData.AdjustmentDiscountVatable + fieldData.VoidAmountVatable +
+                            fieldData.DiscountCardsVatable + fieldData.DeliveryChargesVatable + fieldData.GiftCertificatesChecksRedeemedVatable + fieldData.SSDiscount1Vatable +
+                            fieldData.SSDiscount2Vatable + fieldData.SSDiscount3Vatable + fieldData.SSDiscount4Vatable + fieldData.SSDiscount5Vatable;
+    fieldData.VATTaxAmountVatable = (((fieldData.GrossAmountVatable - fieldData.DeductionVatable)*.12)/1.12);        //30
+    fieldData.NetSalesAmountVatable = fieldData.GrossAmountVatable - fieldData.DeductionVatable - fieldData.VATTaxAmountVatable;  ////31
 
     ///40
-    TotalDeductionNonVatable = TotalPromoSalesAmountNonVatable + TotalSCDDiscountNonVatable + TotalRefundAmountNonVatable + TotalReturnedItemsAmountNonVatable +
-                            TotalOtherTaxesNonVatable + TotalServiceChargeAmountNonVatable + TotalAdjustmentDiscountNonVatable + TotalVoidAmountNonVatable +
-                            TotalDiscountCardsNonVatable + TotalDeliveryChargesNonVatable + TotalGiftCertificatesChecksRedeemedNonVatable + StoreSpecificDiscount1NonVatable +
-                            StoreSpecificDiscount2NonVatable + StoreSpecificDiscount3NonVatable + StoreSpecificDiscount4NonVatable + StoreSpecificDiscount5NonVatable;
-    TotalVATTaxAmountNonVatable = 0;  ///63
-    TotalNetSalesAmountNonVatable = TotalGrossAmountVatable - TotalDeductionVatable ;  //64
-    NewAccumulatedSalesVatable  = OldAccumulatedSalesVatable + TotalNetSalesAmountVatable; //5
-    NewAccumulatedSalesNonVatable  = OldAccumulatedSalesNonVatable + TotalNetSalesAmountNonVatable; //38
+    fieldData.DeductionNonVatable = fieldData.PromoSalesAmountNonVatable + fieldData.SCDDiscountNonVatable + fieldData.RefundAmountNonVatable + fieldData.ReturnedItemsAmountNonVatable +
+                            fieldData.OtherTaxesNonVatable + fieldData.ServiceChargeAmountNonVatable + fieldData.AdjustmentDiscountNonVatable + fieldData.VoidAmountNonVatable +
+                            fieldData.DiscountCardsNonVatable + fieldData.DeliveryChargesNonVatable + fieldData.GiftCertificatesChecksRedeemedNonVatable + fieldData.SSDiscount1NonVatable +
+                            fieldData.SSDiscount2NonVatable + fieldData.SSDiscount3NonVatable + fieldData.SSDiscount4NonVatable + fieldData.SSDiscount5NonVatable;
+    fieldData.VATTaxAmountNonVatable = 0;  ///63
+    fieldData.NetSalesAmountNonVatable = fieldData.GrossAmountVatable - fieldData.DeductionNonVatable ;  //64
+    fieldData.NewAccumulatedSalesVatable  = fieldData.OldAccumulatedSalesVatable + fieldData.NetSalesAmountVatable; //5
+    fieldData.NewAccumulatedSalesNonVatable  = fieldData.OldAccumulatedSalesNonVatable + fieldData.NetSalesAmountNonVatable; //38
 
      //05 Load New Accumulated Sale Row;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
@@ -1185,6 +1413,8 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
     salesData.ArcBillKey = arcBillKey;
     //Now push salesdata to Mallexportdata 's list;
     mallExportData.SalesData.push_back(salesData);
+
+    return mallExportData;
 }
 //-----------------------------------------------------------------------------------------------
 void TEstanciaMall::PrepareDataForExport()

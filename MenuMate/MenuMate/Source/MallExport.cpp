@@ -9,7 +9,7 @@
 
 #pragma package(smart_init)
 
-bool TMallExport::PushToDatabase()
+bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
 {
 }
 //-------------------------------------------------------------------------------

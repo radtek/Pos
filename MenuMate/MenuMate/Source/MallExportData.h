@@ -6,7 +6,7 @@
 #include <list>
 #include "MallExportSalesData.h"
 //---------------------------------------------------------------------------
-class TMallExportData
+class TMallExportPrepareData
 {
     private:
     std::list<TMallExportSettings> _mallSettings;
