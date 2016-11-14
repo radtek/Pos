@@ -26,6 +26,9 @@ UnicodeString fieldNames[NUMBER_OF_FIELDS] =
 
 class TEstanciaMall : public TMallExport
 {
+    private:
+    int GetPatronCount(TPaymentTransaction &paymentTransaction);
+
     public:
     TEstanciaMall();
     void PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);

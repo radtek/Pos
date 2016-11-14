@@ -231,12 +231,8 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
                 }
             }
 
-
-
             if(isVatable)
             {
-                //OldAccumulatedSalesVatable
-                   //5
                 TotalGrossAmountVatable += Order->PriceEach_BillCalc() + fabs(Order->TotalAdjustment());   //6
                 TotalPromoSalesAmountVatable += promoDiscount; //8
                 TotalPWDDiscountVatable += pwdDiscount;  //9
@@ -263,8 +259,6 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
             }
             else
             {
-                //
-                     ////38
                 TotalGrossAmountNonVatable += Order->PriceLevelCustom > 0 ? Order->PriceLevelCustom + fabs(Order->TotalAdjustment()) : Order->PriceLevel1 + fabs(Order->TotalAdjustment());   ////39
                 TotalPromoSalesAmountNonVatable += promoDiscount;    ///41
                 TotalSCDDiscountNonVatable += scdDiscount;      //42
@@ -289,18 +283,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
                 StoreSpecificDiscount4NonApprovedNonVatable += 0;//todo        //61
                 StoreSpecificDiscount5NonApprovedNonVatable += 0;//todo        ///62
             }
-
-
     }
-
-    //patron count
-    int totalPatronCount = 0;
-    std::vector <TPatronType> ::iterator ptrPatronTypes;
-    for (ptrPatronTypes = paymentTransaction.Patrons.begin(); ptrPatronTypes != paymentTransaction.Patrons.end(); ptrPatronTypes++)
-    {
-        totalPatronCount += ptrPatronTypes->Count;
-    }
-
     ///7
     TotalDeductionVatable = TotalPromoSalesAmountVatable + TotalPWDDiscountVatable + TotalRefundAmountVatable + TotalReturnedItemsAmountVatable +
                             TotalOtherTaxesVatable + TotalServiceChargeAmountVatable + TotalAdjustmentDiscountVatable + TotalVoidAmountVatable +
@@ -701,7 +684,7 @@ void TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransacti
      //32 Total Cover Count  ;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
     salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = totalPatronCount;
+    salesData.DataValue = GetPatronCount(paymentTransaction);
     salesData.Field = "Total Cover Count";
     salesData.FieldIndex = 32 ;
     salesData.DataValueType = "int";
@@ -1236,6 +1219,19 @@ long TEstanciaMall::GenerateSaleKey(Database::TDBTransaction &dbTransaction)
 		throw;
 	}
     return saleKey;
+}
+//------------------------------------------------------------------------------------------------
+int TEstanciaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
+{
+    //patron count
+    int totalPatronCount = 0;
+    std::vector <TPatronType> ::iterator ptrPatronTypes;
+    for (ptrPatronTypes = paymentTransaction.Patrons.begin(); ptrPatronTypes != paymentTransaction.Patrons.end(); ptrPatronTypes++)
+    {
+        totalPatronCount += ptrPatronTypes->Count;
+    }
+    return totalPatronCount;
+
 }
 
 
