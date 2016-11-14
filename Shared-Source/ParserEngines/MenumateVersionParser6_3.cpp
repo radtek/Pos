@@ -142,6 +142,7 @@ void TApplyParser::update6_33Tables()
     Create6_33MallExportSettingsMapping(_dbControl);
     Create6_33MallExportSettingsMappingValues(_dbControl);
     Create6_33MallExportSales(_dbControl);
+    Create6_33MallExportHeader(_dbControl);
     Create6_33GeneratorMallExportSaleKey(_dbControl);
     Create6_33GeneratorMallExportsSettingKey(_dbControl);
     Create6_33GeneratorMallExportsSettingMappingKey(_dbControl);
@@ -261,6 +262,21 @@ void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
 			inDBControl );
      }
 }
+//----------------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33MallExportHeader(TDBControl* const inDBControl)
+{
+     if ( !tableExists( "MALL_EXPORT_HEADER", inDBControl ) )
+     {
+		executeQuery(
+                "CREATE TABLE MALL_EXPORT_HEADER "
+                "( "
+                "   MALL_EXPORT_HEADER_ID INTEGER NOT NULL PRIMARY KEY, "
+                "   MM_NAME VARCHAR(50), "
+                "   IS_ACTIVE char(1) default 'F' "
+                ");",
+			inDBControl );
+     }
+ }
 //-------------------------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33GeneratorMallExportMallId(TDBControl* const inDBControl)
 {
@@ -838,5 +854,48 @@ void TApplyParser::Insert6_33MallExport_Settings_Values(TDBControl* const inDBCo
         transaction.Rollback();
     }
 }
+//---------------------------------------------------------------------------------------------------------------------------------------------
+void TApplyParser::Insert6_33Mall_ExportHeader(TDBControl* const inDBControl)
+{
+    const int NUMBER_OF_FIELDS = 65;
+    UnicodeString fieldNames[NUMBER_OF_FIELDS] =
+        {
+            "TenantCode" ,"TerminalNumber" ,"Date" ,"OldAccumulatedSalesVatable" ,"NewAccumulatedSalesVatable" ,"TotalGrossAmountVatable" ,"TotalDeductionsVatable" ,
+            "TotalPromoSalesAmountVatable" ,"TotalPWDDiscountVatable" ,"TotalRefundAmountVatable" ,"TotalReturnedItemsAmountVatable" ,"TotalOtherTaxesVatable" ,"TotalServiceChargeVatable" ,
+            "TotalAdjustmentDiscount" ,"TotalVoidAmount" ,"TotalDiscountCards" ,"TotalDeliveryCharges" ,"TotalGiftCertificates/Checks Redeemed" ,
+            "DiscountGroup1Vatable " ,"DiscountGroup2Vatable" ,"DiscountGroup3Vatable" ,"DiscountGroup4Vatable" ,"DiscountGroup5Vatable" ,
+            "TotalofallNonApprovedStoreDiscountsVatable" ,"Discount1NonApprovedVatable" ,"Discount2NonApprovedVatable" ,"Discount3NonApprovedVatable" ,"Discount4NonApprovedVatable" ,
+            "Discount5NonApprovedVatable" ,"TotalVAT/TaxAmountVatable" ,"TotalNetSalesAmountVatable" ,"TotalCoverCount" ,"Z-Number" ,"TransactionCount" ,"SalesType" ,
+            "Amount" ,"OldAccumulatedSalesNonVatable" ,"NewAccumulatedSalesNonVatable" ,"TotalGrossAmountNonVatable" , "TotalDeductionsNonVatable" ,"TotalPromoSalesAmountNonVatable" ,"SeniorCitizenDiscountNonVatable" ,
+            "TotalRefundAmountNonVatable" , "TotalReturnedItemsAmountNonVatable" ,"TotalOtherTaxesNonVatable" ,"TotalServiceChargeAmountNonVatable" ,"TotalAdjustmentDiscountNonVatable" ,"TotalVoidAmountNonVatable" ,
+            "TotalDiscountCardsNonVatable" ,"TotalDeliveryChargesNonVatable" , "TotalGiftCertificates/ChecksRedeemeNonVatable" ,"DiscountGroup1NonVatable" ,"DiscountGroup2NonVatable" ,
+            "DiscountGroup3NonVatable " , "DiscountGroup4NonVatable" , "Discount5NonVatable" ,"TotalofallNonApprovedStoreDiscountsNonVatable" , "Discount1NonApprovedNonVatable" ,
+            "Discount2NonApprovedNonVatable" , "Discount3NonApprovedNonVatable" , "Discount4NonApprovedNonVatable" , "Discount5NonApprovedNonVatable" ,"VAT/TaxAmountNonVatable" ,
+            "TotalNetSalesAmountNonVatable" ,"GrandTotalNetSales"
+        };
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+
+        for (int i = 0; i < NUMBER_OF_FIELDS; i++)
+        {
+            InsertQuery->Close();
+            InsertQuery->SQL->Text =
+                        "INSERT INTO MALL_EXPORT_HEADER VALUES (:HEADER_ID, :MM_NAME, :IS_ACTIVE) ";
+            InsertQuery->ParamByName("HEADER_ID")->AsInteger = (i + 1);
+            InsertQuery->ParamByName("MM_NAME" )->AsString  = fieldNames[i];
+            InsertQuery->ParamByName("IS_ACTIVE" )->AsString  = "T";
+            InsertQuery->ExecQuery();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//--------------------------------------------------------------------------------------------------------------------------
 }
 

@@ -339,57 +339,6 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction
             terminalNumber = StrToInt(it->Value);
         }
     }
-    salesData.Field = "Tenant Code";
-    salesData.DataValueType = "UnicodeString";
-    salesData.FieldIndex = 1;
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //02 Load pos Terminal Number Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = terminalNumber;
-    salesData.FieldIndex = 2;
-    salesData.Field = "POS Terminal Number";
-    salesData.DataValueType = "Integer";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //03 Load Date Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = Now().FormatString("mmddyyyy");
-    salesData.Field = "Date (mmddyyyy)";
-    salesData.FieldIndex = 3;
-    salesData.DataValueType = "TDateTime";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //04 Load Old Accumulated Row;          //todo
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = Now().FormatString("mmddyyyy");
-    salesData.Field = "Old Accumulated Sales";
-    salesData.FieldIndex = 4;
-    salesData.DataValueType = "TDateTime";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
 
     for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
     {
@@ -529,6 +478,60 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction
     fieldData.NetSalesAmountNonVatable = fieldData.GrossAmountVatable - fieldData.DeductionNonVatable ;  //64
     fieldData.NewAccumulatedSalesVatable  = fieldData.OldAccumulatedSalesVatable + fieldData.NetSalesAmountVatable; //5
     fieldData.NewAccumulatedSalesNonVatable  = fieldData.OldAccumulatedSalesNonVatable + fieldData.NetSalesAmountNonVatable; //38
+
+    salesData.Field = "Tenant Code";
+    salesData.DataValueType = "UnicodeString";
+    salesData.FieldIndex = 1;
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+    //02 Load pos Terminal Number Row;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = terminalNumber;
+    salesData.FieldIndex = 2;
+    salesData.Field = "POS Terminal Number";
+    salesData.DataValueType = "Integer";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //03 Load Date Row;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = Now().FormatString("mmddyyyy");
+    salesData.Field = "Date (mmddyyyy)";
+    salesData.FieldIndex = 3;
+    salesData.DataValueType = "TDateTime";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+     //04 Load Old Accumulated Row;          //todo
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = Now().FormatString("mmddyyyy");
+    salesData.Field = "Old Accumulated Sales";
+    salesData.FieldIndex = 4;
+    salesData.DataValueType = "TDateTime";
+    salesData.enumType = 10;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    //Now push salesdata to Mallexportdata 's list;
+    mallExportData.SalesData.push_back(salesData);
+
+
 
      //05 Load New Accumulated Sale Row;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);

@@ -806,6 +806,7 @@ namespace MenumateVersionParser
         void Create6_33MallExportSettingsMappingValues(TDBControl* const inDBControl);
         void Create6_33MallExportSales(TDBControl* const inDBControl);
         void Create6_33MallExportSettingValuesAttributes(TDBControl* const inDBControl);
+        void Create6_33MallExportHeader(TDBControl* const inDBControl);
         void Create6_33GeneratorMallExportSaleKey(TDBControl* const inDBControl);
         void Create6_33GeneratorMallExportsSettingKey(TDBControl* const inDBControl);
         void Create6_33GeneratorMallExportsSettingMappingKey(TDBControl* const inDBControl);
@@ -815,6 +816,7 @@ namespace MenumateVersionParser
         void Insert6_33MallExport_Settings(TDBControl* const inDBControl);
         void Insert6_33MallExport_Settings_Mapping(TDBControl* const inDBControl);
         void Insert6_33MallExport_Settings_Values(TDBControl* const inDBControl);
+        void Insert6_33Mall_ExportHeader(TDBControl* const inDBControl);
     }; // class
 } // namespace
 
