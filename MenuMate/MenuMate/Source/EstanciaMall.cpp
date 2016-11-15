@@ -300,17 +300,19 @@ void TEstanciaMallField::SetCoverCount(int coverCount)
 //----------------------------------------------------------------------------------------
 bool TEstanciaMall::PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
 {
+    bool retVal = false;
     try
     {
         TMallExportPrepareData preparedData;
         preparedData = PrepareDataForDatabase(paymentTransaction, arcBillKey);
-        InsertInToMallExport_Sales(paymentTransaction.DBTransaction, preparedData);
+        retVal = InsertInToMallExport_Sales(paymentTransaction.DBTransaction, preparedData);
     }
      catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+    return retVal;
 }
 //------------------------------------------------------------------------------------------------------------------------
 TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
@@ -618,10 +620,11 @@ void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, 
     mallExportData.SalesData.push_back(salesData);
 }
 //--------------------------------------------------------------------------------------------------------
-void TEstanciaMall::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportPrepareData mallExportPreparedData)
+bool TEstanciaMall::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportPrepareData mallExportPreparedData)
 {
     Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
 	dbTransaction.RegisterQuery(IBInternalQuery);
+    bool isInserted = false;
     try
     {
         std::list<TMallExportSalesData>::iterator it;
@@ -668,13 +671,15 @@ void TEstanciaMall::InsertInToMallExport_Sales(Database::TDBTransaction &dbTrans
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
             IBInternalQuery->ExecQuery();
         }
+        isInserted = true;
     }
     catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
+        isInserted =  false;
 	}
-
+    return isInserted;
 }
 void TEstanciaMall::PrepareDataForExport()
 {
