@@ -293,8 +293,11 @@ void TEstanciaMallField::SetNetSalesAmountNonVatable(Currency netSalesAmountNonV
     _netSalesAmountNonVatable = netSalesAmountNonVatable;
 }
 //----------------------------------------------------------------------------------------
-
-
+void TEstanciaMallField::SetCoverCount(int coverCount)
+{
+    _coverCount = coverCount;
+}
+//----------------------------------------------------------------------------------------
 TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
 {
     Currency promoDiscount = 0.00;
@@ -320,19 +323,17 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction
     dbTransaction.StartTransaction();
 
     TMallExportPrepareData mallExportData;
-    TMallExportSalesData salesData;
     int terminalNumber;
+    UnicodeString tenantCode;
     std::list<TMallExportSettings>::iterator it;
 
-    //01 load Tenant code Row
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+
 
     for(it = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); it != TGlobalSettings::Instance().mallInfo.MallSettings.end(); it++)
     {
         if(it->ControlName == "edTenantNo1")
         {
-            salesData.DataValue = it->Value;
+            tenantCode = it->Value;
         }
         else if(it->ControlName == "edTerminalNo1")
         {
@@ -478,944 +479,76 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction
     fieldData.NetSalesAmountNonVatable = fieldData.GrossAmountVatable - fieldData.DeductionNonVatable ;  //64
     fieldData.NewAccumulatedSalesVatable  = fieldData.OldAccumulatedSalesVatable + fieldData.NetSalesAmountVatable; //5
     fieldData.NewAccumulatedSalesNonVatable  = fieldData.OldAccumulatedSalesNonVatable + fieldData.NetSalesAmountNonVatable; //38
-
-    salesData.Field = "Tenant Code";
-    salesData.DataValueType = "UnicodeString";
-    salesData.FieldIndex = 1;
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //02 Load pos Terminal Number Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = terminalNumber;
-    salesData.FieldIndex = 2;
-    salesData.Field = "POS Terminal Number";
-    salesData.DataValueType = "Integer";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //03 Load Date Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = Now().FormatString("mmddyyyy");
-    salesData.Field = "Date (mmddyyyy)";
-    salesData.FieldIndex = 3;
-    salesData.DataValueType = "TDateTime";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //04 Load Old Accumulated Row;          //todo
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = Now().FormatString("mmddyyyy");
-    salesData.Field = "Old Accumulated Sales";
-    salesData.FieldIndex = 4;
-    salesData.DataValueType = "TDateTime";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-
-
-     //05 Load New Accumulated Sale Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = NewAccumulatedSalesVatable;
-    salesData.Field = "New Accumulated Sales";
-    salesData.FieldIndex = 5;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-
-    //06 Total Gross Amount Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalGrossAmountVatable;
-    salesData.Field = "Total Gross Amount";
-    salesData.FieldIndex = 6;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //07 Total Deductions Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalDeductionVatable;
-    salesData.Field = "Total Deductions";
-    salesData.FieldIndex = 7;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //08 Total Promo Sale Amount Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalPromoSalesAmountVatable;
-    salesData.Field = "Total Promo Sale Amount";
-    salesData.FieldIndex = 8;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //09 Total PWD Discount Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalPWDDiscountVatable;
-    salesData.Field = "Total PWD Discount";
-    salesData.FieldIndex = 9;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //10 Total Refund Amount;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalRefundAmountVatable;
-    salesData.Field = "Total Refund Amount ";
-    salesData.FieldIndex = 10;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //11 Total Refund Amount;    //todo
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalReturnedItemsAmountVatable;
-    salesData.Field = "Total Returned Items Amount";
-    salesData.FieldIndex = 11;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //12 Total Other taxes //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalOtherTaxesVatable;
-    salesData.Field = "Total Other Taxes";
-    salesData.FieldIndex = 12;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //13 Total Service Charge Amount //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalServiceChargeAmountVatable;
-    salesData.Field = "Total Service Charge Amount ";
-    salesData.FieldIndex = 13;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //14 Total Adjustment Discount //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalAdjustmentDiscountVatable;
-    salesData.Field = "Total Adjustment Discount";
-    salesData.FieldIndex = 14;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-      //15 Total Void Amount //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalVoidAmountVatable;
-    salesData.Field = "Total Void Amount";
-    salesData.FieldIndex = 15;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-      //16 Total Discount Cards  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalDiscountCardsVatable;
-    salesData.Field = "Total Discount Cards";
-    salesData.FieldIndex = 16;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //17 Total Delivery Charges  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalDeliveryChargesVatable;
-    salesData.Field = "Total Delivery Charges";
-    salesData.FieldIndex = 17;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //18 Total Gift Cards  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalGiftCertificatesChecksRedeemedVatable;
-    salesData.Field = "Total Gift Certificates/Checks Redeemed";
-    salesData.FieldIndex = 18;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //19 Store Specific Discount 1  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount1Vatable;
-    salesData.Field = "Store Specific Discount 1";
-    salesData.FieldIndex = 19;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //20 Store Specific Discount 2  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount2Vatable;
-    salesData.Field = "Store Specific Discount 2";
-    salesData.FieldIndex = 20;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //21 Store Specific Discount 3  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount3Vatable;
-    salesData.Field = "Store Specific Discount 3";
-    salesData.FieldIndex = 21;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //22 Store Specific Discount 4 //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount4Vatable;
-    salesData.Field = "Store Specific Discount 4";
-    salesData.FieldIndex = 22;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //23 Store Specific Discount 5 //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount5Vatable;
-    salesData.Field = "Store Specific Discount 5";
-    salesData.FieldIndex = 23;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //24 Total of all Non-Approved Store Discounts //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalofallNonApprovedStoreDiscountsVatable;
-    salesData.Field = "Total of all Non-Approved Store Discounts";
-    salesData.FieldIndex = 24;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //25 Store Specific Discount1//todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount1Vatable;
-    salesData.Field = "Store Specific Discount 1";
-    salesData.FieldIndex = 25 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //26 Store Specific Discount2//todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount2Vatable;
-    salesData.Field = "Store Specific Discount 2";
-    salesData.FieldIndex = 26 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //27 Store Specific Discount3//todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount3Vatable;
-    salesData.Field = "Store Specific Discount 3";
-    salesData.FieldIndex = 27 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //28 Store Specific Discount4//todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount4Vatable;
-    salesData.Field = "Store Specific Discount 4";
-    salesData.FieldIndex = 28 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //29 Store Specific Discount5//todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount5Vatable;
-    salesData.Field = "Store Specific Discount 5";
-    salesData.FieldIndex = 29 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //30 Total VAT/Tax Amount//todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalVATTaxAmountVatable;
-    salesData.Field = "Total VAT/Tax Amount";
-    salesData.FieldIndex = 30 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //31 Total Net Sales Amount ;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalNetSalesAmountVatable;
-    salesData.Field = "Total Net Sales Amount";
-    salesData.FieldIndex = 31 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //32 Total Cover Count  ;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = GetPatronCount(paymentTransaction);
-    salesData.Field = "Total Cover Count";
-    salesData.FieldIndex = 32 ;
-    salesData.DataValueType = "int";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //33 Control Number //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalNetSalesAmountVatable;
-    salesData.Field = "Control Number";
-    salesData.FieldIndex = 33 ;
-    salesData.DataValueType = "int";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-      //34 Total Number of Sales Transaction //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalRefundAmountVatable < 0 ? 0 :1;
-    salesData.Field = "Total Number of Sales Transaction";
-    salesData.FieldIndex = 34 ;
-    salesData.DataValueType = "int";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //35 Sales Type //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = 1;
-    salesData.Field = "Sales Type";
-    salesData.FieldIndex = 35 ;
-    salesData.DataValueType = "int";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //36 Sales Type //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalNetSalesAmountVatable;
-    salesData.Field = "Sales Type";
-    salesData.FieldIndex = 36 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //37 Old Accumulated Sales //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = 0;///todo
-    salesData.Field = "Old Accumulated Sales";
-    salesData.FieldIndex = 36 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //38 Load New Accumulated Sale Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = NewAccumulatedSalesNonVatable;
-    salesData.Field = "New Accumulated Sales";
-    salesData.FieldIndex = 38;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-
-    //39 Total Gross Amount Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalGrossAmountNonVatable;
-    salesData.Field = "Total Gross Amount";
-    salesData.FieldIndex = 39;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //40 Total Deductions Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalDeductionNonVatable;
-    salesData.Field = "Total Deductions";
-    salesData.FieldIndex = 40;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //41 Total Promo Sale Amount Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalPromoSalesAmountNonVatable;
-    salesData.Field = "Total Promo Sale Amount";
-    salesData.FieldIndex = 41;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //42 Total SCDDiscount Row;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = scdDiscount;
-    salesData.Field = "Total SCD Discount";
-    salesData.FieldIndex = 42;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //43 Total Refund Amount;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalRefundAmountNonVatable;
-    salesData.Field = "Total Refund Amount ";
-    salesData.FieldIndex = 43;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //44 Total Returned Items Amount;    //todo
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalReturnedItemsAmountNonVatable;
-    salesData.Field = "Total Returned Items Amount";
-    salesData.FieldIndex = 44;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //45 Total Other taxes //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalOtherTaxesNonVatable;
-    salesData.Field = "Total Other Taxes";
-    salesData.FieldIndex = 45;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //46 Total Service Charge Amount //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalServiceChargeAmountNonVatable;
-    salesData.Field = "Total Service Charge Amount ";
-    salesData.FieldIndex = 46;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //47 Total Adjustment Discount //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalAdjustmentDiscountNonVatable;
-    salesData.Field = "Total Adjustment Discount";
-    salesData.FieldIndex = 47;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-      //48 Total Void Amount //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalVoidAmountNonVatable;
-    salesData.Field = "Total Void Amount";
-    salesData.FieldIndex = 48;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-      //49 Total Discount Cards  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalDiscountCardsNonVatable;
-    salesData.Field = "Total Discount Cards";
-    salesData.FieldIndex = 49;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //50 Total Delivery Charges  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalDeliveryChargesNonVatable;
-    salesData.Field = "Total Delivery Charges";
-    salesData.FieldIndex = 50;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //51 Total Gift Cards  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalGiftCertificatesChecksRedeemedNonVatable;
-    salesData.Field = "Total Gift Certificates/Checks Redeemed";
-    salesData.FieldIndex = 51;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //52 Store Specific Discount 1  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount1NonVatable;
-    salesData.Field = "Store Specific Discount 1";
-    salesData.FieldIndex = 52;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //53 Store Specific Discount 2  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount2NonVatable;
-    salesData.Field = "Store Specific Discount 2";
-    salesData.FieldIndex = 53;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //54 Store Specific Discount 3  //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount3NonVatable;
-    salesData.Field = "Store Specific Discount 3";
-    salesData.FieldIndex = 54;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //55 Store Specific Discount 4 //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount4NonVatable;
-    salesData.Field = "Store Specific Discount 4";
-    salesData.FieldIndex = 55;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //56 Store Specific Discount 5 //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount5NonVatable;
-    salesData.Field = "Store Specific Discount 5";
-    salesData.FieldIndex = 56;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //57 Total of all Non-Approved Store Discounts //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalofallNonApprovedStoreDiscountsNonVatable;
-    salesData.Field = "Total of all Non-Approved Store Discounts";
-    salesData.FieldIndex = 57;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //58 Store Specific Discount1;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount1NonVatable;
-    salesData.Field = "Store Specific Discount 1";
-    salesData.FieldIndex = 58;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //59 Store Specific Discount2//todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount2NonVatable;
-    salesData.Field = "Store Specific Discount 2";
-    salesData.FieldIndex = 59;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //60 Store Specific Discount3//todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount3NonVatable;
-    salesData.Field = "Store Specific Discount 3";
-    salesData.FieldIndex = 60;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //61 Store Specific Discount4;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount4NonVatable;
-    salesData.Field = "Store Specific Discount 4";
-    salesData.FieldIndex = 27 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //62 Store Specific Discount5;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = StoreSpecificDiscount5NonVatable;
-    salesData.Field = "Store Specific Discount 5";
-    salesData.FieldIndex = 62;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //63 Total VAT/Tax Amount//todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalVATTaxAmountNonVatable;
-    salesData.Field = "Total VAT/Tax Amount";
-    salesData.FieldIndex = 63 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-    //64 Total Net Sales Amount ;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalNetSalesAmountNonVatable;
-    salesData.Field = "Total Net Sales Amount";
-    salesData.FieldIndex = 31 ;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //65 Grand Total Net Sales //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = TotalNetSalesAmountVatable + TotalNetSalesAmountNonVatable;
-    salesData.Field = "Grand Total Net Sales";
-    salesData.FieldIndex = 65;
-    salesData.DataValueType = "Currency";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //66 Hour code //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = HourOf(Now().FormatString("dd-mm-yy HH:nn:ss"));
-    salesData.Field = "Hour Code";
-    salesData.FieldIndex = 66;
-    salesData.DataValueType = "int";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
-
-     //67 Status //todo;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = 1;
-    salesData.Field = "Status";
-    salesData.FieldIndex = 67;
-    salesData.DataValueType = "int";
-    salesData.enumType = 10;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    //Now push salesdata to Mallexportdata 's list;
-    mallExportData.SalesData.push_back(salesData);
+    fieldData.CoverCount = GetPatronCount(paymentTransaction);
+
+     ///call function to insert all fields into list
+    PushFieldsInToList(dbTransaction, mallExportData, "Tenant Code", "UnicodeString", tenantCode, 1, arcBillKey);//01
+    PushFieldsInToList(dbTransaction, mallExportData, "POS Terminal Number", "int", terminalNumber, 2, arcBillKey);//02
+    PushFieldsInToList(dbTransaction, mallExportData, "Date (mmddyyyy)", "TDateTime", Now().FormatString("mmddyyyy"), 3, arcBillKey);//03
+    PushFieldsInToList(dbTransaction, mallExportData, "Old Accumulated Sales", "Currency", 0, 4, arcBillKey);//04    //todo
+    PushFieldsInToList(dbTransaction, mallExportData, "New Accumulated Sales", "Currency", fieldData.NewAccumulatedSalesVatable, 5, arcBillKey);//05
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Gross Amount", "Currency", fieldData.GrossAmountVatable, 6, arcBillKey);//06
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Deductions", "Currency", fieldData.DeductionVatable, 7, arcBillKey);//07
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Promo Sale Amount", "Currency", fieldData.PromoSalesAmountVatable, 8, arcBillKey);//08
+    PushFieldsInToList(dbTransaction, mallExportData, "Total PWD Discount", "Currency", fieldData.PWDDiscountVatable, 9, arcBillKey);//09
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Refund Amount", "Currency", fieldData.RefundAmountVatable, 10, arcBillKey);//10
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Returned Items Amount", "Currency", fieldData.ReturnedItemsAmountVatable, 11, arcBillKey);//11
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Other Taxes", "Currency", fieldData.OtherTaxesVatable, 12, arcBillKey);//12
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Service Charge Amount", "Currency", fieldData.ServiceChargeAmountVatable, 13, arcBillKey);//13
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Adjustment Discount", "Currency", fieldData.AdjustmentDiscountVatable, 14, arcBillKey);//14
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Void Amount", "Currency", fieldData.VoidAmountVatable, 15, arcBillKey);//15
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Discount Cards", "Currency", fieldData.DiscountCardsVatable, 16, arcBillKey);//16
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Delivery Charges", "Currency", fieldData.DeliveryChargesVatable, 17, arcBillKey);//17
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Gift Certificates/Checks Redeemed", "Currency", fieldData.GiftCertificatesChecksRedeemedVatable, 18, arcBillKey);//18
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1Vatable, 19, arcBillKey);//19
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2Vatable, 20, arcBillKey);//20
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3Vatable, 21, arcBillKey);//21
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4Vatable, 22, arcBillKey);//22
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5Vatable, 23, arcBillKey);//23
+    PushFieldsInToList(dbTransaction, mallExportData, "Total of all Non-Approved Store Discounts", "Currency", fieldData.TotalOfallNonApprovedSDVatable, 24, arcBillKey);//24
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonVatable, 25, arcBillKey);//25
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonVatable, 26, arcBillKey);//26
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonVatable, 27, arcBillKey);//27
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonVatable, 28, arcBillKey);//28
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonVatable, 29, arcBillKey);//29
+    PushFieldsInToList(dbTransaction, mallExportData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountVatable, 30, arcBillKey);//30
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountVatable, 31, arcBillKey);//31
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Cover Count", "int", fieldData.CoverCount, 32, arcBillKey);//32
+    PushFieldsInToList(dbTransaction, mallExportData, "Control Number", "int", "", 33, arcBillKey);//33  //todo
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Number of Sales Transaction", "int", 1, 34, arcBillKey);//34  //todo
+    PushFieldsInToList(dbTransaction, mallExportData, "Sales Type", "int", 1, 35, arcBillKey);//35  //todo
+    PushFieldsInToList(dbTransaction, mallExportData, "Amount", "Currency", fieldData.NetSalesAmountVatable, 36, arcBillKey);//36
+    PushFieldsInToList(dbTransaction, mallExportData, "Old Accumulated Sales", "Currency", fieldData.OldAccumulatedSalesNonVatable, 37, arcBillKey);//37
+    PushFieldsInToList(dbTransaction, mallExportData, "New Accumulated Sales", "Currency", fieldData.NewAccumulatedSalesNonVatable, 38, arcBillKey);//38
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Gross Amount", "Currency", fieldData.GrossAmountNonVatable, 39, arcBillKey);//39
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Deductions", "Currency", fieldData.DeductionNonVatable, 40, arcBillKey);//40
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Promo Sale Amount", "Currency", fieldData.PromoSalesAmountNonVatable, 41, arcBillKey);//41
+    PushFieldsInToList(dbTransaction, mallExportData, "Total SCD Discount", "Currency", fieldData.SCDDiscountNonVatable, 42, arcBillKey);//42
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Refund Amount", "Currency", fieldData.RefundAmountNonVatable, 43, arcBillKey);//43
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Returned Items Amount", "Currency", fieldData.ReturnedItemsAmountNonVatable, 44, arcBillKey);//44
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Other Taxes", "Currency", fieldData.OtherTaxesNonVatable, 45, arcBillKey);//45
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Service Charge Amount", "Currency", fieldData.ServiceChargeAmountNonVatable, 46, arcBillKey);//46
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Adjustment Discount", "Currency", fieldData.AdjustmentDiscountNonVatable, 47, arcBillKey);//47
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Void Amount", "Currency", fieldData.VoidAmountNonVatable, 48, arcBillKey);//48
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Discount Cards", "Currency", fieldData.DiscountCardsNonVatable, 49, arcBillKey);//49
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Delivery Charges", "Currency", fieldData.DeliveryChargesNonVatable, 50, arcBillKey);//50
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Gift Certificates/Checks Redeemed", "Currency", fieldData.GiftCertificatesChecksRedeemedNonVatable, 51, arcBillKey);//51
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonVatable, 52, arcBillKey);//52
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonVatable, 53, arcBillKey);//53
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonVatable, 54, arcBillKey);//54
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonVatable, 55, arcBillKey);//55
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonVatable, 56, arcBillKey);//56
+    PushFieldsInToList(dbTransaction, mallExportData, "Total of all Non-Approved Store Discounts", "Currency", fieldData.TotalOfallNonApprovedSDiscountsNonVatable, 57, arcBillKey);//57
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonApprovedVatable, 58, arcBillKey);//58
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonApprovedVatable, 59, arcBillKey);//59
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonApprovedVatable, 60, arcBillKey);//60
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonApprovedVatable, 61, arcBillKey);//61
+    PushFieldsInToList(dbTransaction, mallExportData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonApprovedVatable, 62, arcBillKey);//62
+    PushFieldsInToList(dbTransaction, mallExportData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountNonVatable, 63, arcBillKey);//63
+    PushFieldsInToList(dbTransaction, mallExportData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountNonVatable, 64, arcBillKey);//64
+    PushFieldsInToList(dbTransaction, mallExportData, "Grand Total Net Sales", "Currency", fieldData.NetSalesAmountVatable + fieldData.NetSalesAmountNonVatable, 65, arcBillKey);//65
+    PushFieldsInToList(dbTransaction, mallExportData, "Hour Code", "int", HourOf(Now().FormatString("dd-mm-yy HH:nn:ss")), 66, arcBillKey);//66
+    PushFieldsInToList(dbTransaction, mallExportData, "Status", "int", 1, 67, arcBillKey);//67    todo
 
     return mallExportData;
 }
@@ -1466,6 +599,21 @@ int TEstanciaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
     return totalPatronCount;
 
 }
-
+//--------------------------------------------------------------------------------------------------------
+void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, TMallExportPrepareData &mallExportData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
+{
+    TMallExportSalesData salesData;
+    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+    salesData.DataValue = fieldValue;
+    salesData.Field = field;
+    salesData.DataValueType = dataType;
+    salesData.FieldIndex = fieldIndex;
+    salesData.DateCreated = Now();
+    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+    salesData.ArcBillKey = arcBillKey;
+    mallExportData.SalesData.push_back(salesData);
+}
+//--------------------------------------------------------------------------------------------------------
 
 

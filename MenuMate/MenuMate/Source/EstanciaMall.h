@@ -10,6 +10,7 @@ class TEstanciaMall : public TMallExport
     private:
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
     long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
+    void PushFieldsInToList(Database::TDBTransaction &dbTransaction, TMallExportPrepareData &mallExportData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
 
     protected:
     TMallExportPrepareData PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
@@ -76,6 +77,7 @@ class TEstanciaMallField
     Currency _sSDiscount5NonApprovedNonVatable;
     Currency _vATAmountNonVatable;
     Currency _netSalesAmountNonVatable;
+    int _coverCount;
 
     void SetOldAccSalesVatable(Currency oldAccSalesVatable);
     void SetNewAccSalesVatable(Currency newAccSaleVatable);
@@ -133,6 +135,7 @@ class TEstanciaMallField
     void SetSSDiscount5NonApprovedNonVatable(Currency sSDiscount5NonApprovedNonVatable);
     void SetVATAmountNonVatable(Currency vATAmountNonVatable);
     void SetNetSalesAmountNonVatable(Currency netSaleAmountNonVatable);
+    void SetCoverCount(int _coverCount);
 
     public:
     __property Currency OldAccumulatedSalesVatable = {read =  _oldAccSalesVatable, write = SetOldAccSalesVatable};
@@ -163,8 +166,8 @@ class TEstanciaMallField
     __property Currency SSDiscount5NonApprovedVatable = {read = _sSDiscount5NonApprovedVatable, write = SetSSDiscount5NonApprovedVatable};
     __property Currency VATTaxAmountVatable = {read = _vATAmountVatable, write = SetVATAmountVatable};
     __property Currency NetSalesAmountVatable =  {read = _netSalesAmountVatable, write = SetNetSalesAmountVatable};
-    __property Currency oldAccumulatedSalesNonVatable =  {read = _oldAccSalesNonVatable, write = SetOldAccSalesNonVatable};
-    __property Currency newAccumulatedSalesNonVatable =  {read = _newAccSalesNonVatable, write = SetNewAccSalesNonVatable};
+    __property Currency OldAccumulatedSalesNonVatable =  {read = _oldAccSalesNonVatable, write = SetOldAccSalesNonVatable};
+    __property Currency NewAccumulatedSalesNonVatable =  {read = _newAccSalesNonVatable, write = SetNewAccSalesNonVatable};
     __property Currency GrossAmountNonVatable = {read = _grossAmountNonVatable, write = SetGrossAmountNonVatable};
     __property Currency DeductionNonVatable = {read =  _deductionNonVatable, write = SetDeductionNonVatable};
     __property Currency PromoSalesAmountNonVatable = {read = _promoSalesAmountNonVatable, write = SetPromoSalesAmountNonVatable};
@@ -191,6 +194,7 @@ class TEstanciaMallField
     __property Currency SSDiscount5NonApprovedNonVatable = {read = _sSDiscount5NonApprovedNonVatable, write = SetSSDiscount5NonApprovedNonVatable};
     __property Currency VATTaxAmountNonVatable = {read = _vATAmountNonVatable, write = SetVATAmountNonVatable};
     __property Currency NetSalesAmountNonVatable = {read = _netSalesAmountNonVatable, write = SetNetSalesAmountNonVatable};
+    __property int CoverCount = {read = _coverCount, write = SetCoverCount};
 
 };
 #endif
