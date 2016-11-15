@@ -1433,12 +1433,11 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 	ArchiveRewards(PaymentTransaction, ArcBillKey);
 	ArchiveWebOrders(PaymentTransaction, ArcBillKey);
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
-    if(TGlobalSettings::Instance().mallInfo.MallId != 0 && TGlobalSettings::Instance().mallInfo.IsActive != "F")
+    if(TGlobalSettings::Instance().mallInfo.MallId == 1 && TGlobalSettings::Instance().mallInfo.IsActive != "F")
     {
         TEstanciaMall estanciaMall;
-        estanciaMall.PrepareDataForDatabase(PaymentTransaction, ArcBillKey);
+        estanciaMall.PushToDatabase(PaymentTransaction, ArcBillKey);
     }
-
 }
 
 void TListPaymentSystem::CheckPatronByOrderIdentification(TPaymentTransaction &PaymentTransaction)

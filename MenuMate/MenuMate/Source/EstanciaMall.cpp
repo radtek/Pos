@@ -555,7 +555,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountNonVatable, 63, arcBillKey);//63
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountNonVatable, 64, arcBillKey);//64
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Grand Total Net Sales", "Currency", fieldData.NetSalesAmountVatable + fieldData.NetSalesAmountNonVatable, 65, arcBillKey);//65
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Hour Code", "int", HourOf(Now().FormatString("dd-mm-yy HH:nn:ss")), 66, arcBillKey);//66
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Hour Code", "int", HourOf(Now()), 66, arcBillKey);//66
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Status", "int", 1, 67, arcBillKey);//67    todo
     }
     catch(Exception &E)
@@ -665,11 +665,8 @@ void TEstanciaMall::InsertInToMallExport_Sales(Database::TDBTransaction &dbTrans
             IBInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = it->DateCreated;
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = NULL;               //todo................
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
-
             IBInternalQuery->ExecQuery();
-
         }
-
     }
     catch(Exception &E)
 	{

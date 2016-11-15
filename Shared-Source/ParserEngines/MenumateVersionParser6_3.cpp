@@ -141,8 +141,8 @@ void TApplyParser::update6_33Tables()
     Create6_33MallExportSettings(_dbControl);
     Create6_33MallExportSettingsMapping(_dbControl);
     Create6_33MallExportSettingsMappingValues(_dbControl);
-    Create6_33MallExportSales(_dbControl);
     Create6_33MallExportHeader(_dbControl);
+    Create6_33MallExportSales(_dbControl);
     Create6_33GeneratorMallExportSaleKey(_dbControl);
     Create6_33GeneratorMallExportsSettingKey(_dbControl);
     Create6_33GeneratorMallExportsSettingMappingKey(_dbControl);
@@ -152,6 +152,7 @@ void TApplyParser::update6_33Tables()
     Insert6_33MallExport_Settings(_dbControl);
     Insert6_33MallExport_Settings_Mapping(_dbControl);
     Insert6_33MallExport_Settings_Values(_dbControl);
+    Insert6_33Mall_ExportHeader(_dbControl);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -238,6 +239,21 @@ void TApplyParser::Create6_33MallExportSettingValuesAttributes(TDBControl* const
      }
 }
 //----------------------------------------------------------------------------------------------------------
+void TApplyParser::Create6_33MallExportHeader(TDBControl* const inDBControl)
+{
+     if ( !tableExists( "MALLEXPORT_HEADER", inDBControl ) )
+     {
+		executeQuery(
+                "CREATE TABLE MALLEXPORT_HEADER "
+                "( "
+                "   MALLEXPORT_HEADER_ID INTEGER NOT NULL PRIMARY KEY, "
+                "   MM_NAME VARCHAR(50), "
+                "   IS_ACTIVE char(1) default 'F' "
+                ");",
+			inDBControl );
+     }
+}
+//-------------------------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
 {
      if ( !tableExists( "MALLEXPORT_SALES", inDBControl ) )
@@ -249,35 +265,19 @@ void TApplyParser::Create6_33MallExportSales(TDBControl* const inDBControl)
                 "   MALL_KEY INTEGER , "
                 "   FIELD_INDEX INTEGER, "
                 "   FIELD VARCHAR(50), "
-                "   VALUE_GROUP VARCHAR(50), "
                 "   FIELD_VALUE VARCHAR(50), "
                 "   VALUE_TYPE VARCHAR(50), "
-                "   ENUM_TYPE INTEGER , "
                 "   DATE_CREATED  Timestamp, "
                 "   CREATED_BY VARCHAR(50), "
                 "   Z_KEY INTEGER, "
                 "   ARCBILL_KEY INTEGER, "
-                "   FOREIGN KEY (MALL_KEY) REFERENCES MALLS (MALL_ID) ON DELETE CASCADE "
+                "   FOREIGN KEY (MALL_KEY) REFERENCES MALLS (MALL_ID) ON DELETE CASCADE, "
+                "   FOREIGN KEY (FIELD_INDEX) REFERENCES MALLEXPORT_HEADER (MALLEXPORT_HEADER_ID) ON DELETE CASCADE "
                 ");",
 			inDBControl );
      }
 }
 //----------------------------------------------------------------------------------------------------------------
-void TApplyParser::Create6_33MallExportHeader(TDBControl* const inDBControl)
-{
-     if ( !tableExists( "MALL_EXPORT_HEADER", inDBControl ) )
-     {
-		executeQuery(
-                "CREATE TABLE MALL_EXPORT_HEADER "
-                "( "
-                "   MALL_EXPORT_HEADER_ID INTEGER NOT NULL PRIMARY KEY, "
-                "   MM_NAME VARCHAR(50), "
-                "   IS_ACTIVE char(1) default 'F' "
-                ");",
-			inDBControl );
-     }
- }
-//-------------------------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33GeneratorMallExportMallId(TDBControl* const inDBControl)
 {
     if( !generatorExists("GEN_MALLEXPORT_MALL_ID", _dbControl) )
@@ -883,7 +883,7 @@ void TApplyParser::Insert6_33Mall_ExportHeader(TDBControl* const inDBControl)
         {
             InsertQuery->Close();
             InsertQuery->SQL->Text =
-                        "INSERT INTO MALL_EXPORT_HEADER VALUES (:HEADER_ID, :MM_NAME, :IS_ACTIVE) ";
+                        "INSERT INTO MALLEXPORT_HEADER VALUES (:HEADER_ID, :MM_NAME, :IS_ACTIVE) ";
             InsertQuery->ParamByName("HEADER_ID")->AsInteger = (i + 1);
             InsertQuery->ParamByName("MM_NAME" )->AsString  = fieldNames[i];
             InsertQuery->ParamByName("IS_ACTIVE" )->AsString  = "T";
