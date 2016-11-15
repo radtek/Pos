@@ -686,7 +686,7 @@ void TEstanciaMall::PrepareDataForExport()
 
 }
 //-----------------------------------------------------------------------------------------------
-TMallExportPrepareData TEstanciaMall::PrepareDataForinvoiceSalesFile(Database::TDBTransaction &dBTransaction)
+TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction)
 {
     TMallExportPrepareData prepareForDSF;
     try
@@ -694,27 +694,8 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForinvoiceSalesFile(Database::T
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX,a.FIELD,a.FIELD_VALUE,a.VALUE_TYPE, MAX(a.Z_KEY)Z_KEY "
-                                      "FROM MALLEXPORT_SALES a "
-                                      "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
-                                      "WHERE a.FIELD_INDEX in(:VALUE1,:VALUE2,:VALUE3,VALUE4) AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                      "GROUP BY A.FIELD_INDEX,A.FIELD,A.FIELD_VALUE,A.VALUE_TYPE,A.Z_KEY ";
-        IBInternalQuery->ParamByName("VALUE1")->AsInteger = 1;
-        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 2;
-        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 3;
-        IBInternalQuery->ParamByName("VALUE4")->AsInteger = 35;
-        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
-        IBInternalQuery->ExecQuery();
-
-        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-        {
-          TMallExportSettings settings;
-          settings.Name =  IBInternalQuery->Fields[1]->AsString;
-          settings.Value  =IBInternalQuery->Fields[2]->AsString;
-          settings.ValueType =IBInternalQuery->Fields[3]->AsString;
-          prepareForDSF.MallSettings.push_back(settings);
-        }
+         ///Load MallSetting For writing into file
+        LoadMallSettingsForFile(dBTransaction, prepareForDSF);
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY,a.CREATED_BY, a.DATE_CREATED, a.FIELD, a.FIELD_INDEX, a.FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME "
@@ -747,8 +728,80 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForinvoiceSalesFile(Database::T
 		throw;
 	}
     return prepareForDSF;
-
 }
+//-----------------------------------------------------------------------------------------------------------
+TMallExportPrepareData TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction)
+{
+    TMallExportPrepareData prepareForDSF;
+    try
+    {
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        ///Load MallSetting For writing into file
+        LoadMallSettingsForFile(dBTransaction, prepareForDSF);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY,a.CREATED_BY, a.DATE_CREATED, a.FIELD, a.FIELD_INDEX, a.FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME "
+                                     "FROM MALLEXPORT_SALES a  "
+                                     "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
+                                     "WHERE a.FIELD_INDEX IN(:VALUE1,:VALUE2,:VALUE3) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                     "ORDER BY A.MALLEXPORT_SALE_KEY ASC; ";
+        IBInternalQuery->ParamByName("VALUE1")->AsInteger = 65;
+        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 67;
+        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 68;
+        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ExecQuery();
+
+       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+          TMallExportSalesData salesData;
+          salesData.ArcBillKey =  IBInternalQuery->Fields[0]->AsInteger;
+          salesData.CreatedBy  =IBInternalQuery->Fields[1]->AsString;
+          salesData.DateCreated =IBInternalQuery->Fields[2]->AsDateTime;
+          salesData.Field = IBInternalQuery->Fields[3]->AsString;
+          salesData.FieldIndex = IBInternalQuery->Fields[4]->AsInteger;
+          salesData.DataValue = IBInternalQuery->Fields[5]->AsString;
+          salesData.DataValueType = IBInternalQuery->Fields[6]->AsString;
+          prepareForDSF.SalesData.push_back(salesData);
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return prepareForDSF;
+}
+//-----------------------------------------------------------------------------------------------------------------------
+void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF)
+{
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX,a.FIELD,a.FIELD_VALUE,a.VALUE_TYPE, MAX(a.Z_KEY)Z_KEY "
+                                      "FROM MALLEXPORT_SALES a "
+                                      "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
+                                      "WHERE a.FIELD_INDEX in(:VALUE1,:VALUE2,:VALUE3,VALUE4) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                      "GROUP BY A.FIELD_INDEX,A.FIELD,A.FIELD_VALUE,A.VALUE_TYPE,A.Z_KEY ";
+        IBInternalQuery->ParamByName("VALUE1")->AsInteger = 1;
+        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 2;
+        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 3;
+        IBInternalQuery->ParamByName("VALUE4")->AsInteger = 35;
+        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ExecQuery();
+
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+          TMallExportSettings settings;
+          settings.Name =  IBInternalQuery->Fields[1]->AsString;
+          settings.Value  =IBInternalQuery->Fields[2]->AsString;
+          settings.ValueType =IBInternalQuery->Fields[3]->AsString;
+          prepareForDSF.MallSettings.push_back(settings);
+        }
+}
+//------------------------------------------------------------------------------------------------------------------
 void TEstanciaMall::CreateExportMedium()
 {
 ///todo
