@@ -16,6 +16,9 @@ class TEstanciaMall : public TMallExport
     TMallExportPrepareData PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
     void PrepareDataForExport();
     void CreateExportMedium();
+
+    public:
+    bool PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
 };
 
 class TEstanciaMallField
