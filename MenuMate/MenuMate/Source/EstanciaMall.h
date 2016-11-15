@@ -12,6 +12,7 @@ class TEstanciaMall : public TMallExport
     long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
     void PushFieldsInToList(Database::TDBTransaction &dbTransaction, TMallExportPrepareData &mallExportData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
     bool InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportPrepareData mallExportPreparedData);
+    TMallExportPrepareData PrepareDataForinvoiceSalesFile(Database::TDBTransaction &dBTransaction);
 
     protected:
     TMallExportPrepareData PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
