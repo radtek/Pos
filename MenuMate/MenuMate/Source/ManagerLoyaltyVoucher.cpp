@@ -61,9 +61,8 @@ void TManagerLoyaltyVoucher::GetPocketVoucherDetail(AnsiString voucherCode,TVouc
     }
 }
 //------------------------------------------------------------------------------
-double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode,bool &isValidGiftCard)
+void TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode,TGiftCardDetail &GiftCardDetail)
 {
-    double balance = 0;
     TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
     TSyndCode syndicateCode =  managerSyndCode.GetCommunicationSyndCode();
 
@@ -72,11 +71,12 @@ double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode,bool 
         TLoyaltyMateGiftVoucherThread* voucherThread = new TLoyaltyMateGiftVoucherThread(syndicateCode);
         voucherThread->OnTerminate = loyaltyMateOperationCompleted;
         voucherThread->FreeOnTerminate = false;
-        voucherThread->VoucherNumber = voucherCode;
+        voucherThread->GiftCardNumber = voucherCode;
+        voucherThread->GiftCardDetail = GiftCardDetail;
         voucherThread->Start();
         // display dialog box
         _lmOperationDialogBox = new TfrmLoyaltyMateOperationDialogBox(Screen->ActiveForm);
-        _lmOperationDialogBox->OperationDescription = "Getting Voucher Details with server...Please Wait.";
+        _lmOperationDialogBox->OperationDescription = "Getting Gift Card Details with server...Please Wait.";
         _lmOperationDialogBox->OperationTitle = "LoyaltyMate Operation";
         _lmOperationDialogBox->PreventCancelOperation = true;
         _lmOperationDialogBox->ShowModal();
@@ -86,20 +86,15 @@ double TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode,bool 
         if(!result)
         {
             if(errorMessage == NULL || errorMessage == "")
-               MessageBox("Failed to get voucher details.","Menumate", MB_ICONERROR + MB_OK);
+               MessageBox("Failed to get Gift card details.","Menumate", MB_ICONERROR + MB_OK);
             else if(errorMessage == "Invalid Gift Voucher Number")
                MessageBox("Supplied voucher is not valid. please use another voucher or payment method.","Menumate", MB_ICONERROR + MB_OK);
             else
                MessageBox(voucherThread->ErrorMessage,"Menumate", MB_ICONERROR + MB_OK);
-            isValidGiftCard = false;
-        }
-        else
-            balance = voucherThread->GiftCardBalance;
-
+         }
         delete voucherThread;
         delete _lmOperationDialogBox;
     }
-    return balance;
 }
 //------------------------------------------------------------------------------
 bool TManagerLoyaltyVoucher::ProcessVouchers(TVoucherUsageDetail VoucherUsageDetail)

@@ -99,6 +99,16 @@ __fastcall DiscountInfo::~DiscountInfo()
   delete FValue;
 }
 
+__fastcall LoyaltyGiftCardResponse::~LoyaltyGiftCardResponse()
+{
+  delete FGiftCardInfo;
+}
+
+__fastcall GiftCardInfo::~GiftCardInfo()
+{
+  delete FExpiryDate;
+}
+
 __fastcall LoyaltyVoucherResponse::~LoyaltyVoucherResponse()
 {
   delete FVoucherInfo;
@@ -174,6 +184,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(TierLevelInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"TierLevelInfo");
   /* LoyaltyGiftCardResponse */
   RemClassRegistry()->RegisterXSClass(__classid(LoyaltyGiftCardResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyGiftCardResponse");
+  /* GiftCardInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(GiftCardInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"GiftCardInfo");
   /* LoyaltyVoucherResponse */
   RemClassRegistry()->RegisterXSClass(__classid(LoyaltyVoucherResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyVoucherResponse");
   /* ArrayOfDiscountUsageInfo */
@@ -206,6 +218,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(TierLevelInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"TierLevelInfo2", L"TierLevelInfo");
   /* LoyaltyGiftCardResponse */
   RemClassRegistry()->RegisterXSClass(__classid(LoyaltyGiftCardResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyGiftCardResponse2", L"LoyaltyGiftCardResponse");
+  /* GiftCardInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(GiftCardInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"GiftCardInfo2", L"GiftCardInfo");
   /* LoyaltyVoucherResponse */
   RemClassRegistry()->RegisterXSClass(__classid(LoyaltyVoucherResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyVoucherResponse2", L"LoyaltyVoucherResponse");
   /* VoucherTransactionInfo */

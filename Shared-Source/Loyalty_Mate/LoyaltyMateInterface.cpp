@@ -200,7 +200,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMemberCardCode(TSyndCode s
     }
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::GetGiftVoucherBalance(TSyndCode syndicateCode,AnsiString giftVoucherNumber,double &balance)
+MMLoyaltyServiceResponse TLoyaltyMateInterface::GetGiftVoucherBalance(TSyndCode syndicateCode,AnsiString giftVoucherNumber,TGiftCardDetail &GiftCardDetail)
 {
   try
     {
@@ -208,7 +208,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetGiftVoucherBalance(TSyndCode 
         CoInitialize(NULL);
         wcfResponse = loyaltymateClient->GetGiftCardBalance(syndicateCode.GetSyndCode(),CreateRequest(giftVoucherNumber));
         if(wcfResponse->Successful)
-           balance = wcfResponse->GiftCardBalance;
+           ReadGiftCardInfo(wcfResponse->GiftCardInfo, GiftCardDetail );
 
         return CreateMMResponse( wcfResponse );
     }
@@ -402,6 +402,16 @@ void TLoyaltyMateInterface::ReadPocketVoucherInfo(VoucherInfo* inVoucherInfo,TVo
     VoucherDetail.VoucherName  = inVoucherInfo->VoucherName;
     VoucherDetail.DiscountCode  = inVoucherInfo->DiscountCode;
     VoucherDetail.NumberOfUsesRemaining  = inVoucherInfo->NumberOfUsesRemaining;
+}
+//---------------------------------------------------------------------------
+void TLoyaltyMateInterface::ReadGiftCardInfo(GiftCardInfo* inVoucherInfo,TGiftCardDetail& GiftCardDetail)
+{
+    GiftCardDetail.ResponseMessage  = inVoucherInfo->ResponseMessage;
+    GiftCardDetail.IsValid  = inVoucherInfo->IsValid;
+    GiftCardDetail.PointBalance  = inVoucherInfo->PointBalance;
+    if(inVoucherInfo->ExpiryDate != NULL)
+        GiftCardDetail.ExpiryDate  = inVoucherInfo->ExpiryDate->AsUTCDateTime;
+
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateInterface::ReadContactInfo(LoyaltyMemberResponse* inWCFResponse,TMMContactInfo& outContactInfo,bool replacePoints )

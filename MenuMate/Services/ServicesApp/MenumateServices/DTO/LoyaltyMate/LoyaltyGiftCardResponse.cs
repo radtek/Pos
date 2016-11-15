@@ -10,14 +10,14 @@ namespace MenumateServices.DTO.LoyaltyMate
     public class LoyaltyGiftCardResponse : MMServiceResponse
     {
         LoyaltyResponseCode _responseCode;
-        double _giftCardBalance;
+        GiftCardInfo _giftCardInfo;
 
         internal LoyaltyGiftCardResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode,
-                        double giftCardBalance)
+                        GiftCardInfo giftCardInfo)
             : base(inSuccesful, inMessage, inDescription)
         {
             _responseCode = inResponseCode;
-            _giftCardBalance = giftCardBalance;
+            _giftCardInfo = giftCardInfo;
         }
 
         [DataMember]
@@ -28,10 +28,10 @@ namespace MenumateServices.DTO.LoyaltyMate
         }
 
         [DataMember]
-        public double GiftCardBalance
+        public GiftCardInfo GiftCardInfo
         {
-            get { return _giftCardBalance; }
-            set { _giftCardBalance = value; }
+            get { return _giftCardInfo; }
+            set { _giftCardInfo = value; }
         }
     
     }

@@ -224,6 +224,7 @@ private:
     void SetupGLCodes();
     void __fastcall RefreshRunRateBoard();
     bool DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransaction);
+    void ManageGiftCardValidations(Database::TDBTransaction &DBTransaction);
 public: // User declarations
 
 public:

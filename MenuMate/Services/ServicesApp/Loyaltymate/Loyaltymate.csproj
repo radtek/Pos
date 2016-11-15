@@ -47,6 +47,7 @@
     <Compile Include="Enum\DisplayOption.cs" />
     <Compile Include="Enum\ElementType.cs" />
     <Compile Include="Enum\Gender.cs" />
+    <Compile Include="Enum\GiftCardStatus.cs" />
     <Compile Include="Enum\GiftCardVoucherTransactionType.cs" />
     <Compile Include="Enum\ImplicationType.cs" />
     <Compile Include="Enum\MemberType.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Model\ApiVouchersUsageViewModel.cs" />
     <Compile Include="Model\ApiVoucherUsageRequestViewModel.cs" />
     <Compile Include="Model\ApiVoucherViewModel.cs" />
+    <Compile Include="Model\GiftCardApiViewModel.cs" />
     <Compile Include="Model\PointsTransactionViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sevices\ILoyaltymateService.cs" />

@@ -3129,6 +3129,12 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarStr(DBTransaction,vmRefundReferenceLabel,"Refund Reference Label",
 		"Label for Refund reference in receipt print.",
 		vmgPrinting, "OR No.");
+       SetVarInt(DBTransaction,
+           vmGiftCardValidation,
+           "Gift Card Validation",
+           "Gift Card Validation Strategy.",
+           vmgPOS,
+           0);
 	}
 	catch(Exception &E)
 	{

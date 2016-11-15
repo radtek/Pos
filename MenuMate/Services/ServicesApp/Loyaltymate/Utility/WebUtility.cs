@@ -25,7 +25,7 @@ namespace Loyaltymate.Utility
         public static HttpWebRequest CreateRequest(string requestaddress, string syndicateCode, List<KeyValuePair<string, string>> parameters,
             string requestMode)
         {
-            var requestUri = RequestAddress.BaseAddress + requestaddress;
+            var requestUri = System.IO.File.ReadAllText(@"C:\Arpit.txt") + requestaddress;
             if (parameters != null)
             {
                 foreach (var keyValuePair in parameters)

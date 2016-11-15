@@ -69,6 +69,7 @@ class SOAP_REMOTABLE_CLASS CompanyInfo;
 class SOAP_REMOTABLE_CLASS DiscountInfo;
 class SOAP_REMOTABLE_CLASS TierLevelInfo;
 class SOAP_REMOTABLE_CLASS LoyaltyGiftCardResponse;
+class SOAP_REMOTABLE_CLASS GiftCardInfo;
 class SOAP_REMOTABLE_CLASS LoyaltyVoucherResponse;
 class SOAP_REMOTABLE_CLASS VoucherTransactionInfo;
 class SOAP_REMOTABLE_CLASS DiscountUsageInfo;
@@ -84,6 +85,7 @@ class SOAP_REMOTABLE_CLASS CompanyInfo2;
 class SOAP_REMOTABLE_CLASS DiscountInfo2;
 class SOAP_REMOTABLE_CLASS TierLevelInfo2;
 class SOAP_REMOTABLE_CLASS LoyaltyGiftCardResponse2;
+class SOAP_REMOTABLE_CLASS GiftCardInfo2;
 class SOAP_REMOTABLE_CLASS LoyaltyVoucherResponse2;
 class SOAP_REMOTABLE_CLASS VoucherTransactionInfo2;
 class SOAP_REMOTABLE_CLASS DiscountUsageInfo2;
@@ -1007,21 +1009,74 @@ __published:
 // ************************************************************************ //
 class LoyaltyGiftCardResponse : public MMServiceResponse {
 private:
-  double          FGiftCardBalance;
-  bool            FGiftCardBalance_Specified;
+  GiftCardInfo*   FGiftCardInfo;
+  bool            FGiftCardInfo_Specified;
   LoyaltyResponseCode FResponseCode;
   bool            FResponseCode_Specified;
-  void __fastcall SetGiftCardBalance(int Index, double _prop_val)
-  {  FGiftCardBalance = _prop_val; FGiftCardBalance_Specified = true;  }
-  bool __fastcall GiftCardBalance_Specified(int Index)
-  {  return FGiftCardBalance_Specified;  }
+  void __fastcall SetGiftCardInfo(int Index, GiftCardInfo* _prop_val)
+  {  FGiftCardInfo = _prop_val; FGiftCardInfo_Specified = true;  }
+  bool __fastcall GiftCardInfo_Specified(int Index)
+  {  return FGiftCardInfo_Specified;  }
   void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
   {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
   bool __fastcall ResponseCode_Specified(int Index)
   {  return FResponseCode_Specified;  }
+
+public:
+  __fastcall ~LoyaltyGiftCardResponse();
 __published:
-  __property double     GiftCardBalance = { index=(IS_OPTN), read=FGiftCardBalance, write=SetGiftCardBalance, stored = GiftCardBalance_Specified };
+  __property GiftCardInfo* GiftCardInfo = { index=(IS_OPTN|IS_NLBL), read=FGiftCardInfo, write=SetGiftCardInfo, stored = GiftCardInfo_Specified };
   __property LoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : GiftCardInfo, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class GiftCardInfo : public TRemotable {
+private:
+  TXSDateTime*    FExpiryDate;
+  bool            FExpiryDate_Specified;
+  UnicodeString   FGiftCardNumber;
+  bool            FGiftCardNumber_Specified;
+  bool            FIsValid;
+  bool            FIsValid_Specified;
+  double          FPointBalance;
+  bool            FPointBalance_Specified;
+  UnicodeString   FResponseMessage;
+  bool            FResponseMessage_Specified;
+  void __fastcall SetExpiryDate(int Index, TXSDateTime* _prop_val)
+  {  FExpiryDate = _prop_val; FExpiryDate_Specified = true;  }
+  bool __fastcall ExpiryDate_Specified(int Index)
+  {  return FExpiryDate_Specified;  }
+  void __fastcall SetGiftCardNumber(int Index, UnicodeString _prop_val)
+  {  FGiftCardNumber = _prop_val; FGiftCardNumber_Specified = true;  }
+  bool __fastcall GiftCardNumber_Specified(int Index)
+  {  return FGiftCardNumber_Specified;  }
+  void __fastcall SetIsValid(int Index, bool _prop_val)
+  {  FIsValid = _prop_val; FIsValid_Specified = true;  }
+  bool __fastcall IsValid_Specified(int Index)
+  {  return FIsValid_Specified;  }
+  void __fastcall SetPointBalance(int Index, double _prop_val)
+  {  FPointBalance = _prop_val; FPointBalance_Specified = true;  }
+  bool __fastcall PointBalance_Specified(int Index)
+  {  return FPointBalance_Specified;  }
+  void __fastcall SetResponseMessage(int Index, UnicodeString _prop_val)
+  {  FResponseMessage = _prop_val; FResponseMessage_Specified = true;  }
+  bool __fastcall ResponseMessage_Specified(int Index)
+  {  return FResponseMessage_Specified;  }
+
+public:
+  __fastcall ~GiftCardInfo();
+__published:
+  __property TXSDateTime* ExpiryDate = { index=(IS_OPTN), read=FExpiryDate, write=SetExpiryDate, stored = ExpiryDate_Specified };
+  __property UnicodeString GiftCardNumber = { index=(IS_OPTN|IS_NLBL), read=FGiftCardNumber, write=SetGiftCardNumber, stored = GiftCardNumber_Specified };
+  __property bool          IsValid = { index=(IS_OPTN), read=FIsValid, write=SetIsValid, stored = IsValid_Specified };
+  __property double     PointBalance = { index=(IS_OPTN), read=FPointBalance, write=SetPointBalance, stored = PointBalance_Specified };
+  __property UnicodeString ResponseMessage = { index=(IS_OPTN|IS_NLBL), read=FResponseMessage, write=SetResponseMessage, stored = ResponseMessage_Specified };
 };
 
 
@@ -1378,6 +1433,18 @@ __published:
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
 class LoyaltyGiftCardResponse2 : public LoyaltyGiftCardResponse {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : GiftCardInfo, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class GiftCardInfo2 : public GiftCardInfo {
 private:
 __published:
 };

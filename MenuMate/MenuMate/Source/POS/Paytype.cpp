@@ -46,7 +46,7 @@
 #include "GlobalSettings.h"
 #include "ComboDiscount.h"
 #include "DiscountGroup.h"
-
+#include "CardSwipe.h"
 // ---------------------------------------------------------------------------
 #define NUMBER_OF_PAYMENT_TYPES_IN_VIEW 9
 #define ALTCOL 0
@@ -2091,54 +2091,55 @@ void  TfrmPaymentType::ProcessPointPayment(TPayment *Payment)
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::ProcessLoyaltyVoucher(TPayment *Payment)
 {
-    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-    frmTouchKeyboard->MaxLength = 50;
-    frmTouchKeyboard->AllowCarriageReturn = false;
-    frmTouchKeyboard->StartWithShiftDown = false;
-    frmTouchKeyboard->MustHaveValue = true;
-    frmTouchKeyboard->KeyboardText = "";
-    frmTouchKeyboard->Caption = "Enter Voucher Number";
-    if (frmTouchKeyboard->ShowModal() == mrOk)
+    if(Payment->Name == "Voucher")
     {
-      Payment->ReferenceNumber = frmTouchKeyboard->KeyboardText.Trim();
-      AnsiString voucherCode =  frmTouchKeyboard->KeyboardText.Trim();
-      if(Payment->Name == "Gift Card")
-      {
-        if(DoLoyaltyGiftCardValidation(voucherCode,CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber))
+        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+        frmTouchKeyboard->MaxLength = 50;
+        frmTouchKeyboard->AllowCarriageReturn = false;
+        frmTouchKeyboard->StartWithShiftDown = false;
+        frmTouchKeyboard->MustHaveValue = true;
+        frmTouchKeyboard->KeyboardText = "";
+        frmTouchKeyboard->Caption = "Enter Voucher Number";
+        if (frmTouchKeyboard->ShowModal() == mrOk)
         {
-           ProcessLoyaltyGiftVoucherVoucher(voucherCode,Payment);
+          ProcessLoyaltyPocketVoucher(frmTouchKeyboard->KeyboardText,Payment);
         }
         else
         {
-           CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
+           CurrentTransaction.RedeemPocketVoucherInformation->VoucherNumber = "";
            Payment->SetPay(0);
         }
-      }
-      else if(Payment->Name == "Voucher")
-      {
-        ProcessLoyaltyPocketVoucher(voucherCode,Payment);
-      }
     }
-    else
+    else if(Payment->Name == "Gift Card")
     {
-      if(Payment->Name == "Gift Card")
-      {
-        CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
-      }
-      else if(Payment->Name == "Voucher")
-      {
-        CurrentTransaction.RedeemPocketVoucherInformation->VoucherNumber = "";
-      }
-      Payment->SetPay(0);
+        AnsiString voucherNumber = GetVoucherNumber(Payment->Name,Payment->ReferenceNumber,Payment->IsLoyaltyVoucher());
+        if(voucherNumber == "")
+        {
+           CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
+           Payment->SetPay(0);
+        }
+        else
+        {
+            if(DoLoyaltyGiftCardValidation(voucherNumber,CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber))
+            {
+               ProcessLoyaltyGiftVoucherVoucher(voucherNumber,Payment);
+            }
+            else
+            {
+               CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
+               Payment->SetPay(0);
+            }
+        }
     }
-
 }
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TPayment *Payment)
 {
     TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
-    bool isValidGiftCard = true;
-    double balance = ManagerLoyaltyVoucher.GetGiftVoucherDetail(voucherCode,isValidGiftCard);
+    TGiftCardDetail GiftCardDetail;
+    ManagerLoyaltyVoucher.GetGiftVoucherDetail(voucherCode,GiftCardDetail);
+    bool isValidGiftCard = GiftCardDetail.IsValid;
+    double balance = GiftCardDetail.PointBalance;
     if(balance > 0)
     {
        Currency amountToPay = 0;
@@ -2297,36 +2298,30 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 		else if (Payment->Properties & ePayTypeGetVoucherDetails)
 		{
 
-           // Vouchers are not cash out.
-            std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-            frmTouchKeyboard->MaxLength = 50;
-            frmTouchKeyboard->AllowCarriageReturn = false;
-            frmTouchKeyboard->StartWithShiftDown = false;
-            frmTouchKeyboard->MustHaveValue = true;
-            frmTouchKeyboard->KeyboardText = Payment->ReferenceNumber;
-            frmTouchKeyboard->Caption = "Enter " + Payment->Name + " Number";
-            if (frmTouchKeyboard->ShowModal() == mrOk)
-            {
-                Payment->ReferenceNumber = frmTouchKeyboard->KeyboardText;
-            }
-            else
-            {
+           AnsiString voucherNumber = GetVoucherNumber(Payment->Name,Payment->ReferenceNumber,Payment->IsLoyaltyVoucher());
+           if(voucherNumber == "")
+           {
                 Payment->Reset();
                 return;
-            }
+           }
+           else
+           {
+              Payment->ReferenceNumber = voucherNumber;
+           }
 
-            if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
+           if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
             {
                TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
-               bool isValidGiftCard = true;
-               double balance = ManagerLoyaltyVoucher.GetGiftVoucherDetail(Payment->ReferenceNumber,isValidGiftCard);
+               TGiftCardDetail GiftCardDetail;
+               ManagerLoyaltyVoucher.GetGiftVoucherDetail(Payment->ReferenceNumber,GiftCardDetail);
+               bool isValidGiftCard = GiftCardDetail.IsValid;
                if(isValidGiftCard && DoLoyaltyGiftCardValidation(CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber,Payment->ReferenceNumber))
                 {
                     CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
                     CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = Payment->ReferenceNumber;
                     CurrentTransaction.PurchasedGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
                     CurrentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount = wrkPayAmount;
-                    CurrentTransaction.PurchasedGiftVoucherInformation->GiftVoucherAmount = balance;
+                    CurrentTransaction.PurchasedGiftVoucherInformation->GiftVoucherAmount = GiftCardDetail.PointBalance;
                 }
                 else
                 {
@@ -3671,7 +3666,7 @@ void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message)
         }
     }
 }
-
+// ---------------------------------------------------------------------------
 void TfrmPaymentType::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode)
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
@@ -3686,7 +3681,6 @@ void TfrmPaymentType::GetMemberByBarcode(Database::TDBTransaction &DBTransaction
 	}
 
 }
-
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::ProcessThorVouchers()
  {
@@ -4108,7 +4102,7 @@ bool TfrmPaymentType::ThorMemberIsUnregistered()
     }
     return retValue;
 }
-
+// ---------------------------------------------------------------------------
 void TfrmPaymentType::makeLogFile(UnicodeString str)
 {
     AnsiString fileName = ExtractFilePath(Application->ExeName) + "EFTPOSCashDrawer_Logs.txt" ;
@@ -4120,4 +4114,30 @@ void TfrmPaymentType::makeLogFile(UnicodeString str)
     List->Add(" "+ str +  "\n");
     List->SaveToFile(fileName );
 }
-
+// ---------------------------------------------------------------------------
+AnsiString TfrmPaymentType::GetVoucherNumber(AnsiString inPaymentName,AnsiString inReferenceNumber,bool isLoyaltyVoucher)
+{
+    AnsiString retVal = "";
+    if(isLoyaltyVoucher && TGlobalSettings::Instance().GiftCardValidation == MSROnly)
+    {
+        std::auto_ptr<TfrmCardSwipe> frmCardSwipe(TfrmCardSwipe::Create<TfrmCardSwipe>(this));
+        frmCardSwipe->ShowModal();
+        if(frmCardSwipe->ModalResult == mrOk)
+          retVal = frmCardSwipe->SwipeString.SubString(1, 80);
+    }
+    else
+    {
+        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+        frmTouchKeyboard->MaxLength = 50;
+        frmTouchKeyboard->AllowCarriageReturn = false;
+        frmTouchKeyboard->StartWithShiftDown = false;
+        frmTouchKeyboard->MustHaveValue = true;
+        frmTouchKeyboard->KeyboardText = inReferenceNumber;
+        frmTouchKeyboard->Caption = "Enter " + inPaymentName + " Number";
+        if (frmTouchKeyboard->ShowModal() == mrOk)
+        {
+          retVal = frmTouchKeyboard->KeyboardText;
+        }
+    }
+    return retVal;
+}

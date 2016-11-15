@@ -34,6 +34,15 @@ struct TVoucherDetail
         int NumberOfUsesRemaining;
 };
 
+struct TGiftCardDetail
+{
+    public:
+        AnsiString ResponseMessage;
+        bool IsValid;
+        double PointBalance;
+        TDateTime ExpiryDate;
+};
+
 class TVoucherUsageDetail
 {
   public :

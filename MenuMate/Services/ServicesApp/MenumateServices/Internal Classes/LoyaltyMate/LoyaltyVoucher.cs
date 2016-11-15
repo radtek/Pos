@@ -63,20 +63,22 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
                 var response = loyaltymateService.GetGiftCardBalance(inSyndicateCode, CreateRequest(requestInfo));
-                return (CreateGiftCardResponseNoError(response));
+                return (CreateGiftCardResponseNoError(CreateGiftCardInfo(response)));
             }
             catch (AuthenticationFailedException ex)
             {
                 return CreateGiftCardResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
-                            LoyaltyResponseCode.AuthenticationFailed, 0);
+                            LoyaltyResponseCode.AuthenticationFailed, 
+                            CreateGiftCardInfo("Failed to Authenticate"));
             }
             catch (LoyaltymateOperationException ex)
             {
                 return CreateGiftCardResponseError(ex.Message,
                             @"Invalid Gift Voucher Number",
-                            LoyaltyResponseCode.InvalidGiftVoucher, 0);
+                            LoyaltyResponseCode.InvalidGiftVoucher,
+                            CreateGiftCardInfo("Invalid Gift Voucher Number"));
             }
             catch (Exception exc)
             {
@@ -84,7 +86,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                              @"Failed to request gift card balance from the server",
                              exc.Message,
                              LoyaltyResponseCode.GetGiftCardFailed,
-                             0);
+                             CreateGiftCardInfo("Failed to request gift card balance from the server"));
             }
         }
 
@@ -191,6 +193,28 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             result.DiscountCode = inVoucherInfo.DiscountCode;
             result.NumberOfUsesRemaining = inVoucherInfo.NumberOfUsesRemaining;
             result.VoucherName = inVoucherInfo.VoucherName;
+            return result;
+        }
+
+        GiftCardInfo CreateGiftCardInfo(GiftCardApiViewModel inGiftCardInfo)
+        {
+            var result = new GiftCardInfo();
+            if (inGiftCardInfo.ExpiryDate.HasValue)
+                result.ExpiryDate = inGiftCardInfo.ExpiryDate.Value;
+
+            result.GiftCardNumber = inGiftCardInfo.GiftCardNumber;
+            result.PointBalance = inGiftCardInfo.PointBalance;
+            result.IsValid = inGiftCardInfo.Result == Loyaltymate.Enum.GiftCardStatus.Available;
+
+            return result;
+        }
+
+        GiftCardInfo CreateGiftCardInfo(string message)
+        {
+            var result = new GiftCardInfo();
+            result.PointBalance = 0;
+            result.IsValid = false;
+            result.ResponseMessage = message;
             return result;
         }
 

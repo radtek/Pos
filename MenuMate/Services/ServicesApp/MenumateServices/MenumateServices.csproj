@@ -156,6 +156,7 @@
     <Compile Include="DTO\LoyaltyMate\CompanyInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\DiscountInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\DiscountUsageInfo.cs" />
+    <Compile Include="DTO\LoyaltyMate\GiftCardInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyCompanyResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyGiftCardResponse.cs" />
     <Compile Include="DTO\LoyaltyMate\LoyaltyVoucherResponse.cs" />

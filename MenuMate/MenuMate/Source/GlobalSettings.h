@@ -465,6 +465,7 @@ public:
     bool ShowVoidOrRefund;
     bool ShowVoidNumber;
     UnicodeString EftPosTipGLCode;
+    int GiftCardValidation;
 };
 
 #endif
