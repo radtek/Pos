@@ -663,6 +663,7 @@ void TEstanciaMall::InsertInToMallExport_Sales(Database::TDBTransaction &dbTrans
             IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = it->DataValue;
             IBInternalQuery->ParamByName("VALUE_TYPE")->AsString = it->DataValueType;
             IBInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = it->DateCreated;
+            IBInternalQuery->ParamByName("CREATED_BY")->AsString = it->CreatedBy;
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = NULL;               //todo................
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
             IBInternalQuery->ExecQuery();
