@@ -857,7 +857,7 @@ void TApplyParser::Insert6_33MallExport_Settings_Values(TDBControl* const inDBCo
 //---------------------------------------------------------------------------------------------------------------------------------------------
 void TApplyParser::Insert6_33Mall_ExportHeader(TDBControl* const inDBControl)
 {
-    const int NUMBER_OF_FIELDS = 65;
+    const int NUMBER_OF_FIELDS = 67;
     UnicodeString fieldNames[NUMBER_OF_FIELDS] =
         {
             "TenantCode" ,"TerminalNumber" ,"Date" ,"OldAccumulatedSalesVatable" ,"NewAccumulatedSalesVatable" ,"TotalGrossAmountVatable" ,"TotalDeductionsVatable" ,
@@ -871,7 +871,7 @@ void TApplyParser::Insert6_33Mall_ExportHeader(TDBControl* const inDBControl)
             "TotalDiscountCardsNonVatable" ,"TotalDeliveryChargesNonVatable" , "TotalGiftCertificates/ChecksRedeemeNonVatable" ,"DiscountGroup1NonVatable" ,"DiscountGroup2NonVatable" ,
             "DiscountGroup3NonVatable " , "DiscountGroup4NonVatable" , "Discount5NonVatable" ,"TotalofallNonApprovedStoreDiscountsNonVatable" , "Discount1NonApprovedNonVatable" ,
             "Discount2NonApprovedNonVatable" , "Discount3NonApprovedNonVatable" , "Discount4NonApprovedNonVatable" , "Discount5NonApprovedNonVatable" ,"VAT/TaxAmountNonVatable" ,
-            "TotalNetSalesAmountNonVatable" ,"GrandTotalNetSales"
+            "TotalNetSalesAmountNonVatable" ,"GrandTotalNetSales", "HourCode", "Status"
         };
     TDBTransaction transaction( *_dbControl );
     transaction.StartTransaction();
