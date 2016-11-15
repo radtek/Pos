@@ -14,6 +14,7 @@ class TEstanciaMall : public TMallExport
     bool InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportPrepareData mallExportPreparedData);
     TMallExportPrepareData PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction);
     TMallExportPrepareData PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction);
+    TMallExportPrepareData PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction);
     void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF);
 
     protected:

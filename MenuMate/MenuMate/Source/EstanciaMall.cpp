@@ -688,14 +688,14 @@ void TEstanciaMall::PrepareDataForExport()
 //-----------------------------------------------------------------------------------------------
 TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction)
 {
-    TMallExportPrepareData prepareForDSF;
+    TMallExportPrepareData prepareForISF;
     try
     {
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
          ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareForDSF);
+        LoadMallSettingsForFile(dBTransaction, prepareForISF);
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY,a.CREATED_BY, a.DATE_CREATED, a.FIELD, a.FIELD_INDEX, a.FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME "
@@ -719,7 +719,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::T
           salesData.FieldIndex = IBInternalQuery->Fields[4]->AsInteger;
           salesData.DataValue = IBInternalQuery->Fields[5]->AsString;
           salesData.DataValueType = IBInternalQuery->Fields[6]->AsString;
-          prepareForDSF.SalesData.push_back(salesData);
+          prepareForISF.SalesData.push_back(salesData);
         }
     }
     catch(Exception &E)
@@ -727,10 +727,55 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::T
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return prepareForDSF;
+    return prepareForISF;
 }
 //-----------------------------------------------------------------------------------------------------------
 TMallExportPrepareData TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction)
+{
+    TMallExportPrepareData prepareForHSF;
+    try
+    {
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        ///Load MallSetting For writing into file
+        LoadMallSettingsForFile(dBTransaction, prepareForHSF);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT HOURLYDATA.FIELD_INDEX, HOURLYDATA.FIELD, SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code  "
+                                      "FROM  "
+                                        "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME,Extract (Hour From a.DATE_CREATED) Hour_code  "
+                                         "FROM MALLEXPORT_SALES a "
+                                         "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
+                                        " WHERE a.FIELD_INDEX IN(65,34,32) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                         "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
+                                    "GROUP BY 1,2,4,5  ";
+        IBInternalQuery->ParamByName("VALUE1")->AsInteger = 65;
+        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 34;
+        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 32;
+        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ExecQuery();
+
+       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+          TMallExportSalesData salesData;
+          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
+          salesData.Field = IBInternalQuery->Fields[1]->AsString;
+          salesData.DataValue = IBInternalQuery->Fields[2]->AsCurrency;
+          salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
+          salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
+          prepareForHSF.SalesData.push_back(salesData);
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return prepareForHSF;
+}
+//-----------------------------------------------------------------------------------------------------------------------
+TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction)
 {
     TMallExportPrepareData prepareForDSF;
     try
