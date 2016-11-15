@@ -742,27 +742,28 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForHourlySalesFile(Database::TD
         LoadMallSettingsForFile(dBTransaction, prepareForDSF);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY,a.CREATED_BY, a.DATE_CREATED, a.FIELD, a.FIELD_INDEX, a.FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME "
-                                     "FROM MALLEXPORT_SALES a  "
-                                     "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
-                                     "WHERE a.FIELD_INDEX IN(:VALUE1,:VALUE2,:VALUE3) AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                     "ORDER BY A.MALLEXPORT_SALE_KEY ASC; ";
+        IBInternalQuery->SQL->Text = "SELECT HOURLYDATA.FIELD_INDEX, HOURLYDATA.FIELD, SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code  "
+                                      "FROM  "
+                                        "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME,Extract (Hour From a.DATE_CREATED) Hour_code  "
+                                         "FROM MALLEXPORT_SALES a "
+                                         "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
+                                        " WHERE a.FIELD_INDEX IN(65,34,32) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                         "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
+                                    "GROUP BY 1,2,4,5  ";
         IBInternalQuery->ParamByName("VALUE1")->AsInteger = 65;
-        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 67;
-        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 68;
+        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 34;
+        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 32;
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
           TMallExportSalesData salesData;
-          salesData.ArcBillKey =  IBInternalQuery->Fields[0]->AsInteger;
-          salesData.CreatedBy  =IBInternalQuery->Fields[1]->AsString;
-          salesData.DateCreated =IBInternalQuery->Fields[2]->AsDateTime;
-          salesData.Field = IBInternalQuery->Fields[3]->AsString;
-          salesData.FieldIndex = IBInternalQuery->Fields[4]->AsInteger;
-          salesData.DataValue = IBInternalQuery->Fields[5]->AsString;
-          salesData.DataValueType = IBInternalQuery->Fields[6]->AsString;
+          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
+          salesData.Field = IBInternalQuery->Fields[1]->AsString;
+          salesData.DataValue = IBInternalQuery->Fields[2]->AsCurrency;
+          salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
+          salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
           prepareForDSF.SalesData.push_back(salesData);
         }
     }
