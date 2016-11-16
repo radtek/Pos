@@ -801,6 +801,9 @@ namespace MenumateVersionParser
         void upgrade6_33Tables();
         void update6_33Tables();
 		void AlterRoundTimeProcedure6_33( TDBControl* const inDBControl );
+        void PopulateZED_StatusForContactTime6_33(TDBControl* const inDBControl);
+        void ModifyCloseZedColumns6_33( TDBControl* const inDBControl );
+        void ReCreateRoundedContactTimeView6_33( TDBControl* const inDBControl );
 
     }; // class
 } // namespace

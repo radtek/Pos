@@ -435,6 +435,9 @@ int TManagerTimeClock::ClockOut(Database::TDBTransaction &DBTransaction,int &inC
 
 
 
+
+
+
 void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransaction,
                                            TDateTime LogInTime,
                                            std::vector<TStaffHours> &inStaffHours,
@@ -474,35 +477,37 @@ void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransacti
 		}
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
-		"SELECT "
+         "SELECT "
 			"CONTACTTIME_KEY, "
-			"CONTACTTIME.CONTACTS_KEY, "
-			"LOGIN_DATETIME, "
-			"LOGOUT_DATETIME, "
+			"ROUNDEDCONTACTTIME.CONTACTS_KEY, "
+			"ROUNDED_LOGIN_DATETIME, "
+			"ROUNDED_LOGOUT_DATETIME, "
 			"TIMECLOCKLOCATIONS_KEY, "
 			"CONTACTS.HOURLY_RATE, "
-			"CONTACTTIME.BREAKS "
+			"ROUNDEDCONTACTTIME.BREAKS, "
+            "ROUNDEDCONTACTTIME.ZED_STATUS "
 		"FROM "
-			"CONTACTTIME LEFT JOIN CONTACTS ON "
-			"CONTACTTIME.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
+			"ROUNDEDCONTACTTIME LEFT JOIN CONTACTS ON "
+			"ROUNDEDCONTACTTIME.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
 		"WHERE "
-			"LOGOUT_DATETIME > :LOGIN_DATETIME and CONTACTS.CONTACT_TYPE = :CONTACT_TYPE "
+			"ROUNDED_LOGOUT_DATETIME > :LOGIN_DATETIME and CONTACTS.CONTACT_TYPE = :CONTACT_TYPE and ROUNDEDCONTACTTIME.ZED_STATUS is null "
 
          "union all "
 
 	"SELECT "
         "CONTACTTIME_KEY , "
-        "CONTACTTIME.CONTACTS_KEY, "
-        "LOGIN_DATETIME,  "
-        "LOGOUT_DATETIME, "
+        "ROUNDEDCONTACTTIME.CONTACTS_KEY, "
+        "ROUNDED_LOGIN_DATETIME,  "
+        "ROUNDED_LOGOUT_DATETIME, "
         "TIMECLOCKLOCATIONS_KEY,  "
         "CONTACTS.HOURLY_RATE,  "
-        "CONTACTTIME.BREAKS  "
+        "ROUNDEDCONTACTTIME.BREAKS,  "
+        "ROUNDEDCONTACTTIME.ZED_STATUS "
 	"FROM   "
-        "CONTACTTIME LEFT JOIN CONTACTS ON  "
-        "CONTACTTIME.CONTACTS_KEY = CONTACTS.CONTACTS_KEY  "
+        "ROUNDEDCONTACTTIME LEFT JOIN CONTACTS ON  "
+        "ROUNDEDCONTACTTIME.CONTACTS_KEY = CONTACTS.CONTACTS_KEY  "
 	"WHERE "
-    	"LOGOUT_DATETIME is null  and CONTACTS.CONTACT_TYPE = :CONTACT_TYPE " ;
+    	"ROUNDED_LOGOUT_DATETIME is null  and CONTACTS.CONTACT_TYPE = :CONTACT_TYPE and ROUNDEDCONTACTTIME.ZED_STATUS is null " ;
 
 		IBInternalQuery->ParamByName("LOGIN_DATETIME")->AsDateTime = PrevZedTime;
         IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = 0;
@@ -515,17 +520,17 @@ void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransacti
 			onbreak.DecodeTime(&th, &tm, &ts, &tms);
 			int temp = (th*60) + tm;
 
-			TStaffHours sh("",
+	        TStaffHours sh("",
 				IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger,
-                GetRoundedLoginTime(DBTransaction, IBInternalQuery->FieldByName("LOGIN_DATETIME")->AsDateTime, IBInternalQuery->FieldByName("CONTACTTIME_KEY")->AsInteger),
-                GetRoundedLogOutTime(DBTransaction, IBInternalQuery->FieldByName("LOGIN_DATETIME")->AsDateTime, IBInternalQuery->FieldByName("CONTACTTIME_KEY")->AsInteger),
+                IBInternalQuery->FieldByName("ROUNDED_LOGIN_DATETIME")->AsDateTime,
+                IBInternalQuery->FieldByName("ROUNDED_LOGOUT_DATETIME")->AsDateTime,
 				IBInternalQuery->FieldByName("TIMECLOCKLOCATIONS_KEY")->AsInteger,
 				NULL,
 				IBInternalQuery->FieldByName("CONTACTTIME_KEY")->AsInteger,
 				IBInternalQuery->FieldByName("HOURLY_RATE")->AsFloat,
 				temp);
 
-			if(IBInternalQuery->FieldByName("LOGOUT_DATETIME")->AsString == "")
+			if(IBInternalQuery->FieldByName("ROUNDED_LOGOUT_DATETIME")->AsString == "")
 				sh.SetLogOutNull(true);
 
 			inStaffHours.push_back(sh);
@@ -536,6 +541,9 @@ void TManagerTimeClock::GetLoggedInDetails(Database::TDBTransaction &DBTransacti
 		throw;
 	}
 }
+
+
+
 
 
 
@@ -611,10 +619,14 @@ void TManagerTimeClock::SetLoggedInOutDetails(Database::TDBTransaction &DBTransa
 				"UPDATE "
 				" CONTACTTIME"
 				" SET"
+			    " LOGIN_DATETIME = :LOGIN_DATETIME, " // remove this to update login date time
+				" LOGOUT_DATETIME = :LOGOUT_DATETIME," // remove this to update logout date time
 				" TOTALHOURS = :TOTALHOURS, "
 				" BREAKS = :BREAKS "
 				" WHERE CONTACTTIME_KEY = :CONTACTTIME_KEY";
 			IBInternalQuery->ParamByName("CONTACTTIME_KEY")->AsInteger = inStaffHours->second.GetContactTimeKey();
+		    IBInternalQuery->ParamByName("LOGIN_DATETIME")->AsDateTime = inStaffHours->second.GetLoggedIn(); // remove this to update login date time
+			IBInternalQuery->ParamByName("LOGOUT_DATETIME")->AsDateTime = inStaffHours->second.GetLoggedOut(); // remove this to update logout date time
 			IBInternalQuery->ParamByName("TOTALHOURS")->AsFloat = inStaffHours->second.GetHoursWorked();
 			IBInternalQuery->ParamByName("BREAKS")->AsTime = temp;
 			IBInternalQuery->ExecQuery();
