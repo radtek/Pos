@@ -526,7 +526,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Cover Count", "int", fieldData.CoverCount, 32, arcBillKey);//32
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Control Number", "int", "", 33, arcBillKey);//33  //todo
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Number of Sales Transaction", "int", 1, 34, arcBillKey);//34  //todo
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Sales Type", "int", 1, 35, arcBillKey);//35  //todo
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Sales Type", "int", 1, 35, arcBillKey);//35
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Amount", "Currency", fieldData.NetSalesAmountVatable, 36, arcBillKey);//36
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Old Accumulated Sales", "Currency", fieldData.OldAccumulatedSalesNonVatable, 37, arcBillKey);//37
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "New Accumulated Sales", "Currency", fieldData.NewAccumulatedSalesNonVatable, 38, arcBillKey);//38
@@ -558,7 +558,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountNonVatable, 64, arcBillKey);//64
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Grand Total Net Sales", "Currency", fieldData.NetSalesAmountVatable + fieldData.NetSalesAmountNonVatable, 65, arcBillKey);//65
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Hour Code", "int", HourOf(Now()), 66, arcBillKey);//66
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Status", "int", 1, 67, arcBillKey);//67    todo
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Status", "int", 1, 67, arcBillKey);//67
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Invoice Number", "UnicodeString", paymentTransaction.InvoiceNumber, 68, arcBillKey);//68
     }
     catch(Exception &E)
@@ -787,17 +787,24 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDB
         LoadMallSettingsForFile(dBTransaction, prepareForDSF);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT HOURLYDATA.FIELD_INDEX, HOURLYDATA.FIELD, SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code  "
-                                      "FROM  "
-                                        "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME,Extract (Hour From a.DATE_CREATED) Hour_code  "
-                                         "FROM MALLEXPORT_SALES a "
-                                         "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
-                                        " WHERE a.FIELD_INDEX IN(65,34,32) AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                         "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
-                                    "GROUP BY 1,2,4,5  ";
-        IBInternalQuery->ParamByName("VALUE1")->AsInteger = 65;
-        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 34;
-        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 32;
+        IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, SUM(DAILYDATA.FIELD_VALUE) FIELD_VALUE , DAILYDATA.VALUE_TYPE, DAILYDATA.MM_NAME, DAILYDATA.Z_KEY "
+                                      "FROM "
+                                            "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
+                                             "FROM MALLEXPORT_SALES a "
+                                             "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+                                             "WHERE a.FIELD_INDEX NOT IN(:VALUE1, :VALUE2, :VALUE3, :VALUE4, :VALUE5, :VALUE6, :VALUE7, :VALUE8) AND meh.IS_ACTIVE = :IS_ACTIVE  "
+                                             "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
+                                             "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
+                                    "GROUP BY 1,2,4,5,6 "
+                                    "ORDER BY 1 ASC  ";
+        IBInternalQuery->ParamByName("VALUE1")->AsInteger = 1;
+        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 2;
+        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 3;
+        IBInternalQuery->ParamByName("VALUE4")->AsInteger = 33;
+        IBInternalQuery->ParamByName("VALUE5")->AsInteger = 35;
+        IBInternalQuery->ParamByName("VALUE6")->AsInteger = 66;
+        IBInternalQuery->ParamByName("VALUE7")->AsInteger = 67;
+        IBInternalQuery->ParamByName("VALUE8")->AsInteger = 68;
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
@@ -809,6 +816,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDB
           salesData.DataValue = IBInternalQuery->Fields[2]->AsCurrency;
           salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
           salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
+          salesData.ZKey = IBInternalQuery->Fields[5]->AsInteger;
           prepareForDSF.SalesData.push_back(salesData);
         }
     }
