@@ -2006,8 +2006,8 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
 			+  _selectSalesIncl + //For Selecting salesIncl column
 
         "From  "
-            "Security Left Join ORDERS on  "
-                "Security.Security_Ref = ORDERS.Security_Ref "
+            "Orders  Left Join Security on "
+			 "Orders.Security_Ref = Security.Security_Ref "
             "Left Join ArcCategories on "
                 "ORDERS.Category_Key = ArcCategories.Category_Key  "
             "Left Join CategoryGroups on  "
@@ -2254,8 +2254,8 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 			"Cast(Sum(Orders.Cost * Orders.Qty) as Numeric(17,4)) Cost, "
            +  _selectSalesIncl +
 		"From "
-			"Security Left Join Orders on "
-				"Security.Security_Ref = Orders.Security_Ref "
+			"Orders  Left Join Security on "
+			 "Orders.Security_Ref = Security.Security_Ref "
             "left join ARCCATEGORIES on "    
          	"Orders.Category_Key = ArcCategories.Category_Key "
 			"Left Join CategoryGroups on "
@@ -2555,8 +2555,8 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
     "        ) *  cast((COALESCE(STAX.ServiceChargeTax,0))as numeric(17,4))/100 )as numeric(17,4)) " 
     " ) as numeric(17,4))  SalesIncl                                                               "
 		"From "
-			"Security Left Join Orders on "
-				"Security.Security_Ref = Orders.Security_Ref "
+			"Orders  Left Join Security on  "
+			 "Orders.Security_Ref = Security.Security_Ref "
          "Left Join ArcCategories on "
          	"Orders.Category_Key = ArcCategories.Category_Key "
 		"Left Join CategoryGroups on "
@@ -2912,8 +2912,8 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			"Cast(Sum(Orders.Qty * Orders.Cost) as Numeric(17,4)) Cost, "
            +  _selectSalesIncl + //For Selecting salesIncl column
 		"From "
-			"Security Left Join Orders on "
-			"Security.Security_Ref = Orders.Security_Ref "
+			"Orders  Left Join Security on "
+			 "Orders.Security_Ref = Security.Security_Ref "
              + _taxJoins + ///For selecting tax
                      
 		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
@@ -2946,7 +2946,7 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 	qrConsumption->ParamByName("EndTime")->AsDateTime		= EndTime;
 }
 //---------------------------------------------------------------------------
-void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime EndTime, TStrings *Locations, TStrings *Menus, bool IncGST)
+void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime EndTime, TStrings *Locations)
 {
 	qrConsumption->Close();
 	qrConsumption->SQL->Text =
@@ -2989,11 +2989,6 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"Archive.TIME_STAMP >= :StartTime and "
 			"Archive.TIME_STAMP < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
-	if (Menus->Count > 0)
-	{
-		qrConsumption->SQL->Text	=	qrConsumption->SQL->Text + "and (" +
-												ParamString(Menus->Count, "Archive.Menu_Name", "MenuParam") + ")";
-	}
 	if (Locations->Count > 0)
 	{
 		qrConsumption->SQL->Text	=	qrConsumption->SQL->Text + "and (" +
@@ -3050,11 +3045,6 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
                 "DayArchive.TIME_STAMP >= :StartTime and "
                 "DayArchive.TIME_STAMP < :EndTime and "
                 "Security.Security_Event = 'Ordered By' ";
-	if (Menus->Count > 0)
-	{
-		qrConsumption->SQL->Text	=	qrConsumption->SQL->Text + "and (" +
-												ParamString(Menus->Count, "DayArchive.Menu_Name", "MenuParam") + ")";
-	}
 	if (Locations->Count > 0)
 	{
 		qrConsumption->SQL->Text	=	qrConsumption->SQL->Text + "and (" +
@@ -3113,18 +3103,13 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"Cast(Sum(Orders.Cost * Orders.Qty) as Numeric(17,4)) Cost, "
              +  _selectSalesIncl + //For Selecting salesIncl column
 		"From "
-			"Security Left Join Orders on "
-			"Security.Security_Ref = Orders.Security_Ref "
+			"Orders  Left Join Security on "
+			 "Orders.Security_Ref = Security.Security_Ref "
              + _taxJoins + ///For selecting tax
 		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
 			"Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
-	if (Menus->Count > 0)
-	{
-		qrConsumption->SQL->Text	=	qrConsumption->SQL->Text + "and (" +
-												ParamString(Menus->Count, "Orders.Menu_Name", "MenuParam") + ")";
-	}
 	if (Locations->Count > 0)
 	{
 		qrConsumption->SQL->Text	=	qrConsumption->SQL->Text + "and (" +
@@ -3142,10 +3127,6 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 
 		"Order By "
 			"1,2,3,4";
-	for (int i=0; i<Menus->Count; i++)
-	{
-		qrConsumption->ParamByName("MenuParam" + IntToStr(i))->AsString = Menus->Strings[i];
-	}
 	for (int i=0; i<Locations->Count; i++)
 	{
 		qrConsumption->ParamByName("LocationParam" + IntToStr(i))->AsString = Locations->Strings[i];
@@ -3392,8 +3373,8 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 			"ThirdPartyCodes.Code, "
 			 +  _selectSalesIncl + //For Selecting salesIncl column
 		"From "
-			"Security Left Join Orders on "
-				"Security.Security_Ref = Orders.Security_Ref "
+			"Orders  Left Join Security on "
+			 "Orders.Security_Ref = Security.Security_Ref "
 			"Inner Join ThirdPartyCodes On "
 				"Orders.ThirdPartyCodes_Key = ThirdPartyCodes.ThirdPartyCodes_Key "
              + _taxJoins + ///For selecting tax
@@ -4192,8 +4173,8 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
             +  _selectSalesIncl + //For Selecting salesIncl column
 
 		"From "
-			"Security Left Join Orders on "
-				"Security.Security_Ref = Orders.Security_Ref "
+			"Orders  Left Join Security on "
+			 "Orders.Security_Ref = Security.Security_Ref "
 			"Left Join ArcCategories on "
 				"Orders.Category_Key = ArcCategories.Category_Key "
 			"Left Join CategoryGroups on "
