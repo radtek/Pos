@@ -9452,6 +9452,4 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
-
-
 }

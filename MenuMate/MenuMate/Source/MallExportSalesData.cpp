@@ -39,11 +39,6 @@ void TMallExportSalesData::SetFieldIndex(int fieldIndex)
     _dataValueType = dataValueType;
 }
 //---------------------------------------------------------------------------
- void TMallExportSalesData::SetEnumType(int enumType)
-{
-    _enumType = enumType;
-}
-//---------------------------------------------------------------------------
  void TMallExportSalesData::SetDateCreated(TDateTime dateCreated)
 {
     _dateCreated = dateCreated;

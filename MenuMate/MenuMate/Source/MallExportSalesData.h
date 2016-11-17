@@ -13,7 +13,6 @@ class TMallExportSalesData
     int _fieldIndex;
     UnicodeString _dataValue;
     UnicodeString _dataValueType;
-    int _enumType;
     TDateTime _dateCreated;
     UnicodeString _createdBy;
     int _arcBillKey;
@@ -25,7 +24,6 @@ class TMallExportSalesData
     void SetFieldIndex(int fieldIndex);
     void SetDataValue(UnicodeString dataValue);
     void SetDataValueType(UnicodeString dataValueType);
-    void SetEnumType(int enumType);
     void SetDateCreated(TDateTime dateCreated);
     void SetCreatedBy(UnicodeString createdBy);
     void SetArcBillKey(int arcBillKey);
@@ -38,7 +36,6 @@ class TMallExportSalesData
     __property int FieldIndex = {read = _fieldIndex, write = SetFieldIndex};
     __property UnicodeString DataValue = {read = _dataValue, write = SetDataValue};
     __property UnicodeString DataValueType = {read = _dataValueType, write = SetDataValueType};
-    __property int enumType = {read = _enumType, write = SetEnumType};
     __property TDateTime DateCreated = {read = _dateCreated, write = SetDateCreated};
     __property UnicodeString CreatedBy = {read = _createdBy, write = SetCreatedBy};
     __property int ArcBillKey = {read = _arcBillKey, write = SetArcBillKey};
