@@ -777,3 +777,47 @@ void TManagerTimeClock::BuildXMLTotalsTimeClock(TPOS_XMLBase &Data,int SiteID, i
    List->LinkEndChild( EleTimeClock );
    Data.Doc.LinkEndChild( List );
 }
+
+void TManagerTimeClock::UpdateClockInOut(Database::TDBTransaction &DBTransaction, int contact_time_key, int contact_key)
+{
+	try
+	{
+        DBTransaction.StartTransaction();
+
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+		"SELECT  "
+		" CONTACTTIME_KEY, LOGIN_DATETIME"
+		" FROM CONTACTTIME"
+		" WHERE CONTACTTIME_KEY = :CONTACTTIME_KEY "
+		" AND CONTACTS_KEY = :CONTACTS_KEY";
+		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contact_key;
+        IBInternalQuery->ParamByName("CONTACTTIME_KEY")->AsInteger = contact_time_key;
+		IBInternalQuery->ExecQuery();
+
+		if(contact_time_key != 0)
+		{
+			TIBSQL *IBInternalQuery1 = DBTransaction.Query(DBTransaction.AddQuery());
+			IBInternalQuery1->Close();
+			IBInternalQuery1->SQL->Text =
+			"UPDATE "
+			" CONTACTTIME"
+			" SET"
+            " LOGIN_DATETIME = :LOGIN_DATETIME, " // remove this to update login date time
+            " LOGOUT_DATETIME = :LOGOUT_DATETIME " // remove this to update logout date time
+			" WHERE CONTACTTIME_KEY = :CONTACTTIME_KEY ";
+			IBInternalQuery1->ParamByName("CONTACTTIME_KEY")->AsInteger = contact_time_key;
+            IBInternalQuery1->ParamByName("LOGIN_DATETIME")->AsDateTime = GetRoundedLoginTime(DBTransaction, IBInternalQuery->FieldByName("LOGIN_DATETIME")->AsDateTime, contact_time_key);
+			IBInternalQuery1->ParamByName("LOGOUT_DATETIME")->AsDateTime = GetRoundedLogOutTime(DBTransaction, IBInternalQuery->FieldByName("LOGIN_DATETIME")->AsDateTime, contact_time_key);
+			IBInternalQuery1->ExecQuery();
+		}
+
+        DBTransaction.Commit();
+	}
+	catch(Exception &E)
+	{
+		throw;
+	}
+}
+

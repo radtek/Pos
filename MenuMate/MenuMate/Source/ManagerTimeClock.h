@@ -44,6 +44,7 @@ class TManagerTimeClock
 	void SetLoggedInOutDetails(Database::TDBTransaction &DBTransaction, TStaffHoursContainer::iterator inStaffHours);
     TDateTime GetRoundedLoginTime(Database::TDBTransaction &DBTransaction, TDateTime loginTime, int contact_time_key);
     TDateTime GetRoundedLogOutTime(Database::TDBTransaction &DBTransaction, TDateTime loginTime, int contact_time_key);
+    void UpdateClockInOut(Database::TDBTransaction &DBTransaction, int contact_time_key, int contact_key);
 };
 
 
