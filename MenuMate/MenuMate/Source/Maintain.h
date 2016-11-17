@@ -224,7 +224,6 @@ private:
     void SetupGLCodes();
     void __fastcall RefreshRunRateBoard();
     bool DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransaction);
-    void UpgradeLocalMembersCode(Database::TDBTransaction &DBTransaction);
     void PeachTreeSettings();
 public: // User declarations
 

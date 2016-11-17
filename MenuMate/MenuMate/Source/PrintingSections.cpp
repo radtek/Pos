@@ -1604,7 +1604,10 @@ void TPrintSection::ShowRefundReference(TReqPrintJob *PrintJob)
         pPrinter->Line->ColCount = 1;
         pPrinter->Line->Columns[0]->Width = pPrinter->Width;
         pPrinter->Line->Columns[0]->Alignment = taCenter;
-        pPrinter->Line->Columns[0]->Text = "OR No. ";
+        if(TGlobalSettings::Instance().RefundReferenceLabel != "")
+            pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().RefundReferenceLabel;
+        else
+            pPrinter->Line->Columns[0]->Text = "OR NO.";
         pPrinter->Line->Columns[0]->Text += TReceiptUtility::ModifyInvoiceNumber(PrintJob->Transaction->RefundRefReceipt,
                                                    ReceiptLength);
         pPrinter->AddLine();
@@ -2349,6 +2352,7 @@ void TPrintSection::PrintMemberNameInformation(TReqPrintJob *PrintJob)
 {
 	if (PrintJob->Transaction->Membership.Member.ContactKey != 0)
 	{
+        UnicodeString title = "Membership";
 		UnicodeString Member = PrintJob->Transaction->Membership.Member.Alias + " ( " + PrintJob->Transaction->Membership.Member.MembershipNumber + " ) ";
 		switch(PrintJob->MembershipNameDisplay)
 		{
@@ -2415,14 +2419,13 @@ void TPrintSection::PrintMemberNameInformation(TReqPrintJob *PrintJob)
 				}
 			}
 		}
-
 		pPrinter->Line->ColCount = 2;
-		pPrinter->Line->Columns[0]->Width = pPrinter->Width - Member.Length();
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width - Member.Length() < 0 ?  title.Length() + 1 : pPrinter->Width - Member.Length();
 		pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
 		pPrinter->Line->Columns[1]->Width = Member.Length();
 		pPrinter->Line->Columns[1]->Alignment = taRightJustify;
 		pPrinter->Line->Columns[0]->Kanji = pPrinter->KanjiPrinter;
-		pPrinter->Line->Columns[0]->Text = "Membership";
+		pPrinter->Line->Columns[0]->Text = title;
 		pPrinter->Line->Columns[1]->Text = Member;
 		pPrinter->AddLine();
 	}
@@ -2481,24 +2484,7 @@ void TPrintSection::PrintPointsInformation(TReqPrintJob *PrintJob)
            ||PrintJob->Transaction->Membership.MemberSource ==  emsBarcode)
 		{
 
-             /*if(TGlobalSettings::Instance().LoyaltyMateEnabled &&
-                !TGlobalSettings::Instance().IsPOSOffline)
-                {
-                    PrintJob->Transaction->Membership.Member.Points.ClearBySource(pasDatabase) ;
-                      // Putting in the Points Earned.
-                    TPointsTypePair typepair1( pttEarned,ptstLoyalty );
-                    TPointsType type1( pasDatabase, typepair1, pesExported);
-                    double pointsEarned = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint -
-                    TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableBDPoint -
-                    TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableFVPoint;
-                    PrintJob->Transaction->Membership.Member.Points.Load( type1,pointsEarned );
-
-                    // Putting in the Points Loaded ( Purchased ).
-                    TPointsTypePair typepair2( pttPurchased,ptstAccount );
-                    TPointsType type2( pasDatabase, typepair2, pesExported );
-                    PrintJob->Transaction->Membership.Member.Points.Load( type2, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableLoadedPoint );
-                }*/
-			pPrinter->Add("Current Points|" + FormatFloat("0.00",PrintJob->Transaction->Membership.Member.Points.getPointsBalance(pasDatabase)));
+    		pPrinter->Add("Current Points|" + FormatFloat("0.00",PrintJob->Transaction->Membership.Member.Points.getPointsBalance(pasDatabase)));
 
 			if (PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRedeemed() != 0 || PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRefunded() != 0)
 			{
@@ -3884,15 +3870,15 @@ void TPrintSection::PrintTotalDicountsName(TReqPrintJob *PrintJob)
 			ffNumber,
 			CurrencyDecimals);
 
-            if(Adjustment != "0.00")
-            {
+//            if(Adjustment != "0.00")
+//            {
                 pPrinter->Line->Columns[1]->Width = Adjustment.Length() + 1;
                 pPrinter->Line->Columns[0]->Width = pPrinter->Width - Adjustment.Length() - 1;
 
                 pPrinter->Line->Columns[0]->Text = itDiscountTotals->first;
                 pPrinter->Line->Columns[1]->Text = Adjustment;
                 pPrinter->AddLine();
-            }
+//            }
 		}
 
 		// Senior Citizen Discount (SCD) applied
@@ -6194,10 +6180,19 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 				pPrinter->Line->Columns[0]->Text = PrintJob->ReceiptHeader->Strings[i];
 				pPrinter->AddLine();
 			}
+            if(TGlobalSettings::Instance().SetSubHeader &&
+                (!TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)))
+            {
+                for (int i = 0; i < TGlobalSettings::Instance().SubHeader->Count; i++)
+                {
+                    pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().SubHeader->Strings[i];
+                    pPrinter->AddLine();
+                }
+            }
             if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)&&
                  TGlobalSettings::Instance().ShowVoidOrRefund)
              {
-                 pPrinter->Line->Columns[0]->Text = "VOID";//PrintVoidOnReceipt(PrintJob);
+                 pPrinter->Line->Columns[0]->Text = "VOID";
                  pPrinter->AddLine();
              }
             if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem ||
@@ -6325,6 +6320,11 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 	for (int i = 0; i < PrintJob->Transaction->PaymentsCount(); i++)
 	{
 		TPayment *SubPayment = PrintJob->Transaction->PaymentGet(i);
+        AnsiString paymentName = SubPayment->Name;
+        AnsiString cardType = SubPayment->CardType;
+        if(cardType != NULL && cardType != "")
+           paymentName = cardType;
+
 
 		if (SubPayment->GetCashOutTotal() != 0)
 		{
@@ -6337,28 +6337,28 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 
 			if (SubPayment->Properties & ePayTypeCSV)
 			{
-				pPrinter->Add(SubPayment->Name + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
 			else if (SubPayment->Properties & ePayTypePocketVoucher)
 			{
-				pPrinter->Add(SubPayment->Name + " " + SubPayment->VoucherCode + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " " + SubPayment->VoucherCode + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
 			else if (SubPayment->Properties & ePayTypePoints)
 			{
-				pPrinter->Add(SubPayment->Name + " Points Purchase" + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " Points Purchase" + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
 			else
 			{
-				pPrinter->Add(SubPayment->Name + " Cash Out" + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " Cash Out" + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
 				ffNumber,
 				CurrencyDecimals));
@@ -6376,21 +6376,21 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 
 			if (SubPayment->Properties & ePayTypeCSV)
 			{
-				pPrinter->Add(SubPayment->Name + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
 			else if (SubPayment->Properties & ePayTypePocketVoucher)
 			{
-				pPrinter->Add(SubPayment->Name + " " + SubPayment->VoucherCode + "|" + CurrToStrF(
+				pPrinter->Add(paymentName + " " + SubPayment->VoucherCode + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
 				ffNumber,
 				CurrencyDecimals));
 			}
             else if(SubPayment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled)
             {
-                pPrinter->Add(SubPayment->Name + "|" + CurrToStrF(
+                pPrinter->Add(paymentName + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
@@ -6413,13 +6413,6 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
             }
 			else
 			{
-                AnsiString paymentName = SubPayment->Name;
-                AnsiString cardType = SubPayment->CardType;
-                if(cardType != "" && cardType != NULL)
-                {
-                   paymentName = paymentName +"(" + cardType +")";
-                }
-
 				pPrinter->Add(paymentName + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
@@ -6429,12 +6422,6 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 
        if(SubPayment->TipAmount != 0)
         {
-            AnsiString paymentName = SubPayment->Name;
-            AnsiString cardType = SubPayment->CardType;
-            if(cardType != "" && cardType != NULL)
-            {
-                paymentName = paymentName +"(" + cardType +")";
-            }
             pPrinter->Add(paymentName + " Tip " + "|" + CurrToStrF(
             RoundToNearest(SubPayment->TipAmount, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
             ffNumber,

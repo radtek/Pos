@@ -122,6 +122,7 @@ TPriceInfo TMMBillCalculatorAdapter::ConvertItemCompleteToPriceInfo( TItemMinorC
 
         priceInfo.DiscountInfoList.push_back( discountInfo );
         priceInfo.PriceTaxExempt = (discountInfo.DiscountGroupList.size() == 1 && discountInfo.DiscountGroupList[0] == SCD_DISCOUNT_GROUP) // discountInfo->; TODO: Look to see if this discount is in the Senior Citizans Discount group
+                                    || (discountInfo.DiscountGroupList.size() == 1 && discountInfo.DiscountGroupList[0] == PWD_DISCOUNT_GROUP)
                                     || (discountInfo.DiscountGroupList.size() == 1 && discountInfo.DiscountGroupList[0] == COMPLIMENTARY_GROUP)
                                     || (discountInfo.DiscountGroupList.size() == 1 && discountInfo.DiscountGroupList[0] == NONCHARGABLE_GROUP) ;
         priceInfo.CalcDWTOnBasePrice =  priceInfo.PriceTaxExempt|| discountInfo.RecalcPriceWithTaxAfterDiscount;
@@ -192,7 +193,7 @@ TDiscountInfo TMMBillCalculatorAdapter::ConvertDiscountToDiscountInfo( TDiscount
     discountInfo.Description          = inDiscount->GetDescription();
     discountInfo.Percentage           = fabs(inDiscount->PercentAmount);
     discountInfo.Priority             = inDiscount->Priority;
-    discountInfo.RecalcPriceWithTaxAfterDiscount = inDiscount->IsPersonWithDisabilityDiscount();
+    discountInfo.RecalcPriceWithTaxAfterDiscount = false;//inDiscount->IsPersonWithDisabilityDiscount();   Changed on account of change in behaviour of PWD discount
     discountInfo.DiscountCode = inDiscount->DiscountCode;
     discountInfo.IsCloudDiscount = inDiscount->IsCloudDiscount;
     discountInfo.DailyUsageAllowedPerMember = inDiscount->DailyUsageAllowedPerMember;

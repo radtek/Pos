@@ -105,16 +105,18 @@ void TEftPosSmartLink::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPur
                           EftTrans->EventCompleted = true;
                           EftTrans->ResultText = "Eftpos Transaction Completed.";
                           EftTrans->Result = eAccepted;
+                          EftTrans->TimeOut = wcfResponse->TimeOut;
                    }    }
                   else
                    {
-                      MessageBox("Transaction Failed", "EFTPOS ",MB_OK + MB_ICONERROR);
+//                      MessageBox("Transaction Failed", "EFTPOS ",MB_OK + MB_ICONERROR);
                       TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(TxnType);
                       if(EftTrans != NULL)
                        {
                           EftTrans->EventCompleted = true;
                           EftTrans->Result = eDeclined;
                           EftTrans->ResultText = wcfResponse->ErrorText;
+                          EftTrans->TimeOut = wcfResponse->TimeOut;
                        }
                    }
              }

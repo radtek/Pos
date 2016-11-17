@@ -386,11 +386,6 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                 else
                 {
                     paymentName = qrXArcPay->FieldByName("PAY_TYPE")->AsString;
-                    AnsiString cardType = qrXArcPay->FieldByName("PAYMENT_CARD_TYPE")->AsString;
-                    if(cardType != "" && cardType != NULL)
-                    {
-                       paymentName = paymentName + "(" + cardType + ")";
-                    }
                 }
 
                 std::map <UnicodeString, TSumPayments> PaymentValues = TransactionInfo->Payments[groupNumber];
@@ -438,7 +433,11 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                     CurrentPayment.CashOut += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
                     IsCashOut = true;
                 }
-                CurrentPayment.TipAmount += qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency;
+                if(qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency != 0)
+                {
+                     CurrentPayment.TipAmount += qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency;
+                     CurrentPayment.TipQty++;
+                }
                 CurrentPayment.Rounding -= qrXArcPay->FieldByName("ROUNDING")->AsCurrency;
                 CurrentPayment.Properties = qrXArcPay->FieldByName("PROPERTIES")->AsInteger;
 

@@ -183,6 +183,7 @@ public:
 	int KitchenColour;
 	UnicodeString DatabasePath;
 	UnicodeString ReceiptNumberLabel;
+    UnicodeString RefundReferenceLabel;
 	UnicodeString ReprintReceiptLabel;
 	UnicodeString PoleDisplayTopLine;
 	UnicodeString PoleDisplayBottomLine;
@@ -457,8 +458,10 @@ public:
     bool ExportReprintReceipt;
     bool CaptureRefundRefNo;
     bool SetVoidFooter;
+    bool SetSubHeader;
     UnicodeString ReceiptDigits;
     std::auto_ptr<TStringList>VoidFooter;
+    std::auto_ptr<TStringList>SubHeader;
     bool ShowVoidOrRefund;
     bool ShowVoidNumber;
     UnicodeString EftPosTipGLCode;

@@ -316,11 +316,14 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
       cbHideTaxInvoice->Checked = TGlobalSettings::Instance().HideTaxInvoice;
       cbExportReprintReceipt->Checked = TGlobalSettings::Instance().ExportReprintReceipt;
       memCustomizeFooter->Text = TGlobalSettings::Instance().VoidFooter->Text;
+      memCustomizeSubHeader->Text = TGlobalSettings::Instance().SubHeader->Text;
       cbSetFooter->Checked = TGlobalSettings::Instance().SetVoidFooter;
+      cbSetSubHeader->Checked = TGlobalSettings::Instance().SetSubHeader;
       tbtnReceiptNumber->Caption = TGlobalSettings::Instance().ReceiptDigits;
       cbPrintVoid->Checked = TGlobalSettings::Instance().ShowVoidOrRefund;
       cbShowVoidNumber->Checked = TGlobalSettings::Instance().ShowVoidNumber;
       CheckVoidFooterSetting();
+      CheckSubHeaderSetting();
    }
    }
    catch(Exception & E)
@@ -349,6 +352,7 @@ void TfrmPrinterMaintenance::SaveHeaderLabels()
     TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmReceiptNumberLabel,TGlobalSettings::Instance().ReceiptNumberLabel);
     //Save the reprint receipt label to database.
     TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmReprintReceiptLabel,TGlobalSettings::Instance().ReprintReceiptLabel);
+    TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmRefundReferenceLabel,TGlobalSettings::Instance().RefundReferenceLabel);
     DBTransaction.Commit();
 }
 
@@ -2413,7 +2417,7 @@ void TfrmPrinterMaintenance::GetCourseInfo(Database::TDBTransaction &DBTransacti
 		 TempCourseInfo.CourseKey = IBInternalQuery->FieldByName("COURSE_KEY")->AsInteger;
 
 		 TempCourseInfo.CourseName = IBInternalQuery->FieldByName("COURSE_NAME")->AsString;
-		 TempCourseInfo.CourseKitchenName = UTF8ToUnicodeString((AnsiString)IBInternalQuery->FieldByName("COURSE_KITCHEN_NAME")->AsString);
+		 TempCourseInfo.CourseKitchenName = IBInternalQuery->FieldByName("COURSE_KITCHEN_NAME")->AsString;
 		 if (TempCourseInfo.CourseKitchenName == UnicodeString(""))
 		 {
 			TempCourseInfo.CourseKitchenName = TempCourseInfo.CourseName;
@@ -2710,7 +2714,8 @@ void __fastcall TfrmPrinterMaintenance::memFooterMouseUp(TObject *Sender, TMouse
 void __fastcall TfrmPrinterMaintenance::btnHeaderFooterSaveMouseClick(TObject *Sender)
 {
    // Save to Text Files.
-   TDeviceRealTerminal::Instance().SaveHdrFtr(memHeader->Lines, memPHeader->Lines, memFooter->Lines, memCustomizeFooter->Lines);
+   TDeviceRealTerminal::Instance().SaveHdrFtr(memHeader->Lines, memPHeader->Lines, memFooter->Lines, memCustomizeFooter->Lines,
+                                              memCustomizeSubHeader->Lines);
    memHeader->Modified = false;
    memPHeader->Modified = false;
    memFooter->Modified = false;
@@ -5129,12 +5134,13 @@ void __fastcall TfrmPrinterMaintenance::tbtnReprintLabelMouseClick(TObject *Send
 
 {
    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-   frmTouchKeyboard->MaxLength = 0;
+   frmTouchKeyboard->MaxLength = 120;
    frmTouchKeyboard->AllowCarriageReturn = true;
    frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
    frmTouchKeyboard->StartWithShiftDown = false;
    frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().ReprintReceiptLabel;
    frmTouchKeyboard->Caption = "Enter reprint receipt label";
+
    if (frmTouchKeyboard->ShowModal() == mrOk)
    {
 	  TGlobalSettings::Instance().ReprintReceiptLabel = frmTouchKeyboard->KeyboardText;
@@ -5224,7 +5230,8 @@ void __fastcall TfrmPrinterMaintenance::memCustomizeFooterMouseUp(TObject *Sende
    if (frmTouchKeyboard->ShowModal() == mrOk)
    {
 	  memCustomizeFooter->Lines->Text = frmTouchKeyboard->KeyboardText;
-      TDeviceRealTerminal::Instance().SaveHdrFtr(memHeader->Lines, memPHeader->Lines, memFooter->Lines, memCustomizeFooter->Lines);
+      TDeviceRealTerminal::Instance().SaveHdrFtr(memHeader->Lines, memPHeader->Lines, memFooter->Lines, memCustomizeFooter->Lines,
+                                                memCustomizeSubHeader->Lines);
    }
    DBTransaction.Commit();
 }
@@ -5279,6 +5286,67 @@ void __fastcall TfrmPrinterMaintenance::cbShowVoidNumberClick(TObject *Sender)
    TGlobalSettings::Instance().ShowVoidNumber = cbShowVoidNumber->Checked;
    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmShowVoidNumber, TGlobalSettings::Instance().ShowVoidNumber);
    DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::tbtnRefundReferenceLabelMouseClick(TObject *Sender)
+{
+    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+   frmTouchKeyboard->MaxLength = 120;
+   frmTouchKeyboard->AllowCarriageReturn = true;
+   frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
+   frmTouchKeyboard->StartWithShiftDown = false;
+   frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().RefundReferenceLabel;
+   frmTouchKeyboard->Caption = "Enter Refund Reference Label";
+   if (frmTouchKeyboard->ShowModal() == mrOk)
+   {
+	  TGlobalSettings::Instance().RefundReferenceLabel = frmTouchKeyboard->KeyboardText;
+   }
+}
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::cbSetSubHeaderClick(TObject *Sender)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().SetSubHeader = cbSetSubHeader->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmSetSubHeader, TGlobalSettings::Instance().SetSubHeader);
+   DBTransaction.Commit();
+   CheckSubHeaderSetting();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::memSubHeaderMouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+   TDeviceRealTerminal::Instance().LoadHdrFtr();
+   memCustomizeSubHeader->Lines = TGlobalSettings::Instance().SubHeader.get();
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+   frmTouchKeyboard->MaxLength = 0;
+   frmTouchKeyboard->AllowCarriageReturn = true;
+   frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
+   frmTouchKeyboard->StartWithShiftDown = false;
+   frmTouchKeyboard->KeyboardText = memCustomizeSubHeader->Lines->Text;
+   frmTouchKeyboard->Caption = "Enter Sub Header";
+   if (frmTouchKeyboard->ShowModal() == mrOk)
+   {
+	  memCustomizeSubHeader->Lines->Text = frmTouchKeyboard->KeyboardText;
+      TDeviceRealTerminal::Instance().SaveHdrFtr(memHeader->Lines, memPHeader->Lines, memFooter->Lines, memCustomizeFooter->Lines,
+                                                memCustomizeSubHeader->Lines);
+   }
+   DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+void TfrmPrinterMaintenance::CheckSubHeaderSetting()
+{
+    if(cbSetSubHeader->Checked)
+      memCustomizeSubHeader->Enabled = true;
+   else
+      memCustomizeSubHeader->Enabled = false;
 }
 //---------------------------------------------------------------------------
 

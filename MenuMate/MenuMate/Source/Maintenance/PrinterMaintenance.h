@@ -274,6 +274,7 @@ __published:	// IDE-managed Components
     TCheckBox *cbHideTaxInvoice;
     TCheckBox *cbExportReprintReceipt;
     TRichEdit *memCustomizeFooter;
+    TRichEdit *memCustomizeSubHeader;
     TGroupBox *GroupBoxCustom;
     TTabSheet *tsReceiptOptionsInfo;
     TTouchPages *tpsReceiptInfo;
@@ -287,6 +288,8 @@ __published:	// IDE-managed Components
     TTouchBtn *tbtnReceiptNumber;
     TCheckBox *cbPrintVoid;
     TCheckBox *cbShowVoidNumber;
+    TTouchBtn *tbtnRefundReferenceLabel;
+    TCheckBox *cbSetSubHeader;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
@@ -440,6 +443,10 @@ __published:	// IDE-managed Components
     void __fastcall tbtnReceiptNumberAutoRepeat(TObject *Sender);
     void __fastcall cbPrintVoidClick(TObject *Sender);
     void __fastcall cbShowVoidNumberClick(TObject *Sender);
+    void __fastcall tbtnRefundReferenceLabelMouseClick(TObject *Sender);
+    void __fastcall cbSetSubHeaderClick(TObject *Sender);
+    void __fastcall memSubHeaderMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
     //void __fastcall cbExportReprintReceiptClick(TObject *Sender);
    // void __fastcall cbCaptureRefundReferenceClick(TObject *Sender);
     //void __fastcall cbHideTaxInvoiceClick(TObject *Sender);
@@ -506,6 +513,7 @@ private:	// User declarations
 	void MMEnumPrinters(UnicodeString PrinterContainer, std::map<UnicodeString,DWORD> &PrinterData );
     bool IsDBRegistered;
     void CheckVoidFooterSetting();
+    void CheckSubHeaderSetting();
 public:		// User declarations
 	void DisplayKitchenPrinterInstructionSet();
     void DisplayReceiptPrinterInstructionSet();

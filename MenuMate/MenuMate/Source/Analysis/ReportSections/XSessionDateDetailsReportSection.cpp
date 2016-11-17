@@ -31,7 +31,10 @@ void XSessionDateDetailsReportSection::GetOutput(TPrintout* printOut)
         const TMMContactInfo &staff_member = TfrmAnalysis::GetLastAuthenticatedUser();
         printOut->PrintFormat->Line->Columns[0]->Text =staff_member.Name;
         printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[0]->Text = "#" + UnicodeString(TGlobalSettings::Instance().ZCount);
+        DataCalculationUtilities* dataCalculationUtilities = new DataCalculationUtilities;
+        int value = dataCalculationUtilities->GetZedKey(*_dbTransaction);
+        value += 1;
+        printOut->PrintFormat->Line->Columns[0]->Text = "#" + IntToStr(value);
         printOut->PrintFormat->AddLine();
     }
 }

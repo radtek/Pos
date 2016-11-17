@@ -43,7 +43,7 @@
 #include "ManagerPatron.h"
 #include "GUIScale.h"
 #include "FreebieManager.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 #include "SelectDish.h"
 #include "MMInvoicePaymentSystem.h"
 #include "ManagerDelayedPayment.h"
@@ -1754,9 +1754,7 @@ void TfrmBillGroup::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,A
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
-    info.MemberCode = Barcode;
-    info.CardStr = Barcode;
-    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info);
+    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info,Barcode);
 
 	if (info.Valid())
      {
@@ -1886,6 +1884,7 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 			SelectDiscount->MessageType = eDiscountReason;
             SelectDiscount->ShowPointsAsDiscount = false;
             bool isSCDAppliedOnClipp = false;
+            bool isPWDAppliedOnClipp = false;
 			if (SelectDiscount->ShowModal() == mrOk)
 			{
                 ManagerDiscount->GetDiscount(DBTransaction, SelectDiscount->Key, SelectedDiscount);
@@ -1915,13 +1914,20 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 						TPaymentTransaction PaymentTransaction(DBTransaction);
 						TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, OrderKeySet);
 						TDiscount CurrentDiscount;
-                        TSeniorCitizenDiscountChecker SCDChecker;
+                        TSCDPWDChecker SCDChecker;
 						CurrentDiscount.DiscountKey = SelectDiscount->Key;
 						ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-                        applyDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders);
-                        if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders, true) && applyDiscount && CurrentTabType == TabClipp)
+                        applyDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders)  &&
+                                        SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders);
+                        if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, PaymentTransaction.Orders, true)
+                          && applyDiscount && CurrentTabType == TabClipp)
                         {
                            isSCDAppliedOnClipp = true;
+                        }
+                        if(SCDChecker.PWDCheck(CurrentDiscount, PaymentTransaction.Orders, true)
+                          && applyDiscount && CurrentTabType == TabClipp)
+                        {
+                           isPWDAppliedOnClipp = true;
                         }
                         /*if(applyDiscount)
                         {
@@ -1940,6 +1946,11 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 
 				}
                 if(isSCDAppliedOnClipp )
+                {
+                     MessageBox("Order with SCD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
+                     return;
+                }
+                else if(isPWDAppliedOnClipp)
                 {
                      MessageBox("Order with SCD Discount can't be saved to clipp Tab.", "Error", MB_OK + MB_ICONERROR);
                      return;
@@ -2044,9 +2055,10 @@ void __fastcall TfrmBillGroup::ProcessBillThorVouchers(Database::TDBTransaction 
                             ManagerDiscount->GetDiscount(DBTransaction, SelectedDiscount.DiscountKey, SelectedDiscount);
                             TPaymentTransaction PaymentTransaction(DBTransaction);
                             TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, OrderKeySet);
-                            TSeniorCitizenDiscountChecker SCDChecker;
+                            TSCDPWDChecker SCDChecker;
                             ManagerDiscount->ClearThorVouchersDiscounts(PaymentTransaction.Orders);
-                            if(SCDChecker.SeniorCitizensCheck(SelectedDiscount, PaymentTransaction.Orders))
+                            if(SCDChecker.SeniorCitizensCheck(SelectedDiscount, PaymentTransaction.Orders)
+                              && SCDChecker.PWDCheck(SelectedDiscount, PaymentTransaction.Orders))
                             {
                               Membership.Member.AutoAppliedDiscounts.clear();
                               Membership.Member.AutoAppliedDiscounts.insert(SelectedDiscount.DiscountKey);
@@ -2233,7 +2245,6 @@ void __fastcall TfrmBillGroup::tbtnShowItemsMouseClick(TObject *Sender)
 void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMouseButton Button, TShiftState Shift,
 	TGridButton *GridButton)
 {
-
     TMMProcessingState State(Screen->ActiveForm, "Loading Items Please Wait...", "Loading Items");
     TDeviceRealTerminal::Instance().ProcessingController.Push(State);
     try
@@ -2345,7 +2356,7 @@ void __fastcall TfrmBillGroup::tgridItemListMouseClick(TObject *Sender, TMouseBu
 
 	if (SelectedItems.find(GridButton->Tag) == SelectedItems.end())
 	{ // Not Found add it.
-        TSeniorCitizenDiscountChecker SCDChecker;
+        TSCDPWDChecker SCDChecker;
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
 
@@ -2355,7 +2366,8 @@ void __fastcall TfrmBillGroup::tgridItemListMouseClick(TObject *Sender, TMouseBu
             SelectedItemKeys.insert(itItem->first);
         }
 
-        bool canAddItem = SCDChecker.ItemSelectionCheck(DBTransaction, GridButton->Tag, SelectedItemKeys);
+        bool canAddItem = SCDChecker.ItemSelectionCheck(DBTransaction, GridButton->Tag, SelectedItemKeys) &&
+                          SCDChecker.ItemSelectionCheckPWD(DBTransaction, GridButton->Tag, SelectedItemKeys) ;
 
 		if (canAddItem && AddToSelectedTabs(DBTransaction, VisibleItems[GridButton->Tag].TabKey))
 		{
@@ -2476,7 +2488,7 @@ void TfrmBillGroup::ToggleItemState(TGridButton *GridButton)
 //---------------------------------------------------------------------------
 void TfrmBillGroup::SelectItem(TGridButton *GridButton)
 {
-    TSeniorCitizenDiscountChecker SCDChecker;
+    TSCDPWDChecker SCDChecker;
     Database::TDBTransaction DBTransaction(DBControl);
     DBTransaction.StartTransaction();
 
@@ -2486,7 +2498,8 @@ void TfrmBillGroup::SelectItem(TGridButton *GridButton)
         SelectedItemKeys.insert(itItem->first);
     }
 
-    bool canAddItem = SCDChecker.ItemSelectionCheck(DBTransaction, GridButton->Tag, SelectedItemKeys);
+    bool canAddItem = SCDChecker.ItemSelectionCheck(DBTransaction, GridButton->Tag, SelectedItemKeys) &&
+                      SCDChecker.ItemSelectionCheckPWD(DBTransaction, GridButton->Tag, SelectedItemKeys);
 
     if (canAddItem && AddToSelectedTabs(DBTransaction, VisibleItems[GridButton->Tag].TabKey))
     {
@@ -2610,12 +2623,12 @@ void TfrmBillGroup::SplitItemOnClick(int itemSelected)
     frmTouchNumpad->btnSurcharge->Visible = true;
     frmTouchNumpad->View = viewQuantity;
     if (frmTouchNumpad->ShowModal() == mrOk && frmTouchNumpad->splitValue > 0 &&
-        SelectedItems[itemSelected].Qty >= frmTouchNumpad->splitValue)
+        SelectedItems[itemSelected].Qty > frmTouchNumpad->splitValue)
     {
         Database::TDBTransaction DBTransaction(DBControl);
         DBTransaction.StartTransaction();
-        SplitItem(DBTransaction,itemSelected,frmTouchNumpad->splitValue);
-//        UpdateItemListDisplay(DBTransaction);
+        double qtyLeft = SelectedItems[itemSelected].Qty - frmTouchNumpad->splitValue;
+        SplitItem(DBTransaction,itemSelected,qtyLeft);
         if(frmTouchNumpad->splitValue < SelectedItems[itemSelected].Qty)
            RefreshItemStatus(frmTouchNumpad->CURResult,itemSelected,DBTransaction);
         DBTransaction.Commit();
@@ -2654,14 +2667,14 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
                 tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Caption = qtyStr + ptrItem1->Name;
             else
                 tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Caption = ptrItem1->Name;
-            tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Color = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
-            tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
-            tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
-            tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedFontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
+            tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
+            tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
+            tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
+            tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedFontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
             tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Latched =
                                                          (ptrItem1->Qty  - (int)ptrItem1->Qty) > 0;
-            tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_UNSELECTED][ATTRIB_BUTTONCOLOR];
-            SelectedItems.erase(itemSelected);
+            tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_SELECTED][ATTRIB_BUTTONCOLOR];
+           SelectedItems[ptrItem1->Key] = VisibleItems[ptrItem1->Key];
             if(ptrItem1->IsParent)
             {
                 TItemComplete* Order = new TItemComplete();
@@ -2670,19 +2683,20 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
                 for (int j = 1; j <= Order->SubOrders->Count ; j++)
                 {
                     TItemCompleteSub *SubOrder = (TItemCompleteSub *)Order->SubOrders->Items[j-1];
+                    SubOrder->SetQty(splitValue);
                     qtyStr = FormatFloat("0.00", SubOrder->GetQty()) + " ";
                     if(ptrItem1->Qty != 1)
                         tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->Caption = qtyStr + SubOrder->Item;
                     else
                         tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->Caption = SubOrder->Item;
-                    tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->Color = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
-                    tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
-                    tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->LatchedColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
-                    tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->LatchedFontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
+                    tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
+                    tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
+                    tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
+                    tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->LatchedFontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
                     tgridItemList->Buttons[i+j][ITEM_LIST_COLUMN]->Latched =
                                                                  (SubOrder->GetQty()  - (int)ptrItem1->Qty) > 0;
-                    tgridItemList->Buttons[i+j][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_UNSELECTED][ATTRIB_BUTTONCOLOR];
-                    SelectedItems.erase(SubOrder->OrderKey);
+                    tgridItemList->Buttons[i+j][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_SELECTED][ATTRIB_BUTTONCOLOR];
+                    SelectedItems[SubOrder->OrderKey] = VisibleItems[SubOrder->OrderKey];
                 }
             }
             break;
@@ -2703,15 +2717,15 @@ void TfrmBillGroup::RefreshItemStatus(Currency splitValue,int itemSelected,Datab
         }
         tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Caption = QtyStr + ptrItem->Name;
         tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Tag = ptrItem->Key;
-        tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Color = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
-        tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
-        tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_BUTTONCOLOR];
-        tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedFontColor = ButtonColors[BUTTONTYPE_SELECTED][ATTRIB_FONTCOLOR];
-        tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_SELECTED][ATTRIB_BUTTONCOLOR];
-        tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_SEC_SELECTED][ATTRIB_FONTCOLOR];
+        tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Color = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
+        tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
+        tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_BUTTONCOLOR];
+        tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->LatchedFontColor = ButtonColors[BUTTONTYPE_EMPTY][ATTRIB_FONTCOLOR];
+        tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Color = ButtonColors[BUTTONTYPE_SEC_UNSELECTED][ATTRIB_BUTTONCOLOR];
+        tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->FontColor = ButtonColors[BUTTONTYPE_SEC_UNSELECTED][ATTRIB_FONTCOLOR];
         tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Tag = ptrItem->Key;
         tgridItemList->Buttons[i][ITEM_LIST_ENABLE_COLUMN]->Caption = "Select";
-        SelectedItems[ptrItem->Key] = VisibleItems[ptrItem->Key];
+        SelectedItems.erase(ptrItem->Key);
     }
 }
 // ---------------------------------------------------------------------------
@@ -4565,6 +4579,11 @@ void TfrmBillGroup::ApplyMembership(Database::TDBTransaction &DBTransaction, TMM
             btnApplyMembership->ButtonColor = clPurple;
 			RemoveMembershipDiscounts(DBTransaction);
 			MembershipConfirmed = true;
+            if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+            {
+               TManagerDiscount managerDiscount;
+               managerDiscount.GetMembershipDiscounts(DBTransaction,MembershipInfo.AutoAppliedDiscounts);
+            }
 			Membership.Assign(MembershipInfo, MemberSource);
 			lbeMembership->Visible = true;
             if(TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected)

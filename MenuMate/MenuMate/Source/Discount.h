@@ -78,7 +78,7 @@ public:
 	Currency MaximumValue;
     int DailyUsageAllowedPerMember;
     TProductPriority ProductPriority;
-
+    bool IsMembershipDiscount;
 
     std::set<int> CategoryFilterKeys;
     std::vector<TDiscountGroup> DiscountGroupList;

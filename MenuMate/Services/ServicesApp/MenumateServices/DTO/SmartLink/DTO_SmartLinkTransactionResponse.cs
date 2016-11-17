@@ -17,5 +17,7 @@ namespace MenumateServices.DTO.SmartLink
         public string Result { get; set; }
         [DataMember]
         public string AcquirerRef { get; set; }
+        [DataMember]
+        public bool TimeOut { get; set; }
     }
 }

@@ -71,6 +71,7 @@ TMMContactInfo::TMMContactInfo()
     PointRule = 0;
     IsFirstVisitRewarded = false;
     MemberVouchers.clear();
+    HasTransactions = false;
 }
 
 TMMContactInfo::TMMContactInfo( UnicodeString inName)
@@ -357,88 +358,71 @@ bool TMMContactInfo::ValidateMandatoryField(AnsiString& message)
 
 bool TMMContactInfo::ValidateFirstName(AnsiString& message)
 {
-    bool isvalid = false;
-    int nameCounter = 0;
-    int fCount = 0;
-    UnicodeString name = Name;
-    AnsiString strName = name;
-	int name_len = name.Length();
-
-    char* temp_char = new char[strName.Length()+1];
-   	strcpy(temp_char, strName.c_str());
-
-    for(int i = 0; i < name_len; i++)
-    {
-       if(!isalpha(temp_char[i]))
-       {
-         nameCounter++;
-         break;
-       }
-    }
-    if(nameCounter > 0)
-    {
-        message = message + "consisting of Alphabet characters";
-        fCount++;
-    }
-    if(name_len > 20)
-    {
-       if(nameCounter == 0)
-       {
-       message = message + "less than 21 characters";
-       }
-       else
-       {
-         message = message + " and less than 21 characters";
-       }
-       fCount++;
-    }
-    if(fCount == 0)
-    {
-         isvalid = true;
-    }
-    return isvalid;
+    bool isValid = false;
+    AnsiString firstName = Name.Trim();
+    isValid = ValidateName(firstName,message);
+    return isValid;
 }
 
 bool TMMContactInfo::ValidateLastName(AnsiString& message)
 {
-    bool isvalid = false;
-    int lastNameCounter = 0;
-    int lCount = 0;
-    UnicodeString surname = Surname;
-    AnsiString strLastName = surname;
-	int last_name_len = surname.Length();
+    bool isValid = false;
+    AnsiString surname = Surname.Trim();
+    isValid = ValidateName(surname,message);
+    return isValid;
+}
 
-    char* temp_lname_char = new char[strLastName.Length()+1];
-   	strcpy(temp_lname_char, strLastName.c_str());
-
-    for(int i = 0; i < last_name_len; i++)
+bool TMMContactInfo::ValidateName(AnsiString& name,AnsiString& message)
+{
+    bool isValid = false;
+    if(name.Length() < 2)
     {
-       if(!isalpha(temp_lname_char[i]))
-       {
-         lastNameCounter++;
-         break;
-       }
+             message = message + "must be at least two characters long";
+             return isValid;
     }
-    if(lastNameCounter > 0)
+    int nameCounter = 0;
+    int specialCharacterCounter = 0;
+    int lCount = 0;
+    int asciiValues[] = { 33,34,35,36,37,40,41,42,43,47,58,59,60,61,62,63,64,91,92,93,94,123,124,125,126 };
+    std::vector<int> AsciiValuesException(asciiValues, asciiValues+25);
+
+    const char* temp_name_char = name.c_str();
+    for(int char_index = 0; char_index < name.Length(); char_index++)
     {
-        message = message + "consisting of Alphabet characters";
+        int charAscii = temp_name_char[char_index];
+        if(find(AsciiValuesException.begin(),AsciiValuesException.end(),charAscii) != AsciiValuesException.end())        {
+                nameCounter++;
+                break;
+        }
+        if(charAscii == 32 && (char_index+1) < name.Length())
+        {
+             if(temp_name_char[char_index+1] == 32)
+             {
+                nameCounter++;
+                break;
+             }
+        }
+    }
+    if(nameCounter > 0)
+    {
+        message = message + "can contain [a-z], [0-9], [space], [-], [_], ['], [`], [,], [&] only";
         lCount++;
     }
-    if(last_name_len > 20)
+    if(name.Length() > 20)
     {
-       if(lastNameCounter == 0)
+       if(nameCounter == 0)
        {
-             message = message + "less than 21 characters";
+             message = message + "should be less than 21 characters";
        }
        else
        {
-             message = message + " and less than 21 characters";
+             message = message + " and should be less than 21 characters";
        }
      lCount++;
     }
     if(lCount == 0)
     {
-         isvalid = true;
+         isValid = true;
     }
-    return isvalid;
+    return isValid;
 }

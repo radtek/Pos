@@ -25,5 +25,6 @@ namespace Loyaltymate.Model
         public int? MaximumNumberOfItemsAllowed { get; set; }
         public int? DailyUsageAllowedPerMember { get; set; }
         public ProductPriority ProductPriority { get; set; }
+        public bool IsAutoMembersDiscount { get; set; }
     }
 }

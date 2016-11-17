@@ -1944,13 +1944,6 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 
 	Item1.CloseSelection = true;
 	SelectionForm->Items.push_back(Item1);
-    TVerticalSelection Item2;
-    Item2.Title = "Upgrade Local Members";
-    Item2.Properties["Action"] = IntToStr(2);
-    Item2.Properties["Color"] = IntToStr(clNavy);
-    Item2.CloseSelection = true;
-    Item2.IsDisabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
-    SelectionForm->Items.push_back(Item2);
 	SelectionForm->ShowModal();
 	TVerticalSelection SelectedItem;
 	if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -2006,24 +1999,6 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 					RefreshLoyaltyMateBtnColor();
 				}
 			}  break;
-		case 2 :
-			{
-
-                if (MessageBox("This will setup all local members for Loyaltymate and this action is irrevocable. Please confirm that you wish to proceed?",
-									"Upgrade Local Members", MB_YESNO + MB_ICONQUESTION) == IDYES)
-                {
-                    std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-                    frmProcessing->CanCancel = false;
-                    frmProcessing->Message = "Upgrading Members...";
-                    frmProcessing->ShowProgress = false;
-                    frmProcessing->Show();
-                    DBTransaction.StartTransaction();
-                    UpgradeLocalMembersCode(DBTransaction);
-                    DBTransaction.Commit();
-                    frmProcessing->Close();
-                }
-
-			}  break;
 		}
 	}
 	else
@@ -2032,49 +2007,6 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 	return keepFormAlive;
 }
 
-void TfrmMaintain::UpgradeLocalMembersCode(Database::TDBTransaction &DBTransaction)
-{
-    TIBSQL *getQuery = DBTransaction.Query(DBTransaction.AddQuery());
- getQuery->Close();
- getQuery->SQL->Text = "SELECT b.CONTACTS_KEY, b.PROX_CARD,b.CONTACT_Type, a.CONTACTCARDS_KEY,a.SWIPE_CARD  "
-                          "FROM CONTACTS b  left join CONTACTCARDS a on a.CONTACTS_KEY = b.CONTACTS_KEY "
-                          "WHERE B.CONTACT_TYPE = 2 and (b.MEMBER_CARD_CODE = '' or b.MEMBER_CARD_CODE is null) "
-                           "and (b.PROX_CARD <> '' or a.SWIPE_CARD <> '') " ;
- getQuery->ExecQuery();
-    if(!getQuery->Eof)
-    {
-       TIBSQL *updateSwipeCardQuery = DBTransaction.Query(DBTransaction.AddQuery());
-       TIBSQL *updateCardCodeQuery = DBTransaction.Query(DBTransaction.AddQuery());
-       updateSwipeCardQuery->SQL->Text =" UPDATE CONTACTCARDS SET IS_ACTIVE = 'F' WHERE CONTACTS_KEY=:CONTACTS_KEY ";
-       updateCardCodeQuery->SQL->Text = " UPDATE CONTACTS SET MEMBER_CARD_CODE = :MEMBER_CARD_CODE,PROX_CARD ='' "
-                                        " WHERE CONTACTS_KEY=:CONTACTS_KEY";
-       for(; !getQuery->Eof; getQuery->Next())
-        {
-
-            bool updateSwipe = false;
-            AnsiString cardCode = getQuery->FieldByName("SWIPE_CARD")->AsString;
-            if(cardCode == NULL || cardCode == "")
-            {
-                cardCode = getQuery->FieldByName("PROX_CARD")->AsString;
-            }
-            else
-            {
-                updateSwipe = true;
-            }
-            updateSwipeCardQuery->Close();
-            updateCardCodeQuery->Close();
-            updateCardCodeQuery->ParamByName("MEMBER_CARD_CODE")->AsString = cardCode;
-            updateCardCodeQuery->ParamByName("CONTACTS_KEY")->AsInteger = getQuery->FieldByName("CONTACTS_KEY")->AsInteger;
-            updateSwipeCardQuery->ParamByName("CONTACTS_KEY")->AsInteger = getQuery->FieldByName("CONTACTS_KEY")->AsInteger;
-            updateCardCodeQuery->ExecQuery();
-            if(updateSwipe)
-                updateSwipeCardQuery->ExecQuery();
-        }
-    }
-
-
-
-}
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshLoyaltyMateBtnColor()
 {

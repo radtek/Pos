@@ -79,7 +79,7 @@ void TDeviceRealTerminal::LoadPrinterGraphic()
    }
 }
 
-void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TStrings *inFooter, TStrings *inVoidFooter)
+void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TStrings *inFooter, TStrings *inVoidFooter,TStrings *inSubHeader)
 {
    bool Registered = false;
    UnicodeString pRegisteredName = "";
@@ -101,7 +101,7 @@ void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TS
 			ShowMessage = true;
 		 }
 
-		 Receipt->SetHeaderFooter(inHeader, inPHeader, inFooter, inVoidFooter);
+		 Receipt->SetHeaderFooter(inHeader, inPHeader, inFooter, inVoidFooter,inSubHeader);
 		 if (ShowMessage)
 		 {
 			UnicodeString Message = "You must include your registered company name " + pRegisteredName +
@@ -115,16 +115,19 @@ void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TS
    TGlobalSettings::Instance().PHeader->Clear();
    TGlobalSettings::Instance().Footer->Clear();
    TGlobalSettings::Instance().VoidFooter->Clear();
+   TGlobalSettings::Instance().SubHeader->Clear();
 
    TGlobalSettings::Instance().Header->AddStrings(inHeader);
    TGlobalSettings::Instance().PHeader->AddStrings(inPHeader);
    TGlobalSettings::Instance().Footer->AddStrings(inFooter);
    TGlobalSettings::Instance().VoidFooter->AddStrings(inVoidFooter);
+   TGlobalSettings::Instance().SubHeader->AddStrings(inSubHeader);
 
    TGlobalSettings::Instance().Header->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_HEADER);
    TGlobalSettings::Instance().PHeader->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_PRELIM_HEADER);
    TGlobalSettings::Instance().Footer->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_FOOTER);
    TGlobalSettings::Instance().VoidFooter->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_VOID_FOOTER);
+   TGlobalSettings::Instance().SubHeader->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_SUBHEADER);
 }
 
 void TDeviceRealTerminal::SaveZedHeader(TStrings *inZedHeader)

@@ -11,7 +11,7 @@
 using Database::TDBTransaction;
 
 TGlobalSettings::TGlobalSettings()
-	: Header(new TStringList),PHeader(new TStringList),Footer(new TStringList),ZedHeader(new TStringList), VoidFooter(new TStringList)
+	: Header(new TStringList),PHeader(new TStringList),Footer(new TStringList),ZedHeader(new TStringList), VoidFooter(new TStringList),SubHeader(new TStringList)
 {
     InfoSync = 1;
     KitchenOrderNumber = 0;
@@ -159,6 +159,7 @@ TGlobalSettings::TGlobalSettings()
     EnableActivationTokenPrint = false;
     ActivationTokenGreeting = "";
     ReceiptNumberLabel="";
+    RefundReferenceLabel = "";
     ReprintReceiptLabel="";
     //Making the first setting for initialize tax setting
     ItemPriceIncludeTax = true;
@@ -371,6 +372,7 @@ TGlobalSettings::TGlobalSettings()
     ExportReprintReceipt = false;
     CaptureRefundRefNo = false;
     SetVoidFooter = false;
+    SetSubHeader = false;
     ReceiptDigits = "";
     ShowVoidOrRefund = false;
     ShowVoidNumber = false;

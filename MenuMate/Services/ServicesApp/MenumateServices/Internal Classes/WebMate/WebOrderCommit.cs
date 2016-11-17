@@ -36,8 +36,16 @@ namespace MenumateServices.WebMate.InternalClasses
         /// </summary>
         public void Init()
         {
-            web_order_xml_manager = new WebOrderXMLManager();
-            web_order_xml_manager.Init();
+            try
+            {
+                web_order_xml_manager = new WebOrderXMLManager();
+                web_order_xml_manager.Init();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 120, short.MaxValue);
+            }
+
         }
 
         /// <summary>
@@ -47,7 +55,14 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <returns></returns>
         public void OpenOrder(string inHandle)
         {
-            web_order_xml_manager.OpenIncomplete(inHandle);
+            try
+            {
+                web_order_xml_manager.OpenIncomplete(inHandle);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 121, short.MaxValue);
+            }            
         }
 
         /// <summary>
@@ -57,7 +72,14 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <returns></returns>
         public void LoadOrder(string inOrderHandle, WebOrder outWebOrder)
         {
-            web_order_xml_manager.LoadIncomplete(inOrderHandle, outWebOrder);
+            try
+            {
+                web_order_xml_manager.LoadIncomplete(inOrderHandle, outWebOrder);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 122, short.MaxValue);
+            }            
         }
 
         /// <summary>
@@ -70,14 +92,13 @@ namespace MenumateServices.WebMate.InternalClasses
             try
             {
                 dbValidateWebOrder(inWebOrder);
-
                 web_order_xml_manager.SaveComplete(inWebOrder);
                 web_order_xml_manager.RemoveIncomplete(inWebOrder);
             }
-            catch(Exception)
+            catch(Exception e)
             {
                 web_order_xml_manager.RemoveIncomplete(inWebOrder);
-
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 123, short.MaxValue);
                 throw;
             }
 
@@ -89,8 +110,15 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="outWebOrder"></param>
         /// <returns></returns>
         public void RemoveOrder(WebOrder inWebOrder)
-        {
-            web_order_xml_manager.RemoveIncomplete(inWebOrder);
+        {            
+            try
+            {
+                web_order_xml_manager.RemoveIncomplete(inWebOrder);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 124, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -101,7 +129,14 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <returns></returns>
         public void SetHeaderSection(string inWebOrderHandle, DTO_WebOrderHeader inOrderHeader)
         {
-            web_order_xml_manager.SetIncompleteHeaderSection(inWebOrderHandle, inOrderHeader);
+            try
+            {
+                web_order_xml_manager.SetIncompleteHeaderSection(inWebOrderHandle, inOrderHeader);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 125, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -110,8 +145,15 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inWebOrderHandle"></param>
         /// <param name="outOrderHeader"></param>
         public void LoadHeaderSection(string inWebOrderHandle, DTO_WebOrderHeader outOrderHeader)
-        {
-            web_order_xml_manager.LoadIncompleteHeaderSection(inWebOrderHandle, outOrderHeader);
+        {            
+            try
+            {
+                web_order_xml_manager.LoadIncompleteHeaderSection(inWebOrderHandle, outOrderHeader);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 126, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -121,8 +163,15 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inOrderFrom"></param>
         /// <returns></returns>
         public void SetFromSection(string inWebOrderHandle, DTO_WebOrderFrom inOrderFrom)
-        {
-            web_order_xml_manager.SetIncompleteFromSection(inWebOrderHandle, inOrderFrom);
+        {            
+            try
+            {
+                web_order_xml_manager.SetIncompleteFromSection(inWebOrderHandle, inOrderFrom);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 127, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -132,7 +181,14 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="outOrderFrom"></param>
         public void LoadFromSection(string inWebOrderHandle, DTO_WebOrderFrom outOrderFrom)
         {
-            web_order_xml_manager.LoadIncompleteFromSection(inWebOrderHandle, outOrderFrom);
+            try
+            {
+                web_order_xml_manager.LoadIncompleteFromSection(inWebOrderHandle, outOrderFrom);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 128, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -142,8 +198,15 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="intOrderAccount"></param>
         /// <returns></returns>
         public void SetAccountSection(string inWebOrderHandle, DTO_WebOrderAccount intOrderAccount)
-        {
-            web_order_xml_manager.SetIncompleteAccountSection(inWebOrderHandle, intOrderAccount);
+        {            
+            try
+            {
+                web_order_xml_manager.SetIncompleteAccountSection(inWebOrderHandle, intOrderAccount);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 129, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -152,8 +215,15 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inWebOrderHandle"></param>
         /// <param name="outOrderAccount"></param>
         public void LoadAccountSection(string inWebOrderHandle, DTO_WebOrderAccount outOrderAccount)
-        {
-            web_order_xml_manager.LoadIncompleteAccountSection(inWebOrderHandle, outOrderAccount);
+        {            
+            try
+            {
+                web_order_xml_manager.LoadIncompleteAccountSection(inWebOrderHandle, outOrderAccount);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 130, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -208,17 +278,19 @@ namespace MenumateServices.WebMate.InternalClasses
         public bool dbWebOrderAccepted(string inOrderHandle)
         {
             bool result = false;
-
             //::::::::::::::::::::::::::::::::::::::::::::::
-
-            WebOrderDB webOrderDB = new WebOrderDB();
-
-            webOrderDB.BeginTransaction();
-            result = webOrderDB.WebOrderAccepted(inOrderHandle);
-            webOrderDB.EndTransaction();
-
+            try
+            {
+                WebOrderDB webOrderDB = new WebOrderDB();
+                webOrderDB.BeginTransaction();
+                result = webOrderDB.WebOrderAccepted(inOrderHandle);
+                webOrderDB.EndTransaction();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 131, short.MaxValue);
+            }
             //::::::::::::::::::::::::::::::::::::::::::::::
-
             return result;
         }
 
@@ -301,8 +373,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 132, short.MaxValue);
                 return false;
             }
         }
@@ -313,9 +386,16 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <param name="inOrder"></param>
         void dbValidateWebOrder(WebOrder inOrder)
         {
-            dbValidateWebOrderSiteID(  inOrder.FromSection.SiteID);
-            dbValidateWebOrderSiteName(inOrder.FromSection.SiteName);
-            dbValidateWebOrderItems(   inOrder.AccountSection.OrderItems);
+            try
+            {
+                dbValidateWebOrderSiteID(inOrder.FromSection.SiteID);
+                dbValidateWebOrderSiteName(inOrder.FromSection.SiteName);
+                dbValidateWebOrderItems(inOrder.AccountSection.OrderItems);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 300, short.MaxValue);
+            }
 
             //WebOrderDBValidate.Instance.ValidateOrder(inOrder);
         }

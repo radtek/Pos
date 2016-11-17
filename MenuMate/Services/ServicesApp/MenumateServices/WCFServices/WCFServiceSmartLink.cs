@@ -224,6 +224,7 @@ namespace MenumateServices.WCFServices
                         _response.Successful = false;
                         _response.ResultText = "Time-Out";
                         _response.ErrorText = "Time-Out";
+                        _response.TimeOut = true;
                     }
                 }
             }
@@ -254,8 +255,8 @@ namespace MenumateServices.WCFServices
         {
             try
             {
+                ParseResponse(e); 
                 _waitflag = false;
-                ParseResponse(e);
             }
             catch (Exception ex)
             {
@@ -271,7 +272,8 @@ namespace MenumateServices.WCFServices
         {
             try
             {
-                _response.TransactionResult = responseEventArgs.Response.Args["TransactionResult"];
+                if (responseEventArgs.Response.Args.ContainsKey("TransactionResult"))
+                    _response.TransactionResult = responseEventArgs.Response.Args["TransactionResult"];
                 if (responseEventArgs.Response.Args.ContainsKey("ResultText"))
                     _response.ResultText = responseEventArgs.Response.Args["ResultText"];
                 _response.ErrorText = _response.ResultText;
@@ -279,6 +281,10 @@ namespace MenumateServices.WCFServices
                 _response.AcquirerRef = responseEventArgs.Response.Args["AcquirerRef"];
                 if (_response.TransactionResult == "OK-ACCEPTED")
                     _response.Successful = true;
+                if ((_response.TransactionResult != null) && (_response.ResultText == null) && (_response.AcquirerRef == null)
+                    && (_response.Successful == false))
+                    _response.TimeOut = true;
+
             }
             catch (Exception ex)
             {

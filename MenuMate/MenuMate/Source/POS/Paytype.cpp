@@ -36,7 +36,7 @@
 #include "DBContacts.h"
 #include "GroupGUI.h"
 #include "SelectRMSRoom.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 #include "TaxRemoval.h"
 #include "DBTables.h"
 #include "VerticalSelect.h"
@@ -3151,27 +3151,6 @@ Currency  CurrencyMatrix::operator() (unsigned Row, unsigned Col) const		//Throw
 Currency TfrmPaymentType::GetAvailableRedeemPoints(TPaymentTransaction PointsTransaction)
 {
 
-    if(PointsTransaction.Membership.Member.MemberCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled &&
-    !TGlobalSettings::Instance().IsPOSOffline)
-    {
-        /*PointsTransaction.Membership.Member.Points.ClearBySource(pasDatabase) ;
-          // Putting in the Points Earned.
-        TPointsTypePair typepair1( pttEarned,ptstLoyalty );
-	    TPointsType type1( pasDatabase, typepair1, pesExported);
-        double pointsEarned = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableEarnedPoint -
-        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableBDPoint -
-        TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableFVPoint;
-
-
-        PointsTransaction.Membership.Member.Points.Load( type1,pointsEarned  );
-
-        // Putting in the Points Loaded ( Purchased ).
-        TPointsTypePair typepair2( pttPurchased,ptstAccount );
-	    TPointsType type2( pasDatabase, typepair2, pesExported );
-        PointsTransaction.Membership.Member.Points.Load( type2, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->AvailableLoadedPoint );
-      */
-    }
-
   Currency points = 0;
   bool isAllowEarntRedemption = CurrentTransaction.Membership.Member.MemberType == 1 ?
                                TDBTierLevel::IsAllowEarnedRedemption(CurrentTransaction.DBTransaction,
@@ -3697,9 +3676,7 @@ void TfrmPaymentType::GetMemberByBarcode(Database::TDBTransaction &DBTransaction
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
-    info.MemberCode = Barcode;
-    info.CardStr = Barcode;
-    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info);
+    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info,Barcode);
 
 	if (info.Valid())
      {
@@ -3917,6 +3894,11 @@ void TfrmPaymentType::ApplyMembership(TMMContactInfo &Member)
 		// Remove the old Member if any.
         //RemoveMembership();
         CurrentTransaction.RemoveMembership();
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+           TManagerDiscount managerDiscount;
+           managerDiscount.GetMembershipDiscounts(CurrentTransaction.DBTransaction,Member.AutoAppliedDiscounts);
+        }
 		CurrentTransaction.ApplyMembership(Member, MemberSource);
 		if (CurrentTransaction.Orders != NULL)
 		{
@@ -3934,12 +3916,13 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 {
 	bool ProcessDiscount = true;
 	TDiscount CurrentDiscount;
-	TSeniorCitizenDiscountChecker SCDChecker;
+	TSCDPWDChecker SCDChecker;
 
 	bool bailout = false;
 	CurrentDiscount.DiscountKey = DiscountKey;
 	ManagerDiscount->GetDiscount(CurrentTransaction.DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-    ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, CurrentTransaction.Orders);
+    ProcessDiscount = SCDChecker.SeniorCitizensCheck(CurrentDiscount, CurrentTransaction.Orders) &&
+                      SCDChecker.PWDCheck(CurrentDiscount, CurrentTransaction.Orders);
     if(DiscountSource == dsMMMembership)
     {
        CurrentDiscount.IsThorBill = TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected;

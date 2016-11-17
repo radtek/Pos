@@ -2860,12 +2860,12 @@ void __fastcall TfrmAnalysis::btnReportsClick(void)
 	if (AuthenticateReportsAccess(TReportSource::CashDrawer) == lsAccepted)
     {
 		std::auto_ptr <TfrmDropDownFunc> frmDropDown(
-		TfrmDropDownFunc::Create <TfrmDropDownFunc>(this));
-
-		if(!TGlobalSettings::Instance().EnableBlindBalances)
-        {
-			frmDropDown->AddButton("X Report", &ReportXReport);
-		}
+		TfrmDropDownFunc::Create <TfrmDropDownFunc>(this));	
+//		if(!TGlobalSettings::Instance().EnableBlindBalances)
+//        {
+//			frmDropDown->AddButton("X Report", &ReportXReport);
+//		}
+        frmDropDown->AddButton("X Report", &ReportXReport);
 		frmDropDown->AddButton("Float Adjustments", &ReportFloatAdjustments);
 		frmDropDown->AddButton("Write Off Audit", &ReportWriteOff);
 		frmDropDown->AddButton("Consumption", &ReportConsumption);
@@ -3328,8 +3328,10 @@ Zed:
                 UpdateTerminalAccumulatedZed(DBTransaction, AccumulatedZedTotal);
             }
 			if (CompleteZed)
+            {
 			   DefaultItemQuantities(DBTransaction);
-
+               UpdateContactTimeZedStatus(DBTransaction);
+            }
             //create CSV
             if(TGlobalSettings::Instance().IsEnabledPeachTree && CompleteZed)
             {
@@ -3408,6 +3410,7 @@ Zed:
             SyncCompanyDetails();
             // For Mall Export
             UpdateDLFMall();
+
         }
         frmSecurity->LogOut();
         Processing->Close();
@@ -9429,4 +9432,19 @@ void TfrmAnalysis::UpdateDLFMall()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
+}
+
+void TfrmAnalysis::UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransaction)
+{
+   try
+	{
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text ="UPDATE CONTACTTIME SET ZED_STATUS = 1 WHERE CONTACTTIME.LOGOUT_DATETIME is not null ";
+        IBInternalQuery->ExecQuery();
+    }
+	catch(Exception &E)
+	{
+		throw;
+	}
 }

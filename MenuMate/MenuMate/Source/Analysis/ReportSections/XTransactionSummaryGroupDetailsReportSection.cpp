@@ -149,7 +149,7 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
                 if (itCurrentPayment->second.TipAmount != 0)
                 {
                     printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name + " Tips" +
-                                    " (" + IntToStr(ThisTransaction.Count) + ")";
+                                    " (" + IntToStr(itCurrentPayment->second.TipQty) + ")";
                     printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.TipAmount );
                     printOut->PrintFormat->AddLine();
                 }

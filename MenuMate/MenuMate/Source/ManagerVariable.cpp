@@ -3110,6 +3110,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Set For Void Footer"
 		"Default is false",
 		vmgPrinting, false);
+		SetVarBool(DBTransaction,vmSetSubHeader, "Set For Sub Header",
+		"Set For Sub Header"
+		"Default is false",
+		vmgPrinting, false);
 		SetVarBool(DBTransaction,vmShowVoidOrRefund, "Show Void or Refund ",
 		"Show Void or Refund"
 		"Default is false",
@@ -3122,6 +3126,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
             "EftPos Tip GLCode."
             "Default is 860",
             vmg3rdPartyInterface, "860" );
+		SetVarStr(DBTransaction,vmRefundReferenceLabel,"Refund Reference Label",
+		"Label for Refund reference in receipt print.",
+		vmgPrinting, "OR No.");
 
         SetVarBool(DBTransaction, vmIsEnabledPeachTree, "Enable CSV Export",
                  "Enable/Disable CSV Export"

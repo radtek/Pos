@@ -6,6 +6,7 @@ using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 
 using MenumateServices.WebMate.DTO;
+using System.Diagnostics;
 
 namespace MenumateServices.WebMate.InternalClasses
 {
@@ -193,10 +194,11 @@ namespace MenumateServices.WebMate.InternalClasses
 
                 webOrderDB.EndTransaction();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 webOrderDB.RollbackTransaction();
                 ServiceLogger.Log(@"WebOrderDBAccessProcess.dbSaveOrder(WebOrder inOrder) ROLLBACK");
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 120, short.MaxValue);
                 throw;
             }
        }
@@ -232,31 +234,38 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //....................................................
 
-            DTO_WebOrderHeader headerSection = inOrder.GetCompleteHeaderSection();
-            DTO_WebOrderAccount accountSection = inOrder.GetCompleteAccountSection();
+            try
+            {
+                DTO_WebOrderHeader headerSection = inOrder.GetCompleteHeaderSection();
+                DTO_WebOrderAccount accountSection = inOrder.GetCompleteAccountSection();
 
-            result.GUID = inOrder.Handle;
-            result.Name = accountSection.Name;
-            result.StoreName = headerSection.StoreName;
-            result.OrderDate = headerSection.OrderDate;
-            result.ExpectedDate = headerSection.ExpectedDate;
-            result.Status = WebOrderDB.WebOrderStatus.ewosReceived;
+                result.GUID = inOrder.Handle;
+                result.Name = accountSection.Name;
+                result.StoreName = headerSection.StoreName;
+                result.OrderDate = headerSection.OrderDate;
+                result.ExpectedDate = headerSection.ExpectedDate;
+                result.Status = WebOrderDB.WebOrderStatus.ewosReceived;
 
-            result.Recipient = accountSection.Delivery.Recipient;
-            result.StreetNo = accountSection.Delivery.StreetNo;
-            result.StreetName = accountSection.Delivery.StreetName;
-            result.Suburb = accountSection.Delivery.Suburb;
-            result.City = accountSection.Delivery.City;
-            result.Country = accountSection.Delivery.Country;
-            result.Note = accountSection.Delivery.Note;
-            result.Phone = accountSection.Delivery.Phone;
+                result.Recipient = accountSection.Delivery.Recipient;
+                result.StreetNo = accountSection.Delivery.StreetNo;
+                result.StreetName = accountSection.Delivery.StreetName;
+                result.Suburb = accountSection.Delivery.Suburb;
+                result.City = accountSection.Delivery.City;
+                result.Country = accountSection.Delivery.Country;
+                result.Note = accountSection.Delivery.Note;
+                result.Phone = accountSection.Delivery.Phone;
 
-            result.Comments = accountSection.Comments;
-            result.PaymentRequired = accountSection.Payments.PaymentRequired;
+                result.Comments = accountSection.Comments;
+                result.PaymentRequired = accountSection.Payments.PaymentRequired;
 
-            result.OrderTotal = headerSection.OrderTotal;
-            result.Email = accountSection.Email;
-            result.OrderType = accountSection.OrderType;
+                result.OrderTotal = headerSection.OrderTotal;
+                result.Email = accountSection.Email;
+                result.OrderType = accountSection.OrderType;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 301, short.MaxValue);
+            }
             //....................................................
 
             return result;
@@ -273,48 +282,55 @@ namespace MenumateServices.WebMate.InternalClasses
 
             //....................................................
 
-            DTO_WebOrderAccount accountSection = inOrder.GetCompleteAccountSection();
-            DTO_WebOrderHeader headerSection = inOrder.GetCompleteHeaderSection();
-            foreach (DTO_WebOrderItem orderItem in accountSection.OrderItems)
+            try
             {
-                WebOrderDBItem item = new WebOrderDBItem();
-                item.ThirdPartyCodeKey = dbGetThirdPartyCodeKey(orderItem.UID, inWebOrderDB, inMenuKey); //changes for menu_key
-                item.Qty = orderItem.Qty;
-                item.Price = orderItem.BasePrice;
-                item.PriceLevel0 = orderItem.BasePrice;
-                item.PriceLevel1 = orderItem.BasePrice;
-                item.TabName = accountSection.Name;
-                item.TimeStamp = headerSection.OrderDate;
-                item.Note = orderItem.Note;
-                
-                //--------------------------------------------------------
-                // Options are ignored in this version of Webmate
-                //--------------------------------------------------------
-                /*
-                foreach (DTO_WebOrderItemOption orderItemOption in orderItem.ItemOptions)
+                DTO_WebOrderAccount accountSection = inOrder.GetCompleteAccountSection();
+                DTO_WebOrderHeader headerSection = inOrder.GetCompleteHeaderSection();
+                foreach (DTO_WebOrderItem orderItem in accountSection.OrderItems)
                 {
-                    WebOrderDBItemOption option = new WebOrderDBItemOption();
-                    option.OptionKey = Convert.ToInt32(orderItemOption.UID);
-                    item.ItemOptions.Add(option);                   
-                }
-                */
+                    WebOrderDBItem item = new WebOrderDBItem();
+                    item.ThirdPartyCodeKey = dbGetThirdPartyCodeKey(orderItem.UID, inWebOrderDB, inMenuKey); //changes for menu_key
+                    item.Qty = orderItem.Qty;
+                    item.Price = orderItem.BasePrice;
+                    item.PriceLevel0 = orderItem.BasePrice;
+                    item.PriceLevel1 = orderItem.BasePrice;
+                    item.TabName = accountSection.Name;
+                    item.TimeStamp = headerSection.OrderDate;
+                    item.Note = orderItem.Note;
 
-                foreach (DTO_WebOrderItemSide orderItemSide in orderItem.ItemSides) 
-                {
-                    WebOrderDBItemSide side = new WebOrderDBItemSide();
-                    side.ThirdPartyCodeKey = dbGetThirdPartyCodeKey(orderItemSide.UID, inWebOrderDB, inMenuKey); //changes for menu_key
-                    side.Qty = orderItemSide.Qty;
-                    side.Price = orderItemSide.BasePrice;
-                    side.PriceLevel0 = orderItemSide.BasePrice;
-                    side.PriceLevel1 = orderItemSide.BasePrice;
-                    side.TimeStamp = headerSection.OrderDate;
-                    side.TransactionNumber = orderItemSide.UID;
-                    side.TabName = accountSection.Name;
-                    side.Note = orderItem.Note;
-                    item.ItemSides.Add(side);
-                }
+                    //--------------------------------------------------------
+                    // Options are ignored in this version of Webmate
+                    //--------------------------------------------------------
+                    /*
+                    foreach (DTO_WebOrderItemOption orderItemOption in orderItem.ItemOptions)
+                    {
+                        WebOrderDBItemOption option = new WebOrderDBItemOption();
+                        option.OptionKey = Convert.ToInt32(orderItemOption.UID);
+                        item.ItemOptions.Add(option);                   
+                    }
+                    */
 
-                result.Add(item);
+                    foreach (DTO_WebOrderItemSide orderItemSide in orderItem.ItemSides)
+                    {
+                        WebOrderDBItemSide side = new WebOrderDBItemSide();
+                        side.ThirdPartyCodeKey = dbGetThirdPartyCodeKey(orderItemSide.UID, inWebOrderDB, inMenuKey); //changes for menu_key
+                        side.Qty = orderItemSide.Qty;
+                        side.Price = orderItemSide.BasePrice;
+                        side.PriceLevel0 = orderItemSide.BasePrice;
+                        side.PriceLevel1 = orderItemSide.BasePrice;
+                        side.TimeStamp = headerSection.OrderDate;
+                        side.TransactionNumber = orderItemSide.UID;
+                        side.TabName = accountSection.Name;
+                        side.Note = orderItem.Note;
+                        item.ItemSides.Add(side);
+                    }
+
+                    result.Add(item);
+                }
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 302, short.MaxValue);
             }
 
             //....................................................
@@ -342,11 +358,18 @@ namespace MenumateServices.WebMate.InternalClasses
         public int getMenuKeyFormChit(WebOrderDB webOrderDB)
         {
             int menu_key = 0;
-            DTO_WebOrderAccount accountSection = WebOrder.GetCompleteAccountSection();
-            string inorderType = accountSection.OrderType;
-            if (inorderType != "" || inorderType != null)
+            try
             {
-                menu_key = webOrderDB.GetPOSChitDetails(inorderType);
+                DTO_WebOrderAccount accountSection = WebOrder.GetCompleteAccountSection();
+                string inorderType = accountSection.OrderType;
+                if (inorderType != "" || inorderType != null)
+                {
+                    menu_key = webOrderDB.GetPOSChitDetails(inorderType);
+                }
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 303, short.MaxValue);
             }
             return menu_key;  
         }
@@ -359,7 +382,14 @@ namespace MenumateServices.WebMate.InternalClasses
         }
         public void SetWebmateForMessage(WebOrderDB webOrderDB)
         {
-             webOrderDB.SetForWemateInterfaceMessage();            
+            try
+            {
+                webOrderDB.SetForWemateInterfaceMessage();
+            }
+            catch (Exception e)
+            {
+              EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 304, short.MaxValue);
+            }          
         }
 
         #endregion

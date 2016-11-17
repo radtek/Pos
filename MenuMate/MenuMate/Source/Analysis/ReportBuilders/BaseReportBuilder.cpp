@@ -38,16 +38,42 @@ Database::TDBTransaction* BaseReportBuilder::GetDatabaseTransaction()
 int BaseReportBuilder::AddReportSectionToReport(IReport* report, ReportSectionType reportSectionType, bool isEnabled)
 {
     //Use the Factory to get the actual report section..
-    IReportSection* section = _reportSectionFactory->CreateReportSection(reportSectionType);
-
-    if (section)
+    if(ValidateReportSection(reportSectionType))
     {
-        section->SetIsEnabled(isEnabled);
-        int currentPosition = report->AddSection(section);
-        return currentPosition;
-    }
+       IReportSection* section = _reportSectionFactory->CreateReportSection(reportSectionType);
 
+        if (section)
+        {
+            section->SetIsEnabled(isEnabled);
+            int currentPosition = report->AddSection(section);
+            return currentPosition;
+        }
+    }
     return -1;
+}
+bool BaseReportBuilder::ValidateReportSection(ReportSectionType reportSectionType)
+{
+    bool retValue = true;
+    if(_reportType == mmXReport)
+    {
+        switch(reportSectionType)
+        {
+           case mmBlindBalancesDetailsSection:
+              retValue = false;
+              break;
+           case mmMasterBlindBalancesDetailsSection:
+              retValue = false;
+              break;
+           case mmTransactionSummaryGroupDetailsSection:
+              if(TGlobalSettings::Instance().EnableBlindBalances)
+                retValue = false;
+              break;
+           default:
+              retValue = true;
+              break;
+        }
+    }
+    return retValue;
 }
 
 

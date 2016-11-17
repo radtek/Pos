@@ -26,6 +26,8 @@ class TStringTools
 
         AnsiString StripSpecialChars_ANSI( AnsiString inStr );
 
+        AnsiString UpperCaseWithNoSpace(AnsiString string);
+
    private:
 		//Singleton Object Instance
 		static TStringTools* _stringTools;

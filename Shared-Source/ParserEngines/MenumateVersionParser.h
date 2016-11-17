@@ -76,6 +76,8 @@ namespace MenumateVersionParser
             pv6_29,
             pv6_30,
             pv6_31,
+            pv6_32,
+            pv6_33,
     };
 
     class TApplyParser
@@ -152,6 +154,8 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_29( TDBControl* const inDBControl );
         PARSER_ERROR apply6_30( TDBControl* const inDBControl );
         PARSER_ERROR apply6_31( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_32( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_33( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -751,7 +755,6 @@ namespace MenumateVersionParser
         void update6_26Tables();
 		void UpdateDiscountsTable6_26(TDBControl* const inDBControl);
         void UpdateLoyaltyTransactionTable6_26(TDBControl* const inDBControl);
-        void CreateDiscountUsageTable6_26(TDBControl* const inDBControl);
         void UpdateArcCateoriesTable6_26(TDBControl* const inDBControl);
 
         //6.27
@@ -789,6 +792,19 @@ namespace MenumateVersionParser
         void update6_31Tables();
         void UpdatePaymentTables6_31(TDBControl* const inDBControl);
         void UpdateContactTable6_31(TDBControl* const inDBControl);
+        //6.32
+		void upgrade6_32Tables();
+        void update6_32Tables();
+		void UpdateDiscountsTable6_32(TDBControl* const inDBControl);
+        //
+
+        void upgrade6_33Tables();
+        void update6_33Tables();
+		void AlterRoundTimeProcedure6_33( TDBControl* const inDBControl );
+        void PopulateZED_StatusForContactTime6_33(TDBControl* const inDBControl);
+        void ModifyCloseZedColumns6_33( TDBControl* const inDBControl );
+        void ReCreateRoundedContactTimeView6_33( TDBControl* const inDBControl );
+
     }; // class
 } // namespace
 

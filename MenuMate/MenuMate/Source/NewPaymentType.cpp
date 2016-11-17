@@ -18,8 +18,10 @@
 #include "MMLogging.h"
 #include "DBTab.h"
 #include "FolderManager.h"
- #include "Membership.h"
+#include "Membership.h"
 #include "VerticalSelect.h"
+#include "StringTools.h"
+#include "PaymentMaintenance.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "CGRID"
@@ -554,28 +556,44 @@ void __fastcall TfrmNewPaymentType::FormResize(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::btnNameClick(TObject *Sender)
 {
-   std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-   frmTouchKeyboard->MaxLength = 25;
-   frmTouchKeyboard->AllowCarriageReturn = false;
-   frmTouchKeyboard->StartWithShiftDown = false;
-   if (PaymentKey)
-   {
-	  frmTouchKeyboard->KeyboardText = btnName->Caption;
-   }
-   else
-   {
-	  frmTouchKeyboard->KeyboardText = "";
-   }
-   frmTouchKeyboard->Caption = "Enter Payment Name";
-   if (frmTouchKeyboard->ShowModal() == mrOk)
-   {
-	  if (frmTouchKeyboard->KeyboardText.UpperCase() == "CREDIT")
-	  {
-		 MessageBox("'Credit' is used internally by MenuMate. Payment Name changed to 'Credit Card'", "Error", MB_OK);
-		 frmTouchKeyboard->KeyboardText = "Credit Card";
-	  }
-	  btnName->Caption = frmTouchKeyboard->KeyboardText;
-   }
+    UnicodeString paymentName = TStringTools::Instance()->UpperCaseWithNoSpace(btnName->Caption);
+    bool isPaymentNameEditable = paymentName != "CASH" && paymentName != "CHEQUE" && paymentName != "EFTPOS" && paymentName != "AMEX" && paymentName != "DINERS" && paymentName != "VISA" && paymentName != "MASTERCARD" && paymentName != "TIPS";
+    if(isPaymentNameEditable)
+    {
+           std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+           frmTouchKeyboard->MaxLength = 25;
+           frmTouchKeyboard->AllowCarriageReturn = false;
+           frmTouchKeyboard->StartWithShiftDown = false;
+           if (PaymentKey)
+           {
+              frmTouchKeyboard->KeyboardText = btnName->Caption;
+           }
+           else
+           {
+              frmTouchKeyboard->KeyboardText = "";
+           }
+           frmTouchKeyboard->Caption = "Enter Payment Name";
+           std::auto_ptr<TfrmPaymentMaintenance>(frmPaymentMaintenance)(TfrmPaymentMaintenance::Create(this,TDeviceRealTerminal::Instance().DBControl,TDeviceRealTerminal::Instance().PaymentSystem));
+           Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	        DBTransaction.StartTransaction();
+           if (frmTouchKeyboard->ShowModal() == mrOk)
+           {
+                if(!frmPaymentMaintenance->IsPaymentExist(DBTransaction, frmTouchKeyboard->KeyboardText.UpperCase()))
+                {
+                    if (frmTouchKeyboard->KeyboardText.UpperCase() == "CREDIT")
+                      {
+                         MessageBox("'Credit' is used internally by MenuMate. Payment Name changed to 'Credit Card'", "Error", MB_OK);
+                         frmTouchKeyboard->KeyboardText = "Credit Card";
+                      }
+                      btnName->Caption = frmTouchKeyboard->KeyboardText;
+                }
+                else
+                {
+                    MessageBox("This Payment Name already Exist", "Error", MB_OK);
+                }
+           }
+           DBTransaction.Commit();
+    }
 }
 // ---------------------------------------------------------------------------
 

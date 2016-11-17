@@ -8,6 +8,7 @@ using System.Globalization;
 
 using XMLManager;
 using MenumateServices.WebMate.DTO;
+using System.Diagnostics;
 
 namespace MenumateServices.WebMate.InternalClasses
 {
@@ -249,15 +250,19 @@ namespace MenumateServices.WebMate.InternalClasses
         /// <returns></returns>
         Guid initDBWebOrder()
         {
-            _headerSection  = getEmptyHeaderSection();
-            _fromSection    = getEmptyFromSection();
-            _accountSection = getEmptyAccountSection();
-
-            //...............................................
-
-            web_order_commit = new WebOrderCommit();
-            xml_doc = new XmlDocument();
-
+            try
+            {
+                _headerSection = getEmptyHeaderSection();
+                _fromSection = getEmptyFromSection();
+                _accountSection = getEmptyAccountSection();
+                //...............................................
+                web_order_commit = new WebOrderCommit();
+                xml_doc = new XmlDocument();
+            }
+            catch(Exception e)
+            {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" +e.StackTrace, EventLogEntryType.Error, 214, short.MaxValue);
+            }
             //...............................................
 
             return Guid.NewGuid();
@@ -354,8 +359,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
                 return _headerSection;
             }
-            catch 
+            catch(Exception e) 
             {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 210, short.MaxValue);
                 return EmptyHeaderSection;
             }
         }
@@ -372,8 +378,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
                 return _fromSection;
             }
-            catch
+            catch(Exception e)
             {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 211, short.MaxValue);
                 return EmptyFromSection;
             }
         }
@@ -390,8 +397,9 @@ namespace MenumateServices.WebMate.InternalClasses
 
                 return _accountSection;
             }
-            catch
+            catch(Exception e)
             {
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 212, short.MaxValue);
                 return EmptyAccountSection;
             }
         }
@@ -617,9 +625,9 @@ namespace MenumateServices.WebMate.InternalClasses
 			{
 				returnValue = XMLDocManager.GetAttribute(inNode, inAttrName, inDefaultValue);
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				
+                EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 213, short.MaxValue);
 			}
 			return returnValue;
 		}
