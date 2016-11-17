@@ -40,6 +40,5 @@ class TMallExportSalesData
     __property UnicodeString CreatedBy = {read = _createdBy, write = SetCreatedBy};
     __property int ArcBillKey = {read = _arcBillKey, write = SetArcBillKey};
     __property int ZKey = {read = _zKey, write = SetZKey};
-
 };
 #endif

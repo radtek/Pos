@@ -144,7 +144,7 @@ void TApplyParser::update6_33Tables()
     Create6_33MallExportHeader(_dbControl);
     Create6_33MallExportSales(_dbControl);
     Create6_33GeneratorMallExportSaleKey(_dbControl);
-    Create6_33GeneratorMallExportsSettingKey(_dbControl);
+    //Create6_33GeneratorMallExportsSettingKey(_dbControl);
     Create6_33GeneratorMallExportsSettingMappingKey(_dbControl);
     Create6_33GeneratorMallExportsSettingValueAttributes(_dbControl);
     Create6_33MallExportSettingValuesAttributes(_dbControl);
@@ -378,108 +378,45 @@ void TApplyParser::Insert6_33Malls(TDBControl* const inDBControl)
 //--------------------------------------------------------------------------------------------------------------------------
 void TApplyParser::Insert6_33MallExport_Settings(TDBControl* const inDBControl)
 {
+
     TDBTransaction transaction( *_dbControl );
     transaction.StartTransaction();
     try
     {
+        const int numberOfFields = 22;
+        UnicodeString fieldNames[numberOfFields] =
+        {
+            "TENANT_NUMBER" ,"FILE_LOCATION" ,"CLASS_CODE" ,"TRADE_CODE" ,"OUTLET_NUMBER" ,"BRANCH_CODE" ,"TERMINAL_NUMBER" ,
+            "SERIAL_NUMBER" ,"ASSIGN_SALES_TYPE" ,"FTP_SERVER" ,"FTP_PATH" ,"FTP_USER_NAME" ,"FTP_PASSWORD" ,
+            "ENABLE_CONSOLIDATED_REPORT" ,"CONSOLIDATED_DB_PATHS" ,"TYPE_OF_FILE" ,"HEADER_WIDTH" ,"FILE_CREATION_PERIOD" ,
+            "REQUIRED_ON_FTP_SERVER " ,"INCLUDE_IN_EXISTING" ,"FILE_NAMING_CONVENTION" ,"FILE_HEADER"
+        };
+        UnicodeString controlNames[numberOfFields] =
+        {
+            "edTenantNo1" ,"edMallPath1" ,"edClassCode1" ,"edTradeCode1" ,"edOutletCode1" ,"edBranchCode1" ,"edTerminalNo1" ,
+            "edSerialNo1" ,"btnAssignSalesType1" ,"edFTPServer1" ,"edFTPPath1" ,"edFTPUserName1" ,"edFTPPassword1" ,
+            "cbEnableConsolidatedRep1" ,"edConsolidatedDBPaths1" ,"File Type" ,"Header Width" ,"File Creation" ,
+            "Load TO FTP Server ","Append File" , "File Name" ,"File Header"
+        };
+        UnicodeString isUIRequired[numberOfFields] =
+        {
+            "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "F", "F", "F", "F", "F", "F", "F"
+        };
+
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
         TIBSQL *SelectGenQuery    = transaction.Query( transaction.AddQuery() );
-        int generator_Val;
 
-        SelectGenQuery->Close();
-        SelectGenQuery->SQL->Text = "SELECT GEN_ID(GEN_MALLEXPORT_SETTING_KEY, 1) FROM RDB$DATABASE";
-        SelectGenQuery->ExecQuery();
-        generator_Val = SelectGenQuery->Fields[0]->AsInteger;
-
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES (1,'TENANT_NUMBER','edTenantNo1','T') ";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(2,'FILE_LOCATION','edMallPath1','T') ";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES (3,'CLASS_CODE','edClassCode1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(4,'TRADE_CODE','edTradeCode1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(5,'OUTLET_NUMBER','edOutletCode1','T') ";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(6,'BRANCH_CODE','edBranchCode1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(7,'TERMINAL_NUMBER','edTerminalNo1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(8,'SERIAL_NUMBER','edSerialNo1','T') ";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(9,'ASSIGN_SALES_TYPE','btnAssignSalesType1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(10,'FTP_SERVER','edFTPServer1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(11,'FTP_PATH','edFTPPath1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(12,'FTP_USER_NAME','edFTPUserName1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(13,'FTP_PASSWORD','edFTPPassword1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(14,'Enable_Consolidated_Report','cbEnableConsolidatedRep1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(15,'Consolidated_DB_Paths','edConsolidatedDBPaths1','T')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(16,'Type_Of_File','File Type','F')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(17,'Header_Width','Header Width','F')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(18,'File_Creation_Period','File Creation','F')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(19,'Required_On_FTP_Server','Load TO FTP Server','F')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(20,'Include_In_Existing','Append File','F')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(21,'File_Naming_Convention','File Name','F')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS(MALLEXPORT_SETTING_KEY,NAME,CONTROL_NAME,IS_UI_REQUIRED) VALUES(22,'File_Header','File Header','F')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
+        for(int index = 0; index < numberOfFields; index++)
+        {
+            InsertQuery->Close();
+            InsertQuery->SQL->Text =
+                        "INSERT INTO MALLEXPORT_SETTINGS VALUES (:SETTING_KEY,:FIELD_NAME,:CONTROL_NAME,IS_UI) ";
+            InsertQuery->ParamByName("SETTING_KEY")->AsInteger = index+1;
+            InsertQuery->ParamByName("FIELD_NAME")->AsString = fieldNames[index+1];
+            InsertQuery->ParamByName("CONTROL_NAME")->AsString = controlNames[index+1];
+            InsertQuery->ParamByName("IS_UI")->AsString = isUIRequired[index+1];
+            InsertQuery->ExecQuery();
+        }
         transaction.Commit();
     }
     catch( Exception &E )
