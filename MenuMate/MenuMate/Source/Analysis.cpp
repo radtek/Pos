@@ -3376,7 +3376,7 @@ Zed:
 			if(CompleteZed)
 			{
                 UpdateMallExportDetails();
-                UpdateZKeyForMall();
+                UpdateZKeyForMallExportSales();
             }
             //
       }
@@ -9425,7 +9425,7 @@ void TfrmAnalysis::UpdateDLFMall()
     }
 }
 ///--------------------------------------------------------------------------------------------------
-void TfrmAnalysis::UpdateZKeyForMall()
+void TfrmAnalysis::UpdateZKeyForMallExportSales()
 {
     Database::TDBTransaction DBTransaction(
     TDeviceRealTerminal::Instance().DBControl);

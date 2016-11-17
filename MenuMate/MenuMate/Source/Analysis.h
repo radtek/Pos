@@ -223,7 +223,7 @@ private:	// User declarations
     AnsiString GetCashGlCode(Database::TDBTransaction &DBTransaction);
     void CompleteDLFMallExport();
     TDateTime GetMinDayArchiveTime(Database::TDBTransaction &DBTransaction, TDateTime PrevZedTime);
-    void UpdateZKeyForMall();
+    void UpdateZKeyForMallExportSales();
 public:		// User declarations
 	static TLoginSuccess AuthenticateReportsAccess(TReportSource);
 	static const TMMContactInfo &GetLastAuthenticatedUser();
