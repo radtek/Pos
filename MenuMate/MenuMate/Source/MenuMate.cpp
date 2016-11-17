@@ -139,6 +139,7 @@ USEFORM("POS\MenuManagerItemSettings.cpp", frmItemSettings);
 USEFORM("Timer.cpp", frmClockTime);
 USEFORM("DelayedPaymentTabs.cpp", frmDelayedPaymentTabs);
 USEFORM("POS\SelectMember.cpp", frmSelectMember);
+USEFORM("CaptureDiscountDetails.cpp", frmCaptureDiscountDetails);
 //---------------------------------------------------------------------------
 HANDLE Mutex;
 
