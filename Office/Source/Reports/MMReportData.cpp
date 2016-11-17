@@ -1640,14 +1640,15 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
 {
 	qrWages->Close();
 	qrWages->SQL->Text =
-        "select "
+
+ "select "
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
            "cast(Login_DateTime as timestamp) Login_DateTime, "
            "cast(Logout_DateTime as timestamp) Logout_DateTime, "
            "Breaks, "
-           "cast((tt - bd) * 24 as float) Hours_Worked, "
+           "case when (TOTALHOURS is null ) then (tt - bd) * 24 else TOTALHOURS End as TOTALHOURS, "
            "cast((tt - bd) as float) Days_Worked, "
            "Department, "
            "Zone, "
@@ -1661,6 +1662,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                         "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
                         "cast(ct.Logout_DateTime as timestamp) Logout_DateTime, "
                         "ct.Breaks, "
+                        "ct.TOTALHOURS, "
                         "TCL.Name Department, "
                         "TCL.Code Zone, "
                         "ct.Modified "
@@ -1675,6 +1677,8 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                               "and ct.logout_datetime is not null "
                               "and (C.Contact_Type = 0 "
                               "or C.Contact_Type = 1) ";
+
+        
 
     if (Names && Names->Count > 0)
 	{
@@ -1691,10 +1695,10 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
            "Contact_Type, "
            "Name, "
            "Payroll_ID, "
-           "cast(Login_DateTime as timestamp) Login_DateTime, "
-           "cast(Logout_DateTime as timestamp) Logout_DateTime, "
+           "Login_DateTime, "
+           "Logout_DateTime, "
            "Breaks, "
-           "(tt) * 24 Hours_Worked, "
+           "case when (TOTALHOURS is null ) then (tt) * 24 else TOTALHOURS End as TOTALHOURS, "
            "(tt) Days_Worked, "
            "Department, "
            "Zone, "
@@ -1706,6 +1710,7 @@ void TdmMMReportData::SetupWagesByDepatment(TDateTime StartTime, TDateTime EndTi
                         "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
                         "cast(ct.Logout_DateTime as timestamp) Logout_DateTime, "
                         "ct.Breaks, "
+                        "ct.TOTALHOURS, "
                         "TCL.Name Department, "
                         "TCL.Code Zone, "
                         "ct.Modified "
@@ -1757,7 +1762,7 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
            "cast(Login_DateTime as timestamp) Login_DateTime, "
            "cast(Logout_DateTime as timestamp) Logout_DateTime, "
            "Breaks, "
-           "cast((tt - bd) * 24 as float) Hours_Worked, "
+           "case when (TOTALHOURS is null ) then (tt - bd) * 24 else TOTALHOURS End as TOTALHOURS, "
            "cast((tt - bd) as float) Days_Worked, "
            "Department, "
            "Zone, "
@@ -1771,6 +1776,7 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
                         "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
                         "cast(ct.Logout_DateTime as timestamp) Logout_DateTime, "
                         "ct.Breaks, "
+                        "ct.TOTALHOURS, "
                         "TCL.Name Department, "
                         "TCL.Code Zone, "
                         "ct.Modified "
@@ -1804,7 +1810,7 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
            "cast(Login_DateTime as timestamp) Login_DateTime, "
            "cast(Logout_DateTime as timestamp) Logout_DateTime, "
            "Breaks, "
-           "(tt) * 24 Hours_Worked, "
+           "case when (TOTALHOURS is null ) then (tt) * 24 else TOTALHOURS End as TOTALHOURS, "
            "(tt) Days_Worked, "
            "Department, "
            "Zone, "
@@ -1813,9 +1819,10 @@ void TdmMMReportData::SetupWagesByStaff(TDateTime StartTime, TDateTime EndTime, 
                         "C.Contact_Type, "
                         "C.Name, "
                         "C.Payroll_ID, "
-                        "cast(ct.Login_DateTime as timestamp) Login_DateTime, "
+                        "cast(ct.Login_DateTime  as timestamp) Login_DateTime, "
                         "cast(ct.Logout_DateTime as timestamp) Logout_DateTime, "
                         "ct.Breaks, "
+                        "ct.TOTALHOURS, "
                         "TCL.Name Department, "
                         "TCL.Code Zone, "
                         "ct.Modified "
