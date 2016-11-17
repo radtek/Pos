@@ -298,26 +298,9 @@ void TEstanciaMallField::SetCoverCount(int coverCount)
     _coverCount = coverCount;
 }
 //----------------------------------------------------------------------------------------
-bool TEstanciaMall::PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
+std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
 {
-    bool retVal = false;
-    try
-    {
-        TMallExportPrepareData preparedData;
-        preparedData = PrepareDataForDatabase(paymentTransaction, arcBillKey);
-        retVal = InsertInToMallExport_Sales(paymentTransaction.DBTransaction, preparedData);
-    }
-     catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return retVal;
-}
-//------------------------------------------------------------------------------------------------------------------------
-TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
-{
-    TMallExportPrepareData mallExportData;
+    std::list<TMallExportSalesData> mallExportSalesData;
     try
     {
         Currency promoDiscount = 0.00;
@@ -492,74 +475,74 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction
         fieldData.CoverCount = GetPatronCount(paymentTransaction);
 
          ///call function to insert all fields into list
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Tenant Code", "UnicodeString", tenantCode, 1, arcBillKey);//01
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "POS Terminal Number", "int", terminalNumber, 2, arcBillKey);//02
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Date (mmddyyyy)", "TDateTime", Now().FormatString("mmddyyyy"), 3, arcBillKey);//03
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Old Accumulated Sales", "Currency", 0, 4, arcBillKey);//04    //todo
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "New Accumulated Sales", "Currency", fieldData.NewAccumulatedSalesVatable, 5, arcBillKey);//05
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Gross Amount", "Currency", fieldData.GrossAmountVatable, 6, arcBillKey);//06
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Deductions", "Currency", fieldData.DeductionVatable, 7, arcBillKey);//07
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Promo Sale Amount", "Currency", fieldData.PromoSalesAmountVatable, 8, arcBillKey);//08
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total PWD Discount", "Currency", fieldData.PWDDiscountVatable, 9, arcBillKey);//09
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Refund Amount", "Currency", fieldData.RefundAmountVatable, 10, arcBillKey);//10
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Returned Items Amount", "Currency", fieldData.ReturnedItemsAmountVatable, 11, arcBillKey);//11
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Other Taxes", "Currency", fieldData.OtherTaxesVatable, 12, arcBillKey);//12
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Service Charge Amount", "Currency", fieldData.ServiceChargeAmountVatable, 13, arcBillKey);//13
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Adjustment Discount", "Currency", fieldData.AdjustmentDiscountVatable, 14, arcBillKey);//14
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Void Amount", "Currency", fieldData.VoidAmountVatable, 15, arcBillKey);//15
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Discount Cards", "Currency", fieldData.DiscountCardsVatable, 16, arcBillKey);//16
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Delivery Charges", "Currency", fieldData.DeliveryChargesVatable, 17, arcBillKey);//17
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Gift Certificates/Checks Redeemed", "Currency", fieldData.GiftCertificatesChecksRedeemedVatable, 18, arcBillKey);//18
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1Vatable, 19, arcBillKey);//19
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2Vatable, 20, arcBillKey);//20
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3Vatable, 21, arcBillKey);//21
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4Vatable, 22, arcBillKey);//22
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5Vatable, 23, arcBillKey);//23
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total of all Non-Approved Store Discounts", "Currency", fieldData.TotalOfallNonApprovedSDVatable, 24, arcBillKey);//24
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonVatable, 25, arcBillKey);//25
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonVatable, 26, arcBillKey);//26
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonVatable, 27, arcBillKey);//27
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonVatable, 28, arcBillKey);//28
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonVatable, 29, arcBillKey);//29
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountVatable, 30, arcBillKey);//30
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountVatable, 31, arcBillKey);//31
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Cover Count", "int", fieldData.CoverCount, 32, arcBillKey);//32
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Control Number", "int", "", 33, arcBillKey);//33  //todo
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Number of Sales Transaction", "int", 1, 34, arcBillKey);//34  //todo
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Sales Type", "int", 1, 35, arcBillKey);//35
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Amount", "Currency", fieldData.NetSalesAmountVatable, 36, arcBillKey);//36
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Old Accumulated Sales", "Currency", fieldData.OldAccumulatedSalesNonVatable, 37, arcBillKey);//37
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "New Accumulated Sales", "Currency", fieldData.NewAccumulatedSalesNonVatable, 38, arcBillKey);//38
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Gross Amount", "Currency", fieldData.GrossAmountNonVatable, 39, arcBillKey);//39
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Deductions", "Currency", fieldData.DeductionNonVatable, 40, arcBillKey);//40
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Promo Sale Amount", "Currency", fieldData.PromoSalesAmountNonVatable, 41, arcBillKey);//41
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total SCD Discount", "Currency", fieldData.SCDDiscountNonVatable, 42, arcBillKey);//42
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Refund Amount", "Currency", fieldData.RefundAmountNonVatable, 43, arcBillKey);//43
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Returned Items Amount", "Currency", fieldData.ReturnedItemsAmountNonVatable, 44, arcBillKey);//44
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Other Taxes", "Currency", fieldData.OtherTaxesNonVatable, 45, arcBillKey);//45
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Service Charge Amount", "Currency", fieldData.ServiceChargeAmountNonVatable, 46, arcBillKey);//46
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Adjustment Discount", "Currency", fieldData.AdjustmentDiscountNonVatable, 47, arcBillKey);//47
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Void Amount", "Currency", fieldData.VoidAmountNonVatable, 48, arcBillKey);//48
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Discount Cards", "Currency", fieldData.DiscountCardsNonVatable, 49, arcBillKey);//49
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Delivery Charges", "Currency", fieldData.DeliveryChargesNonVatable, 50, arcBillKey);//50
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Gift Certificates/Checks Redeemed", "Currency", fieldData.GiftCertificatesChecksRedeemedNonVatable, 51, arcBillKey);//51
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonVatable, 52, arcBillKey);//52
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonVatable, 53, arcBillKey);//53
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonVatable, 54, arcBillKey);//54
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonVatable, 55, arcBillKey);//55
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonVatable, 56, arcBillKey);//56
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total of all Non-Approved Store Discounts", "Currency", fieldData.TotalOfallNonApprovedSDiscountsNonVatable, 57, arcBillKey);//57
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonApprovedVatable, 58, arcBillKey);//58
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonApprovedVatable, 59, arcBillKey);//59
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonApprovedVatable, 60, arcBillKey);//60
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonApprovedVatable, 61, arcBillKey);//61
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonApprovedVatable, 62, arcBillKey);//62
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountNonVatable, 63, arcBillKey);//63
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountNonVatable, 64, arcBillKey);//64
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Grand Total Net Sales", "Currency", fieldData.NetSalesAmountVatable + fieldData.NetSalesAmountNonVatable, 65, arcBillKey);//65
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Hour Code", "int", HourOf(Now()), 66, arcBillKey);//66
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Status", "int", 1, 67, arcBillKey);//67
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportData, "Invoice Number", "UnicodeString", paymentTransaction.InvoiceNumber, 68, arcBillKey);//68
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Tenant Code", "UnicodeString", tenantCode, 1, arcBillKey);//01
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "POS Terminal Number", "int", terminalNumber, 2, arcBillKey);//02
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Date (mmddyyyy)", "TDateTime", Now().FormatString("mmddyyyy"), 3, arcBillKey);//03
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Old Accumulated Sales", "Currency", 0, 4, arcBillKey);//04    //todo
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "New Accumulated Sales", "Currency", fieldData.NewAccumulatedSalesVatable, 5, arcBillKey);//05
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Gross Amount", "Currency", fieldData.GrossAmountVatable, 6, arcBillKey);//06
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Deductions", "Currency", fieldData.DeductionVatable, 7, arcBillKey);//07
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Promo Sale Amount", "Currency", fieldData.PromoSalesAmountVatable, 8, arcBillKey);//08
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total PWD Discount", "Currency", fieldData.PWDDiscountVatable, 9, arcBillKey);//09
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Refund Amount", "Currency", fieldData.RefundAmountVatable, 10, arcBillKey);//10
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Returned Items Amount", "Currency", fieldData.ReturnedItemsAmountVatable, 11, arcBillKey);//11
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Other Taxes", "Currency", fieldData.OtherTaxesVatable, 12, arcBillKey);//12
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Service Charge Amount", "Currency", fieldData.ServiceChargeAmountVatable, 13, arcBillKey);//13
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Adjustment Discount", "Currency", fieldData.AdjustmentDiscountVatable, 14, arcBillKey);//14
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Void Amount", "Currency", fieldData.VoidAmountVatable, 15, arcBillKey);//15
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Discount Cards", "Currency", fieldData.DiscountCardsVatable, 16, arcBillKey);//16
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Delivery Charges", "Currency", fieldData.DeliveryChargesVatable, 17, arcBillKey);//17
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Gift Certificates/Checks Redeemed", "Currency", fieldData.GiftCertificatesChecksRedeemedVatable, 18, arcBillKey);//18
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1Vatable, 19, arcBillKey);//19
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2Vatable, 20, arcBillKey);//20
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3Vatable, 21, arcBillKey);//21
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4Vatable, 22, arcBillKey);//22
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5Vatable, 23, arcBillKey);//23
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total of all Non-Approved Store Discounts", "Currency", fieldData.TotalOfallNonApprovedSDVatable, 24, arcBillKey);//24
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonVatable, 25, arcBillKey);//25
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonVatable, 26, arcBillKey);//26
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonVatable, 27, arcBillKey);//27
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonVatable, 28, arcBillKey);//28
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonVatable, 29, arcBillKey);//29
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountVatable, 30, arcBillKey);//30
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountVatable, 31, arcBillKey);//31
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Cover Count", "int", fieldData.CoverCount, 32, arcBillKey);//32
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Control Number", "int", "", 33, arcBillKey);//33  //todo
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Number of Sales Transaction", "int", 1, 34, arcBillKey);//34  //todo
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Sales Type", "int", 1, 35, arcBillKey);//35
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Amount", "Currency", fieldData.NetSalesAmountVatable, 36, arcBillKey);//36
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Old Accumulated Sales", "Currency", fieldData.OldAccumulatedSalesNonVatable, 37, arcBillKey);//37
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "New Accumulated Sales", "Currency", fieldData.NewAccumulatedSalesNonVatable, 38, arcBillKey);//38
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Gross Amount", "Currency", fieldData.GrossAmountNonVatable, 39, arcBillKey);//39
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Deductions", "Currency", fieldData.DeductionNonVatable, 40, arcBillKey);//40
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Promo Sale Amount", "Currency", fieldData.PromoSalesAmountNonVatable, 41, arcBillKey);//41
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total SCD Discount", "Currency", fieldData.SCDDiscountNonVatable, 42, arcBillKey);//42
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Refund Amount", "Currency", fieldData.RefundAmountNonVatable, 43, arcBillKey);//43
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Returned Items Amount", "Currency", fieldData.ReturnedItemsAmountNonVatable, 44, arcBillKey);//44
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Other Taxes", "Currency", fieldData.OtherTaxesNonVatable, 45, arcBillKey);//45
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Service Charge Amount", "Currency", fieldData.ServiceChargeAmountNonVatable, 46, arcBillKey);//46
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Adjustment Discount", "Currency", fieldData.AdjustmentDiscountNonVatable, 47, arcBillKey);//47
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Void Amount", "Currency", fieldData.VoidAmountNonVatable, 48, arcBillKey);//48
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Discount Cards", "Currency", fieldData.DiscountCardsNonVatable, 49, arcBillKey);//49
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Delivery Charges", "Currency", fieldData.DeliveryChargesNonVatable, 50, arcBillKey);//50
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Gift Certificates/Checks Redeemed", "Currency", fieldData.GiftCertificatesChecksRedeemedNonVatable, 51, arcBillKey);//51
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonVatable, 52, arcBillKey);//52
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonVatable, 53, arcBillKey);//53
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonVatable, 54, arcBillKey);//54
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonVatable, 55, arcBillKey);//55
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonVatable, 56, arcBillKey);//56
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total of all Non-Approved Store Discounts", "Currency", fieldData.TotalOfallNonApprovedSDiscountsNonVatable, 57, arcBillKey);//57
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonApprovedVatable, 58, arcBillKey);//58
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonApprovedVatable, 59, arcBillKey);//59
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonApprovedVatable, 60, arcBillKey);//60
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonApprovedVatable, 61, arcBillKey);//61
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonApprovedVatable, 62, arcBillKey);//62
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountNonVatable, 63, arcBillKey);//63
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountNonVatable, 64, arcBillKey);//64
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Grand Total Net Sales", "Currency", fieldData.NetSalesAmountVatable + fieldData.NetSalesAmountNonVatable, 65, arcBillKey);//65
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Hour Code", "int", HourOf(Now()), 66, arcBillKey);//66
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Status", "int", 1, 67, arcBillKey);//67
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Invoice Number", "UnicodeString", paymentTransaction.InvoiceNumber, 68, arcBillKey);//68
     }
     catch(Exception &E)
 	{
@@ -567,12 +550,11 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction
 		throw;
 	}
 
-    return mallExportData;
+    return mallExportSalesData;
 }
 //----------------------------------------------------------------------------------------------
 long TEstanciaMall::GenerateSaleKey(Database::TDBTransaction &dbTransaction)
 {
-
     Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
 	dbTransaction.RegisterQuery(IBInternalQuery);
     long saleKey;
@@ -605,7 +587,7 @@ int TEstanciaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
     return totalPatronCount;
 }
 //--------------------------------------------------------------------------------------------------------
-void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, TMallExportPrepareData &mallExportData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
+void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
 {
     TMallExportSalesData salesData;
     salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
@@ -617,73 +599,37 @@ void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, 
     salesData.DateCreated = Now();
     salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
     salesData.ArcBillKey = arcBillKey;
-    mallExportData.SalesData.push_back(salesData);
+    mallExportSalesData.push_back(salesData);
 }
 //--------------------------------------------------------------------------------------------------------
-bool TEstanciaMall::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportPrepareData mallExportPreparedData)
+TEstanciaMall::TEstanciaMall()
 {
-    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-	dbTransaction.RegisterQuery(IBInternalQuery);
-    bool isInserted = false;
+}
+//-------------------------------------------------------------------------------------------------------------
+void TEstanciaMall::PrepareDataForExport()
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
     try
     {
-        std::list<TMallExportSalesData>::iterator it;
-        //Iterate mallExport Sales data for inserting into DB
-        for(it = mallExportPreparedData.SalesData.begin(); it != mallExportPreparedData.SalesData.end(); it++)
-        {
-            // Inserting Each field of nall into Table
-            IBInternalQuery->Close();
-            IBInternalQuery->SQL->Text =
-            "INSERT INTO MALLEXPORT_SALES ("
-                    "MALLEXPORT_SALE_KEY, "
-                    "MALL_KEY, "
-                    "FIELD_INDEX, "
-                    "FIELD, "
-                    "FIELD_VALUE, "
-                    "VALUE_TYPE, "
-                    "DATE_CREATED, "
-                    "CREATED_BY, "
-                    "Z_KEY, "
-                    "ARCBILL_KEY "
-                    " ) "
-            "VALUES ("
-                    ":MALLEXPORT_SALE_KEY, "
-                    ":MALL_KEY, "
-                    ":FIELD_INDEX, "
-                    ":FIELD, "
-                    ":FIELD_VALUE, "
-                    ":VALUE_TYPE, "
-                    ":DATE_CREATED, "
-                    ":CREATED_BY, "
-                    ":Z_KEY,"
-                    ":ARCBILL_KEY "
-                    " );";
+        //Prepare Data For Invoice File
+        PrepareDataForInvoiceSalesFile(dbTransaction);
+        //Prepare Data For Hourly File
+        PrepareDataForHourlySalesFile(dbTransaction);
+        //Prepare Data For Daily Sales File
+        PrepareDataForDailySalesFile(dbTransaction);
 
-            IBInternalQuery->ParamByName("MALLEXPORT_SALE_KEY")->AsInteger = it->MallExportSalesId;
-            IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = it->MallKey;
-            IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = it->FieldIndex;
-            IBInternalQuery->ParamByName("FIELD")->AsString = it->Field;
-            IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = it->DataValue;
-            IBInternalQuery->ParamByName("VALUE_TYPE")->AsString = it->DataValueType;
-            IBInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = it->DateCreated;
-            IBInternalQuery->ParamByName("CREATED_BY")->AsString = it->CreatedBy;
-            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = NULL;               //todo................
-            IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
-            IBInternalQuery->ExecQuery();
-        }
-        isInserted = true;
+       //Commit the transaction as we have completed all the transactions
+        dbTransaction.Commit();
     }
     catch(Exception &E)
 	{
+        dbTransaction.Rollback();
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return isInserted;
-}
-void TEstanciaMall::PrepareDataForExport()
-{
-///todo
-
 }
 //-----------------------------------------------------------------------------------------------
 TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction)

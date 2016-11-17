@@ -10,20 +10,20 @@ class TEstanciaMall : public TMallExport
     private:
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
     long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
-    void PushFieldsInToList(Database::TDBTransaction &dbTransaction, TMallExportPrepareData &mallExportData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
-    bool InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportPrepareData mallExportPreparedData);
+    void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
+
     TMallExportPrepareData PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction);
     TMallExportPrepareData PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction);
     TMallExportPrepareData PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction);
     void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF);
 
     protected:
-    TMallExportPrepareData PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
+    std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
     void PrepareDataForExport();
     void CreateExportMedium();
 
     public:
-    bool PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
+    TEstanciaMall();
 };
 
 class TEstanciaMallField

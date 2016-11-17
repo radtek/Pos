@@ -9427,8 +9427,7 @@ void TfrmAnalysis::UpdateDLFMall()
 ///--------------------------------------------------------------------------------------------------
 void TfrmAnalysis::UpdateZKeyForMallExportSales()
 {
-    Database::TDBTransaction DBTransaction(
-    TDeviceRealTerminal::Instance().DBControl);
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     try
     {

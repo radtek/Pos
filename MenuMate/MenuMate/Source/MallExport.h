@@ -9,9 +9,10 @@
 class TMallExport: public TMallExportInterface
 {
     protected:
-    virtual TMallExportPrepareData PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey) = 0;
+    virtual std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey) = 0;
     virtual void PrepareDataForExport() = 0;
     virtual void CreateExportMedium() = 0;
+    virtual bool InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , std::list<TMallExportSalesData> mallExportSalesData);
 
     public:
     bool PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);

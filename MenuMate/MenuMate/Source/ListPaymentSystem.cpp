@@ -1435,8 +1435,9 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
     if(TGlobalSettings::Instance().mallInfo.MallId == 1 && TGlobalSettings::Instance().mallInfo.IsActive != "F")
     {
-        TEstanciaMall estanciaMall;
-        estanciaMall.PushToDatabase(PaymentTransaction, ArcBillKey);
+        //TODO: Instantiation will happen in a factory based on the active mall in database
+        TMallExport* estanciaMall = new TEstanciaMall();
+        estanciaMall->PushToDatabase(PaymentTransaction, ArcBillKey);
     }
 }
 
