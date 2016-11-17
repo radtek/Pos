@@ -809,7 +809,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDB
         IBInternalQuery->ExecQuery();
 
        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-        {
+       {
           TMallExportSalesData salesData;
           salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
           salesData.Field = IBInternalQuery->Fields[1]->AsString;
@@ -818,7 +818,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDB
           salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
           salesData.ZKey = IBInternalQuery->Fields[5]->AsInteger;
           prepareForDSF.SalesData.push_back(salesData);
-        }
+       }
     }
     catch(Exception &E)
 	{
