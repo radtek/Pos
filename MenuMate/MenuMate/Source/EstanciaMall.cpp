@@ -298,6 +298,10 @@ void TEstanciaMallField::SetCoverCount(int coverCount)
     _coverCount = coverCount;
 }
 //----------------------------------------------------------------------------------------
+TEstanciaMall::TEstanciaMall()
+{
+}
+//-------------------------------------------------------------------------------------------------------------
 std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
 {
     std::list<TMallExportSalesData> mallExportSalesData;
@@ -602,10 +606,6 @@ void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, 
     mallExportSalesData.push_back(salesData);
 }
 //--------------------------------------------------------------------------------------------------------
-TEstanciaMall::TEstanciaMall()
-{
-}
-//-------------------------------------------------------------------------------------------------------------
 void TEstanciaMall::PrepareDataForExport()
 {
     //Register the database transaction..
