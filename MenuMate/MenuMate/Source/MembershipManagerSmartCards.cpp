@@ -2628,6 +2628,10 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
              memberNotExist = GetMemberDetailFromBarcode(UserInfo,memberCardCode);
           }
        }
+       else
+       {
+          memberNotExist = GetMemberDetailFromEmail(UserInfo);
+       }
      }
      else
      {
@@ -2717,6 +2721,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
          bool updateMember = false;
          if(UserInfo.ValidateMandatoryField(message))
          {
+            pointsToSync = UserInfo.Points;
             updateMember = true;
          }
          else
@@ -2747,7 +2752,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
            MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
            if(TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
            {
-           	 MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, UserInfo.ContactKey, UserInfo);
+             MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, UserInfo.ContactKey, UserInfo);
            }
        }
    }
@@ -2760,7 +2765,6 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
     DBTransaction.StartTransaction();
 
 }
-
 bool TManagerMembershipSmartCards::SavePointsTransactionsForBarcodeCard(TContactPoints &Points,TMMContactInfo &UserInfo,AnsiString inInvoiceNumber, bool PointsFromCloud)
 {
     Database::TDBTransaction DBTransaction(DBControl);
