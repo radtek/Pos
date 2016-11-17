@@ -12,10 +12,11 @@ class TEstanciaMall : public TMallExport
     long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
     void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
 
-    TMallExportPrepareData PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction);
-    TMallExportPrepareData PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction);
-    TMallExportPrepareData PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction);
-    void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF);
+    TMallExportPrepareData PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys);
+    TMallExportPrepareData PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys);
+    TMallExportPrepareData PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys);
+    void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect);
+    UnicodeString GetFieldIndexList(std::set<int> indexKeys);
 
     protected:
     std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);

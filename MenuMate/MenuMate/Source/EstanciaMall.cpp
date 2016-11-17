@@ -614,12 +614,30 @@ void TEstanciaMall::PrepareDataForExport()
     dbTransaction.StartTransaction();
     try
     {
+        int invoiceIndex[3] = {65, 67, 68};
+        std::set<int> keyToCheck;
+
+        for(int index = 0; index < 3; index++)
+            keyToCheck.insert(invoiceIndex[index]);
+
         //Prepare Data For Invoice File
-        PrepareDataForInvoiceSalesFile(dbTransaction);
+        PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck);
+
+        int  hourIndexkeys[3] = {65, 64, 32};
+        keyToCheck.clear();
+        for(int index = 0; index < 3; index++)
+            keyToCheck.insert(hourIndexkeys[index]);
+
         //Prepare Data For Hourly File
-        PrepareDataForHourlySalesFile(dbTransaction);
+        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck);
+
+        int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
+        keyToCheck.clear();
+        for(int index = 0; index < 8; index++)
+            keyToCheck.insert(dailySalekeys[index]);
+
         //Prepare Data For Daily Sales File
-        PrepareDataForDailySalesFile(dbTransaction);
+        PrepareDataForDailySalesFile(dbTransaction, keyToCheck);
 
        //Commit the transaction as we have completed all the transactions
         dbTransaction.Commit();
@@ -632,26 +650,29 @@ void TEstanciaMall::PrepareDataForExport()
 	}
 }
 //-----------------------------------------------------------------------------------------------
-TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction)
+TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys)
 {
     TMallExportPrepareData prepareForISF;
     try
     {
+        UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
+        int invoiceIndexKeys[4] = {1, 2, 3, 35};
+        std::set<int>keysToSelect;
+        for(int index = 0; index < 4; index++)
+            keysToSelect.insert(invoiceIndexKeys[index]);
+
          ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareForISF);
+        LoadMallSettingsForFile(dBTransaction, prepareForISF, keysToSelect);
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY,a.CREATED_BY, a.DATE_CREATED, a.FIELD, a.FIELD_INDEX, a.FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME "
                                      "FROM MALLEXPORT_SALES a  "
                                      "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
-                                     "WHERE a.FIELD_INDEX IN(:VALUE1,:VALUE2,:VALUE3) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                     "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
                                      "ORDER BY A.MALLEXPORT_SALE_KEY ASC; ";
-        IBInternalQuery->ParamByName("VALUE1")->AsInteger = 65;
-        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 67;
-        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 68;
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
@@ -676,16 +697,23 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::T
     return prepareForISF;
 }
 //-----------------------------------------------------------------------------------------------------------
-TMallExportPrepareData TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction)
+TMallExportPrepareData TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys)
 {
     TMallExportPrepareData prepareForHSF;
     try
     {
+        UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
+
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
+        std::set<int>keysToSelect;
+        int invoiceIndexKeys[3] = {1, 2, 3};
+        for(int index = 0; index < 3; index++)
+            keysToSelect.insert(invoiceIndexKeys[index]);
+
         ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareForHSF);
+        LoadMallSettingsForFile(dBTransaction, prepareForHSF, keysToSelect);
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT HOURLYDATA.FIELD_INDEX, HOURLYDATA.FIELD, SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code  "
@@ -693,12 +721,9 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForHourlySalesFile(Database::TD
                                         "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME,Extract (Hour From a.DATE_CREATED) Hour_code  "
                                          "FROM MALLEXPORT_SALES a "
                                          "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
-                                        " WHERE a.FIELD_INDEX IN(65,34,32) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                        " WHERE a.FIELD_INDEX IN( " + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
                                          "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
                                     "GROUP BY 1,2,4,5  ";
-        IBInternalQuery->ParamByName("VALUE1")->AsInteger = 65;
-        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 34;
-        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 32;
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
@@ -721,16 +746,22 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForHourlySalesFile(Database::TD
     return prepareForHSF;
 }
 //-----------------------------------------------------------------------------------------------------------------------
-TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction)
+TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys)
 {
     TMallExportPrepareData prepareForDSF;
     try
     {
+        UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
+        std::set<int>keysToSelect;
+        int invoiceIndexKeys[3] = {1, 2, 3};
+        for(int index = 0; index < 3; index++)
+            keysToSelect.insert(invoiceIndexKeys[index]);
+
         ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareForDSF);
+        LoadMallSettingsForFile(dBTransaction, prepareForDSF, keysToSelect);
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, SUM(DAILYDATA.FIELD_VALUE) FIELD_VALUE , DAILYDATA.VALUE_TYPE, DAILYDATA.MM_NAME, DAILYDATA.Z_KEY "
@@ -738,19 +769,11 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDB
                                             "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
                                              "FROM MALLEXPORT_SALES a "
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                             "WHERE a.FIELD_INDEX NOT IN(:VALUE1, :VALUE2, :VALUE3, :VALUE4, :VALUE5, :VALUE6, :VALUE7, :VALUE8) AND meh.IS_ACTIVE = :IS_ACTIVE  "
+                                             "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE  "
                                              "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
                                     "GROUP BY 1,2,4,5,6 "
                                     "ORDER BY 1 ASC  ";
-        IBInternalQuery->ParamByName("VALUE1")->AsInteger = 1;
-        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 2;
-        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 3;
-        IBInternalQuery->ParamByName("VALUE4")->AsInteger = 33;
-        IBInternalQuery->ParamByName("VALUE5")->AsInteger = 35;
-        IBInternalQuery->ParamByName("VALUE6")->AsInteger = 66;
-        IBInternalQuery->ParamByName("VALUE7")->AsInteger = 67;
-        IBInternalQuery->ParamByName("VALUE8")->AsInteger = 68;
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
@@ -774,8 +797,9 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDB
     return prepareForDSF;
 }
 //-----------------------------------------------------------------------------------------------------------------------
-void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF)
+void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect)
 {
+        UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
@@ -783,12 +807,8 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
         IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX,a.FIELD,a.FIELD_VALUE,a.VALUE_TYPE, MAX(a.Z_KEY)Z_KEY "
                                       "FROM MALLEXPORT_SALES a "
                                       "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
-                                      "WHERE a.FIELD_INDEX in(:VALUE1,:VALUE2,:VALUE3,VALUE4) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
                                       "GROUP BY A.FIELD_INDEX,A.FIELD,A.FIELD_VALUE,A.VALUE_TYPE,A.Z_KEY ";
-        IBInternalQuery->ParamByName("VALUE1")->AsInteger = 1;
-        IBInternalQuery->ParamByName("VALUE2")->AsInteger = 2;
-        IBInternalQuery->ParamByName("VALUE3")->AsInteger = 3;
-        IBInternalQuery->ParamByName("VALUE4")->AsInteger = 35;
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
@@ -802,6 +822,18 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
         }
 }
 //------------------------------------------------------------------------------------------------------------------
+UnicodeString TEstanciaMall::GetFieldIndexList(std::set<int> indexKeys)
+{
+    std::set<int>::iterator indexKeysIt = indexKeys.begin();
+    UnicodeString indexKeyList = IntToStr(*indexKeysIt);
+    indexKeysIt++;
+    for(; indexKeysIt != indexKeys.end(); indexKeysIt++)
+    {
+        indexKeyList += ", " + IntToStr(*indexKeysIt);
+    }
+    return indexKeyList;
+}
+//----------------------------------------------------------------------------------------------------------------------------
 void TEstanciaMall::CreateExportMedium()
 {
 ///todo
