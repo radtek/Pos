@@ -224,7 +224,7 @@ void TApplyParser::Create6_33MallExportSettingsMappingValues(TDBControl* const i
 //----------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_33MallExportSettingValuesAttributes(TDBControl* const inDBControl)
 {
-     if ( !tableExists( "MALLEXPORT_SETTING_VALUES_ATTRIBUTES", inDBControl ) )
+     if ( !tableExists( "MALLEXPORT_SETTING_VALUES_ATTR", inDBControl ) )
      {
 		executeQuery(
                 "CREATE TABLE MALLEXPORT_SETTING_VALUES_ATTR"
@@ -404,17 +404,16 @@ void TApplyParser::Insert6_33MallExport_Settings(TDBControl* const inDBControl)
         };
 
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
-        TIBSQL *SelectGenQuery    = transaction.Query( transaction.AddQuery() );
 
         for(int index = 0; index < numberOfFields; index++)
         {
             InsertQuery->Close();
             InsertQuery->SQL->Text =
-                        "INSERT INTO MALLEXPORT_SETTINGS VALUES (:SETTING_KEY,:FIELD_NAME,:CONTROL_NAME,IS_UI) ";
-            InsertQuery->ParamByName("SETTING_KEY")->AsInteger = index+1;
-            InsertQuery->ParamByName("FIELD_NAME")->AsString = fieldNames[index+1];
-            InsertQuery->ParamByName("CONTROL_NAME")->AsString = controlNames[index+1];
-            InsertQuery->ParamByName("IS_UI")->AsString = isUIRequired[index+1];
+                        "INSERT INTO MALLEXPORT_SETTINGS VALUES (:SETTING_KEY, :FIELD_NAME, :CONTROL_NAME, :IS_UI) ";
+            InsertQuery->ParamByName("SETTING_KEY")->AsInteger = index + 1;
+            InsertQuery->ParamByName("FIELD_NAME")->AsString = fieldNames[index];
+            InsertQuery->ParamByName("CONTROL_NAME")->AsString = controlNames[index];
+            InsertQuery->ParamByName("IS_UI")->AsString = isUIRequired[index];
             InsertQuery->ExecQuery();
         }
         transaction.Commit();
@@ -431,45 +430,24 @@ void TApplyParser::Insert6_33MallExport_Settings_Mapping(TDBControl* const inDBC
     transaction.StartTransaction();
     try
     {
+         const int numberOfFields = 9;
+        int settingID[numberOfFields] =
+        {
+            1, 2, 7, 16, 17, 18, 19, 20, 21
+        };
+
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
 
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (1,1,1) ";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES(2,2,1) ";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (3,7,1)";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (4,16,1)";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (5,17,1)";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (6,18,1)";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (7,19,1)";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (8,20,1)";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (9,21,1)";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
+        for(int index = 0; index < numberOfFields; index++)
+        {
+            InsertQuery->Close();
+            InsertQuery->SQL->Text =
+                        "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (:MAPPING_KEY, :SETTING_KEY, :MALL_KEY) ";
+            InsertQuery->ParamByName("MAPPING_KEY")->AsInteger = index+1;
+            InsertQuery->ParamByName("SETTING_KEY")->AsString = settingID[index];
+            InsertQuery->ParamByName("MALL_KEY")->AsString = 1;
+            InsertQuery->ExecQuery();
+        }
         transaction.Commit();
     }
     catch( Exception &E )
@@ -484,306 +462,47 @@ void TApplyParser::Insert6_33MallExport_Settings_Values(TDBControl* const inDBCo
     transaction.StartTransaction();
     try
     {
+         const int numberOfFields = 74;
+         UnicodeString fieldTypes[numberOfFields] =
+         {
+            "UnicodeString", "UnicodeString", "int", "UnicodeString", "UnicodeString", "int", "UnicodeString", "Currency", "UnicodeString", "UnicodeString",
+            "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+            "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+            "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+            "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+            "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+            "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+            "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "bool", "bool",  "UnicodeString"
+         };
+
+         UnicodeString fieldValues[numberOfFields] =
+         {
+            "", "", "", "Text", "5", "2", "8", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12",
+            "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12",
+            "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "Z", "F", "F",
+            "SNNNNTTMMDDYYYY.B"
+         };
+
+         int settingID[numberOfFields] =
+         {
+            1, 2, 7, 16, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17,
+            17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
+            19, 20, 21
+         };
+
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
 
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (1,1,'','UnicodeString') ";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES(2,2,'','UnicodeString') ";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (3,7,'','int')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (4,16,'Text','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (5,17,'5','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (6,17,'2','int')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (7,17,'8','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (8,17,'12','Currency')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (9,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (10,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (11,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                   "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (12,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                   "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (13,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (14,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                   "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (15,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (16,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (17,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                   "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (18,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                   "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (19,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (20,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-       InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (21,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (22,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (23,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (24,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (25,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (26,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (27,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (28,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (29,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (30,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (31,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (32,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (33,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (34,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (35,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (36,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (37,17,'4','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (38,17,'4','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (39,17,'4','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (40,17,'4','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (41,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (42,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (43,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (44,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (45,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (46,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (47,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (48,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (49,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (50,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (51,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (52,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (53,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (54,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (55,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (56,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (57,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (58,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (59,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (60,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (61,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (62,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (63,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (64,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (65,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (66,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (67,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (68,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (69,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (70,17,'12','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (71,18,'Z','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (72,19,'F','bool')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (73,20,'F','bool')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
-        InsertQuery->SQL->Text =
-                    "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (74,21,'SNNNNTTMMDDYYYY.B','UnicodeString')";
-        InsertQuery->ExecQuery();
-        InsertQuery->Close();
+        for(int index = 0; index < numberOfFields; index++)
+        {
+            InsertQuery->Close();
+            InsertQuery->SQL->Text =
+                        "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (:SETTING_VALUE_KEY, :SETTING_KEY, :FIELD_VALUE, :FIELD_TYPE) ";
+            InsertQuery->ParamByName("SETTING_VALUE_KEY")->AsInteger = index+1;
+            InsertQuery->ParamByName("SETTING_KEY")->AsInteger = settingID[index];
+            InsertQuery->ParamByName("FIELD_VALUE")->AsString = fieldValues[index];
+            InsertQuery->ParamByName("FIELD_TYPE")->AsString = fieldTypes[index];
+            InsertQuery->ExecQuery();
+        }
         transaction.Commit();
     }
     catch( Exception &E )
