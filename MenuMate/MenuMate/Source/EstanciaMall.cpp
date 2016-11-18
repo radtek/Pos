@@ -695,7 +695,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
           salesData.DataValueType = IBInternalQuery->Fields[6]->AsString;
           salesDataForISF.push_back(salesData);
        }
-       preparedData.SalesData[index] = salesDataForISF;
+       preparedData.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, salesDataForISF ));
     }
     catch(Exception &E)
 	{
@@ -745,7 +745,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
           salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
           prepareForHSF.push_back(salesData);
         }
-        preparedData.SalesData[index] = prepareForHSF;
+        preparedData.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareForHSF ));
     }
     catch(Exception &E)
 	{
@@ -796,7 +796,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
           salesData.ZKey = IBInternalQuery->Fields[4]->AsInteger;
           prepareForDSF.push_back(salesData);
        }
-       preparedData.SalesData[index] = prepareForDSF;
+       preparedData.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareForDSF ));
     }
     catch(Exception &E)
 	{
@@ -831,7 +831,7 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
           settings.ValueType =IBInternalQuery->Fields[3]->AsString;
           mallSettings.push_back(settings);
         }
-        prepareData.MallSettings[index] = mallSettings;
+        preparedData.MallSettings.insert( std::pair<int,list<TMallExportSettings> >(index, mallSettings));
     }
     catch(Exception &E)
 	{
