@@ -15,7 +15,6 @@ class TManagerMallSetup
  public:
      static std::vector<UnicodeString> LoadAllMalls(Database::TDBTransaction &dbTransaction);
      static void UpdateActiveMall(Database::TDBTransaction &dbTransaction, int mallKey);
-     static void InsertOrUpdateMallExportSettingValues(Database::TDBTransaction &dbTransaction,UnicodeString tenantCode, UnicodeString mallPath, UnicodeString terminalNumber);
      static TMall LoadActiveMallSettings(Database::TDBTransaction &dbTransaction);
      static void UpdateMallExportSettingValues(Database::TDBTransaction &dbTransaction, TMall &mallInfo);
      static int CheckActiveMallExist(Database::TDBTransaction &dbTransaction);

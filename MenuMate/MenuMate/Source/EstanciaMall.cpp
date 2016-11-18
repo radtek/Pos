@@ -831,7 +831,7 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
           settings.ValueType =IBInternalQuery->Fields[3]->AsString;
           mallSettings.push_back(settings);
         }
-        preparedData.MallSettings.insert( std::pair<int,list<TMallExportSettings> >(index, mallSettings));
+        prepareData.MallSettings.insert( std::pair<int,list<TMallExportSettings> >(index, mallSettings));
     }
     catch(Exception &E)
 	{
