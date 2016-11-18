@@ -1266,12 +1266,13 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
     }
     else
     {
-       if (!TGlobalSettings::Instance().IsPOSOffline)
+       if (!TGlobalSettings::Instance().IsPOSOffline && !memberNotExist)
         {
            if(SmartCardContact.Surname != "")
            {
              MembershipSystem->SetContactDetails(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
-             MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
+             if(TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
+               MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, SmartCardContact.ContactKey, SmartCardContact);
            }
            SavePointsTransactionsToSmartCard(SmartCardContact.Points,"",true);
         }
@@ -1335,8 +1336,6 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
             MembershipSystem->GetContactDetails(DBTransaction, SmartCardContact.ContactKey, TempUserDataBaseInfo);
             TempUserDataBaseInfo.CloudUUID = SmartCardContact.CloudUUID;
 
-
-
             //Assign the tier level to smart card, for safer side lets not do a blunder by letting it remain 0
             if(SmartCardContact.TierLevel < TempUserDataBaseInfo.TierLevel)
                    SmartCardContact.TierLevel = TempUserDataBaseInfo.TierLevel;
@@ -1356,6 +1355,7 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
    if(!smartCardHasUUID && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
    {
      AddDefaultPoints(DBTransaction,pointsToSync,SmartCardContact.ContactKey);
+      TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- CardInsertedhandler");
    }
    DBTransaction.Commit();
 }
@@ -1375,6 +1375,8 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
 	DBTransaction.StartTransaction();
 
 	SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
+    if(SmartCardContact.EMail != "" && SmartCardContact.EMail != NULL)
+       SmartCardContact.ContactKey =  TDBContacts::GetContactByEmail(DBTransaction,SmartCardContact.EMail);
 	AnsiString DbUUID = TLoyaltyMateUtilities::GetMemberCloudIdIfRegistered(DBTransaction, SmartCardContact.ContactKey, SmartCardContact.SiteID);
     TDBContacts::GetContactDetails(DBTransaction,SmartCardContact.ContactKey,SmartCardContact);
     SmartCardContact.Points = Points;
@@ -1440,6 +1442,7 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
     if(memberCreationSuccess)
     {
        AddDefaultPoints(DBTransaction,Points,SmartCardContact.ContactKey);
+        TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- Loyaltymate operation");
     }
 
 	if(smartCardUpdateRequired)
@@ -1631,6 +1634,7 @@ bool TManagerMembershipSmartCards::SavePointsTransactionsToSmartCard(TContactPoi
                                     ManagerSyndicateCode.GetCommunicationSyndCode(),
                                     Points,
                                     inInvoiceNumber);
+                                    TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- SavePointsTransactionsToSmartCard");
                                 }
 
 						BeginMemberTransaction();
@@ -2752,7 +2756,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
            MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
            if(TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
            {
-             MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, UserInfo.ContactKey, UserInfo);
+           	 MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, UserInfo.ContactKey, UserInfo);
            }
        }
    }
@@ -2760,11 +2764,13 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
    if(addDefaultPoints && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
    {
      AddDefaultPoints(DBTransaction,pointsToSync,UserInfo.ContactKey);
+     TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- MemberCodeScanned");
    }
     DBTransaction.Commit();
     DBTransaction.StartTransaction();
 
 }
+
 bool TManagerMembershipSmartCards::SavePointsTransactionsForBarcodeCard(TContactPoints &Points,TMMContactInfo &UserInfo,AnsiString inInvoiceNumber, bool PointsFromCloud)
 {
     Database::TDBTransaction DBTransaction(DBControl);
