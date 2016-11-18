@@ -90,7 +90,8 @@ void __fastcall TfrmTimeClock::btnClockOutClick(TObject *Sender)
 
    TDateTime LogOutTime = Now();
    TDateTime LogInTime;
-	if(ManagerTimeClock->ClockOut(DBTransaction,CurrentUser.ContactKey,LogInTime,LogOutTime))
+   int contact_time_key = ManagerTimeClock->ClockOut(DBTransaction,CurrentUser.ContactKey,LogInTime,LogOutTime);
+	if(contact_time_key)
 	{
       if(TDeviceRealTerminal::Instance().IMManager->Registered)
       {
@@ -100,8 +101,9 @@ void __fastcall TfrmTimeClock::btnClockOutClick(TObject *Sender)
          Data.SaveToFile();
       }
    }
-	DBTransaction.Commit();
-	tbtnClockOut->Enabled = false;
+    DBTransaction.Commit();
+    ManagerTimeClock->UpdateClockInOut(DBTransaction, contact_time_key, CurrentUser.ContactKey);
+    tbtnClockOut->Enabled = false;
 	Close();
 }
 //---------------------------------------------------------------------------

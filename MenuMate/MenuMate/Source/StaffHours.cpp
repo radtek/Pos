@@ -333,8 +333,3 @@ bool TStaffHoursInterface::Empty()
 	return true;
 }
 
-//void TStaffHours::CalculateRoundedStaffHours(double minute)
-//{
-//
-//}
-
