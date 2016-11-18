@@ -855,6 +855,6 @@ UnicodeString TEstanciaMall::GetFieldIndexList(std::set<int> indexKeys)
 //----------------------------------------------------------------------------------------------------------------------------
 IExporterInterface* TEstanciaMall::CreateExportMedium()
 {
-     //return new TMallExportTextFile;
+      return new TMallExportTextFile;
 }
 

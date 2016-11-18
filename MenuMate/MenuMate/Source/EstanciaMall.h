@@ -3,6 +3,7 @@
 #ifndef EstanciaMallH
 #define EstanciaMallH
 #include "MallExport.h"
+#include "MallExportTextFile.h"
 //---------------------------------------------------------------------------
 
 class TEstanciaMall : public TMallExport

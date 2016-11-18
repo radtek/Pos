@@ -7,6 +7,7 @@
 class TMallExportTextFile: public IExporterInterface
 {
     public:
+    TMallExportTextFile();
     void WriteToFile(TMallExportPrepareData preparedData);
 };
 #endif

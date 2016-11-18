@@ -6,6 +6,10 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
+TMallExportTextFile::TMallExportTextFile()
+{
+}
+//----------------------------------------------------------------------------------------------
 void TMallExportTextFile::WriteToFile(TMallExportPrepareData preparedData)
 {
 

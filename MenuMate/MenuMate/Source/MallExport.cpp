@@ -5,6 +5,7 @@
 
 #include "MallExport.h"
 #include "MMLogging.h"
+#include "MallExportTextFile.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -37,8 +38,8 @@ bool TMallExport::Export()
     preparedData = PrepareDataForExport();
 
     //Create Export Medium
-//    TMallExportTextFile* exporter = CreateExportMedium();
-//    exporter.WriteToFile(preparedData);
+    TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
+    exporter->WriteToFile(preparedData);
 
     return true;
 }
