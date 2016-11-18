@@ -773,7 +773,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
         LoadMallSettingsForFile(dBTransaction, preparedData, keysToSelect, index);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, SUM(DAILYDATA.FIELD_VALUE) FIELD_VALUE , DAILYDATA.VALUE_TYPE, DAILYDATA.MM_NAME, DAILYDATA.Z_KEY "
+        IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, SUM(DAILYDATA.FIELD_VALUE) FIELD_VALUE , DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY, DAILYDATA.MM_NAME "
                                       "FROM "
                                             "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
                                              "FROM MALLEXPORT_SALES a "
@@ -793,8 +793,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
           salesData.Field = IBInternalQuery->Fields[1]->AsString;
           salesData.DataValue = IBInternalQuery->Fields[2]->AsCurrency;
           salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
-          salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
-          salesData.ZKey = IBInternalQuery->Fields[5]->AsInteger;
+          salesData.ZKey = IBInternalQuery->Fields[4]->AsInteger;
           prepareForDSF.push_back(salesData);
        }
        preparedData.SalesData[index] = prepareForDSF;
