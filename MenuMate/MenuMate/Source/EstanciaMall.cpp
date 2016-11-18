@@ -511,7 +511,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountVatable, 30, arcBillKey);//30
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountVatable, 31, arcBillKey);//31
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Cover Count", "int", fieldData.CoverCount, 32, arcBillKey);//32
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Control Number", "int", "", 33, arcBillKey);//33  //todo
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Control Number", "int", 0, 33, arcBillKey);//33  //todo
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Number of Sales Transaction", "int", 1, 34, arcBillKey);//34  //todo
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Sales Type", "int", 1, 35, arcBillKey);//35
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Amount", "Currency", fieldData.NetSalesAmountVatable, 36, arcBillKey);//36
@@ -616,14 +616,15 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
     dbTransaction.StartTransaction();
     try
     {
-        int invoiceIndex[3] = {65, 67, 68};
         std::set<int> keyToCheck;
+        int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
+        keyToCheck.clear();
 
-        for(int index = 0; index < 3; index++)
-            keyToCheck.insert(invoiceIndex[index]);
+        for(int index = 0; index < 8; index++)
+            keyToCheck.insert(dailySalekeys[index]);
 
-        //Prepare Data For Invoice File
-        PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 1);
+        //Prepare Data For Daily Sales File
+        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, preparedData, 1);
 
         int  hourIndexkeys[3] = {65, 64, 32};
         keyToCheck.clear();
@@ -634,14 +635,13 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
         //Prepare Data For Hourly File
         PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, preparedData, 2);
 
-        int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
-        keyToCheck.clear();
+        int invoiceIndex[3] = {65, 67, 68};
 
-        for(int index = 0; index < 8; index++)
-            keyToCheck.insert(dailySalekeys[index]);
+        for(int index = 0; index < 3; index++)
+            keyToCheck.insert(invoiceIndex[index]);
 
-        //Prepare Data For Daily Sales File
-        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, preparedData, 3);
+        //Prepare Data For Invoice File
+        PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 3);
 
        //Commit the transaction as we have completed all the transactions
         dbTransaction.Commit();
@@ -692,7 +692,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
           salesData.DateCreated =IBInternalQuery->Fields[2]->AsDateTime;
           salesData.Field = IBInternalQuery->Fields[3]->AsString;
           salesData.FieldIndex = IBInternalQuery->Fields[4]->AsInteger;
-          salesData.DataValue = IBInternalQuery->Fields[5]->AsString;
+          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[5]->AsString;
           salesData.DataValueType = IBInternalQuery->Fields[6]->AsString;
           salesDataForISF.push_back(salesData);
        }
@@ -742,7 +742,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
           TMallExportSalesData salesData;
           salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
           salesData.Field = IBInternalQuery->Fields[1]->AsString;
-          salesData.DataValue = IBInternalQuery->Fields[2]->AsCurrency;
+          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
           salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
           salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
           prepareListForHSF.push_back(salesData);
@@ -775,9 +775,9 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
         LoadMallSettingsForFile(dBTransaction, prepareDataForDSF, keysToSelect, index);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, SUM(DAILYDATA.FIELD_VALUE) FIELD_VALUE , DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY, DAILYDATA.MM_NAME "
+        IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, CAST(SUM(DAILYDATA.FIELD_VALUE)*100 AS INT) FIELD_VALUE , DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY, DAILYDATA.MM_NAME "
                                       "FROM "
-                                            "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
+                                            "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
                                              "FROM MALLEXPORT_SALES a "
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                                              "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE  "
@@ -785,7 +785,12 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                              "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
                                     "GROUP BY 1,2,4,5,6 "
-                                    "ORDER BY 1 ASC  ";
+                                    "UNION ALL "
+                                     "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, cast(a.FIELD_VALUE as int ) FIELD_VALUE , a.VALUE_TYPE, a.Z_KEY, meh.MM_NAME  "
+                                     "FROM "
+                                        "MALLEXPORT_SALES a inner join MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+                                        "where a.FIELD_INDEX IN( 33, 35 ) AND meh.IS_ACTIVE = 'T' AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
+                                    "ORDER BY 1 ASC  ";   //TODO AFTER DISCUSSION
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
@@ -794,7 +799,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
           TMallExportSalesData salesData;
           salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
           salesData.Field = IBInternalQuery->Fields[1]->AsString;
-          salesData.DataValue = IBInternalQuery->Fields[2]->AsCurrency;
+          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
           salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
           salesData.ZKey = IBInternalQuery->Fields[4]->AsInteger;
           prepareListForDSF.push_back(salesData);
@@ -818,7 +823,8 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
         dBTransaction.RegisterQuery(IBInternalQuery);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX,a.FIELD,a.FIELD_VALUE,a.VALUE_TYPE "
+        IBInternalQuery->SQL->Text = "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, CASE WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0)
+                                        "ELSE (a.FIELD_VALUE) END FIELD_VALUE, a.VALUE_TYPE "
                                       "FROM MALLEXPORT_SALES a "
                                       "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
                                       "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
@@ -829,9 +835,9 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
         for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
           TMallExportSettings settings;
-          settings.Name =  IBInternalQuery->Fields[1]->AsString;
-          settings.Value  =IBInternalQuery->Fields[2]->AsString;
-          settings.ValueType =IBInternalQuery->Fields[3]->AsString;
+          settings.Name =   IBInternalQuery->Fields[1]->AsString;
+          settings.Value  = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsString;
+          settings.ValueType = IBInternalQuery->Fields[3]->AsString;
           mallSettings.push_back(settings);
         }
         prepareData.MallSettings.insert( std::pair<int,list<TMallExportSettings> >(index, mallSettings));

@@ -9447,10 +9447,19 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales()
         int ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
 
         IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.FIELD_VALUE = :Z_KEY WHERE MALLEXPORT_SALES.Z_KEY = :EXISTING_KEY "
+                                        "AND  MALLEXPORT_SALES.FIELD_INDEX = :FIELD_INDEX ";
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+        IBInternalQuery->ParamByName("EXISTING_KEY")->AsInteger = 0;
+        IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = 33;
+        IBInternalQuery->ExecQuery();
+
+        IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.Z_KEY = :Z_KEY WHERE MALLEXPORT_SALES.Z_KEY = :EXISTING_KEY ";
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
         IBInternalQuery->ParamByName("EXISTING_KEY")->AsInteger = 0;
         IBInternalQuery->ExecQuery();
+
         DBTransaction.Commit();
     }
     catch(Exception & E)
