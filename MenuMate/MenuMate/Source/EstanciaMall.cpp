@@ -679,6 +679,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
                                      "FROM MALLEXPORT_SALES a  "
                                      "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                     "AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
                                      "ORDER BY A.MALLEXPORT_SALE_KEY ASC; ";
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
@@ -730,6 +731,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                                          "FROM MALLEXPORT_SALES a "
                                          "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
                                         " WHERE a.FIELD_INDEX IN( " + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                        "AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
                                          "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
                                     "GROUP BY 1,2,4,5  ";
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
@@ -779,6 +781,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                              "FROM MALLEXPORT_SALES a "
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                                              "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE  "
+                                             "AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
                                              "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
                                     "GROUP BY 1,2,4,5,6 "
@@ -815,11 +818,11 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
         dBTransaction.RegisterQuery(IBInternalQuery);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX,a.FIELD,a.FIELD_VALUE,a.VALUE_TYPE, MAX(a.Z_KEY)Z_KEY "
+        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX,a.FIELD,a.FIELD_VALUE,a.VALUE_TYPE "
                                       "FROM MALLEXPORT_SALES a "
                                       "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
                                       "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                      "GROUP BY A.FIELD_INDEX,A.FIELD,A.FIELD_VALUE,A.VALUE_TYPE,A.Z_KEY ";
+                                      "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
