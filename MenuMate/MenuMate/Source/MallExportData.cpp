@@ -19,3 +19,6 @@
     _salesData = salesData;
 }
 //-----------------------------------------------------------------------------
+TMallExportPrepareData::TMallExportPrepareData()
+{
+}

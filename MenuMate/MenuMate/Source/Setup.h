@@ -286,6 +286,7 @@ private:	// User declarations
     TMall mallInfo;
     void SetupNewMalls();
     void UpdateNoMallUI();
+    UnicodeString CheckAbsolutePath(UnicodeString path);
 
 public:		// User declarations
 

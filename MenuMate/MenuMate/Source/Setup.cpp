@@ -2199,7 +2199,8 @@ void __fastcall TfrmSetup::edMallPath1MouseUp(TObject *Sender, TMouseButton Butt
 	frmTouchKeyboard->Caption = "Enter File Location";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
-        edMallPath1->Text = frmTouchKeyboard->KeyboardText;
+        edMallPath1->Text = CheckAbsolutePath(frmTouchKeyboard->KeyboardText);
+
     }
 }
 //---------------------------------------------------------------------------
@@ -2421,4 +2422,22 @@ void TfrmSetup::UpdateNoMallUI()
         }
     }
     dbTransaction.Commit();
+}
+//-----------------------------------------------------------------------------------------
+UnicodeString TfrmSetup::CheckAbsolutePath(UnicodeString path)
+{
+    UnicodeString MallPathVar = path;
+    std::string StrArray = MallPathVar.t_str();
+    UnicodeString EndOfStr = StrArray[MallPathVar.Length() - 1];
+
+    if(EndOfStr != "\\")
+    {
+        path = path + "\\";
+    }
+    //Check if directory not exist than create it.
+    if (!DirectoryExists(path))
+    {
+        CreateDir(path);
+    }
+    return path;
 }

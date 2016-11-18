@@ -17,6 +17,7 @@ class TMallExportPrepareData
     void SetMallExportSalesData(std::map<int,list<TMallExportSalesData> > salesData);
 
     public:
+    TMallExportPrepareData();
      __property std::map<int,list<TMallExportSettings> > MallSettings = {read = _mallSettings, write = SetMallSettings};
      __property std::map<int,list<TMallExportSalesData> > SalesData = {read = _salesData, write = SetMallExportSalesData};
 };
