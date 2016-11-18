@@ -9,12 +9,12 @@
 
 #pragma package(smart_init)
 
- void TMallExportPrepareData::SetMallSettings(std::list<TMallExportSettings> mallSettings)
+ void TMallExportPrepareData::SetMallSettings(std::map<int,list<TMallExportSettings> > mallSettings)
 {
     _mallSettings = mallSettings;
 }
 //-----------------------------------------------------------------------------
- void TMallExportPrepareData::SetMallExportSalesData(std::list<TMallExportSalesData> salesData)
+ void TMallExportPrepareData::SetMallExportSalesData(std::map<int,list<TMallExportSalesData> > salesData)
 {
     _salesData = salesData;
 }

@@ -31,10 +31,16 @@ bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int ar
 //-------------------------------------------------------------------------------
 bool TMallExport::Export()
 {
+    TMallExportPrepareData preparedData;
+
     //Prepare Data For Exporting into File
-    PrepareDataForExport();
+    preparedData = PrepareDataForExport();
+
     //Create Export Medium
-    CreateExportMedium();
+//    TMallExportTextFile* exporter = CreateExportMedium();
+//    exporter.WriteToFile(preparedData);
+
+    return true;
 }
 //----------------------------------------------------------
 bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , std::list<TMallExportSalesData> mallExportSalesData)

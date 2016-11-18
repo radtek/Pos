@@ -606,8 +606,10 @@ void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, 
     mallExportSalesData.push_back(salesData);
 }
 //--------------------------------------------------------------------------------------------------------
-void TEstanciaMall::PrepareDataForExport()
+TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
 {
+    TMallExportPrepareData preparedData;
+
     //Register the database transaction..
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
@@ -621,23 +623,25 @@ void TEstanciaMall::PrepareDataForExport()
             keyToCheck.insert(invoiceIndex[index]);
 
         //Prepare Data For Invoice File
-        PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck);
+        PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 1);
 
         int  hourIndexkeys[3] = {65, 64, 32};
         keyToCheck.clear();
+
         for(int index = 0; index < 3; index++)
             keyToCheck.insert(hourIndexkeys[index]);
 
         //Prepare Data For Hourly File
-        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck);
+        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, preparedData, 2);
 
         int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
         keyToCheck.clear();
+
         for(int index = 0; index < 8; index++)
             keyToCheck.insert(dailySalekeys[index]);
 
         //Prepare Data For Daily Sales File
-        PrepareDataForDailySalesFile(dbTransaction, keyToCheck);
+        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, preparedData, 3);
 
        //Commit the transaction as we have completed all the transactions
         dbTransaction.Commit();
@@ -648,11 +652,14 @@ void TEstanciaMall::PrepareDataForExport()
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+    return preparedData;
 }
 //-----------------------------------------------------------------------------------------------
-TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys)
+void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys,
+                                                                                        TMallExportPrepareData &preparedData, int index)
 {
-    TMallExportPrepareData prepareForISF;
+    //Create List Of SalesData for invoice file
+    std::list<TMallExportSalesData> salesDataForISF;
     try
     {
         UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
@@ -665,7 +672,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::T
             keysToSelect.insert(invoiceIndexKeys[index]);
 
          ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareForISF, keysToSelect);
+        LoadMallSettingsForFile(dBTransaction, preparedData, keysToSelect, index);
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY,a.CREATED_BY, a.DATE_CREATED, a.FIELD, a.FIELD_INDEX, a.FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME "
@@ -677,7 +684,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::T
         IBInternalQuery->ExecQuery();
 
        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-        {
+       {
           TMallExportSalesData salesData;
           salesData.ArcBillKey =  IBInternalQuery->Fields[0]->AsInteger;
           salesData.CreatedBy  =IBInternalQuery->Fields[1]->AsString;
@@ -686,20 +693,21 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::T
           salesData.FieldIndex = IBInternalQuery->Fields[4]->AsInteger;
           salesData.DataValue = IBInternalQuery->Fields[5]->AsString;
           salesData.DataValueType = IBInternalQuery->Fields[6]->AsString;
-          prepareForISF.SalesData.push_back(salesData);
-        }
+          salesDataForISF.push_back(salesData);
+       }
+       preparedData.SalesData[index] = salesDataForISF;
     }
     catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return prepareForISF;
 }
 //-----------------------------------------------------------------------------------------------------------
-TMallExportPrepareData TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys)
+void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys,
+                                                                                TMallExportPrepareData &preparedData, int index)
 {
-    TMallExportPrepareData prepareForHSF;
+    std::list<TMallExportSalesData> prepareForHSF;
     try
     {
         UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
@@ -713,7 +721,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForHourlySalesFile(Database::TD
             keysToSelect.insert(invoiceIndexKeys[index]);
 
         ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareForHSF, keysToSelect);
+        LoadMallSettingsForFile(dBTransaction, preparedData, keysToSelect, index);
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT HOURLYDATA.FIELD_INDEX, HOURLYDATA.FIELD, SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code  "
@@ -735,20 +743,21 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForHourlySalesFile(Database::TD
           salesData.DataValue = IBInternalQuery->Fields[2]->AsCurrency;
           salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
           salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
-          prepareForHSF.SalesData.push_back(salesData);
+          prepareForHSF.push_back(salesData);
         }
+        preparedData.SalesData[index] = prepareForHSF;
     }
     catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return prepareForHSF;
 }
 //-----------------------------------------------------------------------------------------------------------------------
-TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys)
+void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys,
+                                                                                TMallExportPrepareData &preparedData, int index)
 {
-    TMallExportPrepareData prepareForDSF;
+    std::list<TMallExportSalesData> prepareForDSF;
     try
     {
         UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
@@ -761,7 +770,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDB
             keysToSelect.insert(invoiceIndexKeys[index]);
 
         ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareForDSF, keysToSelect);
+        LoadMallSettingsForFile(dBTransaction, preparedData, keysToSelect, index);
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, SUM(DAILYDATA.FIELD_VALUE) FIELD_VALUE , DAILYDATA.VALUE_TYPE, DAILYDATA.MM_NAME, DAILYDATA.Z_KEY "
@@ -786,19 +795,22 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForDailySalesFile(Database::TDB
           salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
           salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
           salesData.ZKey = IBInternalQuery->Fields[5]->AsInteger;
-          prepareForDSF.SalesData.push_back(salesData);
+          prepareForDSF.push_back(salesData);
        }
+       preparedData.SalesData[index] = prepareForDSF;
     }
     catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return prepareForDSF;
 }
 //-----------------------------------------------------------------------------------------------------------------------
-void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect)
+void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareData, std::set<int> keysToSelect, int index)
 {
+    try
+    {
+        std::list<TMallExportSettings> mallSettings;
         UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
@@ -818,8 +830,15 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
           settings.Name =  IBInternalQuery->Fields[1]->AsString;
           settings.Value  =IBInternalQuery->Fields[2]->AsString;
           settings.ValueType =IBInternalQuery->Fields[3]->AsString;
-          prepareForDSF.MallSettings.push_back(settings);
+          mallSettings.push_back(settings);
         }
+        prepareData.MallSettings[index] = mallSettings;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }
 //------------------------------------------------------------------------------------------------------------------
 UnicodeString TEstanciaMall::GetFieldIndexList(std::set<int> indexKeys)
@@ -834,8 +853,8 @@ UnicodeString TEstanciaMall::GetFieldIndexList(std::set<int> indexKeys)
     return indexKeyList;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-void TEstanciaMall::CreateExportMedium()
+IExporterInterface* TEstanciaMall::CreateExportMedium()
 {
-///todo
+     //return new TMallExportTextFile;
 }
 

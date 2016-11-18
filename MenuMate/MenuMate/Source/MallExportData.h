@@ -5,19 +5,19 @@
 #include "MallExportSettings.h"
 #include <list>
 #include "MallExportSalesData.h"
+#include <map.h>
 //---------------------------------------------------------------------------
 class TMallExportPrepareData
 {
     private:
-    std::list<TMallExportSettings> _mallSettings;
-    std::list<TMallExportSalesData> _salesData;
+    std::map<int,list<TMallExportSettings> > _mallSettings;
+    std::map<int,list<TMallExportSalesData> > _salesData;
 
-    void SetMallSettings(std::list<TMallExportSettings> mallSettings);
-    void SetMallExportSalesData(std::list<TMallExportSalesData> salesData);
+    void SetMallSettings(std::map<int,list<TMallExportSettings> > mallSettings);
+    void SetMallExportSalesData(std::map<int,list<TMallExportSalesData> > salesData);
 
     public:
-     __property std::list<TMallExportSettings> MallSettings ={read = _mallSettings, write = SetMallSettings};
-     __property std::list<TMallExportSalesData> SalesData ={read = _salesData, write = SetMallExportSalesData};
-
+     __property std::map<int,list<TMallExportSettings> > MallSettings = {read = _mallSettings, write = SetMallSettings};
+     __property std::map<int,list<TMallExportSalesData> > SalesData = {read = _salesData, write = SetMallExportSalesData};
 };
 #endif

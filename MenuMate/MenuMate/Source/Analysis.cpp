@@ -57,6 +57,7 @@
 #include "MagicMemoriesSfService.h"
 #include "MagicMemoriesSfProgressMonitor.h"
 #include "SalesForceCommAtZed.h"
+#include "EstanciaMall.h"
 
 #include <string>
 #include <map>
@@ -3377,8 +3378,15 @@ Zed:
 			{
                 UpdateMallExportDetails();
                 UpdateZKeyForMallExportSales();
+                 if(TGlobalSettings::Instance().mallInfo.MallId == 1 && TGlobalSettings::Instance().mallInfo.IsActive != "F")
+                {
+                    //TODO: Instantiation will happen in a factory based on the active mall in database
+                    TMallExport* estanciaMall = new TEstanciaMall();
+                    estanciaMall->Export();
+                }
             }
-            //
+
+
       }
       catch(Exception & E)
       {

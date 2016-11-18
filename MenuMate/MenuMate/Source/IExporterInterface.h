@@ -2,11 +2,11 @@
 
 #ifndef IExporterInterfaceH
 #define IExporterInterfaceH
+#include "MallExportData.h"
 //---------------------------------------------------------------------------
 class IExporterInterface
 {
     public:
-    virtual void WriteToFile()=0;
-
+    virtual void WriteToFile(TMallExportPrepareData preparedData) = 0;
 };
 #endif

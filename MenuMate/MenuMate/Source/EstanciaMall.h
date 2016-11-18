@@ -10,18 +10,19 @@ class TEstanciaMall : public TMallExport
     private:
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
     long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
-    void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
+    void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
+                                UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
 
-    TMallExportPrepareData PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys);
-    TMallExportPrepareData PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys);
-    TMallExportPrepareData PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys);
-    void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect);
+    void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &preparedData, int index);
+    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &preparedData, int index);
+    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &preparedData, int index);
+    void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect, int index);
     UnicodeString GetFieldIndexList(std::set<int> indexKeys);
 
     protected:
     std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
-    void PrepareDataForExport();
-    void CreateExportMedium();
+    TMallExportPrepareData PrepareDataForExport();
+    IExporterInterface* CreateExportMedium();
 
     public:
     TEstanciaMall();
