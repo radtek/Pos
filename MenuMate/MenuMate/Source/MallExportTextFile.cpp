@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <ios>
 #include <fstream>
+#include "GlobalSettings.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
@@ -15,57 +16,86 @@ TMallExportTextFile::TMallExportTextFile()
 //----------------------------------------------------------------------------------------------
 void TMallExportTextFile::WriteToFile(TMallExportPrepareData preparedData)
 {
-    for( int index=1; index< preparedData.MallSettings.size(); index++)
+    for( int index = 1; index <= preparedData.MallSettings.size(); index++)
     {
-        std::map<int,list<TMallExportSettings> > setting = preparedData.MallSettings;
-        //std::list<TMallExportSettings> settings = preparedData.MallSettings.find(index);
+        std::map<int,list<TMallExportSettings> >::iterator itSettings = preparedData.MallSettings.find(index);
+        std::map<int,list<TMallExportSalesData> >::iterator itSalesData = preparedData.SalesData.find(index);
+        std::map<int,UnicodeString>::iterator itFileName = preparedData.FileName.find(index);
 
-        std::map<int,list<TMallExportSettings> >::iterator itSettings = preparedData.MallSettings.find(2);
-        std::map<int,list<TMallExportSalesData> >::iterator itSalesData = preparedData.SalesData.find(2);
-
-        WriteFileAccordingToIndex(preparedData, itSettings, itSalesData, 2);
+        //Write into File According to File Type
+        WriteFileAccordingToIndex(preparedData, itSettings, itSalesData, itFileName, index);
     }
 }
 //------------------------------------------------------------------------------------------------------
 void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData preparedData, std::map<int,list<TMallExportSettings> >::iterator itSettings,
-                                                        std::map<int,list<TMallExportSalesData> >::iterator itSalesData, int index)
+                            std::map<int,list<TMallExportSalesData> >::iterator itSalesData, std::map<int,UnicodeString>::iterator itFileName, int index)
 {
-        std::list<TMallExportSettings>::iterator itFileSettings;
-        std::list<TMallExportSalesData>::iterator it;
+    //Creating Temporary File Stream
+    std::fstream tempFile;
 
-        std::fstream OutputFile;
-        std::fstream TempFile;
+    //Creating output File Stream
+    std::ofstream outFile;
 
-            std::ofstream OutFile;
-            UnicodeString FileURI = "C:\\Estancia\\EstanciaText.txt";
-             TempFile.open(FileURI.c_str());
+    //filePath where the file will be written
+    UnicodeString filePath = "";
 
-             if(TempFile.is_open())
-             {
-                    OutFile.open(FileURI.c_str(), std::ios_base::out);
-                    for(itFileSettings = itSettings->second.begin(); itFileSettings != itSettings->second.end(); itFileSettings++)
-                    {
-                       // OutFile << itFileSettings->Value.t_str();
-                        OutFile << itFileSettings->Value.t_str();
-                        OutFile << "\n";
-                    }
-                    for(it = itSalesData->second.begin(); it != itSalesData->second.end(); it++)
-                    {
-                      //  OutFile << it->FieldIndex.t_str();
-                        OutFile << it->DataValue.t_str();
-                        OutFile << "\n";
-                    }
-             }
-            OutFile.close();
-            TempFile.close();
-          //  }
+    //Format of the file
+    UnicodeString format = ".txt";
 
-//    switch(index)
-//    {
-//        case 1:
-//            break;
-//
-//    }
+    //Iterate the file Settings
+    std::list<TMallExportSettings>::iterator itFileSettings;
 
+    //Iterate mallExportSalesData.
+    std::list<TMallExportSalesData>::iterator it;
 
+    //Iterate FileNaming Convention
+    std::map<int,UnicodeString>::iterator itName;
+
+    //Iterate UI Settings of FilPath
+    std::list<TMallExportSettings> ::iterator itUISettings;
+
+    //Get File Path
+    for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)
+    {
+        if(itUISettings->ControlName == "edMallPath1")
+            filePath = itUISettings->Value;
+    }
+
+    //Check For Directory Existence ..Create if not created already
+    if (!DirectoryExists(filePath))
+    {
+         CreateDir(filePath);
+    }
+
+    //Getting filepath + fileName
+    filePath = filePath + itFileName->second  + format;
+
+    //Open the file.. file will be opened if already Created
+    tempFile.open(filePath.c_str());
+
+    //If writing first time in the file than tempFile.is_open() will return false so control will go inside if
+     if(!tempFile.is_open())
+     {
+        //Open file for writing
+        outFile.open(filePath.c_str(), std::ios_base::out);
+
+        //First Write Settings in the file ex:- Tenant Code, TerminalNumber etc
+        for(itFileSettings = itSettings->second.begin(); itFileSettings != itSettings->second.end(); itFileSettings++)
+        {
+            //Convert Value into String
+            outFile << itFileSettings->Value.t_str();
+            outFile << "\n";
+        }
+
+        //Secondly Write data in the file
+        for(it = itSalesData->second.begin(); it != itSalesData->second.end(); it++)
+        {
+            //Convert Value into String
+            outFile << it->DataValue.t_str();
+            outFile << "\n";
+        }
+     }
+     //As we have written to the file so close it now.
+    outFile.close();
+    tempFile.close();
 }

@@ -19,6 +19,11 @@
     _salesData = salesData;
 }
 //-----------------------------------------------------------------------------
+ void TMallExportPrepareData::SetFileName(std::map<int,UnicodeString> fileName)
+{
+    _fileName = fileName;
+}
+//-----------------------------------------------------------------------------
 TMallExportPrepareData::TMallExportPrepareData()
 {
 }

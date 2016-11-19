@@ -618,8 +618,6 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
     {
         std::set<int> keyToCheck;
         int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
-        keyToCheck.clear();
-
         for(int index = 0; index < 8; index++)
             keyToCheck.insert(dailySalekeys[index]);
 
@@ -636,7 +634,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
         PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, preparedData, 2);
 
         int invoiceIndex[3] = {65, 67, 68};
-
+        keyToCheck.clear();
         for(int index = 0; index < 3; index++)
             keyToCheck.insert(invoiceIndex[index]);
 
@@ -662,12 +660,23 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
     std::list<TMallExportSalesData> salesDataForISF;
     try
     {
+        UnicodeString fileName = "I";
         UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
-        int invoiceIndexKeys[4] = {1, 2, 3, 35};
         std::set<int>keysToSelect;
+        int  fileNameKeys[4] = {1, 2, 3, 33};
+
+        for(int index = 0; index < 3; index++)
+            keysToSelect.insert(fileNameKeys[index]);
+
+        //Write File name into map
+        fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect);
+        prepareDataForInvoice.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
+
+        int invoiceIndexKeys[4] = {1, 2, 3, 35};
+        keysToSelect.clear();
         for(int index = 0; index < 4; index++)
             keysToSelect.insert(invoiceIndexKeys[index]);
 
@@ -711,13 +720,24 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
     std::list<TMallExportSalesData> prepareListForHSF;
     try
     {
+        UnicodeString fileName = "H";
         UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
 
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
         std::set<int>keysToSelect;
+        int  fileNameKeys[4] = {1, 2, 3, 33};
+
+        for(int index = 0; index < 3; index++)
+            keysToSelect.insert(fileNameKeys[index]);
+
+        //Write File name into map
+        fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect);
+        prepareDataForHSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
+
         int invoiceIndexKeys[3] = {1, 2, 3};
+        keysToSelect.clear();
         for(int index = 0; index < 3; index++)
             keysToSelect.insert(invoiceIndexKeys[index]);
 
@@ -762,12 +782,23 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
     std::list<TMallExportSalesData> prepareListForDSF;
     try
     {
+        UnicodeString fileName = "D";
         UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
         std::set<int>keysToSelect;
+        int  fileNameKeys[4] = {1, 2, 3, 33};
+
+        for(int index = 0; index < 3; index++)
+            keysToSelect.insert(fileNameKeys[index]);
+
+        //Write File name into map
+        fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect);
+        prepareDataForDSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
+
         int invoiceIndexKeys[3] = {1, 2, 3};
+        keysToSelect.clear();
         for(int index = 0; index < 3; index++)
             keysToSelect.insert(invoiceIndexKeys[index]);
 
@@ -823,7 +854,7 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
         dBTransaction.RegisterQuery(IBInternalQuery);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, CASE WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0)
+        IBInternalQuery->SQL->Text = "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, CASE WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
                                         "ELSE (a.FIELD_VALUE) END FIELD_VALUE, a.VALUE_TYPE "
                                       "FROM MALLEXPORT_SALES a "
                                       "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
@@ -864,5 +895,41 @@ UnicodeString TEstanciaMall::GetFieldIndexList(std::set<int> indexKeys)
 IExporterInterface* TEstanciaMall::CreateExportMedium()
 {
       return new TMallExportTextFile;
+}
+//--------------------------------------------------------------------------------------------------------------------
+UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect)
+{
+    UnicodeString fileName = "";
+    try
+    {
+        std::list<TMallExportSettings> mallSettings;
+        UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, CASE WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
+                                                                            "WHEN(a.FIELD_INDEX = 33) THEN LPAD(a.FIELD_VALUE,3,0) "
+                                                                        "ELSE (a.FIELD_VALUE) END FIELD_VALUE, "
+                                                "a.VALUE_TYPE , a.Z_KEY "
+                                    "FROM MALLEXPORT_SALES a "
+                                    "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
+                                    "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                    "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) "
+                                    "GROUP BY 1,2,3,4,5 ";
+        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ExecQuery();
+
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            fileName = fileName + "" + IBInternalQuery->Fields[2]->AsString;
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return fileName;
 }
 
