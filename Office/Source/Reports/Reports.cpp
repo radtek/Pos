@@ -5699,9 +5699,8 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 				const AnsiString ReportName = "repConsumption";
 
 				TReportCheckboxFilter *LocationFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
-				TReportCheckboxFilter *MenuFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(2);
-
-				dmMMReportData->SetupLocationConsumption(ReportControl->Start, ReportControl->End, LocationFilter->Selection, MenuFilter->Selection, MenuFilter->GSTChecked);
+				
+				dmMMReportData->SetupLocationConsumption(ReportControl->Start, ReportControl->End, LocationFilter->Selection);
 				if (ReportType == rtExcel)
 				{
 					std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
@@ -5714,8 +5713,7 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 					{
 						AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
 														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-						rvMenuMate->SetParam("ReportRange", DateRange);
-						rvMenuMate->SetParam("IncludeGST", MenuFilter->GSTChecked ? "1":"0");
+						rvMenuMate->SetParam("ReportRange", DateRange); 
 						rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
                         rvMenuMate->SetParam("subCategory", "By Location");
                         rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));

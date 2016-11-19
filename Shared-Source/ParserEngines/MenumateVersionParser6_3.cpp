@@ -28,6 +28,12 @@ void TApplyParser::upgrade6_32Tables()
 	update6_32Tables();
 }
 
+// 6.33
+void TApplyParser::upgrade6_33Tables()
+{
+	update6_33Tables();
+}
+
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -126,6 +132,158 @@ void TApplyParser::UpdateDiscountsTable6_32(TDBControl* const inDBControl)
 		inDBControl);
 	}
 }
+
+//---------------------------------------------------------------------------
+//::::::::::::::::::::::::Version 6.33::::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_33Tables()
+{
+    ModifyCloseZedColumns6_33(_dbControl);
+    PopulateZED_StatusForContactTime6_33(_dbControl);
+    ReCreateRoundedContactTimeView6_33(_dbControl);
+    AlterRoundTimeProcedure6_33(_dbControl);
+}
+//---------------------------------------------------------------------------
+void TApplyParser::AlterRoundTimeProcedure6_33( TDBControl* const inDBControl )
+{    bool procedureExistsPredicate = procedureExists( "ROUNDTIME", _dbControl);
+	std::string profileKey = "(SELECT PROFILE_KEY FROM PROFILE WHERE PROFILE_TYPE = 4 AND NAME = 'Globals')";
+	std::string roundingTimesKey = "(SELECT "
+	"VARSPROFILE.INTEGER_VAL "
+	"FROM VARSPROFILE "
+	"INNER JOIN VARIABLES ON VARSPROFILE.VARIABLES_KEY = VARIABLES.VARIABLES_KEY "
+	"WHERE VARIABLES.VARIABLE_NAME LIKE '%Rounded to time%' AND PROFILE_KEY = " + profileKey + " )";
+	std::string dmlStatement = procedureExistsPredicate ? "ALTER" : "CREATE";
+	executeQuery(
+	dmlStatement +" PROCEDURE ROUNDTIME ( inUnroundedTime Timestamp ) "
+	"RETURNS ( outRoundedTime Timestamp ) "
+	"AS "
+	"DECLARE VARIABLE timeStampMinutes INT; "
+	"DECLARE VARIABLE timeStampHours INT; "
+	"DECLARE VARIABLE timeString CHAR(20); "
+	"DECLARE VARIABLE minutesToRoundTo INT; "
+
+    "DECLARE VARIABLE timeStampDay INT; "
+    "DECLARE VARIABLE timeStampMonth INT; "
+    "DECLARE VARIABLE timeStampYear INT; "
+
+	"BEGIN "
+	"SELECT ROUNDINGTIMES_VALUE FROM ROUNDINGTIMES WHERE ROUNDINGTIMES_KEY = " + roundingTimesKey + " INTO minutesToRoundTo; "
+	"IF ( minutesToRoundTo = 0 ) THEN "
+	"outRoundedTime = InUnroundedTime; "
+	"ELSE "
+	"BEGIN "
+	"timeStampMinutes = EXTRACT ( MINUTE FROM InUnroundedTime ); "
+	"timeStampMinutes = ROUND ( CAST ( timeStampMinutes as DECIMAL(18,4) ) / CAST ( minutesToRoundTo as DECIMAL(18,4) ) ) * minutesToRoundTo; "
+	"timeStampHours = EXTRACT ( HOUR FROM InUnroundedTime ); "
+    "timeStampDay = EXTRACT ( day FROM InUnroundedTime ); "
+    "timeStampMonth = EXTRACT ( Month FROM InUnroundedTime ); "
+    "timeStampYear = EXTRACT ( year FROM InUnroundedTime ); "
+
+	"IF ( timeStampMinutes >= 60 ) THEN "
+	"BEGIN "
+	"timeStampMinutes = MOD ( timeStampMinutes, 60 ); "
+	"timeStampHours = timeStampHours + 1; "
+    "if(timeStampHours >= 24) "
+    "then begin timeStampHours = 0; "
+    "timeStampDay = timeStampDay+1; "
+    "END "
+	"END "
+	"timeString = LPAD ( TRIM ( CAST ( timeStampDay as CHAR(2) ) ), 2, '0' ) || '.' || LPAD ( TRIM ( CAST ( timeStampMonth as CHAR(2) ) ), 2, '0' ) || '.' || LPAD ( TRIM ( CAST ( timeStampYear as CHAR(4) ) ), 4, '0' ) || ', ' || LPAD ( TRIM ( CAST ( timeStampHours as CHAR(2) ) ), 2, '0' ) || ':' || LPAD ( TRIM ( CAST ( timeStampMinutes as CHAR(2) ) ), 2, '0' ) || ':00';  "
+	"outRoundedTime = DATEADD(SECOND, DATEDIFF(SECOND, CAST ( InUnroundedTime AS timestamp ), CAST ( timeString as timestamp ) ), InUnroundedTime); "
+	"END "
+	"SUSPEND; "
+	"END ",
+	inDBControl );
+}//------
+
+
+//------------------------------------------------------------------------------
+void TApplyParser::PopulateZED_StatusForContactTime6_33(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TDateTime PrevZedTime;
+        TIBSQL *query    = transaction.Query( transaction.AddQuery() );
+        TIBSQL *SelectQuery    = transaction.Query( transaction.AddQuery() );
+        transaction.StartTransaction();
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT MAX(ZEDS.TIME_STAMP) TIME_STAMP, PROFILE.PROFILE_KEY "
+			"FROM ZEDS Left JOIN PROFILE ON ZEDS.TERMINAL_NAME = PROFILE.NAME "
+			"WHERE TIME_STAMP IS NOT NULL "
+
+         " and  TIME_STAMP IN (SELECT MAX(TIME_STAMP) FROM ZEDS where  STAFF_HOUR_ENABLE = 1)  "
+			"GROUP BY TERMINAL_NAME, PROFILE_KEY "
+			"ORDER BY TIME_STAMP DESC " ;
+        SelectQuery->ExecQuery();
+        if(SelectQuery->RecordCount)
+        {
+           PrevZedTime = SelectQuery->FieldByName("TIME_STAMP")->AsDateTime;
+        }
+        query->Close();
+        query->SQL->Text = "UPDATE CONTACTTIME SET ZED_STATUS = 1 WHERE CONTACTTIME.LOGOUT_DATETIME < :ZED_TIME ";
+        query->ParamByName("ZED_TIME")->AsDateTime = PrevZedTime;
+        query->ExecQuery();
+        query->Close();
+
+
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+        throw;
+    }
+}
+//---------------------------------------------------------------------------
+void TApplyParser::ModifyCloseZedColumns6_33( TDBControl* const inDBControl )
+{
+    if ( !fieldExists( "CONTACTTIME ", "ZED_STATUS ", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE CONTACTTIME "
+        "ADD ZED_STATUS Integer ; ",
+        inDBControl);
+    }
+}
+
+void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBControl )
+{
+
+    executeQuery(
+        "RECREATE VIEW ROUNDEDCONTACTTIME "
+        "("
+            "CONTACTTIME_KEY, "
+            "CONTACTS_KEY, "
+            "LOGIN_DATETIME, "
+            "ROUNDED_LOGIN_DATETIME, "
+            "ROUNDED_LOGOUT_DATETIME, "
+            "MODIFIED, "
+            "EXPORTED, "
+            "TIMECLOCKLOCATIONS_KEY, "
+            "TOTALHOURS, "
+            "BREAKS, "
+            "ZED_STATUS "
+        ") "
+        "AS "
+        "SELECT "
+            "CONTACTTIME_KEY, "
+            "CONTACTS_KEY, "
+            "LOGIN_DATETIME, "
+            "(SELECT OUTROUNDEDTIME FROM ROUNDTIME( CONTACTTIME.LOGIN_DATETIME  )) AS ROUNDED_LOGIN_DATETIME, "
+            "(SELECT OUTROUNDEDTIME FROM ROUNDTIME( CONTACTTIME.LOGOUT_DATETIME )) AS ROUNDED_LOGOUT_DATETIME, "
+            "MODIFIED, "
+            "EXPORTED, "
+            "TIMECLOCKLOCATIONS_KEY, "
+            "TOTALHOURS, "
+            "BREAKS, "
+            "ZED_STATUS "
+        "FROM "
+            "CONTACTTIME",
+        inDBControl );
+
+}
+
 
 }
 

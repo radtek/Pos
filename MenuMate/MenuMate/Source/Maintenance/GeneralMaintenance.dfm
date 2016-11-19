@@ -223,7 +223,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsPointOfSale
+    ActivePage = tsStaffOptions
     TabOrder = 1
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'
@@ -1099,7 +1099,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Caption = 'Round to nearest times'
           Items.Strings = (
             '0 minutes'
-            '1 minute'
             '5 minutes'
             '10 minutes'
             '15 minutes'
