@@ -745,7 +745,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
         LoadMallSettingsForFile(dBTransaction, prepareDataForHSF, keysToSelect, index);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT HOURLYDATA.FIELD_INDEX, HOURLYDATA.FIELD, SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code  "
+        IBInternalQuery->SQL->Text = /*"SELECT HOURLYDATA.FIELD_INDEX, HOURLYDATA.FIELD, SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code  "
                                       "FROM  "
                                         "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME,Extract (Hour From a.DATE_CREATED) Hour_code  "
                                          "FROM MALLEXPORT_SALES a "
@@ -753,7 +753,42 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                                         " WHERE a.FIELD_INDEX IN( " + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
                                         "AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
                                          "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
-                                    "GROUP BY 1,2,4,5  ";
+                                    "GROUP BY 1,2,4,5  "; */
+
+                             "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 32) THEN 7  "
+                                            "WHEN (HOURLYDATA.FIELD_INDEX = 34) THEN 6 "
+                                            "WHEN (HOURLYDATA.FIELD_INDEX = 66) THEN 4 "
+                                            "ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
+                                    "HOURLYDATA.FIELD, "
+                                    "SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , "
+                                    "HOURLYDATA.VALUE_TYPE , "
+                                    "HOURLYDATA.Hour_code  "
+                            "FROM "
+                                "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS int) FIELD_VALUE, a.VALUE_TYPE, "
+                                                        "meh.MM_NAME,Extract (Hour From a.DATE_CREATED) Hour_code "
+                                 "FROM MALLEXPORT_SALES a "
+                                 "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+                                 "WHERE a.FIELD_INDEX IN(32,34,66) AND meh.IS_ACTIVE = :IS_ACTIVE  "
+                                 "AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
+                                 "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
+                            "GROUP BY 1,2,4,5 "
+
+                            "UNION ALL "
+
+                            "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 65) THEN 5 ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
+                                    "HOURLYDATA.FIELD, CAST(SUM(HOURLYDATA.FIELD_VALUE)*100 AS INT ) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code "
+                            "FROM "
+                                    "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, "
+                                            "Extract (Hour From a.DATE_CREATED) Hour_code "
+                                     "FROM MALLEXPORT_SALES a "
+                                     "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID"
+                                    " WHERE a.FIELD_INDEX IN(65) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                    "AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
+                                     "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA "
+                            "GROUP BY 1,2,4 ,5 "
+
+                            "ORDER BY 5 ASC, 1 ASC ";
+
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
@@ -767,6 +802,38 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
           salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
           prepareListForHSF.push_back(salesData);
         }
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+                                "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 34) THEN 9  "
+                                                  "WHEN (HOURLYDATA.FIELD_INDEX = 65) THEN 8 "
+                                                  "ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
+                                        "HOURLYDATA.FIELD, "
+                                        "CAST(SUM(CASE WHEN HOURLYDATA.FIELD_INDEX = 65 THEN (HOURLYDATA.FIELD_VALUE*100) ELSE (HOURLYDATA.FIELD_VALUE) END )  AS INT ) FIELD_VALUE, "
+                                         "HOURLYDATA.VALUE_TYPE "
+                                "FROM "
+                                "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE "
+                                "FROM MALLEXPORT_SALES a  "
+                                "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+                                "WHERE a.FIELD_INDEX IN(65, 34) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                "AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
+                                "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA "
+                                "GROUP BY 1,2,4 "
+                                "ORDER BY 1 ASC ";
+
+        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ExecQuery();
+
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+          TMallExportSalesData salesData;
+          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
+          salesData.Field = IBInternalQuery->Fields[1]->AsString;
+          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
+          salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
+          prepareListForHSF.push_back(salesData);
+        }
+
         prepareDataForHSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForHSF ));
     }
     catch(Exception &E)
@@ -859,7 +926,8 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
                                       "FROM MALLEXPORT_SALES a "
                                       "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
                                       "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                      "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+                                      "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) "
+                                      "GROUP BY 1,2,3,4 ";
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
