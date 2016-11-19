@@ -83,16 +83,14 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
         for(itFileSettings = itSettings->second.begin(); itFileSettings != itSettings->second.end(); itFileSettings++)
         {
             //Convert Value into String
-            outFile << itFileSettings->Value.t_str();
-            outFile << "\n";
+            outFile << itFileSettings->Value.t_str() << "\n";
         }
 
         //Secondly Write data in the file
         for(it = itSalesData->second.begin(); it != itSalesData->second.end(); it++)
         {
             //Convert Value into String
-            outFile << it->DataValue.t_str();
-            outFile << "\n";
+            outFile << it->DataValue.t_str() << "\n";
         }
      }
      //As we have written to the file so close it now.

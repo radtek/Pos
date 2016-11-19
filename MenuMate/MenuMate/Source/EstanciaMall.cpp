@@ -668,7 +668,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
         std::set<int>keysToSelect;
         int  fileNameKeys[4] = {1, 2, 3, 33};
 
-        for(int index = 0; index < 3; index++)
+        for(int index = 0; index < 4; index++)
             keysToSelect.insert(fileNameKeys[index]);
 
         //Write File name into map
@@ -729,7 +729,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
         std::set<int>keysToSelect;
         int  fileNameKeys[4] = {1, 2, 3, 33};
 
-        for(int index = 0; index < 3; index++)
+        for(int index = 0; index < 4; index++)
             keysToSelect.insert(fileNameKeys[index]);
 
         //Write File name into map
@@ -790,7 +790,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
         std::set<int>keysToSelect;
         int  fileNameKeys[4] = {1, 2, 3, 33};
 
-        for(int index = 0; index < 3; index++)
+        for(int index = 0; index < 4; index++)
             keysToSelect.insert(fileNameKeys[index]);
 
         //Write File name into map
@@ -916,7 +916,8 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
                                     "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
                                     "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE "
                                     "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) "
-                                    "GROUP BY 1,2,3,4,5 ";
+                                    "GROUP BY 1,2,3,4,5 "
+                                    "ORDER BY 1 ASC ";
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
