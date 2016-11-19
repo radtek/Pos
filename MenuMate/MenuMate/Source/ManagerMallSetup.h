@@ -10,8 +10,6 @@
 #include "Mall.h"
 class TManagerMallSetup
 {
- private:
-     static bool IsSettingIdExist(Database::TDBTransaction &dbTransaction,int settingKey);
  public:
      static std::vector<UnicodeString> LoadAllMalls(Database::TDBTransaction &dbTransaction);
      static void UpdateActiveMall(Database::TDBTransaction &dbTransaction, int mallKey);

@@ -54,27 +54,6 @@ void TManagerMallSetup::UpdateActiveMall(Database::TDBTransaction &dbTransaction
 	}
 }
 //-------------------------------------------------------------------------------------------------
-bool TManagerMallSetup::IsSettingIdExist(Database::TDBTransaction &dbTransaction,int settingKey)
-{
-    TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
-    ibInternalQuery->Close();
-    bool isRecordPresent = false;
-    try
-    {
-        ibInternalQuery->SQL->Text = " SELECT * FROM MALLEXPORT_SETTINGS_VALUES WHERE MALLEXPORTSETTING_ID = :MALLEXPORTSETTING_ID ";
-        ibInternalQuery->ParamByName("MALLEXPORTSETTING_ID")->AsInteger = settingKey;
-        ibInternalQuery->ExecQuery();
-
-        if(ibInternalQuery->RecordCount)
-            isRecordPresent = true;
-    }
-     catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return isRecordPresent;
-}//-------------------------------------------------------------------------------------------------
 TMall TManagerMallSetup::LoadActiveMallSettings(Database::TDBTransaction &dbTransaction)
 {
     TMall mallProperties;
