@@ -892,7 +892,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                      "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, cast(a.FIELD_VALUE as int ) FIELD_VALUE , a.VALUE_TYPE, a.Z_KEY, meh.MM_NAME  "
                                      "FROM "
                                         "MALLEXPORT_SALES a inner join MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                        "where a.FIELD_INDEX IN( 33, 35 ) AND meh.IS_ACTIVE = 'T' AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
+                                        "where a.FIELD_INDEX IN( 33, 35 ) AND meh.IS_ACTIVE = :IS_ACTIVE AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
                                     "ORDER BY 1 ASC  ";   //TODO AFTER DISCUSSION
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
