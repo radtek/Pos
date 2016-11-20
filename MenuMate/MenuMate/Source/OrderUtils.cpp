@@ -156,6 +156,16 @@ bool TOrderUtils::SeniorCitizensDiscountApplied(TList *Orders)
 	}
     return retVal;
 }
+bool TOrderUtils::PWDDiscountApplied(TList *Orders)
+{
+    bool retVal = false;
+	for (int i = 0; i < Orders->Count && !retVal; i++)
+	{
+        TItemComplete *Order = (TItemComplete *)Orders->Items[i];
+        retVal = Order->HasPWDApplied();
+	}
+    return retVal;
+}
 
 bool TOrderUtils::AnyDiscountsApplied(TList *Orders)
 {

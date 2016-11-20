@@ -111,7 +111,7 @@
 #include "HoldSend.h"
 #include "DealManager.h"
 #include "ItemSizeCategory.h"
-#include "SeniorCitizenDiscountChecker.h"
+#include "SCDPWDChecker.h"
 #include "MMCustomerDisplayManager.h"
 #include "ReportUtilities.h"
 #include "CaptNamePhone.h"
@@ -9237,7 +9237,7 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
                 {
                     if(SelectionForm->SelectedTabType ==13)
                     {
-                        TSeniorCitizenDiscountChecker SCDChecker;
+                        TSCDPWDChecker SCDChecker;
                          std::auto_ptr<TList> allOrders(new TList());
                            GetAllOrders(allOrders.get());
 
@@ -9250,7 +9250,8 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
                                 CurrentDiscount.DiscountKey =  it->DiscountKey;
                                  ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
 
-                                  if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get(), true))
+                                  if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get(), true))
+                                       && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get(), true)))
                                   {
                                       isSCDApplied = true;
                                   }
@@ -13194,7 +13195,7 @@ void TfrmSelectDish::AssignDiscountLists()
    std::auto_ptr<TList> allOrders(new TList());
    GetAllOrders(allOrders.get());
    TDiscount CurrentDiscount;
-   TSeniorCitizenDiscountChecker SCDChecker;
+   TSCDPWDChecker SCDChecker;
    isChitDiscountExist = false;
 
    for(int i=0; i < ChitNumber.DiscountList.size(); i++)
@@ -13208,7 +13209,9 @@ void TfrmSelectDish::AssignDiscountLists()
              TypeOfSale = NonChargableSale;
           }
           ManagerDiscount->ClearDiscount(SeatOrders[SelectedSeat]->Orders->List, ChitNumber.DiscountList[i]);
-          if(SCDChecker.SeniorCitizensCheck(ChitNumber.DiscountList[i], allOrders.get()))
+//          if(SCDChecker.SeniorCitizensCheck(ChitNumber.DiscountList[i], allOrders.get()))
+          if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+               && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
           {
                bool isDiscountApplied = ApplyDiscount(DBTransaction, ChitNumber.DiscountList[i], SeatOrders[SelectedSeat]->Orders->List);
               if(isDiscountApplied && SeatOrders[SelectedSeat]->Orders->List->Count >0 )
@@ -13310,7 +13313,7 @@ void TfrmSelectDish::GetThorVouchers()
                    {
                         RemoveMembershipDiscounts();
                         SeatOrders[SelectedSeat]->Orders->AppliedMembership.AutoAppliedDiscounts.clear();
-                        TSeniorCitizenDiscountChecker SCDChecker;
+                        TSCDPWDChecker SCDChecker;
                         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
                         DBTransaction.StartTransaction();
                         std::auto_ptr<TList> allOrders(new TList());
@@ -13326,7 +13329,9 @@ void TfrmSelectDish::GetThorVouchers()
                           TypeOfSale = NonChargableSale;
                         }
 
-                        if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+//                        if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+                        if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+                            && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
                         {
                           SeatOrders[SelectedSeat]->Orders->AppliedMembership.AutoAppliedDiscounts.insert(CurrentDiscount.DiscountKey);
                           ApplyDiscount(DBTransaction, CurrentDiscount.DiscountKey, SeatOrders[SelectedSeat]->Orders->List,dsMMMembership);
@@ -13397,7 +13402,7 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
 			else
 			{
                TDiscount CurrentDiscount;
-               TSeniorCitizenDiscountChecker SCDChecker;
+               TSCDPWDChecker SCDChecker;
                std::auto_ptr<TList> allOrders(new TList());
                GetAllOrders(allOrders.get());
                CurrentDiscount.DiscountKey = frmMessage->Key;
@@ -13412,7 +13417,9 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                  TypeOfSale = NonChargableSale;
                }
 
-              if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+//              if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+              if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
+                  && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
               {
                  ApplyDiscount(DBTransaction, frmMessage->Key, SeatOrders[SelectedSeat]->Orders->List);
               }
