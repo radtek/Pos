@@ -681,15 +681,29 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
             keysToSelect.insert(invoiceIndexKeys[index]);
 
          ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareDataForInvoice, keysToSelect, index);
+        LoadMallSettingsForInvoiceFile(dBTransaction, prepareDataForInvoice, keysToSelect, index);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY,a.CREATED_BY, a.DATE_CREATED, a.FIELD, a.FIELD_INDEX, a.FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME "
-                                     "FROM MALLEXPORT_SALES a  "
-                                     "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
-                                     "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                     "AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
-                                     "ORDER BY A.MALLEXPORT_SALE_KEY ASC; ";
+        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY, "
+                                               "a.CREATED_BY, "
+                                               "a.DATE_CREATED, "
+                                               "a.FIELD, "
+                                               "LPAD((CASE WHEN (a.FIELD_INDEX = 65) THEN 6 "
+                                                          "WHEN (a.FIELD_INDEX = 67) THEN 7 "
+                                                          "WHEN (a.FIELD_INDEX = 68) THEN 5 "
+                                                          "ELSE (a.FIELD_INDEX) END),2,0) FIELD_INDEX, "
+                                                "(CASE WHEN (a.FIELD_INDEX = 65) THEN (TOTALNETSALE.FIELD_VALUE*100) "
+                                                      "WHEN (a.FIELD_INDEX = 68) THEN LPAD(a.FIELD_VALUE,5,0) "
+                                                      "ELSE a.FIELD_VALUE END ) FIELD_VALUE, "
+                                                "a.VALUE_TYPE, "
+                                                "meh.MM_NAME "
+                                        "FROM MALLEXPORT_SALES a "
+                                        "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+                                        "LEFT JOIN(SELECT a.ARCBILL_KEY, CAST(a.FIELD_VALUE AS numeric(17,2))FIELD_VALUE "
+                                                        "FROM MALLEXPORT_SALES a WHERE a.FIELD_INDEX = 65)TOTALNETSALE ON a.ARCBILL_KEY = TOTALNETSALE.ARCBILL_KEY "
+                                "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                "AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
+                                "ORDER BY 1,5 ASC; ";
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
 
@@ -701,7 +715,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
           salesData.DateCreated =IBInternalQuery->Fields[2]->AsDateTime;
           salesData.Field = IBInternalQuery->Fields[3]->AsString;
           salesData.FieldIndex = IBInternalQuery->Fields[4]->AsInteger;
-          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[5]->AsString;
+          salesData.DataValue = IBInternalQuery->Fields[4]->AsString + "" + IBInternalQuery->Fields[5]->AsString;
           salesData.DataValueType = IBInternalQuery->Fields[6]->AsString;
           salesDataForISF.push_back(salesData);
        }
@@ -745,16 +759,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
         LoadMallSettingsForFile(dBTransaction, prepareDataForHSF, keysToSelect, index);
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = /*"SELECT HOURLYDATA.FIELD_INDEX, HOURLYDATA.FIELD, SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code  "
-                                      "FROM  "
-                                        "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME,Extract (Hour From a.DATE_CREATED) Hour_code  "
-                                         "FROM MALLEXPORT_SALES a "
-                                         "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID  "
-                                        " WHERE a.FIELD_INDEX IN( " + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                        "AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
-                                         "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
-                                    "GROUP BY 1,2,4,5  "; */
-
+        IBInternalQuery->SQL->Text =
                              "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 32) THEN 7  "
                                             "WHEN (HOURLYDATA.FIELD_INDEX = 34) THEN 6 "
                                             "WHEN (HOURLYDATA.FIELD_INDEX = 66) THEN 4 "
@@ -1000,5 +1005,44 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
 		throw;
 	}
     return fileName;
+}
+//--------------------------------------------------------------------------------------------------------------------
+void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareData, std::set<int> keysToSelect, int index)
+{
+    try
+    {
+        std::list<TMallExportSettings> mallSettings;
+        UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT LPAD((CASE WHEN a.FIELD_INDEX = 35 THEN 2 "
+                                                    "WHEN a.FIELD_INDEX = 2 THEN 4 "
+                                                    "ELSE a.FIELD_INDEX END),2,0) FIELD_INDEX, a.FIELD, CASE WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
+                                                    "ELSE (a.FIELD_VALUE) END FIELD_VALUE, a.VALUE_TYPE "
+                                      "FROM MALLEXPORT_SALES a "
+                                      "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
+                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                      "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) "
+                                      "GROUP BY 1,2,3,4 ";
+        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ExecQuery();
+
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+          TMallExportSettings settings;
+          settings.Name =   IBInternalQuery->Fields[1]->AsString;
+          settings.Value  = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsString;
+          settings.ValueType = IBInternalQuery->Fields[3]->AsString;
+          mallSettings.push_back(settings);
+        }
+        prepareData.MallSettings.insert( std::pair<int,list<TMallExportSettings> >(index, mallSettings));
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }
 
