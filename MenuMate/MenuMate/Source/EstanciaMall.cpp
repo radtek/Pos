@@ -1062,11 +1062,17 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
     UnicodeString fileName = "";
     try
     {
+        //create list of mallexportsetting
         std::list<TMallExportSettings> mallSettings;
+
+        //seperate keys with comma in the form of string
         UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
+
+        //Register Query.
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
+        //Query for fetching file name.
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, CASE WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
                                                                             "WHEN(a.FIELD_INDEX = 33) THEN LPAD(a.FIELD_VALUE,3,0) "
