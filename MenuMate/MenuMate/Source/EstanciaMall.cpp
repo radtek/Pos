@@ -608,31 +608,47 @@ void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, 
 //--------------------------------------------------------------------------------------------------------
 TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
 {
+    //Create TMallExportPrepareData  for returning prepared data
     TMallExportPrepareData preparedData;
 
     //Register the database transaction..
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
+
     try
     {
+        //Set for inserting index. these indexes will be used for fetching data
         std::set<int> keyToCheck;
+
+        //Indexes for which data will not selected
         int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
+
+        //insert these indexes into set.
         keyToCheck = InsertInToSet(dailySalekeys, 8);
 
         //Prepare Data For Daily Sales File
         PrepareDataForDailySalesFile(dbTransaction, keyToCheck, preparedData, 1);
 
+       //indexes for selecting total Net sale, patron count, etc
         int  hourIndexkeys[3] = {65, 64, 32};
+
+        //Clear the map because same map is used for many time insertion
         keyToCheck.clear();
 
+        //insert these indexes into set.
         keyToCheck = InsertInToSet(hourIndexkeys, 3);
 
         //Prepare Data For Hourly File
         PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, preparedData, 2);
 
+        //indexes for selecting total Net sale, invoice number , status
         int invoiceIndex[3] = {65, 67, 68};
+
+         //Clear the map because same map is used for many time insertion
         keyToCheck.clear();
+
+        //insert these indexes into set.
         keyToCheck = InsertInToSet(invoiceIndex, 3);
 
         //Prepare Data For Invoice File
