@@ -459,7 +459,9 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
                     fieldData.SSDiscount5NonApprovedNonVatable += 0;//todo        ///62
                 }
         }
-        ///7
+
+        fieldData.OldAccumulatedSalesVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
+        fieldData.OldAccumulatedSalesNonVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38);
         fieldData.DeductionVatable = fieldData.PromoSalesAmountVatable + fieldData.PWDDiscountVatable + fieldData.RefundAmountVatable + fieldData.ReturnedItemsAmountVatable +
                                 fieldData.OtherTaxesVatable + fieldData.ServiceChargeAmountVatable + fieldData.AdjustmentDiscountVatable + fieldData.VoidAmountVatable +
                                 fieldData.DiscountCardsVatable + fieldData.DeliveryChargesVatable + fieldData.GiftCertificatesChecksRedeemedVatable + fieldData.SSDiscount1Vatable +
@@ -589,6 +591,33 @@ int TEstanciaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
         totalPatronCount += ptrPatronTypes->Count;
     }
     return totalPatronCount;
+}
+//---------------------------------------------------------------------------------
+Currency TEstanciaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
+{
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+    Currency oldAccumulatedSales = 0.00;
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE, a.Z_KEY "
+                                        "FROM MALLEXPORT_SALES a "
+                                        "WHERE A.FIELD_INDEX  = :FIELD_INDEX "
+                                        "AND a.Z_KEY = (SELECT MAX(a.Z_KEY) FROM MALLEXPORT_SALES a) ";
+
+        IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount)
+            oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return oldAccumulatedSales;
 }
 //--------------------------------------------------------------------------------------------------------
 void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
@@ -1094,9 +1123,8 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
         {
             fileName = fileName + "" + IBInternalQuery->Fields[2]->AsString;
 
-            if(IBInternalQuery->Fields[2]->AsInteger == 3)
+            if(IBInternalQuery->Fields[0]->AsInteger == 3)
                 fileName = fileName + ".";
-
         }
     }
     catch(Exception &E)
