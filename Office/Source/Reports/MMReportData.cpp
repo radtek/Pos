@@ -16193,7 +16193,7 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 														ParamString(Names->Count, "CONTACTS.NAME", "NamesParam") + ")";
 	}
 
-
+    qrMembershipAuditPointsBreakdown->SQL->Text = qrMembershipAuditPointsBreakdown->SQL->Text + "order by 2, 3 asc ";
 
     	if (Names)
 	{
@@ -16204,7 +16204,7 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 	}
 
 
-      "order by 5, 3 asc ";
+
 
         qrMembershipAuditPointsBreakdown->ParamByName("StartTime")->AsDateTime	= StartTime;
 	  qrMembershipAuditPointsBreakdown->ParamByName("EndTime")->AsDateTime	= EndTime;
