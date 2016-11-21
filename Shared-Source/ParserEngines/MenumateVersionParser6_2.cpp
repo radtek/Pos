@@ -162,7 +162,7 @@ void TApplyParser::Create6_20PriceLevelItemSize(TDBControl* const inDBControl)
 
 
 
-      if ( !tableExists( "PriceLevelItemSize", inDBControl ) )
+      if ( !tableExists( "PRICELEVELITEMSIZE", inDBControl ) )
      	{
 		executeQuery(
                 "CREATE TABLE PRICELEVELITEMSIZE "
@@ -345,6 +345,11 @@ void TApplyParser::Update6_20_HappyHour_Profiles(TDBControl* const inDBControl)
 void TApplyParser::populateTableForThorVouchers6_20( TDBControl* const inDBControl )
 {
     TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+    TIBSQL *deleteQuery    = transaction.Query( transaction.AddQuery() );
+    deleteQuery->Close();
+    deleteQuery->SQL->Text = "Delete From THORLINK_VOUCHERS";
+    deleteQuery->ExecQuery();
 	const int NUMBER_OF_FIELDS = 31;
     int thorVoucherkeys[NUMBER_OF_FIELDS] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31};
 	UnicodeString names[NUMBER_OF_FIELDS] = { "01: Birthday Coffee Gift","02: 2FOR1 COFFEE","03: 20% OFF TAKE HOME COFFEE PACKS","04: COFFEE  FOR 200 PTS","05: WELCOME TO REWARDS 2FOR1 COFFEE","06: WELCOME BACK 2FOR1 COFFEE","07: FREE COFFEE",
@@ -360,7 +365,7 @@ void TApplyParser::populateTableForThorVouchers6_20( TDBControl* const inDBContr
     int vouchermode[NUMBER_OF_FIELDS] ={ 5,5,1,5,5,5,5,5,5,5,5,5,5,5,0,5,5,5,0,1,5,5,1,5,5,5,5,5,5,5,5};
 	try
 	{
-		transaction.StartTransaction();
+		//transaction.StartTransaction();
 
 		for (int i = 0; i < NUMBER_OF_FIELDS; i++)
 		{

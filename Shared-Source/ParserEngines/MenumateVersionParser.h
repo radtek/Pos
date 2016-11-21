@@ -78,6 +78,7 @@ namespace MenumateVersionParser
             pv6_31,
             pv6_32,
             pv6_33,
+			pv6_34,
     };
 
     class TApplyParser
@@ -156,6 +157,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_31( TDBControl* const inDBControl );
         PARSER_ERROR apply6_32( TDBControl* const inDBControl );
         PARSER_ERROR apply6_33( TDBControl* const inDBControl );
+		PARSER_ERROR apply6_34( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -796,27 +798,37 @@ namespace MenumateVersionParser
 		void upgrade6_32Tables();
         void update6_32Tables();
 		void UpdateDiscountsTable6_32(TDBControl* const inDBControl);
-        //6.32
+        //
+
 		void upgrade6_33Tables();
         void update6_33Tables();
-        void Create6_33Malls(TDBControl* const inDBControl);
-        void Create6_33GeneratorMallExportMallId(TDBControl* const inDBControl);
-        void Create6_33MallExportSettings(TDBControl* const inDBControl);
-        void Create6_33MallExportSettingsMapping(TDBControl* const inDBControl);
-        void Create6_33MallExportSettingsMappingValues(TDBControl* const inDBControl);
-        void Create6_33MallExportSales(TDBControl* const inDBControl);
-        void Create6_33MallExportSettingValuesAttributes(TDBControl* const inDBControl);
-        void Create6_33MallExportHeader(TDBControl* const inDBControl);
-        void Create6_33GeneratorMallExportSaleKey(TDBControl* const inDBControl);
-        void Create6_33GeneratorMallExportsSettingKey(TDBControl* const inDBControl);
-        void Create6_33GeneratorMallExportsSettingMappingKey(TDBControl* const inDBControl);
-        void Create6_33GeneratorMallExportsSettingValues(TDBControl* const inDBControl);
-        void Create6_33GeneratorMallExportsSettingValueAttributes(TDBControl* const inDBControl);
-        void Insert6_33Malls(TDBControl* const inDBControl);
-        void Insert6_33MallExport_Settings(TDBControl* const inDBControl);
-        void Insert6_33MallExport_Settings_Mapping(TDBControl* const inDBControl);
-        void Insert6_33MallExport_Settings_Values(TDBControl* const inDBControl);
-        void Insert6_33Mall_ExportHeader(TDBControl* const inDBControl);
+		void AlterRoundTimeProcedure6_33( TDBControl* const inDBControl );
+        void PopulateZED_StatusForContactTime6_33(TDBControl* const inDBControl);
+        void ModifyCloseZedColumns6_33( TDBControl* const inDBControl );
+        void ReCreateRoundedContactTimeView6_33( TDBControl* const inDBControl );
+
+        //6.32
+		void upgrade6_34Tables();
+        void update6_34Tables();
+        void Create6_34Malls(TDBControl* const inDBControl);
+        void Create6_34GeneratorMallExportMallId(TDBControl* const inDBControl);
+        void Create6_34MallExportSettings(TDBControl* const inDBControl);
+        void Create6_34MallExportSettingsMapping(TDBControl* const inDBControl);
+        void Create6_34MallExportSettingsMappingValues(TDBControl* const inDBControl);
+        void Create6_34MallExportSales(TDBControl* const inDBControl);
+        void Create6_34MallExportSettingValuesAttributes(TDBControl* const inDBControl);
+        void Create6_34MallExportHeader(TDBControl* const inDBControl);
+        void Create6_34GeneratorMallExportSaleKey(TDBControl* const inDBControl);
+        void Create6_34GeneratorMallExportsSettingKey(TDBControl* const inDBControl);
+        void Create6_34GeneratorMallExportsSettingMappingKey(TDBControl* const inDBControl);
+        void Create6_34GeneratorMallExportsSettingValues(TDBControl* const inDBControl);
+        void Create6_34GeneratorMallExportsSettingValueAttributes(TDBControl* const inDBControl);
+        void Insert6_34Malls(TDBControl* const inDBControl);
+        void Insert6_34MallExport_Settings(TDBControl* const inDBControl);
+        void Insert6_34MallExport_Settings_Mapping(TDBControl* const inDBControl);
+        void Insert6_34MallExport_Settings_Values(TDBControl* const inDBControl);
+        void Insert6_34Mall_ExportHeader(TDBControl* const inDBControl);
+        
     }; // class
 } // namespace
 

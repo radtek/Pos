@@ -3329,8 +3329,10 @@ Zed:
                 UpdateTerminalAccumulatedZed(DBTransaction, AccumulatedZedTotal);
             }
 			if (CompleteZed)
+            {
 			   DefaultItemQuantities(DBTransaction);
-
+               UpdateContactTimeZedStatus(DBTransaction);
+            }
 			DBTransaction.Commit();
             PostDataToXeroAndMyOB(XeroInvoiceDetails, MYOBInvoiceDetails, CompleteZed); //post data to xero and Myob
 
@@ -3410,6 +3412,7 @@ Zed:
             SyncCompanyDetails();
             // For Mall Export
             UpdateDLFMall();
+
         }
         frmSecurity->LogOut();
         Processing->Close();
@@ -9431,6 +9434,21 @@ void TfrmAnalysis::UpdateDLFMall()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
+}
+
+void TfrmAnalysis::UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransaction)
+{
+   try
+	{
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text ="UPDATE CONTACTTIME SET ZED_STATUS = 1 WHERE CONTACTTIME.LOGOUT_DATETIME is not null ";
+        IBInternalQuery->ExecQuery();
+    }
+	catch(Exception &E)
+	{
+		throw;
+	}
 }
 ///--------------------------------------------------------------------------------------------------
 void TfrmAnalysis::UpdateZKeyForMallExportSales()
