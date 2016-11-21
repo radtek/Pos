@@ -1150,7 +1150,7 @@ object frmSetup: TfrmSetup
     object tsMallSettings: TTabSheet
       Caption = 'Mall Export Settings'
       ImageIndex = 2
-      object gbMalls1: TGroupBox
+      object gbMallsNew: TGroupBox
         Left = 16
         Top = 3
         Width = 737
@@ -1163,119 +1163,120 @@ object frmSetup: TfrmSetup
         Font.Style = []
         ParentFont = False
         TabOrder = 0
-        object lbTenantNo1: TLabel
+        object lbMallTenantNo: TLabel
           Left = 16
           Top = 94
           Width = 5
           Height = 18
         end
-        object lbFileLocation1: TLabel
+        object lbMallFileLocation: TLabel
           Left = 16
           Top = 152
           Width = 78
           Height = 18
           Caption = 'File Location'
         end
-        object lbClassCode1: TLabel
+        object lbMallClassCode: TLabel
           Left = 16
           Top = 210
           Width = 71
           Height = 18
           Caption = 'Class Code'
         end
-        object lbTradeCode1: TLabel
+        object lbMallTradeCode: TLabel
           Left = 16
           Top = 268
           Width = 77
           Height = 18
           Caption = 'Trade Code'
         end
-        object lbOutletNumber1: TLabel
+        object lbMallOutletNumber: TLabel
           Left = 16
           Top = 326
           Width = 96
           Height = 18
           Caption = 'Outlet Number'
         end
-        object lbMallType1: TLabel
+        object lbNewMallType: TLabel
           Left = 16
           Top = 36
           Width = 63
           Height = 18
           Caption = 'Mall Type'
         end
-        object lbTenantCode1: TLabel
+        object lbMallTenantCode: TLabel
           Left = 14
           Top = 94
           Width = 85
           Height = 18
           Caption = 'Tenant Code'
         end
-        object lbBranchCode1: TLabel
-          Left = 15
+        object lbMallBranchCode: TLabel
+          Left = 16
           Top = 384
-          Width = 5
+          Width = 83
           Height = 18
+          Caption = 'Branch Code'
         end
-        object lbTerminalNumber1: TLabel
+        object lbMallTerminalNumber: TLabel
           Left = 14
           Top = 442
           Width = 113
           Height = 18
           Caption = 'Terminal Number'
         end
-        object lbSerialNumber1: TLabel
+        object lbMallSerialNumber: TLabel
           Left = 15
           Top = 500
           Width = 90
           Height = 18
           Caption = 'Serial Number'
         end
-        object lbFTPPath1: TLabel
+        object lbMallFTPPath: TLabel
           Left = 392
           Top = 151
           Width = 60
           Height = 18
           Caption = 'FTP Path'
         end
-        object lbFTPUserName1: TLabel
+        object lbMallFTPUserName: TLabel
           Left = 392
           Top = 208
           Width = 105
           Height = 18
           Caption = 'FTP User Name'
         end
-        object lbFTPPassword1: TLabel
+        object lbMallFTPPassword: TLabel
           Left = 392
           Top = 267
           Width = 92
           Height = 18
           Caption = 'FTP Password'
         end
-        object lbFTPServer1: TLabel
+        object lbMallFTPServer: TLabel
           Left = 392
           Top = 95
           Width = 73
           Height = 18
           Caption = 'FTP Server'
         end
-        object lbConsolidated1: TLabel
+        object lbMallConsolidated: TLabel
           Left = 392
           Top = 383
           Width = 146
           Height = 18
           Caption = 'Consolidated DB Paths'
         end
-        object cbMallLoc1: TComboBox
+        object cbNewMallLoc: TComboBox
           Left = 16
           Top = 64
           Width = 329
           Height = 26
           Style = csDropDownList
           TabOrder = 0
-          OnChange = cbMallLoc1Change
+          OnChange = cbNewMallLocChange
         end
-        object edTenantNo1: TEdit
+        object edMallTenantNo: TEdit
           Left = 16
           Top = 122
           Width = 330
@@ -1283,9 +1284,9 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           Enabled = False
           TabOrder = 1
-          OnMouseUp = edTenantNo1MouseUp
+          OnMouseUp = edMallTenantNoMouseUp
         end
-        object edMallPath1: TEdit
+        object edNewMallPath: TEdit
           Left = 16
           Top = 180
           Width = 331
@@ -1293,9 +1294,9 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           Enabled = False
           TabOrder = 2
-          OnMouseUp = edMallPath1MouseUp
+          OnMouseUp = edNewMallPathMouseUp
         end
-        object edClassCode1: TEdit
+        object edMallClassCode: TEdit
           Left = 16
           Top = 238
           Width = 331
@@ -1303,9 +1304,8 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           Enabled = False
           TabOrder = 3
-          OnMouseUp = edClassCode1MouseUp
         end
-        object edTradeCode1: TEdit
+        object edMallTradeCode: TEdit
           Left = 16
           Top = 296
           Width = 329
@@ -1313,9 +1313,8 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           Enabled = False
           TabOrder = 4
-          OnMouseUp = edTradeCode1MouseUp
         end
-        object edOutletCode1: TEdit
+        object edMallOutletCode: TEdit
           Left = 16
           Top = 354
           Width = 329
@@ -1323,9 +1322,8 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           Enabled = False
           TabOrder = 5
-          OnMouseUp = edOutletCode1MouseUp
         end
-        object edBranchCode1: TEdit
+        object edMallBranchCode: TEdit
           Left = 17
           Top = 410
           Width = 329
@@ -1333,9 +1331,8 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           Enabled = False
           TabOrder = 6
-          OnMouseUp = edBranchCode1MouseUp
         end
-        object edTerminalNo1: TEdit
+        object edMallTerminalNo: TEdit
           Left = 16
           Top = 470
           Width = 329
@@ -1343,9 +1340,9 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           Enabled = False
           TabOrder = 7
-          OnMouseUp = edTerminalNo1MouseUp
+          OnMouseUp = edMallTerminalNoMouseUp
         end
-        object edSerialNo1: TEdit
+        object edMallSerialNo: TEdit
           Left = 16
           Top = 528
           Width = 329
@@ -1353,7 +1350,6 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           Enabled = False
           TabOrder = 8
-          OnMouseUp = edSerialNo1MouseUp
         end
         object btnResendMallReport: TTouchBtn
           Left = 408
@@ -1389,7 +1385,7 @@ object frmSetup: TfrmSetup
           DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
         end
-        object btnAssignSalesType1: TTouchBtn
+        object btnAssignMallSalesType: TTouchBtn
           Left = 32
           Top = 569
           Width = 329
@@ -1407,9 +1403,8 @@ object frmSetup: TfrmSetup
           DisabledButtonColor = clBtnFace
           Enabled = False
           LatchingProperties = [lkLatchColor, lkStayDown]
-          OnMouseClick = btnAssignSalesType1MouseClick
         end
-        object edFTPServer1: TEdit
+        object edMallFTPServer: TEdit
           Left = 392
           Top = 122
           Width = 330
@@ -1417,7 +1412,7 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           TabOrder = 12
         end
-        object edFTPPath1: TEdit
+        object edMallFTPPath: TEdit
           Left = 392
           Top = 179
           Width = 330
@@ -1425,7 +1420,7 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           TabOrder = 13
         end
-        object edFTPUserName1: TEdit
+        object edMallFTPUserName: TEdit
           Left = 392
           Top = 235
           Width = 330
@@ -1433,7 +1428,7 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           TabOrder = 14
         end
-        object edFTPPassword1: TEdit
+        object edMallFTPPassword: TEdit
           Left = 392
           Top = 294
           Width = 330
@@ -1441,7 +1436,7 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           TabOrder = 16
         end
-        object cbEnableConsolidatedRep1: TCheckBox
+        object cbEnableMallConsolidatedRep: TCheckBox
           Left = 392
           Top = 355
           Width = 289
@@ -1458,7 +1453,7 @@ object frmSetup: TfrmSetup
           ParentFont = False
           TabOrder = 17
         end
-        object edConsolidatedDBPaths1: TEdit
+        object edMallConsolidatedDBPaths: TEdit
           Left = 392
           Top = 412
           Width = 330

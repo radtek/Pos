@@ -126,36 +126,36 @@ __published:	// IDE-managed Components
     TTouchBtn *btnAssignSalesType;
     TEdit *edConsolidatedDBPaths;
     TCheckBox *cbEnableConsolidatedRep;
-    TComboBox *cbMallLoc1;
-    TEdit *edBranchCode1;
-    TEdit *edTerminalNo1;
-    TEdit *edSerialNo1;
+    TComboBox *cbNewMallLoc;
+    TEdit *edMallBranchCode;
+    TEdit *edMallTerminalNo;
+    TEdit *edMallSerialNo;
 
-     TEdit *edMallPath1;
-    TEdit *edClassCode1;
-    TEdit *edTradeCode1;
-    TEdit *edOutletCode1;
-    TLabel *lbTenantNo1;
-    TLabel *lbFileLocation1;
-    TLabel *lbClassCode1;
-    TLabel *lbTradeCode1;
-    TLabel *lbOutletNumber1;
-    TLabel *lbMallType1;
-    TLabel *lbBranchCode1;
-    TLabel *lbTerminalNumber1;
-    TLabel *lbSerialNumber1;
-    TLabel *lbFTPPath1;
-    TLabel *lbFTPUserName1;
-    TLabel *lbFTPPassword1;
-    TEdit *edFTPServer1;
-    TEdit *edFTPPath1;
-    TEdit *edFTPUserName1;
-    TEdit *edFTPPassword1;
-    TLabel *lbFTPServer1;
-    TEdit *edConsolidatedDBPaths1;
-    TCheckBox *cbEnableConsolidatedRep1;
-    TEdit *edTenantNo1;
-    TGroupBox *gbMalls1;
+    TEdit *edNewMallPath;
+    TEdit *edMallClassCode;
+    TEdit *edMallTradeCode;
+    TEdit *edMallOutletCode;
+    TLabel *lbMallTenantCode;
+    TLabel *lbMallFileLocation;
+    TLabel *lbMallClassCode;
+    TLabel *lbMallTradeCode;
+    TLabel *lbMallOutletNumber;
+    TLabel *lbNewMallType;
+    TLabel *lbMallBranchCode;
+    TLabel *lbMallTerminalNumber;
+    TLabel *lbMallSerialNumber;
+    TLabel *lbMallFTPPath;
+    TLabel *lbMallFTPUserName;
+    TLabel *lbMallFTPPassword;
+    TEdit *edMallFTPServer;
+    TEdit *edMallFTPPath;
+    TEdit *edMallFTPUserName;
+    TEdit *edMallFTPPassword;
+    TLabel *lbMallFTPServer;
+    TEdit *edMallConsolidatedDBPaths;
+    TCheckBox *cbMallEnableConsolidatedRep;
+    TEdit *edMallTenantNo;
+    TGroupBox *gbMallsNew;
     TTouchBtn *btnResendMallReport;
     TTouchBtn *btnRegenerateMallReport;
 
@@ -246,33 +246,11 @@ __published:	// IDE-managed Components
     void __fastcall edConsolidatedDBPathsMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
       int X, int Y);
     void __fastcall cbEnableConsolidatedRepClick(TObject *Sender);
-    void __fastcall edMallPath1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
-    void __fastcall edTenantNo1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
-    void __fastcall cbMallLoc1Change(TObject *Sender);
-
-    void __fastcall edClassCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+    void __fastcall edNewMallPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edMallTenantNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall cbNewMallLocChange(TObject *Sender);
+    void __fastcall edMallTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
       int X, int Y);
-    void __fastcall edTradeCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edOutletCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edBranchCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edTerminalNo1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edSerialNo1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edFTPServer1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edFTPPath1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edFTPUserName1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edFTPPassword1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-      void __fastcall btnAssignSalesType1MouseClick(TObject *Sender);
-      //MM-4104
-
 
 private:	// User declarations
 	__fastcall TfrmSetup(TComponent* Owner,Database::TDBControl &inIBDatabase);

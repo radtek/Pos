@@ -65,7 +65,7 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
         //Get File Path
         for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)
         {
-            if(itUISettings->ControlName == "edMallPath1")
+            if(itUISettings->ControlName == "edNewMallPath")
                 filePath = itUISettings->Value;
         }
 

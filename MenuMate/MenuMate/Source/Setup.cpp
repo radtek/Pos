@@ -69,7 +69,7 @@ void __fastcall TfrmSetup::FormCreate(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::imgCloseClick(TObject *Sender)
 {
-    if(cbMallLoc1->ItemIndex== 1)
+    if(cbNewMallLoc->ItemIndex== 1)
     {
         UpdateMallInfo();
     }
@@ -251,7 +251,6 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
       cbNewbookType->ItemIndex =   TGlobalSettings::Instance().NewBook;
    //load new malls
    SetupNewMalls();
-
 }
 
 //---------------------------------------------------------------------------
@@ -2175,9 +2174,9 @@ UnicodeString TfrmSetup::RenameTenantNumber()
     return Caption;
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmSetup::cbMallLoc1Change(TObject *Sender)
+void __fastcall TfrmSetup::cbNewMallLocChange(TObject *Sender)
 {
-    if(cbMallLoc1->ItemIndex != 0)
+    if(cbNewMallLoc->ItemIndex != 0)
     {
         LoadMallSettingInfo();
     }
@@ -2187,132 +2186,68 @@ void __fastcall TfrmSetup::cbMallLoc1Change(TObject *Sender)
     }
 }
 //------------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------------
-void __fastcall TfrmSetup::edMallPath1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+void __fastcall TfrmSetup::edNewMallPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
     std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
 	frmTouchKeyboard->MaxLength = 100;
 	frmTouchKeyboard->AllowCarriageReturn = false;
 	frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = edMallPath1->Text;
+	frmTouchKeyboard->KeyboardText = edNewMallPath->Text;
 	frmTouchKeyboard->Caption = "Enter File Location";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
-        edMallPath1->Text = CheckAbsolutePath(frmTouchKeyboard->KeyboardText);
+        edNewMallPath->Text = CheckAbsolutePath(frmTouchKeyboard->KeyboardText);
 
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmSetup::edTenantNo1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+void __fastcall TfrmSetup::edMallTenantNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
     std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
 	frmTouchKeyboard->MaxLength = 50;
 	frmTouchKeyboard->AllowCarriageReturn = false;
 	frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = edTenantNo1->Text;
+	frmTouchKeyboard->KeyboardText = edMallTenantNo->Text;
 	frmTouchKeyboard->Caption = "Enter Tenant Code";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
-        edTenantNo1->Text = frmTouchKeyboard->KeyboardText;
+        edMallTenantNo->Text = frmTouchKeyboard->KeyboardText;
 	}
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmSetup::edClassCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
-{
-    SetupClassCode();
-}
-//---------------------------------------------------------------------------
 
-void __fastcall TfrmSetup::edTradeCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
-{
-    SetupTradeCode();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmSetup::edOutletCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
-{
-    SetupOutletCode();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmSetup::edBranchCode1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
-{
-    SetupBranchCode();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmSetup::edTerminalNo1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+void __fastcall TfrmSetup::edMallTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
     std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
 	frmTouchKeyboard->MaxLength = 20;
 	frmTouchKeyboard->AllowCarriageReturn = false;
 	frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = edTerminalNo1->Text;
+	frmTouchKeyboard->KeyboardText = edMallTerminalNo->Text;
 	frmTouchKeyboard->Caption = "Enter Terminal Number";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{
-        edTerminalNo1->Text = frmTouchKeyboard->KeyboardText;
+        edMallTerminalNo->Text = frmTouchKeyboard->KeyboardText;
 	}
 }
 //---------------------------------------------------------------------------
-
-void __fastcall TfrmSetup::edSerialNo1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
-{
-    SetupSerialNumber();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmSetup::edFTPServer1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
-{
-    SetupFTPServer();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmSetup::edFTPPath1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
-{
-    SetupFTPPath();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmSetup::edFTPUserName1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
-{
-    SetupFTPUserName();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmSetup::edFTPPassword1MouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
-{
-    SetupFTPPassword();
-}
-//---------------------------------------------------------------------------
-void __fastcall TfrmSetup::btnAssignSalesType1MouseClick(TObject *Sender)
-{
-}
-//-------------------------------------------------------------------------------------
 void  TfrmSetup::SetupNewMalls()
 {
     //Register the database transaction..
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
-    cbMallLoc1->Clear();
+    cbNewMallLoc->Clear();
     std::vector<UnicodeString> malllist;
-    cbMallLoc1->AddItem("None",NULL);
+    cbNewMallLoc->AddItem("None",NULL);
 
     malllist = TManagerMallSetup::LoadAllMalls(dbTransaction);
     for (int index = 0; index < malllist.size() ; index++)
     {
-        cbMallLoc1->AddItem(malllist[index],NULL);
+        cbNewMallLoc->AddItem(malllist[index],NULL);
     }
     int mallIndex = TManagerMallSetup::CheckActiveMallExist(dbTransaction);
-    cbMallLoc1->ItemIndex = mallIndex;
-    if(cbMallLoc1->ItemIndex != 0)
+    cbNewMallLoc->ItemIndex = mallIndex;
+    if(cbNewMallLoc->ItemIndex != 0)
         LoadMallSettingInfo();
     else
     {
@@ -2327,7 +2262,7 @@ void TfrmSetup::LoadMallSettingInfo()
         Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
         TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
         dbTransaction.StartTransaction();
-        TManagerMallSetup::UpdateActiveMall(dbTransaction, cbMallLoc1->ItemIndex);
+        TManagerMallSetup::UpdateActiveMall(dbTransaction, cbNewMallLoc->ItemIndex);
 
         //load all mall settings info
         mallInfo = TManagerMallSetup::LoadActiveMallSettings(dbTransaction);
@@ -2337,9 +2272,9 @@ void TfrmSetup::LoadMallSettingInfo()
         TEdit* editBox;
         for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
         {
-            for (int i = 0; i < gbMalls1->ControlCount; i++)
+            for (int i = 0; i < gbMallsNew->ControlCount; i++)
             {
-                ChildControl = gbMalls1->Controls[i];
+                ChildControl = gbMallsNew->Controls[i];
                 editBox = (TEdit*)ChildControl;
                 if(it->ControlName == editBox->Name)
                 {
@@ -2358,8 +2293,8 @@ void TfrmSetup::UpdateMallInfo()
         Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
         TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
         dbTransaction.StartTransaction();
-        mallInfo.MallId = cbMallLoc1->ItemIndex;
-        mallInfo.MallName = cbMallLoc1->Text;
+        mallInfo.MallId = cbNewMallLoc->ItemIndex;
+        mallInfo.MallName = cbNewMallLoc->Text;
         TMallExportSettings mallSetting;
 
         std::list<TMallExportSettings>::iterator it;
@@ -2367,9 +2302,9 @@ void TfrmSetup::UpdateMallInfo()
         TEdit* editBox;
         for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
         {
-            for (int i = 0; i < gbMalls1->ControlCount; i++)
+            for (int i = 0; i < gbMallsNew->ControlCount; i++)
             {
-                ChildControl = gbMalls1->Controls[i];
+                ChildControl = gbMallsNew->Controls[i];
                 editBox = (TEdit*)ChildControl;
                 if(it->ControlName == editBox->Name)
                 {
@@ -2397,24 +2332,24 @@ void TfrmSetup::UpdateNoMallUI()
     {
         ChildControl = gbMalls1->Controls[i];
         editBox = (TEdit*)ChildControl;
-        if(editBox->Name != "cbMallLoc1")
+        if(editBox->Name != "cbNewMallLoc")
         {
             editBox->Text = "";
             editBox->Enabled = false;
             editBox->Color = clInactiveCaptionText;
         }
     } */
-    edTenantNo1->Text = "";
-    edMallPath1->Text = "";
-    edTerminalNo1->Text = "";
-    edTenantNo1->Enabled = false;
-    edMallPath1->Enabled = false;
-    edTerminalNo1->Enabled = false;
+    edMallTenantNo->Text = "";
+    edNewMallPath->Text = "";
+    edMallTerminalNo->Text = "";
+    edMallTenantNo->Enabled = false;
+    edNewMallPath->Enabled = false;
+    edMallTerminalNo->Enabled = false;
     btnResendMallReport->Enabled = false;
     btnRegenerateMallReport->Enabled = false;
-    edTenantNo1->Color = clInactiveCaptionText;
-    edMallPath1->Color = clInactiveCaptionText;
-    edTerminalNo1->Color = clInactiveCaptionText;
+    edMallTenantNo->Color = clInactiveCaptionText;
+    edNewMallPath->Color = clInactiveCaptionText;
+    edMallTerminalNo->Color = clInactiveCaptionText;
     btnResendMallReport->Color = clInactiveCaptionText;
     btnRegenerateMallReport->Color = clInactiveCaptionText;
     dbTransaction.Commit();
