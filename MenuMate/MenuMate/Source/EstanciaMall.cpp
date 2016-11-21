@@ -618,8 +618,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
     {
         std::set<int> keyToCheck;
         int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
-        for(int index = 0; index < 8; index++)
-            keyToCheck.insert(dailySalekeys[index]);
+        keyToCheck = InsertInToSet(dailySalekeys, 8);
 
         //Prepare Data For Daily Sales File
         PrepareDataForDailySalesFile(dbTransaction, keyToCheck, preparedData, 1);
@@ -627,16 +626,14 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
         int  hourIndexkeys[3] = {65, 64, 32};
         keyToCheck.clear();
 
-        for(int index = 0; index < 3; index++)
-            keyToCheck.insert(hourIndexkeys[index]);
+        keyToCheck = InsertInToSet(hourIndexkeys, 3);
 
         //Prepare Data For Hourly File
         PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, preparedData, 2);
 
         int invoiceIndex[3] = {65, 67, 68};
         keyToCheck.clear();
-        for(int index = 0; index < 3; index++)
-            keyToCheck.insert(invoiceIndex[index]);
+        keyToCheck = InsertInToSet(invoiceIndex, 3);
 
         //Prepare Data For Invoice File
         PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 3);
@@ -668,8 +665,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
         std::set<int>keysToSelect;
         int  fileNameKeys[4] = {1, 2, 3, 33};
 
-        for(int index = 0; index < 4; index++)
-            keysToSelect.insert(fileNameKeys[index]);
+        keysToSelect = InsertInToSet(fileNameKeys, 4);
 
         //Write File name into map
         fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect);
@@ -677,8 +673,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
 
         int invoiceIndexKeys[4] = {1, 2, 3, 35};
         keysToSelect.clear();
-        for(int index = 0; index < 4; index++)
-            keysToSelect.insert(invoiceIndexKeys[index]);
+        keysToSelect = InsertInToSet(invoiceIndexKeys, 4);
 
          ///Load MallSetting For writing into file
         LoadMallSettingsForInvoiceFile(dBTransaction, prepareDataForInvoice, keysToSelect, index);
@@ -694,6 +689,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
                                                           "ELSE (a.FIELD_INDEX) END),2,0) FIELD_INDEX, "
                                                 "(CASE WHEN (a.FIELD_INDEX = 65) THEN (TOTALNETSALE.FIELD_VALUE*100) "
                                                       "WHEN (a.FIELD_INDEX = 68) THEN LPAD(a.FIELD_VALUE,5,0) "
+                                                      "WHEN (a.FIELD_INDEX = 67) THEN LPAD(a.FIELD_VALUE,2,0) "
                                                       "ELSE a.FIELD_VALUE END ) FIELD_VALUE, "
                                                 "a.VALUE_TYPE, "
                                                 "meh.MM_NAME "
@@ -742,18 +738,15 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
 
         std::set<int>keysToSelect;
         int  fileNameKeys[4] = {1, 2, 3, 33};
-
-        for(int index = 0; index < 4; index++)
-            keysToSelect.insert(fileNameKeys[index]);
+        keysToSelect = InsertInToSet(fileNameKeys, 4);
 
         //Write File name into map
         fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect);
         prepareDataForHSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
-        int invoiceIndexKeys[3] = {1, 2, 3};
+        int hourIndexKeys[3] = {1, 2, 3};
         keysToSelect.clear();
-        for(int index = 0; index < 3; index++)
-            keysToSelect.insert(invoiceIndexKeys[index]);
+        keysToSelect = InsertInToSet(hourIndexKeys, 3);
 
         ///Load MallSetting For writing into file
         LoadMallSettingsForFile(dBTransaction, prepareDataForHSF, keysToSelect, index);
@@ -862,17 +855,15 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
         std::set<int>keysToSelect;
         int  fileNameKeys[4] = {1, 2, 3, 33};
 
-        for(int index = 0; index < 4; index++)
-            keysToSelect.insert(fileNameKeys[index]);
+        keysToSelect = InsertInToSet(fileNameKeys, 4);
 
         //Write File name into map
         fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect);
         prepareDataForDSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
-        int invoiceIndexKeys[3] = {1, 2, 3};
+        int dailyIndexKeys[3] = {1, 2, 3};
         keysToSelect.clear();
-        for(int index = 0; index < 3; index++)
-            keysToSelect.insert(invoiceIndexKeys[index]);
+        keysToSelect = InsertInToSet(dailyIndexKeys, 3);
 
         ///Load MallSetting For writing into file
         LoadMallSettingsForFile(dBTransaction, prepareDataForDSF, keysToSelect, index);
@@ -893,6 +884,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                      "FROM "
                                         "MALLEXPORT_SALES a inner join MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                                         "where a.FIELD_INDEX IN( 33, 35 ) AND meh.IS_ACTIVE = :IS_ACTIVE AND a.Z_KEY = (SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES) "
+                                    "GROUP BY 1,2,3,4,5,6 "
                                     "ORDER BY 1 ASC  ";   //TODO AFTER DISCUSSION
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ExecQuery();
@@ -1045,4 +1037,12 @@ void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBT
 		throw;
 	}
 }
+//--------------------------------------------------------------------------------------------------------------------
+std::set<int> TEstanciaMall::InsertInToSet(int arr[], int size)
+{
+    std::set<int> keyToCheck;
+    for(int index = 0; index < size; index++)
+            keyToCheck.insert(arr[index]);
 
+    return keyToCheck;
+}

@@ -20,6 +20,7 @@ class TEstanciaMall : public TMallExport
     UnicodeString GetFieldIndexList(std::set<int> indexKeys);
     UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect);
     void LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect, int index);
+    std::set<int> InsertInToSet(int arr[], int size);
 
     protected:
     std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
