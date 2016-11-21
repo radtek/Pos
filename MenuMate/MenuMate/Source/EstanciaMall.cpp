@@ -1093,6 +1093,10 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
         for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
             fileName = fileName + "" + IBInternalQuery->Fields[2]->AsString;
+
+            if(IBInternalQuery->Fields[2]->AsInteger == 3)
+                fileName = fileName + ".";
+
         }
     }
     catch(Exception &E)
