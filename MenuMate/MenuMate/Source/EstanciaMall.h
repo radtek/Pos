@@ -9,25 +9,55 @@
 class TEstanciaMall : public TMallExport
 {
     private:
+
+    //Get Total Patron count for a Bill
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
+
+    //Generate SalesKey for MallExport_sales Table
     long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
+
+    //Insert Data into MallExport_sales table
     void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
                                 UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
+
+    //Prepare data for Invoice Sales File
     void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForInvoice, int index);
+
+    //Fetch Data For Invoice Sales File writing
     void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForHSF, int index);
+
+    //Fetch Data For Daily Sales File writing
     void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForDSF, int index);
+
+    //Fetch Mall Setting for file writing
     void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect, int index);
+
+    //store keys in string format seperated by commas
     UnicodeString GetFieldIndexList(std::set<int> indexKeys);
+
+    //Get File Name According to file type.
     UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect);
+
+    //Load File Setting For Invoice file Writing
     void LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect, int index);
+
+    //Insert Array into set.
     std::set<int> InsertInToSet(int arr[], int size);
 
     protected:
+
+    //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
     std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
+
+    //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
     TMallExportPrepareData PrepareDataForExport();
+
+    //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
     IExporterInterface* CreateExportMedium();
 
     public:
+
+    //Constructor
     TEstanciaMall();
 };
 
