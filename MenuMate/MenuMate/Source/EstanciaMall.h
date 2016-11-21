@@ -95,6 +95,11 @@ class TEstanciaMallField
     Currency _sSDiscount5NonApprovedVatable;
     Currency _vATAmountVatable;
     Currency _netSalesAmountVatable;
+    int _coverCount;
+    int _controlNumber;
+    int _noOfSalesTransaction;
+    int _salesType;
+    Currency _amount;
     Currency _oldAccSalesNonVatable;
     Currency _newAccSalesNonVatable;
     Currency _grossAmountNonVatable;
@@ -123,7 +128,7 @@ class TEstanciaMallField
     Currency _sSDiscount5NonApprovedNonVatable;
     Currency _vATAmountNonVatable;
     Currency _netSalesAmountNonVatable;
-    int _coverCount;
+
 
     void SetOldAccSalesVatable(Currency oldAccSalesVatable);
     void SetNewAccSalesVatable(Currency newAccSaleVatable);
@@ -153,6 +158,11 @@ class TEstanciaMallField
     void SetSSDiscount5NonApprovedVatable(Currency sSDiscount5NonApprovedVatable);
     void SetVATAmountVatable(Currency vatAmount);
     void SetNetSalesAmountVatable(Currency netSaleAmountVatable);
+    void SetCoverCount(int coverCount);
+    void SetControlNumber(int controlNumber);
+    void SetNoOfSaleTransaction(int noOfSaleTransaction);
+    void SetSalesType(int salesType);
+    void SetAmount(Currency amount);
     void SetOldAccSalesNonVatable(Currency oldAccSalesNonVatable);
     void SetNewAccSalesNonVatable(Currency newAccSalesNonVatable);
     void SetGrossAmountNonVatable(Currency grossAmountNonVatble);
@@ -181,7 +191,6 @@ class TEstanciaMallField
     void SetSSDiscount5NonApprovedNonVatable(Currency sSDiscount5NonApprovedNonVatable);
     void SetVATAmountNonVatable(Currency vATAmountNonVatable);
     void SetNetSalesAmountNonVatable(Currency netSaleAmountNonVatable);
-    void SetCoverCount(int _coverCount);
 
     public:
     __property Currency OldAccumulatedSalesVatable = {read =  _oldAccSalesVatable, write = SetOldAccSalesVatable};
@@ -212,6 +221,11 @@ class TEstanciaMallField
     __property Currency SSDiscount5NonApprovedVatable = {read = _sSDiscount5NonApprovedVatable, write = SetSSDiscount5NonApprovedVatable};
     __property Currency VATTaxAmountVatable = {read = _vATAmountVatable, write = SetVATAmountVatable};
     __property Currency NetSalesAmountVatable =  {read = _netSalesAmountVatable, write = SetNetSalesAmountVatable};
+    __property int CoverCount = {read = _coverCount, write = SetCoverCount};
+    __property int ControlNumber = {read = _controlNumber, write = SetControlNumber};
+    __property int NoOfSalesTransaction = {read = _controlNumber, write = SetControlNumber};
+    __property int SalesType = {read = _salesType, write = SetSalesType};
+    __property Currency Amount = {read = _amount, write = SetAmount};
     __property Currency OldAccumulatedSalesNonVatable =  {read = _oldAccSalesNonVatable, write = SetOldAccSalesNonVatable};
     __property Currency NewAccumulatedSalesNonVatable =  {read = _newAccSalesNonVatable, write = SetNewAccSalesNonVatable};
     __property Currency GrossAmountNonVatable = {read = _grossAmountNonVatable, write = SetGrossAmountNonVatable};
@@ -240,7 +254,5 @@ class TEstanciaMallField
     __property Currency SSDiscount5NonApprovedNonVatable = {read = _sSDiscount5NonApprovedNonVatable, write = SetSSDiscount5NonApprovedNonVatable};
     __property Currency VATTaxAmountNonVatable = {read = _vATAmountNonVatable, write = SetVATAmountNonVatable};
     __property Currency NetSalesAmountNonVatable = {read = _netSalesAmountNonVatable, write = SetNetSalesAmountNonVatable};
-    __property int CoverCount = {read = _coverCount, write = SetCoverCount};
-
 };
 #endif

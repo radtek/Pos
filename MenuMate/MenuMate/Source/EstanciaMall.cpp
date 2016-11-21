@@ -153,6 +153,31 @@ void TEstanciaMallField::SetNetSalesAmountVatable(Currency netSalesAmountVatable
     _netSalesAmountVatable = netSalesAmountVatable;
 }
 //----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetCoverCount(int coverCount)
+{
+    _coverCount = coverCount;
+}
+//-----------------------------------------------------------------------------------------
+void TEstanciaMallField::SetControlNumber(int controlNumber)
+{
+    _controlNumber = controlNumber;
+}
+//-------------------------------------------------------------------------------------------
+void TEstanciaMallField::SetNoOfSaleTransaction(int noOfSalesTransaction)
+{
+    _noOfSalesTransaction = noOfSalesTransaction;
+}
+//-------------------------------------------------------------------------------------------------
+void TEstanciaMallField::SetSalesType(int salesType)
+{
+    _salesType = salesType;
+}
+//--------------------------------------------------------------------------------------------------
+void TEstanciaMallField::SetAmount(Currency amount)
+{
+    _amount = amount;
+}
+//------------------------------------------------------------------------------------------------------
 void TEstanciaMallField::SetOldAccSalesNonVatable(Currency oldAccSalesNonVatable)
 {
     _oldAccSalesNonVatable = oldAccSalesNonVatable;
@@ -291,11 +316,6 @@ void TEstanciaMallField::SetVATAmountNonVatable(Currency vATAmountNonVatable)
 void TEstanciaMallField::SetNetSalesAmountNonVatable(Currency netSalesAmountNonVatable)
 {
     _netSalesAmountNonVatable = netSalesAmountNonVatable;
-}
-//----------------------------------------------------------------------------------------
-void TEstanciaMallField::SetCoverCount(int coverCount)
-{
-    _coverCount = coverCount;
 }
 //----------------------------------------------------------------------------------------
 TEstanciaMall::TEstanciaMall()
@@ -461,6 +481,10 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
         }
 
         fieldData.OldAccumulatedSalesVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
+        fieldData.ControlNumber = 0;
+        fieldData.NoOfSalesTransaction = fieldData.RefundAmountVatable <0 ? 0 : 1;
+        fieldData.SalesType = 1;
+        fieldData.Amount = fieldData.NetSalesAmountVatable;
         fieldData.OldAccumulatedSalesNonVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38);
         fieldData.DeductionVatable = fieldData.PromoSalesAmountVatable + fieldData.PWDDiscountVatable + fieldData.RefundAmountVatable + fieldData.ReturnedItemsAmountVatable +
                                 fieldData.OtherTaxesVatable + fieldData.ServiceChargeAmountVatable + fieldData.AdjustmentDiscountVatable + fieldData.VoidAmountVatable +
@@ -513,9 +537,9 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountVatable, 30, arcBillKey);//30
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountVatable, 31, arcBillKey);//31
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Cover Count", "int", fieldData.CoverCount, 32, arcBillKey);//32
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Control Number", "int", 0, 33, arcBillKey);//33  //todo
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Number of Sales Transaction", "int", 1, 34, arcBillKey);//34  //todo
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Sales Type", "int", 1, 35, arcBillKey);//35
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Control Number", "int", fieldData.ControlNumber, 33, arcBillKey);//33  //todo
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Number of Sales Transaction", "int", fieldData.NoOfSalesTransaction, 34, arcBillKey);//34  //todo
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Sales Type", "int", fieldData.SalesType, 35, arcBillKey);//35
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Amount", "Currency", fieldData.NetSalesAmountVatable, 36, arcBillKey);//36
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Old Accumulated Sales", "Currency", fieldData.OldAccumulatedSalesNonVatable, 37, arcBillKey);//37
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "New Accumulated Sales", "Currency", fieldData.NewAccumulatedSalesNonVatable, 38, arcBillKey);//38
