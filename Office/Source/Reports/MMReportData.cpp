@@ -16183,9 +16183,9 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
             
             "where "
                 "(Points_earned <> 0 or "
-                "Redeemed <> 0) "
+                "Redeemed <> 0) " ;
 
-                "order by 5, 3 asc ";
+
 
                  	if (Names && Names->Count > 0)
 	{
@@ -16204,7 +16204,7 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 	}
 
 
-
+      "order by 5, 3 asc ";
 
         qrMembershipAuditPointsBreakdown->ParamByName("StartTime")->AsDateTime	= StartTime;
 	  qrMembershipAuditPointsBreakdown->ParamByName("EndTime")->AsDateTime	= EndTime;
