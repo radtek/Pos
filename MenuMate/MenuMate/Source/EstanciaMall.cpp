@@ -484,7 +484,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Tenant Code", "UnicodeString", tenantCode, 1, arcBillKey);//01
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "POS Terminal Number", "int", terminalNumber, 2, arcBillKey);//02
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Date (mmddyyyy)", "TDateTime", Now().FormatString("mmddyyyy"), 3, arcBillKey);//03
-        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Old Accumulated Sales", "Currency", 0, 4, arcBillKey);//04    //todo
+        PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Old Accumulated Sales", "Currency", fieldData.OldAccumulatedSalesVatable, 4, arcBillKey);//04    //todo
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "New Accumulated Sales", "Currency", fieldData.NewAccumulatedSalesVatable, 5, arcBillKey);//05
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Gross Amount", "Currency", fieldData.GrossAmountVatable, 6, arcBillKey);//06
         PushFieldsInToList(paymentTransaction.DBTransaction, mallExportSalesData, "Total Deductions", "Currency", fieldData.DeductionVatable, 7, arcBillKey);//07
