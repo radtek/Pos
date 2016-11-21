@@ -2346,12 +2346,12 @@ void TfrmSetup::UpdateNoMallUI()
     edNewMallPath->Enabled = false;
     edMallTerminalNo->Enabled = false;
     btnResendMallReport->Enabled = false;
-    btnRegenerateMallReport->Enabled = false;
+    //btnRegenerateMallReport->Enabled = false;
     edMallTenantNo->Color = clInactiveCaptionText;
     edNewMallPath->Color = clInactiveCaptionText;
     edMallTerminalNo->Color = clInactiveCaptionText;
     btnResendMallReport->Color = clInactiveCaptionText;
-    btnRegenerateMallReport->Color = clInactiveCaptionText;
+  //  btnRegenerateMallReport->Color = clInactiveCaptionText;
     dbTransaction.Commit();
 }
 //-----------------------------------------------------------------------------------------
