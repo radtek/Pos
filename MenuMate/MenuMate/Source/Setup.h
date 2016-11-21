@@ -156,6 +156,9 @@ __published:	// IDE-managed Components
     TCheckBox *cbEnableConsolidatedRep1;
     TEdit *edTenantNo1;
     TGroupBox *gbMalls1;
+    TTouchBtn *btnResendMallReport;
+    TTouchBtn *btnRegenerateMallReport;
+
    void __fastcall imgCloseClick(TObject *Sender);
    void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
    void __fastcall FormCreate(TObject *Sender);
@@ -267,8 +270,6 @@ __published:	// IDE-managed Components
       int X, int Y);
     void __fastcall edFTPPassword1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
       int X, int Y);
-      void __fastcall btnResendReport1MouseClick(TObject *Sender);
-      void __fastcall btnRegenerateReport1MouseClick(TObject *Sender);
       void __fastcall btnAssignSalesType1MouseClick(TObject *Sender);
       //MM-4104
 

@@ -2291,23 +2291,6 @@ void __fastcall TfrmSetup::edFTPPassword1MouseUp(TObject *Sender, TMouseButton B
     SetupFTPPassword();
 }
 //---------------------------------------------------------------------------
-
-//void __fastcall TfrmSetup::edConsolidatedDBPaths1MouseUp(TObject *Sender, TMouseButton Button,
-//          TShiftState Shift, int X, int Y)
-//{
-//    SetupConsolidatedPaths();
-//}
-//---------------------------------------------------------------------------
-void __fastcall TfrmSetup::btnResendReport1MouseClick(TObject *Sender)
-{
-    //----------------
-}
-//----------------------------------------------------------------------------
-void __fastcall TfrmSetup::btnRegenerateReport1MouseClick(TObject *Sender)
-{
-
-}
-//----------------------------------------------------------------------------------
 void __fastcall TfrmSetup::btnAssignSalesType1MouseClick(TObject *Sender)
 {
 }
@@ -2408,7 +2391,7 @@ void TfrmSetup::UpdateNoMallUI()
     TMall mallDetails;
     TGlobalSettings::Instance().mallInfo = mallDetails;
     TManagerMallSetup::UpdateINActiveMall(dbTransaction);
-    TControl *ChildControl;
+   /* TControl *ChildControl;
     TEdit* editBox;
      for (int i = 0; i < gbMalls1->ControlCount; i++)
     {
@@ -2420,7 +2403,20 @@ void TfrmSetup::UpdateNoMallUI()
             editBox->Enabled = false;
             editBox->Color = clInactiveCaptionText;
         }
-    }
+    } */
+    edTenantNo1->Text = "";
+    edMallPath1->Text = "";
+    edTerminalNo1->Text = "";
+    edTenantNo1->Enabled = false;
+    edMallPath1->Enabled = false;
+    edTerminalNo1->Enabled = false;
+    btnResendMallReport->Enabled = false;
+    btnRegenerateMallReport->Enabled = false;
+    edTenantNo1->Color = clInactiveCaptionText;
+    edMallPath1->Color = clInactiveCaptionText;
+    edTerminalNo1->Color = clInactiveCaptionText;
+    btnResendMallReport->Color = clInactiveCaptionText;
+    btnRegenerateMallReport->Color = clInactiveCaptionText;
     dbTransaction.Commit();
 }
 //-----------------------------------------------------------------------------------------
