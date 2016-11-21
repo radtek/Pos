@@ -157,7 +157,7 @@ __published:	// IDE-managed Components
     TEdit *edMallTenantNo;
     TGroupBox *gbMallsNew;
     TTouchBtn *btnResendMallReport;
-    TTouchBtn *btnRegenerateMallReport;
+    TTouchBtn *btnRegenMallReport;
 
    void __fastcall imgCloseClick(TObject *Sender);
    void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -201,33 +201,21 @@ __published:	// IDE-managed Components
     void __fastcall cbScalesTypeChange(TObject *Sender);
     void __fastcall cbMallLocChange(TObject *Sender);
     void __fastcall cbNewbookTypeChange(TObject *Sender);
-    void __fastcall edTenantNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edMallPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edClassCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edTradeCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edOutletCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edBranchCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edSerialNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
+    void __fastcall edTenantNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edMallPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edClassCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edTradeCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edOutletCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edBranchCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edSerialNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall cbBarcodeFormatChange(TObject *Sender);
     void __fastcall cbShowCustomerDisplayClick(TObject *Sender);
     void __fastcall btnResendReportMouseClick(TObject *Sender);
-    void __fastcall edFTPServerMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edFTPPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edFTPUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
-    void __fastcall edFTPPasswordMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
+    void __fastcall edFTPServerMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edFTPPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edFTPUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edFTPPasswordMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
 
     TTouchBtn *tbtnReconfigEmailHost;       //MM-4104
     TTouchBtn *tbtnReconfigEmailId;
@@ -243,14 +231,13 @@ __published:	// IDE-managed Components
 
     void __fastcall btnRegenerateReportMouseClick(TObject *Sender);
     void __fastcall btnAssignSalesTypeMouseClick(TObject *Sender);
-    void __fastcall edConsolidatedDBPathsMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
+    void __fastcall edConsolidatedDBPathsMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall cbEnableConsolidatedRepClick(TObject *Sender);
     void __fastcall edNewMallPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall edMallTenantNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall cbNewMallLocChange(TObject *Sender);
-    void __fastcall edMallTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-      int X, int Y);
+    void __fastcall edMallTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    //void _fastcall btnRegenMallReportMouseClick(TObject *Sender);
 
 private:	// User declarations
 	__fastcall TfrmSetup(TComponent* Owner,Database::TDBControl &inIBDatabase);

@@ -1366,7 +1366,6 @@ object frmSetup: TfrmSetup
           ButtonColor = clMaroon
           LatchedColor = clBtnFace
           DisabledButtonColor = clBtnFace
-          Enabled = False
           LatchingProperties = [lkLatchColor, lkStayDown]
         end
         object btnRegenMallReport: TTouchBtn
@@ -1384,7 +1383,6 @@ object frmSetup: TfrmSetup
           ButtonColor = clMaroon
           LatchedColor = clBtnFace
           DisabledButtonColor = clBtnFace
-          Enabled = False
           LatchingProperties = [lkLatchColor, lkStayDown]
         end
         object btnAssignMallSalesType: TTouchBtn

@@ -329,11 +329,11 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
 
         for(it = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); it != TGlobalSettings::Instance().mallInfo.MallSettings.end(); it++)
         {
-            if(it->ControlName == "edTenantNo1")
+            if(it->ControlName == "edMallTenantNo")
             {
                 tenantCode = it->Value;
             }
-            else if(it->ControlName == "edTerminalNo1")
+            else if(it->ControlName == "edMallTerminalNo")
             {
                 terminalNumber = StrToInt(it->Value);
             }
@@ -1007,8 +1007,10 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
 
         //Query for fetching setting for files according to file type and index keys.
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, CASE WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
-                                        "ELSE (a.FIELD_VALUE) END FIELD_VALUE, a.VALUE_TYPE "
+        IBInternalQuery->SQL->Text = "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, "
+                                                "CASE WHEN(a.FIELD_INDEX = 1) THEN LPAD(a.FIELD_VALUE,5,0) "
+                                                "WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
+                                                "ELSE (a.FIELD_VALUE) END FIELD_VALUE, a.VALUE_TYPE "
                                       "FROM MALLEXPORT_SALES a "
                                       "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
                                       "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
@@ -1074,7 +1076,8 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
 
         //Query for fetching file name.
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, CASE WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
+        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, CASE WHEN(a.FIELD_INDEX = 1) THEN LPAD(a.FIELD_VALUE,5,0) "
+                                                                        "WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
                                                                             "WHEN(a.FIELD_INDEX = 33) THEN LPAD(a.FIELD_VALUE,3,0) "
                                                                         "ELSE (a.FIELD_VALUE) END FIELD_VALUE, "
                                                 "a.VALUE_TYPE , a.Z_KEY "
@@ -1118,7 +1121,10 @@ void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBT
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT LPAD((CASE WHEN a.FIELD_INDEX = 35 THEN 2 "
                                                     "WHEN a.FIELD_INDEX = 2 THEN 4 "
-                                                    "ELSE a.FIELD_INDEX END),2,0) FIELD_INDEX, a.FIELD, CASE WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
+                                                    "ELSE a.FIELD_INDEX END),2,0) FIELD_INDEX, "
+                                            "a.FIELD, "
+                                            "CASE WHEN(a.FIELD_INDEX = 1) THEN LPAD(a.FIELD_VALUE,5,0) "
+                                                "WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
                                                     "ELSE (a.FIELD_VALUE) END FIELD_VALUE, a.VALUE_TYPE "
                                       "FROM MALLEXPORT_SALES a "
                                       "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "

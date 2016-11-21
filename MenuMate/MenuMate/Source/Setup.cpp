@@ -2284,6 +2284,8 @@ void TfrmSetup::LoadMallSettingInfo()
                 }
             }
         }
+        btnRegenMallReport->Visible = true;
+        btnResendMallReport->Visible = false;
         dbTransaction.Commit();
 }
 //-------------------------------------------------------------------------------------
@@ -2345,13 +2347,11 @@ void TfrmSetup::UpdateNoMallUI()
     edMallTenantNo->Enabled = false;
     edNewMallPath->Enabled = false;
     edMallTerminalNo->Enabled = false;
-    btnResendMallReport->Enabled = false;
-    //btnRegenerateMallReport->Enabled = false;
+    btnResendMallReport->Visible = false;
+    btnRegenMallReport->Visible = false;
     edMallTenantNo->Color = clInactiveCaptionText;
     edNewMallPath->Color = clInactiveCaptionText;
     edMallTerminalNo->Color = clInactiveCaptionText;
-    btnResendMallReport->Color = clInactiveCaptionText;
-  //  btnRegenerateMallReport->Color = clInactiveCaptionText;
     dbTransaction.Commit();
 }
 //-----------------------------------------------------------------------------------------
@@ -2372,3 +2372,11 @@ UnicodeString TfrmSetup::CheckAbsolutePath(UnicodeString path)
     }
     return path;
 }
+//----------------------------------------------------------------------------------------------------
+//void _fastcall btnRegenMallReportMouseClick(TObject *Sender)
+//{
+////    std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
+////    std::auto_ptr<TfrmMallExportRegenerateReport> MallExportRegenerateReport(TfrmMallExportRegenerateReport::Create<TfrmMallExportRegenerateReport>(this));
+////    MallExportRegenerateReport->ShowModal();
+//}
+
