@@ -195,8 +195,8 @@ void TfrmRegenerateMallReport::InitializeTimeSet(TDateTime &SDate, TDateTime &ED
     UnicodeString StartHM = StartHour + ":" + StartMin + ":00";
     UnicodeString EndHM = EndHour + ":" + EndMin + ":00";
 
-    SDate = (StartDate + StrToTime(StartHM)).FormatString("mmddyyyy");
-    EDate = (EndDate + StrToTime(EndHM)).FormatString("mmddyyyy");
+    SDate = (StartDate + StrToTime(StartHM));
+    EDate = EndDate + StrToTime(EndHM) ;
 }
 //-------------------------------------------------------------------------------------------------------------
 void TfrmRegenerateMallReport::RegenerateEstanciaMallExport()
