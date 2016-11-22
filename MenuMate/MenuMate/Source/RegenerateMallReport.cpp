@@ -594,7 +594,7 @@ void TfrmRegenerateMallReport::PrepareDataForDailySalesFile(Database::TDBTransac
                                         "where a.FIELD_INDEX IN( 33, 35 ) AND meh.IS_ACTIVE = :IS_ACTIVE "
                                         "AND a.DATE_CREATED >= :START_TIME and a.DATE_CREATED < :END_TIME "
                                     "GROUP BY 1,2,3,4,5,6 "
-                                    "ORDER BY 1 ASC  ";   //TODO AFTER DISCUSSION
+                                    "ORDER BY 5, 1 ASC  ";   //TODO AFTER DISCUSSION
         IBInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
         IBInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
