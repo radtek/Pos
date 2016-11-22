@@ -1384,6 +1384,7 @@ object frmSetup: TfrmSetup
           LatchedColor = clBtnFace
           DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
+          OnMouseClick = btnRegenMallReportMouseClick
         end
         object btnAssignMallSalesType: TTouchBtn
           Left = 32

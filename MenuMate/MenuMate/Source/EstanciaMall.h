@@ -8,7 +8,7 @@
 
 class TEstanciaMall : public TMallExport
 {
-    private:
+    public: //todo private after regeneration testing
 
     //Get Total Patron count for a Bill
     int GetPatronCount(TPaymentTransaction &paymentTransaction);

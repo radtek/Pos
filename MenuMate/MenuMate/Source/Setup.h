@@ -237,7 +237,7 @@ __published:	// IDE-managed Components
     void __fastcall edMallTenantNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall cbNewMallLocChange(TObject *Sender);
     void __fastcall edMallTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
-    //void _fastcall btnRegenMallReportMouseClick(TObject *Sender);
+    void _fastcall btnRegenMallReportMouseClick(TObject *Sender);
 
 private:	// User declarations
 	__fastcall TfrmSetup(TComponent* Owner,Database::TDBControl &inIBDatabase);

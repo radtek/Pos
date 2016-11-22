@@ -40,6 +40,7 @@
 #include "MallExportResendReport.h"
 #include "MallExportManager.h"
 #include "MallExportRegenerateReport.h"
+#include "RegenerateMallReport.h"
 #include "PhoenixHotelSystem.h"
 #include "MallExportSalesTypeAssignment.h"
 #include "Mall.h"
@@ -2253,7 +2254,6 @@ void  TfrmSetup::SetupNewMalls()
     {
         UpdateNoMallUI();
     }
-
 }
 //----------------------------------------------------------------------------------------------
 void TfrmSetup::LoadMallSettingInfo()
@@ -2373,10 +2373,10 @@ UnicodeString TfrmSetup::CheckAbsolutePath(UnicodeString path)
     return path;
 }
 //----------------------------------------------------------------------------------------------------
-//void _fastcall btnRegenMallReportMouseClick(TObject *Sender)
-//{
-////    std::auto_ptr<TMallExportManager> MEM(new TMallExportManager());
-////    std::auto_ptr<TfrmMallExportRegenerateReport> MallExportRegenerateReport(TfrmMallExportRegenerateReport::Create<TfrmMallExportRegenerateReport>(this));
-////    MallExportRegenerateReport->ShowModal();
-//}
+void _fastcall TfrmSetup::btnRegenMallReportMouseClick(TObject *Sender)
+{
+    std::auto_ptr<TfrmRegenerateMallReport> frmRegenerateMallReport(TfrmRegenerateMallReport::Create<TfrmRegenerateMallReport>(this));
+    frmRegenerateMallReport->ShowModal();
+}
+
 

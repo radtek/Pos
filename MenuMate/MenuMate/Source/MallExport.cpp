@@ -17,8 +17,10 @@ bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int ar
     {
         // Create TMallExportPrepareData object to store Preapared Data
         std::list<TMallExportSalesData> salesData;
+
         ///Prepare Data For Inserting Data Into DataBase
         salesData = PrepareDataForDatabase(paymentTransaction, arcBillKey);
+
         //Insert Prepared Data into DataBase
         retVal = InsertInToMallExport_Sales(paymentTransaction.DBTransaction, salesData);
     }
