@@ -2042,21 +2042,21 @@ void TfrmMaintain::ManageGiftCardValidations(Database::TDBTransaction &DBTransac
     TVerticalSelection Item1;
     Item1.Title = "Open Ended Validation";
     Item1.Properties["Action"] = IntToStr(0);
-    Item1.Properties["Color"] = IntToStr(clNavy);
+    Item1.Properties["Color"] = TGlobalSettings::Instance().GiftCardValidation == 0 ? IntToStr(clGreen) : IntToStr(clNavy);
     Item1.CloseSelection = true;
     SelectionForm1->Items.push_back(Item1);
 
     TVerticalSelection Item2;
     Item2.Title = "MSR Cards Only";
     Item2.Properties["Action"] = IntToStr(1);
-    Item2.Properties["Color"] = IntToStr(clNavy);
+    Item2.Properties["Color"] = TGlobalSettings::Instance().GiftCardValidation == 1 ? IntToStr(clGreen) : IntToStr(clNavy);;
     Item2.CloseSelection = true;
     SelectionForm1->Items.push_back(Item2);
 
     TVerticalSelection Item3;
     Item3.Title = "Cloud Validation";
     Item3.Properties["Action"] = IntToStr(2);
-    Item3.Properties["Color"] = IntToStr(clNavy);
+    Item3.Properties["Color"] = TGlobalSettings::Instance().GiftCardValidation == 2 ? IntToStr(clGreen) : IntToStr(clNavy);;
     Item3.CloseSelection = true;
     SelectionForm1->Items.push_back(Item3);
 
