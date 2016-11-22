@@ -116,8 +116,8 @@ object frmPaymentType: TfrmPaymentType
         Align = alClient
         BorderWidth = 0
         Color = 14342874
-        DefaultButtonColor = -16777201
-        DefaultButtonLatchedColor = -16777201
+        DefaultButtonColor = clBtnFace
+        DefaultButtonLatchedColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tgPaymentsMouseClick
         RowCount = 1
@@ -265,8 +265,8 @@ object frmPaymentType: TfrmPaymentType
         ParentColor = True
         Caption = 'Print'
         ButtonColor = 6052441
-        LatchedColor = -16777201
-        DisabledButtonColor = -16777201
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btnPrelimClick
       end
@@ -284,8 +284,8 @@ object frmPaymentType: TfrmPaymentType
         ParentColor = True
         Caption = 'Cancel'
         ButtonColor = 2200566
-        LatchedColor = -16777201
-        DisabledButtonColor = -16777201
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = pnlCancelClick
       end
@@ -453,7 +453,7 @@ object frmPaymentType: TfrmPaymentType
           GridBorderWidth = 8
           ButtonGapWidth = 2
           ButtonGapHeight = 2
-          ButtonColor = -16777201
+          ButtonColor = clMaroon
           CustomKey = True
           CustomKeyCaption = '00'
           NumpadDisplay = ndWorkingAmount
@@ -503,9 +503,9 @@ object frmPaymentType: TfrmPaymentType
           ParentFont = False
           ParentColor = True
           Caption = 'Refund'
-          ButtonColor = -16777201
-          LatchedColor = -16777201
-          DisabledButtonColor = -16777201
+          ButtonColor = clRed
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = tbCreditClick
         end
@@ -523,8 +523,8 @@ object frmPaymentType: TfrmPaymentType
           ParentColor = True
           Caption = 'Patron Count'
           ButtonColor = 6052441
-          LatchedColor = -16777201
-          DisabledButtonColor = -16777201
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = tbPatronCountClick
         end
@@ -541,9 +541,9 @@ object frmPaymentType: TfrmPaymentType
           ParentFont = False
           ParentColor = True
           Caption = 'Discount / Surcharge'
-          ButtonColor = -16777201
-          LatchedColor = -16777201
-          DisabledButtonColor = -16777201
+          ButtonColor = clPurple
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = lbeDiscountClick
         end
@@ -560,9 +560,9 @@ object frmPaymentType: TfrmPaymentType
           ParentFont = False
           ParentColor = True
           Caption = 'Remove Taxes'
-          ButtonColor = -16777201
-          LatchedColor = -16777201
-          DisabledButtonColor = -16777201
+          ButtonColor = clPurple
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = lbeRemoveTaxClick
         end
@@ -573,8 +573,8 @@ object frmPaymentType: TfrmPaymentType
           Height = 73
           Color = 11587808
           ButtonColor = 11587808
-          LatchedColor = -16777201
-          DisabledButtonColor = -16777201
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           ArrowType = atUp
           OnMouseDown = btnReceiptUpMouseDown
@@ -587,8 +587,8 @@ object frmPaymentType: TfrmPaymentType
           Height = 73
           Color = 11587808
           ButtonColor = 11587808
-          LatchedColor = -16777201
-          DisabledButtonColor = -16777201
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           ArrowType = atDown
           OnMouseDown = btnReceiptDownMouseDown

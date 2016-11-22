@@ -2861,10 +2861,11 @@ void __fastcall TfrmAnalysis::btnReportsClick(void)
 		std::auto_ptr <TfrmDropDownFunc> frmDropDown(
 		TfrmDropDownFunc::Create <TfrmDropDownFunc>(this));
 
-		if(!TGlobalSettings::Instance().EnableBlindBalances)
-        {
-			frmDropDown->AddButton("X Report", &ReportXReport);
-		}
+//		if(!TGlobalSettings::Instance().EnableBlindBalances)
+//        {
+//			frmDropDown->AddButton("X Report", &ReportXReport);
+//		}
+        frmDropDown->AddButton("X Report", &ReportXReport);
 		frmDropDown->AddButton("Float Adjustments", &ReportFloatAdjustments);
 		frmDropDown->AddButton("Write Off Audit", &ReportWriteOff);
 		frmDropDown->AddButton("Consumption", &ReportConsumption);

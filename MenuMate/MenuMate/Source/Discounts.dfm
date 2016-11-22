@@ -76,8 +76,8 @@ object frmDiscounts: TfrmDiscounts
         Color = 14342874
         ParentFont = False
         BevelOuter = bvNone
-        DefaultButtonColor = -16777201
-        DefaultButtonLatchedColor = -16777201
+        DefaultButtonColor = clNavy
+        DefaultButtonLatchedColor = clGreen
         LatchingType = ltRadioButton
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tgridSelectionMouseClick
@@ -186,8 +186,8 @@ object frmDiscounts: TfrmDiscounts
         Color = 14342874
         ParentFont = False
         BevelOuter = bvNone
-        DefaultButtonColor = -16777201
-        DefaultButtonLatchedColor = -16777201
+        DefaultButtonColor = clNavy
+        DefaultButtonLatchedColor = clGreen
         LatchingType = ltRadioButton
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tgListOrderMouseClick
@@ -427,8 +427,8 @@ object frmDiscounts: TfrmDiscounts
       ParentColor = True
       Caption = 'Ok'
       ButtonColor = 18944
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = Panel19Click
     end
@@ -446,8 +446,8 @@ object frmDiscounts: TfrmDiscounts
       ParentColor = True
       Caption = 'Add'
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnAddDiscountClick
     end
@@ -465,8 +465,8 @@ object frmDiscounts: TfrmDiscounts
       ParentColor = True
       Caption = 'Edit'
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnEditDiscountClick
     end
@@ -484,8 +484,8 @@ object frmDiscounts: TfrmDiscounts
       ParentColor = True
       Caption = 'Delete'
       ButtonColor = 9933970
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnDeleteClick
     end
@@ -503,8 +503,8 @@ object frmDiscounts: TfrmDiscounts
       ParentColor = True
       Caption = 'Assign Card'
       ButtonColor = 6052441
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnAssignCardClick
     end
@@ -522,8 +522,8 @@ object frmDiscounts: TfrmDiscounts
       ParentColor = True
       Caption = 'Clear Card'
       ButtonColor = 6052441
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnClearCardClick
     end
@@ -541,8 +541,8 @@ object frmDiscounts: TfrmDiscounts
       ParentColor = True
       Caption = 'Configure Auto Times'
       ButtonColor = 6052441
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = TouchBtn1MouseClick
     end
@@ -560,8 +560,8 @@ object frmDiscounts: TfrmDiscounts
       ParentColor = True
       Caption = 'Discount Group'
       ButtonColor = 6052441
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnDiscountGroupMouseClick
     end
