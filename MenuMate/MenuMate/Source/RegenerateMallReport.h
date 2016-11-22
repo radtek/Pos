@@ -93,7 +93,6 @@ public:		// User declarations
     UnicodeString EndHour;
     UnicodeString StartMin;
     UnicodeString EndMin;
-    UnicodeString SetYear;
 
     void InitializeTimeOptions();
     void InitializeTimeSet(TDateTime &SDate, TDateTime &EDate);

@@ -25,7 +25,6 @@ __fastcall TfrmRegenerateMallReport::TfrmRegenerateMallReport(TComponent* Owner)
     EndDate = Date() + 1.0;
     mcStartDate->Date = StartDate;
     mcEndDate->Date = EndDate;
-    SetYear = Now().FormatString("yyyy");
 
     InitializeTimeOptions();
     cbStartHour->ItemIndex = 5;
@@ -65,7 +64,6 @@ void __fastcall TfrmRegenerateMallReport::btnCancelMouseClick(TObject *Sender)
 void __fastcall TfrmRegenerateMallReport::mcStartDateClick(TObject *Sender)
 {
    StartDate = mcStartDate->Date;
-   SetYear = StartDate.FormatString("yyyy");
    InitializeTimeSet(SDate, EDate);
 }
 //---------------------------------------------------------------------------
@@ -197,8 +195,8 @@ void TfrmRegenerateMallReport::InitializeTimeSet(TDateTime &SDate, TDateTime &ED
     UnicodeString StartHM = StartHour + ":" + StartMin + ":00";
     UnicodeString EndHM = EndHour + ":" + EndMin + ":00";
 
-    SDate = StartDate + StrToTime(StartHM);
-    EDate = EndDate + StrToTime(EndHM);
+    SDate = (StartDate + StrToTime(StartHM)).FormatString("mmddyyyy");
+    EDate = (EndDate + StrToTime(EndHM)).FormatString("mmddyyyy");
 }
 //-------------------------------------------------------------------------------------------------------------
 void TfrmRegenerateMallReport::RegenerateEstanciaMallExport()
