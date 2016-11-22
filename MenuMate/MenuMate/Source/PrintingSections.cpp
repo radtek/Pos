@@ -6408,8 +6408,12 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
                   }
                   pPrinter->Add(vouchercode);
                   if(isGiftCardUsed)
+                  {
                      pPrinter->Add("Balance " + CurrToStr( PrintJob->Transaction->RedeemGiftVoucherInformation->GiftVoucherAmount -
                                                            PrintJob->Transaction->RedeemGiftVoucherInformation->RedeemedAmount));
+                     if((double)PrintJob->Transaction->RedeemGiftVoucherInformation->ExpiryDate > double(0))
+                        pPrinter->Add("Expiry Date " + PrintJob->Transaction->RedeemGiftVoucherInformation->ExpiryDate.FormatString("DD/MM/YYYY"));
+                  }
             }
 			else
 			{

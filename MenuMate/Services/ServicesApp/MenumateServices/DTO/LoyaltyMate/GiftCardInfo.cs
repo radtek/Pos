@@ -18,6 +18,6 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public string ResponseMessage { get; set; }
         [DataMember]
-        public bool IsValid { get; set; }
+        public int StatusCode { get; set; }
     }
 }

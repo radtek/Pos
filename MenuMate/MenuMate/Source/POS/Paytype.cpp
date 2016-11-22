@@ -2138,7 +2138,6 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
     TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
     TGiftCardDetail GiftCardDetail;
     ManagerLoyaltyVoucher.GetGiftVoucherDetail(voucherCode,GiftCardDetail);
-    bool isValidGiftCard = GiftCardDetail.IsValid;
     double balance = GiftCardDetail.PointBalance;
     if(balance > 0)
     {
@@ -2157,11 +2156,14 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
            if(wrkPayAmount > balance)
             {
               amountToPay = balance;
+
             }
             else
             {
               amountToPay = wrkPayAmount;
             }
+
+           MessageBox("Payment of " + FormatFloat("0.00",amountToPay) +" approved and balance of " + FormatFloat("0.00",balance - amountToPay) +" remaining.", "Information", MB_OK + MB_ICONINFORMATION);
            Payment->SetPay(amountToPay);
         }
         CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
@@ -2169,12 +2171,22 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
         CurrentTransaction.RedeemGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
         CurrentTransaction.RedeemGiftVoucherInformation->RedeemedAmount = amountToPay;
         CurrentTransaction.RedeemGiftVoucherInformation->GiftVoucherAmount = balance;
+        CurrentTransaction.RedeemGiftVoucherInformation->ExpiryDate = GiftCardDetail.ExpiryDate;
     }
     else
     {
-      if(isValidGiftCard)
+       switch(GiftCardDetail.StatusCode)
+       {
+         case 1:
          MessageBox("The gift card with code " + voucherCode + " has zero balance.", "Warning", MB_OK + MB_ICONINFORMATION);
-
+         break;
+         case 2:
+         MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
+         break;
+         case 3:
+         MessageBox("Gift Card expired.", "Warning", MB_OK + MB_ICONINFORMATION);
+         break;
+       }
       CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
       Payment->SetPay(0);
     }
@@ -2314,7 +2326,11 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
                TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
                TGiftCardDetail GiftCardDetail;
                ManagerLoyaltyVoucher.GetGiftVoucherDetail(Payment->ReferenceNumber,GiftCardDetail);
-               bool isValidGiftCard = GiftCardDetail.IsValid;
+
+               bool isValidGiftCard = true;
+               if(TGlobalSettings::Instance().GiftCardValidation == CloudValidation)
+                 isValidGiftCard == GiftCardDetail.StatusCode != 2;
+
                if(isValidGiftCard && DoLoyaltyGiftCardValidation(CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber,Payment->ReferenceNumber))
                 {
                     CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
@@ -2329,6 +2345,9 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
                    Payment->Reset();
                    return;
                 }
+
+                if(!isValidGiftCard)
+                  MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
             }
 
 			if (CurrentTransaction.CreditTransaction)

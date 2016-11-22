@@ -204,8 +204,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
 
             result.GiftCardNumber = inGiftCardInfo.GiftCardNumber;
             result.PointBalance = inGiftCardInfo.PointBalance;
-            result.IsValid = inGiftCardInfo.Result == Loyaltymate.Enum.GiftCardStatus.Available;
-
+            result.StatusCode = (int)inGiftCardInfo.Result;
             return result;
         }
 
@@ -213,7 +212,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
         {
             var result = new GiftCardInfo();
             result.PointBalance = 0;
-            result.IsValid = false;
+            result.StatusCode = 2;
             result.ResponseMessage = message;
             return result;
         }

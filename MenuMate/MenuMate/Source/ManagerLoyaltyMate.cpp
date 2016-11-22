@@ -642,7 +642,7 @@ void TLoyaltyMateGiftVoucherThread::GetGiftVoucherBalance()
 		else
 		{
             GiftCardDetail.ResponseMessage = giftCardDetail.ResponseMessage;
-            GiftCardDetail.IsValid = giftCardDetail.IsValid;
+            GiftCardDetail.StatusCode = giftCardDetail.StatusCode;
             GiftCardDetail.PointBalance = giftCardDetail.PointBalance;
             GiftCardDetail.ExpiryDate = giftCardDetail.ExpiryDate;
         }

@@ -62,6 +62,7 @@ struct TRedeemGiftVoucherInformation
     Currency TotalSaleAmount;
     Currency RedeemedAmount;
     Currency GiftVoucherAmount;
+    TDateTime ExpiryDate;
 };
 
 class TPaymentTransaction

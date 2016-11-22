@@ -407,7 +407,7 @@ void TLoyaltyMateInterface::ReadPocketVoucherInfo(VoucherInfo* inVoucherInfo,TVo
 void TLoyaltyMateInterface::ReadGiftCardInfo(GiftCardInfo* inVoucherInfo,TGiftCardDetail& GiftCardDetail)
 {
     GiftCardDetail.ResponseMessage  = inVoucherInfo->ResponseMessage;
-    GiftCardDetail.IsValid  = inVoucherInfo->IsValid;
+    GiftCardDetail.StatusCode  = inVoucherInfo->StatusCode;
     GiftCardDetail.PointBalance  = inVoucherInfo->PointBalance;
     if(inVoucherInfo->ExpiryDate != NULL)
         GiftCardDetail.ExpiryDate  = inVoucherInfo->ExpiryDate->AsUTCDateTime;

@@ -38,7 +38,7 @@ struct TGiftCardDetail
 {
     public:
         AnsiString ResponseMessage;
-        bool IsValid;
+        int StatusCode; //Available = 1, NotAvailable = 2,  Expired = 3
         double PointBalance;
         TDateTime ExpiryDate;
 };

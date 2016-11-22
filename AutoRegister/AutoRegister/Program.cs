@@ -10,17 +10,17 @@ namespace AutoRegister
         static void Main(string[] args)
         {
             String Server = "localhost";
-            String Database = @"C:\Program Files\MenuMate\MenuMate.fdb";
+            String Database = @"C:\Program Files (x86)\MenuMate\MenuMate.fdb";
 
-            if (args.Length > 0)
-            {
-                Server = args[0];
-            }
+            //if (args.Length > 0)
+            //{
+            //    Server = args[0];
+            //}
 
-            if (args.Length > 1)
-            {
-                Database = args[1];
-            }
+            //if (args.Length > 1)
+            //{
+            //    Database = args[1];
+            //}
 
             TRegInfo Reg = new TRegInfo();
             Reg.Server = Server;

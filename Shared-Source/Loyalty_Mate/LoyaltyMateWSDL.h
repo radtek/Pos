@@ -1042,12 +1042,12 @@ private:
   bool            FExpiryDate_Specified;
   UnicodeString   FGiftCardNumber;
   bool            FGiftCardNumber_Specified;
-  bool            FIsValid;
-  bool            FIsValid_Specified;
   double          FPointBalance;
   bool            FPointBalance_Specified;
   UnicodeString   FResponseMessage;
   bool            FResponseMessage_Specified;
+  int             FStatusCode;
+  bool            FStatusCode_Specified;
   void __fastcall SetExpiryDate(int Index, TXSDateTime* _prop_val)
   {  FExpiryDate = _prop_val; FExpiryDate_Specified = true;  }
   bool __fastcall ExpiryDate_Specified(int Index)
@@ -1056,10 +1056,6 @@ private:
   {  FGiftCardNumber = _prop_val; FGiftCardNumber_Specified = true;  }
   bool __fastcall GiftCardNumber_Specified(int Index)
   {  return FGiftCardNumber_Specified;  }
-  void __fastcall SetIsValid(int Index, bool _prop_val)
-  {  FIsValid = _prop_val; FIsValid_Specified = true;  }
-  bool __fastcall IsValid_Specified(int Index)
-  {  return FIsValid_Specified;  }
   void __fastcall SetPointBalance(int Index, double _prop_val)
   {  FPointBalance = _prop_val; FPointBalance_Specified = true;  }
   bool __fastcall PointBalance_Specified(int Index)
@@ -1068,15 +1064,19 @@ private:
   {  FResponseMessage = _prop_val; FResponseMessage_Specified = true;  }
   bool __fastcall ResponseMessage_Specified(int Index)
   {  return FResponseMessage_Specified;  }
+  void __fastcall SetStatusCode(int Index, int _prop_val)
+  {  FStatusCode = _prop_val; FStatusCode_Specified = true;  }
+  bool __fastcall StatusCode_Specified(int Index)
+  {  return FStatusCode_Specified;  }
 
 public:
   __fastcall ~GiftCardInfo();
 __published:
   __property TXSDateTime* ExpiryDate = { index=(IS_OPTN), read=FExpiryDate, write=SetExpiryDate, stored = ExpiryDate_Specified };
   __property UnicodeString GiftCardNumber = { index=(IS_OPTN|IS_NLBL), read=FGiftCardNumber, write=SetGiftCardNumber, stored = GiftCardNumber_Specified };
-  __property bool          IsValid = { index=(IS_OPTN), read=FIsValid, write=SetIsValid, stored = IsValid_Specified };
   __property double     PointBalance = { index=(IS_OPTN), read=FPointBalance, write=SetPointBalance, stored = PointBalance_Specified };
   __property UnicodeString ResponseMessage = { index=(IS_OPTN|IS_NLBL), read=FResponseMessage, write=SetResponseMessage, stored = ResponseMessage_Specified };
+  __property int        StatusCode = { index=(IS_OPTN), read=FStatusCode, write=SetStatusCode, stored = StatusCode_Specified };
 };
 
 

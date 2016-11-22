@@ -81,6 +81,11 @@ void TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode,TGiftCa
         _lmOperationDialogBox->PreventCancelOperation = true;
         _lmOperationDialogBox->ShowModal();
 
+        GiftCardDetail.ResponseMessage  = voucherThread->GiftCardDetail.ResponseMessage;
+        GiftCardDetail.StatusCode  = voucherThread->GiftCardDetail.StatusCode;
+        GiftCardDetail.PointBalance  = voucherThread->GiftCardDetail.PointBalance;
+        GiftCardDetail.ExpiryDate  = voucherThread->GiftCardDetail.ExpiryDate;
+
         bool result = voucherThread->OperationSuccessful;
         AnsiString errorMessage =  voucherThread->ErrorMessage;
         if(!result)
