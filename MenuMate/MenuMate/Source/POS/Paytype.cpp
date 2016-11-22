@@ -2329,7 +2329,7 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 
                bool isValidGiftCard = true;
                if(TGlobalSettings::Instance().GiftCardValidation == CloudValidation)
-                 isValidGiftCard == GiftCardDetail.StatusCode != 2;
+                 isValidGiftCard = GiftCardDetail.StatusCode != 2;
 
                if(isValidGiftCard && DoLoyaltyGiftCardValidation(CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber,Payment->ReferenceNumber))
                 {
@@ -2343,11 +2343,12 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
                 {
                    CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
                    Payment->Reset();
+                   if(!isValidGiftCard)
+                    MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
                    return;
                 }
 
-                if(!isValidGiftCard)
-                  MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
+
             }
 
 			if (CurrentTransaction.CreditTransaction)

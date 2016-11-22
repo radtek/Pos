@@ -2067,7 +2067,7 @@ void TfrmMaintain::ManageGiftCardValidations(Database::TDBTransaction &DBTransac
     {
         TGlobalSettings::Instance().GiftCardValidation = StrToIntDef(SelectedItem1.Properties["Action"],0);
         DBTransaction.StartTransaction();
-        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmGiftCardValidation,TGlobalSettings::Instance().GiftCardValidation);
+        TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmGiftCardValidation,TGlobalSettings::Instance().GiftCardValidation);
         DBTransaction.Commit();
     }
 }
