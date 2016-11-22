@@ -435,6 +435,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbOpenCashDrawer->Checked = TGlobalSettings::Instance().OpenCashDrawer;
     cbHideReceiptNumber->Checked = TGlobalSettings::Instance().HideReceiptNumberForRefundItem;
     cbMergeSimilarItem->Checked = TGlobalSettings::Instance().MergeSimilarItem;
+    cbShowLocalTaxandProfitTax->Checked = TGlobalSettings::Instance().ShowLocalandProfitTax;
 }
 
 //---------------------------------------------------------------------------
@@ -4038,7 +4039,15 @@ void __fastcall TfrmGeneralMaintenance::cbMergeSimilarItemClick(TObject *Sender)
 	DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-
+void __fastcall TfrmGeneralMaintenance::cbShowLocalTaxandProfitTaxClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().ShowLocalandProfitTax = cbShowLocalTaxandProfitTax->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmShowLocalandProfitTax, TGlobalSettings::Instance().ShowLocalandProfitTax);
+	DBTransaction.Commit();
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 
 
 

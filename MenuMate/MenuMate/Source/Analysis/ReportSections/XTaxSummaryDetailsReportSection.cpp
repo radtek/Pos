@@ -34,6 +34,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     Currency localTax = reportCalculations->GetLocalTax(*_dbTransaction, deviceName);
     Currency profitTax = reportCalculations->GetProfitTax(*_dbTransaction, deviceName);
     Currency discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction);
+    Currency zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
 
     taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction), 0.01, _globalSettings->MidPointRoundsDown);
 
@@ -42,7 +43,8 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         discountAndSurcharge = 0;
     }
 
-    const Currency taxSales = (((todays_earnings - discountAndSurcharge) - taxExemptSales - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax));
+    const Currency taxSales = (((todays_earnings - discountAndSurcharge) - taxExemptSales - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax)) - zeroratedsales;
+    //CAST((ZEDS.TERMINAL_EARNINGS - (ROUNDING.rounding_amount) - sum(coalesce(VAT_EXEMPT_SALE.price,0)) - SUM(coalesce(zero_rated.price,0))- sum(coalesce(AOT.VAT,0))) as NUMERIC(17,4)) VATABLE
 
     if(_globalSettings->ShowServiceChargeTaxWithSalesTax && !_globalSettings->ShowServiceChargeTaxWithServiceCharge)
     {
@@ -58,27 +60,35 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     {
         reportSectionDisplayTraits->ApplyTraits(printOut);
     }
+    //Currency zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
 
     printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
-	printOut->PrintFormat->Line->FontInfo.Reset();
+    printOut->PrintFormat->Line->FontInfo.Reset();
 
-    printOut->PrintFormat->Line->Columns[0]->Text = "Sales Tax Total:";
-	printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
-	printOut->PrintFormat->AddLine();
+    printOut->PrintFormat->Line->Columns[0]->Text = "VATable Sales:";
+    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxSales);
+    printOut->PrintFormat->AddLine();
 
-    printOut->PrintFormat->Line->Columns[0]->Text = "Tax Exempt Sales Total:";
-	printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxExemptSales);
-	printOut->PrintFormat->AddLine();
+    printOut->PrintFormat->Line->Columns[0]->Text = "VAT Amount:";
+    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
+    printOut->PrintFormat->AddLine();
 
-	printOut->PrintFormat->Line->Columns[0]->Text = "Taxable Sales Total:";
-	printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxSales);
-	printOut->PrintFormat->AddLine();
+    printOut->PrintFormat->Line->Columns[0]->Text = "VAT Exempt Sales:";
+    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxExemptSales);
+    printOut->PrintFormat->AddLine();
 
-	printOut->PrintFormat->Line->Columns[0]->Text = "Local Tax Total:";
-	printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(localTax);
-	printOut->PrintFormat->AddLine();
+    printOut->PrintFormat->Line->Columns[0]->Text = "Zero-Rated Sales:";
+    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(zeroratedsales);
+    printOut->PrintFormat->AddLine();
 
-    printOut->PrintFormat->Line->Columns[0]->Text = "Profit Tax Total:";
-	printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(profitTax);
-	printOut->PrintFormat->AddLine();
+    if(TGlobalSettings::Instance().ShowLocalandProfitTax)
+    {
+        printOut->PrintFormat->Line->Columns[0]->Text = "Local Tax Total:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(localTax);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Profit Tax Total:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(profitTax);
+        printOut->PrintFormat->AddLine();
+    }
 }

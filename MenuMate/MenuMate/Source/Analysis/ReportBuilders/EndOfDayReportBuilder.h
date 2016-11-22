@@ -48,7 +48,7 @@ protected:
     virtual void AddShowRemovalSection(IReport* report);
     virtual void AddPriceAdjustmentSection(IReport* report);
     virtual void AddMallExportConsolidatedReceipt(IReport* report);
-
+    virtual void AddCurrentBegningAndEndingBalance(IReport* report);
 };
 
 #endif

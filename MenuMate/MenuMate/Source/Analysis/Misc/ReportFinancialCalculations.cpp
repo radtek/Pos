@@ -66,7 +66,7 @@ Currency ReportFinancialCalculations::GetTaxExemptSales(Database::TDBTransaction
                         "SELECT ARCHIVE_KEY "
                         "FROM DAYARCORDERTAXES "
                         "WHERE (TAX_TYPE = 0 OR TAX_TYPE = 5) and TAX_VALUE <>0 "
-                    ") "
+                    ") AND (UPPER(DA.DISCOUNT_REASON) NOT LIKE '%DIPLOMAT%')  "
                     "GROUP BY 1,2,3 ";
 	qr->ExecQuery();
 
@@ -812,3 +812,40 @@ void ReportFinancialCalculations::GetSummaNetSalesTotal(Database::TDBTransaction
 		throw;
 	}
 }
+
+Currency ReportFinancialCalculations::GetZeroRatedSales(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
+{
+    Currency zeroratedsalesvalue;
+	try
+	{
+        Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+        TIBSQL *zeroratedsales = tr.Query(tr.AddQuery());
+
+        zeroratedsales->SQL->Text =
+                        "SELECT SUM(cast(coalesce(DA.BASE_PRICE,0)*da.QTY + DA.DISCOUNT_WITHOUT_TAX + coalesce(AOT.TAX_VALUE,0) as numeric(17,4))) PRICE  "
+                        "FROM DayARCHIVE DA "
+                        "LEFT JOIN (SELECT  a.ARCHIVE_KEY, "
+                        "Cast(Sum(coalesce(a.TAX_VALUE,0) ) as Numeric(17,4)) TAX_VALUE "
+                        "FROM DayARCORDERTAXES a group by  a.ARCHIVE_KEY order by 1 ) "
+                        "AOT ON  AOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                        " WHERE DA.TERMINAL_NAME = :TERMINAL_NAME and  DA.DISCOUNT_REASON <> '' AND DA.DISCOUNT = 0 AND DA.ARCHIVE_KEY "
+                        "IN ( SELECT ARCHIVE_KEY  FROM DAYARCORDERTAXES "
+                        "WHERE (TAX_TYPE = 0  and TAX_VALUE = 0 ) AND "
+                        "DAYARCORDERTAXES.ARCHIVE_KEY NOT IN (SELECT a.ARCHIVE_KEY FROM DAYARCORDERDISCOUNTS a WHERE (A.DISCOUNT_GROUPNAME = 'Senior Citizen' AND A.DISCOUNTED_VALUE <> 0) OR (A.DISCOUNT_GROUPNAME = 'Person with Disability'))) ";
+
+        tr.StartTransaction();
+        zeroratedsales->ParamByName("Terminal_Name")->AsString = deviceName;
+        zeroratedsales->ExecQuery();
+        zeroratedsalesvalue = zeroratedsales->FieldByName("PRICE")->AsCurrency;
+
+        tr.Commit();
+        zeroratedsales->Close();
+    }
+	catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+		throw;
+	}
+	return zeroratedsalesvalue;
+}
+

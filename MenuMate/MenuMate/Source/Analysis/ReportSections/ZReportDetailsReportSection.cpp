@@ -24,5 +24,4 @@ void ZReportDetailsReportSection::GetOutput(TPrintout* printout)
     printout->PrintFormat->NewLine();
     printout->PrintFormat->Line->Columns[0]->Text = "Final (Z)";
     printout->PrintFormat->AddLine();
-
 }

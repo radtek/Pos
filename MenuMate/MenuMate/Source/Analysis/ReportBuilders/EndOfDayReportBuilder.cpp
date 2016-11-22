@@ -10,12 +10,10 @@ EndOfDayReportBuilder::~EndOfDayReportBuilder()
 
 void EndOfDayReportBuilder::AddSectionsToReport(IReport* report)
 {
-    
-
-
 
     AddReportDetailsSection(report);
     AddCurrentDateDetailsSection(report);
+    AddCurrentBegningAndEndingBalance(report);
 	AddClientDetailsSection(report);
 	AddSessionDateSection(report);
     AddMasterBlindBalancesSection(report);
@@ -39,15 +37,12 @@ void EndOfDayReportBuilder::AddSectionsToReport(IReport* report)
 	AddAccountBalancesTabsSection(report);
 	AddAccountBalancesSeatedSection(report);
 	AddHourlySalesSection(report);
-	AddAccumulatedTotalSection(report);
-	AddTaxSummarySection(report);
+	AddTaxSummarySection(report); // put tax summary above site accumulated zed
+    AddAccumulatedTotalSection(report);
 	AddServiceChargeSummarSection(report);
 	AddStaffHoursSection(report);
 	AddCommissionTipsSection(report);
 	AddMallExportConsolidatedReceipt(report);
-
-
-
 }
 
 void EndOfDayReportBuilder::AddReportDetailsSection(IReport* report)
@@ -58,6 +53,10 @@ void EndOfDayReportBuilder::AddReportDetailsSection(IReport* report)
 void EndOfDayReportBuilder::AddCurrentDateDetailsSection(IReport* report)
 {
     AddReportSectionToReport(report, mmCurrentDateDetailsSection, true);
+}
+void EndOfDayReportBuilder::AddCurrentBegningAndEndingBalance(IReport* report)
+{
+    AddReportSectionToReport(report, mmShowBegningandEndingBalance, true);
 }
 
 void EndOfDayReportBuilder::AddClientDetailsSection(IReport* report)

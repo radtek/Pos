@@ -3129,6 +3129,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarStr(DBTransaction,vmRefundReferenceLabel,"Refund Reference Label",
 		"Label for Refund reference in receipt print.",
 		vmgPrinting, "OR No.");
+        SetVarBool(DBTransaction,vmShowLocalandProfitTax, "Show Local and Profit Tax ",
+             "Default is false",
+              vmgPrinting, false);
 	}
 	catch(Exception &E)
 	{

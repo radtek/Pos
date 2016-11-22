@@ -26,6 +26,7 @@ public:
     Currency GetDiscountsAndSurcharges(Database::TDBTransaction &DBTransaction);
 
     TFinancialDetails GetFinancialDetails(Database::TDBTransaction &DBTransaction, TTransactionInfo &TransactionInfo,AnsiString DeviceName);
+    Currency GetZeroRatedSales(Database::TDBTransaction &DBTransaction, AnsiString deviceName);
 
 private:
     void GetBilledSalesDetail(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName);

@@ -223,7 +223,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsStaffOptions
+    ActivePage = tsEndOfDayOptions
     TabOrder = 1
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'
@@ -2618,7 +2618,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 400
           Top = 49
           Width = 475
-          Height = 700
+          Height = 730
           Caption = 'Zed Print'
           ParentBackground = False
           TabOrder = 15
@@ -2862,8 +2862,17 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Width = 329
             Height = 20
             Caption = 'Show Price Adjustment on Zed'
-            TabOrder = 26
+            TabOrder = 27
             OnClick = cbShowPriceAdjustmentClick
+          end
+          object cbShowLocalTaxandProfitTax: TCheckBox
+            Left = 8
+            Top = 695
+            Width = 329
+            Height = 20
+            Caption = 'Show Local and Profit Tax in Tax Summary'
+            TabOrder = 26
+            OnClick = cbShowLocalTaxandProfitTaxClick
           end
         end
         object cbEnablePrinterCounts: TCheckBox
