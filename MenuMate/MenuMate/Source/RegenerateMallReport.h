@@ -56,16 +56,6 @@ __published:	// IDE-managed Components
 private:	// User declarations
 
     Database::TDBTransaction *dbTransaction;
-    std::map<UnicodeString, UnicodeString> DataRead;
-    std::vector<UnicodeString> DataToWrite;
-    ////DLFMALL
-    void WriteInToFileForFirstCode(Database::TDBTransaction *dbTransaction, int day , int month , int year, TDateTime date);
-    void WriteInToFileForSecondCode(Database::TDBTransaction *dbTransaction, int arcBillKey, int day , int month , int year, TDateTime date);
-    void WriteInToFileForThirdCode(Database::TDBTransaction *dbTransaction, int arcBillKey, int day , int month , int year, TDateTime date);
-    void WriteInToFileForFourthCode(Database::TDBTransaction *dbTransaction, int arcBillKey, int day , int month , int year, TDateTime date);
-    void WriteInToFileForFifthCode(Database::TDBTransaction *dbTransaction, int arcBillKey, int day , int month , int year, TDateTime date);
-    void WriteInToFileForSixthCode(Database::TDBTransaction *dbTransaction, int day , int month , int year);
-    void LoadFileToFTP();
     int day, month, year;
     AnsiString terminal_Name;
     TEstanciaMall estanciaMall;
