@@ -282,6 +282,7 @@ void TfrmPaymentType::Reset()
              {
                tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
                tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = Payment->IsLoyaltyGiftCard();
+               tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
                CopyPaymentColor(ButtonPos);
              }
