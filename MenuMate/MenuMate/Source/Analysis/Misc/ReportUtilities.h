@@ -190,6 +190,9 @@ public:
     TDateTime GetTransDateForTerminal(Database::TDBTransaction &dbTransaction, UnicodeString terminalName);
     void DataCalculationUtilities::PrinterFormatinTwoSections(TPrintout* printOut);
     void DataCalculationUtilities::PrinterFormatinThreeSections(TPrintout* printOut);
+    TDateTime CalculateSessionTransactionDate(TDateTime trans_date, int bill_hour, int bill_day, int bill_year, int bill_month);
+    int CalculateLastDayOfMonth(int month);
+    TDateTime CalculateSessionTransactionDate(TDateTime trans_date);
 };
 
 struct TPointTransaction

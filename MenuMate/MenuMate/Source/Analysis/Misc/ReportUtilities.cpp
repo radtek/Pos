@@ -735,7 +735,7 @@ TDateTime DataCalculationUtilities::GetTransDateForTerminal(Database::TDBTransac
         terminalNamePredicate = "where a.TERMINAL_NAME = :TERMINAL_NAME ";
     }
     IBInternalQuery->Close();
-    IBInternalQuery->SQL->Text = "select min(a.TIME_STAMP) TIME_STAMP, a.ARCHIVE_KEY, a.TERMINAL_NAME from DAYARCHIVE a " + terminalNamePredicate  + " group by ARCHIVE_KEY, a.TERMINAL_NAME ";
+    IBInternalQuery->SQL->Text = "select min(a.TIME_STAMP) TIME_STAMP, extract(Hour from TIME_STAMP)Bill_Hour, extract(Day from TIME_STAMP)Bill_Day, extract(Year from TIME_STAMP)Bill_Year, extract(Month from TIME_STAMP)Bill_Month, a.ARCHIVE_KEY, a.TERMINAL_NAME from DAYARCHIVE a " + terminalNamePredicate  + " group by ARCHIVE_KEY, a.TERMINAL_NAME, Bill_Hour,Bill_Day,Bill_Year,Bill_Month ";
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
        IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = terminalName;
@@ -745,10 +745,13 @@ TDateTime DataCalculationUtilities::GetTransDateForTerminal(Database::TDBTransac
     if (IBInternalQuery->RecordCount != 0)
     {
         trans_Date = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+        trans_Date = CalculateSessionTransactionDate(trans_Date, IBInternalQuery->FieldByName("Bill_Hour")->AsInteger, IBInternalQuery->FieldByName("Bill_Day")->AsInteger, IBInternalQuery->FieldByName("Bill_Year")->AsInteger, IBInternalQuery->FieldByName("Bill_Month")->AsInteger);
     }
     else
     {
        trans_Date = Now();
+       trans_Date = CalculateSessionTransactionDate(trans_Date);
+
     }
     IBInternalQuery->Close();
     return trans_Date;
@@ -777,4 +780,115 @@ void DataCalculationUtilities::PrinterFormatinTwoSections(TPrintout* printOut)
     printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
     printOut->PrintFormat->Line->Columns[3]->Width = 0;
  }
+
+ TDateTime DataCalculationUtilities::CalculateSessionTransactionDate(TDateTime trans_date, int bill_hour, int bill_day, int bill_year, int bill_month)
+ {
+    SYSTEMTIME SystemTime;
+    ::GetLocalTime(&SystemTime);
+    int nPreviousMth;
+    if(TGlobalSettings::Instance().EndOfDay > 0 && bill_hour < TGlobalSettings::Instance().EndOfDay)
+    {
+        if((bill_day - 1) == 0)
+        {
+           nPreviousMth = (bill_month -1==0)?12:bill_month-1;
+           int day = CalculateLastDayOfMonth(nPreviousMth);
+           TDateTime sessionDate(bill_year, nPreviousMth, day);
+           trans_date = sessionDate;
+        }
+        else
+        {
+            TDateTime sessionDate(bill_year, SystemTime.wMonth, (bill_day - 1));
+            trans_date = sessionDate;
+        }
+    }
+    return trans_date;
+ }
+
+
+TDateTime DataCalculationUtilities::CalculateSessionTransactionDate(TDateTime trans_date)
+{
+    SYSTEMTIME SystemTime;
+    ::GetLocalTime(&SystemTime);
+    int nPreviousMth;
+    int hour = StrToInt(Now().FormatString("hh"));
+    if(hour > TGlobalSettings::Instance().EndOfDay)
+    {
+       hour -= TGlobalSettings::Instance().EndOfDay;
+    }
+    if(TGlobalSettings::Instance().EndOfDay > 0 && hour < TGlobalSettings::Instance().EndOfDay)
+    {
+        if((SystemTime.wDay - 1) == 0)
+        {
+           nPreviousMth = (SystemTime.wMonth -1==0)?12:SystemTime.wMonth-1;
+           int day = CalculateLastDayOfMonth(nPreviousMth);
+           TDateTime sessionDate(SystemTime.wYear, nPreviousMth, day);
+           trans_date = sessionDate;
+        }
+        else
+        {
+            TDateTime sessionDate(SystemTime.wYear, SystemTime.wMonth, (SystemTime.wDay - 1));
+            trans_date = sessionDate;
+        }
+    }
+    return trans_date;
+}
+
+int DataCalculationUtilities::CalculateLastDayOfMonth(int month)
+{
+    SYSTEMTIME SystemTime;
+
+    int lastdayofmonth;
+    int leap_year;
+
+    switch(month)
+    {
+    case 1:
+        lastdayofmonth = 31;
+		break;
+	case 2:
+        leap_year = SystemTime.wYear % 4;
+        if(leap_year == 0)
+        {
+           lastdayofmonth = 29;
+        }
+        else
+        {
+           lastdayofmonth = 28;
+        }
+		break;
+	case 3:
+        lastdayofmonth = 31;
+		break;
+	case 4:
+        lastdayofmonth = 30;
+		break;
+	case 5:
+        lastdayofmonth = 31;
+		break;
+	case 6:
+        lastdayofmonth = 30;
+		break;
+	case 7:
+        lastdayofmonth = 31;
+		break;
+	case 8:
+        lastdayofmonth = 31;
+		break;
+	case 9:
+        lastdayofmonth = 30;
+		break;
+	case 10:
+        lastdayofmonth = 31;
+		break;
+	case 11:
+        lastdayofmonth = 30;
+		break;
+	case 12:
+        lastdayofmonth = 31;
+		break;
+    }
+    return lastdayofmonth;
+}
+
+
 
