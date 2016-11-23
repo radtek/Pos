@@ -13,9 +13,9 @@ void EndOfDayReportBuilder::AddSectionsToReport(IReport* report)
 
     AddReportDetailsSection(report);
     AddCurrentDateDetailsSection(report);
-    AddCurrentBegningAndEndingBalance(report);
 	AddClientDetailsSection(report);
 	AddSessionDateSection(report);
+    AddCurrentBegningAndEndingBalance(report);
     AddMasterBlindBalancesSection(report);
 	AddBlindBalancesSection(report);
 	AddTransactionSummaryGroupSection(report);

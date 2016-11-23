@@ -18,7 +18,7 @@ public:
     ~ReportFinancialCalculations();
 
     Currency GetTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName);
-    Currency GetTaxExemptSales(Database::TDBTransaction &DBTransaction);
+    Currency GetTaxExemptSales(Database::TDBTransaction &DBTransaction, AnsiString deviceName);
     Currency GetServiceCharge(Database::TDBTransaction &DBTransaction, AnsiString deviceName);
     Currency GetServiceChargeTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName);
     Currency GetLocalTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName);

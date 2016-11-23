@@ -36,13 +36,12 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     Currency discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction);
     Currency zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
 
-    taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction), 0.01, _globalSettings->MidPointRoundsDown);
+    taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
 
     if(_globalSettings->ReCalculateTaxPostDiscount)
     {
         discountAndSurcharge = 0;
     }
-
     const Currency taxSales = (((todays_earnings - discountAndSurcharge) - taxExemptSales - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax)) - zeroratedsales;
     //CAST((ZEDS.TERMINAL_EARNINGS - (ROUNDING.rounding_amount) - sum(coalesce(VAT_EXEMPT_SALE.price,0)) - SUM(coalesce(zero_rated.price,0))- sum(coalesce(AOT.VAT,0))) as NUMERIC(17,4)) VATABLE
 
