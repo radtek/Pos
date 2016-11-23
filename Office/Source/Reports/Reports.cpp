@@ -11082,6 +11082,7 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
                         rvMenuMate->SetParam("TiNNumber", dmMMReportData->tinNumber);
                         rvMenuMate->SetParam("TerminalName", dmMMData->GetTerminalName());
                         rvMenuMate->SetParam("SerialNo", dmMMReportData->serialNo);
+                        rvMenuMate->SetParam("Generated", Now().FormatString("ddddd hh:nn"));
 						rvMenuMate->Execute();
 					}
 					else
