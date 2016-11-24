@@ -11059,37 +11059,27 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
                     dmMMReportData->serialNo = CompanyData->Strings[3].TrimLeft();
                 }
 				const AnsiString ReportName = "repSalesSummaryD";
+				dmMMReportData->SetupSalesSummaryD(ReportControl->Start, ReportControl->End);                 
+                if (rvMenuMate->SelectReport(ReportName, false))
+                {
+                    AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+                                                    "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+                    rvMenuMate->SetParam("ReportRange", DateRange);
+                    rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                    rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID);
+                    rvMenuMate->SetParam("NameOfTaxPayer", dmMMReportData->nameOfTaxPayer);
+                    rvMenuMate->SetParam("AddressOfTaxPayer", dmMMReportData->addressOfTaxPayer);
+                    rvMenuMate->SetParam("TiNNumber", dmMMReportData->tinNumber);
+                    rvMenuMate->SetParam("TerminalName", dmMMData->GetTerminalName());
+                    rvMenuMate->SetParam("SerialNo", dmMMReportData->serialNo);
+                    rvMenuMate->SetParam("Generated", Now().FormatString("ddddd hh:nn"));
+                    rvMenuMate->Execute();
+                }
+                else
+                {
+                    Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+                }
 
-				dmMMReportData->SetupSalesSummaryD(ReportControl->Start, ReportControl->End);
-				/*if (ReportType == rtExcel)
-				{
-                    std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-                    ExcelDataSetsList->AddObject("Sales Summary Parameters",(TObject *)dmMMReportData->qrSSDParemeter);
-				   	ExcelDataSetsList->AddObject("Sales Summary D",(TObject *)dmMMReportData->qrSalesSummaryD);
- 				  	ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
-				}
-				else
-				{*/
-					if (rvMenuMate->SelectReport(ReportName, false))
-					{
-						AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-						rvMenuMate->SetParam("ReportRange", DateRange);
-                        rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
-                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
-                        rvMenuMate->SetParam("NameOfTaxPayer", dmMMReportData->nameOfTaxPayer);
-                        rvMenuMate->SetParam("AddressOfTaxPayer", dmMMReportData->addressOfTaxPayer);
-                        rvMenuMate->SetParam("TiNNumber", dmMMReportData->tinNumber);
-                        rvMenuMate->SetParam("TerminalName", dmMMData->GetTerminalName());
-                        rvMenuMate->SetParam("SerialNo", dmMMReportData->serialNo);
-                        rvMenuMate->SetParam("Generated", Now().FormatString("ddddd hh:nn"));
-						rvMenuMate->Execute();
-					}
-					else
-					{
-						Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-					}
-				//}
 
 			}
 
