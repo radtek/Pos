@@ -43,7 +43,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         discountAndSurcharge = 0;
     }
     const Currency taxSales = (((todays_earnings - discountAndSurcharge) - taxExemptSales - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax)) - zeroratedsales;
-    //CAST((ZEDS.TERMINAL_EARNINGS - (ROUNDING.rounding_amount) - sum(coalesce(VAT_EXEMPT_SALE.price,0)) - SUM(coalesce(zero_rated.price,0))- sum(coalesce(AOT.VAT,0))) as NUMERIC(17,4)) VATABLE
+
 
     if(_globalSettings->ShowServiceChargeTaxWithSalesTax && !_globalSettings->ShowServiceChargeTaxWithServiceCharge)
     {
@@ -59,7 +59,6 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     {
         reportSectionDisplayTraits->ApplyTraits(printOut);
     }
-    //Currency zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
 
     printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
     printOut->PrintFormat->Line->FontInfo.Reset();

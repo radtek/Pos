@@ -43,14 +43,6 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
     printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
 	printOut->PrintFormat->Line->FontInfo.Reset();
 
-    //printOut->PrintFormat->Line->Columns[0]->Text = "Beginning Balance:";
-    //printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(openingBalance);
-    //printOut->PrintFormat->AddLine();
-
-    //printOut->PrintFormat->Line->Columns[0]->Text = "Ending Balance:";
-    //printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
-    //printOut->PrintFormat->AddLine();
-
     printOut->PrintFormat->Line->Columns[0]->Text = "Beginning OR No.:";
     printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(startInvoiceNumber);
     printOut->PrintFormat->AddLine();
