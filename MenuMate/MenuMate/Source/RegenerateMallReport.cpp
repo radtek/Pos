@@ -231,7 +231,6 @@ void TfrmRegenerateMallReport::RegenerateEstanciaMallExport()
     dbTransaction.Commit();
 }
 //---------------------------------------------------------------------------
-// Initialize Start and End Time for each mall
 void TfrmRegenerateMallReport::SetSpecificMallTimes(int &StartH, int &EndH, int &StartM, int &EndM)
 {
         StartH = 5;
