@@ -54,20 +54,17 @@ void __fastcall TfrmRegenerateMallReport::btnOkMouseClick(TObject *Sender)
     ModalResult = mrOk;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmRegenerateMallReport::btnCancelMouseClick(TObject *Sender)
 {
     ModalResult = mrCancel;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmRegenerateMallReport::mcStartDateClick(TObject *Sender)
 {
    StartDate = mcStartDate->Date;
    InitializeTimeSet(SDate, EDate);
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmRegenerateMallReport::mcEndDateClick(TObject *Sender)
 {
    if(int(mcStartDate->Date) > int(mcEndDate->Date))
@@ -77,9 +74,7 @@ void __fastcall TfrmRegenerateMallReport::mcEndDateClick(TObject *Sender)
    EndDate = mcEndDate->Date;
    InitializeTimeSet(SDate, EDate);
 }
-
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmRegenerateMallReport::btnGenerateMouseClick(TObject *Sender)
 
 {
@@ -94,7 +89,6 @@ void __fastcall TfrmRegenerateMallReport::btnGenerateMouseClick(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmRegenerateMallReport::cbStartHourChange(TObject *Sender)
 
 {
@@ -103,7 +97,6 @@ void __fastcall TfrmRegenerateMallReport::cbStartHourChange(TObject *Sender)
     InitializeTimeSet(SDate, EDate);
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmRegenerateMallReport::cbStartMinChange(TObject *Sender)
 {
 
@@ -111,21 +104,18 @@ void __fastcall TfrmRegenerateMallReport::cbStartMinChange(TObject *Sender)
     InitializeTimeSet(SDate, EDate);
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmRegenerateMallReport::cbEndHourChange(TObject *Sender)
 {
     EndHour = cbEndHour->ItemIndex;
     InitializeTimeSet(SDate, EDate);
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmRegenerateMallReport::cbEndMinChange(TObject *Sender)
 {
     EndMin = cbEndMin->ItemIndex;
     InitializeTimeSet(SDate, EDate);
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmRegenerateMallReport::edLocationPathMouseUp(TObject *Sender,
           TMouseButton Button, TShiftState Shift, int X, int Y)
 {
@@ -141,7 +131,6 @@ void __fastcall TfrmRegenerateMallReport::edLocationPathMouseUp(TObject *Sender,
 	}
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmRegenerateMallReport::btnLoadPathMouseClick(TObject *Sender)
 {
     std::list<TMallExportSettings>::iterator it;
