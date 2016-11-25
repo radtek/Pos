@@ -60,16 +60,7 @@ private:	// User declarations
     AnsiString terminal_Name;
     TEstanciaMall estanciaMall;
 
-    TMallExportPrepareData PrepareDataForExport();
-
-    //Prepare data for Invoice Sales File
-    void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForInvoice, int index);
-
-    //Fetch Data For Invoice Sales File writing
-    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForHSF, int index);
-
-    //Fetch Data For Daily Sales File writing
-    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForDSF, int index);
+    TMallExportPrepareData PrepareDataForExport(Database::TDBTransaction &dBTransaction, int zKey);
 
 public:		// User declarations
     __fastcall TfrmRegenerateMallReport(TComponent* Owner);

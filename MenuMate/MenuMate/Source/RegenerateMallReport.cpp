@@ -216,10 +216,13 @@ void TfrmRegenerateMallReport::RegenerateEstanciaMallExport()
     //Query for selecting data for invoice file
     IBInternalQuery->Close();
     IBInternalQuery->SQL->Text =  "SELECT a.Z_KEY FROM MALLEXPORT_SALES a "
-                                    "WHERE a.Z_KEY != :Z_KEY "
-                                    "GROUP BY a.Z_KEY ";
+                                    "WHERE a.Z_KEY != :Z_KEY AND a.DATE_CREATED >= :START_TIME AND a.DATE_CREATED < :END_TIME "
+                                    "GROUP BY a.Z_KEY "
+                                    "ORDER BY 1 ASC ";
 
     IBInternalQuery->ParamByName("Z_KEY")->AsInteger = 0;
+    IBInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
+    IBInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
     IBInternalQuery->ExecQuery();
 
    for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -228,45 +231,30 @@ void TfrmRegenerateMallReport::RegenerateEstanciaMallExport()
         zKey = IBInternalQuery->Fields[0]->AsInteger;
 
         //Prepare Data For Exporting into File
-        preparedData = PrepareDataForExport();
+        preparedData = PrepareDataForExport(dbTransaction, zKey);
 
         //Create Export Medium
         TMallExportTextFile* exporter =  new TMallExportTextFile();
         exporter->WriteToFile(preparedData);
     }
 
-    //Commit the transaction as we have completed all the transactions
+     //Commit the transaction as we have completed all the transactions
     dbTransaction.Commit();
 }
 //---------------------------------------------------------------------------
 // Initialize Start and End Time for each mall
 void TfrmRegenerateMallReport::SetSpecificMallTimes(int &StartH, int &EndH, int &StartM, int &EndM)
 {
-    if(TGlobalSettings::Instance().MallIndex == AYALAMALL)
-    {
-        StartH = 6;
-        EndH = 6;
-        StartM = 0;
-        EndM = 0;
-    }
-    else
-    {
         StartH = 5;
         EndH = 5;
         StartM = 0;
         EndM = 0;
-    }
 }
 //---------------------------------------------------------------------------
-TMallExportPrepareData TfrmRegenerateMallReport::PrepareDataForExport()
+TMallExportPrepareData TfrmRegenerateMallReport::PrepareDataForExport(Database::TDBTransaction &dbTransaction, int zKey)
 {
     //Create TMallExportPrepareData  for returning prepared data
     TMallExportPrepareData preparedData;
-
-    //Register the database transaction..
-    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-    dbTransaction.StartTransaction();
 
     try
     {
@@ -280,7 +268,7 @@ TMallExportPrepareData TfrmRegenerateMallReport::PrepareDataForExport()
         keyToCheck = estanciaMall.InsertInToSet(dailySalekeys, 8);
 
         //Prepare Data For Daily Sales File
-        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, preparedData, 1);
+        estanciaMall.PrepareDataForDailySalesFile(dbTransaction, keyToCheck, preparedData, 1, zKey);
 
        //indexes for selecting total Net sale, patron count, etc
         int  hourIndexkeys[3] = {65, 64, 32};
@@ -292,7 +280,7 @@ TMallExportPrepareData TfrmRegenerateMallReport::PrepareDataForExport()
         keyToCheck = estanciaMall.InsertInToSet(hourIndexkeys, 3);
 
         //Prepare Data For Hourly File
-        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, preparedData, 2);
+        estanciaMall.PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, preparedData, 2, zKey);
 
         //indexes for selecting total Net sale, invoice number , status
         int invoiceIndex[3] = {65, 67, 68};
@@ -304,10 +292,7 @@ TMallExportPrepareData TfrmRegenerateMallReport::PrepareDataForExport()
         keyToCheck = estanciaMall.InsertInToSet(invoiceIndex, 3);
 
         //Prepare Data For Invoice File
-        PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 3);
-
-       //Commit the transaction as we have completed all the transactions
-        dbTransaction.Commit();
+        estanciaMall.PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 3, zKey);
     }
     catch(Exception &E)
 	{
@@ -318,342 +303,6 @@ TMallExportPrepareData TfrmRegenerateMallReport::PrepareDataForExport()
     return preparedData;
 }
 //-----------------------------------------------------------------------------------------------
-void TfrmRegenerateMallReport::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys,
-                                                                                        TMallExportPrepareData &prepareDataForInvoice, int index)
-{
-    //Create List Of SalesData for invoice file
-    std::list<TMallExportSalesData> salesDataForISF;
-    try
-    {
-        ///Store First Letter of file name
-        UnicodeString fileName = "I";
-
-        //Seperate key with commas in the form of string.
-        UnicodeString indexKeysList = estanciaMall.GetFieldIndexList(indexKeys);
-
-        ///Register Query
-        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-        dBTransaction.RegisterQuery(IBInternalQuery);
-
-        //Declare Set For storing index
-        std::set<int>keysToSelect;
-
-        //Create array for storing index by which file name will be prepared
-        int  fileNameKeys[4] = {1, 2, 3, 33};
-
-        //Store keys into set
-        keysToSelect = estanciaMall.InsertInToSet(fileNameKeys, 4);
-
-        //Get file name according to field index.
-        fileName = fileName + "" + estanciaMall.GetFileName(dBTransaction, keysToSelect);
-
-        //insert filename into map according to index and file type
-        prepareDataForInvoice.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
-
-        //insert indexes into array for fetching tenant code, date , terminal number, sales type
-        int invoiceIndexKeys[4] = {1, 2, 3, 35};
-
-        //clear the map.
-        keysToSelect.clear();
-
-        //Store keys into set
-        keysToSelect = estanciaMall.InsertInToSet(invoiceIndexKeys, 4);
-
-         ///Load MallSetting For writing into file
-        estanciaMall.LoadMallSettingsForInvoiceFile(dBTransaction, prepareDataForInvoice, keysToSelect, index);
-
-        //Query for selecting data for invoice file
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY, "
-                                               "a.CREATED_BY, "
-                                               "a.DATE_CREATED, "
-                                               "a.FIELD, "
-                                               "LPAD((CASE WHEN (a.FIELD_INDEX = 65) THEN 6 "
-                                                          "WHEN (a.FIELD_INDEX = 67) THEN 7 "
-                                                          "WHEN (a.FIELD_INDEX = 68) THEN 5 "
-                                                          "ELSE (a.FIELD_INDEX) END),2,0) FIELD_INDEX, "
-                                                "(CASE WHEN (a.FIELD_INDEX = 65) THEN (TOTALNETSALE.FIELD_VALUE*100) "
-                                                      "WHEN (a.FIELD_INDEX = 68) THEN LPAD(a.FIELD_VALUE,5,0) "
-                                                      "WHEN (a.FIELD_INDEX = 67) THEN LPAD(a.FIELD_VALUE,2,0) "
-                                                      "ELSE a.FIELD_VALUE END ) FIELD_VALUE, "
-                                                "a.VALUE_TYPE, "
-                                                "meh.MM_NAME "
-                                        "FROM MALLEXPORT_SALES a "
-                                        "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                        "LEFT JOIN(SELECT a.ARCBILL_KEY, CAST(a.FIELD_VALUE AS numeric(17,2))FIELD_VALUE "
-                                                        "FROM MALLEXPORT_SALES a WHERE a.FIELD_INDEX = 65)TOTALNETSALE ON a.ARCBILL_KEY = TOTALNETSALE.ARCBILL_KEY "
-                                "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                "AND a.DATE_CREATED >= :START_TIME and a.DATE_CREATED < :END_TIME "
-                                "ORDER BY 1,5 ASC; ";
-        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
-        IBInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
-        IBInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
-        IBInternalQuery->ExecQuery();
-
-       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-       {
-          ///prepare sales data
-          TMallExportSalesData salesData;
-          salesData.ArcBillKey =  IBInternalQuery->Fields[0]->AsInteger;
-          salesData.CreatedBy  =IBInternalQuery->Fields[1]->AsString;
-          salesData.DateCreated =IBInternalQuery->Fields[2]->AsDateTime;
-          salesData.Field = IBInternalQuery->Fields[3]->AsString;
-          salesData.FieldIndex = IBInternalQuery->Fields[4]->AsInteger;
-          salesData.DataValue = IBInternalQuery->Fields[4]->AsString + "" + IBInternalQuery->Fields[5]->AsString;
-          salesData.DataValueType = IBInternalQuery->Fields[6]->AsString;
-
-          //insert sales data object into   list
-          salesDataForISF.push_back(salesData);
-       }
-
-       //insert list into TMallExportPrepareData's map
-       prepareDataForInvoice.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, salesDataForISF ));
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-//-----------------------------------------------------------------------------------------------------------
-void TfrmRegenerateMallReport::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys,
-                                                                                TMallExportPrepareData &prepareDataForHSF, int index)
-{
-    //Create List Of SalesData for hourly file
-    std::list<TMallExportSalesData> prepareListForHSF;
-    try
-    {
-        ///Store First Letter of file name
-        UnicodeString fileName = "H";
-
-        //Seperate key with commas in the form of string.
-        UnicodeString indexKeysList = estanciaMall.GetFieldIndexList(indexKeys);
-
-        ///Register Query
-        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-        dBTransaction.RegisterQuery(IBInternalQuery);
-
-        //Declare Set For storing index
-        std::set<int>keysToSelect;
-
-        //Create array for storing index by which file name will be prepared
-        int  fileNameKeys[4] = {1, 2, 3, 33};
-
-        //Store keys into set
-        keysToSelect = estanciaMall.InsertInToSet(fileNameKeys, 4);
-
-        //Get file name according to field index.
-        fileName = fileName + "" + estanciaMall.GetFileName(dBTransaction, keysToSelect);
-
-        //insert filename into map according to index and file type
-        prepareDataForHSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
-
-         //insert indexes into array for fetching tenant code, date , terminal number
-        int hourIndexKeys[3] = {1, 2, 3};
-
-        //clear the map
-        keysToSelect.clear();
-
-        //Store keys into set
-        keysToSelect = estanciaMall.InsertInToSet(hourIndexKeys, 3);
-
-        ///Load MallSetting For writing into file
-        estanciaMall.LoadMallSettingsForFile(dBTransaction, prepareDataForHSF, keysToSelect, index);
-
-        //Query for selecting data for hourly file
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-                             "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 32) THEN 7  "
-                                            "WHEN (HOURLYDATA.FIELD_INDEX = 34) THEN 6 "
-                                            "WHEN (HOURLYDATA.FIELD_INDEX = 66) THEN 4 "
-                                            "ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
-                                    "HOURLYDATA.FIELD, "
-                                    "SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , "
-                                    "HOURLYDATA.VALUE_TYPE , "
-                                    "HOURLYDATA.Hour_code  "
-                            "FROM "
-                                "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS int) FIELD_VALUE, a.VALUE_TYPE, "
-                                                        "meh.MM_NAME,Extract (Hour From a.DATE_CREATED) Hour_code "
-                                 "FROM MALLEXPORT_SALES a "
-                                 "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                 "WHERE a.FIELD_INDEX IN(32,34,66) AND meh.IS_ACTIVE = :IS_ACTIVE  "
-                                 "AND a.DATE_CREATED >= :START_TIME and a.DATE_CREATED < :END_TIME "
-                                 "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
-                            "GROUP BY 1,2,4,5 "
-
-                            "UNION ALL "
-
-                            "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 65) THEN 5 ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
-                                    "HOURLYDATA.FIELD, CAST(SUM(HOURLYDATA.FIELD_VALUE)*100 AS INT ) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code "
-                            "FROM "
-                                    "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, "
-                                            "Extract (Hour From a.DATE_CREATED) Hour_code "
-                                     "FROM MALLEXPORT_SALES a "
-                                     "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID"
-                                    " WHERE a.FIELD_INDEX IN(65) AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                    "AND a.DATE_CREATED >= :START_TIME and a.DATE_CREATED < :END_TIME "
-                                     "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA "
-                            "GROUP BY 1,2,4 ,5 "
-
-                            "ORDER BY 5 ASC, 1 ASC ";
-
-        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
-        IBInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
-        IBInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
-        IBInternalQuery->ExecQuery();
-
-       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-        {
-          TMallExportSalesData salesData;
-          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
-          salesData.Field = IBInternalQuery->Fields[1]->AsString;
-          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
-          salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
-          salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
-          prepareListForHSF.push_back(salesData);
-        }
-
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-                                "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 34) THEN 9  "
-                                                  "WHEN (HOURLYDATA.FIELD_INDEX = 65) THEN 8 "
-                                                  "ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
-                                        "HOURLYDATA.FIELD, "
-                                        "CAST(SUM(CASE WHEN HOURLYDATA.FIELD_INDEX = 65 THEN (HOURLYDATA.FIELD_VALUE*100) ELSE (HOURLYDATA.FIELD_VALUE) END )  AS INT ) FIELD_VALUE, "
-                                         "HOURLYDATA.VALUE_TYPE "
-                                "FROM "
-                                "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE "
-                                "FROM MALLEXPORT_SALES a  "
-                                "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                "WHERE a.FIELD_INDEX IN(65, 34) AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                "AND a.DATE_CREATED >= :START_TIME and a.DATE_CREATED < :END_TIME "
-                                "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA "
-                                "GROUP BY 1,2,4 "
-                                "ORDER BY 1 ASC ";
-
-        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
-        IBInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
-        IBInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
-        IBInternalQuery->ExecQuery();
-
-        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-        {
-           ///prepare sales data
-          TMallExportSalesData salesData;
-          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
-          salesData.Field = IBInternalQuery->Fields[1]->AsString;
-          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
-          salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
-
-          //insert prepared data into list
-          prepareListForHSF.push_back(salesData);
-        }
-
-        //insert list into TMallExportPrepareData's map
-        prepareDataForHSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForHSF ));
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-//-----------------------------------------------------------------------------------------------------------------------
-void TfrmRegenerateMallReport::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys,
-                                                                TMallExportPrepareData &prepareDataForDSF, int index)
-{
-    //Create List Of SalesData for hourly file
-    std::list<TMallExportSalesData> prepareListForDSF;
-    try
-    {
-        ///Store First Letter of file name ie; file type
-        UnicodeString fileName = "D";
-
-        //Seperate key with commas in the form of string.
-        UnicodeString indexKeysList = estanciaMall.GetFieldIndexList(indexKeys);
-
-        //Register Query
-        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-        dBTransaction.RegisterQuery(IBInternalQuery);
-
-        //Declare Set For storing index
-        std::set<int>keysToSelect;
-
-        //Create array for storing index by which file name will be prepared
-        int  fileNameKeys[4] = {1, 2, 3, 33};
-
-         //Store keys into set
-        keysToSelect = estanciaMall.InsertInToSet(fileNameKeys, 4);
-
-        //Get file name according to field index.
-        fileName = fileName + "" + estanciaMall.GetFileName(dBTransaction, keysToSelect);
-
-        //insert filename into map according to index and file type
-        prepareDataForDSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
-
-         //insert indexes into array for fetching tenant code, date , terminal number
-        int dailyIndexKeys[3] = {1, 2, 3};
-
-        //clear the map
-        keysToSelect.clear();
-
-        //Store keys into set
-        keysToSelect = estanciaMall.InsertInToSet(dailyIndexKeys, 3);
-
-        ///Load MallSetting For writing into file
-        estanciaMall.LoadMallSettingsForFile(dBTransaction, prepareDataForDSF, keysToSelect, index);
-
-        //Query for fetching data for writing into daily sales file.
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, CAST(SUM(DAILYDATA.FIELD_VALUE)*100 AS INT) FIELD_VALUE , DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY, DAILYDATA.MM_NAME "
-                                      "FROM "
-                                            "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
-                                             "FROM MALLEXPORT_SALES a "
-                                             "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                             "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE  "
-                                             "AND a.DATE_CREATED >= :START_TIME and a.DATE_CREATED < :END_TIME "
-
-                                             ///condition so that after z data is
-                                             "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
-                                             "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
-                                    "GROUP BY 1,2,4,5,6 "
-                                    "UNION ALL "
-                                     "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, cast(a.FIELD_VALUE as int ) FIELD_VALUE , a.VALUE_TYPE, a.Z_KEY, meh.MM_NAME  "
-                                     "FROM "
-                                        "MALLEXPORT_SALES a inner join MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                        "where a.FIELD_INDEX IN( 33, 35 ) AND meh.IS_ACTIVE = :IS_ACTIVE "
-                                        "AND a.DATE_CREATED >= :START_TIME and a.DATE_CREATED < :END_TIME "
-                                    "GROUP BY 1,2,3,4,5,6 "
-                                    "ORDER BY 5, 1 ASC  ";   //TODO AFTER DISCUSSION
-        IBInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
-        IBInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
-        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
-        IBInternalQuery->ExecQuery();
-
-       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-       {
-           ///prepare sales data
-          TMallExportSalesData salesData;
-          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
-          salesData.Field = IBInternalQuery->Fields[1]->AsString;
-          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
-          salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
-          salesData.ZKey = IBInternalQuery->Fields[4]->AsInteger;
-
-          //insert prepared data into list
-          prepareListForDSF.push_back(salesData);
-       }
-
-       //insert list into TMallExportPrepareData's map
-       prepareDataForDSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForDSF ));
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-//-----------------------------------------------------------------------------------------------------------------------
 UnicodeString TfrmRegenerateMallReport::FixTime(UnicodeString Time)
 {
     UnicodeString result = "";

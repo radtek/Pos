@@ -8,7 +8,7 @@
 
 class TEstanciaMall : public TMallExport
 {
-    public: //todo private after regeneration testing
+    private: //todo private after regeneration testing
 
     //Get Total Patron count for a Bill
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
@@ -23,29 +23,19 @@ class TEstanciaMall : public TMallExport
     void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
                                 UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
 
-    //Prepare data for Invoice Sales File
-    void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForInvoice, int index);
-
-    //Fetch Data For Invoice Sales File writing
-    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForHSF, int index);
-
-    //Fetch Data For Daily Sales File writing
-    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForDSF, int index);
-
     //Fetch Mall Setting for file writing
-    void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect, int index);
+    void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
+                                int index, int zKey = 0);
 
     //store keys in string format seperated by commas
     UnicodeString GetFieldIndexList(std::set<int> indexKeys);
 
     //Get File Name According to file type.
-    UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect);
+    UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);
 
     //Load File Setting For Invoice file Writing
-    void LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect, int index);
-
-    //Insert Array into set.
-    std::set<int> InsertInToSet(int arr[], int size);
+    void LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
+                                        int index, int zKey = 0);
 
     protected:
 
@@ -62,6 +52,21 @@ class TEstanciaMall : public TMallExport
 
     //Constructor
     TEstanciaMall();
+
+     //Prepare data for Invoice Sales File
+    void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForInvoice,
+                                            int index, int zKey = 0);
+
+    //Fetch Data For Invoice Sales File writing
+    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForHSF,
+                                        int index, int zKey = 0);
+
+    //Fetch Data For Daily Sales File writing
+    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForDSF,
+                                    int index, int zKey = 0);
+
+    //Insert Array into set.
+    std::set<int> InsertInToSet(int arr[], int size);
 };
 
 class TEstanciaMallField
