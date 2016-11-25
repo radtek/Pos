@@ -656,6 +656,7 @@ void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, 
     salesData.DateCreated = Now();
     salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
     salesData.ArcBillKey = arcBillKey;
+    salesData.ZKey = 0;
     mallExportSalesData.push_back(salesData);
 }
 //--------------------------------------------------------------------------------------------------------
