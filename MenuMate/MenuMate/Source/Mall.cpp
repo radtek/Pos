@@ -29,19 +29,3 @@ void TMall::SetActiveMall(UnicodeString isActive)
     _mallSettings = mallSettings;
 }
 //-----------------------------------------------------------------------------
-void TSetupMallExport::SetupMall()
-{
-    CheckAndCreatePath();
-    InsertDataInToMallTable();
-}
-//---------------------------------------------------------------------------------
-void TSetupMallExport::CheckAndCreatePath()
-{
-
-}
-//---------------------------------------------------------------------------------
-void TSetupMallExport::InsertDataInToMallTable()
-{
-
-}
-//---------------------------------------------------------------------------------------

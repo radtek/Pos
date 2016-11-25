@@ -7,15 +7,6 @@
 #include "MallExportSettings.h"
 #include <list>
 
-class TSetupMallExport
-{
-    public:
-    void SetupMall();
-    void CheckAndCreatePath();
-    virtual void SetupMallsOtherDetails() = 0;
-    void InsertDataInToMallTable();
-};
-
 class TMall
 {
 private:
