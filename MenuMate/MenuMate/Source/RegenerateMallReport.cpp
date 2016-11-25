@@ -225,7 +225,13 @@ void TfrmRegenerateMallReport::RegenerateEstanciaMallExport()
         //Create Export Medium
         TMallExportTextFile* exporter =  new TMallExportTextFile();
         exporter->WriteToFile(preparedData);
-    }
+   }
+
+   //Display message showing status of file
+   if(IBInternalQuery->RecordCount)
+        MessageBox( "Generation of file Successful", "Gernerating File", MB_OK );
+   else
+        MessageBox( "No Data For This Time Period", "Gernerating File", MB_OK );
 
      //Commit the transaction as we have completed all the transactions
     dbTransaction.Commit();

@@ -9,6 +9,9 @@
 //---------------------------------------------------------------------------
 class TMallExport: public TMallExportInterface
 {
+    private:
+    bool CheckTransactionDoneBeforeZed();
+
     protected:
     virtual std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey) = 0;
     virtual TMallExportPrepareData PrepareDataForExport() = 0;

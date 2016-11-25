@@ -1363,6 +1363,7 @@ UnicodeString TEstanciaMall::GetExportType()
                                      "WHERE MES.NAME = :NAME ";
 
         IBInternalQuery->ParamByName("NAME")->AsString = "TYPE_OF_FILE";
+        IBInternalQuery->ExecQuery();
 
         if(IBInternalQuery->RecordCount)
             typeOfFile = IBInternalQuery->Fields[3]->AsString;
