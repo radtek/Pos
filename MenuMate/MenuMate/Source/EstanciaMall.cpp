@@ -1200,7 +1200,9 @@ UnicodeString TEstanciaMall::GetFieldIndexList(std::set<int> indexKeys)
 //----------------------------------------------------------------------------------------------------------------------------
 IExporterInterface* TEstanciaMall::CreateExportMedium()
 {
-      return new TMallExportTextFile;
+    UnicodeString exportType = GetExportType();
+    if(exportType == ".txt")
+        return new TMallExportTextFile;
 }
 //--------------------------------------------------------------------------------------------------------------------
 UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey)
@@ -1337,4 +1339,39 @@ std::set<int> TEstanciaMall::InsertInToSet(int arr[], int size)
             keyToCheck.insert(arr[index]);
 
     return keyToCheck;
+}
+//------------------------------------------------------------------------------------------------------------------------
+UnicodeString TEstanciaMall::GetExportType()
+{
+    UnicodeString typeOfFile = "";
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        ///Register Query
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(IBInternalQuery);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT MES.NAME, MES.MALLEXPORT_SETTING_KEY, MSP.MALL_ID, MSV.FIELD_VALUE  "
+                                     "FROM MALLEXPORT_SETTINGS MES "
+                                     "INNER JOIN MALLEXPORT_SETTINGS_MAPPING MSP ON MES.MALLEXPORT_SETTING_KEY = MSP.MALLEXPORT_SETTING_ID "
+                                     "INNER JOIN MALLEXPORT_SETTINGS_VALUES MSV ON MES.MALLEXPORT_SETTING_KEY = MSV.MALLEXPORTSETTING_ID "
+                                     "WHERE MES.NAME = :NAME ";
+
+        IBInternalQuery->ParamByName("NAME")->AsString = "TYPE_OF_FILE";
+
+        if(IBInternalQuery->RecordCount)
+            typeOfFile = IBInternalQuery->Fields[3]->AsString;
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+
+    return typeOfFile;
 }

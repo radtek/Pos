@@ -48,6 +48,9 @@ class TEstanciaMall : public TMallExport
     //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
     IExporterInterface* CreateExportMedium();
 
+    //get which type of file will be exported
+    UnicodeString GetExportType();
+
     public:
 
     //Constructor
