@@ -260,39 +260,46 @@ TMallExportPrepareData TfrmRegenerateMallReport::PrepareDataForExport(Database::
     {
         //Set for inserting index. these indexes will be used for fetching data
         std::set<int> keyToCheck;
+        std::set<int> keyToCheck2;
 
         //Indexes for which data will not selected
         int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
+        int dailySalekeys2[2] = {33, 35};
 
         //insert these indexes into set.
         keyToCheck = estanciaMall.InsertInToSet(dailySalekeys, 8);
+        keyToCheck2 = estanciaMall.InsertInToSet(dailySalekeys2, 2);
 
         //Prepare Data For Daily Sales File
-        estanciaMall.PrepareDataForDailySalesFile(dbTransaction, keyToCheck, preparedData, 1, zKey);
+        estanciaMall.PrepareDataForDailySalesFile(dbTransaction, keyToCheck, keyToCheck2, preparedData, 1);
 
        //indexes for selecting total Net sale, patron count, etc
-        int  hourIndexkeys[3] = {65, 64, 32};
+        int  hourIndexkeys[3] = {32,34,66};
+        int hourIndexKeys2[2] = {65,34};
 
         //Clear the map because same map is used for many time insertion
         keyToCheck.clear();
+        keyToCheck2.clear();
 
         //insert these indexes into set.
         keyToCheck = estanciaMall.InsertInToSet(hourIndexkeys, 3);
+        keyToCheck2 = estanciaMall.InsertInToSet(hourIndexKeys2, 2);
 
         //Prepare Data For Hourly File
-        estanciaMall.PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, preparedData, 2, zKey);
+        estanciaMall.PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, keyToCheck2, 65, preparedData, 2);
 
         //indexes for selecting total Net sale, invoice number , status
         int invoiceIndex[3] = {65, 67, 68};
 
          //Clear the map because same map is used for many time insertion
         keyToCheck.clear();
+        keyToCheck2.clear();
 
         //insert these indexes into set.
         keyToCheck = estanciaMall.InsertInToSet(invoiceIndex, 3);
 
         //Prepare Data For Invoice File
-        estanciaMall.PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 3, zKey);
+        estanciaMall.PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 3);
     }
     catch(Exception &E)
 	{

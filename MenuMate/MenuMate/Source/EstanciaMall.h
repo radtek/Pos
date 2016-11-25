@@ -58,12 +58,12 @@ class TEstanciaMall : public TMallExport
                                             int index, int zKey = 0);
 
     //Fetch Data For Invoice Sales File writing
-    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForHSF,
-                                        int index, int zKey = 0);
+    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2, int indexKey3,
+                                        TMallExportPrepareData &prepareDataForHSF, int index, int zKey = 0);
 
     //Fetch Data For Daily Sales File writing
-    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForDSF,
-                                    int index, int zKey = 0);
+    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2,
+                                        TMallExportPrepareData &prepareDataForDSF, int index, int zKey = 0);
 
     //Insert Array into set.
     std::set<int> InsertInToSet(int arr[], int size);

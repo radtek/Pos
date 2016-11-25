@@ -673,27 +673,33 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
     {
         //Set for inserting index. these indexes will be used for fetching data
         std::set<int> keyToCheck;
+        std::set<int> keyToCheck2;
 
         //Indexes for which data will not selected
         int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
+        int dailySalekeys2[2] = {33, 35};
 
         //insert these indexes into set.
         keyToCheck = InsertInToSet(dailySalekeys, 8);
+        keyToCheck2 = InsertInToSet(dailySalekeys2, 2);
 
         //Prepare Data For Daily Sales File
-        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, preparedData, 1);
+        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, keyToCheck2, preparedData, 1);
 
        //indexes for selecting total Net sale, patron count, etc
-        int  hourIndexkeys[3] = {65, 64, 32};
+        int  hourIndexkeys[3] = {32,34,66};
+        int hourIndexKeys2[2] = {65,34};
 
         //Clear the map because same map is used for many time insertion
         keyToCheck.clear();
+        keyToCheck2.clear();
 
         //insert these indexes into set.
         keyToCheck = InsertInToSet(hourIndexkeys, 3);
+        keyToCheck2 = InsertInToSet(hourIndexKeys2, 2);
 
         //Prepare Data For Hourly File
-        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, preparedData, 2);
+        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, keyToCheck2, 65, preparedData, 2);
 
         //indexes for selecting total Net sale, invoice number , status
         int invoiceIndex[3] = {65, 67, 68};
@@ -828,7 +834,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
 	}
 }
 //-----------------------------------------------------------------------------------------------------------
-void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys,
+void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2, int indexKey3,
                                                     TMallExportPrepareData &prepareDataForHSF, int index, int zKey)
 {
     //Create List Of SalesData for hourly file
@@ -840,6 +846,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
 
         //Seperate key with commas in the form of string.
         UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
+        UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
 
         ///Register Query
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
@@ -888,7 +895,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                                                         "meh.MM_NAME,Extract (Hour From a.DATE_CREATED) Hour_code "
                                  "FROM MALLEXPORT_SALES a "
                                  "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                 "WHERE a.FIELD_INDEX IN(32,34,66) AND meh.IS_ACTIVE = :IS_ACTIVE  ";
+                                 "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE  ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -901,7 +908,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
                             "GROUP BY 1,2,4,5 "
 
-                            "UNION ALL "
+       "UNION ALL "
 
                             "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 65) THEN 5 ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
                                     "HOURLYDATA.FIELD, CAST(SUM(HOURLYDATA.FIELD_VALUE)*100 AS INT ) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code "
@@ -910,7 +917,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                                             "Extract (Hour From a.DATE_CREATED) Hour_code "
                                      "FROM MALLEXPORT_SALES a "
                                      "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID"
-                                    " WHERE a.FIELD_INDEX IN(65) AND meh.IS_ACTIVE = :IS_ACTIVE ";
+                                    " WHERE a.FIELD_INDEX = :FIELD_INDEX AND meh.IS_ACTIVE = :IS_ACTIVE ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -925,6 +932,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                             "ORDER BY 5 ASC, 1 ASC ";
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = indexKey3;
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
@@ -954,7 +962,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                                 "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE "
                                 "FROM MALLEXPORT_SALES a  "
                                 "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                "WHERE a.FIELD_INDEX IN(65, 34) AND meh.IS_ACTIVE = :IS_ACTIVE ";
+                                "WHERE a.FIELD_INDEX IN(" + indexKeysList2 + ") AND meh.IS_ACTIVE = :IS_ACTIVE ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -998,7 +1006,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
 	}
 }
 //-----------------------------------------------------------------------------------------------------------------------
-void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys,
+void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2,
                                                    TMallExportPrepareData &prepareDataForDSF, int index, int zKey)
 {
     //Create List Of SalesData for hourly file
@@ -1010,6 +1018,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
 
         //Seperate key with commas in the form of string.
         UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
+        UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
 
         //Register Query
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
@@ -1068,7 +1077,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                      "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, cast(a.FIELD_VALUE as int ) FIELD_VALUE , a.VALUE_TYPE, a.Z_KEY, meh.MM_NAME  "
                                      "FROM "
                                         "MALLEXPORT_SALES a inner join MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                        "where a.FIELD_INDEX IN( 33, 35 ) AND meh.IS_ACTIVE = :IS_ACTIVE ";
+                                        "where a.FIELD_INDEX IN( " + indexKeysList2 + " ) AND meh.IS_ACTIVE = :IS_ACTIVE ";    //TODO AFTER DISCUSSION
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -1079,7 +1088,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
         }
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4,5,6 "
-                                    "ORDER BY 1 ASC  ";   //TODO AFTER DISCUSSION
+                                    "ORDER BY 1 ASC  ";
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
 
