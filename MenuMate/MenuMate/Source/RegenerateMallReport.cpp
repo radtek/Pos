@@ -202,13 +202,41 @@ void TfrmRegenerateMallReport::InitializeTimeSet(TDateTime &SDate, TDateTime &ED
 void TfrmRegenerateMallReport::RegenerateEstanciaMallExport()
 {
     TMallExportPrepareData preparedData;
+    int zKey;
 
-    //Prepare Data For Exporting into File
-    preparedData = PrepareDataForExport();
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
 
-    //Create Export Medium
-    TMallExportTextFile* exporter =  new TMallExportTextFile();
-    exporter->WriteToFile(preparedData);
+    ///Register Query
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+    dbTransaction.RegisterQuery(IBInternalQuery);
+
+    //Query for selecting data for invoice file
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text =  "SELECT a.Z_KEY FROM MALLEXPORT_SALES a "
+                                    "WHERE a.Z_KEY != :Z_KEY "
+                                    "GROUP BY a.Z_KEY ";
+
+    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = 0;
+    IBInternalQuery->ExecQuery();
+
+   for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+   {
+        //Fetch z-key
+        zKey = IBInternalQuery->Fields[0]->AsInteger;
+
+        //Prepare Data For Exporting into File
+        preparedData = PrepareDataForExport();
+
+        //Create Export Medium
+        TMallExportTextFile* exporter =  new TMallExportTextFile();
+        exporter->WriteToFile(preparedData);
+    }
+
+    //Commit the transaction as we have completed all the transactions
+    dbTransaction.Commit();
 }
 //---------------------------------------------------------------------------
 // Initialize Start and End Time for each mall
@@ -532,7 +560,7 @@ void TfrmRegenerateMallReport::PrepareDataForHourlySalesFile(Database::TDBTransa
 }
 //-----------------------------------------------------------------------------------------------------------------------
 void TfrmRegenerateMallReport::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys,
-                                                                                TMallExportPrepareData &prepareDataForDSF, int index)
+                                                                TMallExportPrepareData &prepareDataForDSF, int index)
 {
     //Create List Of SalesData for hourly file
     std::list<TMallExportSalesData> prepareListForDSF;
@@ -584,6 +612,8 @@ void TfrmRegenerateMallReport::PrepareDataForDailySalesFile(Database::TDBTransac
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                                              "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE  "
                                              "AND a.DATE_CREATED >= :START_TIME and a.DATE_CREATED < :END_TIME "
+
+                                             ///condition so that after z data is
                                              "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
                                     "GROUP BY 1,2,4,5,6 "
