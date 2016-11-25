@@ -5,6 +5,7 @@
         Discount = 1,
         Voucher,
         PocketVoucher,
-        GiftCard
+        GiftCardRedemption,
+        GiftCardRecharge
     }
 }

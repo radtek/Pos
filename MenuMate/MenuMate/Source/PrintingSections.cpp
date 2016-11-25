@@ -6483,18 +6483,26 @@ void TPrintSection::PrintPaymentSurcharges(TReqPrintJob *PrintJob)
 
             if(SubPayment->IsLoyaltyGiftCard())
             {
+                pPrinter->Line->ColCount = 1;
                 AnsiString balance = CurrToStr(RoundToNearest(PrintJob->Transaction->PurchasedGiftVoucherInformation->GiftVoucherAmount +
                                                            PrintJob->Transaction->PurchasedGiftVoucherInformation->RedeemedAmount,0.01,
                                                            TGlobalSettings::Instance().MidPointRoundsDown));
                 pPrinter->Line->Columns[0]->Width = pPrinter->Width;
                 pPrinter->Line->Columns[0]->Text = "Balance " + balance;
-                pPrinter->Line->Columns[1]->Text = "";
                 pPrinter->AddLine();
+
+                if((double)PrintJob->Transaction->PurchasedGiftVoucherInformation->ExpiryDate > double(0))
+                {
+                    pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+                    pPrinter->Line->Columns[0]->Text = "Expiry Date " + PrintJob->Transaction->PurchasedGiftVoucherInformation->ExpiryDate.FormatString("DD/MM/YYYY");
+                    pPrinter->AddLine();
+                }
             }
             Empty = false;
 		}
 		if (SubPayment->GetRefundPointsValue() != 0)
 		{
+            pPrinter->Line->ColCount = 2;
 			pPrinter->Line->Columns[1]->Width = CurrToStrF(
 			RoundToNearest(SubPayment->GetRefundPointsValue(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 			ffNumber,

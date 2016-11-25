@@ -38,7 +38,7 @@ struct TGiftCardDetail
 {
     public:
         AnsiString ResponseMessage;
-        int StatusCode; //Available = 1, NotAvailable = 2,  Expired = 3
+        int StatusCode; //Available = 1, NotAvailable = 2,  Expired = 3 , NotStarted = 4
         double PointBalance;
         TDateTime ExpiryDate;
 };
@@ -52,6 +52,7 @@ class TVoucherUsageDetail
      //Puchased Gift Card
     AnsiString PurchasedGiftCardNumber;
     double PointsPurchased;
+    TDateTime GiftCardExpiryDate;
     //Member Voucher
     AnsiString VoucherName;
     double MemberVoucherDiscountAmount;

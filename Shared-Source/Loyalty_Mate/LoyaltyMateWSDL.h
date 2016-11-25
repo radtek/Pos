@@ -73,6 +73,7 @@ class SOAP_REMOTABLE_CLASS GiftCardInfo;
 class SOAP_REMOTABLE_CLASS LoyaltyVoucherResponse;
 class SOAP_REMOTABLE_CLASS VoucherTransactionInfo;
 class SOAP_REMOTABLE_CLASS DiscountUsageInfo;
+class SOAP_REMOTABLE_CLASS VoucherTransactionResponse;
 class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo;
 class SOAP_REMOTABLE_CLASS MemberInfo2;
 class SOAP_REMOTABLE_CLASS VoucherInfo2;
@@ -89,6 +90,7 @@ class SOAP_REMOTABLE_CLASS GiftCardInfo2;
 class SOAP_REMOTABLE_CLASS LoyaltyVoucherResponse2;
 class SOAP_REMOTABLE_CLASS VoucherTransactionInfo2;
 class SOAP_REMOTABLE_CLASS DiscountUsageInfo2;
+class SOAP_REMOTABLE_CLASS VoucherTransactionResponse2;
 class SOAP_REMOTABLE_CLASS ReleasedVoucherInfo2;
 
 enum class DiscountType   /* "http://schemas.datacontract.org/2004/07/Loyaltymate.Enum"[GblSmpl] */
@@ -1259,6 +1261,35 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : VoucherTransactionResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class VoucherTransactionResponse : public MMServiceResponse {
+private:
+  TXSDateTime*    FGiftCardExpiryDate;
+  bool            FGiftCardExpiryDate_Specified;
+  LoyaltyResponseCode FResponseCode;
+  bool            FResponseCode_Specified;
+  void __fastcall SetGiftCardExpiryDate(int Index, TXSDateTime* _prop_val)
+  {  FGiftCardExpiryDate = _prop_val; FGiftCardExpiryDate_Specified = true;  }
+  bool __fastcall GiftCardExpiryDate_Specified(int Index)
+  {  return FGiftCardExpiryDate_Specified;  }
+  void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
+  {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
+  bool __fastcall ResponseCode_Specified(int Index)
+  {  return FResponseCode_Specified;  }
+
+public:
+  __fastcall ~VoucherTransactionResponse();
+__published:
+  __property TXSDateTime* GiftCardExpiryDate = { index=(IS_OPTN|IS_NLBL), read=FGiftCardExpiryDate, write=SetGiftCardExpiryDate, stored = GiftCardExpiryDate_Specified };
+  __property LoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : ReleasedVoucherInfo, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
@@ -1489,6 +1520,18 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : VoucherTransactionResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// ************************************************************************ //
+class VoucherTransactionResponse2 : public VoucherTransactionResponse {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : ReleasedVoucherInfo, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
 // ************************************************************************ //
@@ -1521,7 +1564,7 @@ public:
   virtual LoyaltyCompanyResponse* GetCompanyInformation(const UnicodeString inSyndicateCode) = 0;
   virtual LoyaltyGiftCardResponse* GetGiftCardBalance(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
   virtual LoyaltyVoucherResponse* GetPocketVoucherDetail(const UnicodeString inSyndicateCode, const RequestInfo* requestInfo) = 0;
-  virtual LoyaltyResponse* ProcessVoucherTransaction(const UnicodeString inSyndicateCode, const VoucherTransactionInfo* transaction) = 0;
+  virtual VoucherTransactionResponse* ProcessVoucherTransaction(const UnicodeString inSyndicateCode, const VoucherTransactionInfo* transaction) = 0;
   virtual LoyaltyResponse* ReleaseVouchers(const UnicodeString inSyndicateCode, const ReleasedVoucherInfo* releasedVoucherInfo) = 0;
 };
 typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;

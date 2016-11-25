@@ -164,6 +164,7 @@
     <Compile Include="DTO\LoyaltyMate\RequestInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionInfo.cs" />
+    <Compile Include="DTO\LoyaltyMate\VoucherTransactionResponse.cs" />
     <Compile Include="DTO\SalesForce\SalesForceCredentialFactory.cs" />
     <Compile Include="DTO\Thorlink\DTO_TPurchaseInfo.cs" />
     <Compile Include="DTO\Thorlink\DTO_TenderList.cs" />

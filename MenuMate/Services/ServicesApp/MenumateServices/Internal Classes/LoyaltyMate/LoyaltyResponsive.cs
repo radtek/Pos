@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MenumateServices.DTO.LoyaltyMate;
+using System;
 
 namespace MenumateServices.LoyaltyMate
 {
@@ -58,7 +59,17 @@ namespace MenumateServices.LoyaltyMate
         {
             return CreateVoucherResponse(false, inMessage, inDescription, inResponseCode, inVoucherInfo);
         }
+       
+        //Voucher Transaction Response
+        protected VoucherTransactionResponse CreateVoucherTransactionResponseNoError(DateTime? giftCardExpiryDate)
+        {
+            return CreateVoucherTransactionResponse(true, "", "", LoyaltyResponseCode.Successful, giftCardExpiryDate);
+        }
 
+        protected VoucherTransactionResponse CreateVoucherTransactionResponseError(string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, DateTime? giftCardExpiryDate)
+        {
+            return CreateVoucherTransactionResponse(false, inMessage, inDescription, inResponseCode, giftCardExpiryDate);
+        }
 
         #region Private Methods
 
@@ -86,7 +97,13 @@ namespace MenumateServices.LoyaltyMate
         {
             return new LoyaltyVoucherResponse(inSuccesful, inMessage, inDescription, inResponseCode, inVoucherInfo);
         }
-        
+
+        private VoucherTransactionResponse CreateVoucherTransactionResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, DateTime? giftCardExpiryDate)
+        {
+            return new VoucherTransactionResponse(inSuccesful, inMessage, inDescription, inResponseCode, giftCardExpiryDate);
+        }
+
+       
         #endregion
     }
 }

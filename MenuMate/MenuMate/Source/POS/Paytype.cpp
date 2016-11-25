@@ -282,8 +282,6 @@ void TfrmPaymentType::Reset()
              {
                tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
                tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = Payment->IsLoyaltyGiftCard();
-               tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
-               tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
                CopyPaymentColor(ButtonPos);
              }
            else if (Payment->Properties & ePayTypeAllowCashOut || Payment->Properties & ePayTypePoints || (Payment->Properties & ePayTypeGetVoucherDetails && !Payment->IsLoyaltyVoucher()))
@@ -336,11 +334,18 @@ void TfrmPaymentType::Reset()
             }
             else
             {
-                 if (!(ButtonPos==0 && ALTCOL ==0))
+                 if (!(ButtonPos == 0 && ALTCOL == 0))
                  {
                     tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
                  }
             }
+
+            if(Payment->Properties & ePayTypeGetVoucherDetails && Payment->IsLoyaltyVoucher())
+             {
+               tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
+               tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
+             }
+
                    //MM 4775
             if(Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Points")
             {
@@ -361,6 +366,14 @@ void TfrmPaymentType::Reset()
     {
         EnableElectronicPayments();
     }
+
+    //Reset Loyaltymate Information
+   CurrentTransaction.RedeemPointsInformation = new TRedeemPointsInformation;
+   CurrentTransaction.RedeemWeightInformation = new TRedeemPointsInformation;
+   CurrentTransaction.RedeemPocketVoucherInformation = new TRedeemPocketVoucherInformation;
+   CurrentTransaction.RedeemGiftVoucherInformation = new TRedeemGiftVoucherInformation;
+   CurrentTransaction.PurchasedGiftVoucherInformation = new TRedeemGiftVoucherInformation;
+
    //Reset redeemption information
    for (int i=0; i < CurrentTransaction.Orders->Count; i++)
     {
@@ -490,25 +503,33 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
                 tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
             }
             //MM 4775
-                if(TGlobalSettings::Instance().PointOnly)
-                {
-                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
-                    tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = false;
-                }
-                else
-                {
-                  if(!AllowRefund)
-                  {
-                       if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption != "Refund Points")
-                        tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
-                       else
-                       tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
-                  }
-                  else
-                  {
-                        tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
-                  }
-                }
+            if(TGlobalSettings::Instance().PointOnly)
+            {
+                tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = false;
+            }
+            else
+            {
+              if(!AllowRefund)
+              {
+                   if(tgPayments->Buttons[ButtonPos][ALTCOL]->Caption != "Refund Points")
+                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+                   else
+                   tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = false;
+              }
+              else
+              {
+                    tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = true;
+              }
+            }
+
+            if(Payment->Properties & ePayTypeGetVoucherDetails && Payment->IsLoyaltyVoucher())
+            {
+                tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
+                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
+            }
+
+
             //MM 4775
            if(Payment->Name == CurrentTransaction.Membership.Member.Name + "'s Points")
             {
@@ -2140,9 +2161,10 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
     TGiftCardDetail GiftCardDetail;
     ManagerLoyaltyVoucher.GetGiftVoucherDetail(voucherCode,GiftCardDetail);
     double balance = GiftCardDetail.PointBalance;
-    if(balance > 0)
+    if(balance > 0 && GiftCardDetail.StatusCode == 1)
     {
        Currency amountToPay = 0;
+       Currency amountDeducted = 0;
        if(TGlobalSettings::Instance().UseTierLevels && CurrentTransaction.Membership.Applied() &&
         CurrentTransaction.Membership.Member.MemberType == 1 && CurrentTransaction.Membership.Member.TierLevel > 0)
         {
@@ -2151,6 +2173,7 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
             CalculateRedeemedPoints(CurrentTransaction.Orders,RedeemPointsInformation,wrkPayAmount,false,true);
             amountToPay = RedeemPointsInformation->TotalPoints;
             Payment->SetPay(RedeemPointsInformation->TotalValue);
+            amountDeducted = RedeemPointsInformation->TotalValue;
         }
         else
         {
@@ -2163,10 +2186,10 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
             {
               amountToPay = wrkPayAmount;
             }
-
-           MessageBox("Payment of " + FormatFloat("0.00",amountToPay) +" approved and balance of " + FormatFloat("0.00",balance - amountToPay) +" remaining.", "Information", MB_OK + MB_ICONINFORMATION);
-           Payment->SetPay(amountToPay);
+            amountDeducted = amountToPay;
+            Payment->SetPay(amountToPay);
         }
+        MessageBox("Payment of " + FormatFloat("0.00",amountDeducted) +" approved and balance of " + FormatFloat("0.00",balance - amountDeducted) +" remaining.", "Information", MB_OK + MB_ICONINFORMATION);
         CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
         CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = voucherCode;
         CurrentTransaction.RedeemGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
@@ -2182,6 +2205,7 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
          MessageBox("The gift card with code " + voucherCode + " has zero balance.", "Warning", MB_OK + MB_ICONINFORMATION);
          break;
          case 2:
+         case 4:
          MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
          break;
          case 3:
@@ -2339,6 +2363,7 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
                     CurrentTransaction.PurchasedGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
                     CurrentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount = wrkPayAmount;
                     CurrentTransaction.PurchasedGiftVoucherInformation->GiftVoucherAmount = GiftCardDetail.PointBalance;
+                    CurrentTransaction.PurchasedGiftVoucherInformation->ExpiryDate = GiftCardDetail.ExpiryDate;
                 }
                 else
                 {

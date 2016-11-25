@@ -137,7 +137,7 @@ class TLoyaltyMateInterface
         // Get pocket voucher Detail
         MMLoyaltyServiceResponse GetPocketVoucherDetail(TSyndCode syndicateCode,AnsiString pocketVoucherNumber,TVoucherDetail &VoucherDetail);
 
-        MMLoyaltyServiceResponse ProcessVoucherTransaction(TSyndCode syndicateCode,TVoucherUsageDetail inVoucherUsageDetail);
+        MMLoyaltyServiceResponse ProcessVoucherTransaction(TSyndCode syndicateCode,TVoucherUsageDetail& inVoucherUsageDetail);
 
         MMLoyaltyServiceResponse ReleaseVouchers(TSyndCode syndicateCode,TReleasedVoucherDetail inReleasedVoucherDetail);
 
@@ -202,6 +202,8 @@ class TLoyaltyMateInterface
         MMLoyaltyServiceResponse CreateMMResponse(LoyaltyGiftCardResponse* inWCFResponse );
 
         MMLoyaltyServiceResponse CreateMMResponse(LoyaltyVoucherResponse* inWCFResponse );
+
+        MMLoyaltyServiceResponse CreateMMResponse(VoucherTransactionResponse* inWCFResponse );
 
         // creates MMResponse from an exception message
         MMLoyaltyServiceResponse CreateExceptionFailedResponse(AnsiString inMessage );

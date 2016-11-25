@@ -122,6 +122,11 @@ __fastcall VoucherTransactionInfo::~VoucherTransactionInfo()
       delete FDiscountUsages[i];
 }
 
+__fastcall VoucherTransactionResponse::~VoucherTransactionResponse()
+{
+  delete FGiftCardExpiryDate;
+}
+
 __fastcall ReleasedVoucherInfo::~ReleasedVoucherInfo()
 {
   for(int i=0; i<FDiscountCodes.Length; i++)
@@ -194,6 +199,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(VoucherTransactionInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"VoucherTransactionInfo");
   /* DiscountUsageInfo */
   RemClassRegistry()->RegisterXSClass(__classid(DiscountUsageInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"DiscountUsageInfo");
+  /* VoucherTransactionResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(VoucherTransactionResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"VoucherTransactionResponse");
   /* ReleasedVoucherInfo */
   RemClassRegistry()->RegisterXSClass(__classid(ReleasedVoucherInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ReleasedVoucherInfo");
   /* MemberInfo */
@@ -226,6 +233,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(VoucherTransactionInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"VoucherTransactionInfo2", L"VoucherTransactionInfo");
   /* DiscountUsageInfo */
   RemClassRegistry()->RegisterXSClass(__classid(DiscountUsageInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"DiscountUsageInfo2", L"DiscountUsageInfo");
+  /* VoucherTransactionResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(VoucherTransactionResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"VoucherTransactionResponse2", L"VoucherTransactionResponse");
   /* ReleasedVoucherInfo */
   RemClassRegistry()->RegisterXSClass(__classid(ReleasedVoucherInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ReleasedVoucherInfo2", L"ReleasedVoucherInfo");
   /* DiscountType */

@@ -238,11 +238,11 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetPocketVoucherDetail(TSyndCode
     }
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndCode syndicateCode,TVoucherUsageDetail inVoucherUsageDetail)
+MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndCode syndicateCode,TVoucherUsageDetail& inVoucherUsageDetail)
 {
     try
     {
-        LoyaltyResponse *wcfResponse;
+        VoucherTransactionResponse *wcfResponse;
         VoucherTransactionInfo *wcfInfo = new VoucherTransactionInfo();
         wcfInfo->TransactionDate = new TXSDateTime();
         wcfInfo->TransactionReferenceNumber = inVoucherUsageDetail.ReferenceNumber;
@@ -278,6 +278,10 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndC
 
         CoInitialize(NULL);
         wcfResponse = loyaltymateClient->ProcessVoucherTransaction(syndicateCode.GetSyndCode(),wcfInfo);
+        if(wcfResponse->Successful && wcfResponse->GiftCardExpiryDate != NULL)
+        {
+           inVoucherUsageDetail.GiftCardExpiryDate = wcfResponse->GiftCardExpiryDate->AsUTCDateTime;
+        }
         return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
@@ -802,6 +806,16 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyGiftCard
 }
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyVoucherResponse* inWCFResponse )
+{
+     return MMLoyaltyServiceResponse(
+                inWCFResponse->Successful,
+                AnsiString( inWCFResponse->Message.t_str() ),
+                AnsiString( inWCFResponse->Description.t_str() ),
+                ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
+                "" ) ;
+}
+//---------------------------------------------------------------------------
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(VoucherTransactionResponse* inWCFResponse )
 {
      return MMLoyaltyServiceResponse(
                 inWCFResponse->Successful,

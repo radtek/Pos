@@ -3683,6 +3683,8 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
     PaymentTransaction.IsVouchersProcessed = paymentComplete;
     if(paymentComplete)
     {
+
+       PaymentTransaction.PurchasedGiftVoucherInformation->ExpiryDate = VoucherUsageDetail.GiftCardExpiryDate;
        TReleasedVoucherDetail ReleasedVoucherDetail;
        ReleasedVoucherDetail.GiftCardNumber =  PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber;
        ReleasedVoucherDetail.PocketVoucherNumber =  PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber;

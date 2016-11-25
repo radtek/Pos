@@ -9,6 +9,7 @@ namespace Loyaltymate.Enum
     {
         Available = 1,
         NotAvailable,
-        Expired
+        Expired,
+        NotStarted
     }
 }

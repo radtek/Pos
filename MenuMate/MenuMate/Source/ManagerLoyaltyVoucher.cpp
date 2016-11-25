@@ -102,7 +102,7 @@ void TManagerLoyaltyVoucher::GetGiftVoucherDetail(AnsiString voucherCode,TGiftCa
     }
 }
 //------------------------------------------------------------------------------
-bool TManagerLoyaltyVoucher::ProcessVouchers(TVoucherUsageDetail VoucherUsageDetail)
+bool TManagerLoyaltyVoucher::ProcessVouchers(TVoucherUsageDetail& VoucherUsageDetail)
 {
     bool transactionStatus = false;
     TManagerSyndCode managerSyndCode = TDeviceRealTerminal::Instance().ManagerMembership->GetSyndicateCodeManager();
@@ -121,7 +121,7 @@ bool TManagerLoyaltyVoucher::ProcessVouchers(TVoucherUsageDetail VoucherUsageDet
         _lmOperationDialogBox->OperationTitle = "LoyaltyMate Operation";
         _lmOperationDialogBox->PreventCancelOperation = true;
         _lmOperationDialogBox->ShowModal();
-
+        VoucherUsageDetail.GiftCardExpiryDate  = voucherThread->VoucherUsageDetail.GiftCardExpiryDate;
         transactionStatus = voucherThread->OperationSuccessful;
         AnsiString errorMessage =  voucherThread->ErrorMessage;
         if(!transactionStatus)

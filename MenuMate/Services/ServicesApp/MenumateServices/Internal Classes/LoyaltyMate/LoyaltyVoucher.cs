@@ -47,7 +47,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             return GetPocketVoucherDetailFromCloud(inSyndicateCode, requestInfo);
         }
 
-        public LoyaltyResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
+        public VoucherTransactionResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
         {
             return PostVoucherTransaction(inSyndicateCode, transaction);
         }
@@ -70,7 +70,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                 return CreateGiftCardResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
-                            LoyaltyResponseCode.AuthenticationFailed, 
+                            LoyaltyResponseCode.AuthenticationFailed,
                             CreateGiftCardInfo("Failed to Authenticate"));
             }
             catch (LoyaltymateOperationException ex)
@@ -119,7 +119,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        private LoyaltyResponse PostVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
+        private VoucherTransactionResponse PostVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
         {
             try
             {
@@ -130,30 +130,30 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                     foreach (var item in response)
                     {
                         if (!item.IsProcessedSuccessfully)
-                            return CreateResponseError(item.Error,
+                            return CreateVoucherTransactionResponseError(item.Error,
                                                             item.Error,
-                                                            LoyaltyResponseCode.PostTransactionFailed);
+                                                            LoyaltyResponseCode.PostTransactionFailed, null);
                     }
-                    return CreateResponseNoError();
+                    return CreateVoucherTransactionResponseNoError(GetGiftCardExpiryDate(response));
                 }
-                return CreateResponseError(
+                return CreateVoucherTransactionResponseError(
                         @"Failed to process vouchers",
                         @"Failed to process vouchers",
-                        LoyaltyResponseCode.PostTransactionFailed);
+                        LoyaltyResponseCode.PostTransactionFailed, null);
             }
             catch (AuthenticationFailedException ex)
             {
-                return CreateResponseError(
+                return CreateVoucherTransactionResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
-                            LoyaltyResponseCode.AuthenticationFailed);
+                            LoyaltyResponseCode.AuthenticationFailed, null);
             }
             catch (Exception ex)
             {
-                return CreateResponseError(
+                return CreateVoucherTransactionResponseError(
                     "@Failed to post transaction to server",
                     ex.Message,
-                    LoyaltyResponseCode.PostTransactionFailed);
+                    LoyaltyResponseCode.PostTransactionFailed, null);
             }
         }
 
@@ -330,5 +330,15 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                 SiteCode = requestInfo.SiteCode
             };
         }
+
+        DateTime? GetGiftCardExpiryDate(List<ApiProcessingResult> processingResults)
+        {
+            var giftCardRechargeResult = processingResults.FirstOrDefault(s => s.ElementType == Loyaltymate.Enum.ElementType.GiftCardRecharge);
+            if (giftCardRechargeResult != null)
+                return giftCardRechargeResult.ResponseTime;
+            return null;
+        }
+
+
     }
 }
