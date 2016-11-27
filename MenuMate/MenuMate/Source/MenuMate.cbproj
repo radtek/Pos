@@ -3,7 +3,7 @@
 			<ProjectGuid>{192EBDBE-B1AC-4977-ACF9-0BDD61E6D32A}</ProjectGuid>
 			<ProjectType>CppVCLApplication</ProjectType>
 			<MainSource>MenuMate.cpp</MainSource>
-			<Config Condition="'$(Config)'==''">Release</Config>
+			<Config Condition="'$(Config)'==''">Debug</Config>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -3187,6 +3187,9 @@
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSections\ZBegningEndingInvoiceReportSection.cpp">
 				<BuildOrder>721</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\XReportDateTimeReportSection.cpp">
+				<BuildOrder>722</BuildOrder>
 			</CppCompile>
 			<FormResources Include="TerminalChitConfig.dfm"/>
 			<FormResources Include="DealsSetup.dfm"/>

@@ -39,6 +39,14 @@ void ZBegningEndingInvoiceReportSection::GetOutput(TPrintout* printOut)
     printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
 	printOut->PrintFormat->Line->FontInfo.Reset();
 
+    printOut->PrintFormat->Line->Columns[0]->Text = "Report Date:";
+    printOut->PrintFormat->Line->Columns[1]->Text = Now().FormatString("dd/mm/yyyy");
+    printOut->PrintFormat->AddLine();
+    printOut->PrintFormat->Line->Columns[0]->Text = "Report Time:";
+    printOut->PrintFormat->Line->Columns[1]->Text = Now().TimeString();//.FormatString("dd/mm/yyyy");
+    printOut->PrintFormat->AddLine();
+
+
     printOut->PrintFormat->Line->Columns[0]->Text = "Beginning Balance:";
     printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(openingBalance);
     printOut->PrintFormat->AddLine();

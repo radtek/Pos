@@ -49,6 +49,7 @@ protected:
     virtual void AddPriceAdjustmentSection(IReport* report);
     virtual void AddMallExportConsolidatedReceipt(IReport* report);
     virtual void AddCurrentBegningAndEndingBalance(IReport* report);
+    virtual void XAndZReportFormatForBIR(IReport* report);
 };
 
 #endif

@@ -2865,14 +2865,14 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             TabOrder = 27
             OnClick = cbShowPriceAdjustmentClick
           end
-          object cbShowLocalTaxandProfitTax: TCheckBox
+          object cbUseBIRFormatInXZReport: TCheckBox
             Left = 8
             Top = 695
             Width = 329
             Height = 20
-            Caption = 'Show Local and Profit Tax in Tax Summary'
+            Caption = 'Use BIR Format in X and Z Report'
             TabOrder = 26
-            OnClick = cbShowLocalTaxandProfitTaxClick
+            OnClick = cbUseBIRFormatInXZReportClick
           end
         end
         object cbEnablePrinterCounts: TCheckBox

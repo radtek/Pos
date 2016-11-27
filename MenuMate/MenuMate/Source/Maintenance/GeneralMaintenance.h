@@ -316,7 +316,8 @@ __published:	// IDE-managed Components
         TCheckBox *cbHideReceiptNumber;
         TGroupBox *gbItemBilling;
         TCheckBox *cbMergeSimilarItem;
-        TCheckBox *cbShowLocalTaxandProfitTax;
+        //TCheckBox *cbShowLocalTaxandProfitTax;
+        TCheckBox *cbUseBIRFormatInXZReport;
 
         //**********
         void __fastcall FormShow(TObject *Sender);
@@ -541,7 +542,8 @@ __published:	// IDE-managed Components
         void __fastcall cbOpenCashDrawerClick(TObject *Sender);
         void __fastcall cbHideReceiptNumberClick(TObject *Sender);
         void __fastcall cbMergeSimilarItemClick(TObject *Sender);
-        void __fastcall cbShowLocalTaxandProfitTaxClick(TObject *Sender);
+        //void __fastcall cbShowLocalTaxandProfitTaxClick(TObject *Sender);
+        void __fastcall cbUseBIRFormatInXZReportClick(TObject *Sender);
 
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
@@ -561,6 +563,7 @@ private:
         void ClearAllParkedSales( Database::TDBTransaction &DBTransaction );
         bool invalid_email_id;
         void DisplayTextOnWeightLimit();
+        void EnableDisableSectionsForBIRFormat();
 public:		// User declarations
         TTouchBtn *CurrentButton;
         void __fastcall ReDrawLogs();

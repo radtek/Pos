@@ -50,37 +50,43 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         salesTax += serviceChargeTax;
     }
 
-	AddTitle(printOut, "Tax Summary");
-	printOut->PrintFormat->NewLine();
-
-    IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
-
-    if(reportSectionDisplayTraits)
+    if(_globalSettings->ShowPointsReport)
     {
-        reportSectionDisplayTraits->ApplyTraits(printOut);
+
     }
-
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
-    printOut->PrintFormat->Line->FontInfo.Reset();
-
-    printOut->PrintFormat->Line->Columns[0]->Text = "VATable Sales:";
-    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxSales);
-    printOut->PrintFormat->AddLine();
-
-    printOut->PrintFormat->Line->Columns[0]->Text = "VAT Amount:";
-    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
-    printOut->PrintFormat->AddLine();
-
-    printOut->PrintFormat->Line->Columns[0]->Text = "VAT Exempt Sales:";
-    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxExemptSales);
-    printOut->PrintFormat->AddLine();
-
-    printOut->PrintFormat->Line->Columns[0]->Text = "Zero-Rated Sales:";
-    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(zeroratedsales);
-    printOut->PrintFormat->AddLine();
-
-    if(TGlobalSettings::Instance().ShowLocalandProfitTax)
+    else
     {
+        AddTitle(printOut, "Tax Summary");
+        printOut->PrintFormat->NewLine();
+
+        IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
+
+        if(reportSectionDisplayTraits)
+        {
+            reportSectionDisplayTraits->ApplyTraits(printOut);
+        }
+
+        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
+        printOut->PrintFormat->Line->FontInfo.Reset();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "VATable Sales:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxSales);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "VAT Amount:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "VAT Exempt Sales:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxExemptSales);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Zero-Rated Sales:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(zeroratedsales);
+        printOut->PrintFormat->AddLine();
+
+        //if(TGlobalSettings::Instance().ShowLocalandProfitTax)
+        //{
         printOut->PrintFormat->Line->Columns[0]->Text = "Local Tax Total:";
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(localTax);
         printOut->PrintFormat->AddLine();
@@ -88,5 +94,8 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[0]->Text = "Profit Tax Total:";
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(profitTax);
         printOut->PrintFormat->AddLine();
+
     }
+
+    //}
 }

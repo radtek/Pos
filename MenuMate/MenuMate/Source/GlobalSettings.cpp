@@ -377,6 +377,6 @@ TGlobalSettings::TGlobalSettings()
     ShowVoidOrRefund = false;
     ShowVoidNumber = false;
     EftPosTipGLCode = "";
-    ShowLocalandProfitTax = false;
+    UseBIRFormatInXZReport = false;
 }
 

@@ -465,7 +465,7 @@ public:
     bool ShowVoidOrRefund;
     bool ShowVoidNumber;
     UnicodeString EftPosTipGLCode;
-    bool ShowLocalandProfitTax;
+    bool UseBIRFormatInXZReport;
 };
 
 #endif
