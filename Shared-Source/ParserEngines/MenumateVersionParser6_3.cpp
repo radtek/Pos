@@ -583,7 +583,7 @@ void TApplyParser::Insert6_34MallExport_Settings_Mapping(TDBControl* const inDBC
     transaction.StartTransaction();
     try
     {
-         const int numberOfFields = 9;
+         const int numberOfFields = 10;
         int settingID[numberOfFields] =
         {
             1, 2, 7, 16, 17, 18, 19, 20, 21, 24
@@ -626,7 +626,7 @@ void TApplyParser::Insert6_34MallExport_Settings_Values(TDBControl* const inDBCo
             "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
             "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
             "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "bool", "bool",  "UnicodeString"
-           // "bool"
+            "bool"
          };
 
          UnicodeString fieldValues[numberOfFields] =
@@ -634,14 +634,14 @@ void TApplyParser::Insert6_34MallExport_Settings_Values(TDBControl* const inDBCo
             "", "", "", ".txt", "5", "2", "8", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12",
             "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12",
             "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "Z", "false", "false",
-            "SNNNNTTMMDDYYYY.B" //, "true"
+            "SNNNNTTMMDDYYYY.B" , "true"
          };
 
          int settingID[numberOfFields] =
          {
             1, 2, 7, 16, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17,
             17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
-            19, 20, 21 //, 24
+            19, 20, 21, 24
          };
 
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );

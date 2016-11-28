@@ -2330,7 +2330,7 @@ void TfrmSetup::UpdateNoMallUI()
     TManagerMallSetup::UpdateINActiveMall(dbTransaction);
      TControl *ChildControl;
     TEdit* editBox;
-     for (int i = 0; i < gbMallsNew->ControlCount; i++)
+    /* for (int i = 0; i < gbMallsNew->ControlCount; i++)
     {
         ChildControl = gbMallsNew->Controls[i];
         editBox = (TEdit*)ChildControl;
@@ -2340,8 +2340,8 @@ void TfrmSetup::UpdateNoMallUI()
             editBox->Enabled = false;
             editBox->Color = clInactiveCaptionText;
         }
-    }
-   /* edMallTenantNo->Text = "";
+    } */
+    edMallTenantNo->Text = "";
     edNewMallPath->Text = "";
     edMallTerminalNo->Text = "";
     edMallTenantNo->Enabled = false;
@@ -2351,7 +2351,7 @@ void TfrmSetup::UpdateNoMallUI()
     btnRegenMallReport->Visible = false;
     edMallTenantNo->Color = clInactiveCaptionText;
     edNewMallPath->Color = clInactiveCaptionText;
-    edMallTerminalNo->Color = clInactiveCaptionText;  */
+    edMallTerminalNo->Color = clInactiveCaptionText;
     dbTransaction.Commit();
 }
 //-----------------------------------------------------------------------------------------
