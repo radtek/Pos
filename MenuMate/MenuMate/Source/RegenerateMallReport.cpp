@@ -79,9 +79,16 @@ void __fastcall TfrmRegenerateMallReport::mcEndDateClick(TObject *Sender)
 void __fastcall TfrmRegenerateMallReport::btnGenerateMouseClick(TObject *Sender)
 
 {
+    if(EDate >= SDate)
+    {
         //instantiation will happen in a factory base pattern
         TMallExport* estanciaMall = new TEstanciaMall();
         estanciaMall->RegenerateMallReport(SDate, EDate);
+    }
+    else
+    {
+        MessageBox( "End date is set prior to start date", "Invalid Date For File Generation", MB_OK );
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmRegenerateMallReport::cbStartHourChange(TObject *Sender)
