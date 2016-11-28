@@ -207,12 +207,14 @@ void EndOfDayReportBuilder::AddMallExportConsolidatedReceipt(IReport* report)
 
 void EndOfDayReportBuilder::XAndZReportFormatForBIR(IReport* report)
 {
-   if(GetGlobalSettings()->ShowPointsReport)
+   if(GetGlobalSettings()->UseBIRFormatInXZReport)
    {
         AddClientDetailsSection(report);
         AddReportDetailsSection(report);
         AddCurrentBegningAndEndingBalance(report);
         AddTaxSummarySection(report);
+        AddDiscountReportSection(report);
+        AddTransactionSummaryGroupSection(report);
    }
    else
    {

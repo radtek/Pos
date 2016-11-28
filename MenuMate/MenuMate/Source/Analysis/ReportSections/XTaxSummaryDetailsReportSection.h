@@ -12,6 +12,14 @@
 #include "ReportFinancialCalculations.h"
 
 //---------------------------------------------------------------------------
+struct TSalesTax
+{
+    double Rate;
+    double TaxSum;
+};
+
+
+
 class XTaxSummaryDetailsReportSection : public BaseReportSection
 {
 
@@ -20,6 +28,8 @@ public:
     ~XTaxSummaryDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
+    void GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName);
+    std::vector<TSalesTax> sales_tax;
 
 private:
     DataFormatUtilities* dataFormatUtilities;

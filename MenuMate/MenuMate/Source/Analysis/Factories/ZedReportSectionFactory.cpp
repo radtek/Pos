@@ -151,6 +151,9 @@ IReportSection* ZedReportSectionFactory::CreateReportSection(ReportSectionType r
         case mmMallExportConsolidatedReceipt:
             reportSection = new MallExportConsolidatedReceipt(_dbTransaction, _globalSettings);
             break;
+        case mmRefundCancelDetailsSections:
+            reportSection = new XCancelsAndRefundDetailsForBIRReportSection(_dbTransaction, _globalSettings);
+            break;
         default:
             reportSection = NULL;
             break;

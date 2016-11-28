@@ -845,3 +845,41 @@ Currency ReportFinancialCalculations::GetZeroRatedSales(Database::TDBTransaction
 	return zeroratedsalesvalue;
 }
 
+Currency ReportFinancialCalculations::GetTotalDiscountValue(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
+{
+    Currency totaldiscount;
+	try
+	{
+        Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+        TIBSQL *getTotalDiscount = tr.Query(tr.AddQuery());
+
+        getTotalDiscount->SQL->Text =
+                        "select SUM(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT "
+			"from " "DAYARCBILL LEFT JOIN SECURITY ON DAYARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
+			"LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
+			"LEFT JOIN DAYARCHIVE ON DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
+			"LEFT JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+			"where "
+			"DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' AND "
+			"DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME " "AND DAYARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
+			(SecurityTypes[secDiscountedBy]) + "' " ;
+
+        tr.StartTransaction();
+        getTotalDiscount->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        getTotalDiscount->ExecQuery();
+        totaldiscount = getTotalDiscount->FieldByName("DISCOUNT")->AsCurrency;
+        tr.Commit();
+        getTotalDiscount->Close();
+    }
+	catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+		throw;
+	}
+	return totaldiscount;
+}
+
+
+
+
+
