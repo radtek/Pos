@@ -38,6 +38,9 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
 {
     try
     {
+        //print new column in new line or not
+        UnicodeString appendNewLine = "false";
+
         //Creating Temporary File Stream
         std::fstream tempFile;
 
@@ -67,6 +70,8 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
         {
             if(itUISettings->ControlName == "edNewMallPath")
                 filePath = itUISettings->Value;
+            else if(itUISettings->ControlName == "New Line")
+                appendNewLine = itUISettings->Value;
         }
 
         //Check For Directory Existence ..Create if not created already
@@ -87,18 +92,37 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
             //Open file for writing
             outFile.open(filePath.c_str(), std::ios_base::out);
 
+            for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)
+            {
+                //Write file Headers
+                if(itUISettings->ControlName == "File Header")
+                {
+                    outFile << itUISettings->Value.t_str();
+                    if(appendNewLine == "true")
+                        outFile << "\n";
+                }
+            }
+
             //First Write Settings in the file ex:- Tenant Code, TerminalNumber etc
             for(itFileSettings = itSettings->second.begin(); itFileSettings != itSettings->second.end(); itFileSettings++)
             {
                 //Convert Value into String
-                outFile << itFileSettings->Value.t_str() << "\n";
+                outFile << itFileSettings->Value.t_str();
+
+                //Append new line if setting is on
+                if(appendNewLine == "true")
+                    outFile << "\n";
             }
 
             //Secondly Write data in the file
             for(it = itSalesData->second.begin(); it != itSalesData->second.end(); it++)
             {
                 //Convert Value into String
-                outFile << it->DataValue.t_str() << "\n";
+                outFile << it->DataValue.t_str();
+
+                //Append new line if setting is on
+                if(appendNewLine == "true")
+                    outFile << "\n";
             }
         }
          //As we have written to the file so close it now.

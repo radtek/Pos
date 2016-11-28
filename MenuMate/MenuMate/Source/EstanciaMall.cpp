@@ -1370,9 +1370,10 @@ UnicodeString TEstanciaMall::GetExportType()
                                      "FROM MALLEXPORT_SETTINGS MES "
                                      "INNER JOIN MALLEXPORT_SETTINGS_MAPPING MSP ON MES.MALLEXPORT_SETTING_KEY = MSP.MALLEXPORT_SETTING_ID "
                                      "INNER JOIN MALLEXPORT_SETTINGS_VALUES MSV ON MES.MALLEXPORT_SETTING_KEY = MSV.MALLEXPORTSETTING_ID "
-                                     "WHERE MES.NAME = :NAME ";
+                                     "WHERE MES.NAME = :NAME AND MSP.MALL_ID = :MALL_ID";
 
         IBInternalQuery->ParamByName("NAME")->AsString = "TYPE_OF_FILE";
+        IBInternalQuery->ParamByName("MALL_ID")->AsInteger = 1;
         IBInternalQuery->ExecQuery();
 
         if(IBInternalQuery->RecordCount)

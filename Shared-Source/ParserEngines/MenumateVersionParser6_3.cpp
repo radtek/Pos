@@ -536,24 +536,24 @@ void TApplyParser::Insert6_34MallExport_Settings(TDBControl* const inDBControl)
     transaction.StartTransaction();
     try
     {
-        const int numberOfFields = 24;
+        const int numberOfFields = 25;
         UnicodeString fieldNames[numberOfFields] =
         {
             "TENANT_NUMBER" ,"FILE_LOCATION" ,"CLASS_CODE" ,"TRADE_CODE" ,"OUTLET_NUMBER" ,"BRANCH_CODE" ,"TERMINAL_NUMBER" ,
             "SERIAL_NUMBER" ,"ASSIGN_SALES_TYPE" ,"FTP_SERVER" ,"FTP_PATH" ,"FTP_USER_NAME" ,"FTP_PASSWORD" ,
             "ENABLE_CONSOLIDATED_REPORT" ,"CONSOLIDATED_DB_PATHS" ,"TYPE_OF_FILE" ,"HEADER_WIDTH" ,"FILE_CREATION_PERIOD" ,
-            "REQUIRED_ON_FTP_SERVER " ,"INCLUDE_IN_EXISTING" ,"FILE_NAMING_CONVENTION" ,"FILE_HEADER", "RESEND_REPORT", "REGENERATE_REPORT"
+            "REQUIRED_ON_FTP_SERVER " ,"INCLUDE_IN_EXISTING" ,"FILE_NAMING_CONVENTION" ,"FILE_HEADER", "RESEND_REPORT", "REGENERATE_REPORT", "NEW_LINE"
         };
         UnicodeString controlNames[numberOfFields] =
         {
             "edMallTenantNo" ,"edNewMallPath" ,"edMallClassCode" ,"edMallTradeCode" ,"edMallOutletCode" ,"edMallBranchCode" ,"edMallTerminalNo" ,
             "edMallSerialNo" ,"btnAssignMallSalesType" ,"edMallFTPServer" ,"edMallFTPPath" ,"edMallFTPUserName" ,"edMallFTPPassword" ,
             "cbEnableMallConsolidatedRep" ,"edMallConsolidatedDBPaths" ,"File Type" ,"Header Width" ,"File Creation" ,
-            "Load TO FTP Server ","Append File" , "File Name" ,"File Header", "btnResendMallReport", "btnRegenMallReport"
+            "Load TO FTP Server ","Append File" , "File Name" ,"File Header", "btnResendMallReport", "btnRegenMallReport", "New Line"
         };
         UnicodeString isUIRequired[numberOfFields] =
         {
-            "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "F", "F", "F", "F", "F", "F", "F", "T", "T"
+            "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "T", "F", "F", "F", "F", "F", "F", "F", "T", "T", "F"
         };
 
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
@@ -583,10 +583,10 @@ void TApplyParser::Insert6_34MallExport_Settings_Mapping(TDBControl* const inDBC
     transaction.StartTransaction();
     try
     {
-         const int numberOfFields = 10;
+         const int numberOfFields = 11;
         int settingID[numberOfFields] =
         {
-            1, 2, 7, 16, 17, 18, 19, 20, 21, 24
+            1, 2, 7, 16, 17, 18, 19, 20, 21, 24, 25
         };
 
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
@@ -615,7 +615,7 @@ void TApplyParser::Insert6_34MallExport_Settings_Values(TDBControl* const inDBCo
     transaction.StartTransaction();
     try
     {
-         const int numberOfFields = 75;
+         const int numberOfFields = 76;
          UnicodeString fieldTypes[numberOfFields] =
          {
             "UnicodeString", "UnicodeString", "int", "UnicodeString", "UnicodeString", "int", "UnicodeString", "Currency", "UnicodeString", "UnicodeString",
@@ -626,7 +626,7 @@ void TApplyParser::Insert6_34MallExport_Settings_Values(TDBControl* const inDBCo
             "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
             "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
             "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "bool", "bool",  "UnicodeString"
-            "bool"
+            "bool", "bool"
          };
 
          UnicodeString fieldValues[numberOfFields] =
@@ -634,14 +634,14 @@ void TApplyParser::Insert6_34MallExport_Settings_Values(TDBControl* const inDBCo
             "", "", "", ".txt", "5", "2", "8", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12",
             "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12",
             "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "Z", "false", "false",
-            "SNNNNTTMMDDYYYY.B" , "true"
+            "SNNNNTTMMDDYYYY.B" , "true", "true"
          };
 
          int settingID[numberOfFields] =
          {
             1, 2, 7, 16, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17,
             17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
-            19, 20, 21, 24
+            19, 20, 21, 24, 25
          };
 
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );

@@ -71,7 +71,11 @@ TMall TManagerMallSetup::LoadActiveMallSettings(Database::TDBTransaction &dbTran
         ibInternalQuery->Close();
         ibInternalQuery->SQL->Clear();
         ibInternalQuery->SQL->Text = "SELECT * FROM MALLEXPORT_SETTINGS_VALUES msv "
-                                        "INNER JOIN MALLEXPORT_SETTINGS a   on a.MALLEXPORT_SETTING_KEY = msv.MALLEXPORTSETTING_ID ";
+                                        "INNER JOIN MALLEXPORT_SETTINGS a   on a.MALLEXPORT_SETTING_KEY = msv.MALLEXPORTSETTING_ID "
+                                        "INNER JOIN MALLEXPORT_SETTINGS_MAPPING msp ON msp.MALLEXPORT_SETTING_ID = msv.MALLEXPORTSETTING_ID "
+                                    "WHERE msp.MALL_ID = :MALL_ID ";
+
+        ibInternalQuery->ParamByName("MALL_ID")->AsInteger = mallProperties.MallId;
         ibInternalQuery->ExecQuery();
         for(; !ibInternalQuery->Eof; ibInternalQuery->Next())
         {
