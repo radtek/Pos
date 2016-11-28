@@ -4,6 +4,7 @@
 #define EstanciaMallH
 #include "MallExport.h"
 #include "MallExportTextFile.h"
+#include <DateUtils.hpp>
 //---------------------------------------------------------------------------
 
 class TEstanciaMall : public TMallExport
@@ -14,7 +15,7 @@ class TEstanciaMall : public TMallExport
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
 
     //Get OldAccumulated Sale
-    Currency GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex);
+    double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex);
 
     //Generate SalesKey for MallExport_sales Table
     long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
@@ -43,7 +44,7 @@ class TEstanciaMall : public TMallExport
     std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
 
     //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
-    TMallExportPrepareData PrepareDataForExport();
+    TMallExportPrepareData PrepareDataForExport(int zKey = 0);
 
     //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
     IExporterInterface* CreateExportMedium();

@@ -428,24 +428,24 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
 
                 if(isVatable)
                 {
-                    fieldData.GrossAmountVatable += Order->PriceEach_BillCalc() + fabs(Order->TotalAdjustment());   //6
-                    fieldData.PromoSalesAmountVatable += promoDiscount; //8
-                    fieldData.PWDDiscountVatable += pwdDiscount;  //9
-                    fieldData.RefundAmountVatable += Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;   //10
+                    fieldData.GrossAmountVatable += (double)(Order->PriceEach_BillCalc() + fabs(Order->TotalAdjustment()));   //6
+                    fieldData.PromoSalesAmountVatable += (double)promoDiscount; //8
+                    fieldData.PWDDiscountVatable += (double)pwdDiscount;  //9
+                    fieldData.RefundAmountVatable += (double)Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;   //10
                     fieldData.ReturnedItemsAmountVatable += 0;                //11
-                    fieldData.OtherTaxesVatable +=  localTax;                        //12
-                    fieldData.ServiceChargeAmountVatable +=  serviceCharge;  //13
+                    fieldData.OtherTaxesVatable +=  (double)localTax;                        //12
+                    fieldData.ServiceChargeAmountVatable +=  (double)serviceCharge;  //13
                     fieldData.AdjustmentDiscountVatable += 0;  //14
                     fieldData.VoidAmountVatable += 0;//todo          //15
                     fieldData.DiscountCardsVatable += 0;//todo         //16
                     fieldData.DeliveryChargesVatable += 0;//todo       //17
                     fieldData.GiftCertificatesChecksRedeemedVatable +=  0;//todo  //18
-                    fieldData.SSDiscount1Vatable += discountGroup1;  //19
-                    fieldData.SSDiscount2Vatable += discountGroup2;  //20
-                    fieldData.SSDiscount3Vatable += discountGroup3;  //21
-                    fieldData.SSDiscount4Vatable += discountGroup4;  //22
-                    fieldData.SSDiscount5Vatable += discountGroup5;  //23
-                    fieldData.TotalOfallNonApprovedSDVatable += totalNonApprovedDiscount;  //24
+                    fieldData.SSDiscount1Vatable += (double)discountGroup1;  //19
+                    fieldData.SSDiscount2Vatable += (double)discountGroup2;  //20
+                    fieldData.SSDiscount3Vatable += (double)discountGroup3;  //21
+                    fieldData.SSDiscount4Vatable += (double)discountGroup4;  //22
+                    fieldData.SSDiscount5Vatable += (double)discountGroup5;  //23
+                    fieldData.TotalOfallNonApprovedSDVatable += (double)totalNonApprovedDiscount;  //24
                     fieldData.SSDiscount1NonApprovedVatable += 0;//todo       //25
                     fieldData.SSDiscount2NonApprovedVatable +=  0;//todo      //26
                     fieldData.SSDiscount3NonApprovedVatable +=  0;//todo      //27
@@ -454,24 +454,24 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
                 }
                 else
                 {
-                    fieldData.GrossAmountNonVatable += Order->PriceLevelCustom > 0 ? Order->PriceLevelCustom + fabs(Order->TotalAdjustment()) : Order->PriceLevel1 + fabs(Order->TotalAdjustment());   ////39
-                    fieldData.PromoSalesAmountNonVatable += promoDiscount;    ///41
-                    fieldData.SCDDiscountNonVatable += scdDiscount;      //42
-                    fieldData.RefundAmountNonVatable += Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0;     //43
+                    fieldData.GrossAmountNonVatable += (double)(Order->PriceLevelCustom > 0 ? Order->PriceLevelCustom + fabs(Order->TotalAdjustment()) : Order->PriceLevel1 + fabs(Order->TotalAdjustment()));   ////39
+                    fieldData.PromoSalesAmountNonVatable += (double)promoDiscount;    ///41
+                    fieldData.SCDDiscountNonVatable += (double)scdDiscount;      //42
+                    fieldData.RefundAmountNonVatable += (double)(Order->GetQty() < 0 ? Order->PriceEach_BillCalc() : 0);     //43
                     fieldData.ReturnedItemsAmountNonVatable += 0;     //44
-                    fieldData.OtherTaxesNonVatable += localTax;     //45
-                    fieldData.ServiceChargeAmountNonVatable +=  serviceCharge;   //46
+                    fieldData.OtherTaxesNonVatable += (double)localTax;     //45
+                    fieldData.ServiceChargeAmountNonVatable +=  (double)serviceCharge;   //46
                     fieldData.AdjustmentDiscountNonVatable  += 0;      //47
                     fieldData.VoidAmountNonVatable += 0;//todo             //48
                     fieldData.DiscountCardsNonVatable +=  0;//todo         //49
                     fieldData.DeliveryChargesNonVatable +=  0;//todo       //50
                     fieldData.GiftCertificatesChecksRedeemedNonVatable +=  0;//todo   //51
-                    fieldData.SSDiscount1NonVatable += discountGroup1;  //52
-                    fieldData.SSDiscount2NonVatable += discountGroup2;  //53
-                    fieldData.SSDiscount3NonVatable += discountGroup3;  //54
-                    fieldData.SSDiscount4NonVatable += discountGroup4;  //55
-                    fieldData.SSDiscount5NonVatable += discountGroup5;  //56
-                    fieldData.TotalOfallNonApprovedSDiscountsNonVatable += totalNonApprovedDiscount;    //57
+                    fieldData.SSDiscount1NonVatable += (double)discountGroup1;  //52
+                    fieldData.SSDiscount2NonVatable += (double)discountGroup2;  //53
+                    fieldData.SSDiscount3NonVatable += (double)discountGroup3;  //54
+                    fieldData.SSDiscount4NonVatable += (double)discountGroup4;  //55
+                    fieldData.SSDiscount5NonVatable += (double)discountGroup5;  //56
+                    fieldData.TotalOfallNonApprovedSDiscountsNonVatable += (double)totalNonApprovedDiscount;    //57
                     fieldData.SSDiscount1NonApprovedNonVatable += 0;//todo         ///58
                     fieldData.SSDiscount2NonApprovedNonVatable += 0;//todo         //59
                     fieldData.SSDiscount3NonApprovedNonVatable += 0;//todo         //60
@@ -482,26 +482,26 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
 
         fieldData.OldAccumulatedSalesVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
         fieldData.ControlNumber = 0;
-        fieldData.NoOfSalesTransaction = fieldData.RefundAmountVatable <0 ? 0 : 1;
+        fieldData.NoOfSalesTransaction = (double)(fieldData.RefundAmountVatable <0 ? 0 : 1);
         fieldData.SalesType = 1;
-        fieldData.Amount = fieldData.NetSalesAmountVatable;
+        fieldData.Amount = (double)fieldData.NetSalesAmountVatable;
         fieldData.OldAccumulatedSalesNonVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38);
-        fieldData.DeductionVatable = fieldData.PromoSalesAmountVatable + fieldData.PWDDiscountVatable + fieldData.RefundAmountVatable + fieldData.ReturnedItemsAmountVatable +
+        fieldData.DeductionVatable = (double)(fieldData.PromoSalesAmountVatable + fieldData.PWDDiscountVatable + fieldData.RefundAmountVatable + fieldData.ReturnedItemsAmountVatable +
                                 fieldData.OtherTaxesVatable + fieldData.ServiceChargeAmountVatable + fieldData.AdjustmentDiscountVatable + fieldData.VoidAmountVatable +
                                 fieldData.DiscountCardsVatable + fieldData.DeliveryChargesVatable + fieldData.GiftCertificatesChecksRedeemedVatable + fieldData.SSDiscount1Vatable +
-                                fieldData.SSDiscount2Vatable + fieldData.SSDiscount3Vatable + fieldData.SSDiscount4Vatable + fieldData.SSDiscount5Vatable;
-        fieldData.VATTaxAmountVatable = (((fieldData.GrossAmountVatable - fieldData.DeductionVatable)*.12)/1.12);        //30
-        fieldData.NetSalesAmountVatable = fieldData.GrossAmountVatable - fieldData.DeductionVatable - fieldData.VATTaxAmountVatable;  ////31
+                                fieldData.SSDiscount2Vatable + fieldData.SSDiscount3Vatable + fieldData.SSDiscount4Vatable + fieldData.SSDiscount5Vatable);
+        fieldData.VATTaxAmountVatable = (double)(((fieldData.GrossAmountVatable - fieldData.DeductionVatable)*.12)/1.12);        //30
+        fieldData.NetSalesAmountVatable = (double)(fieldData.GrossAmountVatable - fieldData.DeductionVatable - fieldData.VATTaxAmountVatable);  ////31
 
         ///40
-        fieldData.DeductionNonVatable = fieldData.PromoSalesAmountNonVatable + fieldData.SCDDiscountNonVatable + fieldData.RefundAmountNonVatable + fieldData.ReturnedItemsAmountNonVatable +
+        fieldData.DeductionNonVatable = (double)(fieldData.PromoSalesAmountNonVatable + fieldData.SCDDiscountNonVatable + fieldData.RefundAmountNonVatable + fieldData.ReturnedItemsAmountNonVatable +
                                 fieldData.OtherTaxesNonVatable + fieldData.ServiceChargeAmountNonVatable + fieldData.AdjustmentDiscountNonVatable + fieldData.VoidAmountNonVatable +
                                 fieldData.DiscountCardsNonVatable + fieldData.DeliveryChargesNonVatable + fieldData.GiftCertificatesChecksRedeemedNonVatable + fieldData.SSDiscount1NonVatable +
-                                fieldData.SSDiscount2NonVatable + fieldData.SSDiscount3NonVatable + fieldData.SSDiscount4NonVatable + fieldData.SSDiscount5NonVatable;
+                                fieldData.SSDiscount2NonVatable + fieldData.SSDiscount3NonVatable + fieldData.SSDiscount4NonVatable + fieldData.SSDiscount5NonVatable);
         fieldData.VATTaxAmountNonVatable = 0;  ///63
-        fieldData.NetSalesAmountNonVatable = fieldData.GrossAmountVatable - fieldData.DeductionNonVatable ;  //64
-        fieldData.NewAccumulatedSalesVatable  = fieldData.OldAccumulatedSalesVatable + fieldData.NetSalesAmountVatable; //5
-        fieldData.NewAccumulatedSalesNonVatable  = fieldData.OldAccumulatedSalesNonVatable + fieldData.NetSalesAmountNonVatable; //38
+        fieldData.NetSalesAmountNonVatable = (double)(fieldData.GrossAmountVatable - fieldData.DeductionNonVatable) ;  //64
+        fieldData.NewAccumulatedSalesVatable  = (double)(fieldData.OldAccumulatedSalesVatable + fieldData.NetSalesAmountVatable); //5
+        fieldData.NewAccumulatedSalesNonVatable  = (double)(fieldData.OldAccumulatedSalesNonVatable + fieldData.NetSalesAmountNonVatable); //38
         fieldData.CoverCount = GetPatronCount(paymentTransaction);
 
          ///call function to insert all fields into list
@@ -617,11 +617,11 @@ int TEstanciaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
     return totalPatronCount;
 }
 //---------------------------------------------------------------------------------
-Currency TEstanciaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
+double TEstanciaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
 {
     Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
 	dbTransaction.RegisterQuery(IBInternalQuery);
-    Currency oldAccumulatedSales = 0.00;
+    double oldAccumulatedSales = 0.00;
     try
     {
         IBInternalQuery->Close();
@@ -660,7 +660,7 @@ void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, 
     mallExportSalesData.push_back(salesData);
 }
 //--------------------------------------------------------------------------------------------------------
-TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
+TMallExportPrepareData TEstanciaMall::PrepareDataForExport(int zKey)
 {
     //Create TMallExportPrepareData  for returning prepared data
     TMallExportPrepareData preparedData;
@@ -685,7 +685,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
         keyToCheck2 = InsertInToSet(dailySalekeys2, 2);
 
         //Prepare Data For Daily Sales File
-        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, keyToCheck2, preparedData, 1);
+        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, keyToCheck2, preparedData, 1, zKey);
 
        //indexes for selecting total Net sale, patron count, etc
         int  hourIndexkeys[3] = {32,34,66};
@@ -700,7 +700,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
         keyToCheck2 = InsertInToSet(hourIndexKeys2, 2);
 
         //Prepare Data For Hourly File
-        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, keyToCheck2, 65, preparedData, 2);
+        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, keyToCheck2, 65, preparedData, 2, zKey);
 
         //indexes for selecting total Net sale, invoice number , status
         int invoiceIndex[3] = {65, 67, 68};
@@ -712,7 +712,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport()
         keyToCheck = InsertInToSet(invoiceIndex, 3);
 
         //Prepare Data For Invoice File
-        PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 3);
+        PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 3, zKey);
 
        //Commit the transaction as we have completed all the transactions
         dbTransaction.Commit();
@@ -1377,3 +1377,4 @@ UnicodeString TEstanciaMall::GetExportType()
 
     return typeOfFile;
 }
+//-----------------------------------------------------------------------------------------------------------------------------

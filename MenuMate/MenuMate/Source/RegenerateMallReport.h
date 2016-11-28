@@ -58,9 +58,6 @@ private:	// User declarations
     Database::TDBTransaction *dbTransaction;
     int day, month, year;
     AnsiString terminal_Name;
-    TEstanciaMall estanciaMall;
-
-    TMallExportPrepareData PrepareDataForExport(Database::TDBTransaction &dBTransaction, int zKey);
 
 public:		// User declarations
     __fastcall TfrmRegenerateMallReport(TComponent* Owner);
@@ -74,18 +71,15 @@ public:		// User declarations
     UnicodeString EndHour;
     UnicodeString StartMin;
     UnicodeString EndMin;
-
-    void InitializeTimeOptions();
-    void InitializeTimeSet(TDateTime &SDate, TDateTime &EDate);
-    UnicodeString FixTime(UnicodeString Time);
-    void SetSpecificMallTimes(int &StartH, int &EndH, int &StartM, int &EndM);
-
-    void RegenerateEstanciaMallExport();
     TDateTime TrasactionDate;
     int StartH;
     int EndH;
     int StartM;
     int EndM;
+    void InitializeTimeOptions();
+    void InitializeTimeSet(TDateTime &SDate, TDateTime &EDate);
+    UnicodeString FixTime(UnicodeString Time);
+    void SetSpecificMallTimes(int &StartH, int &EndH, int &StartM, int &EndM);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmRegenerateMallReport *frmRegenerateMallReport;

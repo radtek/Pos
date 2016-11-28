@@ -10,7 +10,8 @@
 #include "RegenerateMallReport.h"
 #include "MMTouchKeyboard.h"
 #include "DeviceRealTerminal.h"
-#include "MallExportTextFile.h"
+#include "EstanciaMall.h"
+#include "MallExport.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -78,15 +79,9 @@ void __fastcall TfrmRegenerateMallReport::mcEndDateClick(TObject *Sender)
 void __fastcall TfrmRegenerateMallReport::btnGenerateMouseClick(TObject *Sender)
 
 {
-    switch(TGlobalSettings::Instance().mallInfo.MallId)
-    {
-        case 1:
-        RegenerateEstanciaMallExport();
-        break;
-
-        default:
-        break;
-    }
+        //instantiation will happen in a factory base pattern
+        TMallExport* estanciaMall = new TEstanciaMall();
+        estanciaMall->RegenerateMallReport(SDate, EDate);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmRegenerateMallReport::cbStartHourChange(TObject *Sender)
@@ -188,62 +183,6 @@ void TfrmRegenerateMallReport::InitializeTimeSet(TDateTime &SDate, TDateTime &ED
     EDate = EndDate + StrToTime(EndHM) ;
 }
 //-------------------------------------------------------------------------------------------------------------
-void TfrmRegenerateMallReport::RegenerateEstanciaMallExport()
-{
-    if(EDate >= SDate)
-    {
-        TMallExportPrepareData preparedData;
-        int zKey;
-
-        //Register the database transaction..
-        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-        dbTransaction.StartTransaction();
-
-        ///Register Query
-        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-        dbTransaction.RegisterQuery(IBInternalQuery);
-
-        //Query for selecting data for invoice file
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =  "SELECT a.Z_KEY FROM MALLEXPORT_SALES a "
-                                        "WHERE a.Z_KEY != :Z_KEY AND a.DATE_CREATED >= :START_TIME AND a.DATE_CREATED < :END_TIME "
-                                        "GROUP BY a.Z_KEY "
-                                        "ORDER BY 1 ASC ";
-
-        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = 0;
-        IBInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
-        IBInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
-        IBInternalQuery->ExecQuery();
-
-       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-       {
-            //Fetch z-key
-            zKey = IBInternalQuery->Fields[0]->AsInteger;
-
-            //Prepare Data For Exporting into File
-            preparedData = PrepareDataForExport(dbTransaction, zKey);
-
-            //Create Export Medium
-            TMallExportTextFile* exporter =  new TMallExportTextFile();
-            exporter->WriteToFile(preparedData);
-       }
-
-       //Display message showing status of file
-       if(IBInternalQuery->RecordCount)
-            MessageBox( "Generation of file Successful", "Gernerating File", MB_OK );
-       else
-            MessageBox( "No Data For This Time Period", "Gernerating File", MB_OK );
-
-         //Commit the transaction as we have completed all the transactions
-        dbTransaction.Commit();
-    }
-    else
-    {
-        MessageBox( "End date is set prior to Start date", "Invalid Date For File Generation", MB_OK );
-    }
-}
-//---------------------------------------------------------------------------
 void TfrmRegenerateMallReport::SetSpecificMallTimes(int &StartH, int &EndH, int &StartM, int &EndM)
 {
         StartH = 5;
@@ -252,65 +191,6 @@ void TfrmRegenerateMallReport::SetSpecificMallTimes(int &StartH, int &EndH, int 
         EndM = 0;
 }
 //---------------------------------------------------------------------------
-TMallExportPrepareData TfrmRegenerateMallReport::PrepareDataForExport(Database::TDBTransaction &dbTransaction, int zKey)
-{
-    //Create TMallExportPrepareData  for returning prepared data
-    TMallExportPrepareData preparedData;
-
-    try
-    {
-        //Set for inserting index. these indexes will be used for fetching data
-        std::set<int> keyToCheck;
-        std::set<int> keyToCheck2;
-
-        //Indexes for which data will not selected
-        int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
-        int dailySalekeys2[2] = {33, 35};
-
-        //insert these indexes into set.
-        keyToCheck = estanciaMall.InsertInToSet(dailySalekeys, 8);
-        keyToCheck2 = estanciaMall.InsertInToSet(dailySalekeys2, 2);
-
-        //Prepare Data For Daily Sales File
-        estanciaMall.PrepareDataForDailySalesFile(dbTransaction, keyToCheck, keyToCheck2, preparedData, 1);
-
-       //indexes for selecting total Net sale, patron count, etc
-        int  hourIndexkeys[3] = {32,34,66};
-        int hourIndexKeys2[2] = {65,34};
-
-        //Clear the map because same map is used for many time insertion
-        keyToCheck.clear();
-        keyToCheck2.clear();
-
-        //insert these indexes into set.
-        keyToCheck = estanciaMall.InsertInToSet(hourIndexkeys, 3);
-        keyToCheck2 = estanciaMall.InsertInToSet(hourIndexKeys2, 2);
-
-        //Prepare Data For Hourly File
-        estanciaMall.PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, keyToCheck2, 65, preparedData, 2);
-
-        //indexes for selecting total Net sale, invoice number , status
-        int invoiceIndex[3] = {65, 67, 68};
-
-         //Clear the map because same map is used for many time insertion
-        keyToCheck.clear();
-        keyToCheck2.clear();
-
-        //insert these indexes into set.
-        keyToCheck = estanciaMall.InsertInToSet(invoiceIndex, 3);
-
-        //Prepare Data For Invoice File
-        estanciaMall.PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, preparedData, 3);
-    }
-    catch(Exception &E)
-	{
-        dbTransaction.Rollback();
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return preparedData;
-}
-//-----------------------------------------------------------------------------------------------
 UnicodeString TfrmRegenerateMallReport::FixTime(UnicodeString Time)
 {
     UnicodeString result = "";
