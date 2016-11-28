@@ -190,51 +190,58 @@ void TfrmRegenerateMallReport::InitializeTimeSet(TDateTime &SDate, TDateTime &ED
 //-------------------------------------------------------------------------------------------------------------
 void TfrmRegenerateMallReport::RegenerateEstanciaMallExport()
 {
-    TMallExportPrepareData preparedData;
-    int zKey;
+    if(EDate >= SDate)
+    {
+        TMallExportPrepareData preparedData;
+        int zKey;
 
-    //Register the database transaction..
-    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-    dbTransaction.StartTransaction();
+        //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
 
-    ///Register Query
-    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-    dbTransaction.RegisterQuery(IBInternalQuery);
+        ///Register Query
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(IBInternalQuery);
 
-    //Query for selecting data for invoice file
-    IBInternalQuery->Close();
-    IBInternalQuery->SQL->Text =  "SELECT a.Z_KEY FROM MALLEXPORT_SALES a "
-                                    "WHERE a.Z_KEY != :Z_KEY AND a.DATE_CREATED >= :START_TIME AND a.DATE_CREATED < :END_TIME "
-                                    "GROUP BY a.Z_KEY "
-                                    "ORDER BY 1 ASC ";
+        //Query for selecting data for invoice file
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =  "SELECT a.Z_KEY FROM MALLEXPORT_SALES a "
+                                        "WHERE a.Z_KEY != :Z_KEY AND a.DATE_CREATED >= :START_TIME AND a.DATE_CREATED < :END_TIME "
+                                        "GROUP BY a.Z_KEY "
+                                        "ORDER BY 1 ASC ";
 
-    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = 0;
-    IBInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
-    IBInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
-    IBInternalQuery->ExecQuery();
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = 0;
+        IBInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
+        IBInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
+        IBInternalQuery->ExecQuery();
 
-   for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
-   {
-        //Fetch z-key
-        zKey = IBInternalQuery->Fields[0]->AsInteger;
+       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+       {
+            //Fetch z-key
+            zKey = IBInternalQuery->Fields[0]->AsInteger;
 
-        //Prepare Data For Exporting into File
-        preparedData = PrepareDataForExport(dbTransaction, zKey);
+            //Prepare Data For Exporting into File
+            preparedData = PrepareDataForExport(dbTransaction, zKey);
 
-        //Create Export Medium
-        TMallExportTextFile* exporter =  new TMallExportTextFile();
-        exporter->WriteToFile(preparedData);
-   }
+            //Create Export Medium
+            TMallExportTextFile* exporter =  new TMallExportTextFile();
+            exporter->WriteToFile(preparedData);
+       }
 
-   //Display message showing status of file
-   if(IBInternalQuery->RecordCount)
-        MessageBox( "Generation of file Successful", "Gernerating File", MB_OK );
-   else
-        MessageBox( "No Data For This Time Period", "Gernerating File", MB_OK );
+       //Display message showing status of file
+       if(IBInternalQuery->RecordCount)
+            MessageBox( "Generation of file Successful", "Gernerating File", MB_OK );
+       else
+            MessageBox( "No Data For This Time Period", "Gernerating File", MB_OK );
 
-     //Commit the transaction as we have completed all the transactions
-    dbTransaction.Commit();
+         //Commit the transaction as we have completed all the transactions
+        dbTransaction.Commit();
+    }
+    else
+    {
+        MessageBox( "End date is set prior to Start date", "Invalid Date For File Generation", MB_OK );
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmRegenerateMallReport::SetSpecificMallTimes(int &StartH, int &EndH, int &StartM, int &EndM)
