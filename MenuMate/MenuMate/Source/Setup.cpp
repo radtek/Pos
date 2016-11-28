@@ -2284,8 +2284,6 @@ void TfrmSetup::LoadMallSettingInfo()
                 }
             }
         }
-        btnRegenMallReport->Visible = true;
-        btnResendMallReport->Visible = false;
         dbTransaction.Commit();
 }
 //-------------------------------------------------------------------------------------
@@ -2325,33 +2323,24 @@ void TfrmSetup::UpdateNoMallUI()
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
+    UnicodeString controlNameSubString = "";
     TMall mallDetails;
     TGlobalSettings::Instance().mallInfo = mallDetails;
     TManagerMallSetup::UpdateINActiveMall(dbTransaction);
      TControl *ChildControl;
     TEdit* editBox;
-    /* for (int i = 0; i < gbMallsNew->ControlCount; i++)
+    for (int i = 0; i < gbMallsNew->ControlCount; i++)
     {
         ChildControl = gbMallsNew->Controls[i];
         editBox = (TEdit*)ChildControl;
-        if(editBox != NULL &&  editBox->Name != "cbNewMallLoc")
+        controlNameSubString = editBox->Name.SubString(0,2);
+        if(controlNameSubString != "lb" && controlNameSubString != "cb")
         {
             editBox->Text = "";
             editBox->Enabled = false;
             editBox->Color = clInactiveCaptionText;
         }
-    } */
-    edMallTenantNo->Text = "";
-    edNewMallPath->Text = "";
-    edMallTerminalNo->Text = "";
-    edMallTenantNo->Enabled = false;
-    edNewMallPath->Enabled = false;
-    edMallTerminalNo->Enabled = false;
-    btnResendMallReport->Visible = false;
-    btnRegenMallReport->Visible = false;
-    edMallTenantNo->Color = clInactiveCaptionText;
-    edNewMallPath->Color = clInactiveCaptionText;
-    edMallTerminalNo->Color = clInactiveCaptionText;
+    }
     dbTransaction.Commit();
 }
 //-----------------------------------------------------------------------------------------

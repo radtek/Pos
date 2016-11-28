@@ -646,18 +646,27 @@ double TEstanciaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransac
 //--------------------------------------------------------------------------------------------------------
 void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
 {
-    TMallExportSalesData salesData;
-    salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
-    salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
-    salesData.DataValue = fieldValue;
-    salesData.Field = field;
-    salesData.DataValueType = dataType;
-    salesData.FieldIndex = fieldIndex;
-    salesData.DateCreated = Now();
-    salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
-    salesData.ArcBillKey = arcBillKey;
-    salesData.ZKey = 0;
-    mallExportSalesData.push_back(salesData);
+    try
+    {
+        TMallExportSalesData salesData;
+        salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+        salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+        salesData.DataValue = fieldValue;
+        salesData.Field = field;
+        salesData.DataValueType = dataType;
+        salesData.FieldIndex = fieldIndex;
+        salesData.DateCreated = Now();
+        salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+        salesData.ArcBillKey = arcBillKey;
+        salesData.ZKey = 0;
+        mallExportSalesData.push_back(salesData);
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+
 }
 //--------------------------------------------------------------------------------------------------------
 TMallExportPrepareData TEstanciaMall::PrepareDataForExport(int zKey)

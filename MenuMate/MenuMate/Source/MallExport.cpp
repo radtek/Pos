@@ -35,18 +35,26 @@ bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int ar
 //-------------------------------------------------------------------------------
 bool TMallExport::Export()
 {
-    TMallExportPrepareData preparedData;
-
-    //Prepare Data For Exporting into File
-    preparedData = PrepareDataForExport();
-    bool transactionDoneBeforeZed =  CheckTransactionDoneBeforeZed();
-
-    if(transactionDoneBeforeZed)
+    try
     {
-        //Create Export Medium
-        TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
-        exporter->WriteToFile(preparedData);
+        TMallExportPrepareData preparedData;
+
+        //Prepare Data For Exporting into File
+        preparedData = PrepareDataForExport();
+        bool transactionDoneBeforeZed =  CheckTransactionDoneBeforeZed();
+
+        if(transactionDoneBeforeZed)
+        {
+            //Create Export Medium
+            TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
+            exporter->WriteToFile(preparedData);
+        }
     }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
     return true;
 }
 //----------------------------------------------------------
