@@ -32,6 +32,7 @@
 #include "XPriceAdjustmentReportSection.h"
 #include "MallExportConsolidatedReceipt.h"
 #include "ZBegningEndingInvoiceReportSection.h"
+#include "XCancelsAndRefundDetailsForBIRReportSection.h"
 
 
 ZedReportSectionFactory::ZedReportSectionFactory(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)

@@ -187,6 +187,7 @@ public:
     Currency GetAccumulatedZedTotal(Database::TDBTransaction &dbTransaction);
     TCalculatedTotals GetCashDrawerOpenTotals(Database::TDBTransaction &dbTransaction, TGlobalSettings* globalSettings, UnicodeString deviceName);
     TDateTime GetPreviousZedTimeForTerminal(Database::TDBTransaction &dbTransaction, UnicodeString terminalName);
+    TDateTime GetTransDateForTerminal(Database::TDBTransaction &dbTransaction, UnicodeString terminalName);
 };
 
 struct TPointTransaction

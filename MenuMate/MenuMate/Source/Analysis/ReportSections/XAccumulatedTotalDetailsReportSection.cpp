@@ -30,9 +30,11 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
     FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
 
-    AddTitle(printOut, "Site Accumulated Zed");
-	printOut->PrintFormat->NewLine();
-
+    if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    {
+        AddTitle(printOut, "Site Accumulated Zed");
+        printOut->PrintFormat->NewLine();
+    }
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
 
     if(reportSectionDisplayTraits)
@@ -40,24 +42,50 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         reportSectionDisplayTraits->ApplyTraits(printOut);
     }
 
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
-	printOut->PrintFormat->Line->FontInfo.Reset();
+    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    {
+        SetPrinterFormatInMiddle(printOut);
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Beginning OR No.";
+        printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(startInvoiceNumber);
+        printOut->PrintFormat->AddLine();
 
-    printOut->PrintFormat->Line->Columns[0]->Text = "Beginning OR No.:";
-    printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(startInvoiceNumber);
-    printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Ending OR No.";
+        printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(endInvoiceNumber);
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Beginning Balance";
+        printOut->PrintFormat->Line->Columns[2]->Text = "";
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Ending Balance";
+        printOut->PrintFormat->Line->Columns[2]->Text = "";
+        printOut->PrintFormat->AddLine();
 
-    printOut->PrintFormat->Line->Columns[0]->Text = "Ending OR No.:";
-    printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(endInvoiceNumber);
-    printOut->PrintFormat->AddLine();
+    }
+    else
+    {
+        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
+        printOut->PrintFormat->Line->FontInfo.Reset();
 
-    printOut->PrintFormat->Line->Columns[0]->Text = "Beginning Balance:";
-    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(openingBalance);
-    printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[0]->Text = "Beginning OR No.";
+        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(startInvoiceNumber);
+        printOut->PrintFormat->AddLine();
 
-    printOut->PrintFormat->Line->Columns[0]->Text = "Ending Balance:";
-    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
-    printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[0]->Text = "Ending OR No.";
+        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(endInvoiceNumber);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Beginning Balance:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(openingBalance);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Ending Balance:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
+        printOut->PrintFormat->AddLine();
+
+    }
 
 
 }
@@ -168,4 +196,15 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
         lastEndInvoiceNum = "0";
     }
 	return lastEndInvoiceNum;
+}
+
+void XAccumulatedTotalDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 4;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4 + 8;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4;
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
+    printOut->PrintFormat->Line->Columns[3]->Width = 0;
 }

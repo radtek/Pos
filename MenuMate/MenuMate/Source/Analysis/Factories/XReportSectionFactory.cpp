@@ -32,6 +32,7 @@
 #include "XPriceAdjustmentReportSection.h"
 #include "MallExportConsolidatedReceipt.h"
 #include "XReportDateTimeReportSection.h"
+#include "XCancelsAndRefundDetailsForBIRReportSection.h"
 
 XReportSectionFactory::XReportSectionFactory(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSectionFactory(dbTransaction, globalSettings)

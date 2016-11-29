@@ -53,50 +53,50 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         salesTax += serviceChargeTax;
     }
 
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
-    printOut->PrintFormat->Line->FontInfo.Reset();
+    //printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
+    //printOut->PrintFormat->Line->FontInfo.Reset();
 
     if(_globalSettings->UseBIRFormatInXZReport)
     {
         sales_tax.clear();
         GetDifferentTotalSalesTax(*_dbTransaction, deviceName);
+        SetPrinterFormatToMiddle(printOut);
 
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "";
+        printOut->PrintFormat->Line->Columns[2]->Text = "";
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "VATable Sales";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxSales);
+        printOut->PrintFormat->Line->Columns[1]->Text = "VATable Sales";
+        printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(taxSales);
         printOut->PrintFormat->AddLine();
 
         if(sales_tax.size() > 0)
         {
             for (std::vector<TSalesTax>::iterator it = sales_tax.begin(); it != sales_tax.end(); it++)
             {
-                printOut->PrintFormat->Line->Columns[0]->Text = FloatToStr((it->Rate)) + "% VAT";
-                printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(it->TaxSum);//salesTax);
+                printOut->PrintFormat->Line->Columns[1]->Text = FloatToStr((it->Rate)) + "% VAT";
+                printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(it->TaxSum);//salesTax);
                 printOut->PrintFormat->AddLine();
             }
         }
         else
         {
-            printOut->PrintFormat->Line->Columns[0]->Text = FloatToStr(0) + "% VAT";
-            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(0.00);
+            printOut->PrintFormat->Line->Columns[1]->Text = FloatToStr(0) + "% VAT";
+            printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(0.00);
             printOut->PrintFormat->AddLine();
         }
-        printOut->PrintFormat->Line->Columns[0]->Text = "VAT Exempt Sales";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxExemptSales);
+        printOut->PrintFormat->Line->Columns[1]->Text = "VAT Exempt Sales";
+        printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(taxExemptSales);
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Zero-Rated Sales";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(zeroratedsales);
+        printOut->PrintFormat->Line->Columns[1]->Text = "Zero-Rated Sales";
+        printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(zeroratedsales);
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Total Discount";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(fabs(totaldiscount));
+        printOut->PrintFormat->Line->Columns[1]->Text = "Total Discount";
+        printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(fabs(totaldiscount));
         printOut->PrintFormat->AddLine();
-
-
     }
     else
     {
@@ -171,4 +171,17 @@ void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTra
         salesTaxQuery->Next();
     }
     salesTaxQuery->Close();
+}
+
+void XTaxSummaryDetailsReportSection::SetPrinterFormatToMiddle(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 4;
+
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
+    //printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4 + 8;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4;//printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]
+        //->Width - printOut->PrintFormat->Line->Columns[1]->Width;
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
 }

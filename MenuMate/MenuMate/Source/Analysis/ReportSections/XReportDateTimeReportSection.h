@@ -24,6 +24,7 @@ private:
     DataFormatUtilities* dataFormatUtilities;
     DataCalculationUtilities* dataCalculationUtilities;
     AnsiString ExtractInvoiceNumber(AnsiString &inStartInvoiceNumber);
+    void SetPrinterFormatInMiddle(TPrintout* printOut);
 };
 
 #endif

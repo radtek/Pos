@@ -44,6 +44,7 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
     Currency groupGrandTotal;
     std::map <UnicodeString, TSumPayments> PaymentValues;
     Currency roundingTotal = 0;
+    int total_payment = 0;
 
     for (itPayments = transactionInfo.Payments.begin(); itPayments != transactionInfo.Payments.end(); itPayments++)
     {
@@ -60,30 +61,34 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
             Currency cashValue = 0;
             Currency changeValue = 0;
 
-            if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
-            {
+           // if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
+            //{
                 if(reportSectionDisplayTraits)
                 {
                     reportSectionDisplayTraits->ApplyTraits(printOut);
                 }
                 if (value == 0)
                 {
-                    groupGrandTotal += skimCalculations.CurrentFloat;
+                    if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
+                    {
 
-                    printOut->PrintFormat->Line->Columns[0]->Text = eStrCalculatedTotals[ectInitialFloat];
-                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(skimCalculations.CurrentFloat);
-                    printOut->PrintFormat->AddLine();
+                        groupGrandTotal += skimCalculations.CurrentFloat;
 
-                    TCalculatedTotals InitialFloatTotal(ectInitialFloat, skimCalculations.CurrentFloat, 0, 0, 0);
-                    transactionInfo.CalculatedTotals[eStrCalculatedTotals[ectInitialFloat]] = InitialFloatTotal;
+                        printOut->PrintFormat->Line->Columns[0]->Text = eStrCalculatedTotals[ectInitialFloat];
+                        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(skimCalculations.CurrentFloat);
+                        printOut->PrintFormat->AddLine();
 
-                    groupGrandTotal += skimCalculations.CurrentSkimsTotal;
-                    printOut->PrintFormat->Line->Columns[0]->Text = eStrCalculatedTotals[ectFloatAdjustments];
-                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(skimCalculations.CurrentSkimsTotal);
-                    printOut->PrintFormat->AddLine();
+                        TCalculatedTotals InitialFloatTotal(ectInitialFloat, skimCalculations.CurrentFloat, 0, 0, 0);
+                        transactionInfo.CalculatedTotals[eStrCalculatedTotals[ectInitialFloat]] = InitialFloatTotal;
 
-                    TCalculatedTotals FloatAdjustmentsTotal(ectFloatAdjustments, skimCalculations.CurrentSkimsTotal, 0, 0, 0);
-                    transactionInfo.CalculatedTotals[eStrCalculatedTotals[ectFloatAdjustments]] = FloatAdjustmentsTotal;
+                        groupGrandTotal += skimCalculations.CurrentSkimsTotal;
+                        printOut->PrintFormat->Line->Columns[0]->Text = eStrCalculatedTotals[ectFloatAdjustments];
+                        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(skimCalculations.CurrentSkimsTotal);
+                        printOut->PrintFormat->AddLine();
+
+                        TCalculatedTotals FloatAdjustmentsTotal(ectFloatAdjustments, skimCalculations.CurrentSkimsTotal, 0, 0, 0);
+                        transactionInfo.CalculatedTotals[eStrCalculatedTotals[ectFloatAdjustments]] = FloatAdjustmentsTotal;
+                    }
 
                     std::map <UnicodeString, TSumPayments> ::iterator itCurrentPayment = PaymentValues.find(CASH);
 
@@ -111,17 +116,20 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
                         transactionInfo.CalculatedTotals[eStrCalculatedTotals[ectChange]] = ChangeTotal;
                     }
 
-                    printOut->PrintFormat->Line->Columns[0]->Text = "Cash";
-                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( cashValue + changeValue );
-                    printOut->PrintFormat->AddLine();
+                    if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
+                    {
+                        printOut->PrintFormat->Line->Columns[0]->Text = "Cash";
+                        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( cashValue + changeValue );
+                        printOut->PrintFormat->AddLine();
 
-                    printOut->PrintFormat->Line->Columns[0]->Text = "";
-                    printOut->PrintFormat->Line->Columns[1]->Line();
-                    printOut->PrintFormat->AddLine();
-                    printOut->PrintFormat->Add( "Cash In Drawer Total|" + dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal ) );
-                    printOut->PrintFormat->NewLine();
+                        printOut->PrintFormat->Line->Columns[0]->Text = "";
+                        printOut->PrintFormat->Line->Columns[1]->Line();
+                        printOut->PrintFormat->AddLine();
+                        printOut->PrintFormat->Add( "Cash In Drawer Total|" + dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal ) );
+                        printOut->PrintFormat->NewLine();
+                    }
                 }
-            }
+            //}
 
         //}
         if(reportSectionDisplayTraits)
@@ -130,22 +138,18 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
         }
         if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
         {
-            printOut->PrintFormat->Line->Columns[0]->Text = "Payments";
+            //printOut->PrintFormat->Line->Columns[0]->Text = "";
+            //printOut->PrintFormat->AddLine();
+            //printOut->PrintFormat->Line->ColCount = 1;
+            //printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
+            SetPrinterFormatInMiddle(printOut);
+            printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+            //printOut->PrintFormat->Line->Columns[0]->Line();
+            printOut->PrintFormat->Line->Columns[1]->Text = "Payments";
             printOut->PrintFormat->AddLine();
-            printOut->PrintFormat->Line->ColCount = 1;
-            printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
-            printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-            printOut->PrintFormat->Line->Columns[0]->Line();
             //printout->PrintFormat->Line->Columns[1]->();
-            printOut->PrintFormat->AddLine();
-            printOut->PrintFormat->Line->ColCount = 3;
-            printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width / 3;
-            printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-            printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width / 3;
-            printOut->PrintFormat->Line->Columns[1]->Alignment = taCenter;
-            printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]
-            ->Width - printOut->PrintFormat->Line->Columns[1]->Width;
-            printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
+           // printOut->PrintFormat->AddLine();
+            //SetPrinterFormat(printOut);
         }
 
         std::map <UnicodeString, TSumPayments> ::iterator itCurrentPayment;
@@ -162,31 +166,61 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
                 // Payment Might only have surcharges so dont show those here.
                 if (itCurrentPayment->second.Total != 0)
                 {
-                    printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name +
-                                    " (" + IntToStr(ThisTransaction.Count) + ")";
-                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount);
-                    printOut->PrintFormat->AddLine();
 
+                    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+                    {
+                         printOut->PrintFormat->Line->Columns[1]->Text = itCurrentPayment->second.Name;
+                         printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(ThisTransaction.Count);
+                         printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount);
+                         printOut->PrintFormat->AddLine();
+                         total_payment += ThisTransaction.Count;
+                    }
+                    else
+                    {
+                        printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name +
+                                        " (" + IntToStr(ThisTransaction.Count) + ")";
+                        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount);
+                        printOut->PrintFormat->AddLine();
+                    }
                     TCalculatedTotals Total(itCurrentPayment->second.Name, itCurrentPayment->second.Total,0,0, ThisTransaction.Count);
                     transactionInfo.CalculatedTotals[itCurrentPayment->second.Name] = Total;
                 }
 
                 if (itCurrentPayment->second.TipAmount != 0)
                 {
-                    printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name + " Tips" +
-                                    " (" + IntToStr(itCurrentPayment->second.TipQty) + ")";
-                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.TipAmount );
-                    printOut->PrintFormat->AddLine();
+                    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+                    {
+                        printOut->PrintFormat->Line->Columns[1]->Text = itCurrentPayment->second.Name + " Tips";
+                        printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(itCurrentPayment->second.TipQty);
+                        printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.TipAmount );
+                        printOut->PrintFormat->AddLine();
+                        total_payment += itCurrentPayment->second.TipQty;
+                    }
+                    else
+                    {
+                        printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name + " Tips" +
+                                        " (" + IntToStr(itCurrentPayment->second.TipQty) + ")";
+                        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.TipAmount );
+                        printOut->PrintFormat->AddLine();
+                    }
                 }
-
-
                 if (itCurrentPayment->second.CashOut != 0)
                 {
-                    printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name + " Cash Out " + " ("
-                                    + IntToStr(ThisTransaction.CashOutCount) + ")";
-                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.CashOut );
-                    printOut->PrintFormat->AddLine();
-
+                    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+                    {
+                        printOut->PrintFormat->Line->Columns[1]->Text = itCurrentPayment->second.Name + " Cash Out ";
+                        printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(ThisTransaction.CashOutCount);
+                        printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.CashOut );
+                        printOut->PrintFormat->AddLine();
+                        total_payment += ThisTransaction.CashOutCount;
+                    }
+                    else
+                    {
+                        printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name + " Cash Out " + " ("
+                                        + IntToStr(ThisTransaction.CashOutCount) + ")";
+                        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.CashOut );
+                        printOut->PrintFormat->AddLine();
+                    }
                     TCalculatedTotals Total(itCurrentPayment->second.Name + " Cash Out", itCurrentPayment->second.CashOut,0,0,
                     ThisTransaction.CashOutCount);
                     transactionInfo.CalculatedTotals[itCurrentPayment->second.Name + " Cash Out"] = Total;
@@ -205,9 +239,22 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
 
             if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
             {
-                printOut->PrintFormat->Add("Total |" + dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal ));
+                //SetSingleColumnPrinterFormat(printOut);
+                SetPrinterFormatInMiddle(printOut);
+                printOut->PrintFormat->Line->Columns[1]->Line();
+                printOut->PrintFormat->Line->Columns[2]->Line();
+                printOut->PrintFormat->Line->Columns[3]->Line();
+                printOut->PrintFormat->AddLine();
+                //SetPrinterFormat(printOut);
+
+                //printOut->PrintFormat->Add("Total |" + dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal ));
+                printOut->PrintFormat->Line->Columns[1]->Text = "Total";
+                printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(total_payment);
+                printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal );
+                //printOut->PrintFormat->Line->Columns[1]->DoubleLine();
+                printOut->PrintFormat->AddLine();
+                SetSingleColumnPrinterFormat(printOut);
                 printOut->PrintFormat->Line->Columns[0]->Text = "";
-                printOut->PrintFormat->Line->Columns[1]->DoubleLine();
                 printOut->PrintFormat->AddLine();
             }
             else
@@ -609,46 +656,100 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
     if (transactionInfo.Payments.size() == 0)
     {
 
-        printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-        printOut->PrintFormat->Line->ColCount = 1;
-        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
-        printOut->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-        printOut->PrintFormat->Line->Columns[0]->DoubleLine();
-        printOut->PrintFormat->NewLine();
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->NewLine();
-
-        if(reportSectionDisplayTraits)
+        if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
         {
-            reportSectionDisplayTraits->ApplyTraits(printOut);
+            printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+            printOut->PrintFormat->Line->ColCount = 1;
+            printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
+            printOut->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+            printOut->PrintFormat->Line->Columns[0]->DoubleLine();
+            printOut->PrintFormat->NewLine();
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->NewLine();
+
+            if(reportSectionDisplayTraits)
+            {
+                reportSectionDisplayTraits->ApplyTraits(printOut);
+            }
+
+            printOut->PrintFormat->Line->Columns[0]->Text = eStrCalculatedTotals[ectInitialFloat];
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(skimCalculations.CurrentFloat);
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[0]->Text = "Float Deposits";
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( skimCalculations.Refloats );
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[0]->Text = "Float Withdrawals";
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( skimCalculations.Skims );
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[0]->Text = eStrCalculatedTotals[ectFloatAdjustments];
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( skimCalculations.CurrentSkimsTotal );
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[0]->Text = "";
+            printOut->PrintFormat->Line->Columns[1]->Line();
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[0]->Text = "Float Balance";
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( skimCalculations.CurrentFloat + skimCalculations.Refloats + skimCalculations.Skims );
+            printOut->PrintFormat->AddLine();
         }
-
-        printOut->PrintFormat->Line->Columns[0]->Text = eStrCalculatedTotals[ectInitialFloat];
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(skimCalculations.CurrentFloat);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Float Deposits";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( skimCalculations.Refloats );
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Float Withdrawals";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( skimCalculations.Skims );
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = eStrCalculatedTotals[ectFloatAdjustments];
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( skimCalculations.CurrentSkimsTotal );
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Line();
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Float Balance";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( skimCalculations.CurrentFloat + skimCalculations.Refloats + skimCalculations.Skims );
-        printOut->PrintFormat->AddLine();
+        else
+        {
+            SetPrinterFormatInMiddle(printOut);
+            printOut->PrintFormat->Line->Columns[1]->Text = "Payments";
+            printOut->PrintFormat->AddLine();
+            printOut->PrintFormat->Line->Columns[1]->Line();
+            printOut->PrintFormat->Line->Columns[2]->Line();
+            printOut->PrintFormat->Line->Columns[3]->Line();
+            printOut->PrintFormat->AddLine();
+            //SetPrinterFormat(printOut);
+            printOut->PrintFormat->Line->Columns[1]->Text = "Total";
+            printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(total_payment);
+            printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(fabs(groupGrandTotal));
+            printOut->PrintFormat->AddLine();
+            SetSingleColumnPrinterFormat(printOut);
+            printOut->PrintFormat->Line->Columns[0]->Text = "";
+            printOut->PrintFormat->AddLine();
+        }
     }
 
+}
+
+void XTransactionSummaryGroupDetailsReportSection::SetPrinterFormat(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 3;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 3;
+    printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 3;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taCenter;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]
+            ->Width - printOut->PrintFormat->Line->Columns[1]->Width;//printOut->PrintFormat->Width - (printOut->PrintFormat->Width * 7 / 9);
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
+}
+
+void XTransactionSummaryGroupDetailsReportSection::SetSingleColumnPrinterFormat(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 1;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
+    printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+}
+
+void XTransactionSummaryGroupDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 4;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
+    printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4 - 3;
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taCenter;
+    printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width/4;// - printOut->PrintFormat->Line->Columns[1]
+            //->Width - printOut->PrintFormat->Line->Columns[2]->Width;//printOut->PrintFormat->Width - (printOut->PrintFormat->Width * 7 / 9);
+    printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
 }
 
 

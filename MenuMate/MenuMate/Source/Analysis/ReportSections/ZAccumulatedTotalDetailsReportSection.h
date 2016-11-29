@@ -14,6 +14,8 @@ public:
 	~ZAccumulatedTotalDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
+    void SetPrinterFormatInMiddle(TPrintout* printOut);
+    void SetPrinterFormatForSingleColumn(TPrintout* printOut);
 
 private:
     AnsiString GetStartInvoiceNumber();

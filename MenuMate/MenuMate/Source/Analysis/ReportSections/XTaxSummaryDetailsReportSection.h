@@ -30,6 +30,7 @@ public:
     virtual void GetOutput(TPrintout* printOut);
     void GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName);
     std::vector<TSalesTax> sales_tax;
+    void SetPrinterFormatToMiddle(TPrintout* printOut);
 
 private:
     DataFormatUtilities* dataFormatUtilities;

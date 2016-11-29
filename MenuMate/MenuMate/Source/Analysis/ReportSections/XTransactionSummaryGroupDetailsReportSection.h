@@ -16,6 +16,9 @@ public:
     ~XTransactionSummaryGroupDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
+    void SetPrinterFormat(TPrintout* printOut);
+    void SetSingleColumnPrinterFormat(TPrintout* printOut);
+    void SetPrinterFormatInMiddle(TPrintout* printOut);
 
 private:
     TMembership* _memberShip;

@@ -25,6 +25,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
     TStringList *DiscountServerList = new TStringList;
     UnicodeString DiscountSQL = "";
     int total_discount_qty = 0;
+    Currency show_discount_totals = 0;
     if (_globalSettings->UseBIRFormatInXZReport)
     {
 			DiscountSQL =
@@ -171,10 +172,18 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 		//	printout->PrintFormat->Line->Columns[2]->Width = printout->PrintFormat->Width - printout->PrintFormat->Line->Columns[0]
 		//	->Width - printout->PrintFormat->Line->Columns[1]->Width;
 		//	printout->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-
-            printout->PrintFormat->Line->Columns[0]->Text = "Discounts";
+            if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+            {
+                SetPrinterFormat(printout);
+                printout->PrintFormat->Line->Columns[0]->Text = "";
+                printout->PrintFormat->Line->Columns[1]->Text = "Discounts";
+                //printout->PrintFormat->Line->Columns[1]->Text = "";
+                printout->PrintFormat->AddLine();
+            }
+            //SetPrinterFormat(printout);
+            //printout->PrintFormat->Line->Columns[0]->Text = "Discounts";
             //printout->PrintFormat->Line->Columns[1]->Text = "";
-            printout->PrintFormat->AddLine();
+            //printout->PrintFormat->AddLine();
 
             //if()
             //{
@@ -182,13 +191,16 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
             //}
             //else
             //{
-            if (TGlobalSettings::Instance().SummariseDiscountOnZed || TGlobalSettings::Instance().UseBIRFormatInXZReport)
+            if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
             {
-                printout->PrintFormat->Add("Name | Items | Total");
-            }
-            else
-            {
-                printout->PrintFormat->Add("Name | | Total");
+                if (TGlobalSettings::Instance().SummariseDiscountOnZed)
+                {
+                    printout->PrintFormat->Add("Name | Items | Total");
+                }
+                else
+                {
+                    printout->PrintFormat->Add("Name | | Total");
+                }
             }
             //}
 			printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
@@ -218,14 +230,20 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 
                         if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
                         {
+                            SetPrinterFormat(printout);
+
                             DiscountTotal += ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total;
                             if(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total < 0)
                             {
-                               printout->PrintFormat->Add(((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + "(" + dataFormatUtilities->FormatMMReportCurrency( fabs(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total )) + ")" );
+                                printout->PrintFormat->Add("|" + ((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + "(" + dataFormatUtilities->FormatMMReportCurrency( fabs(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total )) + ")" );
+                                //printout->PrintFormat->Line->Columns[1]->Text = ((TStringList*)DiscountServerList->Objects[i])->Strings[j];
+                                //printout->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Count);
+                                //printout->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total);
+                                //printout->PrintFormat->AddLine();
                             }
                             else
                             {
-                               printout->PrintFormat->Add(((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total ) );
+                               printout->PrintFormat->Add("|" + ((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total ) );
                             }
                         }
                         else
@@ -266,24 +284,24 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 
             if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
             {
-                printout->PrintFormat->Line->ColCount = 1;
-                printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width;
-                printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-                printout->PrintFormat->Line->Columns[0]->Line();
+                SetPrinterFormat(printout);
+                //printout->PrintFormat->Line->ColCount = 1;
+                //printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width;
+                printout->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+                printout->PrintFormat->Line->Columns[1]->Line();
+                printout->PrintFormat->Line->Columns[2]->Line();
+                printout->PrintFormat->Line->Columns[3]->Line();
                 //printout->PrintFormat->Line->Columns[1]->();
                 printout->PrintFormat->AddLine();
-                printout->PrintFormat->Line->ColCount = 3;
-                printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width / 3;
-                printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-                printout->PrintFormat->Line->Columns[1]->Width = printout->PrintFormat->Width / 3;
-                printout->PrintFormat->Line->Columns[1]->Alignment = taCenter;
-                printout->PrintFormat->Line->Columns[2]->Width = printout->PrintFormat->Width - printout->PrintFormat->Line->Columns[0]
-                ->Width - printout->PrintFormat->Line->Columns[1]->Width;
-                printout->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-                Currency show_discount_totals =  DiscountTotal;
-                printout->PrintFormat->Add("Total Discounts|" + IntToStr(total_discount_qty) +"|"+ dataFormatUtilities->FormatMMReportCurrency(fabs(show_discount_totals)) );
+                SetPrinterFormat(printout);
+                show_discount_totals =  DiscountTotal;
+                printout->PrintFormat->Add("|Total |" + IntToStr(total_discount_qty) +"|"+ dataFormatUtilities->FormatMMReportCurrency(fabs(show_discount_totals)) );
                 TCalculatedTotals DiscountsTotal(etcTotalDiscounts, DiscountTotal,DiscountTotal,0, 0);
                 transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcTotalDiscounts]] = DiscountsTotal;
+                //printout->PrintFormat->AddLine();
+                SetSingleColumnPrinterFormat(printout);
+                printout->PrintFormat->Line->Columns[0]->Text = "";
+                printout->PrintFormat->AddLine();
             }
             else
             {
@@ -296,6 +314,52 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
             }
 
 		}
+        else
+        {
+           if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+           {
+                SetPrinterFormat(printout);
+                printout->PrintFormat->Line->Columns[1]->Text = "Discounts";
+                printout->PrintFormat->Line->Columns[2]->Text = "";
+                printout->PrintFormat->Line->Columns[3]->Text = "";
+                printout->PrintFormat->AddLine();
+                printout->PrintFormat->Line->Columns[1]->Line();
+                printout->PrintFormat->Line->Columns[2]->Line();
+                printout->PrintFormat->Line->Columns[3]->Line();
+                printout->PrintFormat->AddLine();
+                SetPrinterFormat(printout);
+                printout->PrintFormat->Line->Columns[1]->Text = "Total";
+                printout->PrintFormat->Line->Columns[2]->Text = FloatToStr(total_discount_qty);
+                printout->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(fabs(show_discount_totals));
+                printout->PrintFormat->AddLine();
+                SetSingleColumnPrinterFormat(printout);
+                printout->PrintFormat->Line->Columns[0]->Text = "";
+                printout->PrintFormat->AddLine();
+
+           }
+        }
+
 
 
  }
+
+void XDiscountReportDetailsReportSection::SetPrinterFormat(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 4;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
+    printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4 - 3;
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taCenter;
+    printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width/4;// - printOut->PrintFormat->Line->Columns[1]
+            //->Width - printOut->PrintFormat->Line->Columns[2]->Width;//printOut->PrintFormat->Width - (printOut->PrintFormat->Width * 7 / 9);
+    printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
+}
+
+void XDiscountReportDetailsReportSection::SetSingleColumnPrinterFormat(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 1;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
+    printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+}

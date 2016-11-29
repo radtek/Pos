@@ -692,5 +692,32 @@ void TTransactionInfoProcessor::RemoveEntryFromMap(UnicodeString deviceName)
      }
 }
 
+TDateTime DataCalculationUtilities::GetTransDateForTerminal(Database::TDBTransaction &dbTransaction, UnicodeString terminalName)
+{
+    TDateTime trans_Date = Now();
+    TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "where a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "select min(a.TIME_STAMP) TIME_STAMP from DAYARCHIVE a " + terminalNamePredicate ;
+    //IBInternalQuery->SQL->Text = "SELECT " "MAX(TIME_STAMP)TIME_STAMP FROM ZEDS " "WHERE " "TERMINAL_NAME = :TERMINAL_NAME";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+       IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = terminalName;
+    }
+    IBInternalQuery->ExecQuery();
+
+    if (IBInternalQuery->RecordCount != 0)
+    {
+        trans_Date = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+    }
+    IBInternalQuery->Close();
+    return trans_Date;
+}
+
 
 

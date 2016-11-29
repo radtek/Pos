@@ -26,6 +26,7 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
 
     const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
 	const Currency closingBalance = openingBalance + todaysEarnings;
+    TDateTime trans_date = dataCalculationUtilities->GetTransDateForTerminal(*_dbTransaction, deviceName);
 
 	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
 	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
@@ -42,27 +43,33 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
 
     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
-        printOut->PrintFormat->Line->Columns[0]->Text = "Report Date:";
-        printOut->PrintFormat->Line->Columns[1]->Text = Now().FormatString("dd/mm/yyyy");
+        //printOut->PrintFormat->Width = printOut->PrintFormat->Width * 1/2;
+        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Line->Columns[0]->Width * 1/2;
+        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
+        printOut->PrintFormat->Line->FontInfo.Reset();
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        SetPrinterFormatInMiddle(printOut);
+        printOut->PrintFormat->Line->Columns[1]->Text = "Report Date:";
+        printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("dd/mm/yyyy");
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Report Time:";
-        printOut->PrintFormat->Line->Columns[1]->Text = Now().TimeString();
+        printOut->PrintFormat->Line->Columns[1]->Text = "Report Time:";
+        printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("hh:nn AM/PM");
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Terminal: ";
-        printOut->PrintFormat->Line->Columns[1]->Text = deviceName;
+        printOut->PrintFormat->Line->Columns[1]->Text = "Terminal: ";
+        printOut->PrintFormat->Line->Columns[2]->Text = deviceName;
         printOut->PrintFormat->AddLine();
 
         const TMMContactInfo &staff_member = TfrmAnalysis::GetLastAuthenticatedUser();
-        printOut->PrintFormat->Line->Columns[0]->Text = "Cashier: ";//
-        printOut->PrintFormat->Line->Columns[1]->Text = staff_member.Name;
+        printOut->PrintFormat->Line->Columns[1]->Text = "Cashier: ";//
+        printOut->PrintFormat->Line->Columns[2]->Text = staff_member.Name;
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Tran Date:";
-        printOut->PrintFormat->Line->Columns[1]->Text = Now().FormatString("dd/mm/yyyy");
+        printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
+        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd/mm/yyyy");//Now().FormatString("dd/mm/yyyy");
         printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->AddLine();
+        //printOut->PrintFormat->AddLine();
     }
 
 
@@ -182,4 +189,17 @@ AnsiString XReportDateTimeReportSection::GetLastEndInvoiceNumber()
         lastEndInvoiceNum = "0";
     }
 	return lastEndInvoiceNum;
+}
+
+void XReportDateTimeReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 4;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
+    //printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4 + 8;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4;//printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]
+            //->Width - printOut->PrintFormat->Line->Columns[1]->Width;
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
+    printOut->PrintFormat->Line->Columns[3]->Width = 0;
 }
