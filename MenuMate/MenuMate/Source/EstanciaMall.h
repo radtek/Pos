@@ -6,76 +6,33 @@
 #include "MallExportTextFile.h"
 #include <DateUtils.hpp>
 //---------------------------------------------------------------------------
-
-class TEstanciaMall : public TMallExport
+struct TEstanciaTaxes
 {
-    private:
+    Currency salesTax;
+    Currency serviceCharge;
+    Currency serviceChargeTax;
+    Currency localTax;
+    Currency profitTax;
+};
 
-    //Get Total Patron count for a Bill
-    int GetPatronCount(TPaymentTransaction &paymentTransaction);
-
-    //Get OldAccumulated Sale
-    double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex);
-
-    //Generate SalesKey for MallExport_sales Table
-    long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
-
-    //Insert Data into MallExport_sales table
-    void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
-                                UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
-
-    //Fetch Mall Setting for file writing
-    void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
-                                int index, int zKey = 0);
-
-    //store keys in string format seperated by commas
-    UnicodeString GetFieldIndexList(std::set<int> indexKeys);
-
-    //Get File Name According to file type.
-    UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);
-
-    //Load File Setting For Invoice file Writing
-    void LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
-                                        int index, int zKey = 0);
-
-    protected:
-
-    //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
-    std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
-
-    //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
-    TMallExportPrepareData PrepareDataForExport(int zKey = 0);
-
-    //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
-    IExporterInterface* CreateExportMedium();
-
-    //get which type of file will be exported
-    UnicodeString GetExportType();
-
-    public:
-
-    //Constructor
-    TEstanciaMall();
-
-     //Prepare data for Invoice Sales File
-    void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int indexKey2, TMallExportPrepareData &prepareDataForInvoice,
-                                            int index, int zKey = 0);
-
-    //Fetch Data For Invoice Sales File writing
-    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2, int indexKey3,
-                                        TMallExportPrepareData &prepareDataForHSF, int index, int zKey = 0);
-
-    //Fetch Data For Daily Sales File writing
-    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2,
-                                        TMallExportPrepareData &prepareDataForDSF, int index, int zKey = 0);
-
-    //Insert Array into set.
-    std::set<int> InsertInToSet(int arr[], int size);
+struct TEstanciaDiscounts
+{
+    Currency promoDiscount;
+    Currency scdDiscount;
+    Currency pwdDiscount;
+    Currency discountGroup1;
+    Currency discountGroup2;
+    Currency discountGroup3;
+    Currency discountGroup4;
+    Currency discountGroup5;
+    Currency totalNonApprovedDiscount;
 };
 
 class TEstanciaMallField
 {
     private:
+    int _terminalNumber;
+    UnicodeString _tenantCode;
     Currency _oldAccSalesVatable;
     Currency _newAccSalesVatable;
     Currency _grossAmountVatable;
@@ -137,8 +94,10 @@ class TEstanciaMallField
     Currency _sSDiscount5NonApprovedNonVatable;
     Currency _vATAmountNonVatable;
     Currency _netSalesAmountNonVatable;
+    UnicodeString _invoiceNumber;
 
-
+    void SetTerminalNumber(int terminalNumber);
+    void SetTenantCode(UnicodeString tenantCode);
     void SetOldAccSalesVatable(Currency oldAccSalesVatable);
     void SetNewAccSalesVatable(Currency newAccSaleVatable);
     void SetGrossAmountVatable(Currency grossAmountVatable);
@@ -200,8 +159,11 @@ class TEstanciaMallField
     void SetSSDiscount5NonApprovedNonVatable(Currency sSDiscount5NonApprovedNonVatable);
     void SetVATAmountNonVatable(Currency vATAmountNonVatable);
     void SetNetSalesAmountNonVatable(Currency netSaleAmountNonVatable);
+    void SetInvoiceNumber(UnicodeString invoiceNumber);
 
     public:
+    __property int TerminalNumber = {read = _terminalNumber, write = SetTerminalNumber};
+    __property UnicodeString TenantCode = {read = _tenantCode, write = SetTenantCode};
     __property Currency OldAccumulatedSalesVatable = {read =  _oldAccSalesVatable, write = SetOldAccSalesVatable};
     __property Currency NewAccumulatedSalesVatable = {read =  _newAccSalesVatable, write = SetNewAccSalesVatable};
     __property Currency GrossAmountVatable =  {read =  _grossAmountVatable, write = SetGrossAmountVatable};
@@ -263,5 +225,89 @@ class TEstanciaMallField
     __property Currency SSDiscount5NonApprovedNonVatable = {read = _sSDiscount5NonApprovedNonVatable, write = SetSSDiscount5NonApprovedNonVatable};
     __property Currency VATTaxAmountNonVatable = {read = _vATAmountNonVatable, write = SetVATAmountNonVatable};
     __property Currency NetSalesAmountNonVatable = {read = _netSalesAmountNonVatable, write = SetNetSalesAmountNonVatable};
+    __property UnicodeString InvoiceNumber = {read = _invoiceNumber, write = SetInvoiceNumber};
 };
+
+class TEstanciaMall : public TMallExport
+{
+    private:
+
+    //Get Total Patron count for a Bill
+    int GetPatronCount(TPaymentTransaction &paymentTransaction);
+
+    //Get OldAccumulated Sale
+    double GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex);
+
+    //Generate SalesKey for MallExport_sales Table
+    long GenerateSaleKey(Database::TDBTransaction &dbTransaction);
+
+    //Insert Data into MallExport_sales table
+    void PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field,
+                                UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcbillKey);
+
+    //Fetch Mall Setting for file writing
+    void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
+                                int index, int zKey = 0);
+
+    //store keys in string format seperated by commas
+    UnicodeString GetFieldIndexList(std::set<int> indexKeys);
+
+    //Get File Name According to file type.
+    UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);
+
+    //Load File Setting For Invoice file Writing
+    void LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
+                                        int index, int zKey = 0);
+
+    //Get all taxes and store seperate each tax
+    bool IsItemVatable(TItemMinorComplete *Order, TEstanciaTaxes &estanciaTaxes);
+
+    //Get All types of discounts as needed for report
+    void PrepareAllDiscounts(TItemMinorComplete *Order, TEstanciaDiscounts &estanciaDiscounts, bool &isVatable);
+
+    //Set Discount and Taxes
+    void SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstanciaTaxes estanciaTaxes, TEstanciaDiscounts estanciaDiscounts,
+                                            TItemMinorComplete *Order, bool isVatable);
+
+    //Prepare item call taxes and discount etc calculation function inside it
+    void PrepareItem(TItemMinorComplete *Order, TEstanciaMallField &fieldData);
+
+    //insert field into list
+    void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEstanciaMallField fieldData, int arcBillKey);
+
+    protected:
+
+    //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
+    std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
+
+    //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
+    TMallExportPrepareData PrepareDataForExport(int zKey = 0);
+
+    //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
+    IExporterInterface* CreateExportMedium();
+
+    //get which type of file will be exported
+    UnicodeString GetExportType();
+
+    public:
+
+    //Constructor
+    TEstanciaMall();
+
+     //Prepare data for Invoice Sales File
+    void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int indexKey2, TMallExportPrepareData &prepareDataForInvoice,
+                                            int index, int zKey = 0);
+
+    //Fetch Data For Invoice Sales File writing
+    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2, int indexKey3,
+                                        TMallExportPrepareData &prepareDataForHSF, int index, int zKey = 0);
+
+    //Fetch Data For Daily Sales File writing
+    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2,
+                                        TMallExportPrepareData &prepareDataForDSF, int index, int zKey = 0);
+
+    //Insert Array into set.
+    std::set<int> InsertInToSet(int arr[], int size);
+};
+
 #endif
