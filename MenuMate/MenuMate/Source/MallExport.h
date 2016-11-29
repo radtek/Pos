@@ -21,6 +21,6 @@ class TMallExport: public TMallExportInterface
     public:
     bool PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
     bool Export();
-    virtual void RegenerateMallReport(TDateTime sDate, TDateTime eDate);
+    void RegenerateMallReport(TDateTime sDate, TDateTime eDate);
 };
 #endif

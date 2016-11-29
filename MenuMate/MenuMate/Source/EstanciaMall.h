@@ -58,7 +58,7 @@ class TEstanciaMall : public TMallExport
     TEstanciaMall();
 
      //Prepare data for Invoice Sales File
-    void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, TMallExportPrepareData &prepareDataForInvoice,
+    void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int indexKey2, TMallExportPrepareData &prepareDataForInvoice,
                                             int index, int zKey = 0);
 
     //Fetch Data For Invoice Sales File writing
