@@ -26,6 +26,11 @@ struct TEstanciaDiscounts
     Currency discountGroup4;
     Currency discountGroup5;
     Currency totalNonApprovedDiscount;
+    Currency nonApprovedDiscount1;
+    Currency nonApprovedDiscount2;
+    Currency nonApprovedDiscount3;
+    Currency nonApprovedDiscount4;
+    Currency nonApprovedDiscount5;
 };
 
 class TEstanciaMallField
