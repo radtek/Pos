@@ -64,6 +64,10 @@ void ZBegningEndingInvoiceReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
         printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd/mm/yyyy");//Now().FormatString("dd/mm/yyyy");
+        if(printOut->PrintFormat->Line->Columns[2]->Text == "30/12/1899")
+        {
+           printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("dd/mm/yyyy");
+        }
         printOut->PrintFormat->AddLine();
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "Beg. S.I. # ";

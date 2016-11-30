@@ -355,9 +355,20 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
            // before = Now();    //arun
             qrXArcPay->Close();
-            qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+            if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+            {
+               qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+                                    "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
+                                    "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0 AND SUBTOTAL > 0 ";
+            }
+            else
+            {
+
+
+               qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
                                     "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
                                     "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
+            }
             qrXArcPay->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
             qrXArcPay->ExecQuery();
 
