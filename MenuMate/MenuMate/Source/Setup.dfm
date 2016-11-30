@@ -1267,6 +1267,13 @@ object frmSetup: TfrmSetup
           Height = 18
           Caption = 'Consolidated DB Paths'
         end
+        object lbTaxRate: TLabel
+          Left = 392
+          Top = 445
+          Width = 61
+          Height = 18
+          Caption = 'Tax Rate'
+        end
         object cbNewMallLoc: TComboBox
           Left = 16
           Top = 64
@@ -1464,6 +1471,16 @@ object frmSetup: TfrmSetup
           Color = clInactiveCaptionText
           Enabled = False
           TabOrder = 15
+        end
+        object edTaxRate: TEdit
+          Left = 392
+          Top = 471
+          Width = 330
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 18
+          OnClick = edTaxRateClick
         end
       end
     end

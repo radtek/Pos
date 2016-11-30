@@ -44,6 +44,7 @@
 #include "PhoenixHotelSystem.h"
 #include "MallExportSalesTypeAssignment.h"
 #include "Mall.h"
+#include "GUIDiscount.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -2357,10 +2358,24 @@ UnicodeString TfrmSetup::CheckAbsolutePath(UnicodeString path)
     return path;
 }
 //----------------------------------------------------------------------------------------------------
-void _fastcall TfrmSetup::btnRegenMallReportMouseClick(TObject *Sender)
+void __fastcall TfrmSetup::btnRegenMallReportMouseClick(TObject *Sender)
 {
     std::auto_ptr<TfrmRegenerateMallReport> frmRegenerateMallReport(TfrmRegenerateMallReport::Create<TfrmRegenerateMallReport>(this));
     frmRegenerateMallReport->ShowModal();
+}
+//----------------------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::edTaxRateClick(TObject *Sender)
+{
+    std::auto_ptr<TfrmDiscount> frmDiscount(TfrmDiscount::Create<TfrmDiscount>(this));
+    frmDiscount->Mode = DiscModePercent;
+    frmDiscount->tbToggleAmount->Visible = false;
+    frmDiscount->pnlToggle->Visible = false;
+    frmDiscount->PERCInitial = StrToCurr(edTaxRate->Text);
+    frmDiscount->Caption = "Enter Tax Rate";
+    if (frmDiscount->ShowModal() == mrOk)
+    {
+        edTaxRate->Text = frmDiscount->PERCResult;
+    }
 }
 
 

@@ -345,6 +345,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
         TEstanciaMallField fieldData;
         int terminalNumber;
         UnicodeString tenantCode;
+        Currency taxRate = 0.00;
         std::list<TMallExportSettings>::iterator it;
 
         for(it = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); it != TGlobalSettings::Instance().mallInfo.MallSettings.end(); it++)
@@ -356,6 +357,10 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
             else if(it->ControlName == "edMallTerminalNo")
             {
                 fieldData.TerminalNumber = StrToInt(it->Value);
+            }
+            else if(it->ControlName == "edTaxRate")
+            {
+                taxRate = StrToCurr(it->Value);
             }
         }
 
@@ -388,7 +393,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
                                 fieldData.DiscountCardsVatable + fieldData.DeliveryChargesVatable + fieldData.GiftCertificatesChecksRedeemedVatable + fieldData.SSDiscount1Vatable +
                                 fieldData.SSDiscount2Vatable + fieldData.SSDiscount3Vatable + fieldData.SSDiscount4Vatable + fieldData.SSDiscount5Vatable);
 
-        fieldData.VATTaxAmountVatable = (double)(((fieldData.GrossAmountVatable - fieldData.DeductionVatable)*.12)/1.12);
+        fieldData.VATTaxAmountVatable = (double)((fieldData.GrossAmountVatable - fieldData.DeductionVatable)*(taxRate/(taxRate + 100)));
         fieldData.NetSalesAmountVatable = (double)(fieldData.GrossAmountVatable - fieldData.DeductionVatable - fieldData.VATTaxAmountVatable);
 
         fieldData.DeductionNonVatable = (double)(fieldData.PromoSalesAmountNonVatable + fieldData.SCDDiscountNonVatable + fieldData.RefundAmountNonVatable +
@@ -485,7 +490,10 @@ void TEstanciaMall::PrepareAllDiscounts(TItemMinorComplete *Order, TEstanciaDisc
                 isVatable = false;
             }
             else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
+            {
                 estanciaDiscounts.pwdDiscount += Order->DiscountValue_BillCalc(ptrDiscounts);
+                isVatable = false;
+            }
             else if(ptrDiscounts->DiscountGroupList[0].Name == "Discount 1")
                 estanciaDiscounts.discountGroup1 += Order->DiscountValue_BillCalc(ptrDiscounts);
             else if(ptrDiscounts->DiscountGroupList[0].Name == "Discount 2")
