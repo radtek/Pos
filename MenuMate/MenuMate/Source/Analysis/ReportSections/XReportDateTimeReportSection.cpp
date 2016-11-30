@@ -43,7 +43,6 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
 
     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
-        //printOut->PrintFormat->Width = printOut->PrintFormat->Width * 1/2;
         printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Line->Columns[0]->Width * 1/2;
         printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
         printOut->PrintFormat->Line->FontInfo.Reset();
@@ -68,23 +67,9 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
 
         printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
         printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd/mm/yyyy");//Now().FormatString("dd/mm/yyyy");
-        if(printOut->PrintFormat->Line->Columns[2]->Text == "30/12/1899")
-        {
-           printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("dd/mm/yyyy");
-        }
         printOut->PrintFormat->AddLine();
-        //printOut->PrintFormat->AddLine();
     }
 
-
-
-    /*printOut->PrintFormat->Line->Columns[0]->Text = "Beginning Balance:";
-    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(openingBalance);
-    printOut->PrintFormat->AddLine();
-
-    printOut->PrintFormat->Line->Columns[0]->Text = "Ending Balance:";
-    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
-    printOut->PrintFormat->AddLine();*/
 }
 
 void XReportDateTimeReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)

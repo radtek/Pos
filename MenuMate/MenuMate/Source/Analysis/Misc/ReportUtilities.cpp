@@ -74,7 +74,7 @@ Currency DataCalculationUtilities::GetAccumulatedZedTotal(Database::TDBTransacti
 }
 
 
-Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName)
+Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, bool showendingbal)
 {
     try
     {
@@ -87,7 +87,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
         Currency refloats = 0;
 
 
-        TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(dbTransaction, deviceName);
+        TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(dbTransaction, deviceName, showendingbal);
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
 
         ibInternalQuery->Close();
@@ -221,7 +221,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
     return TransactionInfo;
 }
 
- TTransactionInfo TTransactionInfoProcessor::GetTransactionInfo(Database::TDBTransaction &dbTransaction, UnicodeString deviceName)
+ TTransactionInfo TTransactionInfoProcessor::GetTransactionInfo(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, bool showendingbal)
 {
     if(!deviceTransactions[deviceName])                                             // checks if the object is already present for the given terminal
     {
@@ -270,13 +270,25 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
             terminalNamePredicate = " a.TERMINAL_NAME = :TERMINAL_NAME AND";
         }
 
-        qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
+        if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
+        {
+            qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
+                                " from DAYARCBILL a "
+                                " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and b.ORDER_TYPE != 3 "
+                                " group by 1,2,3,4,5,6,7,8,9,10 ";
+        }
+        else
+        {
+
+         qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
                                 " from DAYARCBILL a "
                                 " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                 " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
                                 " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable')"
                                 " group by 1,2,3,4,5,6,7,8,9,10 ";
-
+         }
         //WHERE (( DAYARCBILL.DISCOUNT >= 0 ) or DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE <> 0 )
 
         if(!TGlobalSettings::Instance().EnableDepositBagNum)
@@ -355,20 +367,20 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
            // before = Now();    //arun
             qrXArcPay->Close();
-            if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
-            {
-               qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                                    "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
-                                    "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0 AND SUBTOTAL > 0 ";
-            }
-            else
-            {
+            //if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
+            //{
+            //   qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+            //                        "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
+            //                        "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0 AND SUBTOTAL > 0 ";
+           // }
+            //else
+            //{
 
 
                qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
                                     "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
                                     "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
-            }
+            //}
             qrXArcPay->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
             qrXArcPay->ExecQuery();
 
@@ -437,7 +449,11 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                 bool IsCashOut = false;
                 if (qrXArcPay->FieldByName("CASH_OUT")->AsString == "F" || qrXArcPay->FieldByName("CASH_OUT")->AsString == "")
                 {
-                    CurrentPayment.Total += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
+                    //if(qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency > 0)
+                    //{
+                       CurrentPayment.Total += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
+                    //}
+
                 }
                 else
                 {
@@ -714,7 +730,7 @@ TDateTime DataCalculationUtilities::GetTransDateForTerminal(Database::TDBTransac
         terminalNamePredicate = "where a.TERMINAL_NAME = :TERMINAL_NAME ";
     }
     IBInternalQuery->Close();
-    IBInternalQuery->SQL->Text = "select min(a.TIME_STAMP) TIME_STAMP from DAYARCHIVE a " + terminalNamePredicate ;
+    IBInternalQuery->SQL->Text = "select min(a.TIME_STAMP) TIME_STAMP, a.ARCHIVE_KEY, a.TERMINAL_NAME from DAYARCHIVE a " + terminalNamePredicate  + " group by ARCHIVE_KEY, a.TERMINAL_NAME ";
     //IBInternalQuery->SQL->Text = "SELECT " "MAX(TIME_STAMP)TIME_STAMP FROM ZEDS " "WHERE " "TERMINAL_NAME = :TERMINAL_NAME";
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
@@ -725,6 +741,10 @@ TDateTime DataCalculationUtilities::GetTransDateForTerminal(Database::TDBTransac
     if (IBInternalQuery->RecordCount != 0)
     {
         trans_Date = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+    }
+    else
+    {
+       trans_Date = Now();
     }
     IBInternalQuery->Close();
     return trans_Date;

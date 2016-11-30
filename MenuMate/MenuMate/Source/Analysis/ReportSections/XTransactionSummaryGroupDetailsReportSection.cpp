@@ -33,8 +33,9 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
     skimCalculations.CalculateSkims(*_dbTransaction, deviceName);
 
     TTransactionInfo transactionInfo;
+    TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
 
-    transactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, deviceName);
+    transactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, deviceName, true);
 
 
 
@@ -86,9 +87,11 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
                         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(skimCalculations.CurrentSkimsTotal);
                         printOut->PrintFormat->AddLine();
 
+                     }
+
                         TCalculatedTotals FloatAdjustmentsTotal(ectFloatAdjustments, skimCalculations.CurrentSkimsTotal, 0, 0, 0);
                         transactionInfo.CalculatedTotals[eStrCalculatedTotals[ectFloatAdjustments]] = FloatAdjustmentsTotal;
-                    }
+                    //}
 
                     std::map <UnicodeString, TSumPayments> ::iterator itCurrentPayment = PaymentValues.find(CASH);
 

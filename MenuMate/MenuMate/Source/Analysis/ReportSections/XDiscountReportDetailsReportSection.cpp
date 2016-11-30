@@ -90,9 +90,9 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
                     {
 						((TStringList*)DiscountServerList->Objects[Index])->AddObject
-						(qrDiscount->FieldByName("DESCRIPTION")->AsString + " |" + qrDiscount->FieldByName("QTY")->AsString,
+						(qrDiscount->FieldByName("DESCRIPTION")->AsString + " |" + IntToStr(abs(qrDiscount->FieldByName("QTY")->AsInteger)),
 						Item);
-                        total_discount_qty += qrDiscount->FieldByName("QTY")->AsInteger;
+                        total_discount_qty += abs(qrDiscount->FieldByName("QTY")->AsInteger);
 
                     }
                     else
@@ -118,9 +118,9 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
                     {
                         ((TStringList*)DiscountServerList->Objects[Index])->AddObject
-                        (qrDiscount->FieldByName("DESCRIPTION")->AsString + " |" + qrDiscount->FieldByName("QTY")->AsString,
+                        (qrDiscount->FieldByName("DESCRIPTION")->AsString + " |" + IntToStr(abs(qrDiscount->FieldByName("QTY")->AsInteger)),
                         Item);
-                        total_discount_qty += qrDiscount->FieldByName("QTY")->AsInteger;
+                        total_discount_qty += abs(qrDiscount->FieldByName("QTY")->AsInteger);
                     }
                     else
                     {

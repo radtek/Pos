@@ -38,15 +38,15 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut)
     cancelsQuery->Close();
     cancelsQuery->SQL->Text =
                         "select "
-                            "CAST(ITEM_NAME AS VARCHAR(50)) ITEM_NAME, "
-                            "PRICE, "
-                            "PRICE_LEVEL0, "
-                            "PRICE_LEVEL1, "
+                            "sum(PRICE_LEVEL0)PRICE_LEVEL0, "
+                            "sum(PRICE_LEVEL1)PRICE_LEVEL1, "
+                            //"PRICE_LEVEL0, "
+                            //"PRICE_LEVEL1, "
                             "HAPPY_HOUR HAPPYHOUR, "
-                            "CONTACTS.NAME, "
-                            "SECURITY.NOTE, "
-                            "SECURITY.TIME_STAMP, "
-							"QTY "
+                            //"CONTACTS.NAME, "
+                            //"SECURITY.NOTE, "
+                            "SECURITY.TIME_STAMP "
+							//"QTY "
                         "from "
                             "DAYARCHIVE "
                             "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =DAYARCHIVE.SECURITY_REF "
@@ -56,7 +56,10 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut)
                             + " ORDER_TYPE = :ORDER_TYPE "
                               " and SECURITY.TIME_STAMP > :PrevZedTime "
                               " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
-                                "OR SECURITY.SECURITY_EVENT = 'CancelY' ) ";
+                                "OR SECURITY.SECURITY_EVENT = 'CancelY' ) "
+                                "group by "
+                                "HAPPY_HOUR, "
+                                "SECURITY.TIME_STAMP ";
 
     cancelsQuery->ParamByName("ORDER_TYPE")->AsInteger = CanceledOrder;
     cancelsQuery->ParamByName("PrevZedTime")->AsDateTime = prevZedTime;
@@ -70,12 +73,12 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut)
     {
        if(cancelsQuery->FieldByName("HAPPYHOUR")->AsString == "T")
        {
-          qty  += cancelsQuery->FieldByName("QTY")->AsDouble;
+          qty++;
           total_price += cancelsQuery->FieldByName("PRICE_LEVEL1")->AsCurrency;
        }
        else
        {
-          qty  += cancelsQuery->FieldByName("QTY")->AsDouble;
+          qty++;
           total_price += cancelsQuery->FieldByName("PRICE_LEVEL0")->AsCurrency;
        }
     }
@@ -89,20 +92,21 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut)
     TIBSQL *creditQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
     creditQuery->Close();
     creditQuery->SQL->Text = "SELECT "
-                                    "ITEM_NAME, "
-                                    "PRICE, "
-                                    "QTY, "
-                                    "REDEEMED, "
+                                    "sum(PRICE) PRICE,  "
                                     "ORDER_TYPE, "
                                     "CONTACTS.NAME, "
-                                    "SECURITY.NOTE, "
                                     "SECURITY.TIME_STAMP "
                                 "FROM DAYARCHIVE "
                                 "LEFT JOIN SECURITY ON DAYARCHIVE.SECURITY_REF = SECURITY.SECURITY_REF "
                                 "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
                                 " WHERE " + terminalNamePredicate + " ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + " " "AND "
                                 "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secCredit] + "' "
-                                 "OR "  "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secWriteOff] + "' "  "ORDER BY " "CONTACTS.NAME";
+                                 "OR "  "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secWriteOff] + "' "
+                                 "group by "
+                                 "ORDER_TYPE, "
+                                 "SECURITY.TIME_STAMP, "
+                                 "CONTACTS.NAME "
+                                 "ORDER BY CONTACTS.NAME ";
     creditQuery->ExecQuery();
 
     double refund_qty = 0;
@@ -110,123 +114,51 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut)
 
     for(; !creditQuery->Eof; creditQuery->Next())
     {
-       refund_qty  += creditQuery->FieldByName("QTY")->AsDouble;
+       refund_qty++;
        refund_total_price += creditQuery->FieldByName("PRICE")->AsCurrency;
     }
-    /*for (; !cancelsQuery->Eof; cancelsQuery->Next())
-    {
-        int Index = _cancelsServerList->IndexOf(cancelsQuery->FieldByName("NAME")->AsString);
-        if (Index == -1)
-        {
-            TStringList *ItemsList = new TStringList;
-            Index = _cancelsServerList->AddObject(cancelsQuery->FieldByName("NAME")->AsString, ItemsList);
-            TCurrencyTotal *Item = new TCurrencyTotal;
-            Item->Total = (cancelsQuery->FieldByName("HAPPYHOUR")->AsString == "T")
-                            ? (cancelsQuery->FieldByName("PRICELEVELS1")->AsCurrency
-                            : (cancelsQuery->FieldByName("PRICELEVELS2")->AsCurrency);
 
-            ((TStringList*)_cancelsServerList->Objects[Index])->AddObject( + " |" + //Item);
-        }
-        else
-        {
-            TCurrencyTotal *Item = new TCurrencyTotal;
-            Item->Total = (cancelsQuery->FieldByName("HAPPYHOUR")->AsString == "T")
-                            ? -(cancelsQuery->FieldByName("PRICE_LEVEL1")->AsCurrency * cancelsQuery->FieldByName("QTY")->AsDouble)
-                            : -(cancelsQuery->FieldByName("PRICE_LEVEL0")->AsCurrency * cancelsQuery->FieldByName("QTY")->AsDouble);
-
-            Item->Note = cancelsQuery->FieldByName("NOTE")->AsString;
-            Item->TimeStamp = cancelsQuery->FieldByName("TIME_STAMP")->AsString;
-             Item->Name = cancelsQuery->FieldByName("ITEM_NAME")->AsString;
-             Item->StaffName= cancelsQuery->FieldByName("NAME")->AsString;
-            ((TStringList*)_cancelsServerList->Objects[Index])->AddObject(cancelsQuery->FieldByName("ITEM_NAME")->AsString, Item);
-        }
-    }*/
-
-    //if ( _cancelsServerList->Count > 0 )
-    //{
-        //AddTitle(printOut, "Cancels Report");
 
         printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 
         Currency TotalCanceled = 0;
-        //for (int i = 0; i < _cancelsServerList->Count; i++)
-        //{
-            // Add User name...
-            SetPrinterFormatInMiddle(printOut);
-            printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4 + 10;
-            printOut->PrintFormat->Line->Columns[1]->Text = "Void and Refund";
-            printOut->PrintFormat->AddLine();
-            //printOut->PrintFormat->Add(_cancelsServerList->Strings[i]);
 
-            // ...followed by the items canceled by that user.
-            //SetPrinterFormat(printOut);
-            SetPrinterFormatInMiddle(printOut);
-            printOut->PrintFormat->Line->Columns[1]->Text = "Void ";
-            printOut->PrintFormat->Line->Columns[2]->Text = FloatToStr(qty);
-
-            printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(total_price);
-            printOut->PrintFormat->AddLine();
-
-            printOut->PrintFormat->Line->Columns[1]->Text = "Refund";
-            printOut->PrintFormat->Line->Columns[2]->Text = FloatToStr(fabs(refund_qty));
-            printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(refund_total_price);
-            printOut->PrintFormat->AddLine();
-
-            double total_qty = qty + fabs(refund_qty);
-            Currency total_amount = total_price + refund_total_price;
-
-            //SetSingleColumnPrinterFormat(printOut);
-            printOut->PrintFormat->Line->Columns[1]->Line();
-            printOut->PrintFormat->Line->Columns[2]->Line();
-            printOut->PrintFormat->Line->Columns[3]->Line();
-            printOut->PrintFormat->AddLine();
-
-            //SetPrinterFormat(printOut);
-
-            printOut->PrintFormat->Line->Columns[1]->Text = "Total";
-            printOut->PrintFormat->Line->Columns[2]->Text = FloatToStr(total_qty);
-            printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(total_amount);
-            printOut->PrintFormat->AddLine();
-            SetSingleColumnPrinterFormat(printOut);
-            printOut->PrintFormat->Line->Columns[0]->Text = "";
-            //printOut->PrintFormat->NewLine();
-            printOut->PrintFormat->AddLine();
-            //for (int j = 0; j < ((TStringList*)_cancelsServerList->Objects[i])->Count; j++)
-            //{
-                //printOut->PrintFormat->Add(
-                           // ((TCurrencyTotal*)((TStringList*)_cancelsServerList->Objects[i])->Objects[j])->TimeStamp.FormatString("dd/mm/yy hh:nn:ss")
-                           // + "|" + " " + ((TStringList*)_cancelsServerList->Objects[i])->Strings[j] + "|"
-                           // + dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)_cancelsServerList->Objects[i])->Objects[j])->Total ) );
-
-                //if (((TCurrencyTotal*)((TStringList*)_cancelsServerList->Objects[i])->Objects[j])->Note != "")
-                //{
-               //     printOut->PrintFormat->Add("Note : " +((TCurrencyTotal*)((TStringList*)_cancelsServerList->Objects[i])->Objects[j])->Note + "|");
-                //}
-               // printOut->PrintFormat->Add(((TCurrencyTotal*)((TStringList*)_cancelsServerList->Objects[i])->Objects[j])->Name + "|"); //MM-4385
-               // printOut->PrintFormat->Add("Staff Name :" +((TCurrencyTotal*)((TStringList*)_cancelsServerList->Objects[i])->Objects[j])->StaffName + "|");
-                //TotalCanceled += //((TCurrencyTotal*)((TStringList*)_cancelsServerList->Objects[i])->Objects[j])->Total;
-                //delete((TStringList*)_cancelsServerList->Objects[i])->Objects[j];
-            //}
-            //delete _cancelsServerList->Objects[i];
-       // }
-
-        /*IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
-
-        if(reportSectionDisplayTraits)
-        {
-            reportSectionDisplayTraits->ApplyTraits(printOut);
-        }
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->DoubleLine();
+        SetPrinterFormatInMiddle(printOut);
+        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4 + 10;
+        printOut->PrintFormat->Line->Columns[1]->Text = "Void and Refund";
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Total Cancels";
-        printOut->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( TotalCanceled );
-        ///printOut->PrintFormat->AddLine(); */
-    ///}
-   // delete _cancelsServerList;
+        SetPrinterFormatInMiddle(printOut);
+        printOut->PrintFormat->Line->Columns[1]->Text = "Void ";
+        printOut->PrintFormat->Line->Columns[2]->Text = FloatToStr(qty);
+
+        printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(total_price);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[1]->Text = "Refund";
+        printOut->PrintFormat->Line->Columns[2]->Text = FloatToStr(fabs(refund_qty));
+        printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(refund_total_price);
+        printOut->PrintFormat->AddLine();
+
+        double total_qty = qty + fabs(refund_qty);
+        Currency total_amount = total_price + refund_total_price;
+
+        //SetSingleColumnPrinterFormat(printOut);
+        printOut->PrintFormat->Line->Columns[1]->Line();
+        printOut->PrintFormat->Line->Columns[2]->Line();
+        printOut->PrintFormat->Line->Columns[3]->Line();
+        printOut->PrintFormat->AddLine();
+
+        //SetPrinterFormat(printOut);
+
+        printOut->PrintFormat->Line->Columns[1]->Text = "Total";
+        printOut->PrintFormat->Line->Columns[2]->Text = FloatToStr(total_qty);
+        printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(total_amount);
+        printOut->PrintFormat->AddLine();
+        SetSingleColumnPrinterFormat(printOut);
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        //printOut->PrintFormat->NewLine();
+        printOut->PrintFormat->AddLine();
 }
 
 void XCancelsAndRefundDetailsForBIRReportSection::SetPrinterFormat(TPrintout* printOut)

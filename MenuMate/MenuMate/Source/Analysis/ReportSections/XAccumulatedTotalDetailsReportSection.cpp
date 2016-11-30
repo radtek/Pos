@@ -69,20 +69,28 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
         printOut->PrintFormat->Line->FontInfo.Reset();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Beginning OR No.";
-        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(startInvoiceNumber);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Ending OR No.";
-        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(endInvoiceNumber);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Beginning Balance:";
+        printOut->PrintFormat->Line->Columns[0]->Text = "Opening Balance:";
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(openingBalance);
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Ending Balance:";
+        printOut->PrintFormat->Line->Columns[0]->Text = "Z Report:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(todaysEarnings);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Accumulated Total:";
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Beginning Invoice:";
+        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(startInvoiceNumber);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Ending Invoice:";
+        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(endInvoiceNumber);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Z Reading No:";
+        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(_globalSettings->ZCount);
         printOut->PrintFormat->AddLine();
 
     }
