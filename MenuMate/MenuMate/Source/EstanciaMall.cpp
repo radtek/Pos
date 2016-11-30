@@ -459,15 +459,16 @@ bool TEstanciaMall::IsItemVatable(TItemMinorComplete *Order, TEstanciaTaxes &est
                  estanciaTaxes.profitTax += itTaxes->Value;
                  break;
         }
-        if (Order->BillCalcResult.ServiceCharge.Percentage != 0)
+    }
+    if (Order->BillCalcResult.ServiceCharge.Percentage != 0)
+    {
+        estanciaTaxes.serviceCharge += Order->BillCalcResult.ServiceCharge.Value;
+        if (Order->BillCalcResult.ServiceCharge.TaxPercentage != 0)
         {
-            estanciaTaxes.serviceCharge += Order->BillCalcResult.ServiceCharge.Value;
-            if (Order->BillCalcResult.ServiceCharge.TaxPercentage != 0)
-            {
-                estanciaTaxes.serviceChargeTax += Order->BillCalcResult.ServiceCharge.TaxValue;
-            }
+            estanciaTaxes.serviceChargeTax += Order->BillCalcResult.ServiceCharge.TaxValue;
         }
     }
+    return isVatable;
 }
 //--------------------------------------------------------------------------------------------------
 void TEstanciaMall::PrepareAllDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEstanciaDiscounts &estanciaDiscounts, bool &isVatable)
