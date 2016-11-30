@@ -2050,9 +2050,6 @@ void __fastcall TfrmSetup::tbtnReconfigEmailPasswordMouseClick(TObject *Sender)
 
 }
 
-
-
-
 UnicodeString TfrmSetup::DisplayInputForm(UnicodeString initialValue, AnsiString caption)
 {
     UnicodeString finalvalue;
@@ -2125,8 +2122,6 @@ void __fastcall TfrmSetup::cbNewbookTypeChange(TObject *Sender)
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmNewBook,TGlobalSettings::Instance().NewBook);
 		DBTransaction.Commit();
-
-
 }
 //---------------------------------------------------------------------------
 
@@ -2327,7 +2322,7 @@ void TfrmSetup::UpdateNoMallUI()
     TMall mallDetails;
     TGlobalSettings::Instance().mallInfo = mallDetails;
     TManagerMallSetup::UpdateINActiveMall(dbTransaction);
-     TControl *ChildControl;
+    TControl *ChildControl;
     TEdit* editBox;
     for (int i = 0; i < gbMallsNew->ControlCount; i++)
     {
