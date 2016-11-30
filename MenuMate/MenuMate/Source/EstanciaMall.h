@@ -26,11 +26,7 @@ struct TEstanciaDiscounts
     Currency discountGroup4;
     Currency discountGroup5;
     Currency totalNonApprovedDiscount;
-    Currency nonApprovedDiscount1;
-    Currency nonApprovedDiscount2;
-    Currency nonApprovedDiscount3;
-    Currency nonApprovedDiscount4;
-    Currency nonApprovedDiscount5;
+    Currency nonApprovedDiscounts[5];
 };
 
 class TEstanciaMallField
@@ -268,14 +264,14 @@ class TEstanciaMall : public TMallExport
     bool IsItemVatable(TItemMinorComplete *Order, TEstanciaTaxes &estanciaTaxes);
 
     //Get All types of discounts as needed for report
-    void PrepareAllDiscounts(TItemMinorComplete *Order, TEstanciaDiscounts &estanciaDiscounts, bool &isVatable);
+    void PrepareAllDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEstanciaDiscounts &estanciaDiscounts, bool &isVatable);
 
     //Set Discount and Taxes
     void SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstanciaTaxes estanciaTaxes, TEstanciaDiscounts estanciaDiscounts,
                                             TItemMinorComplete *Order, bool isVatable);
 
     //Prepare item call taxes and discount etc calculation function inside it
-    void PrepareItem(TItemMinorComplete *Order, TEstanciaMallField &fieldData);
+    void PrepareItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEstanciaMallField &fieldData);
 
     //insert field into list
     void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEstanciaMallField fieldData, int arcBillKey);

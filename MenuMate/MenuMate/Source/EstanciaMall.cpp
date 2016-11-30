@@ -369,7 +369,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
                 TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
 
                 //this will call all taxes and discount calculation inside it
-                PrepareItem(Order, fieldData);
+                PrepareItem(paymentTransaction.DBTransaction, Order, fieldData);
 
                 //For SubOrder
                 for (int i = 0; i < Order->SubOrders->Count; i++)
@@ -377,7 +377,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
 					TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
 
                     //this will call all taxes and discount calculation inside it
-                    PrepareItem(CurrentSubOrder, fieldData);
+                    PrepareItem(paymentTransaction.DBTransaction, CurrentSubOrder, fieldData);
                 }
         }
 
@@ -421,7 +421,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
     return mallExportSalesData;
 }
 //----------------------------------------------------------------------------------------------
-void TEstanciaMall::PrepareItem(TItemMinorComplete *Order, TEstanciaMallField &fieldData)
+void TEstanciaMall::PrepareItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEstanciaMallField &fieldData)
 {
     //Create Taxes Object to collect all taxes details
     TEstanciaTaxes estanciaTaxes;
@@ -432,7 +432,7 @@ void TEstanciaMall::PrepareItem(TItemMinorComplete *Order, TEstanciaMallField &f
     /////////////////////////////////////////
     TEstanciaDiscounts estanciaDiscounts;
 
-    PrepareAllDiscounts(Order, estanciaDiscounts, isVatable);
+    PrepareAllDiscounts(dbTransaction, Order, estanciaDiscounts, isVatable);
 
     //Set Discount and Taxes and store it into  TEstanciaMallField 's properies
     SetDiscountAndTaxes(fieldData, estanciaTaxes, estanciaDiscounts, Order, isVatable);
@@ -470,8 +470,31 @@ bool TEstanciaMall::IsItemVatable(TItemMinorComplete *Order, TEstanciaTaxes &est
     }
 }
 //--------------------------------------------------------------------------------------------------
-void TEstanciaMall::PrepareAllDiscounts(TItemMinorComplete *Order, TEstanciaDiscounts &estanciaDiscounts, bool &isVatable)
+void TEstanciaMall::PrepareAllDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEstanciaDiscounts &estanciaDiscounts, bool &isVatable)
 {
+    UnicodeString nonApprovedDiscount[5];
+
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+
+    //Get All Non Approved Discount
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT  FIRST 5 a.NAME, "
+                                          "DGDT.DISCOUNTTYPE_KEY,"
+                                          " DGDT.DISCOUNTGROUPS_KEY, "
+                                          "DISCOUNT_GROUPS.DISCOUNTGROUPS_KEY "
+                                "FROM DISCOUNTS a "
+                                "INNER JOIN DISCOUNTGROUPS_DISCOUNTTYPES DGDT ON A.DISCOUNT_KEY = DGDT.DISCOUNTTYPE_KEY "
+                                "INNER JOIN DISCOUNT_GROUPS ON  DISCOUNT_GROUPS.DISCOUNTGROUPS_KEY = DGDT.DISCOUNTGROUPS_KEY "
+                                "WHERE DISCOUNT_GROUPS.DISCOUNTGROUP_NAME = :DISCOUNTGROUP_NAME ";
+
+    IBInternalQuery->ParamByName("DISCOUNTGROUP_NAME")->AsString = "Non Approved Discount";
+    IBInternalQuery->ExecQuery();
+
+    //Store first 5 NonApproved Discount
+    for(int index = 0; !IBInternalQuery->Eof; index++,IBInternalQuery->Next())
+        nonApprovedDiscount[index] = IBInternalQuery->Fields[0]->AsString;
+
      //categories discounts according to group
     for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();std::advance(ptrDiscounts, 1))
     {
@@ -505,7 +528,17 @@ void TEstanciaMall::PrepareAllDiscounts(TItemMinorComplete *Order, TEstanciaDisc
             else if(ptrDiscounts->DiscountGroupList[0].Name == "Discount 5")
                 estanciaDiscounts.discountGroup5 += Order->DiscountValue_BillCalc(ptrDiscounts);
             else if(ptrDiscounts->DiscountGroupList[0].Name == "Non Approved Discount")
+            {
                 estanciaDiscounts.totalNonApprovedDiscount += Order->DiscountValue_BillCalc(ptrDiscounts);
+
+                for(int index = 0; index < 5; index++)
+                {
+                    if(ptrDiscounts->Name == nonApprovedDiscount[index])
+                        estanciaDiscounts.nonApprovedDiscounts[index] = Order->DiscountValue_BillCalc(ptrDiscounts);
+                    else
+                        estanciaDiscounts.nonApprovedDiscounts[index] = 0.00;
+                }
+            }
         }
     }
 }
@@ -533,11 +566,11 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
         fieldData.SSDiscount4Vatable += (double)fabs(estanciaDiscounts.discountGroup4);
         fieldData.SSDiscount5Vatable += (double)fabs(estanciaDiscounts.discountGroup5);
         fieldData.TotalOfallNonApprovedSDVatable += (double)fabs(estanciaDiscounts.totalNonApprovedDiscount);
-        fieldData.SSDiscount1NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscount1);
-        fieldData.SSDiscount2NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscount2);
-        fieldData.SSDiscount3NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscount3);
-        fieldData.SSDiscount4NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscount4);
-        fieldData.SSDiscount5NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscount5);
+        fieldData.SSDiscount1NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[0]);
+        fieldData.SSDiscount2NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[1]);
+        fieldData.SSDiscount3NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[2]);
+        fieldData.SSDiscount4NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[3]);
+        fieldData.SSDiscount5NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[4]);
     }
     else
     {
@@ -559,11 +592,11 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
         fieldData.SSDiscount4NonVatable += (double)fabs(estanciaDiscounts.discountGroup4);
         fieldData.SSDiscount5NonVatable += (double)fabs(estanciaDiscounts.discountGroup5);
         fieldData.TotalOfallNonApprovedSDiscountsNonVatable += (double)fabs(estanciaDiscounts.totalNonApprovedDiscount);
-        fieldData.SSDiscount1NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscount1);
-        fieldData.SSDiscount2NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscount2);
-        fieldData.SSDiscount3NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscount3);
-        fieldData.SSDiscount4NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscount4);
-        fieldData.SSDiscount5NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscount5);
+        fieldData.SSDiscount1NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[0]);
+        fieldData.SSDiscount2NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[1]);
+        fieldData.SSDiscount3NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[2]);
+        fieldData.SSDiscount4NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[3]);
+        fieldData.SSDiscount5NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[4]);
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------
@@ -656,11 +689,11 @@ void TEstanciaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction,
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4Vatable, 22, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5Vatable, 23, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total of all Non-Approved Store Discounts", "Currency", fieldData.TotalOfallNonApprovedSDVatable, 24, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonVatable, 25, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonVatable, 26, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonVatable, 27, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonVatable, 28, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonVatable, 29, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonApprovedVatable, 25, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonApprovedVatable, 26, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonApprovedVatable, 27, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonApprovedVatable, 28, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonApprovedVatable, 29, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountVatable, 30, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountVatable, 31, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Cover Count", "int", fieldData.CoverCount, 32, arcBillKey);
@@ -689,11 +722,11 @@ void TEstanciaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction,
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonVatable, 55, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonVatable, 56, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total of all Non-Approved Store Discounts", "Currency", fieldData.TotalOfallNonApprovedSDiscountsNonVatable, 57, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonApprovedVatable, 58, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonApprovedVatable, 59, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonApprovedVatable, 60, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonApprovedVatable, 61, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonApprovedVatable, 62, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 1", "Currency", fieldData.SSDiscount1NonApprovedNonVatable, 58, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 2", "Currency", fieldData.SSDiscount2NonApprovedNonVatable, 59, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 3", "Currency", fieldData.SSDiscount3NonApprovedNonVatable, 60, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 4", "Currency", fieldData.SSDiscount4NonApprovedNonVatable, 61, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Store Specific Discount 5", "Currency", fieldData.SSDiscount5NonApprovedNonVatable, 62, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total VAT/Tax Amount", "Currency", fieldData.VATTaxAmountNonVatable, 63, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Net Sales Amount", "Currency", fieldData.NetSalesAmountNonVatable, 64, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Grand Total Net Sales", "Currency", fieldData.NetSalesAmountVatable + fieldData.NetSalesAmountNonVatable, 65, arcBillKey);
