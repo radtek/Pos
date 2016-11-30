@@ -671,7 +671,7 @@ private:	// User declarations
 	void SetupFilterDisplay();
 
 	TReportControl *ReportControl;
-	void ShowCurrentFilter(bool isEJournalReport = false);
+	void ShowCurrentFilter(bool _disableBackAndExcelButton = false);
 	void SaveCurrentFilter();
 	void AddFilterStringParams(TStrings *SQL, TStrings *Values, AnsiString FieldName, AnsiString Operator="And");
 	void AddFilterNumericParams(TStrings *SQL, TStrings *Values, AnsiString FieldName);

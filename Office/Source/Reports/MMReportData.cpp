@@ -16303,7 +16303,7 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                                 "OR SECURITY.SECURITY_EVENT = 'CancelY' )   "
                         "GROUP BY ARCHIVE.ARCBILL_KEY)CANCEL_AMOUNT on CANCEL_AMOUNT.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
         "LEFT JOIN ( "
-                    "SELECT DA.ARCHIVE_KEY, cast((coalesce(DA.BASE_PRICE,0) * DA.QTY)+ DA.DISCOUNT_WITHOUT_TAX + sum(coalesce(DAOT.TAX_VALUE,0)) as numeric(17,4))price "
+                    "SELECT DA.ARCHIVE_KEY, cast((coalesce(DA.BASE_PRICE,0) * abs(DA.QTY))+ DA.DISCOUNT_WITHOUT_TAX + sum(coalesce(DAOT.TAX_VALUE,0)) as numeric(17,4))price "
                     "FROM ARCHIVE DA  "
                     "LEFT JOIN ARCORDERTAXES DAOT ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                     "WHERE DA.ARCHIVE_KEY  not IN (  "
