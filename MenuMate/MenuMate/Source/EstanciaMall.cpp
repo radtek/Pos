@@ -507,55 +507,55 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
 {
     if(isVatable)
     {
-        fieldData.GrossAmountVatable += (double)fabs(order->PriceEach_BillCalc() + fabs(order->TotalAdjustment()));   //6
-        fieldData.PromoSalesAmountVatable += (double)fabs(estanciaDiscounts.promoDiscount); //8
-        fieldData.PWDDiscountVatable += (double)fabs(estanciaDiscounts.pwdDiscount);  //9
-        fieldData.RefundAmountVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);   //10
-        fieldData.ReturnedItemsAmountVatable += 0;                //11
-        fieldData.OtherTaxesVatable +=  (double)fabs(estanciaTaxes.localTax);                        //12
-        fieldData.ServiceChargeAmountVatable +=  (double)fabs(estanciaTaxes.serviceCharge);  //13
-        fieldData.AdjustmentDiscountVatable += 0;  //14
-        fieldData.VoidAmountVatable += 0;//todo          //15
-        fieldData.DiscountCardsVatable += 0;//todo         //16
-        fieldData.DeliveryChargesVatable += 0;//todo       //17
-        fieldData.GiftCertificatesChecksRedeemedVatable +=  0;//todo  //18
-        fieldData.SSDiscount1Vatable += (double)fabs(estanciaDiscounts.discountGroup1);  //19
-        fieldData.SSDiscount2Vatable += (double)fabs(estanciaDiscounts.discountGroup2);  //20
-        fieldData.SSDiscount3Vatable += (double)fabs(estanciaDiscounts.discountGroup3);  //21
-        fieldData.SSDiscount4Vatable += (double)fabs(estanciaDiscounts.discountGroup4);  //22
-        fieldData.SSDiscount5Vatable += (double)fabs(estanciaDiscounts.discountGroup5);  //23
-        fieldData.TotalOfallNonApprovedSDVatable += (double)fabs(estanciaDiscounts.totalNonApprovedDiscount);  //24
-        fieldData.SSDiscount1NonApprovedVatable += 0;//todo       //25
-        fieldData.SSDiscount2NonApprovedVatable +=  0;//todo      //26
-        fieldData.SSDiscount3NonApprovedVatable +=  0;//todo      //27
-        fieldData.SSDiscount4NonApprovedVatable  += 0;//todo      //28
-        fieldData.SSDiscount5NonApprovedVatable +=  0;//todo      //29
+        fieldData.GrossAmountVatable += (double)fabs(order->PriceEach_BillCalc() + fabs(order->TotalAdjustment()));
+        fieldData.PromoSalesAmountVatable += (double)fabs(estanciaDiscounts.promoDiscount);
+        fieldData.PWDDiscountVatable += (double)fabs(estanciaDiscounts.pwdDiscount);
+        fieldData.RefundAmountVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);
+        fieldData.ReturnedItemsAmountVatable += 0;
+        fieldData.OtherTaxesVatable +=  (double)fabs(estanciaTaxes.localTax);
+        fieldData.ServiceChargeAmountVatable +=  (double)fabs(estanciaTaxes.serviceCharge);
+        fieldData.AdjustmentDiscountVatable += 0;
+        fieldData.VoidAmountVatable += 0;//todo
+        fieldData.DiscountCardsVatable += 0;//todo
+        fieldData.DeliveryChargesVatable += 0;//todo
+        fieldData.GiftCertificatesChecksRedeemedVatable +=  0;//todo
+        fieldData.SSDiscount1Vatable += (double)fabs(estanciaDiscounts.discountGroup1);
+        fieldData.SSDiscount2Vatable += (double)fabs(estanciaDiscounts.discountGroup2);
+        fieldData.SSDiscount3Vatable += (double)fabs(estanciaDiscounts.discountGroup3);
+        fieldData.SSDiscount4Vatable += (double)fabs(estanciaDiscounts.discountGroup4);
+        fieldData.SSDiscount5Vatable += (double)fabs(estanciaDiscounts.discountGroup5);
+        fieldData.TotalOfallNonApprovedSDVatable += (double)fabs(estanciaDiscounts.totalNonApprovedDiscount);
+        fieldData.SSDiscount1NonApprovedVatable += 0;//todo
+        fieldData.SSDiscount2NonApprovedVatable +=  0;//todo
+        fieldData.SSDiscount3NonApprovedVatable +=  0;//todo
+        fieldData.SSDiscount4NonApprovedVatable  += 0;//todo
+        fieldData.SSDiscount5NonApprovedVatable +=  0;//todo
     }
     else
     {
-        fieldData.GrossAmountNonVatable += (double)fabs(order->PriceLevelCustom > 0 ? order->PriceLevelCustom + fabs(order->TotalAdjustment()) : order->PriceLevel1 + fabs(order->TotalAdjustment()));   ////39
-        fieldData.PromoSalesAmountNonVatable += (double)fabs(estanciaDiscounts.promoDiscount);    ///41
-        fieldData.SCDDiscountNonVatable += (double)fabs(estanciaDiscounts.scdDiscount);      //42
-        fieldData.RefundAmountNonVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);     //43
-        fieldData.ReturnedItemsAmountNonVatable += 0;     //44
-        fieldData.OtherTaxesNonVatable += (double)fabs(estanciaTaxes.localTax);     //45
-        fieldData.ServiceChargeAmountNonVatable +=  (double)fabs(estanciaTaxes.serviceCharge);   //46
-        fieldData.AdjustmentDiscountNonVatable  += 0;      //47
-        fieldData.VoidAmountNonVatable += 0;//todo             //48
-        fieldData.DiscountCardsNonVatable +=  0;//todo         //49
-        fieldData.DeliveryChargesNonVatable +=  0;//todo       //50
-        fieldData.GiftCertificatesChecksRedeemedNonVatable +=  0;//todo   //51
-        fieldData.SSDiscount1NonVatable += (double)fabs(estanciaDiscounts.discountGroup1);  //52
-        fieldData.SSDiscount2NonVatable += (double)fabs(estanciaDiscounts.discountGroup2);  //53
-        fieldData.SSDiscount3NonVatable += (double)fabs(estanciaDiscounts.discountGroup3);  //54
-        fieldData.SSDiscount4NonVatable += (double)fabs(estanciaDiscounts.discountGroup4);  //55
-        fieldData.SSDiscount5NonVatable += (double)fabs(estanciaDiscounts.discountGroup5);  //56
-        fieldData.TotalOfallNonApprovedSDiscountsNonVatable += (double)fabs(estanciaDiscounts.totalNonApprovedDiscount);    //57
-        fieldData.SSDiscount1NonApprovedNonVatable += 0;//todo         ///58
-        fieldData.SSDiscount2NonApprovedNonVatable += 0;//todo         //59
-        fieldData.SSDiscount3NonApprovedNonVatable += 0;//todo         //60
-        fieldData.SSDiscount4NonApprovedNonVatable += 0;//todo        //61
-        fieldData.SSDiscount5NonApprovedNonVatable += 0;//todo        ///62
+        fieldData.GrossAmountNonVatable += (double)fabs(order->PriceLevelCustom > 0 ? order->PriceLevelCustom + fabs(order->TotalAdjustment()) : order->PriceLevel1 + fabs(order->TotalAdjustment()));
+        fieldData.PromoSalesAmountNonVatable += (double)fabs(estanciaDiscounts.promoDiscount);
+        fieldData.SCDDiscountNonVatable += (double)fabs(estanciaDiscounts.scdDiscount);
+        fieldData.RefundAmountNonVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);
+        fieldData.ReturnedItemsAmountNonVatable += 0;
+        fieldData.OtherTaxesNonVatable += (double)fabs(estanciaTaxes.localTax);
+        fieldData.ServiceChargeAmountNonVatable +=  (double)fabs(estanciaTaxes.serviceCharge);
+        fieldData.AdjustmentDiscountNonVatable  += 0;
+        fieldData.VoidAmountNonVatable += 0;//todo
+        fieldData.DiscountCardsNonVatable +=  0;//todo
+        fieldData.DeliveryChargesNonVatable +=  0;//todo
+        fieldData.GiftCertificatesChecksRedeemedNonVatable +=  0;//todo
+        fieldData.SSDiscount1NonVatable += (double)fabs(estanciaDiscounts.discountGroup1);
+        fieldData.SSDiscount2NonVatable += (double)fabs(estanciaDiscounts.discountGroup2);
+        fieldData.SSDiscount3NonVatable += (double)fabs(estanciaDiscounts.discountGroup3);
+        fieldData.SSDiscount4NonVatable += (double)fabs(estanciaDiscounts.discountGroup4);
+        fieldData.SSDiscount5NonVatable += (double)fabs(estanciaDiscounts.discountGroup5);
+        fieldData.TotalOfallNonApprovedSDiscountsNonVatable += (double)fabs(estanciaDiscounts.totalNonApprovedDiscount);
+        fieldData.SSDiscount1NonApprovedNonVatable += 0;//todo
+        fieldData.SSDiscount2NonApprovedNonVatable += 0;//todo
+        fieldData.SSDiscount3NonApprovedNonVatable += 0;//todo
+        fieldData.SSDiscount4NonApprovedNonVatable += 0;//todo
+        fieldData.SSDiscount5NonApprovedNonVatable += 0;//todo
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------
