@@ -782,10 +782,15 @@ int DataCalculationUtilities::CalculateLastDayOfMonth(int month)
 
     int lastdayofmonth;
     int leap_year;
-
     switch(month)
     {
     case 1:
+	case 3:
+    case 5:
+    case 7:
+    case 8:
+    case 10:
+    case 12:
         lastdayofmonth = 31;
 		break;
 	case 2:
@@ -799,35 +804,11 @@ int DataCalculationUtilities::CalculateLastDayOfMonth(int month)
            lastdayofmonth = 28;
         }
 		break;
-	case 3:
-        lastdayofmonth = 31;
-		break;
 	case 4:
+    case 6:
+    case 9:
+    case 11:
         lastdayofmonth = 30;
-		break;
-	case 5:
-        lastdayofmonth = 31;
-		break;
-	case 6:
-        lastdayofmonth = 30;
-		break;
-	case 7:
-        lastdayofmonth = 31;
-		break;
-	case 8:
-        lastdayofmonth = 31;
-		break;
-	case 9:
-        lastdayofmonth = 30;
-		break;
-	case 10:
-        lastdayofmonth = 31;
-		break;
-	case 11:
-        lastdayofmonth = 30;
-		break;
-	case 12:
-        lastdayofmonth = 31;
 		break;
     }
     return lastdayofmonth;
