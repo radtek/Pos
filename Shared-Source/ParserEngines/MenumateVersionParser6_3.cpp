@@ -297,12 +297,12 @@ void TApplyParser::update6_34Tables()
 //---------------------------------------------------------------------------
 void TApplyParser::Create6_34TableSeniorCustomerDetails(TDBControl* const inDBControl)
 {
-    if ( !tableExists( "SENIOR_CUSTOMER_DETAILS", _dbControl ) )
+    if ( !tableExists( "SENIOR_CITIZEN_CUSTOMER_DETAILS", _dbControl ) )
 	{
 		executeQuery(
-		"CREATE TABLE SENIOR_CUSTOMER_DETAILS "
+		"CREATE TABLE SENIOR_CITIZEN_CUSTOMER_DETAILS "
 		"( "
-		"   SENIOR_CUSTOMER_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
+		"   CUSTOMER_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
         "   ARCBILL_KEY INT NOT NULL, "
 		"   FIELD_HEADER varchar(50),"
         "   FIELD_VALUE VARCHAR(150),"
@@ -314,14 +314,14 @@ void TApplyParser::Create6_34TableSeniorCustomerDetails(TDBControl* const inDBCo
 //---------------------------------------------------------------------------------
 void TApplyParser::Create6_34GeneratorSeniorCustomerDetails(TDBControl* const inDBControl)
 {
-    if(!generatorExists("GEN_SENIOR_CUSTOMER_DETAILS_KEY", _dbControl))
+    if(!generatorExists("GEN_SENIOR_CITIZEN_CUSTOMER_DETAILS_KEY", _dbControl))
     {
         executeQuery(
-            "CREATE GENERATOR GEN_SENIOR_CUSTOMER_DETAILS_KEY;", inDBControl
+            "CREATE GENERATOR GEN_CUSTOMER_DETAILS_KEY;", inDBControl
         );
 
         executeQuery(
-            "SET GENERATOR GEN_SENIOR_CUSTOMER_DETAILS_KEY TO 0;", inDBControl
+            "SET GENERATOR GEN_CUSTOMER_DETAILS_KEY TO 0;", inDBControl
         );
     }
 }
