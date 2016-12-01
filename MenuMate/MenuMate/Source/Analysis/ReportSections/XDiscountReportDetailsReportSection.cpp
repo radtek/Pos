@@ -295,7 +295,14 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                 printout->PrintFormat->AddLine();
                 SetPrinterFormat(printout);
                 show_discount_totals =  DiscountTotal;
-                printout->PrintFormat->Add("|Total |" + IntToStr(total_discount_qty) +"|"+ dataFormatUtilities->FormatMMReportCurrency(fabs(show_discount_totals)) );
+                if(show_discount_totals < 0)
+                {
+                   printout->PrintFormat->Add("|Total |" + IntToStr(total_discount_qty) +"|"+ "(" +dataFormatUtilities->FormatMMReportCurrency(fabs(show_discount_totals))+ ")"  );
+                }
+                else
+                {
+                    printout->PrintFormat->Add("|Total |" + IntToStr(total_discount_qty) +"|"+ dataFormatUtilities->FormatMMReportCurrency(show_discount_totals) );
+                }
                 TCalculatedTotals DiscountsTotal(etcTotalDiscounts, DiscountTotal,DiscountTotal,0, 0);
                 transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcTotalDiscounts]] = DiscountsTotal;
                 //printout->PrintFormat->AddLine();
