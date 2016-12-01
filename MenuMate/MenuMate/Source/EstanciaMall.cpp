@@ -393,6 +393,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
                                 fieldData.DiscountCardsVatable + fieldData.DeliveryChargesVatable + fieldData.GiftCertificatesChecksRedeemedVatable + fieldData.SSDiscount1Vatable +
                                 fieldData.SSDiscount2Vatable + fieldData.SSDiscount3Vatable + fieldData.SSDiscount4Vatable + fieldData.SSDiscount5Vatable);
 
+        fieldData.GrossAmountVatable = fieldData.GrossAmountVatable + fieldData.VoidAmountVatable - fieldData.RefundAmountNonVatable;
         fieldData.VATTaxAmountVatable = (double)((fieldData.GrossAmountVatable - fieldData.DeductionVatable)*(taxRate/(taxRate + 100)));
         fieldData.NetSalesAmountVatable = (double)(fieldData.GrossAmountVatable - fieldData.DeductionVatable - fieldData.VATTaxAmountVatable);
 
@@ -402,6 +403,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
                                         fieldData.DeliveryChargesNonVatable + fieldData.GiftCertificatesChecksRedeemedNonVatable + fieldData.SSDiscount1NonVatable +
                                         fieldData.SSDiscount2NonVatable + fieldData.SSDiscount3NonVatable + fieldData.SSDiscount4NonVatable + fieldData.SSDiscount5NonVatable);
 
+        fieldData.GrossAmountNonVatable = fieldData.GrossAmountNonVatable + fieldData.VoidAmountNonVatable - fieldData.RefundAmountNonVatable;
         fieldData.VATTaxAmountNonVatable = 0;
         fieldData.NetSalesAmountNonVatable = (double)(fieldData.GrossAmountNonVatable - fieldData.DeductionNonVatable) ;
         fieldData.NewAccumulatedSalesVatable  = (double)(fieldData.OldAccumulatedSalesVatable + fieldData.NetSalesAmountVatable);
@@ -547,9 +549,10 @@ void TEstanciaMall::PrepareAllDiscounts(Database::TDBTransaction &dbTransaction,
 void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstanciaTaxes estanciaTaxes, TEstanciaDiscounts estanciaDiscounts,
                                             TItemMinorComplete *order, bool isVatable)
 {
+    TItemComplete *cancelOrder =   (TItemComplete*)order;
     if(isVatable)
     {
-        fieldData.GrossAmountVatable += (double)fabs((order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment())));
+        fieldData.GrossAmountVatable += (double)((order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment())));
         fieldData.PromoSalesAmountVatable += (double)fabs(estanciaDiscounts.promoDiscount);
         fieldData.PWDDiscountVatable += (double)fabs(estanciaDiscounts.pwdDiscount);
         fieldData.RefundAmountVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);
@@ -557,7 +560,7 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
         fieldData.OtherTaxesVatable +=  (double)fabs(estanciaTaxes.localTax);
         fieldData.ServiceChargeAmountVatable +=  (double)fabs(estanciaTaxes.serviceCharge);
         fieldData.AdjustmentDiscountVatable += 0;
-        fieldData.VoidAmountVatable += 0;//todo
+        fieldData.VoidAmountVatable += (double)(cancelOrder->TabContainerName != "" && order->BillCalcResult.BasePrice == 0 ? order->PriceLevel1 : 0);
         fieldData.DiscountCardsVatable += 0;//todo
         fieldData.DeliveryChargesVatable += 0;//todo
         fieldData.GiftCertificatesChecksRedeemedVatable +=  0;//todo
@@ -575,7 +578,7 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
     }
     else
     {
-        fieldData.GrossAmountNonVatable += (double)fabs((order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment())));
+        fieldData.GrossAmountNonVatable += (double)((order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment())));
         fieldData.PromoSalesAmountNonVatable += (double)fabs(estanciaDiscounts.promoDiscount);
         fieldData.SCDDiscountNonVatable += (double)fabs(estanciaDiscounts.scdDiscount);
         fieldData.RefundAmountNonVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);
@@ -583,7 +586,7 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
         fieldData.OtherTaxesNonVatable += (double)fabs(estanciaTaxes.localTax);
         fieldData.ServiceChargeAmountNonVatable +=  (double)fabs(estanciaTaxes.serviceCharge);
         fieldData.AdjustmentDiscountNonVatable  += 0;
-        fieldData.VoidAmountNonVatable += 0;//todo
+        fieldData.VoidAmountNonVatable += (double)(cancelOrder->TabContainerName != "" && order->BillCalcResult.BasePrice == 0 ? order->PriceLevel1 : 0);
         fieldData.DiscountCardsNonVatable +=  0;//todo
         fieldData.DeliveryChargesNonVatable +=  0;//todo
         fieldData.GiftCertificatesChecksRedeemedNonVatable +=  0;//todo
