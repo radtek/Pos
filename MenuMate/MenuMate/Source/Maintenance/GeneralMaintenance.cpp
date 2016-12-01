@@ -4056,19 +4056,10 @@ void __fastcall TfrmGeneralMaintenance::cbUseBIRFormatInXZReportClick(TObject *S
 	DBTransaction.Commit();
     if(cbUseBIRFormatInXZReport->Checked)
     {
-        cbShowTransactionSummaryGroups->Checked = false;
-        cbShowTransactionSummaryGroups->Enabled = false;
-        cbShowTaxSummary->Checked = false;
-        cbShowTaxSummary->Enabled = false;
-        cbShowDiscountReport->Checked = false;
-        cbShowDiscountReport->Enabled = false;
-        cbEnableHideCredCancels->Checked = false;
-        cbEnableHideCredCancels->Enabled = false;
-        cbShowSessionDate->Checked = false;
-        cbShowSessionDate->Enabled = false;
-        cbShowAccumulatedTotal->Checked = false;
-        cbShowAccumulatedTotal->Enabled = false;
+        if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
+        {
 
+        cbShowTransactionSummaryGroups->Enabled = false;
         cbDEnableBlindBalances->Checked = false;
         cbShowTransactionSummaryGroups->Checked = false;
         cbShowBilledSalesTotals->Checked = false;
@@ -4093,6 +4084,20 @@ void __fastcall TfrmGeneralMaintenance::cbUseBIRFormatInXZReportClick(TObject *S
         cbShowInvoiceInfo->Checked = false;
         cbRevenueFiguresAreDiscountInclusive->Checked = false;
         cbShowPriceAdjustment->Checked = false;
+
+        }
+        cbShowDiscountReport->Checked = false;
+        cbShowTransactionSummaryGroups->Checked = false;
+        cbShowTransactionSummaryGroups->Enabled = false;
+        cbShowTaxSummary->Enabled = false;
+        cbShowDiscountReport->Enabled = false;
+        cbEnableHideCredCancels->Enabled = false;
+        cbShowSessionDate->Checked = false;
+        cbShowSessionDate->Enabled = false;
+        cbEnableHideCredCancels->Checked = false;
+        cbShowAccumulatedTotal->Checked = false;
+        cbShowAccumulatedTotal->Enabled = false;
+        cbShowTaxSummary->Checked = false;
         EnableDisableSectionsForBIRFormat();
     }
     else
