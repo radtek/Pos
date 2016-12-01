@@ -100,52 +100,6 @@ Currency ReportFinancialCalculations::GetTaxExemptSales(Database::TDBTransaction
     }
 
     return TaxExemptTotal;
-
-
-	/*Currency TaxExemptTotal;
-	Currency calctaxexempt;
-	Currency servicecharge;
-    Currency quantity;
-
-    TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
-    TIBSQL *qr1 = DBTransaction.Query(DBTransaction.AddQuery());
-
-    qr->SQL->Text =
-                    "SELECT DA.ARCHIVE_KEY, cast((coalesce(DA.BASE_PRICE,0) * abs(DA.QTY))+ DA.DISCOUNT_WITHOUT_TAX "
-                    " + sum(coalesce(DAOT.TAX_VALUE,0)) as numeric(17,4))price "
-                    "FROM DAYARCHIVE DA "
-                    "LEFT JOIN DAYARCORDERTAXES DAOT ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
-                    "WHERE DA.ARCHIVE_KEY  not IN ( "
-                            "SELECT ARCHIVE_KEY "
-                            "FROM DAYARCORDERTAXES "
-                            "WHERE ((TAX_TYPE = 0)  AND TAX_VALUE <> 0) "
-                        ")  AND (UPPER(DA.DISCOUNT_REASON) NOT LIKE '%DIPLOMAT%') "
-                         " group by da.ARCHIVE_KEY,da.DISCOUNT_WITHOUT_TAX,da.BASE_PRICE,da.QTY ";
-	qr->ExecQuery();
-
-    while(!qr->Eof)
-    {
-        TaxExemptTotal += qr->FieldByName("PRICE")->AsCurrency;
-        qr->Next();
-    }
-    qr->Close();
-    qr1->SQL->Text = "SELECT TAX_VALUE "
-                    "FROM DAYARCORDERTAXES DAOT "
-                    "INNER JOIN DAYARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
-                    "INNER JOIN DAYARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                    "WHERE TAX_TYPE IN ('2','4','5') AND DAB.TERMINAL_NAME = :Terminal_Name ";
-    qr1->ParamByName("Terminal_Name")->AsString = deviceName;
-    qr1->ExecQuery();
-    while(!qr1->Eof)
-    {
-        servicecharge += qr1->FieldByName("TAX_VALUE")->AsDouble;
-        qr1->Next();
-    }
-    qr1->Close();
-    if(TaxExemptTotal != 0) {
-        TaxExemptTotal = TaxExemptTotal - servicecharge;
-    }
-    return TaxExemptTotal;*/
 }
 
 Currency ReportFinancialCalculations::GetServiceCharge(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
@@ -915,54 +869,6 @@ Currency ReportFinancialCalculations::GetZeroRatedSales(Database::TDBTransaction
 		throw;
 	}
 	return zeroratedsalesvalue;
-	/*Currency zeroratedsalesvalue;
-	Currency calctaxexempt;
-	Currency servicecharge;
-    Currency quantity;
-
-    TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
-    TIBSQL *qr1 = DBTransaction.Query(DBTransaction.AddQuery());
-
-    qr->SQL->Text = "SELECT DA.ARCHIVE_KEY, DA.PRICE, DA.QTY "
-                    "FROM DAYARCHIVE DA "
-                    "LEFT JOIN DAYARCORDERTAXES DAOT ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
-                    "WHERE DA.ARCHIVE_KEY NOT IN ( "
-                        "SELECT ARCHIVE_KEY "
-                        "FROM DAYARCORDERTAXES "
-                        "WHERE (TAX_TYPE = 0) and TAX_VALUE = 0 "
-                    ") "
-                    "GROUP BY 1,2,3 ";
-	qr->ExecQuery();
-
-    while(!qr->Eof)
-    {
-        calctaxexempt = qr->FieldByName("PRICE")->AsCurrency;
-        quantity = qr->FieldByName("QTY")->AsCurrency;
-        zeroratedsalesvalue += calctaxexempt * quantity;
-
-        // Get the ARCHIVE key for all tax exempt items
-        qr1->SQL->Text = "SELECT TAX_VALUE "
-                         "FROM DAYARCORDERTAXES "
-                         "WHERE TAX_TYPE IN ('2','4') AND ARCHIVE_KEY=:ARCKEY ";
-
-        qr1->ParamByName("ARCKEY")->AsInteger = qr->FieldByName("ARCHIVE_KEY")->AsInteger;
-        qr1->ExecQuery();
-        while(!qr1->Eof)
-        {
-            servicecharge += qr1->FieldByName("TAX_VALUE")->AsCurrency;
-            qr1->Next();
-        }
-        qr1->Close();
-        qr->Next();
-    }
-
-	qr->Close();
-
-    if(zeroratedsalesvalue != 0) {
-        zeroratedsalesvalue = zeroratedsalesvalue - servicecharge;
-    }*/
-
-    //return zeroratedsalesvalue;
 }
 
 Currency ReportFinancialCalculations::GetTotalDiscountValue(Database::TDBTransaction &DBTransaction, AnsiString deviceName)

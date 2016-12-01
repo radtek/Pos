@@ -188,6 +188,8 @@ public:
     TCalculatedTotals GetCashDrawerOpenTotals(Database::TDBTransaction &dbTransaction, TGlobalSettings* globalSettings, UnicodeString deviceName);
     TDateTime GetPreviousZedTimeForTerminal(Database::TDBTransaction &dbTransaction, UnicodeString terminalName);
     TDateTime GetTransDateForTerminal(Database::TDBTransaction &dbTransaction, UnicodeString terminalName);
+    void DataCalculationUtilities::PrinterFormatinTwoSections(TPrintout* printOut);
+    void DataCalculationUtilities::PrinterFormatinThreeSections(TPrintout* printOut);
 };
 
 struct TPointTransaction

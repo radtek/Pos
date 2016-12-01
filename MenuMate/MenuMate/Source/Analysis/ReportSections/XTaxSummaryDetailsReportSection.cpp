@@ -25,7 +25,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     if(!printOut->BlindBalanceUsed)
         return;
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-    const Currency todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+    const Currency todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
     Currency taxExemptSales = 0;
     Currency salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName);
     Currency serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName);
@@ -45,7 +45,6 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         discountAndSurcharge = 0;
     }
     const Currency taxSales = 0;
-    //taxExemptSales -= zeroratedsales;
 
     if(_globalSettings->UseBIRFormatInXZReport)
     {
@@ -67,7 +66,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     {
         sales_tax.clear();
         GetDifferentTotalSalesTax(*_dbTransaction, deviceName);
-        SetPrinterFormatToMiddle(printOut);
+        dataCalculationUtilities->PrinterFormatinTwoSections(printOut); //SetPrinterFormatToMiddle(printOut);
 
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "";
@@ -197,15 +196,4 @@ void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTra
     salesTaxQuery->Close();
 }
 
-void XTaxSummaryDetailsReportSection::SetPrinterFormatToMiddle(TPrintout* printOut)
-{
-    printOut->PrintFormat->Line->ColCount = 4;
 
-    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
-    //printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4 + 8;
-    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4;//printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]
-        //->Width - printOut->PrintFormat->Line->Columns[1]->Width;
-    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-}

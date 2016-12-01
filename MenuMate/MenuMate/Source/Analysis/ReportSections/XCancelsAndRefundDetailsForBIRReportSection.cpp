@@ -40,13 +40,8 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut)
                         "select "
                             "sum(PRICE_LEVEL0)PRICE_LEVEL0, "
                             "sum(PRICE_LEVEL1)PRICE_LEVEL1, "
-                            //"PRICE_LEVEL0, "
-                            //"PRICE_LEVEL1, "
                             "HAPPY_HOUR HAPPYHOUR, "
-                            //"CONTACTS.NAME, "
-                            //"SECURITY.NOTE, "
                             "SECURITY.TIME_STAMP "
-							//"QTY "
                         "from "
                             "DAYARCHIVE "
                             "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =DAYARCHIVE.SECURITY_REF "
@@ -123,12 +118,12 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut)
 
         Currency TotalCanceled = 0;
 
-        SetPrinterFormatInMiddle(printOut);
-        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4 + 10;
+        dataCalcUtils.PrinterFormatinThreeSections(printOut);
+        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/2.5 ;
         printOut->PrintFormat->Line->Columns[1]->Text = "Void and Refund";
         printOut->PrintFormat->AddLine();
 
-        SetPrinterFormatInMiddle(printOut);
+        dataCalcUtils.PrinterFormatinThreeSections(printOut);
         printOut->PrintFormat->Line->Columns[1]->Text = "Void ";
         printOut->PrintFormat->Line->Columns[2]->Text = FloatToStr(qty);
 
@@ -143,13 +138,11 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut)
         double total_qty = qty + fabs(refund_qty);
         Currency total_amount = total_price + refund_total_price;
 
-        //SetSingleColumnPrinterFormat(printOut);
         printOut->PrintFormat->Line->Columns[1]->Line();
         printOut->PrintFormat->Line->Columns[2]->Line();
         printOut->PrintFormat->Line->Columns[3]->Line();
         printOut->PrintFormat->AddLine();
 
-        //SetPrinterFormat(printOut);
 
         printOut->PrintFormat->Line->Columns[1]->Text = "Total";
         printOut->PrintFormat->Line->Columns[2]->Text = FloatToStr(total_qty);
@@ -157,20 +150,7 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->AddLine();
         SetSingleColumnPrinterFormat(printOut);
         printOut->PrintFormat->Line->Columns[0]->Text = "";
-        //printOut->PrintFormat->NewLine();
         printOut->PrintFormat->AddLine();
-}
-
-void XCancelsAndRefundDetailsForBIRReportSection::SetPrinterFormat(TPrintout* printOut)
-{
-    printOut->PrintFormat->Line->ColCount = 3;
-    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 3;
-    printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 3;
-    printOut->PrintFormat->Line->Columns[1]->Alignment = taCenter;
-    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]
-            ->Width - printOut->PrintFormat->Line->Columns[1]->Width;//printOut->PrintFormat->Width - (printOut->PrintFormat->Width * 7 / 9);
-    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
 }
 
 void XCancelsAndRefundDetailsForBIRReportSection::SetSingleColumnPrinterFormat(TPrintout* printOut)
@@ -180,22 +160,23 @@ void XCancelsAndRefundDetailsForBIRReportSection::SetSingleColumnPrinterFormat(T
     printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
 }
 
-void XCancelsAndRefundDetailsForBIRReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
+/*void XCancelsAndRefundDetailsForBIRReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
 {
     printOut->PrintFormat->Line->ColCount = 4;
-    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
+
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3.5;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/5;
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taCenter;
+    /*printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
     printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
     printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4;
     printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
     printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4 - 3;
     printOut->PrintFormat->Line->Columns[2]->Alignment = taCenter;
-    printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width/4;// - printOut->PrintFormat->Line->Columns[1]
-            //->Width - printOut->PrintFormat->Line->Columns[2]->Width;//printOut->PrintFormat->Width - (printOut->PrintFormat->Width * 7 / 9);
+    printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/4;
     printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
-}
-
-
-
-
+}*/
 
 #pragma package(smart_init)

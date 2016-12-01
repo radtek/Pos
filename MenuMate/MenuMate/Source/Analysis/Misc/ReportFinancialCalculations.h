@@ -28,7 +28,6 @@ public:
     TFinancialDetails GetFinancialDetails(Database::TDBTransaction &DBTransaction, TTransactionInfo &TransactionInfo,AnsiString DeviceName);
     Currency GetZeroRatedSales(Database::TDBTransaction &DBTransaction, AnsiString deviceName);
     Currency GetTotalDiscountValue(Database::TDBTransaction &DBTransaction, AnsiString deviceName);
-    //void GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, struct sales_tax, std::vector<TSalesTax> taxProfiles);
 
 private:
     void GetBilledSalesDetail(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName);

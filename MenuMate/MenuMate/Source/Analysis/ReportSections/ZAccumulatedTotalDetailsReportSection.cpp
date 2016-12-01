@@ -46,7 +46,7 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 
     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
-        SetPrinterFormatInMiddle(printOut);
+        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
         printOut->PrintFormat->Line->Columns[1]->Text = "Beginning OR No.";
         printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(startInvoiceNumber);
         printOut->PrintFormat->AddLine();
@@ -54,14 +54,12 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[1]->Text = "Ending OR No.";
         printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(endInvoiceNumber);
         printOut->PrintFormat->AddLine();
-        SetPrinterFormatInMiddle(printOut);
         printOut->PrintFormat->Line->Columns[1]->Text = "Accumulated";
         printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
         printOut->PrintFormat->AddLine();
         printOut->PrintFormat->Line->Columns[1]->Text = "Grand Total";
         printOut->PrintFormat->Line->Columns[2]->Text = "";
         printOut->PrintFormat->AddLine();
-        SetPrinterFormatInMiddle(printOut);
         int value = dataCalculationUtilities->GetZedKey(*_dbTransaction);
         value += 1;
         printOut->PrintFormat->Line->Columns[1]->Text = "Z-Counter";
@@ -209,20 +207,6 @@ AnsiString ZAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
         lastEndInvoiceNum = "0";
     }
 	return lastEndInvoiceNum;
-}
-
-
-void ZAccumulatedTotalDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
-{
-    printOut->PrintFormat->Line->ColCount = 4;
-    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
-    //printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4 + 8;
-    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4;//printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]
-            //->Width - printOut->PrintFormat->Line->Columns[1]->Width;
-    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-    printOut->PrintFormat->Line->Columns[3]->Width = 0;
 }
 
 void ZAccumulatedTotalDetailsReportSection::SetPrinterFormatForSingleColumn(TPrintout* printOut)

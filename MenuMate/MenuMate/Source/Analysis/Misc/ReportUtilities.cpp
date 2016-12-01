@@ -2,6 +2,7 @@
 #include "ManagerReports.h"
 #include "SecurityReference.h"
 #include "MMMessageBox.h"
+#include "Printout.h"
 __fastcall TTransactionCount::TTransactionCount()
 {
 	Count = 0;
@@ -750,5 +751,27 @@ TDateTime DataCalculationUtilities::GetTransDateForTerminal(Database::TDBTransac
     return trans_Date;
 }
 
+void DataCalculationUtilities::PrinterFormatinThreeSections(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 4;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3.5;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/4;
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taCenter;
+    printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/4;
+    printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
 
+ }
+
+void DataCalculationUtilities::PrinterFormatinTwoSections(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 4;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/2.5;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/2.5;
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
+    printOut->PrintFormat->Line->Columns[3]->Width = 0;
+ }
 

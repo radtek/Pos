@@ -913,7 +913,7 @@
 				<DependentOn>ErrorPrinter.h</DependentOn>
 				<BuildOrder>245</BuildOrder>
 			</CppCompile>
-			<None Include="enum.h">
+			<None Include="Enum.h">
 				<BuildOrder>35</BuildOrder>
 				<BuildOrder>144</BuildOrder>
 			</None>

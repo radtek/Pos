@@ -141,18 +141,12 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
         }
         if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
         {
-            //printOut->PrintFormat->Line->Columns[0]->Text = "";
-            //printOut->PrintFormat->AddLine();
-            //printOut->PrintFormat->Line->ColCount = 1;
-            //printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
-            SetPrinterFormatInMiddle(printOut);
+
+            dataCalculationUtilities->PrinterFormatinThreeSections(printOut);
             printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-            //printOut->PrintFormat->Line->Columns[0]->Line();
             printOut->PrintFormat->Line->Columns[1]->Text = "Payments";
             printOut->PrintFormat->AddLine();
-            //printout->PrintFormat->Line->Columns[1]->();
-           // printOut->PrintFormat->AddLine();
-            //SetPrinterFormat(printOut);
+
         }
 
         std::map <UnicodeString, TSumPayments> ::iterator itCurrentPayment;
@@ -249,19 +243,15 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
 
             if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
             {
-                //SetSingleColumnPrinterFormat(printOut);
-                SetPrinterFormatInMiddle(printOut);
+                dataCalculationUtilities->PrinterFormatinThreeSections(printOut);
                 printOut->PrintFormat->Line->Columns[1]->Line();
                 printOut->PrintFormat->Line->Columns[2]->Line();
                 printOut->PrintFormat->Line->Columns[3]->Line();
                 printOut->PrintFormat->AddLine();
-                //SetPrinterFormat(printOut);
 
-                //printOut->PrintFormat->Add("Total |" + dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal ));
                 printOut->PrintFormat->Line->Columns[1]->Text = "Total";
                 printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(total_payment);
                 printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal );
-                //printOut->PrintFormat->Line->Columns[1]->DoubleLine();
                 printOut->PrintFormat->AddLine();
                 SetSingleColumnPrinterFormat(printOut);
                 printOut->PrintFormat->Line->Columns[0]->Text = "";
@@ -709,14 +699,13 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
         }
         else
         {
-            SetPrinterFormatInMiddle(printOut);
+            dataCalculationUtilities->PrinterFormatinThreeSections(printOut);
             printOut->PrintFormat->Line->Columns[1]->Text = "Payments";
             printOut->PrintFormat->AddLine();
             printOut->PrintFormat->Line->Columns[1]->Line();
             printOut->PrintFormat->Line->Columns[2]->Line();
             printOut->PrintFormat->Line->Columns[3]->Line();
             printOut->PrintFormat->AddLine();
-            //SetPrinterFormat(printOut);
             printOut->PrintFormat->Line->Columns[1]->Text = "Total";
             printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(total_payment);
             printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(fabs(groupGrandTotal));
@@ -729,38 +718,9 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
 
 }
 
-void XTransactionSummaryGroupDetailsReportSection::SetPrinterFormat(TPrintout* printOut)
-{
-    printOut->PrintFormat->Line->ColCount = 3;
-    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 3;
-    printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 3;
-    printOut->PrintFormat->Line->Columns[1]->Alignment = taCenter;
-    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]
-            ->Width - printOut->PrintFormat->Line->Columns[1]->Width;//printOut->PrintFormat->Width - (printOut->PrintFormat->Width * 7 / 9);
-    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-}
-
 void XTransactionSummaryGroupDetailsReportSection::SetSingleColumnPrinterFormat(TPrintout* printOut)
 {
     printOut->PrintFormat->Line->ColCount = 1;
     printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
     printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
 }
-
-void XTransactionSummaryGroupDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
-{
-    printOut->PrintFormat->Line->ColCount = 4;
-    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
-    printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4;
-    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4 - 3;
-    printOut->PrintFormat->Line->Columns[2]->Alignment = taCenter;
-    printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width/4;// - printOut->PrintFormat->Line->Columns[1]
-            //->Width - printOut->PrintFormat->Line->Columns[2]->Width;//printOut->PrintFormat->Width - (printOut->PrintFormat->Width * 7 / 9);
-    printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
-}
-
-
-

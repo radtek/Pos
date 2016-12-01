@@ -44,7 +44,9 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 
     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
-        SetPrinterFormatInMiddle(printOut);
+
+        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
+
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "Beginning OR No.";
         printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(startInvoiceNumber);
@@ -206,13 +208,3 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
 	return lastEndInvoiceNum;
 }
 
-void XAccumulatedTotalDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
-{
-    printOut->PrintFormat->Line->ColCount = 4;
-    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
-    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4 + 8;
-    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4;
-    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-    printOut->PrintFormat->Line->Columns[3]->Width = 0;
-}

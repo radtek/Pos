@@ -47,7 +47,7 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
         printOut->PrintFormat->Line->FontInfo.Reset();
         printOut->PrintFormat->Line->Columns[0]->Text = "";
-        SetPrinterFormatInMiddle(printOut);
+        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
         printOut->PrintFormat->Line->Columns[1]->Text = "Report Date:";
         printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("dd/mm/yyyy");
         printOut->PrintFormat->AddLine();
@@ -66,7 +66,7 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->AddLine();
 
         printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
-        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd/mm/yyyy");//Now().FormatString("dd/mm/yyyy");
+        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd/mm/yyyy");
         printOut->PrintFormat->AddLine();
     }
 
@@ -184,11 +184,9 @@ void XReportDateTimeReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
 {
     printOut->PrintFormat->Line->ColCount = 4;
     printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width  / 4 - 2;
-    //printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
     printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width  / 4 + 8;
     printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4;//printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]
-            //->Width - printOut->PrintFormat->Line->Columns[1]->Width;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  / 4;
     printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
     printOut->PrintFormat->Line->Columns[3]->Width = 0;
 }
