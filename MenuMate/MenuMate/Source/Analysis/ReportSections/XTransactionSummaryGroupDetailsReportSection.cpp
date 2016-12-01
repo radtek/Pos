@@ -170,11 +170,11 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
                          printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(ThisTransaction.Count);
                          if((itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount) < 0)
                          {
-                            printOut->PrintFormat->Line->Columns[3]->Text = "(" + dataFormatUtilities->FormatMMReportCurrency( fabs(itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount)) + ")";
+                            printOut->PrintFormat->Line->Columns[3]->Text = "(" + CurrToStrF(fabs(itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount), ffNumber, CurrencyDecimals) + ")";
                          }
                          else
                          {
-                            printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount);
+                            printOut->PrintFormat->Line->Columns[3]->Text = CurrToStrF((itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount), ffNumber, CurrencyDecimals);//dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount);
                          }
                          printOut->PrintFormat->AddLine();
                          total_payment += ThisTransaction.Count;
@@ -250,8 +250,8 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
                 printOut->PrintFormat->AddLine();
 
                 printOut->PrintFormat->Line->Columns[1]->Text = "Total";
-                printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(total_payment);
-                printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal );
+                printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(total_payment, ffNumber, CurrencyDecimals);
+                printOut->PrintFormat->Line->Columns[3]->Text = CurrToStrF(groupGrandTotal, ffNumber, CurrencyDecimals);
                 printOut->PrintFormat->AddLine();
                 SetSingleColumnPrinterFormat(printOut);
                 printOut->PrintFormat->Line->Columns[0]->Text = "";
@@ -708,7 +708,7 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
             printOut->PrintFormat->AddLine();
             printOut->PrintFormat->Line->Columns[1]->Text = "Total";
             printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(total_payment);
-            printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(fabs(groupGrandTotal));
+            printOut->PrintFormat->Line->Columns[3]->Text = CurrToStrF(fabs(groupGrandTotal), ffNumber, CurrencyDecimals);
             printOut->PrintFormat->AddLine();
             SetSingleColumnPrinterFormat(printOut);
             printOut->PrintFormat->Line->Columns[0]->Text = "";

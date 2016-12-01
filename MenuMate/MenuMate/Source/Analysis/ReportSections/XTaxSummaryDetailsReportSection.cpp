@@ -74,7 +74,14 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->AddLine();
 
         printOut->PrintFormat->Line->Columns[1]->Text = "VATable Sales";
-        printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(taxSales);
+        if(taxSales < 0)
+        {
+           printOut->PrintFormat->Line->Columns[2]->Text = "(" + CurrToStrF(fabs(taxSales), ffNumber, CurrencyDecimals) + ")";
+        }
+        else
+        {
+            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(taxSales, ffNumber, CurrencyDecimals);
+        }
         printOut->PrintFormat->AddLine();
 
         if(sales_tax.size() > 0)
@@ -84,11 +91,11 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
                 printOut->PrintFormat->Line->Columns[1]->Text = FloatToStr((it->Rate)) + "% VAT";
                 if(it->TaxSum < 0)
                 {
-                   printOut->PrintFormat->Line->Columns[2]->Text = "(" + dataFormatUtilities->FormatMMReportCurrency(abs(it->TaxSum)) + ")";
+                   printOut->PrintFormat->Line->Columns[2]->Text = "(" + CurrToStrF(abs(it->TaxSum), ffNumber, CurrencyDecimals) + ")";
                 }
                 else
                 {
-                    printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(it->TaxSum);//salesTax);
+                    printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(it->TaxSum, ffNumber, CurrencyDecimals);
                 }
                 printOut->PrintFormat->AddLine();
             }
@@ -102,26 +109,26 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[1]->Text = "VAT Exempt Sales";
         if((taxExemptSales - zeroratedsales) < 0)
         {
-           printOut->PrintFormat->Line->Columns[2]->Text ="(" + dataFormatUtilities->FormatMMReportCurrency(fabs(taxExemptSales - zeroratedsales)) + ")";
+           printOut->PrintFormat->Line->Columns[2]->Text ="(" + CurrToStrF(fabs(taxExemptSales - zeroratedsales), ffNumber, CurrencyDecimals) + ")";
         }
         else
         {
-            printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(taxExemptSales - zeroratedsales);
+            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF((taxExemptSales - zeroratedsales), ffNumber, CurrencyDecimals);
         }
         printOut->PrintFormat->AddLine();
 
         printOut->PrintFormat->Line->Columns[1]->Text = "Zero-Rated Sales";
-        printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(zeroratedsales);
+        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(zeroratedsales, ffNumber, CurrencyDecimals);
         printOut->PrintFormat->AddLine();
 
         printOut->PrintFormat->Line->Columns[1]->Text = "Total Discount";
         if(totaldiscount < 0)
         {
-           printOut->PrintFormat->Line->Columns[2]->Text = "(" +dataFormatUtilities->FormatMMReportCurrency(fabs(totaldiscount)) + ")";
+           printOut->PrintFormat->Line->Columns[2]->Text = "(" +CurrToStrF(fabs(totaldiscount), ffNumber, CurrencyDecimals) + ")";
         }
         else
         {
-            printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(totaldiscount);
+            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(totaldiscount, ffNumber, CurrencyDecimals) ;
         }
         printOut->PrintFormat->AddLine();
         printOut->PrintFormat->Line->Columns[1]->Text = "";

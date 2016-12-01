@@ -220,7 +220,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                             DiscountTotal += ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total;
                             if(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total < 0)
                             {
-                                printout->PrintFormat->Add("|" + ((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + "(" + dataFormatUtilities->FormatMMReportCurrency( fabs(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total )) + ")" );
+                                printout->PrintFormat->Add("|" + ((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + "(" +CurrToStrF(fabs(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total ), ffNumber, CurrencyDecimals) + ")" );
                                 //printout->PrintFormat->Line->Columns[1]->Text = ((TStringList*)DiscountServerList->Objects[i])->Strings[j];
                                 //printout->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Count);
                                 //printout->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total);
@@ -228,7 +228,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                             }
                             else
                             {
-                               printout->PrintFormat->Add("|" + ((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total ) );
+                               printout->PrintFormat->Add("|" + ((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + CurrToStrF(fabs(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total ), ffNumber, CurrencyDecimals) );
                             }
                         }
                         else
@@ -283,11 +283,11 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                 show_discount_totals =  DiscountTotal;
                 if(show_discount_totals < 0)
                 {
-                   printout->PrintFormat->Add("|Total |" + IntToStr(total_discount_qty) +"|"+ "(" +dataFormatUtilities->FormatMMReportCurrency(fabs(show_discount_totals))+ ")"  );
+                   printout->PrintFormat->Add("|Total |" + CurrToStrF(total_discount_qty, ffNumber, CurrencyDecimals) +"|"+ "(" + CurrToStrF(fabs(show_discount_totals), ffNumber, CurrencyDecimals) + ")"  );
                 }
                 else
                 {
-                    printout->PrintFormat->Add("|Total |" + IntToStr(total_discount_qty) +"|"+ dataFormatUtilities->FormatMMReportCurrency(show_discount_totals) );
+                    printout->PrintFormat->Add("|Total |" + CurrToStrF(total_discount_qty, ffNumber, CurrencyDecimals)+"|"+ CurrToStrF(show_discount_totals, ffNumber, CurrencyDecimals) );
                 }
                 TCalculatedTotals DiscountsTotal(etcTotalDiscounts, DiscountTotal,DiscountTotal,0, 0);
                 transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcTotalDiscounts]] = DiscountsTotal;

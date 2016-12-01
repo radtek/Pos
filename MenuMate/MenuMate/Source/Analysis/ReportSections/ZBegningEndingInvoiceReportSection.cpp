@@ -81,11 +81,11 @@ void ZBegningEndingInvoiceReportSection::GetOutput(TPrintout* printOut)
 
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "Beginning Balance";
-        printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(openingBalance);
+        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(openingBalance, ffNumber, CurrencyDecimals);
         printOut->PrintFormat->AddLine();
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "Ending Balance";
-        printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
+        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(closingBalance, ffNumber, CurrencyDecimals);
         printOut->PrintFormat->AddLine();
     }
 

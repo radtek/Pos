@@ -55,7 +55,7 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(endInvoiceNumber);
         printOut->PrintFormat->AddLine();
         printOut->PrintFormat->Line->Columns[1]->Text = "Accumulated";
-        printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
+        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(closingBalance, ffNumber, CurrencyDecimals);
         printOut->PrintFormat->AddLine();
         printOut->PrintFormat->Line->Columns[1]->Text = "Grand Total";
         printOut->PrintFormat->Line->Columns[2]->Text = "";
