@@ -104,7 +104,7 @@ object frmCaptureDiscountDetails: TfrmCaptureDiscountDetails
         Width = 313
         Height = 22
         TabOrder = 0
-        Text = 'edCustomerName'
+        OnClick = edCustomerNameClick
       end
       object edAddress: TEdit
         Left = 8
@@ -112,7 +112,7 @@ object frmCaptureDiscountDetails: TfrmCaptureDiscountDetails
         Width = 313
         Height = 22
         TabOrder = 1
-        Text = 'edCustomerName'
+        OnClick = edAddressClick
       end
       object edTIN: TEdit
         Left = 8
@@ -120,7 +120,7 @@ object frmCaptureDiscountDetails: TfrmCaptureDiscountDetails
         Width = 313
         Height = 22
         TabOrder = 2
-        Text = 'edTIN'
+        OnClick = edTinClick
       end
       object edBusinessStyle: TEdit
         Left = 8
@@ -128,7 +128,7 @@ object frmCaptureDiscountDetails: TfrmCaptureDiscountDetails
         Width = 313
         Height = 22
         TabOrder = 3
-        Text = 'edBusinessStyle'
+        OnClick = edBusinessStyleClick
       end
       object edSCPWDNO: TEdit
         Left = 8
@@ -136,7 +136,7 @@ object frmCaptureDiscountDetails: TfrmCaptureDiscountDetails
         Width = 313
         Height = 22
         TabOrder = 4
-        Text = 'edSCPWDNO'
+        OnClick = edSCPWDNOClick
       end
       object btnOK: TTouchBtn
         Left = 8
@@ -154,6 +154,7 @@ object frmCaptureDiscountDetails: TfrmCaptureDiscountDetails
         LatchedColor = clBtnFace
         DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = btnOKClick
       end
       object btnCancel: TTouchBtn
         Left = 221
@@ -171,6 +172,7 @@ object frmCaptureDiscountDetails: TfrmCaptureDiscountDetails
         LatchedColor = clBtnFace
         DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = btnCancelClick
       end
     end
   end

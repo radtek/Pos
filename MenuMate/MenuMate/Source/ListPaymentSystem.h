@@ -195,6 +195,7 @@ protected:
      bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
      bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
      void ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction);
+     bool IsSCDOrPWDApplied(TPaymentTransaction &PaymentTransaction);
 };
 
 #endif

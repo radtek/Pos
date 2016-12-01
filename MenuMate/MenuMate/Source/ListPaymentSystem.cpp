@@ -51,6 +51,7 @@
 #include "DBWebUtil.h"
 #include <vector>
 #include "IBillCalculator.h"
+#include "CaptureCustomerDetails.h"
 #include "MallExportUpdateAdaptor.h"
 #include "PaymentTypeGroupsManager.h"
 #include "MallExportManager.h"
@@ -4338,6 +4339,19 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
                 }
+
+                //Check SCD Applied on Bill
+                bool isSCDApplied = IsSCDOrPWDApplied(PaymentTransaction);
+                if(isSCDApplied)
+                {
+                    std::auto_ptr <TfrmCaptureCustomerDetails> frmCaptureCustomerDetails(TfrmCaptureCustomerDetails::Create <TfrmCaptureCustomerDetails> (Screen->ActiveForm));
+                    if(frmCaptureCustomerDetails->ShowModal() == mrOk)
+                    {
+                       // frmCaptureCustomerDetails->
+                        PaymentComplete = true;
+                    }
+                }
+
 				if (PaymentComplete)
 				{
 					if (PaymentTransaction.CreditTransaction)
@@ -5741,5 +5755,31 @@ void TListPaymentSystem::SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeSt
 	}
 }
 //---------------------------------------------------------------------------
-
   /**************************DLF MALL END********************************************/
+bool TListPaymentSystem::IsSCDOrPWDApplied(TPaymentTransaction &paymentTransaction)
+{
+    for(int i = 0 ; i < paymentTransaction.Orders->Count ; i++)
+    {
+        TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[i];
+
+        BillCalculator::DISCOUNT_RESULT_LIST::iterator drIT = itemComplete->BillCalcResult.Discount.begin();
+
+        for( ; drIT != itemComplete->BillCalcResult.Discount.end(); drIT++ )
+        {
+            if(drIT->Name.UpperCase() != "DIPLOMAT" && drIT->Value != 0)
+            {
+                std::vector<UnicodeString> discountGroupList = drIT->DiscountGroupList;
+                std::vector<UnicodeString>::iterator gIT = discountGroupList.begin();
+
+                for( ; gIT != discountGroupList.end(); gIT++ )
+                {
+                    if( *gIT == SCD_DISCOUNT_GROUP ||  *gIT == PWD_DISCOUNT_GROUP)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+	return false;
+}
