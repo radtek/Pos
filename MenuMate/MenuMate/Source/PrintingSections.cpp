@@ -6462,7 +6462,7 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
         }
 	}
 
-	if (PrintJob->PaymentType != ptPreliminary)
+	if (PrintJob->PaymentType != ptPreliminary && !TGlobalSettings::Instance().HideRoundingOnReceipt)
 	{
 		pPrinter->Line->Columns[1]->Width = CurrToStrF(PrintJob->Transaction->Money.TotalRounding, ffNumber, CurrencyDecimals).Length() + 1;
 		pPrinter->Line->Columns[0]->Width = pPrinter->Width - pPrinter->Line->Columns[1]->Width;

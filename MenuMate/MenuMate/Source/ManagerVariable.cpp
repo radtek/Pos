@@ -3047,88 +3047,87 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                   vmgPOS, false);
 
 	SetVarStr( DBTransaction, vmMYOBMachineName, "MYOB Integration / Machine Name",
-		"Xero Integration / Machine Name.\r"
-		"Default is localhost",
-		vmg3rdPartyInterface, "localhost" );
+                "Xero Integration / Machine Name.\r"
+                "Default is localhost",
+                vmg3rdPartyInterface, "localhost" );
 
-		SetVarStr( DBTransaction, vmMYOBUserName, "MYOB Integration / Username",
-		"Xero Integration / Username.\r"
-		"Default is empty string",
-		vmg3rdPartyInterface, "" );
+	SetVarStr( DBTransaction, vmMYOBUserName, "MYOB Integration / Username",
+                "Xero Integration / Username.\r"
+                "Default is empty string",
+                vmg3rdPartyInterface, "" );
 
-		SetVarStr( DBTransaction, vmMYOBPassword, "MYOB Integration / Password",
-		"MYOB Integration / Password.\r"
-		"Default is empty string",
-		vmg3rdPartyInterface, "" );
+	SetVarStr( DBTransaction, vmMYOBPassword, "MYOB Integration / Password",
+                "MYOB Integration / Password.\r"
+                "Default is empty string",
+                vmg3rdPartyInterface, "" );
 
-		SetVarStr(DBTransaction, vmMYOBFolderPath, "MYOB Integration / Folder URL",
-		"MYOB Integration / Folder URL.\r"
-		"Default is C:\\Program Files\\Menumate\\" + MYOB_INTEGRATION_FOLDER,
-		vmg3rdPartyInterface, "C:\\Program Files\\Menumate\\" + MYOB_INTEGRATION_FOLDER);
+	SetVarStr(DBTransaction, vmMYOBFolderPath, "MYOB Integration / Folder URL",
+                "MYOB Integration / Folder URL.\r"
+                "Default is C:\\Program Files\\Menumate\\" + MYOB_INTEGRATION_FOLDER,
+                vmg3rdPartyInterface, "C:\\Program Files\\Menumate\\" + MYOB_INTEGRATION_FOLDER);
 
-		SetVarBool(DBTransaction,
-                    vmIsXeroEnabled,
-                    "Enable Thorlink",
-                    "This setting will enable or disable Thorlink.",
+	SetVarBool(DBTransaction, vmIsXeroEnabled,
+                "Enable Xero",
+                "This setting will enable or disable Xero.",
+                vmgPOS,
+                false);
+
+	SetVarBool(DBTransaction, vmIsMYOBEnabled,
+                    "Enable MYOB",
+                    "This setting will enable or disable MYOB.",
                     vmgPOS,
                     false);
-
-		SetVarBool(DBTransaction,
-                    vmIsMYOBEnabled,
-                    "Enable Thorlink",
-                    "This setting will enable or disable Thorlink.",
-                    vmgPOS,
-                    false);
-       SetVarBool(DBTransaction, vmOpenCashDrawer, "Open Cash Drawer",
+     SetVarBool(DBTransaction, vmOpenCashDrawer, "Open Cash Drawer",
                  "Open Cash Drawer after Zed"
                  "Default is False.",
                   vmgPOS, false);
-       SetVarBool(DBTransaction, vmHideReceiptNumberForRefundItem, "Hide Receipt Number when Refund Item",
+     SetVarBool(DBTransaction, vmHideReceiptNumberForRefundItem, "Hide Receipt Number when Refund Item",
                  "Hide Receipt Number when Refund Item"
                  "Default is False.",
                   vmgPOS, false);
        SetVarBool(DBTransaction, vmMergeSimilarItem, "Merge Similar item",
                  "Merge Similar item"
                  "Default is True.",
-                  vmgPOS, true);       SetVarBool(DBTransaction,vmCaptureRefundRefNo, "Capture Refund Ref. No",
-		"Capture Refund Ref. No.\r"
-		"Default is false",
-		vmgPrinting, false);
+                  vmgPOS, true);
+        SetVarBool(DBTransaction,vmCaptureRefundRefNo, "Capture Refund Ref. No",
+                "Capture Refund Ref. No.\r"
+                "Default is false",
+                vmgPrinting, false);
 		SetVarBool(DBTransaction,vmHideTaxInvoice, "Hide Tax Invoice",
-		"Hide Tax Invoice.\r"
-		"Default is false",
-		vmgPrinting, false);
+                "Hide Tax Invoice.\r"
+                "Default is false",
+                vmgPrinting, false);
 		SetVarStr(DBTransaction,vmReceiptDigits, "Digits for Receipts",
-		"Digits for Receipts.\r"
-		"Default is ",
-		vmgPrinting, "0");
+                "Digits for Receipts.\r"
+                "Default is ",
+                vmgPrinting, "0");
 		SetVarBool(DBTransaction,vmExportReprintReceipt, "Export Reprint Receipt",
-		"Export Reprint Receipt.\r"
-		"Default is false",
-		vmgPrinting, false);
+                "Export Reprint Receipt.\r"
+                "Default is false",
+                vmgPrinting, false);
 		SetVarBool(DBTransaction,vmSetVoidFooter, "Set For Void Footer",
-		"Set For Void Footer"
-		"Default is false",
-		vmgPrinting, false);
+                "Set For Void Footer"
+                "Default is false",
+                vmgPrinting, false);
 		SetVarBool(DBTransaction,vmSetSubHeader, "Set For Sub Header",
-		"Set For Sub Header"
-		"Default is false",
-		vmgPrinting, false);
+                "Set For Sub Header"
+                "Default is false",
+                vmgPrinting, false);
 		SetVarBool(DBTransaction,vmShowVoidOrRefund, "Show Void or Refund ",
-		"Show Void or Refund"
-		"Default is false",
-		vmgPrinting, false);
+                "Show Void or Refund"
+                "Default is false",
+                vmgPrinting, false);
  		SetVarBool(DBTransaction,vmShowVoidNumber, "Show Void or Refund number",
-		"Show Void or Refund number"
-		"Default is false",
-		vmgPrinting, false);
+                "Show Void or Refund number"
+                "Default is false",
+                vmgPrinting, false);
         SetVarStr( DBTransaction, vmEftPosTipGLCode, "EftPos Tip GLCode",
-            "EftPos Tip GLCode."
-            "Default is 860",
-            vmg3rdPartyInterface, "860" );
+                "EftPos Tip GLCode."
+                "Default is 860",
+                vmg3rdPartyInterface, "860" );
 		SetVarStr(DBTransaction,vmRefundReferenceLabel,"Refund Reference Label",
-		"Label for Refund reference in receipt print.",
-		vmgPrinting, "OR No.");
+                "Label for Refund reference in receipt print.",
+                vmgPrinting, "OR No.");
         SetVarBool(DBTransaction, vmHideRoundingOnReceipt, "Hide Rounding On Receipt",
                  "Rounding will be disable on receipt if setting is true"
                  "Default is False.",

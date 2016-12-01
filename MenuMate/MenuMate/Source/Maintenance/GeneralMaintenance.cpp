@@ -435,6 +435,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbOpenCashDrawer->Checked = TGlobalSettings::Instance().OpenCashDrawer;
     cbHideReceiptNumber->Checked = TGlobalSettings::Instance().HideReceiptNumberForRefundItem;
     cbMergeSimilarItem->Checked = TGlobalSettings::Instance().MergeSimilarItem;
+    cbHideRoundingOnReceipt->Checked = TGlobalSettings::Instance().HideRoundingOnReceipt;
 }
 
 //---------------------------------------------------------------------------
