@@ -894,7 +894,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
                                         "LEFT JOIN(SELECT ARCBILL_KEY, CAST(FIELD_VALUE*100 AS INT)FIELD_VALUE FROM "
                                             "(SELECT a.ARCBILL_KEY, CAST(a.FIELD_VALUE AS numeric(17,2))FIELD_VALUE "
                                                         "FROM MALLEXPORT_SALES a WHERE a.FIELD_INDEX = :FIELD_INDEX))TOTALNETSALE ON a.ARCBILL_KEY = TOTALNETSALE.ARCBILL_KEY "
-                                "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE ";
+                                "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE AND a.MALL_KEY = :MALL_KEY ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -908,6 +908,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = indexKey2;
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 1;
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
@@ -1001,7 +1002,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                                                         "meh.MM_NAME,Extract (Hour From a.DATE_CREATED) Hour_code "
                                  "FROM MALLEXPORT_SALES a "
                                  "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                 "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE  ";
+                                 "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE AND a.MALL_KEY = :MALL_KEY ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -1023,7 +1024,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                                             "Extract (Hour From a.DATE_CREATED) Hour_code "
                                      "FROM MALLEXPORT_SALES a "
                                      "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID"
-                                    " WHERE a.FIELD_INDEX = :FIELD_INDEX AND meh.IS_ACTIVE = :IS_ACTIVE ";
+                                    " WHERE a.FIELD_INDEX = :FIELD_INDEX AND meh.IS_ACTIVE = :IS_ACTIVE AND a.MALL_KEY = :MALL_KEY ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -1039,6 +1040,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = indexKey3;
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 1;
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
@@ -1068,7 +1070,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                                 "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE "
                                 "FROM MALLEXPORT_SALES a  "
                                 "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                "WHERE a.FIELD_INDEX IN(" + indexKeysList2 + ") AND meh.IS_ACTIVE = :IS_ACTIVE ";
+                                "WHERE a.FIELD_INDEX IN(" + indexKeysList2 + ") AND meh.IS_ACTIVE = :IS_ACTIVE AND a.MALL_KEY = :MALL_KEY  ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -1083,6 +1085,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                                 "ORDER BY 1 ASC ";
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 1;
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
@@ -1164,7 +1167,8 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                             "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
                                              "FROM MALLEXPORT_SALES a "
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                             "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE  ";
+                                             "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE  "
+                                             "AND a.MALL_KEY = :MALL_KEY ;
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -1183,7 +1187,8 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                      "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, cast(a.FIELD_VALUE as int ) FIELD_VALUE , a.VALUE_TYPE, a.Z_KEY, meh.MM_NAME  "
                                      "FROM "
                                         "MALLEXPORT_SALES a inner join MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                        "where a.FIELD_INDEX IN( " + indexKeysList2 + " ) AND meh.IS_ACTIVE = :IS_ACTIVE ";    //TODO AFTER DISCUSSION
+                                        "where a.FIELD_INDEX IN( " + indexKeysList2 + " ) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                        "AND a.MALL_KEY = :MALL_KEY ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -1197,6 +1202,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                     "ORDER BY 1 ASC  ";
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 1;
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
@@ -1250,7 +1256,8 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
                                                 "ELSE (a.FIELD_VALUE) END FIELD_VALUE, a.VALUE_TYPE "
                                       "FROM MALLEXPORT_SALES a "
                                       "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
-                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE ";
+                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                      "AND a.MALL_KEY = :MALL_KEY ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -1263,6 +1270,7 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4 ";
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 1;
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
@@ -1342,7 +1350,8 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
                                                 "a.VALUE_TYPE , a.Z_KEY "
                                     "FROM MALLEXPORT_SALES a "
                                     "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
-                                    "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE ";
+                                    "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                    "AND a.MALL_KEY = :MALL_KEY  ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -1356,6 +1365,7 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
                                                                 "ORDER BY 1 ASC ";
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 1;
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
@@ -1404,7 +1414,8 @@ void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBT
                                                     "ELSE (a.FIELD_VALUE) END FIELD_VALUE, a.VALUE_TYPE "
                                       "FROM MALLEXPORT_SALES a "
                                       "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
-                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE ";
+                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                      "AND a.MALL_KEY = :MALL_KEY  ";
          if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
@@ -1417,6 +1428,7 @@ void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBT
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4 ";
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 1;
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
