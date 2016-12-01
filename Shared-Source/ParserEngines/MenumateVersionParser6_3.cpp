@@ -34,6 +34,12 @@ void TApplyParser::upgrade6_33Tables()
 	update6_33Tables();
 }
 
+// 6.34
+void TApplyParser::upgrade6_34Tables()
+{
+	update6_34Tables();
+}
+
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -281,9 +287,44 @@ void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBCon
         "FROM "
             "CONTACTTIME",
         inDBControl );
-
 }
+//------------------------------------------------------------------------------------
+void TApplyParser::update6_34Tables()
+{
+    Create6_34GeneratorSeniorCustomerDetails(_dbControl);
+    Create6_34TableSeniorCustomerDetails(_dbControl);
+}
+//---------------------------------------------------------------------------
+void TApplyParser::Create6_34TableSeniorCustomerDetails(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "SENIOR_CUSTOMER_DETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE SENIOR_CUSTOMER_DETAILS "
+		"( "
+		"   SENIOR_CUSTOMER_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
+        "   ARCBILL_KEY INT NOT NULL, "
+		"   FIELD_HEADER varchar(50),"
+        "   FIELD_VALUE VARCHAR(150),"
+        "   DATA_TYPE VARCHAR(25)"
+		");",
+		inDBControl );
+    }
+}
+//---------------------------------------------------------------------------------
+void TApplyParser::Create6_34GeneratorSeniorCustomerDetails(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_SENIOR_CUSTOMER_DETAILS_KEY", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_SENIOR_CUSTOMER_DETAILS_KEY;", inDBControl
+        );
 
+        executeQuery(
+            "SET GENERATOR GEN_SENIOR_CUSTOMER_DETAILS_KEY TO 0;", inDBControl
+        );
+    }
+}
 
 }
 
