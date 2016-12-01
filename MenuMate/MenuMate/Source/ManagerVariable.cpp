@@ -3129,6 +3129,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarStr(DBTransaction,vmRefundReferenceLabel,"Refund Reference Label",
 		"Label for Refund reference in receipt print.",
 		vmgPrinting, "OR No.");
+        SetVarBool(DBTransaction, vmHideRoundingOnReceipt, "Hide Rounding On Receipt",
+                 "Rounding will be disable on receipt if setting is true"
+                 "Default is False.",
+                  vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

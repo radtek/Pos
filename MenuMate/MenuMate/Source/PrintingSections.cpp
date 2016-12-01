@@ -3899,16 +3899,19 @@ bool TPrintSection::scdHasBeenApplied( BillCalculator::DISCOUNT_RESULT_LIST inDi
 
 	for( ; drIT != inDiscount.end(); drIT++ )
 	{
-		std::vector<UnicodeString> discountGroupList = drIT->DiscountGroupList;
-		std::vector<UnicodeString>::iterator gIT = discountGroupList.begin();
+        if(drIT->Name.UpperCase() != "DIPLOMAT" && drIT->Value != 0)
+        {
+            std::vector<UnicodeString> discountGroupList = drIT->DiscountGroupList;
+            std::vector<UnicodeString>::iterator gIT = discountGroupList.begin();
 
-		for( ; gIT != discountGroupList.end(); gIT++ )
-		{
-			if( *gIT == SCD_DISCOUNT_GROUP )
-			{
-				return true;
-			}
-		}
+            for( ; gIT != discountGroupList.end(); gIT++ )
+            {
+                if( *gIT == SCD_DISCOUNT_GROUP ||  *gIT == PWD_DISCOUNT_GROUP)
+                {
+                    return true;
+                }
+            }
+        }
 	}
 	return false;
 }
@@ -3925,9 +3928,11 @@ void TPrintSection::printSCDSummary()
 
 void TPrintSection::populateSCDSummary( std::vector<AnsiString>& inSCDSummary )
 {
-	inSCDSummary.push_back( "Name     : ________________________________________" );
-	inSCDSummary.push_back( "ID No    : ________________________________________" );
-	inSCDSummary.push_back( "Signature: ________________________________________" );
+	inSCDSummary.push_back( "Customer Name : ___________________________________" );
+	inSCDSummary.push_back( "Address       : ___________________________________" );
+	inSCDSummary.push_back( "TIN           : ___________________________________" );
+	inSCDSummary.push_back( "Business Style: ___________________________________" );
+	inSCDSummary.push_back( "SCD/PWD #     : ___________________________________" );
 }
 
 void TPrintSection::printSCDSummary( std::vector<AnsiString> inSCDSummary )
@@ -6247,6 +6252,20 @@ void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
     if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
                 && TGlobalSettings::Instance().SetVoidFooter)
     {
+        bool scdApplied = false; // Senior Citizen Discount
+
+        for (int i = 0; i < WorkingOrdersList->Count; i++)
+        {
+            TItemComplete *Item = (TItemComplete*)WorkingOrdersList->Items[i];
+
+            scdApplied = scdHasBeenApplied( Item->BillCalcResult.Discount );
+            if(scdApplied)
+                break;
+        }
+		if( scdApplied )
+		{
+			printSCDSummary();
+		}
         if (PrintJob->ReceiptVoidFooter->Count == 0)
         {
             Empty = true;
@@ -6278,6 +6297,20 @@ void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
     if((!TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction))
          || !TGlobalSettings::Instance().SetVoidFooter)
     {
+        bool scdApplied = false; // Senior Citizen Discount
+
+        for (int i = 0; i < WorkingOrdersList->Count; i++)
+        {
+            TItemComplete *Item = (TItemComplete*)WorkingOrdersList->Items[i];
+
+            scdApplied = scdHasBeenApplied( Item->BillCalcResult.Discount );
+            if(scdApplied)
+                break;
+        }
+		if( scdApplied )
+		{
+			printSCDSummary();
+		}
         if (PrintJob->ReceiptFooter->Count == 0)
         {
             Empty = true;

@@ -4038,7 +4038,14 @@ void __fastcall TfrmGeneralMaintenance::cbMergeSimilarItemClick(TObject *Sender)
 	DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-
+void __fastcall TfrmGeneralMaintenance::cbHideRoundingOnReceiptClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().HideRoundingOnReceipt = cbHideRoundingOnReceipt->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmHideRoundingOnReceipt, TGlobalSettings::Instance().HideRoundingOnReceipt);
+	DBTransaction.Commit();
+}
 
 
 
