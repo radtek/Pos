@@ -9458,7 +9458,7 @@ void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime En
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
 			 "CONTACTS.NAME,"
-			 "CONTACTS.TOTAL_SPENT TOTAL_POINTS,"
+			 "cast((SELECT distinct SUM(ADJUSTMENT) TOTAL FROM POINTSTRANSACTIONS a WHERE CONTACTS_KEY = CONTACTS.CONTACTS_KEY) as Numeric(15,4)) TOTAL_POINTS,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
 			 "POINTSTRANSACTIONS.INVOICE_NUMBER,"
@@ -9502,7 +9502,7 @@ void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime En
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
 			 "CONTACTS.NAME,"
-			 "CONTACTS.TOTAL_SPENT TOTAL_POINTS,"
+			 "cast((SELECT distinct SUM(ADJUSTMENT) TOTAL FROM POINTSTRANSACTIONS a WHERE CONTACTS_KEY = CONTACTS.CONTACTS_KEY) as Numeric(15,4)) TOTAL_POINTS,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
 			 "POINTSTRANSACTIONS.INVOICE_NUMBER,"
@@ -9564,18 +9564,28 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
 			 "CONTACTS.NAME,"
-			 "CONTACTS.TOTAL_SPENT TOTAL_POINTS,"
+			 "cast((SELECT distinct SUM(ADJUSTMENT) TOTAL FROM POINTSTRANSACTIONS a WHERE CONTACTS_KEY = CONTACTS.CONTACTS_KEY) as Numeric(15,4)) TOTAL_POINTS,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
 			 "POINTSTRANSACTIONS.INVOICE_NUMBER,"
-			 "ARCBILL.TIME_STAMP,"
+			 "ARCBILL.TIME_STAMP, "
 			 "SUM(POINTSTRANSACTIONS.ADJUSTMENT) POINTS,"
-			 "ARCBILL.TOTAL TOTAL_SPENT "
+			 "Cast(ARCBILL.TOTAL / Invoice_number_count as Numeric(17,4)) TOTAL_SPENT "
 		"FROM "
 			 "POINTSTRANSACTIONS LEFT JOIN CONTACTS ON "
 				  "POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
 			 "LEFT JOIN ARCBILL ON "
 				  "POINTSTRANSACTIONS.INVOICE_NUMBER = ARCBILL.INVOICE_NUMBER "
+			"left join "
+			"( "
+			  "select count(POINTSTRANSACTIONS.INVOICE_NUMBER) as Invoice_number_count, POINTSTRANSACTIONS.CONTACTS_KEY contact_key, POINTSTRANSACTIONS.INVOICE_NUMBER  from POINTSTRANSACTIONS "
+			  "group by "
+			  "POINTSTRANSACTIONS.INVOICE_NUMBER, "
+			  "POINTSTRANSACTIONS.CONTACTS_KEY "
+			") as Invoice_Count on "
+			"Invoice_Count.contact_key = POINTSTRANSACTIONS.CONTACTS_KEY "
+			"and Invoice_Count.INVOICE_NUMBER = POINTSTRANSACTIONS.INVOICE_NUMBER "
+
 		"WHERE "
 			 "(CONTACTS.CONTACT_TYPE = 2 OR CONTACTS.CONTACT_TYPE = 4) AND "
 			 "ARCBILL.TIME_STAMP > :StartTime AND "
@@ -9604,7 +9614,8 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
 			 "POINTSTRANSACTIONS.INVOICE_NUMBER,"
 			 "ARCBILL.TIME_STAMP,"
-			 "ARCBILL.TOTAL "
+			 "ARCBILL.TOTAL, "
+             "Invoice_number_count "
 
 		"UNION ALL "
 
@@ -9613,18 +9624,30 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			 "CONTACTS.CONTACTS_KEY,"
 			 "CONTACTS.MEMBER_NUMBER,"
 			 "CONTACTS.NAME,"
-			 "CONTACTS.TOTAL_SPENT TOTAL_POINTS,"
+			 "cast((SELECT distinct SUM(ADJUSTMENT) TOTAL FROM POINTSTRANSACTIONS a WHERE CONTACTS_KEY = CONTACTS.CONTACTS_KEY) as Numeric(15,4)) TOTAL_POINTS,"
              "CONTACTS.INITIAL_EARNT_POINTS,"
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
 			 "POINTSTRANSACTIONS.INVOICE_NUMBER,"
-			 "DAYARCBILL.TIME_STAMP,"
+			 "DAYARCBILL.TIME_STAMP, "
 			 "SUM(POINTSTRANSACTIONS.ADJUSTMENT) POINTS,"
-			 "DAYARCBILL.TOTAL TOTAL_SPENT "
+             "Cast(DAYARCBILL.TOTAL / Invoice_number_count as Numeric(17,4)) TOTAL_SPENT "
 		"FROM "
 			 "POINTSTRANSACTIONS LEFT JOIN CONTACTS ON "
 				  "POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
 			 "LEFT JOIN DAYARCBILL ON "
-				  "POINTSTRANSACTIONS.INVOICE_NUMBER = DAYARCBILL.INVOICE_NUMBER ";
+				  "POINTSTRANSACTIONS.INVOICE_NUMBER = DAYARCBILL.INVOICE_NUMBER "
+
+			"left join "
+			"( "
+			  "select count(POINTSTRANSACTIONS.INVOICE_NUMBER) as Invoice_number_count,POINTSTRANSACTIONS.CONTACTS_KEY contact_key, POINTSTRANSACTIONS.INVOICE_NUMBER  from POINTSTRANSACTIONS "
+			  "group by "
+			  "POINTSTRANSACTIONS.INVOICE_NUMBER, "
+			  "POINTSTRANSACTIONS.CONTACTS_KEY "
+
+			") as Invoice_Count on "
+			"Invoice_Count.contact_key = POINTSTRANSACTIONS.CONTACTS_KEY "
+			"and Invoice_Count.INVOICE_NUMBER = POINTSTRANSACTIONS.INVOICE_NUMBER " ;
+
 
 	if (Names && Names->Count > 0)
 	{
@@ -9653,7 +9676,8 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			 "POINTSTRANSACTIONS.ADJUSTMENT_TYPE,"
 			 "POINTSTRANSACTIONS.INVOICE_NUMBER,"
 			 "DAYARCBILL.TIME_STAMP,"
-			 "DAYARCBILL.TOTAL "
+			 "DAYARCBILL.TOTAL, "
+             "Invoice_number_count "
 
 		"ORDER BY "
 			 "4,"
@@ -15969,6 +15993,8 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 	qrMembershipAuditPointsBreakdown->SQL->Text =
 		"select "
 				"CONTACTS.NAME as Contacts_name, "
+                "CONTACTS.CONTACTS_KEY, "
+                "Item_breakdown.TIME_STAMP, "
 				"Contacts.Mailing_address as Contacts_address, "
                 "Contacts.Member_number as Contacts_member_number, "
 				"case "
@@ -15982,9 +16008,14 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 				"Item_breakdown.Day_of_transaction, "
 				"Item_breakdown.Terminal_name, "
 				"Item_breakdown.Item_name, "
-            "Item_breakdown.Number_purchased, "
+                "Item_breakdown.Number_purchased, "
 				"Item_breakdown.Points_earned, "
-				"Item_breakdown.Redeemed "
+				"Item_breakdown.Redeemed, "
+                "DayClosing, "
+                "cast((COALESCE(opening,0)) as Numeric(15,4)) Dayopening "
+                //"Cast((COALESCE(Dayopening,0) as Numeric(17,4)) Dayopening, "
+                //"(Closing - Item_breakdown.Points_earned +Item_breakdown.Redeemed ) Open_Balance, "
+
 			"from "
 				"( "
 					"select "
@@ -15995,7 +16026,8 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 						"Item_name, "
 						"Number_purchased, "
 						"(Number_purchased * Redeemed) as Redeemed, "
-						"(Number_purchased * Points_earned) as Points_earned "
+						"(Number_purchased * Points_earned) as Points_earned, "
+                        "TIME_STAMP "
 					"from "
 						"( "
 							"select "
@@ -16008,12 +16040,26 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
                                         "then 'Points purchased' "
                                     "when (Adjustment_type = 3 and DISCOUNT_REASON = 'Loyalty Points Discount') "
                                         "then 'Loyalty Points Discount' "
+                                    "when (Adjustment_type = 7 and Pt.adjustment < 0) "
+                                        "then 'Points Refunded' "
+                                    "when (Adjustment_type = 6) "
+                                        "then 'First Visit Reward' "
+                                    "when (Adjustment_type = 5) "
+                                        "then 'Birthday Bonus' "
                                     "else Item_name "
                                 "end as "
                                     "Item_name, "
 								"Pt.Adjustment_type, "
                                 "case "
                                     "when (adjustment_type = 1) "
+                                        "then adjustment "
+                                   "when (adjustment_type = 6) "
+                                        "then adjustment "
+                                   "when (adjustment_type = 7 and adjustment < 0) "
+                                        "then 0 "
+                                   "when (adjustment_type = 7 and adjustment > 0 and Archive.POINTS_EARNED <= 0) "
+                                        "then Archive.PRICE  "
+                                   "when (adjustment_type = 5) "
                                         "then adjustment "
                                     "else points_earned "
                                 "end as "
@@ -16023,10 +16069,15 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
                                         "then 0 "
                                     "when (Adjustment_type = 3 and DISCOUNT_REASON = 'Loyalty Points Discount') "
                                         "then abs(adjustment) "
+                                   "when (adjustment_type = 7 and adjustment > 0) "
+                                        "then 0 "
+                                   "when (adjustment_type = 7 and adjustment < 0) "
+                                        "then abs(adjustment) "
                                     "else redeemed "
                                 "end as "
                                     "Redeemed, "
-								"count(*) as Number_purchased "
+								"count(*) as Number_purchased ,"
+                                "Pt.TIME_STAMP "
 							"from "
 								"( "
                                     "SELECT "
@@ -16061,12 +16112,15 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 
                     "Pt.Contacts_key, "
                     "Day_of_transaction, "
+                    "TIME_STAMP, "
                     "ArcBill.Terminal_name, "
                     "Archive.Item_name, "
                     "Pt.Adjustment_type, "
                     "Points_earned, "
                     "Redeemed, "
-                    "DISCOUNT_REASON"
+                    "DISCOUNT_REASON, "
+                    "adjustment "
+
                 ") "
             ") as "
 			    "Item_breakdown "
@@ -16104,9 +16158,34 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 				") as "
 					"Opening_balance on "
 						"Opening_balance.Contacts_key = Item_breakdown.Contacts_key "
+            "left join "
+            "( "
+                "select TIME_STAMP, CONTACTS_KEY, "
+                "( "
+                    "select sum(ADJUSTMENT) "
+                    "from POINTSTRANSACTIONS t2 "
+                    "where t2.CONTACTS_KEY = POINTSTRANSACTIONS.CONTACTS_KEY and "
+                    "t2.TIME_STAMP <= POINTSTRANSACTIONS.TIME_STAMP "
+
+                ") as DayClosing, "
+                "( "
+                    "select (sum(ADJUSTMENT)) "
+                    "from POINTSTRANSACTIONS t2 "
+                    "where t2.CONTACTS_KEY = POINTSTRANSACTIONS.CONTACTS_KEY and "
+                    "t2.TIME_STAMP < POINTSTRANSACTIONS.TIME_STAMP "
+                ")as opening "
+                "from  POINTSTRANSACTIONS "
+                "group by 1, 2, 3 "
+            ") "
+            "as Closing_balance on "
+            "Closing_balance.CONTACTS_KEY =  Item_breakdown.CONTACTS_KEY "
+            "and Closing_balance.TIME_STAMP = Item_breakdown.Time_stamp "
+            
             "where "
                 "(Points_earned <> 0 or "
-                "Redeemed <> 0) ";
+                "Redeemed <> 0) " ;
+
+
 
                  	if (Names && Names->Count > 0)
 	{
@@ -16114,7 +16193,7 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 														ParamString(Names->Count, "CONTACTS.NAME", "NamesParam") + ")";
 	}
 
-
+    qrMembershipAuditPointsBreakdown->SQL->Text = qrMembershipAuditPointsBreakdown->SQL->Text + "order by 2, 3 asc ";
 
     	if (Names)
 	{
@@ -16123,6 +16202,9 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 			qrMembershipAuditPointsBreakdown->ParamByName("NamesParam" + IntToStr(i))->AsString = Names->Strings[i];
 		}
 	}
+
+
+
 
         qrMembershipAuditPointsBreakdown->ParamByName("StartTime")->AsDateTime	= StartTime;
 	  qrMembershipAuditPointsBreakdown->ParamByName("EndTime")->AsDateTime	= EndTime;
@@ -16303,7 +16385,7 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                                 "OR SECURITY.SECURITY_EVENT = 'CancelY' )   "
                         "GROUP BY ARCHIVE.ARCBILL_KEY)CANCEL_AMOUNT on CANCEL_AMOUNT.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
         "LEFT JOIN ( "
-                    "SELECT DA.ARCHIVE_KEY, cast((coalesce(DA.BASE_PRICE,0) * DA.QTY)+ DA.DISCOUNT_WITHOUT_TAX + sum(coalesce(DAOT.TAX_VALUE,0)) as numeric(17,4))price "
+                    "SELECT DA.ARCHIVE_KEY, cast((coalesce(DA.BASE_PRICE,0) * abs(DA.QTY))+ DA.DISCOUNT_WITHOUT_TAX + sum(coalesce(DAOT.TAX_VALUE,0)) as numeric(17,4))price "
                     "FROM ARCHIVE DA  "
                     "LEFT JOIN ARCORDERTAXES DAOT ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                     "WHERE DA.ARCHIVE_KEY  not IN (  "
