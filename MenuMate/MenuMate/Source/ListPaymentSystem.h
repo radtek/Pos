@@ -200,7 +200,8 @@ protected:
      void ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction);
      bool CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
      bool IsSCDOrPWDApplied(TPaymentTransaction &PaymentTransaction);
-     void InsertSCDOrPWDCustomerDetails(long arcbillKey);
+     void PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey);
+     void InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, long arcbillKey, UnicodeString header, UnicodeString value);
 };
 
 #endif

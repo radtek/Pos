@@ -130,6 +130,7 @@ TListPaymentSystem::TListPaymentSystem() : ManagerReference(new TManagerReferenc
 	ForceReceiptWithCashContent = false;
 	EftPosEnabled = true;
 	LastReceipt = NULL;
+    isSCDOrPWDApplied = false;
 }
 
 __fastcall TListPaymentSystem::~TListPaymentSystem()
@@ -1434,7 +1435,7 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
 
     if(isSCDOrPWDApplied)
-        InsertSCDOrPWDCustomerDetails(ArcBillKey);
+        PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
 }
 
 void TListPaymentSystem::CheckPatronByOrderIdentification(TPaymentTransaction &PaymentTransaction)
@@ -5796,7 +5797,7 @@ void TListPaymentSystem::SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeSt
 bool TListPaymentSystem::CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &paymentTransaction)
 {
     //Check SCD Applied on Bill
-    bool isSCDOrPWDApplied = IsSCDOrPWDApplied(paymentTransaction);
+    isSCDOrPWDApplied = IsSCDOrPWDApplied(paymentTransaction);
 
     if(isSCDOrPWDApplied)
     {
@@ -5842,7 +5843,56 @@ bool TListPaymentSystem::IsSCDOrPWDApplied(TPaymentTransaction &paymentTransacti
 	return isSCDOrPWDApplied;
 }
 //-----------------------------------------------------------------------------------------------------
-void TListPaymentSystem::InsertSCDOrPWDCustomerDetails(long arcbillKey)
+void TListPaymentSystem::PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey)
 {
+    TIBSQL *IBInternalQuery = PaymentTransaction.DBTransaction.Query(PaymentTransaction.DBTransaction.AddQuery());
 
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Customer Neme", customerDetails.CustomerName);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Address", customerDetails.Address);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Tin", customerDetails.TinNo);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Business Style", customerDetails.BusinessStyle);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "SC/PWD ID#", customerDetails.SC_PWD_ID);
+}
+//----------------------------------------------------------------------------------------------------------------------
+void TListPaymentSystem::InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, long arcbillKey, UnicodeString header, UnicodeString value)
+{
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_CUSTOMER_DETAILS_KEY, 1) FROM RDB$DATABASE";
+        IBInternalQuery->ExecQuery();
+        int customerDetailKey = IBInternalQuery->Fields[0]->AsInteger;
+
+        IBInternalQuery->Close();
+        IBInternalQuery->ParamCheck = true;
+        IBInternalQuery->SQL->Clear();
+        IBInternalQuery->SQL->Text =
+        "INSERT INTO SCD_PWD_CUSTOMER_DETAILS ("
+        "CUSTOMER_DETAILS_KEY,"
+        "ARCBILL_KEY,"
+        "FIELD_HEADER,"
+        "FIELD_VALUE,"
+        "DATA_TYPE "
+        ")"
+        " VALUES "
+        "("
+        ":CUSTOMER_DETAILS_KEY,"
+        ":ARCBILL_KEY,"
+        ":FIELD_HEADER,"
+        ":FIELD_VALUE,"
+        ":DATA_TYPE "
+        ");";
+
+        IBInternalQuery->ParamByName("CUSTOMER_DETAILS_KEY")->AsInteger = customerDetailKey;
+        IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcbillKey;
+        IBInternalQuery->ParamByName("FIELD_HEADER")->AsString = header;
+        IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = value;
+        IBInternalQuery->ParamByName("DATA_TYPE")->AsString = "UnicodeString";
+        IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }
