@@ -40,14 +40,12 @@ __published:	// IDE-managed Components
     TTouchBtn *btnOK;
     TTouchBtn *btnCancel;
     void __fastcall FormShow(TObject *Sender);
-    void __fastcall edCustomerNameClick(TObject *Sender);
-    void __fastcall edAddressClick(TObject *Sender);
-    void __fastcall edTinClick(TObject *Sender);
-    void __fastcall edBusinessStyleClick(TObject *Sender);
-    void __fastcall edSCPWDNOClick(TObject *Sender);
+    void __fastcall CaptureCustomerDetails(TObject *Sender);
     void __fastcall btnOKClick(TObject *Sender);
     void __fastcall btnCancelClick(TObject *Sender);
 private:	// User declarations
+    UnicodeString CustomerInfoPointers[5];
+    void DisplayCustomerData();
 public:		// User declarations
     __fastcall TfrmCaptureCustomerDetails(TComponent* Owner);
     SCDPWDCustomerDetails customerDetails;

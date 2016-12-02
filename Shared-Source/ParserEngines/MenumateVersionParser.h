@@ -810,8 +810,8 @@ namespace MenumateVersionParser
         //6.34
         void upgrade6_34Tables();
         void update6_34Tables();
-        void Create6_34GeneratorSeniorCustomerDetails(TDBControl* const inDBControl);
-        void Create6_34TableSeniorCustomerDetails(TDBControl* const inDBControl);
+        void Create6_34GeneratorSCDPWDCustomerDetails(TDBControl* const inDBControl);
+        void Create6_34TableSCDPWDCustomerDetails(TDBControl* const inDBControl);
 
     }; // class
 } // namespace

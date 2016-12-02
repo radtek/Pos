@@ -21,76 +21,6 @@ void __fastcall TfrmCaptureCustomerDetails::FormShow(TObject *Sender)
     //UnicodeString pwdNo = edSCPWDNO->Text;
 }
 //----------------------------------------------------------------------------------------------
-void __fastcall TfrmCaptureCustomerDetails::edCustomerNameClick(TObject *Sender)
-{
-    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-	frmTouchKeyboard->MaxLength = 150;
-	frmTouchKeyboard->AllowCarriageReturn = false;
-    frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = edCustomerName->Text;
-    frmTouchKeyboard->Caption = "Enter Customer Name";
-    if (frmTouchKeyboard->ShowModal() == mrOk)
-    {
-        edCustomerName->Text = frmTouchKeyboard->KeyboardText;
-    }
-}
-//----------------------------------------------------------------------------------------------
-void __fastcall TfrmCaptureCustomerDetails::edAddressClick(TObject *Sender)
-{
-    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-	frmTouchKeyboard->MaxLength = 150;
-	frmTouchKeyboard->AllowCarriageReturn = false;
-    frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = edAddress->Text;
-    frmTouchKeyboard->Caption = "Enter Customer Address";
-    if (frmTouchKeyboard->ShowModal() == mrOk)
-    {
-        edAddress->Text = frmTouchKeyboard->KeyboardText;
-    }
-}
-//----------------------------------------------------------------------------------------------
-void __fastcall TfrmCaptureCustomerDetails::edTinClick(TObject *Sender)
-{
-    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-	frmTouchKeyboard->MaxLength = 150;
-	frmTouchKeyboard->AllowCarriageReturn = false;
-    frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = edTIN->Text;
-    frmTouchKeyboard->Caption = "Enter Tin No";
-    if (frmTouchKeyboard->ShowModal() == mrOk)
-    {
-        edTIN->Text = frmTouchKeyboard->KeyboardText;
-    }
-}
-//----------------------------------------------------------------------------------------------
-void __fastcall TfrmCaptureCustomerDetails::edBusinessStyleClick(TObject *Sender)
-{
-    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-	frmTouchKeyboard->MaxLength = 150;
-	frmTouchKeyboard->AllowCarriageReturn = false;
-    frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = edBusinessStyle->Text;
-    frmTouchKeyboard->Caption = "Enter Business Style";
-    if (frmTouchKeyboard->ShowModal() == mrOk)
-    {
-        edBusinessStyle->Text = frmTouchKeyboard->KeyboardText;
-    }
-}
-//----------------------------------------------------------------------------------------------
-void __fastcall TfrmCaptureCustomerDetails::edSCPWDNOClick(TObject *Sender)
-{
-    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-	frmTouchKeyboard->MaxLength = 150;
-	frmTouchKeyboard->AllowCarriageReturn = false;
-    frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = edSCPWDNO->Text;
-    frmTouchKeyboard->Caption = "Enter SCD/PWD ID#";
-    if (frmTouchKeyboard->ShowModal() == mrOk)
-    {
-        edSCPWDNO->Text = frmTouchKeyboard->KeyboardText;
-    }
-}
-//----------------------------------------------------------------------------------------------
 void __fastcall TfrmCaptureCustomerDetails::btnOKClick(TObject *Sender)
 {
     customerDetails.CustomerName = edCustomerName->Text;
@@ -106,3 +36,63 @@ void __fastcall TfrmCaptureCustomerDetails::btnCancelClick(TObject *Sender)
     ModalResult = mrCancel;
 }
 //----------------------------------------------------------------------------------------------
+void __fastcall TfrmCaptureCustomerDetails::CaptureCustomerDetails(TObject *Sender)
+{
+    TTouchBtn *btn = reinterpret_cast<TTouchBtn*>(Sender);
+
+    if(btn->Tag > 6)
+        return;
+
+    AnsiString Caption = "";
+    AnsiString KeyboardText = "";
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+    frmTouchKeyboard->AllowCarriageReturn = false;
+    frmTouchKeyboard->StartWithShiftDown = false;
+    frmTouchKeyboard->MaxLength = 150;
+
+     switch(btn->Tag)
+    {
+        case 0:
+            Caption = "Enter Customer Name";
+            frmTouchKeyboard->KeyboardText = edCustomerName->Text;
+            break;
+        case 1:
+            Caption = "Enter Customer Address";
+            frmTouchKeyboard->KeyboardText = edAddress->Text;
+            break;
+        case 2:
+            Caption = "Enter Tin No";
+            frmTouchKeyboard->KeyboardText = edTIN->Text;;
+            break;
+        case 3:
+            Caption = "Enter Business Style";
+            frmTouchKeyboard->KeyboardText = edBusinessStyle->Text;
+            break;
+        case 4:
+            Caption = "Enter SCD/PWD ID#";
+            frmTouchKeyboard->KeyboardText = edSCPWDNO->Text;
+            break;
+        default:
+            break;
+    }
+    frmTouchKeyboard->Caption = Caption;
+    if (frmTouchKeyboard->ShowModal() == mrOk)
+    {
+         CustomerInfoPointers[btn->Tag] =  frmTouchKeyboard->KeyboardText;
+         customerDetails.CustomerName =  CustomerInfoPointers[0].Trim();
+         customerDetails.Address = CustomerInfoPointers[1].Trim();
+         customerDetails.TinNo =  CustomerInfoPointers[2].Trim();
+         customerDetails.BusinessStyle = CustomerInfoPointers[3].Trim();
+         customerDetails.SC_PWD_ID =  CustomerInfoPointers[4];
+		 DisplayCustomerData();
+	}
+}
+//-------------------------------------------------------------------------------------------------
+void TfrmCaptureCustomerDetails::DisplayCustomerData()
+{
+     edCustomerName->Text = CustomerInfoPointers[0].Trim();
+     edAddress->Text = CustomerInfoPointers[1].Trim();
+     edTIN->Text = CustomerInfoPointers[2].Trim();
+     edBusinessStyle->Text = CustomerInfoPointers[3].Trim();
+     edSCPWDNO->Text = CustomerInfoPointers[4];
+}

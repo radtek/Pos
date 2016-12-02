@@ -291,16 +291,16 @@ void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBCon
 //------------------------------------------------------------------------------------
 void TApplyParser::update6_34Tables()
 {
-    Create6_34GeneratorSeniorCustomerDetails(_dbControl);
-    Create6_34TableSeniorCustomerDetails(_dbControl);
+    Create6_34TableSCDPWDCustomerDetails(_dbControl);
+    Create6_34GeneratorSCDPWDCustomerDetails(_dbControl);
 }
 //---------------------------------------------------------------------------
-void TApplyParser::Create6_34TableSeniorCustomerDetails(TDBControl* const inDBControl)
+void TApplyParser::Create6_34TableSCDPWDCustomerDetails(TDBControl* const inDBControl)
 {
-    if ( !tableExists( "SENIOR_CITIZEN_CUSTOMER_DETAILS", _dbControl ) )
+    if ( !tableExists( "SCD_PWD_CUSTOMER_DETAILS", _dbControl ) )
 	{
 		executeQuery(
-		"CREATE TABLE SENIOR_CITIZEN_CUSTOMER_DETAILS "
+		"CREATE TABLE SCD_PWD_CUSTOMER_DETAILS "
 		"( "
 		"   CUSTOMER_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
         "   ARCBILL_KEY INT NOT NULL, "
@@ -312,9 +312,9 @@ void TApplyParser::Create6_34TableSeniorCustomerDetails(TDBControl* const inDBCo
     }
 }
 //---------------------------------------------------------------------------------
-void TApplyParser::Create6_34GeneratorSeniorCustomerDetails(TDBControl* const inDBControl)
+void TApplyParser::Create6_34GeneratorSCDPWDCustomerDetails(TDBControl* const inDBControl)
 {
-    if(!generatorExists("GEN_SENIOR_CITIZEN_CUSTOMER_DETAILS_KEY", _dbControl))
+    if(!generatorExists("GEN_CUSTOMER_DETAILS_KEY", _dbControl))
     {
         executeQuery(
             "CREATE GENERATOR GEN_CUSTOMER_DETAILS_KEY;", inDBControl

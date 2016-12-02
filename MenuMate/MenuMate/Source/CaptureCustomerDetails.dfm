@@ -104,41 +104,46 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
         Width = 313
         Height = 22
         TabOrder = 0
-        OnClick = edCustomerNameClick
+        OnClick = CaptureCustomerDetails
       end
       object edAddress: TEdit
+        Tag = 1
         Left = 8
         Top = 103
         Width = 313
         Height = 22
         TabOrder = 1
-        OnClick = edAddressClick
+        OnClick = CaptureCustomerDetails
       end
       object edTIN: TEdit
+        Tag = 2
         Left = 8
         Top = 151
         Width = 313
         Height = 22
         TabOrder = 2
-        OnClick = edTinClick
+        OnClick = CaptureCustomerDetails
       end
       object edBusinessStyle: TEdit
+        Tag = 3
         Left = 8
         Top = 199
         Width = 313
         Height = 22
         TabOrder = 3
-        OnClick = edBusinessStyleClick
+        OnClick = CaptureCustomerDetails
       end
       object edSCPWDNO: TEdit
+        Tag = 4
         Left = 8
         Top = 247
         Width = 313
         Height = 22
         TabOrder = 4
-        OnClick = edSCPWDNOClick
+        OnClick = CaptureCustomerDetails
       end
       object btnOK: TTouchBtn
+        Tag = 5
         Left = 8
         Top = 291
         Width = 100
@@ -157,6 +162,7 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
         OnMouseClick = btnOKClick
       end
       object btnCancel: TTouchBtn
+        Tag = 6
         Left = 221
         Top = 291
         Width = 100
