@@ -49,9 +49,9 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       object LabelAddress: TLabel
         Left = 8
         Top = 83
-        Width = 81
+        Width = 49
         Height = 14
-        Caption = 'LabelAddress'
+        Caption = 'Address'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -12
