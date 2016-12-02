@@ -807,7 +807,7 @@ namespace MenumateVersionParser
         void ModifyCloseZedColumns6_33( TDBControl* const inDBControl );
         void ReCreateRoundedContactTimeView6_33( TDBControl* const inDBControl );
 
-        //6.32
+        //6.34
 		void upgrade6_34Tables();
         void update6_34Tables();
         void Create6_34Malls(TDBControl* const inDBControl);
