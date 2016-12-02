@@ -198,8 +198,8 @@ private:
 	void PrintTotalDicountsName(TReqPrintJob *PrintJob);
 
     bool scdHasBeenApplied( BillCalculator::DISCOUNT_RESULT_LIST inDiscount );
-    void printSCDSummary();
-    void populateSCDSummary( std::vector<AnsiString>& inSCDSummary );
+    void printSCDSummary(TReqPrintJob *printJob);
+    void populateSCDSummary(TReqPrintJob *printJob, std::vector<AnsiString>& inSCDSummary );
     void printSCDSummary( std::vector<AnsiString> inSCDSummary );
 
 	void PrintFoodDrink(TReqPrintJob *PrintJob);

@@ -4346,7 +4346,7 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
                 //if payment complete is true then check whether transaction has SCD or PWD Discount
                 if(PaymentComplete)
                 {
-                    PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                     PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
                 }
 
 				if (PaymentComplete)
@@ -4475,7 +4475,7 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                          //if payment complete is true then check whether transaction has SCD or PWD Discount
                         if(PaymentComplete)
                         {
-                            PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                             PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
                         }
 
                         if (PaymentComplete)
@@ -4625,7 +4625,7 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                      //if payment complete is true then check whether transaction has SCD or PWD Discount
                     if(PaymentComplete)
                     {
-                        PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                         PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
                     }
 
 					if (PaymentComplete)
@@ -4735,7 +4735,7 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
          //if payment complete is true then check whether transaction has SCD or PWD Discount
         if(PaymentComplete)
         {
-            PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+            PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
         }
 
         if (PaymentComplete)
@@ -4791,7 +4791,7 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
                  //if payment complete is true then check whether transaction has SCD or PWD Discount
                 if(PaymentComplete)
                 {
-                    PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                     PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
                 }
 
 				if (PaymentComplete)
@@ -4863,7 +4863,7 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
                  //if payment complete is true then check whether transaction has SCD or PWD Discount
                 if(PaymentComplete)
                 {
-                    PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                     PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
                 }
 
 				if (PaymentComplete)
@@ -4943,7 +4943,7 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
                 //if payment complete is true then check whether transaction has SCD or PWD Discount
                 if(PaymentComplete)
                 {
-                    PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                     PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
                 }
 
 				if (PaymentComplete)
@@ -5804,7 +5804,7 @@ bool TListPaymentSystem::CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &pay
         std::auto_ptr <TfrmCaptureCustomerDetails> frmCaptureCustomerDetails(TfrmCaptureCustomerDetails::Create <TfrmCaptureCustomerDetails> (Screen->ActiveForm));
         if(frmCaptureCustomerDetails->ShowModal() == mrOk)
         {
-            customerDetails = frmCaptureCustomerDetails->customerDetails;
+            paymentTransaction.customerDetails = frmCaptureCustomerDetails->customerDetails;
         }
         else
         {
@@ -5843,15 +5843,15 @@ bool TListPaymentSystem::IsSCDOrPWDApplied(TPaymentTransaction &paymentTransacti
 	return isSCDOrPWDApplied;
 }
 //-----------------------------------------------------------------------------------------------------
-void TListPaymentSystem::PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey)
+void TListPaymentSystem::PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &paymentTransaction, long arcbillKey)
 {
-    TIBSQL *IBInternalQuery = PaymentTransaction.DBTransaction.Query(PaymentTransaction.DBTransaction.AddQuery());
+    TIBSQL *IBInternalQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
 
-    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Customer Neme", customerDetails.CustomerName);
-    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Address", customerDetails.Address);
-    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Tin", customerDetails.TinNo);
-    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Business Style", customerDetails.BusinessStyle);
-    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "SC/PWD ID#", customerDetails.SC_PWD_ID);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Customer Neme", paymentTransaction.customerDetails.CustomerName);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Address", paymentTransaction.customerDetails.Address);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Tin", paymentTransaction.customerDetails.TinNo);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Business Style", paymentTransaction.customerDetails.BusinessStyle);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "SC/PWD ID#", paymentTransaction.customerDetails.SC_PWD_ID);
 }
 //----------------------------------------------------------------------------------------------------------------------
 void TListPaymentSystem::InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, long arcbillKey, UnicodeString header, UnicodeString value)

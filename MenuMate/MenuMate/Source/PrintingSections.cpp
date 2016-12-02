@@ -3810,13 +3810,9 @@ void TPrintSection::PrintTotalDicountsName(TReqPrintJob *PrintJob)
 	Currency temp = 0;
 	DiscountTotals.clear();
 
-	bool scdApplied = false; // Senior Citizen Discount
-
 	for (int i = 0; i < WorkingOrdersList->Count; i++)
 	{
 		TItemComplete *Item = (TItemComplete*)WorkingOrdersList->Items[i];
-
-		scdApplied = scdApplied | scdHasBeenApplied( Item->BillCalcResult.Discount );
 
 		if (Item->BillCalcResult.Discount.size() != 0)
 		{
@@ -3880,12 +3876,6 @@ void TPrintSection::PrintTotalDicountsName(TReqPrintJob *PrintJob)
                 pPrinter->AddLine();
 //            }
 		}
-
-		// Senior Citizen Discount (SCD) applied
-		if( scdApplied )
-		{
-			printSCDSummary();
-		}
 	}
 	else
 	{
@@ -3916,23 +3906,24 @@ bool TPrintSection::scdHasBeenApplied( BillCalculator::DISCOUNT_RESULT_LIST inDi
 	return false;
 }
 
-void TPrintSection::printSCDSummary()
+void TPrintSection::printSCDSummary(TReqPrintJob *printJob)
 {
 	std::vector<AnsiString> scdSummary;
 
-	populateSCDSummary( scdSummary );
-	printSCDSummary(    scdSummary );
+	populateSCDSummary(printJob, scdSummary );
+	printSCDSummary(scdSummary );
 
 	scdSummary.clear();
 }
 
-void TPrintSection::populateSCDSummary( std::vector<AnsiString>& inSCDSummary )
+void TPrintSection::populateSCDSummary(TReqPrintJob *printJob, std::vector<AnsiString>& inSCDSummary )
 {
-	inSCDSummary.push_back( "Customer Name : ___________________________________" );
-	inSCDSummary.push_back( "Address       : ___________________________________" );
-	inSCDSummary.push_back( "TIN           : ___________________________________" );
-	inSCDSummary.push_back( "Business Style: ___________________________________" );
-	inSCDSummary.push_back( "SCD/PWD #     : ___________________________________" );
+	inSCDSummary.push_back( "Customer Name : " + printJob->Transaction->customerDetails.CustomerName );
+	inSCDSummary.push_back( "Address       : " + printJob->Transaction->customerDetails.Address);
+	inSCDSummary.push_back( "TIN           : " + printJob->Transaction->customerDetails.TinNo);
+	inSCDSummary.push_back( "Business Style: " + printJob->Transaction->customerDetails.BusinessStyle);
+	inSCDSummary.push_back( "SCD/PWD #     : " + printJob->Transaction->customerDetails.SC_PWD_ID);
+    inSCDSummary.push_back( "Signature     : ........................................");
 }
 
 void TPrintSection::printSCDSummary( std::vector<AnsiString> inSCDSummary )
@@ -6257,15 +6248,7 @@ void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
         for (int i = 0; i < WorkingOrdersList->Count; i++)
         {
             TItemComplete *Item = (TItemComplete*)WorkingOrdersList->Items[i];
-
-            scdApplied = scdHasBeenApplied( Item->BillCalcResult.Discount );
-            if(scdApplied)
-                break;
         }
-		if( scdApplied )
-		{
-			printSCDSummary();
-		}
         if (PrintJob->ReceiptVoidFooter->Count == 0)
         {
             Empty = true;
@@ -6309,7 +6292,7 @@ void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
         }
 		if( scdApplied )
 		{
-			printSCDSummary();
+			printSCDSummary(PrintJob);
 		}
         if (PrintJob->ReceiptFooter->Count == 0)
         {

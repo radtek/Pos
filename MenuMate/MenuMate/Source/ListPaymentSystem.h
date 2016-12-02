@@ -191,7 +191,6 @@ protected:
      bool sessionStartedAlready;
      bool skipPaymentFormDeletion;
      bool isSCDOrPWDApplied;
-     SCDPWDCustomerDetails customerDetails;
      void CheckPatronByOrderIdentification(TPaymentTransaction &inPaymentTransaction);
      bool CheckForCard(TPaymentTransaction &PaymentTransaction);
      bool ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction);
