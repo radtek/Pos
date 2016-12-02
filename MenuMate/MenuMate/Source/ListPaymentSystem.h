@@ -191,13 +191,14 @@ protected:
      bool sessionStartedAlready;
      bool skipPaymentFormDeletion;
      bool isSCDOrPWDApplied;
+     TModalResult modalResult;
      void CheckPatronByOrderIdentification(TPaymentTransaction &inPaymentTransaction);
      bool CheckForCard(TPaymentTransaction &PaymentTransaction);
      bool ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction);
      bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
      bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
      void ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction);
-     bool CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
+     TModalResult CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
      bool IsSCDOrPWDApplied(TPaymentTransaction &PaymentTransaction);
      void PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey);
      void InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, long arcbillKey, UnicodeString header, UnicodeString value);

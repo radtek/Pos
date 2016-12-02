@@ -4346,7 +4346,8 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
                 //if payment complete is true then check whether transaction has SCD or PWD Discount
                 if(PaymentComplete)
                 {
-                     PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                     if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                        PaymentComplete = false;
                 }
 
 				if (PaymentComplete)
@@ -4475,7 +4476,8 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                          //if payment complete is true then check whether transaction has SCD or PWD Discount
                         if(PaymentComplete)
                         {
-                             PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                             if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                                PaymentComplete = false;
                         }
 
                         if (PaymentComplete)
@@ -4625,7 +4627,8 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                      //if payment complete is true then check whether transaction has SCD or PWD Discount
                     if(PaymentComplete)
                     {
-                         PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                         if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                            PaymentComplete = false;
                     }
 
 					if (PaymentComplete)
@@ -4735,7 +4738,8 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
          //if payment complete is true then check whether transaction has SCD or PWD Discount
         if(PaymentComplete)
         {
-            PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+            if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                        PaymentComplete = false;
         }
 
         if (PaymentComplete)
@@ -4791,7 +4795,8 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
                  //if payment complete is true then check whether transaction has SCD or PWD Discount
                 if(PaymentComplete)
                 {
-                     PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                     if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                        PaymentComplete = false;
                 }
 
 				if (PaymentComplete)
@@ -4863,7 +4868,8 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
                  //if payment complete is true then check whether transaction has SCD or PWD Discount
                 if(PaymentComplete)
                 {
-                     PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                     if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                        PaymentComplete = false;
                 }
 
 				if (PaymentComplete)
@@ -4943,7 +4949,8 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
                 //if payment complete is true then check whether transaction has SCD or PWD Discount
                 if(PaymentComplete)
                 {
-                     PaymentComplete = PaymentComplete | CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                    if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                        PaymentComplete = false;
                 }
 
 				if (PaymentComplete)
@@ -5794,8 +5801,9 @@ void TListPaymentSystem::SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeSt
 //---------------------------------------------------------------------------
 /**************************DLF MALL END********************************************/
 
-bool TListPaymentSystem::CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &paymentTransaction)
+TModalResult TListPaymentSystem::CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &paymentTransaction)
 {
+    modalResult = mrNone;
     //Check SCD Applied on Bill
     isSCDOrPWDApplied = IsSCDOrPWDApplied(paymentTransaction);
 
@@ -5805,13 +5813,14 @@ bool TListPaymentSystem::CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &pay
         if(frmCaptureCustomerDetails->ShowModal() == mrOk)
         {
             paymentTransaction.customerDetails = frmCaptureCustomerDetails->customerDetails;
+            modalResult = mrOk;
         }
         else
         {
-            isSCDOrPWDApplied = false;
+            modalResult = mrCancel;
         }
     }
-    return isSCDOrPWDApplied;
+    return modalResult;
 }
 //-------------------------------------------------------------------------------------------------------------
 bool TListPaymentSystem::IsSCDOrPWDApplied(TPaymentTransaction &paymentTransaction)
