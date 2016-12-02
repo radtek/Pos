@@ -12,7 +12,7 @@
 #include "TouchControls.h"
 #include "ZForm.h"
 //---------------------------------------------------------------------------
-struct SeniorCustomerDetails
+struct SCDPWDCustomerDetails
 {
     UnicodeString CustomerName;
     UnicodeString Address;
@@ -23,6 +23,7 @@ struct SeniorCustomerDetails
 //---------------------------------------------------------------------------
 class TfrmCaptureCustomerDetails : public TZForm
 {
+    friend TZForm;
 __published:	// IDE-managed Components
     TPanel *PanelDetails;
     TGroupBox *GroupBox1;
@@ -39,7 +40,6 @@ __published:	// IDE-managed Components
     TTouchBtn *btnOK;
     TTouchBtn *btnCancel;
     void __fastcall FormShow(TObject *Sender);
-    void __fastcall FormCreate(TObject *Sender);
     void __fastcall edCustomerNameClick(TObject *Sender);
     void __fastcall edAddressClick(TObject *Sender);
     void __fastcall edTinClick(TObject *Sender);
@@ -50,8 +50,7 @@ __published:	// IDE-managed Components
 private:	// User declarations
 public:		// User declarations
     __fastcall TfrmCaptureCustomerDetails(TComponent* Owner);
+    SCDPWDCustomerDetails customerDetails;
 };
 //------------------------------------------------------------------------------------------
-extern PACKAGE TfrmCaptureCustomerDetails *frmCaptureCustomerDetails;
-//---------------------------------------------------------------------------
 #endif

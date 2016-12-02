@@ -1,4 +1,4 @@
-object frmCaptureDiscountDetails: TfrmCaptureDiscountDetails
+object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
   Left = 0
   Top = 0
   Caption = 'SC/PWD Details'

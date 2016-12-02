@@ -20,6 +20,7 @@
 #include "DBContacts.h"
 #include "DrinkCommandData.h"
 #include "ThorlinkDataObjects.h"
+#include "CaptureCustomerDetails.h"
 //#include "ThorlinkClient.h"
 
 class TReqPrintJob;
@@ -186,16 +187,20 @@ protected:
     bool ProcessCSVNewBookExport( TPaymentTransaction &inPaymentTransaction );
 
    private:
-     void CheckPatronByOrderIdentification(TPaymentTransaction &inPaymentTransaction);
      bool MakePatronCountZero;
      bool sessionStartedAlready;
      bool skipPaymentFormDeletion;
+     bool isSCDOrPWDApplied;
+     SCDPWDCustomerDetails customerDetails;
+     void CheckPatronByOrderIdentification(TPaymentTransaction &inPaymentTransaction);
      bool CheckForCard(TPaymentTransaction &PaymentTransaction);
      bool ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction);
      bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
      bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
      void ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction);
+     bool CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
      bool IsSCDOrPWDApplied(TPaymentTransaction &PaymentTransaction);
+     void InsertSCDOrPWDCustomerDetails(long arcbillKey);
 };
 
 #endif

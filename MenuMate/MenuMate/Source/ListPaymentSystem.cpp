@@ -51,7 +51,6 @@
 #include "DBWebUtil.h"
 #include <vector>
 #include "IBillCalculator.h"
-#include "CaptureCustomerDetails.h"
 #include "MallExportUpdateAdaptor.h"
 #include "PaymentTypeGroupsManager.h"
 #include "MallExportManager.h"
@@ -1433,6 +1432,9 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 	ArchiveRewards(PaymentTransaction, ArcBillKey);
 	ArchiveWebOrders(PaymentTransaction, ArcBillKey);
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
+
+    if(isSCDOrPWDApplied)
+        InsertSCDOrPWDCustomerDetails(ArcBillKey);
 }
 
 void TListPaymentSystem::CheckPatronByOrderIdentification(TPaymentTransaction &PaymentTransaction)
@@ -4340,16 +4342,10 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
                 }
 
-                //Check SCD Applied on Bill
-                bool isSCDApplied = IsSCDOrPWDApplied(PaymentTransaction);
-                if(isSCDApplied)
+                //if payment complete is true then check whether transaction has SCD or PWD Discount
+                if(PaymentComplete)
                 {
-                    std::auto_ptr <TfrmCaptureCustomerDetails> frmCaptureCustomerDetails(TfrmCaptureCustomerDetails::Create <TfrmCaptureCustomerDetails> (Screen->ActiveForm));
-                    if(frmCaptureCustomerDetails->ShowModal() == mrOk)
-                    {
-                       // frmCaptureCustomerDetails->
-                        PaymentComplete = true;
-                    }
+                    PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
                 }
 
 				if (PaymentComplete)
@@ -4473,6 +4469,12 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                         if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
                         {
                             PaymentComplete = PrepareThorRequest(PaymentTransaction);
+                        }
+
+                         //if payment complete is true then check whether transaction has SCD or PWD Discount
+                        if(PaymentComplete)
+                        {
+                            PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
                         }
 
                         if (PaymentComplete)
@@ -4619,6 +4621,12 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                         PaymentComplete = PrepareThorRequest(PaymentTransaction);
                     }
 
+                     //if payment complete is true then check whether transaction has SCD or PWD Discount
+                    if(PaymentComplete)
+                    {
+                        PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                    }
+
 					if (PaymentComplete)
 					{
 						if (Screen->ActiveForm != NULL)
@@ -4722,6 +4730,13 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
         {
             PaymentComplete = PrepareThorRequest(PaymentTransaction);
         }
+
+         //if payment complete is true then check whether transaction has SCD or PWD Discount
+        if(PaymentComplete)
+        {
+            PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+        }
+
         if (PaymentComplete)
         {
             if (Screen->ActiveForm != NULL)
@@ -4771,6 +4786,13 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
                 }
+
+                 //if payment complete is true then check whether transaction has SCD or PWD Discount
+                if(PaymentComplete)
+                {
+                    PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                }
+
 				if (PaymentComplete)
 				{
 					if (Screen->ActiveForm != NULL)
@@ -4836,6 +4858,13 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
                 }
+
+                 //if payment complete is true then check whether transaction has SCD or PWD Discount
+                if(PaymentComplete)
+                {
+                    PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                }
+
 				if (PaymentComplete)
 				{
 					if (Screen->ActiveForm != NULL)
@@ -4909,6 +4938,13 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
                 }
+
+                //if payment complete is true then check whether transaction has SCD or PWD Discount
+                if(PaymentComplete)
+                {
+                    PaymentComplete = CaptureSCDOrPWDCustomerDetails(PaymentTransaction);
+                }
+
 				if (PaymentComplete)
 				{
 					if (Screen->ActiveForm != NULL)
@@ -5755,9 +5791,31 @@ void TListPaymentSystem::SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeSt
 	}
 }
 //---------------------------------------------------------------------------
-  /**************************DLF MALL END********************************************/
+/**************************DLF MALL END********************************************/
+
+bool TListPaymentSystem::CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &paymentTransaction)
+{
+    //Check SCD Applied on Bill
+    bool isSCDOrPWDApplied = IsSCDOrPWDApplied(paymentTransaction);
+
+    if(isSCDOrPWDApplied)
+    {
+        std::auto_ptr <TfrmCaptureCustomerDetails> frmCaptureCustomerDetails(TfrmCaptureCustomerDetails::Create <TfrmCaptureCustomerDetails> (Screen->ActiveForm));
+        if(frmCaptureCustomerDetails->ShowModal() == mrOk)
+        {
+            customerDetails = frmCaptureCustomerDetails->customerDetails;
+        }
+        else
+        {
+            isSCDOrPWDApplied = false;
+        }
+    }
+    return isSCDOrPWDApplied;
+}
+//-------------------------------------------------------------------------------------------------------------
 bool TListPaymentSystem::IsSCDOrPWDApplied(TPaymentTransaction &paymentTransaction)
 {
+    bool isSCDOrPWDApplied = false;
     for(int i = 0 ; i < paymentTransaction.Orders->Count ; i++)
     {
         TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[i];
@@ -5775,11 +5833,16 @@ bool TListPaymentSystem::IsSCDOrPWDApplied(TPaymentTransaction &paymentTransacti
                 {
                     if( *gIT == SCD_DISCOUNT_GROUP ||  *gIT == PWD_DISCOUNT_GROUP)
                     {
-                        return true;
+                        isSCDOrPWDApplied = true;
                     }
                 }
             }
         }
     }
-	return false;
+	return isSCDOrPWDApplied;
+}
+//-----------------------------------------------------------------------------------------------------
+void TListPaymentSystem::InsertSCDOrPWDCustomerDetails(long arcbillKey)
+{
+
 }
