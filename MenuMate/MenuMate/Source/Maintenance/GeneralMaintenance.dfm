@@ -2873,6 +2873,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Use BIR Format in X and Z Report'
             TabOrder = 26
             OnClick = cbUseBIRFormatInXZReportClick
+            OnMouseUp = cbUseBIRFormatInXZReportMouseUp
           end
         end
         object cbEnablePrinterCounts: TCheckBox

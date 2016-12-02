@@ -544,6 +544,9 @@ __published:	// IDE-managed Components
         void __fastcall cbMergeSimilarItemClick(TObject *Sender);
         //void __fastcall cbShowLocalTaxandProfitTaxClick(TObject *Sender);
         void __fastcall cbUseBIRFormatInXZReportClick(TObject *Sender);
+        //void __fastcall cbUseBIRFormatInXZReportOnEnter(TObject *Sender);
+        void __fastcall cbUseBIRFormatInXZReportMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
 
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
@@ -564,9 +567,12 @@ private:
         bool invalid_email_id;
         void DisplayTextOnWeightLimit();
         void EnableDisableSectionsForBIRFormat();
+        bool isBIRSettingTicked;
+        void CheckSettingsOfZed();
 public:		// User declarations
         TTouchBtn *CurrentButton;
         void __fastcall ReDrawLogs();
+
 
 };
 //---------------------------------------------------------------------------

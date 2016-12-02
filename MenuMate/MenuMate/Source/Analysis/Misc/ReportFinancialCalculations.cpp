@@ -32,15 +32,26 @@ Currency ReportFinancialCalculations::GetTotalSalesTax(Database::TDBTransaction 
 {
     Currency salesTax;
     TIBSQL *salesTaxQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and DAB.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
 
     salesTaxQuery->SQL->Text = "SELECT "
                                     "SUM(TAX_VALUE) AS TAXSUM "
                                 "FROM DAYARCORDERTAXES DAOT "
                                 "INNER JOIN DAYARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                                 "INNER JOIN DAYARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                                "WHERE TAX_TYPE = '0' AND DAB.TERMINAL_NAME = :Terminal_Name";
+                                "WHERE TAX_TYPE = '0' " + terminalNamePredicate ;
 
-    salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+
+
 
     salesTaxQuery->ExecQuery();
     salesTax = salesTaxQuery->FieldByName("TAXSUM")->AsCurrency;
@@ -106,14 +117,26 @@ Currency ReportFinancialCalculations::GetServiceCharge(Database::TDBTransaction 
 {
     Currency servicecharge;
     TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and DAB.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
+
+
     qr->SQL->Text = "SELECT "
                                     "SUM(TAX_VALUE) AS TAXSUM "
                                 "FROM DAYARCORDERTAXES DAOT "
                                 "INNER JOIN DAYARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                                 "INNER JOIN DAYARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                                "WHERE TAX_TYPE = '2' AND DAB.TERMINAL_NAME = :Terminal_Name";
+                                "WHERE TAX_TYPE = '2' " + terminalNamePredicate ;
 
-    qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
 
     qr->ExecQuery();
     servicecharge = qr->FieldByName("TAXSUM")->AsCurrency;
@@ -126,14 +149,26 @@ Currency ReportFinancialCalculations::GetServiceChargeTax(Database::TDBTransacti
 {
     Currency servicechargetax;
     TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and DAB.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
     qr->SQL->Text = "SELECT "
                                     "SUM(TAX_VALUE) AS TAXSUM "
                                 "FROM DAYARCORDERTAXES DAOT "
                                 "INNER JOIN DAYARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                                 "INNER JOIN DAYARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                                "WHERE TAX_TYPE = '3' AND DAB.TERMINAL_NAME = :Terminal_Name";
+                                "WHERE TAX_TYPE = '3'  " + terminalNamePredicate ;
 
-    qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+
+
     qr->ExecQuery();
     servicechargetax = qr->FieldByName("TAXSUM")->AsCurrency;
 
@@ -145,14 +180,23 @@ Currency ReportFinancialCalculations::GetLocalTax(Database::TDBTransaction &DBTr
 {
     Currency localtax;
     TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and DAB.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
     qr->SQL->Text = "SELECT "
                                     "SUM(TAX_VALUE) AS TAXSUM "
                                 "FROM DAYARCORDERTAXES DAOT "
                                 "INNER JOIN DAYARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                                 "INNER JOIN DAYARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                                "WHERE TAX_TYPE = '4' AND DAB.TERMINAL_NAME = :Terminal_Name";
+                                "WHERE TAX_TYPE = '4' " + terminalNamePredicate ;
 
-    qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+       qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
 
     qr->ExecQuery();
     localtax = qr->FieldByName("TAXSUM")->AsCurrency;
@@ -165,15 +209,25 @@ Currency ReportFinancialCalculations::GetProfitTax(Database::TDBTransaction &DBT
 {
     Currency localtax;
     TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and DAB.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
     qr->SQL->Text = "SELECT "
                                     "SUM(TAX_VALUE) AS TAXSUM "
                                 "FROM DAYARCORDERTAXES DAOT "
                                 "INNER JOIN DAYARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                                 "INNER JOIN DAYARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                                "WHERE TAX_TYPE = '5' AND DAB.TERMINAL_NAME = :Terminal_Name";
+                                "WHERE TAX_TYPE = '5' " + terminalNamePredicate ;
 
-    qr->ParamByName("Terminal_Name")->AsString = deviceName;
 
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+       qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
     qr->ExecQuery();
     localtax = qr->FieldByName("TAXSUM")->AsCurrency;
 
@@ -185,12 +239,13 @@ Currency ReportFinancialCalculations::GetDiscountsAndSurcharges(Database::TDBTra
 {
 	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
 	TIBSQL *qr = tr.Query(tr.AddQuery());
+
 	Currency discountsandsurcharges;
 
     qr->SQL->Text = "SELECT SUM(DAD.DISCOUNTED_VALUE) AS DISCSUM "
                     "FROM DAYARCORDERDISCOUNTS DAD "
                     "JOIN DAYARCORDERTAXES DAT ON DAD.ARCHIVE_KEY = DAT.ARCHIVE_KEY "
-                    "WHERE DAT.TAX_TYPE = '0' AND DAT.TAX_VALUE > 0";
+                    "WHERE DAT.TAX_TYPE = '0' AND DAT.TAX_VALUE > 0 ";
 
 	tr.StartTransaction();
 
@@ -824,38 +879,55 @@ Currency ReportFinancialCalculations::GetZeroRatedSales(Database::TDBTransaction
         TIBSQL *qr1 = tr.Query(tr.AddQuery());
         Currency servicecharge = 0;
 
+        AnsiString terminalNamePredicate = "";
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            terminalNamePredicate = " DA.TERMINAL_NAME = :TERMINAL_NAME And ";
+        }
+
+
         zeroratedsales->SQL->Text =
-                        "SELECT SUM(cast(coalesce(DA.BASE_PRICE,0)* abs(da.QTY) + DA.DISCOUNT_WITHOUT_TAX + coalesce(AOT.TAX_VALUE,0) as numeric(17,4))) PRICE  "
+                        "SELECT SUM(cast(coalesce(DA.BASE_PRICE,0)* abs(da.QTY) + DA.DISCOUNT_WITHOUT_TAX + coalesce(AOT.TAX_VALUE,0) as numeric(17,4))) PRICE , Da.ARCHIVE_KEY  "
                         "FROM DayARCHIVE DA "
                         "LEFT JOIN (SELECT  a.ARCHIVE_KEY, "
                         "Cast(Sum(coalesce(a.TAX_VALUE,0) ) as Numeric(17,4)) TAX_VALUE "
                         "FROM DayARCORDERTAXES a group by  a.ARCHIVE_KEY order by 1 ) "
                         "AOT ON  AOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
-                        " WHERE DA.TERMINAL_NAME = :TERMINAL_NAME and  DA.DISCOUNT_REASON <> '' AND DA.DISCOUNT = 0 AND DA.ARCHIVE_KEY "
+                        " WHERE " + terminalNamePredicate + " DA.DISCOUNT_REASON <> '' AND DA.DISCOUNT = 0 AND DA.ARCHIVE_KEY "
                         "IN ( SELECT ARCHIVE_KEY  FROM DAYARCORDERTAXES "
                         "WHERE (TAX_TYPE = 0  and TAX_VALUE = 0 ) AND "
-                        "DAYARCORDERTAXES.ARCHIVE_KEY NOT IN (SELECT a.ARCHIVE_KEY FROM DAYARCORDERDISCOUNTS a WHERE (A.DISCOUNT_GROUPNAME = 'Senior Citizen' AND A.DISCOUNTED_VALUE <> 0) OR (A.DISCOUNT_GROUPNAME = 'Person with Disability'))) ";
+                        "DAYARCORDERTAXES.ARCHIVE_KEY NOT IN (SELECT a.ARCHIVE_KEY FROM DAYARCORDERDISCOUNTS a WHERE (A.DISCOUNT_GROUPNAME = 'Senior Citizen' AND A.DISCOUNTED_VALUE <> 0) OR (A.DISCOUNT_GROUPNAME = 'Person with Disability'))) "
+                        "group by "
+                        "Da.ARCHIVE_KEY ";
 
         tr.StartTransaction();
-        zeroratedsales->ParamByName("Terminal_Name")->AsString = deviceName;
-        zeroratedsales->ExecQuery();
-        zeroratedsalesvalue = zeroratedsales->FieldByName("PRICE")->AsCurrency;
-
-        //
-        zeroratedsales->Close();
-        qr1->Close();
-        qr1->SQL->Text = "SELECT TAX_VALUE "
-                    "FROM DAYARCORDERTAXES DAOT "
-                    "INNER JOIN DAYARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
-                    "INNER JOIN DAYARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                    "WHERE TAX_TYPE IN ('2','4','5') AND DAB.TERMINAL_NAME = :Terminal_Name ";
-        qr1->ParamByName("Terminal_Name")->AsString = deviceName;
-        qr1->ExecQuery();
-        while(!qr1->Eof)
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
         {
-            servicecharge += qr1->FieldByName("TAX_VALUE")->AsDouble;
-            qr1->Next();
+            zeroratedsales->ParamByName("Terminal_Name")->AsString = deviceName;
         }
+
+        zeroratedsales->ExecQuery();
+
+        while(!zeroratedsales->Eof)
+        {
+
+            zeroratedsalesvalue += zeroratedsales->FieldByName("PRICE")->AsCurrency;
+            qr1->Close();
+            // Get the ARCHIVE key for all tax exempt items
+            qr1->SQL->Text = "SELECT TAX_VALUE "
+                             "FROM DAYARCORDERTAXES "
+                             "WHERE TAX_TYPE IN ('2','4') AND ARCHIVE_KEY=:ARCKEY ";
+
+            qr1->ParamByName("ARCKEY")->AsInteger = zeroratedsales->FieldByName("ARCHIVE_KEY")->AsInteger;
+            qr1->ExecQuery();
+            while(!qr1->Eof)
+            {
+                servicecharge += qr1->FieldByName("TAX_VALUE")->AsCurrency;
+                qr1->Next();
+            }
+            zeroratedsales->Next();
+        }        //
+        zeroratedsales->Close();
         qr1->Close();
         tr.Commit();
          if(zeroratedsalesvalue != 0) {
@@ -879,6 +951,12 @@ Currency ReportFinancialCalculations::GetTotalDiscountValue(Database::TDBTransac
         Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
         TIBSQL *getTotalDiscount = tr.Query(tr.AddQuery());
 
+        AnsiString terminalNamePredicate = "";
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            terminalNamePredicate = "And DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME ";
+        }
+
         getTotalDiscount->SQL->Text =
                         "select SUM(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT "
 			"from " "DAYARCBILL LEFT JOIN SECURITY ON DAYARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
@@ -886,12 +964,15 @@ Currency ReportFinancialCalculations::GetTotalDiscountValue(Database::TDBTransac
 			"LEFT JOIN DAYARCHIVE ON DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
 			"LEFT JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
 			"where "
-			"DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' AND "
-			"DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME " "AND DAYARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
+			"DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' "
+			+ terminalNamePredicate + " And DAYARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
 			(SecurityTypes[secDiscountedBy]) + "' " ;
 
         tr.StartTransaction();
-        getTotalDiscount->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            getTotalDiscount->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        }
         getTotalDiscount->ExecQuery();
         totaldiscount = getTotalDiscount->FieldByName("DISCOUNT")->AsCurrency;
         tr.Commit();

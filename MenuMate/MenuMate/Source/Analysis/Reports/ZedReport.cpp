@@ -18,8 +18,10 @@ int ZedReport::DisplayAndPrint(TMemoryStream* memoryStream)
 {
     int retValue = 0;
     TPrintout* printOut = SetupPrintOutInstance();
-
-    printOut->PrintFormat->PartialCut();
+    if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    {
+       printOut->PrintFormat->PartialCut();
+    }
 
     TForm* currentForm = Screen->ActiveForm;
     if(printOut->BlindBalanceUsed)

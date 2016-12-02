@@ -46,12 +46,10 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
     {
 
         dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
-
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "Beginning OR No.";
         printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(startInvoiceNumber);
         printOut->PrintFormat->AddLine();
-
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "Ending OR No.";
         printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(endInvoiceNumber);
@@ -63,6 +61,14 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "Ending Balance";
         printOut->PrintFormat->Line->Columns[2]->Text = "";
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[1]->Text = "";
+        printOut->PrintFormat->Line->Columns[2]->Text = "";
+        printOut->PrintFormat->Line->Columns[3]->Text = "";
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[1]->Line();
+        printOut->PrintFormat->Line->Columns[2]->Line();
+        printOut->PrintFormat->Line->Columns[3]->Line();
         printOut->PrintFormat->AddLine();
 
     }

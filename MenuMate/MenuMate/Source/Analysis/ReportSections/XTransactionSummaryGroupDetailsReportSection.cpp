@@ -33,7 +33,10 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
     skimCalculations.CalculateSkims(*_dbTransaction, deviceName);
 
     TTransactionInfo transactionInfo;
-    TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
+    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    {
+       TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
+    }
 
     transactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, deviceName, true);
 
@@ -244,13 +247,13 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
             if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
             {
                 dataCalculationUtilities->PrinterFormatinThreeSections(printOut);
-                printOut->PrintFormat->Line->Columns[1]->Line();
-                printOut->PrintFormat->Line->Columns[2]->Line();
-                printOut->PrintFormat->Line->Columns[3]->Line();
+                printOut->PrintFormat->Line->Columns[1]->Text = "-----------------------------------------------------------";
+                printOut->PrintFormat->Line->Columns[2]->Text = "-----------------------------------------------------------";
+                printOut->PrintFormat->Line->Columns[3]->Text = "-----------------------------------------------------------";
                 printOut->PrintFormat->AddLine();
 
                 printOut->PrintFormat->Line->Columns[1]->Text = "Total";
-                printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(total_payment, ffNumber, CurrencyDecimals);
+                printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(total_payment);//, ffNumber, CurrencyDecimals);
                 printOut->PrintFormat->Line->Columns[3]->Text = CurrToStrF(groupGrandTotal, ffNumber, CurrencyDecimals);
                 printOut->PrintFormat->AddLine();
                 SetSingleColumnPrinterFormat(printOut);
@@ -702,9 +705,9 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
             dataCalculationUtilities->PrinterFormatinThreeSections(printOut);
             printOut->PrintFormat->Line->Columns[1]->Text = "Payments";
             printOut->PrintFormat->AddLine();
-            printOut->PrintFormat->Line->Columns[1]->Line();
-            printOut->PrintFormat->Line->Columns[2]->Line();
-            printOut->PrintFormat->Line->Columns[3]->Line();
+            printOut->PrintFormat->Line->Columns[1]->Text = "-----------------------------------------------------------";
+            printOut->PrintFormat->Line->Columns[2]->Text = "-----------------------------------------------------------";
+            printOut->PrintFormat->Line->Columns[3]->Text = "-----------------------------------------------------------";
             printOut->PrintFormat->AddLine();
             printOut->PrintFormat->Line->Columns[1]->Text = "Total";
             printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(total_payment);

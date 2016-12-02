@@ -21,10 +21,22 @@ ZAccumulatedTotalDetailsReportSection::~ZAccumulatedTotalDetailsReportSection()
 void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-    const Currency todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
+    /*const Currency todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
 
     const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
+	const Currency closingBalance = openingBalance + todaysEarnings;*/
+    const Currency todaysEarnings = 0;
+    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    {
+       todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+    }
+    else
+    {
+       todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
+    }
+    const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
 	const Currency closingBalance = openingBalance + todaysEarnings;
+
 
 
 	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
@@ -67,6 +79,15 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->AddLine();
         SetPrinterFormatForSingleColumn(printOut);
         printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->AddLine();
+        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
+        printOut->PrintFormat->Line->Columns[1]->Text = "";
+        printOut->PrintFormat->Line->Columns[2]->Text = "";
+        printOut->PrintFormat->Line->Columns[3]->Text = "";
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[1]->Line();
+        printOut->PrintFormat->Line->Columns[2]->Line();
+        printOut->PrintFormat->Line->Columns[3]->Line();
         printOut->PrintFormat->AddLine();
     }
     else

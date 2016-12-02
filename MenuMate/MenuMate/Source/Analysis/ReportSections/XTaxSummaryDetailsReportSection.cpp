@@ -37,7 +37,6 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     Currency totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName);
 
 
-
     taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
 
     if(_globalSettings->ReCalculateTaxPostDiscount)
@@ -177,6 +176,12 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
 void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
 {
     TIBSQL *salesTaxQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "AND DAB.TERMINAL_NAME = :Terminal_Name ";
+    }
+
 
     salesTaxQuery->SQL->Text = "SELECT "
                                     "SUM(TAX_VALUE) AS TAXSUM, DTax.RATE "
@@ -184,12 +189,15 @@ void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTra
                                 "INNER JOIN DAYARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                                 "INNER JOIN DAYARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
                                 "INNER JOIN TAXPROFILES DTax on DTax.TYPE = DAOT.TAX_TYPE "
-                                "WHERE TAX_TYPE = '0' AND DAB.TERMINAL_NAME = :Terminal_Name and DAOT.TAX_NAME = DTax.NAME "
+                                "WHERE TAX_TYPE = '0' " + terminalNamePredicate + " and DAOT.TAX_NAME = DTax.NAME "
                                 "group by "
                                 "DTax.RATE, "
                                 "DAOT.TAX_TYPE ";
 
-    salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+       salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
 
     salesTaxQuery->ExecQuery();
     while(!salesTaxQuery->Eof)

@@ -87,7 +87,11 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
         Currency skims = 0;
         Currency refloats = 0;
 
-
+        if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
+        {
+           TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
+           showendingbal = false;
+        }
         TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(dbTransaction, deviceName, showendingbal);
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
 
@@ -277,7 +281,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                                 " from DAYARCBILL a "
                                 " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                 " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and b.ORDER_TYPE != 3 "
+                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 "
                                 " group by 1,2,3,4,5,6,7,8,9,10 ";
         }
         else
@@ -732,7 +736,6 @@ TDateTime DataCalculationUtilities::GetTransDateForTerminal(Database::TDBTransac
     }
     IBInternalQuery->Close();
     IBInternalQuery->SQL->Text = "select min(a.TIME_STAMP) TIME_STAMP, a.ARCHIVE_KEY, a.TERMINAL_NAME from DAYARCHIVE a " + terminalNamePredicate  + " group by ARCHIVE_KEY, a.TERMINAL_NAME ";
-    //IBInternalQuery->SQL->Text = "SELECT " "MAX(TIME_STAMP)TIME_STAMP FROM ZEDS " "WHERE " "TERMINAL_NAME = :TERMINAL_NAME";
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
        IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = terminalName;
