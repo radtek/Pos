@@ -154,7 +154,14 @@ void TManagerMessage::GetListContent(Database::TDBTransaction &DBTransaction,TSt
    
    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-   List->Add("Message");
+   if(Filter == 14)
+   {
+      List->Add("Denomination");
+   }
+   else
+   {
+      List->Add("Message");
+   }
 
    IBInternalQuery->Close();
    IBInternalQuery->SQL->Text =

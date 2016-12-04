@@ -13,6 +13,7 @@
 #include "ManagerPatron.h"
 #include "MMLogging.h"
 #include "ManagerFloat.h"
+#include "MMTouchNumpad.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -64,6 +65,11 @@ void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
 	else if (MessageType == eCashDrawer)
 	{
 		pnlLabel->Caption = "Cash Drawer Reason";
+	}
+
+	else if (MessageType == eCashDenomination)
+	{
+		pnlLabel->Caption = "Cash Denomination";
 	}
 
 	this->Caption = pnlLabel->Caption;
@@ -175,6 +181,11 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
 			CurrentCaption = "Enter Button Title";
 			CurrentMessage = "Enter Cash Drawer Reason";
 		}
+		else if (MessageType == eCashDenomination)
+		{
+			CurrentCaption = "Enter Button Title";
+			CurrentMessage = "Enter Cash Denomination";
+		}
 
     	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
 		frmTouchKeyboard->MaxLength = 15;
@@ -217,19 +228,28 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
                    frmTouchKeyboard->MaxLength = 39;
                 }
 				frmTouchKeyboard->Caption = CurrentMessage;
-				if (frmTouchKeyboard->ShowModal() == mrOk)
-				{
-					if (MessageType == eRunProgram)
-					{
-						CurrentCaption = "Enter Program Button Title";
-						CurrentMessage = "Enter Run Command";
-						ManagerRun->Add(DBTransaction,ButtonTitle,frmTouchKeyboard->KeyboardText,ManagerRun->GetCount(DBTransaction,MessageType)+1,0);
-					}
-					else
-					{
-						ManagerMessage->Add(DBTransaction,ButtonTitle,frmTouchKeyboard->KeyboardText,ManagerMessage->GetCount(DBTransaction,MessageType)+1,MessageType);
-					}
-				}
+                if(MessageType != eCashDenomination)
+                {
+                    if (frmTouchKeyboard->ShowModal() == mrOk)
+                    {
+                        if (MessageType == eRunProgram)
+                        {
+                            CurrentCaption = "Enter Program Button Title";
+                            CurrentMessage = "Enter Run Command";
+                            ManagerRun->Add(DBTransaction,ButtonTitle,frmTouchKeyboard->KeyboardText,ManagerRun->GetCount(DBTransaction,MessageType)+1,0);
+                        }
+                        else
+                        {
+                            ManagerMessage->Add(DBTransaction,ButtonTitle,frmTouchKeyboard->KeyboardText,ManagerMessage->GetCount(DBTransaction,MessageType)+1,MessageType);
+                        }
+                    }
+                }
+                else
+                {
+                   Currency denomination = 0.0;
+                   denomination = CashDenominationValue(DBTransaction, denomination);
+                   ManagerMessage->Add(DBTransaction,ButtonTitle, FloatToStr(denomination),ManagerMessage->GetCount(DBTransaction,MessageType)+1,MessageType);
+                }
 			}
 			DBTransaction.Commit();
 		}
@@ -301,6 +321,11 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(
 				CurrentCaption = "Enter Button Title";
 				CurrentMessage = "Enter Cash Drawer Reason";
 			}
+            else if (MessageType == eCashDenomination)
+            {
+                CurrentCaption = "Enter Button Title";
+                CurrentMessage = "Enter Cash Denomination";
+            }
 
 			Database::TDBTransaction DBTransaction(DBControl);
 			DBTransaction.StartTransaction();
@@ -352,24 +377,35 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(
                 }
 				frmTouchKeyboard->KeyboardText =  Manager->GetTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
 				frmTouchKeyboard->Caption = CurrentCaption;
-				if (frmTouchKeyboard->ShowModal() == mrOk)
-				{
-					Manager->SetTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],frmTouchKeyboard->KeyboardText);
-					frmTouchKeyboard->MaxLength = 200;
-					frmTouchKeyboard->AllowCarriageReturn = false;
-					frmTouchKeyboard->StartWithShiftDown = true;
-                    if(MessageType == eCashDrawer)
+
+
+                    if (frmTouchKeyboard->ShowModal() == mrOk)
                     {
-                       frmTouchKeyboard->MustHaveValue = true;
-                       frmTouchKeyboard->MaxLength = 39;
+                        Manager->SetTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],frmTouchKeyboard->KeyboardText);
+                        frmTouchKeyboard->MaxLength = 200;
+                        frmTouchKeyboard->AllowCarriageReturn = false;
+                        frmTouchKeyboard->StartWithShiftDown = true;
+                        if(MessageType == eCashDrawer)
+                        {
+                           frmTouchKeyboard->MustHaveValue = true;
+                           frmTouchKeyboard->MaxLength = 39;
+                        }
+                        if(MessageType != eCashDenomination)
+                        {
+                            frmTouchKeyboard->KeyboardText =  Manager->GetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+                            frmTouchKeyboard->Caption = CurrentMessage;
+                            if (frmTouchKeyboard->ShowModal() == mrOk)
+                            {
+                                Manager->SetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],frmTouchKeyboard->KeyboardText);
+                            }
+                        }
+                        else
+                        {
+                           Currency value = StrToCurr(Manager->GetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]));
+                           Manager->SetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row], FloatToStr(CashDenominationValue(DBTransaction, value, true)));
+                        }
                     }
-					frmTouchKeyboard->KeyboardText =  Manager->GetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
-					frmTouchKeyboard->Caption = CurrentMessage;
-					if (frmTouchKeyboard->ShowModal() == mrOk)
-					{
-						Manager->SetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],frmTouchKeyboard->KeyboardText);
-					}
-				}
+
 			}
 			DBTransaction.Commit();
 		}
@@ -411,4 +447,24 @@ void __fastcall TfrmMessageMaintenance::btnDelMessageClick(TObject *Sender)
 	ShowMessages();
 }
 //---------------------------------------------------------------------------
+Currency TfrmMessageMaintenance::CashDenominationValue(Database::TDBTransaction &DBTransaction,Currency value, bool isedited)
+{
+    Currency denomination = 0.0;
+    TManagerInterface *Manager = NULL;
+    std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+    frmTouchNumpad->Caption = "Cash Denominations";
+    frmTouchNumpad->btnSurcharge->Caption = "Ok";
+    frmTouchNumpad->btnDiscount->Visible = false;
+    frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->Mode = pmDecimal;
+    if(isedited)
+    {
+       frmTouchNumpad->CURInitial = value;
+    }
+    if (frmTouchNumpad->ShowModal() == mrOk)
+    {
+        denomination = frmTouchNumpad->CURResult;
+    }
+    return denomination;
+}
 

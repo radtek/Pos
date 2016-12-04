@@ -34,6 +34,12 @@ void TApplyParser::upgrade6_33Tables()
 	update6_33Tables();
 }
 
+// 6.34
+void TApplyParser::upgrade6_34Tables()
+{
+	update6_34Tables();
+}
+
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -284,6 +290,41 @@ void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBCon
 
 }
 
+//---------------------------------------------------------------------------
+//::::::::::::::::::::::::Version 6.34::::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_34Tables()
+{
+    CreateGeneratorAndTableForCashDenominations6_34( _dbControl);
+}
+
+void TApplyParser::CreateGeneratorAndTableForCashDenominations6_34( TDBControl* const inDBControl )
+{
+    if( !generatorExists("GEN_CASHDENOMINATION_KEY", _dbControl) )
+	{
+		executeQuery(
+		"CREATE GENERATOR GEN_CASHDENOMINATION_KEY;",
+		inDBControl);
+		executeQuery(
+		"SET GENERATOR GEN_CASHDENOMINATION_KEY TO 0; ",
+		inDBControl );
+	}
+
+   if ( !tableExists("CASHDENOMINATION", _dbControl ) )
+   {
+    executeQuery(
+    "CREATE TABLE CASHDENOMINATION "
+        "( "
+         " CASHDENOMINATION_KEY Integer NOT NULL PRIMARY KEY , "
+         " CASHDENOMINATION  Varchar(50), "
+         " ZED_KEY INTEGER, "
+         " QUANTITY_COUNT INTEGER ,  "
+         " BANKING NUMERIC(17,4) ,  "
+         " ZED_STATUS INTEGER "
+        "); ",
+    inDBControl );
+    }
+
+}
 
 }
 

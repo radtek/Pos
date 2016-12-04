@@ -47,6 +47,7 @@ private:	// User declarations
 	Database::TDBControl &DBControl;
 
 	void ShowMessages();
+    Currency CashDenominationValue(Database::TDBTransaction &DBTransaction, Currency value,bool isedited = false);
 public:		// User declarations
 
 	eMessageType MessageType;

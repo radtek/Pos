@@ -513,7 +513,7 @@ object frmMaintain: TfrmMaintain
           Left = 8
           Top = 49
           Width = 241
-          Height = 489
+          Height = 546
           Caption = 'Quick Messages '
           Font.Charset = ANSI_CHARSET
           Font.Color = clBlack
@@ -635,6 +635,23 @@ object frmMaintain: TfrmMaintain
             ParentFont = False
             ParentColor = True
             Caption = 'Cash Drawer'
+            ButtonColor = 6052441
+            LatchedColor = clBtnFace
+            DisabledButtonColor = clBtnFace
+            LatchingProperties = [lkLatchColor, lkStayDown]
+            OnMouseClick = BitBtn2Click
+          end
+          object tbtnCashDenomination: TTouchBtn
+            Left = 28
+            Top = 473
+            Font.Charset = THAI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ParentColor = True
+            Caption = 'Cash Denomination'
             ButtonColor = 6052441
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace

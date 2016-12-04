@@ -78,6 +78,7 @@ namespace MenumateVersionParser
             pv6_31,
             pv6_32,
             pv6_33,
+            pv6_34,
     };
 
     class TApplyParser
@@ -156,6 +157,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_31( TDBControl* const inDBControl );
         PARSER_ERROR apply6_32( TDBControl* const inDBControl );
         PARSER_ERROR apply6_33( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_34( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -804,6 +806,10 @@ namespace MenumateVersionParser
         void PopulateZED_StatusForContactTime6_33(TDBControl* const inDBControl);
         void ModifyCloseZedColumns6_33( TDBControl* const inDBControl );
         void ReCreateRoundedContactTimeView6_33( TDBControl* const inDBControl );
+
+        void upgrade6_34Tables();
+        void update6_34Tables();
+        void CreateGeneratorAndTableForCashDenominations6_34( TDBControl* const inDBControl );
 
     }; // class
 } // namespace
