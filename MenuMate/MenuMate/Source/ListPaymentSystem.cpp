@@ -4694,8 +4694,7 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
         if( PaymentTransaction.PaymentsCount() == 0 )
         return;
 
-        //	Security->SecurityClear();
-
+        PaymentTransaction.Money.Recalc(PaymentTransaction);
         TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
         PaymentTransaction.ProcessPoints();
         if(!IsClippSale)

@@ -477,9 +477,18 @@ void TLoyaltyMateInterface::ReadContactInfo(MemberInfo* inMemberInfo,TMMContactI
         inContactInfo.Points.Load( type1, inMemberInfo->EarnedPoints );
 
         // Putting in the Points Loaded ( Purchased ).
-        TPointsTypePair typepair2( pttPurchased,ptstAccount );
-	    TPointsType type2( pasCloud, typepair2, pesNone );
-        inContactInfo.Points.Load( type2, inMemberInfo->LoadedPoints );
+        if(TGlobalSettings::Instance().EnableSeperateEarntPts)
+        {
+            TPointsTypePair typepair2( pttPurchased,ptstAccount );
+            TPointsType type2( pasCloud, typepair2, pesNone );
+            inContactInfo.Points.Load( type2, inMemberInfo->LoadedPoints );
+        }
+        else
+        {
+            TPointsTypePair typepair2( pttPurchased,ptstLoyalty );
+            TPointsType type2( pasCloud, typepair2, pesNone );
+            inContactInfo.Points.Load( type2, inMemberInfo->LoadedPoints );
+        }
 
          // Putting in the Birthday Points .
         TPointsTypePair typepair3( pttBirthdayBonus,ptstLoyalty );

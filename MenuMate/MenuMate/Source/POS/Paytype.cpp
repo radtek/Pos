@@ -378,8 +378,11 @@ void TfrmPaymentType::Reset()
    for (int i=0; i < CurrentTransaction.Orders->Count; i++)
     {
         TItemMinorComplete *Order = (TItemMinorComplete *) CurrentTransaction.Orders->Items[i];
+        Order->IsPayByPoints = false;
         Order->AmountRedeemed = 0;
         Order->PointRedeemed = 0;
+        if(TGlobalSettings::Instance().PontsSpentCountedAsRevenue)
+          Order->DiscountByTypeRemove(dsMMMebersPoints);
     }
 }
 // ---------------------------------------------------------------------------
@@ -879,14 +882,18 @@ void __fastcall TfrmPaymentType::pnlCancelClick(TObject *Sender)
 		tbCreditClick(Sender);
 	}
     PrintCancelEvent++;
-    if(CurrentTransaction.Orders->Count != 0 && TGlobalSettings::Instance().ShowScreenToSelectItemForPoint)
+
+   //Reset redeemption information
+   for (int i=0; i < CurrentTransaction.Orders->Count; i++)
     {
-        for(int i = 0 ; i < CurrentTransaction.Orders->Count ; i++)
-        {
-            TItemComplete *Order = (TItemComplete*)CurrentTransaction.Orders->Items[i];
-            Order->IsPayByPoints = false;
-        }
+        TItemMinorComplete *Order = (TItemMinorComplete *) CurrentTransaction.Orders->Items[i];
+        Order->IsPayByPoints = false;
+        Order->AmountRedeemed = 0;
+        Order->PointRedeemed = 0;
+        if(TGlobalSettings::Instance().PontsSpentCountedAsRevenue)
+          Order->DiscountByTypeRemove(dsMMMebersPoints);
     }
+    CurrentTransaction.Recalc();
     if(TGlobalSettings::Instance().EnableCancelCheckRemoval)
     {
         if(PrintCancelEvent > 0)
