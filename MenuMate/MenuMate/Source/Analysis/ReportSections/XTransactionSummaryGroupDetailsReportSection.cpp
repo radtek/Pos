@@ -215,7 +215,12 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
                 {
                     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
                     {
-                        printOut->PrintFormat->Line->Columns[1]->Text = itCurrentPayment->second.Name + " Cash Out ";
+                        AnsiString cashOut = " CashOut ";
+                        printOut->PrintFormat->Line->Columns[1]->Width += 2;//cashOut.Length();
+                        printOut->PrintFormat->Line->Columns[2]->Width -= 3;//cashOut.Length();
+                        printOut->PrintFormat->Line->Columns[3]->Width +=1;
+                        //printOut->PrintFormat->Line->Columns[3]->Width -= cashOut.Length();
+                        printOut->PrintFormat->Line->Columns[1]->Text = itCurrentPayment->second.Name + cashOut;
                         printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(ThisTransaction.CashOutCount);
                         printOut->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.CashOut );
                         printOut->PrintFormat->AddLine();
@@ -254,10 +259,18 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
 
                 printOut->PrintFormat->Line->Columns[1]->Text = "Total";
                 printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(total_payment);//, ffNumber, CurrencyDecimals);
-                printOut->PrintFormat->Line->Columns[3]->Text = CurrToStrF(groupGrandTotal, ffNumber, CurrencyDecimals);
+                if(groupGrandTotal < 0)
+                {
+                   printOut->PrintFormat->Line->Columns[3]->Text = "(" + CurrToStrF(fabs(groupGrandTotal), ffNumber, CurrencyDecimals) + ")";
+                }
+                else
+                {
+                    printOut->PrintFormat->Line->Columns[3]->Text = CurrToStrF(groupGrandTotal, ffNumber, CurrencyDecimals);
+                }
                 printOut->PrintFormat->AddLine();
                 SetSingleColumnPrinterFormat(printOut);
                 printOut->PrintFormat->Line->Columns[0]->Text = "";
+                printOut->PrintFormat->AddLine();
                 printOut->PrintFormat->AddLine();
             }
             else
@@ -715,6 +728,7 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
             printOut->PrintFormat->AddLine();
             SetSingleColumnPrinterFormat(printOut);
             printOut->PrintFormat->Line->Columns[0]->Text = "";
+            printOut->PrintFormat->AddLine();
             printOut->PrintFormat->AddLine();
         }
     }

@@ -281,7 +281,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                                 " from DAYARCBILL a "
                                 " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                 " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 "
+                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 or a.DISCOUNT !=0 "
                                 " group by 1,2,3,4,5,6,7,8,9,10 ";
         }
         else

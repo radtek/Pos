@@ -312,6 +312,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                 SetSingleColumnPrinterFormat(printout);
                 printout->PrintFormat->Line->Columns[0]->Text = "";
                 printout->PrintFormat->AddLine();
+                printout->PrintFormat->AddLine();
             }
             else
             {
@@ -340,11 +341,12 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                 printout->PrintFormat->AddLine();
                 dataCalcUtils.PrinterFormatinThreeSections(printout);//SetPrinterFormat(printout);
                 printout->PrintFormat->Line->Columns[1]->Text = "Total";
-                printout->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(total_discount_qty);//FloatToStr(total_discount_qty);
-                printout->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency(fabs(show_discount_totals));
+                printout->PrintFormat->Line->Columns[2]->Text = IntToStr(total_discount_qty);//FloatToStr(total_discount_qty);
+                printout->PrintFormat->Line->Columns[3]->Text = FloatToStr(fabs(show_discount_totals));
                 printout->PrintFormat->AddLine();
                 SetSingleColumnPrinterFormat(printout);
                 printout->PrintFormat->Line->Columns[0]->Text = "";
+                printout->PrintFormat->AddLine();
                 printout->PrintFormat->AddLine();
 
            }

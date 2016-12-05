@@ -133,6 +133,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[1]->Text = "";
         printOut->PrintFormat->Line->Columns[2]->Text = "";
         printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->AddLine();
     }
     else
     {

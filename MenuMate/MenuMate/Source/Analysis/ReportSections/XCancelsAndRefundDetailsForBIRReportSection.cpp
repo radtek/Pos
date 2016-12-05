@@ -140,7 +140,8 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut)
         Currency TotalCanceled = 0;
 
         dataCalcUtils.PrinterFormatinThreeSections(printOut);
-        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/2.5 ;
+        AnsiString title = "Void and Refund";
+        printOut->PrintFormat->Line->Columns[1]->Width = title.Length();
         printOut->PrintFormat->Line->Columns[1]->Text = "Void and Refund";
         printOut->PrintFormat->AddLine();
 
