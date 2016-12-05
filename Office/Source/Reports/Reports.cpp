@@ -8348,10 +8348,11 @@ void TfrmReports::PrintLoyaltyAudit(TReportControl *ReportControl)
 	}
 
 	AnsiString ReportName;
-
+    AnsiString DateRange;
 	try
 	{
 		TReportCheckboxFilter *CustomersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
+
 
 		if (ReportControl->CurrentSubReport == 0)
 		{
@@ -8375,10 +8376,15 @@ void TfrmReports::PrintLoyaltyAudit(TReportControl *ReportControl)
 		{
 			if (rvMenuMate->SelectReport(ReportName, false))
 			{
+
+                DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+                            "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+                rvMenuMate->SetParam("ReportRange", DateRange);
                 Database::TDBTransaction transaction(dmMMData->dbMenuMate);
                 transaction.Start();
         	    TManagerVariable varManager;
                 int val = 1;
+
                 if(varManager.GetInt(transaction, vmEnableSeperateEarntPts, val))
                 {
                     rvMenuMate->SetParam("EarntSpent", "EarntSpent");
@@ -8391,9 +8397,6 @@ void TfrmReports::PrintLoyaltyAudit(TReportControl *ReportControl)
                     rvMenuMate->SetParam("LoadedSpent", "Redeemed");
                     rvMenuMate->SetParam("Loaded", "Purchased");
                 }
-
-
-
 				rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
 				rvMenuMate->Execute();
 			}
@@ -9555,7 +9558,7 @@ void TfrmReports::PrintMembershipAudit(TReportControl *ReportControl)
 
         try {
                 const AnsiString ReportName = "repLoyaltyMembershipAuditPointsBreakdown";
-               TReportCheckboxFilter *CustomersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
+                TReportCheckboxFilter *CustomersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
                dmMMReportData->SetupLoyaltyMembershipAuditItem1(ReportControl->Start, ReportControl->End, CustomersFilter->Selection);
                    if (ReportType == rtExcel)
 				{
