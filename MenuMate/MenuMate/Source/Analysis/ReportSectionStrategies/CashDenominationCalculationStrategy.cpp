@@ -1,24 +1,24 @@
-#include "BlindBalanceCalculationStrategy.h"
+#include "CashDenominationCalculationStrategy.h"
 #include "DeviceRealTerminal.h"
 #include "GlobalSettings.h"
-#include "BlindBalanceController.h"
+#include "CashDenominationController.h"
 
-
-BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, bool isMasterBalance)
+CashDenominationCalculationStrategy::CashDenominationCalculationStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, bool isMasterBalance)
 	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings)
 {
     _isMasterBalance = isMasterBalance;
 }
 
-void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
+void CashDenominationCalculationStrategy::BuildSection(TPrintout* printOut)
 {
     TBlindBalances balance;
     AnsiString bagId;
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
 
     TForm* currentForm = Screen->ActiveForm;
-    TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction, deviceName);
-    if(!blindBalanceController.Run())
+    //TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction, deviceName);
+    TCashDenominationController CashDenominationController(currentForm, *_dbTransaction, deviceName);
+    if(!CashDenominationController.Run())
     {
         printOut->BlindBalanceUsed = false;
         return;
@@ -29,8 +29,8 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
        _dbTransaction->StartTransaction();
     }
 
-    balance = blindBalanceController.Get();
-    bagId = blindBalanceController.GetBagID();
+    balance = CashDenominationController.Get();
+    bagId = CashDenominationController.GetBagID();
     TBlindBalanceControllerInterface::Instance()->SetBalances(balance);
     TBlindBalanceControllerInterface::Instance()->SetBagID(bagId);
     TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
@@ -38,13 +38,13 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
     printOut->PrintFormat->Line->ColCount = 3;
 	printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 4/10;
 	printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-	printOut->PrintFormat->Line->Columns[0]->Text =  "Payment Type";
+	printOut->PrintFormat->Line->Columns[0]->Text =  "Denomination";
 	printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width / 3;
 	printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-	printOut->PrintFormat->Line->Columns[1]->Text = "Blind Balance ";
+	printOut->PrintFormat->Line->Columns[1]->Text = "Quantity Count ";
 	printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width - printOut->PrintFormat->Line->Columns[0]->Width - printOut->PrintFormat->Line->Columns[1]->Width;
 	printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-	printOut->PrintFormat->Line->Columns[2]->Text = "Variance ";
+	printOut->PrintFormat->Line->Columns[2]->Text = "Banking ";
 
 	printOut->PrintFormat->AddLine();
 
@@ -71,15 +71,15 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
 		}
 
 		printOut->PrintFormat->Line->Columns[0]->Text = itBlindBalances->first;
-		printOut->PrintFormat->Line->Columns[1]->Text = FormatFloat("0.00", itBlindBalances->second.BlindBalance);
+		printOut->PrintFormat->Line->Columns[1]->Text = FormatFloat("0.00", itBlindBalances->second.TransQty);
 
 		ibInternalQuery->ParamByName("pay_type")->AsString = itBlindBalances->first;
 		ibInternalQuery->ExecQuery();
 
-		itBlindBalances->second.SystemBalance = ibInternalQuery->FieldByName("total")->AsCurrency;
-		double tempBalance = itBlindBalances->second.BlindBalance - itBlindBalances->second.SystemBalance;
+		//itBlindBalances->second.SystemBalance = ibInternalQuery->FieldByName("total")->AsCurrency;
+		//double tempBalance = itBlindBalances->second.BlindBalance - itBlindBalances->second.SystemBalance;
 
-		printOut->PrintFormat->Line->Columns[2]->Text = FormatFloat("0.00", tempBalance);
+		printOut->PrintFormat->Line->Columns[2]->Text = FormatFloat("0.00", itBlindBalances->second.BlindBalance);
 		printOut->PrintFormat->AddLine();
 
 		ibInternalQuery->Close();

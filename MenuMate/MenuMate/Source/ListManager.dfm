@@ -74,6 +74,8 @@ object frmListManager: TfrmListManager
             ParentBackground = False
             ParentFont = False
             TabOrder = 0
+            ExplicitLeft = 0
+            ExplicitTop = 1
           end
           object sgDisplay: TStringGrid
             Left = 7

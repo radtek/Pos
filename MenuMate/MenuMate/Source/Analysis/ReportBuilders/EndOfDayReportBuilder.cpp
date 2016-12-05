@@ -19,6 +19,7 @@ void EndOfDayReportBuilder::AddSectionsToReport(IReport* report)
 	AddClientDetailsSection(report);
 	AddSessionDateSection(report);
     AddMasterBlindBalancesSection(report);
+    AddCashDenominationSection(report); // shows cash denomination above blind balance
 	AddBlindBalancesSection(report);
 	AddTransactionSummaryGroupSection(report);
 	AddBilledSalesTotalsSection(report);
@@ -203,5 +204,10 @@ void EndOfDayReportBuilder::AddPriceAdjustmentSection(IReport* report)
 void EndOfDayReportBuilder::AddMallExportConsolidatedReceipt(IReport* report)
 {
     AddReportSectionToReport(report, mmMallExportConsolidatedReceipt, true);
+}
+
+void EndOfDayReportBuilder::AddCashDenominationSection(IReport* report)
+{
+    AddReportSectionToReport(report, mmCashDenominationDetailsSection, GetGlobalSettings()->CashDenominationEntry);
 }
 
