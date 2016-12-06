@@ -15,7 +15,7 @@ ZCashDenominationReportSection::~ZCashDenominationReportSection()
 
 void ZCashDenominationReportSection::GetOutput(TPrintout* printOut)
 {
-    AddTitle(printOut, " Blind Balances");
+    AddTitle(printOut, " Cash Denominations");
     printOut->PrintFormat->NewLine();
 
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();

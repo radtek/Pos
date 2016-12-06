@@ -299,27 +299,38 @@ void TApplyParser::update6_34Tables()
 
 void TApplyParser::CreateGeneratorAndTableForCashDenominations6_34( TDBControl* const inDBControl )
 {
-    if( !generatorExists("GEN_CASHDENOMINATION_KEY", _dbControl) )
+    if( !generatorExists("GEN_CASHDENOMINATION", _dbControl) )
 	{
 		executeQuery(
-		"CREATE GENERATOR GEN_CASHDENOMINATION_KEY;",
+		"CREATE GENERATOR GEN_CASHDENOMINATION;",
 		inDBControl);
 		executeQuery(
-		"SET GENERATOR GEN_CASHDENOMINATION_KEY TO 0; ",
+		"SET GENERATOR GEN_CASHDENOMINATION TO 0; ",
 		inDBControl );
 	}
 
-   if ( !tableExists("CASHDENOMINATION", _dbControl ) )
+    if( !tableExists("CASHDENOMINATIONS", _dbControl ) )
+    {
+       executeQuery(
+            "CREATE TABLE CASHDENOMINATIONS "
+            "( "
+            " CASHDENOMINATION_KEY Integer NOT NULL PRIMARY KEY , "
+            " TITLE  Varchar(50), "
+            " DENOMINATION NUMERIC(17,4) "
+            "); ",
+        inDBControl );
+    }
+
+   if ( !tableExists("ZED_CASHDENOMINATIONS", _dbControl ) )
    {
-    executeQuery(
-    "CREATE TABLE CASHDENOMINATION "
+       executeQuery(
+        "CREATE TABLE ZED_CASHDENOMINATIONS "
         "( "
-         " CASHDENOMINATION_KEY Integer NOT NULL PRIMARY KEY , "
-         " CASHDENOMINATION  Varchar(50), "
+         " CASHDENOMINATION_KEY Integer , "
          " ZED_KEY INTEGER, "
-         " QUANTITY_COUNT INTEGER ,  "
-         " BANKING NUMERIC(17,4) ,  "
-         " ZED_STATUS INTEGER "
+         " TERMINAL_NAME  Varchar(50), "
+         " QUANTITY INTEGER ,  "
+         " AMOUNT NUMERIC(17,4) "
         "); ",
     inDBControl );
     }

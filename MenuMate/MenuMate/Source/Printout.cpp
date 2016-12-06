@@ -15,6 +15,7 @@ TPrintout::TPrintout()
    PrintedSuccessfully = false;
    Status = poPending;
    BlindBalanceUsed = true;
+   CashDenominationUsed = true;
 }
 
 __fastcall TPrintout::~TPrintout()
@@ -144,3 +145,4 @@ bool TPrintout::PrintToStrings(TStrings *Strings)
    return true;
 }
 // ---------------------------------------------------------------------------
+

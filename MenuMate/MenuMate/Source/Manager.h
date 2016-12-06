@@ -26,18 +26,18 @@ class TManager
 class TManagerInterface : public TManager
 {
 	public :
-   UnicodeString virtual GetContent(Database::TDBTransaction &DBTransaction,int Key) = 0;
-	UnicodeString virtual GetTitle(Database::TDBTransaction &DBTransaction,int Key) = 0;
-   void virtual GetListTitle(Database::TDBTransaction &DBTransaction,TStrings *List,int Filter) = 0;
-   void virtual GetListContent(Database::TDBTransaction &DBTransaction,TStrings *List,int Filter) = 0;
-	int virtual GetNew(Database::TDBTransaction &DBTransaction,int Filter) = 0;
-   int virtual GetCount(Database::TDBTransaction &DBTransaction,int Filter) = 0;
+    UnicodeString virtual GetContent(Database::TDBTransaction &DBTransaction,int Key) = 0;
+    UnicodeString virtual GetTitle(Database::TDBTransaction &DBTransaction,int Key) = 0;
+    void virtual GetListTitle(Database::TDBTransaction &DBTransaction,TStrings *List,int Filter) = 0;
+    void virtual GetListContent(Database::TDBTransaction &DBTransaction,TStrings *List,int Filter) = 0;
+    int virtual GetNew(Database::TDBTransaction &DBTransaction,int Filter) = 0;
+    int virtual GetCount(Database::TDBTransaction &DBTransaction,int Filter) = 0;
 
-	void virtual SetContent(Database::TDBTransaction &DBTransaction,int Key,UnicodeString Content) = 0;
-	void virtual SetTitle(Database::TDBTransaction &DBTransaction,int Key,UnicodeString Title) = 0;
-	void virtual SetOrder(Database::TDBTransaction &DBTransaction,int Key,int AppearanceOrder) = 0;
-   void virtual SetFilter(Database::TDBTransaction &DBTransaction,int Key,int Filter) = 0;
-   void virtual Delete(Database::TDBTransaction &DBTransaction,int Key) = 0;
+    void virtual SetContent(Database::TDBTransaction &DBTransaction,int Key,UnicodeString Content) = 0;
+    void virtual SetTitle(Database::TDBTransaction &DBTransaction,int Key,UnicodeString Title) = 0;
+    void virtual SetOrder(Database::TDBTransaction &DBTransaction,int Key,int AppearanceOrder) = 0;
+    void virtual SetFilter(Database::TDBTransaction &DBTransaction,int Key,int Filter) = 0;
+    void virtual Delete(Database::TDBTransaction &DBTransaction,int Key) = 0;
 };
 
 #endif

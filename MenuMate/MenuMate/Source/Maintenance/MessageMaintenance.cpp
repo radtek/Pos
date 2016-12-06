@@ -14,7 +14,7 @@
 #include "MMLogging.h"
 #include "ManagerFloat.h"
 #include "MMTouchNumpad.h"
-
+#include "DBDenominations.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -30,50 +30,61 @@ __fastcall TfrmMessageMaintenance::TfrmMessageMaintenance(TComponent* Owner,Data
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::FormShow(TObject *Sender)
 {
-	if (MessageType == eMessage)
-	{
-		pnlLabel->Caption = "Message List";
-	}
-	else if (MessageType == eCancelReason)
-	{
-		pnlLabel->Caption = "Cancel Reasons";
-	}
-	else if (MessageType == eCreditReason)
-	{
-		pnlLabel->Caption = "Refund Reasons";
-	}
-	else if (MessageType == eRunProgram)
-	{
-		pnlLabel->Caption = "Configured Programs.";
-	}
-	else if (MessageType == ePatronTypes)
-	{
-		pnlLabel->Caption = "Configure Patron Types.";
-	}
-	else if (MessageType == eSkimRefloat)
-	{
-		pnlLabel->Caption = "Deposit/Withdrawal Reasons";
-	}
-	else if (MessageType == eWriteOff)
-	{
-		pnlLabel->Caption = "Wastage Reasons";
-	}
-	else if (MessageType == eCustomerTypes)
-	{
-		pnlLabel->Caption = "Customer Order Type Reasons";
-	}
-	else if (MessageType == eCashDrawer)
-	{
-		pnlLabel->Caption = "Cash Drawer Reason";
-	}
-
-	else if (MessageType == eCashDenomination)
-	{
-		pnlLabel->Caption = "Cash Denomination";
-	}
+    switch(MessageType)
+    {
+        case eMessage:
+        {
+            pnlLabel->Caption = "Message List";
+            break;
+        }
+        case eCancelReason:
+        {
+            pnlLabel->Caption = "Cancel Reasons";
+            break;
+        }
+        case eCreditReason:
+        {
+            pnlLabel->Caption = "Refund Reasons";
+            break;
+        }
+        case eRunProgram:
+        {
+            pnlLabel->Caption = "Configured Programs.";
+            break;
+        }
+        case ePatronTypes:
+        {
+            pnlLabel->Caption = "Configure Patron Types.";
+            break;
+        }
+        case eSkimRefloat:
+        {
+            pnlLabel->Caption = "Deposit/Withdrawal Reasons";
+            break;
+        }
+        case eWriteOff:
+        {
+            pnlLabel->Caption = "Wastage Reasons";
+            break;
+        }
+        case eCustomerTypes:
+        {
+            pnlLabel->Caption = "Customer Order Type Reasons";
+            break;
+        }
+        case eCashDrawer:
+        {
+            pnlLabel->Caption = "Cash Drawer Reason";
+            break;
+        }
+        case eCashDenomination:
+        {
+            pnlLabel->Caption = "Cash Denomination";
+            break;
+        }
+    }
 
 	this->Caption = pnlLabel->Caption;
-
 	FormResize(NULL);
 	ShowMessages();
 }
@@ -85,13 +96,6 @@ void __fastcall TfrmMessageMaintenance::WMDisplayChange(TWMDisplayChange& Messag
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::FormResize(TObject *Sender)
 {
-/*	if (Tag != Screen->Width)
-	{
-		int Temp = Tag;
-		Tag = Screen->Width;
-
-		ScaleBy(Screen->Width, Temp);
-	}                                    */
 	ClientWidth = Panel1->Width + (Panel1->Left * 2);
 	ClientHeight = Panel1->Height + (Panel1->Top * 2);
 	Left = (Screen->Width - Width) / 2;
@@ -102,21 +106,32 @@ void TfrmMessageMaintenance::ShowMessages()
 {
 	sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 1 / 3;
 	sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
-
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
-	if (MessageType == eRunProgram)
-	{
-		ManagerRun->LoadMessages(DBTransaction,sgDisplay,MessageType);
-	}
-	else if (MessageType == ePatronTypes)
-	{
-		TManagerPatron::Instance().GetPatronTypes(DBTransaction,sgDisplay);
-	}
-	else
-	{
-		ManagerMessage->LoadMessages(DBTransaction,sgDisplay,MessageType);
-	}
+    switch(MessageType)
+    {
+      case eRunProgram:
+      {
+        ManagerRun->LoadMessages(DBTransaction,sgDisplay,MessageType);
+        break;
+      }
+      case ePatronTypes:
+      {
+        TManagerPatron::Instance().GetPatronTypes(DBTransaction,sgDisplay);
+        break;
+      }
+      case eCashDenomination:
+      {
+        LoadDenominations(DBTransaction);
+        break;
+      }
+      default:
+      {
+         ManagerMessage->LoadMessages(DBTransaction,sgDisplay,MessageType);
+         break;
+      }
+
+    }
 	DBTransaction.Commit();
 	sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 1 / 3;
 	sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[1] - 1;
@@ -131,103 +146,50 @@ void __fastcall TfrmMessageMaintenance::imgExitClick(TObject *Sender)
 void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
 {
 
-	try
-	{
-		AnsiString CurrentCaption = "Enter Button Title";
-		AnsiString CurrentMessage = "Enter Message";
+    try
+    {
+        AnsiString CurrentCaption = "Enter Button Title";
+        AnsiString CurrentMessage = "Enter Message";
+        GetHeaders(CurrentCaption,CurrentMessage);
+        std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+        frmTouchKeyboard->MaxLength = 15;
+        frmTouchKeyboard->AllowCarriageReturn = false;
+        frmTouchKeyboard->StartWithShiftDown = true;
+        frmTouchKeyboard->MustHaveValue = true;
+        frmTouchKeyboard->KeyboardText = "";
+        frmTouchKeyboard->Caption = CurrentCaption;
 
-		if (MessageType == eMessage)
-		{
-			CurrentCaption = "Enter Button Title";
-			CurrentMessage = "Enter Message";
-		}
-		else if (MessageType == eCancelReason)
-		{
-			CurrentCaption = "Enter Cancel Button Title";
-			CurrentMessage = "Enter Cancel Message";
-		}
-		else if (MessageType == eCreditReason)
-		{
-			CurrentCaption = "Enter Refund Button Title";
-			CurrentMessage = "Enter Refund Message";
-		}
-		else if (MessageType == eRunProgram)
-		{
-			CurrentCaption = "Enter Program Button Title";
-			CurrentMessage = "Enter Run Command";
-		}
-		else if (MessageType == ePatronTypes)
-		{
-			CurrentCaption = "Enter Patron Type (i.e Adult)";
-			CurrentMessage = "";
-		}
-		else if (MessageType == eSkimRefloat)
-		{
-			CurrentCaption = "Enter Button Title";
-			CurrentMessage = "Enter Deposit/Withdrawal Reason";
-		}
-		else if (MessageType == eWriteOff)
-		{
-			CurrentCaption = "Enter Button Title";
-			CurrentMessage = "Enter Wastage Reason";
-		}
-		else if (MessageType == eCustomerTypes)
-		{
-			CurrentCaption = "Enter Button Title";
-			CurrentMessage = "Enter Order Type Reason";
-		}
-		else if (MessageType == eCashDrawer)
-		{
-			CurrentCaption = "Enter Button Title";
-			CurrentMessage = "Enter Cash Drawer Reason";
-		}
-		else if (MessageType == eCashDenomination)
-		{
-			CurrentCaption = "Enter Button Title";
-			CurrentMessage = "Enter Cash Denomination";
-		}
-
-    	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-		frmTouchKeyboard->MaxLength = 15;
-		frmTouchKeyboard->AllowCarriageReturn = false;
-		frmTouchKeyboard->StartWithShiftDown = true;
-		frmTouchKeyboard->MustHaveValue = true;		
-		frmTouchKeyboard->KeyboardText = "";
-		frmTouchKeyboard->Caption = CurrentCaption;
-
-		if (frmTouchKeyboard->ShowModal() == mrOk)
-		{
-			AnsiString ButtonTitle = frmTouchKeyboard->KeyboardText;
-
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-
-			if(MessageType == ePatronTypes)
-			{
-				bool Default = false;
-				if(MessageBox("Do you want this to be the Default Patron Type?",
-									" Default Patron Type?",MB_YESNO + MB_ICONQUESTION) == IDYES)
-				{
-					Default = true;
-				}
-				TPatronType PatronType;
-				PatronType.Name = ButtonTitle;
-				PatronType.Default = Default;
-				TManagerPatron::Instance().SetPatronType(DBTransaction,0,PatronType);
-			}
-			else
-			{
-				std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-				frmTouchKeyboard->MaxLength = 200;
-				frmTouchKeyboard->AllowCarriageReturn = false;
-				frmTouchKeyboard->StartWithShiftDown = true;
-				frmTouchKeyboard->KeyboardText = "";
+        if (frmTouchKeyboard->ShowModal() == mrOk)
+        {
+            AnsiString ButtonTitle = frmTouchKeyboard->KeyboardText;
+            Database::TDBTransaction DBTransaction(DBControl);
+            DBTransaction.StartTransaction();
+            if(MessageType == ePatronTypes)
+            {
+                bool Default = false;
+                if(MessageBox("Do you want this to be the Default Patron Type?",
+                                    " Default Patron Type?",MB_YESNO + MB_ICONQUESTION) == IDYES)
+                {
+                    Default = true;
+                }
+                TPatronType PatronType;
+                PatronType.Name = ButtonTitle;
+                PatronType.Default = Default;
+                TManagerPatron::Instance().SetPatronType(DBTransaction,0,PatronType);
+            }
+            else
+            {
+                std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+                frmTouchKeyboard->MaxLength = 200;
+                frmTouchKeyboard->AllowCarriageReturn = false;
+                frmTouchKeyboard->StartWithShiftDown = true;
+                frmTouchKeyboard->KeyboardText = "";
                 if(MessageType == eCashDrawer)
                 {
                    frmTouchKeyboard->MustHaveValue = true;
                    frmTouchKeyboard->MaxLength = 39;
                 }
-				frmTouchKeyboard->Caption = CurrentMessage;
+                frmTouchKeyboard->Caption = CurrentMessage;
                 if(MessageType != eCashDenomination)
                 {
                     if (frmTouchKeyboard->ShowModal() == mrOk)
@@ -247,86 +209,33 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
                 else
                 {
                    Currency denomination = 0.0;
-                   denomination = CashDenominationValue(DBTransaction, denomination);
-                   ManagerMessage->Add(DBTransaction,ButtonTitle, FloatToStr(denomination),ManagerMessage->GetCount(DBTransaction,MessageType)+1,MessageType);
+                   denomination = GetDenominationValue(DBTransaction, denomination);
+                   AddDenomination(DBTransaction,ButtonTitle,denomination);
                 }
-			}
-			DBTransaction.Commit();
-		}
-		ShowMessages();
-	}
-	catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-	}
+            }
+            DBTransaction.Commit();
+        }
+        ShowMessages();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmMessageMaintenance::btnEditMessageClick(
-		TObject *Sender)
+void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
 {
-
 	try
 	{
 		if((int)sgDisplay->Objects[0][sgDisplay->Row] == 0)
 		{
-			MessageBox("There is nothing to Edit.", "Warning",
-							MB_ICONWARNING + MB_OK);
+			MessageBox("There is nothing to Edit.", "Warning", MB_ICONWARNING + MB_OK);
 		}
 		else
 		{
 			AnsiString CurrentCaption = "Enter Button Title";
 			AnsiString CurrentMessage = "Enter Message";
-			if (MessageType == eMessage)
-			{
-				CurrentCaption = "Enter Button Title";
-				CurrentMessage = "Enter Message";
-			}
-			else if (MessageType == eCancelReason)
-			{
-				CurrentCaption = "Enter Cancel Button Title";
-				CurrentMessage = "Enter Cancel Message";
-			}
-			else if (MessageType == eCreditReason)
-			{
-				CurrentCaption = "Enter Refund Button Title";
-				CurrentMessage = "Enter Refund Message";
-			}
-			else if (MessageType == eRunProgram)
-			{
-				CurrentCaption = "Enter Program Button Title";
-				CurrentMessage = "Enter Run Command";
-			}
-			else if (MessageType == ePatronTypes)
-			{
-				CurrentCaption = "Enter Patron Type (i.e Adult)";
-				CurrentMessage = "";
-			}
-			else if (MessageType == eSkimRefloat)
-			{
-				CurrentCaption = "Enter Button Title";
-				CurrentMessage = "Enter Reason";
-			}
-			else if (MessageType == eWriteOff)
-			{
-				CurrentCaption = "Enter Button Title";
-				CurrentMessage = "Enter Reason";
-			}
-			else if (MessageType == eCustomerTypes)
-			{
-				CurrentCaption = "Enter Button Title";
-				CurrentMessage = "Enter Reason";
-			}
-			else if (MessageType == eCashDrawer)
-			{
-				CurrentCaption = "Enter Button Title";
-				CurrentMessage = "Enter Cash Drawer Reason";
-			}
-            else if (MessageType == eCashDenomination)
-            {
-                CurrentCaption = "Enter Button Title";
-                CurrentMessage = "Enter Cash Denomination";
-            }
-
+			GetHeaders(CurrentCaption,CurrentMessage);
 			Database::TDBTransaction DBTransaction(DBControl);
 			DBTransaction.StartTransaction();
 
@@ -377,34 +286,34 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(
                 }
 				frmTouchKeyboard->KeyboardText =  Manager->GetTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
 				frmTouchKeyboard->Caption = CurrentCaption;
-
-
-                    if (frmTouchKeyboard->ShowModal() == mrOk)
+                if (frmTouchKeyboard->ShowModal() == mrOk)
+                {
+                    Manager->SetTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],frmTouchKeyboard->KeyboardText);
+                    frmTouchKeyboard->MaxLength = 200;
+                    frmTouchKeyboard->AllowCarriageReturn = false;
+                    frmTouchKeyboard->StartWithShiftDown = true;
+                    if(MessageType == eCashDrawer)
                     {
-                        Manager->SetTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],frmTouchKeyboard->KeyboardText);
-                        frmTouchKeyboard->MaxLength = 200;
-                        frmTouchKeyboard->AllowCarriageReturn = false;
-                        frmTouchKeyboard->StartWithShiftDown = true;
-                        if(MessageType == eCashDrawer)
+                       frmTouchKeyboard->MustHaveValue = true;
+                       frmTouchKeyboard->MaxLength = 39;
+                    }
+                    if(MessageType != eCashDenomination)
+                    {
+                        frmTouchKeyboard->KeyboardText =  Manager->GetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+                        frmTouchKeyboard->Caption = CurrentMessage;
+                        if (frmTouchKeyboard->ShowModal() == mrOk)
                         {
-                           frmTouchKeyboard->MustHaveValue = true;
-                           frmTouchKeyboard->MaxLength = 39;
-                        }
-                        if(MessageType != eCashDenomination)
-                        {
-                            frmTouchKeyboard->KeyboardText =  Manager->GetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
-                            frmTouchKeyboard->Caption = CurrentMessage;
-                            if (frmTouchKeyboard->ShowModal() == mrOk)
-                            {
-                                Manager->SetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],frmTouchKeyboard->KeyboardText);
-                            }
-                        }
-                        else
-                        {
-                           Currency value = StrToCurr(Manager->GetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]));
-                           Manager->SetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row], FloatToStr(CashDenominationValue(DBTransaction, value, true)));
+                            Manager->SetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],frmTouchKeyboard->KeyboardText);
                         }
                     }
+                    else
+                    {
+                       Currency denomination = StrToCurr(Manager->GetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]));
+                       denomination = GetDenominationValue(DBTransaction, denomination);
+                       if(denomination > 0)
+                         TDBDenominations::SetDenominationValue(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],denomination);
+                    }
+                }
 
 			}
 			DBTransaction.Commit();
@@ -447,24 +356,119 @@ void __fastcall TfrmMessageMaintenance::btnDelMessageClick(TObject *Sender)
 	ShowMessages();
 }
 //---------------------------------------------------------------------------
-Currency TfrmMessageMaintenance::CashDenominationValue(Database::TDBTransaction &DBTransaction,Currency value, bool isedited)
+Currency TfrmMessageMaintenance::GetDenominationValue(Database::TDBTransaction &DBTransaction,Currency denominationValue)
 {
-    Currency denomination = 0.0;
-    TManagerInterface *Manager = NULL;
     std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
     frmTouchNumpad->Caption = "Cash Denominations";
     frmTouchNumpad->btnSurcharge->Caption = "Ok";
     frmTouchNumpad->btnDiscount->Visible = false;
     frmTouchNumpad->btnSurcharge->Visible = true;
     frmTouchNumpad->Mode = pmDecimal;
-    if(isedited)
-    {
-       frmTouchNumpad->CURInitial = value;
-    }
+    frmTouchNumpad->CURInitial = denominationValue;
     if (frmTouchNumpad->ShowModal() == mrOk)
     {
-        denomination = frmTouchNumpad->CURResult;
+        denominationValue = frmTouchNumpad->CURResult;
     }
-    return denomination;
+    return denominationValue;
 }
-
+//---------------------------------------------------------------------------
+Currency TfrmMessageMaintenance::LoadDenominations(Database::TDBTransaction &DBTransaction)
+{
+    std::vector<TDenomination> denominations;
+    TDBDenominations::LoadDenominations(DBTransaction,denominations);
+    sgDisplay->Cols[0]->Clear();
+    sgDisplay->Cols[1]->Clear();
+    sgDisplay->Cols[0]->Add("Button Title");
+    sgDisplay->Cols[1]->Add("Denomination");
+    for(std::vector<TDenomination>::iterator it = denominations.begin(); it != denominations.end(); ++it)
+    {
+         int Index = sgDisplay->Cols[0]->Add(it->Title);
+         sgDisplay->Cols[0]->Objects[Index] = (TObject *)it->Key;
+         Index = sgDisplay->Cols[1]->Add(it->DenominationValue);
+         sgDisplay->Cols[1]->Objects[Index] = (TObject *)it->Key;
+    }
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::GetHeaders(AnsiString& CurrentCaption, AnsiString& CurrentMessage)
+{
+    CurrentCaption = "Enter Button Title";
+    CurrentMessage = "Enter Message";
+    switch(MessageType)
+    {
+        case eMessage:
+        {
+            CurrentCaption = "Enter Button Title";
+            CurrentMessage = "Enter Message";
+            break;
+        }
+        case eCancelReason:
+        {
+            CurrentCaption = "Enter Cancel Button Title";
+            CurrentMessage = "Enter Cancel Message";
+            break;
+        }
+        case eCreditReason:
+        {
+            CurrentCaption = "Enter Refund Button Title";
+            CurrentMessage = "Enter Refund Message";
+            break;
+        }
+        case eRunProgram:
+        {
+            CurrentCaption = "Enter Program Button Title";
+            CurrentMessage = "Enter Run Command";
+            break;
+        }
+        case ePatronTypes:
+        {
+            CurrentCaption = "Enter Patron Type (i.e Adult)";
+            CurrentMessage = "";
+            break;
+        }
+        case eSkimRefloat:
+        {
+            CurrentCaption = "Enter Button Title";
+            CurrentMessage = "Enter Deposit/Withdrawal Reason";
+            break;
+        }
+        case eWriteOff:
+        {
+            CurrentCaption = "Enter Button Title";
+            CurrentMessage = "Enter Wastage Reason";
+            break;
+        }
+        case eCustomerTypes:
+        {
+            CurrentCaption = "Enter Button Title";
+            CurrentMessage = "Enter Order Type Reason";
+            break;
+        }
+        case eCashDrawer:
+        {
+            CurrentCaption = "Enter Button Title";
+            CurrentMessage = "Enter Cash Drawer Reason";
+            break;
+        }
+        case eCashDenomination:
+        {
+            CurrentCaption = "Enter Button Title";
+            CurrentMessage = "Enter Cash Denomination";
+            break;
+        }
+    }
+}
+//---------------------------------------------------------------------------
+void TfrmMessageMaintenance::AddDenomination(Database::TDBTransaction &DBTransaction, AnsiString inTitle, Currency inValue)
+{
+   if(!TDBDenominations::IsDenominationExist(DBTransaction,inTitle))
+   {
+     TDenomination denomination;
+     denomination.Title = inTitle;
+     denomination.DenominationValue = inValue;
+     TDBDenominations::AddDenominations(DBTransaction,denomination);
+   }
+   else
+   {
+      MessageBox("Denomination with same title already exist.", "Warning", MB_ICONWARNING + MB_OK);
+   }
+}

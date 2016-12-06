@@ -13,35 +13,37 @@
 
 #pragma package(smart_init)
 
-TBlindBalanceControllerInterface* TBlindBalanceControllerInterface::instance = NULL;
+TCashDenominationControllerInterface* TCashDenominationControllerInterface::instance = NULL;
 
-TBlindBalanceControllerInterface::TBlindBalanceControllerInterface()
+TCashDenominationControllerInterface::TCashDenominationControllerInterface()
 {
 
 }
 //---------------------------------------------------------------------------
-TBlindBalanceControllerInterface::~TBlindBalanceControllerInterface()
+TCashDenominationControllerInterface::~TCashDenominationControllerInterface()
 {
     //
 }
 
-void TBlindBalanceControllerInterface::SetBalances(TBlindBalances balances)
+void TCashDenominationControllerInterface::SetCashDenominations(TCashDenominations inCashDenominations)
 {
-  Balances = balances;
+  CashDenominations = inCashDenominations;
 }
-void TBlindBalanceControllerInterface::SetBagID(AnsiString bagId)
+
+void TCashDenominationControllerInterface::SetBagID(AnsiString bagId)
 {
   BagId = bagId;
 }
-TBlindBalances TBlindBalanceControllerInterface::GetBalances()
+
+TCashDenominations TCashDenominationControllerInterface::GetCashDenominations()
 {
-  return Balances;
+  return CashDenominations;
 }
-AnsiString TBlindBalanceControllerInterface::GetBagID()
+
+AnsiString TCashDenominationControllerInterface::GetBagID()
 {
   return BagId;
 }
-
 
 TCashDenominationController::TCashDenominationController(TForm *inDisplayOwner, Database::TDBTransaction &inDBTransaction) : frmListManager(new TfrmListManager(inDisplayOwner)), DBTransaction(inDBTransaction)
 {
@@ -53,41 +55,36 @@ TCashDenominationController::TCashDenominationController(TForm *inDisplayOwner, 
 	DisplayOwner = inDisplayOwner;
 }
 
-
-
 bool TCashDenominationController::Run()
 {
 	frmListManager->btnClose->Caption = "Save";
-	frmListManager->tbtnAdd->Caption = "Add Another Payment Type";
-	frmListManager->tbtnAdd->Height = 80;
     frmListManager->tbtnAdd->Visible = false;
 	frmListManager->Close.RegisterForEvent(OnClose);
-	frmListManager->Add.RegisterForEvent(OnAdd);
 	frmListManager->Edit.RegisterForEvent(OnEdit);
 	frmListManager->Select.RegisterForEvent(OnEdit);
-	frmListManager->Delete.RegisterForEvent(OnDelete);
+    frmListManager->Delete.RegisterForEvent(OnDelete);
 	frmListManager->tbtnEdit->Hide();
 	frmListManager->tbtnDelete->Caption = "Cancel";
+    PopulateDenominationValues(DBTransaction);
 	PopulateListManager();
-	frmListManager->SetCaption("Blind Balance Values");
+	frmListManager->SetCaption("Cash Denominations Values");
 	frmListManager->pnlLabel->Visible = false;
     frmListManager->sgDisplay->Height = 434 + 34;
     frmListManager->sgDisplay->Top = 7;
 	if(frmListManager->ShowModal() == mrCancel)
 		return false;
 	frmListManager->Close.DeregisterForEvent(OnClose);
-	frmListManager->Add.DeregisterForEvent(OnAdd);
 	frmListManager->Edit.DeregisterForEvent(OnEdit);
 	frmListManager->Select.DeregisterForEvent(OnEdit);
-	frmListManager->Delete.DeregisterForEvent(OnDelete);
+    frmListManager->Delete.DeregisterForEvent(OnDelete);
 	return true;
 }
 
 void TCashDenominationController::OnClose(int Index, int ColIndex)
 {
-	UnicodeString Total = FormatFloat("0.00", BlindBalances.GetTotal());
+	UnicodeString Total = FormatFloat("0.00", CashDenominations.GetTotal());
 
-	if(BlindBalances.GetTotal() == 0.0)
+	if(CashDenominations.GetTotal() == 0.0)
 	{
 		if(MessageBox("The total counted is " + Total + ", are you sure you wish to continue?", "Warning", MB_OKCANCEL + MB_ICONQUESTION) == IDCANCEL)
 			return;
@@ -97,143 +94,79 @@ void TCashDenominationController::OnClose(int Index, int ColIndex)
 		if(MessageBox("The total counted is " + Total + ", would you like to continue?", "Warning", MB_OKCANCEL + MB_ICONQUESTION) == IDCANCEL)
 			return;
 	}
-		std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (DisplayOwner));
-		frmTouchKeyboard->Caption = "Enter the deposit bag ID";
-
-		MasterBalance = BlindBalances;
-		if(TGlobalSettings::Instance().EnableDepositBagNum && !TGlobalSettings::Instance().EnableDontClearZedData)
-		{
-			LoadBlindBalances();
-			if(frmTouchKeyboard->ShowModal() == mrOk )
-			{
-				BlindBalances.BagID = frmTouchKeyboard->KeyboardText;
-				UpdateBlindBalances(frmTouchKeyboard->KeyboardText);
-			}
-			else
-				return;
-		}
-		frmListManager->ModalResult = mrOk;
-}
-
-void TCashDenominationController::OnAdd(int Index, int ColIndex)
-{
-	// Balance Name.
-	/*AnsiString BalanceName = "";
-	Currency BalanceAmount = 0;
-	std::auto_ptr<TfrmTouchKeyboard>frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(Screen->ActiveForm));
-	frmTouchKeyboard->MaxLength = 20;
-	frmTouchKeyboard->AllowCarriageReturn = false;
-	frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = "";
-	frmTouchKeyboard->Caption = "Enter the Blind Balance Name ( i.e Cash )";
-	if (frmTouchKeyboard->ShowModal() == mrOk)
-	{
-		BalanceName = frmTouchKeyboard->KeyboardText;
-
-		std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(DisplayOwner));
-		frmTouchNumpad->Caption = "Enter the Blind Balance Amount";
-		frmTouchNumpad->btnSurcharge->Caption = "Ok";
-		frmTouchNumpad->btnDiscount->Visible = false;
-		frmTouchNumpad->btnSurcharge->Visible = true;
-		frmTouchNumpad->Mode = pmCurrency;
-		frmTouchNumpad->CURInitial = 0;
-		if (frmTouchNumpad->ShowModal() == mrOk)
-		{
-			BlindBalances.UpdateBlindBalance(BalanceName, frmTouchNumpad->CURResult);
-			PopulateListManager();
-		}
-	}*/
+    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (DisplayOwner));
+    frmTouchKeyboard->Caption = "Enter the deposit bag ID";
+    MasterCashDenominations = CashDenominations;
+    /*if(TGlobalSettings::Instance().EnableDepositBagNum && !TGlobalSettings::Instance().EnableDontClearZedData)
+    {
+        LoadBlindBalances();
+        if(frmTouchKeyboard->ShowModal() == mrOk )
+        {
+            BlindBalances.BagID = frmTouchKeyboard->KeyboardText;
+            UpdateBlindBalances(frmTouchKeyboard->KeyboardText);
+        }
+        else
+            return;
+    }*/
+    frmListManager->ModalResult = mrOk;
 }
 
 void TCashDenominationController::OnEdit(int Index, int ColIndex)
 {
-	//if (BlindBalances.IndexValid(Index + 1))
-	//{
+    Index--;
+	if (CashDenominations.IndexValid(Index))
+     {
 		std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(DisplayOwner));
-		frmTouchNumpad->Caption = "Enter Quantity Count";
+		frmTouchNumpad->Caption = "Enter Quantity";
 		frmTouchNumpad->btnSurcharge->Caption = "Ok";
 		frmTouchNumpad->btnSurcharge->Visible = true;
 		frmTouchNumpad->Mode = pmNumber;
-		frmTouchNumpad->CURInitial = BlindBalances.GetBlindBalance(Index + 1);
+		frmTouchNumpad->CURInitial = CashDenominations.GetDenominationQuantity(Index);
 		if (frmTouchNumpad->ShowModal() == mrOk)
 		{
-			BlindBalances.UpdateBlindBalance(Index, frmTouchNumpad->INTResult);
+			CashDenominations.UpdateDenominationQuantity(Index, frmTouchNumpad->INTResult);
 			PopulateListManager();
 		}
-	//}
+	}
 }
 
 void TCashDenominationController::OnDelete(int Index, int ColIndex)
 {
-/*	if (BlindBalances.IndexValid(Index))
-	{
-		if (MessageBox("Are you sure you wish to remove " + BlindBalances.BalanceName(Index) + "'s Balance?", "Warning", MB_OKCANCEL + MB_ICONQUESTION) == IDOK)
-		{
-			BlindBalances.RemoveBlindBalance(Index);
-			PopulateListManager();
-		}
-	}
-*/
-		frmListManager->ModalResult = mrCancel;
-
+  frmListManager->ModalResult = mrCancel;
 }
 
 void TCashDenominationController::PopulateListManager()
 {
 	try
 	{
+        int width = (int)(frmListManager->pnlMajor->Width /3);
         frmListManager->sgDisplay->ColCount = 3;
-		frmListManager->sgDisplay->Cols[0]->Clear();
-		frmListManager->sgDisplay->Cols[1]->Clear();
+        frmListManager->sgDisplay->Cols[0]->Clear();
+        frmListManager->sgDisplay->Cols[1]->Clear();
         frmListManager->sgDisplay->Cols[2]->Clear();
+        frmListManager->sgDisplay->ColWidths[0] = width;
+        frmListManager->sgDisplay->ColWidths[1] = width;
+        frmListManager->sgDisplay->ColWidths[2] = width;
+
         frmListManager->sgDisplay->Cols[0]->Text ="Denomination";
         frmListManager->sgDisplay->Cols[1]->Text ="Quantity Count";
         frmListManager->sgDisplay->Cols[2]->Text ="Banking";
 
-
-        std::vector<TCashDenominationDetails> DenominationDetails;
-
-        PopulateDenominationValues(DBTransaction, DenominationDetails);
-		// Load up all the current! payment types.
-        //std::vector<TPayment> Payments;     std::vector<TPayment> &Payments
-		//TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction,Payments);
-
-		  for (std::vector<TCashDenominationDetails>::const_iterator ptr = DenominationDetails.begin(); ptr != DenominationDetails.end(); std::advance(ptr,1))
-		  {
-			if(BlindBalances.find(ptr->CashDenominationName) == BlindBalances.end())
-			{
-				BlindBalances.UpdateBlindBalance(ptr->CashDenominationName, 0, 0, ptr->DenominationValue);
-			}
-
-				/*if(ptr->Properties & ePayTypeAllowCashOut)
-				{
-					 if (BlindBalances.find(ptr->Name + " Cash Out") == BlindBalances.end())
-					 {
-						BlindBalances.UpdateBlindBalance(ptr->Name + " Cash Out", 0);
-					 }
-				}*/
-		  }
-
-
-		frmListManager->sgDisplay->RowCount = BlindBalances.size() + 1 + 1;
-
-//		Currency Total;
-		BlindBalances.ClearTotal();
+		frmListManager->sgDisplay->RowCount = CashDenominations.size() + 1 + 1;
+		CashDenominations.ResetTotal();
 		int j = 0;
-		TBlindBalanceContainer::iterator itBlindBalances;
-		TBlindBalanceSortedVector::iterator itSortedBlindBalances = BlindBalances.vectorbegin();
-		for (; itSortedBlindBalances != BlindBalances.vectorend(); itSortedBlindBalances++, j++)
+		TCashDenominationContainer::iterator itCashDenomination = CashDenominations.begin();
+		for (; itCashDenomination != CashDenominations.end(); advance(itCashDenomination,1))
 		{
-			frmListManager->sgDisplay->Cols[0]->AddObject(*itSortedBlindBalances, (TObject*)j);
-			itBlindBalances = BlindBalances.find(*itSortedBlindBalances);
-			frmListManager->sgDisplay->Cols[1]->AddObject(FormatFloat("0.00", itBlindBalances->second.TransQty), (TObject*)j);
-            frmListManager->sgDisplay->Cols[2]->AddObject(FormatFloat("0.00", itBlindBalances->second.BlindBalance), (TObject*)j);
-			BlindBalances.SetTotal(itBlindBalances->second.BlindBalance, itBlindBalances->second.CashDenominationValue);
+			frmListManager->sgDisplay->Cols[0]->AddObject(itCashDenomination->second.Title, (TObject*)j);
+			frmListManager->sgDisplay->Cols[1]->AddObject(FormatFloat("0.00", itCashDenomination->second.Quantity), (TObject*)j);
+            frmListManager->sgDisplay->Cols[2]->AddObject(FormatFloat("0.00", itCashDenomination->second.Total), (TObject*)j);
+			CashDenominations.AddToTotal(itCashDenomination->second.Total);
+            j++;
 		}
 
 		frmListManager->sgDisplay->Cols[0]->AddObject("Total", (TObject*)j);
-		frmListManager->sgDisplay->Cols[2]->AddObject(FormatFloat("0.00", BlindBalances.GetTotal()), (TObject*)j);
-
+		frmListManager->sgDisplay->Cols[2]->AddObject(FormatFloat("0.00", CashDenominations.GetTotal()), (TObject*)j);
 	}
 	catch(Exception & E)
 	{
@@ -250,240 +183,109 @@ bool TCashDenominationController::WarnOperator(void)
 	return true;
 }
 
-void TCashDenominationController::LoadBlindBalances(void)
+TCashDenominations TCashDenominationController::Get()
 {
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text = "SELECT * "
-										  "FROM BLINDBALANCE B "
-										  "WHERE DEPOSITBAG_ID = 'To Be Zed';";
-	IBInternalQuery->ExecQuery();
-	for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-	{
-		BlindBalances.UpdateBlindBalance(IBInternalQuery->FieldByName("PAYMENT")->AsString, IBInternalQuery->FieldByName("BLIND_BALANCE")->AsFloat, IBInternalQuery->FieldByName("BLIND_BALANCE")->AsFloat,IBInternalQuery->FieldByName("BLIND_BALANCE")->AsFloat);
-	}
+	return CashDenominations;
 }
 
-void TCashDenominationController::UpdateBlindBalances(AnsiString BagID)
+TCashDenominations TCashDenominationController::GetMaster()
 {
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text = "UPDATE BLINDBALANCE "
-										  "SET DEPOSITBAG_ID = :DEPOSITBAG_ID "
-										  "WHERE DEPOSITBAG_ID = 'To Be Zed' ";
-	IBInternalQuery->ParamByName("DEPOSITBAG_ID")->AsString = BagID;
-	IBInternalQuery->ExecQuery();
+	return MasterCashDenominations;
 }
 
-TBlindBalances TCashDenominationController::Get()
+AnsiString TCashDenominationController::GetBagID(void)
 {
-	return BlindBalances;
+	return CashDenominations.BagID;
 }
 
-TBlindBalances TCashDenominationController::GetMaster()
+void TCashDenominationController::PopulateDenominationValues(Database::TDBTransaction &DBTransaction)
 {
-	return MasterBalance;
+    std::vector<TDenomination> denominations;
+    TDBDenominations::LoadDenominations(DBTransaction,denominations);
+    for(std::vector<TDenomination>::iterator it = denominations.begin(); it != denominations.end(); ++it)
+    {
+       TDenomination cashDenomination;
+       cashDenomination.Key = it->Key;
+       cashDenomination.Title = it->Title;
+       cashDenomination.DenominationValue = it->DenominationValue;
+       cashDenomination.Quantity = 0;
+       cashDenomination.Total = 0;
+       CashDenominations.SetCashDenomination(cashDenomination);
+    }
 }
 
-void TBlindBalances::UpdateSystemBalance(AnsiString Payment, Currency Amount)
+void TCashDenominations::SetCashDenomination(TDenomination denomination)
 {
-	//BlindBalances[Payment].SystemBalance = Amount;
+   CashDenominations[denomination.Key] = denomination;
 }
 
-void TBlindBalances::UpdateBlindBalance(AnsiString Payment, int qty, Currency Amount, double value)
+bool TCashDenominations::IndexValid(int Index)
 {
-	BlindBalances[Payment].BlindBalance += Amount;
-    BlindBalances[Payment].TransQty = qty;
-    BlindBalances[Payment].CashDenominationValue = value;
-	BlindBalancesVector.push_back(Payment);
-}
-
-void TBlindBalances::UpdateSystemBalance(int Index, Currency Amount)
-{
-	/*TBlindBalanceContainer::iterator itBlindBalances = BlindBalances.begin();
-	std::advance(itBlindBalances, Index);
-	if (itBlindBalances != BlindBalances.end())
-	{
-		itBlindBalances->second.SystemBalance = Amount;
-	}*/
-}
-
-void TBlindBalances::UpdateBlindBalance(int Index, Currency Amount)
-{
-	TBlindBalanceSortedVector::iterator itSortedBlindBalances = vectorbegin();
-	TBlindBalanceContainer::iterator itBlindBalances;
-	std::advance(itSortedBlindBalances, Index);
-	if (itSortedBlindBalances != vectorend())
-	{
-		itBlindBalances = BlindBalances.find(*itSortedBlindBalances);
-        itBlindBalances->second.TransQty = Amount;
-		itBlindBalances->second.BlindBalance = itBlindBalances->second.TransQty * itBlindBalances->second.CashDenominationValue;
-	}
-}
-
-Currency TBlindBalances::GetSystemBalance(int Index)
-{
-	/*Currency SysBal = 0;
-	TBlindBalanceContainer::iterator itBlindBalances = BlindBalances.begin();
-	std::advance(itBlindBalances, Index);
-	if (itBlindBalances != BlindBalances.end())
-	{
-		SysBal = itBlindBalances->second.SystemBalance;
-	}*/
-}
-
-Currency TBlindBalances::GetBlindBalance(int Index)
-{
-	Currency BlindBal = 0;
-	TBlindBalanceSortedVector::iterator itSortedBlindBalances = vectorbegin();
-	TBlindBalanceContainer::iterator itBlindBalances;
-	std::advance(itSortedBlindBalances, Index);
-	if (itSortedBlindBalances != vectorend())
-	{
-		itBlindBalances = BlindBalances.find(*itSortedBlindBalances);
-		BlindBal = itBlindBalances->second.BlindBalance;
-	}
-	return BlindBal;
-}
-
-Currency TBlindBalances::GetBlindBalance(AnsiString Name)
-{
-	return BlindBalances[Name].BlindBalance;
-}
-
-AnsiString TBlindBalances::BalanceName(int Index)
-{
-	TBlindBalanceContainer::iterator itBlindBalances = BlindBalances.begin();
-	std::advance(itBlindBalances, Index);
-	if (itBlindBalances != BlindBalances.end())
-	{
-		return itBlindBalances->first;
-	}
-	return "";
-}
-
-Currency TBlindBalances::GetSystemBalance(AnsiString Name)
-{
-	//return BlindBalances[Name].SystemBalance;
-}
-
-bool TBlindBalances::IndexValid(int Index)
-{
-	TBlindBalanceContainer::iterator itBlindBalances = BlindBalances.begin();
-	std::advance(itBlindBalances, Index);
-	if (itBlindBalances != BlindBalances.end())
+	TCashDenominationContainer::iterator itCashDenominations = CashDenominations.begin();
+	std::advance(itCashDenominations, Index);
+	if (itCashDenominations != CashDenominations.end())
 	{
 		return true;
 	}
 	return false;
 }
 
-TBlindBalanceContainer::iterator TBlindBalances::GetIterator(int Index)
+void TCashDenominations::UpdateDenominationQuantity(int key, int Amount)
 {
-	TBlindBalanceContainer::iterator itBlindBalances = BlindBalances.begin();
-	std::advance(itBlindBalances, Index);
-	return itBlindBalances;
-}
-
-void TBlindBalances::RemoveBlindBalance(int Index)
-{
-	TBlindBalanceContainer::iterator itBlindBalances = GetIterator(Index);
-	BlindBalances.erase(itBlindBalances);
-}
-
-void TBlindBalances::SetBalance(TBlindBalance &Balance)
-{
-	BlindBalances[Balance.CashDenominationName] = Balance;
-}
-
-TBlindBalanceContainer::iterator TBlindBalances::begin()
-{
-	return BlindBalances.begin();
-}
-
-TBlindBalanceContainer::iterator TBlindBalances::end()
-{
-	return BlindBalances.end();
-}
-
-TBlindBalanceContainer::iterator TBlindBalances::find(AnsiString Value)
-{
-	return BlindBalances.find(Value);
-}
-
-int TBlindBalances::size()
-{
-	return BlindBalances.size();
-}
-
-bool TBlindBalances::Empty()
-{
-	bool RetVal = true;
-	TBlindBalanceContainer::iterator itBlindBalances = BlindBalances.begin();
-	for (itBlindBalances = BlindBalances.begin(); itBlindBalances != BlindBalances.end(); itBlindBalances++)
+    TCashDenominationContainer::iterator itCashDenominations = CashDenominations.begin();
+	std::advance(itCashDenominations, key);
+	if (itCashDenominations != CashDenominations.end())
 	{
-		if (itBlindBalances->second.BlindBalance != 0)
-		{
-			RetVal = false;
-		}
+		itCashDenominations->second.Quantity = Amount;
+        itCashDenominations->second.Total = itCashDenominations->second.DenominationValue * Amount;
 	}
-	return RetVal;
 }
 
-TBlindBalanceSortedVector::iterator TBlindBalances::vectorbegin()
+int TCashDenominations::GetDenominationQuantity(int key)
 {
-	return BlindBalancesVector.begin();
+    TCashDenominationContainer::iterator itCashDenominations = CashDenominations.begin();
+	std::advance(itCashDenominations, key);
+	if (itCashDenominations != CashDenominations.end())
+	{
+		return itCashDenominations->second.Quantity;
+	}
+    return 0;
 }
 
-TBlindBalanceSortedVector::iterator TBlindBalances::vectorend()
-{
-	return BlindBalancesVector.end();
-}
-
-void TBlindBalances::SetTotal(Currency sum, double qty)
-{
-	Total += qty * sum;
-}
-
-Currency TBlindBalances::GetTotal(void)
-{
-	return Total;
-}
-
-void TBlindBalances::ClearTotal(void)
+void TCashDenominations::ResetTotal()
 {
 	Total = 0;
 }
 
-AnsiString TCashDenominationController::GetBagID(void)
+Currency TCashDenominations::GetTotal()
 {
-	return BlindBalances.BagID;
+	return Total;
 }
 
-void TBlindBalance::operator = (TBlindBalance rhs)
+void TCashDenominations::AddToTotal(Currency amount)
 {
-	CashDenominationName = rhs.CashDenominationName;
-	TransQty = rhs.TransQty;
-    CashDenominationValue = rhs.CashDenominationValue;
-	BlindBalance = rhs.BlindBalance;
+	Total += amount;
 }
 
-void TCashDenominationController::PopulateDenominationValues(Database::TDBTransaction &DBTransaction, std::vector<TCashDenominationDetails> &DenominationDetails)
+int TCashDenominations::size()
 {
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text = "SELECT * "
-										  "FROM MESSAGES M "
-										  "WHERE M.MESSAGE_TYPE = 14; ";
-	IBInternalQuery->ExecQuery();
-	for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-	{
-          TCashDenominationDetails MessageDetails;
-          MessageDetails.CashDenominationName = IBInternalQuery->FieldByName("TITLE")->AsString;
-          MessageDetails.DenominationValue = StrToFloat(IBInternalQuery->FieldByName("MESSAGE_TEXT")->AsString);
-          DenominationDetails.push_back(MessageDetails);
-		//BlindBalances.UpdateBlindBalance(IBInternalQuery->FieldByName("PAYMENT")->AsString, IBInternalQuery->FieldByName("BLIND_BALANCE")->AsFloat);
-	}
+	return CashDenominations.size();
 }
+
+TCashDenominationContainer::iterator TCashDenominations::begin()
+{
+	return CashDenominations.begin();
+}
+
+TCashDenominationContainer::iterator TCashDenominations::end()
+{
+	return CashDenominations.end();
+}
+
+
+
+
+
+
 
 

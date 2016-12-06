@@ -65,6 +65,7 @@ object frmMessageMaintenance: TfrmMessageMaintenance
         ColCount = 2
         FixedCols = 0
         RowCount = 17
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
         ScrollBars = ssVertical
         TabOrder = 1
         ColWidths = (

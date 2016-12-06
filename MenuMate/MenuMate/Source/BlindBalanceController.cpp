@@ -29,14 +29,17 @@ void TBlindBalanceControllerInterface::SetBalances(TBlindBalances balances)
 {
   Balances = balances;
 }
+
 void TBlindBalanceControllerInterface::SetBagID(AnsiString bagId)
 {
   BagId = bagId;
 }
+
 TBlindBalances TBlindBalanceControllerInterface::GetBalances()
 {
   return Balances;
 }
+
 AnsiString TBlindBalanceControllerInterface::GetBagID()
 {
   return BagId;
@@ -93,22 +96,22 @@ void TBlindBalanceController::OnClose(int Index, int ColIndex)
 		if(MessageBox("The total counted is " + Total + ", would you like to continue?", "Warning", MB_OKCANCEL + MB_ICONQUESTION) == IDCANCEL)
 			return;
 	}
-		std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (DisplayOwner));
-		frmTouchKeyboard->Caption = "Enter the deposit bag ID";
+    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (DisplayOwner));
+    frmTouchKeyboard->Caption = "Enter the deposit bag ID";
 
-		MasterBalance = BlindBalances;
-		if(TGlobalSettings::Instance().EnableDepositBagNum && !TGlobalSettings::Instance().EnableDontClearZedData)
-		{
-			LoadBlindBalances();
-			if(frmTouchKeyboard->ShowModal() == mrOk )
-			{
-				BlindBalances.BagID = frmTouchKeyboard->KeyboardText;
-				UpdateBlindBalances(frmTouchKeyboard->KeyboardText);
-			}
-			else
-				return;
-		}
-		frmListManager->ModalResult = mrOk;
+    MasterBalance = BlindBalances;
+    if(TGlobalSettings::Instance().EnableDepositBagNum && !TGlobalSettings::Instance().EnableDontClearZedData)
+    {
+        LoadBlindBalances();
+        if(frmTouchKeyboard->ShowModal() == mrOk )
+        {
+            BlindBalances.BagID = frmTouchKeyboard->KeyboardText;
+            UpdateBlindBalances(frmTouchKeyboard->KeyboardText);
+        }
+        else
+            return;
+    }
+    frmListManager->ModalResult = mrOk;
 }
 
 void TBlindBalanceController::OnAdd(int Index, int ColIndex)
@@ -161,17 +164,7 @@ void TBlindBalanceController::OnEdit(int Index, int ColIndex)
 
 void TBlindBalanceController::OnDelete(int Index, int ColIndex)
 {
-/*	if (BlindBalances.IndexValid(Index))
-	{
-		if (MessageBox("Are you sure you wish to remove " + BlindBalances.BalanceName(Index) + "'s Balance?", "Warning", MB_OKCANCEL + MB_ICONQUESTION) == IDOK)
-		{
-			BlindBalances.RemoveBlindBalance(Index);
-			PopulateListManager();
-		}
-	}
-*/
-		frmListManager->ModalResult = mrCancel;
-
+  frmListManager->ModalResult = mrCancel;
 }
 
 void TBlindBalanceController::PopulateListManager()

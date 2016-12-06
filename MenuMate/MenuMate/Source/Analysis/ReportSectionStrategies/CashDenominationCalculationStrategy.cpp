@@ -11,16 +11,15 @@ CashDenominationCalculationStrategy::CashDenominationCalculationStrategy(Databas
 
 void CashDenominationCalculationStrategy::BuildSection(TPrintout* printOut)
 {
-    TBlindBalances balance;
+    TCashDenominations cashDenominations;
     AnsiString bagId;
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
 
     TForm* currentForm = Screen->ActiveForm;
-    //TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction, deviceName);
     TCashDenominationController CashDenominationController(currentForm, *_dbTransaction, deviceName);
     if(!CashDenominationController.Run())
     {
-        printOut->BlindBalanceUsed = false;
+        printOut->CashDenominationUsed = false;
         return;
     }
     else
@@ -29,11 +28,10 @@ void CashDenominationCalculationStrategy::BuildSection(TPrintout* printOut)
        _dbTransaction->StartTransaction();
     }
 
-    balance = CashDenominationController.Get();
+    cashDenominations = CashDenominationController.Get();
     bagId = CashDenominationController.GetBagID();
-    TBlindBalanceControllerInterface::Instance()->SetBalances(balance);
-    TBlindBalanceControllerInterface::Instance()->SetBagID(bagId);
-    TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
+    TCashDenominationControllerInterface::Instance()->SetCashDenominations(cashDenominations);
+    TCashDenominationControllerInterface::Instance()->SetBagID(bagId);
 
     printOut->PrintFormat->Line->ColCount = 3;
 	printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 4/10;
@@ -48,40 +46,12 @@ void CashDenominationCalculationStrategy::BuildSection(TPrintout* printOut)
 
 	printOut->PrintFormat->AddLine();
 
-    TBlindBalanceContainer::iterator itBlindBalances = balance.begin();
-	for (itBlindBalances = balance.begin(); itBlindBalances != balance.end(); itBlindBalances++)
+    TCashDenominationContainer::iterator itCashDenominations = cashDenominations.begin();
+	for (; itCashDenominations != cashDenominations.end(); itCashDenominations++)
 	{
-		ibInternalQuery->Close();
-		ibInternalQuery->SQL->Text = "select sum(dabp.subtotal) total "
-                                        "       from dayarcbillpay dabp "
-                                        "            left join dayarcbill dab on "
-                                        "                 dabp.arcbill_key = dab.arcbill_key "
-                                        "       where dabp.pay_type = :pay_type ";
-
-        if (!_globalSettings->EnableDepositBagNum || _isMasterBalance)
-		{
-			ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text +
-			"             and dab.terminal_name = :terminal_name "
-			"       		  group by dabp.pay_type;";
-			ibInternalQuery->ParamByName("terminal_name")->AsString = deviceName;
-		}
-		else
-		{
-			ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + "       group by dabp.pay_type;";
-		}
-
-		printOut->PrintFormat->Line->Columns[0]->Text = itBlindBalances->first;
-		printOut->PrintFormat->Line->Columns[1]->Text = FormatFloat("0.00", itBlindBalances->second.TransQty);
-
-		ibInternalQuery->ParamByName("pay_type")->AsString = itBlindBalances->first;
-		ibInternalQuery->ExecQuery();
-
-		//itBlindBalances->second.SystemBalance = ibInternalQuery->FieldByName("total")->AsCurrency;
-		//double tempBalance = itBlindBalances->second.BlindBalance - itBlindBalances->second.SystemBalance;
-
-		printOut->PrintFormat->Line->Columns[2]->Text = FormatFloat("0.00", itBlindBalances->second.BlindBalance);
+		printOut->PrintFormat->Line->Columns[0]->Text = itCashDenominations->second.Title;
+		printOut->PrintFormat->Line->Columns[1]->Text = FormatFloat("0.00", itCashDenominations->second.Quantity);
+		printOut->PrintFormat->Line->Columns[2]->Text = FormatFloat("0.00", itCashDenominations->second.Total);
 		printOut->PrintFormat->AddLine();
-
-		ibInternalQuery->Close();
 	}
 }

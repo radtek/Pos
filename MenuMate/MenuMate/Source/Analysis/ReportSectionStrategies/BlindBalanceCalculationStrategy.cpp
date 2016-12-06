@@ -18,15 +18,16 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
 
     TForm* currentForm = Screen->ActiveForm;
     TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction, deviceName);
-    if(!blindBalanceController.Run())
-    {
-        printOut->BlindBalanceUsed = false;
-        return;
-    }
-    else
+
+    if(printOut->CashDenominationUsed && blindBalanceController.Run())
     {
        _dbTransaction->Commit();
        _dbTransaction->StartTransaction();
+    }
+    else
+    {
+        printOut->BlindBalanceUsed = false;
+        return;
     }
 
     balance = blindBalanceController.Get();

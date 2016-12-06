@@ -45,9 +45,11 @@ private:	// User declarations
 	__fastcall TfrmMessageMaintenance(TComponent* Owner,Database::TDBControl &inDBControl);
 	
 	Database::TDBControl &DBControl;
-
 	void ShowMessages();
-    Currency CashDenominationValue(Database::TDBTransaction &DBTransaction, Currency value,bool isedited = false);
+    Currency GetDenominationValue(Database::TDBTransaction &DBTransaction, Currency denominationValue);
+    Currency LoadDenominations(Database::TDBTransaction &DBTransaction);
+    void GetHeaders(AnsiString& CurrentCaption, AnsiString& CurrentMessage);
+    void AddDenomination(Database::TDBTransaction &DBTransaction, AnsiString inTitle, Currency inValue);
 public:		// User declarations
 
 	eMessageType MessageType;

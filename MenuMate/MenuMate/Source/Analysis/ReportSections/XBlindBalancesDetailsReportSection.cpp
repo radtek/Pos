@@ -7,7 +7,6 @@ XBlindBalancesDetailsReportSection::XBlindBalancesDetailsReportSection(Database:
 {
 }
 
-
 XBlindBalancesDetailsReportSection::~XBlindBalancesDetailsReportSection()
 {
 }
