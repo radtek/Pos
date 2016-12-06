@@ -15,7 +15,19 @@ TDBDenominations::~TDBDenominations()
 {
 }
 //--------------------------------------------------------------------------
-void TDBDenominations::AddDenominations(Database::TDBTransaction &DBTransaction,TDenomination inDenomination)
+void TDBDenominations::SaveDenomination(Database::TDBTransaction &DBTransaction,TDenomination inDenomination)
+{
+   if(inDenomination.Key == 0)
+   {
+      TDBDenominations::AddDenomination(DBTransaction,inDenomination);
+   }
+   else
+   {
+     TDBDenominations::UpdateDenomination(DBTransaction,inDenomination);
+   }
+}
+//--------------------------------------------------------------------------
+void TDBDenominations::AddDenomination(Database::TDBTransaction &DBTransaction,TDenomination inDenomination)
 {
     inDenomination.Key = TDBDenominations::GetDenominationKey(DBTransaction);
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -25,6 +37,17 @@ void TDBDenominations::AddDenominations(Database::TDBTransaction &DBTransaction,
                                  ":CASHDENOMINATION_KEY, "
                                  ":TITLE, "
                                  ":DENOMINATION)";
+    IBInternalQuery->ParamByName("CASHDENOMINATION_KEY")->AsInteger = inDenomination.Key;
+    IBInternalQuery->ParamByName("TITLE")->AsString = inDenomination.Title;
+    IBInternalQuery->ParamByName("DENOMINATION")->AsCurrency = inDenomination.DenominationValue;
+    IBInternalQuery->ExecQuery();
+}
+//--------------------------------------------------------------------------
+void TDBDenominations::UpdateDenomination(Database::TDBTransaction &DBTransaction,TDenomination inDenomination)
+{
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->SQL->Text =  "UPDATE CASHDENOMINATIONS SET DENOMINATION = :DENOMINATION,  TITLE = :TITLE "
+                                  " WHERE CASHDENOMINATION_KEY = :CASHDENOMINATION_KEY ";
     IBInternalQuery->ParamByName("CASHDENOMINATION_KEY")->AsInteger = inDenomination.Key;
     IBInternalQuery->ParamByName("TITLE")->AsString = inDenomination.Title;
     IBInternalQuery->ParamByName("DENOMINATION")->AsCurrency = inDenomination.DenominationValue;
@@ -80,27 +103,9 @@ AnsiString TDBDenominations::GetDenominationTitle(Database::TDBTransaction &DBTr
    IBInternalQuery->ExecQuery();
    if(!IBInternalQuery->Eof)
    {
-     retVal = IBInternalQuery->FieldByName("DENOMINATION")->AsString;
+     retVal = IBInternalQuery->FieldByName("TITLE")->AsString;
    }
    return retVal;
-}
-//--------------------------------------------------------------------------
-void TDBDenominations::SetDenominationValue(Database::TDBTransaction &DBTransaction,int key,Currency inValue)
-{
-    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    IBInternalQuery->SQL->Text =  "UPDATE CASHDENOMINATIONS SET DENOMINATION = :DENOMINATION WHERE CASHDENOMINATION_KEY = :CASHDENOMINATION_KEY ";
-    IBInternalQuery->ParamByName("CASHDENOMINATION_KEY")->AsInteger = key;
-    IBInternalQuery->ParamByName("DENOMINATION")->AsCurrency = inValue;
-    IBInternalQuery->ExecQuery();
-}
-//--------------------------------------------------------------------------
-void TDBDenominations::SetDenominationTitle(Database::TDBTransaction &DBTransaction,int key,AnsiString inTitle)
-{
-    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    IBInternalQuery->SQL->Text =  "UPDATE CASHDENOMINATIONS SET TITLE = :TITLE WHERE CASHDENOMINATION_KEY = :CASHDENOMINATION_KEY ";
-    IBInternalQuery->ParamByName("TITLE")->AsString = inTitle;
-    IBInternalQuery->ParamByName("CASHDENOMINATION_KEY")->AsInteger = key;
-    IBInternalQuery->ExecQuery();
 }
 //--------------------------------------------------------------------------
 int TDBDenominations::GetDenominationKey(Database::TDBTransaction &DBTransaction)
@@ -112,17 +117,21 @@ int TDBDenominations::GetDenominationKey(Database::TDBTransaction &DBTransaction
     retVal = IBInternalQuery->Fields[0]->AsInteger;
     return retVal;
 }
-bool TDBDenominations::IsDenominationExist(Database::TDBTransaction &DBTransaction,AnsiString inTitle)
+
+bool TDBDenominations::IsDenominationExist(Database::TDBTransaction &DBTransaction,int key,AnsiString inTitle)
 {
    bool retVal = false;
    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
    IBInternalQuery->Close();
-   IBInternalQuery->SQL->Text = "SELECT CASHDENOMINATION_KEY FROM  CASHDENOMINATIONS WHERE UPPER(TITLE) = :TITLE";
+   IBInternalQuery->SQL->Text = "SELECT CASHDENOMINATION_KEY FROM  CASHDENOMINATIONS WHERE UPPER(TITLE) = :TITLE ";
    IBInternalQuery->ParamByName("TITLE")->AsString = inTitle.UpperCase();
    IBInternalQuery->ExecQuery();
    if(!IBInternalQuery->Eof)
    {
-     retVal = true;
+     if(key != IBInternalQuery->FieldByName("CASHDENOMINATION_KEY")->AsInteger)
+       retVal = true;
+     else
+       retVal = false;
    }
    return retVal;
 }

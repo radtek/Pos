@@ -23,14 +23,14 @@ class TDBDenominations
    public:
     TDBDenominations();
     ~TDBDenominations();
-    static void AddDenominations(Database::TDBTransaction &DBTransaction,TDenomination inDenomination);
+    static void SaveDenomination(Database::TDBTransaction &DBTransaction,TDenomination inDenomination);
+    static void AddDenomination(Database::TDBTransaction &DBTransaction,TDenomination inDenomination);
+    static void UpdateDenomination(Database::TDBTransaction &DBTransaction,TDenomination inDenomination);
     static void LoadDenominations(Database::TDBTransaction &DBTransaction,std::vector<TDenomination> &inDenominations);
     static void DeleteDenominations(Database::TDBTransaction &DBTransaction,int key);
     static Currency GetDenominationValue(Database::TDBTransaction &DBTransaction,int key);
     static AnsiString GetDenominationTitle(Database::TDBTransaction &DBTransaction,int key);
-    static void SetDenominationValue(Database::TDBTransaction &DBTransaction,int key,Currency inValue);
-    static void SetDenominationTitle(Database::TDBTransaction &DBTransaction,int key,AnsiString inTitle);
     static int GetDenominationKey(Database::TDBTransaction &DBTransaction);
-    static bool IsDenominationExist(Database::TDBTransaction &DBTransaction,AnsiString inTitle);
+    static bool IsDenominationExist(Database::TDBTransaction &DBTransaction, int key, AnsiString inTitle);
 };
 #endif

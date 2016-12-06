@@ -30,6 +30,7 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
         return;
     }
 
+
     balance = blindBalanceController.Get();
     bagId = blindBalanceController.GetBagID();
     TBlindBalanceControllerInterface::Instance()->SetBalances(balance);

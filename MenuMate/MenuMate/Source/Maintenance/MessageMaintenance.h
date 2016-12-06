@@ -49,7 +49,7 @@ private:	// User declarations
     Currency GetDenominationValue(Database::TDBTransaction &DBTransaction, Currency denominationValue);
     Currency LoadDenominations(Database::TDBTransaction &DBTransaction);
     void GetHeaders(AnsiString& CurrentCaption, AnsiString& CurrentMessage);
-    void AddDenomination(Database::TDBTransaction &DBTransaction, AnsiString inTitle, Currency inValue);
+    void SaveDenomination(Database::TDBTransaction &DBTransaction,int key, AnsiString inTitle, Currency inValue);
 public:		// User declarations
 
 	eMessageType MessageType;

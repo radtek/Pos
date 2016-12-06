@@ -64,7 +64,7 @@ class TBlindBalances
     Currency GetBlindBalance(AnsiString Name);
     bool IndexValid(Index);
     bool Empty();
-
+    bool CashDenominationEntered;
     AnsiString BagID;
 };
 

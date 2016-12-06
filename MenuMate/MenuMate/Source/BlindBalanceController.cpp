@@ -8,7 +8,7 @@
 #include "MMTouchKeyboard.h"
 #include "DeviceRealTerminal.h"
 #include "ListPaymentSystem.h"
-
+#include "CashDenominationController.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -70,6 +70,7 @@ bool TBlindBalanceController::Run()
 	frmListManager->Delete.RegisterForEvent(OnDelete);
 	frmListManager->tbtnEdit->Hide();
 	frmListManager->tbtnDelete->Caption = "Cancel";
+    BlindBalances.CashDenominationEntered = false;
 	PopulateListManager();
 	frmListManager->SetCaption("Blind Balance Values");
 	if(frmListManager->ShowModal() == mrCancel)
@@ -174,7 +175,6 @@ void TBlindBalanceController::PopulateListManager()
 		frmListManager->sgDisplay->Cols[0]->Clear();
 		frmListManager->sgDisplay->Cols[1]->Clear();
 
-
 		// Load up all the current! payment types.
         std::vector<TPayment> Payments;
 		TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction,Payments);
@@ -183,22 +183,30 @@ void TBlindBalanceController::PopulateListManager()
 		  {
 			if(BlindBalances.find(ptr->Name) == BlindBalances.end())
 			{
-				BlindBalances.UpdateBlindBalance(ptr->Name, 0);
+                Currency amount = 0;
+                if(ptr->Name.UpperCase() == "CASH")
+                {
+                  TCashDenominations cashDenominations = TCashDenominationControllerInterface::Instance()->GetCashDenominations();
+                  if(cashDenominations.GetTotal() > 0)
+                  {
+                      amount += cashDenominations.GetTotal();
+                      BlindBalances.CashDenominationEntered = true;
+                  }
+                }
+                BlindBalances.UpdateBlindBalance(ptr->Name, amount);
 			}
 
-				if(ptr->Properties & ePayTypeAllowCashOut)
-				{
-					 if (BlindBalances.find(ptr->Name + " Cash Out") == BlindBalances.end())
-					 {
-						BlindBalances.UpdateBlindBalance(ptr->Name + " Cash Out", 0);
-					 }
-				}
+            if(ptr->Properties & ePayTypeAllowCashOut)
+            {
+                if (BlindBalances.find(ptr->Name + " Cash Out") == BlindBalances.end())
+                {
+                   BlindBalances.UpdateBlindBalance(ptr->Name + " Cash Out", 0);
+                }
+            }
 		  }
 
 		frmListManager->sgDisplay->ColCount = 2;
 		frmListManager->sgDisplay->RowCount = BlindBalances.size() + 1;
-
-//		Currency Total;
 		BlindBalances.ClearTotal();
 		int j = 0;
 		TBlindBalanceContainer::iterator itBlindBalances;
@@ -211,7 +219,6 @@ void TBlindBalanceController::PopulateListManager()
 
 			BlindBalances.SetTotal(itBlindBalances->second.BlindBalance);
 		}
-
 		frmListManager->sgDisplay->Cols[0]->AddObject("Total", (TObject*)j);
 		frmListManager->sgDisplay->Cols[1]->AddObject(FormatFloat("0.00", BlindBalances.GetTotal()), (TObject*)j);
 
@@ -351,7 +358,17 @@ bool TBlindBalances::IndexValid(int Index)
 	std::advance(itBlindBalances, Index);
 	if (itBlindBalances != BlindBalances.end())
 	{
-		return true;
+        TBlindBalanceSortedVector::iterator itSortedBlindBalances = vectorbegin();
+        TBlindBalanceContainer::iterator itBlindBalances1;
+        std::advance(itSortedBlindBalances, Index);
+        if (itSortedBlindBalances != vectorend())
+        {
+            itBlindBalances1 = BlindBalances.find(*itSortedBlindBalances);
+            AnsiString paymentName = itBlindBalances1->first ;
+            if(CashDenominationEntered && paymentName.UpperCase() == "CASH")
+              return false;
+        }
+        return true;
 	}
 	return false;
 }

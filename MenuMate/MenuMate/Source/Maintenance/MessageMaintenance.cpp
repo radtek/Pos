@@ -210,7 +210,7 @@ void __fastcall TfrmMessageMaintenance::btnAddMessageClick(TObject *Sender)
                 {
                    Currency denomination = 0.0;
                    denomination = GetDenominationValue(DBTransaction, denomination);
-                   AddDenomination(DBTransaction,ButtonTitle,denomination);
+                   SaveDenomination(DBTransaction,0,ButtonTitle,denomination);
                 }
             }
             DBTransaction.Commit();
@@ -284,7 +284,17 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
                 {
                    frmTouchKeyboard->MustHaveValue = true;
                 }
-				frmTouchKeyboard->KeyboardText =  Manager->GetTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+                AnsiString title = "";
+                if(MessageType == eCashDenomination)
+                {
+                  title = TDBDenominations::GetDenominationTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+                }
+                else
+                {
+                   title = Manager->GetTitle(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+                }
+
+				frmTouchKeyboard->KeyboardText = title;
 				frmTouchKeyboard->Caption = CurrentCaption;
                 if (frmTouchKeyboard->ShowModal() == mrOk)
                 {
@@ -308,10 +318,9 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
                     }
                     else
                     {
-                       Currency denomination = StrToCurr(Manager->GetContent(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]));
+                       Currency denomination = TDBDenominations::GetDenominationValue(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
                        denomination = GetDenominationValue(DBTransaction, denomination);
-                       if(denomination > 0)
-                         TDBDenominations::SetDenominationValue(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],denomination);
+                       SaveDenomination(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row],frmTouchKeyboard->KeyboardText,denomination);
                     }
                 }
 
@@ -328,8 +337,11 @@ void __fastcall TfrmMessageMaintenance::btnEditMessageClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::btnDelMessageClick(TObject *Sender)
 {
-	if(MessageBox("Are you sure wish to delete this Option?", "Warning",
-		MB_ICONWARNING + MB_OKCANCEL) == ID_OK)
+    if((int)sgDisplay->Objects[0][sgDisplay->Row] == 0)
+    {
+        MessageBox("There is nothing to delete.", "Warning", MB_ICONWARNING + MB_OK);
+    }
+    else if(MessageBox("Are you sure wish to delete this Option?", "Warning", MB_ICONWARNING + MB_OKCANCEL) == ID_OK)
 	{
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
@@ -349,7 +361,15 @@ void __fastcall TfrmMessageMaintenance::btnDelMessageClick(TObject *Sender)
 			{
 				Manager = ManagerMessage;
 			}
-			Manager->Delete(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+            if(MessageType == eCashDenomination)
+            {
+              TDBDenominations::DeleteDenominations(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+            }
+            else
+            {
+              Manager->Delete(DBTransaction,(int)sgDisplay->Objects[0][sgDisplay->Row]);
+            }
+
 		}
 		DBTransaction.Commit();		
 	}
@@ -458,17 +478,28 @@ void TfrmMessageMaintenance::GetHeaders(AnsiString& CurrentCaption, AnsiString& 
     }
 }
 //---------------------------------------------------------------------------
-void TfrmMessageMaintenance::AddDenomination(Database::TDBTransaction &DBTransaction, AnsiString inTitle, Currency inValue)
+void TfrmMessageMaintenance::SaveDenomination(Database::TDBTransaction &DBTransaction,int key, AnsiString inTitle, Currency inValue)
 {
-   if(!TDBDenominations::IsDenominationExist(DBTransaction,inTitle))
+   inTitle = inTitle.Trim();
+   if(inTitle == "")
    {
-     TDenomination denomination;
-     denomination.Title = inTitle;
-     denomination.DenominationValue = inValue;
-     TDBDenominations::AddDenominations(DBTransaction,denomination);
+      MessageBox("Denomination must have a title.", "Warning", MB_ICONWARNING + MB_OK);
+   }
+   else if(inValue == 0)
+   {
+      MessageBox("Denomination must have value greater than zero.", "Warning", MB_ICONWARNING + MB_OK);
+   }
+   else if(TDBDenominations::IsDenominationExist(DBTransaction,key,inTitle))
+   {
+     MessageBox("Denomination with same title already exist.", "Warning", MB_ICONWARNING + MB_OK);
    }
    else
    {
-      MessageBox("Denomination with same title already exist.", "Warning", MB_ICONWARNING + MB_OK);
+     TDenomination denomination;
+     denomination.Key = key;
+     denomination.Title = inTitle;
+     denomination.DenominationValue = inValue;
+     TDBDenominations::SaveDenomination(DBTransaction,denomination);
    }
 }
+
