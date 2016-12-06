@@ -116,7 +116,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         }
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[1]->Text = "Zero-Rated Sales";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Zero Rated Sales";
         printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(zeroratedsales, ffNumber, CurrencyDecimals);
         printOut->PrintFormat->AddLine();
 
