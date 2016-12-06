@@ -5868,7 +5868,7 @@ void TListPaymentSystem::PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &pay
 {
     TIBSQL *IBInternalQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
 
-    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Customer Neme", paymentTransaction.customerDetails.CustomerName);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Customer Name", paymentTransaction.customerDetails.CustomerName);
     InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Address", paymentTransaction.customerDetails.Address);
     InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Tin", paymentTransaction.customerDetails.TinNo);
     InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Business Style", paymentTransaction.customerDetails.BusinessStyle);

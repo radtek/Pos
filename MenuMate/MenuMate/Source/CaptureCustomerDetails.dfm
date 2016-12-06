@@ -1,9 +1,10 @@
 object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
   Left = 0
   Top = 0
+  BorderStyle = bsDialog
   Caption = 'SC/PWD Details'
-  ClientHeight = 372
-  ClientWidth = 368
+  ClientHeight = 380
+  ClientWidth = 624
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,20 +12,21 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesktopCenter
   PixelsPerInch = 96
   TextHeight = 13
   object PanelDetails: TPanel
     Left = 0
     Top = 0
-    Width = 376
-    Height = 377
+    Width = 620
+    Height = 400
     Caption = 'PanelDetails'
     TabOrder = 0
     object GroupBox1: TGroupBox
       Left = 8
       Top = 0
-      Width = 357
-      Height = 361
+      Width = 600
+      Height = 370
       Caption = 'Details Required'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -35,10 +37,10 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       TabOrder = 0
       object LabelCustomerName: TLabel
         Left = 8
-        Top = 35
-        Width = 90
+        Top = 55
+        Width = 104
         Height = 14
-        Caption = 'Cutomer Name'
+        Caption = 'Customer Name :'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -12
@@ -48,10 +50,10 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       end
       object LabelAddress: TLabel
         Left = 8
-        Top = 83
-        Width = 49
+        Top = 103
+        Width = 57
         Height = 14
-        Caption = 'Address'
+        Caption = 'Address :'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -12
@@ -61,10 +63,10 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       end
       object LabelTIN: TLabel
         Left = 8
-        Top = 131
-        Width = 20
+        Top = 151
+        Width = 28
         Height = 14
-        Caption = 'TIN'
+        Caption = 'TIN :'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -12
@@ -74,10 +76,10 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       end
       object LabelBusinessStyle: TLabel
         Left = 8
-        Top = 179
-        Width = 87
+        Top = 199
+        Width = 95
         Height = 14
-        Caption = 'Business Style'
+        Caption = 'Business Style :'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -12
@@ -87,7 +89,7 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       end
       object LabelSCPWDNO: TLabel
         Left = 8
-        Top = 227
+        Top = 247
         Width = 65
         Height = 14
         Caption = 'SC/PWD #'
@@ -99,45 +101,45 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
         ParentFont = False
       end
       object edCustomerName: TEdit
-        Left = 8
+        Left = 200
         Top = 55
-        Width = 313
+        Width = 350
         Height = 22
         TabOrder = 0
         OnClick = CaptureCustomerDetails
       end
       object edAddress: TEdit
         Tag = 1
-        Left = 8
+        Left = 200
         Top = 103
-        Width = 313
+        Width = 350
         Height = 22
         TabOrder = 1
         OnClick = CaptureCustomerDetails
       end
       object edTIN: TEdit
         Tag = 2
-        Left = 8
+        Left = 200
         Top = 151
-        Width = 313
+        Width = 350
         Height = 22
         TabOrder = 2
         OnClick = CaptureCustomerDetails
       end
       object edBusinessStyle: TEdit
         Tag = 3
-        Left = 8
+        Left = 200
         Top = 199
-        Width = 313
+        Width = 350
         Height = 22
         TabOrder = 3
         OnClick = CaptureCustomerDetails
       end
       object edSCPWDNO: TEdit
         Tag = 4
-        Left = 8
+        Left = 200
         Top = 247
-        Width = 313
+        Width = 350
         Height = 22
         TabOrder = 4
         OnClick = CaptureCustomerDetails
@@ -163,7 +165,7 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       end
       object btnCancel: TTouchBtn
         Tag = 6
-        Left = 221
+        Left = 450
         Top = 291
         Width = 100
         Font.Charset = DEFAULT_CHARSET

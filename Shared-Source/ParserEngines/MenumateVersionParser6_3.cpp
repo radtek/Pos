@@ -305,7 +305,7 @@ void TApplyParser::Create6_34TableSCDPWDCustomerDetails(TDBControl* const inDBCo
 		"   CUSTOMER_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
         "   ARCBILL_KEY INT NOT NULL, "
 		"   FIELD_HEADER varchar(50),"
-        "   FIELD_VALUE VARCHAR(150),"
+        "   FIELD_VALUE VARCHAR(200),"
         "   DATA_TYPE VARCHAR(25)"
 		");",
 		inDBControl );

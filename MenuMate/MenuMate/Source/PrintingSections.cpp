@@ -3918,26 +3918,41 @@ void TPrintSection::printSCDSummary(TReqPrintJob *printJob)
 
 void TPrintSection::populateSCDSummary(TReqPrintJob *printJob, std::vector<AnsiString>& inSCDSummary )
 {
-	inSCDSummary.push_back( "Customer Name : " + printJob->Transaction->customerDetails.CustomerName );
-	inSCDSummary.push_back( "Address       : " + printJob->Transaction->customerDetails.Address);
-	inSCDSummary.push_back( "TIN           : " + printJob->Transaction->customerDetails.TinNo);
-	inSCDSummary.push_back( "Business Style: " + printJob->Transaction->customerDetails.BusinessStyle);
-	inSCDSummary.push_back( "SCD/PWD #     : " + printJob->Transaction->customerDetails.SC_PWD_ID);
-    inSCDSummary.push_back( "Signature     : ........................................");
+	inSCDSummary.push_back(printJob->Transaction->customerDetails.CustomerName );
+	inSCDSummary.push_back(printJob->Transaction->customerDetails.Address);
+	inSCDSummary.push_back(printJob->Transaction->customerDetails.TinNo);
+	inSCDSummary.push_back(printJob->Transaction->customerDetails.BusinessStyle);
+	inSCDSummary.push_back(printJob->Transaction->customerDetails.SC_PWD_ID);
+    inSCDSummary.push_back("...........................");
 }
 
 void TPrintSection::printSCDSummary( std::vector<AnsiString> inSCDSummary )
 {
+    UnicodeString customerDetails[6] = {"Customer Name : ", "Address       : ", "TIN           : ", "Business Style: ", "SCD/PWD #     : ", "Signature     : "};
+    pPrinter->Line->ColCount = 2;
+    pPrinter->Line->Columns[0]->Width = 16;
+    pPrinter->Line->Columns[1]->Width = pPrinter->Width - 17;
 	pPrinter->Line->Columns[0]->Text = "";
-	pPrinter->Line->Columns[1]->Text = "";
+    pPrinter->Line->Columns[1]->Text = "";
+    pPrinter->Line->Columns[1]->Alignment = taLeftJustify;
+	pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
 	pPrinter->AddLine();
+    UnicodeString data = "";
+    int customerDetailsIndex = 0;
 
 	std::vector<AnsiString>::iterator scdIT = inSCDSummary.begin();
 
 	for( ; scdIT != inSCDSummary.end(); scdIT++ )
 	{
-		pPrinter->Line->Columns[0]->Text = *scdIT;
-		pPrinter->AddLine();
+        data = *scdIT;
+        pPrinter->Line->Columns[0]->Text = customerDetails[customerDetailsIndex];
+        for(int index =0; index< data.Length(); index += pPrinter->Line->Columns[1]->Width)
+		{
+            pPrinter->Line->Columns[1]->Text = data.SubString(index, index + pPrinter->Line->Columns[1]->Width);
+            pPrinter->AddLine();
+            pPrinter->Line->Columns[0]->Text = "";
+        }
+        customerDetailsIndex++;
 	}
 }
 
@@ -3950,8 +3965,8 @@ void TPrintSection::PrintTotalDicountDetails(TReqPrintJob *PrintJob)
 	pPrinter->Line->ColCount = 2;
 	pPrinter->Line->Columns[0]->Width = pPrinter->Width;
 	pPrinter->Line->FontInfo.Bold = false;
-	pPrinter->Line->Columns[1]->Alignment = taRightJustify;
-	pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+   	pPrinter->Line->Columns[1]->Alignment = taLeftJustify;
+    pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
 
 	if (ThisInstruction->Caption != "")
 	{

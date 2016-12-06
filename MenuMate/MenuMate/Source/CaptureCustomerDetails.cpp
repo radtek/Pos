@@ -5,6 +5,7 @@
 
 #include "CaptureCustomerDetails.h"
 #include "MMTouchKeyboard.h"
+#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -23,12 +24,31 @@ void __fastcall TfrmCaptureCustomerDetails::FormShow(TObject *Sender)
 //----------------------------------------------------------------------------------------------
 void __fastcall TfrmCaptureCustomerDetails::btnOKClick(TObject *Sender)
 {
-    customerDetails.CustomerName = edCustomerName->Text;
-    customerDetails.Address = edAddress->Text;
-    customerDetails.TinNo = edTIN->Text;
-    customerDetails.BusinessStyle = edBusinessStyle->Text;
-    customerDetails.SC_PWD_ID = edSCPWDNO->Text;
-    ModalResult = mrOk;
+    if (edCustomerName->Text.Trim()  == "")
+    {
+      MessageBox("You must enter Customer Name.", "Error", MB_OK + MB_ICONERROR);
+    }
+    else if(edAddress->Text.Trim()  == "" )
+    {
+        MessageBox("Enter Customer Address", "Error", MB_OK + MB_ICONERROR);
+    }
+    else if(edTIN->Text.Trim() == "")
+    {
+       MessageBox("You must enter Tin No.", "Error", MB_ICONERROR);
+    }
+    else if(edSCPWDNO->Text.Trim() == "")
+    {
+       MessageBox("You must enter SC/PWD ID.", "Error", MB_ICONERROR);
+    }
+    else
+    {
+        customerDetails.CustomerName = edCustomerName->Text;
+        customerDetails.Address = edAddress->Text;
+        customerDetails.TinNo = edTIN->Text;
+        customerDetails.BusinessStyle = edBusinessStyle->Text;
+        customerDetails.SC_PWD_ID = edSCPWDNO->Text;
+        ModalResult = mrOk;
+    }
 }
 //----------------------------------------------------------------------------------------------
 void __fastcall TfrmCaptureCustomerDetails::btnCancelClick(TObject *Sender)
@@ -48,17 +68,19 @@ void __fastcall TfrmCaptureCustomerDetails::CaptureCustomerDetails(TObject *Send
     std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
     frmTouchKeyboard->AllowCarriageReturn = false;
     frmTouchKeyboard->StartWithShiftDown = false;
-    frmTouchKeyboard->MaxLength = 150;
+    frmTouchKeyboard->MaxLength = 50;
 
      switch(btn->Tag)
     {
         case 0:
             Caption = "Enter Customer Name";
             frmTouchKeyboard->KeyboardText = edCustomerName->Text;
+            frmTouchKeyboard->MaxLength = 75;
             break;
         case 1:
             Caption = "Enter Customer Address";
             frmTouchKeyboard->KeyboardText = edAddress->Text;
+            frmTouchKeyboard->MaxLength = 200;
             break;
         case 2:
             Caption = "Enter Tin No";
@@ -90,9 +112,12 @@ void __fastcall TfrmCaptureCustomerDetails::CaptureCustomerDetails(TObject *Send
 //-------------------------------------------------------------------------------------------------
 void TfrmCaptureCustomerDetails::DisplayCustomerData()
 {
-     edCustomerName->Text = CustomerInfoPointers[0].Trim();
-     edAddress->Text = CustomerInfoPointers[1].Trim();
-     edTIN->Text = CustomerInfoPointers[2].Trim();
-     edBusinessStyle->Text = CustomerInfoPointers[3].Trim();
-     edSCPWDNO->Text = CustomerInfoPointers[4];
+    edCustomerName->Text = CustomerInfoPointers[0].Trim();
+    edAddress->Text = CustomerInfoPointers[1].Trim();
+    edTIN->Text = CustomerInfoPointers[2].Trim();
+    edBusinessStyle->Text = CustomerInfoPointers[3].Trim();
+    edSCPWDNO->Text = CustomerInfoPointers[4];
 }
+
+
+
