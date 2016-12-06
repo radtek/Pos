@@ -724,39 +724,6 @@ void TTransactionInfoProcessor::RemoveEntryFromMap(UnicodeString deviceName)
      }
 }
 
-TDateTime DataCalculationUtilities::GetTransDateForTerminal(Database::TDBTransaction &dbTransaction, UnicodeString terminalName)
-{
-    TDateTime trans_Date = Now();
-    TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
-    AnsiString terminalNamePredicate = "";
-
-    if(!TGlobalSettings::Instance().EnableDepositBagNum)
-    {
-        terminalNamePredicate = "where a.TERMINAL_NAME = :TERMINAL_NAME ";
-    }
-    IBInternalQuery->Close();
-    IBInternalQuery->SQL->Text = "select min(a.TIME_STAMP) TIME_STAMP, extract(Hour from TIME_STAMP)Bill_Hour, extract(Day from TIME_STAMP)Bill_Day, extract(Year from TIME_STAMP)Bill_Year, extract(Month from TIME_STAMP)Bill_Month, a.ARCHIVE_KEY, a.TERMINAL_NAME from DAYARCHIVE a " + terminalNamePredicate  + " group by ARCHIVE_KEY, a.TERMINAL_NAME, Bill_Hour,Bill_Day,Bill_Year,Bill_Month ";
-    if(!TGlobalSettings::Instance().EnableDepositBagNum)
-    {
-       IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = terminalName;
-    }
-    IBInternalQuery->ExecQuery();
-
-    if (IBInternalQuery->RecordCount != 0)
-    {
-        trans_Date = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
-        trans_Date = CalculateSessionTransactionDate(trans_Date, IBInternalQuery->FieldByName("Bill_Hour")->AsInteger, IBInternalQuery->FieldByName("Bill_Day")->AsInteger, IBInternalQuery->FieldByName("Bill_Year")->AsInteger, IBInternalQuery->FieldByName("Bill_Month")->AsInteger);
-    }
-    else
-    {
-       trans_Date = Now();
-       trans_Date = CalculateSessionTransactionDate(trans_Date);
-
-    }
-    IBInternalQuery->Close();
-    return trans_Date;
-}
-
 void DataCalculationUtilities::PrinterFormatinThreeSections(TPrintout* printOut)
 {
     printOut->PrintFormat->Line->ColCount = 4;
@@ -781,37 +748,13 @@ void DataCalculationUtilities::PrinterFormatinTwoSections(TPrintout* printOut)
     printOut->PrintFormat->Line->Columns[3]->Width = 0;
  }
 
- TDateTime DataCalculationUtilities::CalculateSessionTransactionDate(TDateTime trans_date, int bill_hour, int bill_day, int bill_year, int bill_month)
- {
-    SYSTEMTIME SystemTime;
-    ::GetLocalTime(&SystemTime);
-    int nPreviousMth;
-    if(TGlobalSettings::Instance().EndOfDay > 0 && bill_hour < TGlobalSettings::Instance().EndOfDay)
-    {
-        if((bill_day - 1) == 0)
-        {
-           nPreviousMth = (bill_month -1==0)?12:bill_month-1;
-           int day = CalculateLastDayOfMonth(nPreviousMth);
-           TDateTime sessionDate(bill_year, nPreviousMth, day);
-           trans_date = sessionDate;
-        }
-        else
-        {
-            TDateTime sessionDate(bill_year, SystemTime.wMonth, (bill_day - 1));
-            trans_date = sessionDate;
-        }
-    }
-    return trans_date;
- }
-
-
 TDateTime DataCalculationUtilities::CalculateSessionTransactionDate(TDateTime trans_date)
 {
     SYSTEMTIME SystemTime;
     ::GetLocalTime(&SystemTime);
     int nPreviousMth;
     int hour = StrToInt(Now().FormatString("hh"));
-    if(hour > TGlobalSettings::Instance().EndOfDay)
+    if(hour >= TGlobalSettings::Instance().EndOfDay)
     {
        hour -= TGlobalSettings::Instance().EndOfDay;
     }

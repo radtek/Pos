@@ -26,8 +26,8 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
 
     const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
 	const Currency closingBalance = openingBalance + todaysEarnings;
-    TDateTime trans_date = dataCalculationUtilities->GetTransDateForTerminal(*_dbTransaction, deviceName);
-
+    
+    TDateTime trans_date = dataCalculationUtilities->CalculateSessionTransactionDate(Now());
 	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
 	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
     FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
@@ -49,7 +49,7 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
         printOut->PrintFormat->Line->Columns[1]->Text = "Report Date:";
-        printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("dd/mm/yyyy");
+        printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("dd") + "/" + Now().FormatString("mm") + "/" + Now().FormatString("yyyy");
         printOut->PrintFormat->AddLine();
 
         printOut->PrintFormat->Line->Columns[1]->Text = "Report Time:";
@@ -66,7 +66,7 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->AddLine();
 
         printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
-        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd/mm/yyyy");
+        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd") + "/" + trans_date.FormatString("mm") + "/" + trans_date.FormatString("yyyy"); 
         printOut->PrintFormat->AddLine();
     }
 
