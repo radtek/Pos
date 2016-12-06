@@ -11,6 +11,7 @@
 #include "TouchBtn.h"
 #include "TouchControls.h"
 #include "ZForm.h"
+#include <ComCtrls.hpp>
 //---------------------------------------------------------------------------
 struct SCDPWDCustomerDetails
 {

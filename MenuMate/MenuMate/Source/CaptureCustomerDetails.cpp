@@ -69,6 +69,7 @@ void __fastcall TfrmCaptureCustomerDetails::CaptureCustomerDetails(TObject *Send
     frmTouchKeyboard->AllowCarriageReturn = false;
     frmTouchKeyboard->StartWithShiftDown = false;
     frmTouchKeyboard->MaxLength = 50;
+    frmTouchKeyboard->AllowCarriageReturn = true;
 
      switch(btn->Tag)
     {
@@ -100,7 +101,20 @@ void __fastcall TfrmCaptureCustomerDetails::CaptureCustomerDetails(TObject *Send
     frmTouchKeyboard->Caption = Caption;
     if (frmTouchKeyboard->ShowModal() == mrOk)
     {
-         CustomerInfoPointers[btn->Tag] =  frmTouchKeyboard->KeyboardText;
+        const char* line = frmTouchKeyboard->KeyboardText.t_str();
+        AnsiString keyBoardVal = "";
+        for(int i = 0; line[i] != '\0'; i++)
+        {
+            if(line[i] == '\n')
+            {
+                keyBoardVal += ' ';
+            }
+            else if(line[i] != '\r')
+            {
+                keyBoardVal += char(line[i]);
+            }
+         }
+         CustomerInfoPointers[btn->Tag] =  keyBoardVal;
          customerDetails.CustomerName =  CustomerInfoPointers[0].Trim();
          customerDetails.Address = CustomerInfoPointers[1].Trim();
          customerDetails.TinNo =  CustomerInfoPointers[2].Trim();

@@ -1,32 +1,37 @@
 object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
   Left = 0
   Top = 0
-  BorderStyle = bsDialog
+  Anchors = [akLeft, akTop, akRight, akBottom]
+  BorderStyle = bsNone
   Caption = 'SC/PWD Details'
-  ClientHeight = 380
-  ClientWidth = 624
-  Color = clBtnFace
+  ClientHeight = 815
+  ClientWidth = 1135
+  Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
+  WindowState = wsMaximized
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object PanelDetails: TPanel
-    Left = 0
-    Top = 0
-    Width = 620
-    Height = 400
+    Left = 192
+    Top = 144
+    Width = 641
+    Height = 409
     Caption = 'PanelDetails'
     TabOrder = 0
     object GroupBox1: TGroupBox
-      Left = 8
-      Top = 0
-      Width = 600
-      Height = 370
+      Left = 12
+      Top = 10
+      Width = 613
+      Height = 383
       Caption = 'Details Required'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -105,6 +110,7 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
         Top = 55
         Width = 350
         Height = 22
+        MaxLength = 75
         TabOrder = 0
         OnClick = CaptureCustomerDetails
       end
@@ -123,6 +129,7 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
         Top = 151
         Width = 350
         Height = 22
+        MaxLength = 50
         TabOrder = 2
         OnClick = CaptureCustomerDetails
       end
@@ -132,6 +139,7 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
         Top = 199
         Width = 350
         Height = 22
+        MaxLength = 50
         TabOrder = 3
         OnClick = CaptureCustomerDetails
       end
@@ -141,6 +149,7 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
         Top = 247
         Width = 350
         Height = 22
+        MaxLength = 50
         TabOrder = 4
         OnClick = CaptureCustomerDetails
       end
