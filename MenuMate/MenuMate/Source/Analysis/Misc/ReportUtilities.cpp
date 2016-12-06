@@ -784,15 +784,6 @@ int DataCalculationUtilities::CalculateLastDayOfMonth(int month)
     int leap_year;
     switch(month)
     {
-    case 1:
-	case 3:
-    case 5:
-    case 7:
-    case 8:
-    case 10:
-    case 12:
-        lastdayofmonth = 31;
-		break;
 	case 2:
         leap_year = SystemTime.wYear % 4;
         if(leap_year == 0)
@@ -810,6 +801,8 @@ int DataCalculationUtilities::CalculateLastDayOfMonth(int month)
     case 11:
         lastdayofmonth = 30;
 		break;
+     default:
+        lastdayofmonth = 31;
     }
     return lastdayofmonth;
 }
