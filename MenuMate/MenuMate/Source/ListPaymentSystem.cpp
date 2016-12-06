@@ -4330,6 +4330,14 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
                     RetrieveUserOptions = ((PaymentTransaction.IsQuickPayTransaction && TGlobalSettings::Instance().SkipConfirmationOnFastTender)||
                           frmControlTransaction->RetrieveUserOptions() != eBack);
              }
+
+             //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+             if(RetrieveUserOptions)
+             {
+                 if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                    RetrieveUserOptions = false;
+             }
+
 		     if (RetrieveUserOptions)
 			{
 				TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
@@ -4341,13 +4349,6 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
                 if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                }
-
-                //if payment complete is true then check whether transaction has SCD or PWD Discount
-                if(PaymentComplete)
-                {
-                     if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
-                        PaymentComplete = false;
                 }
 
 				if (PaymentComplete)
@@ -4459,7 +4460,16 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                 if (frmPaymentType->Execute() == mrOk)
                 {
                     isPaymentProcessed = true;
-                    if (frmControlTransaction->RetrieveUserOptions() != eBack)
+                    bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+                    //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+                    if(retrieveUserOptions)
+                    {
+                        if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                            retrieveUserOptions = false;
+                    }
+
+                    if (retrieveUserOptions)
                     {
                         TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
                         PaymentTransaction.ProcessPoints();
@@ -4471,13 +4481,6 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                         if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
                         {
                             PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                        }
-
-                         //if payment complete is true then check whether transaction has SCD or PWD Discount
-                        if(PaymentComplete)
-                        {
-                             if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
-                                PaymentComplete = false;
                         }
 
                         if (PaymentComplete)
@@ -4609,7 +4612,16 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
 		{
 			if (frmPaymentType->Execute() == mrOk)
 			{
-				if (frmControlTransaction->RetrieveUserOptions() != eBack)
+                bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+                //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+                if(retrieveUserOptions)
+                {
+                    if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                        retrieveUserOptions = false;
+                }
+
+				if (retrieveUserOptions)
 				{
                     isPaymentProcessed = true;
 					TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
@@ -4622,13 +4634,6 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                     if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
                     {
                         PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                    }
-
-                     //if payment complete is true then check whether transaction has SCD or PWD Discount
-                    if(PaymentComplete)
-                    {
-                         if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
-                            PaymentComplete = false;
                     }
 
 					if (PaymentComplete)
@@ -4778,8 +4783,17 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
 	{
 		if (frmPaymentType->Execute() == mrOk)
 		{
-			if (frmControlTransaction->RetrieveUserOptions() != eBack)
-			{
+            bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+            //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+            if(retrieveUserOptions)
+            {
+                if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                    retrieveUserOptions = false;
+            }
+
+            if (retrieveUserOptions)
+            {
 				TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
 				PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
@@ -4790,13 +4804,6 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
                 if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                }
-
-                 //if payment complete is true then check whether transaction has SCD or PWD Discount
-                if(PaymentComplete)
-                {
-                     if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
-                        PaymentComplete = false;
                 }
 
 				if (PaymentComplete)
@@ -4851,8 +4858,17 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
 	{
 		if (frmPaymentType->Execute() == mrOk)
 		{
-			if (SkipUserOptions || frmControlTransaction->RetrieveUserOptions() != eBack)
-			{
+            bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+            //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+            if(retrieveUserOptions)
+            {
+                if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                    retrieveUserOptions = false;
+            }
+            retrieveUserOptions = SkipUserOptions || retrieveUserOptions;
+            if (retrieveUserOptions)
+            {
 				TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
 				PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
@@ -4863,13 +4879,6 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
                 if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                }
-
-                 //if payment complete is true then check whether transaction has SCD or PWD Discount
-                if(PaymentComplete)
-                {
-                     if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
-                        PaymentComplete = false;
                 }
 
 				if (PaymentComplete)
@@ -4932,8 +4941,18 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 	{
 		if (frmPaymentType->Execute() == mrOk)
 		{
-			if (SkipUserOptions || frmControlTransaction->RetrieveUserOptions() != eBack)
-			{
+            bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+            //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+            if(retrieveUserOptions)
+            {
+                if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                retrieveUserOptions = false;
+            }
+            retrieveUserOptions = SkipUserOptions || retrieveUserOptions;
+
+            if (retrieveUserOptions)
+            {
 				TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
 				PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
@@ -4944,13 +4963,6 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
                 if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                }
-
-                //if payment complete is true then check whether transaction has SCD or PWD Discount
-                if(PaymentComplete)
-                {
-                    if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
-                        PaymentComplete = false;
                 }
 
 				if (PaymentComplete)

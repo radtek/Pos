@@ -93,26 +93,27 @@ class TListPaymentSystem : public TMMPaymentSystem
 	int GetPartialPayment(TPaymentTransaction &PaymentTransaction,double &SplitPercentage,Currency &RequestedTotal);
 
 	// Eftpos Functions.
-	void ProcessRecoveryInfo();
+    void ProcessRecoveryInfo();
     void ProcessRewardSchemes(TPaymentTransaction & PaymentTransaction);
     bool ProcessTipOnVisaTransaction(int arcBillKey, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount);
-	bool AllowsTipsOnTransactions();
-	std::vector<AnsiString> GetTippableCardTypes();
-     int GetPaymentTabName(Database::TDBTransaction &DBTransaction,AnsiString PAYMENT_NAME);
+    bool AllowsTipsOnTransactions();
+    std::vector<AnsiString> GetTippableCardTypes();
+    int GetPaymentTabName(Database::TDBTransaction &DBTransaction,AnsiString PAYMENT_NAME);
     void LoadClippPaymentTypes(TPaymentTransaction &PaymentTransaction);
     bool PrepareThorRequest(TPaymentTransaction &paymentTransaction);
     AnsiString CreateFilename(TDateTime date);
-     UnicodeString CreateTextFile(AnsiString LocalPath,AnsiString value);
-     void SaveIntVariable(vmVariables vmVar, int CompName);
-        void SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName);
-     //void GetDLFMallInfo(TItemComplete &ItemComplete);
-     void GetDLFMallCMDCodeFirst(AnsiString invoiceNumber,AnsiString fileStatus) ;
-     void GetDLFMallCMDCodeSec(TPaymentTransaction &paymentTransaction);
-      void GetDLFMallCMDCodeThird(TItemComplete *ItemComplete,AnsiString catkey,Currency discount);
-       void GetDLFMallCMDCodeSubOrderThird(TItemCompleteSub *ItemComplete,AnsiString catkey,Currency discount);
+    UnicodeString CreateTextFile(AnsiString LocalPath,AnsiString value);
+    void SaveIntVariable(vmVariables vmVar, int CompName);
+    void SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName);
+    //void GetDLFMallInfo(TItemComplete &ItemComplete);
+    void GetDLFMallCMDCodeFirst(AnsiString invoiceNumber,AnsiString fileStatus) ;
+    void GetDLFMallCMDCodeSec(TPaymentTransaction &paymentTransaction);
+    void GetDLFMallCMDCodeThird(TItemComplete *ItemComplete,AnsiString catkey,Currency discount);
+    void GetDLFMallCMDCodeSubOrderThird(TItemCompleteSub *ItemComplete,AnsiString catkey,Currency discount);
 
-     void GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTransaction);
+    void GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTransaction);
     void GetDLFMallCMDCodeFifth(TPaymentTransaction &PaymentTransaction)  ;
+    TModalResult CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
 
 protected:
 
@@ -198,7 +199,6 @@ protected:
      bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
      bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
      void ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction);
-     TModalResult CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
      bool IsSCDOrPWDApplied(TPaymentTransaction &PaymentTransaction);
      void PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey);
      void InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, long arcbillKey, UnicodeString header, UnicodeString value);
