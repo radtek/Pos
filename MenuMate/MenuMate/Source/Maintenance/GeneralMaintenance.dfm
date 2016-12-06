@@ -737,6 +737,32 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             OnClick = cbItemSearchClick
           end
         end
+        object GroupBoxEJournal: TGroupBox
+          Left = 447
+          Top = 652
+          Width = 401
+          Height = 70
+          Caption = 'E Journal'
+          TabOrder = 7
+          object cbExcludeReceipt: TCheckBox
+            Left = 8
+            Top = 21
+            Width = 250
+            Height = 20
+            Caption = 'Do not include Receipt'
+            TabOrder = 1
+            OnClick = cbExcludeReceiptClick
+          end
+          object cbExcludeXReport: TCheckBox
+            Left = 8
+            Top = 40
+            Width = 250
+            Height = 20
+            Caption = 'Do not include X Report'
+            TabOrder = 0
+            OnClick = cbExcludeXReportClick
+          end
+        end
         object gbItemBilling: TGroupBox
           Left = 447
           Top = 270

@@ -4038,6 +4038,16 @@ void __fastcall TfrmGeneralMaintenance::cbMergeSimilarItemClick(TObject *Sender)
 	DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbExcludeReceiptClick(TObject *Sender)
+{
+    int x = 0;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbExcludeXReportClick(TObject *Sender)
+{
+    int x = 0;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 
 
 

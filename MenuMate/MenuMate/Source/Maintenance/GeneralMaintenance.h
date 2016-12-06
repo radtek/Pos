@@ -310,6 +310,7 @@ __published:	// IDE-managed Components
         TCheckBox *cbUseNMIStandardFontSize;
         TCheckBox *cbShowLargeFonts;
         TGroupBox *GroupBox23;
+        TGroupBox *GroupBoxEJournal;
         TCheckBox *cbItemSearch;
         TCheckBox *cbShowDarkBackgroundInPOS;
         TCheckBox *cbOpenCashDrawer;
@@ -540,6 +541,8 @@ __published:	// IDE-managed Components
         void __fastcall cbOpenCashDrawerClick(TObject *Sender);
         void __fastcall cbHideReceiptNumberClick(TObject *Sender);
         void __fastcall cbMergeSimilarItemClick(TObject *Sender);
+        void __fastcall cbExcludeReceiptClick(TObject *Sender);
+        void __fastcall cbExcludeXReportClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP

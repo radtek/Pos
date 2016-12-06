@@ -9206,6 +9206,16 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
                 xReport->DisplayAndPrint();
 				DBTransaction.Commit();
 			}break;
+		case 11: // E-Journal
+			{
+                TTransactionInfoProcessor::Instance().RemoveEntryFromMap(TDeviceRealTerminal::Instance().ID.Name);
+				Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+				DBTransaction.StartTransaction();
+                ReportManager reportManager;
+                XReport* xReport = reportManager.GetXReport(&TGlobalSettings::Instance(), &DBTransaction);
+                xReport->DisplayAndPrint();
+				DBTransaction.Commit();
+			}break;
 		}
 	}
 	catch(Exception & E)
