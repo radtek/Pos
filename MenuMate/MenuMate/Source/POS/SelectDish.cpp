@@ -134,6 +134,7 @@
 #include "ProductSearch.h"
 #include "OrderUtils.h"
 #include "MessageManager.h"
+#include "ManagerEJournal.h"
 using SfIntegration::Sf_svc_iface;
 using SfIntegration::Sf_svc_iface_params;//
 
@@ -9208,13 +9209,8 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
 			}break;
 		case 11: // E-Journal
 			{
-                TTransactionInfoProcessor::Instance().RemoveEntryFromMap(TDeviceRealTerminal::Instance().ID.Name);
-				Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-				DBTransaction.StartTransaction();
-                ReportManager reportManager;
-                XReport* xReport = reportManager.GetXReport(&TGlobalSettings::Instance(), &DBTransaction);
-                xReport->DisplayAndPrint();
-				DBTransaction.Commit();
+                std::auto_ptr<TManagerEJournal> managerEJournal(new TManagerEJournal());
+                managerEJournal->TriggerEJournal();
 			}break;
 		}
 	}

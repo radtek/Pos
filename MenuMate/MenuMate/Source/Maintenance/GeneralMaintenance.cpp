@@ -239,7 +239,9 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 	cbRevenueFiguresAreTaxAndServiceChargeInclusive->Checked = TGlobalSettings::Instance().RevenueFiguresAreTaxAndServiceChargeInclusive;
 	tbMinRedemptionPoint->Caption = IntToStr(TGlobalSettings::Instance().MinRedemptionPoint);
 	cbvmAllowMemberDetailscreen->Checked = TGlobalSettings::Instance().AllowMemberDetailscreen ;
-     cbvmMandatoryMembershipCard->Checked= TGlobalSettings::Instance().MandatoryMembershipCard ;
+    cbvmMandatoryMembershipCard->Checked= TGlobalSettings::Instance().MandatoryMembershipCard ;
+    cbExcludeReceipt->Checked = TGlobalSettings::Instance().ExcludeReceipt;
+    cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
 
 
 	int SerialPortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort);
@@ -4040,12 +4042,20 @@ void __fastcall TfrmGeneralMaintenance::cbMergeSimilarItemClick(TObject *Sender)
 //----------------------------------------------------------------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbExcludeReceiptClick(TObject *Sender)
 {
-    int x = 0;
+    TGlobalSettings::Instance().ExcludeReceipt = cbExcludeReceipt->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmExcludeReceipt, TGlobalSettings::Instance().ExcludeReceipt);
+	DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbExcludeXReportClick(TObject *Sender)
 {
-    int x = 0;
+    TGlobalSettings::Instance().ExcludeXReport = cbExcludeXReport->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmExcludeXReport, TGlobalSettings::Instance().ExcludeXReport);
+	DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 

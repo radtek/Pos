@@ -198,7 +198,9 @@ enum vmVariables
     vmIsXeroEnabled,
     vmIsMYOBEnabled,
     vmConsolidateReportPaths,
-    vmEnableConsolidatedReport
+    vmEnableConsolidatedReport,
+    vmExcludeReceipt,
+    vmExcludeXReport,
 };
 
 // ---------------------------------------------------------------------------

@@ -317,6 +317,8 @@ __published:	// IDE-managed Components
         TCheckBox *cbHideReceiptNumber;
         TGroupBox *gbItemBilling;
         TCheckBox *cbMergeSimilarItem;
+        TCheckBox *cbExcludeReceipt;
+        TCheckBox *cbExcludeXReport;
 
         //**********
         void __fastcall FormShow(TObject *Sender);
