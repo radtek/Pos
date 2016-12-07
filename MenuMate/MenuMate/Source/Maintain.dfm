@@ -651,7 +651,7 @@ object frmMaintain: TfrmMaintain
             Font.Style = []
             ParentFont = False
             ParentColor = True
-            Caption = 'Cash Denomination'
+            Caption = 'Cash Denominations'
             ButtonColor = 6052441
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
