@@ -414,8 +414,12 @@ void TLoyaltyMateInterface::ReadGiftCardInfo(GiftCardInfo* inVoucherInfo,TGiftCa
     GiftCardDetail.StatusCode  = inVoucherInfo->StatusCode;
     GiftCardDetail.PointBalance  = inVoucherInfo->PointBalance;
     if(inVoucherInfo->ExpiryDate != NULL)
-        GiftCardDetail.ExpiryDate  = inVoucherInfo->ExpiryDate->AsUTCDateTime;
+     {
+       GiftCardDetail.ExpiryDate = Dateutils::EncodeDateTime(inVoucherInfo->ExpiryDate->Year,
+       inVoucherInfo->ExpiryDate->Month,inVoucherInfo->ExpiryDate->Day,inVoucherInfo->ExpiryDate->Hour,inVoucherInfo->ExpiryDate->Minute,
+       inVoucherInfo->ExpiryDate->Second,inVoucherInfo->ExpiryDate->Millisecond);
 
+     }
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateInterface::ReadContactInfo(LoyaltyMemberResponse* inWCFResponse,TMMContactInfo& outContactInfo,bool replacePoints )
