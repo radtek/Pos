@@ -2606,7 +2606,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 45
             Width = 250
             Height = 25
-            Caption = 'Cash Denomination Entry'
+            Caption = 'Enable Cash Denomination Entry'
             TabOrder = 27
             OnClick = cbCashDenominationEntryClick
           end
