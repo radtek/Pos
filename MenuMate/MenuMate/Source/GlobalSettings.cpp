@@ -379,5 +379,6 @@ TGlobalSettings::TGlobalSettings()
     EftPosTipGLCode = "";
     ExcludeReceipt = false;
     ExcludeXReport = false;
+    UseBIRFormatInXZReport = false;
 }
 

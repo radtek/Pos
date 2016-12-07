@@ -34,6 +34,12 @@ void TApplyParser::upgrade6_33Tables()
 	update6_33Tables();
 }
 
+// 6.34
+void TApplyParser::upgrade6_34Tables()
+{
+	update6_34Tables();
+}
+
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -284,6 +290,23 @@ void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBCon
 
 }
 
+//::::::::::::::::::::::::Version 6.33::::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_34Tables()
+{
+   UpdateZedTable6_34(_dbControl);
+}
+
+//---------------------------------------------------------------------------
+void TApplyParser::UpdateZedTable6_34( TDBControl* const inDBControl )
+{
+    if ( !fieldExists( "ZEDS", "TRANS_DATE", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ZEDS "
+        "ADD TRANS_DATE TIMESTAMP ",
+        inDBControl);
+    }
+}
 
 }
 

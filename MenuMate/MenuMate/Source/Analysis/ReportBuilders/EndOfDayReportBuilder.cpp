@@ -10,44 +10,7 @@ EndOfDayReportBuilder::~EndOfDayReportBuilder()
 
 void EndOfDayReportBuilder::AddSectionsToReport(IReport* report)
 {
-    
-
-
-
-    AddReportDetailsSection(report);
-    AddCurrentDateDetailsSection(report);
-	AddClientDetailsSection(report);
-	AddSessionDateSection(report);
-    AddMasterBlindBalancesSection(report);
-	AddBlindBalancesSection(report);
-	AddTransactionSummaryGroupSection(report);
-	AddBilledSalesTotalsSection(report);
-	AddComplimentarySalesTotalsSection(report);
-	AddChargeSalesTotalsSection(report);
-	AddTotalsSection(report);
-	AddBreakdownCategoriesSection(report);
-    AddShowRemovalSection(report);
-	AddRefundSection(report);
-    AddCancelsSection(report);
-    AddWriteOffSection(report);
-	AddDiscountReportSection(report);
-    AddPriceAdjustmentSection(report);
-	AddPointsReportSection(report);
-	AddPatronAverageSection(report);
-	AddProductionInfoSection(report);
-	AddAccountPurchasesSection(report);
-	AddAccountBalancesTabsSection(report);
-	AddAccountBalancesSeatedSection(report);
-	AddHourlySalesSection(report);
-	AddAccumulatedTotalSection(report);
-	AddTaxSummarySection(report);
-	AddServiceChargeSummarSection(report);
-	AddStaffHoursSection(report);
-	AddCommissionTipsSection(report);
-	AddMallExportConsolidatedReceipt(report);
-
-
-
+    XAndZReportFormatForBIR(report);
 }
 
 void EndOfDayReportBuilder::AddReportDetailsSection(IReport* report)
@@ -58,6 +21,10 @@ void EndOfDayReportBuilder::AddReportDetailsSection(IReport* report)
 void EndOfDayReportBuilder::AddCurrentDateDetailsSection(IReport* report)
 {
     AddReportSectionToReport(report, mmCurrentDateDetailsSection, true);
+}
+void EndOfDayReportBuilder::AddCurrentBegningAndEndingBalance(IReport* report)
+{
+    AddReportSectionToReport(report, mmShowBegningandEndingBalance, true);
 }
 
 void EndOfDayReportBuilder::AddClientDetailsSection(IReport* report)
@@ -203,5 +170,83 @@ void EndOfDayReportBuilder::AddPriceAdjustmentSection(IReport* report)
 void EndOfDayReportBuilder::AddMallExportConsolidatedReceipt(IReport* report)
 {
     AddReportSectionToReport(report, mmMallExportConsolidatedReceipt, true);
+}
+
+void EndOfDayReportBuilder::AddVoidAndCancelReport(IReport* report)
+{
+    AddReportSectionToReport(report, mmRefundCancelDetailsSections, !GetGlobalSettings()->EnableHideCredsCancels);
+}
+
+void EndOfDayReportBuilder::XAndZReportFormatForBIR(IReport* report)
+{
+   if(GetGlobalSettings()->UseBIRFormatInXZReport)
+   {
+        AddClientDetailsSection(report);
+        AddReportDetailsSection(report);
+        AddCurrentBegningAndEndingBalance(report);
+        AddTaxSummarySection(report);
+        AddDiscountReportSection(report);
+        AddTransactionSummaryGroupSection(report);
+        AddVoidAndCancelReport(report);
+        AddAccumulatedTotalSection(report);
+/////////////////// Normal Zed Files.../////////////////
+        AddMasterBlindBalancesSection(report);
+        AddBlindBalancesSection(report);
+        AddBilledSalesTotalsSection(report);
+        AddComplimentarySalesTotalsSection(report);
+        AddChargeSalesTotalsSection(report);
+        AddTotalsSection(report);
+        AddBreakdownCategoriesSection(report);
+        AddShowRemovalSection(report);
+        AddWriteOffSection(report);
+        AddPriceAdjustmentSection(report);
+
+        AddPointsReportSection(report);
+        AddPatronAverageSection(report);
+        AddProductionInfoSection(report);
+        AddAccountPurchasesSection(report);
+        AddAccountBalancesTabsSection(report);
+        AddAccountBalancesSeatedSection(report);
+        AddHourlySalesSection(report);
+        AddServiceChargeSummarSection(report);
+        AddStaffHoursSection(report);
+        AddCommissionTipsSection(report);
+        AddMallExportConsolidatedReceipt(report);
+   }
+   else
+   {
+        AddReportDetailsSection(report);
+        AddCurrentDateDetailsSection(report);
+        AddClientDetailsSection(report);
+        AddSessionDateSection(report);
+        AddCurrentBegningAndEndingBalance(report);
+        AddMasterBlindBalancesSection(report);
+        AddBlindBalancesSection(report);
+        AddTransactionSummaryGroupSection(report);
+        AddBilledSalesTotalsSection(report);
+        AddComplimentarySalesTotalsSection(report);
+        AddChargeSalesTotalsSection(report);
+        AddTotalsSection(report);
+        AddBreakdownCategoriesSection(report);
+        AddShowRemovalSection(report);
+        AddRefundSection(report);
+        AddCancelsSection(report);
+        AddWriteOffSection(report);
+        AddDiscountReportSection(report);
+        AddPriceAdjustmentSection(report);
+        AddPointsReportSection(report);
+        AddPatronAverageSection(report);
+        AddProductionInfoSection(report);
+        AddAccountPurchasesSection(report);
+        AddAccountBalancesTabsSection(report);
+        AddAccountBalancesSeatedSection(report);
+        AddHourlySalesSection(report);
+        AddTaxSummarySection(report); // put tax summary above site accumulated zed
+        AddAccumulatedTotalSection(report);
+        AddServiceChargeSummarSection(report);
+        AddStaffHoursSection(report);
+        AddCommissionTipsSection(report);
+        AddMallExportConsolidatedReceipt(report);
+   }
 }
 

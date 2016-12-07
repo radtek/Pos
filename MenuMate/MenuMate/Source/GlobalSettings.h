@@ -467,6 +467,7 @@ public:
     UnicodeString EftPosTipGLCode;
     bool ExcludeReceipt;
     bool ExcludeXReport;
+    bool UseBIRFormatInXZReport;
 };
 
 #endif

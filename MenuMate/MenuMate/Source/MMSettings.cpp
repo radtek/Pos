@@ -368,6 +368,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EftPosTipGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTipGLCode, "860");
         TGlobalSettings::Instance().ExcludeReceipt	= TManagerVariable::Instance().GetBool(DBTransaction, vmExcludeReceipt, false);
         TGlobalSettings::Instance().ExcludeXReport	= TManagerVariable::Instance().GetBool(DBTransaction, vmExcludeXReport, false);
+        TGlobalSettings::Instance().EftPosTipGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTipGLCode, "860");
+        TGlobalSettings::Instance().UseBIRFormatInXZReport = TManagerVariable::Instance().GetBool(DBTransaction, vmUseBIRFormatInXZReport, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

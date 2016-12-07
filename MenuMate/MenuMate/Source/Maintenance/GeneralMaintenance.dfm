@@ -223,7 +223,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsStaffOptions
+    ActivePage = tsEndOfDayOptions
     TabOrder = 1
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'
@@ -726,7 +726,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Width = 401
           Height = 49
           Caption = 'Item Search'
-          TabOrder = 7
+          TabOrder = 8
           object cbItemSearch: TCheckBox
             Left = 8
             Top = 21
@@ -2644,7 +2644,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 400
           Top = 49
           Width = 475
-          Height = 700
+          Height = 730
           Caption = 'Zed Print'
           ParentBackground = False
           TabOrder = 15
@@ -2888,8 +2888,18 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Width = 329
             Height = 20
             Caption = 'Show Price Adjustment on Zed'
-            TabOrder = 26
+            TabOrder = 27
             OnClick = cbShowPriceAdjustmentClick
+          end
+          object cbUseBIRFormatInXZReport: TCheckBox
+            Left = 8
+            Top = 695
+            Width = 329
+            Height = 20
+            Caption = 'Use BIR Format in X and Z Report'
+            TabOrder = 26
+            OnClick = cbUseBIRFormatInXZReportClick
+            OnMouseUp = cbUseBIRFormatInXZReportMouseUp
           end
         end
         object cbEnablePrinterCounts: TCheckBox
