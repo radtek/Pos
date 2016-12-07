@@ -333,6 +333,7 @@ private:
     void PrintVoidOnReceipt(TReqPrintJob *PrintJob);
     void ShowRefundReference(TReqPrintJob *PrintJob);
     void PrintBIRSalesTax(TReqPrintJob* PrintJob);
+    bool IsDiplomatDiscountApplied( BillCalculator::DISCOUNT_RESULT_LIST inDiscount );
 };
 
 // ------------------------------------------------------------------------------

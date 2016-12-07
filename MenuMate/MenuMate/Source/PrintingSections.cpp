@@ -4204,6 +4204,7 @@ void TPrintSection::PrintSalesTaxExempt(TReqPrintJob* PrintJob)
 	UnicodeString ItemName = ThisInstruction->Caption;
 
 	Currency SubTotal = 0;
+    bool isDiplomatDiscountApplied = false;
 
 	for (int i = 0; i < WorkingOrdersList->Count; i++)
 	{
@@ -4213,9 +4214,10 @@ void TPrintSection::PrintSalesTaxExempt(TReqPrintJob* PrintJob)
 		profitTax = getProfitTax(CurrentOrder);
 		serviceCharge = getServiceCharge(CurrentOrder);
 		serviceChargeTax = getServiceChargeTax(CurrentOrder);
+        isDiplomatDiscountApplied = IsDiplomatDiscountApplied(CurrentOrder->BillCalcResult.Discount);
 
 
-        if(CurrentOrder->BillCalcResult.PriceTaxExempt && productTax == 0)
+        if(CurrentOrder->BillCalcResult.PriceTaxExempt && productTax == 0 && !isDiplomatDiscountApplied)
         {
             SubTotal += CurrentOrder->BillCalcResult.FinalPrice - serviceCharge - serviceChargeTax - localTax - profitTax;
         }
@@ -4228,8 +4230,9 @@ void TPrintSection::PrintSalesTaxExempt(TReqPrintJob* PrintJob)
 			serviceChargeTaxSides = getServiceChargeTax((TItemMinorComplete*)SubOrderImage);
 			localTaxSides = getLocalTax((TItemMinorComplete*)SubOrderImage);
             profitTaxSides = getProfitTax((TItemMinorComplete*)SubOrderImage);
+            isDiplomatDiscountApplied = IsDiplomatDiscountApplied(SubOrderImage->BillCalcResult.Discount);
 
-            if(SubOrderImage->BillCalcResult.PriceTaxExempt && productTaxSides == 0)
+            if(SubOrderImage->BillCalcResult.PriceTaxExempt && productTaxSides == 0 && !isDiplomatDiscountApplied)
             {
                 SubTotal +=  SubOrderImage->BillCalcResult.FinalPrice - serviceChargeSides - serviceChargeTaxSides - localTaxSides - profitTaxSides;
             }
@@ -4627,6 +4630,7 @@ void TPrintSection::PrintZeroRated(TReqPrintJob* PrintJob)
 	UnicodeString ItemName = ThisInstruction->Caption;
 
 	Currency SubTotal = 0;
+    bool isDiplomatDiscountApplied = false;
 
 	for (int i = 0; i < WorkingOrdersList->Count; i++)
 	{
@@ -4637,7 +4641,9 @@ void TPrintSection::PrintZeroRated(TReqPrintJob* PrintJob)
 		serviceCharge = getServiceCharge(CurrentOrder);
 		serviceChargeTax = getServiceChargeTax(CurrentOrder);
 
-		if(!CurrentOrder->BillCalcResult.PriceTaxExempt && productTax == 0)
+        isDiplomatDiscountApplied = IsDiplomatDiscountApplied(CurrentOrder->BillCalcResult.Discount);
+
+		if((!CurrentOrder->BillCalcResult.PriceTaxExempt || isDiplomatDiscountApplied) && productTax == 0)
 		{
 			SubTotal += CurrentOrder->BillCalcResult.FinalPrice - serviceCharge - serviceChargeTax - localTax - profitTax;
 		}
@@ -4651,7 +4657,9 @@ void TPrintSection::PrintZeroRated(TReqPrintJob* PrintJob)
 			localTaxSides = getLocalTax((TItemMinorComplete*)SubOrderImage);
             profitTaxSides = getProfitTax((TItemMinorComplete*)SubOrderImage);
 
-			if(!SubOrderImage->BillCalcResult.PriceTaxExempt && productTaxSides == 0)
+            isDiplomatDiscountApplied = IsDiplomatDiscountApplied(CurrentOrder->BillCalcResult.Discount);
+
+			if((!SubOrderImage->BillCalcResult.PriceTaxExempt || isDiplomatDiscountApplied) && productTaxSides == 0)
 			{
 				SubTotal +=  SubOrderImage->BillCalcResult.FinalPrice - serviceChargeSides - serviceChargeTaxSides - localTaxSides - profitTaxSides;
 			}
@@ -8875,4 +8883,20 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
 		pPrinter->Line->Columns[1]->Text = (PrintJob->Transaction->TypeOfSale == NonChargableSale) ? UnicodeString::UnicodeString() : ItemPrice;
 		pPrinter->AddLine();
 	}
+}
+//------------------------------------------------------------------------------
+bool TPrintSection::IsDiplomatDiscountApplied( BillCalculator::DISCOUNT_RESULT_LIST inDiscount )
+{
+    bool isDiplomatApplied = false;
+	BillCalculator::DISCOUNT_RESULT_LIST::iterator drIT = inDiscount.begin();
+
+	for( ; drIT != inDiscount.end(); drIT++ )
+	{
+        if(drIT->Name.UpperCase() == "DIPLOMAT" && drIT->Value == 0)
+        {
+           isDiplomatApplied =  true;
+           break;
+        }
+	}
+	return isDiplomatApplied;
 }
