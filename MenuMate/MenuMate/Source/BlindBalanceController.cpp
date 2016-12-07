@@ -9,6 +9,7 @@
 #include "DeviceRealTerminal.h"
 #include "ListPaymentSystem.h"
 #include "CashDenominationController.h"
+#include "GlobalSettings.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -56,8 +57,6 @@ TBlindBalanceController::TBlindBalanceController(TForm *inDisplayOwner, Database
 	DisplayOwner = inDisplayOwner;
 }
 
-
-
 bool TBlindBalanceController::Run()
 {
 	frmListManager->btnClose->Caption = "Save";
@@ -70,7 +69,6 @@ bool TBlindBalanceController::Run()
 	frmListManager->Delete.RegisterForEvent(OnDelete);
 	frmListManager->tbtnEdit->Hide();
 	frmListManager->tbtnDelete->Caption = "Cancel";
-    BlindBalances.CashDenominationEntered = false;
 	PopulateListManager();
 	frmListManager->SetCaption("Blind Balance Values");
 	if(frmListManager->ShowModal() == mrCancel)
@@ -184,14 +182,10 @@ void TBlindBalanceController::PopulateListManager()
 			if(BlindBalances.find(ptr->Name) == BlindBalances.end())
 			{
                 Currency amount = 0;
-                if(ptr->Name.UpperCase() == "CASH")
+                if(TGlobalSettings::Instance().CashDenominationEntry && ptr->Name.UpperCase() == "CASH")
                 {
                   TCashDenominations cashDenominations = TCashDenominationControllerInterface::Instance()->GetCashDenominations();
-                  if(cashDenominations.GetTotal() > 0)
-                  {
-                      amount += cashDenominations.GetTotal();
-                      BlindBalances.CashDenominationEntered = true;
-                  }
+                  amount = cashDenominations.GetTotal();
                 }
                 BlindBalances.UpdateBlindBalance(ptr->Name, amount);
 			}
@@ -365,7 +359,7 @@ bool TBlindBalances::IndexValid(int Index)
         {
             itBlindBalances1 = BlindBalances.find(*itSortedBlindBalances);
             AnsiString paymentName = itBlindBalances1->first ;
-            if(CashDenominationEntered && paymentName.UpperCase() == "CASH")
+            if(TGlobalSettings::Instance().CashDenominationEntry && paymentName.UpperCase() == "CASH")
               return false;
         }
         return true;

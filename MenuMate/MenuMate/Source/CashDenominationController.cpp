@@ -86,7 +86,6 @@ bool TCashDenominationController::Run()
 void TCashDenominationController::OnClose(int Index, int ColIndex)
 {
 	UnicodeString Total = FormatFloat("0.00", CashDenominations.GetTotal());
-
 	if(CashDenominations.GetTotal() == 0.0)
 	{
 		if(MessageBox("The total counted is " + Total + ", are you sure you wish to continue?", "Warning", MB_OKCANCEL + MB_ICONQUESTION) == IDCANCEL)
@@ -97,20 +96,7 @@ void TCashDenominationController::OnClose(int Index, int ColIndex)
 		if(MessageBox("The total counted is " + Total + ", would you like to continue?", "Warning", MB_OKCANCEL + MB_ICONQUESTION) == IDCANCEL)
 			return;
 	}
-    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (DisplayOwner));
-    frmTouchKeyboard->Caption = "Enter the deposit bag ID";
     MasterCashDenominations = CashDenominations;
-    /*if(TGlobalSettings::Instance().EnableDepositBagNum && !TGlobalSettings::Instance().EnableDontClearZedData)
-    {
-        LoadBlindBalances();
-        if(frmTouchKeyboard->ShowModal() == mrOk )
-        {
-            BlindBalances.BagID = frmTouchKeyboard->KeyboardText;
-            UpdateBlindBalances(frmTouchKeyboard->KeyboardText);
-        }
-        else
-            return;
-    }*/
     frmListManager->ModalResult = mrOk;
 }
 
