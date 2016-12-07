@@ -43,7 +43,7 @@ class TCashDenominationController
 		static TCashDenominations MasterCashDenominations;
 		TCashDenominationController(TForm *inDisplayOwner,Database::TDBTransaction &inDBTransaction);
 		TCashDenominationController(TForm *inDisplayOwner,Database::TDBTransaction &inDBTransaction, AnsiString DeviceName);
-        void PopulateDenominationValues(Database::TDBTransaction &DBTransaction);
+        bool PopulateDenominationValues(Database::TDBTransaction &DBTransaction);
 		bool Run();
 		AnsiString GetBagID(void);
 		TCashDenominations Get();

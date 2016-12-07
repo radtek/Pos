@@ -65,8 +65,11 @@ bool TCashDenominationController::Run()
     frmListManager->Delete.RegisterForEvent(OnDelete);
 	frmListManager->tbtnEdit->Hide();
 	frmListManager->tbtnDelete->Caption = "Cancel";
-    PopulateDenominationValues(DBTransaction);
-	PopulateListManager();
+	if(!PopulateDenominationValues(DBTransaction))
+    {
+      return false;
+    }
+    PopulateListManager();
 	frmListManager->SetCaption("Cash Denominations Values");
 	frmListManager->pnlLabel->Visible = false;
     frmListManager->sgDisplay->Height = 434 + 34;
@@ -198,19 +201,28 @@ AnsiString TCashDenominationController::GetBagID(void)
 	return CashDenominations.BagID;
 }
 
-void TCashDenominationController::PopulateDenominationValues(Database::TDBTransaction &DBTransaction)
+bool TCashDenominationController::PopulateDenominationValues(Database::TDBTransaction &DBTransaction)
 {
     std::vector<TDenomination> denominations;
     TDBDenominations::LoadDenominations(DBTransaction,denominations);
-    for(std::vector<TDenomination>::iterator it = denominations.begin(); it != denominations.end(); ++it)
+    if(denominations.size() > 0)
     {
-       TDenomination cashDenomination;
-       cashDenomination.Key = it->Key;
-       cashDenomination.Title = it->Title;
-       cashDenomination.DenominationValue = it->DenominationValue;
-       cashDenomination.Quantity = 0;
-       cashDenomination.Total = 0;
-       CashDenominations.SetCashDenomination(cashDenomination);
+        for(std::vector<TDenomination>::iterator it = denominations.begin(); it != denominations.end(); ++it)
+        {
+           TDenomination cashDenomination;
+           cashDenomination.Key = it->Key;
+           cashDenomination.Title = it->Title;
+           cashDenomination.DenominationValue = it->DenominationValue;
+           cashDenomination.Quantity = 0;
+           cashDenomination.Total = 0;
+           CashDenominations.SetCashDenomination(cashDenomination);
+        }
+        return true;
+    }
+    else
+    {
+        MessageBox("You have not set denominations. Please set up denominations to run Z-Report.", "Warning", MB_ICONWARNING + MB_OK);
+        return false;
     }
 }
 

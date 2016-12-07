@@ -10,10 +10,6 @@ EndOfDayReportBuilder::~EndOfDayReportBuilder()
 
 void EndOfDayReportBuilder::AddSectionsToReport(IReport* report)
 {
-    
-
-
-
     AddReportDetailsSection(report);
     AddCurrentDateDetailsSection(report);
 	AddClientDetailsSection(report);
