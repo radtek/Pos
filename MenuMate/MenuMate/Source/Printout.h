@@ -21,8 +21,7 @@ public:
 
 	TPrintFormat 		*PrintFormat;		// Contains the formated printout ready for printing.
 	bool PrintedSuccessfully;
-    bool BlindBalanceUsed;
-    bool CashDenominationUsed;
+    bool ContinuePrinting;
 	__property TPrinterPhysical Printer  = { read=FPrinter, write=SetPrinter };
 
 	bool OpenDrawer();

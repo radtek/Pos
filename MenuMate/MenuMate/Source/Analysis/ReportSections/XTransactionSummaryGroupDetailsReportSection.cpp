@@ -21,8 +21,6 @@ XTransactionSummaryGroupDetailsReportSection::~XTransactionSummaryGroupDetailsRe
 
 void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    if(!printOut->BlindBalanceUsed)
-       return;
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
 
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;

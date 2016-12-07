@@ -12,8 +12,6 @@ ZReportDetailsReportSection::~ZReportDetailsReportSection()
 
 void ZReportDetailsReportSection::GetOutput(TPrintout* printout)
 {
-    if(!printout->BlindBalanceUsed)
-        return;
     printout->PrintFormat->NewLine();
     printout->PrintFormat->Line->Columns[0]->Text = "Summary Report";
     printout->PrintFormat->AddLine();

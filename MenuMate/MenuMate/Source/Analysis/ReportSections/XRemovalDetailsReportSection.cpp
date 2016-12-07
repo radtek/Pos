@@ -20,8 +20,6 @@ XRemovalDetailsReportSection::~XRemovalDetailsReportSection()
 
 void XRemovalDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    if(!printOut->BlindBalanceUsed)
-        return;
     TStringList *_removalsServerList = new TStringList;
     DataCalculationUtilities dataCalcUtils;
 

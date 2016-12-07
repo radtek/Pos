@@ -19,14 +19,14 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
     TForm* currentForm = Screen->ActiveForm;
     TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction, deviceName);
 
-    if(printOut->CashDenominationUsed && blindBalanceController.Run())
+    if(blindBalanceController.Run())
     {
        _dbTransaction->Commit();
        _dbTransaction->StartTransaction();
     }
     else
     {
-        printOut->BlindBalanceUsed = false;
+        printOut->ContinuePrinting = false;
         return;
     }
 

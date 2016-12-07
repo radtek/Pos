@@ -14,8 +14,7 @@ TPrintout::TPrintout()
    PrintFormat = new TPrintFormat;
    PrintedSuccessfully = false;
    Status = poPending;
-   BlindBalanceUsed = true;
-   CashDenominationUsed = true;
+   ContinuePrinting = true;
 }
 
 __fastcall TPrintout::~TPrintout()

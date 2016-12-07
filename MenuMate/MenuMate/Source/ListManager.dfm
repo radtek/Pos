@@ -6,7 +6,7 @@ object frmListManager: TfrmListManager
   BorderStyle = bsSingle
   BorderWidth = 5
   ClientHeight = 488
-  ClientWidth = 488
+  ClientWidth = 534
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,35 +23,38 @@ object frmListManager: TfrmListManager
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 488
+    Width = 534
     Height = 488
     Align = alClient
     Color = clWhite
     ParentBackground = False
     TabOrder = 0
+    ExplicitWidth = 488
     object Panel2: TPanel
       Left = 1
       Top = 1
-      Width = 486
+      Width = 532
       Height = 486
       Align = alClient
       Color = clGradientInactiveCaption
       ParentBackground = False
       TabOrder = 0
+      ExplicitWidth = 486
       object Panel3: TPanel
         Left = 1
         Top = 1
-        Width = 484
+        Width = 530
         Height = 484
         Align = alClient
         Caption = 'Panel3'
         Color = clDefault
         ParentBackground = False
         TabOrder = 0
+        ExplicitWidth = 484
         object pnlMajor: TPanel
           Left = 1
           Top = 1
-          Width = 338
+          Width = 382
           Height = 482
           Align = alLeft
           BorderWidth = 6
@@ -61,7 +64,7 @@ object frmListManager: TfrmListManager
           object pnlLabel: TPanel
             Left = 7
             Top = 7
-            Width = 324
+            Width = 368
             Height = 34
             Align = alTop
             BevelOuter = bvLowered
@@ -74,11 +77,12 @@ object frmListManager: TfrmListManager
             ParentBackground = False
             ParentFont = False
             TabOrder = 0
+            ExplicitWidth = 324
           end
           object sgDisplay: TStringGrid
             Left = 7
             Top = 41
-            Width = 324
+            Width = 368
             Height = 434
             Align = alClient
             ColCount = 2
@@ -97,13 +101,14 @@ object frmListManager: TfrmListManager
             TabOrder = 1
             OnDrawCell = sgDisplayDrawCell
             OnSelectCell = sgDisplaySelectCell
+            ExplicitWidth = 382
             ColWidths = (
               151
               150)
           end
         end
         object pnlMinor: TPanel
-          Left = 344
+          Left = 390
           Top = 1
           Width = 139
           Height = 482
@@ -113,6 +118,7 @@ object frmListManager: TfrmListManager
           Color = 14342874
           ParentBackground = False
           TabOrder = 1
+          ExplicitLeft = 344
           object btnClose: TTouchBtn
             Left = 7
             Top = 8

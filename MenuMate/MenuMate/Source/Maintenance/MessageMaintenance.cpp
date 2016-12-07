@@ -404,7 +404,7 @@ Currency TfrmMessageMaintenance::LoadDenominations(Database::TDBTransaction &DBT
     {
          int Index = sgDisplay->Cols[0]->Add(it->Title);
          sgDisplay->Cols[0]->Objects[Index] = (TObject *)it->Key;
-         Index = sgDisplay->Cols[1]->Add(it->DenominationValue);
+         Index = sgDisplay->Cols[1]->Add(FormatFloat("0.00",it->DenominationValue));
          sgDisplay->Cols[1]->Objects[Index] = (TObject *)it->Key;
     }
 }

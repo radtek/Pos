@@ -22,8 +22,6 @@ XTaxSummaryDetailsReportSection::~XTaxSummaryDetailsReportSection()
 
 void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    if(!printOut->BlindBalanceUsed)
-        return;
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     const Currency todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
 

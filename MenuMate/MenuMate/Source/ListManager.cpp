@@ -117,18 +117,18 @@ __fastcall TfrmListManager::TfrmListManager(TComponent* Owner)
 
 void __fastcall TfrmListManager::FormResize(TObject *Sender)
 {
-	if (Tag != Screen->Width)
-	{
-		int Temp = Tag;
-		Tag = Screen->Width;
-                if(double(Screen->Width) / Screen->Height < 1.4)
-                {
-			ScaleBy(Screen->Width, Temp);
-                }
-	}
-	Left				= (Screen->Width - Width) / 2;
-   Top				= (Screen->Height - Height) / 2;
-   pnlMajor->Width = pnlMinor->Left - this->BorderWidth;   
+    if (Tag != Screen->Width)
+    {
+        int Temp = Tag;
+        Tag = Screen->Width;
+        if(double(Screen->Width) / Screen->Height < 1.4)
+        {
+           ScaleBy(Screen->Width, Temp);
+        }
+    }
+    Left = (Screen->Width - Width) / 2;
+    Top	 = (Screen->Height - Height) / 2;
+    pnlMajor->Width = pnlMinor->Left - this->BorderWidth;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmListManager::WMDisplayChange(TWMDisplayChange& Message)

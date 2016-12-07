@@ -142,7 +142,7 @@ void TCashDenominationController::PopulateListManager()
 {
 	try
 	{
-        int width = (int)(frmListManager->pnlMajor->Width /3);
+        int width = (int)(frmListManager->sgDisplay->ClientWidth /3);
         frmListManager->sgDisplay->ColCount = 3;
         frmListManager->sgDisplay->Cols[0]->Clear();
         frmListManager->sgDisplay->Cols[1]->Clear();

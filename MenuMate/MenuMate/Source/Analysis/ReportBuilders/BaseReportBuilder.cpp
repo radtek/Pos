@@ -51,6 +51,7 @@ int BaseReportBuilder::AddReportSectionToReport(IReport* report, ReportSectionTy
     }
     return -1;
 }
+
 bool BaseReportBuilder::ValidateReportSection(ReportSectionType reportSectionType)
 {
     bool retValue = true;

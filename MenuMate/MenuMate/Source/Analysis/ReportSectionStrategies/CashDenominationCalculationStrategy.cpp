@@ -17,15 +17,14 @@ void CashDenominationCalculationStrategy::BuildSection(TPrintout* printOut)
 
     TForm* currentForm = Screen->ActiveForm;
     TCashDenominationController CashDenominationController(currentForm, *_dbTransaction, deviceName);
-    if(printOut->CashDenominationUsed && CashDenominationController.Run())
+    if(CashDenominationController.Run())
     {
        _dbTransaction->Commit();
        _dbTransaction->StartTransaction();
     }
     else
     {
-        printOut->CashDenominationUsed = false;
-        printOut->BlindBalanceUsed = false;
+        printOut->ContinuePrinting = false;
         return;
     }
 

@@ -22,7 +22,7 @@ int ZedReport::DisplayAndPrint(TMemoryStream* memoryStream)
     printOut->PrintFormat->PartialCut();
 
     TForm* currentForm = Screen->ActiveForm;
-    if(printOut->BlindBalanceUsed)
+    if(printOut->ContinuePrinting)
     {
         std::auto_ptr <TfrmShowPrintout> (frmShowPrintout)(TfrmShowPrintout::Create <TfrmShowPrintout> (currentForm));
 
