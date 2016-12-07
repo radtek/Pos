@@ -77,17 +77,27 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[1]->Text = "Z-Counter";
         printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(value);
         printOut->PrintFormat->AddLine();
-        SetPrinterFormatForSingleColumn(printOut);
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->AddLine();
+
         dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
-        printOut->PrintFormat->Line->Columns[1]->Text = "";
-        printOut->PrintFormat->Line->Columns[2]->Text = "";
-        printOut->PrintFormat->Line->Columns[3]->Text = "";
-        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->ColCount = 5;
+        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
+        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/5;
+        printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+        printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/5;
+        printOut->PrintFormat->Line->Columns[2]->Alignment = taCenter;
+        printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/5;
+        printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
+        printOut->PrintFormat->Line->Columns[4]->Width = printOut->PrintFormat->Width * 1/5 + 4;
+
+        printOut->PrintFormat->Line->Columns[0]->Alignment = taRightJustify;
+        //printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/3.5;
+        printOut->PrintFormat->Line->Columns[0]->Text = "__";
         printOut->PrintFormat->Line->Columns[1]->Line();
         printOut->PrintFormat->Line->Columns[2]->Line();
         printOut->PrintFormat->Line->Columns[3]->Line();
+        printOut->PrintFormat->Line->Columns[4]->Line();
+        //printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/3.5;
+        //printOut->PrintFormat->Line->Columns[3]->Text = "_________";
         printOut->PrintFormat->AddLine();
     }
     else
