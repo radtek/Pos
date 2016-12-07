@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "ManagerEJournal.h"
+#include "ShowEJournal.h"
 
 //---------------------------------------------------------------------------
 
@@ -20,6 +21,9 @@ TManagerEJournal::~TManagerEJournal()
 
 void TManagerEJournal::TriggerEJournal()
 {
-
+    TForm* currentForm = Screen->ActiveForm;
+    std::auto_ptr <TfrmEJournal> (frmEJournal)(TfrmEJournal::Create <TfrmEJournal> (currentForm));
+    frmEJournal->Execute();
 }
 //---------------------------------------------------------------------------
+
