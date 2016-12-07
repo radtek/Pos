@@ -44,7 +44,6 @@
 #include "MallExportHourlyUpdate.h"
 #include "MallExportTransactionUpdate.h"
 #include "MallExportOtherDetailsUpdate.h"
-
 #include "MYOBInvoiceBuilder.h"
 #include "DeviceRealTerminal.h"
 #include "DBTables.h"
@@ -53,11 +52,10 @@
 #include "ManagerDiscount.h"
 #include "ManagerPatron.h"
 #include "DBGroups.h"
-
 #include "MagicMemoriesSfService.h"
 #include "MagicMemoriesSfProgressMonitor.h"
 #include "SalesForceCommAtZed.h"
-
+#include "CashDenominationController.h"
 #include <string>
 #include <map>
 #include <cassert>
@@ -3051,6 +3049,7 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
+    TCashDenominationControllerInterface::Instance()->GetCashDenominations().ResetTotal();
     // call to new class to get orders of DC and bill them off by storing
     if(TGlobalSettings::Instance().DrinkCommandServerPort != 0 && TGlobalSettings::Instance().DrinkCommandServerPath.Length() != 0
       && TGlobalSettings::Instance().IsDrinkCommandEnabled)
@@ -3086,8 +3085,7 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 		PrinterExists = false;
 	}
 
-	Database::TDBTransaction DBTransaction(
-	TDeviceRealTerminal::Instance().DBControl);
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
 
 	if (!PrinterExists)
