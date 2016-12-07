@@ -215,7 +215,7 @@ object frmEJournal: TfrmEJournal
         Date = 42711.940321759260000000
         Time = 42711.940321759260000000
         TabOrder = 1
-        OnCloseUp = FromDateOnCloseUp
+        OnCloseUp = FromDateTimePickerCloseUp
       end
       object ToDateTimePicker: TDateTimePicker
         Left = 3
@@ -225,6 +225,7 @@ object frmEJournal: TfrmEJournal
         Date = 42711.940554849540000000
         Time = 42711.940554849540000000
         TabOrder = 2
+        OnCloseUp = ToDateTimePickerCloseUp
       end
     end
   end

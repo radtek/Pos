@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "ShowEJournal.h"
+#include "EJournalEngine.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -25,43 +26,66 @@ void __fastcall TfrmEJournal::btnCancelMouseClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
 {
-    int i = 0;
+   if(FromDateTimePicker->Date <= ToDateTimePicker->Date)
+   {
+      std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
+      EJournalEngine->CategorizeEJournal(FromDateTimePicker->Date,ToDateTimePicker->Date);
+   }
+   else
+   {
+      MessageBox("From Date can not be more than To Date", "Error", MB_OK + MB_ICONERROR);
+   }
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmEJournal::btnSavePDFMouseClick(TObject *Sender)
 {
-    int i = 0;
+   ExitCode = 0;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmEJournal::btnPrintMouseClick(TObject *Sender)
 {
-    int i = 0;
+   ExitCode = 0;
+   Close();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmEJournal::btnReportDownAutoRepeat(TObject *Sender)
 {
-    int i = 0;
+   ExitCode = 0;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmEJournal::btnReportUpAutoRepeat(TObject *Sender)
 {
-    int i = 0;
+   ExitCode = 0;
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::Execute()
 {
-	  ShowModal();
+    if(TGlobalSettings::Instance().ExcludeReceipt && TGlobalSettings::Instance().ExcludeXReport)
+        btnClosePrint->Visible = false;
+	ShowModal();
 }
-// ---------------------------------------------------------------------------
-
-
-void __fastcall TfrmEJournal::FromDateOnCloseUp(TObject *Sender)
+//---------------------------------------------------------------------------
+void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
 {
     if(FromDateTimePicker->Date > Now())
-        MessageBox("Invalid date", "Error", MB_OK + MB_ICONERROR);
+    {
+       MessageBox("From Date can not be more than today's date", "Error", MB_OK + MB_ICONERROR);
+       FromDateTimePicker->Date = Now();
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmEJournal::ToDateTimePickerCloseUp(TObject *Sender)
+{
+    if(ToDateTimePicker->Date > Now())
+    {
+       MessageBox("To Date can not be more than today's date", "Error", MB_OK + MB_ICONERROR);
+       ToDateTimePicker->Date = Now();
+    }
 }
 //---------------------------------------------------------------------------
 

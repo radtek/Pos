@@ -43,7 +43,8 @@ __published:	// IDE-managed Components
     void __fastcall btnPrintMouseClick(TObject *Sender);
     void __fastcall btnReportDownAutoRepeat(TObject *Sender);
     void __fastcall btnReportUpAutoRepeat(TObject *Sender);
-    void __fastcall FromDateOnCloseUp(TObject *Sender);
+    void __fastcall FromDateTimePickerCloseUp(TObject *Sender);
+    void __fastcall ToDateTimePickerCloseUp(TObject *Sender);
 private:	// User declarations
 	int ExitCode;
 public:		// User declarations
