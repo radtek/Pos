@@ -6,7 +6,7 @@ object frmMessageMaintenance: TfrmMessageMaintenance
   BorderStyle = bsDialog
   Caption = 'Messages'
   ClientHeight = 526
-  ClientWidth = 694
+  ClientWidth = 699
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,31 +17,40 @@ object frmMessageMaintenance: TfrmMessageMaintenance
   Position = poScreenCenter
   OnResize = FormResize
   OnShow = FormShow
+  DesignSize = (
+    699
+    526)
   PixelsPerInch = 96
   TextHeight = 19
   object Panel1: TPanel
     Left = 8
     Top = 8
-    Width = 793
+    Width = 685
     Height = 513
+    Anchors = []
     BevelInner = bvRaised
     BevelOuter = bvNone
     Color = 14342874
     ParentBackground = False
     TabOrder = 0
+    DesignSize = (
+      685
+      513)
     object Panel9: TPanel
-      Left = 8
+      Left = 6
       Top = 8
-      Width = 522
+      Width = 520
       Height = 497
+      Anchors = []
       BorderWidth = 6
       Color = 14342874
       ParentBackground = False
       TabOrder = 0
+      ExplicitLeft = 4
       object pnlLabel: TPanel
         Left = 7
         Top = 7
-        Width = 508
+        Width = 506
         Height = 34
         Align = alTop
         BevelOuter = bvLowered
@@ -55,11 +64,12 @@ object frmMessageMaintenance: TfrmMessageMaintenance
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
+        ExplicitWidth = 508
       end
       object sgDisplay: TStringGrid
         Left = 7
         Top = 48
-        Width = 508
+        Width = 506
         Height = 442
         Align = alBottom
         ColCount = 2
@@ -68,21 +78,24 @@ object frmMessageMaintenance: TfrmMessageMaintenance
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
         ScrollBars = ssVertical
         TabOrder = 1
+        ExplicitWidth = 508
         ColWidths = (
           169
           320)
       end
     end
     object Panel10: TPanel
-      Left = 536
+      Left = 534
       Top = 8
       Width = 146
       Height = 497
+      Anchors = []
       BevelInner = bvRaised
       BevelOuter = bvNone
       Color = 14342874
       ParentBackground = False
       TabOrder = 1
+      ExplicitLeft = 530
       object btnAdd: TTouchBtn
         Left = 8
         Top = 80

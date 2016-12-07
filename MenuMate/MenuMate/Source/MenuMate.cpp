@@ -12,7 +12,7 @@
 #include "Comms.h"
 #include "Pause.h"
 #include "GetMoney.h"
-
+USEFORM("..\..\..\Shared-Source\Touch Utils\MMTouchNumpad.cpp", frmTouchNumpad);
 USEFORM("SelectDiscounts.cpp", frmSelectDiscounts);
 USEFORM("DealsSetup.cpp", frmDeals);
 USEFORM("TerminalChitConfig.cpp", frmTerminalChitConfig);
@@ -122,7 +122,6 @@ USEFORM("Casino Security Screen\TransactionAuditScreen.cpp", frmTransactionAudit
 USEFORM("POS\GroupGUI.cpp", frmGroupGUI);
 USEFORM("EftPosDialogs.cpp", frmEftPos);
 USEFORM("NewPaymentType.cpp", frmNewPaymentType);
-USEFORM("..\..\..\Shared-Source\Touch Utils\MMTouchNumpad.cpp", frmTouchNumpad);
 USEFORM("Analysis.cpp", frmAnalysis);
 USEFORM("LoyaltyMateOperationDialogBox.cpp", frmLoyaltyMateOperationDialogBox);
 USEFORM("POS\Paytype.cpp", frmPaymentType);

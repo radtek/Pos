@@ -96,10 +96,10 @@ void __fastcall TfrmMessageMaintenance::WMDisplayChange(TWMDisplayChange& Messag
 //---------------------------------------------------------------------------
 void __fastcall TfrmMessageMaintenance::FormResize(TObject *Sender)
 {
-	ClientWidth = Panel1->Width + (Panel1->Left * 2);
+	/*ClientWidth = Panel1->Width + (Panel1->Left * 2);
 	ClientHeight = Panel1->Height + (Panel1->Top * 2);
 	Left = (Screen->Width - Width) / 2;
-	Top = (Screen->Height - Height) / 2;
+	Top = (Screen->Height - Height) / 2;*/
 }
 //---------------------------------------------------------------------------
 void TfrmMessageMaintenance::ShowMessages()
@@ -383,6 +383,7 @@ Currency TfrmMessageMaintenance::GetDenominationValue(Database::TDBTransaction &
     frmTouchNumpad->btnSurcharge->Caption = "Ok";
     frmTouchNumpad->btnDiscount->Visible = false;
     frmTouchNumpad->btnSurcharge->Visible = true;
+    frmTouchNumpad->IsInitialized = false;
     frmTouchNumpad->Mode = pmDecimal;
     frmTouchNumpad->CURInitial = denominationValue;
     if (frmTouchNumpad->ShowModal() == mrOk)
@@ -396,10 +397,21 @@ Currency TfrmMessageMaintenance::LoadDenominations(Database::TDBTransaction &DBT
 {
     std::vector<TDenomination> denominations;
     TDBDenominations::LoadDenominations(DBTransaction,denominations);
+    if(denominations.size() == 0)
+    {
+       sgDisplay->RowCount = 2;
+    }
+    else
+    {
+       sgDisplay->RowCount = denominations.size() + 1;
+    }
+
+
     sgDisplay->Cols[0]->Clear();
     sgDisplay->Cols[1]->Clear();
     sgDisplay->Cols[0]->Add("Button Title");
     sgDisplay->Cols[1]->Add("Denomination");
+
     for(std::vector<TDenomination>::iterator it = denominations.begin(); it != denominations.end(); ++it)
     {
          int Index = sgDisplay->Cols[0]->Add(it->Title);
@@ -502,4 +514,5 @@ void TfrmMessageMaintenance::SaveDenomination(Database::TDBTransaction &DBTransa
      TDBDenominations::SaveDenomination(DBTransaction,denomination);
    }
 }
+//---------------------------------------------------------------------------
 
