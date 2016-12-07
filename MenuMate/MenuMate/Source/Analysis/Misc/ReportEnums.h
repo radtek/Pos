@@ -41,6 +41,7 @@ enum ReportSectionType
     mmShowRemovalSection,
     mmShowPriceAdjustmentSection,
     mmMallExportConsolidatedReceipt,
+    mmMasterCashDenominationDetailsSection,
     mmCashDenominationDetailsSection
 };
 

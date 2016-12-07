@@ -1,6 +1,5 @@
 #include "ZCashDenominationReportSection.h"
 #include "DeviceRealTerminal.h"
-#include "Forms.hpp"
 #include "CashDenominationController.h"
 
 ZCashDenominationReportSection::ZCashDenominationReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)

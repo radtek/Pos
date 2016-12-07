@@ -48,6 +48,7 @@ protected:
     virtual void AddShowRemovalSection(IReport* report);
     virtual void AddPriceAdjustmentSection(IReport* report);
     virtual void AddMallExportConsolidatedReceipt(IReport* report);
+    virtual void AddMasterCashDenominationSection(IReport* report);
     virtual void AddCashDenominationSection(IReport* report);
 
 };

@@ -32,7 +32,7 @@
 #include "XPriceAdjustmentReportSection.h"
 #include "MallExportConsolidatedReceipt.h"
 #include "ZCashDenominationReportSection.h"
-
+#include "ZMasterCashDenominationReportSection.h"
 ZedReportSectionFactory::ZedReportSectionFactory(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSectionFactory(dbTransaction, globalSettings)
 {
@@ -149,6 +149,9 @@ IReportSection* ZedReportSectionFactory::CreateReportSection(ReportSectionType r
             break;
         case mmCashDenominationDetailsSection:
             reportSection = new ZCashDenominationReportSection(_dbTransaction, _globalSettings);
+            break;
+        case mmMasterCashDenominationDetailsSection:
+            reportSection = new ZMasterCashDenominationReportSection(_dbTransaction, _globalSettings);
             break;
         default:
             reportSection = NULL;

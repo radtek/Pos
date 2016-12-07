@@ -62,6 +62,9 @@ IReportSectionDisplayStrategy* ReportSectionDisplayStrategyProvider::CreateSecti
                case mmCashDenominationDetailsSection:
                     reportSectionDisplayStrategy = new CashDenominationCalculationStrategy(_dbTransaction, _globalSettings, false);
                     break;
+               case mmMasterCashDenominationDetailsSection:
+                    reportSectionDisplayStrategy = new CashDenominationCalculationStrategy(_dbTransaction, _globalSettings, true);
+                    break;
                 default:
                     reportSectionDisplayStrategy = NULL;
                     break;
