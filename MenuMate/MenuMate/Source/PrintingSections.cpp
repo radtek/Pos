@@ -3945,10 +3945,17 @@ void TPrintSection::printSCDSummary( std::vector<AnsiString> inSCDSummary )
 	for( ; scdIT != inSCDSummary.end(); scdIT++ )
 	{
         data = *scdIT;
-        pPrinter->Line->Columns[0]->Text = customerDetails[customerDetailsIndex];
+
+        if(data.Length() != 0)
+            pPrinter->Line->Columns[0]->Text = customerDetails[customerDetailsIndex];
+
         for(int index =0; index< data.Length(); index += pPrinter->Line->Columns[1]->Width)
 		{
-            pPrinter->Line->Columns[1]->Text = data.SubString(index, index + pPrinter->Line->Columns[1]->Width);
+            if(index == 0)
+                pPrinter->Line->Columns[1]->Text = data.SubString(index, pPrinter->Line->Columns[1]->Width);
+            else
+                pPrinter->Line->Columns[1]->Text = data.SubString(index+1, pPrinter->Line->Columns[1]->Width);
+
             pPrinter->AddLine();
             pPrinter->Line->Columns[0]->Text = "";
         }
