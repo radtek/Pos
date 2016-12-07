@@ -8828,20 +8828,32 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
 		TItemMinorComplete *CurrentOrder = (TItemMinorComplete*)WorkingOrdersList->Items[i];
         isSCDOrPWDApplied = scdHasBeenApplied( CurrentOrder->BillCalcResult.Discount );
 
-        if(!isSCDOrPWDApplied)
+        if(isSCDOrPWDApplied)
         {
             for (std::vector<BillCalculator::TTaxResult>::iterator taxIt = CurrentOrder->BillCalcResult.Tax.begin(); taxIt != CurrentOrder->BillCalcResult.Tax.end(); taxIt++)
             {
-                if (taxIt->Value != 0 && taxIt->TaxType == TTaxType::ttSale)
+                if (taxIt->TaxType == TTaxType::ttSale)
                 {
                     taxIt->Name = "Less: VAT (" + taxIt->Percentage + "%)";
-                    if (TaxesMap.count(taxIt->Name) == 0)
+                    Currency itemTaxAmount = 0.00;
+
+                    if(TGlobalSettings::Instance().ItemPriceIncludeTax && TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
                     {
-                        TaxesMap[taxIt->Name] = taxIt->Value;
+                        itemTaxAmount = (CurrentOrder->PriceLevel1 - CurrentOrder->BillCalcResult.PriceIncl)*(CurrentOrder->GetQty());
                     }
                     else
                     {
-                        TaxesMap[taxIt->Name] += taxIt->Value;
+                         itemTaxAmount = (CurrentOrder->PriceLevel1 - CurrentOrder->BillCalcResult.BasePrice)*(CurrentOrder->GetQty());
+                    }
+
+
+                    if (TaxesMap.count(taxIt->Name) == 0)
+                    {
+                        TaxesMap[taxIt->Name] = itemTaxAmount;
+                    }
+                    else
+                    {
+                        TaxesMap[taxIt->Name] += itemTaxAmount;
                     }
                 }
             }
@@ -8850,16 +8862,27 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
                 TItemCompleteSub *SubOrderImage = CurrentOrder->SubOrders->SubOrderGet(i);
                 for (std::vector<BillCalculator::TTaxResult>::iterator taxIt = SubOrderImage->BillCalcResult.Tax.begin(); taxIt != SubOrderImage->BillCalcResult.Tax.end(); taxIt++)
                 {
-                    if (taxIt->Value != 0 && taxIt->TaxType == TTaxType::ttSale)
+                    if (taxIt->TaxType == TTaxType::ttSale)
                     {
                         taxIt->Name = "Less: VAT (" + taxIt->Percentage + "%)";
-                        if (TaxesMap.count(taxIt->Name) == 0)
+                        Currency sideItemTaxAmount = 0.00;
+
+                        if(TGlobalSettings::Instance().ItemPriceIncludeTax && TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
                         {
-                            TaxesMap[taxIt->Name] = taxIt->Value;
+                            sideItemTaxAmount = (SubOrderImage->PriceLevel1 - SubOrderImage->BillCalcResult.PriceIncl)*(SubOrderImage->GetQty());
                         }
                         else
                         {
-                            TaxesMap[taxIt->Name] += taxIt->Value;
+                             sideItemTaxAmount = (SubOrderImage->PriceLevel1 - SubOrderImage->BillCalcResult.BasePrice)*(SubOrderImage->GetQty());
+                        }
+
+                        if (TaxesMap.count(taxIt->Name) == 0)
+                        {
+                            TaxesMap[taxIt->Name] = sideItemTaxAmount;
+                        }
+                        else
+                        {
+                            TaxesMap[taxIt->Name] += sideItemTaxAmount;
                         }
                     }
                 }
