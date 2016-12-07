@@ -23,20 +23,6 @@ void __fastcall TfrmEJournal::btnCancelMouseClick(TObject *Sender)
    Close();
 }
 //---------------------------------------------------------------------------
-
-void __fastcall TfrmEJournal::FromDateOnChange(TObject *Sender)
-{
-    if(FromDateTimePicker->DateTime > Now())
-        	  MessageBox("From Date can not more than current Date ", "Warning",
-		 MB_ICONWARNING + MB_OK);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmEJournal::ToDateOnChange(TObject *Sender)
-{
-    int i = 0;
-}
-//---------------------------------------------------------------------------
 void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
 {
     int i = 0;
@@ -67,24 +53,15 @@ void __fastcall TfrmEJournal::btnReportUpAutoRepeat(TObject *Sender)
 //---------------------------------------------------------------------------
 void TfrmEJournal::Execute()
 {
-      FromDateTimePicker->Date = Now();
-      ToDateTimePicker->Date = Now();
 	  ShowModal();
 }
 // ---------------------------------------------------------------------------
-void __fastcall TfrmEJournal::FromDateTimePickerExit(TObject *Sender)
-{
-    if(FromDateTimePicker->DateTime > Now())
-        	  MessageBox("From Date can not more than current Date ", "Warning",
-		 MB_ICONWARNING + MB_OK);
-}
-//---------------------------------------------------------------------------
 
-void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
+
+void __fastcall TfrmEJournal::FromDateOnCloseUp(TObject *Sender)
 {
-    if(FromDateTimePicker->DateTime > Now())
-        	  MessageBox("From Date can not more than current Date ", "Warning",
-		 MB_ICONWARNING + MB_OK);
+    if(FromDateTimePicker->Date > Now())
+        MessageBox("Invalid date", "Error", MB_OK + MB_ICONERROR);
 }
 //---------------------------------------------------------------------------
 

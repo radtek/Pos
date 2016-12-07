@@ -189,40 +189,6 @@ object frmEJournal: TfrmEJournal
         Height = 16
         Caption = 'From Date'
       end
-      object FromDateTimePicker: TDateTimePicker
-        Left = 4
-        Top = 48
-        Width = 146
-        Height = 28
-        Date = 42711.725326111110000000
-        Time = 42711.725326111110000000
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -17
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsBold]
-        ParentFont = False
-        TabOrder = 0
-        OnCloseUp = FromDateTimePickerCloseUp
-        OnChange = FromDateOnChange
-        OnExit = FromDateTimePickerExit
-      end
-      object ToDateTimePicker: TDateTimePicker
-        Left = 3
-        Top = 104
-        Width = 146
-        Height = 28
-        Date = 42711.722845196760000000
-        Time = 42711.722845196760000000
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -17
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsBold]
-        ParentFont = False
-        TabOrder = 1
-        OnChange = ToDateOnChange
-      end
       object btnGenerate: TTouchBtn
         Left = 3
         Top = 146
@@ -240,6 +206,25 @@ object frmEJournal: TfrmEJournal
         DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = btnGenerateMouseClick
+      end
+      object FromDateTimePicker: TDateTimePicker
+        Left = 3
+        Top = 52
+        Width = 146
+        Height = 24
+        Date = 42711.940321759260000000
+        Time = 42711.940321759260000000
+        TabOrder = 1
+        OnCloseUp = FromDateOnCloseUp
+      end
+      object ToDateTimePicker: TDateTimePicker
+        Left = 3
+        Top = 104
+        Width = 146
+        Height = 24
+        Date = 42711.940554849540000000
+        Time = 42711.940554849540000000
+        TabOrder = 2
       end
     end
   end

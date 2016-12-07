@@ -32,21 +32,18 @@ __published:	// IDE-managed Components
     TMemo *memReceipt;
     TTouchBtn *btnClosePrint;
     TGroupBox *GroupBoxFilter;
-    TDateTimePicker *ToDateTimePicker;
-    TDateTimePicker *FromDateTimePicker;
     TLabel *LabelFromDate;
     TLabel *LabelToDate;
     TTouchBtn *btnGenerate;
+    TDateTimePicker *FromDateTimePicker;
+    TDateTimePicker *ToDateTimePicker;
     void __fastcall btnCancelMouseClick(TObject *Sender);
-    void __fastcall FromDateOnChange(TObject *Sender);
-    void __fastcall ToDateOnChange(TObject *Sender);
     void __fastcall btnGenerateMouseClick(TObject *Sender);
     void __fastcall btnSavePDFMouseClick(TObject *Sender);
     void __fastcall btnPrintMouseClick(TObject *Sender);
     void __fastcall btnReportDownAutoRepeat(TObject *Sender);
     void __fastcall btnReportUpAutoRepeat(TObject *Sender);
-    void __fastcall FromDateTimePickerExit(TObject *Sender);
-    void __fastcall FromDateTimePickerCloseUp(TObject *Sender);
+    void __fastcall FromDateOnCloseUp(TObject *Sender);
 private:	// User declarations
 	int ExitCode;
 public:		// User declarations
