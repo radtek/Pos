@@ -5,6 +5,7 @@
 
 #include "EJournalEngine.h"
 #include "GlobalSettings.h"
+#include "RealDeviceterminal.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -20,20 +21,28 @@ TEJournalEngine::~TEJournalEngine()
 
 void TEJournalEngine::CategorizeEJournal(TDateTime fromSessionDate,TDateTime toSessionDate)
 {
-  // Receipts+X+Zed
-  if(!TGlobalSettings::Instance().ExcludeReceipt && !TGlobalSettings::Instance().ExcludeXReport)
-  {
-     int i = 0;
-  }
-  // Receipts+Zed
-  else if(!TGlobalSettings::Instance().ExcludeReceipt && TGlobalSettings::Instance().ExcludeXReport)
-  {
-     int j = 0;
-  }
-  //only Zed
-  else if(TGlobalSettings::Instance().ExcludeReceipt && TGlobalSettings::Instance().ExcludeXReport)
-  {
-     int k = 0;
-  }
+    // Receipts+X+Zed
+    if(!TGlobalSettings::Instance().ExcludeReceipt && !TGlobalSettings::Instance().ExcludeXReport )
+    {
+
+    }
+    // Receipts+Zed
+    if(!TGlobalSettings::Instance().ExcludeReceipt && TGlobalSettings::Instance().ExcludeXReport)
+    {
+
+    }
+    //only Zed
+    if(TGlobalSettings::Instance().ExcludeReceipt && TGlobalSettings::Instance().ExcludeXReport)
+    {
+
+    }
+    if(TGlobalSettings::Instance().ExcludeReceipt && !TGlobalSettings::Instance().ExcludeXReport)
+    {
+
+    }
 }
 //---------------------------------------------------------------------------
+void TEJournalEngine::CheckDataExist(TDateTime fromSessionDate,TDateTime toSessionDate)
+{
+    CategorizeEJournal(fromSessionDate,toSessionDate);
+}

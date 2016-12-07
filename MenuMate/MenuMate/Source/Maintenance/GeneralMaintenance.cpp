@@ -240,10 +240,6 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 	tbMinRedemptionPoint->Caption = IntToStr(TGlobalSettings::Instance().MinRedemptionPoint);
 	cbvmAllowMemberDetailscreen->Checked = TGlobalSettings::Instance().AllowMemberDetailscreen ;
     cbvmMandatoryMembershipCard->Checked= TGlobalSettings::Instance().MandatoryMembershipCard ;
-    cbExcludeReceipt->Checked = TGlobalSettings::Instance().ExcludeReceipt;
-    cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
-
-
 	int SerialPortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort);
 	if(SerialPortNumber != -1)
 	{
@@ -437,6 +433,8 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbOpenCashDrawer->Checked = TGlobalSettings::Instance().OpenCashDrawer;
     cbHideReceiptNumber->Checked = TGlobalSettings::Instance().HideReceiptNumberForRefundItem;
     cbMergeSimilarItem->Checked = TGlobalSettings::Instance().MergeSimilarItem;
+    cbExcludeReceipt->Checked = TGlobalSettings::Instance().ExcludeReceipt;
+    cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
 }
 
 //---------------------------------------------------------------------------

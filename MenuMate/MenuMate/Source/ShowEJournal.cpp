@@ -29,7 +29,7 @@ void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
    if(FromDateTimePicker->Date <= ToDateTimePicker->Date)
    {
       std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-      EJournalEngine->CategorizeEJournal(FromDateTimePicker->Date,ToDateTimePicker->Date);
+      EJournalEngine->CheckDataExist(FromDateTimePicker->Date,ToDateTimePicker->Date);
    }
    else
    {
@@ -65,7 +65,10 @@ void __fastcall TfrmEJournal::btnReportUpAutoRepeat(TObject *Sender)
 void TfrmEJournal::Execute()
 {
     if(TGlobalSettings::Instance().ExcludeReceipt && TGlobalSettings::Instance().ExcludeXReport)
+    {
         btnClosePrint->Visible = false;
+    }
+    btnSaveAsPDF->Enabled = false;
 	ShowModal();
 }
 //---------------------------------------------------------------------------
@@ -78,7 +81,6 @@ void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmEJournal::ToDateTimePickerCloseUp(TObject *Sender)
 {
     if(ToDateTimePicker->Date > Now())
