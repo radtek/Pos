@@ -8846,7 +8846,6 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
                          itemTaxAmount = (CurrentOrder->PriceLevel1 - CurrentOrder->BillCalcResult.BasePrice)*(CurrentOrder->GetQty());
                     }
 
-
                     if (TaxesMap.count(taxIt->Name) == 0)
                     {
                         TaxesMap[taxIt->Name] = itemTaxAmount;

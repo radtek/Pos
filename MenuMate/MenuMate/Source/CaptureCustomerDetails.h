@@ -44,6 +44,7 @@ __published:	// IDE-managed Components
     void __fastcall CaptureCustomerDetails(TObject *Sender);
     void __fastcall btnOKClick(TObject *Sender);
     void __fastcall btnCancelClick(TObject *Sender);
+    void __fastcall FormResize(TObject *Sender);
 private:	// User declarations
     UnicodeString CustomerInfoPointers[5];
     void DisplayCustomerData();

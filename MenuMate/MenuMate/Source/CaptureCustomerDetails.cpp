@@ -6,6 +6,7 @@
 #include "CaptureCustomerDetails.h"
 #include "MMTouchKeyboard.h"
 #include "MMMessageBox.h"
+#include "GUIScale.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -19,9 +20,15 @@ __fastcall TfrmCaptureCustomerDetails::TfrmCaptureCustomerDetails(TComponent* Ow
 //---------------------------------------------------------------------------
 void __fastcall TfrmCaptureCustomerDetails::FormShow(TObject *Sender)
 {
-    //UnicodeString pwdNo = edSCPWDNO->Text;
+    FormResize(Sender);
 }
 //----------------------------------------------------------------------------------------------
+void __fastcall TfrmCaptureCustomerDetails::FormResize(TObject *Sender)
+{
+	PanelDetails->Left = (Screen->Width - PanelDetails->Width) / 2;
+	PanelDetails->Top  = (Screen->Height - PanelDetails->Height) / 2;
+}
+//--------------------------------------------------------
 void __fastcall TfrmCaptureCustomerDetails::btnOKClick(TObject *Sender)
 {
     if (edCustomerName->Text.Trim()  == "")
