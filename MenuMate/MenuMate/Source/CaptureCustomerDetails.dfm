@@ -14,24 +14,22 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poScreenCenter
+  Position = poDefault
   WindowState = wsMaximized
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object PanelDetails: TPanel
-    Left = 192
-    Top = 144
-    Width = 641
-    Height = 409
+    Left = 200
+    Top = 130
+    Width = 769
+    Height = 505
     Caption = 'PanelDetails'
     TabOrder = 0
     object GroupBox1: TGroupBox
       Left = 12
       Top = 10
-      Width = 613
-      Height = 383
+      Width = 741
+      Height = 479
       Caption = 'Details Required'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -43,12 +41,12 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       object LabelCustomerName: TLabel
         Left = 8
         Top = 55
-        Width = 104
-        Height = 14
+        Width = 141
+        Height = 19
         Caption = 'Customer Name :'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -12
+        Font.Height = -16
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
@@ -56,12 +54,12 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       object LabelAddress: TLabel
         Left = 8
         Top = 103
-        Width = 57
-        Height = 14
+        Width = 76
+        Height = 19
         Caption = 'Address :'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -12
+        Font.Height = -16
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
@@ -69,12 +67,12 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       object LabelTIN: TLabel
         Left = 8
         Top = 151
-        Width = 28
-        Height = 14
+        Width = 41
+        Height = 19
         Caption = 'TIN :'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -12
+        Font.Height = -16
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
@@ -82,12 +80,12 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       object LabelBusinessStyle: TLabel
         Left = 8
         Top = 199
-        Width = 95
-        Height = 14
+        Width = 127
+        Height = 19
         Caption = 'Business Style :'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -12
+        Font.Height = -16
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
@@ -95,12 +93,12 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       object LabelSCPWDNO: TLabel
         Left = 8
         Top = 247
-        Width = 65
-        Height = 14
+        Width = 87
+        Height = 19
         Caption = 'SC/PWD #'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -12
+        Font.Height = -16
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
@@ -156,7 +154,7 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       object btnOK: TTouchBtn
         Tag = 5
         Left = 8
-        Top = 291
+        Top = 331
         Width = 100
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWhite
@@ -175,7 +173,7 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
       object btnCancel: TTouchBtn
         Tag = 6
         Left = 450
-        Top = 291
+        Top = 331
         Width = 100
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWhite
