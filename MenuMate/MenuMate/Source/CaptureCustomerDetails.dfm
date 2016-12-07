@@ -19,8 +19,8 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
   PixelsPerInch = 96
   TextHeight = 13
   object PanelDetails: TPanel
-    Left = 200
-    Top = 130
+    Left = 240
+    Top = 186
     Width = 769
     Height = 505
     Caption = 'PanelDetails'

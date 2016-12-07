@@ -305,6 +305,9 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiPrintReceiptVoidFooter, "Receipt Void Footer");
 	DefaultCaption[epofiPrintReceiptVoidFooter] = "Receipt Void Footer";
+
+    Instructions[i++] = InstructionPair(epofiPrintBIRSalesTax, "BIR Sales Tax");
+	DefaultCaption[epofiPrintBIRSalesTax] = "BIR Sales Tax";
 }
 
 
@@ -481,6 +484,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
 	case epofiPrintRedeemableWeight:
     case epofiCurrentYearPts:
     case epofiPrintReceiptVoidFooter:
+    case epofiPrintBIRSalesTax:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -983,6 +987,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 			break;
         case epofiPrintReceiptVoidFooter:
 			PrintReceiptFooterSecond(PrintJob);
+			break;
+        case epofiPrintBIRSalesTax:
+			PrintBIRSalesTax(PrintJob);
 			break;
 		default:
 			break;
@@ -3918,12 +3925,15 @@ void TPrintSection::printSCDSummary(TReqPrintJob *printJob)
 
 void TPrintSection::populateSCDSummary(TReqPrintJob *printJob, std::vector<AnsiString>& inSCDSummary )
 {
-	inSCDSummary.push_back(printJob->Transaction->customerDetails.CustomerName );
-	inSCDSummary.push_back(printJob->Transaction->customerDetails.Address);
-	inSCDSummary.push_back(printJob->Transaction->customerDetails.TinNo);
-	inSCDSummary.push_back(printJob->Transaction->customerDetails.BusinessStyle);
-	inSCDSummary.push_back(printJob->Transaction->customerDetails.SC_PWD_ID);
-    inSCDSummary.push_back("...........................");
+    if(printJob->Transaction->customerDetails.CustomerName != "")
+    {
+        inSCDSummary.push_back(printJob->Transaction->customerDetails.CustomerName );
+        inSCDSummary.push_back(printJob->Transaction->customerDetails.Address);
+        inSCDSummary.push_back(printJob->Transaction->customerDetails.TinNo);
+        inSCDSummary.push_back(printJob->Transaction->customerDetails.BusinessStyle);
+        inSCDSummary.push_back(printJob->Transaction->customerDetails.SC_PWD_ID);
+        inSCDSummary.push_back("...........................");
+    }
 }
 
 void TPrintSection::printSCDSummary( std::vector<AnsiString> inSCDSummary )
@@ -3946,8 +3956,10 @@ void TPrintSection::printSCDSummary( std::vector<AnsiString> inSCDSummary )
 	{
         data = *scdIT;
 
-        if(data.Length() != 0)
-            pPrinter->Line->Columns[0]->Text = customerDetails[customerDetailsIndex];
+        pPrinter->Line->Columns[0]->Text = customerDetails[customerDetailsIndex];
+
+        if(data.Length() == 0)
+            pPrinter->AddLine();
 
         for(int index =0; index< data.Length(); index += pPrinter->Line->Columns[1]->Width)
 		{
@@ -3958,6 +3970,7 @@ void TPrintSection::printSCDSummary( std::vector<AnsiString> inSCDSummary )
 
             pPrinter->AddLine();
             pPrinter->Line->Columns[0]->Text = "";
+            pPrinter->Line->Columns[1]->Text = "";
         }
         customerDetailsIndex++;
 	}
@@ -8795,3 +8808,71 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
 
         pPrinter->AddLine();
  }
+//-------------------------------------------------------------------------------------------------------------
+ void TPrintSection::PrintBIRSalesTax(TReqPrintJob* PrintJob)
+{
+    std::map<UnicodeString, Currency> TaxesMap;
+    bool isSCDOrPWDApplied = false;
+    pPrinter->Line->ColCount = 2;
+
+	for (int i = 0; i < WorkingOrdersList->Count; i++)
+	{
+		TItemMinorComplete *CurrentOrder = (TItemMinorComplete*)WorkingOrdersList->Items[i];
+        isSCDOrPWDApplied = scdHasBeenApplied( CurrentOrder->BillCalcResult.Discount );
+
+        if(!isSCDOrPWDApplied)
+        {
+            for (std::vector<BillCalculator::TTaxResult>::iterator taxIt = CurrentOrder->BillCalcResult.Tax.begin(); taxIt != CurrentOrder->BillCalcResult.Tax.end(); taxIt++)
+            {
+                if (taxIt->Value != 0 && taxIt->TaxType == TTaxType::ttSale)
+                {
+                    taxIt->Name = "Less: VAT (" + taxIt->Percentage + "%)";
+                    if (TaxesMap.count(taxIt->Name) == 0)
+                    {
+                        TaxesMap[taxIt->Name] = taxIt->Value;
+                    }
+                    else
+                    {
+                        TaxesMap[taxIt->Name] += taxIt->Value;
+                    }
+                }
+            }
+            for (int i = 0; i < CurrentOrder->SubOrders->Count; i++)
+            {
+                TItemCompleteSub *SubOrderImage = CurrentOrder->SubOrders->SubOrderGet(i);
+                for (std::vector<BillCalculator::TTaxResult>::iterator taxIt = SubOrderImage->BillCalcResult.Tax.begin(); taxIt != SubOrderImage->BillCalcResult.Tax.end(); taxIt++)
+                {
+                    if (taxIt->Value != 0 && taxIt->TaxType == TTaxType::ttSale)
+                    {
+                        taxIt->Name = "Less: VAT (" + taxIt->Percentage + "%)";
+                        if (TaxesMap.count(taxIt->Name) == 0)
+                        {
+                            TaxesMap[taxIt->Name] = taxIt->Value;
+                        }
+                        else
+                        {
+                            TaxesMap[taxIt->Name] += taxIt->Value;
+                        }
+                    }
+                }
+            }
+        }
+     }
+
+	for (std::map<UnicodeString, Currency>::iterator taxesMapIt = TaxesMap.begin(); taxesMapIt != TaxesMap.end(); taxesMapIt++)
+	{
+		UnicodeString ItemName = taxesMapIt->first;
+
+		UnicodeString ItemPrice = CurrToStrF(
+		RoundToNearest(taxesMapIt->second, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+		ffNumber,
+		CurrencyDecimals);
+
+		pPrinter->Line->Columns[1]->Width = ItemPrice.Length() + 1;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width - ItemPrice.Length() - 1;
+
+		pPrinter->Line->Columns[0]->Text =  ItemName;
+		pPrinter->Line->Columns[1]->Text = (PrintJob->Transaction->TypeOfSale == NonChargableSale) ? UnicodeString::UnicodeString() : ItemPrice;
+		pPrinter->AddLine();
+	}
+}

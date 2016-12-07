@@ -332,6 +332,7 @@ private:
     void PrintTaxInvoice(TReqPrintJob *PrintJob) ;
     void PrintVoidOnReceipt(TReqPrintJob *PrintJob);
     void ShowRefundReference(TReqPrintJob *PrintJob);
+    void PrintBIRSalesTax(TReqPrintJob* PrintJob);
 };
 
 // ------------------------------------------------------------------------------
