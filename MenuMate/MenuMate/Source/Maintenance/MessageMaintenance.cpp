@@ -515,4 +515,59 @@ void TfrmMessageMaintenance::SaveDenomination(Database::TDBTransaction &DBTransa
    }
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMessageMaintenance::sgDisplayDrawCell(TObject *Sender, int ACol,
+          int ARow, TRect &Rect, TGridDrawState State)
+{
+  sgDisplay->Canvas->Font->Charset = DEFAULT_CHARSET;
+  sgDisplay->Canvas->Font->Name="Tahoma";
+  if(ARow > 0 && SelectedRow == ARow)
+  {
+    sgDisplay->Canvas->Brush->Color = clNavy;
+    sgDisplay->Canvas->Font->Color = clWhite;
+  }
+  else
+  {
+    sgDisplay->Canvas->Font->Color = clWindowText;
+    sgDisplay->Canvas->Brush->Color = clWhite;
+  }
+
+  UnicodeString CellContent = sgDisplay->Cells[ACol][ARow];
+  sgDisplay->Canvas->Font->Size = 14;
+  sgDisplay->Canvas->Font->Style= TFontStyles();
+
+  if(ARow == 0)
+  {
+    sgDisplay->Canvas->Font->Style= TFontStyles() << fsBold;
+  }
+  sgDisplay->Canvas->FillRect(Rect);
+
+  if(ARow == 0 || ACol == 0 || MessageType != eCashDenomination)
+  {
+    sgDisplay->Canvas->TextRect(Rect, Rect.Left + 5 , Rect.Top, CellContent);
+  }
+  else
+  {
+    Word SavedAlign = SetTextAlign(sgDisplay->Canvas->Handle,TA_RIGHT);
+    sgDisplay->Canvas->TextRect(Rect, Rect.Right - 5, Rect.Top, CellContent);
+    SetTextAlign(sgDisplay->Canvas->Handle, SavedAlign);
+  }
+}
+//---------------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmMessageMaintenance::sgDisplaySelectCell(TObject *Sender, int ACol,
+          int ARow, bool &CanSelect)
+{
+    if(ARow > 0)
+    {
+        SelectedRow = ARow;
+    }
+}
+
+
+
+
+//---------------------------------------------------------------------------
 

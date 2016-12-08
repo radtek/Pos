@@ -22,20 +22,14 @@ XTransactionSummaryGroupDetailsReportSection::~XTransactionSummaryGroupDetailsRe
 void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut)
 {
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
-
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-
      _memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
 
     SkimCalculations skimCalculations;
     skimCalculations.CalculateSkims(*_dbTransaction, deviceName);
 
     TTransactionInfo transactionInfo;
-
     transactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, deviceName);
-
-
-
     transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcTotalCashDrawerOpens]] = dataCalculationUtilities->GetCashDrawerOpenTotals(*_dbTransaction, _globalSettings, deviceName);
 
     std::map <int, std::map <UnicodeString, TSumPayments> > ::iterator itPayments;
@@ -411,37 +405,6 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
                 TCalculatedTotals PointsMovementTotal(etcPointsMovement, Sum, 0, 0, 0);
                 transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcPointsMovement]] = PointsMovementTotal;
             }
-            /*if (PointsIn != 0)
-            {
-                printOut->PrintFormat->Line->Columns[0]->Text = "Points Sold ";
-                printOut->PrintFormat->Line->Columns[1]->Text = FormatFloat("0.00", PointsIn);
-                printOut->PrintFormat->AddLine();
-
-                TCalculatedTotals PointsInTotal(etcPointsSold, PointsIn, 0, 0, 0);
-                transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcPointsSold]] = PointsInTotal;
-            }
-
-            if (PointsOut != 0)
-            {
-                printOut->PrintFormat->Line->Columns[0]->Text = "Points Redeemed ";
-                printOut->PrintFormat->Line->Columns[1]->Text = FormatFloat("(-) 0.00", PointsOut);
-                printOut->PrintFormat->AddLine();
-                TCalculatedTotals PointsOutTotal(etcPointsRedeemed, PointsOut, 0, 0, 0);
-                transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcPointsRedeemed]] = PointsOutTotal;
-            }
-
-            if (PointsIn - PointsOut != 0)
-            {
-                printOut->PrintFormat->Line->Columns[0]->Text = "Points Movement (+ = Gain)";
-                printOut->PrintFormat->Line->Columns[1]->Text = FormatFloat("0.00", PointsIn - PointsOut);
-                printOut->PrintFormat->AddLine();
-                printOut->PrintFormat->Line->Columns[0]->Text = "";
-                printOut->PrintFormat->Line->Columns[1]->Line();
-                printOut->PrintFormat->AddLine();
-
-                TCalculatedTotals PointsMovementTotal(etcPointsMovement, PointsIn - PointsOut, 0, 0, 0);
-                transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcPointsMovement]] = PointsMovementTotal;
-            }*/
         }
 
         if (PointsHeld != 0)

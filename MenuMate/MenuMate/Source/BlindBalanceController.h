@@ -78,6 +78,7 @@ class TBlindBalanceController
 		void OnAdd(int ItemIndex, int ColIndex = -1);
 		void OnEdit(int ItemIndex, int ColIndex = -1);
 		void OnDelete(int ItemIndex, int ColIndex = -1);
+        void OnDrawCell(int ARow, int ACol = -1);
 		void PopulateListManager();
 		bool WarnOperator(void);
 		void LoadBlindBalances(void);

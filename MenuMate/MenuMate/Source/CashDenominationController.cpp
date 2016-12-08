@@ -63,6 +63,7 @@ bool TCashDenominationController::Run()
 	frmListManager->Edit.RegisterForEvent(OnEdit);
 	frmListManager->Select.RegisterForEvent(OnEdit);
     frmListManager->Delete.RegisterForEvent(OnDelete);
+    frmListManager->DrawCell.RegisterForEvent(OnDrawCell);
 	frmListManager->tbtnEdit->Hide();
 	frmListManager->tbtnDelete->Caption = "Cancel";
 	if(!PopulateDenominationValues(DBTransaction))
@@ -72,16 +73,43 @@ bool TCashDenominationController::Run()
     PopulateListManager();
 	frmListManager->SetCaption("Cash Denominations Values");
 	frmListManager->pnlLabel->Visible = false;
-    frmListManager->sgDisplay->Height = 434 + 34;
-    frmListManager->sgDisplay->Top = 7;
+    frmListManager->DoCustomDrawing();
 	if(frmListManager->ShowModal() == mrCancel)
 		return false;
 	frmListManager->Close.DeregisterForEvent(OnClose);
 	frmListManager->Edit.DeregisterForEvent(OnEdit);
 	frmListManager->Select.DeregisterForEvent(OnEdit);
     frmListManager->Delete.DeregisterForEvent(OnDelete);
+    frmListManager->DrawCell.DeregisterForEvent(OnDrawCell);
 	return true;
 }
+
+void TCashDenominationController::OnDrawCell(int ARow, int ACol)
+{
+  TRect Rect = frmListManager->sgDisplay->CellRect(ACol,ARow);
+  frmListManager->sgDisplay->Canvas->Font->Charset = DEFAULT_CHARSET;
+  frmListManager->sgDisplay->Canvas->Font->Name="Tahoma";
+  frmListManager->sgDisplay->Canvas->Font->Color = clWindowText;
+  frmListManager->sgDisplay->Canvas->Brush->Color = clWhite;
+
+  UnicodeString CellContent = frmListManager->sgDisplay->Cells[ACol][ARow];
+  frmListManager->sgDisplay->Canvas->Font->Size = 12;
+  frmListManager->sgDisplay->Canvas->Font->Style= TFontStyles();
+  frmListManager->sgDisplay->Canvas->Font->Style= TFontStyles() << fsBold;
+  frmListManager->sgDisplay->Canvas->FillRect(Rect);
+
+  if(ARow == 0 || ACol == 0)
+  {
+    frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Left + 5 , Rect.Top, CellContent);
+  }
+  else
+  {
+    Word SavedAlign = SetTextAlign(frmListManager->sgDisplay->Canvas->Handle,TA_RIGHT);
+    frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Right - 5, Rect.Top, CellContent);
+    SetTextAlign(frmListManager->sgDisplay->Canvas->Handle, SavedAlign);
+  }
+}
+
 
 void TCashDenominationController::OnClose(int Index, int ColIndex)
 {
@@ -133,6 +161,7 @@ void TCashDenominationController::PopulateListManager()
         frmListManager->sgDisplay->Cols[0]->Clear();
         frmListManager->sgDisplay->Cols[1]->Clear();
         frmListManager->sgDisplay->Cols[2]->Clear();
+
         frmListManager->sgDisplay->ColWidths[0] = width;
         frmListManager->sgDisplay->ColWidths[1] = width;
         frmListManager->sgDisplay->ColWidths[2] = width;

@@ -46,7 +46,6 @@ object frmMessageMaintenance: TfrmMessageMaintenance
       Color = 14342874
       ParentBackground = False
       TabOrder = 0
-      ExplicitLeft = 4
       object pnlLabel: TPanel
         Left = 7
         Top = 7
@@ -64,7 +63,6 @@ object frmMessageMaintenance: TfrmMessageMaintenance
         ParentBackground = False
         ParentFont = False
         TabOrder = 0
-        ExplicitWidth = 508
       end
       object sgDisplay: TStringGrid
         Left = 7
@@ -73,12 +71,14 @@ object frmMessageMaintenance: TfrmMessageMaintenance
         Height = 442
         Align = alBottom
         ColCount = 2
+        DefaultDrawing = False
         FixedCols = 0
         RowCount = 17
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
         ScrollBars = ssVertical
         TabOrder = 1
-        ExplicitWidth = 508
+        OnDrawCell = sgDisplayDrawCell
+        OnSelectCell = sgDisplaySelectCell
         ColWidths = (
           169
           320)
@@ -95,7 +95,6 @@ object frmMessageMaintenance: TfrmMessageMaintenance
       Color = 14342874
       ParentBackground = False
       TabOrder = 1
-      ExplicitLeft = 530
       object btnAdd: TTouchBtn
         Left = 8
         Top = 80

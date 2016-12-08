@@ -58,7 +58,7 @@ void TDBDenominations::LoadDenominations(Database::TDBTransaction &DBTransaction
 {
    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
    IBInternalQuery->Close();
-   IBInternalQuery->SQL->Text = "SELECT * FROM  CASHDENOMINATIONS ";
+   IBInternalQuery->SQL->Text = "SELECT * FROM  CASHDENOMINATIONS ORDER BY CASHDENOMINATION_KEY";
    IBInternalQuery->ExecQuery();
    for (;!IBInternalQuery->Eof; IBInternalQuery->Next())
    {

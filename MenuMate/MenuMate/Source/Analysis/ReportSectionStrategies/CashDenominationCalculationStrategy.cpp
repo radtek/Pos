@@ -54,4 +54,16 @@ void CashDenominationCalculationStrategy::BuildSection(TPrintout* printOut)
 		printOut->PrintFormat->Line->Columns[2]->Text = FormatFloat("0.00", itCashDenominations->second.Total);
 		printOut->PrintFormat->AddLine();
 	}
+
+    printOut->PrintFormat->Line->Columns[0]->Text = "";
+    printOut->PrintFormat->Line->Columns[1]->Text = "";
+    printOut->PrintFormat->Line->Columns[2]->Line();
+    printOut->PrintFormat->AddLine();
+
+
+    printOut->PrintFormat->Line->Columns[0]->Text = "Total";
+    printOut->PrintFormat->Line->Columns[1]->Text = "";
+    printOut->PrintFormat->Line->Columns[2]->Text = FormatFloat("0.00", cashDenominations.GetTotal());
+    printOut->PrintFormat->AddLine();
+
 }

@@ -51,7 +51,6 @@ void TListManagerEvents::Occured(int ItemIndex, int ColIndex = -1)
 	}
 }
 
-
 void TListManagerEvents::RegisterForEvent(TMMListManagerEvent Function)
 {
 	std::vector<TMMListManagerEvent>::iterator itFunction = std::find(Events.begin(), Events.end(), Function);
@@ -82,6 +81,7 @@ void TListManagerEvents::Enable()
 {
    Enabled = true;
 }
+
 void TListManagerEvents::Disable()
 {
    Enabled = false;
@@ -114,7 +114,6 @@ __fastcall TfrmListManager::TfrmListManager(TComponent* Owner)
 {
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmListManager::FormResize(TObject *Sender)
 {
     if (Tag != Screen->Width)
@@ -142,15 +141,22 @@ void __fastcall TfrmListManager::FormShow(TObject *Sender)
 
     if(sgDisplay->ColCount > 1)
     {
-//		sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 2 / 3;
-//		sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[0] - 1;
+        int width = (int)((sgDisplay->Width - 40) /sgDisplay->ColCount);
+        for(int i =0 ; i < sgDisplay->ColCount; i++)
+        {
+            sgDisplay->ColWidths[i] = width;
+        }
     }
     else
     {
 		sgDisplay->ColWidths[0] = sgDisplay->ClientWidth;
     }
 }
-//---------------------------------------------------------------------------
+
+void TfrmListManager::DoCustomDrawing()
+{
+   sgDisplay->DefaultDrawing = false;
+}
 
 //---------------------------------------------------------------------------
 void __fastcall TfrmListManager::tbtnAddMouseUp(TObject *Sender,
@@ -185,15 +191,12 @@ void TfrmListManager::SetCaption(AnsiString inCaption)
    pnlLabel->Caption = inCaption;
 }
 
-
 void __fastcall TfrmListManager::btnActiveMouseUp(TObject *Sender,
       TMouseButton Button, TShiftState Shift, int X, int Y)
 {
    Active.Occured((int)sgDisplay->Objects[0][sgDisplay->Row]);
 }
 //---------------------------------------------------------------------------
-
-
 
 void __fastcall TfrmListManager::sgDisplaySelectCell(TObject *Sender, int ACol, int ARow,
           bool &CanSelect)

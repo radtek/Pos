@@ -67,10 +67,12 @@ bool TBlindBalanceController::Run()
 	frmListManager->Edit.RegisterForEvent(OnEdit);
 	frmListManager->Select.RegisterForEvent(OnEdit);
 	frmListManager->Delete.RegisterForEvent(OnDelete);
+    frmListManager->DrawCell.RegisterForEvent(OnDrawCell);
 	frmListManager->tbtnEdit->Hide();
 	frmListManager->tbtnDelete->Caption = "Cancel";
 	PopulateListManager();
 	frmListManager->SetCaption("Blind Balance Values");
+    frmListManager->DoCustomDrawing();
 	if(frmListManager->ShowModal() == mrCancel)
 		return false;
 	frmListManager->Close.DeregisterForEvent(OnClose);
@@ -78,7 +80,34 @@ bool TBlindBalanceController::Run()
 	frmListManager->Edit.DeregisterForEvent(OnEdit);
 	frmListManager->Select.DeregisterForEvent(OnEdit);
 	frmListManager->Delete.DeregisterForEvent(OnDelete);
+    frmListManager->DrawCell.DeregisterForEvent(OnDrawCell);
 	return true;
+}
+
+void TBlindBalanceController::OnDrawCell(int ARow, int ACol)
+{
+  TRect Rect = frmListManager->sgDisplay->CellRect(ACol,ARow);
+  frmListManager->sgDisplay->Canvas->Font->Charset = DEFAULT_CHARSET;
+  frmListManager->sgDisplay->Canvas->Font->Name="Tahoma";
+  frmListManager->sgDisplay->Canvas->Font->Color = clWindowText;
+  frmListManager->sgDisplay->Canvas->Brush->Color = clWhite;
+
+  UnicodeString CellContent = frmListManager->sgDisplay->Cells[ACol][ARow];
+  frmListManager->sgDisplay->Canvas->Font->Size = 12;
+  frmListManager->sgDisplay->Canvas->Font->Style= TFontStyles();
+  frmListManager->sgDisplay->Canvas->Font->Style= TFontStyles() << fsBold;
+  frmListManager->sgDisplay->Canvas->FillRect(Rect);
+
+  if(ACol == 0)
+  {
+    frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Left + 5 , Rect.Top, CellContent);
+  }
+  else
+  {
+    Word SavedAlign = SetTextAlign(frmListManager->sgDisplay->Canvas->Handle,TA_RIGHT);
+    frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Right - 5, Rect.Top, CellContent);
+    SetTextAlign(frmListManager->sgDisplay->Canvas->Handle, SavedAlign);
+  }
 }
 
 void TBlindBalanceController::OnClose(int Index, int ColIndex)
