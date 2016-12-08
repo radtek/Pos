@@ -3974,6 +3974,13 @@ void TPrintSection::printSCDSummary( std::vector<AnsiString> inSCDSummary )
         }
         customerDetailsIndex++;
 	}
+    if(inSCDSummary.size() > 0)
+    {
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Line();
+        pPrinter->AddLine();
+    }
 }
 
 void TPrintSection::PrintTotalDicountDetails(TReqPrintJob *PrintJob)
@@ -4205,6 +4212,7 @@ void TPrintSection::PrintSalesTaxExempt(TReqPrintJob* PrintJob)
 
 	Currency SubTotal = 0;
     bool isDiplomatDiscountApplied = false;
+    bool isSalesTax = false;
 
 	for (int i = 0; i < WorkingOrdersList->Count; i++)
 	{
@@ -4215,9 +4223,9 @@ void TPrintSection::PrintSalesTaxExempt(TReqPrintJob* PrintJob)
 		serviceCharge = getServiceCharge(CurrentOrder);
 		serviceChargeTax = getServiceChargeTax(CurrentOrder);
         isDiplomatDiscountApplied = IsDiplomatDiscountApplied(CurrentOrder->BillCalcResult.Discount);
+        isSalesTax = CurrentOrder->IsTaxTypeExist(TTaxType::ttSale);
 
-
-        if(CurrentOrder->BillCalcResult.PriceTaxExempt && productTax == 0 && !isDiplomatDiscountApplied)
+        if(!isSalesTax  && !isDiplomatDiscountApplied)
         {
             SubTotal += CurrentOrder->BillCalcResult.FinalPrice - serviceCharge - serviceChargeTax - localTax - profitTax;
         }
@@ -4231,8 +4239,9 @@ void TPrintSection::PrintSalesTaxExempt(TReqPrintJob* PrintJob)
 			localTaxSides = getLocalTax((TItemMinorComplete*)SubOrderImage);
             profitTaxSides = getProfitTax((TItemMinorComplete*)SubOrderImage);
             isDiplomatDiscountApplied = IsDiplomatDiscountApplied(SubOrderImage->BillCalcResult.Discount);
+            isSalesTax = SubOrderImage->IsTaxTypeExist(TTaxType::ttSale);
 
-            if(SubOrderImage->BillCalcResult.PriceTaxExempt && productTaxSides == 0 && !isDiplomatDiscountApplied)
+            if(!isSalesTax && !isDiplomatDiscountApplied)
             {
                 SubTotal +=  SubOrderImage->BillCalcResult.FinalPrice - serviceChargeSides - serviceChargeTaxSides - localTaxSides - profitTaxSides;
             }
@@ -4631,6 +4640,7 @@ void TPrintSection::PrintZeroRated(TReqPrintJob* PrintJob)
 
 	Currency SubTotal = 0;
     bool isDiplomatDiscountApplied = false;
+    bool isSalesTax = false;
 
 	for (int i = 0; i < WorkingOrdersList->Count; i++)
 	{
@@ -4642,8 +4652,9 @@ void TPrintSection::PrintZeroRated(TReqPrintJob* PrintJob)
 		serviceChargeTax = getServiceChargeTax(CurrentOrder);
 
         isDiplomatDiscountApplied = IsDiplomatDiscountApplied(CurrentOrder->BillCalcResult.Discount);
+        isSalesTax = CurrentOrder->IsTaxTypeExist(TTaxType::ttSale);
 
-		if((!CurrentOrder->BillCalcResult.PriceTaxExempt || isDiplomatDiscountApplied) && productTax == 0)
+		if((isSalesTax || isDiplomatDiscountApplied) && (productTax == 0))
 		{
 			SubTotal += CurrentOrder->BillCalcResult.FinalPrice - serviceCharge - serviceChargeTax - localTax - profitTax;
 		}
@@ -4658,8 +4669,9 @@ void TPrintSection::PrintZeroRated(TReqPrintJob* PrintJob)
             profitTaxSides = getProfitTax((TItemMinorComplete*)SubOrderImage);
 
             isDiplomatDiscountApplied = IsDiplomatDiscountApplied(CurrentOrder->BillCalcResult.Discount);
+            isSalesTax = SubOrderImage->IsTaxTypeExist(TTaxType::ttSale);
 
-			if((!SubOrderImage->BillCalcResult.PriceTaxExempt || isDiplomatDiscountApplied) && productTaxSides == 0)
+			if((isSalesTax || isDiplomatDiscountApplied) && (productTaxSides) == 0)
 			{
 				SubTotal +=  SubOrderImage->BillCalcResult.FinalPrice - serviceChargeSides - serviceChargeTaxSides - localTaxSides - profitTaxSides;
 			}
@@ -8839,11 +8851,13 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
 
                     if(TGlobalSettings::Instance().ItemPriceIncludeTax && TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
                     {
-                        itemTaxAmount = (CurrentOrder->PriceLevel1 - CurrentOrder->BillCalcResult.PriceIncl)*(CurrentOrder->GetQty());
+                         itemTaxAmount = CurrentOrder->PriceLevelCustom != 0 ? (CurrentOrder->PriceLevelCustom - CurrentOrder->BillCalcResult.PriceIncl)*(CurrentOrder->GetQty())
+                                                :(CurrentOrder->PriceLevel1 - CurrentOrder->BillCalcResult.PriceIncl)*(CurrentOrder->GetQty());
                     }
                     else
                     {
-                         itemTaxAmount = (CurrentOrder->PriceLevel1 - CurrentOrder->BillCalcResult.BasePrice)*(CurrentOrder->GetQty());
+                         itemTaxAmount = CurrentOrder->PriceLevelCustom != 0 ? (CurrentOrder->PriceLevelCustom - CurrentOrder->BillCalcResult.BasePrice)*(CurrentOrder->GetQty())
+                                                    : (CurrentOrder->PriceLevel1 - CurrentOrder->BillCalcResult.BasePrice)*(CurrentOrder->GetQty());
                     }
 
                     if (TaxesMap.count(taxIt->Name) == 0)
@@ -8868,11 +8882,13 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
 
                         if(TGlobalSettings::Instance().ItemPriceIncludeTax && TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
                         {
-                            sideItemTaxAmount = (SubOrderImage->PriceLevel1 - SubOrderImage->BillCalcResult.PriceIncl)*(SubOrderImage->GetQty());
+                            sideItemTaxAmount = SubOrderImage->PriceLevelCustom != 0 ? (SubOrderImage->PriceLevelCustom - SubOrderImage->BillCalcResult.PriceIncl)*(SubOrderImage->GetQty())
+                                                            : (SubOrderImage->PriceLevel1 - SubOrderImage->BillCalcResult.PriceIncl)*(SubOrderImage->GetQty());
                         }
                         else
                         {
-                             sideItemTaxAmount = (SubOrderImage->PriceLevel1 - SubOrderImage->BillCalcResult.BasePrice)*(SubOrderImage->GetQty());
+                             sideItemTaxAmount = SubOrderImage->PriceLevelCustom != 0 ? (SubOrderImage->PriceLevelCustom - SubOrderImage->BillCalcResult.BasePrice)*(SubOrderImage->GetQty())
+                                                            : (SubOrderImage->PriceLevel1 - SubOrderImage->BillCalcResult.BasePrice)*(SubOrderImage->GetQty());
                         }
 
                         if (TaxesMap.count(taxIt->Name) == 0)
