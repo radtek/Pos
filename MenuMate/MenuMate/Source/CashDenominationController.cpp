@@ -72,7 +72,6 @@ bool TCashDenominationController::Run()
     }
     PopulateListManager();
 	frmListManager->SetCaption("Cash Denominations Values");
-	frmListManager->pnlLabel->Visible = false;
     frmListManager->DoCustomDrawing();
 	if(frmListManager->ShowModal() == mrCancel)
 		return false;
@@ -100,12 +99,12 @@ void TCashDenominationController::OnDrawCell(int ARow, int ACol)
 
   if(ACol == 0)
   {
-    frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Left + 5 , Rect.Top, CellContent);
+    frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Left + 5 , Rect.Top + 5, CellContent);
   }
   else
   {
     Word SavedAlign = SetTextAlign(frmListManager->sgDisplay->Canvas->Handle,TA_RIGHT);
-    frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Right - 5, Rect.Top, CellContent);
+    frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Right - 5, Rect.Top + 5, CellContent);
     SetTextAlign(frmListManager->sgDisplay->Canvas->Handle, SavedAlign);
   }
 }
