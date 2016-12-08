@@ -383,9 +383,8 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
 
         fieldData.OldAccumulatedSalesVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
         fieldData.ControlNumber = 0;
-        fieldData.NoOfSalesTransaction = (double)(fieldData.RefundAmountVatable <0 ? 0 : 1);
+        fieldData.NoOfSalesTransaction = (double)(fieldData.RefundAmountVatable > 0 ? 1 : 0);
         fieldData.SalesType = 1;
-        fieldData.Amount = (double)fieldData.NetSalesAmountVatable;
         fieldData.OldAccumulatedSalesNonVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38);
 
         fieldData.DeductionVatable = (double)(fieldData.PromoSalesAmountVatable + fieldData.PWDDiscountVatable + fieldData.RefundAmountVatable + fieldData.ReturnedItemsAmountVatable +
@@ -393,9 +392,10 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
                                 fieldData.DiscountCardsVatable + fieldData.DeliveryChargesVatable + fieldData.GiftCertificatesChecksRedeemedVatable + fieldData.SSDiscount1Vatable +
                                 fieldData.SSDiscount2Vatable + fieldData.SSDiscount3Vatable + fieldData.SSDiscount4Vatable + fieldData.SSDiscount5Vatable);
 
-        fieldData.GrossAmountVatable = fieldData.GrossAmountVatable + fieldData.VoidAmountVatable - fieldData.RefundAmountNonVatable;
-        fieldData.VATTaxAmountVatable = (double)((fieldData.GrossAmountVatable - fieldData.DeductionVatable)*(taxRate/(taxRate + 100)));
-        fieldData.NetSalesAmountVatable = (double)(fieldData.GrossAmountVatable - fieldData.DeductionVatable - fieldData.VATTaxAmountVatable);
+        fieldData.GrossAmountVatable = fieldData.GrossAmountVatable + fieldData.VoidAmountVatable;
+        fieldData.VATTaxAmountVatable = (double)((fieldData.GrossAmountVatable - (fieldData.DeductionVatable - fieldData.RefundAmountVatable))*(taxRate/(taxRate + 100)));
+        fieldData.NetSalesAmountVatable = (double)(fieldData.GrossAmountVatable - (fieldData.DeductionVatable - fieldData.RefundAmountVatable) - fieldData.VATTaxAmountVatable);
+        fieldData.Amount = (double)(fieldData.RefundAmountVatable > 0 ? fieldData.NetSalesAmountVatable*-1 : fieldData.NetSalesAmountVatable);
 
         fieldData.DeductionNonVatable = (double)(fieldData.PromoSalesAmountNonVatable + fieldData.SCDDiscountNonVatable + fieldData.RefundAmountNonVatable +
                                         fieldData.ReturnedItemsAmountNonVatable + fieldData.OtherTaxesNonVatable + fieldData.ServiceChargeAmountNonVatable +
@@ -403,9 +403,9 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
                                         fieldData.DeliveryChargesNonVatable + fieldData.GiftCertificatesChecksRedeemedNonVatable + fieldData.SSDiscount1NonVatable +
                                         fieldData.SSDiscount2NonVatable + fieldData.SSDiscount3NonVatable + fieldData.SSDiscount4NonVatable + fieldData.SSDiscount5NonVatable);
 
-        fieldData.GrossAmountNonVatable = fieldData.GrossAmountNonVatable + fieldData.VoidAmountNonVatable - fieldData.RefundAmountNonVatable;
+        fieldData.GrossAmountNonVatable = fieldData.GrossAmountNonVatable + fieldData.VoidAmountNonVatable;
         fieldData.VATTaxAmountNonVatable = 0;
-        fieldData.NetSalesAmountNonVatable = (double)(fieldData.GrossAmountNonVatable - fieldData.DeductionNonVatable) ;
+        fieldData.NetSalesAmountNonVatable = (double)(fieldData.GrossAmountNonVatable - (fieldData.DeductionNonVatable - fieldData.RefundAmountNonVatable)) ;
         fieldData.NewAccumulatedSalesVatable  = (double)(fieldData.OldAccumulatedSalesVatable + fieldData.NetSalesAmountVatable);
         fieldData.NewAccumulatedSalesNonVatable  = (double)(fieldData.OldAccumulatedSalesNonVatable + fieldData.NetSalesAmountNonVatable);
         fieldData.CoverCount = GetPatronCount(paymentTransaction);
@@ -550,57 +550,72 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
                                             TItemMinorComplete *order, bool isVatable)
 {
     TItemComplete *cancelOrder =   (TItemComplete*)order;
+
+    estanciaDiscounts.discountGroup1 = (order->GetQty() > 0 ? fabs(estanciaDiscounts.discountGroup1) : estanciaDiscounts.discountGroup1*-1);
+    estanciaDiscounts.discountGroup2 = (order->GetQty() > 0 ? fabs(estanciaDiscounts.discountGroup2) : estanciaDiscounts.discountGroup2*-1);
+    estanciaDiscounts.discountGroup3 = (order->GetQty() > 0 ? fabs(estanciaDiscounts.discountGroup3) : estanciaDiscounts.discountGroup3*-1);
+    estanciaDiscounts.discountGroup4 = (order->GetQty() > 0 ? fabs(estanciaDiscounts.discountGroup4) : estanciaDiscounts.discountGroup4*-1);
+    estanciaDiscounts.discountGroup5 = (order->GetQty() > 0 ? fabs(estanciaDiscounts.discountGroup5) : estanciaDiscounts.discountGroup5*-1);
+    estanciaDiscounts.totalNonApprovedDiscount = (order->GetQty() > 0 ? fabs(estanciaDiscounts.totalNonApprovedDiscount) : estanciaDiscounts.totalNonApprovedDiscount*-1);
+    estanciaDiscounts.nonApprovedDiscounts[0] = (order->GetQty() > 0 ? fabs(estanciaDiscounts.nonApprovedDiscounts[0]) : estanciaDiscounts.nonApprovedDiscounts[0]*-1);
+    estanciaDiscounts.nonApprovedDiscounts[1] = (order->GetQty() > 0 ? fabs(estanciaDiscounts.nonApprovedDiscounts[1]) : estanciaDiscounts.nonApprovedDiscounts[1]*-1);
+    estanciaDiscounts.nonApprovedDiscounts[2] = (order->GetQty() > 0 ? fabs(estanciaDiscounts.nonApprovedDiscounts[2]) : estanciaDiscounts.nonApprovedDiscounts[2]*-1);
+    estanciaDiscounts.nonApprovedDiscounts[3] = (order->GetQty() > 0 ? fabs(estanciaDiscounts.nonApprovedDiscounts[3]) : estanciaDiscounts.nonApprovedDiscounts[3]*-1);
+    estanciaDiscounts.nonApprovedDiscounts[4] = (order->GetQty() > 0 ? fabs(estanciaDiscounts.nonApprovedDiscounts[4]) : estanciaDiscounts.nonApprovedDiscounts[4]*-1);
+
     if(isVatable)
     {
-        fieldData.GrossAmountVatable += (double)((order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment())));
-        fieldData.PromoSalesAmountVatable += (double)fabs(estanciaDiscounts.promoDiscount);
-        fieldData.PWDDiscountVatable += (double)fabs(estanciaDiscounts.pwdDiscount);
-        fieldData.RefundAmountVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);
+        fieldData.GrossAmountVatable += (double)(order->GetQty() > 0 ? (order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment()))
+                                            : (order->PriceEach_BillCalc()*(order->GetQty()) + (order->TotalAdjustment()*-1)));
+        fieldData.PromoSalesAmountVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.promoDiscount) : estanciaDiscounts.promoDiscount*-1);
+        fieldData.PWDDiscountVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.pwdDiscount) : estanciaDiscounts.pwdDiscount*-1);
+        fieldData.RefundAmountVatable += (double)(order->GetQty() < 0 ? order->PriceEach_BillCalc() : 0);
         fieldData.ReturnedItemsAmountVatable += 0;
-        fieldData.OtherTaxesVatable +=  (double)fabs(estanciaTaxes.localTax);
-        fieldData.ServiceChargeAmountVatable +=  (double)fabs(estanciaTaxes.serviceCharge);
+        fieldData.OtherTaxesVatable +=  (double)(order->GetQty() < 0 ? fabs(estanciaTaxes.localTax) : estanciaTaxes.localTax*-1);
+        fieldData.ServiceChargeAmountVatable +=  (double)(order->GetQty() < 0 ? fabs(estanciaTaxes.serviceCharge) : estanciaTaxes.serviceCharge*-1);
         fieldData.AdjustmentDiscountVatable += 0;
         fieldData.VoidAmountVatable += (double)(cancelOrder->TabContainerName != "" && order->BillCalcResult.BasePrice == 0 ? order->PriceLevel1 : 0);
         fieldData.DiscountCardsVatable += 0;//todo
         fieldData.DeliveryChargesVatable += 0;//todo
         fieldData.GiftCertificatesChecksRedeemedVatable +=  0;//todo
-        fieldData.SSDiscount1Vatable += (double)fabs(estanciaDiscounts.discountGroup1);
-        fieldData.SSDiscount2Vatable += (double)fabs(estanciaDiscounts.discountGroup2);
-        fieldData.SSDiscount3Vatable += (double)fabs(estanciaDiscounts.discountGroup3);
-        fieldData.SSDiscount4Vatable += (double)fabs(estanciaDiscounts.discountGroup4);
-        fieldData.SSDiscount5Vatable += (double)fabs(estanciaDiscounts.discountGroup5);
-        fieldData.TotalOfallNonApprovedSDVatable += (double)fabs(estanciaDiscounts.totalNonApprovedDiscount);
-        fieldData.SSDiscount1NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[0]);
-        fieldData.SSDiscount2NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[1]);
-        fieldData.SSDiscount3NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[2]);
-        fieldData.SSDiscount4NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[3]);
-        fieldData.SSDiscount5NonApprovedVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[4]);
+        fieldData.SSDiscount1Vatable += (double)(estanciaDiscounts.discountGroup1);
+        fieldData.SSDiscount2Vatable += (double)(estanciaDiscounts.discountGroup2);
+        fieldData.SSDiscount3Vatable += (double)(estanciaDiscounts.discountGroup3);
+        fieldData.SSDiscount4Vatable += (double)(estanciaDiscounts.discountGroup4);
+        fieldData.SSDiscount5Vatable += (double)(estanciaDiscounts.discountGroup5);
+        fieldData.TotalOfallNonApprovedSDVatable += (double)(estanciaDiscounts.totalNonApprovedDiscount);
+        fieldData.SSDiscount1NonApprovedVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[0]);
+        fieldData.SSDiscount2NonApprovedVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[1]);
+        fieldData.SSDiscount3NonApprovedVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[2]);
+        fieldData.SSDiscount4NonApprovedVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[3]);
+        fieldData.SSDiscount5NonApprovedVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[4]);
     }
     else
     {
-        fieldData.GrossAmountNonVatable += (double)((order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment())));
-        fieldData.PromoSalesAmountNonVatable += (double)fabs(estanciaDiscounts.promoDiscount);
-        fieldData.SCDDiscountNonVatable += (double)fabs(estanciaDiscounts.scdDiscount);
+        fieldData.GrossAmountNonVatable += (double)(order->GetQty() > 0 ? (order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment()))
+                                            : (order->PriceEach_BillCalc()*(order->GetQty()) + (order->TotalAdjustment()*-1)));
+        fieldData.PromoSalesAmountNonVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.promoDiscount) : estanciaDiscounts.promoDiscount*-1);
+        fieldData.SCDDiscountNonVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.scdDiscount) : estanciaDiscounts.scdDiscount*-1);
         fieldData.RefundAmountNonVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);
         fieldData.ReturnedItemsAmountNonVatable += 0;
-        fieldData.OtherTaxesNonVatable += (double)fabs(estanciaTaxes.localTax);
-        fieldData.ServiceChargeAmountNonVatable +=  (double)fabs(estanciaTaxes.serviceCharge);
+        fieldData.OtherTaxesNonVatable += (double)(order->GetQty() < 0 ? fabs(estanciaTaxes.localTax) : estanciaTaxes.localTax*-1);
+        fieldData.ServiceChargeAmountNonVatable +=  (double)(order->GetQty() < 0 ? fabs(estanciaTaxes.serviceCharge) : estanciaTaxes.serviceCharge*-1);
         fieldData.AdjustmentDiscountNonVatable  += 0;
         fieldData.VoidAmountNonVatable += (double)(cancelOrder->TabContainerName != "" && order->BillCalcResult.BasePrice == 0 ? order->PriceLevel1 : 0);
         fieldData.DiscountCardsNonVatable +=  0;//todo
         fieldData.DeliveryChargesNonVatable +=  0;//todo
         fieldData.GiftCertificatesChecksRedeemedNonVatable +=  0;//todo
-        fieldData.SSDiscount1NonVatable += (double)fabs(estanciaDiscounts.discountGroup1);
-        fieldData.SSDiscount2NonVatable += (double)fabs(estanciaDiscounts.discountGroup2);
-        fieldData.SSDiscount3NonVatable += (double)fabs(estanciaDiscounts.discountGroup3);
-        fieldData.SSDiscount4NonVatable += (double)fabs(estanciaDiscounts.discountGroup4);
-        fieldData.SSDiscount5NonVatable += (double)fabs(estanciaDiscounts.discountGroup5);
-        fieldData.TotalOfallNonApprovedSDiscountsNonVatable += (double)fabs(estanciaDiscounts.totalNonApprovedDiscount);
-        fieldData.SSDiscount1NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[0]);
-        fieldData.SSDiscount2NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[1]);
-        fieldData.SSDiscount3NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[2]);
-        fieldData.SSDiscount4NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[3]);
-        fieldData.SSDiscount5NonApprovedNonVatable += (double)fabs(estanciaDiscounts.nonApprovedDiscounts[4]);
+        fieldData.SSDiscount1NonVatable += (double)(estanciaDiscounts.discountGroup1);
+        fieldData.SSDiscount2NonVatable += (double)(estanciaDiscounts.discountGroup2);
+        fieldData.SSDiscount3NonVatable += (double)(estanciaDiscounts.discountGroup3);
+        fieldData.SSDiscount4NonVatable += (double)(estanciaDiscounts.discountGroup4);
+        fieldData.SSDiscount5NonVatable += (double)(estanciaDiscounts.discountGroup5);
+        fieldData.TotalOfallNonApprovedSDiscountsNonVatable += (double)(estanciaDiscounts.totalNonApprovedDiscount);
+        fieldData.SSDiscount1NonApprovedNonVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[0]);
+        fieldData.SSDiscount2NonApprovedNonVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[1]);
+        fieldData.SSDiscount3NonApprovedNonVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[2]);
+        fieldData.SSDiscount4NonApprovedNonVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[3]);
+        fieldData.SSDiscount5NonApprovedNonVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[4]);
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------
