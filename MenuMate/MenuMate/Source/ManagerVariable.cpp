@@ -3068,15 +3068,15 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 
 		SetVarBool(DBTransaction,
                     vmIsXeroEnabled,
-                    "Enable Thorlink",
-                    "This setting will enable or disable Thorlink.",
+                    "Enable Xero",
+                    "This setting will enable or disable Xero.",
                     vmgPOS,
                     false);
 
 		SetVarBool(DBTransaction,
                     vmIsMYOBEnabled,
-                    "Enable Thorlink",
-                    "This setting will enable or disable Thorlink.",
+                    "Enable MYOB",
+                    "This setting will enable or disable MYOB.",
                     vmgPOS,
                     false);
        SetVarBool(DBTransaction, vmOpenCashDrawer, "Open Cash Drawer",
@@ -3129,6 +3129,14 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarStr(DBTransaction,vmRefundReferenceLabel,"Refund Reference Label",
 		"Label for Refund reference in receipt print.",
 		vmgPrinting, "OR No.");
+ 		SetVarBool(DBTransaction,vmExcludeReceipt, "Show Void or Refund number",
+		"Show Void or Refund number"
+		"Default is false",
+		vmgPrinting, false);
+ 		SetVarBool(DBTransaction,vmExcludeXReport, "Show Void or Refund number",
+		"Show Void or Refund number"
+		"Default is false",
+		vmgPrinting, false);
         SetVarBool(DBTransaction,vmUseBIRFormatInXZReport, "Use BIR Format in X and Z Report ",
              "Default is false",
               vmgPrinting, false);

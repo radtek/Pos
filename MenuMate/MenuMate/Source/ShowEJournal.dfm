@@ -15,6 +15,7 @@ object frmEJournal: TfrmEJournal
   OldCreateOrder = False
   Position = poScreenCenter
   Scaled = False
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
@@ -215,7 +216,7 @@ object frmEJournal: TfrmEJournal
         Date = 42711.940321759260000000
         Time = 42711.940321759260000000
         TabOrder = 1
-        OnCloseUp = FromDateOnCloseUp
+        OnCloseUp = FromDateTimePickerCloseUp
       end
       object ToDateTimePicker: TDateTimePicker
         Left = 3
@@ -225,7 +226,12 @@ object frmEJournal: TfrmEJournal
         Date = 42711.940554849540000000
         Time = 42711.940554849540000000
         TabOrder = 2
+        OnCloseUp = ToDateTimePickerCloseUp
       end
     end
+  end
+  object SaveDialog1: TSaveDialog
+    Left = 336
+    Top = 512
   end
 end

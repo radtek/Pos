@@ -17,6 +17,7 @@
 #include "MMMessageBox.h"
 #include "Printout.h"
 #include "ReportUtilities.h"
+#include <Dialogs.hpp>
 
 #define RECEIPT_DELIMITER "#####"
 //---------------------------------------------------------------------------
@@ -37,19 +38,28 @@ __published:	// IDE-managed Components
     TTouchBtn *btnGenerate;
     TDateTimePicker *FromDateTimePicker;
     TDateTimePicker *ToDateTimePicker;
+    TSaveDialog *SaveDialog1;
     void __fastcall btnCancelMouseClick(TObject *Sender);
     void __fastcall btnGenerateMouseClick(TObject *Sender);
     void __fastcall btnSavePDFMouseClick(TObject *Sender);
     void __fastcall btnPrintMouseClick(TObject *Sender);
     void __fastcall btnReportDownAutoRepeat(TObject *Sender);
     void __fastcall btnReportUpAutoRepeat(TObject *Sender);
-    void __fastcall FromDateOnCloseUp(TObject *Sender);
+    void __fastcall FromDateTimePickerCloseUp(TObject *Sender);
+    void __fastcall ToDateTimePickerCloseUp(TObject *Sender);
+    void __fastcall FromDateTimePickerChange(TObject *Sender);
+    void __fastcall ToDateTimePickerClick(TObject *Sender);
+    void __fastcall ToDateTimePickerChange(TObject *Sender);
+    void __fastcall FormShow(TObject *Sender);
+   // void __fastcall ToDateTimePickerCloseUp(TObject *Sender);
 private:	// User declarations
 	int ExitCode;
 public:		// User declarations
     __fastcall TfrmEJournal(TComponent* Owner);
     const std::auto_ptr<TMemoryStream> CurrentPrintout;
 	void Execute();
+    void PopulateReport(TMemoryStream *Receipt);
+    TStringList *Lines;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmEJournal *frmEJournal;
