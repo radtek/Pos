@@ -16,6 +16,7 @@ object frmCaptureCustomerDetails: TfrmCaptureCustomerDetails
   OldCreateOrder = False
   Position = poDefault
   WindowState = wsMaximized
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object PanelDetails: TPanel

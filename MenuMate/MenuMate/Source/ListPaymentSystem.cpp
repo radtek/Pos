@@ -5822,8 +5822,6 @@ TModalResult TListPaymentSystem::CaptureSCDOrPWDCustomerDetails(TPaymentTransact
     if(isSCDOrPWDApplied)
     {
         std::auto_ptr <TfrmCaptureCustomerDetails> frmCaptureCustomerDetails(TfrmCaptureCustomerDetails::Create <TfrmCaptureCustomerDetails> (Screen->ActiveForm));
-        frmCaptureCustomerDetails->PanelDetails->Left = (Screen->Width - frmCaptureCustomerDetails->PanelDetails->Width) / 2;
-	    frmCaptureCustomerDetails->PanelDetails->Top  = (Screen->Height - frmCaptureCustomerDetails->PanelDetails->Height) / 2;
         if(frmCaptureCustomerDetails->ShowModal() == mrOk)
         {
             paymentTransaction.customerDetails = frmCaptureCustomerDetails->customerDetails;

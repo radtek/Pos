@@ -6,7 +6,6 @@
 #include "CaptureCustomerDetails.h"
 #include "MMTouchKeyboard.h"
 #include "MMMessageBox.h"
-#include "GUIScale.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
