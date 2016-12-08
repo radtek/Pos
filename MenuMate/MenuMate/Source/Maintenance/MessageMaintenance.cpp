@@ -541,7 +541,7 @@ void __fastcall TfrmMessageMaintenance::sgDisplayDrawCell(TObject *Sender, int A
   }
   sgDisplay->Canvas->FillRect(Rect);
 
-  if(ARow == 0 || ACol == 0 || MessageType != eCashDenomination)
+  if(ACol == 0 || MessageType != eCashDenomination)
   {
     sgDisplay->Canvas->TextRect(Rect, Rect.Left + 5 , Rect.Top, CellContent);
   }

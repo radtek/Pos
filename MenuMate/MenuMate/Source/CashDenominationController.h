@@ -7,7 +7,7 @@
 #include "ListManager.h"
 #include "DBDenominations.h"
 
-typedef std::map< AnsiString, TDenomination > TCashDenominationContainer;
+typedef std::map<int, TDenomination > TCashDenominationContainer;
 class TCashDenominations
 {
 	TCashDenominationContainer CashDenominations;

@@ -98,7 +98,7 @@ void TCashDenominationController::OnDrawCell(int ARow, int ACol)
   frmListManager->sgDisplay->Canvas->Font->Style= TFontStyles() << fsBold;
   frmListManager->sgDisplay->Canvas->FillRect(Rect);
 
-  if(ARow == 0 || ACol == 0)
+  if(ACol == 0)
   {
     frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Left + 5 , Rect.Top, CellContent);
   }
@@ -221,16 +221,17 @@ bool TCashDenominationController::PopulateDenominationValues(Database::TDBTransa
     std::vector<TDenomination> denominations;
     TDBDenominations::LoadDenominations(DBTransaction,denominations);
     if(denominations.size() > 0)
-    {
+    {    int j = 0;
         for(std::vector<TDenomination>::iterator it = denominations.begin(); it != denominations.end(); ++it)
         {
            TDenomination cashDenomination;
-           cashDenomination.Key = it->Key;
+           cashDenomination.Key = j;
            cashDenomination.Title = it->Title;
            cashDenomination.DenominationValue = it->DenominationValue;
            cashDenomination.Quantity = 0;
            cashDenomination.Total = 0;
            CashDenominations.SetCashDenomination(cashDenomination);
+           j++;
         }
         return true;
     }
