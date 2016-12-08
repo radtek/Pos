@@ -5,6 +5,7 @@
 
 #include "ShowEJournal.h"
 #include "ReceiptManager.h"
+#include "Processing.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -16,7 +17,6 @@ TfrmEJournal *frmEJournal;
 //---------------------------------------------------------------------------
 __fastcall TfrmEJournal::TfrmEJournal(TComponent* Owner): TZForm(Owner), CurrentPrintout(new TMemoryStream)
 {
-   ExitCode = 0;
 }
 //---------------------------------------------------------------------------
 
@@ -44,58 +44,37 @@ void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
 void __fastcall TfrmEJournal::btnSavePDFMouseClick(TObject *Sender)
 {
    ExitCode = 0;
-// Decalre a pointer to TFileStream
-	/*TFileStream *FStream;
-
-	// Let the user call the Save Dialog
-	if( SaveDialog1->Execute() )
-	{
-		// Use the constructor of the TFileStream to create a file
-		try {
-			FStream = new TFileStream(SaveDialog1->FileName, fmCreate);
-			// In the pointer to FStream, add the contents of the Memo
-			FStream->WriteComponent(memReceipt);
-			// and the content of the Edit controls
-			//FStream->WriteComponent("Hello");
-		}
-		__finally
-		{
-			// Since the pointer was created, delete it,
-			// whether it was used or not
-			delete FStream;
-		}
-	}*/
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmEJournal::btnPrintMouseClick(TObject *Sender)
 {
-   ExitCode = 0;
-   Close();
+    int count = CollectReceipts.size();
+    TPrintout *Printout = new TPrintout;
+    Printout->Printer = TComms::Instance().ReceiptPrinter;
+    Printout->PrintToPrinterStream(ManagerReceipt->Receipt,TComms::Instance().ReceiptPrinter.UNCName());
+    delete Printout;
+    Close();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmEJournal::btnReportDownAutoRepeat(TObject *Sender)
 {
-   //ExitCode = 0;
    memReceipt->Perform(WM_VSCROLL, SB_LINEDOWN, 0);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmEJournal::btnReportUpAutoRepeat(TObject *Sender)
 {
-   //ExitCode = 0;
    memReceipt->Perform(WM_VSCROLL, SB_LINEUP, 0);
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::Execute()
 {
-//   ShowModal();
-    if(TGlobalSettings::Instance().ExcludeReceipt && TGlobalSettings::Instance().ExcludeXReport)
-    {
-        btnClosePrint->Visible = false;
-    }
-    btnSaveAsPDF->Enabled = false;
+
+    btnClosePrint->Enabled = false;
+    btnSaveAsPDF->Visible = false;
+    memReceipt->Clear();
 	ShowModal();
 }
 //---------------------------------------------------------------------------
@@ -109,30 +88,10 @@ void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmEJournal::FromDateTimePickerChange(TObject *Sender)
-{
-    //if(FromDateTimePicker->Date > Now())
-      //  MessageBox("Invalid date", "Error", MB_OK + MB_ICONERROR);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmEJournal::ToDateTimePickerClick(TObject *Sender)
-{
-    //if(FromDateTimePicker->Date > Now())
-        //MessageBox("Invalid To date", "Error", MB_OK + MB_ICONERROR);
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmEJournal::ToDateTimePickerChange(TObject *Sender)
-{
-    //if(FromDateTimePicker->Date > Now())
-       // MessageBox("Invalid To date", "Error", MB_OK + MB_ICONERROR);
-}
-//---------------------------------------------------------------------------
 
 void __fastcall TfrmEJournal::ToDateTimePickerCloseUp(TObject *Sender)
 {
-    if(ToDateTimePicker->Date > Now())
+    if((TDateTime)ToDateTimePicker->DateTime.DateString() > Now().CurrentDate())
     {
        MessageBox("To Date Cannot Be More Than Today's Date", "Error", MB_OK + MB_ICONERROR);
        ToDateTimePicker->Date = Now();
@@ -153,15 +112,13 @@ void TfrmEJournal::PopulateReport(TMemoryStream *Receipt)
 	}
 }
 //---------------------------------------------------------------------------
-void __fastcall TfrmEJournal::FormShow(TObject *Sender)
-{
-  //Lines = new TStringList;
-  int i = 0;
-}
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractEJournalReport(EJournalType type)
 {
-   switch(type)  //{eZed,,eZEDReceiptX,};
+   std::auto_ptr <TfrmProcessing> (Processing)(TfrmProcessing::Create <TfrmProcessing> (this));
+   Processing->Message = "Processing Data for E-Journal.Please Wait...";
+   Processing->Show();
+   switch(type)
    {
       case eZed:
       ExtractZedReport();
@@ -176,38 +133,83 @@ void TfrmEJournal::ExtractEJournalReport(EJournalType type)
       ExtractZedReceiptReport();
       break;
    }
+   Processing->Close();
 }
+
+
+
+
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedReport()
 {
    ManagerReceipt->Receipt->Clear();
+   CollectReceipts.clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime);
-   PopulateReport(ManagerReceipt->Receipt);
-   MessageBox(FromDateTimePicker->DateTime.FormatString("dd/mm/yyyy hh:mm:ss"), "From", MB_OK + MB_ICONERROR);
-   MessageBox(ToDateTimePicker->DateTime.FormatString("dd/mm/yyyy hh:mm:ss"), "To", MB_OK + MB_ICONERROR);
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime, CollectReceipts);
+   if(ManagerReceipt->Receipt->Size > 0)
+   {
+      PopulateReport(ManagerReceipt->Receipt);
+      btnClosePrint->Enabled = true;
+   }
+   else
+   {
+      MessageBox("No Sales data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
+      btnClosePrint->Enabled = false;
+   }
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedAndXReport()
 {
-   int i = 0;
+   ManagerReceipt->Receipt->Clear();
+   CollectReceipts.clear();
+   std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedAndXReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime, CollectReceipts);
+   if(ManagerReceipt->Receipt->Size > 0)
+   {
+      PopulateReport(ManagerReceipt->Receipt);
+      btnClosePrint->Enabled = true;
+   }
+   else
+   {
+      MessageBox("No Sales data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
+      btnClosePrint->Enabled = false;
+   }
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedReceiptAndXReport()
 {
    ManagerReceipt->Receipt->Clear();
+   CollectReceipts.clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptAndXReport(FromDateTimePicker->Date,ToDateTimePicker->Date);
-   PopulateReport(ManagerReceipt->Receipt);
-
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptAndXReport(FromDateTimePicker->Date,ToDateTimePicker->Date, CollectReceipts);
+   if(ManagerReceipt->Receipt->Size > 0)
+   {
+     PopulateReport(ManagerReceipt->Receipt);
+     btnClosePrint->Enabled = true;
+   }
+   else
+   {
+     MessageBox("No Sales data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
+     btnClosePrint->Enabled = false;
+   }
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedReceiptReport()
 {
    ManagerReceipt->Receipt->Clear();
+   CollectReceipts.clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptReport(FromDateTimePicker->Date,ToDateTimePicker->Date);
-   PopulateReport(ManagerReceipt->Receipt);
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptReport(FromDateTimePicker->Date,ToDateTimePicker->Date, CollectReceipts);
+   if(ManagerReceipt->Receipt->Size > 0)
+   {
+      PopulateReport(ManagerReceipt->Receipt);
+      btnClosePrint->Enabled = true;
+   }
+   else
+   {
+      MessageBox("No Sales data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
+      btnClosePrint->Enabled = false;
+   }
 }
 //---------------------------------------------------------------------------
 

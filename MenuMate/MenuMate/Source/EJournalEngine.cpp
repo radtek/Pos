@@ -35,7 +35,6 @@ EJournalType TEJournalEngine::CategorizeEJournal(TDateTime from,TDateTime to)
     //only Zed
     if(TGlobalSettings::Instance().ExcludeReceipt && TGlobalSettings::Instance().ExcludeXReport)
     {
-       //ExteractZedReport(fromSessionDate,toSessionDate);
        journalType = eZed;
     }
     if(TGlobalSettings::Instance().ExcludeReceipt && !TGlobalSettings::Instance().ExcludeXReport)
@@ -50,29 +49,26 @@ void TEJournalEngine::CheckDataExist(TDateTime fromSessionDate,TDateTime toSessi
     CategorizeEJournal(fromSessionDate,toSessionDate);
 }
 //---------------------------------------------------------------------------
-TMemoryStream* TEJournalEngine::ExtractZedReport(TDateTime fromSessionDate,TDateTime toSessionDate)
+TMemoryStream* TEJournalEngine::ExtractZedReport(TDateTime fromSessionDate,TDateTime toSessionDate, std::vector<TMemoryStream*> &CollectReceipts)
 {
     TMemoryStream *ZedReceipt = new TMemoryStream;;
-
+    TMemoryStream *CollectZedReceipt = new TMemoryStream;;
     ZedReceipt->Clear();
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     try
     {
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        //IBInternalQuery->Close();
-//        IBInternalQuery->SQL->Text="select a.REPORT from ZEDS a Where a.TRANS_DATE >= :From_DATE "
-//                                    "and a.TRANS_DATE < :To_DATE " ;
-//
-//        IBInternalQuery->ParamByName("From_DATE")->AsDateTime = fromSessionDate;
-//        IBInternalQuery->ParamByName("To_DATE")->AsDateTime = toSessionDate;
         GetZReport(IBInternalQuery, fromSessionDate, toSessionDate);
 
         IBInternalQuery->ExecQuery();
         for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
+           CollectZedReceipt->Clear();
            IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
+           IBInternalQuery->FieldByName("REPORT")->SaveToStream(CollectZedReceipt);
            ManagerReceipt->Receipt->Position++;
+           CollectReceipts.push_back(CollectZedReceipt);
         }
         DBTransaction.Commit();
     }
@@ -82,26 +78,23 @@ TMemoryStream* TEJournalEngine::ExtractZedReport(TDateTime fromSessionDate,TDate
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
-    //CategorizeEJournal(fromSessionDate,toSessionDate);
     return ZedReceipt;
 }
 //---------------------------------------------------------------------------
 
 void TEJournalEngine::GetZReport(TIBSQL *IBInternalQuery,TDateTime fromSessionDate,TDateTime toSessionDate)
 {
-    //TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     IBInternalQuery->Close();
     IBInternalQuery->SQL->Text="select a.REPORT, a.Z_KEY from ZEDS a Where a.TRANS_DATE >= :From_DATE "
                                 "and a.TRANS_DATE <= :To_DATE " ;
     IBInternalQuery->ParamByName("From_DATE")->AsDateTime = fromSessionDate;
     IBInternalQuery->ParamByName("To_DATE")->AsDateTime = toSessionDate;
-
-    //return IBInternalQuery;
 }
 
-TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDate,TDateTime toSessionDate)
+TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDate,TDateTime toSessionDate, std::vector<TMemoryStream*> &CollectReceipts)
 {
     TMemoryStream *ZedReceipt = new TMemoryStream;
+    TMemoryStream *CollectZedReceipt = new TMemoryStream;
     ZedReceipt->Clear();
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
@@ -118,10 +111,16 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDat
             IBGetReciptQuery->ExecQuery();
             for (; !IBGetReciptQuery->Eof; IBGetReciptQuery->Next())
             {
+               CollectZedReceipt->Clear();
                IBGetReciptQuery->FieldByName("RECEIPT")->SaveToStream(ZedReceipt);
+               IBGetReciptQuery->FieldByName("RECEIPT")->SaveToStream(CollectZedReceipt);
+               CollectReceipts.push_back(CollectZedReceipt);
                ZedReceipt->Position++;
             }
+            CollectZedReceipt->Clear();
             IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
+            IBInternalQuery->FieldByName("REPORT")->SaveToStream(CollectZedReceipt);
+            CollectReceipts.push_back(CollectZedReceipt);
             ZedReceipt->Position++;
         }
 
@@ -135,7 +134,7 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDat
     return ZedReceipt;
 }
 
-bool TEJournalEngine::IsXReportGenerate(TIBSQL *IBInternalQuery, int z_key)
+bool TEJournalEngine::IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key)
 {
     bool isXReportGenerate = false;
     IBInternalQuery->Close();
@@ -149,9 +148,10 @@ bool TEJournalEngine::IsXReportGenerate(TIBSQL *IBInternalQuery, int z_key)
     return isXReportGenerate;
 }
 
-TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate)
+TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate, std::vector<TMemoryStream*> &CollectReceipts)
 {
     TMemoryStream *ZedReceipt = new TMemoryStream;
+    TMemoryStream *CollectZedAndXReceipt = new TMemoryStream;
     ZedReceipt->Clear();
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
@@ -170,29 +170,34 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessio
             IBGetReciptQuery->ExecQuery();
             for (; !IBGetReciptQuery->Eof; IBGetReciptQuery->Next())
             {
+               CollectZedAndXReceipt->Clear();
                IBGetReciptQuery->FieldByName("RECEIPT")->SaveToStream(ZedReceipt);
+               IBGetReciptQuery->FieldByName("RECEIPT")->SaveToStream(CollectZedAndXReceipt);
+               CollectReceipts.push_back(CollectZedAndXReceipt);
                ZedReceipt->Position++;
             }
+            CollectZedAndXReceipt->Clear();
             IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
+            IBInternalQuery->FieldByName("REPORT")->SaveToStream(CollectZedAndXReceipt);
+            CollectReceipts.push_back(CollectZedAndXReceipt);
             ZedReceipt->Position++;
         }
-        if(IsXReportGenerate(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger))
+        if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger))
         {
-           int k = 0;
-           // no x - report will generate
-        }
-        else
-        {
-            int k = 0;
+            // x - report will generate
             GetCurrentRunningReceipt(IBGetCurrentRunningReciptQuery);
             IBGetCurrentRunningReciptQuery->ExecQuery();
             for (; !IBGetCurrentRunningReciptQuery->Eof; IBGetCurrentRunningReciptQuery->Next())
             {
+               CollectZedAndXReceipt->Clear();
                IBGetCurrentRunningReciptQuery->FieldByName("RECEIPT")->SaveToStream(ZedReceipt);
+               IBGetCurrentRunningReciptQuery->FieldByName("RECEIPT")->SaveToStream(CollectZedAndXReceipt);
+               CollectReceipts.push_back(CollectZedAndXReceipt);
                ZedReceipt->Position++;
             }
-            DisplayXReport(ZedReceipt);
-           // x - report will generate
+            DisplayXReport(ZedReceipt, CollectZedAndXReceipt);
+            CollectReceipts.push_back(CollectZedAndXReceipt);
+
         }
     }
     catch(Exception &E)
@@ -210,13 +215,15 @@ void TEJournalEngine::GetReceipt(TIBSQL *IBGetReciptQuery, int z_key)
     IBGetReciptQuery->ParamByName("Z_KEY")->AsInteger = z_key;
 }
 
-void TEJournalEngine::DisplayXReport(TMemoryStream* XReceipt)
+void TEJournalEngine::DisplayXReport(TMemoryStream* XReceipt, TMemoryStream* CollectXReceipt)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     ReportManager reportManager;
     XReport* xReport = reportManager.GetXReport(&TGlobalSettings::Instance(), &DBTransaction);
-    xReport->DisplayAndPrintForEJournal(XReceipt);
+    xReport->PopulateXReportForEJournal(XReceipt);
+    CollectXReceipt->Clear();
+    xReport->PopulateXReportForEJournal(CollectXReceipt);
     DBTransaction.Commit();
 }
 
@@ -224,6 +231,57 @@ void TEJournalEngine::GetCurrentRunningReceipt(TIBSQL *IBGetCurrentRunningRecipt
 {
     IBGetCurrentRunningReciptQuery->Close();
     IBGetCurrentRunningReciptQuery->SQL->Text=" SELECT a.ARCBILL_KEY, a.RECEIPT FROM DAYARCBILL a " ;
+}
+
+TMemoryStream* TEJournalEngine::ExtractZedAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate, std::vector<TMemoryStream*> &CollectReceipts)
+{
+    TMemoryStream *ZedReceipt = new TMemoryStream;
+    TMemoryStream *CollectZedAndXReceipt = new TMemoryStream;
+    ZedReceipt->Clear();
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBGetReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBCheckXReport = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBGetCurrentRunningReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate);
+        IBInternalQuery->ExecQuery();
+        for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            CollectZedAndXReceipt->Clear();
+            IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
+            IBInternalQuery->FieldByName("REPORT")->SaveToStream(CollectZedAndXReceipt);
+            CollectReceipts.push_back(CollectZedAndXReceipt);
+            ZedReceipt->Position++;
+        }
+        if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger))
+        {
+            //int k = 0;
+//            GetCurrentRunningReceipt(IBGetCurrentRunningReciptQuery);
+//            IBGetCurrentRunningReciptQuery->ExecQuery();
+//            for (; !IBGetCurrentRunningReciptQuery->Eof; IBGetCurrentRunningReciptQuery->Next())
+//            {
+//               CollectZedAndXReceipt->Clear();
+//               IBGetCurrentRunningReciptQuery->FieldByName("RECEIPT")->SaveToStream(ZedReceipt);
+//               IBGetCurrentRunningReciptQuery->FieldByName("RECEIPT")->SaveToStream(CollectZedAndXReceipt);
+//               CollectReceipts.push_back(CollectZedAndXReceipt);
+//               ZedReceipt->Position++;
+//            }
+            DisplayXReport(ZedReceipt,CollectZedAndXReceipt);
+            CollectReceipts.push_back(CollectZedAndXReceipt);
+           // x - report will generate
+        }
+    }
+    catch(Exception &E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+    return ZedReceipt;
 }
 
 

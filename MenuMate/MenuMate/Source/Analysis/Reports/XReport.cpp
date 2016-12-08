@@ -46,31 +46,9 @@ int XReport::DisplayAndPrint(TMemoryStream* memoryStream)
     return frmShowPrintout->ExitCode;
 }
 
-void XReport::DisplayAndPrintForEJournal(TMemoryStream* memoryStream)
+void XReport::PopulateXReportForEJournal(TMemoryStream* memoryStream)
 {
     TPrintout* printOut = SetupPrintOutInstance();
-
-    /*if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
-    {
-        printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-        printOut->PrintFormat->Line->ColCount = 1;
-        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
-        printOut->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-        printOut->PrintFormat->Add("");
-        printOut->PrintFormat->Add("Preliminary (X) Till Not Closed Off");
-        printOut->PrintFormat->PartialCut();
-    }*/
-
-    //TForm* currentForm = Screen->ActiveForm;
-    //std::auto_ptr <TfrmShowPrintout> (frmShowPrintout)(TfrmShowPrintout::Create <TfrmShowPrintout> (currentForm));
-    //printOut->PrintToStream(frmShowPrintout->CurrentPrintout.get());
-
-    //frmShowPrintout->btnCancel->Caption = "Close";
-    //frmShowPrintout->btnClose->Visible = false;
-    //frmShowPrintout->btnClosePrint->Caption = "Print";
-
-    //frmShowPrintout->Execute();
-
     if(memoryStream)
     {
         printOut->PrintToStream(memoryStream);

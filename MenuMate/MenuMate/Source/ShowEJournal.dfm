@@ -15,7 +15,6 @@ object frmEJournal: TfrmEJournal
   OldCreateOrder = False
   Position = poScreenCenter
   Scaled = False
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
@@ -147,7 +146,7 @@ object frmEJournal: TfrmEJournal
     end
     object btnClosePrint: TTouchBtn
       Left = 423
-      Top = 466
+      Top = 530
       Width = 153
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite

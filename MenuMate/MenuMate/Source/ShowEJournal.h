@@ -19,6 +19,7 @@
 #include "ReportUtilities.h"
 #include <Dialogs.hpp>
 #include "EJournalEngine.h"
+#include "Printout.h"
 
 #define RECEIPT_DELIMITER "#####"
 //---------------------------------------------------------------------------
@@ -48,11 +49,6 @@ __published:	// IDE-managed Components
     void __fastcall btnReportUpAutoRepeat(TObject *Sender);
     void __fastcall FromDateTimePickerCloseUp(TObject *Sender);
     void __fastcall ToDateTimePickerCloseUp(TObject *Sender);
-    void __fastcall FromDateTimePickerChange(TObject *Sender);
-    void __fastcall ToDateTimePickerClick(TObject *Sender);
-    void __fastcall ToDateTimePickerChange(TObject *Sender);
-    void __fastcall FormShow(TObject *Sender);
-   // void __fastcall ToDateTimePickerCloseUp(TObject *Sender);
 private:	// User declarations
 	int ExitCode;
 public:		// User declarations
@@ -65,7 +61,7 @@ public:		// User declarations
     void ExtractZedReport();
     void ExtractZedReceiptReport();
     void ExtractZedReceiptAndXReport();
-    //TStringList *Lines;
+    std::vector<TMemoryStream*> CollectReceipts;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmEJournal *frmEJournal;
