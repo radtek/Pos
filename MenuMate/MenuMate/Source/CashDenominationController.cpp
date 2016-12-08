@@ -103,7 +103,7 @@ void TCashDenominationController::OnClose(int Index, int ColIndex)
 void TCashDenominationController::OnEdit(int Index, int ColIndex)
 {
     Index--;
-	if (CashDenominations.IndexValid(Index))
+	if (CashDenominations.IndexValid(Index) && ColIndex == 1)
      {
 		std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(DisplayOwner));
 		frmTouchNumpad->Caption = "Enter Quantity";

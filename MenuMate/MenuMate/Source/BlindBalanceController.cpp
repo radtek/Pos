@@ -145,7 +145,7 @@ void TBlindBalanceController::OnAdd(int Index, int ColIndex)
 
 void TBlindBalanceController::OnEdit(int Index, int ColIndex)
 {
-	if (BlindBalances.IndexValid(Index))
+	if (BlindBalances.IndexValid(Index) && ColIndex == 1)
 	{
 		std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(DisplayOwner));
 		frmTouchNumpad->Caption = "Set the Blind Balance Amount";
