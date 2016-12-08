@@ -438,6 +438,8 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbOpenCashDrawer->Checked = TGlobalSettings::Instance().OpenCashDrawer;
     cbHideReceiptNumber->Checked = TGlobalSettings::Instance().HideReceiptNumberForRefundItem;
     cbMergeSimilarItem->Checked = TGlobalSettings::Instance().MergeSimilarItem;
+    cbExcludeReceipt->Checked = TGlobalSettings::Instance().ExcludeReceipt;
+    cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
     cbUseBIRFormatInXZReport->Checked = TGlobalSettings::Instance().UseBIRFormatInXZReport;
     isBIRSettingTicked = false;
 }

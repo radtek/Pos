@@ -18,6 +18,7 @@
 #include "Printout.h"
 #include "ReportUtilities.h"
 #include <Dialogs.hpp>
+#include "EJournalEngine.h"
 
 #define RECEIPT_DELIMITER "#####"
 //---------------------------------------------------------------------------
@@ -59,7 +60,12 @@ public:		// User declarations
     const std::auto_ptr<TMemoryStream> CurrentPrintout;
 	void Execute();
     void PopulateReport(TMemoryStream *Receipt);
-    TStringList *Lines;
+    void ExtractEJournalReport(EJournalType type);
+    void ExtractZedAndXReport();
+    void ExtractZedReport();
+    void ExtractZedReceiptReport();
+    void ExtractZedReceiptAndXReport();
+    //TStringList *Lines;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmEJournal *frmEJournal;

@@ -5,9 +5,7 @@
 
 #include "ShowEJournal.h"
 #include "ReceiptManager.h"
-#include "EJournalEngine.h"
-//#include "PageSizeHelp.h"
-//#include "PDFUnit.h"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -33,13 +31,14 @@ void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
    if(FromDateTimePicker->Date <= ToDateTimePicker->Date)
    {
       std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-      EJournalEngine->CategorizeEJournal(FromDateTimePicker->Date,ToDateTimePicker->Date);
+      EJournalType type = EJournalEngine->CategorizeEJournal(FromDateTimePicker->Date,ToDateTimePicker->Date);
+      ExtractEJournalReport(type);
    }
    else
    {
       MessageBox("From Date can not be more than To Date", "Error", MB_OK + MB_ICONERROR);
    }
-    ManagerReceipt->Receipt->Clear();
+    /*ManagerReceipt->Receipt->Clear();
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     try
@@ -68,7 +67,7 @@ void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
         DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
-    }
+    }*/
 
 
 
@@ -125,7 +124,10 @@ void TfrmEJournal::Execute()
 {
    ShowModal();
     if(TGlobalSettings::Instance().ExcludeReceipt && TGlobalSettings::Instance().ExcludeXReport)
+    {
         btnClosePrint->Visible = false;
+    }
+    btnSaveAsPDF->Enabled = false;
 	ShowModal();
 }
 //---------------------------------------------------------------------------
@@ -139,7 +141,6 @@ void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmEJournal::FromDateTimePickerChange(TObject *Sender)
 {
     //if(FromDateTimePicker->Date > Now())
@@ -172,7 +173,7 @@ void __fastcall TfrmEJournal::ToDateTimePickerCloseUp(TObject *Sender)
 //---------------------------------------------------------------------------
 void TfrmEJournal::PopulateReport(TMemoryStream *Receipt)
 {
-   	//TStringList *Lines = new TStringList;
+   	TStringList *Lines = new TStringList;
 	try
 	{
 		ManagerReceipt->Get(Lines);
@@ -186,7 +187,53 @@ void TfrmEJournal::PopulateReport(TMemoryStream *Receipt)
 //---------------------------------------------------------------------------
 void __fastcall TfrmEJournal::FormShow(TObject *Sender)
 {
-  Lines = new TStringList;
+  //Lines = new TStringList;
+  int i = 0;
+}
+//---------------------------------------------------------------------------
+void TfrmEJournal::ExtractEJournalReport(EJournalType type)
+{
+   switch(type)  //{eZed,,eZEDReceiptX,};
+   {
+      case eZed:
+      ExtractZedReport();
+      break;
+      case eZedX:
+      ExtractZedAndXReport();
+      break;
+      case eZEDReceiptX:
+      ExtractZedReceiptAndXReport();
+      break;
+      case eZedReceipt:
+      ExtractZedReceiptReport();
+      break;
+   }
+}
+//---------------------------------------------------------------------------
+void TfrmEJournal::ExtractZedReport()
+{
+   ManagerReceipt->Receipt->Clear();
+   std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
+   ManagerReceipt->Receipt = EJournalEngine->GetZedReport(FromDateTimePicker->Date,ToDateTimePicker->Date);
+   PopulateReport(ManagerReceipt->Receipt);
+}
+//---------------------------------------------------------------------------
+void TfrmEJournal::ExtractZedAndXReport()
+{
+   int i = 0;
+}
+//---------------------------------------------------------------------------
+void TfrmEJournal::ExtractZedReceiptAndXReport()
+{
+   int i = 0;
+}
+//---------------------------------------------------------------------------
+void TfrmEJournal::ExtractZedReceiptReport()
+{
+   ManagerReceipt->Receipt->Clear();
+   std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptReport(FromDateTimePicker->Date,ToDateTimePicker->Date);
+   PopulateReport(ManagerReceipt->Receipt);
 }
 //---------------------------------------------------------------------------
 

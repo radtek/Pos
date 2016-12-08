@@ -3,12 +3,22 @@
 #ifndef EJournalEngineH
 #define EJournalEngineH
 #include <DateUtils.hpp>
+#include "ReceiptManager.h"
 //---------------------------------------------------------------------------
+enum EJournalType {eZed,eZedX,eZEDReceiptX,eZedReceipt};
+
 class TEJournalEngine
 {
     public:
          TEJournalEngine();
 	    ~TEJournalEngine();
-        void CategorizeEJournal(TDateTime fromSessionDate,TDateTime toSessionDate);
+        //bool CheckDataExist(TDateTime fromSessionDate,TDateTime toSessionDate);
+        EJournalType CategorizeEJournal(TDateTime fromSessionDate,TDateTime toSessionDate);
+        TMemoryStream* GetZedReport(TDateTime fromSessionDate,TDateTime toSessionDate);
+        TMemoryStream* ExtractZedReceiptReport(TDateTime fromSessionDate,TDateTime toSessionDate);
+    private:
+        EJournalType journalType;
+        void CheckDataExist(TDateTime fromSessionDate,TDateTime toSessionDate);
+        void GetZReport(TIBSQL *IBInternalQuery,TDateTime fromSessionDate,TDateTime toSessionDate);
 };
 #endif
