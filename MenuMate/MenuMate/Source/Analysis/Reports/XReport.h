@@ -11,6 +11,7 @@ public:
     AnsiString GetReportName();
 
     int DisplayAndPrint(TMemoryStream* memoryStream = NULL);
+    void DisplayAndPrintForEJournal(TMemoryStream* memoryStream);
 };
 
 

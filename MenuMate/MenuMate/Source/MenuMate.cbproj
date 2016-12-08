@@ -1097,21 +1097,9 @@
 				<DependentOn>DBHappyHour.h</DependentOn>
 				<BuildOrder>688</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="GraphicsHelp.cpp">
-				<DependentOn>GraphicsHelp.h</DependentOn>
-				<BuildOrder>727</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="ReceiptUtility.cpp">
 				<DependentOn>ReceiptUtility.h</DependentOn>
 				<BuildOrder>719</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MathsHelp.cpp">
-				<DependentOn>MathsHelp.h</DependentOn>
-				<BuildOrder>730</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="PageSizeHelp.cpp">
-				<DependentOn>PageSizeHelp.h</DependentOn>
-				<BuildOrder>729</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="EftposSmartLink.cpp">
 				<DependentOn>EftposSmartLink.h</DependentOn>

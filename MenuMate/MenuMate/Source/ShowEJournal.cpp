@@ -38,38 +38,6 @@ void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
    {
       MessageBox("From Date can not be more than To Date", "Error", MB_OK + MB_ICONERROR);
    }
-    /*ManagerReceipt->Receipt->Clear();
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    try
-    {
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text="select a.REPORT from ZEDS a Where a.TRANS_DATE >= :From_DATE "
-                                    "and a.TRANS_DATE < :To_DATE " ;
-
-        IBInternalQuery->ParamByName("From_DATE")->AsDateTime = FromDateTimePicker->Date;
-        IBInternalQuery->ParamByName("To_DATE")->AsDateTime = ToDateTimePicker->Date;
-
-        IBInternalQuery->ExecQuery();
-        for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-        {
-           IBInternalQuery->FieldByName("REPORT")->SaveToStream(ManagerReceipt->Receipt);
-           ManagerReceipt->Receipt->Position++;
-        }
-
-        PopulateReport(ManagerReceipt->Receipt);
-
-        DBTransaction.Commit();
-    }
-    catch(Exception &E)
-    {
-        DBTransaction.Rollback();
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
-    }*/
-
-
 
 }
 //---------------------------------------------------------------------------
@@ -122,7 +90,7 @@ void __fastcall TfrmEJournal::btnReportUpAutoRepeat(TObject *Sender)
 //---------------------------------------------------------------------------
 void TfrmEJournal::Execute()
 {
-   ShowModal();
+//   ShowModal();
     if(TGlobalSettings::Instance().ExcludeReceipt && TGlobalSettings::Instance().ExcludeXReport)
     {
         btnClosePrint->Visible = false;
@@ -214,8 +182,10 @@ void TfrmEJournal::ExtractZedReport()
 {
    ManagerReceipt->Receipt->Clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->GetZedReport(FromDateTimePicker->Date,ToDateTimePicker->Date);
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime);
    PopulateReport(ManagerReceipt->Receipt);
+   MessageBox(FromDateTimePicker->DateTime.FormatString("dd/mm/yyyy hh:mm:ss"), "From", MB_OK + MB_ICONERROR);
+   MessageBox(ToDateTimePicker->DateTime.FormatString("dd/mm/yyyy hh:mm:ss"), "To", MB_OK + MB_ICONERROR);
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedAndXReport()
@@ -225,7 +195,11 @@ void TfrmEJournal::ExtractZedAndXReport()
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedReceiptAndXReport()
 {
-   int i = 0;
+   ManagerReceipt->Receipt->Clear();
+   std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptAndXReport(FromDateTimePicker->Date,ToDateTimePicker->Date);
+   PopulateReport(ManagerReceipt->Receipt);
+
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedReceiptReport()

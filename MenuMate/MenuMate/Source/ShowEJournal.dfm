@@ -213,8 +213,8 @@ object frmEJournal: TfrmEJournal
         Top = 52
         Width = 146
         Height = 24
-        Date = 42711.940321759260000000
-        Time = 42711.940321759260000000
+        Date = 42711.000000000000000000
+        Time = 42711.000000000000000000
         TabOrder = 1
         OnCloseUp = FromDateTimePickerCloseUp
       end
@@ -223,8 +223,8 @@ object frmEJournal: TfrmEJournal
         Top = 104
         Width = 146
         Height = 24
-        Date = 42711.940554849540000000
-        Time = 42711.940554849540000000
+        Date = 42711.999988425930000000
+        Time = 42711.999988425930000000
         TabOrder = 2
         OnCloseUp = ToDateTimePickerCloseUp
       end
