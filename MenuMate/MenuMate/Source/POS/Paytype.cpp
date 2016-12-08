@@ -2196,7 +2196,7 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
             amountDeducted = amountToPay;
             Payment->SetPay(amountToPay);
         }
-        MessageBox("Payment of " + FormatFloat("0.00",amountDeducted) +" approved and balance of " + FormatFloat("0.00",balance - amountDeducted) +" remaining.", "Information", MB_OK + MB_ICONINFORMATION);
+        MessageBox("Payment of " + FormatFloat("0.00",amountDeducted) +" approved and balance of " + FormatFloat("0.00",balance - amountToPay) +" remaining.", "Information", MB_OK + MB_ICONINFORMATION);
         CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
         CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = voucherCode;
         CurrentTransaction.RedeemGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;

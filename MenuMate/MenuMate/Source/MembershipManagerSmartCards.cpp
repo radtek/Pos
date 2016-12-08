@@ -2613,6 +2613,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
    if(existInLocalDb && TLoyaltyMateUtilities::HasPendingTransactions(DBTransaction,localContactInfo.ContactKey))
      {
         MessageBox("There are pending transaction to be sync. Please try again.", "Information", MB_OK + MB_ICONINFORMATION);
+        TManagerLoyaltyMate::Instance()->TriggerPointSync();
         return false;
      }
 
@@ -2626,6 +2627,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
    {
      if(existInLocalDb)
      {
+       addDefaultPoints = true;
        pointsToSync = localContactInfo.Points;
        //check for email
        if(UserInfo.EMail == "" || UserInfo.EMail == NULL)
@@ -2638,7 +2640,6 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
               {
                 LinkMembers(DBTransaction, UserInfo.ContactKey, localEmailContactKey);
                 TDBContacts::GetContactDetails(DBTransaction,localEmailContactKey,UserInfo);
-                addDefaultPoints = true;
               }
               memberNotExist = GetMemberDetailFromEmail(UserInfo);
           }
@@ -2650,6 +2651,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
        else
        {
           memberNotExist = GetMemberDetailFromEmail(UserInfo);
+
        }
      }
      else

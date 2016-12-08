@@ -183,10 +183,10 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                if(!IsBarcodeCard)
                 {
                    SaveContactInfoAddedToSmartCard(Info, true);
-                   if(TGlobalSettings::Instance().LoyaltyMateEnabled && Info.Points.getPointsBalance() != 0)
+                   /*if(TGlobalSettings::Instance().LoyaltyMateEnabled && Info.Points.getPointsBalance() != 0)
                    {
                        SavePointsTransactionsToSmartCard(Info.Points,"",true);
-                   }
+                   }*/
                 }
 
                DBTransaction.StartTransaction();
