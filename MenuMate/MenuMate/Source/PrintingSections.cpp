@@ -8857,7 +8857,7 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
                     else
                     {
                          itemTaxAmount = CurrentOrder->PriceLevelCustom != 0 ? (CurrentOrder->PriceLevelCustom - CurrentOrder->BillCalcResult.BasePrice)*(CurrentOrder->GetQty())
-                                                    : (CurrentOrder->PriceLevel1 - CurrentOrder->BillCalcResult.BasePrice)*(CurrentOrder->GetQty());
+                                                    : (CurrentOrder->PriceLevel1 - fabs(CurrentOrder->BillCalcResult.BasePrice))*(CurrentOrder->GetQty());
                     }
 
                     if (TaxesMap.count(taxIt->Name) == 0)
@@ -8888,7 +8888,7 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
                         else
                         {
                              sideItemTaxAmount = SubOrderImage->PriceLevelCustom != 0 ? (SubOrderImage->PriceLevelCustom - SubOrderImage->BillCalcResult.BasePrice)*(SubOrderImage->GetQty())
-                                                            : (SubOrderImage->PriceLevel1 - SubOrderImage->BillCalcResult.BasePrice)*(SubOrderImage->GetQty());
+                                                            : (SubOrderImage->PriceLevel1 - fabs(SubOrderImage->BillCalcResult.BasePrice))*(SubOrderImage->GetQty());
                         }
 
                         if (TaxesMap.count(taxIt->Name) == 0)
