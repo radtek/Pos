@@ -294,7 +294,6 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                                 " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable')"
                                 " group by 1,2,3,4,5,6,7,8,9,10 ";
          }
-        //WHERE (( DAYARCBILL.DISCOUNT >= 0 ) or DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE <> 0 )
 
         if(!TGlobalSettings::Instance().EnableDepositBagNum)
         {
@@ -372,17 +371,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
            // before = Now();    //arun
             qrXArcPay->Close();
-            //if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
-            //{
-            //   qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-            //                        "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
-            //                        "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0 AND SUBTOTAL > 0 ";
-           // }
-            //else
-            //{
-
-
-               qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+            qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
                                     "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
                                     "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
             //}

@@ -37,7 +37,6 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
     {
        TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
     }
-
     transactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, deviceName, true);
 
 

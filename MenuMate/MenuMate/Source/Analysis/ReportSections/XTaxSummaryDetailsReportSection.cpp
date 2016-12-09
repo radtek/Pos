@@ -25,7 +25,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     if(!printOut->BlindBalanceUsed)
         return;
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-    const Currency todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
+    const Currency todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
     Currency taxExemptSales = 0;
     Currency salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName);
     Currency serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName);

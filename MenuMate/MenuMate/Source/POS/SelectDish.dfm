@@ -2899,7 +2899,7 @@ object frmSelectDish: TfrmSelectDish
     ButtonColor = 6052441
     LatchedColor = clBtnFace
     DisabledButtonColor = 6052441
-    LatchingProperties = [lkLatchColor, lkStayDown]
+    LatchingProperties = [lkLatchColor, lkStayDown] 
     OnMouseClick = tbtnSelectTableMouseClick
   end
   object tbtnSave: TTouchBtn

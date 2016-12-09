@@ -21,10 +21,6 @@ ZAccumulatedTotalDetailsReportSection::~ZAccumulatedTotalDetailsReportSection()
 void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-    /*const Currency todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
-
-    const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
-	const Currency closingBalance = openingBalance + todaysEarnings;*/
     const Currency todaysEarnings = 0;
     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
