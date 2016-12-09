@@ -112,7 +112,7 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDat
             IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
             ZedReceipt->Position++;
         }
-
+        DBTransaction.Commit();
     }
     catch(Exception &E)
     {
@@ -176,6 +176,7 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessio
             }
             DisplayXReport(ZedReceipt);
         }
+        DBTransaction.Commit();
     }
     catch(Exception &E)
     {
@@ -233,6 +234,7 @@ TMemoryStream* TEJournalEngine::ExtractZedAndXReport(TDateTime fromSessionDate,T
             // x - report will generate
             DisplayXReport(ZedReceipt);
         }
+        DBTransaction.Commit();
     }
     catch(Exception &E)
     {
