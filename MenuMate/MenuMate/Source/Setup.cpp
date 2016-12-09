@@ -2370,7 +2370,7 @@ void __fastcall TfrmSetup::edTaxRateClick(TObject *Sender)
     frmDiscount->Mode = DiscModePercent;
     frmDiscount->tbToggleAmount->Visible = false;
     frmDiscount->pnlToggle->Visible = false;
-    frmDiscount->PERCInitial = StrToCurr(edTaxRate->Text);
+    frmDiscount->PERCInitial = edTaxRate->Text != "" ? StrToCurr(edTaxRate->Text) : 0;
     frmDiscount->Caption = "Enter Tax Rate";
     if (frmDiscount->ShowModal() == mrOk)
     {
