@@ -13,17 +13,17 @@ class TEJournalEngine
          TEJournalEngine();
 	    ~TEJournalEngine();
         EJournalType CategorizeEJournal(TDateTime fromSessionDate,TDateTime toSessionDate);
-        TMemoryStream* ExtractZedReport(TDateTime fromSessionDate,TDateTime toSessionDate, std::vector<TMemoryStream*> &CollectReceipts);
-        TMemoryStream* ExtractZedReceiptReport(TDateTime fromSessionDate,TDateTime toSessionDate, std::vector<TMemoryStream*> &CollectReceipts);
-        TMemoryStream* ExtractZedReceiptAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate, std::vector<TMemoryStream*> &CollectReceipts);
-        TMemoryStream* ExtractZedAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate, std::vector<TMemoryStream*> &CollectReceipts);
+        TMemoryStream* ExtractZedReport(TDateTime fromSessionDate,TDateTime toSessionDate);
+        TMemoryStream* ExtractZedReceiptReport(TDateTime fromSessionDate,TDateTime toSessionDate);
+        TMemoryStream* ExtractZedReceiptAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate);
+        TMemoryStream* ExtractZedAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate);
     private:
         EJournalType journalType;
         void CheckDataExist(TDateTime fromSessionDate,TDateTime toSessionDate);
         void GetZReport(TIBSQL *IBInternalQuery,TDateTime fromSessionDate,TDateTime toSessionDate);
         bool IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key);
         void GetReceipt(TIBSQL *IBGetReciptQuery, int z_key);
-        void DisplayXReport(TMemoryStream* XReceipt, TMemoryStream* CollectXReceipt);
+        void DisplayXReport(TMemoryStream* XReceipt);
         void GetCurrentRunningReceipt(TIBSQL *IBGetCurrentRunningReciptQuery);
 };
 #endif

@@ -51,17 +51,17 @@ __published:	// IDE-managed Components
     void __fastcall ToDateTimePickerCloseUp(TObject *Sender);
 private:	// User declarations
 	int ExitCode;
-public:		// User declarations
-    __fastcall TfrmEJournal(TComponent* Owner);
-    const std::auto_ptr<TMemoryStream> CurrentPrintout;
-	void Execute();
+    void CheckAndPopulateData();
     void PopulateReport(TMemoryStream *Receipt);
     void ExtractEJournalReport(EJournalType type);
     void ExtractZedAndXReport();
     void ExtractZedReport();
     void ExtractZedReceiptReport();
     void ExtractZedReceiptAndXReport();
-    std::vector<TMemoryStream*> CollectReceipts;
+public:		// User declarations
+    __fastcall TfrmEJournal(TComponent* Owner);
+    const std::auto_ptr<TMemoryStream> CurrentPrintout;
+	void Execute();
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmEJournal *frmEJournal;

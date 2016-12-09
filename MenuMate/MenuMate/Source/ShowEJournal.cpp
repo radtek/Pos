@@ -49,7 +49,6 @@ void __fastcall TfrmEJournal::btnSavePDFMouseClick(TObject *Sender)
 
 void __fastcall TfrmEJournal::btnPrintMouseClick(TObject *Sender)
 {
-    int count = CollectReceipts.size();
     TPrintout *Printout = new TPrintout;
     Printout->Printer = TComms::Instance().ReceiptPrinter;
     Printout->PrintToPrinterStream(ManagerReceipt->Receipt,TComms::Instance().ReceiptPrinter.UNCName());
@@ -135,71 +134,41 @@ void TfrmEJournal::ExtractEJournalReport(EJournalType type)
    }
    Processing->Close();
 }
-
-
-
-
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedReport()
 {
    ManagerReceipt->Receipt->Clear();
-   CollectReceipts.clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime, CollectReceipts);
-   if(ManagerReceipt->Receipt->Size > 0)
-   {
-      PopulateReport(ManagerReceipt->Receipt);
-      btnClosePrint->Enabled = true;
-   }
-   else
-   {
-      MessageBox("No Sales data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
-      btnClosePrint->Enabled = false;
-   }
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime);
+   CheckAndPopulateData();
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedAndXReport()
 {
    ManagerReceipt->Receipt->Clear();
-   CollectReceipts.clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedAndXReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime, CollectReceipts);
-   if(ManagerReceipt->Receipt->Size > 0)
-   {
-      PopulateReport(ManagerReceipt->Receipt);
-      btnClosePrint->Enabled = true;
-   }
-   else
-   {
-      MessageBox("No Sales data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
-      btnClosePrint->Enabled = false;
-   }
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedAndXReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime);
+   CheckAndPopulateData();
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedReceiptAndXReport()
 {
    ManagerReceipt->Receipt->Clear();
-   CollectReceipts.clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptAndXReport(FromDateTimePicker->Date,ToDateTimePicker->Date, CollectReceipts);
-   if(ManagerReceipt->Receipt->Size > 0)
-   {
-     PopulateReport(ManagerReceipt->Receipt);
-     btnClosePrint->Enabled = true;
-   }
-   else
-   {
-     MessageBox("No Sales data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
-     btnClosePrint->Enabled = false;
-   }
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptAndXReport(FromDateTimePicker->Date,ToDateTimePicker->Date);
+   CheckAndPopulateData();
 }
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractZedReceiptReport()
 {
    ManagerReceipt->Receipt->Clear();
-   CollectReceipts.clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptReport(FromDateTimePicker->Date,ToDateTimePicker->Date, CollectReceipts);
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptReport(FromDateTimePicker->Date,ToDateTimePicker->Date);
+   CheckAndPopulateData();
+}
+//---------------------------------------------------------------------------
+void TfrmEJournal::CheckAndPopulateData()
+{
    if(ManagerReceipt->Receipt->Size > 0)
    {
       PopulateReport(ManagerReceipt->Receipt);
@@ -211,5 +180,4 @@ void TfrmEJournal::ExtractZedReceiptReport()
       btnClosePrint->Enabled = false;
    }
 }
-//---------------------------------------------------------------------------
 
