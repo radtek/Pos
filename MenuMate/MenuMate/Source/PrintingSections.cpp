@@ -4295,8 +4295,10 @@ void TPrintSection::PrintSalesTaxable(TReqPrintJob* PrintJob)
     {
         SubTotal = PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRefunded();
     }
-
-    SubTotal += PrintJob->Transaction->Money.RoundedCreditRedeemed*-1;
+    else if(WorkingOrdersList->Count == 0)
+    {
+        SubTotal += PrintJob->Transaction->Money.RoundedCreditRedeemed*-1;
+    }
 
     for (int i = 0; i < WorkingOrdersList->Count; i++)
     {
