@@ -15,8 +15,6 @@ XProductionInfoDetailsReportSection::~XProductionInfoDetailsReportSection()
 
 void XProductionInfoDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    if(!printOut->BlindBalanceUsed)
-        return;
     printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
     printOut->PrintFormat->Line->ColCount = 1;
     printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;

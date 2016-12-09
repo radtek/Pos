@@ -469,6 +469,7 @@ public:
     bool ExcludeXReport;
     bool UseBIRFormatInXZReport;
     bool HideRoundingOnReceipt;
+	bool CashDenominationEntry;
 };
 
 #endif

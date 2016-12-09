@@ -3150,6 +3150,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmUseBIRFormatInXZReport, "Use BIR Format in X and Z Report ",
              "Default is false",
               vmgPrinting, false);
+		SetVarBool(DBTransaction,vmCashDenominationEntry, "Enable Cash Denomination",
+		"Default is False",
+		vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

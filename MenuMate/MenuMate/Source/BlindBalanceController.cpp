@@ -8,7 +8,8 @@
 #include "MMTouchKeyboard.h"
 #include "DeviceRealTerminal.h"
 #include "ListPaymentSystem.h"
-
+#include "CashDenominationController.h"
+#include "GlobalSettings.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -65,10 +66,12 @@ bool TBlindBalanceController::Run()
 	frmListManager->Edit.RegisterForEvent(OnEdit);
 	frmListManager->Select.RegisterForEvent(OnEdit);
 	frmListManager->Delete.RegisterForEvent(OnDelete);
+    frmListManager->DrawCell.RegisterForEvent(OnDrawCell);
 	frmListManager->tbtnEdit->Hide();
 	frmListManager->tbtnDelete->Caption = "Cancel";
 	PopulateListManager();
 	frmListManager->SetCaption("Blind Balance Values");
+    frmListManager->DoCustomDrawing();
 	if(frmListManager->ShowModal() == mrCancel)
 		return false;
 
@@ -77,7 +80,34 @@ bool TBlindBalanceController::Run()
 	frmListManager->Edit.DeregisterForEvent(OnEdit);
 	frmListManager->Select.DeregisterForEvent(OnEdit);
 	frmListManager->Delete.DeregisterForEvent(OnDelete);
+    frmListManager->DrawCell.DeregisterForEvent(OnDrawCell);
 	return true;
+}
+
+void TBlindBalanceController::OnDrawCell(int ARow, int ACol)
+{
+  TRect Rect = frmListManager->sgDisplay->CellRect(ACol,ARow);
+  frmListManager->sgDisplay->Canvas->Font->Charset = DEFAULT_CHARSET;
+  frmListManager->sgDisplay->Canvas->Font->Name="Tahoma";
+  frmListManager->sgDisplay->Canvas->Font->Color = clWindowText;
+  frmListManager->sgDisplay->Canvas->Brush->Color = clWhite;
+
+  UnicodeString CellContent = frmListManager->sgDisplay->Cells[ACol][ARow];
+  frmListManager->sgDisplay->Canvas->Font->Size = 12;
+  frmListManager->sgDisplay->Canvas->Font->Style= TFontStyles();
+  frmListManager->sgDisplay->Canvas->Font->Style= TFontStyles() << fsBold;
+  frmListManager->sgDisplay->Canvas->FillRect(Rect);
+
+  if(ACol == 0)
+  {
+    frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Left + 5 , Rect.Top + 5, CellContent);
+  }
+  else
+  {
+    Word SavedAlign = SetTextAlign(frmListManager->sgDisplay->Canvas->Handle,TA_RIGHT);
+    frmListManager->sgDisplay->Canvas->TextRect(Rect, Rect.Right - 5, Rect.Top + 5, CellContent);
+    SetTextAlign(frmListManager->sgDisplay->Canvas->Handle, SavedAlign);
+  }
 }
 
 void TBlindBalanceController::OnClose(int Index, int ColIndex)
@@ -144,7 +174,7 @@ void TBlindBalanceController::OnAdd(int Index, int ColIndex)
 
 void TBlindBalanceController::OnEdit(int Index, int ColIndex)
 {
-	if (BlindBalances.IndexValid(Index))
+	if (BlindBalances.IndexValid(Index) && ColIndex == 1)
 	{
 		std::auto_ptr<TfrmTouchNumpad>frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(DisplayOwner));
 		frmTouchNumpad->Caption = "Set the Blind Balance Amount";
@@ -162,17 +192,7 @@ void TBlindBalanceController::OnEdit(int Index, int ColIndex)
 
 void TBlindBalanceController::OnDelete(int Index, int ColIndex)
 {
-/*	if (BlindBalances.IndexValid(Index))
-	{
-		if (MessageBox("Are you sure you wish to remove " + BlindBalances.BalanceName(Index) + "'s Balance?", "Warning", MB_OKCANCEL + MB_ICONQUESTION) == IDOK)
-		{
-			BlindBalances.RemoveBlindBalance(Index);
-			PopulateListManager();
-		}
-	}
-*/
-		frmListManager->ModalResult = mrCancel;
-
+  frmListManager->ModalResult = mrCancel;
 }
 
 void TBlindBalanceController::PopulateListManager()
@@ -191,7 +211,13 @@ void TBlindBalanceController::PopulateListManager()
 		  {
 			if(BlindBalances.find(ptr->Name) == BlindBalances.end())
 			{
-				BlindBalances.UpdateBlindBalance(ptr->Name, 0);
+                Currency amount = 0;
+                if(TGlobalSettings::Instance().CashDenominationEntry && ptr->Name.UpperCase() == "CASH")
+                {
+                  TCashDenominations cashDenominations = TCashDenominationControllerInterface::Instance()->GetCashDenominations();
+                  amount = cashDenominations.GetTotal();
+                }
+                BlindBalances.UpdateBlindBalance(ptr->Name, amount);
 			}
 
 				if(ptr->Properties & ePayTypeAllowCashOut)
@@ -359,7 +385,17 @@ bool TBlindBalances::IndexValid(int Index)
 	std::advance(itBlindBalances, Index);
 	if (itBlindBalances != BlindBalances.end())
 	{
-		return true;
+        TBlindBalanceSortedVector::iterator itSortedBlindBalances = vectorbegin();
+        TBlindBalanceContainer::iterator itBlindBalances1;
+        std::advance(itSortedBlindBalances, Index);
+        if (itSortedBlindBalances != vectorend())
+        {
+            itBlindBalances1 = BlindBalances.find(*itSortedBlindBalances);
+            AnsiString paymentName = itBlindBalances1->first ;
+            if(TGlobalSettings::Instance().CashDenominationEntry && paymentName.UpperCase() == "CASH")
+              return false;
+        }
+        return true;
 	}
 	return false;
 }

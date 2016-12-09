@@ -51,6 +51,8 @@ protected:
     virtual void AddCurrentBegningAndEndingBalance(IReport* report);
     virtual void XAndZReportFormatForBIR(IReport* report);
     virtual void AddVoidAndCancelReport(IReport* report);
+	virtual void AddMasterCashDenominationSection(IReport* report);
+    virtual void AddCashDenominationSection(IReport* report);
 };
 
 #endif

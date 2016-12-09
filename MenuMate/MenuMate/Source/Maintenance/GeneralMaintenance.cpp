@@ -443,6 +443,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbUseBIRFormatInXZReport->Checked = TGlobalSettings::Instance().UseBIRFormatInXZReport;
     isBIRSettingTicked = false;
     cbHideRoundingOnReceipt->Checked = TGlobalSettings::Instance().HideRoundingOnReceipt;
+	cbCashDenominationEntry->Checked = TGlobalSettings::Instance().CashDenominationEntry;
 }
 
 //---------------------------------------------------------------------------
@@ -4184,3 +4185,12 @@ void __fastcall TfrmGeneralMaintenance::cbUseBIRFormatInXZReportMouseUp(TObject 
   {
      CheckSettingsOfZed();
   }
+  
+void __fastcall TfrmGeneralMaintenance::cbCashDenominationEntryClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().CashDenominationEntry = cbCashDenominationEntry->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmCashDenominationEntry, TGlobalSettings::Instance().CashDenominationEntry);
+	DBTransaction.Commit();
+}

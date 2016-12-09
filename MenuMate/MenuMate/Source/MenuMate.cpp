@@ -138,9 +138,9 @@ USEFORM("POS\SelectGlass.cpp", frmSelectGlass);
 USEFORM("ComboForm.cpp", frmComboForm);
 USEFORM("SetupGlCodes.cpp", frmSetupGlCodes);
 USEFORM("SelectDateAndTime.cpp", frmSelectDateTime);
+USEFORM("CaptureCustomerDetails.cpp", frmCaptureDiscountDetails);
 USEFORM("ShowEJournal.cpp", frmEJournal);
 USEFORM("ProductSearch\ProductSearch.cpp", frmProductSearch);
-USEFORM("CaptureCustomerDetails.cpp", frmCaptureCustomerDetails);
 //---------------------------------------------------------------------------
 HANDLE Mutex;
 

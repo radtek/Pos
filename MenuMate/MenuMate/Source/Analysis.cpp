@@ -57,7 +57,7 @@
 #include "MagicMemoriesSfService.h"
 #include "MagicMemoriesSfProgressMonitor.h"
 #include "SalesForceCommAtZed.h"
-
+#include "CashDenominationController.h"
 #include <string>
 #include <map>
 #include <cassert>
@@ -3051,6 +3051,7 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
+    TCashDenominationControllerInterface::Instance()->GetCashDenominations().ResetTotal();
     // call to new class to get orders of DC and bill them off by storing
     if(TGlobalSettings::Instance().DrinkCommandServerPort != 0 && TGlobalSettings::Instance().DrinkCommandServerPath.Length() != 0
       && TGlobalSettings::Instance().IsDrinkCommandEnabled)

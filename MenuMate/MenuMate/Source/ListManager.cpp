@@ -117,18 +117,18 @@ __fastcall TfrmListManager::TfrmListManager(TComponent* Owner)
 
 void __fastcall TfrmListManager::FormResize(TObject *Sender)
 {
-	if (Tag != Screen->Width)
-	{
-		int Temp = Tag;
-		Tag = Screen->Width;
-                if(double(Screen->Width) / Screen->Height < 1.4)
-                {
-			ScaleBy(Screen->Width, Temp);
-                }
-	}
-	Left				= (Screen->Width - Width) / 2;
-   Top				= (Screen->Height - Height) / 2;
-   pnlMajor->Width = pnlMinor->Left - this->BorderWidth;   
+    if (Tag != Screen->Width)
+    {
+        int Temp = Tag;
+        Tag = Screen->Width;
+        if(double(Screen->Width) / Screen->Height < 1.4)
+        {
+           ScaleBy(Screen->Width, Temp);
+        }
+    }
+    Left = (Screen->Width - Width) / 2;
+    Top	 = (Screen->Height - Height) / 2;
+    pnlMajor->Width = pnlMinor->Left - this->BorderWidth;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmListManager::WMDisplayChange(TWMDisplayChange& Message)
@@ -142,15 +142,22 @@ void __fastcall TfrmListManager::FormShow(TObject *Sender)
 
     if(sgDisplay->ColCount > 1)
     {
-//		sgDisplay->ColWidths[0] = sgDisplay->ClientWidth * 2 / 3;
-//		sgDisplay->ColWidths[1] = sgDisplay->ClientWidth - sgDisplay->ColWidths[0] - 1;
+        int width = (int)((sgDisplay->Width - 40) /sgDisplay->ColCount);
+        for(int i =0 ; i < sgDisplay->ColCount; i++)
+        {
+            sgDisplay->ColWidths[i] = width;
+        }
     }
     else
     {
 		sgDisplay->ColWidths[0] = sgDisplay->ClientWidth;
     }
 }
-//---------------------------------------------------------------------------
+
+void TfrmListManager::DoCustomDrawing()
+{
+   sgDisplay->DefaultDrawing = false;
+}
 
 //---------------------------------------------------------------------------
 void __fastcall TfrmListManager::tbtnAddMouseUp(TObject *Sender,

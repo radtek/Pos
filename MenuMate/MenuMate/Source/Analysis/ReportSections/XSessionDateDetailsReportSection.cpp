@@ -14,8 +14,6 @@ XSessionDateDetailsReportSection::~XSessionDateDetailsReportSection()
 
 void XSessionDateDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    if(!printOut->BlindBalanceUsed)
-        return;
     IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
 
     if (reportSectionDisplayStrategy)

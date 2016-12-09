@@ -381,5 +381,6 @@ TGlobalSettings::TGlobalSettings()
     ExcludeXReport = false;
     UseBIRFormatInXZReport = false;
     HideRoundingOnReceipt = false;
+	CashDenominationEntry = false;
 }
 

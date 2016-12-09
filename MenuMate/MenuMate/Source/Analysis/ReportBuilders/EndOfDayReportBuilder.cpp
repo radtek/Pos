@@ -177,6 +177,16 @@ void EndOfDayReportBuilder::AddVoidAndCancelReport(IReport* report)
     AddReportSectionToReport(report, mmRefundCancelDetailsSections, !GetGlobalSettings()->EnableHideCredsCancels);
 }
 
+void EndOfDayReportBuilder::AddCashDenominationSection(IReport* report)
+{
+    AddReportSectionToReport(report, mmCashDenominationDetailsSection, GetGlobalSettings()->CashDenominationEntry);
+}
+
+void EndOfDayReportBuilder::AddMasterCashDenominationSection(IReport* report)
+{
+    AddReportSectionToReport(report, mmMasterCashDenominationDetailsSection, GetGlobalSettings()->CashDenominationEntry && GetGlobalSettings()->EnableDepositBagNum);
+}
+
 void EndOfDayReportBuilder::XAndZReportFormatForBIR(IReport* report)
 {
    if(GetGlobalSettings()->UseBIRFormatInXZReport)
@@ -220,8 +230,10 @@ void EndOfDayReportBuilder::XAndZReportFormatForBIR(IReport* report)
         AddClientDetailsSection(report);
         AddSessionDateSection(report);
         AddCurrentBegningAndEndingBalance(report);
+        AddMasterCashDenominationSection(report);
         AddMasterBlindBalancesSection(report);
-        AddBlindBalancesSection(report);
+        AddCashDenominationSection(report); // shows cash denomination above blind balance
+	    AddBlindBalancesSection(report);
         AddTransactionSummaryGroupSection(report);
         AddBilledSalesTotalsSection(report);
         AddComplimentarySalesTotalsSection(report);
