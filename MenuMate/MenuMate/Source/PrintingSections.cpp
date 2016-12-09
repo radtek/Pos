@@ -6310,6 +6310,23 @@ void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
     if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
                 && TGlobalSettings::Instance().SetVoidFooter)
     {
+         bool scdApplied = false; // Senior Citizen Discount
+
+        for (int i = 0; i < WorkingOrdersList->Count; i++)
+        {
+            TItemComplete *Item = (TItemComplete*)WorkingOrdersList->Items[i];
+
+            scdApplied = scdHasBeenApplied( Item->BillCalcResult.Discount );
+
+            if(scdApplied)
+                break;
+        }
+
+		if( scdApplied )
+		{
+			printSCDSummary(PrintJob);
+		}
+
         if (PrintJob->ReceiptVoidFooter->Count == 0)
         {
             Empty = true;
