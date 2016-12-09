@@ -465,6 +465,9 @@ public:
     bool ShowVoidOrRefund;
     bool ShowVoidNumber;
     UnicodeString EftPosTipGLCode;
+    bool ExcludeReceipt;
+    bool ExcludeXReport;
+    bool UseBIRFormatInXZReport;
     bool HideRoundingOnReceipt;
 };
 

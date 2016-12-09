@@ -310,12 +310,17 @@ __published:	// IDE-managed Components
         TCheckBox *cbUseNMIStandardFontSize;
         TCheckBox *cbShowLargeFonts;
         TGroupBox *GroupBox23;
+        TGroupBox *GroupBoxEJournal;
         TCheckBox *cbItemSearch;
         TCheckBox *cbShowDarkBackgroundInPOS;
         TCheckBox *cbOpenCashDrawer;
         TCheckBox *cbHideReceiptNumber;
         TGroupBox *gbItemBilling;
         TCheckBox *cbMergeSimilarItem;
+        //TCheckBox *cbShowLocalTaxandProfitTax;
+        TCheckBox *cbUseBIRFormatInXZReport;
+        TCheckBox *cbExcludeReceipt;
+        TCheckBox *cbExcludeXReport;
         TCheckBox *cbHideRoundingOnReceipt;
 
         //**********
@@ -541,6 +546,14 @@ __published:	// IDE-managed Components
         void __fastcall cbOpenCashDrawerClick(TObject *Sender);
         void __fastcall cbHideReceiptNumberClick(TObject *Sender);
         void __fastcall cbMergeSimilarItemClick(TObject *Sender);
+        //void __fastcall cbShowLocalTaxandProfitTaxClick(TObject *Sender);
+        void __fastcall cbUseBIRFormatInXZReportClick(TObject *Sender);
+        //void __fastcall cbUseBIRFormatInXZReportOnEnter(TObject *Sender);
+        void __fastcall cbUseBIRFormatInXZReportMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+
+        void __fastcall cbExcludeReceiptClick(TObject *Sender);
+        void __fastcall cbExcludeXReportClick(TObject *Sender);
         void __fastcall cbHideRoundingOnReceiptClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
@@ -560,9 +573,13 @@ private:
         void ClearAllParkedSales( Database::TDBTransaction &DBTransaction );
         bool invalid_email_id;
         void DisplayTextOnWeightLimit();
+        void EnableDisableSectionsForBIRFormat();
+        bool isBIRSettingTicked;
+        void CheckSettingsOfZed();
 public:		// User declarations
         TTouchBtn *CurrentButton;
         void __fastcall ReDrawLogs();
+
 
 };
 //---------------------------------------------------------------------------

@@ -4420,21 +4420,6 @@ case DAILY_SALES_REPORT:
             _disableBackAndExcelButton = true;
 			break;
         }
-        case E_JOURNAL_INDEX:
-        {
-   			requiredPermission = Security::SecurityReports;
-			ReportControl									= new TReportControl;
-			ReportControl->PrintReport					= &TfrmReports::PrintEJournalReport;
-			TSubReport *SubReport0						= ReportControl->AddSubReport("E-Journal Report");
-
-			// Dates
-			TReportDateFilter *ReportFilter0			= new TReportDateFilter(ReportControl, MMFilterTransaction);
-			ReportFilter0->Caption						= "Select the date range for the Reprint Receipt.";
-			SubReport0->AddFilterIndex(0);
-			ReportControl->AddFilter(ReportFilter0);
-            _disableBackAndExcelButton = true;
-        	break;
-        }
 }
  	if (ReportControl)
 	{
@@ -11094,34 +11079,4 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void TfrmReports::PrintEJournalReport(TReportControl *ReportControl)
-{
-	const AnsiString ReportName = "repESalesJournal";
-	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
-	{
-		dmMMReportData->MMTrans->StartTransaction();
-	}
-	try
-	{
 
-		dmMMReportData->SetupEJournal(ReportControl->Start, ReportControl->End);
-        if (rvMenuMate->SelectReport(ReportName, false))
-        {
-            AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-                                            "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-            rvMenuMate->SetParam("ReportRange", DateRange);
-            rvMenuMate->Execute();
-        }
-        else
-        {
-            Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-        }
-	}
-	__finally
-	{
-		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
-		{
-			dmMMReportData->MMTrans->Commit();
-		}
-	}
-}

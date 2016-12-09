@@ -3066,13 +3066,20 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                 "Default is C:\\Program Files\\Menumate\\" + MYOB_INTEGRATION_FOLDER,
                 vmg3rdPartyInterface, "C:\\Program Files\\Menumate\\" + MYOB_INTEGRATION_FOLDER);
 
+		SetVarBool(DBTransaction,
+                    vmIsXeroEnabled,
+                    "Enable Xero",
+                    "This setting will enable or disable Xero.",
+                    vmgPOS,
+                    false);
 	SetVarBool(DBTransaction, vmIsXeroEnabled,
                 "Enable Xero",
                 "This setting will enable or disable Xero.",
                 vmgPOS,
                 false);
 
-	SetVarBool(DBTransaction, vmIsMYOBEnabled,
+		SetVarBool(DBTransaction,
+                    vmIsMYOBEnabled,
                     "Enable MYOB",
                     "This setting will enable or disable MYOB.",
                     vmgPOS,
@@ -3132,6 +3139,17 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "Rounding will be disable on receipt if setting is true"
                  "Default is False.",
                   vmgPOS, false);
+ 		SetVarBool(DBTransaction,vmExcludeReceipt, "Show Void or Refund number",
+		"Show Void or Refund number"
+		"Default is false",
+		vmgPrinting, false);
+ 		SetVarBool(DBTransaction,vmExcludeXReport, "Show Void or Refund number",
+		"Show Void or Refund number"
+		"Default is false",
+		vmgPrinting, false);
+        SetVarBool(DBTransaction,vmUseBIRFormatInXZReport, "Use BIR Format in X and Z Report ",
+             "Default is false",
+              vmgPrinting, false);
 	}
 	catch(Exception &E)
 	{

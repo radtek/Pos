@@ -1,24 +1,24 @@
-#include "XAccumulatedTotalDetailsReportSection.h"
+#include "ZBegningEndingInvoiceReportSection.h"
 #include "DeviceRealTerminal.h"
 #include "SecurityReference.h"
 #include "ManagerReports.h"
 #include "GlobalSettings.h"
 #include "ReceiptUtility.h"
 
-XAccumulatedTotalDetailsReportSection::XAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
-	: BaseReportSection(mmXReport, mmAccumulatedTotalDetailsSection, dbTransaction, globalSettings)
+ZBegningEndingInvoiceReportSection::ZBegningEndingInvoiceReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
+	: BaseReportSection(mmXReport, mmShowBegningandEndingBalance, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
 }
 
-XAccumulatedTotalDetailsReportSection::~XAccumulatedTotalDetailsReportSection()
+ZBegningEndingInvoiceReportSection::~ZBegningEndingInvoiceReportSection()
 {
     delete dataFormatUtilities;
     delete dataCalculationUtilities;
 }
 
-void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
+void ZBegningEndingInvoiceReportSection::GetOutput(TPrintout* printOut)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     const Currency todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
@@ -26,15 +26,12 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
     const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
 	const Currency closingBalance = openingBalance + todaysEarnings;
 
+    
+    TDateTime trans_date = dataCalculationUtilities->CalculateSessionTransactionDate(Now());
 	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
 	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
     FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
 
-    if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
-    {
-        AddTitle(printOut, "Site Accumulated Zed");
-        printOut->PrintFormat->NewLine();
-    }
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
 
     if(reportSectionDisplayTraits)
@@ -45,82 +42,56 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
 
-        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
+        printOut->PrintFormat->Line->ColCount = 4;
+
+
+        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
+        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/2.5;
+        printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+        printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/2.5;
+        printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
+
+        printOut->PrintFormat->Line->FontInfo.Reset();
+
         printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "Beginning OR No.";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Report Date:";
+        printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("dd") + "/" + Now().FormatString("mm") + "/" + Now().FormatString("yyyy");//Now().FormatString("dd/mm/yyyy");
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Report Time:";
+        printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("hh:nn AM/PM");
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
+        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd") + "/" + trans_date.FormatString("mm") + "/" + trans_date.FormatString("yyyy"); //trans_date.FormatString("dd/mm/yyyy");
+
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Beg. S.I. # ";
         printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(startInvoiceNumber);
         printOut->PrintFormat->AddLine();
         printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "Ending OR No.";
+        printOut->PrintFormat->Line->Columns[1]->Text = "End. S.I. # ";
         printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(endInvoiceNumber);
         printOut->PrintFormat->AddLine();
         printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "Beginning Balance";
+        printOut->PrintFormat->Line->Columns[1]->Text = "";
         printOut->PrintFormat->Line->Columns[2]->Text = "";
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Beginning Balance";
+        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(openingBalance, ffNumber, CurrencyDecimals);
         printOut->PrintFormat->AddLine();
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "Ending Balance";
-        printOut->PrintFormat->Line->Columns[2]->Text = "";
+        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(closingBalance, ffNumber, CurrencyDecimals);
         printOut->PrintFormat->AddLine();
-
-        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
-        printOut->PrintFormat->Line->ColCount = 5;
-        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
-        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/5;
-        printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-        printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/5;
-        printOut->PrintFormat->Line->Columns[2]->Alignment = taCenter;
-        printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/5;
-        printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
-        printOut->PrintFormat->Line->Columns[4]->Width = printOut->PrintFormat->Width * 1/5 + 4;
-
-        printOut->PrintFormat->Line->Columns[0]->Alignment = taRightJustify;
-        //printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/3.5;
-        printOut->PrintFormat->Line->Columns[0]->Text = "__";
-        printOut->PrintFormat->Line->Columns[1]->Line();
-        printOut->PrintFormat->Line->Columns[2]->Line();
-        printOut->PrintFormat->Line->Columns[3]->Line();
-        printOut->PrintFormat->Line->Columns[4]->Line();
-        //printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/3.5;
-        //printOut->PrintFormat->Line->Columns[3]->Text = "_________";
-        printOut->PrintFormat->AddLine();
-
     }
-    else
-    {
-        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
-        printOut->PrintFormat->Line->FontInfo.Reset();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Opening Balance:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(openingBalance);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Z Report:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(todaysEarnings);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Accumulated Total:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Beginning Invoice:";
-        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(startInvoiceNumber);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Ending Invoice:";
-        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(endInvoiceNumber);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Z Reading No:";
-        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(_globalSettings->ZCount);
-        printOut->PrintFormat->AddLine();
-
-    }
-
 
 }
 
-void XAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
+void ZBegningEndingInvoiceReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
 {
     AnsiString prefix1 = TReceiptUtility::ExtractInvoiceNumber(inStartInvoiceNumber);
     if(StrToInt(inStartInvoiceNumber) > 0 )//&& StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
@@ -140,7 +111,7 @@ void XAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inSt
     }
     inEndInvoiceNumber = prefix2 + inEndInvoiceNumber;
 }
-AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber()
+AnsiString ZBegningEndingInvoiceReportSection::GetStartInvoiceNumber()
 {
 	AnsiString beginInvoiceNum = 0;
 
@@ -168,7 +139,7 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber()
 	return beginInvoiceNum;
 }
 
-AnsiString XAccumulatedTotalDetailsReportSection::GetEndInvoiceNumber()
+AnsiString ZBegningEndingInvoiceReportSection::GetEndInvoiceNumber()
 {
 	AnsiString endInvoiceNum = 0;
 
@@ -199,7 +170,7 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetEndInvoiceNumber()
 	return endInvoiceNum;
 }
 
-AnsiString XAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
+AnsiString ZBegningEndingInvoiceReportSection::GetLastEndInvoiceNumber()
 {
 	AnsiString lastEndInvoiceNum = 0;
     TIBSQL *qrEndInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
@@ -227,4 +198,3 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
     }
 	return lastEndInvoiceNum;
 }
-

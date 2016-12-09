@@ -121,7 +121,7 @@ public:
        return singleton;
     }
 
-    TTransactionInfo GetTransactionInfo(Database::TDBTransaction &dbTransaction, UnicodeString deviceName);
+    TTransactionInfo GetTransactionInfo(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, bool showendingbal = false);
 	TTransactionInfo GetBalanceInfo(TBlindBalances &balance);
 
     //We will remove the transaction info object from the map, since we have completed the transaction for the current ZED..
@@ -183,10 +183,14 @@ class DataCalculationUtilities
 {
 public:
     int GetZedKey(Database::TDBTransaction &dbTransaction);
-    Currency GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName);
+    Currency GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, bool showendingbal = false);
     Currency GetAccumulatedZedTotal(Database::TDBTransaction &dbTransaction);
     TCalculatedTotals GetCashDrawerOpenTotals(Database::TDBTransaction &dbTransaction, TGlobalSettings* globalSettings, UnicodeString deviceName);
     TDateTime GetPreviousZedTimeForTerminal(Database::TDBTransaction &dbTransaction, UnicodeString terminalName);
+    void DataCalculationUtilities::PrinterFormatinTwoSections(TPrintout* printOut);
+    void DataCalculationUtilities::PrinterFormatinThreeSections(TPrintout* printOut);
+    int CalculateLastDayOfMonth(int month);
+    TDateTime CalculateSessionTransactionDate(TDateTime trans_date);
 };
 
 struct TPointTransaction

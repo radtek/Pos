@@ -1,30 +1,39 @@
-#include "XAccumulatedTotalDetailsReportSection.h"
+#include "ZAccumulatedTotalDetailsReportSection.h"
 #include "DeviceRealTerminal.h"
 #include "SecurityReference.h"
 #include "ManagerReports.h"
 #include "GlobalSettings.h"
 #include "ReceiptUtility.h"
 
-XAccumulatedTotalDetailsReportSection::XAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
+ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	: BaseReportSection(mmXReport, mmAccumulatedTotalDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
 }
 
-XAccumulatedTotalDetailsReportSection::~XAccumulatedTotalDetailsReportSection()
+ZAccumulatedTotalDetailsReportSection::~ZAccumulatedTotalDetailsReportSection()
 {
     delete dataFormatUtilities;
     delete dataCalculationUtilities;
 }
 
-void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
+void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-    const Currency todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
-
+    const Currency todaysEarnings = 0;
+    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    {
+       todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+    }
+    else
+    {
+       todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
+    }
     const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
 	const Currency closingBalance = openingBalance + todaysEarnings;
+
+
 
 	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
 	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
@@ -35,6 +44,7 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         AddTitle(printOut, "Site Accumulated Zed");
         printOut->PrintFormat->NewLine();
     }
+
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
 
     if(reportSectionDisplayTraits)
@@ -44,23 +54,24 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 
     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
-
         dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "Beginning OR No.";
         printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(startInvoiceNumber);
         printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
+
         printOut->PrintFormat->Line->Columns[1]->Text = "Ending OR No.";
         printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(endInvoiceNumber);
         printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "Beginning Balance";
+        printOut->PrintFormat->Line->Columns[1]->Text = "Accumulated";
+        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(closingBalance, ffNumber, CurrencyDecimals);
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[1]->Text = "Grand Total";
         printOut->PrintFormat->Line->Columns[2]->Text = "";
         printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "Ending Balance";
-        printOut->PrintFormat->Line->Columns[2]->Text = "";
+        int value = dataCalculationUtilities->GetZedKey(*_dbTransaction);
+        value += 1;
+        printOut->PrintFormat->Line->Columns[1]->Text = "Z-Counter";
+        printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(value);
         printOut->PrintFormat->AddLine();
 
         dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
@@ -84,7 +95,6 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         //printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/3.5;
         //printOut->PrintFormat->Line->Columns[3]->Text = "_________";
         printOut->PrintFormat->AddLine();
-
     }
     else
     {
@@ -114,13 +124,11 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[0]->Text = "Z Reading No:";
         printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(_globalSettings->ZCount);
         printOut->PrintFormat->AddLine();
-
     }
-
 
 }
 
-void XAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
+void ZAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
 {
     AnsiString prefix1 = TReceiptUtility::ExtractInvoiceNumber(inStartInvoiceNumber);
     if(StrToInt(inStartInvoiceNumber) > 0 )//&& StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
@@ -140,7 +148,7 @@ void XAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inSt
     }
     inEndInvoiceNumber = prefix2 + inEndInvoiceNumber;
 }
-AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber()
+AnsiString ZAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber()
 {
 	AnsiString beginInvoiceNum = 0;
 
@@ -168,7 +176,7 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber()
 	return beginInvoiceNum;
 }
 
-AnsiString XAccumulatedTotalDetailsReportSection::GetEndInvoiceNumber()
+AnsiString ZAccumulatedTotalDetailsReportSection::GetEndInvoiceNumber()
 {
 	AnsiString endInvoiceNum = 0;
 
@@ -199,7 +207,7 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetEndInvoiceNumber()
 	return endInvoiceNum;
 }
 
-AnsiString XAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
+AnsiString ZAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
 {
 	AnsiString lastEndInvoiceNum = 0;
     TIBSQL *qrEndInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
@@ -227,4 +235,12 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
     }
 	return lastEndInvoiceNum;
 }
+
+void ZAccumulatedTotalDetailsReportSection::SetPrinterFormatForSingleColumn(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 1;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
+    printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+}
+
 

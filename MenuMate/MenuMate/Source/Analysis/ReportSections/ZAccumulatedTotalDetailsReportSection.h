@@ -1,5 +1,5 @@
-#ifndef XAccumulatedTotalDetailsReportSectionH
-#define XAccumulatedTotalDetailsReportSectionH
+#ifndef ZAccumulatedTotalDetailsReportSectionH
+#define ZAccumulatedTotalDetailsReportSectionH
 
 #include "BaseReportSection.h"
 #include "MM_DBCore.h"
@@ -7,14 +7,14 @@
 #include "ReportUtilities.h"
 
 
-class XAccumulatedTotalDetailsReportSection : public BaseReportSection
+class ZAccumulatedTotalDetailsReportSection : public BaseReportSection
 {
 public:
-	XAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
-	~XAccumulatedTotalDetailsReportSection();
+	ZAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+	~ZAccumulatedTotalDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
-    void SetPrinterFormatInMiddle(TPrintout* printOut);
+    void SetPrinterFormatForSingleColumn(TPrintout* printOut);
 
 private:
     AnsiString GetStartInvoiceNumber();

@@ -14,7 +14,7 @@
 #include "XChargedSalesTotalsDetailsReportSection.h"
 #include "XComplimentarySalesTotalsDetailsReportSection.h"
 #include "XAccountBalancesTabsDetailsReportSection.h"
-#include "XAccumulatedTotalDetailsReportSection.h"
+#include "ZAccumulatedTotalDetailsReportSection.h"
 #include "ZStaffHoursDetailsReportSection.h"
 #include "ZCommissionTipsDetailsReportSection.h"
 #include "XAccountBalancesSeatedDetailsReportSection.h"
@@ -31,6 +31,9 @@
 #include "XRemovalDetailsReportSection.h"
 #include "XPriceAdjustmentReportSection.h"
 #include "MallExportConsolidatedReceipt.h"
+#include "ZBegningEndingInvoiceReportSection.h"
+#include "XCancelsAndRefundDetailsForBIRReportSection.h"
+
 
 ZedReportSectionFactory::ZedReportSectionFactory(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSectionFactory(dbTransaction, globalSettings)
@@ -55,6 +58,9 @@ IReportSection* ZedReportSectionFactory::CreateReportSection(ReportSectionType r
             break;
         case mmCurrentDateDetailsSection:
             reportSection = new XCurrentDateDetailsReportSection(_dbTransaction, _globalSettings);
+            break;
+        case mmShowBegningandEndingBalance:
+            reportSection = new ZBegningEndingInvoiceReportSection(_dbTransaction, _globalSettings);
             break;
         case mmClientDetailsSection:
             reportSection = new XClientDetailsReportSection(_dbTransaction, _globalSettings);
@@ -96,7 +102,7 @@ IReportSection* ZedReportSectionFactory::CreateReportSection(ReportSectionType r
             reportSection = new XAccountBalancesTabsDetailsReportSection(_dbTransaction, _globalSettings);
             break;
         case mmAccumulatedTotalDetailsSection:
-            reportSection = new XAccumulatedTotalDetailsReportSection(_dbTransaction, _globalSettings);
+            reportSection = new ZAccumulatedTotalDetailsReportSection(_dbTransaction, _globalSettings);
             break;
         case mmStaffHoursDetailsSection:
             reportSection = new ZStaffHoursDetailsReportSection(_dbTransaction, _globalSettings);
@@ -145,6 +151,9 @@ IReportSection* ZedReportSectionFactory::CreateReportSection(ReportSectionType r
             break;
         case mmMallExportConsolidatedReceipt:
             reportSection = new MallExportConsolidatedReceipt(_dbTransaction, _globalSettings);
+            break;
+        case mmRefundCancelDetailsSections:
+            reportSection = new XCancelsAndRefundDetailsForBIRReportSection(_dbTransaction, _globalSettings);
             break;
         default:
             reportSection = NULL;

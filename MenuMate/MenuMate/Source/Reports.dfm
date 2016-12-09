@@ -218,6 +218,25 @@ object frmReports: TfrmReports
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnXReportMouseClick
     end
+    object btnEJournal: TTouchBtn
+      Left = 319
+      Top = 150
+      Width = 145
+      Height = 65
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'E-Journal'
+      ButtonColor = 6052441
+      LatchedColor = -16777201
+      DisabledButtonColor = -16777201
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnEJournalMouseClick
+    end
   end
   object Panel1: TPanel
     Left = 633

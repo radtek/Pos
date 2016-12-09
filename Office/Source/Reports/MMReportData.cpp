@@ -16350,41 +16350,6 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
 
 }
 
-//---------------------------------------------------------------------------
-void TdmMMReportData::SetupEJournal(TDateTime StartTime, TDateTime EndTime)
-{
-   qrEJournal->Close();
-   qrEJournal->SQL->Text =
-      "SELECT "
-         "DAB.ARCBILL_KEY, "
-         "DAB.time_stamp datetime, "
-         "DAB.RECEIPT receipt, "
-         "DAB.INVOICE_NUMBER "
-         "From "
-			"DAYARCBILL DAB "
-      "WHERE "
-         "DAB.Time_Stamp >= :StartTime and "
-         "DAB.Time_Stamp < :EndTime "
-
-        " UNION ALL "
-
-      "SELECT "
-         "AB.ARCBILL_KEY, "
-         "AB.time_stamp datetime, "
-         "AB.RECEIPT receipt, "
-         "AB.INVOICE_NUMBER " 
-         "From "
-			"ARCBILL AB "
-      "WHERE "
-         "AB.Time_Stamp >= :StartTime and "
-         "AB.Time_Stamp < :EndTime "
-
-         "order by 1 ";
-   qrEJournal->ParamByName("StartTime")->AsDateTime	= StartTime;
-   qrEJournal->ParamByName("EndTime")->AsDateTime	= EndTime;
-}
-
-
 
 
 
