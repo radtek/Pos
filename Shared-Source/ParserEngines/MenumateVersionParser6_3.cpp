@@ -294,6 +294,7 @@ void TApplyParser::update6_34Tables()
     Create6_34TableSCDPWDCustomerDetails(_dbControl);
     Create6_34GeneratorSCDPWDCustomerDetails(_dbControl);
     UpdateZedTable6_34(_dbControl);
+    CreateGeneratorAndTableForCashDenominations6_34( _dbControl);
     Create6_34Malls(_dbControl);
     Create6_34MallExportSettings(_dbControl);
     Create6_34MallExportSettingsMapping(_dbControl);
@@ -351,6 +352,31 @@ void TApplyParser::UpdateZedTable6_34( TDBControl* const inDBControl )  // updat
     }
 }
 //----------------------------------------------------------------------------------------------------------------
+void TApplyParser::CreateGeneratorAndTableForCashDenominations6_34( TDBControl* const inDBControl )
+{
+    if( !generatorExists("GEN_CASHDENOMINATION", _dbControl) )
+	{
+		executeQuery(
+		"CREATE GENERATOR GEN_CASHDENOMINATION;",
+		inDBControl);
+		executeQuery(
+		"SET GENERATOR GEN_CASHDENOMINATION TO 0; ",
+		inDBControl );
+	}
+
+    if( !tableExists("CASHDENOMINATIONS", _dbControl ) )
+    {
+       executeQuery(
+            "CREATE TABLE CASHDENOMINATIONS "
+            "( "
+            " CASHDENOMINATION_KEY Integer NOT NULL PRIMARY KEY , "
+            " TITLE  Varchar(50), "
+            " DENOMINATION NUMERIC(17,4) "
+            "); ",
+        inDBControl );
+    }
+}
+//-----------------------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_34Malls(TDBControl* const inDBControl)
 {
      if ( !tableExists( "MALLS", inDBControl ) )

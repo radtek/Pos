@@ -813,6 +813,7 @@ namespace MenumateVersionParser
         void Create6_34GeneratorSCDPWDCustomerDetails(TDBControl* const inDBControl);
         void Create6_34TableSCDPWDCustomerDetails(TDBControl* const inDBControl);
         void UpdateZedTable6_34(TDBControl* const inDBControl);
+        void CreateGeneratorAndTableForCashDenominations6_34( TDBControl* const inDBControl );
         void Create6_34Malls(TDBControl* const inDBControl);
         void Create6_34MallExportSettings(TDBControl* const inDBControl);
         void Create6_34MallExportSettingsMapping(TDBControl* const inDBControl);
