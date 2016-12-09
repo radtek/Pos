@@ -8875,7 +8875,7 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
                 TItemCompleteSub *SubOrderImage = CurrentOrder->SubOrders->SubOrderGet(i);
                 for (std::vector<BillCalculator::TTaxResult>::iterator taxIt = SubOrderImage->BillCalcResult.Tax.begin(); taxIt != SubOrderImage->BillCalcResult.Tax.end(); taxIt++)
                 {
-                    if (taxIt->TaxType == TTaxType::ttSale)
+                    if (taxIt->TaxType == TTaxType::ttSale && taxIt->Percentage != 0)
                     {
                         taxIt->Name = "Less: VAT (" + taxIt->Percentage + "%)";
                         Currency sideItemTaxAmount = 0.00;
