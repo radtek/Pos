@@ -68,14 +68,16 @@ void __fastcall TfrmEJournal::btnReportUpAutoRepeat(TObject *Sender)
    memReceipt->Perform(WM_VSCROLL, SB_LINEUP, 0);
 }
 //---------------------------------------------------------------------------
-void TfrmEJournal::Execute()
-{
+void TfrmEJournal::Execute(){
 
     btnClosePrint->Enabled = false;
     btnSaveAsPDF->Visible = false;
+    FromDateTimePicker->Date = Now();
+    ToDateTimePicker->Date = Now();
     memReceipt->Clear();
-	ShowModal();
+    ShowModal();
 }
+
 //---------------------------------------------------------------------------
 void __fastcall TfrmEJournal::FromDateTimePickerCloseUp(TObject *Sender)
 {

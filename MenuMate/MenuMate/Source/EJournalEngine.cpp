@@ -126,13 +126,24 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDat
 bool TEJournalEngine::IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key)
 {
     bool isXReportGenerate = false;
-    IBInternalQuery->Close();
-    IBInternalQuery->SQL->Text="SELECT a.Z_KEY FROM ZEDS a where a.Z_KEY > :Z_KEY ";
-    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = z_key;
-    IBInternalQuery->ExecQuery();
-    for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+    if(z_key > 0)
     {
-       isXReportGenerate = true;
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text="SELECT a.Z_KEY FROM ZEDS a where a.Z_KEY > :Z_KEY ";
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = z_key;
+        IBInternalQuery->ExecQuery();
+        for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+           isXReportGenerate = true;
+        }
+    }
+    if(!isXReportGenerate)
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text="SELECT a.ARCBILL_KEY FROM DAYARCBILL a ";
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount == 0)
+            isXReportGenerate = true;
     }
     return isXReportGenerate;
 }

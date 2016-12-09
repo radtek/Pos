@@ -781,7 +781,7 @@ object frmSelectDish: TfrmSelectDish
       ParentFont = False
       ParentColor = True
       Caption = 'Park Sales'
-      ButtonColor = clBtnFace
+      ButtonColor = clWhite
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
