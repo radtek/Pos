@@ -64,7 +64,6 @@ TMemoryStream* TEJournalEngine::ExtractZedReport(TDateTime fromSessionDate,TDate
         for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
            IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
-           ZedReceipt->Position++;
         }
         DBTransaction.Commit();
     }
