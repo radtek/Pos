@@ -291,16 +291,12 @@ void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBCon
 void TApplyParser::update6_34Tables()
 {
     Create6_34Malls(_dbControl);
-    Create6_34GeneratorMallExportMallId(_dbControl);
     Create6_34MallExportSettings(_dbControl);
     Create6_34MallExportSettingsMapping(_dbControl);
     Create6_34MallExportSettingsMappingValues(_dbControl);
     Create6_34MallExportHeader(_dbControl);
     Create6_34MallExportSales(_dbControl);
     Create6_34GeneratorMallExportSaleKey(_dbControl);
-    //Create6_33GeneratorMallExportsSettingKey(_dbControl);
-    Create6_34GeneratorMallExportsSettingMappingKey(_dbControl);
-    Create6_34GeneratorMallExportsSettingValueAttributes(_dbControl);
     Create6_34MallExportSettingValuesAttributes(_dbControl);
     Insert6_34Malls(_dbControl);
     Insert6_34MallExport_Settings(_dbControl);
@@ -429,71 +425,6 @@ void TApplyParser::Create6_34MallExportSales(TDBControl* const inDBControl)
                 ");",
 			inDBControl );
      }
-}
-//----------------------------------------------------------------------------------------------------------------
-void TApplyParser::Create6_34GeneratorMallExportMallId(TDBControl* const inDBControl)
-{
-    if( !generatorExists("GEN_MALLEXPORT_MALL_ID", _dbControl) )
-        {
-            executeQuery(
-            "CREATE GENERATOR GEN_MALLEXPORT_MALL_ID;",
-            inDBControl);
-            executeQuery(
-            "SET GENERATOR GEN_MALLEXPORT_MALL_ID TO 0; ",
-            inDBControl );
-        }
-}
-//----------------------------------------------------------------------------------------------------------------
-void TApplyParser::Create6_34GeneratorMallExportsSettingKey(TDBControl* const inDBControl)
-{
-    if( !generatorExists("GEN_MALLEXPORT_SETTING_KEY", _dbControl) )
-        {
-            executeQuery(
-            "CREATE GENERATOR GEN_MALLEXPORT_SETTING_KEY;",
-            inDBControl);
-            executeQuery(
-            "SET GENERATOR GEN_MALLEXPORT_SETTING_KEY TO 0; ",
-            inDBControl );
-        }
-}
-//----------------------------------------------------------------------------------------------------------------
-void TApplyParser::Create6_34GeneratorMallExportsSettingMappingKey(TDBControl* const inDBControl)
-{
-    if( !generatorExists("GEN_MALLEXPORT_SETTING_MAP_KEY", _dbControl) )
-        {
-            executeQuery(
-            "CREATE GENERATOR GEN_MALLEXPORT_SETTING_MAP_KEY;",
-            inDBControl);
-            executeQuery(
-            "SET GENERATOR GEN_MALLEXPORT_SETTING_MAP_KEY TO 0; ",
-            inDBControl );
-        }
-}
-//----------------------------------------------------------------------------------------------------------------
-void TApplyParser::Create6_34GeneratorMallExportsSettingValues(TDBControl* const inDBControl)
-{
-    if( !generatorExists("GEN_MALLEXPORT_SETTING_VAL_KEY", _dbControl) )
-        {
-            executeQuery(
-            "CREATE GENERATOR GEN_MALLEXPORT_SETTING_VAL_KEY;",
-            inDBControl);
-            executeQuery(
-            "SET GENERATOR GEN_MALLEXPORT_SETTING_VAL_KEY TO 0; ",
-            inDBControl );
-        }
-}
-//----------------------------------------------------------------------------------------------------------------
-void TApplyParser::Create6_34GeneratorMallExportsSettingValueAttributes(TDBControl* const inDBControl)
-{
-    if( !generatorExists("GEN_MALLEXPORT_ATTRIBUTE_KEY", _dbControl) )
-        {
-            executeQuery(
-            "CREATE GENERATOR GEN_MALLEXPORT_ATTRIBUTE_KEY;",
-            inDBControl);
-            executeQuery(
-            "SET GENERATOR GEN_MALLEXPORT_ATTRIBUTE_KEY TO 0; ",
-            inDBControl );
-        }
 }
 //----------------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_34GeneratorMallExportSaleKey(TDBControl* const inDBControl)
