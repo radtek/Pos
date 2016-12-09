@@ -4287,6 +4287,17 @@ void TPrintSection::PrintSalesTaxable(TReqPrintJob* PrintJob)
 	Currency SubTotal = 0;
 	Currency TaxPercentage = 0;
 
+    if(PrintJob->Transaction->Membership.Member.Points.getCurrentPointsPurchased() > 0)
+    {
+        SubTotal = PrintJob->Transaction->Membership.Member.Points.getCurrentPointsPurchased();
+    }
+    else if(PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRefunded() < 0)
+    {
+        SubTotal = PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRefunded();
+    }
+
+    SubTotal += PrintJob->Transaction->Money.RoundedCreditRedeemed*-1;
+
     for (int i = 0; i < WorkingOrdersList->Count; i++)
     {
         TItemMinorComplete *CurrentOrder = (TItemMinorComplete*)WorkingOrdersList->Items[i];
@@ -4295,7 +4306,6 @@ void TPrintSection::PrintSalesTaxable(TReqPrintJob* PrintJob)
         profitTax = getProfitTax(CurrentOrder);
         serviceCharge = getServiceCharge(CurrentOrder);
         serviceChargeTax = getServiceChargeTax(CurrentOrder);
-
 
 		if(!CurrentOrder->BillCalcResult.PriceTaxExempt && productTax != 0)
 		{
