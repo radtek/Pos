@@ -812,6 +812,20 @@ namespace MenumateVersionParser
         void update6_34Tables();
         void Create6_34GeneratorSCDPWDCustomerDetails(TDBControl* const inDBControl);
         void Create6_34TableSCDPWDCustomerDetails(TDBControl* const inDBControl);
+        void UpdateZedTable6_34(TDBControl* const inDBControl);
+        void Create6_34Malls(TDBControl* const inDBControl);
+        void Create6_34MallExportSettings(TDBControl* const inDBControl);
+        void Create6_34MallExportSettingsMapping(TDBControl* const inDBControl);
+        void Create6_34MallExportSettingsMappingValues(TDBControl* const inDBControl);
+        void Create6_34MallExportSales(TDBControl* const inDBControl);
+        void Create6_34MallExportSettingValuesAttributes(TDBControl* const inDBControl);
+        void Create6_34MallExportHeader(TDBControl* const inDBControl);
+        void Create6_34GeneratorMallExportSaleKey(TDBControl* const inDBControl);
+        void Insert6_34Malls(TDBControl* const inDBControl);
+        void Insert6_34MallExport_Settings(TDBControl* const inDBControl);
+        void Insert6_34MallExport_Settings_Mapping(TDBControl* const inDBControl);
+        void Insert6_34MallExport_Settings_Values(TDBControl* const inDBControl);
+        void Insert6_34Mall_ExportHeader(TDBControl* const inDBControl);
 
     }; // class
 } // namespace
