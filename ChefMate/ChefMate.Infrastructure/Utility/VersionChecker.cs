@@ -2,6 +2,7 @@
 using Chefmate.Database.DbModels;
 using ChefMate.Database;
 using Chefmate.Core.Enums;
+using Chefmate.Logger;
 
 namespace Chefmate.Infrastructure.Utility
 {
@@ -46,6 +47,7 @@ namespace Chefmate.Infrastructure.Utility
             {
                 versionMode = DatabaseMode.UnVersion;
                 messageString = "Database unversioned please run the parser";
+                ChefmateLogger.Instance.LogError("CheckVersionInformation : ", ex.Message);
             }
             return versionMode;
         }
