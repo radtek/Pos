@@ -130,6 +130,7 @@ TListPaymentSystem::TListPaymentSystem() : ManagerReference(new TManagerReferenc
 	ForceReceiptWithCashContent = false;
 	EftPosEnabled = true;
 	LastReceipt = NULL;
+    isSCDOrPWDApplied = false;
 }
 
 __fastcall TListPaymentSystem::~TListPaymentSystem()
@@ -1432,6 +1433,9 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 	ArchiveRewards(PaymentTransaction, ArcBillKey);
 	ArchiveWebOrders(PaymentTransaction, ArcBillKey);
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
+
+    if(isSCDOrPWDApplied)
+        PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
 }
 
 void TListPaymentSystem::CheckPatronByOrderIdentification(TPaymentTransaction &PaymentTransaction)
@@ -4326,6 +4330,14 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
                     RetrieveUserOptions = ((PaymentTransaction.IsQuickPayTransaction && TGlobalSettings::Instance().SkipConfirmationOnFastTender)||
                           frmControlTransaction->RetrieveUserOptions() != eBack);
              }
+
+             //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+             if(RetrieveUserOptions)
+             {
+                 if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                    RetrieveUserOptions = false;
+             }
+
 		     if (RetrieveUserOptions)
 			{
 				TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
@@ -4338,6 +4350,7 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
                 }
+
 				if (PaymentComplete)
 				{
 					if (PaymentTransaction.CreditTransaction)
@@ -4447,7 +4460,16 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                 if (frmPaymentType->Execute() == mrOk)
                 {
                     isPaymentProcessed = true;
-                    if (frmControlTransaction->RetrieveUserOptions() != eBack)
+                    bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+                    //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+                    if(retrieveUserOptions)
+                    {
+                        if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                            retrieveUserOptions = false;
+                    }
+
+                    if (retrieveUserOptions)
                     {
                         TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
                         PaymentTransaction.ProcessPoints();
@@ -4590,7 +4612,16 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
 		{
 			if (frmPaymentType->Execute() == mrOk)
 			{
-				if (frmControlTransaction->RetrieveUserOptions() != eBack)
+                bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+                //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+                if(retrieveUserOptions)
+                {
+                    if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                        retrieveUserOptions = false;
+                }
+
+				if (retrieveUserOptions)
 				{
                     isPaymentProcessed = true;
 					TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
@@ -4708,6 +4739,14 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
         {
             PaymentComplete = PrepareThorRequest(PaymentTransaction);
         }
+
+         //if payment complete is true then check whether transaction has SCD or PWD Discount
+        if(PaymentComplete)
+        {
+            if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                        PaymentComplete = false;
+        }
+
         if (PaymentComplete)
         {
             if (Screen->ActiveForm != NULL)
@@ -4744,8 +4783,17 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
 	{
 		if (frmPaymentType->Execute() == mrOk)
 		{
-			if (frmControlTransaction->RetrieveUserOptions() != eBack)
-			{
+            bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+            //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+            if(retrieveUserOptions)
+            {
+                if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                    retrieveUserOptions = false;
+            }
+
+            if (retrieveUserOptions)
+            {
 				TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
 				PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
@@ -4757,6 +4805,7 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
                 }
+
 				if (PaymentComplete)
 				{
 					if (Screen->ActiveForm != NULL)
@@ -4809,8 +4858,17 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
 	{
 		if (frmPaymentType->Execute() == mrOk)
 		{
-			if (SkipUserOptions || frmControlTransaction->RetrieveUserOptions() != eBack)
-			{
+            bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+            //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+            if(retrieveUserOptions)
+            {
+                if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                    retrieveUserOptions = false;
+            }
+            retrieveUserOptions = SkipUserOptions || retrieveUserOptions;
+            if (retrieveUserOptions)
+            {
 				TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
 				PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
@@ -4822,6 +4880,7 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
                 }
+
 				if (PaymentComplete)
 				{
 					if (Screen->ActiveForm != NULL)
@@ -4882,8 +4941,18 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 	{
 		if (frmPaymentType->Execute() == mrOk)
 		{
-			if (SkipUserOptions || frmControlTransaction->RetrieveUserOptions() != eBack)
-			{
+            bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+            //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+            if(retrieveUserOptions)
+            {
+                if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
+                retrieveUserOptions = false;
+            }
+            retrieveUserOptions = SkipUserOptions || retrieveUserOptions;
+
+            if (retrieveUserOptions)
+            {
 				TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
 				PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
@@ -4895,6 +4964,7 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
                 {
                     PaymentComplete = PrepareThorRequest(PaymentTransaction);
                 }
+
 				if (PaymentComplete)
 				{
 					if (Screen->ActiveForm != NULL)
@@ -5741,5 +5811,109 @@ void TListPaymentSystem::SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeSt
 	}
 }
 //---------------------------------------------------------------------------
+/**************************DLF MALL END********************************************/
 
-  /**************************DLF MALL END********************************************/
+TModalResult TListPaymentSystem::CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &paymentTransaction)
+{
+    modalResult = mrNone;
+    //Check SCD Applied on Bill
+    isSCDOrPWDApplied = IsSCDOrPWDApplied(paymentTransaction);
+
+    if(isSCDOrPWDApplied)
+    {
+        std::auto_ptr <TfrmCaptureCustomerDetails> frmCaptureCustomerDetails(TfrmCaptureCustomerDetails::Create <TfrmCaptureCustomerDetails> (Screen->ActiveForm));
+        if(frmCaptureCustomerDetails->ShowModal() == mrOk)
+        {
+            paymentTransaction.customerDetails = frmCaptureCustomerDetails->customerDetails;
+            modalResult = mrOk;
+        }
+        else
+        {
+            modalResult = mrCancel;
+        }
+    }
+    return modalResult;
+}
+//-------------------------------------------------------------------------------------------------------------
+bool TListPaymentSystem::IsSCDOrPWDApplied(TPaymentTransaction &paymentTransaction)
+{
+    bool isSCDOrPWDApplied = false;
+    for(int i = 0 ; i < paymentTransaction.Orders->Count ; i++)
+    {
+        TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[i];
+
+        BillCalculator::DISCOUNT_RESULT_LIST::iterator drIT = itemComplete->BillCalcResult.Discount.begin();
+
+        for( ; drIT != itemComplete->BillCalcResult.Discount.end(); drIT++ )
+        {
+            if(drIT->Name.UpperCase() != "DIPLOMAT" && drIT->Value != 0)
+            {
+                std::vector<UnicodeString> discountGroupList = drIT->DiscountGroupList;
+                std::vector<UnicodeString>::iterator gIT = discountGroupList.begin();
+
+                for( ; gIT != discountGroupList.end(); gIT++ )
+                {
+                    if( *gIT == SCD_DISCOUNT_GROUP ||  *gIT == PWD_DISCOUNT_GROUP)
+                    {
+                        isSCDOrPWDApplied = true;
+                    }
+                }
+            }
+        }
+    }
+	return isSCDOrPWDApplied;
+}
+//-----------------------------------------------------------------------------------------------------
+void TListPaymentSystem::PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &paymentTransaction, long arcbillKey)
+{
+    TIBSQL *IBInternalQuery = paymentTransaction.DBTransaction.Query(paymentTransaction.DBTransaction.AddQuery());
+
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Customer Name", paymentTransaction.customerDetails.CustomerName);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Address", paymentTransaction.customerDetails.Address);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Tin", paymentTransaction.customerDetails.TinNo);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "Business Style", paymentTransaction.customerDetails.BusinessStyle);
+    InsertSCDOrPWDCustomerDetails(IBInternalQuery, arcbillKey, "SC/PWD ID#", paymentTransaction.customerDetails.SC_PWD_ID);
+}
+//----------------------------------------------------------------------------------------------------------------------
+void TListPaymentSystem::InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, long arcbillKey, UnicodeString header, UnicodeString value)
+{
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_CUSTOMER_DETAILS_KEY, 1) FROM RDB$DATABASE";
+        IBInternalQuery->ExecQuery();
+        int customerDetailKey = IBInternalQuery->Fields[0]->AsInteger;
+
+        IBInternalQuery->Close();
+        IBInternalQuery->ParamCheck = true;
+        IBInternalQuery->SQL->Clear();
+        IBInternalQuery->SQL->Text =
+        "INSERT INTO SCD_PWD_CUSTOMER_DETAILS ("
+        "CUSTOMER_DETAILS_KEY,"
+        "ARCBILL_KEY,"
+        "FIELD_HEADER,"
+        "FIELD_VALUE,"
+        "DATA_TYPE "
+        ")"
+        " VALUES "
+        "("
+        ":CUSTOMER_DETAILS_KEY,"
+        ":ARCBILL_KEY,"
+        ":FIELD_HEADER,"
+        ":FIELD_VALUE,"
+        ":DATA_TYPE "
+        ");";
+
+        IBInternalQuery->ParamByName("CUSTOMER_DETAILS_KEY")->AsInteger = customerDetailKey;
+        IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcbillKey;
+        IBInternalQuery->ParamByName("FIELD_HEADER")->AsString = header;
+        IBInternalQuery->ParamByName("FIELD_VALUE")->AsString = value;
+        IBInternalQuery->ParamByName("DATA_TYPE")->AsString = "UnicodeString";
+        IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}

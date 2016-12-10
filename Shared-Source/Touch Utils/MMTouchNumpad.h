@@ -110,6 +110,7 @@ public: // User declarations
     void SetMaxLengthValue(int Length);
 
 	void __fastcall UpdateDisplay();
+    bool IsInitialized;
 };
 // ---------------------------------------------------------------------------
 #endif

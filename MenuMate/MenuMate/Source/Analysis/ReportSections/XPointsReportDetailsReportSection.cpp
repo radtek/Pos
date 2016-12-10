@@ -18,8 +18,6 @@ XPointsReportDetailsReportSection::~XPointsReportDetailsReportSection()
 
 void XPointsReportDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    if(!printOut->BlindBalanceUsed)
-        return;
     AddTitle(printOut, "Points Report");
 	printOut->PrintFormat->NewLine();
 
