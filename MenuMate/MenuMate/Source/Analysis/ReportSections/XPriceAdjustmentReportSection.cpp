@@ -17,8 +17,6 @@ XPriceAdjustmentReportSection::~XPriceAdjustmentReportSection()
 
 void XPriceAdjustmentReportSection::GetOutput(TPrintout* printOut)
 {
-    if(!printOut->BlindBalanceUsed)
-      return;
 	std::auto_ptr<TStringList> AdjustmentsUserList (new TStringList);
 	std::auto_ptr<TStringList> AdjustmentsSQL (new TStringList);
 	if (_globalSettings->ShowPriceAdjustment)

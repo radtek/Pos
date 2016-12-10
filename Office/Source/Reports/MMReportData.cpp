@@ -16303,7 +16303,7 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                                 "OR SECURITY.SECURITY_EVENT = 'CancelY' )   "
                         "GROUP BY ARCHIVE.ARCBILL_KEY)CANCEL_AMOUNT on CANCEL_AMOUNT.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
         "LEFT JOIN ( "
-                    "SELECT DA.ARCHIVE_KEY, cast((coalesce(DA.BASE_PRICE,0) * DA.QTY)+ DA.DISCOUNT_WITHOUT_TAX + sum(coalesce(DAOT.TAX_VALUE,0)) as numeric(17,4))price "
+                    "SELECT DA.ARCHIVE_KEY, cast((coalesce(DA.BASE_PRICE,0) * abs(DA.QTY))+ DA.DISCOUNT_WITHOUT_TAX + sum(coalesce(DAOT.TAX_VALUE,0)) as numeric(17,4))price "
                     "FROM ARCHIVE DA  "
                     "LEFT JOIN ARCORDERTAXES DAOT ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                     "WHERE DA.ARCHIVE_KEY  not IN (  "
@@ -16349,41 +16349,6 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
     qrSalesSummaryD->ParamByName("EndTime")->AsDateTime	= EndTime;
 
 }
-
-//---------------------------------------------------------------------------
-void TdmMMReportData::SetupEJournal(TDateTime StartTime, TDateTime EndTime)
-{
-   qrEJournal->Close();
-   qrEJournal->SQL->Text =
-      "SELECT "
-         "DAB.ARCBILL_KEY, "
-         "DAB.time_stamp datetime, "
-         "DAB.RECEIPT receipt, "
-         "DAB.INVOICE_NUMBER "
-         "From "
-			"DAYARCBILL DAB "
-      "WHERE "
-         "DAB.Time_Stamp >= :StartTime and "
-         "DAB.Time_Stamp < :EndTime "
-
-        " UNION ALL "
-
-      "SELECT "
-         "AB.ARCBILL_KEY, "
-         "AB.time_stamp datetime, "
-         "AB.RECEIPT receipt, "
-         "AB.INVOICE_NUMBER " 
-         "From "
-			"ARCBILL AB "
-      "WHERE "
-         "AB.Time_Stamp >= :StartTime and "
-         "AB.Time_Stamp < :EndTime "
-
-         "order by 1 ";
-   qrEJournal->ParamByName("StartTime")->AsDateTime	= StartTime;
-   qrEJournal->ParamByName("EndTime")->AsDateTime	= EndTime;
-}
-
 
 
 

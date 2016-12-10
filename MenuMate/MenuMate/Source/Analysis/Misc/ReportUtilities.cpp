@@ -2,6 +2,7 @@
 #include "ManagerReports.h"
 #include "SecurityReference.h"
 #include "MMMessageBox.h"
+#include "Printout.h"
 __fastcall TTransactionCount::TTransactionCount()
 {
 	Count = 0;
@@ -74,7 +75,7 @@ Currency DataCalculationUtilities::GetAccumulatedZedTotal(Database::TDBTransacti
 }
 
 
-Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName)
+Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, bool showendingbal)
 {
     try
     {
@@ -86,8 +87,12 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
         Currency skims = 0;
         Currency refloats = 0;
 
-
-        TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(dbTransaction, deviceName);
+        if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
+        {
+           TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
+           showendingbal = false;
+        }
+        TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(dbTransaction, deviceName, showendingbal);
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
 
         ibInternalQuery->Close();
@@ -221,7 +226,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
     return TransactionInfo;
 }
 
- TTransactionInfo TTransactionInfoProcessor::GetTransactionInfo(Database::TDBTransaction &dbTransaction, UnicodeString deviceName)
+ TTransactionInfo TTransactionInfoProcessor::GetTransactionInfo(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, bool showendingbal)
 {
     if(!deviceTransactions[deviceName])                                             // checks if the object is already present for the given terminal
     {
@@ -270,14 +275,25 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
             terminalNamePredicate = " a.TERMINAL_NAME = :TERMINAL_NAME AND";
         }
 
-        qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
+        if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
+        {
+            qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
+                                " from DAYARCBILL a "
+                                " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 or a.DISCOUNT !=0 "
+                                " group by 1,2,3,4,5,6,7,8,9,10 ";
+        }
+        else
+        {
+
+         qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
                                 " from DAYARCBILL a "
                                 " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                 " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
                                 " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable')"
                                 " group by 1,2,3,4,5,6,7,8,9,10 ";
-
-        //WHERE (( DAYARCBILL.DISCOUNT >= 0 ) or DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE <> 0 )
+         }
 
         if(!TGlobalSettings::Instance().EnableDepositBagNum)
         {
@@ -358,6 +374,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
             qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
                                     "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
                                     "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
+            //}
             qrXArcPay->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
             qrXArcPay->ExecQuery();
 
@@ -426,7 +443,11 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                 bool IsCashOut = false;
                 if (qrXArcPay->FieldByName("CASH_OUT")->AsString == "F" || qrXArcPay->FieldByName("CASH_OUT")->AsString == "")
                 {
-                    CurrentPayment.Total += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
+                    //if(qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency > 0)
+                    //{
+                       CurrentPayment.Total += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
+                    //}
+
                 }
                 else
                 {
@@ -690,6 +711,89 @@ void TTransactionInfoProcessor::RemoveEntryFromMap(UnicodeString deviceName)
          it=deviceTransactions.find(deviceName);
          deviceTransactions.erase(it);
      }
+}
+
+void DataCalculationUtilities::PrinterFormatinThreeSections(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 4;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3.5;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/4;
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taCenter;
+    printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/4;
+    printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
+
+ }
+
+void DataCalculationUtilities::PrinterFormatinTwoSections(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 4;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/2.5;
+    printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+    printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/2.5;
+    printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
+    printOut->PrintFormat->Line->Columns[3]->Width = 0;
+ }
+
+TDateTime DataCalculationUtilities::CalculateSessionTransactionDate(TDateTime trans_date)
+{
+    SYSTEMTIME SystemTime;
+    ::GetLocalTime(&SystemTime);
+    int nPreviousMth;
+    int hour = StrToInt(Now().FormatString("hh"));
+    if(hour >= TGlobalSettings::Instance().EndOfDay)
+    {
+       hour -= TGlobalSettings::Instance().EndOfDay;
+    }
+    if(TGlobalSettings::Instance().EndOfDay > 0 && hour < TGlobalSettings::Instance().EndOfDay)
+    {
+        if((SystemTime.wDay - 1) == 0)
+        {
+           nPreviousMth = (SystemTime.wMonth -1==0)?12:SystemTime.wMonth-1;
+           int day = CalculateLastDayOfMonth(nPreviousMth);
+           TDateTime sessionDate(SystemTime.wYear, nPreviousMth, day);
+           trans_date = sessionDate;
+        }
+        else
+        {
+            TDateTime sessionDate(SystemTime.wYear, SystemTime.wMonth, (SystemTime.wDay - 1));
+            trans_date = sessionDate;
+        }
+    }
+    return trans_date;
+}
+
+int DataCalculationUtilities::CalculateLastDayOfMonth(int month)
+{
+    SYSTEMTIME SystemTime;
+
+    int lastdayofmonth;
+    int leap_year;
+    switch(month)
+    {
+	case 2:
+        leap_year = SystemTime.wYear % 4;
+        if(leap_year == 0)
+        {
+           lastdayofmonth = 29;
+        }
+        else
+        {
+           lastdayofmonth = 28;
+        }
+		break;
+	case 4:
+    case 6:
+    case 9:
+    case 11:
+        lastdayofmonth = 30;
+		break;
+     default:
+        lastdayofmonth = 31;
+    }
+    return lastdayofmonth;
 }
 
 
