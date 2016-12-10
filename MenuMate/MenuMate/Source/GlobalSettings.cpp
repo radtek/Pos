@@ -377,5 +377,10 @@ TGlobalSettings::TGlobalSettings()
     ShowVoidOrRefund = false;
     ShowVoidNumber = false;
     EftPosTipGLCode = "";
+    ExcludeReceipt = false;
+    ExcludeXReport = false;
+    UseBIRFormatInXZReport = false;
+    HideRoundingOnReceipt = false;
+	CashDenominationEntry = false;
 }
 

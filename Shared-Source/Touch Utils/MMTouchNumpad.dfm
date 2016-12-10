@@ -19,7 +19,6 @@ object frmTouchNumpad: TfrmTouchNumpad
   OldCreateOrder = False
   Position = poScreenCenter
   OnHide = FormHide
-  OnKeyUp = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
@@ -79,8 +78,8 @@ object frmTouchNumpad: TfrmTouchNumpad
           Visible = False
           Caption = 'Surcharge'
           ButtonColor = 9933970
-          LatchedColor = -16777201
-          DisabledButtonColor = -16777201
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnSurchargeClick
         end
@@ -99,8 +98,8 @@ object frmTouchNumpad: TfrmTouchNumpad
           Visible = False
           Caption = 'Discount'
           ButtonColor = 9933970
-          LatchedColor = -16777201
-          DisabledButtonColor = -16777201
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnDiscountClick
         end
@@ -119,8 +118,8 @@ object frmTouchNumpad: TfrmTouchNumpad
           Visible = False
           Caption = 'Cancel'
           ButtonColor = 2200566
-          LatchedColor = -16777201
-          DisabledButtonColor = -16777201
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnCancelClick
         end
@@ -139,8 +138,8 @@ object frmTouchNumpad: TfrmTouchNumpad
           Visible = False
           Caption = 'Ok'
           ButtonColor = 18944
-          LatchedColor = -16777201
-          DisabledButtonColor = -16777201
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = btnOkMouseClick
         end

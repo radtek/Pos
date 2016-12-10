@@ -18,8 +18,6 @@ XServiceChargeSummaryDetailsReportSection::~XServiceChargeSummaryDetailsReportSe
 
 void XServiceChargeSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    if(!printOut->BlindBalanceUsed)
-        return;
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
 
     Currency servcharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName);

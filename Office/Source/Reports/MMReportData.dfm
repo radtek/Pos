@@ -1,8 +1,10 @@
 object dmMMReportData: TdmMMReportData
   OldCreateOrder = False
   OnDestroy = DataModuleDestroy
+  Left = 65532
+  Top = 65532
   Height = 715
-  Width = 1280
+  Width = 1292
   object qrMenu: TIBQuery
     Database = dmMMData.dbMenuMate
     Transaction = MMTrans

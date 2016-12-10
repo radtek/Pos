@@ -20,8 +20,6 @@ ZCommissionTipsDetailsReportSection::~ZCommissionTipsDetailsReportSection()
 
 void ZCommissionTipsDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    if(!printOut->BlindBalanceUsed)
-        return;
     AddTitle(printOut, "Commission/Tips");
     printOut->PrintFormat->NewLine();
 

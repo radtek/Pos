@@ -7,6 +7,7 @@
 #include "PointsReportHeaderTrait.h"
 #include "SeperatePointsStrategy.h"
 #include "UnifiedPointsStrategy.h"
+#include "CashDenominationCalculationStrategy.h"
 
 ReportSectionDisplayStrategyProvider::ReportSectionDisplayStrategyProvider(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 {
@@ -58,6 +59,12 @@ IReportSectionDisplayStrategy* ReportSectionDisplayStrategyProvider::CreateSecti
                         }
                     }
                     break;
+               case mmCashDenominationDetailsSection:
+                    reportSectionDisplayStrategy = new CashDenominationCalculationStrategy(_dbTransaction, _globalSettings, false);
+                    break;
+               case mmMasterCashDenominationDetailsSection:
+                    reportSectionDisplayStrategy = new CashDenominationCalculationStrategy(_dbTransaction, _globalSettings, true);
+                    break;
                 default:
                     reportSectionDisplayStrategy = NULL;
                     break;
@@ -70,6 +77,9 @@ IReportSectionDisplayStrategy* ReportSectionDisplayStrategyProvider::CreateSecti
             {
                case mmBlindBalancesDetailsSection:
                     reportSectionDisplayStrategy = new BlindBalanceCalculationStrategy(_dbTransaction, _globalSettings, false);
+                    break;
+               case mmCashDenominationDetailsSection:
+                    reportSectionDisplayStrategy = new CashDenominationCalculationStrategy(_dbTransaction, _globalSettings, false);
                     break;
                 default:
                     reportSectionDisplayStrategy = NULL;

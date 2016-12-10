@@ -14,8 +14,6 @@ void ZTotalsDetailsReportSection::GetOutput(TPrintout* printout)
 	//TODO:    use the db transaction in BaseReportSection
 	//          execute the query ( can create one or more methods to return query string )
 	//          format the output and add them into printout object
-    if(!printout->BlindBalanceUsed)
-        return;
 	IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
 
     if (reportSectionDisplayStrategy)
