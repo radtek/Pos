@@ -13,6 +13,7 @@ public:
 	~XReportDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
+    void SetPrinterFormatInMiddle(TPrintout* printOut);
 };
 
 

@@ -118,6 +118,8 @@ enum vmVariables
     vmOpenCashDrawer,
     vmHideReceiptNumberForRefundItem,
     vmMergeSimilarItem,
+    vmHideRoundingOnReceipt,
+	vmCashDenominationEntry,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
@@ -140,7 +142,7 @@ enum vmVariables
    vmSummariseDiscountOnZed, vm_PLACEHOLDER_HideMembershipDetialsOnReceipts, vmCreditPaymentGroupNumber, vmMembersNameOnReceipt,
    vmAutoPrintWebReceipts,vmReceiptNumberLabel,vmReprintReceiptLabel, vmShowSessionDateInZed,vmPrintZeroTaxes,vmPrintNoticeOnTransfer, vmShowPriceAdjustment, vmRevenueFiguresAreDiscountInclusive,
    vmCaptureRefundRefNo, vmHideTaxInvoice, vmExportReprintReceipt, vmSetVoidFooter,
-   vmReceiptDigits, vmShowVoidOrRefund, vmShowVoidNumber,vmRefundReferenceLabel,vmSetSubHeader,
+   vmReceiptDigits, vmShowVoidOrRefund, vmShowVoidNumber,vmRefundReferenceLabel,vmSetSubHeader,vmUseBIRFormatInXZReport,
    // Printers   ------------------------------------------------------------------
    vmPrinterModel = 7000, vmPrinterEmulationMode, vmNormalCPL, vmNormalBoldCPL, vmCutterGap, vmTopMargin, vmKitchenTopMargin,
    vmAlwaysUseFullCut, vmKanjiPrinter, vmSingleLineChar, vmDoubleLineChar, vmGraphicPrinter, vmGraphicFontName, vmGraphicFontSize,
@@ -198,7 +200,9 @@ enum vmVariables
     vmIsXeroEnabled,
     vmIsMYOBEnabled,
     vmConsolidateReportPaths,
-    vmEnableConsolidatedReport
+    vmEnableConsolidatedReport,
+    vmExcludeReceipt,
+    vmExcludeXReport,
 };
 
 // ---------------------------------------------------------------------------

@@ -57,7 +57,7 @@
 #include "MagicMemoriesSfService.h"
 #include "MagicMemoriesSfProgressMonitor.h"
 #include "SalesForceCommAtZed.h"
-
+#include "CashDenominationController.h"
 #include <string>
 #include <map>
 #include <cassert>
@@ -3051,6 +3051,7 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
+    TCashDenominationControllerInterface::Instance()->GetCashDenominations().ResetTotal();
     // call to new class to get orders of DC and bill them off by storing
     if(TGlobalSettings::Instance().DrinkCommandServerPort != 0 && TGlobalSettings::Instance().DrinkCommandServerPath.Length() != 0
       && TGlobalSettings::Instance().IsDrinkCommandEnabled)
@@ -3171,7 +3172,7 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 
 			DataCalculationUtilities* dataCalculationUtilities;
 			Currency TotalEarnings = dataCalculationUtilities->GetTotalEarnings(DBTransaction, DeviceName);
-
+            TDateTime trans_date = dataCalculationUtilities->CalculateSessionTransactionDate(Now());
 			ReportManager reportManager;
 			ZedReport* zedReport = reportManager.GetZedReport(&TGlobalSettings::Instance(), &DBTransaction);
 
@@ -3236,10 +3237,10 @@ Zed:
 						IBInternalQuery->ExecQuery();
 						z_key = Zedkey = IBInternalQuery->Fields[0]->AsInteger;
                         int EMAIL_STATUS = 0;
-						IBInternalQuery->Close();
+						IBInternalQuery->Close();                                                          //
 						IBInternalQuery->SQL->Text =
-						"INSERT INTO ZEDS (" "Z_KEY," "INITIAL_FLOAT," "TERMINAL_NAME," "TIME_STAMP," "REPORT," "SECURITY_REF," "EMAIL_STATUS) "
-						"VALUES (" ":Z_KEY," ":INITIAL_FLOAT," ":TERMINAL_NAME," ":TIME_STAMP," ":REPORT," ":SECURITY_REF," ":EMAIL_STATUS ); ";
+						"INSERT INTO ZEDS (" "Z_KEY," "INITIAL_FLOAT," "TERMINAL_NAME," "TIME_STAMP," "REPORT," "SECURITY_REF," "EMAIL_STATUS," "TRANS_DATE) "
+						"VALUES (" ":Z_KEY," ":INITIAL_FLOAT," ":TERMINAL_NAME," ":TIME_STAMP," ":REPORT," ":SECURITY_REF," ":EMAIL_STATUS," ":TRANS_DATE); ";
 						IBInternalQuery->ParamByName("Z_KEY")->AsInteger = Zedkey;
 						IBInternalQuery->ParamByName("INITIAL_FLOAT")->AsCurrency = 0;
 						IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
@@ -3249,6 +3250,7 @@ Zed:
 						IBInternalQuery->ParamByName("REPORT")->LoadFromStream( FormattedZed(ZedToArchive));
 						IBInternalQuery->ParamByName("SECURITY_REF")->AsInteger = CurrentSecurityRef;
                         IBInternalQuery->ParamByName("EMAIL_STATUS")->AsInteger = EMAIL_STATUS;
+                        IBInternalQuery->ParamByName("TRANS_DATE")->AsDateTime = trans_date;
 						IBInternalQuery->ExecQuery();
 						UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
 						UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);

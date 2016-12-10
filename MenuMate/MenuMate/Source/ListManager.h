@@ -18,29 +18,28 @@ class TListManagerEvents;
 
 typedef void (__closure *TMMListManagerEvent)(int ItemIndex, int ColIndex = -1);
 
-
 class TListManagerEvents
 {
    private:
-	std::vector<TMMListManagerEvent> Events;
-   bool RecursionProtected;
-   bool Enabled;
-   bool Asleep;
-   bool FiredWhileAsleep;
-	public:
-	void RegisterForEvent(TMMListManagerEvent Function);
-	void DeregisterForEvent(TMMListManagerEvent Function);
-	void Occured(int ItemIndex, int ColIndex);
-	AnsiString ErrorMessage;
-	AnsiString ErrorTitle;
-	bool HaltProceedingEvents;
-	bool EventsFailed;
-	void Enable();
-	void Disable();
-   void Sleep();
-   void Wakeup();
-   int EventCount();
-	TListManagerEvents();
+    std::vector<TMMListManagerEvent> Events;
+    bool RecursionProtected;
+    bool Enabled;
+    bool Asleep;
+    bool FiredWhileAsleep;
+   public:
+    void RegisterForEvent(TMMListManagerEvent Function);
+    void DeregisterForEvent(TMMListManagerEvent Function);
+    void Occured(int ItemIndex, int ColIndex);
+    AnsiString ErrorMessage;
+    AnsiString ErrorTitle;
+    bool HaltProceedingEvents;
+    bool EventsFailed;
+    void Enable();
+    void Disable();
+    void Sleep();
+    void Wakeup();
+    int EventCount();
+    TListManagerEvents();
 };
 
 
@@ -93,7 +92,8 @@ public:		// User declarations
 	TListManagerEvents Active;   
 	TListManagerEvents Select;
 	TListManagerEvents DrawCell;
-   void SetCaption(AnsiString inCaption);
+    void SetCaption(AnsiString inCaption);
+    void DoCustomDrawing();
 };
 
 //---------------------------------------------------------------------------
