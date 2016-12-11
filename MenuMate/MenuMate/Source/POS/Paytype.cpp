@@ -4215,6 +4215,7 @@ bool TfrmPaymentType::IsGiftCardNumberValid(AnsiString inGiftCardNumber)
     {
         int currentChar = charArray[i];
         if((currentChar == 34) ||
+           (currentChar == 39) ||
            (currentChar == 44) ||
             (lastChar != -1 && lastChar == 32 && lastChar == currentChar))
         {
