@@ -87,7 +87,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
         Currency skims = 0;
         Currency refloats = 0;
 
-        if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
+        if(TGlobalSettings::Instance().UseBIRFormatInXZReport || showendingbal)
         {
            TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
            showendingbal = false;

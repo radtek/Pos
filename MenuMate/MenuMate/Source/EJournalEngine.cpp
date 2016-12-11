@@ -107,6 +107,8 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDat
     {
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBGetReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBGetCurrentRunningReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBCheckCurrentReceipt = DBTransaction.Query(DBTransaction.AddQuery());
 
         GetZReport(IBInternalQuery, fromSessionDate, toSessionDate, deviceName);
         IBInternalQuery->ExecQuery();
@@ -120,6 +122,16 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDat
             }
             IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
 
+        }
+        if(!IsCurrentReceiptAvailable(IBCheckCurrentReceipt, toSessionDate, deviceName))
+        {
+            GetCurrentRunningReceipt(IBGetCurrentRunningReciptQuery, deviceName);
+            IBGetCurrentRunningReciptQuery->ExecQuery();
+            for (; !IBGetCurrentRunningReciptQuery->Eof; IBGetCurrentRunningReciptQuery->Next())
+            {
+               IBGetCurrentRunningReciptQuery->FieldByName("RECEIPT")->SaveToStream(ZedReceipt);
+
+            }
         }
         DBTransaction.Commit();
     }
@@ -141,8 +153,6 @@ bool TEJournalEngine::IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key, Ans
     {
         terminalNamePredicate = "and a.TERMINAL_NAME = :TERMINAL_NAME ";
     }
-
-
     if(z_key > 0)
     {
         IBInternalQuery->Close();
@@ -303,6 +313,48 @@ TMemoryStream* TEJournalEngine::ExtractZedAndXReport(TDateTime fromSessionDate,T
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
     return ZedReceipt;
+}
+
+bool TEJournalEngine::IsCurrentReceiptAvailable(TIBSQL *IBInternalQuery, TDateTime toSessionDate, AnsiString deviceName)
+{
+    bool isCurrentReceiptGenerate = false;
+
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text="SELECT a.TRANS_DATE FROM ZEDS a where a.TRANS_DATE > :TRANS_DATE " + terminalNamePredicate ;
+    IBInternalQuery->ParamByName("TRANS_DATE")->AsDateTime = toSessionDate;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    IBInternalQuery->ExecQuery();
+    for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+       isCurrentReceiptGenerate = true;
+    }
+
+    if(!isCurrentReceiptGenerate)
+    {
+        IBInternalQuery->Close();
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            terminalNamePredicate = " where a.TERMINAL_NAME = :TERMINAL_NAME ";
+        }
+        IBInternalQuery->SQL->Text="SELECT a.ARCBILL_KEY FROM DAYARCBILL a " + terminalNamePredicate ;
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+        }
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount == 0)
+            isCurrentReceiptGenerate = true;
+    }
+    return isCurrentReceiptGenerate;
 }
 
 

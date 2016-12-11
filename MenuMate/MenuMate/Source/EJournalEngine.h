@@ -25,5 +25,6 @@ class TEJournalEngine
         void GetReceipt(TIBSQL *IBGetReciptQuery, int z_key, AnsiString deviceName);
         void DisplayXReport(TMemoryStream* XReceipt);
         void GetCurrentRunningReceipt(TIBSQL *IBGetCurrentRunningReciptQuery,AnsiString deviceName);
+        bool IsCurrentReceiptAvailable(TIBSQL *IBInternalQuery, TDateTime toSessionDate, AnsiString deviceName);
 };
 #endif
