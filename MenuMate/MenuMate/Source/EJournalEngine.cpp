@@ -217,14 +217,17 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessio
         if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger, deviceName))
         {
             // x - report will generate
-            GetCurrentRunningReceipt(IBGetCurrentRunningReciptQuery, deviceName);
-            IBGetCurrentRunningReciptQuery->ExecQuery();
-            for (; !IBGetCurrentRunningReciptQuery->Eof; IBGetCurrentRunningReciptQuery->Next())
+            if(!IsCurrentReceiptAvailable(IBGetCurrentRunningReciptQuery, toSessionDate, deviceName))
             {
-               IBGetCurrentRunningReciptQuery->FieldByName("RECEIPT")->SaveToStream(ZedReceipt);
+                GetCurrentRunningReceipt(IBGetCurrentRunningReciptQuery, deviceName);
+                IBGetCurrentRunningReciptQuery->ExecQuery();
+                for (; !IBGetCurrentRunningReciptQuery->Eof; IBGetCurrentRunningReciptQuery->Next())
+                {
+                   IBGetCurrentRunningReciptQuery->FieldByName("RECEIPT")->SaveToStream(ZedReceipt);
 
+                }
+                DisplayXReport(ZedReceipt);
             }
-            DisplayXReport(ZedReceipt);
         }
         DBTransaction.Commit();
     }
