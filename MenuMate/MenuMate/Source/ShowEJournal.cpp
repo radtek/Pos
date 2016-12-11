@@ -119,53 +119,54 @@ void TfrmEJournal::ExtractEJournalReport(EJournalType type)
    std::auto_ptr <TfrmProcessing> (Processing)(TfrmProcessing::Create <TfrmProcessing> (this));
    Processing->Message = "Processing Data for E-Journal.Please Wait...";
    Processing->Show();
+   AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
    switch(type)
    {
       case eZed:
-      ExtractZedReport();
+      ExtractZedReport(deviceName);
       break;
       case eZedX:
-      ExtractZedAndXReport();
+      ExtractZedAndXReport(deviceName);
       break;
       case eZEDReceiptX:
-      ExtractZedReceiptAndXReport();
+      ExtractZedReceiptAndXReport(deviceName);
       break;
       case eZedReceipt:
-      ExtractZedReceiptReport();
+      ExtractZedReceiptReport(deviceName);
       break;
    }
    Processing->Close();
 }
 //---------------------------------------------------------------------------
-void TfrmEJournal::ExtractZedReport()
+void TfrmEJournal::ExtractZedReport(AnsiString deviceName)
 {
    ManagerReceipt->Receipt->Clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime);
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime, deviceName);
    CheckAndPopulateData();
 }
 //---------------------------------------------------------------------------
-void TfrmEJournal::ExtractZedAndXReport()
+void TfrmEJournal::ExtractZedAndXReport(AnsiString deviceName)
 {
    ManagerReceipt->Receipt->Clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedAndXReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime);
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedAndXReport(FromDateTimePicker->Date,ToDateTimePicker->DateTime, deviceName);
    CheckAndPopulateData();
 }
 //---------------------------------------------------------------------------
-void TfrmEJournal::ExtractZedReceiptAndXReport()
+void TfrmEJournal::ExtractZedReceiptAndXReport(AnsiString deviceName)
 {
    ManagerReceipt->Receipt->Clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptAndXReport(FromDateTimePicker->Date,ToDateTimePicker->Date);
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptAndXReport(FromDateTimePicker->Date,ToDateTimePicker->Date, deviceName);
    CheckAndPopulateData();
 }
 //---------------------------------------------------------------------------
-void TfrmEJournal::ExtractZedReceiptReport()
+void TfrmEJournal::ExtractZedReceiptReport(AnsiString deviceName)
 {
    ManagerReceipt->Receipt->Clear();
    std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptReport(FromDateTimePicker->Date,ToDateTimePicker->Date);
+   ManagerReceipt->Receipt = EJournalEngine->ExtractZedReceiptReport(FromDateTimePicker->Date,ToDateTimePicker->Date, deviceName);
    CheckAndPopulateData();
 }
 //---------------------------------------------------------------------------

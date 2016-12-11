@@ -54,10 +54,10 @@ private:	// User declarations
     void CheckAndPopulateData();
     void PopulateReport(TMemoryStream *Receipt);
     void ExtractEJournalReport(EJournalType type);
-    void ExtractZedAndXReport();
-    void ExtractZedReport();
-    void ExtractZedReceiptReport();
-    void ExtractZedReceiptAndXReport();
+    void ExtractZedAndXReport(AnsiString deviceName);
+    void ExtractZedReport(AnsiString deviceName);
+    void ExtractZedReceiptReport(AnsiString deviceName);
+    void ExtractZedReceiptAndXReport(AnsiString deviceName);
 public:		// User declarations
     __fastcall TfrmEJournal(TComponent* Owner);
     const std::auto_ptr<TMemoryStream> CurrentPrintout;

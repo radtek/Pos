@@ -13,17 +13,17 @@ class TEJournalEngine
          TEJournalEngine();
 	    ~TEJournalEngine();
         EJournalType CategorizeEJournal(TDateTime fromSessionDate,TDateTime toSessionDate);
-        TMemoryStream* ExtractZedReport(TDateTime fromSessionDate,TDateTime toSessionDate);
-        TMemoryStream* ExtractZedReceiptReport(TDateTime fromSessionDate,TDateTime toSessionDate);
-        TMemoryStream* ExtractZedReceiptAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate);
-        TMemoryStream* ExtractZedAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate);
+        TMemoryStream* ExtractZedReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName);
+        TMemoryStream* ExtractZedReceiptReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName);
+        TMemoryStream* ExtractZedReceiptAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName);
+        TMemoryStream* ExtractZedAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName);
     private:
         EJournalType journalType;
         void CheckDataExist(TDateTime fromSessionDate,TDateTime toSessionDate);
-        void GetZReport(TIBSQL *IBInternalQuery,TDateTime fromSessionDate,TDateTime toSessionDate);
-        bool IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key);
-        void GetReceipt(TIBSQL *IBGetReciptQuery, int z_key);
+        void GetZReport(TIBSQL *IBInternalQuery,TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName);
+        bool IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key, AnsiString deviceName);
+        void GetReceipt(TIBSQL *IBGetReciptQuery, int z_key, AnsiString deviceName);
         void DisplayXReport(TMemoryStream* XReceipt);
-        void GetCurrentRunningReceipt(TIBSQL *IBGetCurrentRunningReciptQuery);
+        void GetCurrentRunningReceipt(TIBSQL *IBGetCurrentRunningReciptQuery,AnsiString deviceName);
 };
 #endif

@@ -49,7 +49,7 @@ void TEJournalEngine::CheckDataExist(TDateTime fromSessionDate,TDateTime toSessi
     CategorizeEJournal(fromSessionDate,toSessionDate);
 }
 //---------------------------------------------------------------------------
-TMemoryStream* TEJournalEngine::ExtractZedReport(TDateTime fromSessionDate,TDateTime toSessionDate)
+TMemoryStream* TEJournalEngine::ExtractZedReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName)
 {
     TMemoryStream *ZedReceipt = new TMemoryStream;
     ZedReceipt->Clear();
@@ -58,7 +58,7 @@ TMemoryStream* TEJournalEngine::ExtractZedReport(TDateTime fromSessionDate,TDate
     try
     {
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate);
+        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate, deviceName);
 
         IBInternalQuery->ExecQuery();
         for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -77,16 +77,27 @@ TMemoryStream* TEJournalEngine::ExtractZedReport(TDateTime fromSessionDate,TDate
 }
 //---------------------------------------------------------------------------
 
-void TEJournalEngine::GetZReport(TIBSQL *IBInternalQuery,TDateTime fromSessionDate,TDateTime toSessionDate)
+void TEJournalEngine::GetZReport(TIBSQL *IBInternalQuery,TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName)
 {
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
     IBInternalQuery->Close();
     IBInternalQuery->SQL->Text="select a.REPORT, a.Z_KEY from ZEDS a Where a.TRANS_DATE >= :From_DATE "
-                                "and a.TRANS_DATE <= :To_DATE " ;
+                                "and a.TRANS_DATE <= :To_DATE " + terminalNamePredicate ;
     IBInternalQuery->ParamByName("From_DATE")->AsDateTime = fromSessionDate;
     IBInternalQuery->ParamByName("To_DATE")->AsDateTime = toSessionDate;
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
 }
 
-TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDate,TDateTime toSessionDate)
+TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName)
 {
     TMemoryStream *ZedReceipt = new TMemoryStream;
     ZedReceipt->Clear();
@@ -97,11 +108,11 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDat
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBGetReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate);
+        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate, deviceName);
         IBInternalQuery->ExecQuery();
         for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
-            GetReceipt(IBGetReciptQuery, IBInternalQuery->FieldByName("Z_KEY")->AsInteger);
+            GetReceipt(IBGetReciptQuery, IBInternalQuery->FieldByName("Z_KEY")->AsInteger, deviceName);
             IBGetReciptQuery->ExecQuery();
             for (; !IBGetReciptQuery->Eof; IBGetReciptQuery->Next())
             {
@@ -121,14 +132,26 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDat
     return ZedReceipt;
 }
 
-bool TEJournalEngine::IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key)
+bool TEJournalEngine::IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key, AnsiString deviceName)
 {
     bool isXReportGenerate = false;
+
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
+
     if(z_key > 0)
     {
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text="SELECT a.Z_KEY FROM ZEDS a where a.Z_KEY > :Z_KEY ";
+        IBInternalQuery->SQL->Text="SELECT a.Z_KEY FROM ZEDS a where a.Z_KEY > :Z_KEY " + terminalNamePredicate ;
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = z_key;
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+        }
         IBInternalQuery->ExecQuery();
         for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
@@ -138,7 +161,15 @@ bool TEJournalEngine::IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key)
     if(!isXReportGenerate)
     {
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text="SELECT a.ARCBILL_KEY FROM DAYARCBILL a ";
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            terminalNamePredicate = " where a.TERMINAL_NAME = :TERMINAL_NAME ";
+        }
+        IBInternalQuery->SQL->Text="SELECT a.ARCBILL_KEY FROM DAYARCBILL a " + terminalNamePredicate ;
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+        }
         IBInternalQuery->ExecQuery();
         if(IBInternalQuery->RecordCount == 0)
             isXReportGenerate = true;
@@ -146,7 +177,7 @@ bool TEJournalEngine::IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key)
     return isXReportGenerate;
 }
 
-TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate)
+TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName)
 {
     TMemoryStream *ZedReceipt = new TMemoryStream;
     ZedReceipt->Clear();
@@ -159,11 +190,11 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessio
         TIBSQL *IBCheckXReport = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBGetCurrentRunningReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate);
+        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate, deviceName);
         IBInternalQuery->ExecQuery();
         for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
-            GetReceipt(IBGetReciptQuery, IBInternalQuery->FieldByName("Z_KEY")->AsInteger);
+            GetReceipt(IBGetReciptQuery, IBInternalQuery->FieldByName("Z_KEY")->AsInteger, deviceName);
             IBGetReciptQuery->ExecQuery();
             for (; !IBGetReciptQuery->Eof; IBGetReciptQuery->Next())
             {
@@ -173,10 +204,10 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessio
             IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
 
         }
-        if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger))
+        if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger, deviceName))
         {
             // x - report will generate
-            GetCurrentRunningReceipt(IBGetCurrentRunningReciptQuery);
+            GetCurrentRunningReceipt(IBGetCurrentRunningReciptQuery, deviceName);
             IBGetCurrentRunningReciptQuery->ExecQuery();
             for (; !IBGetCurrentRunningReciptQuery->Eof; IBGetCurrentRunningReciptQuery->Next())
             {
@@ -195,11 +226,21 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessio
     }
     return ZedReceipt;
 }
-void TEJournalEngine::GetReceipt(TIBSQL *IBGetReciptQuery, int z_key)
+void TEJournalEngine::GetReceipt(TIBSQL *IBGetReciptQuery, int z_key, AnsiString deviceName)
 {
+
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
     IBGetReciptQuery->Close();
-    IBGetReciptQuery->SQL->Text=" SELECT a.RECEIPT, a.Z_KEY FROM ARCBILL a where a.Z_KEY =:Z_KEY order by TIME_STAMP " ;
+    IBGetReciptQuery->SQL->Text=" SELECT a.RECEIPT, a.Z_KEY FROM ARCBILL a where a.Z_KEY =:Z_KEY " + terminalNamePredicate + " order by TIME_STAMP " ;
     IBGetReciptQuery->ParamByName("Z_KEY")->AsInteger = z_key;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        IBGetReciptQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
 }
 
 void TEJournalEngine::DisplayXReport(TMemoryStream* XReceipt)
@@ -212,13 +253,23 @@ void TEJournalEngine::DisplayXReport(TMemoryStream* XReceipt)
     DBTransaction.Commit();
 }
 
-void TEJournalEngine::GetCurrentRunningReceipt(TIBSQL *IBGetCurrentRunningReciptQuery)
+void TEJournalEngine::GetCurrentRunningReceipt(TIBSQL *IBGetCurrentRunningReciptQuery, AnsiString deviceName)
 {
+
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = " Where a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
     IBGetCurrentRunningReciptQuery->Close();
-    IBGetCurrentRunningReciptQuery->SQL->Text=" SELECT a.ARCBILL_KEY, a.RECEIPT FROM DAYARCBILL a order by TIME_STAMP " ;
+    IBGetCurrentRunningReciptQuery->SQL->Text=" SELECT a.ARCBILL_KEY, a.RECEIPT FROM DAYARCBILL a " + terminalNamePredicate + " order by TIME_STAMP " ;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        IBGetCurrentRunningReciptQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
 }
 
-TMemoryStream* TEJournalEngine::ExtractZedAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate)
+TMemoryStream* TEJournalEngine::ExtractZedAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName)
 {
     TMemoryStream *ZedReceipt = new TMemoryStream;
     ZedReceipt->Clear();
@@ -231,14 +282,14 @@ TMemoryStream* TEJournalEngine::ExtractZedAndXReport(TDateTime fromSessionDate,T
         TIBSQL *IBCheckXReport = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBGetCurrentRunningReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate);
+        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate, deviceName);
         IBInternalQuery->ExecQuery();
         for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
             IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
 
         }
-        if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger))
+        if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger, deviceName))
         {
             // x - report will generate
             DisplayXReport(ZedReceipt);
