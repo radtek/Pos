@@ -239,7 +239,10 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 	cbRevenueFiguresAreTaxAndServiceChargeInclusive->Checked = TGlobalSettings::Instance().RevenueFiguresAreTaxAndServiceChargeInclusive;
 	tbMinRedemptionPoint->Caption = IntToStr(TGlobalSettings::Instance().MinRedemptionPoint);
 	cbvmAllowMemberDetailscreen->Checked = TGlobalSettings::Instance().AllowMemberDetailscreen ;
-     cbvmMandatoryMembershipCard->Checked= TGlobalSettings::Instance().MandatoryMembershipCard ;
+    cbvmMandatoryMembershipCard->Checked= TGlobalSettings::Instance().MandatoryMembershipCard ;
+    cbvmMandatoryMembershipCard->Checked= TGlobalSettings::Instance().MandatoryMembershipCard ;
+    cbExcludeReceipt->Checked = TGlobalSettings::Instance().ExcludeReceipt;
+    cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
 
 
 	int SerialPortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort);
@@ -435,6 +438,12 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbOpenCashDrawer->Checked = TGlobalSettings::Instance().OpenCashDrawer;
     cbHideReceiptNumber->Checked = TGlobalSettings::Instance().HideReceiptNumberForRefundItem;
     cbMergeSimilarItem->Checked = TGlobalSettings::Instance().MergeSimilarItem;
+    cbExcludeReceipt->Checked = TGlobalSettings::Instance().ExcludeReceipt;
+    cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
+    cbUseBIRFormatInXZReport->Checked = TGlobalSettings::Instance().UseBIRFormatInXZReport;
+    isBIRSettingTicked = false;
+    cbHideRoundingOnReceipt->Checked = TGlobalSettings::Instance().HideRoundingOnReceipt;
+	cbCashDenominationEntry->Checked = TGlobalSettings::Instance().CashDenominationEntry;
 }
 
 //---------------------------------------------------------------------------
@@ -3907,7 +3916,6 @@ void _fastcall TfrmGeneralMaintenance::cbPostMoneyToGLAccountsClick(TObject *Sen
         cbPostMoneyAsPayments->Checked = false;
         TGlobalSettings::Instance().PostMoneyAsPayment =cbPostMoneyAsPayments->Checked;
         TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmPostMoneyAsPayment,TGlobalSettings::Instance().PostMoneyAsPayment);
-
         cbPostMoneyAsPayments->OnClick=cbPostMoneyAsPaymentsClick;
     }
     DBTransaction.Commit();
@@ -4038,12 +4046,151 @@ void __fastcall TfrmGeneralMaintenance::cbMergeSimilarItemClick(TObject *Sender)
 	DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbUseBIRFormatInXZReportClick(TObject *Sender)
+{
+    isBIRSettingTicked = true;
+    TGlobalSettings::Instance().UseBIRFormatInXZReport = cbUseBIRFormatInXZReport->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmUseBIRFormatInXZReport, TGlobalSettings::Instance().UseBIRFormatInXZReport);
+	DBTransaction.Commit();
+    if(cbUseBIRFormatInXZReport->Checked)
+    {
+        cbShowDiscountReport->Checked = false;
+        cbShowTransactionSummaryGroups->Checked = false;
+        cbShowTransactionSummaryGroups->Enabled = false;
+        cbShowTaxSummary->Enabled = false;
+        cbShowDiscountReport->Enabled = false;
+        cbEnableHideCredCancels->Enabled = false;
+        cbShowSessionDate->Checked = false;
+        cbShowSessionDate->Enabled = false;
+        cbEnableHideCredCancels->Checked = false;
+        cbShowAccumulatedTotal->Checked = false;
+        cbShowAccumulatedTotal->Enabled = false;
+        cbShowTaxSummary->Checked = false;
+        EnableDisableSectionsForBIRFormat();
+    }
+    else
+    {
+       cbShowTransactionSummaryGroups->Enabled = true;
+       cbShowTaxSummary->Enabled = true;
+       cbShowDiscountReport->Enabled = true;
+       cbEnableHideCredCancels->Enabled = true;
+       cbShowSessionDate->Enabled = true;
+       cbShowAccumulatedTotal->Enabled = true;
+       EnableDisableSectionsForBIRFormat();
+    }
+}
+void __fastcall TfrmGeneralMaintenance::cbExcludeReceiptClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().ExcludeReceipt = cbExcludeReceipt->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmExcludeReceipt, TGlobalSettings::Instance().ExcludeReceipt);
+	DBTransaction.Commit();
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbExcludeXReportClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().ExcludeXReport = cbExcludeXReport->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmExcludeXReport, TGlobalSettings::Instance().ExcludeXReport);
+	DBTransaction.Commit();
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
+void TfrmGeneralMaintenance::EnableDisableSectionsForBIRFormat()
+{
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	int global_profile_key;
+	// This is used to retain the state of the checkbox if the POS is exited
+#pragma warn -pia
+	if (!(global_profile_key = TManagerVariable::Instance().GetProfile(DBTransaction, eSystemProfiles, "Globals")))
+	global_profile_key = TManagerVariable::Instance().SetProfile(DBTransaction, eSystemProfiles, "Globals");
+#pragma warn .pia
+	TManagerVariable::Instance().SetProfileBool(DBTransaction,global_profile_key,vmShowTaxSummary, TGlobalSettings::Instance().ShowTaxSummary = cbUseBIRFormatInXZReport->Checked);
+	TManagerVariable::Instance().SetProfileBool(DBTransaction,global_profile_key,vmShowTransactionSummaryGroups, TGlobalSettings::Instance().ShowTransactionSummaryGroups = cbUseBIRFormatInXZReport->Checked);
+    TManagerVariable::Instance().SetProfileBool(DBTransaction,global_profile_key,vmShowDiscountReport, TGlobalSettings::Instance().ShowDiscountReport = cbUseBIRFormatInXZReport->Checked);
+    TManagerVariable::Instance().SetProfileBool(DBTransaction,global_profile_key,vmShowAccumulatedZed, TGlobalSettings::Instance().ShowAccumulatedZeds = cbUseBIRFormatInXZReport->Checked);
+    DBTransaction.Commit();
+}
+void TfrmGeneralMaintenance::CheckSettingsOfZed()
+{
+    if(cbUseBIRFormatInXZReport->Checked)
+    {
+        cbShowTransactionSummaryGroups->Enabled = false;
+        cbDEnableBlindBalances->Checked = false;
+        cbShowTransactionSummaryGroups->Checked = false;
+        cbShowBilledSalesTotals->Checked = false;
+        cbShowComplimentarySalesTotals->Checked = false;
+        cbShowChargedSalesTotals->Checked = false;
+        cbShowTotals->Checked = false;
+        cbShowBreakdownCategories->Checked = false;
+        cbShowRemovalReport->Checked = false;
+        cbShowPointsReport->Checked = false;
+        cbShowPatronAverages->Checked = false;
+        cbShowProductionInfo->Checked = false;
+        cbShowAccountPurchases->Checked = false;
+        cbShowAccountBalancesTabs->Checked = false;
+        cbShowAccountBalances->Checked = false;
+        cbShowHourlySales->Checked = false;
+        cbShowServiceChargeSummary->Checked = false;
+        cbEnableStaffHours->Checked = false;
+        cbEnableCommission->Checked = false;
+        cbRevenueFiguresAreTaxAndServiceChargeInclusive->Checked = false;
+        cbPointsOnZed->Checked = false;
+        cbShowInvoiceInfo->Checked = false;
+        cbRevenueFiguresAreDiscountInclusive->Checked = false;
+        cbShowPriceAdjustment->Checked = false;
 
+        cbShowDiscountReport->Checked = false;
+        cbShowTransactionSummaryGroups->Checked = false;
+        cbShowTransactionSummaryGroups->Enabled = false;
+        cbShowTaxSummary->Enabled = false;
+        cbShowDiscountReport->Enabled = false;
+        cbEnableHideCredCancels->Enabled = false;
+        cbShowSessionDate->Checked = false;
+        cbShowSessionDate->Enabled = false;
+        cbEnableHideCredCancels->Checked = false;
+        cbShowAccumulatedTotal->Checked = false;
+        cbShowAccumulatedTotal->Enabled = false;
+        cbShowTaxSummary->Checked = false;
+        EnableDisableSectionsForBIRFormat();
+    }
+    else
+    {
+       cbShowTransactionSummaryGroups->Enabled = true;
+       cbShowTaxSummary->Enabled = true;
+       cbShowDiscountReport->Enabled = true;
+       cbEnableHideCredCancels->Enabled = true;
+       cbShowSessionDate->Enabled = true;
+       cbShowAccumulatedTotal->Enabled = true;
+       EnableDisableSectionsForBIRFormat();
+    }
+}
+void __fastcall TfrmGeneralMaintenance::cbHideRoundingOnReceiptClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().HideRoundingOnReceipt = cbHideRoundingOnReceipt->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmHideRoundingOnReceipt, TGlobalSettings::Instance().HideRoundingOnReceipt);
+	DBTransaction.Commit();
+}
 
-
-
-
-
-
-
-
+void __fastcall TfrmGeneralMaintenance::cbUseBIRFormatInXZReportMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+  int X, int Y)
+  {
+     CheckSettingsOfZed();
+  }
+  
+void __fastcall TfrmGeneralMaintenance::cbCashDenominationEntryClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().CashDenominationEntry = cbCashDenominationEntry->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmCashDenominationEntry, TGlobalSettings::Instance().CashDenominationEntry);
+	DBTransaction.Commit();
+}

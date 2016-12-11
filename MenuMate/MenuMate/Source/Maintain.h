@@ -107,6 +107,7 @@ class TfrmMaintain : public TZForm
     TTouchBtn *btnTierLevels;
     TTouchBtn *btnAccountingInterface;
     TTouchBtn *tbtnCashDrawer;
+    TTouchBtn *tbtnCashDenomination;
 
     //*****************
 

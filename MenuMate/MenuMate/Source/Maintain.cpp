@@ -499,6 +499,11 @@ void __fastcall TfrmMaintain::BitBtn2Click(TObject *Sender)
 			frmMessageMaintenance->MessageType = eCashDrawer;
 			frmMessageMaintenance->ShowModal();
 		}
+		else if (Sender == tbtnCashDenomination)
+		{
+			frmMessageMaintenance->MessageType = eCashDenomination;
+			frmMessageMaintenance->ShowModal();
+		}
 	}
 	else if (Result == lsDenied)
 	{

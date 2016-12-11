@@ -42,6 +42,7 @@ __published:	// IDE-managed Components
 	TTouchBtn *BtnFloatAdjustments;
 	TTouchBtn *btnSiteSummary;
 	TTouchBtn *btnXReport;
+    TTouchBtn *btnEJournal;
 	void __fastcall btnStockMouseClick(TObject *Sender);
 	void __fastcall btnTransactionMouseClick(TObject *Sender);
 	void __fastcall btnTransferredMouseClick(TObject *Sender);
@@ -53,6 +54,8 @@ __published:	// IDE-managed Components
 	void __fastcall BtnFloatAdjustmentsMouseClick(TObject *Sender);
 	void __fastcall btnSiteSummaryMouseClick(TObject *Sender);
 	void __fastcall btnXReportMouseClick(TObject *Sender);
+    void __fastcall btnEJournalMouseClick(TObject *Sender);
+
 private:	// User declarations
 	int BtnSelection;
 public:		// User declarations

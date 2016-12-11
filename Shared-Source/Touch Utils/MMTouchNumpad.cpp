@@ -16,6 +16,7 @@
 // ---------------------------------------------------------------------------
 __fastcall TfrmTouchNumpad::TfrmTouchNumpad(TComponent* Owner) : TZForm(Owner)
 {
+   IsInitialized = true;
    PreSelect = true;
    Format = pmCurrency;
    MaxLength = 9; // Default length is 9
@@ -105,6 +106,7 @@ void __fastcall TfrmTouchNumpad::FormShow(TObject *Sender)
 	  }
    }
  }
+ OnKeyUp = FormKeyDown;
 }
 
 void __fastcall TfrmTouchNumpad::UpdateDisplay()
@@ -147,6 +149,7 @@ void __fastcall TfrmTouchNumpad::FormHide(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmTouchNumpad::btnNumberMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
+   IsInitialized = true;
    TLabel *Btn = (TLabel*)Sender;
 
    if (Mode == pmCurrency || Mode == pmDecimal)
@@ -447,7 +450,7 @@ void __fastcall TfrmTouchNumpad::btnSurchargeClick(TObject *Sender)
 
 void __fastcall TfrmTouchNumpad::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
 {
-   if (Key == VK_RETURN || Key == VK_SPACE)
+   if (IsInitialized && (Key == VK_RETURN || Key == VK_SPACE))
    {
 	  btnSurchargeClick(Sender);
    }
@@ -582,6 +585,7 @@ void __fastcall TfrmTouchNumpad::FormKeyDown(TObject *Sender, WORD &Key, TShiftS
            splitValue = QtyDisplay->Numeric();
         }
    }
+   IsInitialized = true;
 }
 
 // ---------------------------------------------------------------------------

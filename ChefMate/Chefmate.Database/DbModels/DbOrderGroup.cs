@@ -5,18 +5,32 @@ using System.Data;
 using Chefmate.Core.Enums;
 using Chefmate.Core.Model;
 using Chefmate.Database.Model;
+using Chefmate.Logger;
 using ChefMate.Database;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace Chefmate.Database.DbModels
 {
     public class DbOrderGroup
     {
-        public static void AddOrderGroups(ObservableCollection<Group> inGroups)
+        public static void AddOrderGroups(FbConnection inConnection, FbTransaction inTransaction, ObservableCollection<Group> inGroups)
         {
             foreach (var inGroup in inGroups)
             {
-                AddOrderGroup(inGroup);
+                AddOrderGroup(inConnection, inTransaction, inGroup);
             }
+        }
+        public static void AddOrderGroup(FbConnection inConnection, FbTransaction inTransaction, Group inGroup)
+        {
+            inGroup.GroupKey = DbGroup.GetOrCreateGroup(inConnection, inTransaction, inGroup);
+            inGroup.OrderGroupKey = DatabaseCore.Instance.GetGeneratorValue("GEN_ORDERGROUP");
+            var fbParameters = new List<QueryParameter>();
+            fbParameters.Add(new QueryParameter("ORDERGROUP_KEY", inGroup.OrderGroupKey));
+            fbParameters.Add(new QueryParameter("ORDER_KEY", inGroup.Order.OrderKey));
+            fbParameters.Add(new QueryParameter("GROUP_KEY", inGroup.GroupKey));
+            fbParameters.Add(new QueryParameter("ORDERGROUP_CALLED_AWAY", inGroup.CalledAway));
+            var queryString = DatabaseCore.Instance.BuildInsertQuery("ORDERGROUPS", fbParameters);
+            DatabaseCore.Instance.ExecuteNonQuery(inConnection, inTransaction, queryString, fbParameters);
         }
         public static void AddOrderGroup(Group inGroup)
         {
@@ -42,14 +56,21 @@ namespace Chefmate.Database.DbModels
             var resultSet = DatabaseCore.Instance.ExecuteDataSetQuery(queryString, queryParameters);
             return ExtractGroupsInformation(resultSet, order);
         }
-        public static void CallAwayGroup(int orderGroupKey,bool callAwayStatus)
+        public static void CallAwayGroup(int orderGroupKey, bool callAwayStatus)
         {
-            var whereCondition = " WHERE ORDERGROUP_KEY=@ORDERGROUP_KEY";
-            var parameters = new List<QueryParameter>();
-            parameters.Add(new QueryParameter("ORDERGROUP_CALLED_AWAY", callAwayStatus));
-            var queryString = DatabaseCore.Instance.BuildUpdateQuery("ORDERGROUPS", parameters, whereCondition);
-            parameters.Add(new QueryParameter("ORDERGROUP_KEY", orderGroupKey));
-            DatabaseCore.Instance.ExecuteNonQuery(queryString, parameters);
+            try
+            {
+                var whereCondition = " WHERE ORDERGROUP_KEY=@ORDERGROUP_KEY";
+                var parameters = new List<QueryParameter>();
+                parameters.Add(new QueryParameter("ORDERGROUP_CALLED_AWAY", callAwayStatus));
+                var queryString = DatabaseCore.Instance.BuildUpdateQuery("ORDERGROUPS", parameters, whereCondition);
+                parameters.Add(new QueryParameter("ORDERGROUP_KEY", orderGroupKey));
+                DatabaseCore.Instance.ExecuteNonQuery(queryString, parameters);
+            }
+            catch (Exception ex)
+            {
+                ChefmateLogger.Instance.LogError("CallAwayGroup : ", ex.Message);
+            }
         }
         public static int GetOrderKeyFromGroupKey(int inOrderGroupDbKey)
         {

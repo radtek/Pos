@@ -5,21 +5,22 @@ using System.Data;
 using Chefmate.Core.Model;
 using Chefmate.Database.Model;
 using ChefMate.Database;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace Chefmate.Database.DbModels
 {
     public class DbOrderItemSide
     {
-        public static void AddOrderItemSides(ObservableCollection<Side> sides)
+        public static void AddOrderItemSides(FbConnection inConnection, FbTransaction inTransaction, ObservableCollection<Side> sides)
         {
             foreach (var side in sides)
             {
-                AddOrderItemSide(side);
+                AddOrderItemSide(inConnection, inTransaction, side);
             }
         }
-        public static void AddOrderItemSide(Side inSide)
+        public static void AddOrderItemSide(FbConnection inConnection, FbTransaction inTransaction, Side inSide)
         {
-            inSide.SideKey = DbSide.GetOrCreateSide(inSide);
+            inSide.SideKey = DbSide.GetOrCreateSide(inConnection, inTransaction, inSide);
             inSide.OrderSideKey = DatabaseCore.Instance.GetGeneratorValue("GEN_ORDERITEMSIDE");
             var fbParameters = new List<QueryParameter>();
             fbParameters.Add(new QueryParameter("ORDERITEMSIDE_KEY", inSide.OrderSideKey));
@@ -28,7 +29,7 @@ namespace Chefmate.Database.DbModels
             fbParameters.Add(new QueryParameter("ORDERITEMSIDE_POS_KEY", inSide.SidePosKey));
             fbParameters.Add(new QueryParameter("IS_CANCELED", inSide.IsCanceled));
             var queryString = DatabaseCore.Instance.BuildInsertQuery("ORDERITEMSIDES", fbParameters);
-            DatabaseCore.Instance.ExecuteNonQuery(queryString, fbParameters);
+            DatabaseCore.Instance.ExecuteNonQuery(inConnection, inTransaction, queryString, fbParameters);
         }
         public static ObservableCollection<Side> GetOrderItemSides(Item item)
         {

@@ -78,8 +78,18 @@ void TMMInvoicePaymentSystem::_processMultipleInvoiceTransaction( TPaymentTransa
 	{
 		if (frmPaymentType->Execute() == mrOk)
 		{
-			if (frmControlTransaction->RetrieveUserOptions() != eBack)
-			{
+             bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+            //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+            if(retrieveUserOptions)
+            {
+                std::auto_ptr<TListPaymentSystem> paymentSystem( new TListPaymentSystem );
+                if(paymentSystem->CaptureSCDOrPWDCustomerDetails(MasterPaymentTransaction) == mrCancel)
+                    retrieveUserOptions = false;
+            }
+
+            if (retrieveUserOptions)
+            {
 				TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
 				MasterPaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
@@ -183,8 +193,18 @@ void TMMInvoicePaymentSystem::_processMultipleInvoicePartialPayTransaction( TPay
 		{
 			if (frmPaymentType->Execute() == mrOk)
 			{
-				if (frmControlTransaction->RetrieveUserOptions() != eBack)
-				{
+				 bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+                //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+                if(retrieveUserOptions)
+                {
+                     std::auto_ptr<TListPaymentSystem> paymentSystem( new TListPaymentSystem );
+                     if(paymentSystem->CaptureSCDOrPWDCustomerDetails(MasterPaymentTransaction) == mrCancel)
+                        retrieveUserOptions = false;
+                }
+
+                if (retrieveUserOptions)
+                {
 					TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
 					MasterPaymentTransaction.ProcessPoints();
 					TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
@@ -305,8 +325,18 @@ void TMMInvoicePaymentSystem::_processMultipleInvoiceSplitPayTransaction( TPayme
 		{
 			if (frmPaymentType->Execute() == mrOk)
 			{
-				if (frmControlTransaction->RetrieveUserOptions() != eBack)
-				{
+				 bool retrieveUserOptions = frmControlTransaction->RetrieveUserOptions() != eBack;
+
+                //if RetrieveUserOptions is true then check whether transaction has SCD or PWD Discount
+                if(retrieveUserOptions)
+                {
+                    std::auto_ptr<TListPaymentSystem> paymentSystem( new TListPaymentSystem );
+                    if(paymentSystem->CaptureSCDOrPWDCustomerDetails(MasterPaymentTransaction) == mrCancel)
+                        retrieveUserOptions = false;
+                }
+
+                if (retrieveUserOptions)
+                {
 					TDeviceRealTerminal::Instance().ManagerMembership->BeginMemberTransaction();
 					MasterPaymentTransaction.ProcessPoints();
 					TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);

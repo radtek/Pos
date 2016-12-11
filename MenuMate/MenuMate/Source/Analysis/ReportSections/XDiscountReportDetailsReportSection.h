@@ -14,6 +14,8 @@ public:
 	XDiscountReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
 	~XDiscountReportDetailsReportSection();
 	virtual void GetOutput(TPrintout* printout);
+    void SetPrinterFormat(TPrintout* printOut);
+    void SetSingleColumnPrinterFormat(TPrintout* printOut);
 private:
     DataFormatUtilities* dataFormatUtilities;
 };

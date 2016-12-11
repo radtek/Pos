@@ -466,6 +466,11 @@ public:
     bool ShowVoidNumber;
     UnicodeString EftPosTipGLCode;
     int GiftCardValidation;
+    bool ExcludeReceipt;
+    bool ExcludeXReport;
+    bool UseBIRFormatInXZReport;
+    bool HideRoundingOnReceipt;
+	bool CashDenominationEntry;
 };
 
 #endif

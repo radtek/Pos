@@ -31,6 +31,8 @@
 #include "XRemovalDetailsReportSection.h"
 #include "XPriceAdjustmentReportSection.h"
 #include "MallExportConsolidatedReceipt.h"
+#include "XReportDateTimeReportSection.h"
+#include "XCancelsAndRefundDetailsForBIRReportSection.h"
 
 XReportSectionFactory::XReportSectionFactory(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSectionFactory(dbTransaction, globalSettings)
@@ -143,6 +145,13 @@ IReportSection* XReportSectionFactory::CreateReportSection(ReportSectionType rep
         case mmMallExportConsolidatedReceipt:
             reportSection = new MallExportConsolidatedReceipt(_dbTransaction, _globalSettings);
             break;
+        case mmShowBegningandEndingBalance:
+            reportSection = new XReportDateTimeReportSection(_dbTransaction, _globalSettings);
+            break;
+        case mmRefundCancelDetailsSections:
+            reportSection = new XCancelsAndRefundDetailsForBIRReportSection(_dbTransaction, _globalSettings);
+            break;
+
 
         default:
             reportSection = NULL;
