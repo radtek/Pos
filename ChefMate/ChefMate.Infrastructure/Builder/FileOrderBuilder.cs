@@ -43,16 +43,23 @@ namespace Chefmate.Infrastructure.Builder
         }
         public bool BuildOrder(string inXmluri)
         {
-            var posOrder = ChefmateUtility.DeSerializeFromFilePath<PosOrder>(inXmluri);
-            var chefmateOrder = ConvertToChefmateOrder(posOrder);
-            if (chefmateOrder != null)
+            try
             {
-                ChefmateController.Instance.OrderArrived(chefmateOrder);
-                // play sound when an order comes from POS to chefmate.
-                PlaySoundByOrderState(chefmateOrder.OrderState);
-                return true;
+                var posOrder = ChefmateUtility.DeSerializeFromFilePath<PosOrder>(inXmluri);
+                var chefmateOrder = ConvertToChefmateOrder(posOrder);
+                if (chefmateOrder != null)
+                {
+                    ChefmateController.Instance.OrderArrived(chefmateOrder);
+                    // play sound when an order comes from POS to chefmate.
+                    PlaySoundByOrderState(chefmateOrder.OrderState);
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
         private Order ConvertToChefmateOrder(PosOrder posOrder)
         {
@@ -283,11 +290,6 @@ namespace Chefmate.Infrastructure.Builder
                     SoundManager.PlaySound(SoundEvents.TransferOrderFromMm);
                     break;
             }
-        }
-        void LogError(string inFuncName, string inMsg)
-        {
-            string functURI = string.Format(@"ChefMate.Builder.OrderBuilderFromXML.{0}", inFuncName);
-            //Logger.CMLogger.Instance.logError(functURI, inMsg);
         }
 
     }

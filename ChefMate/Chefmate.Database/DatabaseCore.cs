@@ -10,9 +10,12 @@ namespace ChefMate.Database
 {
     public class DatabaseCore
     {
+        private string _databaseAddress;
+        private string _databasePath;
         private FbConnection _fbConnection;
         private static DatabaseCore _instance;
         private static volatile object _syncRoot = new object();
+        private static volatile object _lockObject = new object();
         private DatabaseCore() { }
         public static DatabaseCore Instance
         {
@@ -31,52 +34,129 @@ namespace ChefMate.Database
         }
 
         #region Query Execution
-
         public int GetGeneratorValue(string generatorName)
         {
-            OpenConnection();
-            var commandText = "SELECT GEN_ID(" + generatorName + ", 1) FROM RDB$DATABASE";
-            var command = CreateCommand(commandText);
-            var genValue = command.ExecuteScalar();
-            CloseConnection();
-            return Convert.ToInt32(genValue);
+            lock (_lockObject)
+            {
+                OpenConnection();
+                var commandText = "SELECT GEN_ID(" + generatorName + ", 1) FROM RDB$DATABASE";
+                var command = CreateCommand(commandText);
+                var genValue = command.ExecuteScalar();
+                CloseConnection();
+                return Convert.ToInt32(genValue);
+            }
+        }
+        public bool ExecuteNonQuery(FbConnection inConnection, FbTransaction inTransaction, string query, List<QueryParameter> queryParameters)
+        {
+            lock (_lockObject)
+            {
+                try
+                {
+                    var command = CreateCommand(inConnection, inTransaction, query, queryParameters);
+                    command.ExecuteNonQuery();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    ChefmateLogger.Instance.LogError("ExecuteNonQuery : ", ex.Message);
+                    throw ex;
+                }
+            }
+        }
+        public bool ExecuteNonQuery(FbConnection inConnection, FbTransaction inTransaction, string query)
+        {
+            lock (_lockObject)
+            {
+                try
+                {
+                    var command = CreateCommand(inConnection, inTransaction, query);
+                    command.ExecuteNonQuery();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    ChefmateLogger.Instance.LogError("ExecuteNonQuery : ", ex.Message);
+                    throw ex;
+                }
+            }
         }
         public bool ExecuteNonQuery(string query, List<QueryParameter> queryParameters)
         {
-            try
+            lock (_lockObject)
             {
-                OpenConnection();
-                var command = CreateCommand(query, queryParameters);
-                command.ExecuteNonQuery();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ChefmateLogger.Instance.LogError("ExecuteNonQuery : ", ex.Message);
-                return false;
-            }
-            finally
-            {
-                CloseConnection();
+                try
+                {
+                    OpenConnection();
+                    var command = CreateCommand(query, queryParameters);
+                    command.ExecuteNonQuery();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    ChefmateLogger.Instance.LogError("ExecuteNonQuery : ", ex.Message);
+                    throw ex;
+                }
+                finally
+                {
+                    CloseConnection();
+                }
             }
         }
         public bool ExecuteNonQuery(string query)
         {
+            lock (_lockObject)
+            {
+                try
+                {
+                    OpenConnection();
+                    var command = CreateCommand(query);
+                    command.ExecuteNonQuery();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    ChefmateLogger.Instance.LogError("ExecuteNonQuery : ", ex.Message);
+                    throw ex;
+                }
+                finally
+                {
+                    CloseConnection();
+                }
+            }
+        }
+        public T ExecuteScalar<T>(FbConnection inConnection, FbTransaction inTransaction, string query)
+        {
             try
             {
-                OpenConnection();
-                var command = CreateCommand(query);
-                command.ExecuteNonQuery();
-                return true;
+                var command = CreateCommand(inConnection, inTransaction, query);
+                var retVal = command.ExecuteScalar();
+                CloseConnection();
+                if (retVal == null)
+                    return default(T);
+                return (T)retVal;
             }
             catch (Exception ex)
             {
-                ChefmateLogger.Instance.LogError("ExecuteNonQuery : ", ex.Message);
-                return false;
+                ChefmateLogger.Instance.LogError("ExecuteScalar : ", ex.Message);
+                return default(T);
             }
-            finally
+        }
+        public T ExecuteScalar<T>(FbConnection inConnection, FbTransaction inTransaction, string query, List<QueryParameter> queryParameters)
+        {
+            try
             {
+                OpenConnection();
+                var command = CreateCommand(inConnection, inTransaction, query, queryParameters);
+                var retVal = command.ExecuteScalar();
                 CloseConnection();
+                if (retVal == null)
+                    return default(T);
+                return (T)retVal;
+            }
+            catch (Exception ex)
+            {
+                ChefmateLogger.Instance.LogError("ExecuteScalar : ", ex.Message);
+                return default(T);
             }
         }
         public T ExecuteScalar<T>(string query)
@@ -123,6 +203,7 @@ namespace ChefMate.Database
                 CloseConnection();
             }
         }
+
         public DataTable ExecuteDataSetQuery(string query)
         {
             try
@@ -155,7 +236,6 @@ namespace ChefMate.Database
                 return new DataTable();
             }
         }
-
         public bool IsRecorExist(string query)
         {
             try
@@ -188,6 +268,8 @@ namespace ChefMate.Database
         {
             try
             {
+                _databaseAddress = databaseAddress;
+                _databasePath = databasePath;
                 string connectionString = BuildConnectionString(databaseAddress, databasePath);
                 _fbConnection = new FbConnection(connectionString);
                 return TestConnection(databaseAddress, databasePath);
@@ -231,21 +313,56 @@ namespace ChefMate.Database
             return fbCommand;
 
         }
+        private FbCommand CreateCommand(FbConnection inConnection, FbTransaction inTransaction, string commandText)
+        {
+            var fbCommand = new FbCommand(commandText, inConnection, inTransaction);
+            return fbCommand;
+        }
+        private FbCommand CreateCommand(FbConnection inConnection, FbTransaction inTransaction, string commandText, List<QueryParameter> queryParameters)
+        {
+            var fbCommand = CreateCommand(inConnection, inTransaction, commandText);
+            AddParameters(fbCommand, queryParameters);
+            return fbCommand;
+
+        }
+        public FbConnection GetConnection()
+        {
+            string connectionString = BuildConnectionString(_databaseAddress, _databasePath);
+            var fbConnection = new FbConnection(connectionString);
+            return fbConnection;
+        }
         private void OpenConnection()
         {
             if (_fbConnection.State == ConnectionState.Closed || _fbConnection.State == ConnectionState.Broken)
                 _fbConnection.Open();
-			else
-			{
-				CloseConnection();
-				_fbConnection.Open();
-			}
+            else
+            {
+                CloseConnection();
+                _fbConnection.Open();
+            }
+        }
+        public void OpenConnection(FbConnection inConnection)
+        {
+            if (inConnection.State == ConnectionState.Closed || inConnection.State == ConnectionState.Broken)
+                inConnection.Open();
+            else
+            {
+                CloseConnection(inConnection);
+                inConnection.Open();
+            }
         }
         private void CloseConnection()
         {
             if (_fbConnection.State == ConnectionState.Open)
                 _fbConnection.Close();
         }
+
+        public void CloseConnection(FbConnection inConnection)
+        {
+            if (inConnection.State == ConnectionState.Open)
+                inConnection.Close();
+        }
+
         private void AddParameters(FbCommand fbCommand, List<QueryParameter> queryParameters)
         {
             foreach (var parameter in queryParameters)
