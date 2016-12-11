@@ -5,23 +5,25 @@ using System.Data;
 using Chefmate.Core.Enums;
 using Chefmate.Core.Model;
 using Chefmate.Database.Model;
+using Chefmate.Logger;
 using ChefMate.Database;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace Chefmate.Database.DbModels
 {
     public class DbOrderItem
     {
-        public static void AddOrderItems(ObservableCollection<Item> items, int terminalKey, int orderKey)
+        public static void AddOrderItems(FbConnection inConnection, FbTransaction inTransaction, ObservableCollection<Item> items, int terminalKey, int orderKey)
         {
             foreach (var item in items)
             {
                 item.OrderKey = orderKey;
-                AddOrderItem(item, terminalKey);
+                AddOrderItem(inConnection, inTransaction, item, terminalKey);
             }
         }
-        public static void AddOrderItem(Item item, int terminalKey)
+        public static void AddOrderItem(FbConnection inConnection, FbTransaction inTransaction, Item item, int terminalKey)
         {
-            item.ItemKey = DbItem.GetOrCreateItem(item);
+            item.ItemKey = DbItem.GetOrCreateItem(inConnection, inTransaction, item);
             item.OrderItemKey = DatabaseCore.Instance.GetGeneratorValue("GEN_ORDERITEM");
             var fbParameters = new List<QueryParameter>();
             fbParameters.Add(new QueryParameter("ORDERITEM_KEY", item.OrderItemKey));
@@ -34,9 +36,9 @@ namespace Chefmate.Database.DbModels
             fbParameters.Add(new QueryParameter("ORDERITEM_NOTE", item.Note));
             fbParameters.Add(new QueryParameter("ARRIVAL_TIME", item.ArrivalTime));
             var queryString = DatabaseCore.Instance.BuildInsertQuery("ORDERITEMS", fbParameters);
-            DatabaseCore.Instance.ExecuteNonQuery(queryString, fbParameters);
-            DbOrderItemSide.AddOrderItemSides(item.Sides);
-            DbOrderItemOption.AddOrderItemOptions(item.Options);
+            DatabaseCore.Instance.ExecuteNonQuery(inConnection, inTransaction, queryString, fbParameters);
+            DbOrderItemSide.AddOrderItemSides(inConnection, inTransaction, item.Sides);
+            DbOrderItemOption.AddOrderItemOptions(inConnection, inTransaction, item.Options);
         }
         public static ObservableCollection<Item> GetOrderItems(List<int> groupKeys, GroupType inGroupType, int terminalKey)
         {
@@ -116,31 +118,52 @@ namespace Chefmate.Database.DbModels
         }
         public static void UpdateOrderItemStatus(int orderItemKey, OrderStatus itemStatus)
         {
-            var whereCondition = " Where ORDERITEM_KEY = @ORDERITEM_KEY";
-            var fbParameters = new List<QueryParameter>();
-            fbParameters.Add(new QueryParameter("ORDER_ITEM_STATUS", itemStatus));
-            var commandText = DatabaseCore.Instance.BuildUpdateQuery("ORDERITEMS", fbParameters, whereCondition);
-            fbParameters.Add(new QueryParameter("ORDERITEM_KEY", orderItemKey));
-            DatabaseCore.Instance.ExecuteNonQuery(commandText, fbParameters);
+            try
+            {
+                var whereCondition = " Where ORDERITEM_KEY = @ORDERITEM_KEY";
+                var fbParameters = new List<QueryParameter>();
+                fbParameters.Add(new QueryParameter("ORDER_ITEM_STATUS", itemStatus));
+                var commandText = DatabaseCore.Instance.BuildUpdateQuery("ORDERITEMS", fbParameters, whereCondition);
+                fbParameters.Add(new QueryParameter("ORDERITEM_KEY", orderItemKey));
+                DatabaseCore.Instance.ExecuteNonQuery(commandText, fbParameters);
+            }
+            catch (Exception ex)
+            {
+                ChefmateLogger.Instance.LogError("UpdateOrderItemStatus : ", ex.Message);
+            }
         }
         public static void UpdateOrderItemTerminalKey(int orderItemKey, int terminalId)
         {
-            var whereCondition = " Where ORDERITEM_KEY = @ORDERITEM_KEY";
-            var fbParameters = new List<QueryParameter>();
-            fbParameters.Add(new QueryParameter("TERMINAL_KEY", terminalId));
-            var commandText = DatabaseCore.Instance.BuildUpdateQuery("ORDERITEMS", fbParameters, whereCondition);
-            fbParameters.Add(new QueryParameter("ORDERITEM_KEY", orderItemKey));
-            DatabaseCore.Instance.ExecuteNonQuery(commandText, fbParameters);
+            try
+            {
+                var whereCondition = " Where ORDERITEM_KEY = @ORDERITEM_KEY";
+                var fbParameters = new List<QueryParameter>();
+                fbParameters.Add(new QueryParameter("TERMINAL_KEY", terminalId));
+                var commandText = DatabaseCore.Instance.BuildUpdateQuery("ORDERITEMS", fbParameters, whereCondition);
+                fbParameters.Add(new QueryParameter("ORDERITEM_KEY", orderItemKey));
+                DatabaseCore.Instance.ExecuteNonQuery(commandText, fbParameters);
+            }
+            catch (Exception ex)
+            {
+                ChefmateLogger.Instance.LogError("UpdateOrderItemTerminalKey : ", ex.Message);
+            }
         }
         public static void UpdateItemOnTransfer(int orderItemKey, int terminalId, OrderStatus itemStatus)
         {
-            var whereCondition = " Where ORDERITEM_KEY = @ORDERITEM_KEY";
-            var fbParameters = new List<QueryParameter>();
-            fbParameters.Add(new QueryParameter("TERMINAL_KEY", terminalId));
-            fbParameters.Add(new QueryParameter("ORDER_ITEM_STATUS", itemStatus));
-            var commandText = DatabaseCore.Instance.BuildUpdateQuery("ORDERITEMS", fbParameters, whereCondition);
-            fbParameters.Add(new QueryParameter("ORDERITEM_KEY", orderItemKey));
-            DatabaseCore.Instance.ExecuteNonQuery(commandText, fbParameters);
+            try
+            {
+                var whereCondition = " Where ORDERITEM_KEY = @ORDERITEM_KEY";
+                var fbParameters = new List<QueryParameter>();
+                fbParameters.Add(new QueryParameter("TERMINAL_KEY", terminalId));
+                fbParameters.Add(new QueryParameter("ORDER_ITEM_STATUS", itemStatus));
+                var commandText = DatabaseCore.Instance.BuildUpdateQuery("ORDERITEMS", fbParameters, whereCondition);
+                fbParameters.Add(new QueryParameter("ORDERITEM_KEY", orderItemKey));
+                DatabaseCore.Instance.ExecuteNonQuery(commandText, fbParameters);
+            }
+            catch (Exception ex)
+            {
+                ChefmateLogger.Instance.LogError("UpdateItemOnTransfer : ", ex.Message);
+            }
         }
         public static void ItemBumped(int orderItemKey, DateTime dateTime)
         {
@@ -153,21 +176,28 @@ namespace Chefmate.Database.DbModels
         }
         public static void UpdateGroupInformation(Item item)
         {
-            if (item.SCourseGroup.OrderGroupKey == 0)
+            try
             {
-                DbOrderGroup.AddOrderGroup(item.SCourseGroup);
+                if (item.SCourseGroup.OrderGroupKey == 0)
+                {
+                    DbOrderGroup.AddOrderGroup(item.SCourseGroup);
+                }
+                if (item.CourseGroup.OrderGroupKey == 0)
+                {
+                    DbOrderGroup.AddOrderGroup(item.CourseGroup);
+                }
+                var whereCondition = " Where ORDERITEM_KEY = @ORDERITEM_KEY";
+                var fbParameters = new List<QueryParameter>();
+                fbParameters.Add(new QueryParameter("COURSE_KEY", item.CourseGroup.OrderGroupKey));
+                fbParameters.Add(new QueryParameter("SERVINGCOURSE_KEY", item.SCourseGroup.OrderGroupKey));
+                var commandText = DatabaseCore.Instance.BuildUpdateQuery("ORDERITEMS", fbParameters, whereCondition);
+                fbParameters.Add(new QueryParameter("ORDERITEM_KEY", item.OrderItemKey));
+                DatabaseCore.Instance.ExecuteNonQuery(commandText, fbParameters);
             }
-            if (item.CourseGroup.OrderGroupKey == 0)
+            catch (Exception ex)
             {
-                DbOrderGroup.AddOrderGroup(item.CourseGroup);
+                ChefmateLogger.Instance.LogError("UpdateGroupInformation : ", ex.Message);
             }
-            var whereCondition = " Where ORDERITEM_KEY = @ORDERITEM_KEY";
-            var fbParameters = new List<QueryParameter>();
-            fbParameters.Add(new QueryParameter("COURSE_KEY", item.CourseGroup.OrderGroupKey));
-            fbParameters.Add(new QueryParameter("SERVINGCOURSE_KEY", item.SCourseGroup.OrderGroupKey));
-            var commandText = DatabaseCore.Instance.BuildUpdateQuery("ORDERITEMS", fbParameters, whereCondition);
-            fbParameters.Add(new QueryParameter("ORDERITEM_KEY", item.OrderItemKey));
-            DatabaseCore.Instance.ExecuteNonQuery(commandText, fbParameters);
         }
         public static Item GetOrderItemFromItemKey(int inOrderIemKey)
         {
@@ -185,12 +215,19 @@ namespace Chefmate.Database.DbModels
         }
         public static void UpdateOrderItemNote(int orderItemKey, string note)
         {
-            var whereCondition = " Where ORDERITEM_KEY = @ORDERITEM_KEY";
-            var fbParameters = new List<QueryParameter>();
-            fbParameters.Add(new QueryParameter("ORDERITEM_NOTE", note));
-            var commandText = DatabaseCore.Instance.BuildUpdateQuery("ORDERITEMS", fbParameters, whereCondition);
-            fbParameters.Add(new QueryParameter("ORDERITEM_KEY", orderItemKey));
-            DatabaseCore.Instance.ExecuteNonQuery(commandText, fbParameters);
+            try
+            {
+                var whereCondition = " Where ORDERITEM_KEY = @ORDERITEM_KEY";
+                var fbParameters = new List<QueryParameter>();
+                fbParameters.Add(new QueryParameter("ORDERITEM_NOTE", note));
+                var commandText = DatabaseCore.Instance.BuildUpdateQuery("ORDERITEMS", fbParameters, whereCondition);
+                fbParameters.Add(new QueryParameter("ORDERITEM_KEY", orderItemKey));
+                DatabaseCore.Instance.ExecuteNonQuery(commandText, fbParameters);
+            }
+            catch (Exception ex)
+            {
+                ChefmateLogger.Instance.LogError("UpdateOrderItemNote : ", ex.Message);
+            }
         }
     }
 }
