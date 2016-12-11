@@ -163,6 +163,7 @@ private:	// User declarations
     bool ValidateAlreadyRefunded(Database::TDBTransaction &DBTransaction,UnicodeString str);
     bool IsRefundReceipt(Database::TDBTransaction &DBTransaction,UnicodeString str);
     AnsiString GetVoucherNumber(AnsiString inPaymentName,AnsiString inReferenceNumber,bool isLoyaltyVoucher);
+    bool IsGiftCardNumberValid(AnsiString inGiftCardNumber);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);

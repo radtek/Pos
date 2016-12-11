@@ -2355,33 +2355,45 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 
            if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
             {
-               TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
-               TGiftCardDetail GiftCardDetail;
-               ManagerLoyaltyVoucher.GetGiftVoucherDetail(Payment->ReferenceNumber,GiftCardDetail);
+               AnsiString messageString = "";
+               bool isInValid = false;
+               if(!IsGiftCardNumberValid(voucherNumber))
+               {
+                  messageString = "Gift Card number is not valid.";
+                  isInValid = true;
+               }
+               else
+               {
+                   TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+                   TGiftCardDetail GiftCardDetail;
+                   ManagerLoyaltyVoucher.GetGiftVoucherDetail(Payment->ReferenceNumber,GiftCardDetail);
 
-               bool isValidGiftCard = true;
-               if(TGlobalSettings::Instance().GiftCardValidation == CloudValidation)
-                 isValidGiftCard = GiftCardDetail.StatusCode != 2;
+                   bool isValidGiftCard = true;
+                   if(TGlobalSettings::Instance().GiftCardValidation == CloudValidation)
+                     isValidGiftCard = GiftCardDetail.StatusCode != 2;
 
-               if(isValidGiftCard && DoLoyaltyGiftCardValidation(CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber,Payment->ReferenceNumber))
-                {
-                    CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
-                    CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = Payment->ReferenceNumber;
-                    CurrentTransaction.PurchasedGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
-                    CurrentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount = wrkPayAmount;
-                    CurrentTransaction.PurchasedGiftVoucherInformation->GiftVoucherAmount = GiftCardDetail.PointBalance;
-                    CurrentTransaction.PurchasedGiftVoucherInformation->ExpiryDate = GiftCardDetail.ExpiryDate;
-                }
-                else
-                {
+                   if(isValidGiftCard && DoLoyaltyGiftCardValidation(CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber,Payment->ReferenceNumber))
+                    {
+                        CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
+                        CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = Payment->ReferenceNumber;
+                        CurrentTransaction.PurchasedGiftVoucherInformation->TotalSaleAmount = CurrentTransaction.Money.GrandTotal;
+                        CurrentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount = wrkPayAmount;
+                        CurrentTransaction.PurchasedGiftVoucherInformation->GiftVoucherAmount = GiftCardDetail.PointBalance;
+                        CurrentTransaction.PurchasedGiftVoucherInformation->ExpiryDate = GiftCardDetail.ExpiryDate;
+                    }
+                    else
+                    {
+                      messageString = "Gift Card not found please try another card.";
+                      isInValid = true;
+                    }
+               }
+               if(isInValid)
+               {
                    CurrentTransaction.PurchasedGiftVoucherInformation->VoucherNumber = "";
                    Payment->Reset();
-                   if(!isValidGiftCard)
-                    MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
+                   MessageBox(messageString, "Warning", MB_OK + MB_ICONINFORMATION);
                    return;
-                }
-
-
+               }
             }
 
 			if (CurrentTransaction.CreditTransaction)
@@ -4176,7 +4188,7 @@ AnsiString TfrmPaymentType::GetVoucherNumber(AnsiString inPaymentName,AnsiString
         std::auto_ptr<TfrmCardSwipe> frmCardSwipe(TfrmCardSwipe::Create<TfrmCardSwipe>(this));
         frmCardSwipe->ShowModal();
         if(frmCardSwipe->ModalResult == mrOk)
-          retVal = frmCardSwipe->SwipeString.SubString(1, 80);
+          retVal = frmCardSwipe->SwipeString.SubString(1, 80).Trim();
     }
     else
     {
@@ -4189,8 +4201,26 @@ AnsiString TfrmPaymentType::GetVoucherNumber(AnsiString inPaymentName,AnsiString
         frmTouchKeyboard->Caption = "Enter " + inPaymentName + " Number";
         if (frmTouchKeyboard->ShowModal() == mrOk)
         {
-          retVal = frmTouchKeyboard->KeyboardText;
+          retVal = frmTouchKeyboard->KeyboardText.Trim();
         }
     }
     return retVal;
+}
+
+bool TfrmPaymentType::IsGiftCardNumberValid(AnsiString inGiftCardNumber)
+{
+   const char* charArray = inGiftCardNumber.c_str();
+   int lastChar = -1;
+   for(int i = 0; i < inGiftCardNumber.Length(); i++)
+    {
+        int currentChar = charArray[i];
+        if((currentChar == 34) ||
+           (currentChar == 44) ||
+            (lastChar != -1 && lastChar == 32 && lastChar == currentChar))
+        {
+           return false;
+        }
+        lastChar = currentChar;
+    }
+    return true;
 }
