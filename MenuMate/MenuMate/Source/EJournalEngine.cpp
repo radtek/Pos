@@ -107,10 +107,9 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptReport(TDateTime fromSessionDat
             for (; !IBGetReciptQuery->Eof; IBGetReciptQuery->Next())
             {
                IBGetReciptQuery->FieldByName("RECEIPT")->SaveToStream(ZedReceipt);
-               ZedReceipt->Position++;
             }
             IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
-            ZedReceipt->Position++;
+
         }
         DBTransaction.Commit();
     }
@@ -170,10 +169,10 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessio
             for (; !IBGetReciptQuery->Eof; IBGetReciptQuery->Next())
             {
                IBGetReciptQuery->FieldByName("RECEIPT")->SaveToStream(ZedReceipt);
-               ZedReceipt->Position++;
+
             }
             IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
-            ZedReceipt->Position++;
+
         }
         if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger))
         {
@@ -183,7 +182,7 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessio
             for (; !IBGetCurrentRunningReciptQuery->Eof; IBGetCurrentRunningReciptQuery->Next())
             {
                IBGetCurrentRunningReciptQuery->FieldByName("RECEIPT")->SaveToStream(ZedReceipt);
-               ZedReceipt->Position++;
+
             }
             DisplayXReport(ZedReceipt);
         }
@@ -200,7 +199,7 @@ TMemoryStream* TEJournalEngine::ExtractZedReceiptAndXReport(TDateTime fromSessio
 void TEJournalEngine::GetReceipt(TIBSQL *IBGetReciptQuery, int z_key)
 {
     IBGetReciptQuery->Close();
-    IBGetReciptQuery->SQL->Text=" SELECT a.RECEIPT, a.Z_KEY FROM ARCBILL a where a.Z_KEY =:Z_KEY" ;
+    IBGetReciptQuery->SQL->Text=" SELECT a.RECEIPT, a.Z_KEY FROM ARCBILL a where a.Z_KEY =:Z_KEY order by TIME_STAMP " ;
     IBGetReciptQuery->ParamByName("Z_KEY")->AsInteger = z_key;
 }
 
@@ -217,7 +216,7 @@ void TEJournalEngine::DisplayXReport(TMemoryStream* XReceipt)
 void TEJournalEngine::GetCurrentRunningReceipt(TIBSQL *IBGetCurrentRunningReciptQuery)
 {
     IBGetCurrentRunningReciptQuery->Close();
-    IBGetCurrentRunningReciptQuery->SQL->Text=" SELECT a.ARCBILL_KEY, a.RECEIPT FROM DAYARCBILL a " ;
+    IBGetCurrentRunningReciptQuery->SQL->Text=" SELECT a.ARCBILL_KEY, a.RECEIPT FROM DAYARCBILL a order by TIME_STAMP " ;
 }
 
 TMemoryStream* TEJournalEngine::ExtractZedAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate)
@@ -238,7 +237,7 @@ TMemoryStream* TEJournalEngine::ExtractZedAndXReport(TDateTime fromSessionDate,T
         for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
             IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
-            ZedReceipt->Position++;
+
         }
         if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger))
         {

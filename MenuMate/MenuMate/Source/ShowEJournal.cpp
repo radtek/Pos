@@ -179,6 +179,7 @@ void TfrmEJournal::CheckAndPopulateData()
    else
    {
       MessageBox("No Sales data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
+      memReceipt->Clear();
       btnClosePrint->Enabled = false;
    }
 }
