@@ -5,21 +5,22 @@ using System.Data;
 using Chefmate.Core.Model;
 using Chefmate.Database.Model;
 using ChefMate.Database;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace Chefmate.Database.DbModels
 {
     public class DbOrderItemOption
     {
-        public static void AddOrderItemOptions(ObservableCollection<Option> options)
+        public static void AddOrderItemOptions(FbConnection inConnection, FbTransaction inTransaction, ObservableCollection<Option> options)
         {
             foreach (var option in options)
             {
-                AddOrderItemOption(option);
+                AddOrderItemOption(inConnection, inTransaction, option);
             }
         }
-        public static void AddOrderItemOption(Option inOption)
+        public static void AddOrderItemOption(FbConnection inConnection, FbTransaction inTransaction, Option inOption)
         {
-            inOption.OptionKey = DbOption.GetOrCreateOption(inOption);
+            inOption.OptionKey = DbOption.GetOrCreateOption(inConnection, inTransaction, inOption);
             inOption.OrderOptionKey = DatabaseCore.Instance.GetGeneratorValue("GEN_ORDERITEMOPTION");
             var fbParameters = new List<QueryParameter>();
             fbParameters.Add(new QueryParameter("ORDERITEMOPTION_KEY", inOption.OrderOptionKey));
@@ -27,7 +28,7 @@ namespace Chefmate.Database.DbModels
             fbParameters.Add(new QueryParameter("OPTION_KEY", inOption.OptionKey));
             fbParameters.Add(new QueryParameter("IS_PLUS", inOption.IsPlus));
             var queryString = DatabaseCore.Instance.BuildInsertQuery("ORDERITEMOPTIONS", fbParameters);
-            DatabaseCore.Instance.ExecuteNonQuery(queryString, fbParameters);
+            DatabaseCore.Instance.ExecuteNonQuery(inConnection, inTransaction, queryString, fbParameters);
         }
         public static ObservableCollection<Option> GetOrderItemOptions(Item item)
         {

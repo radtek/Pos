@@ -154,7 +154,7 @@ namespace Chefmate.Infrastructure.Builder
         {
             string fileName = Path.GetFileName(inFileUri);
 
-            return _filePool + @"\" + fileName;
+            return _retryFolder + @"\" + fileName;
         }
         private string SuccessfulFileUri(string inFileUri)
         {
