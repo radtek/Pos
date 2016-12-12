@@ -687,6 +687,15 @@ void TLoyaltyMateInterface::SyncTierLevels(Database::TDBTransaction &DBTransacti
              ReadTierInfo(tierLevelInfo,tierLevel);
              TDBTierLevel::AddTierLevel(DBTransaction,tierLevel);
            }
+          TGlobalSettings::Instance().UseTierLevels = tierLevels.Length > 0;
+  	      TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseTierLevels,TGlobalSettings::Instance().UseTierLevels);
+          if(!TGlobalSettings::Instance().UseTierLevels)
+	      {
+             TGlobalSettings::Instance().AllowPointPaymentByValue = true;
+             TGlobalSettings::Instance().AllowPointPaymentByWeight = false;
+             TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAllowPointPaymentByWeight, TGlobalSettings::Instance().AllowPointPaymentByWeight);
+             TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAllowPointPaymentByValue, TGlobalSettings::Instance().AllowPointPaymentByValue);
+          }
 	   }
       catch( Exception &exc )
         {
