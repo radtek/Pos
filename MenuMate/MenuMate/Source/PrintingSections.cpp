@@ -6503,7 +6503,7 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
                   pPrinter->Add(vouchercode);
                   if(isGiftCardUsed)
                   {
-                     pPrinter->Add("Balance " + CurrToStr( PrintJob->Transaction->RedeemGiftVoucherInformation->GiftVoucherAmount -
+                     pPrinter->Add("Balance " + FormatFloat("0.00", PrintJob->Transaction->RedeemGiftVoucherInformation->GiftVoucherAmount -
                                                            PrintJob->Transaction->RedeemGiftVoucherInformation->RedeemedAmount));
                      if((double)PrintJob->Transaction->RedeemGiftVoucherInformation->ExpiryDate > double(0))
                         pPrinter->Add("Expiry Date " + PrintJob->Transaction->RedeemGiftVoucherInformation->ExpiryDate.FormatString("DD/MM/YYYY"));
@@ -6578,7 +6578,7 @@ void TPrintSection::PrintPaymentSurcharges(TReqPrintJob *PrintJob)
             if(SubPayment->IsLoyaltyGiftCard())
             {
                 pPrinter->Line->ColCount = 1;
-                AnsiString balance = CurrToStr(RoundToNearest(PrintJob->Transaction->PurchasedGiftVoucherInformation->GiftVoucherAmount +
+                AnsiString balance = FormatFloat("0.00",RoundToNearest(PrintJob->Transaction->PurchasedGiftVoucherInformation->GiftVoucherAmount +
                                                            PrintJob->Transaction->PurchasedGiftVoucherInformation->RedeemedAmount,0.01,
                                                            TGlobalSettings::Instance().MidPointRoundsDown));
                 pPrinter->Line->Columns[0]->Width = pPrinter->Width;
