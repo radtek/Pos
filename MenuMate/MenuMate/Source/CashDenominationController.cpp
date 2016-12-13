@@ -75,12 +75,14 @@ void TCashDenominationControllerInterface::SaveDenominations(Database::TDBTransa
 
    if(CashDenominations.GetTotal() > 0)
    {
+        UnicodeString terminalName = TGlobalSettings::Instance().EnableDepositBagNum ? UnicodeString("") : inTerminalName;
+
         TCashDenominationContainer::iterator itCashDenomination = CashDenominations.begin();
 		for (; itCashDenomination != CashDenominations.end(); advance(itCashDenomination,1))
 		{
            if(itCashDenomination->second.Quantity > 0)
             {
-                TDBDenominations::SaveZedDenominations(DBTransaction,z_key,"",
+                TDBDenominations::SaveZedDenominations(DBTransaction,z_key,terminalName,
                                                    itCashDenomination->second.Title,
                                                    itCashDenomination->second.DenominationValue,
                                                    itCashDenomination->second.Quantity);
