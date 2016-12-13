@@ -142,9 +142,18 @@ TPrintout* BaseReport::SetupPrintOutInstance()
 
     printOut->PrintFormat->DocumentName = GetReportName();
 
-    ReportSections functor(printOut);
-    std::for_each(_sections.begin(), _sections.end(), functor);
+    for(std::vector<IReportSection*>::iterator it = _sections.begin();
+        it != _sections.end();++it)
+    {
+       if((*it)->GetIsEnabled() && printOut->ContinuePrinting)
+        {
+            (*it)->GetOutput(printOut);
+        }
+    }
 
+
+    //ReportSections functor(printOut);
+    //std::for_each(_sections.begin(), _sections.end(), functor);
     //std::bind2nd(std::mem_fun(&IReportSection::GetOutput), printOut));
     return printOut;
 }

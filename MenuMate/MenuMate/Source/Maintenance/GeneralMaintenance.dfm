@@ -223,7 +223,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsStaffOptions
+    ActivePage = tsEndOfDayOptions
     TabOrder = 1
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'
@@ -245,7 +245,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 49
           Width = 433
-          Height = 695
+          Height = 720
           Caption = 'P.O.S Options'
           ParentBackground = False
           TabOrder = 5
@@ -559,8 +559,17 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Width = 412
             Height = 25
             Caption = 'Hide Receipt Number for Refund Order'
-            TabOrder = 21
+            TabOrder = 24
             OnClick = cbHideReceiptNumberClick
+          end
+          object cbHideRoundingOnReceipt: TCheckBox
+            Left = 8
+            Top = 685
+            Width = 412
+            Height = 25
+            Caption = 'Hide Rounding On Receipt'
+            TabOrder = 21
+            OnClick = cbHideRoundingOnReceiptClick
           end
         end
         object GroupBox5: TGroupBox
@@ -726,7 +735,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Width = 401
           Height = 49
           Caption = 'Item Search'
-          TabOrder = 7
+          TabOrder = 8
           object cbItemSearch: TCheckBox
             Left = 8
             Top = 21
@@ -735,6 +744,32 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Item Search'
             TabOrder = 0
             OnClick = cbItemSearchClick
+          end
+        end
+        object GroupBoxEJournal: TGroupBox
+          Left = 447
+          Top = 652
+          Width = 401
+          Height = 70
+          Caption = 'E Journal'
+          TabOrder = 7
+          object cbExcludeReceipt: TCheckBox
+            Left = 8
+            Top = 21
+            Width = 250
+            Height = 20
+            Caption = 'Do not include Receipt'
+            TabOrder = 1
+            OnClick = cbExcludeReceiptClick
+          end
+          object cbExcludeXReport: TCheckBox
+            Left = 8
+            Top = 40
+            Width = 250
+            Height = 20
+            Caption = 'Do not include X Report'
+            TabOrder = 0
+            OnClick = cbExcludeXReportClick
           end
         end
         object gbItemBilling: TGroupBox
@@ -2618,7 +2653,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 400
           Top = 49
           Width = 475
-          Height = 700
+          Height = 750
           Caption = 'Zed Print'
           ParentBackground = False
           TabOrder = 15
@@ -2631,9 +2666,18 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             TabOrder = 0
             OnClick = cbShowSessionDateClick
           end
-          object cbDEnableBlindBalances: TCheckBox
+          object cbCashDenominationEntry: TCheckBox
             Left = 8
             Top = 45
+            Width = 250
+            Height = 25
+            Caption = 'Enable Cash Denomination Entry'
+            TabOrder = 27
+            OnClick = cbCashDenominationEntryClick
+          end
+          object cbDEnableBlindBalances: TCheckBox
+            Left = 8
+            Top = 70
             Width = 250
             Height = 25
             Caption = 'Enable Zed Blind Balances'
@@ -2642,7 +2686,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowTransactionSummaryGroups: TCheckBox
             Left = 8
-            Top = 70
+            Top = 95
             Width = 280
             Height = 25
             Caption = 'Show Transaction Summary Groups'
@@ -2651,7 +2695,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowBilledSalesTotals: TCheckBox
             Left = 8
-            Top = 95
+            Top = 120
             Width = 250
             Height = 25
             Caption = 'Show Billed Sales Totals'
@@ -2660,7 +2704,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowComplimentarySalesTotals: TCheckBox
             Left = 8
-            Top = 120
+            Top = 145
             Width = 250
             Height = 25
             Caption = 'Show Complimentary Sales Totals'
@@ -2669,7 +2713,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowChargedSalesTotals: TCheckBox
             Left = 8
-            Top = 145
+            Top = 170
             Width = 250
             Height = 25
             Caption = 'Show Charged Sales Totals'
@@ -2678,7 +2722,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowTotals: TCheckBox
             Left = 8
-            Top = 170
+            Top = 195
             Width = 250
             Height = 25
             Caption = 'Show Totals'
@@ -2687,7 +2731,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowBreakdownCategories: TCheckBox
             Left = 8
-            Top = 195
+            Top = 220
             Width = 250
             Height = 25
             Caption = 'Show Breakdown Categories'
@@ -2696,7 +2740,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowRemovalReport: TCheckBox
             Left = 8
-            Top = 220
+            Top = 245
             Width = 250
             Height = 25
             Caption = 'Show Removals Report'
@@ -2705,7 +2749,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowDiscountReport: TCheckBox
             Left = 8
-            Top = 245
+            Top = 270
             Width = 250
             Height = 25
             Caption = 'Show Discount Report'
@@ -2714,7 +2758,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowPointsReport: TCheckBox
             Left = 8
-            Top = 270
+            Top = 295
             Width = 250
             Height = 25
             Caption = 'Show Points Report'
@@ -2723,7 +2767,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowPatronAverages: TCheckBox
             Left = 8
-            Top = 295
+            Top = 320
             Width = 250
             Height = 25
             Caption = 'Show Patron Averages'
@@ -2732,7 +2776,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowProductionInfo: TCheckBox
             Left = 8
-            Top = 320
+            Top = 345
             Width = 250
             Height = 25
             Caption = 'Show Production Info'
@@ -2741,7 +2785,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowAccountPurchases: TCheckBox
             Left = 8
-            Top = 345
+            Top = 370
             Width = 250
             Height = 25
             Caption = 'Show Account Purchases'
@@ -2750,7 +2794,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowAccountBalancesTabs: TCheckBox
             Left = 8
-            Top = 370
+            Top = 395
             Width = 250
             Height = 25
             Caption = 'Show Account Balances Tabs'
@@ -2759,7 +2803,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowAccountBalances: TCheckBox
             Left = 8
-            Top = 395
+            Top = 420
             Width = 250
             Height = 25
             Caption = 'Show Account Balances - Seated'
@@ -2768,7 +2812,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowHourlySales: TCheckBox
             Left = 8
-            Top = 420
+            Top = 445
             Width = 250
             Height = 25
             Caption = 'Show Hourly Sales'
@@ -2777,7 +2821,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowAccumulatedTotal: TCheckBox
             Left = 8
-            Top = 445
+            Top = 470
             Width = 250
             Height = 25
             Caption = 'Show Accumulated Total'
@@ -2786,7 +2830,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowTaxSummary: TCheckBox
             Left = 8
-            Top = 470
+            Top = 495
             Width = 250
             Height = 25
             Caption = 'Show Tax Summary'
@@ -2795,7 +2839,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowServiceChargeSummary: TCheckBox
             Left = 8
-            Top = 495
+            Top = 520
             Width = 250
             Height = 25
             Caption = 'Show Service Charge Summary'
@@ -2804,7 +2848,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbEnableStaffHours: TCheckBox
             Left = 8
-            Top = 520
+            Top = 545
             Width = 217
             Height = 25
             Caption = 'Enable Staff Hours'
@@ -2813,7 +2857,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbEnableCommission: TCheckBox
             Left = 9
-            Top = 545
+            Top = 570
             Width = 243
             Height = 25
             Caption = 'Enable Commission / Tips'
@@ -2822,7 +2866,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbRevenueFiguresAreTaxAndServiceChargeInclusive: TCheckBox
             Left = 9
-            Top = 570
+            Top = 595
             Width = 370
             Height = 25
             Caption = 'Revenue figures are tax and service charge inclusive'
@@ -2831,7 +2875,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbPointsOnZed: TCheckBox
             Left = 8
-            Top = 595
+            Top = 620
             Width = 289
             Height = 20
             Caption = 'Show points earned on Zed'
@@ -2840,7 +2884,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowInvoiceInfo: TCheckBox
             Left = 8
-            Top = 620
+            Top = 645
             Width = 329
             Height = 20
             Caption = 'Show Invoice Information on Zed'
@@ -2849,7 +2893,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbRevenueFiguresAreDiscountInclusive: TCheckBox
             Left = 8
-            Top = 645
+            Top = 670
             Width = 329
             Height = 20
             Caption = 'Revenue Figures are discount inclusive'
@@ -2858,12 +2902,22 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowPriceAdjustment: TCheckBox
             Left = 8
-            Top = 670
+            Top = 695
             Width = 329
             Height = 20
             Caption = 'Show Price Adjustment on Zed'
-            TabOrder = 26
+            TabOrder = 27
             OnClick = cbShowPriceAdjustmentClick
+          end
+          object cbUseBIRFormatInXZReport: TCheckBox
+            Left = 8
+            Top = 720
+            Width = 329
+            Height = 20
+            Caption = 'Use BIR Format in X and Z Report'
+            TabOrder = 26
+            OnClick = cbUseBIRFormatInXZReportClick
+            OnMouseUp = cbUseBIRFormatInXZReportMouseUp
           end
         end
         object cbEnablePrinterCounts: TCheckBox

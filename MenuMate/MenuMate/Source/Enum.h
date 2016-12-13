@@ -438,4 +438,5 @@ const NIP_PIC        	= 2;
 const SPLASH_PIC        = 3;
 const DISABLEDSTATE_PIC = 4;
 
+enum eGiftCardValidation {OpenEnded = 0, MSROnly, CloudValidation};
 #endif

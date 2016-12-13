@@ -4560,8 +4560,7 @@ void TdmMMReportData::SetupTurnAround(TDateTime StartTime, TDateTime EndTime)
 			"CAST('12/30/1899' AS TIMESTAMP) + (Bump_Time - Arrival_Time) Make_Time,"
 			"CAST('12/30/1899' AS TIMESTAMP) + (Bump_Time - Arrival_Time) + (Order_Sale_Finish_Time - Order_Sale_Start_Time) Process_Time "
 		"From "
-			"Orders Inner Join OrderTimesView "
-            "On Orders.Order_Key = OrderTimesView.Order_Key "
+			"Orders "
 		"Where "
 			"Order_Sale_Start_Time >= :StartTime and "
 			"Order_Sale_Start_Time < :EndTime and "
@@ -7352,8 +7351,6 @@ void TdmMMReportData::SetupCredits(TDateTime StartTime, TDateTime EndTime, TStri
 			"Security.Note,"
 			"Archive.Size_Name,"
 			"Cast(Archive.Item_Name As Varchar(50)) Item_Name,"
-		 //	"cast(Archive.Qty * Archive.Price + Archive.Discount as numeric(17, 4)) Price,"
-		 //	"cast(Archive.Price * Archive.Qty + Archive.Discount as numeric(17, 4)) Total_Price,"
  " Cast((Archive.QTY * Archive.BASE_PRICE +COALESCE(abs(AOT.VAT),0)+COALESCE(abs(AOT.ServiceCharge),0) + COALESCE(abs(AOT.OtherServiceCharge),0) + COALESCE(abs(AOT.ProfitTax),0) + COALESCE(abs(AOT.LocalTax),0)  - COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Total_Price, "
     " Cast((Archive.QTY * Archive.BASE_PRICE +COALESCE(abs(AOT.VAT),0)+COALESCE(abs(AOT.ServiceCharge),0) + COALESCE(abs(AOT.OtherServiceCharge),0) + COALESCE(abs(AOT.ProfitTax),0) + COALESCE(abs(AOT.LocalTax),0)  - COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Price, "
 
@@ -7406,8 +7403,6 @@ void TdmMMReportData::SetupCredits(TDateTime StartTime, TDateTime EndTime, TStri
 			"Security.Note,"
 			"DayArchive.Size_Name,"
 			"Cast(DayArchive.Item_Name As Varchar(50)) Item_Name,"
-		 //	"cast(DayArchive.Price * DayArchive.Qty + DayArchive.Discount as numeric(17, 4)) Price,"
-		 //	"cast(DayArchive.Price * DayArchive.Qty + DayArchive.Discount as numeric(17, 4)) Total_Price,"
     " Cast((DayArchive.QTY * DAYARCHIVE.BASE_PRICE  + COALESCE(abs(AOT.VAT),0)+COALESCE( abs(AOT.ServiceCharge),0) + COALESCE( abs(AOT.OtherServiceCharge),0) + COALESCE(abs(AOT.ProfitTax),0) + COALESCE(abs(AOT.LocalTax),0)   - COALESCE((DayArchive.DISCOUNT_WITHOUT_TAX),0)) as Numeric(17,4)) Price, "
       " Cast((DayArchive.QTY * DAYARCHIVE.BASE_PRICE  + COALESCE(abs(AOT.VAT),0)+COALESCE(abs(AOT.ServiceCharge),0) + COALESCE( abs(AOT.OtherServiceCharge),0) + COALESCE(abs(AOT.ProfitTax),0) + COALESCE(abs(AOT.LocalTax),0) - COALESCE((DayArchive.DISCOUNT_WITHOUT_TAX),0)) as Numeric(17,4)) Total_Price, "
 
@@ -9449,6 +9444,7 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime EndTime, TStrings *Names)
 {
 	qrLoyaltyAuditSummary->Close();
@@ -9699,6 +9695,8 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 		qrLoyaltyAuditSummary->ParamByName("LocationParam" + IntToStr(i))->AsString = Locations->Strings[i];
 	}
 }
+//---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
@@ -13291,25 +13289,39 @@ void TdmMMReportData::SetupSalesSummaryC(TDateTime StartTime, TDateTime EndTime,
     }
 
     qrSalesCountByDayPart->SQL->Text = qrSalesCountByDayPart->SQL->Text +
-    // Total Patron Count every Breakfast (5am to 11am) / As of 04/26/2016 it is now LUNCH (5am to 2:59pm)
-    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 5 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 15 "
+    // Total Patron Count every Breakfast (5am to 11am) / As of 04/26/2016 it is now LUNCH (5am to 2:59pm) /As of 12/08/2016 it is now from 6am to 10 am.
+    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 6 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 10 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS BREAKFASTCOUNT, "
 
-    // Total Amount every Breakfast (5am to 11am) / As of 04/26/2016 it is now LUNCH (5am to 2:59pm)
-    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 5 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 15 "
+    // Total Amount every Breakfast (5am to 11am) / As of 04/26/2016 it is now LUNCH (5am to 2:59pm) /As of 12/08/2016 it is now from 6am to 10 am.
+    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 6 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 10 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 5 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 15 AND "
+    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 6 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 10 AND "
     "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
     "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
-    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 5 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 15 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 6 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 10 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
     "AS BREAKFASTAMOUNT, "
 
-    // Total Patron Count every Lunch (11am to 3pm) / As of 04/26/2016 it is now SNACK (3pm to 5:59pm)
-    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 15 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 18 "
+    // Total Patron Count every Lunch (11am to 3pm) / As of 04/26/2016 it is now SNACK (3pm to 5:59pm)  /As of 12/08/2016 it is now from 10am to 3 pm.
+    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 10 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 15 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS LUNCHCOUNT, "
 
-    // Total Amount every Lunch (11am to 3pm) / As of 04/26/2016 it is now SNACK (3pm to 5:59pm)
+    // Total Amount every Lunch (11am to 3pm) / As of 04/26/2016 it is now SNACK (3pm to 5:59pm) /As of 12/08/2016 it is now from 10am to 3 pm.
+    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 10 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 15 "
+    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
+    "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
+    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 10 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 15 AND "
+    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
+    "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 10 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 15 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
+    "AS LUNCHAMOUNT, "
+
+    // Total Patron Count every Merienda(Snacks) (3pm to 6pm) / As of 04/26/2016 it is now DINNER (6pm to 8:59pm) /As of 12/08/2016 it is now from 3 pm to 6 pm.
+    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 15 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 18 "
+    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS MERIENDACOUNT, "
+
+    // Total Amount every Merienda(Snacks) (3pm to 6pm) / As of 04/26/2016 it is now DINNER (6pm to 8:59pm) /As of 12/08/2016 it is now from 3 pm to 6 pm.
     "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 15 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 18 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
@@ -13317,62 +13329,48 @@ void TdmMMReportData::SetupSalesSummaryC(TDateTime StartTime, TDateTime EndTime,
     "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
     "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
     "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 15 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 18 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
-    "AS LUNCHAMOUNT, "
-
-    // Total Patron Count every Merienda(Snacks) (3pm to 6pm) / As of 04/26/2016 it is now DINNER (6pm to 8:59pm)
-    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 18 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 21 "
-    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS MERIENDACOUNT, "
-
-    // Total Amount every Merienda(Snacks) (3pm to 6pm) / As of 04/26/2016 it is now DINNER (6pm to 8:59pm)
-    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 18 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 21 "
-    "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
-    "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 18 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 21 AND "
-    "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
-    "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
-    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 18 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 21 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
     "AS MERIENDAAMOUNT, "
 
-    // Total Patron Count every Dinner (6pm to 9pm) / As of 04/26/2016 it is now AFTER DINNER (9pm to 11:59pm)
-    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 21 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) <= 23 "
+    // Total Patron Count every Dinner (6pm to 9pm) / As of 04/26/2016 it is now AFTER DINNER (9pm to 11:59pm) /As of 12/08/2016 it is now from 6 pm to 9 pm.
+    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 18 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) <= 21 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS DINNERCOUNT, "
 
-    // Total Amount every Dinner (6pm to 9pm) / As of 04/26/2016 it is now AFTER DINNER (9pm to 11:59pm)
-    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 21 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) <= 23 "
+    // Total Amount every Dinner (6pm to 9pm) / As of 04/26/2016 it is now AFTER DINNER (9pm to 11:59pm)  /As of 12/08/2016 it is now from 6 pm to 9 pm.
+    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 18 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) <= 21 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 21 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) <= 23 AND "
+    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 18 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) <= 21 AND "
     "ARCHIVE.TIME_STAMP >= :StartTime AND ARCHIVE.TIME_STAMP < :EndTime),0)) - "
     "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
-    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 21 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 23 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 18 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 21 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
     "AS DINNERAMOUNT, "
 
-    // Total Patron Count every After Dinner (9pm to 12am) / As of 04/26/2016 it is now LATE EVENING (12am to 12:59am)
-    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 1 "
+    // Total Patron Count every After Dinner (9pm to 12am) / As of 04/26/2016 it is now LATE EVENING (12am to 12:59am)  /As of 12/08/2016 it is now from 9 pm to 12am.
+    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 21 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 24 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS AFTERDINNERCOUNT, "
 
-    // Total Amount every After Dinner (9pm to 12am) As of 04/26/2016 it is now LATE EVENING (12am to 12:59am)
-    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 1 "
+    // Total Amount every After Dinner (9pm to 12am) As of 04/26/2016 it is now LATE EVENING (12am to 12:59am) /As of 12/08/2016 it is now from 9 pm to 12am
+    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 21 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 24 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 1 AND "
+    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 21 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 24 AND "
     "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
     "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
-    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 1 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 21 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 24 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
     "AS AFTERDINNERAMOUNT, "
 
-    // Total Patron Count every Late (12am onwards) / As of 04/26/2016 it is now AFTER HOURS (1am to 4:59am)
-    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 1 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 5 "
+    // Total Patron Count every Late (12am onwards) / As of 04/26/2016 it is now AFTER HOURS (1am to 4:59am) /As of 12/08/2016 it is now from 12am to 6am
+    "COALESCE((SELECT SUM(ARCBILL.PATRON_COUNT) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR FROM ARCBILL.TIME_STAMP) < 6 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) AS LATECOUNT, "
 
-    // Total Amount every Late (12am onwards) / As of 04/26/2016 it is now AFTER HOURS (1am to 4:59am)
-    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 1 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 5 "
+    // Total Amount every Late (12am onwards) / As of 04/26/2016 it is now AFTER HOURS (1am to 4:59am) /As of 12/08/2016 it is now from 12am to 6am
+    "(COALESCE((SELECT SUM(ARCBILL.TOTAL) FROM ARCBILL WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 6 "
     "AND ARCBILL.TIME_STAMP >= :StartTime AND ARCBILL.TIME_STAMP < :EndTime),0) - "
     "COALESCE((SELECT SUM(ARCORDERTAXES.TAX_VALUE) FROM ARCORDERTAXES LEFT JOIN ARCHIVE ON ARCORDERTAXES.ARCHIVE_KEY = ARCHIVE.ARCHIVE_KEY "
-    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 1 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 5 AND "
+    "WHERE ARCORDERTAXES.TAX_TYPE IN (0,2,3,4) AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCHIVE.TIME_STAMP) < 6 AND "
     "ARCHIVE.TIME_STAMP_BILLED >= :StartTime AND ARCHIVE.TIME_STAMP_BILLED < :EndTime),0)) - "
     "COALESCE((SELECT SUM(ARCSURCHARGE.SUBTOTAL) FROM ARCSURCHARGE LEFT JOIN ARCBILL ON ARCSURCHARGE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
-    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 1 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 5 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
+    "WHERE EXTRACT(HOUR from ARCBILL.TIME_STAMP) >= 0 AND EXTRACT(HOUR from ARCBILL.TIME_STAMP) < 6 AND ARCBILL.TIME_STAMP BETWEEN :StartTime AND :EndTime),0) "
     "AS LATEDINNERAMOUNT, "
 
     // Total Amount for All Hours (Breakfast, Lunch, Merienda, Dinner)
@@ -15985,6 +15983,8 @@ qrPointSpend->ParamByName("EndTime")->AsDateTime	= EndTime;
 }
 
 
+
+
 void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDateTime EndTime, TStrings *Names)
 
 {
@@ -16210,6 +16210,10 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 	  qrMembershipAuditPointsBreakdown->ParamByName("EndTime")->AsDateTime	= EndTime;
 
 }
+
+
+
+
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupBreakdownCategory(TStrings *Menus)
 {
@@ -16431,41 +16435,6 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
     qrSalesSummaryD->ParamByName("EndTime")->AsDateTime	= EndTime;
 
 }
-
-//---------------------------------------------------------------------------
-void TdmMMReportData::SetupEJournal(TDateTime StartTime, TDateTime EndTime)
-{
-   qrEJournal->Close();
-   qrEJournal->SQL->Text =
-      "SELECT "
-         "DAB.ARCBILL_KEY, "
-         "DAB.time_stamp datetime, "
-         "DAB.RECEIPT receipt, "
-         "DAB.INVOICE_NUMBER "
-         "From "
-			"DAYARCBILL DAB "
-      "WHERE "
-         "DAB.Time_Stamp >= :StartTime and "
-         "DAB.Time_Stamp < :EndTime "
-
-        " UNION ALL "
-
-      "SELECT "
-         "AB.ARCBILL_KEY, "
-         "AB.time_stamp datetime, "
-         "AB.RECEIPT receipt, "
-         "AB.INVOICE_NUMBER " 
-         "From "
-			"ARCBILL AB "
-      "WHERE "
-         "AB.Time_Stamp >= :StartTime and "
-         "AB.Time_Stamp < :EndTime "
-
-         "order by 1 ";
-   qrEJournal->ParamByName("StartTime")->AsDateTime	= StartTime;
-   qrEJournal->ParamByName("EndTime")->AsDateTime	= EndTime;
-}
-
 
 
 

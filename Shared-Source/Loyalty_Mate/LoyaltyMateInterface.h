@@ -132,12 +132,12 @@ class TLoyaltyMateInterface
                                                  TDateTime occurredDate,int pointsType,AnsiString inInvoiceNumber);
 
         // Get gift voucher balance
-        MMLoyaltyServiceResponse GetGiftVoucherBalance(TSyndCode syndicateCode,AnsiString giftVoucherNumber,double &balance);
+        MMLoyaltyServiceResponse GetGiftVoucherBalance(TSyndCode syndicateCode,AnsiString giftVoucherNumber,TGiftCardDetail &GiftCardDetail);
 
         // Get pocket voucher Detail
         MMLoyaltyServiceResponse GetPocketVoucherDetail(TSyndCode syndicateCode,AnsiString pocketVoucherNumber,TVoucherDetail &VoucherDetail);
 
-        MMLoyaltyServiceResponse ProcessVoucherTransaction(TSyndCode syndicateCode,TVoucherUsageDetail inVoucherUsageDetail);
+        MMLoyaltyServiceResponse ProcessVoucherTransaction(TSyndCode syndicateCode,TVoucherUsageDetail& inVoucherUsageDetail);
 
         MMLoyaltyServiceResponse ReleaseVouchers(TSyndCode syndicateCode,TReleasedVoucherDetail inReleasedVoucherDetail);
 
@@ -153,6 +153,7 @@ class TLoyaltyMateInterface
         void SyncTierLevels(Database::TDBTransaction &DBTransaction,DynamicArray<TierLevelInfo*> tierLevels);
         void SyncDiscounts(Database::TDBTransaction &DBTransaction,DynamicArray<DiscountInfo*> discounts);
         void ReadPocketVoucherInfo(VoucherInfo* inVoucherInfo,TVoucherDetail& VoucherDetail);
+        void ReadGiftCardInfo(GiftCardInfo* inVoucherInfo,TGiftCardDetail& GiftCardDetail);
         void ReadMemberVouchers(DynamicArray<VoucherInfo*> memberVouchers,TMMContactInfo& inContactInfo);
     private:
         // initiates the Loyaltymate WCF Client
@@ -201,6 +202,8 @@ class TLoyaltyMateInterface
         MMLoyaltyServiceResponse CreateMMResponse(LoyaltyGiftCardResponse* inWCFResponse );
 
         MMLoyaltyServiceResponse CreateMMResponse(LoyaltyVoucherResponse* inWCFResponse );
+
+        MMLoyaltyServiceResponse CreateMMResponse(VoucherTransactionResponse* inWCFResponse );
 
         // creates MMResponse from an exception message
         MMLoyaltyServiceResponse CreateExceptionFailedResponse(AnsiString inMessage );

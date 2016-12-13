@@ -10,8 +10,8 @@ class TManagerLoyaltyVoucher
 {
    public:
     void GetPocketVoucherDetail(AnsiString voucherCode,TVoucherDetail& VoucherDetail);
-    double GetGiftVoucherDetail(AnsiString voucherCode,bool &isValidGiftCard);
-    bool ProcessVouchers(TVoucherUsageDetail VoucherUsageDetail);
+    void GetGiftVoucherDetail(AnsiString voucherCode,TGiftCardDetail &GiftCardDetail);
+    bool ProcessVouchers(TVoucherUsageDetail& VoucherUsageDetail);
     bool ReleaseVouchers(TReleasedVoucherDetail inReleasedVoucherDetail);
     void DisplayMemberVouchers(Database::TDBTransaction &DBTransaction,TMMContactInfo &MemberInfo);
    private:

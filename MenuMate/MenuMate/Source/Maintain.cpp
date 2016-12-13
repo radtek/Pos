@@ -499,6 +499,11 @@ void __fastcall TfrmMaintain::BitBtn2Click(TObject *Sender)
 			frmMessageMaintenance->MessageType = eCashDrawer;
 			frmMessageMaintenance->ShowModal();
 		}
+		else if (Sender == tbtnCashDenomination)
+		{
+			frmMessageMaintenance->MessageType = eCashDenomination;
+			frmMessageMaintenance->ShowModal();
+		}
 	}
 	else if (Result == lsDenied)
 	{
@@ -1928,9 +1933,6 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 	TVerticalSelection Item1;
 	Item1.Title = UnicodeString("Enable/Disable \r") + UnicodeString((TGlobalSettings::Instance().LoyaltyMateEnabled ? "Enabled" : "Disabled"));
 	Item1.Properties["Action"] = IntToStr(1);
-
-	//:::::::::::::::::::::::::::::::::::::::
-
 	if( TGlobalSettings::Instance().LoyaltyMateEnabled )
 	{
 		Item1.Properties["Color"] = IntToStr(clGreen);
@@ -1939,11 +1941,16 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 	{
 		Item1.Properties["Color"] = IntToStr(clRed);
 	}
-
-	//:::::::::::::::::::::::::::::::::::::::
-
 	Item1.CloseSelection = true;
 	SelectionForm->Items.push_back(Item1);
+
+    TVerticalSelection Item2;
+	Item2.Title = UnicodeString("Gift Card Validation");
+	Item2.Properties["Action"] = IntToStr(2);
+    Item2.Properties["Color"] = IntToStr(clNavy);
+    Item2.CloseSelection = true;
+    SelectionForm->Items.push_back(Item2);
+
 	SelectionForm->ShowModal();
 	TVerticalSelection SelectedItem;
 	if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -1994,11 +2001,13 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 					DBTransaction.StartTransaction();
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmLoyaltyMateEnabled,TGlobalSettings::Instance().LoyaltyMateEnabled);
 					DBTransaction.Commit();
-
-					//::::::::::::::::::::::::::::::::::::::::::::::::
 					RefreshLoyaltyMateBtnColor();
 				}
 			}  break;
+            case 2 :
+			{
+               ManageGiftCardValidations(DBTransaction);
+            }  break;
 		}
 	}
 	else
@@ -2022,6 +2031,50 @@ void __fastcall TfrmMaintain::RefreshLoyaltyMateBtnColor()
 
 		TouchBtnLoyaltyMate->Caption = "Loyalty Mate \r[Disabled]";
 	}
+}
+
+void TfrmMaintain::ManageGiftCardValidations(Database::TDBTransaction &DBTransaction)
+{
+    std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+    TVerticalSelection Item;
+    Item.Title = "Cancel";
+    Item.Properties["Color"] = "0x000098F5";
+    Item.Properties["FontColor"] = IntToStr(clWhite);;
+    Item.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item);
+
+    TVerticalSelection Item1;
+    Item1.Title = "Open Ended Validation";
+    Item1.Properties["Action"] = IntToStr(0);
+    Item1.Properties["Color"] = TGlobalSettings::Instance().GiftCardValidation == 0 ? IntToStr(clGreen) : IntToStr(clNavy);
+    Item1.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item1);
+
+    TVerticalSelection Item2;
+    Item2.Title = "MSR Cards Only";
+    Item2.Properties["Action"] = IntToStr(1);
+    Item2.Properties["Color"] = TGlobalSettings::Instance().GiftCardValidation == 1 ? IntToStr(clGreen) : IntToStr(clNavy);;
+    Item2.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item2);
+
+    TVerticalSelection Item3;
+    Item3.Title = "Cloud Validation";
+    Item3.Properties["Action"] = IntToStr(2);
+    Item3.Properties["Color"] = TGlobalSettings::Instance().GiftCardValidation == 2 ? IntToStr(clGreen) : IntToStr(clNavy);;
+    Item3.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item3);
+
+
+    SelectionForm1->ShowModal();
+    TVerticalSelection SelectedItem1;
+    if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+    {
+        TGlobalSettings::Instance().GiftCardValidation = StrToIntDef(SelectedItem1.Properties["Action"],0);
+        DBTransaction.StartTransaction();
+        TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmGiftCardValidation,TGlobalSettings::Instance().GiftCardValidation);
+        DBTransaction.Commit();
+    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::CustomerOrderTypesClick(TObject *Sender)

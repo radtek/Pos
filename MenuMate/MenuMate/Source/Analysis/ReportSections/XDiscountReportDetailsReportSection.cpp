@@ -17,12 +17,46 @@ XDiscountReportDetailsReportSection::~XDiscountReportDetailsReportSection()
 
 void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 {
+
+    //AddTitle(printout, "Discounts");
+    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+    TIBSQL *qrDiscount = _dbTransaction->Query(_dbTransaction->AddQuery());
+    DataCalculationUtilities dataCalcUtils;
+    TTransactionInfo transactionInfo;
+    TStringList *DiscountServerList = new TStringList;
+    UnicodeString DiscountSQL = "";
+    int total_discount_qty = 0;
+    Currency show_discount_totals = 0;
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = " where SubQuery1.TERMINAL_NAME = :TERMINAL_NAME  ";
+    }
+
+    if (_globalSettings->UseBIRFormatInXZReport)
+    {
+		DiscountSQL = "select '' NAME, SubQuery1.DESCRIPTION, sum(SubQuery1.DISCOUNTED_VALUE) DISCOUNT, count(*)Qty "
+                     "from( "
+                     "select DAYARCORDERDISCOUNTS.DESCRIPTION, "
+                            "sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNTED_VALUE, "
+                            "DAYARCBILL.ARCBILL_KEY, DAYARCHIVE.TERMINAL_NAME "
+                     "from DAYARCORDERDISCOUNTS inner join DAYARCHIVE on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+                    "inner join DAYARCBILL on DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
+                    " GROUP BY DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCBILL.ARCBILL_KEY, DAYARCHIVE.TERMINAL_NAME)SubQuery1 ";
+                    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+                    {
+                       DiscountSQL +=  " where SubQuery1.TERMINAL_NAME = :TERMINAL_NAME  "
+                                       " group by SubQuery1.DESCRIPTION ";
+                    }
+                    else
+                    {
+                       DiscountSQL +=  " group by SubQuery1.DESCRIPTION " ;
+                    }
+
+    }
+    else
+    {
         AddTitle(printout, "Discount Report");
-        AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-        TIBSQL *qrDiscount = _dbTransaction->Query(_dbTransaction->AddQuery());
-        TTransactionInfo transactionInfo;
-        TStringList *DiscountServerList = new TStringList;
-		UnicodeString DiscountSQL = "";
 		if (_globalSettings->SummariseDiscountOnZed)
 		{
 			DiscountSQL =
@@ -50,10 +84,14 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 			(SecurityTypes[secDiscountedBy]) + "' "
 			"group by DAYARCBILL.ARCBILL_KEY,CONTACTS.NAME,DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCHIVE.TIME_STAMP_BILLED;";
 		}
+     }
 
 		qrDiscount->Close();
 		qrDiscount->SQL->Text = DiscountSQL;
-		qrDiscount->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+           qrDiscount->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        }
 		qrDiscount->ExecQuery();
 
 		for (; !qrDiscount->Eof; qrDiscount->Next())
@@ -67,35 +105,56 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 					Index = DiscountServerList->AddObject(qrDiscount->FieldByName("NAME")->AsString, ItemsList);
 					TCurrencyTotal *Item = new TCurrencyTotal;
 					Item->Total = qrDiscount->FieldByName("DISCOUNT")->AsCurrency;
-					if (TGlobalSettings::Instance().SummariseDiscountOnZed)
-					{
+                    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+                    {
 						((TStringList*)DiscountServerList->Objects[Index])->AddObject
-						(qrDiscount->FieldByName("DESCRIPTION")->AsString + " |x" + qrDiscount->FieldByName("QTY")->AsString,
+						(qrDiscount->FieldByName("DESCRIPTION")->AsString + " |" + IntToStr(abs(qrDiscount->FieldByName("QTY")->AsInteger)),
 						Item);
-					}
-					else
-					{
-						((TStringList*)DiscountServerList->Objects[Index])->AddObject
-						(qrDiscount->FieldByName("TIME_STAMP_BILLED")->AsDateTime.FormatString("hh:nn ") + qrDiscount->FieldByName
-						("DESCRIPTION")->AsString, Item);
-					}
+                        total_discount_qty += abs(qrDiscount->FieldByName("QTY")->AsInteger);
+
+                    }
+                    else
+                    {
+                        if (TGlobalSettings::Instance().SummariseDiscountOnZed)
+                        {
+                            ((TStringList*)DiscountServerList->Objects[Index])->AddObject
+                            (qrDiscount->FieldByName("DESCRIPTION")->AsString + " |x" + qrDiscount->FieldByName("QTY")->AsString,
+                            Item);
+                        }
+                        else
+                        {
+                            ((TStringList*)DiscountServerList->Objects[Index])->AddObject
+                            (qrDiscount->FieldByName("TIME_STAMP_BILLED")->AsDateTime.FormatString("hh:nn ") + qrDiscount->FieldByName
+                            ("DESCRIPTION")->AsString, Item);
+                        }
+                    }
 				}
 				else
 				{
 					TCurrencyTotal *Item = new TCurrencyTotal;
 					Item->Total = qrDiscount->FieldByName("DISCOUNT")->AsCurrency;
-					if (TGlobalSettings::Instance().SummariseDiscountOnZed)
-					{
-						((TStringList*)DiscountServerList->Objects[Index])->AddObject
-						(qrDiscount->FieldByName("DESCRIPTION")->AsString + " |x" + qrDiscount->FieldByName("QTY")->AsString,
-						Item);
-					}
-					else
-					{
-						((TStringList*)DiscountServerList->Objects[Index])->AddObject
-						(qrDiscount->FieldByName("TIME_STAMP_BILLED")->AsDateTime.FormatString("hh:nn ") + qrDiscount->FieldByName
-						("DESCRIPTION")->AsString, Item);
-					}
+                    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+                    {
+                        ((TStringList*)DiscountServerList->Objects[Index])->AddObject
+                        (qrDiscount->FieldByName("DESCRIPTION")->AsString + " |" + IntToStr(abs(qrDiscount->FieldByName("QTY")->AsInteger)),
+                        Item);
+                        total_discount_qty += abs(qrDiscount->FieldByName("QTY")->AsInteger);
+                    }
+                    else
+                    {
+                        if (TGlobalSettings::Instance().SummariseDiscountOnZed)
+                        {
+                            ((TStringList*)DiscountServerList->Objects[Index])->AddObject
+                            (qrDiscount->FieldByName("DESCRIPTION")->AsString + " |x" + qrDiscount->FieldByName("QTY")->AsString,
+                            Item);
+                        }
+                        else
+                        {
+                            ((TStringList*)DiscountServerList->Objects[Index])->AddObject
+                            (qrDiscount->FieldByName("TIME_STAMP_BILLED")->AsDateTime.FormatString("hh:nn ") + qrDiscount->FieldByName
+                            ("DESCRIPTION")->AsString, Item);
+                        }
+                    }
 				}
 
 			}
@@ -111,29 +170,41 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 			printout->PrintFormat->Line->ColCount = 1;
 			printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width;
 			printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-			printout->PrintFormat->Line->Columns[0]->DoubleLine();
-			printout->PrintFormat->AddLine();
-			printout->PrintFormat->NewLine();
-
+            if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
+            {
+               printout->PrintFormat->Line->Columns[0]->DoubleLine();
+               printout->PrintFormat->NewLine();
+            }
+            else
+            {
+               printout->PrintFormat->Line->Columns[0]->Text = "";
+            }
+            printout->PrintFormat->AddLine();
 			//AddSectionTitle(printout.get(), "Discount Report");
 
 			printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 			printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width / 3;
 			printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-//			printout->PrintFormat->Line->Columns[1]->Width = printout->PrintFormat->Width / 3;
-		  //	printout->PrintFormat->Line->Columns[1]->Alignment = taCenter;
-		//	printout->PrintFormat->Line->Columns[2]->Width = printout->PrintFormat->Width - printout->PrintFormat->Line->Columns[0]
-		//	->Width - printout->PrintFormat->Line->Columns[1]->Width;
-		//	printout->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-
-			if (TGlobalSettings::Instance().SummariseDiscountOnZed)
-			{
-				printout->PrintFormat->Add("Name | Items | Total");
-			}
-			else
-			{
-				printout->PrintFormat->Add("Name | | Total");
-			}
+            if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+            {
+                dataCalcUtils.PrinterFormatinThreeSections(printout); //SetPrinterFormat(printout);
+                printout->PrintFormat->Line->Columns[0]->Text = "";
+                printout->PrintFormat->Line->Columns[1]->Text = "Discounts";
+                //printout->PrintFormat->Line->Columns[1]->Text = "";
+                printout->PrintFormat->AddLine();
+            }
+            if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
+            {
+                if (TGlobalSettings::Instance().SummariseDiscountOnZed)
+                {
+                    printout->PrintFormat->Add("Name | Items | Total");
+                }
+                else
+                {
+                    printout->PrintFormat->Add("Name | | Total");
+                }
+            }
+            //}
 			printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 
 			// Currency TotalDiscount = 0;
@@ -145,7 +216,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 				printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
 				printout->PrintFormat->Add(DiscountServerList->Strings[i]);
 
-				if (TGlobalSettings::Instance().SummariseDiscountOnZed)
+				if (TGlobalSettings::Instance().SummariseDiscountOnZed || TGlobalSettings::Instance().UseBIRFormatInXZReport)
 				{
 					// ...followed by the items discounted by that user.
 					printout->PrintFormat->Line->ColCount = 3;
@@ -158,8 +229,30 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 					printout->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
 					for (int j = 0; j < ((TStringList*)DiscountServerList->Objects[i])->Count; j++)
 					{
-						printout->PrintFormat->Add(((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total ) );
-						DiscountTotal += ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total;
+
+                        if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+                        {
+                            dataCalcUtils.PrinterFormatinThreeSections(printout);//SetPrinterFormat(printout);
+
+                            DiscountTotal += ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total;
+                            if(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total < 0)
+                            {
+                                printout->PrintFormat->Add("|" + ((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + "(" +CurrToStrF(fabs(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total ), ffNumber, CurrencyDecimals) + ")" );
+                                //printout->PrintFormat->Line->Columns[1]->Text = ((TStringList*)DiscountServerList->Objects[i])->Strings[j];
+                                //printout->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Count);
+                                //printout->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total);
+                                //printout->PrintFormat->AddLine();
+                            }
+                            else
+                            {
+                               printout->PrintFormat->Add("|" + ((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + CurrToStrF(fabs(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total ), ffNumber, CurrencyDecimals) );
+                            }
+                        }
+                        else
+                        {
+                           printout->PrintFormat->Add(((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total ) );
+                           DiscountTotal += ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total;
+                        }
 						delete((TStringList*)DiscountServerList->Objects[i])->Objects[j];
 					}
 				}
@@ -183,18 +276,91 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 				delete DiscountServerList->Objects[i];
 			}
 		   //	printoutFormatForTxtValue(printout.get());
+
+
             IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
             if(reportSectionDisplayTraits)
             {
                reportSectionDisplayTraits->ApplyTraits(printout);
             }
-			printout->PrintFormat->Line->Columns[0]->Text = "";
-			printout->PrintFormat->Line->Columns[1]->DoubleLine();
-			printout->PrintFormat->AddLine();
-			printout->PrintFormat->Add("Total Discounts|" + dataFormatUtilities->FormatMMReportCurrency( DiscountTotal ) );
-			TCalculatedTotals DiscountsTotal(etcTotalDiscounts, DiscountTotal,DiscountTotal,0, 0);
-			transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcTotalDiscounts]] = DiscountsTotal;
+
+            if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+            {
+                dataCalcUtils.PrinterFormatinThreeSections(printout);
+                
+                
+                printout->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+                printout->PrintFormat->Line->Columns[1]->Text = "-----------------------------------------------------------";
+                printout->PrintFormat->Line->Columns[2]->Text = "-----------------------------------------------------------";
+                printout->PrintFormat->Line->Columns[3]->Text = "-----------------------------------------------------------";
+                //printout->PrintFormat->Line->Columns[1]->();
+                printout->PrintFormat->AddLine();
+                dataCalcUtils.PrinterFormatinThreeSections(printout);
+
+                show_discount_totals =  DiscountTotal;
+                if(show_discount_totals < 0)
+                {
+                   printout->PrintFormat->Add("|Total |" + IntToStr(total_discount_qty) +"|"+ "(" + CurrToStrF(fabs(show_discount_totals), ffNumber, CurrencyDecimals) + ")"  );
+                }
+                else
+                {
+                    printout->PrintFormat->Add("|Total |" + IntToStr(total_discount_qty) +"|"+ CurrToStrF(show_discount_totals, ffNumber, CurrencyDecimals) );
+                }
+                TCalculatedTotals DiscountsTotal(etcTotalDiscounts, DiscountTotal,DiscountTotal,0, 0);
+                transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcTotalDiscounts]] = DiscountsTotal;
+                //printout->PrintFormat->AddLine();
+                SetSingleColumnPrinterFormat(printout);
+                printout->PrintFormat->Line->Columns[0]->Text = "";
+                printout->PrintFormat->AddLine();
+                printout->PrintFormat->AddLine();
+            }
+            else
+            {
+                printout->PrintFormat->Line->Columns[0]->Text = "";
+                printout->PrintFormat->Line->Columns[1]->DoubleLine();
+                printout->PrintFormat->AddLine();
+                printout->PrintFormat->Add("Total Discounts|" + dataFormatUtilities->FormatMMReportCurrency( DiscountTotal ) );
+                TCalculatedTotals DiscountsTotal(etcTotalDiscounts, DiscountTotal,DiscountTotal,0, 0);
+                transactionInfo.CalculatedTotals[eStrCalculatedTotals[etcTotalDiscounts]] = DiscountsTotal;
+            }
+
 		}
+        else
+        {
+           if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+           {
+                dataCalcUtils.PrinterFormatinThreeSections(printout);//SetPrinterFormat(printout);
+                printout->PrintFormat->Line->Columns[1]->Text = "Discounts";
+                printout->PrintFormat->Line->Columns[2]->Text = "";
+                printout->PrintFormat->Line->Columns[3]->Text = "";
+                printout->PrintFormat->AddLine();
+                printout->PrintFormat->Line->Columns[1]->Text = "-----------------------------------------------------------";
+                printout->PrintFormat->Line->Columns[2]->Text = "-----------------------------------------------------------";
+                printout->PrintFormat->Line->Columns[3]->Text = "-----------------------------------------------------------";
+                //printout->PrintFormat->Line->Columns[1]->();
+                printout->PrintFormat->AddLine();
+                dataCalcUtils.PrinterFormatinThreeSections(printout);//SetPrinterFormat(printout);
+                printout->PrintFormat->Line->Columns[1]->Text = "Total";
+                printout->PrintFormat->Line->Columns[2]->Text = IntToStr(total_discount_qty);//FloatToStr(total_discount_qty);
+                printout->PrintFormat->Line->Columns[3]->Text = FloatToStr(fabs(show_discount_totals));
+                printout->PrintFormat->AddLine();
+                SetSingleColumnPrinterFormat(printout);
+                printout->PrintFormat->Line->Columns[0]->Text = "";
+                printout->PrintFormat->AddLine();
+                printout->PrintFormat->AddLine();
+
+           }
+        }
+
 
 
  }
+
+
+
+void XDiscountReportDetailsReportSection::SetSingleColumnPrinterFormat(TPrintout* printOut)
+{
+    printOut->PrintFormat->Line->ColCount = 1;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
+    printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+}

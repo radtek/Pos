@@ -1,4 +1,5 @@
 ﻿using Loyaltymate.Enum;
+using System;
 
 namespace Loyaltymate.Model
 {
@@ -8,5 +9,6 @@ namespace Loyaltymate.Model
         public ElementType ElementType { get; set; }
         public bool IsProcessedSuccessfully { get; set; }
         public string Error { get; set; }
+        public DateTime? ResponseTime { get; set; }
     }
 }

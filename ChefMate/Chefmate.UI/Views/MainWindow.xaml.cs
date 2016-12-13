@@ -302,16 +302,18 @@ namespace Chefmate.UI.Views
         #region Navigations
         private void Backward(object sender)
         {
+            ParentScroller.PageLeft();
             var position = ParentScroller.HorizontalOffset;
-            var offset = position - OrderWidth * ChefmateController.Instance.PageColumns;
-            ParentScroller.ScrollToHorizontalOffset(offset);
+            var offset = position > 0 ? position - OrderWidth * ChefmateController.Instance.PageColumns : 0; 
+            //ParentScroller.ScrollToHorizontalOffset(offset);
             UpdateNavigationButtonDisplay(offset);
         }
         private void Forward(object sender)
         {
+            ParentScroller.PageRight();
             var position = ParentScroller.HorizontalOffset;
             var offset = position + OrderWidth * ChefmateController.Instance.PageColumns;
-            ParentScroller.ScrollToHorizontalOffset(offset);
+            //ParentScroller.ScrollToHorizontalOffset(offset);
             UpdateNavigationButtonDisplay(offset);
 
         }
@@ -328,12 +330,16 @@ namespace Chefmate.UI.Views
         }
         private void UpdateNavigationButtonDisplay(double offset = 0)
         {
+            //Set Backward navigation Status
             var backwardEnabled = offset > 0;
-            var forwardEnabled = offset + (this.ActualWidth + 10) < _cordX + _orderWidth;
             BackwardNavigationButton.IsEnabled = backwardEnabled;
             LeftNavigationButton.IsEnabled = backwardEnabled;
+
+            //Set forward navigation Status
+            var forwardEnabled = offset + (this.ActualWidth + 10) < _cordX + _orderWidth;
             ForwardNavigationButton.IsEnabled = forwardEnabled;
             RightNavigationButton.IsEnabled = forwardEnabled;
+
             OrderContainer.Focus();
         }
         #endregion
@@ -379,7 +385,7 @@ namespace Chefmate.UI.Views
                 {
                     FilterOrder(order);
                 }
-                UpdateNavigationButtonDisplay();
+                UpdateNavigationButtonDisplay(ParentScroller.HorizontalOffset);
             }));
 
         }
@@ -539,13 +545,15 @@ namespace Chefmate.UI.Views
                 if (canAdd)
                 {
                     webOrder.ArrivalTime = DateTime.Now;
-                    ordersToRemove.Add(webOrder.OrderKey);
-                    TotalOrders.Add(webOrder);
-                    FilterOrder(webOrder);
-                    AnalyticalData.TotalOrdersCount++;
-                    AnalyticalData.CurrentOrdersCount++;
-                    AnalyticalData.CurrentItems += webOrder.Items.Count;
-                    DbOrder.UpdateOrderArrivalTime(webOrder.OrderKey);
+                    if (DbOrder.UpdateOrderArrivalTime(webOrder.OrderKey)) 
+                    {
+                        ordersToRemove.Add(webOrder.OrderKey);
+                        TotalOrders.Add(webOrder);
+                        FilterOrder(webOrder);
+                        AnalyticalData.TotalOrdersCount++;
+                        AnalyticalData.CurrentOrdersCount++;
+                        AnalyticalData.CurrentItems += webOrder.Items.Count;
+                    }
                 }
             }
             ChefmateController.Instance.WebOrders.RemoveAll(s => ordersToRemove.Contains(s.OrderKey));
@@ -563,22 +571,29 @@ namespace Chefmate.UI.Views
                     StopTimer();
                     FilterOrder(order);
                     StartTimer();
-                    UpdateNavigationButtonDisplay();
+                    UpdateNavigationButtonDisplay(ParentScroller.HorizontalOffset);
                 }));
         }
         private void OrderArrivedEventHandler(Order order)
         {
-            Application.Current.Dispatcher.Invoke(new
-                Action(() =>
-                {
-                    StopTimer();
-                    bool addOrder = CanAddOrderToGui(order);
-                    ChefmateController.Instance.AddOrder(order);
-                    if (addOrder)
-                        FilterOrder(order);
-                    StartTimer();
-                    UpdateNavigationButtonDisplay();
-                }));
+            try
+            {
+                Application.Current.Dispatcher.Invoke(new
+                       Action(() =>
+                       {
+                           StopTimer();
+                           bool addOrder = CanAddOrderToGui(order);
+                           ChefmateController.Instance.AddOrder(order);
+                           if (addOrder)
+                               FilterOrder(order);
+                           StartTimer();
+                           UpdateNavigationButtonDisplay(ParentScroller.HorizontalOffset);
+                       }));
+            }
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
 
         #endregion

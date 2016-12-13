@@ -5,8 +5,8 @@ object frmListManager: TfrmListManager
   BorderIcons = []
   BorderStyle = bsSingle
   BorderWidth = 5
-  ClientHeight = 488
-  ClientWidth = 488
+  ClientHeight = 540
+  ClientWidth = 594
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,45 +23,49 @@ object frmListManager: TfrmListManager
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 488
-    Height = 488
+    Width = 594
+    Height = 540
     Align = alClient
     Color = clWhite
     ParentBackground = False
     TabOrder = 0
+    ExplicitHeight = 488
     object Panel2: TPanel
       Left = 1
       Top = 1
-      Width = 486
-      Height = 486
+      Width = 592
+      Height = 538
       Align = alClient
       Color = clGradientInactiveCaption
       ParentBackground = False
       TabOrder = 0
+      ExplicitHeight = 486
       object Panel3: TPanel
         Left = 1
         Top = 1
-        Width = 484
-        Height = 484
+        Width = 590
+        Height = 536
         Align = alClient
         Caption = 'Panel3'
         Color = clDefault
         ParentBackground = False
         TabOrder = 0
+        ExplicitHeight = 484
         object pnlMajor: TPanel
           Left = 1
           Top = 1
-          Width = 338
-          Height = 482
+          Width = 440
+          Height = 534
           Align = alLeft
           BorderWidth = 6
           Color = 14342874
           ParentBackground = False
           TabOrder = 0
+          ExplicitHeight = 482
           object pnlLabel: TPanel
             Left = 7
             Top = 7
-            Width = 324
+            Width = 426
             Height = 34
             Align = alTop
             BevelOuter = bvLowered
@@ -78,8 +82,8 @@ object frmListManager: TfrmListManager
           object sgDisplay: TStringGrid
             Left = 7
             Top = 41
-            Width = 324
-            Height = 434
+            Width = 426
+            Height = 486
             Align = alClient
             ColCount = 2
             DefaultColWidth = 150
@@ -90,29 +94,31 @@ object frmListManager: TfrmListManager
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -16
-            Font.Name = 'Arial'
+            Font.Name = 'Tahoma'
             Font.Style = [fsBold]
             ParentFont = False
             ScrollBars = ssVertical
             TabOrder = 1
             OnDrawCell = sgDisplayDrawCell
             OnSelectCell = sgDisplaySelectCell
+            ExplicitHeight = 434
             ColWidths = (
               151
               150)
           end
         end
         object pnlMinor: TPanel
-          Left = 344
+          Left = 450
           Top = 1
           Width = 139
-          Height = 482
+          Height = 534
           Align = alRight
           BevelInner = bvRaised
           BevelOuter = bvNone
           Color = 14342874
           ParentBackground = False
           TabOrder = 1
+          ExplicitHeight = 482
           object btnClose: TTouchBtn
             Left = 7
             Top = 8

@@ -54,7 +54,7 @@ namespace MenumateServices.WCFServices
             return LoyaltyVoucher.Instance.GetPocketVoucherDetail(inSyndicateCode, requestInfo);
         }
 
-        public LoyaltyResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
+        public VoucherTransactionResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
         {
             return LoyaltyVoucher.Instance.ProcessVoucherTransaction(inSyndicateCode, transaction);
         }

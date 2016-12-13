@@ -148,10 +148,9 @@ void TApplyParser::update6_33Tables()
     ReCreateRoundedContactTimeView6_33(_dbControl);
     AlterRoundTimeProcedure6_33(_dbControl);
 }
-//----------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 void TApplyParser::AlterRoundTimeProcedure6_33( TDBControl* const inDBControl )
-{
-    bool procedureExistsPredicate = procedureExists( "ROUNDTIME", _dbControl);
+{    bool procedureExistsPredicate = procedureExists( "ROUNDTIME", _dbControl);
 	std::string profileKey = "(SELECT PROFILE_KEY FROM PROFILE WHERE PROFILE_TYPE = 4 AND NAME = 'Globals')";
 	std::string roundingTimesKey = "(SELECT "
 	"VARSPROFILE.INTEGER_VAL "
@@ -200,7 +199,9 @@ void TApplyParser::AlterRoundTimeProcedure6_33( TDBControl* const inDBControl )
 	"SUSPEND; "
 	"END ",
 	inDBControl );
-}
+}//------
+
+
 //------------------------------------------------------------------------------
 void TApplyParser::PopulateZED_StatusForContactTime6_33(TDBControl* const inDBControl)
 {
@@ -231,6 +232,7 @@ void TApplyParser::PopulateZED_StatusForContactTime6_33(TDBControl* const inDBCo
         query->ExecQuery();
         query->Close();
 
+
         transaction.Commit();
     }
     catch( Exception &E )
@@ -250,9 +252,10 @@ void TApplyParser::ModifyCloseZedColumns6_33( TDBControl* const inDBControl )
         inDBControl);
     }
 }
-//--------------------------------------------------------------------------------------------
+
 void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBControl )
 {
+
     executeQuery(
         "RECREATE VIEW ROUNDEDCONTACTTIME "
         "("
@@ -284,12 +287,14 @@ void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBCon
         "FROM "
             "CONTACTTIME",
         inDBControl );
-
 }
-//----------------------------------------------------------------------------------------------------------
-
+//------------------------------------------------------------------------------------
 void TApplyParser::update6_34Tables()
 {
+    Create6_34TableSCDPWDCustomerDetails(_dbControl);
+    Create6_34GeneratorSCDPWDCustomerDetails(_dbControl);
+    UpdateZedTable6_34(_dbControl);
+    CreateGeneratorAndTableForCashDenominations6_34( _dbControl);
     Create6_34Malls(_dbControl);
     Create6_34MallExportSettings(_dbControl);
     Create6_34MallExportSettingsMapping(_dbControl);
@@ -305,6 +310,73 @@ void TApplyParser::update6_34Tables()
     Insert6_34Mall_ExportHeader(_dbControl);
 }
 //---------------------------------------------------------------------------
+void TApplyParser::Create6_34TableSCDPWDCustomerDetails(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "SCD_PWD_CUSTOMER_DETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE SCD_PWD_CUSTOMER_DETAILS "
+		"( "
+		"   CUSTOMER_DETAILS_KEY INT NOT NULL PRIMARY KEY,"
+        "   ARCBILL_KEY INT NOT NULL, "
+		"   FIELD_HEADER varchar(50),"
+        "   FIELD_VALUE VARCHAR(200),"
+        "   DATA_TYPE VARCHAR(25)"
+		");",
+		inDBControl );
+    }
+}
+//---------------------------------------------------------------------------------
+void TApplyParser::Create6_34GeneratorSCDPWDCustomerDetails(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_CUSTOMER_DETAILS_KEY", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_CUSTOMER_DETAILS_KEY;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_CUSTOMER_DETAILS_KEY TO 0;", inDBControl
+        );
+    }
+}
+//---------------------------------------------------------------------------------------------------
+void TApplyParser::UpdateZedTable6_34( TDBControl* const inDBControl )  // update zed table to add Trans_date column
+{
+    if ( !fieldExists( "ZEDS", "TRANS_DATE", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ZEDS "
+        "ADD TRANS_DATE TIMESTAMP ",
+        inDBControl);
+    }
+}
+//----------------------------------------------------------------------------------------------------------------
+void TApplyParser::CreateGeneratorAndTableForCashDenominations6_34( TDBControl* const inDBControl )
+{
+    if( !generatorExists("GEN_CASHDENOMINATION", _dbControl) )
+	{
+		executeQuery(
+		"CREATE GENERATOR GEN_CASHDENOMINATION;",
+		inDBControl);
+		executeQuery(
+		"SET GENERATOR GEN_CASHDENOMINATION TO 0; ",
+		inDBControl );
+	}
+
+    if( !tableExists("CASHDENOMINATIONS", _dbControl ) )
+    {
+       executeQuery(
+            "CREATE TABLE CASHDENOMINATIONS "
+            "( "
+            " CASHDENOMINATION_KEY Integer NOT NULL PRIMARY KEY , "
+            " TITLE  Varchar(50), "
+            " DENOMINATION NUMERIC(17,4) "
+            "); ",
+        inDBControl );
+    }
+}
+//-----------------------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_34Malls(TDBControl* const inDBControl)
 {
      if ( !tableExists( "MALLS", inDBControl ) )
@@ -319,7 +391,6 @@ void TApplyParser::Create6_34Malls(TDBControl* const inDBControl)
 			inDBControl );
      }
  }
-
 //----------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_34MallExportSettings(TDBControl* const inDBControl)
 {
@@ -336,7 +407,6 @@ void TApplyParser::Create6_34MallExportSettings(TDBControl* const inDBControl)
 			inDBControl );
      }
 }
-
 //----------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_34MallExportSettingsMapping(TDBControl* const inDBControl)
 {
@@ -351,7 +421,6 @@ void TApplyParser::Create6_34MallExportSettingsMapping(TDBControl* const inDBCon
                 " FOREIGN KEY (MALL_ID) REFERENCES MALLS (MALL_ID)  ON DELETE CASCADE "
                 ");",
 			inDBControl );
-
         }
 }
 //----------------------------------------------------------------------------------------------------------
@@ -639,5 +708,8 @@ void TApplyParser::Insert6_34Mall_ExportHeader(TDBControl* const inDBControl)
     }
 }
 //--------------------------------------------------------------------------------------------------------------------------
+
+//::::::::::::::::::::::::Version 6.34::::::::::::::::::::::::::::::::::::::::::
+//---------------------------------------------------------------------------
 }
 

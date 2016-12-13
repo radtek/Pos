@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MenumateServices.DTO.LoyaltyMate;
+using System;
 
 namespace MenumateServices.LoyaltyMate
 {
@@ -38,14 +39,14 @@ namespace MenumateServices.LoyaltyMate
         }
 
         //GiftCard Response
-        protected LoyaltyGiftCardResponse CreateGiftCardResponseNoError(double giftCardBalance)
+        protected LoyaltyGiftCardResponse CreateGiftCardResponseNoError(GiftCardInfo giftCardInfo)
         {
-            return CreateGiftCardResponse(true, "", "", LoyaltyResponseCode.Successful, giftCardBalance);
+            return CreateGiftCardResponse(true, "", "", LoyaltyResponseCode.Successful, giftCardInfo);
         }
 
-        protected LoyaltyGiftCardResponse CreateGiftCardResponseError(string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, double giftCardBalance)
+        protected LoyaltyGiftCardResponse CreateGiftCardResponseError(string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, GiftCardInfo giftCardInfo)
         {
-            return CreateGiftCardResponse(false, inMessage, inDescription, inResponseCode, giftCardBalance);
+            return CreateGiftCardResponse(false, inMessage, inDescription, inResponseCode, giftCardInfo);
         }
 
         //Voucher Response
@@ -58,7 +59,17 @@ namespace MenumateServices.LoyaltyMate
         {
             return CreateVoucherResponse(false, inMessage, inDescription, inResponseCode, inVoucherInfo);
         }
+       
+        //Voucher Transaction Response
+        protected VoucherTransactionResponse CreateVoucherTransactionResponseNoError(DateTime? giftCardExpiryDate)
+        {
+            return CreateVoucherTransactionResponse(true, "", "", LoyaltyResponseCode.Successful, giftCardExpiryDate);
+        }
 
+        protected VoucherTransactionResponse CreateVoucherTransactionResponseError(string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, DateTime? giftCardExpiryDate)
+        {
+            return CreateVoucherTransactionResponse(false, inMessage, inDescription, inResponseCode, giftCardExpiryDate);
+        }
 
         #region Private Methods
 
@@ -77,16 +88,22 @@ namespace MenumateServices.LoyaltyMate
             return new LoyaltyCompanyResponse(inSuccesful, inMessage, inDescription, inResponseCode, inCompanyInfo);
         }
 
-        private LoyaltyGiftCardResponse CreateGiftCardResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, double giftCardBalance)
+        private LoyaltyGiftCardResponse CreateGiftCardResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, GiftCardInfo giftCardInfo)
         {
-            return new LoyaltyGiftCardResponse(inSuccesful, inMessage, inDescription, inResponseCode, giftCardBalance);
+            return new LoyaltyGiftCardResponse(inSuccesful, inMessage, inDescription, inResponseCode, giftCardInfo);
         }
 
         private LoyaltyVoucherResponse CreateVoucherResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, VoucherInfo inVoucherInfo)
         {
             return new LoyaltyVoucherResponse(inSuccesful, inMessage, inDescription, inResponseCode, inVoucherInfo);
         }
-        
+
+        private VoucherTransactionResponse CreateVoucherTransactionResponse(bool inSuccesful, string inMessage, string inDescription, LoyaltyResponseCode inResponseCode, DateTime? giftCardExpiryDate)
+        {
+            return new VoucherTransactionResponse(inSuccesful, inMessage, inDescription, inResponseCode, giftCardExpiryDate);
+        }
+
+       
         #endregion
     }
 }

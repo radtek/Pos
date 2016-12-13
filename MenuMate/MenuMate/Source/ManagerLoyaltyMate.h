@@ -127,8 +127,8 @@ class TLoyaltyMateGiftVoucherThread: public TThread
 
 	public:
 		TLoyaltyMateGiftVoucherThread(TSyndCode inSyndicateCode);
-        double GiftCardBalance;
-        AnsiString VoucherNumber;
+        TGiftCardDetail GiftCardDetail;;
+        AnsiString GiftCardNumber;
         bool OperationSuccessful;
 		AnsiString ErrorMessage;
 };
