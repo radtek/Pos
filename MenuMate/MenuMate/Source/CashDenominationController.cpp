@@ -25,9 +25,12 @@ TCashDenominationControllerInterface::~TCashDenominationControllerInterface()
     //
 }
 
-void TCashDenominationControllerInterface::SetCashDenominations(TCashDenominations inCashDenominations)
+void TCashDenominationControllerInterface::SetCashDenominations(TCashDenominations inCashDenominations,bool isMaster)
 {
-  CashDenominations = inCashDenominations;
+  if(isMaster)
+   MasterCashDenominations = inCashDenominations;
+  else
+   CashDenominations = inCashDenominations;
 }
 
 void TCashDenominationControllerInterface::SetBagID(AnsiString bagId)
@@ -35,8 +38,10 @@ void TCashDenominationControllerInterface::SetBagID(AnsiString bagId)
   BagId = bagId;
 }
 
-TCashDenominations TCashDenominationControllerInterface::GetCashDenominations()
+TCashDenominations TCashDenominationControllerInterface::GetCashDenominations(bool isMaster)
 {
+  if(isMaster)
+    return MasterCashDenominations;
   return CashDenominations;
 }
 
@@ -45,12 +50,55 @@ AnsiString TCashDenominationControllerInterface::GetBagID()
   return BagId;
 }
 
-TCashDenominationController::TCashDenominationController(TForm *inDisplayOwner, Database::TDBTransaction &inDBTransaction) : frmListManager(new TfrmListManager(inDisplayOwner)), DBTransaction(inDBTransaction)
+void TCashDenominationControllerInterface::ResetCashDenominations()
+{
+    MasterCashDenominations.ResetTotal();
+    CashDenominations.ResetTotal();
+}
+
+void TCashDenominationControllerInterface::SaveDenominations(Database::TDBTransaction &DBTransaction,int z_key,UnicodeString inTerminalName)
+{
+   if(MasterCashDenominations.GetTotal() > 0)
+   {
+        TCashDenominationContainer::iterator itCashDenomination = MasterCashDenominations.begin();
+		for (; itCashDenomination != MasterCashDenominations.end(); advance(itCashDenomination,1))
+		{
+            if(itCashDenomination->second.Quantity > 0)
+            {
+                TDBDenominations::SaveZedDenominations(DBTransaction,z_key,inTerminalName,
+                                                   itCashDenomination->second.Title,
+                                                   itCashDenomination->second.DenominationValue,
+                                                   itCashDenomination->second.Quantity);
+            }
+		}
+   }
+
+   if(CashDenominations.GetTotal() > 0)
+   {
+        TCashDenominationContainer::iterator itCashDenomination = CashDenominations.begin();
+		for (; itCashDenomination != CashDenominations.end(); advance(itCashDenomination,1))
+		{
+           if(itCashDenomination->second.Quantity > 0)
+            {
+                TDBDenominations::SaveZedDenominations(DBTransaction,z_key,"",
+                                                   itCashDenomination->second.Title,
+                                                   itCashDenomination->second.DenominationValue,
+                                                   itCashDenomination->second.Quantity);
+            }
+		}
+   }
+}
+
+
+
+TCashDenominationController::TCashDenominationController(TForm *inDisplayOwner, Database::TDBTransaction &inDBTransaction)
+: frmListManager(new TfrmListManager(inDisplayOwner)), DBTransaction(inDBTransaction)
 {
 	DisplayOwner = inDisplayOwner;
 }
 
-TCashDenominationController::TCashDenominationController(TForm *inDisplayOwner, Database::TDBTransaction &inDBTransaction, AnsiString DeviceName) : frmListManager(new TfrmListManager(inDisplayOwner)), DBTransaction(inDBTransaction), Terminal(DeviceName)
+TCashDenominationController::TCashDenominationController(TForm *inDisplayOwner, Database::TDBTransaction &inDBTransaction, AnsiString DeviceName)
+: frmListManager(new TfrmListManager(inDisplayOwner)), DBTransaction(inDBTransaction), Terminal(DeviceName)
 {
 	DisplayOwner = inDisplayOwner;
 }

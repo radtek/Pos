@@ -2172,10 +2172,10 @@ void __fastcall TfrmGeneralMaintenance::bankingMouseClick(TObject *Sender)
 
 void TfrmGeneralMaintenance::CallBlindBalance(void)
 {
-	Database::TDBTransaction DBTransaction(DBControl);
+	/*Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
 	TBlindBalanceController BlindBalanceController(this, DBTransaction);
-	BlindBalanceController.Run();
+	BlindBalanceController.Run();*/
 }
 void __fastcall TfrmGeneralMaintenance::EnableStaffHoursOnClick(TObject *Sender)
 {

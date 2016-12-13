@@ -30,7 +30,7 @@ void CashDenominationCalculationStrategy::BuildSection(TPrintout* printOut)
 
     cashDenominations = CashDenominationController.Get();
     bagId = CashDenominationController.GetBagID();
-    TCashDenominationControllerInterface::Instance()->SetCashDenominations(cashDenominations);
+    TCashDenominationControllerInterface::Instance()->SetCashDenominations(cashDenominations,_isMasterBalance);
     TCashDenominationControllerInterface::Instance()->SetBagID(bagId);
 
     printOut->PrintFormat->Line->ColCount = 3;

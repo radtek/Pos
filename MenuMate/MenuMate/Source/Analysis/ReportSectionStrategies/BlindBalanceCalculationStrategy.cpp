@@ -17,7 +17,7 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
 
     TForm* currentForm = Screen->ActiveForm;
-    TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction, deviceName);
+    TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction,_isMasterBalance, deviceName);
 
     if(blindBalanceController.Run())
     {

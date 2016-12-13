@@ -375,6 +375,20 @@ void TApplyParser::CreateGeneratorAndTableForCashDenominations6_34( TDBControl* 
             "); ",
         inDBControl );
     }
+
+    if( !tableExists("ZED_CASHDENOMINATIONS", _dbControl ) )
+    {
+       executeQuery(
+            "CREATE TABLE ZED_CASHDENOMINATIONS "
+            "( "
+            " Z_KEY Integer, "
+            " TERMINAL_NAME Varchar(50), "
+            " DENOMINATION_TITLE  Varchar(50), "
+            " DENOMINATION_VALUE NUMERIC(17,4), "
+            " DENOMINATION_QUANTITY Integer "
+            "); ",
+        inDBControl );
+    }
 }
 //-----------------------------------------------------------------------------------------------------------------------
 void TApplyParser::Create6_34Malls(TDBControl* const inDBControl)

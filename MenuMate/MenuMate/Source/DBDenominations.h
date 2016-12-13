@@ -32,5 +32,11 @@ class TDBDenominations
     static AnsiString GetDenominationTitle(Database::TDBTransaction &DBTransaction,int key);
     static int GetDenominationKey(Database::TDBTransaction &DBTransaction);
     static bool IsDenominationExist(Database::TDBTransaction &DBTransaction, int key, AnsiString inTitle);
+    static void TDBDenominations::SaveZedDenominations(Database::TDBTransaction &DBTransaction,
+                                            int zedKey,
+                                            UnicodeString inTerminalName,
+                                            UnicodeString inDenominationTitle,
+                                            Currency inDenominationValue,
+                                            int  inDenominationQty);
 };
 #endif
