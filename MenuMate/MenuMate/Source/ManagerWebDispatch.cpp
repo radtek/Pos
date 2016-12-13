@@ -9,7 +9,7 @@
 #include "Contact.h"
 #include "MM_DBCore.h"
 #include "ReportDisplayNav.h"
-
+#include "ContactStaff.h"
 #include "ManagerWebDispatch.h"
 
 #ifdef MenuMate
@@ -52,8 +52,46 @@ void TManagerWebDispatch::Execute(UnicodeString CommandUrl,WordBool &Cancel)
             ReceiptNumber = CommandUrl.SubString(CommandUrl.Pos("{")+1,CommandUrl.Pos("}") - CommandUrl.Pos("{")-1);
             if (ManagerReceipt->Find(ReceiptNumber))
             {
-               std::auto_ptr<TfrmSelectReceipt> frmSelectReceipt(new TfrmSelectReceipt(Owner));
-               frmSelectReceipt->Execute(ReceiptNumber);
+                  bool canShow = false;
+                  TMMContactInfo TempUserInfo;
+                  Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+                  DBTransaction.StartTransaction();
+                  std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+                  bool AccessForReprint = Staff->TestAccessLevel( TDeviceRealTerminal::Instance().User, CheckReprintReceipt);
+                  if(AccessForReprint)
+                  {
+                        DBTransaction.Commit();
+                        TDeviceRealTerminal::Instance().User.LatestLoginContactKey =TDeviceRealTerminal::Instance().User.ContactKey;
+                        TDeviceRealTerminal::Instance().User.LatestLoginName  = TDeviceRealTerminal::Instance().User.Name;
+                        canShow = true;
+                  }
+                  else
+                  {
+                      TLoginSuccess Result = Staff->Login(Owner,DBTransaction,TempUserInfo, CheckReprintReceipt);
+                      DBTransaction.Commit();
+                      TDeviceRealTerminal::Instance().User.LatestLoginContactKey =0;
+                      TDeviceRealTerminal::Instance().User.LatestLoginName  = "";
+                      if (Result == lsAccepted)
+                      {
+                            TDeviceRealTerminal::Instance().User.LatestLoginContactKey =TempUserInfo.ContactKey;
+                            TDeviceRealTerminal::Instance().User.LatestLoginName  = TempUserInfo.Name;
+                            canShow = true;
+                      }
+                      else if (Result == lsDenied)
+                      {
+                            MessageBox("You do not have access privileges to reprint receipt.", "Error", MB_OK + MB_ICONERROR);
+                      }
+                      else if (Result == lsPINIncorrect)
+                      {
+                            MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+                      }
+                  }
+
+                  if(canShow)
+                  {
+                        std::auto_ptr<TfrmSelectReceipt> frmSelectReceipt(new TfrmSelectReceipt(Owner));
+                        frmSelectReceipt->Execute(ReceiptNumber);
+                  }
             }
             else
             {
@@ -63,10 +101,9 @@ void TManagerWebDispatch::Execute(UnicodeString CommandUrl,WordBool &Cancel)
          else if(Command.LowerCase() == "showreportpointsinformation")
          {
       		std::auto_ptr<TStringList> Report(new TStringList);
-				UnicodeString ReportLocation = "";
+            UnicodeString ReportLocation = "";
             AnsiString MemberKey = "0";
-
-				MemberKey = CommandUrl.SubString(CommandUrl.Pos("{")+1,CommandUrl.Pos("}") - CommandUrl.Pos("{")-1);
+			MemberKey = CommandUrl.SubString(CommandUrl.Pos("{")+1,CommandUrl.Pos("}") - CommandUrl.Pos("{")-1);
             TMMContactInfo TempUserInfo;
             eMemberSource MemberSource;
             TempUserInfo.ContactKey = StrToIntDef(MemberKey,0);

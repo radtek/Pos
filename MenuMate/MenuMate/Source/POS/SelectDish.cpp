@@ -7706,6 +7706,7 @@ void __fastcall TfrmSelectDish::tbtnReprintReceiptsMouseClick(TObject *Sender)
           {
                 TDeviceRealTerminal::Instance().User.LatestLoginContactKey =TDeviceRealTerminal::Instance().User.ContactKey;
                 TDeviceRealTerminal::Instance().User.LatestLoginName  = TDeviceRealTerminal::Instance().User.Name;
+                DBTransaction.Commit();
                 ManagerReceipt->PrintLastReceipt();
           }
           else
