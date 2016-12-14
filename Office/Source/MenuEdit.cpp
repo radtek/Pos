@@ -2747,6 +2747,7 @@ void TfrmMenuEdit::GetAllSizes(TStringList *AllSizes)
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::GetAllServingCourses(TStringList *AllServingCourses)
 {
+    ServingCoursesList->Clear();
 	TTreeNode *ServingCoursesNode  = tvMenu->Items->GetFirstNode()->Item[SERVING_COURSES_INDEX];
 	//	bool SomeServingCoursesVisible = false;
 	for (int i=0; i<ServingCoursesNode->Count; i++)
@@ -9793,7 +9794,7 @@ void __fastcall TfrmMenuEdit::btnServingCoursesEditClick(TObject *Sender)     //
 				//RelabelDrinkCosts();
 				RefreshMenuDetails();
 				lbAvailableServingCourses->ItemIndex = NewIndex;
-                ServingCoursesList->Clear();
+                //ServingCoursesList->Clear();
                 GetAllServingCourses(ServingCoursesList);
 
 			}
@@ -9818,7 +9819,7 @@ void __fastcall TfrmMenuEdit::btnServingCoursesDeleteClick(TObject *Sender)  // 
 		lbAvailableServingCourses->SetFocus();
 		if (OldIndex > lbAvailableServingCourses->Items->Count -1) OldIndex--;
 		lbAvailableServingCourses->ItemIndex = OldIndex;
-        ServingCoursesList->Clear();
+        //ServingCoursesList->Clear();
         GetAllServingCourses(ServingCoursesList);
 	}
 }
@@ -9896,7 +9897,7 @@ void __fastcall TfrmMenuEdit::cbServingCourseEnableClick(TObject *Sender)
 			ServingCourseData->Disable();
 		}
 		MenuEdited = true;
-        ServingCoursesList->Clear();
+        //ServingCoursesList->Clear();
         GetAllServingCourses(ServingCoursesList);
 	}
 }
@@ -9916,7 +9917,7 @@ void __fastcall TfrmMenuEdit::cbSelectableClick(TObject *Sender)
 			ServingCourseData->Selectable = false;
 		}
 		MenuEdited = true;
-        ServingCoursesList->Clear();
+        //ServingCoursesList->Clear();
         GetAllServingCourses(ServingCoursesList);
 	}
 }
@@ -9964,7 +9965,7 @@ void __fastcall TfrmMenuEdit::cbServingCoursesEnableClick(TObject *Sender)
 		RefreshServingCourses((TServingCoursesNode *)ServingCoursesNode->Data);
 		lbAvailableServingCourses->SetFocus();
 		lbAvailableServingCourses->ItemIndex = OldIndex;
-        ServingCoursesList->Clear();
+        //ServingCoursesList->Clear();
         GetAllServingCourses(ServingCoursesList);
 	}
 }
@@ -10579,7 +10580,6 @@ bool TfrmMenuEdit::LoadMenu()
 	//....................................
 
 	bool result = false;
-    AllSizesForMenu.clear();
 	//::::::::::::::::::::::::::::::::::::
 
 	TButtonResult btnResult = ShowLoadMenuDialog();
@@ -11151,7 +11151,7 @@ void *TfrmMenuEdit::AddServingCourses(Menu::TServingCoursesInfo *ServingCoursesI
 		CourseData->NewServingCourse = false;
 		CourseData->Selectable  	 = ServingCoursesInfo->ServingCourses[i].Selectable;
 	}
-    ServingCoursesList->Clear();
+    //->Clear();
     GetAllServingCourses(ServingCoursesList);
 	return NULL;
 }
@@ -12336,19 +12336,21 @@ void TfrmMenuEdit::SaveMenuSizes( TSaveMenu* inSaveMenu, TTreeNode* inSizesTreeN
 //---------------------------------------------------------------------------
 void TfrmMenuEdit::SaveMenuServingCourses( TSaveMenu* inSaveMenu, TTreeNode* inServingCoursesTreeNode )
 {
-    for( int i = 0; i < ServingCoursesList->Count; i+=8 )
-    {
- 		inSaveMenu->SaveServingCourse
-        (
-          StrToInt(ServingCoursesList->Strings[i + 6]),
-		  UTF8Encode( ServingCoursesList->Strings[i] ),
-		  UTF8Encode( ServingCoursesList->Strings[i + 1] ),
-		  StrToBool(ServingCoursesList->Strings[i + 2]),
-		  StrToBool(ServingCoursesList->Strings[i + 3]),
-		  StrToBool(ServingCoursesList->Strings[i + 4]),
-		  StringToColor(ServingCoursesList->Strings[i + 5]),
-          StrToInt(ServingCoursesList->Strings[i + 7]) );
-    }
+	for( int i = 0; i < inServingCoursesTreeNode->Count; i++ )
+	{
+		TServingCourseNode *servingCourseData = ( TServingCourseNode * )inServingCoursesTreeNode->Item[i]->Data;
+		servingCourseData->DisplayOrder = i;
+
+		inSaveMenu->SaveServingCourse( servingCourseData->Key,
+		UTF8Encode( servingCourseData->LongDescription ),
+		UTF8Encode( servingCourseData->KitchenName ),
+		servingCourseData->Enabled,
+		servingCourseData->Deleted,
+		servingCourseData->Selectable,
+		servingCourseData->Colour,
+		servingCourseData->DisplayOrder
+		);
+	}
 	// Deleted Serving Courses that need to be notified to the POS
 	for (unsigned i=0; i<DeletedServingCoursesInfo.DeletedServingCourseVector.size(); i++)
 	{
