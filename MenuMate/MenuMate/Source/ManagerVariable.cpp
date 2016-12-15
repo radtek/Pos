@@ -3159,6 +3159,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
            "Gift Card Validation Strategy.",
            vmgPOS,
            0);
+		SetVarBool(DBTransaction,vmMembershipPaid, "Enable Membership Payment",
+		"Default is False",
+		vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

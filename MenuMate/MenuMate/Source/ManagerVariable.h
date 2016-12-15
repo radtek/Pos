@@ -203,6 +203,7 @@ enum vmVariables
     vmEnableConsolidatedReport,
     vmExcludeReceipt,
     vmExcludeXReport,
+    vmMembershipPaid,
 };
 
 // ---------------------------------------------------------------------------

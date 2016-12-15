@@ -471,6 +471,7 @@ public:
     bool UseBIRFormatInXZReport;
     bool HideRoundingOnReceipt;
 	bool CashDenominationEntry;
+    bool MembershipPaid;
 };
 
 #endif

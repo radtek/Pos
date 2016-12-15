@@ -176,3 +176,9 @@ void __fastcall TfrmFunctions::btnSyncMouseClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TfrmFunctions::TouchBtn2MouseClick(TObject *Sender)
+{
+    int i = 0;
+}
+//---------------------------------------------------------------------------
+
