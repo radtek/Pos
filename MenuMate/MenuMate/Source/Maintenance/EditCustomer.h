@@ -96,6 +96,8 @@ __published: // IDE-managed Components
     TLabel *lbeLocationAddress;
     TLabel *lbeMailingAddress;
     TLabel *lbeDisplayedNote;
+	TTouchBtn *tcbeprFinancial;
+    TTouchBtn *tcbeprAllowDiscounts;
 
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
@@ -123,6 +125,8 @@ __published: // IDE-managed Components
 	void __fastcall CheckBoxChargesMouseClick(TObject *Sender);
 	void __fastcall tbProximityMouseClick(TObject *Sender);
 	void __fastcall cbNoEmailMouseClick(TObject *Sender);
+    void __fastcall tcbeprFinancialClick(TObject *Sender);
+    void __fastcall tcbeprAllowDiscountsClick(TObject *Sender);
 
 
     TLabel *lblFirstname;

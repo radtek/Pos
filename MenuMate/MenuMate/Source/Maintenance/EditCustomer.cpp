@@ -143,6 +143,8 @@ void TfrmEditCustomer::DrawContactDetails()
 	  tcbeprAllowedNegitive->Latched = true;
    else
 	  tcbeprAllowedNegitive->Latched = false;
+   tcbeprFinancial->Latched = TGlobalSettings::Instance().MembershipPaid;
+   tcbeprAllowDiscounts->Latched = false;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::WMDisplayChange(TWMDisplayChange& Message)
@@ -1210,6 +1212,16 @@ bool TfrmEditCustomer::CheckMobileNumber(UnicodeString mobile)
 void __fastcall TfrmEditCustomer::cbNoEmailMouseClick(TObject *Sender)
 {
    edEmail->Enabled = !cbNoEmail->Checked;
+}
+// ---------------------------------------------------------------------------
+void __fastcall TfrmEditCustomer::tcbeprFinancialClick(TObject *Sender)
+{
+    int i = 0;
+}
+// ---------------------------------------------------------------------------
+void __fastcall TfrmEditCustomer::tcbeprAllowDiscountsClick(TObject *Sender)
+{
+    int i = 0;
 }
 
 

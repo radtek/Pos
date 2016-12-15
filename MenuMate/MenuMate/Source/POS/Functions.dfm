@@ -6,7 +6,7 @@ object frmFunctions: TfrmFunctions
   BorderStyle = bsDialog
   BorderWidth = 6
   Caption = 'Functions'
-  ClientHeight = 493
+  ClientHeight = 407
   ClientWidth = 622
   Color = clBlack
   Font.Charset = ANSI_CHARSET
@@ -24,12 +24,11 @@ object frmFunctions: TfrmFunctions
     Left = 0
     Top = 0
     Width = 489
-    Height = 493
+    Height = 407
     Align = alLeft
     Color = 14342874
     ParentBackground = False
     TabOrder = 0
-    ExplicitHeight = 407
     object BtnCallAway: TTouchBtn
       Left = 8
       Top = 8
@@ -318,36 +317,16 @@ object frmFunctions: TfrmFunctions
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnSyncMouseClick
     end
-    object TouchBtn2: TTouchBtn
-      Left = 8
-      Top = 408
-      Width = 145
-      Height = 65
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWhite
-      Font.Height = -20
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ParentColor = True
-      Caption = 'Member'#39's Subscription'
-      ButtonColor = 6052441
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
-      LatchingProperties = [lkLatchColor, lkStayDown]
-      OnMouseClick = TouchBtn2MouseClick
-    end
   end
   object Panel1: TPanel
     Left = 493
     Top = 0
     Width = 129
-    Height = 493
+    Height = 407
     Align = alRight
     Color = 14342874
     ParentBackground = False
     TabOrder = 1
-    ExplicitHeight = 407
     object btnOk: TTouchBtn
       Left = 9
       Top = 8
