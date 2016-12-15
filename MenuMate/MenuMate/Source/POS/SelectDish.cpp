@@ -9213,6 +9213,11 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
                 std::auto_ptr<TManagerEJournal> managerEJournal(new TManagerEJournal());
                 managerEJournal->TriggerEJournal();
 			}break;
+		case 12: // Consolidated Zed
+			{
+                std::auto_ptr<TManagerEJournal> managerEJournal(new TManagerEJournal());
+                managerEJournal->TriggerEJournal(true);
+			}break;
 		}
 	}
 	catch(Exception & E)

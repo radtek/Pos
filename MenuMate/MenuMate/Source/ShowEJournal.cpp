@@ -30,9 +30,16 @@ void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
 {
    if(FromDateTimePicker->Date <= ToDateTimePicker->Date)
    {
-      std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-      EJournalType type = EJournalEngine->CategorizeEJournal(FromDateTimePicker->Date,ToDateTimePicker->Date);
-      ExtractEJournalReport(type);
+      if(!IsConsolidatedZed)
+      {
+          std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
+          EJournalType type = EJournalEngine->CategorizeEJournal(FromDateTimePicker->Date,ToDateTimePicker->Date);
+          ExtractEJournalReport(type);
+      }
+      else
+      {
+          ExtractEJournalReport(eConsolidatedZed);
+      }
    }
    else
    {
@@ -134,6 +141,9 @@ void TfrmEJournal::ExtractEJournalReport(EJournalType type)
       case eZedReceipt:
       ExtractZedReceiptReport(deviceName);
       break;
+      case eConsolidatedZed:
+      ExtractConsolidatedZedReport(deviceName);
+      break;
    }
    Processing->Close();
 }
@@ -170,6 +180,15 @@ void TfrmEJournal::ExtractZedReceiptReport(AnsiString deviceName)
    CheckAndPopulateData();
 }
 //---------------------------------------------------------------------------
+void TfrmEJournal::ExtractConsolidatedZedReport(AnsiString deviceName)
+{
+   ManagerReceipt->Receipt->Clear();
+   std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
+   ManagerReceipt->Receipt = EJournalEngine->ExtractConsolidatedZedReport(FromDateTimePicker->Date,ToDateTimePicker->Date, deviceName);
+   CheckAndPopulateData();
+}
+//---------------------------------------------------------------------------
+
 void TfrmEJournal::CheckAndPopulateData()
 {
    if(ManagerReceipt->Receipt->Size > 0)

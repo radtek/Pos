@@ -15,6 +15,7 @@ public:
 	~ReportSectionFactoryProvider();
 
 	IReportSectionFactory* CreateReportSectionFactory(ReportType reportType, Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    IReportSectionFactory* CreateReportSectionFactory(ReportType reportType, Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 };
 
 #endif

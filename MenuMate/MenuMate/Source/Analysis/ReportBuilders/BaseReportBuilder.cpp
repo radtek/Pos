@@ -12,6 +12,17 @@ BaseReportBuilder::BaseReportBuilder(ReportType reportType, TGlobalSettings* glo
 	_reportSectionFactory = reportSectionFactoryProvider->CreateReportSectionFactory(reportType, dbTransaction, globalSettings);
 }
 
+BaseReportBuilder::BaseReportBuilder(ReportType reportType, TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction, TDateTime* startTime, TDateTime* endTime)
+   : _reportType(reportType), _globalSettings(globalSettings), _dbTransaction(dbTransaction), _startTime(startTime), _endTime(endTime)
+{
+	ReportSectionFactoryProvider* reportSectionFactoryProvider = new ReportSectionFactoryProvider;
+	//Get the report section factory and assign it to the member variable for use in building report sections..
+	_reportSectionFactory = reportSectionFactoryProvider->CreateReportSectionFactory(reportType, dbTransaction, globalSettings, startTime, endTime);
+}
+
+
+
+
 IReport* BaseReportBuilder::BuildReport()
 {
 	//Ask the concrete classes to prepare the report..

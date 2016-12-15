@@ -13,6 +13,7 @@ class BaseReportBuilder : public IReportBuilder
 {
 public:
 	BaseReportBuilder(ReportType reportType, TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction);
+    BaseReportBuilder(ReportType reportType, TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction, TDateTime* startTime, TDateTime* endTime);
 
 	//We are implementing template here, since we need to invoke report creation here but want individual derived classes to implement the report creation.
 	IReport* BuildReport();
@@ -37,6 +38,8 @@ private:
 	TGlobalSettings* _globalSettings;
 	Database::TDBTransaction*  _dbTransaction;
     bool ValidateReportSection(ReportSectionType reportSectionType);
+    TDateTime* _startTime;
+    TDateTime* _endTime;
 };
 
 #endif

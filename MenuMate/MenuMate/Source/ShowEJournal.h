@@ -58,10 +58,12 @@ private:	// User declarations
     void ExtractZedReport(AnsiString deviceName);
     void ExtractZedReceiptReport(AnsiString deviceName);
     void ExtractZedReceiptAndXReport(AnsiString deviceName);
+    void ExtractConsolidatedZedReport(AnsiString deviceName);
 public:		// User declarations
     __fastcall TfrmEJournal(TComponent* Owner);
     const std::auto_ptr<TMemoryStream> CurrentPrintout;
 	void Execute();
+    bool IsConsolidatedZed;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmEJournal *frmEJournal;

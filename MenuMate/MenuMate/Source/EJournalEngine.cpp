@@ -360,5 +360,45 @@ bool TEJournalEngine::IsCurrentReceiptAvailable(TIBSQL *IBInternalQuery, TDateTi
     return isCurrentReceiptGenerate;
 }
 
+TMemoryStream* TEJournalEngine::ExtractConsolidatedZedReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName)
+{
+    TMemoryStream *ZedReceipt = new TMemoryStream;
+    ZedReceipt->Clear();
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    /*try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBGetReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBCheckXReport = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBGetCurrentRunningReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate, deviceName);
+        IBInternalQuery->ExecQuery();
+        for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
+
+        }
+        if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger, deviceName))
+        {
+            // x - report will generate
+            DisplayXReport(ZedReceipt);
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }*/
+    ReportManager reportManager;
+    ZedReport* zedReport = reportManager.GetZedReport(&TGlobalSettings::Instance(), &DBTransaction);
+
+    zedReport->DisplayAndPrint(ZedReceipt);
+
+    return ZedReceipt;
+}
 
 

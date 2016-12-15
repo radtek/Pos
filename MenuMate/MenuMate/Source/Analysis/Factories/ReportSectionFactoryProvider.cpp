@@ -29,3 +29,19 @@ IReportSectionFactory* ReportSectionFactoryProvider::CreateReportSectionFactory(
 
 	return reportSectionFactory;
 }
+
+IReportSectionFactory* ReportSectionFactoryProvider::CreateReportSectionFactory(ReportType reportType, Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+{
+	IReportSectionFactory* reportSectionFactory;
+
+	switch (reportType)
+	{
+        case mmConsolidatedZReport:
+            reportSectionFactory = new ZedReportSectionFactory(dbTransaction, globalSettings);
+            break;
+        default:
+            reportSectionFactory = NULL;
+	}
+
+	return reportSectionFactory;
+}
