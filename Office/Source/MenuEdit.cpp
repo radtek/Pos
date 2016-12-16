@@ -9819,7 +9819,7 @@ void __fastcall TfrmMenuEdit::btnServingCoursesDeleteClick(TObject *Sender)  // 
 		lbAvailableServingCourses->SetFocus();
 		if (OldIndex > lbAvailableServingCourses->Items->Count -1) OldIndex--;
 		lbAvailableServingCourses->ItemIndex = OldIndex;
-        //ServingCoursesList->Clear();
+        ServingCoursesList->Clear();
         GetAllServingCourses(ServingCoursesList);
 	}
 }
@@ -9985,6 +9985,8 @@ void __fastcall TfrmMenuEdit::btnServingCourseDeleteClick(TObject *Sender)
 		AddToDeletedServingCourses((TServingCourseNode *)tvMenu->Selected->Data);
 		tvMenu->Selected->Delete();
 		MenuEdited = true;
+        ServingCoursesList->Clear();
+        GetAllServingCourses(ServingCoursesList);
 	}
 }
 //---------------------------------------------------------------------------
