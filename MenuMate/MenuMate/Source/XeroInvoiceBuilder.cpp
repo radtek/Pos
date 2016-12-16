@@ -151,10 +151,11 @@ void TXeroInvoiceBuilder::AddItemToXeroInvoice( TXeroInvoice* inXeroInvoice, TIt
 
 	AnsiString originalQtyStr = FormatFloat( "0.0000", inOrder->GetQty() );
 	AnsiString unitAmountStr  = CalcAsString( totalAmountStr, originalQtyStr, taxStr );
-
 	//................................................
-
-	FXeroInvoice->AddItem( itemCodeStr, inOrder->Item, unitAmountStr.ToDouble(), taxStr.ToDouble(), qtyStr.ToDouble() );
+    //if(CheckRoundingAmount(inOrder->Item, unitAmountStr.ToDouble()));
+    //{
+    FXeroInvoice->AddItem( itemCodeStr, inOrder->Item, unitAmountStr.ToDouble(), taxStr.ToDouble(), qtyStr.ToDouble() );
+    //}
 }
 //---------------------------------------------------------------------------
 AnsiString TXeroInvoiceBuilder::CalcAsString(AnsiString inPrice, AnsiString inQty, AnsiString &inTax )
@@ -219,6 +220,8 @@ bool TXeroInvoiceBuilder::CreateXeroInvoice(TXeroInvoiceDetail& XeroInvoiceDetai
    FXeroInvoice->InvoiceContact->ContactName = XeroInvoiceDetail.ContactName;
    double invoiceTotal = 0;
 
+   roundAmount = 0;
+   CheckRoundingAmount(XeroInvoiceDetail);
 
     for (std::vector<TXeroPayTypeDetail>::iterator it = XeroInvoiceDetail.XeroPayTypeDetails.begin() ;
           it != XeroInvoiceDetail.XeroPayTypeDetails.end(); ++it)
@@ -232,21 +235,34 @@ bool TXeroInvoiceBuilder::CreateXeroInvoice(TXeroInvoiceDetail& XeroInvoiceDetai
      {
         invoiceTotal += (it->UnitAmount + it->TaxAmount);
         invoiceTotal = RoundTo(invoiceTotal, -4);
-        AddItemToXeroInvoice(FXeroInvoice,*it);
+        if(invoiceTotal == 0.01 || invoiceTotal == -0.01)
+        {
+           invoiceTotal += roundAmount;
+           AddItemToXeroInvoice(FXeroInvoice,*it, true);
+        }
+        else
+        {
+           AddItemToXeroInvoice(FXeroInvoice,*it);
+        }
      }
     FXeroInvoice->InvoiceType = invoiceTotal < 0 ? xitACCRECCREDIT : xitACCREC;;
 
 	return FXeroInvoice->InvoiceItemCount > 0;
 }
 
-void TXeroInvoiceBuilder::AddItemToXeroInvoice( TXeroInvoice* inXeroInvoice, TXeroCategoryDetail& PayTypeDetail )
+void TXeroInvoiceBuilder::AddItemToXeroInvoice( TXeroInvoice* inXeroInvoice, TXeroCategoryDetail& PayTypeDetail , bool isAddRounding)
 {
+    if(isAddRounding)
+    {
+       PayTypeDetail.UnitAmount += roundAmount;
+    }
     AnsiString itemCodeStr    = PayTypeDetail.AccountCode;
 	AnsiString totalAmountStr = FormatFloat( "0.0000", PayTypeDetail.UnitAmount );
 	AnsiString qtyStr         = FormatFloat( "0.0000", PayTypeDetail.Quantity);
 	AnsiString taxStr         = FormatFloat( "0.0000", PayTypeDetail.TaxAmount );
 	AnsiString originalQtyStr = FormatFloat( "0.0000", PayTypeDetail.Quantity );
 	AnsiString unitAmountStr  = FormatFloat( "0.0000", PayTypeDetail.UnitAmount );;
+
 	FXeroInvoice->AddItem( itemCodeStr, PayTypeDetail.Description, unitAmountStr.ToDouble(), taxStr.ToDouble(), qtyStr.ToDouble() );
 }
 
@@ -369,6 +385,37 @@ void TXeroInvoiceBuilder::ModifyVector(TXeroInvoice *FXeroInvoice,std::vector<No
              }
              index ++;
           }
+}
+
+void TXeroInvoiceBuilder::CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDetail)
+{
+    //bool retVal = true;
+     for (std::vector<TXeroCategoryDetail>::iterator it = XeroInvoiceDetail.XeroCategoryDetails.begin() ;
+          it != XeroInvoiceDetail.XeroCategoryDetails.end(); ++it)
+     {
+          AnsiString description = it->Description;
+          if(description == "ROUNDING")
+          {
+             double unitamount = it->UnitAmount;
+             unitamount = RoundTo(unitamount, -4);
+             if(unitamount == 0.01 || unitamount == -0.01)
+             {
+                roundAmount = unitamount;
+                XeroInvoiceDetail.XeroCategoryDetails.erase(it);
+                //XeroInvoiceDetail.XeroCategoryDetails.pop_back();
+                break;
+             }
+          }
+     }
+
+    /*if(description == "ROUNDING")
+    {
+       if(roundingamount <= 0.01 && roundingamount >= -0.01)
+       {
+           retVal = false;
+       }
+    }*/
+    //return retVal;
 }
 
 
