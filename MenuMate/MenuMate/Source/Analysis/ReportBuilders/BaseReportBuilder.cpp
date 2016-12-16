@@ -46,6 +46,16 @@ Database::TDBTransaction* BaseReportBuilder::GetDatabaseTransaction()
 	return _dbTransaction;
 }
 
+TDateTime* BaseReportBuilder::GetStartTime()
+{
+	return _startTime;
+}
+
+TDateTime* BaseReportBuilder::GetEndTime()
+{
+	return _endTime;
+}
+
 int BaseReportBuilder::AddReportSectionToReport(IReport* report, ReportSectionType reportSectionType, bool isEnabled)
 {
     //Use the Factory to get the actual report section..
@@ -62,6 +72,25 @@ int BaseReportBuilder::AddReportSectionToReport(IReport* report, ReportSectionTy
     }
     return -1;
 }
+
+int BaseReportBuilder::AddConsolidatedReportSectionToReport(IReport* report, ReportSectionType reportSectionType, bool isEnabled, TDateTime* startTime, TDateTime* endTime)
+{
+    //Use the Factory to get the actual report section..
+    if(ValidateReportSection(reportSectionType))
+    {
+       IReportSection* section = _reportSectionFactory->CreateReportSection(reportSectionType);
+
+        if (section)
+        {
+            section->SetIsEnabled(isEnabled);
+            int currentPosition = report->AddSection(section);
+            return currentPosition;
+        }
+    }
+    return -1;
+}
+
+
 bool BaseReportBuilder::ValidateReportSection(ReportSectionType reportSectionType)
 {
     bool retValue = true;

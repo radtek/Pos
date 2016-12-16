@@ -22,6 +22,7 @@ protected:
 	//This method will be overridden in the dervied classes to prepare the report.
 	virtual IReport* PrepareAndCompileSections() = 0;
     virtual int AddReportSectionToReport(IReport* report, ReportSectionType reportSectionType, bool isEnabled);
+    virtual int AddConsolidatedReportSectionToReport(IReport* report, ReportSectionType reportSectionType, bool isEnabled, TDateTime* startTime, TDateTime* endTime);
 
 	//We need to encapsulate the private member variables..
 	TGlobalSettings* GetGlobalSettings();
