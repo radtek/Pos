@@ -152,10 +152,8 @@ void TXeroInvoiceBuilder::AddItemToXeroInvoice( TXeroInvoice* inXeroInvoice, TIt
 	AnsiString originalQtyStr = FormatFloat( "0.0000", inOrder->GetQty() );
 	AnsiString unitAmountStr  = CalcAsString( totalAmountStr, originalQtyStr, taxStr );
 	//................................................
-    //if(CheckRoundingAmount(inOrder->Item, unitAmountStr.ToDouble()));
-    //{
     FXeroInvoice->AddItem( itemCodeStr, inOrder->Item, unitAmountStr.ToDouble(), taxStr.ToDouble(), qtyStr.ToDouble() );
-    //}
+
 }
 //---------------------------------------------------------------------------
 AnsiString TXeroInvoiceBuilder::CalcAsString(AnsiString inPrice, AnsiString inQty, AnsiString &inTax )
@@ -389,7 +387,6 @@ void TXeroInvoiceBuilder::ModifyVector(TXeroInvoice *FXeroInvoice,std::vector<No
 
 void TXeroInvoiceBuilder::CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDetail)
 {
-    //bool retVal = true;
      for (std::vector<TXeroCategoryDetail>::iterator it = XeroInvoiceDetail.XeroCategoryDetails.begin() ;
           it != XeroInvoiceDetail.XeroCategoryDetails.end(); ++it)
      {
@@ -402,20 +399,10 @@ void TXeroInvoiceBuilder::CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDet
              {
                 roundAmount = unitamount;
                 XeroInvoiceDetail.XeroCategoryDetails.erase(it);
-                //XeroInvoiceDetail.XeroCategoryDetails.pop_back();
                 break;
              }
           }
      }
-
-    /*if(description == "ROUNDING")
-    {
-       if(roundingamount <= 0.01 && roundingamount >= -0.01)
-       {
-           retVal = false;
-       }
-    }*/
-    //return retVal;
 }
 
 
