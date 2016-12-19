@@ -377,5 +377,11 @@ TGlobalSettings::TGlobalSettings()
     ShowVoidOrRefund = false;
     ShowVoidNumber = false;
     EftPosTipGLCode = "";
+    GiftCardValidation = 0;
+    ExcludeReceipt = false;
+    ExcludeXReport = false;
+    UseBIRFormatInXZReport = false;
+    HideRoundingOnReceipt = false;
+	CashDenominationEntry = false;
 }
 

@@ -365,7 +365,16 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().ReceiptDigits = TManagerVariable::Instance().GetStr(DBTransaction, vmReceiptDigits, "0");
         TGlobalSettings::Instance().ShowVoidOrRefund = TManagerVariable::Instance().GetBool(DBTransaction, vmShowVoidOrRefund, false);
         TGlobalSettings::Instance().ShowVoidNumber = TManagerVariable::Instance().GetBool(DBTransaction, vmShowVoidNumber, false);
-         TGlobalSettings::Instance().EftPosTipGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTipGLCode, "860");
+        TGlobalSettings::Instance().EftPosTipGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTipGLCode, "860");
+        TGlobalSettings::Instance().GiftCardValidation = TManagerVariable::Instance().GetInt(DBTransaction, vmGiftCardValidation, 0);
+        TGlobalSettings::Instance().EftPosTipGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTipGLCode, "860");
+        TGlobalSettings::Instance().ExcludeReceipt	= TManagerVariable::Instance().GetBool(DBTransaction, vmExcludeReceipt, false);
+        TGlobalSettings::Instance().ExcludeXReport	= TManagerVariable::Instance().GetBool(DBTransaction, vmExcludeXReport, false);
+        TGlobalSettings::Instance().EftPosTipGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTipGLCode, "860");
+        TGlobalSettings::Instance().UseBIRFormatInXZReport = TManagerVariable::Instance().GetBool(DBTransaction, vmUseBIRFormatInXZReport, false);
+        TGlobalSettings::Instance().EftPosTipGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTipGLCode, "860");
+        TGlobalSettings::Instance().HideRoundingOnReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmHideRoundingOnReceipt, false);
+		TGlobalSettings::Instance().CashDenominationEntry = TManagerVariable::Instance().GetBool(DBTransaction, vmCashDenominationEntry, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

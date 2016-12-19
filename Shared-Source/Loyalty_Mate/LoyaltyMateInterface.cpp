@@ -200,7 +200,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMemberCardCode(TSyndCode s
     }
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::GetGiftVoucherBalance(TSyndCode syndicateCode,AnsiString giftVoucherNumber,double &balance)
+MMLoyaltyServiceResponse TLoyaltyMateInterface::GetGiftVoucherBalance(TSyndCode syndicateCode,AnsiString giftVoucherNumber,TGiftCardDetail &GiftCardDetail)
 {
   try
     {
@@ -208,7 +208,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetGiftVoucherBalance(TSyndCode 
         CoInitialize(NULL);
         wcfResponse = loyaltymateClient->GetGiftCardBalance(syndicateCode.GetSyndCode(),CreateRequest(giftVoucherNumber));
         if(wcfResponse->Successful)
-           balance = wcfResponse->GiftCardBalance;
+           ReadGiftCardInfo(wcfResponse->GiftCardInfo, GiftCardDetail );
 
         return CreateMMResponse( wcfResponse );
     }
@@ -238,11 +238,11 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetPocketVoucherDetail(TSyndCode
     }
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndCode syndicateCode,TVoucherUsageDetail inVoucherUsageDetail)
+MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndCode syndicateCode,TVoucherUsageDetail& inVoucherUsageDetail)
 {
     try
     {
-        LoyaltyResponse *wcfResponse;
+        VoucherTransactionResponse *wcfResponse;
         VoucherTransactionInfo *wcfInfo = new VoucherTransactionInfo();
         wcfInfo->TransactionDate = new TXSDateTime();
         wcfInfo->TransactionReferenceNumber = inVoucherUsageDetail.ReferenceNumber;
@@ -278,6 +278,10 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndC
 
         CoInitialize(NULL);
         wcfResponse = loyaltymateClient->ProcessVoucherTransaction(syndicateCode.GetSyndCode(),wcfInfo);
+        if(wcfResponse->Successful && wcfResponse->GiftCardExpiryDate != NULL)
+        {
+           inVoucherUsageDetail.GiftCardExpiryDate = wcfResponse->GiftCardExpiryDate->AsUTCDateTime;
+        }
         return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
@@ -404,6 +408,20 @@ void TLoyaltyMateInterface::ReadPocketVoucherInfo(VoucherInfo* inVoucherInfo,TVo
     VoucherDetail.NumberOfUsesRemaining  = inVoucherInfo->NumberOfUsesRemaining;
 }
 //---------------------------------------------------------------------------
+void TLoyaltyMateInterface::ReadGiftCardInfo(GiftCardInfo* inVoucherInfo,TGiftCardDetail& GiftCardDetail)
+{
+    GiftCardDetail.ResponseMessage  = inVoucherInfo->ResponseMessage;
+    GiftCardDetail.StatusCode  = inVoucherInfo->StatusCode;
+    GiftCardDetail.PointBalance  = inVoucherInfo->PointBalance;
+    if(inVoucherInfo->ExpiryDate != NULL)
+     {
+       GiftCardDetail.ExpiryDate = Dateutils::EncodeDateTime(inVoucherInfo->ExpiryDate->Year,
+       inVoucherInfo->ExpiryDate->Month,inVoucherInfo->ExpiryDate->Day,inVoucherInfo->ExpiryDate->Hour,inVoucherInfo->ExpiryDate->Minute,
+       inVoucherInfo->ExpiryDate->Second,inVoucherInfo->ExpiryDate->Millisecond);
+
+     }
+}
+//---------------------------------------------------------------------------
 void TLoyaltyMateInterface::ReadContactInfo(LoyaltyMemberResponse* inWCFResponse,TMMContactInfo& outContactInfo,bool replacePoints )
 {
     ReadContactInfo(inWCFResponse->MemberInfo,outContactInfo,replacePoints );
@@ -463,9 +481,18 @@ void TLoyaltyMateInterface::ReadContactInfo(MemberInfo* inMemberInfo,TMMContactI
         inContactInfo.Points.Load( type1, inMemberInfo->EarnedPoints );
 
         // Putting in the Points Loaded ( Purchased ).
-        TPointsTypePair typepair2( pttPurchased,ptstAccount );
-	    TPointsType type2( pasCloud, typepair2, pesNone );
-        inContactInfo.Points.Load( type2, inMemberInfo->LoadedPoints );
+        if(TGlobalSettings::Instance().EnableSeperateEarntPts)
+        {
+            TPointsTypePair typepair2( pttPurchased,ptstAccount );
+            TPointsType type2( pasCloud, typepair2, pesNone );
+            inContactInfo.Points.Load( type2, inMemberInfo->LoadedPoints );
+        }
+        else
+        {
+            TPointsTypePair typepair2( pttPurchased,ptstLoyalty );
+            TPointsType type2( pasCloud, typepair2, pesNone );
+            inContactInfo.Points.Load( type2, inMemberInfo->LoadedPoints );
+        }
 
          // Putting in the Birthday Points .
         TPointsTypePair typepair3( pttBirthdayBonus,ptstLoyalty );
@@ -660,6 +687,15 @@ void TLoyaltyMateInterface::SyncTierLevels(Database::TDBTransaction &DBTransacti
              ReadTierInfo(tierLevelInfo,tierLevel);
              TDBTierLevel::AddTierLevel(DBTransaction,tierLevel);
            }
+          TGlobalSettings::Instance().UseTierLevels = tierLevels.Length > 0;
+  	      TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseTierLevels,TGlobalSettings::Instance().UseTierLevels);
+          if(!TGlobalSettings::Instance().UseTierLevels)
+	      {
+             TGlobalSettings::Instance().AllowPointPaymentByValue = true;
+             TGlobalSettings::Instance().AllowPointPaymentByWeight = false;
+             TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAllowPointPaymentByWeight, TGlobalSettings::Instance().AllowPointPaymentByWeight);
+             TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmAllowPointPaymentByValue, TGlobalSettings::Instance().AllowPointPaymentByValue);
+          }
 	   }
       catch( Exception &exc )
         {
@@ -792,6 +828,16 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyGiftCard
 }
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyVoucherResponse* inWCFResponse )
+{
+     return MMLoyaltyServiceResponse(
+                inWCFResponse->Successful,
+                AnsiString( inWCFResponse->Message.t_str() ),
+                AnsiString( inWCFResponse->Description.t_str() ),
+                ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
+                "" ) ;
+}
+//---------------------------------------------------------------------------
+MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(VoucherTransactionResponse* inWCFResponse )
 {
      return MMLoyaltyServiceResponse(
                 inWCFResponse->Successful,

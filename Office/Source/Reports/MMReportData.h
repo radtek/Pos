@@ -318,7 +318,7 @@ public:		// User declarations
 	void SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDateTime EndTime,TStrings *Terminals);
 
 	void SetupMenuConsumption(TDateTime StartTime, TDateTime EndTime, TStrings *Menus, bool IncGST);
-	void SetupLocationConsumption(TDateTime StartTime, TDateTime EndTime, TStrings *Locations, TStrings *Menus, bool IncGST);
+	void SetupLocationConsumption(TDateTime StartTime, TDateTime EndTime, TStrings *Locations);
 	void SetupTabConsumption(TDateTime StartTime, TDateTime EndTime, TStrings *Tabs, bool IncGST);
 	void Setup3rdPartyConsumption(TDateTime StartTime, TDateTime EndTime, TStrings *Locations, TStrings *Menus);
 	void SetupUserSales(TDateTime StartTime, TDateTime EndTime, TStrings *Names, TStrings *Groups);
@@ -426,7 +426,6 @@ public:		// User declarations
     AnsiString addressOfTaxPayer;
     AnsiString tinNumber;
     AnsiString serialNo;
-    void SetupEJournal(TDateTime StartTime, TDateTime EndTime);
 };
 
 

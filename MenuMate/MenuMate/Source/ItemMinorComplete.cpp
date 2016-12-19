@@ -1864,3 +1864,20 @@ TDiscount TItemMinorComplete::GetLastPointDiscount()
 	}
 	return ReturnDiscount;
 }
+//-----------------------------------------------------------------------------------------------------------------
+bool TItemMinorComplete::IsTaxTypeExist( BillCalculator::TTaxType taxType )
+{
+    bool isTaxTypeSame = false;
+    BillCalculator::TAX_RESULT_LIST::const_iterator it = BillCalcResult.Tax.begin();
+
+    for( it; it != BillCalcResult.Tax.end(); it++)
+    {
+        if( it->TaxType == taxType )
+        {
+            isTaxTypeSame = true;
+            break;
+        }
+    }
+
+    return isTaxTypeSame;
+}

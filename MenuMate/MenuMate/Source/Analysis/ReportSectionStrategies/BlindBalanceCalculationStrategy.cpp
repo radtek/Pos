@@ -3,6 +3,7 @@
 #include "GlobalSettings.h"
 #include "BlindBalanceController.h"
 
+
 BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, bool isMasterBalance)
 	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings)
 {
@@ -16,17 +17,19 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
 
     TForm* currentForm = Screen->ActiveForm;
-    TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction, deviceName);
-    if(!blindBalanceController.Run())
-    {
-        printOut->BlindBalanceUsed = false;
-        return;
-    }
-    else
+    TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction,_isMasterBalance, deviceName);
+
+    if(blindBalanceController.Run())
     {
        _dbTransaction->Commit();
        _dbTransaction->StartTransaction();
     }
+    else
+    {
+        printOut->ContinuePrinting = false;
+        return;
+    }
+
 
     balance = blindBalanceController.Get();
     bagId = blindBalanceController.GetBagID();

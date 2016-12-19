@@ -19,7 +19,7 @@
 
         //Gift Voucher
         public const string GetGiftCardBalance = "api/VoucherApi/GiftCard";
-
+        public const string GetGiftCardInfo = "api/v2Pos/VoucherApi/GiftCardInfo";
         //Pocket Voucher
         public const string GetPocketVoucher = "api/VoucherApi/PocketVoucher";
 

@@ -42,7 +42,7 @@ namespace MenumateServices.WCFServices
         LoyaltyVoucherResponse GetPocketVoucherDetail(string inSyndicateCode, RequestInfo requestInfo);
 
         [OperationContract]
-        LoyaltyResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction);
+        VoucherTransactionResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction);
 
         [OperationContract]
         LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo);

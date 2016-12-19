@@ -346,4 +346,16 @@ AnsiString TLoyaltyMateUtilities::GetUniqueNumber()
   return uniqueString;
 }
 
+bool TLoyaltyMateUtilities::HasPendingTransactions(Database::TDBTransaction &DBTransaction,int inContactKey)
+{
+    bool result = true;
+    TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+    query->Close();
+    query->SQL->Text =  "SELECT * FROM LOYALTYPENDINGTRANSACTIONS WHERE CONTACT_KEY = :CONTACT_KEY ";
+    query->ParamByName("CONTACT_KEY")->AsInteger = inContactKey;
+    query->ExecQuery();
+    result = !query->Eof;
+    return result;
+}
+
 

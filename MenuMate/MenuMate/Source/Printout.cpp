@@ -14,7 +14,7 @@ TPrintout::TPrintout()
    PrintFormat = new TPrintFormat;
    PrintedSuccessfully = false;
    Status = poPending;
-   BlindBalanceUsed = true;
+   ContinuePrinting = true;
 }
 
 __fastcall TPrintout::~TPrintout()

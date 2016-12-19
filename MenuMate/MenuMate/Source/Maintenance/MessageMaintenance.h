@@ -36,6 +36,11 @@ __published:	// IDE-managed Components
 	void __fastcall btnAddMessageClick(TObject *Sender);
 	void __fastcall btnEditMessageClick(TObject *Sender);
 	void __fastcall btnDelMessageClick(TObject *Sender);
+    void __fastcall sgDisplayDrawCell(TObject *Sender, int ACol, int ARow, TRect &Rect,
+          TGridDrawState State);
+    void __fastcall sgDisplaySelectCell(TObject *Sender, int ACol, int ARow, bool &CanSelect);
+
+
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	 BEGIN_MESSAGE_MAP
@@ -43,10 +48,13 @@ protected:
 	 END_MESSAGE_MAP(TForm)
 private:	// User declarations
 	__fastcall TfrmMessageMaintenance(TComponent* Owner,Database::TDBControl &inDBControl);
-	
+	int SelectedRow;
 	Database::TDBControl &DBControl;
-
 	void ShowMessages();
+    Currency GetDenominationValue(Database::TDBTransaction &DBTransaction, Currency denominationValue);
+    Currency LoadDenominations(Database::TDBTransaction &DBTransaction);
+    void GetHeaders(AnsiString& CurrentCaption, AnsiString& CurrentMessage);
+    void SaveDenomination(Database::TDBTransaction &DBTransaction,int key, AnsiString inTitle, Currency inValue);
 public:		// User declarations
 
 	eMessageType MessageType;

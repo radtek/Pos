@@ -103,3 +103,10 @@ void __fastcall TfrmReports::btnXReportMouseClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TfrmReports::btnEJournalMouseClick(TObject *Sender)
+{
+	BtnSelection = 11;
+	Close();
+}
+//---------------------------------------------------------------------------
+

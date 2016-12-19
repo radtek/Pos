@@ -40,7 +40,11 @@ enum ReportSectionType
     mmWriteOffDetailsSection,
     mmShowRemovalSection,
     mmShowPriceAdjustmentSection,
-    mmMallExportConsolidatedReceipt
+    mmMallExportConsolidatedReceipt,
+    mmShowBegningandEndingBalance,
+    mmRefundCancelDetailsSections,
+	mmMasterCashDenominationDetailsSection,
+    mmCashDenominationDetailsSection
 };
 
 enum CalculatedTotals

@@ -9,6 +9,7 @@ using Chefmate.Core.Model;
 using Chefmate.Database.Model;
 using ChefMate.Database;
 using Chefmate.Core;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace Chefmate.Database.DbModels
 {
@@ -16,41 +17,57 @@ namespace Chefmate.Database.DbModels
     {
         public static void AddOrder(Order order, int terminalKey, bool addItems = true)
         {
-            order.OrderKey = DatabaseCore.Instance.GetGeneratorValue("GEN_ORDERS");
-            var fbParameters = new List<QueryParameter>();
-            fbParameters.Add(new QueryParameter("ORDER_KEY", order.OrderKey));
-            fbParameters.Add(new QueryParameter("ORDER_NUMBER", order.OrderNumber));
-            fbParameters.Add(new QueryParameter("ORDER_POS_KEY", order.OrderPosKey));
-            fbParameters.Add(new QueryParameter("PATRON_COUNT", order.PatronCount));
-            fbParameters.Add(new QueryParameter("CHIT_VALUE", order.ChitValue));
-            fbParameters.Add(new QueryParameter("TABLE_TAB_NAME", order.TableTabName));
-            fbParameters.Add(new QueryParameter("SOURCE_TABLE_TAB_NAME", order.SourceTableName));
-            fbParameters.Add(new QueryParameter("PARTY_NAME", order.PartyName));
-            fbParameters.Add(new QueryParameter("SERVER_NAME", order.ServerName));
-            fbParameters.Add(new QueryParameter("CUSTOMER_NAME", order.CustomerName));
-            fbParameters.Add(new QueryParameter("ORDER_TYPE", order.OrderType));
-            fbParameters.Add(new QueryParameter("ORDER_STATUS", order.OrderStatus));
-            fbParameters.Add(new QueryParameter("ORDER_SALE_START_TIME", order.SaleStartTime));
-            fbParameters.Add(new QueryParameter("ORDER_SALE_FINISH_TIME", order.SaleFinishTime));
-            fbParameters.Add(new QueryParameter("DELIVERY_TIME", order.DeliveryTime));
-            fbParameters.Add(new QueryParameter("ARRIVAL_TIME", order.ArrivalTime));
-            fbParameters.Add(new QueryParameter("IS_BUMPED", false));
-            fbParameters.Add(new QueryParameter("CUSTOMER_PHONE", order.CustomerPhone));
-            fbParameters.Add(new QueryParameter("CUSTOMER_EMAIL", order.CustomerEmail));
-            fbParameters.Add(new QueryParameter("CUSTOMER_ADDRESS", order.CustomerAddress));
-            fbParameters.Add(new QueryParameter("PAYMENT_STATUS", order.PaymentStatus));
-            fbParameters.Add(new QueryParameter("ORDER_ACTION", order.OrderAction));
-            var queryString = DatabaseCore.Instance.BuildInsertQuery("ORDERS", fbParameters);
-            bool result = DatabaseCore.Instance.ExecuteNonQuery(queryString, fbParameters);
-            if (result)
+            var fbConnection = DatabaseCore.Instance.GetConnection();
+            DatabaseCore.Instance.OpenConnection(fbConnection);
+            FbTransaction fbTransaction = fbConnection.BeginTransaction();
+            try
             {
-                //Add Order Groups
-                DbOrderGroup.AddOrderGroups(order.ServingCourseGroups);
-                DbOrderGroup.AddOrderGroups(order.CourseGroups);
-                if (addItems)
-                    DbOrderItem.AddOrderItems(order.Items, terminalKey, order.OrderKey);
+                
+                order.OrderKey = DatabaseCore.Instance.GetGeneratorValue("GEN_ORDERS");
+                var fbParameters = new List<QueryParameter>();
+                fbParameters.Add(new QueryParameter("ORDER_KEY", order.OrderKey));
+                fbParameters.Add(new QueryParameter("ORDER_NUMBER", order.OrderNumber));
+                fbParameters.Add(new QueryParameter("ORDER_POS_KEY", order.OrderPosKey));
+                fbParameters.Add(new QueryParameter("PATRON_COUNT", order.PatronCount));
+                fbParameters.Add(new QueryParameter("CHIT_VALUE", order.ChitValue));
+                fbParameters.Add(new QueryParameter("TABLE_TAB_NAME", order.TableTabName));
+                fbParameters.Add(new QueryParameter("SOURCE_TABLE_TAB_NAME", order.SourceTableName));
+                fbParameters.Add(new QueryParameter("PARTY_NAME", order.PartyName));
+                fbParameters.Add(new QueryParameter("SERVER_NAME", order.ServerName));
+                fbParameters.Add(new QueryParameter("CUSTOMER_NAME", order.CustomerName));
+                fbParameters.Add(new QueryParameter("ORDER_TYPE", order.OrderType));
+                fbParameters.Add(new QueryParameter("ORDER_STATUS", order.OrderStatus));
+                fbParameters.Add(new QueryParameter("ORDER_SALE_START_TIME", order.SaleStartTime));
+                fbParameters.Add(new QueryParameter("ORDER_SALE_FINISH_TIME", order.SaleFinishTime));
+                fbParameters.Add(new QueryParameter("DELIVERY_TIME", order.DeliveryTime));
+                fbParameters.Add(new QueryParameter("ARRIVAL_TIME", order.ArrivalTime));
+                fbParameters.Add(new QueryParameter("IS_BUMPED", false));
+                fbParameters.Add(new QueryParameter("CUSTOMER_PHONE", order.CustomerPhone));
+                fbParameters.Add(new QueryParameter("CUSTOMER_EMAIL", order.CustomerEmail));
+                fbParameters.Add(new QueryParameter("CUSTOMER_ADDRESS", order.CustomerAddress));
+                fbParameters.Add(new QueryParameter("PAYMENT_STATUS", order.PaymentStatus));
+                fbParameters.Add(new QueryParameter("ORDER_ACTION", order.OrderAction));
+                var queryString = DatabaseCore.Instance.BuildInsertQuery("ORDERS", fbParameters);
+                bool result = DatabaseCore.Instance.ExecuteNonQuery(fbConnection, fbTransaction, queryString, fbParameters);
+                if (result)
+                {
+                    //Add Order Groups
+                    DbOrderGroup.AddOrderGroups(fbConnection, fbTransaction, order.ServingCourseGroups);
+                    DbOrderGroup.AddOrderGroups(fbConnection, fbTransaction, order.CourseGroups);
+                    if (addItems)
+                        DbOrderItem.AddOrderItems(fbConnection, fbTransaction, order.Items, terminalKey, order.OrderKey);
+                    fbTransaction.Commit();
+                }
             }
-
+            catch (Exception ex)
+            {
+                fbTransaction.Rollback();
+                throw ex;
+            }
+            finally
+            {
+                DatabaseCore.Instance.CloseConnection(fbConnection);
+            }
         }
         public static ObservableCollection<Order> GetAllOrders(int terminalKey)
         {
@@ -266,14 +283,22 @@ namespace Chefmate.Database.DbModels
             if (servingCourseFound && courseFound)
                 order.Items.Add(item);
         }
-        public static void UpdateOrderArrivalTime(int orderKey)
+        public static bool UpdateOrderArrivalTime(int orderKey)
         {
-            var whereCondition = " WHERE ORDER_KEY=@ORDER_KEY";
-            var parameters = new List<QueryParameter>();
-            parameters.Add(new QueryParameter("ARRIVAL_TIME", DateTime.Now));
-            var queryString = DatabaseCore.Instance.BuildUpdateQuery("ORDERS", parameters, whereCondition);
-            parameters.Add(new QueryParameter("ORDER_KEY", orderKey));
-            DatabaseCore.Instance.ExecuteNonQuery(queryString, parameters);
+            try
+            {
+                var whereCondition = " WHERE ORDER_KEY=@ORDER_KEY";
+                var parameters = new List<QueryParameter>();
+                parameters.Add(new QueryParameter("ARRIVAL_TIME", DateTime.Now));
+                var queryString = DatabaseCore.Instance.BuildUpdateQuery("ORDERS", parameters, whereCondition);
+                parameters.Add(new QueryParameter("ORDER_KEY", orderKey));
+                DatabaseCore.Instance.ExecuteNonQuery(queryString, parameters);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

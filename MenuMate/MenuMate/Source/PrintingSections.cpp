@@ -305,6 +305,9 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
 
     Instructions[i++] = InstructionPair(epofiPrintReceiptVoidFooter, "Receipt Void Footer");
 	DefaultCaption[epofiPrintReceiptVoidFooter] = "Receipt Void Footer";
+
+    Instructions[i++] = InstructionPair(epofiPrintBIRSalesTax, "BIR Sales Tax");
+	DefaultCaption[epofiPrintBIRSalesTax] = "BIR Sales Tax";
 }
 
 
@@ -481,6 +484,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
 	case epofiPrintRedeemableWeight:
     case epofiCurrentYearPts:
     case epofiPrintReceiptVoidFooter:
+    case epofiPrintBIRSalesTax:
         case epofiPrintDeliveryTime:
 		{
 			SortByItems();
@@ -983,6 +987,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
 			break;
         case epofiPrintReceiptVoidFooter:
 			PrintReceiptFooterSecond(PrintJob);
+			break;
+        case epofiPrintBIRSalesTax:
+			PrintBIRSalesTax(PrintJob);
 			break;
 		default:
 			break;
@@ -3810,13 +3817,9 @@ void TPrintSection::PrintTotalDicountsName(TReqPrintJob *PrintJob)
 	Currency temp = 0;
 	DiscountTotals.clear();
 
-	bool scdApplied = false; // Senior Citizen Discount
-
 	for (int i = 0; i < WorkingOrdersList->Count; i++)
 	{
 		TItemComplete *Item = (TItemComplete*)WorkingOrdersList->Items[i];
-
-		scdApplied = scdApplied | scdHasBeenApplied( Item->BillCalcResult.Discount );
 
 		if (Item->BillCalcResult.Discount.size() != 0)
 		{
@@ -3880,12 +3883,6 @@ void TPrintSection::PrintTotalDicountsName(TReqPrintJob *PrintJob)
                 pPrinter->AddLine();
 //            }
 		}
-
-		// Senior Citizen Discount (SCD) applied
-		if( scdApplied )
-		{
-			printSCDSummary();
-		}
 	}
 	else
 	{
@@ -3899,50 +3896,91 @@ bool TPrintSection::scdHasBeenApplied( BillCalculator::DISCOUNT_RESULT_LIST inDi
 
 	for( ; drIT != inDiscount.end(); drIT++ )
 	{
-		std::vector<UnicodeString> discountGroupList = drIT->DiscountGroupList;
-		std::vector<UnicodeString>::iterator gIT = discountGroupList.begin();
+        if(drIT->Name.UpperCase() != "DIPLOMAT" && drIT->Value != 0)
+        {
+            std::vector<UnicodeString> discountGroupList = drIT->DiscountGroupList;
+            std::vector<UnicodeString>::iterator gIT = discountGroupList.begin();
 
-		for( ; gIT != discountGroupList.end(); gIT++ )
-		{
-			if( *gIT == SCD_DISCOUNT_GROUP )
-			{
-				return true;
-			}
-		}
+            for( ; gIT != discountGroupList.end(); gIT++ )
+            {
+                if( *gIT == SCD_DISCOUNT_GROUP ||  *gIT == PWD_DISCOUNT_GROUP)
+                {
+                    return true;
+                }
+            }
+        }
 	}
 	return false;
 }
 
-void TPrintSection::printSCDSummary()
+void TPrintSection::printSCDSummary(TReqPrintJob *printJob)
 {
 	std::vector<AnsiString> scdSummary;
 
-	populateSCDSummary( scdSummary );
-	printSCDSummary(    scdSummary );
+	populateSCDSummary(printJob, scdSummary );
+	printSCDSummary(scdSummary );
 
 	scdSummary.clear();
 }
 
-void TPrintSection::populateSCDSummary( std::vector<AnsiString>& inSCDSummary )
+void TPrintSection::populateSCDSummary(TReqPrintJob *printJob, std::vector<AnsiString>& inSCDSummary )
 {
-	inSCDSummary.push_back( "Name     : ________________________________________" );
-	inSCDSummary.push_back( "ID No    : ________________________________________" );
-	inSCDSummary.push_back( "Signature: ________________________________________" );
+    if(printJob->Transaction->customerDetails.CustomerName != "")
+    {
+        inSCDSummary.push_back(printJob->Transaction->customerDetails.CustomerName );
+        inSCDSummary.push_back(printJob->Transaction->customerDetails.Address);
+        inSCDSummary.push_back(printJob->Transaction->customerDetails.TinNo);
+        inSCDSummary.push_back(printJob->Transaction->customerDetails.BusinessStyle);
+        inSCDSummary.push_back(printJob->Transaction->customerDetails.SC_PWD_ID);
+        inSCDSummary.push_back("...........................");
+    }
 }
 
 void TPrintSection::printSCDSummary( std::vector<AnsiString> inSCDSummary )
 {
+    UnicodeString customerDetails[6] = {"Customer Name : ", "Address       : ", "TIN           : ", "Business Style: ", "SCD/PWD #     : ", "Signature     : "};
+    pPrinter->Line->ColCount = 2;
+    pPrinter->Line->Columns[0]->Width = 16;
+    pPrinter->Line->Columns[1]->Width = pPrinter->Width - 17;
 	pPrinter->Line->Columns[0]->Text = "";
-	pPrinter->Line->Columns[1]->Text = "";
+    pPrinter->Line->Columns[1]->Text = "";
+    pPrinter->Line->Columns[1]->Alignment = taLeftJustify;
+	pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
 	pPrinter->AddLine();
+    UnicodeString data = "";
+    int customerDetailsIndex = 0;
 
 	std::vector<AnsiString>::iterator scdIT = inSCDSummary.begin();
 
 	for( ; scdIT != inSCDSummary.end(); scdIT++ )
 	{
-		pPrinter->Line->Columns[0]->Text = *scdIT;
-		pPrinter->AddLine();
+        data = *scdIT;
+
+        pPrinter->Line->Columns[0]->Text = customerDetails[customerDetailsIndex];
+
+        if(data.Length() == 0)
+            pPrinter->AddLine();
+
+        for(int index =0; index< data.Length(); index += pPrinter->Line->Columns[1]->Width)
+		{
+            if(index == 0)
+                pPrinter->Line->Columns[1]->Text = data.SubString(index, pPrinter->Line->Columns[1]->Width);
+            else
+                pPrinter->Line->Columns[1]->Text = data.SubString(index+1, pPrinter->Line->Columns[1]->Width);
+
+            pPrinter->AddLine();
+            pPrinter->Line->Columns[0]->Text = "";
+            pPrinter->Line->Columns[1]->Text = "";
+        }
+        customerDetailsIndex++;
 	}
+    if(inSCDSummary.size() > 0)
+    {
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Line();
+        pPrinter->AddLine();
+    }
 }
 
 void TPrintSection::PrintTotalDicountDetails(TReqPrintJob *PrintJob)
@@ -3954,8 +3992,8 @@ void TPrintSection::PrintTotalDicountDetails(TReqPrintJob *PrintJob)
 	pPrinter->Line->ColCount = 2;
 	pPrinter->Line->Columns[0]->Width = pPrinter->Width;
 	pPrinter->Line->FontInfo.Bold = false;
-	pPrinter->Line->Columns[1]->Alignment = taRightJustify;
-	pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+   	pPrinter->Line->Columns[1]->Alignment = taLeftJustify;
+    pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
 
 	if (ThisInstruction->Caption != "")
 	{
@@ -4173,6 +4211,8 @@ void TPrintSection::PrintSalesTaxExempt(TReqPrintJob* PrintJob)
 	UnicodeString ItemName = ThisInstruction->Caption;
 
 	Currency SubTotal = 0;
+    bool isDiplomatDiscountApplied = false;
+    bool isSalesTax = false;
 
 	for (int i = 0; i < WorkingOrdersList->Count; i++)
 	{
@@ -4182,9 +4222,10 @@ void TPrintSection::PrintSalesTaxExempt(TReqPrintJob* PrintJob)
 		profitTax = getProfitTax(CurrentOrder);
 		serviceCharge = getServiceCharge(CurrentOrder);
 		serviceChargeTax = getServiceChargeTax(CurrentOrder);
+        isDiplomatDiscountApplied = IsDiplomatDiscountApplied(CurrentOrder->BillCalcResult.Discount);
+        isSalesTax = CurrentOrder->IsTaxTypeExist(TTaxType::ttSale);
 
-
-        if(CurrentOrder->BillCalcResult.PriceTaxExempt && productTax == 0)
+        if((!isSalesTax|| (isSalesTax && productTax == 0)) && !isDiplomatDiscountApplied)
         {
             SubTotal += CurrentOrder->BillCalcResult.FinalPrice - serviceCharge - serviceChargeTax - localTax - profitTax;
         }
@@ -4197,8 +4238,10 @@ void TPrintSection::PrintSalesTaxExempt(TReqPrintJob* PrintJob)
 			serviceChargeTaxSides = getServiceChargeTax((TItemMinorComplete*)SubOrderImage);
 			localTaxSides = getLocalTax((TItemMinorComplete*)SubOrderImage);
             profitTaxSides = getProfitTax((TItemMinorComplete*)SubOrderImage);
+            isDiplomatDiscountApplied = IsDiplomatDiscountApplied(SubOrderImage->BillCalcResult.Discount);
+            isSalesTax = SubOrderImage->IsTaxTypeExist(TTaxType::ttSale);
 
-            if(SubOrderImage->BillCalcResult.PriceTaxExempt && productTaxSides == 0)
+            if((!isSalesTax || (isSalesTax && productTax == 0)) && !isDiplomatDiscountApplied)
             {
                 SubTotal +=  SubOrderImage->BillCalcResult.FinalPrice - serviceChargeSides - serviceChargeTaxSides - localTaxSides - profitTaxSides;
             }
@@ -4244,6 +4287,19 @@ void TPrintSection::PrintSalesTaxable(TReqPrintJob* PrintJob)
 	Currency SubTotal = 0;
 	Currency TaxPercentage = 0;
 
+    if(PrintJob->Transaction->Membership.Member.Points.getCurrentPointsPurchased() > 0)
+    {
+        SubTotal = PrintJob->Transaction->Membership.Member.Points.getCurrentPointsPurchased();
+    }
+    else if(PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRefunded() < 0)
+    {
+        SubTotal = PrintJob->Transaction->Membership.Member.Points.getCurrentPointsRefunded();
+    }
+    else if(WorkingOrdersList->Count == 0)
+    {
+        SubTotal += PrintJob->Transaction->Money.RoundedCreditRedeemed*-1;
+    }
+
     for (int i = 0; i < WorkingOrdersList->Count; i++)
     {
         TItemMinorComplete *CurrentOrder = (TItemMinorComplete*)WorkingOrdersList->Items[i];
@@ -4252,7 +4308,6 @@ void TPrintSection::PrintSalesTaxable(TReqPrintJob* PrintJob)
         profitTax = getProfitTax(CurrentOrder);
         serviceCharge = getServiceCharge(CurrentOrder);
         serviceChargeTax = getServiceChargeTax(CurrentOrder);
-
 
 		if(!CurrentOrder->BillCalcResult.PriceTaxExempt && productTax != 0)
 		{
@@ -4263,7 +4318,7 @@ void TPrintSection::PrintSalesTaxable(TReqPrintJob* PrintJob)
 			}
 			else
 			{
-				SubTotal += CurrentOrder->BillCalcResult.BasePrice * CurrentOrder->GetQty();
+				SubTotal += fabs(CurrentOrder->BillCalcResult.BasePrice) * CurrentOrder->GetQty();
 			}
 		}
 
@@ -4285,7 +4340,7 @@ void TPrintSection::PrintSalesTaxable(TReqPrintJob* PrintJob)
 				}
 				else
 				{
-					SubTotal += SubOrderImage->BillCalcResult.BasePrice * SubOrderImage->GetQty();
+					SubTotal += fabs(SubOrderImage->BillCalcResult.BasePrice) * SubOrderImage->GetQty();
 				}
 			}
 		}
@@ -4596,6 +4651,8 @@ void TPrintSection::PrintZeroRated(TReqPrintJob* PrintJob)
 	UnicodeString ItemName = ThisInstruction->Caption;
 
 	Currency SubTotal = 0;
+    bool isDiplomatDiscountApplied = false;
+    bool isSalesTax = false;
 
 	for (int i = 0; i < WorkingOrdersList->Count; i++)
 	{
@@ -4606,7 +4663,10 @@ void TPrintSection::PrintZeroRated(TReqPrintJob* PrintJob)
 		serviceCharge = getServiceCharge(CurrentOrder);
 		serviceChargeTax = getServiceChargeTax(CurrentOrder);
 
-		if(!CurrentOrder->BillCalcResult.PriceTaxExempt && productTax == 0)
+        isDiplomatDiscountApplied = IsDiplomatDiscountApplied(CurrentOrder->BillCalcResult.Discount);
+        isSalesTax = CurrentOrder->IsTaxTypeExist(TTaxType::ttSale);
+
+		if(isDiplomatDiscountApplied)
 		{
 			SubTotal += CurrentOrder->BillCalcResult.FinalPrice - serviceCharge - serviceChargeTax - localTax - profitTax;
 		}
@@ -4620,7 +4680,10 @@ void TPrintSection::PrintZeroRated(TReqPrintJob* PrintJob)
 			localTaxSides = getLocalTax((TItemMinorComplete*)SubOrderImage);
             profitTaxSides = getProfitTax((TItemMinorComplete*)SubOrderImage);
 
-			if(!SubOrderImage->BillCalcResult.PriceTaxExempt && productTaxSides == 0)
+            isDiplomatDiscountApplied = IsDiplomatDiscountApplied(SubOrderImage->BillCalcResult.Discount);
+            isSalesTax = SubOrderImage->IsTaxTypeExist(TTaxType::ttSale);
+
+			if(isDiplomatDiscountApplied)
 			{
 				SubTotal +=  SubOrderImage->BillCalcResult.FinalPrice - serviceChargeSides - serviceChargeTaxSides - localTaxSides - profitTaxSides;
 			}
@@ -6247,6 +6310,23 @@ void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
     if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
                 && TGlobalSettings::Instance().SetVoidFooter)
     {
+         bool scdApplied = false; // Senior Citizen Discount
+
+        for (int i = 0; i < WorkingOrdersList->Count; i++)
+        {
+            TItemComplete *Item = (TItemComplete*)WorkingOrdersList->Items[i];
+
+            scdApplied = scdHasBeenApplied( Item->BillCalcResult.Discount );
+
+            if(scdApplied)
+                break;
+        }
+
+		if( scdApplied )
+		{
+			printSCDSummary(PrintJob);
+		}
+
         if (PrintJob->ReceiptVoidFooter->Count == 0)
         {
             Empty = true;
@@ -6278,6 +6358,20 @@ void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
     if((!TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction))
          || !TGlobalSettings::Instance().SetVoidFooter)
     {
+        bool scdApplied = false; // Senior Citizen Discount
+
+        for (int i = 0; i < WorkingOrdersList->Count; i++)
+        {
+            TItemComplete *Item = (TItemComplete*)WorkingOrdersList->Items[i];
+
+            scdApplied = scdHasBeenApplied( Item->BillCalcResult.Discount );
+            if(scdApplied)
+                break;
+        }
+		if( scdApplied )
+		{
+			printSCDSummary(PrintJob);
+		}
         if (PrintJob->ReceiptFooter->Count == 0)
         {
             Empty = true;
@@ -6408,8 +6502,12 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
                   }
                   pPrinter->Add(vouchercode);
                   if(isGiftCardUsed)
-                     pPrinter->Add("Balance " + CurrToStr( PrintJob->Transaction->RedeemGiftVoucherInformation->GiftVoucherAmount -
+                  {
+                     pPrinter->Add("Balance " + FormatFloat("0.00", PrintJob->Transaction->RedeemGiftVoucherInformation->GiftVoucherAmount -
                                                            PrintJob->Transaction->RedeemGiftVoucherInformation->RedeemedAmount));
+                     if((double)PrintJob->Transaction->RedeemGiftVoucherInformation->ExpiryDate > double(0))
+                        pPrinter->Add("Expiry Date " + PrintJob->Transaction->RedeemGiftVoucherInformation->ExpiryDate.FormatString("DD/MM/YYYY"));
+                  }
             }
 			else
 			{
@@ -6429,7 +6527,7 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
         }
 	}
 
-	if (PrintJob->PaymentType != ptPreliminary)
+	if (PrintJob->PaymentType != ptPreliminary && !TGlobalSettings::Instance().HideRoundingOnReceipt)
 	{
 		pPrinter->Line->Columns[1]->Width = CurrToStrF(PrintJob->Transaction->Money.TotalRounding, ffNumber, CurrencyDecimals).Length() + 1;
 		pPrinter->Line->Columns[0]->Width = pPrinter->Width - pPrinter->Line->Columns[1]->Width;
@@ -6479,18 +6577,26 @@ void TPrintSection::PrintPaymentSurcharges(TReqPrintJob *PrintJob)
 
             if(SubPayment->IsLoyaltyGiftCard())
             {
-                AnsiString balance = CurrToStr(RoundToNearest(PrintJob->Transaction->PurchasedGiftVoucherInformation->GiftVoucherAmount +
+                pPrinter->Line->ColCount = 1;
+                AnsiString balance = FormatFloat("0.00",RoundToNearest(PrintJob->Transaction->PurchasedGiftVoucherInformation->GiftVoucherAmount +
                                                            PrintJob->Transaction->PurchasedGiftVoucherInformation->RedeemedAmount,0.01,
                                                            TGlobalSettings::Instance().MidPointRoundsDown));
                 pPrinter->Line->Columns[0]->Width = pPrinter->Width;
                 pPrinter->Line->Columns[0]->Text = "Balance " + balance;
-                pPrinter->Line->Columns[1]->Text = "";
                 pPrinter->AddLine();
+
+                if((double)PrintJob->Transaction->PurchasedGiftVoucherInformation->ExpiryDate > double(0))
+                {
+                    pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+                    pPrinter->Line->Columns[0]->Text = "Expiry Date " + PrintJob->Transaction->PurchasedGiftVoucherInformation->ExpiryDate.FormatString("DD/MM/YYYY");
+                    pPrinter->AddLine();
+                }
             }
             Empty = false;
 		}
 		if (SubPayment->GetRefundPointsValue() != 0)
 		{
+            pPrinter->Line->ColCount = 2;
 			pPrinter->Line->Columns[1]->Width = CurrToStrF(
 			RoundToNearest(SubPayment->GetRefundPointsValue(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 			ffNumber,
@@ -8763,3 +8869,113 @@ void TPrintSection::PrintManuallyEnteredWeightString(TOrderBundle* orderbundle, 
 
         pPrinter->AddLine();
  }
+//-------------------------------------------------------------------------------------------------------------
+ void TPrintSection::PrintBIRSalesTax(TReqPrintJob* PrintJob)
+{
+    std::map<UnicodeString, Currency> TaxesMap;
+    bool isSCDOrPWDApplied = false;
+    pPrinter->Line->ColCount = 2;
+
+	for (int i = 0; i < WorkingOrdersList->Count; i++)
+	{
+		TItemMinorComplete *CurrentOrder = (TItemMinorComplete*)WorkingOrdersList->Items[i];
+        isSCDOrPWDApplied = scdHasBeenApplied( CurrentOrder->BillCalcResult.Discount );
+
+        if(isSCDOrPWDApplied)
+        {
+            for (std::vector<BillCalculator::TTaxResult>::iterator taxIt = CurrentOrder->BillCalcResult.Tax.begin(); taxIt != CurrentOrder->BillCalcResult.Tax.end(); taxIt++)
+            {
+                if (taxIt->TaxType == TTaxType::ttSale && taxIt->Percentage != 0)
+                {
+                    taxIt->Name = "Less: VAT (" + taxIt->Percentage + "%)";
+                    Currency itemTaxAmount = 0.00;
+
+                    if(TGlobalSettings::Instance().ItemPriceIncludeTax && TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
+                    {
+                         itemTaxAmount = CurrentOrder->PriceLevelCustom != 0 ? (CurrentOrder->PriceLevelCustom - CurrentOrder->BillCalcResult.PriceIncl)*(CurrentOrder->GetQty())
+                                                :(CurrentOrder->PriceLevel1 - CurrentOrder->BillCalcResult.PriceIncl)*(CurrentOrder->GetQty());
+                    }
+                    else
+                    {
+                         itemTaxAmount = CurrentOrder->PriceLevelCustom != 0 ? (CurrentOrder->PriceLevelCustom - fabs(CurrentOrder->BillCalcResult.BasePrice))*(CurrentOrder->GetQty())
+                                                    : (CurrentOrder->PriceLevel1 - fabs(CurrentOrder->BillCalcResult.BasePrice))*(CurrentOrder->GetQty());
+                    }
+
+                    if (TaxesMap.count(taxIt->Name) == 0)
+                    {
+                        TaxesMap[taxIt->Name] = itemTaxAmount;
+                    }
+                    else
+                    {
+                        TaxesMap[taxIt->Name] += itemTaxAmount;
+                    }
+                }
+            }
+            for (int i = 0; i < CurrentOrder->SubOrders->Count; i++)
+            {
+                TItemCompleteSub *SubOrderImage = CurrentOrder->SubOrders->SubOrderGet(i);
+                for (std::vector<BillCalculator::TTaxResult>::iterator taxIt = SubOrderImage->BillCalcResult.Tax.begin(); taxIt != SubOrderImage->BillCalcResult.Tax.end(); taxIt++)
+                {
+                    if (taxIt->TaxType == TTaxType::ttSale && taxIt->Percentage != 0)
+                    {
+                        taxIt->Name = "Less: VAT (" + taxIt->Percentage + "%)";
+                        Currency sideItemTaxAmount = 0.00;
+
+                        if(TGlobalSettings::Instance().ItemPriceIncludeTax && TGlobalSettings::Instance().ItemPriceIncludeServiceCharge)
+                        {
+                            sideItemTaxAmount = SubOrderImage->PriceLevelCustom != 0 ? (SubOrderImage->PriceLevelCustom - SubOrderImage->BillCalcResult.PriceIncl)*(SubOrderImage->GetQty())
+                                                            : (SubOrderImage->PriceLevel1 - SubOrderImage->BillCalcResult.PriceIncl)*(SubOrderImage->GetQty());
+                        }
+                        else
+                        {
+                             sideItemTaxAmount = SubOrderImage->PriceLevelCustom != 0 ? (SubOrderImage->PriceLevelCustom - fabs(SubOrderImage->BillCalcResult.BasePrice))*(SubOrderImage->GetQty())
+                                                            : (SubOrderImage->PriceLevel1 - fabs(SubOrderImage->BillCalcResult.BasePrice))*(SubOrderImage->GetQty());
+                        }
+
+                        if (TaxesMap.count(taxIt->Name) == 0)
+                        {
+                            TaxesMap[taxIt->Name] = sideItemTaxAmount;
+                        }
+                        else
+                        {
+                            TaxesMap[taxIt->Name] += sideItemTaxAmount;
+                        }
+                    }
+                }
+            }
+        }
+     }
+
+	for (std::map<UnicodeString, Currency>::iterator taxesMapIt = TaxesMap.begin(); taxesMapIt != TaxesMap.end(); taxesMapIt++)
+	{
+		UnicodeString ItemName = taxesMapIt->first;
+
+		UnicodeString ItemPrice = CurrToStrF(
+		RoundToNearest(taxesMapIt->second, 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),
+		ffNumber,
+		CurrencyDecimals);
+
+		pPrinter->Line->Columns[1]->Width = ItemPrice.Length() + 1;
+		pPrinter->Line->Columns[0]->Width = pPrinter->Width - ItemPrice.Length() - 1;
+
+		pPrinter->Line->Columns[0]->Text =  ItemName;
+		pPrinter->Line->Columns[1]->Text = (PrintJob->Transaction->TypeOfSale == NonChargableSale) ? UnicodeString::UnicodeString() : ItemPrice;
+		pPrinter->AddLine();
+	}
+}
+//------------------------------------------------------------------------------
+bool TPrintSection::IsDiplomatDiscountApplied( BillCalculator::DISCOUNT_RESULT_LIST inDiscount )
+{
+    bool isDiplomatApplied = false;
+	BillCalculator::DISCOUNT_RESULT_LIST::iterator drIT = inDiscount.begin();
+
+	for( ; drIT != inDiscount.end(); drIT++ )
+	{
+        if(drIT->Name.UpperCase() == "DIPLOMAT" && drIT->Value == 0)
+        {
+           isDiplomatApplied =  true;
+           break;
+        }
+	}
+	return isDiplomatApplied;
+}

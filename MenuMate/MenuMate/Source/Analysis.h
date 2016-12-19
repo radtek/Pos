@@ -279,6 +279,7 @@ private:
     void OpenCashDrawer();
     void PostDataToXeroAndMyOB(std::vector<TXeroInvoiceDetail>  &XeroInvoiceDetails, std::vector<TMYOBInvoiceDetail>  &MYOBInvoiceDetails, bool CompleteZed);
     void UpdateDLFMall();
+    void UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransaction);
 
 };
 
