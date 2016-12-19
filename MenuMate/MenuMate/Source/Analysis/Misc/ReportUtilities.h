@@ -126,6 +126,12 @@ public:
 
     //We will remove the transaction info object from the map, since we have completed the transaction for the current ZED..
     void RemoveEntryFromMap(UnicodeString deviceName);
+    //bool IsConsolidatedZed;
+    ReportType _reportType;
+    void NormalZedTransaction(TIBSQL *qrXArcBill, bool showendingbal);
+    void ConsolidatedZedTransaction(TIBSQL *qrXArcBill, bool showendingbal);
+    TDateTime StartTime;
+    TDateTime EndTime;
 };
 
 class THourlyTotals

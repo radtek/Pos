@@ -7,6 +7,7 @@
 #include "GlobalSettings.h"
 #include "DeviceRealTerminal.h"
 #include "ReportManager.h"
+#include "ReportUtilities.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -366,37 +367,17 @@ TMemoryStream* TEJournalEngine::ExtractConsolidatedZedReport(TDateTime fromSessi
     ZedReceipt->Clear();
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
-    /*try
-    {
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        TIBSQL *IBGetReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        TIBSQL *IBCheckXReport = DBTransaction.Query(DBTransaction.AddQuery());
-        TIBSQL *IBGetCurrentRunningReciptQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-        GetZReport(IBInternalQuery, fromSessionDate, toSessionDate, deviceName);
-        IBInternalQuery->ExecQuery();
-        for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-        {
-            IBInternalQuery->FieldByName("REPORT")->SaveToStream(ZedReceipt);
+    TTransactionInfo TransactionInfo;
+    TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
+    TTransactionInfoProcessor::Instance()._reportType = mmConsolidatedZReport;
+    TTransactionInfoProcessor::Instance().StartTime = fromSessionDate;
+    TTransactionInfoProcessor::Instance().EndTime = toSessionDate;
+    TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(DBTransaction, deviceName);
 
-        }
-        if(!IsXReportAvailable(IBCheckXReport, IBInternalQuery->FieldByName("Z_KEY")->AsInteger, deviceName))
-        {
-            // x - report will generate
-            DisplayXReport(ZedReceipt);
-        }
-        DBTransaction.Commit();
-    }
-    catch(Exception &E)
-    {
-        DBTransaction.Rollback();
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
-    }*/
     ReportManager reportManager;
-    ZedReport* zedReport = reportManager.GetZedReport(&TGlobalSettings::Instance(), &DBTransaction);
-
-    zedReport->DisplayAndPrint(ZedReceipt);
+    ConsolidatedZedReport* consolidatedzedReport = reportManager.GetConsolidatedZedReport(&TGlobalSettings::Instance(), &DBTransaction, &fromSessionDate, &toSessionDate);
+    consolidatedzedReport->DisplayAndPrint(ZedReceipt);
 
     return ZedReceipt;
 }

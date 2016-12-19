@@ -11,9 +11,11 @@ class ZBegningEndingInvoiceReportSection : public BaseReportSection
 {
 public:
 	ZBegningEndingInvoiceReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    ZBegningEndingInvoiceReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~ZBegningEndingInvoiceReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
+    virtual void GetOutput(TPrintout* printout,TDateTime* startTime, TDateTime* endTime);
 
 private:
     AnsiString GetStartInvoiceNumber();

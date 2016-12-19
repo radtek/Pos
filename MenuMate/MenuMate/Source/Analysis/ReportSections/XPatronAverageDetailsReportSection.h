@@ -14,9 +14,11 @@ class XPatronAverageDetailsReportSection : public BaseReportSection
 
 public:
     XPatronAverageDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XPatronAverageDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XPatronAverageDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
+    virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
 
 private:
     TMembership* _memberShip;

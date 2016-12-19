@@ -15,176 +15,177 @@ void ConsolidatedEndOfDayReportBuilder::AddSectionsToReport(IReport* report)
 
 void ConsolidatedEndOfDayReportBuilder::AddReportDetailsSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmReportDetailsSection, true);
+    //AddReportSectionToReport(report, mmReportDetailsSection, true);
+    AddConsolidatedReportSectionToReport(report, mmReportDetailsSection, true, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddCurrentDateDetailsSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmCurrentDateDetailsSection, true);
+    AddConsolidatedReportSectionToReport(report, mmCurrentDateDetailsSection, true, GetStartTime(), GetEndTime());
 }
 void ConsolidatedEndOfDayReportBuilder::AddCurrentBegningAndEndingBalance(IReport* report)
 {
-    AddReportSectionToReport(report, mmShowBegningandEndingBalance, true);
+    AddConsolidatedReportSectionToReport(report, mmShowBegningandEndingBalance, true, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddClientDetailsSection(IReport* report)
 {
-	AddReportSectionToReport(report, mmClientDetailsSection, GetGlobalSettings()->EnableClientDetails);
+	AddConsolidatedReportSectionToReport(report, mmClientDetailsSection, GetGlobalSettings()->EnableClientDetails, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddSessionDateSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmSessionDateDetailsSection, GetGlobalSettings()->ShowSessionDateInZed);
+    AddConsolidatedReportSectionToReport(report, mmSessionDateDetailsSection, GetGlobalSettings()->ShowSessionDateInZed, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddMasterBlindBalancesSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmMasterBlindBalancesDetailsSection, (GetGlobalSettings()->EnableBlindBalances && GetGlobalSettings()->EnableDepositBagNum));
+    AddConsolidatedReportSectionToReport(report, mmMasterBlindBalancesDetailsSection, (GetGlobalSettings()->EnableBlindBalances && GetGlobalSettings()->EnableDepositBagNum), GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddBlindBalancesSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmBlindBalancesDetailsSection, GetGlobalSettings()->EnableBlindBalances);
+    AddConsolidatedReportSectionToReport(report, mmBlindBalancesDetailsSection, GetGlobalSettings()->EnableBlindBalances, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddTransactionSummaryGroupSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmTransactionSummaryGroupDetailsSection, GetGlobalSettings()->ShowTransactionSummaryGroups);
+    AddConsolidatedReportSectionToReport(report, mmTransactionSummaryGroupDetailsSection, GetGlobalSettings()->ShowTransactionSummaryGroups, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddBilledSalesTotalsSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmBilledSalesTotalsDetailsSection, GetGlobalSettings()->ShowBilledSalesTotals);
+    AddConsolidatedReportSectionToReport(report, mmBilledSalesTotalsDetailsSection, GetGlobalSettings()->ShowBilledSalesTotals, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddComplimentarySalesTotalsSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmComplimentarySalesTotalsDetailsSection, GetGlobalSettings()->ShowComplimentarySalesTotals);
+    AddConsolidatedReportSectionToReport(report, mmComplimentarySalesTotalsDetailsSection, GetGlobalSettings()->ShowComplimentarySalesTotals, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddChargeSalesTotalsSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmChargeSalesTotalsDetailsSection, GetGlobalSettings()->ShowChargedSalesTotals);
+    AddConsolidatedReportSectionToReport(report, mmChargeSalesTotalsDetailsSection, GetGlobalSettings()->ShowChargedSalesTotals, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddTotalsSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmTotalsDetailsSection, GetGlobalSettings()->ShowTotals);
+    AddConsolidatedReportSectionToReport(report, mmTotalsDetailsSection, GetGlobalSettings()->ShowTotals, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddBreakdownCategoriesSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmBreakdownCategoriesDetailsSection, GetGlobalSettings()->ShowBreakdownCategories);
+    AddConsolidatedReportSectionToReport(report, mmBreakdownCategoriesDetailsSection, GetGlobalSettings()->ShowBreakdownCategories, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddDiscountReportSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmDiscountReportDetailsSection, GetGlobalSettings()->ShowDiscountReport);
+    AddConsolidatedReportSectionToReport(report, mmDiscountReportDetailsSection, GetGlobalSettings()->ShowDiscountReport, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddPointsReportSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmPointsReportDetailsSection, GetGlobalSettings()->ShowPointsReport);
+    AddConsolidatedReportSectionToReport(report, mmPointsReportDetailsSection, GetGlobalSettings()->ShowPointsReport, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddPatronAverageSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmPatronAverageDetailsSection, GetGlobalSettings()->ShowPatronAverages);
+    AddConsolidatedReportSectionToReport(report, mmPatronAverageDetailsSection, GetGlobalSettings()->ShowPatronAverages, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddProductionInfoSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmProductionInfoDetailsSection, GetGlobalSettings()->ShowProductionInfo);
+    AddConsolidatedReportSectionToReport(report, mmProductionInfoDetailsSection, GetGlobalSettings()->ShowProductionInfo, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddAccountPurchasesSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmAccountPurchasesDetailsSection, GetGlobalSettings()->ShowAccountPurchases);
+    AddConsolidatedReportSectionToReport(report, mmAccountPurchasesDetailsSection, GetGlobalSettings()->ShowAccountPurchases, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddAccountBalancesTabsSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmAccountBalancesTabsDetailsSection, GetGlobalSettings()->ShowAccountBalancesTabs);
+    AddConsolidatedReportSectionToReport(report, mmAccountBalancesTabsDetailsSection, GetGlobalSettings()->ShowAccountBalancesTabs, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddAccountBalancesSeatedSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmAccountBalancesSeatedDetailsSection, GetGlobalSettings()->ShowAccountBalances);
+    AddConsolidatedReportSectionToReport(report, mmAccountBalancesSeatedDetailsSection, GetGlobalSettings()->ShowAccountBalances, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddHourlySalesSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmHourlySalesDetailsSection, GetGlobalSettings()->ShowHourlySales);
+    AddConsolidatedReportSectionToReport(report, mmHourlySalesDetailsSection, GetGlobalSettings()->ShowHourlySales, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddAccumulatedTotalSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmAccumulatedTotalDetailsSection, GetGlobalSettings()->ShowAccumulatedZeds);
+    AddConsolidatedReportSectionToReport(report, mmAccumulatedTotalDetailsSection, GetGlobalSettings()->ShowAccumulatedZeds, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddTaxSummarySection(IReport* report)
 {
-    AddReportSectionToReport(report, mmTaxSummaryDetailsSection, GetGlobalSettings()->ShowTaxSummary);
+    AddConsolidatedReportSectionToReport(report, mmTaxSummaryDetailsSection, GetGlobalSettings()->ShowTaxSummary, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddServiceChargeSummarSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmServiceChargeSummaryDetailsSection, GetGlobalSettings()->ShowServiceChargeSummary);
+    AddConsolidatedReportSectionToReport(report, mmServiceChargeSummaryDetailsSection, GetGlobalSettings()->ShowServiceChargeSummary, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddStaffHoursSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmStaffHoursDetailsSection, GetGlobalSettings()->EnableStaffHours);
+    AddConsolidatedReportSectionToReport(report, mmStaffHoursDetailsSection, GetGlobalSettings()->EnableStaffHours, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddCommissionTipsSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmCommissionTipsDetailsSection, GetGlobalSettings()->EnableCommission);
+    AddConsolidatedReportSectionToReport(report, mmCommissionTipsDetailsSection, GetGlobalSettings()->EnableCommission, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddRefundSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmRefundDetailsSection, !GetGlobalSettings()->EnableHideCredsCancels);
+    AddConsolidatedReportSectionToReport(report, mmRefundDetailsSection, !GetGlobalSettings()->EnableHideCredsCancels, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddCancelsSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmCancelsDetailsSection, !GetGlobalSettings()->EnableHideCredsCancels);
+    AddConsolidatedReportSectionToReport(report, mmCancelsDetailsSection, !GetGlobalSettings()->EnableHideCredsCancels, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddWriteOffSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmWriteOffDetailsSection, !GetGlobalSettings()->EnableHideCredsCancels);
+    AddConsolidatedReportSectionToReport(report, mmWriteOffDetailsSection, !GetGlobalSettings()->EnableHideCredsCancels, GetStartTime(), GetEndTime());
 }
 //
 void ConsolidatedEndOfDayReportBuilder::AddShowRemovalSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmShowRemovalSection, GetGlobalSettings()->ShowRemovalReport);
+    AddConsolidatedReportSectionToReport(report, mmShowRemovalSection, GetGlobalSettings()->ShowRemovalReport, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddPriceAdjustmentSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmShowPriceAdjustmentSection, GetGlobalSettings()->ShowPointsReport);
+    AddConsolidatedReportSectionToReport(report, mmShowPriceAdjustmentSection, GetGlobalSettings()->ShowPointsReport, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddMallExportConsolidatedReceipt(IReport* report)
 {
-    AddReportSectionToReport(report, mmMallExportConsolidatedReceipt, true);
+    AddConsolidatedReportSectionToReport(report, mmMallExportConsolidatedReceipt, true, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddVoidAndCancelReport(IReport* report)
 {
-    AddReportSectionToReport(report, mmRefundCancelDetailsSections, !GetGlobalSettings()->EnableHideCredsCancels);
+    AddConsolidatedReportSectionToReport(report, mmRefundCancelDetailsSections, !GetGlobalSettings()->EnableHideCredsCancels, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddCashDenominationSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmCashDenominationDetailsSection, GetGlobalSettings()->CashDenominationEntry);
+    AddConsolidatedReportSectionToReport(report, mmCashDenominationDetailsSection, GetGlobalSettings()->CashDenominationEntry, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddMasterCashDenominationSection(IReport* report)
 {
-    AddReportSectionToReport(report, mmMasterCashDenominationDetailsSection, GetGlobalSettings()->CashDenominationEntry && GetGlobalSettings()->EnableDepositBagNum);
+    AddConsolidatedReportSectionToReport(report, mmMasterCashDenominationDetailsSection, (GetGlobalSettings()->CashDenominationEntry && GetGlobalSettings()->EnableDepositBagNum), GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::XAndZReportFormatForBIR(IReport* report)

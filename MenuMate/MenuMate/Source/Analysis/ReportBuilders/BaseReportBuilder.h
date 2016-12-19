@@ -31,6 +31,8 @@ protected:
 	ReportType GetCurrentReportType();
 
 	IReportSectionFactory* _reportSectionFactory;
+    TDateTime* GetStartTime();
+    TDateTime* GetEndTime();
 
 private:
 	TPrintout* _printOut;

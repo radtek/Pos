@@ -11,9 +11,11 @@ class XBreakdownCategoriesDetailsReportSection: public BaseReportSection
 {
 public:
 	XBreakdownCategoriesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XBreakdownCategoriesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~XBreakdownCategoriesDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
+    virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime);
 
 private:
     DataFormatUtilities* dataFormatUtilities;

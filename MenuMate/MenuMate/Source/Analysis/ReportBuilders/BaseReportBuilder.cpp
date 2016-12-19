@@ -17,7 +17,7 @@ BaseReportBuilder::BaseReportBuilder(ReportType reportType, TGlobalSettings* glo
 {
 	ReportSectionFactoryProvider* reportSectionFactoryProvider = new ReportSectionFactoryProvider;
 	//Get the report section factory and assign it to the member variable for use in building report sections..
-	_reportSectionFactory = reportSectionFactoryProvider->CreateReportSectionFactory(reportType, dbTransaction, globalSettings, startTime, endTime);
+	_reportSectionFactory = reportSectionFactoryProvider->CreateReportSectionFactoryForConsolidatedZed(reportType, dbTransaction, globalSettings, startTime, endTime);
 }
 
 
@@ -83,6 +83,8 @@ int BaseReportBuilder::AddConsolidatedReportSectionToReport(IReport* report, Rep
         if (section)
         {
             section->SetIsEnabled(isEnabled);
+            section->SetStartTime(startTime);
+            section->SetEndTime(endTime);
             int currentPosition = report->AddSection(section);
             return currentPosition;
         }

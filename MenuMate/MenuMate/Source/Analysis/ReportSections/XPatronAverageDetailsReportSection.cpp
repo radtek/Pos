@@ -9,6 +9,12 @@ XPatronAverageDetailsReportSection::XPatronAverageDetailsReportSection(Database:
     dataFormatUtilities = new DataFormatUtilities;
 }
 
+XPatronAverageDetailsReportSection::XPatronAverageDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmXReport, mmPatronAverageDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
 
 XPatronAverageDetailsReportSection::~XPatronAverageDetailsReportSection()
 {
@@ -16,6 +22,12 @@ XPatronAverageDetailsReportSection::~XPatronAverageDetailsReportSection()
 }
 
 void XPatronAverageDetailsReportSection::GetOutput(TPrintout* printOut)
+{
+   PrintPatronStatistics(printOut);
+   PrintChitStatistics(printOut);
+}
+
+void XPatronAverageDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
    PrintPatronStatistics(printOut);
    PrintChitStatistics(printOut);

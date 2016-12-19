@@ -15,9 +15,11 @@ class XCancelsDetailsReportSection : public BaseReportSection
 
 public:
     XCancelsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XCancelsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XCancelsDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
+    virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
 
 private:
     DataFormatUtilities* dataFormatUtilities;

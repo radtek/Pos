@@ -13,9 +13,11 @@ class XPriceAdjustmentReportSection : public BaseReportSection
 
 public:
     XPriceAdjustmentReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XPriceAdjustmentReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XPriceAdjustmentReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
+    virtual void GetOutput(TPrintout* printOut,TDateTime* startTime, TDateTime* endTime);
 
 private:
     DataFormatUtilities* dataFormatUtilities;

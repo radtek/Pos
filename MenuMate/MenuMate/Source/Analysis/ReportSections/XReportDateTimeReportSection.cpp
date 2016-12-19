@@ -13,6 +13,15 @@ XReportDateTimeReportSection::XReportDateTimeReportSection(Database::TDBTransact
     dataCalculationUtilities = new DataCalculationUtilities;
 }
 
+XReportDateTimeReportSection::XReportDateTimeReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	: BaseReportSection(mmXReport, mmShowBegningandEndingBalance, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
+}
+
+
+
 XReportDateTimeReportSection::~XReportDateTimeReportSection()
 {
     delete dataFormatUtilities;
@@ -66,11 +75,65 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->AddLine();
 
         printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
-        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd") + "/" + trans_date.FormatString("mm") + "/" + trans_date.FormatString("yyyy"); 
+        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd") + "/" + trans_date.FormatString("mm") + "/" + trans_date.FormatString("yyyy");
         printOut->PrintFormat->AddLine();
     }
 
 }
+
+void XReportDateTimeReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+{
+    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+    const Currency todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+
+    const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
+	const Currency closingBalance = openingBalance + todaysEarnings;
+
+    TDateTime trans_date = dataCalculationUtilities->CalculateSessionTransactionDate(Now());
+	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
+	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
+    FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
+
+    IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
+
+    if(reportSectionDisplayTraits)
+    {
+        reportSectionDisplayTraits->ApplyTraits(printOut);
+    }
+    printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
+	printOut->PrintFormat->Line->FontInfo.Reset();
+
+    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    {
+        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Line->Columns[0]->Width * 1/2;
+        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
+        printOut->PrintFormat->Line->FontInfo.Reset();
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
+        printOut->PrintFormat->Line->Columns[1]->Text = "Report Date:";
+        printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("dd") + "/" + Now().FormatString("mm") + "/" + Now().FormatString("yyyy");
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[1]->Text = "Report Time:";
+        printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("hh:nn AM/PM");
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[1]->Text = "Terminal: ";
+        printOut->PrintFormat->Line->Columns[2]->Text = deviceName;
+        printOut->PrintFormat->AddLine();
+
+        const TMMContactInfo &staff_member = TfrmAnalysis::GetLastAuthenticatedUser();
+        printOut->PrintFormat->Line->Columns[1]->Text = "Cashier: ";//
+        printOut->PrintFormat->Line->Columns[2]->Text = staff_member.Name;
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
+        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd") + "/" + trans_date.FormatString("mm") + "/" + trans_date.FormatString("yyyy");
+        printOut->PrintFormat->AddLine();
+    }
+
+}
+
 
 void XReportDateTimeReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
 {

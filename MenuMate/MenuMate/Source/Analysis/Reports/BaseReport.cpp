@@ -158,3 +158,50 @@ TPrintout* BaseReport::SetupPrintOutInstance()
     return printOut;
 }
 
+TPrintout* BaseReport::SetupPrintOutInstanceForConsolidatedZed()
+{
+    bool printerExists = true;
+
+    if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
+    {
+        printerExists = false;
+    }
+
+    TPrintout* printOut = new TPrintout;
+
+    if (!printerExists)
+    {
+        TPrinterPhysical defaultScreenPrinter;
+        defaultScreenPrinter.NormalCharPerLine = 40;
+        defaultScreenPrinter.BoldCharPerLine = 40;
+
+        printOut->Printer = defaultScreenPrinter;
+    }
+    else
+    {
+        printOut->Printer = TComms::Instance().ReceiptPrinter;
+    }
+
+    printOut->PrintFormat->Line->FontInfo.Height = fsDoubleSize;
+    printOut->PrintFormat->Line->ColCount = 1;
+    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
+    printOut->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+
+    printOut->PrintFormat->DocumentName = GetReportName();
+
+    for(std::vector<IReportSection*>::iterator it = _sections.begin();
+        it != _sections.end();++it)
+    {
+       if((*it)->GetIsEnabled() && printOut->ContinuePrinting)
+        {
+            (*it)->GetOutput(printOut, (*it)->GetStartTime(), (*it)->GetEndTime());
+        }
+    }
+
+
+    //ReportSections functor(printOut);
+    //std::for_each(_sections.begin(), _sections.end(), functor);
+    //std::bind2nd(std::mem_fun(&IReportSection::GetOutput), printOut));
+    return printOut;
+}
+

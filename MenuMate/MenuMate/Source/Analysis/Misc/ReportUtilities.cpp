@@ -228,6 +228,8 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
  TTransactionInfo TTransactionInfoProcessor::GetTransactionInfo(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, bool showendingbal)
 {
+    //ReportType _reportType;
+
     if(!deviceTransactions[deviceName])                                             // checks if the object is already present for the given terminal
     {
         deviceTransactions[deviceName] = new TTransactionInfo;
@@ -268,32 +270,16 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
         qrXArcBill->Close();
 
-        AnsiString terminalNamePredicate = "";
-
-        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        if(_reportType == mmConsolidatedZReport)
         {
-            terminalNamePredicate = " a.TERMINAL_NAME = :TERMINAL_NAME AND";
-        }
-
-        if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
-        {
-            qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
-                                " from DAYARCBILL a "
-                                " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-                                " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 or a.DISCOUNT !=0 "
-                                " group by 1,2,3,4,5,6,7,8,9,10 ";
+           ConsolidatedZedTransaction(qrXArcBill, showendingbal);
+           qrXArcBill->ParamByName("StartTime")->AsDateTime = StartTime;
+           qrXArcBill->ParamByName("EndTime")->AsDateTime = EndTime;
         }
         else
         {
-
-         qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
-                                " from DAYARCBILL a "
-                                " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-                                " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable')"
-                                " group by 1,2,3,4,5,6,7,8,9,10 ";
-         }
+           NormalZedTransaction(qrXArcBill, showendingbal);
+        }
 
         if(!TGlobalSettings::Instance().EnableDepositBagNum)
         {
@@ -371,10 +357,19 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
            // before = Now();    //arun
             qrXArcPay->Close();
-            qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                                    "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
-                                    "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
+            if(_reportType == mmConsolidatedZReport)
+            {
+                qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+                                        "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from ARCBILLPAY "
+                                        "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
+            }
+            else
+            {
+                qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+                                        "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
+                                        "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
             //}
+            }
             qrXArcPay->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
             qrXArcPay->ExecQuery();
 
@@ -526,11 +521,19 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                            if (adjustType == 3 && adjustSubtype == 1)
                              {
                                 qXArcPoints1->Close();
-                                qXArcPoints1->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                                                           "GROUP_NUMBER, PROPERTIES,ROUNDING from DAYARCBILLPAY "
-                                                            "where ARCBILL_KEY = :ARCBILL_KEY and PAY_TYPE='Points'";
+                                if(_reportType == mmConsolidatedZReport)
+                                {
+                                    qXArcPoints1->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+                                                               "GROUP_NUMBER, PROPERTIES,ROUNDING from ARCBILLPAY "
+                                                                "where ARCBILL_KEY = :ARCBILL_KEY and PAY_TYPE='Points'";
+                                }
+                                else
+                                {
+                                    qXArcPoints1->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+                                                               "GROUP_NUMBER, PROPERTIES,ROUNDING from DAYARCBILLPAY "
+                                                                "where ARCBILL_KEY = :ARCBILL_KEY and PAY_TYPE='Points'";
 
-                               
+                                }
                                 qXArcPoints1->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
                                 qXArcPoints1->ExecQuery();
 
@@ -578,9 +581,18 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
            }
 
             qXArcSurcharge->Close();
-            qXArcSurcharge->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, PAY_TYPE_DETAILS, SUBTOTAL ,NOTE, TAX_FREE,PROPERTIES,"
-                                        "GROUP_NUMBER,ROUNDING from DAYARCSURCHARGE "
-                                        "where ARCBILL_KEY = :ARCBILL_KEY";
+            if(_reportType == mmConsolidatedZReport)
+            {
+                qXArcSurcharge->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, PAY_TYPE_DETAILS, SUBTOTAL ,NOTE, TAX_FREE,PROPERTIES,"
+                                            "GROUP_NUMBER,ROUNDING from ARCSURCHARGE "
+                                            "where ARCBILL_KEY = :ARCBILL_KEY";
+            }
+            else
+            {
+                qXArcSurcharge->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, PAY_TYPE_DETAILS, SUBTOTAL ,NOTE, TAX_FREE,PROPERTIES,"
+                                            "GROUP_NUMBER,ROUNDING from DAYARCSURCHARGE "
+                                            "where ARCBILL_KEY = :ARCBILL_KEY";
+            }
             qXArcSurcharge->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
             qXArcSurcharge->ExecQuery();
 
@@ -635,7 +647,6 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                 }
                 itTransactionsCountGroups->second = TransactionsCount;
             }
-
             // MM-1282 : this invoice has been counted, mark it so
             countedInvoiceNumbers.insert(currentInvoiceKey);
 
@@ -794,6 +805,67 @@ int DataCalculationUtilities::CalculateLastDayOfMonth(int month)
         lastdayofmonth = 31;
     }
     return lastdayofmonth;
+}
+
+void TTransactionInfoProcessor::NormalZedTransaction(TIBSQL *qrXArcBill, bool showendingbal)
+{
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = " a.TERMINAL_NAME = :TERMINAL_NAME AND";
+    }
+
+    if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
+    {
+        qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
+                            " from DAYARCBILL a "
+                            " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                            " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                            " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 or a.DISCOUNT !=0 "
+                            " group by 1,2,3,4,5,6,7,8,9,10 ";
+    }
+    else
+    {
+
+     qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
+                            " from DAYARCBILL a "
+                            " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                            " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                            " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable')"
+                            " group by 1,2,3,4,5,6,7,8,9,10 ";
+     }
+}
+void TTransactionInfoProcessor::ConsolidatedZedTransaction(TIBSQL *qrXArcBill, bool showendingbal)
+{
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = " a.TERMINAL_NAME = :TERMINAL_NAME AND";
+    }
+
+    if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
+    {
+        qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
+                            " from ARCBILL a "
+                            " left join ARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                            " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                            " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 or a.DISCOUNT !=0 "
+                            " and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime "
+                            " group by 1,2,3,4,5,6,7,8,9,10 ";
+    }
+    else
+    {
+
+     qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
+                            " from ARCBILL a "
+                            " left join ARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                            " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                            " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable')"
+                            " and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime "
+                            " group by 1,2,3,4,5,6,7,8,9,10 ";
+     }
 }
 
 

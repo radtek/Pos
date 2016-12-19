@@ -15,9 +15,11 @@ class XAccountBalancesSeatedDetailsReportSection : public BaseReportSection
 
 public:
     XAccountBalancesSeatedDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XAccountBalancesSeatedDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XAccountBalancesSeatedDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
+    virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
 
 private:
     TMembership* _memberShip;

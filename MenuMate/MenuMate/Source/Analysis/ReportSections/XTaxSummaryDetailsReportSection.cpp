@@ -12,6 +12,14 @@ XTaxSummaryDetailsReportSection::XTaxSummaryDetailsReportSection(Database::TDBTr
     reportCalculations = new ReportFinancialCalculations;
 }
 
+XTaxSummaryDetailsReportSection::XTaxSummaryDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmXReport, mmTaxSummaryDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
+    reportCalculations = new ReportFinancialCalculations;
+}
+
 
 XTaxSummaryDetailsReportSection::~XTaxSummaryDetailsReportSection()
 {
@@ -171,6 +179,159 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
 
     }
 }
+
+void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+{
+    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+    const Currency todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+    Currency taxExemptSales = 0;
+    Currency salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName, *startTime, *endTime);
+    Currency serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName, *startTime, *endTime);
+    Currency serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName, *startTime, *endTime);
+    Currency localTax = reportCalculations->GetLocalTax(*_dbTransaction, deviceName, *startTime, *endTime);
+    Currency profitTax = reportCalculations->GetProfitTax(*_dbTransaction, deviceName, *startTime, *endTime);
+    Currency discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction);
+    Currency zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
+    Currency totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName);
+
+
+    taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
+
+    if(_globalSettings->ReCalculateTaxPostDiscount)
+    {
+        discountAndSurcharge = 0;
+    }
+    const Currency taxSales = 0;
+
+    if(_globalSettings->UseBIRFormatInXZReport)
+    {
+
+        taxSales = (((todays_earnings - discountAndSurcharge) - (taxExemptSales -zeroratedsales)  - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax)) - zeroratedsales;
+    }
+    else
+    {
+       taxSales = (((todays_earnings - discountAndSurcharge) - taxExemptSales - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax));
+    }
+
+
+    if(_globalSettings->ShowServiceChargeTaxWithSalesTax && !_globalSettings->ShowServiceChargeTaxWithServiceCharge)
+    {
+        salesTax += serviceChargeTax;
+    }
+
+    if(_globalSettings->UseBIRFormatInXZReport)
+    {
+        sales_tax.clear();
+        GetDifferentTotalSalesTax(*_dbTransaction, deviceName);
+        dataCalculationUtilities->PrinterFormatinTwoSections(printOut); //SetPrinterFormatToMiddle(printOut);
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[1]->Text = "";
+        printOut->PrintFormat->Line->Columns[2]->Text = "";
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[1]->Text = "VATable Sales";
+        if(taxSales < 0)
+        {
+           printOut->PrintFormat->Line->Columns[2]->Text = "(" + CurrToStrF(fabs(taxSales), ffNumber, CurrencyDecimals) + ")";
+        }
+        else
+        {
+            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(taxSales, ffNumber, CurrencyDecimals);
+        }
+        printOut->PrintFormat->AddLine();
+
+        if(sales_tax.size() > 0)
+        {
+            for (std::vector<TSalesTax>::iterator it = sales_tax.begin(); it != sales_tax.end(); it++)
+            {
+                printOut->PrintFormat->Line->Columns[1]->Text = FloatToStr((it->Rate)) + "% VAT";
+                if(it->TaxSum < 0)
+                {
+                   printOut->PrintFormat->Line->Columns[2]->Text = "(" + CurrToStrF(abs(it->TaxSum), ffNumber, CurrencyDecimals) + ")";
+                }
+                else
+                {
+                    printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(it->TaxSum, ffNumber, CurrencyDecimals);
+                }
+                printOut->PrintFormat->AddLine();
+            }
+        }
+        else
+        {
+            printOut->PrintFormat->Line->Columns[1]->Text = FloatToStr(0) + "% VAT";
+            printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(0.00);
+            printOut->PrintFormat->AddLine();
+        }
+        printOut->PrintFormat->Line->Columns[1]->Text = "VAT Exempt Sales";
+        if((taxExemptSales - zeroratedsales) < 0)
+        {
+           printOut->PrintFormat->Line->Columns[2]->Text ="(" + CurrToStrF(fabs(taxExemptSales - zeroratedsales), ffNumber, CurrencyDecimals) + ")";
+        }
+        else
+        {
+            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF((taxExemptSales - zeroratedsales), ffNumber, CurrencyDecimals);
+        }
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[1]->Text = "Zero Rated Sales";
+        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(zeroratedsales, ffNumber, CurrencyDecimals);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[1]->Text = "Total Discount";
+        if(totaldiscount < 0)
+        {
+           printOut->PrintFormat->Line->Columns[2]->Text = "(" +CurrToStrF(fabs(totaldiscount), ffNumber, CurrencyDecimals) + ")";
+        }
+        else
+        {
+            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(totaldiscount, ffNumber, CurrencyDecimals) ;
+        }
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[1]->Text = "";
+        printOut->PrintFormat->Line->Columns[2]->Text = "";
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->AddLine();
+    }
+    else
+    {
+        AddTitle(printOut, "Tax Summary");
+        printOut->PrintFormat->NewLine();
+
+        IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
+
+        if(reportSectionDisplayTraits)
+        {
+            reportSectionDisplayTraits->ApplyTraits(printOut);
+        }
+
+        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
+        printOut->PrintFormat->Line->FontInfo.Reset();
+
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Sales Tax Total:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Tax Exempt Sales Total";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxExemptSales);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Taxable Sales Total:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxSales);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Local Tax Total:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(localTax);
+        printOut->PrintFormat->AddLine();
+
+        printOut->PrintFormat->Line->Columns[0]->Text = "Profit Tax Total:";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(profitTax);
+        printOut->PrintFormat->AddLine();
+
+    }
+}
+
 
 void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
 {

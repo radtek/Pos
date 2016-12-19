@@ -7,12 +7,27 @@ XSessionDateDetailsReportSection::XSessionDateDetailsReportSection(Database::TDB
 {
 }
 
+XSessionDateDetailsReportSection::XSessionDateDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmXReport, mmSessionDateDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
 
 XSessionDateDetailsReportSection::~XSessionDateDetailsReportSection()
 {
 }
 
 void XSessionDateDetailsReportSection::GetOutput(TPrintout* printOut)
+{
+   ShowSessionDate(printOut);
+}
+
+void XSessionDateDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+{
+   ShowSessionDate(printOut);
+}
+
+void XSessionDateDetailsReportSection::ShowSessionDate(TPrintout* printOut)
 {
     IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
 

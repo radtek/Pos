@@ -17,7 +17,7 @@ AnsiString ConsolidatedZedReport::GetReportName()
 int ConsolidatedZedReport::DisplayAndPrint(TMemoryStream* memoryStream)
 {
     int retValue = 0;
-    TPrintout* printOut = SetupPrintOutInstance();
+    TPrintout* printOut = SetupPrintOutInstanceForConsolidatedZed();
     if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
        printOut->PrintFormat->PartialCut();
@@ -26,30 +26,11 @@ int ConsolidatedZedReport::DisplayAndPrint(TMemoryStream* memoryStream)
     TForm* currentForm = Screen->ActiveForm;
     if(printOut->ContinuePrinting)
     {
-        std::auto_ptr <TfrmShowPrintout> (frmShowPrintout)(TfrmShowPrintout::Create <TfrmShowPrintout> (currentForm));
-
-        printOut->PrintToStream(frmShowPrintout->CurrentPrintout.get());
-
-        if (TGlobalSettings::Instance().EnableBlindBalances)
-        {
-            frmShowPrintout->btnCancel->Visible = false;
-        }
-        else
-        {
-            frmShowPrintout->btnCancel->Visible = true;
-            frmShowPrintout->btnCancel->Caption = "Cancel Zed";
-        }
-        frmShowPrintout->btnClose->Caption = "Close Till";
-        frmShowPrintout->btnClosePrint->Caption = "Close Till and Print Zed";
-
-        frmShowPrintout->Execute();
-
         if(memoryStream)
         {
             printOut->PrintToStream(memoryStream);
         }
         SkipZedProcess = false;
-        retValue = frmShowPrintout->ExitCode;
     }
     else
     {

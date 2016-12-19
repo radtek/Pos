@@ -11,9 +11,12 @@ class XClientDetailsReportSection : public BaseReportSection
 {
 public:
 	XClientDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XClientDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~XClientDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
+    virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime);
+
 };
 
 #endif

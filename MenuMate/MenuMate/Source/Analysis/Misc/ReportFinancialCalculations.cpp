@@ -60,6 +60,39 @@ Currency ReportFinancialCalculations::GetTotalSalesTax(Database::TDBTransaction 
     return salesTax;
 }
 
+Currency ReportFinancialCalculations::GetTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    Currency salesTax;
+    TIBSQL *salesTaxQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and DAB.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
+    salesTaxQuery->SQL->Text = "SELECT "
+                                    "SUM(TAX_VALUE) AS TAXSUM "
+                                "FROM ARCORDERTAXES DAOT "
+                                "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                                "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
+                                "WHERE TAX_TYPE = '0' and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+
+    salesTaxQuery->ParamByName("StartTime")->AsDateTime = startTime;
+    salesTaxQuery->ParamByName("EndTime")->AsDateTime = endTime;
+    salesTaxQuery->ExecQuery();
+    salesTax = salesTaxQuery->FieldByName("TAXSUM")->AsCurrency;
+    salesTaxQuery->Close();
+
+    return salesTax;
+}
+
+
 Currency ReportFinancialCalculations::GetTaxExemptSales(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
 {
 
@@ -145,6 +178,41 @@ Currency ReportFinancialCalculations::GetServiceCharge(Database::TDBTransaction 
     return servicecharge;
 }
 
+Currency ReportFinancialCalculations::GetServiceCharge(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    Currency servicecharge;
+    TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and DAB.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
+
+
+    qr->SQL->Text = "SELECT "
+                        "SUM(TAX_VALUE) AS TAXSUM "
+                    "FROM ARCORDERTAXES DAOT "
+                    "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                    "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
+                    "WHERE TAX_TYPE = '2' and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    qr->ParamByName("StartTime")->AsDateTime = startTime;
+    qr->ParamByName("EndTime")->AsDateTime = endTime;
+    qr->ExecQuery();
+    servicecharge = qr->FieldByName("TAXSUM")->AsCurrency;
+    qr->Close();
+
+    return servicecharge;
+}
+
+
+
 Currency ReportFinancialCalculations::GetServiceChargeTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
 {
     Currency servicechargetax;
@@ -176,6 +244,68 @@ Currency ReportFinancialCalculations::GetServiceChargeTax(Database::TDBTransacti
     return servicechargetax;
 }
 
+Currency ReportFinancialCalculations::GetServiceChargeTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    Currency servicechargetax;
+    TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and DAB.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
+    qr->SQL->Text = "SELECT "
+                                    "SUM(TAX_VALUE) AS TAXSUM "
+                                "FROM ARCORDERTAXES DAOT "
+                                "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                                "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
+                                "WHERE TAX_TYPE = '3' and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    qr->ParamByName("StartTime")->AsDateTime = startTime;
+    qr->ParamByName("EndTime")->AsDateTime = endTime;
+    qr->ExecQuery();
+    servicechargetax = qr->FieldByName("TAXSUM")->AsCurrency;
+
+    qr->Close();
+    return servicechargetax;
+}
+
+Currency ReportFinancialCalculations::GetLocalTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    Currency localtax;
+    TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and DAB.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
+    qr->SQL->Text = "SELECT "
+                                    "SUM(TAX_VALUE) AS TAXSUM "
+                                "FROM ARCORDERTAXES DAOT "
+                                "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                                "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
+                                "WHERE TAX_TYPE = '4' and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+       qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    qr->ParamByName("StartTime")->AsDateTime = startTime;
+    qr->ParamByName("EndTime")->AsDateTime = endTime;
+
+    qr->ExecQuery();
+    localtax = qr->FieldByName("TAXSUM")->AsCurrency;
+
+    qr->Close();
+    return localtax;
+}
+
 Currency ReportFinancialCalculations::GetLocalTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
 {
     Currency localtax;
@@ -204,6 +334,7 @@ Currency ReportFinancialCalculations::GetLocalTax(Database::TDBTransaction &DBTr
     qr->Close();
     return localtax;
 }
+
 
 Currency ReportFinancialCalculations::GetProfitTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
 {
@@ -984,6 +1115,65 @@ Currency ReportFinancialCalculations::GetTotalDiscountValue(Database::TDBTransac
 		throw;
 	}
 	return totaldiscount;
+}
+
+Currency ReportFinancialCalculations::GetProfitTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    Currency localtax;
+    TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and DAB.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
+    qr->SQL->Text = "SELECT "
+                                    "SUM(TAX_VALUE) AS TAXSUM "
+                                "FROM ARCORDERTAXES DAOT "
+                                "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                                "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
+                                "WHERE TAX_TYPE = '5' and DA.TIME_STAMP >= :StartTime and DA.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
+
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+       qr->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    qr->ParamByName("StartTime")->AsDateTime = startTime;
+    qr->ParamByName("EndTime")->AsDateTime = endTime;
+    qr->ExecQuery();
+    localtax = qr->FieldByName("TAXSUM")->AsCurrency;
+
+    qr->Close();
+    return localtax;
+}
+
+Currency ReportFinancialCalculations::GetDiscountsAndSurcharges(Database::TDBTransaction &DBTransaction, TDateTime startTime, TDateTime endTime)
+{
+	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+	TIBSQL *qr = tr.Query(tr.AddQuery());
+
+	Currency discountsandsurcharges;
+
+    qr->SQL->Text = "SELECT SUM(DAD.DISCOUNTED_VALUE) AS DISCSUM "
+                    "FROM ARCORDERDISCOUNTS DAD "
+                    "JOIN ARCORDERTAXES DAT ON DAD.ARCHIVE_KEY = DAT.ARCHIVE_KEY "
+                    "inner join ARCHIVE DA on DAD.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                    "WHERE DAT.TAX_TYPE = '0' AND DAT.TAX_VALUE > 0  and DA.TIME_STAMP >= :StartTime and DA.TIME_STAMP <= :EndTime  ";
+
+	tr.StartTransaction();
+    qr->ParamByName("StartTime")->AsDateTime = startTime;
+    qr->ParamByName("EndTime")->AsDateTime = endTime;
+
+	qr->ExecQuery();
+
+    discountsandsurcharges = qr->FieldByName("DISCSUM")->AsCurrency;
+
+	tr.Commit();
+	qr->Close();
+
+	return discountsandsurcharges;
 }
 
 

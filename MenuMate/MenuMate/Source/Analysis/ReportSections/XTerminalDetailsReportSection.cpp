@@ -7,11 +7,23 @@ XTerminalDetailsReportSection::XTerminalDetailsReportSection(Database::TDBTransa
 }
 
 
+XTerminalDetailsReportSection::XTerminalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+    :BaseReportSection(mmXReport, mmClientDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
+
 XTerminalDetailsReportSection::~XTerminalDetailsReportSection()
 {
 }
 
 void XTerminalDetailsReportSection::GetOutput(TPrintout* printout)
+{
+    printout->PrintFormat->Line->Columns[0]->Text = TDeviceRealTerminal::Instance().ID.Name;
+    printout->PrintFormat->AddLine();
+}
+
+void XTerminalDetailsReportSection::GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime)
 {
     printout->PrintFormat->Line->Columns[0]->Text = TDeviceRealTerminal::Instance().ID.Name;
     printout->PrintFormat->AddLine();

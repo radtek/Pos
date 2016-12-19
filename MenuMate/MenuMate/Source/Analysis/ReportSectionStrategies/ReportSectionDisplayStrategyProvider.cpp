@@ -15,6 +15,15 @@ ReportSectionDisplayStrategyProvider::ReportSectionDisplayStrategyProvider(Datab
     _dbTransaction = dbTransaction;
 }
 
+ReportSectionDisplayStrategyProvider::ReportSectionDisplayStrategyProvider(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+{
+	_globalSettings = globalSettings;
+    _dbTransaction = dbTransaction;
+    _startTime = startTime;
+    _endTime = endTime;
+}
+
+
 
 ReportSectionDisplayStrategyProvider::~ReportSectionDisplayStrategyProvider()
 {

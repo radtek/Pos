@@ -12,6 +12,14 @@ XTransactionSummaryGroupDetailsReportSection::XTransactionSummaryGroupDetailsRep
     dataCalculationUtilities = new DataCalculationUtilities;
 }
 
+XTransactionSummaryGroupDetailsReportSection::XTransactionSummaryGroupDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmXReport, mmTransactionSummaryGroupDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
+}
+
+
 
 XTransactionSummaryGroupDetailsReportSection::~XTransactionSummaryGroupDetailsReportSection()
 {
@@ -21,6 +29,19 @@ XTransactionSummaryGroupDetailsReportSection::~XTransactionSummaryGroupDetailsRe
 
 void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+
+   DisplayBankingSection(printOut);
+}
+
+void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+{
+
+   DisplayBankingSection(printOut);
+}
+
+void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrintout* printOut)
+{
+
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
 
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
@@ -729,8 +750,8 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
             printOut->PrintFormat->AddLine();
         }
     }
-
 }
+
 
 void XTransactionSummaryGroupDetailsReportSection::SetSingleColumnPrinterFormat(TPrintout* printOut)
 {

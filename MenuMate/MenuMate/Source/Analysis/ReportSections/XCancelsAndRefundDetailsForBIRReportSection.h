@@ -15,12 +15,14 @@ class XCancelsAndRefundDetailsForBIRReportSection : public BaseReportSection
 
 public:
     XCancelsAndRefundDetailsForBIRReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XCancelsAndRefundDetailsForBIRReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XCancelsAndRefundDetailsForBIRReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
     void SetPrinterFormat(TPrintout* printOut);
     void SetSingleColumnPrinterFormat(TPrintout* printOut);
     void SetPrinterFormatInMiddle(TPrintout* printOut);
+    virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
 
 private:
     DataFormatUtilities* dataFormatUtilities;

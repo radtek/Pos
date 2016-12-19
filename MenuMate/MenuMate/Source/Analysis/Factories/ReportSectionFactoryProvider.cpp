@@ -1,6 +1,7 @@
 #include "ReportSectionFactoryProvider.h"
 #include "ZedReportSectionFactory.h"
 #include "XReportSectionFactory.h"
+#include "ConsolidatedZedReportSectionFactory.h"
 
 
 ReportSectionFactoryProvider::ReportSectionFactoryProvider()
@@ -30,14 +31,14 @@ IReportSectionFactory* ReportSectionFactoryProvider::CreateReportSectionFactory(
 	return reportSectionFactory;
 }
 
-IReportSectionFactory* ReportSectionFactoryProvider::CreateReportSectionFactory(ReportType reportType, Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+IReportSectionFactory* ReportSectionFactoryProvider::CreateReportSectionFactoryForConsolidatedZed(ReportType reportType, Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 {
 	IReportSectionFactory* reportSectionFactory;
 
 	switch (reportType)
 	{
         case mmConsolidatedZReport:
-            reportSectionFactory = new ZedReportSectionFactory(dbTransaction, globalSettings);
+            reportSectionFactory = new ConsolidatedZedReportSectionFactory(dbTransaction, globalSettings, startTime, endTime);
             break;
         default:
             reportSectionFactory = NULL;
