@@ -26,40 +26,21 @@ TWeightStreamStdTypeA* TWeightStreamStdTypeA::Create(unsigned char *Buffer, int 
 
 void TWeightStreamStdTypeA::GetWeight(TWeight &Weight)
 {
-    /*Stream->Position = 0;
-    UnicodeString UnformattedWeightStr = "";
-    StreamRead(Stream.get(), UnformattedWeightStr);
-    UnicodeString WeightStr = UnformattedWeightStr.SubString(UnformattedWeightStr.Pos(".")-3,7);
-    double dblWeight = StrToFloatDef(WeightStr.Trim(), -1);
-    if (dblWeight == -1)
-    {
-        if(TDeviceRealTerminal::Instance().Scales->Counter <= 2)
-        {
-            TDeviceRealTerminal::Instance().Scales->Counter++;
-        }
-        else if(TDeviceRealTerminal::Instance().Scales->Counter >= 3)
-        {
-            TDeviceRealTerminal::Instance().Scales->Counter = 0;
-            Weight.SetWeight_Invalid(dblWeight);
-        }
-
-    }
-    else
-    {
-        TDeviceRealTerminal::Instance().Scales->Counter = 0;
-        RecentWeightsList.insert(RecentWeightsList.begin(), dblWeight);
-        if (RecentWeightsList.size() > 3)
-        {
-            RecentWeightsList.pop_back();
-        }
-        Weight.SetWeightIn_Kg(dblWeight);
-    }*/
-
-
     Stream->Position = 0;
     UnicodeString UnformattedWeightStr = "";
     StreamRead(Stream.get(), UnformattedWeightStr);
-    UnicodeString WeightStr = GetFormattedString(UnformattedWeightStr);
+
+
+    TStringList* logList = new TStringList();
+    if(FileExists(ExtractFilePath(Application->ExeName)+ "WeightLog.txt"))
+    {
+        logList->LoadFromFile(ExtractFilePath(Application->ExeName)+ "WeightLog.txt");
+    }
+    logList->Add(UnformattedWeightStr);
+    logList->SaveToFile(ExtractFilePath(Application->ExeName)+ "WeightLog.txt");
+    delete logList;
+
+    UnicodeString WeightStr = UnformattedWeightStr.SubString(UnformattedWeightStr.Pos("\r")+1,7);
     double dblWeight = StrToFloatDef(WeightStr.Trim(), -1);
     if (dblWeight == -1)
     {
@@ -96,19 +77,28 @@ void TWeightStreamStdTypeA::GetStable(bool &Stable)
 
 UnicodeString TWeightStreamStdTypeA::GetFormattedString(UnicodeString unFormattedString)
 {
+   TStringList* logList = new TStringList();
+   if(FileExists(ExtractFilePath(Application->ExeName)+ "WeightLog.txt"))
+    {
+        logList->LoadFromFile(ExtractFilePath(Application->ExeName)+ "WeightLog.txt");
+    }
+   logList->Add(unFormattedString);
+   logList->SaveToFile(ExtractFilePath(Application->ExeName)+ "WeightLog.txt");
+   delete logList;
+
    UnicodeString orgString = unFormattedString;
    UnicodeString WeightStr = "-1";
-   char* charArray = orgString.t_str();
+   //char* charArray = orgString.t_str();
    int pos = unFormattedString.Pos("\r");
-   for(int i = 0; i < unFormattedString.Length() ; i++)
+   /*for(int i = 0; i < unFormattedString.Length() ; i++)
    {
       if(charArray[i] == '\r')
       {
         pos = i;
         break;
       }
-   }
-   if(pos + 1 != unFormattedString.Length())
-      WeightStr = unFormattedString.SubString(pos + 1, 7);
+   }*/
+   if(pos + 3 != unFormattedString.Length())
+      WeightStr = unFormattedString.SubString(pos + 3, 7);
    return WeightStr;
 }
