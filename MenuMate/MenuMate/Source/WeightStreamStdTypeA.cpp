@@ -26,7 +26,7 @@ TWeightStreamStdTypeA* TWeightStreamStdTypeA::Create(unsigned char *Buffer, int 
 
 void TWeightStreamStdTypeA::GetWeight(TWeight &Weight)
 {
-    Stream->Position = 0;
+    /*Stream->Position = 0;
     UnicodeString UnformattedWeightStr = "";
     StreamRead(Stream.get(), UnformattedWeightStr);
     UnicodeString WeightStr = UnformattedWeightStr.SubString(UnformattedWeightStr.Pos(".")-3,7);
@@ -53,6 +53,26 @@ void TWeightStreamStdTypeA::GetWeight(TWeight &Weight)
             RecentWeightsList.pop_back();
         }
         Weight.SetWeightIn_Kg(dblWeight);
+    }*/
+
+
+    Stream->Position = 0;
+    UnicodeString UnformattedWeightStr = "";
+    StreamRead(Stream.get(), UnformattedWeightStr);
+    UnicodeString WeightStr = GetFormattedString(UnformattedWeightStr);
+    double dblWeight = StrToFloatDef(WeightStr.Trim(), -1);
+    if (dblWeight == -1)
+    {
+		Weight.SetWeight_Invalid(dblWeight);
+    }
+    else
+    {
+        RecentWeightsList.insert(RecentWeightsList.begin(), dblWeight);
+        if (RecentWeightsList.size() > 3)
+        {
+            RecentWeightsList.pop_back();
+        }
+        Weight.SetWeightIn_Kg(dblWeight);
     }
 }
 
@@ -72,4 +92,23 @@ void TWeightStreamStdTypeA::GetStable(bool &Stable)
         }
         Stable = AllMatch;
     }
+}
+
+UnicodeString TWeightStreamStdTypeA::GetFormattedString(UnicodeString unFormattedString)
+{
+   UnicodeString orgString = unFormattedString;
+   UnicodeString WeightStr = "-1";
+   char* charArray = orgString.t_str();
+   int pos = unFormattedString.Pos("\r");
+   for(int i = 0; i < unFormattedString.Length() ; i++)
+   {
+      if(charArray[i] == '\r')
+      {
+        pos = i;
+        break;
+      }
+   }
+   if(pos + 1 != unFormattedString.Length())
+      WeightStr = unFormattedString.SubString(pos + 1, 7);
+   return WeightStr;
 }
