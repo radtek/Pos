@@ -233,7 +233,7 @@ bool TXeroInvoiceBuilder::CreateXeroInvoice(TXeroInvoiceDetail& XeroInvoiceDetai
      {
         invoiceTotal += (it->UnitAmount + it->TaxAmount);
         invoiceTotal = RoundTo(invoiceTotal, -4);
-        if(invoiceTotal == 0.01 || invoiceTotal == -0.01)
+        if(CheckInvoiceTotal(invoiceTotal))
         {
            invoiceTotal += roundAmount;
            AddItemToXeroInvoice(FXeroInvoice,*it, true);
@@ -395,14 +395,61 @@ void TXeroInvoiceBuilder::CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDet
           {
              double unitamount = it->UnitAmount;
              unitamount = RoundTo(unitamount, -4);
-             if(unitamount == 0.01 || unitamount == -0.01)
+
+             if(RoundTo(fabs((it->UnitAmount)), -2) > 0.01)
              {
-                roundAmount = unitamount;
-                XeroInvoiceDetail.XeroCategoryDetails.erase(it);
                 break;
+             }
+
+             if(unitamount < 0)
+             {
+                if((unitamount <= -0.0000 && unitamount > -0.0200))
+                {
+                    roundAmount = it->UnitAmount;
+                    XeroInvoiceDetail.XeroCategoryDetails.erase(it);
+                    break;
+                }
+
+             }
+             else
+             {
+                if(unitamount >= 0.0000 && unitamount < 0.0200)
+                {
+                    roundAmount = it->UnitAmount;
+                    XeroInvoiceDetail.XeroCategoryDetails.erase(it);
+                    break;
+                }
+
              }
           }
      }
+}
+
+bool TXeroInvoiceBuilder::CheckInvoiceTotal(double invoiceTotal)
+{
+    bool retVal = false;
+    double amount = invoiceTotal;
+    amount = RoundTo(amount, -4);
+
+    if(roundAmount != 0.00)
+    {
+         if(amount < 0)
+         {
+
+            if((amount <= -0.0000 && amount > -0.0200))
+            {
+                retVal = true;
+            }
+         }
+         else
+         {
+            if(amount >= 0.0000 && amount < 0.0200)
+            {
+                retVal = true;
+            }
+         }
+     }
+   return retVal;
 }
 
 

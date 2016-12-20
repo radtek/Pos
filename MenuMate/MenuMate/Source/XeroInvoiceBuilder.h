@@ -73,6 +73,7 @@ class TXeroInvoiceBuilder
         std::vector<NodeItem> NodeItems;
         void CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDetail);
         double roundAmount;
+        bool CheckInvoiceTotal(double invoiceTotal);
 
 //        std::vector<TItemComplete *> itemCompleteModified;
 
