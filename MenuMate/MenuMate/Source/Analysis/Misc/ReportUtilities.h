@@ -197,6 +197,7 @@ public:
     void DataCalculationUtilities::PrinterFormatinThreeSections(TPrintout* printOut);
     int CalculateLastDayOfMonth(int month);
     TDateTime CalculateSessionTransactionDate(TDateTime trans_date);
+    Currency GetAccumulatedZedTotal(Database::TDBTransaction &dbTransaction, TDateTime &startTime, TDateTime &endTime, UnicodeString deviceName);
 };
 
 struct TPointTransaction

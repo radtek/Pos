@@ -125,11 +125,11 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut, TDate
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     const Currency todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
 
-    const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
+    const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction, *startTime, *endTime, deviceName);
 	const Currency closingBalance = openingBalance + todaysEarnings;
 
-	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
-	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
+	AnsiString startInvoiceNumber = GetStartInvoiceNumber(*startTime, *endTime);   // Todo FormatReceiptNo
+	AnsiString endInvoiceNumber = GetEndInvoiceNumber(*startTime, *endTime);       // Todo FormatReceiptNo
     FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
 
     if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
@@ -213,9 +213,9 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut, TDate
         printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(endInvoiceNumber);
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Z Reading No:";
-        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(_globalSettings->ZCount);
-        printOut->PrintFormat->AddLine();
+        //printOut->PrintFormat->Line->Columns[0]->Text = "Z Reading No:";
+        //printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(_globalSettings->ZCount);
+        //printOut->PrintFormat->AddLine();
 
     }
 
@@ -328,4 +328,71 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
     }
 	return lastEndInvoiceNum;
 }
+
+AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber(TDateTime &startTime, TDateTime &endTime)
+{
+	AnsiString beginInvoiceNum = 0;
+
+	TIBSQL *qrStartInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
+	qrStartInvoiceNumber->SQL->Text = "SELECT "
+                                        "DAB.INVOICE_NUMBER "
+                                        "FROM ARCBILL DAB "
+                                        "LEFT JOIN ARCHIVE DA on DAB.ARCBILL_KEY = DA.ARCBILL_KEY "
+                                        "LEFT JOIN ARCORDERDISCOUNTS DAOD on DA.ARCHIVE_KEY = DAOD.ARCHIVE_KEY "
+                                        "WHERE(COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
+                                        "and DAB.TIME_STAMP >= :startTime  and DAB.TIME_STAMP <=:endTime  "
+                                        "GROUP BY DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
+                                        "ORDER BY DAB.ARCBILL_KEY ";
+
+    qrStartInvoiceNumber->ParamByName("startTime")->AsDateTime = startTime;
+    qrStartInvoiceNumber->ParamByName("endTime")->AsDateTime = endTime;
+	qrStartInvoiceNumber->ExecQuery();
+
+	if(!qrStartInvoiceNumber->Eof)
+	{
+		beginInvoiceNum = qrStartInvoiceNumber->Fields[0]->AsString;
+	}
+	else
+	{
+		beginInvoiceNum = GetLastEndInvoiceNumber();
+	}
+
+	return beginInvoiceNum;
+}
+
+AnsiString XAccumulatedTotalDetailsReportSection::GetEndInvoiceNumber(TDateTime &startTime, TDateTime &endTime)
+{
+	AnsiString endInvoiceNum = 0;
+
+	TIBSQL *qrEndInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
+    qrEndInvoiceNumber->SQL->Text = "SELECT "
+                                    "DAB.INVOICE_NUMBER "
+                                    "FROM ARCBILL DAB "
+                                    "LEFT JOIN ARCHIVE DA on DAB.ARCBILL_KEY = DA.ARCBILL_KEY "
+                                    "LEFT JOIN ARCORDERDISCOUNTS DAOD on DA.ARCHIVE_KEY = DAOD.ARCHIVE_KEY "
+                                    "WHERE(COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
+                                    "and DAB.TIME_STAMP >= :startTime  and DAB.TIME_STAMP <=:endTime  "
+                                    "GROUP BY DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
+                                    "ORDER BY DAB.ARCBILL_KEY ";
+
+    qrEndInvoiceNumber->ParamByName("startTime")->AsDateTime = startTime;
+    qrEndInvoiceNumber->ParamByName("endTime")->AsDateTime = endTime;
+
+	qrEndInvoiceNumber->ExecQuery();
+
+	if(!qrEndInvoiceNumber->Eof)
+	{
+		for(; !qrEndInvoiceNumber->Eof; qrEndInvoiceNumber->Next())
+		{
+			endInvoiceNum = qrEndInvoiceNumber->Fields[0]->AsString;
+		}
+	}
+	else
+	{
+		endInvoiceNum = GetLastEndInvoiceNumber();
+	}
+
+	return endInvoiceNum;
+}
+
 

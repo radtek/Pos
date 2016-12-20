@@ -32,8 +32,11 @@ public:
     Currency GetServiceCharge(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime);
     Currency GetLocalTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime);
     Currency GetProfitTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime);
-    Currency GetDiscountsAndSurcharges(Database::TDBTransaction &DBTransaction, TDateTime startTime, TDateTime endTime);
+    Currency GetDiscountsAndSurcharges(Database::TDBTransaction &DBTransaction, TDateTime &startTime, TDateTime &endTime);
     Currency GetServiceChargeTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime);
+    Currency GetZeroRatedSales(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime);
+    Currency GetTotalDiscountValue(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime);
+    Currency GetTaxExemptSales(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime);
 
 private:
     void GetBilledSalesDetail(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName);

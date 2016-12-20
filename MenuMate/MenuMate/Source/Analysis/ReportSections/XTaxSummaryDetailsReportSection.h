@@ -40,6 +40,7 @@ private:
     ReportFinancialCalculations* reportCalculations;
 
     TMembership* _memberShip;
+    void GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime);
 };
 
 

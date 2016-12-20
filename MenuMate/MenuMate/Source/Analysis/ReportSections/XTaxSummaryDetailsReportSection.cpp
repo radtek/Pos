@@ -190,12 +190,12 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* 
     Currency serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName, *startTime, *endTime);
     Currency localTax = reportCalculations->GetLocalTax(*_dbTransaction, deviceName, *startTime, *endTime);
     Currency profitTax = reportCalculations->GetProfitTax(*_dbTransaction, deviceName, *startTime, *endTime);
-    Currency discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction);
-    Currency zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
-    Currency totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName);
+    Currency discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction, *startTime, *endTime);
+    Currency zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName, *startTime, *endTime);
+    Currency totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName, *startTime, *endTime);
 
 
-    taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
+    taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName, *startTime, *endTime), 0.01, _globalSettings->MidPointRoundsDown);
 
     if(_globalSettings->ReCalculateTaxPostDiscount)
     {
@@ -222,7 +222,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* 
     if(_globalSettings->UseBIRFormatInXZReport)
     {
         sales_tax.clear();
-        GetDifferentTotalSalesTax(*_dbTransaction, deviceName);
+        GetDifferentTotalSalesTax(*_dbTransaction, deviceName, *startTime, *endTime);
         dataCalculationUtilities->PrinterFormatinTwoSections(printOut); //SetPrinterFormatToMiddle(printOut);
 
         printOut->PrintFormat->Line->Columns[0]->Text = "";
@@ -308,7 +308,6 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* 
         printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
         printOut->PrintFormat->Line->FontInfo.Reset();
 
-
         printOut->PrintFormat->Line->Columns[0]->Text = "Sales Tax Total:";
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
         printOut->PrintFormat->AddLine();
@@ -359,6 +358,46 @@ void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTra
        salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
     }
 
+    salesTaxQuery->ExecQuery();
+    while(!salesTaxQuery->Eof)
+    {
+        TSalesTax sales;
+        sales.Rate = salesTaxQuery->FieldByName("RATE")->AsDouble;
+        sales.TaxSum = salesTaxQuery->FieldByName("TAXSUM")->AsCurrency;
+        sales_tax.push_back(sales);
+        salesTaxQuery->Next();
+    }
+    salesTaxQuery->Close();
+}
+
+void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    TIBSQL *salesTaxQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "AND DAB.TERMINAL_NAME = :Terminal_Name ";
+    }
+
+
+    salesTaxQuery->SQL->Text = "SELECT "
+                                    "SUM(TAX_VALUE) AS TAXSUM, DTax.RATE "
+                                "FROM ARCORDERTAXES DAOT "
+                                "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                                "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
+                                "INNER JOIN TAXPROFILES DTax on DTax.TYPE = DAOT.TAX_TYPE "
+                                "WHERE TAX_TYPE = '0' " + terminalNamePredicate + " and DAOT.TAX_NAME = DTax.NAME "
+                                "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP < :endTime "
+                                "group by "
+                                "DTax.RATE, "
+                                "DAOT.TAX_TYPE ";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+       salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    salesTaxQuery->ParamByName("StartTime")->AsDateTime = startTime;
+    salesTaxQuery->ParamByName("EndTime")->AsDateTime = endTime;
     salesTaxQuery->ExecQuery();
     while(!salesTaxQuery->Eof)
     {

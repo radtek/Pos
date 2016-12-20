@@ -27,6 +27,8 @@ private:
     DataFormatUtilities* dataFormatUtilities;
     DataCalculationUtilities* dataCalculationUtilities;
     AnsiString ExtractInvoiceNumber(AnsiString &inStartInvoiceNumber);
+    AnsiString GetEndInvoiceNumber(TDateTime &startTime, TDateTime &endTime);
+    AnsiString GetStartInvoiceNumber(TDateTime &startTime, TDateTime &endTime);
 };
 
 #endif

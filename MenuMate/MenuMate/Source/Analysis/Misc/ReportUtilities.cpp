@@ -868,5 +868,39 @@ void TTransactionInfoProcessor::ConsolidatedZedTransaction(TIBSQL *qrXArcBill, b
      }
 }
 
+Currency DataCalculationUtilities::GetAccumulatedZedTotal(Database::TDBTransaction &dbTransaction, TDateTime &startTime, TDateTime &endTime, UnicodeString deviceName)
+{
+	TIBSQL *qrAccumulatedTotal = dbTransaction.Query(dbTransaction.AddQuery());
+    Currency accumulatedTotal;
+    AnsiString terminalNamePredicate = "";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
+	qrAccumulatedTotal->SQL->Text = "SELECT SUM(TERMINAL_EARNINGS) AS TOTAL FROM ZEDS  a where a.TIME_STAMP >=:startTime  and a.TIME_STAMP <= :endTime " + terminalNamePredicate ;
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        qrAccumulatedTotal->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+    }
+    qrAccumulatedTotal->ParamByName("StartTime")->AsDateTime = startTime;
+    qrAccumulatedTotal->ParamByName("EndTime")->AsDateTime = endTime;
+	qrAccumulatedTotal->ExecQuery();
+
+	if(qrAccumulatedTotal->FieldByName("TOTAL")->IsNull)
+    {
+		accumulatedTotal = 0;
+	}
+    else
+    {
+		accumulatedTotal = qrAccumulatedTotal->FieldByName("TOTAL")->AsCurrency;
+	}
+	qrAccumulatedTotal->Close();
+
+	return accumulatedTotal;
+}
+
 
 

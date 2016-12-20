@@ -76,7 +76,7 @@ Currency ReportFinancialCalculations::GetTotalSalesTax(Database::TDBTransaction 
                                 "FROM ARCORDERTAXES DAOT "
                                 "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                                 "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                                "WHERE TAX_TYPE = '0' and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
+                                "WHERE TAX_TYPE = '0' and DAB.TIME_STAMP >= :StartTime and DAB.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
 
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
@@ -196,7 +196,7 @@ Currency ReportFinancialCalculations::GetServiceCharge(Database::TDBTransaction 
                     "FROM ARCORDERTAXES DAOT "
                     "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                     "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                    "WHERE TAX_TYPE = '2' and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
+                    "WHERE TAX_TYPE = '2' and DAB.TIME_STAMP >= :StartTime and DAB.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
 
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
@@ -260,7 +260,7 @@ Currency ReportFinancialCalculations::GetServiceChargeTax(Database::TDBTransacti
                                 "FROM ARCORDERTAXES DAOT "
                                 "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                                 "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                                "WHERE TAX_TYPE = '3' and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
+                                "WHERE TAX_TYPE = '3' and DAB.TIME_STAMP >= :StartTime and DAB.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
 
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
@@ -290,7 +290,7 @@ Currency ReportFinancialCalculations::GetLocalTax(Database::TDBTransaction &DBTr
                                 "FROM ARCORDERTAXES DAOT "
                                 "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
                                 "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                                "WHERE TAX_TYPE = '4' and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
+                                "WHERE TAX_TYPE = '4' and DAB.TIME_STAMP >= :StartTime and DAB.TIME_STAMP <= :EndTime " + terminalNamePredicate ;
 
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
@@ -1149,7 +1149,7 @@ Currency ReportFinancialCalculations::GetProfitTax(Database::TDBTransaction &DBT
     return localtax;
 }
 
-Currency ReportFinancialCalculations::GetDiscountsAndSurcharges(Database::TDBTransaction &DBTransaction, TDateTime startTime, TDateTime endTime)
+Currency ReportFinancialCalculations::GetDiscountsAndSurcharges(Database::TDBTransaction &DBTransaction, TDateTime &startTime, TDateTime &endTime)
 {
 	Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
 	TIBSQL *qr = tr.Query(tr.AddQuery());
@@ -1174,6 +1174,195 @@ Currency ReportFinancialCalculations::GetDiscountsAndSurcharges(Database::TDBTra
 	qr->Close();
 
 	return discountsandsurcharges;
+}
+
+Currency ReportFinancialCalculations::GetZeroRatedSales(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    Currency zeroratedsalesvalue;
+	try
+	{
+        Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+        TIBSQL *zeroratedsales = tr.Query(tr.AddQuery());
+        TIBSQL *qr1 = tr.Query(tr.AddQuery());
+        Currency servicecharge = 0;
+
+        AnsiString terminalNamePredicate = "";
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            terminalNamePredicate = " DA.TERMINAL_NAME = :TERMINAL_NAME And ";
+        }
+
+
+        zeroratedsales->SQL->Text =
+                        "SELECT SUM(cast(coalesce(DA.BASE_PRICE,0)* abs(da.QTY) + DA.DISCOUNT_WITHOUT_TAX + coalesce(AOT.TAX_VALUE,0) as numeric(17,4))) PRICE , Da.ARCHIVE_KEY  "
+                        "FROM ARCHIVE DA "
+                        "LEFT JOIN (SELECT  a.ARCHIVE_KEY, "
+                        "Cast(Sum(coalesce(a.TAX_VALUE,0) ) as Numeric(17,4)) TAX_VALUE "
+                        "FROM ARCORDERTAXES a group by  a.ARCHIVE_KEY order by 1 ) "
+                        "AOT ON  AOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                        " WHERE " + terminalNamePredicate + " DA.DISCOUNT_REASON <> '' AND DA.DISCOUNT = 0 AND DA.ARCHIVE_KEY "
+                        "IN ( SELECT ARCHIVE_KEY  FROM ARCORDERTAXES "
+                        "WHERE (TAX_TYPE = 0  and TAX_VALUE = 0 ) AND "
+                        "ARCORDERTAXES.ARCHIVE_KEY NOT IN (SELECT a.ARCHIVE_KEY FROM ARCORDERDISCOUNTS a WHERE (A.DISCOUNT_GROUPNAME = 'Senior Citizen' AND A.DISCOUNTED_VALUE <> 0) OR (A.DISCOUNT_GROUPNAME = 'Person with Disability'))) "
+                        " and da.TIME_STAMP >= :startTime  and da.TIME_STAMP < :endTime  "
+                        "group by "
+                        "Da.ARCHIVE_KEY ";
+
+        tr.StartTransaction();
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            zeroratedsales->ParamByName("Terminal_Name")->AsString = deviceName;
+        }
+        zeroratedsales->ParamByName("StartTime")->AsDateTime = startTime;
+        zeroratedsales->ParamByName("EndTime")->AsDateTime = endTime;
+        zeroratedsales->ExecQuery();
+
+        while(!zeroratedsales->Eof)
+        {
+
+            zeroratedsalesvalue += zeroratedsales->FieldByName("PRICE")->AsCurrency;
+            qr1->Close();
+            // Get the ARCHIVE key for all tax exempt items
+            qr1->SQL->Text = "SELECT TAX_VALUE "
+                             "FROM ARCORDERTAXES "
+                             "WHERE TAX_TYPE IN ('2','4') AND ARCHIVE_KEY=:ARCKEY ";
+
+            qr1->ParamByName("ARCKEY")->AsInteger = zeroratedsales->FieldByName("ARCHIVE_KEY")->AsInteger;
+            qr1->ExecQuery();
+            while(!qr1->Eof)
+            {
+                servicecharge += qr1->FieldByName("TAX_VALUE")->AsCurrency;
+                qr1->Next();
+            }
+            zeroratedsales->Next();
+        }        //
+        zeroratedsales->Close();
+        qr1->Close();
+        tr.Commit();
+         if(zeroratedsalesvalue != 0) {
+            zeroratedsalesvalue = zeroratedsalesvalue - servicecharge;
+        }
+    }
+	catch(Exception & E)
+	{
+
+		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+		throw;
+	}
+	return zeroratedsalesvalue;
+}
+
+Currency ReportFinancialCalculations::GetTotalDiscountValue(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    Currency totaldiscount;
+	try
+	{
+        Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+        TIBSQL *getTotalDiscount = tr.Query(tr.AddQuery());
+
+        AnsiString terminalNamePredicate = "";
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            terminalNamePredicate = "And ARCBILL.TERMINAL_NAME = :TERMINAL_NAME ";
+        }
+
+        getTotalDiscount->SQL->Text =
+                        "select SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT "
+			"from " "ARCBILL LEFT JOIN SECURITY ON ARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
+			"LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
+			"LEFT JOIN ARCHIVE ON ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
+			"LEFT JOIN ARCORDERDISCOUNTS ON ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
+			"where "
+			"ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' "
+			+ terminalNamePredicate + " And ARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
+			(SecurityTypes[secDiscountedBy]) + "' and ARCBILL.TIME_STAMP >= :startTime  and ARCBILL.TIME_STAMP < :endTime  " ;
+
+        tr.StartTransaction();
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            getTotalDiscount->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        }
+        getTotalDiscount->ParamByName("StartTime")->AsDateTime = startTime;
+        getTotalDiscount->ParamByName("EndTime")->AsDateTime = endTime;
+        getTotalDiscount->ExecQuery();
+        totaldiscount = getTotalDiscount->FieldByName("DISCOUNT")->AsCurrency;
+        tr.Commit();
+        getTotalDiscount->Close();
+    }
+	catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+		throw;
+	}
+	return totaldiscount;
+}
+
+Currency ReportFinancialCalculations::GetTaxExemptSales(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+
+	Currency TaxExemptTotal;
+	Currency calctaxexempt;
+	Currency servicecharge;
+    Currency quantity;
+
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = " And DA.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+
+
+    TIBSQL *qr = DBTransaction.Query(DBTransaction.AddQuery());
+    TIBSQL *qr1 = DBTransaction.Query(DBTransaction.AddQuery());
+
+    qr->SQL->Text = "SELECT DA.ARCHIVE_KEY, DA.PRICE, DA.QTY "
+                    "FROM ARCHIVE DA "
+                    "LEFT JOIN ARCORDERTAXES DAOT ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                    "WHERE DA.ARCHIVE_KEY NOT IN ( "
+                        "SELECT ARCHIVE_KEY "
+                        "FROM ARCORDERTAXES "
+                        "WHERE (TAX_TYPE = 0 OR TAX_TYPE = 5) and TAX_VALUE <>0 "
+                    ") "
+                    + terminalNamePredicate +
+                    " and DA.TIME_STAMP >=:startTime  and DA.TIME_STAMP < :endTime "
+                    "GROUP BY 1,2,3 ";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        qr->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+    }
+    qr->ParamByName("StartTime")->AsDateTime = startTime;
+    qr->ParamByName("EndTime")->AsDateTime = endTime;
+	qr->ExecQuery();
+
+    while(!qr->Eof)
+    {
+        calctaxexempt = qr->FieldByName("PRICE")->AsCurrency;
+        quantity = qr->FieldByName("QTY")->AsCurrency;
+        TaxExemptTotal += calctaxexempt * quantity;
+
+        // Get the ARCHIVE key for all tax exempt items
+        qr1->SQL->Text = "SELECT TAX_VALUE "
+                         "FROM ARCORDERTAXES "
+                         "WHERE TAX_TYPE IN ('2','4') AND ARCHIVE_KEY=:ARCKEY ";
+
+        qr1->ParamByName("ARCKEY")->AsInteger = qr->FieldByName("ARCHIVE_KEY")->AsInteger;
+        qr1->ExecQuery();
+        while(!qr1->Eof)
+        {
+            servicecharge += qr1->FieldByName("TAX_VALUE")->AsCurrency;
+            qr1->Next();
+        }
+        qr1->Close();
+        qr->Next();
+    }
+
+	qr->Close();
+
+    if(TaxExemptTotal != 0) {
+        TaxExemptTotal = TaxExemptTotal - servicecharge;
+    }
+
+    return TaxExemptTotal;
 }
 
 
