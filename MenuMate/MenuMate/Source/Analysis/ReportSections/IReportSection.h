@@ -24,7 +24,7 @@ public:
     virtual TDateTime* GetEndTime() = 0;
     virtual void SetStartTime(TDateTime* startTime) = 0;
     virtual void SetEndTime(TDateTime* endTime) = 0;
-    virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime) = 0;
+    //virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime) = 0;
 };
 
 #endif

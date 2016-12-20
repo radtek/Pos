@@ -228,8 +228,6 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
  TTransactionInfo TTransactionInfoProcessor::GetTransactionInfo(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, bool showendingbal)
 {
-    //ReportType _reportType;
-
     if(!deviceTransactions[deviceName])                                             // checks if the object is already present for the given terminal
     {
         deviceTransactions[deviceName] = new TTransactionInfo;
@@ -270,16 +268,33 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
         qrXArcBill->Close();
 
-        if(_reportType == mmConsolidatedZReport)
+        AnsiString terminalNamePredicate = "";
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
         {
-           ConsolidatedZedTransaction(qrXArcBill, showendingbal);
-           qrXArcBill->ParamByName("StartTime")->AsDateTime = StartTime;
-           qrXArcBill->ParamByName("EndTime")->AsDateTime = EndTime;
+            terminalNamePredicate = " a.TERMINAL_NAME = :TERMINAL_NAME AND";
+        }
+
+        /*if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
+        {
+            qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
+                                " from DAYARCBILL a "
+                                " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 or a.DISCOUNT !=0 "
+                                " group by 1,2,3,4,5,6,7,8,9,10 ";
         }
         else
         {
-           NormalZedTransaction(qrXArcBill, showendingbal);
-        }
+
+         qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
+                                " from DAYARCBILL a "
+                                " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable')"
+                                " group by 1,2,3,4,5,6,7,8,9,10 ";
+         }*/
+        NormalZedTransaction(qrXArcBill, showendingbal);
 
         if(!TGlobalSettings::Instance().EnableDepositBagNum)
         {
@@ -357,25 +372,18 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
            // before = Now();    //arun
             qrXArcPay->Close();
-            if(_reportType == mmConsolidatedZReport)
-            {
-                qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                                        "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from ARCBILLPAY "
-                                        "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
-            }
-            else
-            {
-                qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                                        "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
-                                        "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
+            GetArcPayForNormalZed(qrXArcPay);
+            /*qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+                                    "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
+                                    "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";*/
             //}
-            }
             qrXArcPay->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
             qrXArcPay->ExecQuery();
 
             bool loop = true;
+            LoadArcPayTransaction(TransactionInfo, qrXArcPay, loop, qrXArcBill,pointTransaction, countedInvoiceNumbers, currentInvoiceKey);
 
-            for (; !qrXArcPay->Eof; qrXArcPay->Next())
+            /*for (; !qrXArcPay->Eof; qrXArcPay->Next())
             {
                 TSumPayments CurrentPayment;
                 int groupNumber = qrXArcPay->FieldByName("GROUP_NUMBER")->AsInteger;
@@ -487,7 +495,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                         }
                     }
                 }
-            }
+            }*/
 
 
 
@@ -521,23 +529,13 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                            if (adjustType == 3 && adjustSubtype == 1)
                              {
                                 qXArcPoints1->Close();
-                                if(_reportType == mmConsolidatedZReport)
-                                {
-                                    qXArcPoints1->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                                                               "GROUP_NUMBER, PROPERTIES,ROUNDING from ARCBILLPAY "
-                                                                "where ARCBILL_KEY = :ARCBILL_KEY and PAY_TYPE='Points'";
-                                }
-                                else
-                                {
-                                    qXArcPoints1->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                                                               "GROUP_NUMBER, PROPERTIES,ROUNDING from DAYARCBILLPAY "
-                                                                "where ARCBILL_KEY = :ARCBILL_KEY and PAY_TYPE='Points'";
 
-                                }
+                                GetArcPointsForNormalZed(qXArcPoints1);
+
                                 qXArcPoints1->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
                                 qXArcPoints1->ExecQuery();
 
-                                for (; !qXArcPoints1->Eof; qXArcPoints1->Next())
+                                /*for (; !qXArcPoints1->Eof; qXArcPoints1->Next())
                                 {
                                     TSumPayments CurrentPayment;
                                     int GroupNumber = qXArcPoints1->FieldByName("GROUP_NUMBER")->AsInteger;
@@ -574,29 +572,23 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
                                     PaymentValues[CurrentPayment.Name] = CurrentPayment;
                                     TransactionInfo->Payments[GroupNumber] = PaymentValues;
-                                }
+                                }*/
                         }
                     }
                 }
            }
 
             qXArcSurcharge->Close();
-            if(_reportType == mmConsolidatedZReport)
-            {
-                qXArcSurcharge->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, PAY_TYPE_DETAILS, SUBTOTAL ,NOTE, TAX_FREE,PROPERTIES,"
-                                            "GROUP_NUMBER,ROUNDING from ARCSURCHARGE "
-                                            "where ARCBILL_KEY = :ARCBILL_KEY";
-            }
-            else
-            {
-                qXArcSurcharge->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, PAY_TYPE_DETAILS, SUBTOTAL ,NOTE, TAX_FREE,PROPERTIES,"
-                                            "GROUP_NUMBER,ROUNDING from DAYARCSURCHARGE "
-                                            "where ARCBILL_KEY = :ARCBILL_KEY";
-            }
+            /*qXArcSurcharge->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, PAY_TYPE_DETAILS, SUBTOTAL ,NOTE, TAX_FREE,PROPERTIES,"
+                                        "GROUP_NUMBER,ROUNDING from DAYARCSURCHARGE "
+                                        "where ARCBILL_KEY = :ARCBILL_KEY";*/
+            GetArcSurchargeForNormalZed(qXArcSurcharge);
             qXArcSurcharge->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
             qXArcSurcharge->ExecQuery();
 
-            for (; !qXArcSurcharge->Eof; qXArcSurcharge->Next())
+            LoadArcPointTransaction(qXArcSurcharge, TransactionInfo, countedInvoiceNumbers, currentInvoiceKey);
+
+            /*for (; !qXArcSurcharge->Eof; qXArcSurcharge->Next())
             {
                 TSumPayments CurrentPayment;
 
@@ -629,7 +621,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                         TransactionInfo->TransactionsCountGroups[GroupNumber] = TransactionsCount;
                     }
                 }
-            }
+            }*/
 
             std::map <int, std::map <UnicodeString, TTransactionCount> > ::iterator itTransactionsCountGroups = TransactionInfo->TransactionsCountGroups.begin();
 
@@ -647,6 +639,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                 }
                 itTransactionsCountGroups->second = TransactionsCount;
             }
+
             // MM-1282 : this invoice has been counted, mark it so
             countedInvoiceNumbers.insert(currentInvoiceKey);
 
@@ -836,71 +829,224 @@ void TTransactionInfoProcessor::NormalZedTransaction(TIBSQL *qrXArcBill, bool sh
                             " group by 1,2,3,4,5,6,7,8,9,10 ";
      }
 }
-void TTransactionInfoProcessor::ConsolidatedZedTransaction(TIBSQL *qrXArcBill, bool showendingbal)
+
+
+void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* TransactionInfo, TIBSQL *qrXArcPay, bool loop, TIBSQL *qrXArcBill, std::map<AnsiString,TPointTransactions> pointTransaction, std::set<AnsiString> countedInvoiceNumbers, AnsiString currentInvoiceKey)
 {
-    AnsiString terminalNamePredicate = "";
-
-    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    for (; !qrXArcPay->Eof; qrXArcPay->Next())
     {
-        terminalNamePredicate = " a.TERMINAL_NAME = :TERMINAL_NAME AND";
+        TSumPayments CurrentPayment;
+        int groupNumber = qrXArcPay->FieldByName("GROUP_NUMBER")->AsInteger;
+
+        // Summarise all points type payments.
+        UnicodeString paymentName = "";
+
+        if (qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypePoints)
+        {
+            paymentName = "Points";
+        }
+        else if (qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit && qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency < 0)
+        {
+            paymentName = qrXArcPay->FieldByName("PAY_TYPE")->AsString + " Purchased";
+        }
+        else if (qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit && qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency >= 0)
+        {
+            paymentName = qrXArcPay->FieldByName("PAY_TYPE")->AsString + " Redeemed";
+        }
+        else
+        {
+            paymentName = qrXArcPay->FieldByName("PAY_TYPE")->AsString;
+        }
+
+        std::map <UnicodeString, TSumPayments> PaymentValues = TransactionInfo->Payments[groupNumber];
+        CurrentPayment = PaymentValues[paymentName];
+        CurrentPayment.Name = paymentName;
+        CurrentPayment.Qty++;
+
+        std::map<int, Currency> Points = CurrentPayment.Points;
+        //Removing EnableSeperateEarntPts condition as discussed with ravish
+        if(loop)
+        {
+         AnsiString invoiceNumber = qrXArcBill->FieldByName("INVOICE_NUMBER")->AsString;
+         std::map<AnsiString, TPointTransactions>::iterator iter  = pointTransaction.find(invoiceNumber);
+         if(iter != pointTransaction.end())
+         {
+
+             for (std::vector<TPointTransaction>::iterator ptrPoints = iter->second.PointsTransactions.begin();
+                  ptrPoints != iter->second.PointsTransactions.end(); ptrPoints++)
+                {
+                    int adjustType, adjustSubtype;
+                    int numSubtypes = 2;
+                    adjustType =  ptrPoints->adjustmentType;
+                    adjustSubtype =  ptrPoints->adjustmentSubType;
+                    if (!(adjustType == 3 && adjustSubtype == 1) )
+                    {
+
+                        int pointsAdjustIndex = ((adjustType - 1) * numSubtypes) + adjustSubtype;
+                        Points[pointsAdjustIndex] +=  ptrPoints->adjustment;
+                    }
+                }
+
+          }
+            loop = false;
+        }
+        CurrentPayment.Points = Points;
+
+
+        bool IsCashOut = false;
+        if (qrXArcPay->FieldByName("CASH_OUT")->AsString == "F" || qrXArcPay->FieldByName("CASH_OUT")->AsString == "")
+        {
+            //if(qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency > 0)
+            //{
+               CurrentPayment.Total += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
+            //}
+
+        }
+        else
+        {
+            CurrentPayment.CashOut += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
+            IsCashOut = true;
+        }
+        if(qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency != 0)
+        {
+             CurrentPayment.TipAmount += qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency;
+             CurrentPayment.TipQty++;
+        }
+        CurrentPayment.Rounding -= qrXArcPay->FieldByName("ROUNDING")->AsCurrency;
+        CurrentPayment.Properties = qrXArcPay->FieldByName("PROPERTIES")->AsInteger;
+
+        PaymentValues[CurrentPayment.Name] = CurrentPayment;
+        TransactionInfo->Payments[groupNumber] = PaymentValues;
+
+        // MM-1282 : count this transaction if not already counted
+        if(countedInvoiceNumbers.find(currentInvoiceKey) == countedInvoiceNumbers.end() )
+        {
+            // Count this Transaction.
+            std::map <UnicodeString, TTransactionCount> TransactionsCount = TransactionInfo->TransactionsCountGroups[groupNumber];
+            TTransactionCount ThisTransaction = TransactionsCount[paymentName];
+            if (IsCashOut)
+            {
+                if (ThisTransaction.CashOutCounted == false)
+                {
+                    ThisTransaction.CashOutCount++;
+                    ThisTransaction.CashOutCounted = true;
+                    TransactionsCount[paymentName] = ThisTransaction;
+                    TransactionInfo->TransactionsCountGroups[groupNumber] = TransactionsCount;
+                }
+            }
+            else
+            {
+                if (ThisTransaction.Counted == false)
+                {
+                    ThisTransaction.Count++;
+                    ThisTransaction.Counted = true;
+                    TransactionsCount[paymentName] = ThisTransaction;
+                    TransactionInfo->TransactionsCountGroups[groupNumber] = TransactionsCount;
+                }
+            }
+        }
     }
+}
+void TTransactionInfoProcessor::GetArcPayForNormalZed(TIBSQL *qrXArcPay)
+{
+    qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+            "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
+            "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
 
-    if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
-    {
-        qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
-                            " from ARCBILL a "
-                            " left join ARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-                            " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-                            " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 or a.DISCOUNT !=0 "
-                            " and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime "
-                            " group by 1,2,3,4,5,6,7,8,9,10 ";
-    }
-    else
-    {
-
-     qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
-                            " from ARCBILL a "
-                            " left join ARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-                            " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-                            " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable')"
-                            " and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime "
-                            " group by 1,2,3,4,5,6,7,8,9,10 ";
-     }
 }
 
-Currency DataCalculationUtilities::GetAccumulatedZedTotal(Database::TDBTransaction &dbTransaction, TDateTime &startTime, TDateTime &endTime, UnicodeString deviceName)
+void TTransactionInfoProcessor::GetArcPointsForNormalZed(TIBSQL *qXArcPoints1)
 {
-	TIBSQL *qrAccumulatedTotal = dbTransaction.Query(dbTransaction.AddQuery());
-    Currency accumulatedTotal;
-    AnsiString terminalNamePredicate = "";
-
-    if(!TGlobalSettings::Instance().EnableDepositBagNum)
-    {
-        terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";
-    }
-
-	qrAccumulatedTotal->SQL->Text = "SELECT SUM(TERMINAL_EARNINGS) AS TOTAL FROM ZEDS  a where a.TIME_STAMP >=:startTime  and a.TIME_STAMP <= :endTime " + terminalNamePredicate ;
-
-    if(!TGlobalSettings::Instance().EnableDepositBagNum)
-    {
-        qrAccumulatedTotal->ParamByName("TERMINAL_NAME")->AsString = deviceName;
-    }
-    qrAccumulatedTotal->ParamByName("StartTime")->AsDateTime = startTime;
-    qrAccumulatedTotal->ParamByName("EndTime")->AsDateTime = endTime;
-	qrAccumulatedTotal->ExecQuery();
-
-	if(qrAccumulatedTotal->FieldByName("TOTAL")->IsNull)
-    {
-		accumulatedTotal = 0;
-	}
-    else
-    {
-		accumulatedTotal = qrAccumulatedTotal->FieldByName("TOTAL")->AsCurrency;
-	}
-	qrAccumulatedTotal->Close();
-
-	return accumulatedTotal;
+    qXArcPoints1->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
+       "GROUP_NUMBER, PROPERTIES,ROUNDING from DAYARCBILLPAY "
+        "where ARCBILL_KEY = :ARCBILL_KEY and PAY_TYPE='Points'";
 }
 
+void TTransactionInfoProcessor::LoadArcPointTransaction(TIBSQL *qXArcPoints1, TTransactionInfo* TransactionInfo, TIBSQL *qrXArcPay, std::vector<TPointTransaction>::iterator ptrPoints)
+{
+    for (; !qXArcPoints1->Eof; qXArcPoints1->Next())
+    {
+        TSumPayments CurrentPayment;
+        int GroupNumber = qXArcPoints1->FieldByName("GROUP_NUMBER")->AsInteger;
+        // Summarise all points type payments.
+        UnicodeString paymentName = "";
+        if (qXArcPoints1->FieldByName("PROPERTIES")->AsInteger & ePayTypePoints)
+        {
+            paymentName = "Points";
+        }
+        else if (qXArcPoints1->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit && qXArcPoints1->FieldByName("SUBTOTAL")->AsCurrency < 0)
+        {
+            paymentName = qXArcPoints1->FieldByName("PAY_TYPE")->AsString + " Purchased";
+        }
+        else if (qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit && qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency >= 0)
+        {
+            paymentName = qXArcPoints1->FieldByName("PAY_TYPE")->AsString + " Redeemed";
+        }
+        else
+        {
+            paymentName = qXArcPoints1->FieldByName("PAY_TYPE")->AsString;
+        }
 
+        std::map <UnicodeString, TSumPayments> PaymentValues = TransactionInfo->Payments[GroupNumber];
+        CurrentPayment = PaymentValues[paymentName];
+        CurrentPayment.Name = paymentName;
+        CurrentPayment.Qty++;
+
+        std::map<int, Currency> Points = CurrentPayment.Points;
+        Points[5] = Points[5] + ptrPoints->adjustment;
+        CurrentPayment.Points = Points;
+
+        CurrentPayment.Rounding -= qXArcPoints1->FieldByName("ROUNDING")->AsCurrency;
+        CurrentPayment.Properties = qXArcPoints1->FieldByName("PROPERTIES")->AsInteger;
+
+        PaymentValues[CurrentPayment.Name] = CurrentPayment;
+        TransactionInfo->Payments[GroupNumber] = PaymentValues;
+    }
+}
+
+void TTransactionInfoProcessor::GetArcSurchargeForNormalZed(TIBSQL *qXArcSurcharge)
+{
+    qXArcSurcharge->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, PAY_TYPE_DETAILS, SUBTOTAL ,NOTE, TAX_FREE,PROPERTIES,"
+        "GROUP_NUMBER,ROUNDING from DAYARCSURCHARGE "
+        "where ARCBILL_KEY = :ARCBILL_KEY";
+}
+
+void TTransactionInfoProcessor::LoadArcPointTransaction(TIBSQL *qXArcSurcharge, TTransactionInfo* TransactionInfo, std::set<AnsiString> countedInvoiceNumbers, AnsiString currentInvoiceKey)
+{
+    for (; !qXArcSurcharge->Eof; qXArcSurcharge->Next())
+    {
+        TSumPayments CurrentPayment;
+
+        int GroupNumber = qXArcSurcharge->FieldByName("GROUP_NUMBER")->AsInteger;
+        UnicodeString paymentName = qXArcSurcharge->FieldByName("PAY_TYPE")->AsString;
+        std::map <UnicodeString, TSumPayments> PaymentValues = TransactionInfo->Payments[GroupNumber];
+
+        CurrentPayment = PaymentValues[paymentName];
+        CurrentPayment.Name = paymentName;
+        CurrentPayment.Qty++;
+
+        CurrentPayment.Surcharge += qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency;
+        CurrentPayment.Rounding -= qXArcSurcharge->FieldByName("ROUNDING")->AsCurrency;
+        CurrentPayment.Properties = qXArcSurcharge->FieldByName("PROPERTIES")->AsInteger;
+
+        PaymentValues[CurrentPayment.Name] = CurrentPayment;
+        TransactionInfo->Payments[GroupNumber] = PaymentValues;
+
+        // MM-1282 : count this transaction if not already counted
+        if (countedInvoiceNumbers.find(currentInvoiceKey) == countedInvoiceNumbers.end())
+        {
+            // Count this Transaction.
+            std::map <UnicodeString, TTransactionCount> TransactionsCount = TransactionInfo->TransactionsCountGroups[GroupNumber];
+            TTransactionCount ThisTransaction = TransactionsCount[paymentName];
+            if (ThisTransaction.SurchargeCounted == false)
+            {
+                ThisTransaction.SurchargeCount++;
+                ThisTransaction.SurchargeCounted = true;
+                TransactionsCount[paymentName] = ThisTransaction;
+                TransactionInfo->TransactionsCountGroups[GroupNumber] = TransactionsCount;
+            }
+        }
+    }
+
+}
 

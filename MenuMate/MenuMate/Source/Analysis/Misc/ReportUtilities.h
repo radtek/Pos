@@ -8,6 +8,21 @@
 #include "GlobalSettings.h"
 #include "ReportEnums.h"
 
+struct TPointTransaction
+{
+   public:
+        int   adjustmentType;
+        int  adjustmentSubType;
+        Currency  adjustment;
+        AnsiString  invoiceNo;
+};
+
+struct TPointTransactions
+{
+   public:
+   std::vector<TPointTransaction> PointsTransactions;
+};
+
 const char* const eStrCalculatedTotals[] =
 {
     NULL,
@@ -126,12 +141,13 @@ public:
 
     //We will remove the transaction info object from the map, since we have completed the transaction for the current ZED..
     void RemoveEntryFromMap(UnicodeString deviceName);
-    //bool IsConsolidatedZed;
-    ReportType _reportType;
     void NormalZedTransaction(TIBSQL *qrXArcBill, bool showendingbal);
-    void ConsolidatedZedTransaction(TIBSQL *qrXArcBill, bool showendingbal);
-    TDateTime StartTime;
-    TDateTime EndTime;
+    void LoadArcPayTransaction(TTransactionInfo* TransactionInfo, TIBSQL *qrXArcPay, bool loop, TIBSQL *qrXArcBill, std::map<AnsiString, TPointTransactions> pointTransaction, std::set<AnsiString> countedInvoiceNumbers, AnsiString currentInvoiceKey);
+    void GetArcPayForNormalZed(TIBSQL *qrXArcPay);
+    void GetArcPointsForNormalZed(TIBSQL *qXArcPoints1);
+    void LoadArcPointTransaction(TIBSQL *qXArcPoints1, TTransactionInfo* TransactionInfo, TIBSQL *qrXArcPay, std::vector<TPointTransaction>::iterator ptrPoints);
+    void GetArcSurchargeForNormalZed(TIBSQL *qXArcSurcharge);
+    void LoadArcPointTransaction(TIBSQL *qXArcSurcharge, TTransactionInfo* TransactionInfo, std::set<AnsiString> countedInvoiceNumbers, AnsiString currentInvoiceKey);
 };
 
 class THourlyTotals
@@ -197,22 +213,9 @@ public:
     void DataCalculationUtilities::PrinterFormatinThreeSections(TPrintout* printOut);
     int CalculateLastDayOfMonth(int month);
     TDateTime CalculateSessionTransactionDate(TDateTime trans_date);
-    Currency GetAccumulatedZedTotal(Database::TDBTransaction &dbTransaction, TDateTime &startTime, TDateTime &endTime, UnicodeString deviceName);
 };
 
-struct TPointTransaction
-{
-   public:
-        int   adjustmentType;
-        int  adjustmentSubType;
-        Currency  adjustment;
-        AnsiString  invoiceNo;
-};
 
-struct TPointTransactions
-{
-   public:
-   std::vector<TPointTransaction> PointsTransactions;
-};
 
 #endif
+
