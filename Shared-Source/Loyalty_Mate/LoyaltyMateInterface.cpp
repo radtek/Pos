@@ -49,10 +49,6 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicate
         else
             wcfInfo->Activated    = false;     //trip
 	
-
-        //wcfInfo->EarnedPoints =  contactInfo.Points.getPointsBalance(ptstLoyalty);
-        //wcfInfo->LoadedPoints =  contactInfo.Points.getPointsBalance(ptstAccount);
-
         CoInitialize(NULL);
         wcfResponse = loyaltymateClient->SaveMember(syndicateCode.GetSyndCode(),wcfInfo );
         if( FAutoSync && wcfResponse->Successful)
@@ -473,7 +469,7 @@ void TLoyaltyMateInterface::ReadContactInfo(MemberInfo* inMemberInfo,TMMContactI
     ReadMemberVouchers(inMemberInfo->MemberVouchers,inContactInfo);
     if(replacePoints) // Do we want to replace points or simply add them on to what we already have?
     {
-        inContactInfo.Points.Clear();
+        inContactInfo.Points.ClearPoints();
 
         // Putting in the Points Earned.
         TPointsTypePair typepair1( pttEarned,ptstLoyalty );
