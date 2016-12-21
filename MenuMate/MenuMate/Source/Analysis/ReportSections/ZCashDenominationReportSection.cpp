@@ -35,7 +35,7 @@ void ZCashDenominationReportSection::GetOutput(TPrintout* printOut)
 		reportSectionDisplayStrategy->BuildSection(printOut);
         return;
 	}
-}void ZCashDenominationReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime){
+}/*void ZCashDenominationReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime){
     AddTitle(printOut, " Cash Denominations");
     printOut->PrintFormat->NewLine();
 
@@ -52,4 +52,4 @@ void ZCashDenominationReportSection::GetOutput(TPrintout* printOut)
 		reportSectionDisplayStrategy->BuildSection(printOut);
         return;
 	}
-}
+}*/

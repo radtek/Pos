@@ -27,11 +27,11 @@ void XPatronAverageDetailsReportSection::GetOutput(TPrintout* printOut)
    PrintChitStatistics(printOut);
 }
 
-void XPatronAverageDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XPatronAverageDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
    PrintPatronStatistics(printOut);
    PrintChitStatistics(printOut);
-}
+}*/
 
 void XPatronAverageDetailsReportSection::PrintPatronStatistics(TPrintout* printOut)
 {

@@ -57,7 +57,7 @@ void XAccountBalancesSeatedDetailsReportSection::GetOutput(TPrintout* printOut)
        delete SeatedList;
 }
 
-void XAccountBalancesSeatedDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XAccountBalancesSeatedDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AddTitle(printOut, "Account Balances - Seated");
     TStringList *SeatedList = new TStringList;
@@ -88,7 +88,7 @@ void XAccountBalancesSeatedDetailsReportSection::GetOutput(TPrintout* printOut, 
         }
     }
        delete SeatedList;
-}
+}*/
 
 
 void XAccountBalancesSeatedDetailsReportSection::GetReportData(TStringList *SeatedList)

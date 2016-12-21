@@ -135,7 +135,7 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 
 }
 
-void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     const Currency todaysEarnings = 0;
@@ -242,7 +242,7 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut, TDate
         printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(_globalSettings->ZCount);
         printOut->PrintFormat->AddLine();
     }
-}
+}*/
 
 void ZAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
 {

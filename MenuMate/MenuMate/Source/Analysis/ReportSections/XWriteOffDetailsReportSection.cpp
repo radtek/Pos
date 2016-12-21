@@ -112,7 +112,7 @@ void XWriteOffDetailsReportSection::GetOutput(TPrintout* printOut)
     }
 }
 
-void XWriteOffDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XWriteOffDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     DataCalculationUtilities dataCalcUtils;
 
@@ -198,6 +198,6 @@ void XWriteOffDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* st
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(TotalWriteOff);
         printOut->PrintFormat->AddLine();
     }
-}
+} */
 
 #pragma package(smart_init)

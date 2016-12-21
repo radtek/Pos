@@ -36,7 +36,7 @@ void XBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut)
 	}
 }
 
-void XBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AddTitle(printOut, " Blind Balances");
     printOut->PrintFormat->NewLine();
@@ -53,4 +53,4 @@ void XBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut, TDateTim
 		//Call the strategy to build the section..
 		reportSectionDisplayStrategy->BuildSection(printOut);
 	}
-}
+}*/

@@ -8,6 +8,7 @@ XChargedSalesTotalsDetailsReportSection::XChargedSalesTotalsDetailsReportSection
 {
     dataFormatUtilities = new DataFormatUtilities;
     reportFinancialCalculations = new ReportFinancialCalculations;
+    IsConsolidatedZed = false;
 }
 
 XChargedSalesTotalsDetailsReportSection::XChargedSalesTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings,TDateTime* startTime, TDateTime* endTime)
@@ -15,6 +16,7 @@ XChargedSalesTotalsDetailsReportSection::XChargedSalesTotalsDetailsReportSection
 {
     dataFormatUtilities = new DataFormatUtilities;
     reportFinancialCalculations = new ReportFinancialCalculations;
+    IsConsolidatedZed = true;
 }
 
 
@@ -26,6 +28,11 @@ XChargedSalesTotalsDetailsReportSection::~XChargedSalesTotalsDetailsReportSectio
 
 void XChargedSalesTotalsDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+    if(IsConsolidatedZed)
+    {
+       return;
+    }
+
     TTransactionInfo TransactionInfo;
     AnsiString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
     TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, DeviceName);
@@ -86,7 +93,7 @@ void XChargedSalesTotalsDetailsReportSection::GetOutput(TPrintout* printOut)
     printOut->PrintFormat->Add("SubTotal |" + dataFormatUtilities->FormatMMReportCurrency(total) );
 }
 
-void XChargedSalesTotalsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XChargedSalesTotalsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     TTransactionInfo TransactionInfo;
     AnsiString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
@@ -146,4 +153,4 @@ void XChargedSalesTotalsDetailsReportSection::GetOutput(TPrintout* printOut, TDa
 
     Currency total = showTaxAndServiceCharge ? FinancialDetails.SavedSales.Totals.Total : FinancialDetails.SavedSales.Totals.RawTotal;
     printOut->PrintFormat->Add("SubTotal |" + dataFormatUtilities->FormatMMReportCurrency(total) );
-}
+}*/

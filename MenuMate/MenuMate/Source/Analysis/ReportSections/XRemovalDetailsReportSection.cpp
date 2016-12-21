@@ -150,7 +150,7 @@ void XRemovalDetailsReportSection::GetOutput(TPrintout* printOut)
     delete _removalsServerList;
 }
 
-void XRemovalDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XRemovalDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     TStringList *_removalsServerList = new TStringList;
     DataCalculationUtilities dataCalcUtils;
@@ -274,7 +274,7 @@ void XRemovalDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* sta
         printOut->PrintFormat->AddLine();
     }
     delete _removalsServerList;
-}
+}*/
 
 
 #pragma package(smart_init)

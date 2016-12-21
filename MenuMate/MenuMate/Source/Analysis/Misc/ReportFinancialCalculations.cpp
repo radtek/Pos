@@ -392,170 +392,12 @@ Currency ReportFinancialCalculations::GetDiscountsAndSurcharges(Database::TDBTra
 
 void ReportFinancialCalculations::GetBilledSalesDetail(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName)
 {
-    AnsiString TerminalCondition = "";
-    if(!TGlobalSettings::Instance().EnableDepositBagNum)
-      {
-         TerminalCondition = " DAYARCHIVE.TERMINAL_NAME = '" + DeviceName + "' AND ";
-      }
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     IBInternalQuery->Close();
-    IBInternalQuery->SQL->Text = "SELECT CATEGORYGROUPS.NAME,CATEGORYGROUPS.CATEGORYGROUPS_KEY,"
-			" ARCCATEGORIES.CATEGORY,ARCCATEGORIES.CATEGORY_KEY, DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, "
-			" SUM (SALES_TAX.TAX_TOTAL) SALES_TAX_TOTAL,"
-			" SUM (SC_TAX.TAX_TOTAL) SC_TAX_TOTAL,"
-			" SUM (SC.SC_TOTAL) SC_TOTAL,"
-			" SUM (LOCAL_TAX.LOCAL_TAX_TOTAL) LOCAL_TAX_TOTAL,"
-            " SUM (PROFIT_TAX.PROFIT_TAX_TOTAL) PROFIT_TAX_TOTAL,";
-            if(TGlobalSettings::Instance().RevenueFiguresAreDiscountInclusive)
-            {
-                    IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
-                    " SUM ((DAYARCHIVE.PRICE * DAYARCHIVE.QTY))  TOTAL,"
-                     " SUM ((abs(DAYARCHIVE.BASE_PRICE) * DAYARCHIVE.QTY)+(DAYARCHIVE.DISCOUNT_WITHOUT_TAX)) RAWTOTAL,";
-            }
-            else
-            {
-                    IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
-                    " SUM ((DAYARCHIVE.PRICE * DAYARCHIVE.QTY)-(DAYARCHIVE.DISCOUNT))  TOTAL,"
-                    " SUM (abs(DAYARCHIVE.BASE_PRICE) * DAYARCHIVE.QTY) RAWTOTAL,";
-            }
-             IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
 
-			" SUM (DAYARCHIVE.COST * DAYARCHIVE.QTY) COST,"
-			" SUM (DAYARCHIVE.QTY) TOTALQTY"
-            " FROM CATEGORYGROUPS"
-			" INNER JOIN ARCCATEGORIES ON CATEGORYGROUPS.CATEGORYGROUPS_KEY = ARCCATEGORIES.CATEGORYGROUPS_KEY"
-			" INNER JOIN DAYARCHIVE ON ARCCATEGORIES.CATEGORY_KEY = DAYARCHIVE.CATEGORY_KEY"
-			" LEFT JOIN DAYARCBILL ON DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY"
-			" LEFT JOIN  (SELECT DAYARCORDERDISCOUNTS.ARCHIVE_KEY, "
-			" MIN(CASE WHEN DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary' THEN coalesce(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) END) AS DISCOUNT_GROUPNAME  "
-			" FROM DAYARCORDERDISCOUNTS  WHERE (COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, 0)= 'Complimentary') group by  DAYARCORDERDISCOUNTS.ARCHIVE_KEY )  DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY   "
-	        " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 0 GROUP BY ARCHIVE_KEY) SALES_TAX ON DAYARCHIVE.ARCHIVE_KEY = SALES_TAX.ARCHIVE_KEY"
-			" LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 3 GROUP BY ARCHIVE_KEY) SC_TAX ON DAYARCHIVE.ARCHIVE_KEY = SC_TAX.ARCHIVE_KEY"
-			" LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) SC_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 2 GROUP BY ARCHIVE_KEY) SC ON DAYARCHIVE.ARCHIVE_KEY = SC.ARCHIVE_KEY"
-			" LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) LOCAL_TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 4 GROUP BY ARCHIVE_KEY) LOCAL_TAX ON DAYARCHIVE.ARCHIVE_KEY = LOCAL_TAX.ARCHIVE_KEY"
-            " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) PROFIT_TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 5 GROUP BY ARCHIVE_KEY) PROFIT_TAX ON DAYARCHIVE.ARCHIVE_KEY = PROFIT_TAX.ARCHIVE_KEY"
-			" WHERE (COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') AND "	+ TerminalCondition +
-			" ( ORDER_TYPE = " + IntToStr(NormalOrder) + " " " OR    ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + ") "
-			" GROUP BY CATEGORYGROUPS.NAME,CATEGORYGROUPS.CATEGORYGROUPS_KEY, ARCCATEGORIES.CATEGORY, ARCCATEGORIES.CATEGORY_KEY,DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME ";
+    BilledSalesDetailsForNormalZed(IBInternalQuery, DeviceName);
     IBInternalQuery->ExecQuery();
-    for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-	{
-                // Retrive Grand Totals.
-                TCategoryGroupDetails TotalSalesCategoryGroup = FinancialDetails.TotalSales.Details[IBInternalQuery->FieldByName("NAME")->AsString];
-                TCatTotal TotalSalesDetailTotals = TotalSalesCategoryGroup.Details[IBInternalQuery->FieldByName("CATEGORY")->AsString];
-                // Retrive Category Group Totals.
-                TCategoryGroupDetails CategoryGroup = FinancialDetails.BilledSales.Details[IBInternalQuery->FieldByName("NAME")->AsString];
-                if(IBInternalQuery->FieldByName("DISCOUNT_GROUPNAME")->AsString == "Complimentary")
-                {
-                        //TODO:
-                        CategoryGroup = FinancialDetails.ComplimentarySales.Details[IBInternalQuery->FieldByName("NAME")->AsString];
-                }
-                TCatTotal DetailTotals = CategoryGroup.Details[IBInternalQuery->FieldByName("CATEGORY")->AsString];
-
-                DetailTotals.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
-                DetailTotals.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
-                DetailTotals.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
-                DetailTotals.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
-                DetailTotals.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
-                DetailTotals.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
-                DetailTotals.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
-                DetailTotals.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
-                DetailTotals.Totals.TaxContent = DetailTotals.Totals.SalesTaxContent + DetailTotals.Totals.ServiceChargeTaxContent;
-                DetailTotals.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
-
-                CategoryGroup.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
-                CategoryGroup.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
-                CategoryGroup.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
-                CategoryGroup.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
-                CategoryGroup.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
-                CategoryGroup.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
-                CategoryGroup.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
-                CategoryGroup.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
-                CategoryGroup.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
-                CategoryGroup.Totals.TaxContent = CategoryGroup.Totals.SalesTaxContent + CategoryGroup.Totals.ServiceChargeTaxContent;
-
-                TotalSalesDetailTotals.Category_Key = IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
-                TotalSalesDetailTotals.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
-                TotalSalesDetailTotals.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
-                TotalSalesDetailTotals.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
-                TotalSalesDetailTotals.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
-                TotalSalesDetailTotals.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
-                TotalSalesDetailTotals.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
-                TotalSalesDetailTotals.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
-                TotalSalesDetailTotals.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
-                TotalSalesDetailTotals.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
-                TotalSalesDetailTotals.Totals.TaxContent = TotalSalesDetailTotals.Totals.SalesTaxContent + TotalSalesDetailTotals.Totals.ServiceChargeTaxContent;
-
-                TotalSalesCategoryGroup.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
-                TotalSalesCategoryGroup.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
-                TotalSalesCategoryGroup.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
-                TotalSalesCategoryGroup.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
-                TotalSalesCategoryGroup.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
-                TotalSalesCategoryGroup.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
-                TotalSalesCategoryGroup.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
-                TotalSalesCategoryGroup.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
-                TotalSalesCategoryGroup.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
-                TotalSalesCategoryGroup.Totals.TaxContent = TotalSalesCategoryGroup.Totals.SalesTaxContent + TotalSalesCategoryGroup.Totals.ServiceChargeTaxContent;
-                TotalSalesCategoryGroup.Category_Group_Name = IBInternalQuery->FieldByName("NAME")->AsString;
-                TotalSalesCategoryGroup.Category_Group_Key = IBInternalQuery->FieldByName("CATEGORYGROUPS_KEY")->AsInteger;
-
-                if(IBInternalQuery->FieldByName("DISCOUNT_GROUPNAME")->AsString == "Complimentary")
-                {
-                        FinancialDetails.ComplimentarySales.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
-                        FinancialDetails.ComplimentarySales.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
-                        FinancialDetails.ComplimentarySales.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
-                        FinancialDetails.ComplimentarySales.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
-                        FinancialDetails.ComplimentarySales.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
-                        FinancialDetails.ComplimentarySales.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
-                        FinancialDetails.ComplimentarySales.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
-                        FinancialDetails.ComplimentarySales.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
-                        FinancialDetails.ComplimentarySales.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
-                        FinancialDetails.ComplimentarySales.Totals.TaxContent = FinancialDetails.BilledSales.Totals.SalesTaxContent + FinancialDetails.BilledSales.Totals.ServiceChargeTaxContent;
-                }
-                else
-                {
-                        FinancialDetails.BilledSales.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
-                        FinancialDetails.BilledSales.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
-                        FinancialDetails.BilledSales.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
-                        FinancialDetails.BilledSales.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
-                        FinancialDetails.BilledSales.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
-                        FinancialDetails.BilledSales.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
-                        FinancialDetails.BilledSales.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
-                        FinancialDetails.BilledSales.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
-                        FinancialDetails.BilledSales.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
-                        FinancialDetails.BilledSales.Totals.TaxContent = FinancialDetails.BilledSales.Totals.SalesTaxContent + FinancialDetails.BilledSales.Totals.ServiceChargeTaxContent;
-                }
-
-                FinancialDetails.TotalSales.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
-                FinancialDetails.TotalSales.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
-                FinancialDetails.TotalSales.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
-                FinancialDetails.TotalSales.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
-                FinancialDetails.TotalSales.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
-                FinancialDetails.TotalSales.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
-                FinancialDetails.TotalSales.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
-                FinancialDetails.TotalSales.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
-                FinancialDetails.TotalSales.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
-                FinancialDetails.TotalSales.Totals.TaxContent = FinancialDetails.TotalSales.Totals.SalesTaxContent + FinancialDetails.TotalSales.Totals.ServiceChargeTaxContent;
-
-                // Store Category Group Totals.
-                //TODO:
-                CategoryGroup.Details[IBInternalQuery->FieldByName("CATEGORY")->AsString] = DetailTotals;
-                if(IBInternalQuery->FieldByName("DISCOUNT_GROUPNAME")->AsString == "Complimentary")
-                {
-                        //TODO:
-                    FinancialDetails.ComplimentarySales.Details[IBInternalQuery->FieldByName("NAME")->AsString] = CategoryGroup;
-                }
-                else
-                {
-                        //TODO:
-                     FinancialDetails.BilledSales.Details[IBInternalQuery->FieldByName("NAME")->AsString] = CategoryGroup;
-                }
-                // Store Grand Totals.
-                //TODO:
-                TotalSalesCategoryGroup.Details[IBInternalQuery->FieldByName("CATEGORY")->AsString] = TotalSalesDetailTotals;
-                //TODO:
-                FinancialDetails.TotalSales.Details[IBInternalQuery->FieldByName("NAME")->AsString] = TotalSalesCategoryGroup;
-      }
+    LoadBilledSalesDetails(IBInternalQuery, FinancialDetails);
     IBInternalQuery->Close();
 }
 
@@ -1364,6 +1206,307 @@ Currency ReportFinancialCalculations::GetTaxExemptSales(Database::TDBTransaction
 
     return TaxExemptTotal;
 }
+
+TFinancialDetails ReportFinancialCalculations::GetFinancialDetails(Database::TDBTransaction &DBTransaction, TTransactionInfo &TransactionInfo,AnsiString DeviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    TFinancialDetails financialDetails;
+
+    GetBilledSalesDetail(DBTransaction, financialDetails, DeviceName, startTime, endTime);
+    //GetSavedSalesDetail(DBTransaction, financialDetails, DeviceName);
+    GetBilledSalesQuantity(DBTransaction, financialDetails, DeviceName, startTime, endTime);
+    //GetSavedSalesQuantity(DBTransaction, financialDetails, DeviceName);
+    GetLoyaltySalesDetail(DBTransaction, TransactionInfo, DeviceName, startTime, endTime);
+
+    return financialDetails;
+}
+
+void ReportFinancialCalculations::BilledSalesDetailsForNormalZed(TIBSQL *IBInternalQuery, AnsiString DeviceName)
+{
+    AnsiString TerminalCondition = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        TerminalCondition = " DAYARCHIVE.TERMINAL_NAME = '" + DeviceName + "' AND ";
+    }
+    IBInternalQuery->SQL->Text = "SELECT CATEGORYGROUPS.NAME,CATEGORYGROUPS.CATEGORYGROUPS_KEY,"
+    " ARCCATEGORIES.CATEGORY,ARCCATEGORIES.CATEGORY_KEY, DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, "
+    " SUM (SALES_TAX.TAX_TOTAL) SALES_TAX_TOTAL,"
+    " SUM (SC_TAX.TAX_TOTAL) SC_TAX_TOTAL,"
+    " SUM (SC.SC_TOTAL) SC_TOTAL,"
+    " SUM (LOCAL_TAX.LOCAL_TAX_TOTAL) LOCAL_TAX_TOTAL,"
+    " SUM (PROFIT_TAX.PROFIT_TAX_TOTAL) PROFIT_TAX_TOTAL,";
+    if(TGlobalSettings::Instance().RevenueFiguresAreDiscountInclusive)
+    {
+            IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
+            " SUM ((DAYARCHIVE.PRICE * DAYARCHIVE.QTY))  TOTAL,"
+             " SUM ((abs(DAYARCHIVE.BASE_PRICE) * DAYARCHIVE.QTY)+(DAYARCHIVE.DISCOUNT_WITHOUT_TAX)) RAWTOTAL,";
+    }
+    else
+    {
+            IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
+            " SUM ((DAYARCHIVE.PRICE * DAYARCHIVE.QTY)-(DAYARCHIVE.DISCOUNT))  TOTAL,"
+            " SUM (abs(DAYARCHIVE.BASE_PRICE) * DAYARCHIVE.QTY) RAWTOTAL,";
+    }
+     IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
+
+    " SUM (DAYARCHIVE.COST * DAYARCHIVE.QTY) COST,"
+    " SUM (DAYARCHIVE.QTY) TOTALQTY"
+    " FROM CATEGORYGROUPS"
+    " INNER JOIN ARCCATEGORIES ON CATEGORYGROUPS.CATEGORYGROUPS_KEY = ARCCATEGORIES.CATEGORYGROUPS_KEY"
+    " INNER JOIN DAYARCHIVE ON ARCCATEGORIES.CATEGORY_KEY = DAYARCHIVE.CATEGORY_KEY"
+    " LEFT JOIN DAYARCBILL ON DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY"
+    " LEFT JOIN  (SELECT DAYARCORDERDISCOUNTS.ARCHIVE_KEY, "
+    " MIN(CASE WHEN DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary' THEN coalesce(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) END) AS DISCOUNT_GROUPNAME  "
+    " FROM DAYARCORDERDISCOUNTS  WHERE (COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, 0)= 'Complimentary') group by  DAYARCORDERDISCOUNTS.ARCHIVE_KEY )  DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY   "
+    " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 0 GROUP BY ARCHIVE_KEY) SALES_TAX ON DAYARCHIVE.ARCHIVE_KEY = SALES_TAX.ARCHIVE_KEY"
+    " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 3 GROUP BY ARCHIVE_KEY) SC_TAX ON DAYARCHIVE.ARCHIVE_KEY = SC_TAX.ARCHIVE_KEY"
+    " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) SC_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 2 GROUP BY ARCHIVE_KEY) SC ON DAYARCHIVE.ARCHIVE_KEY = SC.ARCHIVE_KEY"
+    " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) LOCAL_TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 4 GROUP BY ARCHIVE_KEY) LOCAL_TAX ON DAYARCHIVE.ARCHIVE_KEY = LOCAL_TAX.ARCHIVE_KEY"
+    " LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) PROFIT_TAX_TOTAL FROM DAYARCORDERTAXES WHERE TAX_TYPE = 5 GROUP BY ARCHIVE_KEY) PROFIT_TAX ON DAYARCHIVE.ARCHIVE_KEY = PROFIT_TAX.ARCHIVE_KEY"
+    " WHERE (COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') AND "	+ TerminalCondition +
+    " ( ORDER_TYPE = " + IntToStr(NormalOrder) + " " " OR    ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + ") "
+    " GROUP BY CATEGORYGROUPS.NAME,CATEGORYGROUPS.CATEGORYGROUPS_KEY, ARCCATEGORIES.CATEGORY, ARCCATEGORIES.CATEGORY_KEY,DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME ";
+
+}
+
+void ReportFinancialCalculations::LoadBilledSalesDetails(TIBSQL *IBInternalQuery, TFinancialDetails &FinancialDetails)
+{
+    for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+        // Retrive Grand Totals.
+        TCategoryGroupDetails TotalSalesCategoryGroup = FinancialDetails.TotalSales.Details[IBInternalQuery->FieldByName("NAME")->AsString];
+        TCatTotal TotalSalesDetailTotals = TotalSalesCategoryGroup.Details[IBInternalQuery->FieldByName("CATEGORY")->AsString];
+        // Retrive Category Group Totals.
+        TCategoryGroupDetails CategoryGroup = FinancialDetails.BilledSales.Details[IBInternalQuery->FieldByName("NAME")->AsString];
+        if(IBInternalQuery->FieldByName("DISCOUNT_GROUPNAME")->AsString == "Complimentary")
+        {
+                //TODO:
+                CategoryGroup = FinancialDetails.ComplimentarySales.Details[IBInternalQuery->FieldByName("NAME")->AsString];
+        }
+        TCatTotal DetailTotals = CategoryGroup.Details[IBInternalQuery->FieldByName("CATEGORY")->AsString];
+
+        DetailTotals.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
+        DetailTotals.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
+        DetailTotals.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
+        DetailTotals.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
+        DetailTotals.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
+        DetailTotals.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
+        DetailTotals.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
+        DetailTotals.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
+        DetailTotals.Totals.TaxContent = DetailTotals.Totals.SalesTaxContent + DetailTotals.Totals.ServiceChargeTaxContent;
+        DetailTotals.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
+
+        CategoryGroup.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
+        CategoryGroup.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
+        CategoryGroup.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
+        CategoryGroup.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
+        CategoryGroup.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
+        CategoryGroup.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
+        CategoryGroup.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
+        CategoryGroup.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
+        CategoryGroup.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
+        CategoryGroup.Totals.TaxContent = CategoryGroup.Totals.SalesTaxContent + CategoryGroup.Totals.ServiceChargeTaxContent;
+
+        TotalSalesDetailTotals.Category_Key = IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+        TotalSalesDetailTotals.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
+        TotalSalesDetailTotals.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
+        TotalSalesDetailTotals.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
+        TotalSalesDetailTotals.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
+        TotalSalesDetailTotals.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
+        TotalSalesDetailTotals.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
+        TotalSalesDetailTotals.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
+        TotalSalesDetailTotals.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
+        TotalSalesDetailTotals.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
+        TotalSalesDetailTotals.Totals.TaxContent = TotalSalesDetailTotals.Totals.SalesTaxContent + TotalSalesDetailTotals.Totals.ServiceChargeTaxContent;
+
+        TotalSalesCategoryGroup.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
+        TotalSalesCategoryGroup.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
+        TotalSalesCategoryGroup.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
+        TotalSalesCategoryGroup.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
+        TotalSalesCategoryGroup.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
+        TotalSalesCategoryGroup.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
+        TotalSalesCategoryGroup.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
+        TotalSalesCategoryGroup.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
+        TotalSalesCategoryGroup.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
+        TotalSalesCategoryGroup.Totals.TaxContent = TotalSalesCategoryGroup.Totals.SalesTaxContent + TotalSalesCategoryGroup.Totals.ServiceChargeTaxContent;
+        TotalSalesCategoryGroup.Category_Group_Name = IBInternalQuery->FieldByName("NAME")->AsString;
+        TotalSalesCategoryGroup.Category_Group_Key = IBInternalQuery->FieldByName("CATEGORYGROUPS_KEY")->AsInteger;
+
+        if(IBInternalQuery->FieldByName("DISCOUNT_GROUPNAME")->AsString == "Complimentary")
+        {
+                FinancialDetails.ComplimentarySales.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
+                FinancialDetails.ComplimentarySales.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
+                FinancialDetails.ComplimentarySales.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
+                FinancialDetails.ComplimentarySales.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
+                FinancialDetails.ComplimentarySales.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
+                FinancialDetails.ComplimentarySales.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
+                FinancialDetails.ComplimentarySales.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
+                FinancialDetails.ComplimentarySales.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
+                FinancialDetails.ComplimentarySales.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
+                FinancialDetails.ComplimentarySales.Totals.TaxContent = FinancialDetails.BilledSales.Totals.SalesTaxContent + FinancialDetails.BilledSales.Totals.ServiceChargeTaxContent;
+        }
+        else
+        {
+                FinancialDetails.BilledSales.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
+                FinancialDetails.BilledSales.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
+                FinancialDetails.BilledSales.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
+                FinancialDetails.BilledSales.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
+                FinancialDetails.BilledSales.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
+                FinancialDetails.BilledSales.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
+                FinancialDetails.BilledSales.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
+                FinancialDetails.BilledSales.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
+                FinancialDetails.BilledSales.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
+                FinancialDetails.BilledSales.Totals.TaxContent = FinancialDetails.BilledSales.Totals.SalesTaxContent + FinancialDetails.BilledSales.Totals.ServiceChargeTaxContent;
+        }
+
+        FinancialDetails.TotalSales.Totals.Total += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
+        FinancialDetails.TotalSales.Totals.RawTotal += IBInternalQuery->FieldByName("RAWTOTAL")->AsCurrency;
+        FinancialDetails.TotalSales.Totals.Cost += IBInternalQuery->FieldByName("COST")->AsCurrency;
+        FinancialDetails.TotalSales.Totals.Qty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
+        FinancialDetails.TotalSales.Totals.SalesTaxContent += IBInternalQuery->FieldByName("SALES_TAX_TOTAL")->AsCurrency;
+        FinancialDetails.TotalSales.Totals.ServiceChargeTaxContent += IBInternalQuery->FieldByName("SC_TAX_TOTAL")->AsCurrency;
+        FinancialDetails.TotalSales.Totals.ServiceChargeContent += IBInternalQuery->FieldByName("SC_TOTAL")->AsCurrency;
+        FinancialDetails.TotalSales.Totals.LocalTaxContent += IBInternalQuery->FieldByName("LOCAL_TAX_TOTAL")->AsCurrency;
+        FinancialDetails.TotalSales.Totals.ProfitTaxContent += IBInternalQuery->FieldByName("PROFIT_TAX_TOTAL")->AsCurrency;
+        FinancialDetails.TotalSales.Totals.TaxContent = FinancialDetails.TotalSales.Totals.SalesTaxContent + FinancialDetails.TotalSales.Totals.ServiceChargeTaxContent;
+
+        // Store Category Group Totals.
+        //TODO:
+        CategoryGroup.Details[IBInternalQuery->FieldByName("CATEGORY")->AsString] = DetailTotals;
+        if(IBInternalQuery->FieldByName("DISCOUNT_GROUPNAME")->AsString == "Complimentary")
+        {
+                //TODO:
+            FinancialDetails.ComplimentarySales.Details[IBInternalQuery->FieldByName("NAME")->AsString] = CategoryGroup;
+        }
+        else
+        {
+                //TODO:
+             FinancialDetails.BilledSales.Details[IBInternalQuery->FieldByName("NAME")->AsString] = CategoryGroup;
+        }
+        // Store Grand Totals.
+        //TODO:
+        TotalSalesCategoryGroup.Details[IBInternalQuery->FieldByName("CATEGORY")->AsString] = TotalSalesDetailTotals;
+        //TODO:
+        FinancialDetails.TotalSales.Details[IBInternalQuery->FieldByName("NAME")->AsString] = TotalSalesCategoryGroup;
+    }
+}
+
+void ReportFinancialCalculations::GetBilledSalesDetail(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    BilledSalesDetailsForConsolidatedZed(IBInternalQuery, DeviceName, startTime, endTime);
+    IBInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
+    IBInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
+    IBInternalQuery->ExecQuery();
+    LoadBilledSalesDetails(IBInternalQuery, FinancialDetails);
+    IBInternalQuery->Close();
+}
+
+void ReportFinancialCalculations::BilledSalesDetailsForConsolidatedZed(TIBSQL *IBInternalQuery, AnsiString DeviceName, TDateTime startTime, TDateTime endTime)
+{
+    AnsiString TerminalCondition = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        TerminalCondition = " ARCHIVE.TERMINAL_NAME = '" + DeviceName + "' AND ";
+    }
+IBInternalQuery->SQL->Text = "SELECT CATEGORYGROUPS.NAME,CATEGORYGROUPS.CATEGORYGROUPS_KEY,"
+" ARCCATEGORIES.CATEGORY,ARCCATEGORIES.CATEGORY_KEY, ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, "
+" SUM (SALES_TAX.TAX_TOTAL) SALES_TAX_TOTAL,"
+" SUM (SC_TAX.TAX_TOTAL) SC_TAX_TOTAL,"
+" SUM (SC.SC_TOTAL) SC_TOTAL,"
+" SUM (LOCAL_TAX.LOCAL_TAX_TOTAL) LOCAL_TAX_TOTAL,"
+" SUM (PROFIT_TAX.PROFIT_TAX_TOTAL) PROFIT_TAX_TOTAL,";
+if(TGlobalSettings::Instance().RevenueFiguresAreDiscountInclusive)
+{
+        IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
+        " SUM ((ARCHIVE.PRICE * ARCHIVE.QTY))  TOTAL,"
+         " SUM ((abs(ARCHIVE.BASE_PRICE) * ARCHIVE.QTY)+(ARCHIVE.DISCOUNT_WITHOUT_TAX)) RAWTOTAL,";
+}
+else
+{
+        IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
+        " SUM ((ARCHIVE.PRICE * ARCHIVE.QTY)-(ARCHIVE.DISCOUNT))  TOTAL,"
+        " SUM (abs(ARCHIVE.BASE_PRICE) * ARCHIVE.QTY) RAWTOTAL,";
+}
+IBInternalQuery->SQL->Text =IBInternalQuery->SQL->Text+
+
+" SUM (ARCHIVE.COST * ARCHIVE.QTY) COST,"
+" SUM (ARCHIVE.QTY) TOTALQTY"
+" FROM CATEGORYGROUPS"
+" INNER JOIN ARCCATEGORIES ON CATEGORYGROUPS.CATEGORYGROUPS_KEY = ARCCATEGORIES.CATEGORYGROUPS_KEY"
+" INNER JOIN ARCHIVE ON ARCCATEGORIES.CATEGORY_KEY = ARCHIVE.CATEGORY_KEY"
+" LEFT JOIN ARCBILL ON ARCHIVE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY"
+" LEFT JOIN  (SELECT ARCORDERDISCOUNTS.ARCHIVE_KEY, "
+" MIN(CASE WHEN ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary' THEN coalesce(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) END) AS DISCOUNT_GROUPNAME  "
+" FROM ARCORDERDISCOUNTS  WHERE (COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, 0)= 'Complimentary') group by  ARCORDERDISCOUNTS.ARCHIVE_KEY )  ARCORDERDISCOUNTS ON ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY   "
+" LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) TAX_TOTAL FROM ARCORDERTAXES WHERE TAX_TYPE = 0 GROUP BY ARCHIVE_KEY) SALES_TAX ON ARCHIVE.ARCHIVE_KEY = SALES_TAX.ARCHIVE_KEY"
+" LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) TAX_TOTAL FROM ARCORDERTAXES WHERE TAX_TYPE = 3 GROUP BY ARCHIVE_KEY) SC_TAX ON ARCHIVE.ARCHIVE_KEY = SC_TAX.ARCHIVE_KEY"
+" LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) SC_TOTAL FROM ARCORDERTAXES WHERE TAX_TYPE = 2 GROUP BY ARCHIVE_KEY) SC ON ARCHIVE.ARCHIVE_KEY = SC.ARCHIVE_KEY"
+" LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) LOCAL_TAX_TOTAL FROM ARCORDERTAXES WHERE TAX_TYPE = 4 GROUP BY ARCHIVE_KEY) LOCAL_TAX ON ARCHIVE.ARCHIVE_KEY = LOCAL_TAX.ARCHIVE_KEY"
+" LEFT JOIN (SELECT ARCHIVE_KEY, SUM(TAX_VALUE) PROFIT_TAX_TOTAL FROM ARCORDERTAXES WHERE TAX_TYPE = 5 GROUP BY ARCHIVE_KEY) PROFIT_TAX ON ARCHIVE.ARCHIVE_KEY = PROFIT_TAX.ARCHIVE_KEY"
+" WHERE (COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') AND "	+ TerminalCondition +
+" ( ORDER_TYPE = " + IntToStr(NormalOrder) + " " " OR    ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + ") "
+" and ARCBILL.TIME_STAMP >= :startTime and ARCBILL.TIME_STAMP <= :endTime  "
+" GROUP BY CATEGORYGROUPS.NAME,CATEGORYGROUPS.CATEGORYGROUPS_KEY, ARCCATEGORIES.CATEGORY, ARCCATEGORIES.CATEGORY_KEY, ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME ";
+
+}
+
+void ReportFinancialCalculations::GetBilledSalesQuantity(Database::TDBTransaction &DBTransaction,TFinancialDetails &FinancialDetails,AnsiString DeviceName, TDateTime startTime, TDateTime endTime)
+{
+    AnsiString ArcbillCondition = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+	    ArcbillCondition = " ARCBILL.TERMINAL_NAME = '" + DeviceName + "' AND ";
+    }
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT COUNT (DISTINCT ARCBILL.ARCBILL_KEY) QTYTOTAL " "FROM ARCBILL "
+    "LEFT JOIN ARCHIVE ON ARCHIVE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+    " WHERE ARCBILL.TIME_STAMP >= :TIME_STAMP and ARCBILL.TIME_STAMP <= :TIME_STAMP and " + ArcbillCondition +
+    " ( ARCHIVE.ORDER_TYPE = " + IntToStr(NormalOrder) + " " " OR    ARCHIVE.ORDER_TYPE = " + IntToStr
+    (CreditNonExistingOrder) + ") ";
+    IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = startTime;
+    IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = endTime;
+
+    IBInternalQuery->ExecQuery();
+    if (IBInternalQuery->RecordCount != 0)
+    {
+       FinancialDetails.BilledSales.Totals.Qty = IBInternalQuery->FieldByName("QTYTOTAL")->AsInteger;
+    }
+}
+
+void ReportFinancialCalculations::GetLoyaltySalesDetail(Database::TDBTransaction &DBTransaction,TTransactionInfo &TransactionInfo,AnsiString DeviceName, TDateTime startTime, TDateTime endTime)
+{
+    AnsiString TerminalCondition = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+       TerminalCondition = " TERMINAL_NAME = '" + DeviceName + "' AND ";
+    }
+    TDateTime PrevZedTime = GetPreviousZedTime(DBTransaction);
+    Currency LoyaltyTotal = 0;
+    float LoyaltyTotalQty = 0;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "select " " SUM (ARCHIVE.PRICE) TOTAL,"
+    " SUM (ARCHIVE.COST * ARCHIVE.QTY) COST," " SUM (ARCHIVE.QTY) TOTALQTY " " FROM " "ARCHIVE "
+    " WHERE ARCHIVE.TIME_STAMP >= :startTime and ARCHIVE.TIME_STAMP <= :endTime and " + TerminalCondition +
+    " LOYALTY_KEY != 0 " " AND LOYALTY_KEY IS NOT NULL " " AND ( ORDER_TYPE = " + IntToStr(NormalOrder)
+    + " " " OR    ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + ") ";
+
+    IBInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
+    IBInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
+
+    IBInternalQuery->ExecQuery();
+
+    LoyaltyTotal += IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
+    LoyaltyTotalQty += IBInternalQuery->FieldByName("TOTALQTY")->AsFloat;
+
+    TCalculatedTotals LoyaltySalesTotal(etcTotalLoyaltySales, LoyaltyTotal,0,0, LoyaltyTotalQty);
+    TransactionInfo.CalculatedTotals[eStrCalculatedTotals[etcTotalLoyaltySales]] = LoyaltySalesTotal;
+    IBInternalQuery->Close();
+}
+
+
 
 
 

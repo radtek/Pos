@@ -15,10 +15,13 @@ public:
 	~XBreakdownCategoriesDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
-    virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime);
+    //virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime);
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    void GetBreakDownDetailsForNormalZed(TIBSQL *qrBreakdownCategories, AnsiString deviceName);
+    void GetBreakDownDetailsForConsolidatedZed(TIBSQL *qrBreakdownCategories, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime);
+    void LoadBreakDownCategoryDetails(TPrintout* printout, TIBSQL *qrBreakdownCategories, TStringList *CatList);
 };
 
 #endif

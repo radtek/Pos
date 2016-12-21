@@ -188,7 +188,7 @@ void XCancelsAndRefundDetailsForBIRReportSection::SetSingleColumnPrinterFormat(T
     printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
 }
 
-void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
 
     TStringList *_cancelsServerList = new TStringList;
@@ -345,6 +345,6 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetOutput(TPrintout* printOut,
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->AddLine();
 
-}
+}*/
 
 #pragma package(smart_init)

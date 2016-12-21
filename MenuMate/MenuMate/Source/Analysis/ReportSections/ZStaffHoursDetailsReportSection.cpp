@@ -97,7 +97,7 @@ void ZStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut)
     }
 }
 
-void ZStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void ZStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AddTitle(printOut, " Staff Hours");
     TForm* currentForm = Screen->ActiveForm;
@@ -170,5 +170,5 @@ void ZStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* 
         printOut->PrintFormat->AddLine();
     }
 
-}
+} */
 

@@ -140,7 +140,7 @@ void XProductionInfoDetailsReportSection::GetOutput(TPrintout* printOut)
     }
 }
 
-void XProductionInfoDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XProductionInfoDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
     printOut->PrintFormat->Line->ColCount = 1;
@@ -259,4 +259,4 @@ void XProductionInfoDetailsReportSection::GetOutput(TPrintout* printOut, TDateTi
             printOut->PrintFormat->Add(Doc + "|" + Opr + "|" + Qty + "|" + Dur + "|" + Avg + "|" + Val);
         }
     }
-}
+}*/

@@ -91,7 +91,7 @@ void XComplimentarySalesTotalsDetailsReportSection::GetOutput(TPrintout* printOu
     Currency total = showTaxAndServiceCharge ? FinancialDetails.ComplimentarySales.Totals.Total : FinancialDetails.ComplimentarySales.Totals.RawTotal;
     printOut->PrintFormat->Add("SubTotal |" + dataFormatUtilities->FormatMMReportCurrency(total) );
 }
-void XComplimentarySalesTotalsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XComplimentarySalesTotalsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     TTransactionInfo TransactionInfo;
     AnsiString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
@@ -156,4 +156,4 @@ void XComplimentarySalesTotalsDetailsReportSection::GetOutput(TPrintout* printOu
 
     Currency total = showTaxAndServiceCharge ? FinancialDetails.ComplimentarySales.Totals.Total : FinancialDetails.ComplimentarySales.Totals.RawTotal;
     printOut->PrintFormat->Add("SubTotal |" + dataFormatUtilities->FormatMMReportCurrency(total) );
-}
+}*/

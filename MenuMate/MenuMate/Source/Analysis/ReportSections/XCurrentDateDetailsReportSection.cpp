@@ -8,7 +8,7 @@ XCurrentDateDetailsReportSection::XCurrentDateDetailsReportSection(Database::TDB
 }
 
 XCurrentDateDetailsReportSection::XCurrentDateDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
-	:BaseReportSection(mmXReport, mmCurrentDateDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmCurrentDateDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
 }
 
@@ -45,7 +45,7 @@ void XCurrentDateDetailsReportSection::GetOutput(TPrintout* printout)
         
 }
 
-void XCurrentDateDetailsReportSection::GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime)
+/*void XCurrentDateDetailsReportSection::GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime)
 {
     IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
 
@@ -68,4 +68,4 @@ void XCurrentDateDetailsReportSection::GetOutput(TPrintout* printout, TDateTime*
         printout->PrintFormat->Line->Columns[0]->Text = "#" + IntToStr(value);
         printout->PrintFormat->AddLine();
     }
-}
+}*/

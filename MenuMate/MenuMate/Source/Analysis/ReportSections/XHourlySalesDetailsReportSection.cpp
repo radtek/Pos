@@ -104,7 +104,7 @@ void XHourlySalesDetailsReportSection::GetOutput(TPrintout* printOut)
     }
 }
 
-void XHourlySalesDetailsReportSection::GetOutput(TPrintout* printOut,TDateTime* startTime, TDateTime* endTime)
+/*void XHourlySalesDetailsReportSection::GetOutput(TPrintout* printOut,TDateTime* startTime, TDateTime* endTime)
 {
 AnsiString hourlySalesQuery = "SELECT "
                                         "CAST(CAST(EXTRACT(MONTH FROM SECURITY.TIME_STAMP) "
@@ -188,5 +188,5 @@ AnsiString hourlySalesQuery = "SELECT "
             printOut->PrintFormat->AddLine();
         }
     }
-}
+}*/
 

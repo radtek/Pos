@@ -10,7 +10,7 @@ XStaffHoursDetailsReportSection::XStaffHoursDetailsReportSection(Database::TDBTr
 }
 
 XStaffHoursDetailsReportSection::XStaffHoursDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
-	:BaseReportSection(mmXReport, mmStaffHoursDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmStaffHoursDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
@@ -97,7 +97,7 @@ void XStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut)
     }
 }
 
-void XStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AddTitle(printOut, " Staff Hours");
     TForm* currentForm = Screen->ActiveForm;
@@ -169,4 +169,4 @@ void XStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* 
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( 100 * TotalWages / totalEarnings );
         printOut->PrintFormat->AddLine();
     }
-}
+}*/

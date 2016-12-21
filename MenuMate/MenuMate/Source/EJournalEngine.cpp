@@ -370,10 +370,7 @@ TMemoryStream* TEJournalEngine::ExtractConsolidatedZedReport(TDateTime fromSessi
 
     TTransactionInfo TransactionInfo;
     TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
-    TTransactionInfoProcessor::Instance()._reportType = mmConsolidatedZReport;
-    TTransactionInfoProcessor::Instance().StartTime = fromSessionDate;
-    TTransactionInfoProcessor::Instance().EndTime = toSessionDate;
-    TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(DBTransaction, deviceName);
+    TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfoForConsolidatedZed(DBTransaction, deviceName, fromSessionDate, toSessionDate);
 
     ReportManager reportManager;
     ConsolidatedZedReport* consolidatedzedReport = reportManager.GetConsolidatedZedReport(&TGlobalSettings::Instance(), &DBTransaction, &fromSessionDate, &toSessionDate);

@@ -41,7 +41,7 @@ MallExportConsolidatedReceipt::~MallExportConsolidatedReceipt()
     delete dataCalculationUtilities;
 }
 
-void MallExportConsolidatedReceipt::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void MallExportConsolidatedReceipt::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     if(TGlobalSettings::Instance().MallIndex == AYALAMALL && TGlobalSettings::Instance().EnableConsolidatedReport)
     {
@@ -53,7 +53,7 @@ void MallExportConsolidatedReceipt::GetOutput(TPrintout* printOut, TDateTime* st
         UnicodeString SDateValue = "";
         UnicodeString EDateValue = "";
     }
-}
+}*/
 
 
 void MallExportConsolidatedReceipt::GetOutput(TPrintout* printOut)

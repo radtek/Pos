@@ -148,6 +148,12 @@ public:
     void LoadArcPointTransaction(TIBSQL *qXArcPoints1, TTransactionInfo* TransactionInfo, TIBSQL *qrXArcPay, std::vector<TPointTransaction>::iterator ptrPoints);
     void GetArcSurchargeForNormalZed(TIBSQL *qXArcSurcharge);
     void LoadArcPointTransaction(TIBSQL *qXArcSurcharge, TTransactionInfo* TransactionInfo, std::set<AnsiString> countedInvoiceNumbers, AnsiString currentInvoiceKey);
+    void ConsolidatedZedTransaction(TIBSQL *qrXArcBill, bool showendingbal);
+    void GetSurchargeDetailsForConsolidatedZedTransaction(TIBSQL *qXArcSurcharge);
+    TTransactionInfo GetTransactionInfoForConsolidatedZed(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, TDateTime startTime, TDateTime endTime, bool showendingbal = false);
+    void GetArcPointsForConsolidatedZed(TIBSQL *qXArcPoints1);
+    void GetArcPayForConsolidatedZed(TIBSQL *qrXArcPay);
+    void GetArcSurchargeForConsolidatedZed(TIBSQL *qXArcSurcharge);
 };
 
 class THourlyTotals

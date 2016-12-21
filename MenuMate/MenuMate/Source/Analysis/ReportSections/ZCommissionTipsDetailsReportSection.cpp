@@ -83,7 +83,7 @@ void ZCommissionTipsDetailsReportSection::GetOutput(TPrintout* printOut)
 }
 
 
-void ZCommissionTipsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void ZCommissionTipsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AddTitle(printOut, "Commission/Tips");
     printOut->PrintFormat->NewLine();
@@ -138,4 +138,4 @@ void ZCommissionTipsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTi
     printOut->PrintFormat->Line->Columns[0]->Text = "Total Commission:";
     printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( TotalCommission );
     printOut->PrintFormat->AddLine();
-}
+}*/

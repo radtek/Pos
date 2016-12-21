@@ -17,7 +17,7 @@ AnsiString ConsolidatedZedReport::GetReportName()
 int ConsolidatedZedReport::DisplayAndPrint(TMemoryStream* memoryStream)
 {
     int retValue = 0;
-    TPrintout* printOut = SetupPrintOutInstanceForConsolidatedZed();
+    TPrintout* printOut = SetupPrintOutInstance();
     if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
        printOut->PrintFormat->PartialCut();

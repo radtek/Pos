@@ -22,7 +22,7 @@ public:
     void SetPrinterFormat(TPrintout* printOut);
     void SetSingleColumnPrinterFormat(TPrintout* printOut);
     void SetPrinterFormatInMiddle(TPrintout* printOut);
-    virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
+   // virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
 
 private:
     DataFormatUtilities* dataFormatUtilities;

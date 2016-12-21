@@ -38,7 +38,7 @@ void XMasterBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut)
 	}
 }
 
-void XMasterBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XMasterBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     AddTitle(printOut, deviceName + " Blind Balances");
@@ -58,4 +58,4 @@ void XMasterBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut, TD
 		//Call the strategy to build the section..
 		reportSectionDisplayStrategy->BuildSection(printOut);
 	}
-}
+}*/

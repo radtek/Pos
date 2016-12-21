@@ -44,7 +44,7 @@ void ZMasterCashDenominationReportSection::GetOutput(TPrintout* printOut)
 	}
 }
 
-void ZMasterCashDenominationReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void ZMasterCashDenominationReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     AddTitle(printOut, deviceName + " Cash Denominations");
@@ -63,4 +63,4 @@ void ZMasterCashDenominationReportSection::GetOutput(TPrintout* printOut, TDateT
 		reportSectionDisplayStrategy->BuildSection(printOut);
         return;
 	}
-}
+}*/

@@ -33,11 +33,11 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
    DisplayBankingSection(printOut);
 }
 
-void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
 
    DisplayBankingSection(printOut);
-}
+}*/
 
 void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrintout* printOut)
 {

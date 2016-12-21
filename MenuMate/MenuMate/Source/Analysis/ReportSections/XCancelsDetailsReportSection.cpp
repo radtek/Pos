@@ -14,7 +14,7 @@ XCancelsDetailsReportSection::XCancelsDetailsReportSection(Database::TDBTransact
 }
 
 XCancelsDetailsReportSection::XCancelsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
-	:BaseReportSection(mmXReport, mmRefundDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmRefundDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
 }
@@ -186,7 +186,7 @@ void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut)
     delete _cancelsServerList;
 }
 
-void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     TStringList *_cancelsServerList = new TStringList;
     DataCalculationUtilities dataCalcUtils;
@@ -346,6 +346,6 @@ void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* sta
         printOut->PrintFormat->AddLine();
     }
     delete _cancelsServerList;
-}
+}*/
 
 #pragma package(smart_init)

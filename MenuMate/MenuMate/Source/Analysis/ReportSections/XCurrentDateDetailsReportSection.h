@@ -14,7 +14,7 @@ public:
 	~XCurrentDateDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
-    virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime);
+    //virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime);
 };
 
 #endif

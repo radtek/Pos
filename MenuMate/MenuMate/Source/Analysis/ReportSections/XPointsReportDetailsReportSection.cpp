@@ -10,7 +10,7 @@ XPointsReportDetailsReportSection::XPointsReportDetailsReportSection(Database::T
 }
 
 XPointsReportDetailsReportSection::XPointsReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
-	:BaseReportSection(mmXReport, mmPointsReportDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmPointsReportDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     _dataFormatUtilities = new DataFormatUtilities;
 }
@@ -311,7 +311,7 @@ TIBSQL* XPointsReportDetailsReportSection::GetPointsQuery(int adjustmentType)
     return ibInternalQuery;
 }
 
-void XPointsReportDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XPointsReportDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AddTitle(printOut, "Points Report");
 	printOut->PrintFormat->NewLine();
@@ -327,4 +327,4 @@ void XPointsReportDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime
     GetGiftCardOutput(printOut);
     GetFirstVisitOutput(printOut);
     GetBirthdayOutput(printOut);
-}
+} */

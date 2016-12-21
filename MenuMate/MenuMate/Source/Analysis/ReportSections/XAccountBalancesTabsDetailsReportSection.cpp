@@ -17,7 +17,7 @@ XAccountBalancesTabsDetailsReportSection::XAccountBalancesTabsDetailsReportSecti
 
 
 XAccountBalancesTabsDetailsReportSection::XAccountBalancesTabsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
-	:BaseReportSection(mmXReport, mmAccountBalancesTabsDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmAccountBalancesTabsDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
 }
@@ -60,7 +60,7 @@ void XAccountBalancesTabsDetailsReportSection::GetOutput(TPrintout* printOut)
        delete TabsList;
 }
 
-void XAccountBalancesTabsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XAccountBalancesTabsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AddTitle(printOut, "Account Balances - Tabs");
     TStringList *TabsList = new TStringList;
@@ -91,7 +91,7 @@ void XAccountBalancesTabsDetailsReportSection::GetOutput(TPrintout* printOut, TD
             }
        }
        delete TabsList;
-}
+}*/
 
 
 void XAccountBalancesTabsDetailsReportSection::GetReportData(TStringList *TabsList)

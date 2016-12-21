@@ -23,6 +23,7 @@ public:
     virtual TDateTime* GetEndTime();
     virtual void SetStartTime(TDateTime* startTime);
     virtual void SetEndTime(TDateTime* endTime);
+    bool IsConsolidatedZed;
 protected:
     Database::TDBTransaction* _dbTransaction;
     TGlobalSettings* _globalSettings;

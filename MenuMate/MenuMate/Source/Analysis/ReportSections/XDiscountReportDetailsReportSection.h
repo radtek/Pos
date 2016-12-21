@@ -17,9 +17,11 @@ public:
 	virtual void GetOutput(TPrintout* printout);
     void SetPrinterFormat(TPrintout* printOut);
     void SetSingleColumnPrinterFormat(TPrintout* printOut);
-    virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime);
+    //virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime);
 private:
     DataFormatUtilities* dataFormatUtilities;
+    UnicodeString DiscountQueryForNormalZed(UnicodeString DiscountSQL, TPrintout* printout);
+    UnicodeString DiscountQueryForConsolidatedZed(UnicodeString DiscountSQL, TPrintout* printout);
 };
 
 

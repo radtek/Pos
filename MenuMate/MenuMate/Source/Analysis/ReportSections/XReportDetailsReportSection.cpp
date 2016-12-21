@@ -65,7 +65,7 @@ void XReportDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
     printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/4;
 }
 
-void XReportDetailsReportSection::GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime)
+/*void XReportDetailsReportSection::GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime)
 {
     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
@@ -101,4 +101,4 @@ void XReportDetailsReportSection::GetOutput(TPrintout* printout, TDateTime* star
         printout->PrintFormat->Line->Columns[0]->Text = "Preliminary (X) Till Not Closed Off";
         printout->PrintFormat->AddLine();
     }
-}
+} */

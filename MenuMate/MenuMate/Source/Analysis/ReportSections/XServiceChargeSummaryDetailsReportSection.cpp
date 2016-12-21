@@ -50,7 +50,7 @@ void XServiceChargeSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     }
 }
 
-void XServiceChargeSummaryDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XServiceChargeSummaryDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
 
@@ -76,7 +76,7 @@ void XServiceChargeSummaryDetailsReportSection::GetOutput(TPrintout* printOut, T
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(servchargetax);
         printOut->PrintFormat->AddLine();
     }
-}
+}*/
 
 void XServiceChargeSummaryDetailsReportSection::SetupPrintFormat(TPrintFormat*pf)
 {

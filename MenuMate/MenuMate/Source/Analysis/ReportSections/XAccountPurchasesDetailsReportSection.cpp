@@ -246,7 +246,7 @@ void XAccountPurchasesDetailsReportSection::GetOutput(TPrintout* printOut)
     }
 }
 
-void XAccountPurchasesDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XAccountPurchasesDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     TDateTime previousZedTime = Now();
 
@@ -472,4 +472,4 @@ void XAccountPurchasesDetailsReportSection::GetOutput(TPrintout* printOut, TDate
         printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
         printOut->PrintFormat->AddLine();
     }
-}
+}*/

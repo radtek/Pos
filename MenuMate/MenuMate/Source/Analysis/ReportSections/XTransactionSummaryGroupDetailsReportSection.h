@@ -17,7 +17,7 @@ public:
     ~XTransactionSummaryGroupDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
-    virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
+    //virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
     void SetSingleColumnPrinterFormat(TPrintout* printOut);
 
 private:

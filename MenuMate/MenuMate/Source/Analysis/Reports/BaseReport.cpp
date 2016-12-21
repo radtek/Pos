@@ -158,7 +158,7 @@ TPrintout* BaseReport::SetupPrintOutInstance()
     return printOut;
 }
 
-TPrintout* BaseReport::SetupPrintOutInstanceForConsolidatedZed()
+/*TPrintout* BaseReport::SetupPrintOutInstanceForConsolidatedZed()
 {
     bool printerExists = true;
 
@@ -203,5 +203,5 @@ TPrintout* BaseReport::SetupPrintOutInstanceForConsolidatedZed()
     //std::for_each(_sections.begin(), _sections.end(), functor);
     //std::bind2nd(std::mem_fun(&IReportSection::GetOutput), printOut));
     return printOut;
-}
+}*/
 

@@ -29,7 +29,7 @@ public:
     ~XTaxSummaryDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
-    virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
+    //virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
     void GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName);
     std::vector<TSalesTax> sales_tax;
     void SetPrinterFormatToMiddle(TPrintout* printOut);

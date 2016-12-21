@@ -67,7 +67,7 @@ void ZReportDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
     printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/4;
 }
 
-void ZReportDetailsReportSection::GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime)
+/*void ZReportDetailsReportSection::GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime)
 {
  if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
  {
@@ -107,5 +107,5 @@ void ZReportDetailsReportSection::GetOutput(TPrintout* printout, TDateTime* star
         printout->PrintFormat->Line->Columns[0]->Text = "Final (Z)";
         printout->PrintFormat->AddLine();
     }
-}
+}*/
 

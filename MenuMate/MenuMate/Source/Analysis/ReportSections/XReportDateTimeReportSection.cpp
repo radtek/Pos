@@ -14,7 +14,7 @@ XReportDateTimeReportSection::XReportDateTimeReportSection(Database::TDBTransact
 }
 
 XReportDateTimeReportSection::XReportDateTimeReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
-	: BaseReportSection(mmXReport, mmShowBegningandEndingBalance, dbTransaction, globalSettings, startTime, endTime)
+	: BaseReportSection(mmConsolidatedZReport, mmShowBegningandEndingBalance, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
@@ -81,7 +81,7 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
 
 }
 
-void XReportDateTimeReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XReportDateTimeReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     const Currency todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
@@ -132,7 +132,7 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut, TDateTime* sta
         printOut->PrintFormat->AddLine();
     }
 
-}
+}*/
 
 
 void XReportDateTimeReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)

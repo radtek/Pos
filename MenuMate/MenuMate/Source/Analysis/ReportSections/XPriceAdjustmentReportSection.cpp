@@ -167,7 +167,7 @@ void XPriceAdjustmentReportSection::GetOutput(TPrintout* printOut)
 	}
 }
 
-void XPriceAdjustmentReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XPriceAdjustmentReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
 	std::auto_ptr<TStringList> AdjustmentsUserList (new TStringList);
 	std::auto_ptr<TStringList> AdjustmentsSQL (new TStringList);
@@ -311,4 +311,4 @@ void XPriceAdjustmentReportSection::GetOutput(TPrintout* printOut, TDateTime* st
 	    	printOut->PrintFormat->Add("Total |" + dataFormatUtilities->FormatMMReportCurrency( TotalUp ) + "|" + dataFormatUtilities->FormatMMReportCurrency( TotalDown ) );
 
 	}
-}
+}*/

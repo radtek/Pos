@@ -10,7 +10,7 @@ XRefundDetailsReportSection::XRefundDetailsReportSection(Database::TDBTransactio
 }
 
 XRefundDetailsReportSection::XRefundDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
-	:BaseReportSection(mmXReport, mmRefundDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmRefundDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
 }
@@ -148,7 +148,7 @@ void XRefundDetailsReportSection::GetOutput(TPrintout* printOut)
     delete _creditServerList;
 }
 
-void XRefundDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XRefundDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     TStringList *_creditServerList = new TStringList;
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
@@ -273,4 +273,4 @@ void XRefundDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* star
         printOut->PrintFormat->NewLine();
     }
     delete _creditServerList;
-}
+}*/

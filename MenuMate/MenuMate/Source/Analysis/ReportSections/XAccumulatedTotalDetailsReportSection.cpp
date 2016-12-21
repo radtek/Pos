@@ -120,7 +120,7 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 
 }
 
-void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+/*void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     const Currency todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
@@ -219,7 +219,7 @@ void XAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut, TDate
 
     }
 
-}
+} */
 
 void XAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
 {

@@ -36,7 +36,7 @@ void ZBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut)
 		reportSectionDisplayStrategy->BuildSection(printOut);
         return;
 	}
-}void ZBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime){    AddTitle(printOut, " Blind Balances");    printOut->PrintFormat->NewLine();
+}/*void ZBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime){    AddTitle(printOut, " Blind Balances");    printOut->PrintFormat->NewLine();
 
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
     if(reportSectionDisplayTraits)
@@ -50,4 +50,4 @@ void ZBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut)
 		//Call the strategy to build the section..
 		reportSectionDisplayStrategy->BuildSection(printOut);
         return;
-	}}
+	}}*/
