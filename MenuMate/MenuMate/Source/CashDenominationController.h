@@ -57,6 +57,7 @@ class TCashDenominationControllerInterface
 {
  private:
    TCashDenominations CashDenominations;
+   TCashDenominations MasterCashDenominations;
    AnsiString BagId;
    static TCashDenominationControllerInterface* instance;
 
@@ -72,9 +73,11 @@ class TCashDenominationControllerInterface
 
             return instance;
         }
-     void SetCashDenominations(TCashDenominations inCashDenominations);
+     void SetCashDenominations(TCashDenominations inCashDenominations,bool isMaster = true);
+     TCashDenominations GetCashDenominations(bool isMaster = true);
      void SetBagID(AnsiString bagId);
-     TCashDenominations GetCashDenominations();
      AnsiString GetBagID();
+     void ResetCashDenominations();
+     void SaveDenominations(Database::TDBTransaction &DBTransaction,int z_key,UnicodeString inTerminalName);
 };
 #endif

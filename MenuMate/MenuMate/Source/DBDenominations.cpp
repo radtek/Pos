@@ -117,7 +117,7 @@ int TDBDenominations::GetDenominationKey(Database::TDBTransaction &DBTransaction
     retVal = IBInternalQuery->Fields[0]->AsInteger;
     return retVal;
 }
-
+//--------------------------------------------------------------------------
 bool TDBDenominations::IsDenominationExist(Database::TDBTransaction &DBTransaction,int key,AnsiString inTitle)
 {
    bool retVal = false;
@@ -135,5 +135,33 @@ bool TDBDenominations::IsDenominationExist(Database::TDBTransaction &DBTransacti
    }
    return retVal;
 }
-
+//--------------------------------------------------------------------------
+void TDBDenominations::SaveZedDenominations(Database::TDBTransaction &DBTransaction,
+                                            int zedKey,
+                                            UnicodeString inTerminalName,
+                                            UnicodeString inDenominationTitle,
+                                            Currency inDenominationValue,
+                                            int  inDenominationQty)
+{
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "INSERT INTO ZED_CASHDENOMINATIONS ("
+                                 "Z_KEY, "
+                                 "TERMINAL_NAME, "
+                                 "DENOMINATION_TITLE, "
+                                 "DENOMINATION_VALUE, "
+                                 "DENOMINATION_QUANTITY "
+                                 ")VALUES ( "
+                                 ":Z_KEY, "
+                                 ":TERMINAL_NAME, "
+                                 ":DENOMINATION_TITLE, "
+                                 ":DENOMINATION_VALUE, "
+                                 ":DENOMINATION_QUANTITY) ";
+    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zedKey;
+    IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = inTerminalName;
+    IBInternalQuery->ParamByName("DENOMINATION_TITLE")->AsString = inDenominationTitle;
+    IBInternalQuery->ParamByName("DENOMINATION_VALUE")->AsCurrency = inDenominationValue;
+    IBInternalQuery->ParamByName("DENOMINATION_QUANTITY")->AsInteger = inDenominationQty;
+    IBInternalQuery->ExecQuery();
+}
 

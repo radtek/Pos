@@ -44,12 +44,14 @@ AnsiString TBlindBalanceControllerInterface::GetBagID()
 }
 
 
-TBlindBalanceController::TBlindBalanceController(TForm *inDisplayOwner, Database::TDBTransaction &inDBTransaction) : frmListManager(new TfrmListManager(inDisplayOwner)), DBTransaction(inDBTransaction)
+TBlindBalanceController::TBlindBalanceController(TForm *inDisplayOwner, Database::TDBTransaction &inDBTransaction,bool isMaster)
+: frmListManager(new TfrmListManager(inDisplayOwner)), DBTransaction(inDBTransaction),IsMaster(isMaster)
 {
 	DisplayOwner = inDisplayOwner;
 }
 
-TBlindBalanceController::TBlindBalanceController(TForm *inDisplayOwner, Database::TDBTransaction &inDBTransaction, AnsiString DeviceName) : frmListManager(new TfrmListManager(inDisplayOwner)), DBTransaction(inDBTransaction), Terminal(DeviceName)
+TBlindBalanceController::TBlindBalanceController(TForm *inDisplayOwner, Database::TDBTransaction &inDBTransaction,bool isMaster, AnsiString DeviceName)
+: frmListManager(new TfrmListManager(inDisplayOwner)), DBTransaction(inDBTransaction),IsMaster(isMaster), Terminal(DeviceName)
 {
 	DisplayOwner = inDisplayOwner;
 }
@@ -214,7 +216,7 @@ void TBlindBalanceController::PopulateListManager()
                 Currency amount = 0;
                 if(TGlobalSettings::Instance().CashDenominationEntry && ptr->Name.UpperCase() == "CASH")
                 {
-                  TCashDenominations cashDenominations = TCashDenominationControllerInterface::Instance()->GetCashDenominations();
+                  TCashDenominations cashDenominations = TCashDenominationControllerInterface::Instance()->GetCashDenominations(IsMaster);
                   amount = cashDenominations.GetTotal();
                 }
                 BlindBalances.UpdateBlindBalance(ptr->Name, amount);
