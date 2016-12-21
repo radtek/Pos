@@ -9,6 +9,12 @@ CashDenominationCalculationStrategy::CashDenominationCalculationStrategy(Databas
     _isMasterBalance = isMasterBalance;
 }
 
+CashDenominationCalculationStrategy::CashDenominationCalculationStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, bool isMasterBalance, TDateTime* startTime, TDateTime* endTime)
+	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
+{
+   _isMasterBalance = isMasterBalance;
+}
+
 void CashDenominationCalculationStrategy::BuildSection(TPrintout* printOut)
 {
     TCashDenominations cashDenominations;

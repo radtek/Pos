@@ -10,6 +10,7 @@ ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Dat
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
+    IsConsolidatedZed = false;
 }
 
 ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
@@ -17,6 +18,7 @@ ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Dat
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
+    IsConsolidatedZed = true;
 }
 
 ZAccumulatedTotalDetailsReportSection::~ZAccumulatedTotalDetailsReportSection()
@@ -29,6 +31,8 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     const Currency todaysEarnings = 0;
+    const Currency openingBalance = 0;
+    const Currency closingBalance = 0;
     if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
        todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
@@ -37,10 +41,15 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
     {
        todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
     }
-    const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
-	const Currency closingBalance = openingBalance + todaysEarnings;
-
-
+    if(IsConsolidatedZed)
+    {
+        openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction, *_startTime, *_endTime, deviceName);
+    }
+    else
+    {
+        openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
+    }
+	closingBalance = openingBalance + todaysEarnings;
 
 	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
 	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
@@ -134,115 +143,6 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
     }
 
 }
-
-/*void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
-{
-    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-    const Currency todaysEarnings = 0;
-    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
-    {
-       todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
-    }
-    else
-    {
-       todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
-    }
-    const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
-	const Currency closingBalance = openingBalance + todaysEarnings;
-
-
-
-	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
-	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
-    FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
-
-    if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
-    {
-        AddTitle(printOut, "Site Accumulated Zed");
-        printOut->PrintFormat->NewLine();
-    }
-
-    IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
-
-    if(reportSectionDisplayTraits)
-    {
-        reportSectionDisplayTraits->ApplyTraits(printOut);
-    }
-
-    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
-    {
-        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
-        printOut->PrintFormat->Line->Columns[1]->Text = "Beginning OR No.";
-        printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(startInvoiceNumber);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[1]->Text = "Ending OR No.";
-        printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(endInvoiceNumber);
-        printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[1]->Text = "Accumulated";
-        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(closingBalance, ffNumber, CurrencyDecimals);
-        printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[1]->Text = "Grand Total";
-        printOut->PrintFormat->Line->Columns[2]->Text = "";
-        printOut->PrintFormat->AddLine();
-        int value = dataCalculationUtilities->GetZedKey(*_dbTransaction);
-        value += 1;
-        printOut->PrintFormat->Line->Columns[1]->Text = "Z-Counter";
-        printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(value);
-        printOut->PrintFormat->AddLine();
-
-        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
-        printOut->PrintFormat->Line->ColCount = 5;
-        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
-        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/5;
-        printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-        printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/5;
-        printOut->PrintFormat->Line->Columns[2]->Alignment = taCenter;
-        printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/5;
-        printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
-        printOut->PrintFormat->Line->Columns[4]->Width = printOut->PrintFormat->Width * 1/5 + 4;
-
-        printOut->PrintFormat->Line->Columns[0]->Alignment = taRightJustify;
-        //printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/3.5;
-        printOut->PrintFormat->Line->Columns[0]->Text = "__";
-        printOut->PrintFormat->Line->Columns[1]->Line();
-        printOut->PrintFormat->Line->Columns[2]->Line();
-        printOut->PrintFormat->Line->Columns[3]->Line();
-        printOut->PrintFormat->Line->Columns[4]->Line();
-        //printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/3.5;
-        //printOut->PrintFormat->Line->Columns[3]->Text = "_________";
-        printOut->PrintFormat->AddLine();
-    }
-    else
-    {
-        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/3;
-        printOut->PrintFormat->Line->FontInfo.Reset();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Opening Balance:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(openingBalance);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Z Report:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(todaysEarnings);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Accumulated Total:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Beginning Invoice:";
-        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(startInvoiceNumber);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Ending Invoice:";
-        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(endInvoiceNumber);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Z Reading No:";
-        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(_globalSettings->ZCount);
-        printOut->PrintFormat->AddLine();
-    }
-}*/
 
 void ZAccumulatedTotalDetailsReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
 {

@@ -6,6 +6,15 @@ UnifiedPointsStrategy::UnifiedPointsStrategy(Database::TDBTransaction* dbTransac
 {
     _pointsReportHeaderTraits = pointsReportHeaderTraits;
     _dataFormatUtilities = new DataFormatUtilities;
+    IsConsolidatedStartegy = false;
+}
+
+UnifiedPointsStrategy::UnifiedPointsStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, IReportSectionDisplayTraits* pointsReportHeaderTraits, TDateTime* startTime, TDateTime* endTime)
+	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
+{
+    _pointsReportHeaderTraits = pointsReportHeaderTraits;
+    _dataFormatUtilities = new DataFormatUtilities;
+    IsConsolidatedStartegy = true;
 }
 
 void UnifiedPointsStrategy::BuildSection(TPrintout* printOut)
@@ -23,7 +32,20 @@ void UnifiedPointsStrategy::BuildSection(TPrintout* printOut)
 	TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
 	ibInternalQuery->Close();
 
-    ibInternalQuery->SQL->Text = "SELECT  "
+    if(IsConsolidatedStartegy)
+    {
+       GetPointsDetailsForConsolidatedZed(ibInternalQuery, masterSlaveCondition);
+       ibInternalQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+       ibInternalQuery->ParamByName("endTime")->AsDateTime = *_endTime;
+    }
+    else
+    {
+       GetPointsDetailsForNormalZed(ibInternalQuery, masterSlaveCondition);
+       ibInternalQuery->ParamByName("ZTERMINAL_NAME")->AsString = deviceName;
+    }
+
+
+    /*ibInternalQuery->SQL->Text = "SELECT  "
                                     "SUM(DAYARCHIVE.POINTS_EARNED) EARNED,  "
                                     "SUM(DAYARCHIVE.REDEEMED) REDEEMED,  "
                                     "DAYARCHIVE.LOYALTY_KEY  "
@@ -35,10 +57,10 @@ void UnifiedPointsStrategy::BuildSection(TPrintout* printOut)
                                         "AND  PT.ADJUSTMENT_TYPE not in (5,6) GROUP BY INVOICE_NUMBER "
                             " ) pts on  DAB.INVOICE_NUMBER = pts.INVOICE_NUMBER " + masterSlaveCondition + "(DAYARCHIVE.POINTS_EARNED != 0 OR DAYARCHIVE.REDEEMED != 0) "
                                     "AND DAYARCHIVE.LOYALTY_KEY != 0 AND DAYARCHIVE.LOYALTY_KEY IS NOT NULL "
-                            "GROUP BY LOYALTY_KEY; ";
+                            "GROUP BY LOYALTY_KEY; ";*/
 
 
-    ibInternalQuery->ParamByName("ZTERMINAL_NAME")->AsString = deviceName;
+
 	if (!_globalSettings->EnableDepositBagNum)
 	{
 		ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
@@ -89,5 +111,46 @@ void UnifiedPointsStrategy::BuildSection(TPrintout* printOut)
 		printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
 		printOut->PrintFormat->AddLine();
 	}
+}
+
+void UnifiedPointsStrategy::GetPointsDetailsForNormalZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
+{
+    ibInternalQuery->SQL->Text = "SELECT  "
+                "SUM(DAYARCHIVE.POINTS_EARNED) EARNED,  "
+                "SUM(DAYARCHIVE.REDEEMED) REDEEMED,  "
+                "DAYARCHIVE.LOYALTY_KEY  "
+        "FROM DAYARCBILL DAB "
+        "LEFT JOIN DAYARCHIVE ON DAB.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
+        "inner join (select PT.INVOICE_NUMBER from POINTSTRANSACTIONS   PT "
+                    "inner join CONTACTS  CT ON CT.CONTACTS_KEY = PT.CONTACTS_KEY  "
+                    "where CT.MEMBER_TYPE != 2  "
+                    "AND  PT.ADJUSTMENT_TYPE not in (5,6) GROUP BY INVOICE_NUMBER "
+        " ) pts on  DAB.INVOICE_NUMBER = pts.INVOICE_NUMBER " + masterSlaveCondition + "(DAYARCHIVE.POINTS_EARNED != 0 OR DAYARCHIVE.REDEEMED != 0) "
+                "AND DAYARCHIVE.LOYALTY_KEY != 0 AND DAYARCHIVE.LOYALTY_KEY IS NOT NULL "
+        "GROUP BY LOYALTY_KEY; ";
+}
+
+void UnifiedPointsStrategy::GetPointsDetailsForConsolidatedZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
+{
+    masterSlaveCondition = "WHERE DAB.TIME_STAMP >=:startTime and DAB.TIME_STAMP < :endTime AND ";
+
+	if (!_globalSettings->EnableDepositBagNum)
+	{
+		masterSlaveCondition = masterSlaveCondition + " DAB.TERMINAL_NAME = :TERMINAL_NAME AND ";
+	}
+
+    ibInternalQuery->SQL->Text = "SELECT  "
+                "SUM(ARCHIVE.POINTS_EARNED) EARNED,  "
+                "SUM(ARCHIVE.REDEEMED) REDEEMED,  "
+                "ARCHIVE.LOYALTY_KEY  "
+        "FROM ARCBILL DAB "
+        "LEFT JOIN ARCHIVE ON DAB.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
+        "inner join (select PT.INVOICE_NUMBER from POINTSTRANSACTIONS   PT "
+                    "inner join CONTACTS  CT ON CT.CONTACTS_KEY = PT.CONTACTS_KEY  "
+                    "where CT.MEMBER_TYPE != 2  "
+                    "AND  PT.ADJUSTMENT_TYPE not in (5,6) GROUP BY INVOICE_NUMBER "
+        " ) pts on  DAB.INVOICE_NUMBER = pts.INVOICE_NUMBER " + masterSlaveCondition + "(ARCHIVE.POINTS_EARNED != 0 OR ARCHIVE.REDEEMED != 0) "
+                "AND ARCHIVE.LOYALTY_KEY != 0 AND ARCHIVE.LOYALTY_KEY IS NOT NULL "
+        "GROUP BY LOYALTY_KEY; ";
 }
 

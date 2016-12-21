@@ -7,12 +7,14 @@ XPatronAverageDetailsReportSection::XPatronAverageDetailsReportSection(Database:
 	:BaseReportSection(mmXReport, mmPatronAverageDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
+    IsConsolidatedZed = false;
 }
 
 XPatronAverageDetailsReportSection::XPatronAverageDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmXReport, mmPatronAverageDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
+    IsConsolidatedZed = true;
 }
 
 
@@ -26,12 +28,6 @@ void XPatronAverageDetailsReportSection::GetOutput(TPrintout* printOut)
    PrintPatronStatistics(printOut);
    PrintChitStatistics(printOut);
 }
-
-/*void XPatronAverageDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
-{
-   PrintPatronStatistics(printOut);
-   PrintChitStatistics(printOut);
-}*/
 
 void XPatronAverageDetailsReportSection::PrintPatronStatistics(TPrintout* printOut)
 {
@@ -93,9 +89,18 @@ void XPatronAverageDetailsReportSection::PrintChitStatistics(TPrintout* printOut
     {
         // if so check whether there are more terminal names in the dayarchive table
         // this is where the sales recorded in at the end of the day from master and slaves
-        query->SQL->Text = "select distinct(terminal_name) "
+
+        if(IsConsolidatedZed)
+        {
+           GetDistinctTerminalNameForConsolidatedZed(query);
+        }
+        else
+        {
+           GetDistinctTerminalNameForNormalZed(query);
+        }
+        /*query->SQL->Text = "select distinct(terminal_name) "
         "       from dayarchive "
-        "       where terminal_name <> :terminal_name;";
+        "       where terminal_name <> :terminal_name;";*/
         query->ParamByName("terminal_name")->AsString = terminalName;
         query->ExecQuery();
         if(!query->Eof)
@@ -110,23 +115,44 @@ void XPatronAverageDetailsReportSection::PrintChitStatistics(TPrintout* printOut
     }
 
     /* Calculate the average total spend. */
-    query->SQL->Text = "select sum(price * qty) total_spend, "
+    /*query->SQL->Text = "select sum(price * qty) total_spend, "
                        "count(*) n_sales "
                        "from dayarchive "
                        "where terminal_name in ( " + terminalNames + " ) "
-                       "and chit_name is not null;";
+                       "and chit_name is not null;";*/
+    if(IsConsolidatedZed)
+    {
+       GetTotalSpendForConsolidatedZed(query, terminalNames);
+       query->ParamByName("startTime")->AsDateTime = *_startTime;
+       query->ParamByName("endTime")->AsDateTime = *_endTime;
+    }
+    else
+    {
+       GetTotalSpendForNormalZed(query, terminalNames);
+    }
+
     query->ExecQuery();
     total_spend = query->FieldByName("total_spend")->AsCurrency;
     average_total_spend = query->FieldByName("total_spend")->AsCurrency / (query->FieldByName("n_sales")->AsCurrency + (query->FieldByName("n_sales")->AsInteger == 0));
     query->Close();
 
     /* Calculate the averages for each chit type. */
-    query->SQL->Text = "select chit_name, "
+    /*query->SQL->Text = "select chit_name, "
                        "sum(price * qty) average_spend "
                        "from dayarchive "
                        "where terminal_name in ( " + terminalNames + " ) "
                        "and chit_name is not null "
-                       "group by chit_name;";
+                       "group by chit_name;";*/
+    if(IsConsolidatedZed)
+    {
+       GetChitNameForConsolidatedZed(query, terminalNames);
+       query->ParamByName("startTime")->AsDateTime = *_startTime;
+       query->ParamByName("endTime")->AsDateTime = *_endTime;
+    }
+    else
+    {
+        GetChitNameForNormalZed(query, terminalNames);
+    }
     for (query->ExecQuery(); !query->Eof; query->Next())
     {
         chit_totals[query->FieldByName("chit_name")->AsString] = query->FieldByName("average_spend")->AsCurrency;
@@ -134,7 +160,7 @@ void XPatronAverageDetailsReportSection::PrintChitStatistics(TPrintout* printOut
     query->Close();
 
     /* Determine the patron count for each chit type. */
-    query->SQL->Text =
+    /*query->SQL->Text =
 						"select dacp.chit_name, "
                         "sum(dac.patron_count) n_patrons "
                         "from daypatroncount dac "
@@ -150,7 +176,19 @@ void XPatronAverageDetailsReportSection::PrintChitStatistics(TPrintout* printOut
                         "da.chit_name "
                         ") dacp on "
                         "dacp.arcbill_key = dac.arcbill_key "
-                        "group by dacp.chit_name;";
+                        "group by dacp.chit_name;";*/
+
+    if(IsConsolidatedZed)
+    {
+       GetTotalPatronCountForConsolidatedZed(query, terminalNames);
+       query->ParamByName("startTime")->AsDateTime = *_startTime;
+       query->ParamByName("endTime")->AsDateTime = *_endTime;
+    }
+    else
+    {
+        GetTotalPatronCountForNormalZed(query, terminalNames);
+    }
+
     for (query->ExecQuery(); !query->Eof; query->Next())
       {
             int n_patrons = query->FieldByName("n_patrons")->AsInteger;
@@ -187,6 +225,102 @@ void XPatronAverageDetailsReportSection::PrintChitStatistics(TPrintout* printOut
     RoundToNearest(total_spend / Currency(total_patrons + (total_patrons == 0)), 0.01, midpoint_rounds_down),UnicodeString::sffFixed,2);
     printOut->PrintFormat->AddLine();
     printOut->PrintFormat->NewLine();
+}
+
+void XPatronAverageDetailsReportSection::GetDistinctTerminalNameForNormalZed(TIBSQL *query)
+{
+    query->SQL->Text = "select distinct(terminal_name) "
+    "       from dayarchive "
+    "       where terminal_name <> :terminal_name;";
+}
+
+void XPatronAverageDetailsReportSection::GetDistinctTerminalNameForConsolidatedZed(TIBSQL *query)
+{
+    query->SQL->Text = "select distinct(terminal_name) "
+    "       from archive "
+    "       where terminal_name <> :terminal_name;";
+}
+
+void XPatronAverageDetailsReportSection::GetTotalSpendForNormalZed(TIBSQL *query, UnicodeString terminalNames)
+{
+    query->SQL->Text = "select sum(price * qty) total_spend, "
+                       "count(*) n_sales "
+                       "from dayarchive "
+                       "where terminal_name in ( " + terminalNames + " ) "
+                       "and chit_name is not null;";
+}
+
+void XPatronAverageDetailsReportSection::GetTotalSpendForConsolidatedZed(TIBSQL *query, UnicodeString terminalNames)
+{
+    query->SQL->Text = "select sum(price * qty) total_spend, "
+                       "count(*) n_sales "
+                       "from archive "
+                       "where terminal_name in ( " + terminalNames + " ) "
+                       "and archive.TIME_STAMP >= :startTime and archive.TIME_STAMP < :endTime "
+                       "and chit_name is not null;";
+}
+
+void XPatronAverageDetailsReportSection::GetChitNameForNormalZed(TIBSQL *query, UnicodeString terminalNames)
+{
+ query->SQL->Text = "select chit_name, "
+                   "sum(price * qty) average_spend "
+                   "from dayarchive "
+                   "where terminal_name in ( " + terminalNames + " ) "
+                   "and chit_name is not null "
+                   "group by chit_name;";
+}
+void XPatronAverageDetailsReportSection::GetChitNameForConsolidatedZed(TIBSQL *query, UnicodeString terminalNames)
+{
+ query->SQL->Text = "select chit_name, "
+                   "sum(price * qty) average_spend "
+                   "from archive "
+                   "where terminal_name in ( " + terminalNames + " ) "
+                   "and chit_name is not null "
+                   "and archive.TIME_STAMP >= :startTime and archive.TIME_STAMP < :endTime "
+                   "group by chit_name;";
+}
+
+void XPatronAverageDetailsReportSection::GetTotalPatronCountForNormalZed(TIBSQL *query, UnicodeString terminalNames)
+{
+    query->SQL->Text =
+        "select dacp.chit_name, "
+        "sum(dac.patron_count) n_patrons "
+        "from daypatroncount dac "
+        "inner join ( "
+        "select da.arcbill_key, "
+        "da.chit_name "
+        "from daypatroncount dac "
+        "inner join dayarchive da on "
+        "da.arcbill_key = dac.arcbill_key "
+        "where terminal_name in ( " + terminalNames + " ) "
+        "and chit_name is not null "
+        "group by da.arcbill_key, "
+        "da.chit_name "
+        ") dacp on "
+        "dacp.arcbill_key = dac.arcbill_key "
+        "group by dacp.chit_name;";
+}
+
+void XPatronAverageDetailsReportSection::GetTotalPatronCountForConsolidatedZed(TIBSQL *query, UnicodeString terminalNames)
+{
+    query->SQL->Text =
+        "select dacp.chit_name, "
+        "sum(dac.patron_count) n_patrons "
+        "from patroncount dac "
+        "inner join ( "
+        "select da.arcbill_key, "
+        "da.chit_name "
+        "from patroncount dac "
+        "inner join archive da on "
+        "da.arcbill_key = dac.arcbill_key "
+        "where terminal_name in ( " + terminalNames + " ) "
+        "and chit_name is not null "
+        "and da.TIME_STAMP >= :startTime and da.TIME_STAMP < :endTime "
+        "group by da.arcbill_key, "
+        "da.chit_name "
+        ") dacp on "
+        "dacp.arcbill_key = dac.arcbill_key "
+        "group by dacp.chit_name;";
 }
 
 

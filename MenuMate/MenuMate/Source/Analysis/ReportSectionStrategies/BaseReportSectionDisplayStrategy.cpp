@@ -4,3 +4,8 @@ BaseReportSectionDisplayStrategy::BaseReportSectionDisplayStrategy(Database::TDB
         : _dbTransaction(dbTransaction), _globalSettings(globalSettings)
 {
 }
+
+BaseReportSectionDisplayStrategy::BaseReportSectionDisplayStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+        : _dbTransaction(dbTransaction), _globalSettings(globalSettings), _startTime(startTime), _endTime(endTime)
+{
+}

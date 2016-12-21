@@ -10,6 +10,13 @@ BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTr
     _isMasterBalance = isMasterBalance;
 }
 
+
+BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, bool isMasterBalance, TDateTime* startTime, TDateTime* endTime)
+	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
+{
+    _isMasterBalance = isMasterBalance;
+}
+
 void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
 {
     TBlindBalances balance;

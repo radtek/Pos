@@ -21,6 +21,8 @@ public:
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    void GetPriceAdjustmentQueryForNormalZed(TStringList* AdjustmentsSQL, AnsiString masterSlaveCondition);
+    void GetPriceAdjustmentQueryForConsolidatedZed(TStringList* AdjustmentsSQL, AnsiString masterSlaveCondition);
 };
 
 

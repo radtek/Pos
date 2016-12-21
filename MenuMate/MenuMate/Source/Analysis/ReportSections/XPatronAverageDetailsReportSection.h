@@ -25,5 +25,13 @@ private:
     DataFormatUtilities* dataFormatUtilities;
     void PrintPatronStatistics(TPrintout* printOut);
     void PrintChitStatistics(TPrintout* printOut);
+    void GetDistinctTerminalNameForNormalZed(TIBSQL *query);
+    void GetDistinctTerminalNameForConsolidatedZed(TIBSQL *query);
+    void GetTotalSpendForConsolidatedZed(TIBSQL *query, UnicodeString terminalNames);
+    void GetTotalSpendForNormalZed(TIBSQL *query, UnicodeString terminalNames);
+    void GetChitNameForConsolidatedZed(TIBSQL *query, UnicodeString terminalNames);
+    void GetChitNameForNormalZed(TIBSQL *query, UnicodeString terminalNames);
+    void GetTotalPatronCountForConsolidatedZed(TIBSQL *query, UnicodeString terminalNames);
+    void GetTotalPatronCountForNormalZed(TIBSQL *query, UnicodeString terminalNames);
 };
 #endif
