@@ -139,7 +139,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 
                     }
                     else
-                    {                                                                                     etgedyfh
+                    {
                         if (TGlobalSettings::Instance().SummariseDiscountOnZed || IsConsolidatedZed)
                         {
                             ((TStringList*)DiscountServerList->Objects[Index])->AddObject
@@ -220,7 +220,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
             }
             if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
             {
-                if (TGlobalSettings::Instance().SummariseDiscountOnZed)
+                if (TGlobalSettings::Instance().SummariseDiscountOnZed || IsConsolidatedZed)
                 {
                     printout->PrintFormat->Add("Name | Items | Total");
                 }
@@ -241,7 +241,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 				printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
 				printout->PrintFormat->Add(DiscountServerList->Strings[i]);
 
-				if (TGlobalSettings::Instance().SummariseDiscountOnZed || TGlobalSettings::Instance().UseBIRFormatInXZReport)
+				if (TGlobalSettings::Instance().SummariseDiscountOnZed || TGlobalSettings::Instance().UseBIRFormatInXZReport || IsConsolidatedZed)
 				{
 					// ...followed by the items discounted by that user.
 					printout->PrintFormat->Line->ColCount = 3;

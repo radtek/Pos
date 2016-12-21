@@ -7,12 +7,14 @@ XPointsReportDetailsReportSection::XPointsReportDetailsReportSection(Database::T
 	:BaseReportSection(mmXReport, mmPointsReportDetailsSection, dbTransaction, globalSettings)
 {
     _dataFormatUtilities = new DataFormatUtilities;
+    IsConsolidatedZed = false;
 }
 
 XPointsReportDetailsReportSection::XPointsReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmPointsReportDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     _dataFormatUtilities = new DataFormatUtilities;
+    IsConsolidatedZed = true;
 }
 
 
@@ -51,51 +53,21 @@ void XPointsReportDetailsReportSection::GetGiftCardOutput(TPrintout* printOut)
 		masterSlaveCondition = " AND  DAB.TERMINAL_NAME = :TERMINAL_NAME ";
 	}
 
-	TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
-	ibInternalQuery->Close();
-   /*	ibInternalQuery->SQL->Text = "SELECT "
-                                        "COALESCE(SUM(PTrans.REDEEMED),0) REDEEMED, "
-                                        "COALESCE( SUM(PTrans.PURCHASED),0) PURCHASED, "
-                                        "PTrans.CONTACTS_KEY AS LOYALTY_KEY, "
-                                        "CT.Name "
-                                    "FROM DAYARCBILL DAB "
-                                    "LEFT JOIN (SELECT "
-                                                    "INVOICE_NUMBER, "
-                                                    "POINTSTRANSACTIONS_KEY, "
-                                                    "CONTACTS_KEY, "
-                                                    "ADJUSTMENT_TYPE, "
-                                                    "MIN(CASE WHEN (ADJUSTMENT_TYPE = 3 OR ADJUSTMENT_TYPE = 8 OR ADJUSTMENT_TYPE = 9) THEN ABS(COALESCE(ADJUSTMENT,0)) END) AS REDEEMED, "
-                                                    "MIN(CASE WHEN ADJUSTMENT_TYPE = 1 THEN  COALESCE( ADJUSTMENT,0) END) AS PURCHASED "
-                                                "FROM POINTSTRANSACTIONS "
-                                                "GROUP BY POINTSTRANSACTIONS_KEY,INVOICE_NUMBER, CONTACTS_KEY,ADJUSTMENT_TYPE) PTrans on PTrans.INVOICE_NUMBER = DAB.INVOICE_NUMBER "
-                                    "LEFT JOIN CONTACTS CT ON PTrans.CONTACTS_KEY = CT.CONTACTS_KEY "
-                                    "WHERE CT.MEMBER_TYPE = 2 " + masterSlaveCondition +
-                                    "GROUP BY PTrans.CONTACTS_KEY, CT.Name "
-                                    "ORDER BY LOYALTY_KEY;";     */
+	 TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
+	 ibInternalQuery->Close();
 
-  	ibInternalQuery->SQL->Text = 	"SELECT "
-                                            "COALESCE(SUM(PTrans.REDEEMED),0) REDEEMED, "
-                                            "COALESCE( SUM(PTrans.PURCHASED),0) PURCHASED, "
-                                            "PTrans.CONTACTS_KEY AS LOYALTY_KEY,  "
-                                            "PTrans.Name  "
-                                        "FROM DAYARCBILL DAB  "
-                                        "INNER JOIN (SELECT "
-                                                "INVOICE_NUMBER,  "
-                                                "POINTSTRANSACTIONS_KEY,  "
-                                                "POINTSTRANSACTIONS.CONTACTS_KEY, "
-                                                "ADJUSTMENT_TYPE, "
-                                                "MIN(CASE WHEN (ADJUSTMENT_TYPE = 3 OR ADJUSTMENT_TYPE = 8 OR ADJUSTMENT_TYPE = 9) THEN ABS(COALESCE(ADJUSTMENT,0)) END) AS REDEEMED, "
-                                                "MIN(CASE WHEN ADJUSTMENT_TYPE = 1 THEN  COALESCE( ADJUSTMENT,0) END) AS PURCHASED , "
-                                                "C.NAME  "
-                                        "FROM POINTSTRANSACTIONS   "
-                                        "INNER JOIN ( SELECT CT.CONTACTS_KEY,CT.NAME  FROM CONTACTS CT WHERE CT.MEMBER_TYPE=2) C ON C.CONTACTS_KEY=POINTSTRANSACTIONS.CONTACTS_KEY "
-                                                    "GROUP BY POINTSTRANSACTIONS_KEY,INVOICE_NUMBER, CONTACTS_KEY,ADJUSTMENT_TYPE,  C.NAME  "
-                                                    ") PTrans on PTrans.INVOICE_NUMBER = DAB.INVOICE_NUMBER   "
+     if(IsConsolidatedZed)
+     {
+        GetGiftCardOutputForConsolidatedZed(ibInternalQuery, masterSlaveCondition);
+        ibInternalQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+        ibInternalQuery->ParamByName("endTime")->AsDateTime = *_endTime;
+     }
+     else
+     {
+        GetGiftCardOutputForNormalZed(ibInternalQuery, masterSlaveCondition);
+     }
 
-                                        "WHERE DAB.TIME_STAMP >= (select coalesce(max(b.Time_Stamp),'28.12.1889, 19:39:25.000') from ZEDS b where b.TERMINAL_NAME = :ZTERMINAL_NAME)  "
-                                         + masterSlaveCondition +
-                                                "GROUP BY PTrans.CONTACTS_KEY, PTrans.Name  "
-                                                "ORDER BY LOYALTY_KEY " ;
+
 
      ibInternalQuery->ParamByName("ZTERMINAL_NAME")->AsString = deviceName;
   	if (!_globalSettings->EnableDepositBagNum)
@@ -262,8 +234,8 @@ void XPointsReportDetailsReportSection::GetOutputForAdjustmentType(int adjustmen
 
 TIBSQL* XPointsReportDetailsReportSection::GetPointsQuery(int adjustmentType)
 {
-    AnsiString masterSlaveCondition = "";
-    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+     AnsiString masterSlaveCondition = "";
+     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     _memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
 
 	if (!_globalSettings->EnableDepositBagNum)
@@ -273,58 +245,116 @@ TIBSQL* XPointsReportDetailsReportSection::GetPointsQuery(int adjustmentType)
 
 	TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
 	ibInternalQuery->Close();
- /*	ibInternalQuery->SQL->Text = "SELECT "
-                                    "COALESCE(SUM(PT.ADJUSTMENT), 0) Points, "
-                                    "PT.CONTACTS_KEY AS LOYALTY_KEY, "
-                                    "CT.NAME "
-                                "FROM DAYARCBILL DAB "
-                                "LEFT JOIN POINTSTRANSACTIONS PT ON DAB.INVOICE_NUMBER = PT.INVOICE_NUMBER "
-                                "LEFT JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
-                                "WHERE PT.ADJUSTMENT_TYPE = :Adjustment_Type " + masterSlaveCondition +
-                                "GROUP BY PT.CONTACTS_KEY, CT.NAME "
-                                "ORDER BY PT.CONTACTS_KEY; ";     */
-
-    	ibInternalQuery->SQL->Text =
-                                    "SELECT "
-                                        "COALESCE(SUM(PT1.ADJUSTMENT), 0) Points, "
-                                        "PT1.CONTACTS_KEY AS LOYALTY_KEY, "
-                                        "PT1.NAME  "
-                                    "FROM DAYARCBILL DAB "
-                                    "INNER JOIN ( SELECT PT.ADJUSTMENT_TYPE,PT.CONTACTS_KEY,PT.ADJUSTMENT,CT.NAME,PT.INVOICE_NUMBER FROM  POINTSTRANSACTIONS  PT "
-                                                "INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
-                                                "WHERE PT.ADJUSTMENT_TYPE =:Adjustment_Type   "
-                                                ")PT1 ON PT1.INVOICE_NUMBER = DAB.INVOICE_NUMBER  "
-                                   "WHERE DAB.TIME_STAMP >= (select coalesce(max(b.Time_Stamp),'28.12.1889, 19:39:25.000') from ZEDS b where b.TERMINAL_NAME = :ZTERMINAL_NAME)  "
-                                     + masterSlaveCondition +
-                                   "GROUP BY PT1.CONTACTS_KEY, PT1.NAME   "
-                                    "ORDER BY PT1.CONTACTS_KEY;  ";
-
+    if(IsConsolidatedZed)
+    {
+        GetPointsQueryForConsolidatedZed(ibInternalQuery, masterSlaveCondition);
+        ibInternalQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+        ibInternalQuery->ParamByName("endTime")->AsDateTime = *_endTime;
+    }
+    else
+    {
+        GetPointsQueryForNormalZed(ibInternalQuery, masterSlaveCondition);
+    }
 
     ibInternalQuery->ParamByName("ZTERMINAL_NAME")->AsString = deviceName;
     ibInternalQuery->ParamByName("Adjustment_Type")->AsInteger = adjustmentType;
 
-	if (!_globalSettings->EnableDepositBagNum)
-	{
-		ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
-	}
-
+    if (!_globalSettings->EnableDepositBagNum)
+    {
+        ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+    }
     return ibInternalQuery;
 }
 
-/*void XPointsReportDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
+void XPointsReportDetailsReportSection::GetGiftCardOutputForNormalZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
 {
-    AddTitle(printOut, "Points Report");
-	printOut->PrintFormat->NewLine();
+    ibInternalQuery->SQL->Text = 	"SELECT "
+        "COALESCE(SUM(PTrans.REDEEMED),0) REDEEMED, "
+        "COALESCE( SUM(PTrans.PURCHASED),0) PURCHASED, "
+        "PTrans.CONTACTS_KEY AS LOYALTY_KEY,  "
+        "PTrans.Name  "
+    "FROM DAYARCBILL DAB  "
+    "INNER JOIN (SELECT "
+            "INVOICE_NUMBER,  "
+            "POINTSTRANSACTIONS_KEY,  "
+            "POINTSTRANSACTIONS.CONTACTS_KEY, "
+            "ADJUSTMENT_TYPE, "
+            "MIN(CASE WHEN (ADJUSTMENT_TYPE = 3 OR ADJUSTMENT_TYPE = 8 OR ADJUSTMENT_TYPE = 9) THEN ABS(COALESCE(ADJUSTMENT,0)) END) AS REDEEMED, "
+            "MIN(CASE WHEN ADJUSTMENT_TYPE = 1 THEN  COALESCE( ADJUSTMENT,0) END) AS PURCHASED , "
+            "C.NAME  "
+    "FROM POINTSTRANSACTIONS   "
+    "INNER JOIN ( SELECT CT.CONTACTS_KEY,CT.NAME  FROM CONTACTS CT WHERE CT.MEMBER_TYPE=2) C ON C.CONTACTS_KEY=POINTSTRANSACTIONS.CONTACTS_KEY "
+                "GROUP BY POINTSTRANSACTIONS_KEY,INVOICE_NUMBER, CONTACTS_KEY,ADJUSTMENT_TYPE,  C.NAME  "
+                ") PTrans on PTrans.INVOICE_NUMBER = DAB.INVOICE_NUMBER   "
 
-    IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
+    "WHERE DAB.TIME_STAMP >= (select coalesce(max(b.Time_Stamp),'28.12.1889, 19:39:25.000') from ZEDS b where b.TERMINAL_NAME = :ZTERMINAL_NAME)  "
+     + masterSlaveCondition +
+            "GROUP BY PTrans.CONTACTS_KEY, PTrans.Name  "
+            "ORDER BY LOYALTY_KEY "  ;
+}
 
-    if (reportSectionDisplayStrategy)
-	{
-		//Call the strategy to build the section..
-		reportSectionDisplayStrategy->BuildSection(printOut);
-	}
+void XPointsReportDetailsReportSection::GetGiftCardOutputForConsolidatedZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
+{
 
-    GetGiftCardOutput(printOut);
-    GetFirstVisitOutput(printOut);
-    GetBirthdayOutput(printOut);
-} */
+    ibInternalQuery->SQL->Text = 	"SELECT "
+        "COALESCE(SUM(PTrans.REDEEMED),0) REDEEMED, "
+        "COALESCE( SUM(PTrans.PURCHASED),0) PURCHASED, "
+        "PTrans.CONTACTS_KEY AS LOYALTY_KEY,  "
+        "PTrans.Name  "
+    "FROM ARCBILL DAB  "
+    "INNER JOIN (SELECT "
+            "INVOICE_NUMBER,  "
+            "POINTSTRANSACTIONS_KEY,  "
+            "POINTSTRANSACTIONS.CONTACTS_KEY, "
+            "ADJUSTMENT_TYPE, "
+            "MIN(CASE WHEN (ADJUSTMENT_TYPE = 3 OR ADJUSTMENT_TYPE = 8 OR ADJUSTMENT_TYPE = 9) THEN ABS(COALESCE(ADJUSTMENT,0)) END) AS REDEEMED, "
+            "MIN(CASE WHEN ADJUSTMENT_TYPE = 1 THEN  COALESCE( ADJUSTMENT,0) END) AS PURCHASED , "
+            "C.NAME  "
+    "FROM POINTSTRANSACTIONS   "
+    "INNER JOIN ( SELECT CT.CONTACTS_KEY,CT.NAME  FROM CONTACTS CT WHERE CT.MEMBER_TYPE=2) C ON C.CONTACTS_KEY=POINTSTRANSACTIONS.CONTACTS_KEY "
+                "GROUP BY POINTSTRANSACTIONS_KEY,INVOICE_NUMBER, CONTACTS_KEY,ADJUSTMENT_TYPE,  C.NAME  "
+                ") PTrans on PTrans.INVOICE_NUMBER = DAB.INVOICE_NUMBER   "
+
+    "WHERE DAB.TIME_STAMP >=:startTime and DAB.TIME_STAMP < :endTime  from ZEDS b where b.TERMINAL_NAME = :ZTERMINAL_NAME)  "
+     + masterSlaveCondition +
+            "GROUP BY PTrans.CONTACTS_KEY, PTrans.Name  "
+            "ORDER BY LOYALTY_KEY " ;
+}
+
+void XPointsReportDetailsReportSection::GetPointsQueryForNormalZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
+{
+    ibInternalQuery->SQL->Text =
+            "SELECT "
+                "COALESCE(SUM(PT1.ADJUSTMENT), 0) Points, "
+                "PT1.CONTACTS_KEY AS LOYALTY_KEY, "
+                "PT1.NAME  "
+            "FROM DAYARCBILL DAB "
+            "INNER JOIN ( SELECT PT.ADJUSTMENT_TYPE,PT.CONTACTS_KEY,PT.ADJUSTMENT,CT.NAME,PT.INVOICE_NUMBER FROM  POINTSTRANSACTIONS  PT "
+                        "INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
+                        "WHERE PT.ADJUSTMENT_TYPE =:Adjustment_Type   "
+                        ")PT1 ON PT1.INVOICE_NUMBER = DAB.INVOICE_NUMBER  "
+           "WHERE DAB.TIME_STAMP >= (select coalesce(max(b.Time_Stamp),'28.12.1889, 19:39:25.000') from ZEDS b where b.TERMINAL_NAME = :ZTERMINAL_NAME)  "
+             + masterSlaveCondition +
+           "GROUP BY PT1.CONTACTS_KEY, PT1.NAME   "
+            "ORDER BY PT1.CONTACTS_KEY;  ";
+
+}
+
+void XPointsReportDetailsReportSection::GetPointsQueryForConsolidatedZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
+{
+    ibInternalQuery->SQL->Text =
+            "SELECT "
+                "COALESCE(SUM(PT1.ADJUSTMENT), 0) Points, "
+                "PT1.CONTACTS_KEY AS LOYALTY_KEY, "
+                "PT1.NAME  "
+            "FROM ARCBILL DAB "
+            "INNER JOIN ( SELECT PT.ADJUSTMENT_TYPE,PT.CONTACTS_KEY,PT.ADJUSTMENT,CT.NAME,PT.INVOICE_NUMBER FROM  POINTSTRANSACTIONS  PT "
+                        "INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
+                        "WHERE PT.ADJUSTMENT_TYPE =:Adjustment_Type   "
+                        ")PT1 ON PT1.INVOICE_NUMBER = DAB.INVOICE_NUMBER  "
+           "WHERE DAB.TIME_STAMP >=:startTime and DAB.TIME_STAMP < :endTime from ZEDS b where b.TERMINAL_NAME = :ZTERMINAL_NAME)  "
+             + masterSlaveCondition +
+           "GROUP BY PT1.CONTACTS_KEY, PT1.NAME   "
+            "ORDER BY PT1.CONTACTS_KEY;  ";
+
+}

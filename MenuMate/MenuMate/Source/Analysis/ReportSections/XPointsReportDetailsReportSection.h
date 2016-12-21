@@ -28,6 +28,10 @@ private:
     void GetBirthdayOutput(TPrintout* printOut);
     void GetOutputForAdjustmentType(int adjustmentType, UnicodeString title, TPrintout* printOut);
     TIBSQL* GetPointsQuery(int adjustmentType);
+    void GetGiftCardOutputForConsolidatedZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition);
+    void GetGiftCardOutputForNormalZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition);
+    void GetPointsQueryForConsolidatedZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition);
+    void GetPointsQueryForNormalZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition);
 };
 
 #endif
