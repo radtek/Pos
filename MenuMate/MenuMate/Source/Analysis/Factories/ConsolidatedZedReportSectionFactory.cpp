@@ -35,6 +35,7 @@
 #include "XCancelsAndRefundDetailsForBIRReportSection.h"
 #include "ZCashDenominationReportSection.h"
 #include "ZMasterCashDenominationReportSection.h"
+#include "ZStaffHoursDetailsReportSectionForConsolidatedZed.h"
 
 ConsolidatedZedReportSectionFactory::ConsolidatedZedReportSectionFactory(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSectionFactory(dbTransaction, globalSettings, startTime, endTime)
@@ -106,7 +107,7 @@ IReportSection* ConsolidatedZedReportSectionFactory::CreateReportSection(ReportS
             reportSection = new ZAccumulatedTotalDetailsReportSection(_dbTransaction, _globalSettings, _startTime, _endTime);
             break;
         case mmStaffHoursDetailsSection:
-            reportSection = new ZStaffHoursDetailsReportSection(_dbTransaction, _globalSettings, _startTime, _endTime);
+            reportSection = new ZStaffHoursDetailsReportSectionForConsolidatedZed(_dbTransaction, _globalSettings, _startTime, _endTime);
             break;
         case mmCommissionTipsDetailsSection:
             reportSection = new ZCommissionTipsDetailsReportSection(_dbTransaction, _globalSettings);

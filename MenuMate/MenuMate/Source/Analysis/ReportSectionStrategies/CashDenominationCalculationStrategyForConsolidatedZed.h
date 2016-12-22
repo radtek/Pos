@@ -12,6 +12,9 @@ public:
 
 protected:
     bool _isMasterBalance;
+private:
+void GetCashDenominationQueryForConsolidatedZed(TPrintout* printOut, AnsiString deviceName);
+
 
 };
 
