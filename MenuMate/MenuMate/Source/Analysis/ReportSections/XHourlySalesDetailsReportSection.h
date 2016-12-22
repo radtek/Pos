@@ -20,6 +20,8 @@ public:
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    AnsiString GetHourlySalesDetailsForNormalZed(AnsiString hourlySalesQuery);
+    AnsiString GetHourlySalesDetailsForConsolidatedZed(AnsiString hourlySalesQuery);
 };
 
 #endif

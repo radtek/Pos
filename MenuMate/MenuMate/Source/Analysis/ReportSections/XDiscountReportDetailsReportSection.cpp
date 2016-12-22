@@ -51,61 +51,6 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
        DiscountSQL = DiscountQueryForNormalZed(DiscountSQL, printout);
     }
 
-
-    /*if (_globalSettings->UseBIRFormatInXZReport)
-    {
-		DiscountSQL = "select '' NAME, SubQuery1.DESCRIPTION, sum(SubQuery1.DISCOUNTED_VALUE) DISCOUNT, count(*)Qty "
-                     "from( "
-                     "select DAYARCORDERDISCOUNTS.DESCRIPTION, "
-                            "sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNTED_VALUE, "
-                            "DAYARCBILL.ARCBILL_KEY, DAYARCHIVE.TERMINAL_NAME "
-                     "from DAYARCORDERDISCOUNTS inner join DAYARCHIVE on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-                    "inner join DAYARCBILL on DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
-                    " GROUP BY DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCBILL.ARCBILL_KEY, DAYARCHIVE.TERMINAL_NAME)SubQuery1 ";
-                    if(!TGlobalSettings::Instance().EnableDepositBagNum)
-                    {
-                       DiscountSQL +=  " where SubQuery1.TERMINAL_NAME = :TERMINAL_NAME  "
-                                       " group by SubQuery1.DESCRIPTION ";
-                    }
-                    else
-                    {
-                       DiscountSQL +=  " group by SubQuery1.DESCRIPTION " ;
-                    }
-
-    }
-    else
-    {
-        AddTitle(printout, "Discount Report");
-		if (_globalSettings->SummariseDiscountOnZed)
-		{
-			DiscountSQL =
-			"select '' NAME,SUM(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT, sum(DAYARCHIVE.QTY) QTY,DAYARCORDERDISCOUNTS.DESCRIPTION "
-			"from " "DAYARCBILL LEFT JOIN SECURITY ON DAYARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
-			"LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
-			"LEFT JOIN DAYARCHIVE ON DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
-			"LEFT JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-			"where "
-			"DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' AND "
-			"DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME " "AND DAYARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
-			(SecurityTypes[secDiscountedBy]) + "' " ;
-            "group by NAME,DAYARCORDERDISCOUNTS.DESCRIPTION; ";
-		}
-		else
-		{
-			DiscountSQL = "select SUM(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT, "
-			"DAYARCBILL.ARCBILL_KEY,CONTACTS.NAME,DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCHIVE.TIME_STAMP_BILLED " "from "
-			"DAYARCBILL LEFT JOIN SECURITY ON DAYARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
-			"LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
-			"LEFT JOIN DAYARCHIVE ON DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
-			"LEFT JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-			"where "
-			"DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' AND "
-			"DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME " "AND DAYARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
-			(SecurityTypes[secDiscountedBy]) + "' "
-			"group by DAYARCBILL.ARCBILL_KEY,CONTACTS.NAME,DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCHIVE.TIME_STAMP_BILLED;";
-		}
-     }*/
-
 		qrDiscount->Close();
 		qrDiscount->SQL->Text = DiscountSQL;
         if(!TGlobalSettings::Instance().EnableDepositBagNum)
