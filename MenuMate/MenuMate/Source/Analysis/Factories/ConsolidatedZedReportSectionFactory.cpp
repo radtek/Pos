@@ -157,10 +157,10 @@ IReportSection* ConsolidatedZedReportSectionFactory::CreateReportSection(ReportS
             reportSection = new XCancelsAndRefundDetailsForBIRReportSection(_dbTransaction, _globalSettings, _startTime, _endTime);
             break;
         case mmCashDenominationDetailsSection:
-            reportSection = new ZCashDenominationReportSection(_dbTransaction, _globalSettings);
+            reportSection = new ZCashDenominationReportSection(_dbTransaction, _globalSettings, _startTime, _endTime);
             break;
         case mmMasterCashDenominationDetailsSection:
-            reportSection = new ZMasterCashDenominationReportSection(_dbTransaction, _globalSettings);
+            reportSection = new ZMasterCashDenominationReportSection(_dbTransaction, _globalSettings, _startTime, _endTime);
             break;
         default:
             reportSection = NULL;

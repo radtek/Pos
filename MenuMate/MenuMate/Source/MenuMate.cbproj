@@ -3,7 +3,7 @@
 			<ProjectGuid>{192EBDBE-B1AC-4977-ACF9-0BDD61E6D32A}</ProjectGuid>
 			<ProjectType>CppVCLApplication</ProjectType>
 			<MainSource>MenuMate.cpp</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -3243,6 +3243,13 @@
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportBuilders\ConsolidatedEndOfDayReportBuilder.cpp">
 				<BuildOrder>735</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSectionStrategies\BlindBalanceCalculationStrategyForConsolidatedZed.cpp">
+				<DependentOn>Analysis\ReportSectionStrategies\BlindBalanceCalculationStrategyForConsolidatedZed.h</DependentOn>
+				<BuildOrder>737</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSectionStrategies\CashDenominationCalculationStrategyForConsolidatedZed.cpp">
+				<BuildOrder>738</BuildOrder>
 			</CppCompile>
 			<FormResources Include="POS\Functions.dfm"/>
 			<FormResources Include="PrinterRedirect.dfm"/>

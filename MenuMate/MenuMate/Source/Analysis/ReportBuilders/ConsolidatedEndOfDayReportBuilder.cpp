@@ -40,7 +40,7 @@ void ConsolidatedEndOfDayReportBuilder::AddSessionDateSection(IReport* report)
 
 void ConsolidatedEndOfDayReportBuilder::AddMasterBlindBalancesSection(IReport* report)
 {
-    AddConsolidatedReportSectionToReport(report, mmMasterBlindBalancesDetailsSection, (GetGlobalSettings()->EnableBlindBalances && GetGlobalSettings()->EnableDepositBagNum), GetStartTime(), GetEndTime());
+    //AddConsolidatedReportSectionToReport(report, mmMasterBlindBalancesDetailsSection, (GetGlobalSettings()->EnableBlindBalances && GetGlobalSettings()->EnableDepositBagNum), GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddBlindBalancesSection(IReport* report)
@@ -185,7 +185,7 @@ void ConsolidatedEndOfDayReportBuilder::AddCashDenominationSection(IReport* repo
 
 void ConsolidatedEndOfDayReportBuilder::AddMasterCashDenominationSection(IReport* report)
 {
-    AddConsolidatedReportSectionToReport(report, mmMasterCashDenominationDetailsSection, (GetGlobalSettings()->CashDenominationEntry && GetGlobalSettings()->EnableDepositBagNum), GetStartTime(), GetEndTime());
+    //AddConsolidatedReportSectionToReport(report, mmMasterCashDenominationDetailsSection, (GetGlobalSettings()->CashDenominationEntry && GetGlobalSettings()->EnableDepositBagNum), GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::XAndZReportFormatForBIR(IReport* report)

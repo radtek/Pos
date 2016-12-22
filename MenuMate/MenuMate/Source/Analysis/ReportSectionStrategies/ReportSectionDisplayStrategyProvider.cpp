@@ -8,6 +8,8 @@
 #include "SeperatePointsStrategy.h"
 #include "UnifiedPointsStrategy.h"
 #include "CashDenominationCalculationStrategy.h"
+#include "BlindBalanceCalculationStrategyForConsolidatedZed.h"
+#include "CashDenominationCalculationStrategyForConsolidatedZed.h"
 
 ReportSectionDisplayStrategyProvider::ReportSectionDisplayStrategyProvider(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 {
@@ -110,10 +112,10 @@ IReportSectionDisplayStrategy* ReportSectionDisplayStrategyProvider::CreateSecti
                     reportSectionDisplayStrategy = new SessionDateWithoutTimeStrategy(_dbTransaction, _globalSettings, _startTime, _endTime);
                     break;
                 case mmBlindBalancesDetailsSection:
-                    reportSectionDisplayStrategy = new BlindBalanceCalculationStrategy(_dbTransaction, _globalSettings, false, _startTime, _endTime);
+                    reportSectionDisplayStrategy = new BlindBalanceCalculationStrategyForConsolidatedZed(_dbTransaction, _globalSettings, false, _startTime, _endTime);
                     break;
                 case mmMasterBlindBalancesDetailsSection:
-                    reportSectionDisplayStrategy = new BlindBalanceCalculationStrategy(_dbTransaction, _globalSettings, true, _startTime, _endTime);
+                    reportSectionDisplayStrategy = new BlindBalanceCalculationStrategyForConsolidatedZed(_dbTransaction, _globalSettings, true, _startTime, _endTime);
                     break;
                 case mmPointsReportDetailsSection:
                     {
@@ -129,10 +131,10 @@ IReportSectionDisplayStrategy* ReportSectionDisplayStrategyProvider::CreateSecti
                     }
                     break;
                case mmCashDenominationDetailsSection:
-                    reportSectionDisplayStrategy = new CashDenominationCalculationStrategy(_dbTransaction, _globalSettings, false, _startTime, _endTime);
+                    reportSectionDisplayStrategy = new CashDenominationCalculationStrategyForConsolidatedZed(_dbTransaction, _globalSettings, false, _startTime, _endTime);
                     break;
                case mmMasterCashDenominationDetailsSection:
-                    reportSectionDisplayStrategy = new CashDenominationCalculationStrategy(_dbTransaction, _globalSettings, true, _startTime, _endTime);
+                    reportSectionDisplayStrategy = new CashDenominationCalculationStrategyForConsolidatedZed(_dbTransaction, _globalSettings, true, _startTime, _endTime);
                     break;
                 default:
                     reportSectionDisplayStrategy = NULL;

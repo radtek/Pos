@@ -8,8 +8,6 @@ BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTr
 {
     _isMasterBalance = isMasterBalance;
     IsConsolidatedStartegy = false;
-    _isConsolidatedStrategy = IsConsolidatedStartegy;
-
 }
 
 
@@ -18,7 +16,6 @@ BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTr
 {
     _isMasterBalance = isMasterBalance;
     IsConsolidatedStartegy = true;
-    _isConsolidatedStrategy = IsConsolidatedStartegy;
 }
 
 void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
@@ -29,21 +26,16 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
 
     TForm* currentForm = Screen->ActiveForm;
     TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction,_isMasterBalance, deviceName);
-
-    if(!IsConsolidatedStartegy)
+    if(blindBalanceController.Run())
     {
-        if(blindBalanceController.Run())
-        {
-           _dbTransaction->Commit();
-           _dbTransaction->StartTransaction();
-        }
-        else
-        {
-            printOut->ContinuePrinting = false;
-            return;
-        }
+       _dbTransaction->Commit();
+       _dbTransaction->StartTransaction();
     }
-
+    else
+    {
+        printOut->ContinuePrinting = false;
+        return;
+    }
 
     balance = blindBalanceController.Get();
     bagId = blindBalanceController.GetBagID();
@@ -63,45 +55,7 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
 	printOut->PrintFormat->Line->Columns[2]->Text = "Variance ";
 
 	printOut->PrintFormat->AddLine();
-
     LoadBlindBalanceDetailsForNormalZed(printOut, ibInternalQuery, balance, deviceName);
-
-    /*TBlindBalanceContainer::iterator itBlindBalances = balance.begin();
-	for (itBlindBalances = balance.begin(); itBlindBalances != balance.end(); itBlindBalances++)
-	{
-		ibInternalQuery->Close();
-		ibInternalQuery->SQL->Text = "select sum(dabp.subtotal) total "
-                                        "       from dayarcbillpay dabp "
-                                        "            left join dayarcbill dab on "
-                                        "                 dabp.arcbill_key = dab.arcbill_key "
-                                        "       where dabp.pay_type = :pay_type ";
-
-        if (!_globalSettings->EnableDepositBagNum || _isMasterBalance)
-		{
-			ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text +
-			"             and dab.terminal_name = :terminal_name "
-			"       		  group by dabp.pay_type;";
-			ibInternalQuery->ParamByName("terminal_name")->AsString = deviceName;
-		}
-		else
-		{
-			ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + "       group by dabp.pay_type;";
-		}
-
-		printOut->PrintFormat->Line->Columns[0]->Text = itBlindBalances->first;
-		printOut->PrintFormat->Line->Columns[1]->Text = FormatFloat("0.00", itBlindBalances->second.BlindBalance);
-
-		ibInternalQuery->ParamByName("pay_type")->AsString = itBlindBalances->first;
-		ibInternalQuery->ExecQuery();
-
-		itBlindBalances->second.SystemBalance = ibInternalQuery->FieldByName("total")->AsCurrency;
-		double tempBalance = itBlindBalances->second.BlindBalance - itBlindBalances->second.SystemBalance;
-
-		printOut->PrintFormat->Line->Columns[2]->Text = FormatFloat("0.00", tempBalance);
-		printOut->PrintFormat->AddLine();
-
-		ibInternalQuery->Close();
-	}*/
 }
 
 void BlindBalanceCalculationStrategy::LoadBlindBalanceDetailsForNormalZed(TPrintout* printOut, TIBSQL *ibInternalQuery, TBlindBalances balance, AnsiString deviceName)
