@@ -159,41 +159,37 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
 			DBTransaction.StartTransaction();
 			TDBContacts::GetAvailableGroups(DBTransaction, Info);
 
-		   if (GetMembershipDetailsFromGUI(DBTransaction, Info,
-											 triggered_by_preloaded_card))
+		   if (GetMembershipDetailsFromGUI(DBTransaction, Info, triggered_by_preloaded_card))
 		   {
                Info.ActivationDate = Now();
                Info.MemberCode = cardCode;
 			   ManagerDiscount->DiscountKeyToCode(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
-			   // Update Member & Assign Member Number.
 			   MembershipSystem->SetContactDetails(DBTransaction, Info.ContactKey, Info);
-			   // Ensure the member is written into the DB prior to updating the
-			   // smart card which may fire events that requires a DM member lookup.
-			   // i.e updating the card restore point.
                bool IsSmartCardEnabled =TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership,false);
 			   DBTransaction.Commit();
 
-			   if (TGlobalSettings::Instance().LoyaltyMateEnabled && Info.CloudUUID == "" && (IsSmartCardEnabled || IsBarcodeCard) )
+			   if (TGlobalSettings::Instance().LoyaltyMateEnabled && Info.CloudUUID == "" && (IsSmartCardEnabled || IsBarcodeCard))
 			   {
                    // calling the protected method from MembershipManagerSmartCards
                     TSyndCode syndicateCode =  GetSyndicateCodeManager().GetCommunicationSyndCode();
                     bool memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(syndicateCode, Info);
 			   }
 
-               if(!IsBarcodeCard)
+               if(ManagerSmartCards->CardOk)
                 {
                    SaveContactInfoAddedToSmartCard(Info, true);
-                   /*if(TGlobalSettings::Instance().LoyaltyMateEnabled && Info.Points.getPointsBalance() != 0)
+                   if(TGlobalSettings::Instance().LoyaltyMateEnabled && Info.Points.getPointsBalance() != 0)
                    {
                        SavePointsTransactionsToSmartCard(Info.Points,"",true);
-                   }*/
+                   }
                 }
 
                DBTransaction.StartTransaction();
-               if(!IsBarcodeCard)
+               if(ManagerSmartCards->CardOk)
                 {
                    TMMContactInfo creationDateInfo;
                    ManagerSmartCards->GetContactInfo(creationDateInfo);
+                   creationDateInfo.CardCreationDate = Now();
                    TDBContacts::SetCardCreationDate(DBTransaction, Info.ContactKey, creationDateInfo.CardCreationDate);
                    TManagerMembershipSmartCards::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.CloudUUID);
                 }
@@ -217,8 +213,6 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
 				TDBContacts::SetCurrentGroups(DBTransaction, Info.ContactKey, GroupKey);
 			  }
 
-
-			   // Update Tab.
 			   if (Info.ContactKey != 0 && Info.TabEnabled)
 			   {
                   int TabKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
@@ -237,7 +231,7 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
       }
       __finally
       {
-	 CardIssueInProgress = false;
+	    CardIssueInProgress = false;
       }
    }
    return Result;
@@ -249,9 +243,7 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
 
     if (MembershipSystem->ReadOnlyInterface)
     {
-        MessageBox
-          ("You must Add,Edit and Delete Members from your 3rd Party Membership software.",
-           "Warning", MB_ICONWARNING + MB_OK);
+        MessageBox("You must Add,Edit and Delete Members from your 3rd Party Membership software.","Warning", MB_ICONWARNING + MB_OK);
     }
     else
      {
@@ -306,23 +298,16 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
                         }
 
                         ManagerDiscount->DiscountKeyToCode(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
-
-
                         /* Even though we have a parent transaction for all the updates, we need a seperate transaction for this setContactdetails method
                             because while the current transaction is not committed yet, the SaveContactInfoEditedToSmartCard will fire card update event,
                             SelectDish will catch the event, tries to load the contact from database, at that point old information will be picked up. */
-
                         Database::TDBTransaction DBSetMemberTransaction(DBControl);
                         DBSetMemberTransaction.StartTransaction();
-                        // Update Member & Get MemberNumber.
-                        MembershipSystem->SetContactDetails(DBSetMemberTransaction,
-                                                            Info.ContactKey,
-                                                            Info);
+                        MembershipSystem->SetContactDetails(DBSetMemberTransaction,Info.ContactKey,Info);
                         DBSetMemberTransaction.Commit();
 
-                        if(!Info.IsCodePresent())
+                        if(ManagerSmartCards->CardOk)
                         {
-						  // Information has already been saved to database..Update Smart Card.
 						  SaveContactInfoEditedToSmartCard(Info);
                         }
                         else
@@ -352,39 +337,31 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
 							MembershipSystem->DeleteContactCards(DBTransaction, Info.ContactKey);
                         }
 
-                        TDBContacts::RemoveCurrentGroups(DBTransaction,
-                                                         Info.ContactKey);
-                        for (int i = 0; i < Info.currentGroups.size(); i++) {
-                            TDBContacts::SetCurrentGroups(DBTransaction,
-                                                          Info.ContactKey,
-                                                          Info.
-                                                          currentGroups.
-                                                          at(i));
+                        TDBContacts::RemoveCurrentGroups(DBTransaction,Info.ContactKey);
+                        for (int i = 0; i < Info.currentGroups.size(); i++)
+                        {
+                            TDBContacts::SetCurrentGroups(DBTransaction,Info.ContactKey,Info.currentGroups.at(i));
                         }
-                        TDBContacts::SetSummaGroup(DBTransaction,
-                                                   Info.ContactKey, Info);
+                        TDBContacts::SetSummaGroup(DBTransaction,Info.ContactKey, Info);
 
-                        if (!Info.currentGroups.size()) {
+                        if (!Info.currentGroups.size())
+                        {
                             ContactGroup GroupKey;
-
-                            GroupKey.Key =
-                              TDBGroups::FindGroup(DBTransaction,
-                                                   "No Contacts Group");
-                            TDBContacts::SetCurrentGroups(DBTransaction,
-                                                          Info.ContactKey,
-                                                          GroupKey);
+                            GroupKey.Key = TDBGroups::FindGroup(DBTransaction,"No Contacts Group");
+                            TDBContacts::SetCurrentGroups(DBTransaction,Info.ContactKey,GroupKey);
                         }
 
                     }
                     EndMemberTransaction();
                 }
             }
-            catch(Exception & E) {
-                MessageBox(E.Message, "Failed to Edit Member.",
-                           MB_OK + MB_ICONERROR);
+            catch(Exception & E)
+            {
+                MessageBox(E.Message, "Failed to Edit Member.", MB_OK + MB_ICONERROR);
             }
         }
-        __finally {
+        __finally
+        {
             CardIssueInProgress = false;
         }
     }

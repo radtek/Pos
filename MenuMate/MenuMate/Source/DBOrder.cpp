@@ -2362,7 +2362,6 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
     double accumulatedQuantity = 0;
 	try
 	{
-
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
 		IBInternalQuery->Close();
@@ -2380,6 +2379,11 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 		std::set<__int64> ValidOrderKeys;
 		std::set<__int64> OrderKeysThatHaveSides;
 		TSCDPWDChecker SCDChecker;
+
+        ///Check whether any discount exist having  SCD Or PWD Discount group.
+        bool isSCDOrPWDDiscountExist = IsSCDOrPWDDiscountConfigured(DBTransaction);
+        bool checkSCDOrPWDExist = false;
+
 		for (; !IBInternalQuery->Eof  ;IBInternalQuery->Next())
 		{
 			TPnMOrder Order;
@@ -2393,8 +2397,13 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 			Order.TimeKey     = IBInternalQuery->FieldByName("TIME_KEY")->AsInteger;
             Order.IsWeighted  = IBInternalQuery->FieldByName("WEIGHTED_SIZE")->AsString == "T";
 
-			if(!SelectingItems || ((SCDChecker.ItemSelectionCheck(DBTransaction, Order.Key, ValidOrderKeys)) &&
-                                   (SCDChecker.ItemSelectionCheckPWD(DBTransaction, Order.Key, ValidOrderKeys))))
+            if(isSCDOrPWDDiscountExist)
+            {
+                checkSCDOrPWDExist = ((SCDChecker.ItemSelectionCheck(DBTransaction, Order.Key, ValidOrderKeys)) &&
+                                       (SCDChecker.ItemSelectionCheckPWD(DBTransaction, Order.Key, ValidOrderKeys)));
+            }
+
+			if(!SelectingItems || (!isSCDOrPWDDiscountExist || checkSCDOrPWDExist))
 			{
 				if(Order.GroupNumber != 0)
 				{
@@ -4726,5 +4735,30 @@ int TDBOrder::CheckItemAvailability(Database::TDBTransaction &DBTransaction, int
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+}
+//------------------------------------------------------------------------------------------------------------
+bool TDBOrder::IsSCDOrPWDDiscountConfigured(Database::TDBTransaction &DBTransaction)
+{
+    bool isDiscountConfigured = false;
+    TIBSQL *SelectDiscountGroup = DBTransaction.Query(DBTransaction.AddQuery());
+    SelectDiscountGroup->Close();
+    SelectDiscountGroup->SQL->Clear();
+    SelectDiscountGroup->SQL->Text =
+                                "SELECT  a.NAME, "
+                                "DGDT.DISCOUNTTYPE_KEY, "
+                                "DGDT.DISCOUNTGROUPS_KEY, "
+                                "DISCOUNT_GROUPS.DISCOUNTGROUPS_KEY "
+                                "FROM DISCOUNTS a "
+                                "INNER JOIN DISCOUNTGROUPS_DISCOUNTTYPES DGDT ON A.DISCOUNT_KEY = DGDT.DISCOUNTTYPE_KEY "
+                                "INNER JOIN DISCOUNT_GROUPS ON  DISCOUNT_GROUPS.DISCOUNTGROUPS_KEY = DGDT.DISCOUNTGROUPS_KEY "
+                                "WHERE DISCOUNT_GROUPS.DISCOUNTGROUP_NAME = :DISCOUNTGROUP_NAME_1 OR  DISCOUNT_GROUPS.DISCOUNTGROUP_NAME = :DISCOUNTGROUP_NAME_2 ";
+    SelectDiscountGroup->ParamByName("DISCOUNTGROUP_NAME_1")->AsString = "Senior Citizen";
+    SelectDiscountGroup->ParamByName("DISCOUNTGROUP_NAME_2")->AsString = "Person with Disability";
+    SelectDiscountGroup->ExecQuery();
+
+    if(SelectDiscountGroup->RecordCount)
+        isDiscountConfigured = true;
+
+    return isDiscountConfigured;
 }
 

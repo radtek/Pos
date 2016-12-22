@@ -14,6 +14,7 @@
 class TDBOrder
 {
 	private :
+    static bool IsSCDOrPWDDiscountConfigured(Database::TDBTransaction &DBTransaction);
 public:
 	TDBOrder();
 	~TDBOrder();

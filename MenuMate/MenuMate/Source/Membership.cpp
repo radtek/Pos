@@ -689,15 +689,13 @@ void TMembership::SetContactLoyaltyAttributes(Database::TDBTransaction &DBTransa
                                        "UUID = :UUID, "
                                        "SITE_ID = :SITE_ID, "
                                        "CONTACTS_KEY = :CONTACTS_KEY, "
-                                       "ACTIVATION_TOKEN = :ACTIVATION_TOKEN, "
-                                       "CREATION_TIME = :CREATION_TIME "
+                                       "ACTIVATION_TOKEN = :ACTIVATION_TOKEN "
                                        "WHERE  ATTRIB_KEY =:ATTRIB_KEY";
           IBInternalQuery->ParamByName("ATTRIB_KEY")->AsInteger = attrKey;
           IBInternalQuery->ParamByName("UUID")->AsString = Info.CloudUUID;
           IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Info.SiteID;
           IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
           IBInternalQuery->ParamByName("ACTIVATION_TOKEN")->AsString = Info.ActivationToken;
-          IBInternalQuery->ParamByName("CREATION_TIME")->AsDateTime = Now();
           IBInternalQuery->ExecQuery();
           IBInternalQuery->Close();
       }
