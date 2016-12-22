@@ -342,7 +342,9 @@ AnsiString TLoyaltyMateUtilities::GetUniqueNumber(Database::TDBTransaction &DBTr
   ManagerSyndicateCode.Initialise(DBTransaction);
   int nextNumber = TDBContacts::GenerateNextMemberEmailNumber(DBTransaction);
   AnsiString siteString = IntToStr(TGlobalSettings::Instance().SiteID);
-  AnsiString uniqueString = siteString + ManagerSyndicateCode.GetCommunicationSyndCodeString() + IntToStr(nextNumber);
+  AnsiString syndicate = ManagerSyndicateCode.GetCommunicationSyndCodeString();
+
+  AnsiString uniqueString = siteString + syndicate.SubString(1,10) + IntToStr(nextNumber);
   /*TGUID uniqueId;
   CreateGUID(uniqueId);
   AnsiString uniqueString = Sysutils::GUIDToString(uniqueId);
