@@ -472,6 +472,7 @@ public:
     bool HideRoundingOnReceipt;
 	bool CashDenominationEntry;
     bool MembershipPaid;
+    bool UseMemberSubs;
 };
 
 #endif

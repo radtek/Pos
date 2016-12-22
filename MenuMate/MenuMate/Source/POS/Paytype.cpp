@@ -3844,6 +3844,11 @@ void __fastcall TfrmPaymentType::lbeDiscountClick(TObject *Sender)
 	TempUserInfo = TDeviceRealTerminal::Instance().User;
 	bool AllowDiscount = false;
 	AnsiString DiscountMenu = "";
+    if((CurrentTransaction.Membership.Member.ContactKey != 0) && !CurrentTransaction.Membership.Member.Points.PointsRules.Contains(eprAllowDiscounts))
+    {
+        MessageBox("Discounts are disabled for this Member.", "INFORMATION", MB_OK + MB_ICONINFORMATION);
+        return;
+    }
 	// Secutriy access changes fix when Implementing full security access levbels.
 	// If not, prompt for a login.
 	if (!AllowDiscount)
@@ -3961,6 +3966,8 @@ void TfrmPaymentType::ApplyMembership(TMMContactInfo &Member)
 		CurrentTransaction.ApplyMembership(Member, MemberSource);
 		if (CurrentTransaction.Orders != NULL)
 		{
+            if(!CurrentTransaction.Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+               ManagerDiscount->ClearDiscounts(CurrentTransaction.Orders);
             ManagerDiscount->ClearMemberExemtDiscounts(CurrentTransaction.Orders);
 			TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(CurrentTransaction);
 			Reset(); // Reloads the Buttons on the screen.

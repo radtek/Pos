@@ -30,6 +30,7 @@
 #include "GlobalSettings.h"
 #include "ManagerLoyaltyMate.h"
 #include "LoyaltyMateOperationDialogBox.h"
+#include "PointsRulesSetUtils.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -113,7 +114,99 @@ void TfrmEditCustomer::DrawContactDetails()
     lbePoints->Caption = "Points Total : " + FloatToStrF(Info.Points.getPointsBalance(), ffFixed, 15, 2);
 
    //CheckBoxCharges->Checked = Info.Charges;
+   if(!Editing)
+      UpdatePointsRuleNewMember();
+   else
+      UpdatePointsRuleOldMember();
 
+//   if (Info.Points.PointsRules.Contains(eprNoPointsRedemption))
+//	  tcbeprNoPointsRedemption->Latched = true;
+//   else
+//	  tcbeprNoPointsRedemption->Latched = false;
+//
+//   if (Info.Points.PointsRules.Contains(eprNoPointsPurchases))
+//	  tcbeprNoPointsPurchases->Latched = true;
+//   else
+//	  tcbeprNoPointsPurchases->Latched = false;
+//
+//   if (Info.Points.PointsRules.Contains(eprEarnsPointsWhileRedeemingPoints))
+//	  tcbeprEarnsPointsWhileRedeemingPoints->Latched = true;
+//   else
+//	  tcbeprEarnsPointsWhileRedeemingPoints->Latched = false;
+//
+//   if (Info.Points.PointsRules.Contains(eprOnlyEarnsPointsWhileRedeemingPoints))
+//	  tcbeprOnlyEarnsPointsWhileRedeemingPoints->Latched = true;
+//   else
+//	  tcbeprOnlyEarnsPointsWhileRedeemingPoints->Latched = false;
+//
+//   if (Info.Points.PointsRules.Contains(eprNeverEarnsPoints))
+//	  tcbeprNeverEarnsPoints->Latched = true;
+//   else
+//	  tcbeprNeverEarnsPoints->Latched = false;
+//
+//   if (Info.Points.PointsRules.Contains(eprAllowedNegitive))
+//	  tcbeprAllowedNegitive->Latched = true;
+//   else
+//	  tcbeprAllowedNegitive->Latched = false;
+//   if(Info.ContactKey != 0)
+//   {
+//     if(Info.Points.PointsRules.Contains(eprFinancial))
+//        tcbeprFinancial->Latched = true;
+//     else
+//        tcbeprFinancial->Latched = false;
+//   }
+//   else
+//   {
+//     if(!TGlobalSettings::Instance().UseMemberSubs)
+//     {
+//        tcbeprFinancial->Latched = true;
+//     }
+//     else
+//     {
+//        tcbeprFinancial->Latched = false;
+//     }
+//
+//   }
+//   if(Info.Points.PointsRules.Contains(eprAllowDiscounts))
+//      tcbeprAllowDiscounts->Latched = true;
+//   else
+//      tcbeprAllowDiscounts->Latched = false;
+}
+//----------------------------------------------------------------------------
+void TfrmEditCustomer::UpdatePointsRuleNewMember()
+{
+    if(TGlobalSettings::Instance().UseMemberSubs)
+    {
+        tcbeprNoPointsRedemption->Latched = true;
+        tcbeprNoPointsPurchases->Latched = true;
+        tcbeprNeverEarnsPoints->Latched = true;
+        tcbeprAllowDiscounts->Latched = true;
+        int PointRule = 0;
+        PointRule |= eprNeverEarnsPoints;
+        PointRule |= eprNoPointsPurchases;
+        PointRule |= eprNoPointsRedemption;
+        TPointsRulesSetUtils().Expand(PointRule, Info.Points.PointsRules);
+        PointRule |= eprAllowDiscounts;
+        TPointsRulesSetUtils().ExpandSubs(PointRule, Info.Points.PointsRulesSubs);
+    }
+    else
+    {
+        tcbeprNoPointsRedemption->Latched = false;
+        tcbeprNoPointsPurchases->Latched = false;
+        tcbeprEarnsPointsWhileRedeemingPoints->Latched = false;
+        tcbeprNeverEarnsPoints->Latched = false;
+        tcbeprAllowedNegitive->Latched = false;
+        tcbeprFinancial->Latched = true;
+        tcbeprAllowDiscounts->Latched = true;
+        int PointRule = 0;
+        PointRule |= eprAllowDiscounts;
+        PointRule |= eprFinancial;
+        TPointsRulesSetUtils().ExpandSubs(PointRule, Info.Points.PointsRulesSubs);
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmEditCustomer::UpdatePointsRuleOldMember()
+{
    if (Info.Points.PointsRules.Contains(eprNoPointsRedemption))
 	  tcbeprNoPointsRedemption->Latched = true;
    else
@@ -143,8 +236,16 @@ void TfrmEditCustomer::DrawContactDetails()
 	  tcbeprAllowedNegitive->Latched = true;
    else
 	  tcbeprAllowedNegitive->Latched = false;
-   tcbeprFinancial->Latched = TGlobalSettings::Instance().MembershipPaid;
-   tcbeprAllowDiscounts->Latched = false;
+
+   if(Info.Points.PointsRulesSubs.Contains(eprFinancial))
+      tcbeprFinancial->Latched = true;
+   else
+      tcbeprFinancial->Latched = false;
+
+   if(Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+      tcbeprAllowDiscounts->Latched = true;
+   else
+      tcbeprAllowDiscounts->Latched = false;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::WMDisplayChange(TWMDisplayChange& Message)
@@ -347,6 +448,11 @@ void TfrmEditCustomer::RedrawButtons(TObject * Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tbtnPalmProfileMouseClick(TObject *Sender)
 {
+   if(!Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+   {
+      MessageBox("Discounts cannot be configured for the Member. Please allow Discounts for the Member first.", "Information", MB_OK + MB_ICONINFORMATION);
+      return;
+   }
    pgControl->ActivePage = tsDiscounts;
    RedrawButtons(Sender);
    RedrawDiscounts();
@@ -1216,13 +1322,24 @@ void __fastcall TfrmEditCustomer::cbNoEmailMouseClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tcbeprFinancialClick(TObject *Sender)
 {
-    int i = 0;
+   if (Info.Points.PointsRulesSubs.Contains(eprFinancial))
+      tcbeprFinancial->Latched = true;
+   else
+      tcbeprFinancial->Latched = false;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tcbeprAllowDiscountsClick(TObject *Sender)
 {
-    int i = 0;
+   if (tcbeprAllowDiscounts->Latched)
+      Info.Points.PointsRulesSubs << eprAllowDiscounts;
+   else
+   {
+      Info.Points.PointsRulesSubs >> eprAllowDiscounts;
+      Info.AutoAppliedDiscounts.clear();
+   }
 }
+//-----------------------------------------------------------------------------
+
 
 
 

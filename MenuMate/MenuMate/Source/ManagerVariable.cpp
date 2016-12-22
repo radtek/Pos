@@ -3162,6 +3162,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarBool(DBTransaction,vmMembershipPaid, "Enable Membership Payment",
 		"Default is False",
 		vmgPOS, false);
+		SetVarBool(DBTransaction,vmUseMemberSubs, "Enable Membership Subscription",
+		"Default is False",
+		vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

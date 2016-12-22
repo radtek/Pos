@@ -204,6 +204,7 @@ enum vmVariables
     vmExcludeReceipt,
     vmExcludeXReport,
     vmMembershipPaid,
+    vmUseMemberSubs,
 };
 
 // ---------------------------------------------------------------------------

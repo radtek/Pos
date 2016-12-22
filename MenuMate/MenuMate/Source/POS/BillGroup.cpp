@@ -1856,6 +1856,11 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
         TGlobalSettings::Instance().IsDiscountSelected = true;
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
+        if((Membership.Member.ContactKey != 0) && !Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        {
+            MessageBox("Discounts are disabled for this Member.", "INFORMATION", MB_OK + MB_ICONINFORMATION);
+            return;
+        }
 		TMMContactInfo TempUserInfo;
 		TempUserInfo = TDeviceRealTerminal::Instance().User;
 		bool AllowDiscount = false;
@@ -1876,6 +1881,7 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 			{
 				MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 			}
+
 		}
 
 		if (AllowDiscount)
@@ -4602,6 +4608,10 @@ void TfrmBillGroup::ApplyMembership(Database::TDBTransaction &DBTransaction, TMM
              }
              TPaymentTransaction PaymentTransaction(DBTransaction);
              TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, SelectedItemKeys);
+             if (!MembershipInfo.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+             {
+               ManagerDiscount->ClearDiscounts(PaymentTransaction.Orders);
+             }
              ManagerDiscount->ClearMemberExemtDiscounts(PaymentTransaction.Orders);
              PaymentTransaction.ApplyMembership(Membership);
              PaymentTransaction.DeleteOrders();

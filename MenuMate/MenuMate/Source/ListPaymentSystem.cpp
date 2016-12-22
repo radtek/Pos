@@ -68,6 +68,7 @@
 #include "LoyaltyMateUtilities.h"
 #include "ReceiptUtility.h"
 #include "StringTools.h"
+#include "PointsRulesSetUtils.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -920,9 +921,27 @@ bool TListPaymentSystem::CheckForCard(TPaymentTransaction &PaymentTransaction)
       throw Exception("Failed To Read Card. Either Re-insert card or remove member.");
     return retVal;
 }
-
 void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &PaymentTransaction )
 {
+     if(PaymentTransaction.Membership.Member.ContactKey != 0 && TGlobalSettings::Instance().UseMemberSubs)
+     {
+        for(int i = 0; i< PaymentTransaction.Orders->Count; i++)
+        {
+            TItemComplete *itemComplete = (TItemComplete*)PaymentTransaction.Orders->Items[0];
+            if(itemComplete->Item == "Pay Subs" && itemComplete->TabKey == 0)
+              {
+                 int PointRules = 0;
+                 PointRules |= eprFinancial;
+                 PaymentTransaction.Membership.Member.Points.PointsRules >> eprNoPointsRedemption;
+                 PaymentTransaction.Membership.Member.Points.PointsRules >> eprNeverEarnsPoints;
+                 PaymentTransaction.Membership.Member.Points.PointsRules >> eprNoPointsPurchases;
+                 TPointsRulesSetUtils().ExpandSubs(PointRules,PaymentTransaction.Membership.Member.Points.PointsRulesSubs);
+                 TPointsRulesSetUtils().Expand(PointRules,PaymentTransaction.Membership.Member.Points.PointsRules);
+                 UpdateSubscriptionDetails(PaymentTransaction,itemComplete->BillCalcResult.FinalPrice);
+                 break;
+              }
+        }
+    }
 	if (PaymentTransaction.Type == eTransQuickSale && PaymentTransaction.SalesType == eTab)
     {
          ReceiptPrint(PaymentTransaction, RequestEFTPOSReceipt, false);
@@ -5917,4 +5936,40 @@ void TListPaymentSystem::InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, 
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+}
+//-----------------------------------------------------------------------------
+void TListPaymentSystem::UpdateSubscriptionDetails( TPaymentTransaction &PaymentTransaction,double amount )
+{
+    TIBSQL *IBInternalQueryFirst = PaymentTransaction.DBTransaction.Query(PaymentTransaction.DBTransaction.AddQuery());
+    IBInternalQueryFirst->Close();
+    IBInternalQueryFirst->SQL->Text =
+        " UPDATE MEMBERSHIP_SUBS_DETAILS SET"
+        " POINTS_RULES_SUBS = :POINTS_RULES_SUBS, "
+        " SUBS_PAID = :SUBS_PAID, "
+        " SUBS_TYPE = :SUBS_TYPE,"
+        " SUBS_PAID_DATE = :SUBS_PAID_DATE,"
+        " SUBS_EXPIRY_DATE = :SUBS_EXPIRY_DATE,"
+        " SUBS_PAID_AMOUNT = :SUBS_PAID_AMOUNT,"
+        " SUBS_PAID_RECEIPT_NO = :SUBS_PAID_RECEIPT_NO,"
+        " ISLOCAL_MEMBER = :ISLOCAL_MEMBER "
+        " WHERE CONTACTS_KEY = :CONTACTS_KEY AND"
+        " SUBS_PAID = :SUBS_PAID1 AND ISLOCAL_MEMBER = :ISLOCAL_MEMBER";
+    IBInternalQueryFirst->ParamByName("POINTS_RULES_SUBS" )->AsInteger = TPointsRulesSetUtils().CompressSubs(PaymentTransaction.Membership.Member.Points.PointsRulesSubs);
+    IBInternalQueryFirst->ParamByName("CONTACTS_KEY" )->AsInteger = PaymentTransaction.Membership.Member.ContactKey;
+    IBInternalQueryFirst->ParamByName("SUBS_PAID_DATE" )->AsDateTime = Now();
+    IBInternalQueryFirst->ParamByName("SUBS_EXPIRY_DATE" )->AsDateTime = Dateutils::EncodeDateTime(1899,12,30,0,0,00,000);
+    IBInternalQueryFirst->ParamByName("SUBS_PAID_AMOUNT" )->AsDouble = amount;
+    IBInternalQueryFirst->ParamByName("SUBS_PAID_RECEIPT_NO" )->AsInteger = atoi(PaymentTransaction.InvoiceNumber.t_str());
+    IBInternalQueryFirst->ParamByName("SUBS_PAID" )->AsString = "T";
+    IBInternalQueryFirst->ParamByName("SUBS_TYPE" )->AsString = "Pay Subs";
+    IBInternalQueryFirst->ParamByName("SUBS_PAID1" )->AsString = "F";
+    IBInternalQueryFirst->ParamByName("ISLOCAL_MEMBER" )->AsString = "T";
+    IBInternalQueryFirst->ExecQuery();
+    IBInternalQueryFirst->Close();
+    IBInternalQueryFirst->SQL->Text = " UPDATE CONTACTS SET"
+        " POINTS_RULES = :POINTS_RULES "
+        " WHERE CONTACTS_KEY = :CONTACTS_KEY ";
+    IBInternalQueryFirst->ParamByName("POINTS_RULES" )->AsInteger = TPointsRulesSetUtils().Compress(PaymentTransaction.Membership.Member.Points.PointsRules);
+    IBInternalQueryFirst->ParamByName("CONTACTS_KEY" )->AsInteger = PaymentTransaction.Membership.Member.ContactKey;
+    IBInternalQueryFirst->ExecQuery();
 }

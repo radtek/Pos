@@ -384,5 +384,6 @@ TGlobalSettings::TGlobalSettings()
     HideRoundingOnReceipt = false;
 	CashDenominationEntry = false;
     MembershipPaid = false;
+    UseMemberSubs = false;
 }
 

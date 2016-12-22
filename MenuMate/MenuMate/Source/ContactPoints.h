@@ -36,6 +36,7 @@ class TContactPoints
 	public :
 
     TPointsRulesSet PointsRules;
+    TPointsRulesSubsSet PointsRulesSubs;
     /* The "Per transaction' ExportStatus is held in the Key Value (TPointsType)
     for the Map when the element to be sotred in the Map is created.
     The Key value for the Map is const by definition, so we cant even the

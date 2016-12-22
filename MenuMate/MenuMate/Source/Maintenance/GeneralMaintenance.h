@@ -323,6 +323,8 @@ __published:	// IDE-managed Components
         TCheckBox *cbExcludeXReport;
         TCheckBox *cbHideRoundingOnReceipt;
 		TCheckBox *cbCashDenominationEntry;
+        TGroupBox *grpMemberSubs;
+        TCheckBox *cbUseMemberSubs;
 
         //**********
         void __fastcall FormShow(TObject *Sender);
@@ -557,6 +559,7 @@ __published:	// IDE-managed Components
         void __fastcall cbExcludeXReportClick(TObject *Sender);
         void __fastcall cbHideRoundingOnReceiptClick(TObject *Sender);
 		void __fastcall cbCashDenominationEntryClick(TObject *Sender);
+        void __fastcall cbUseMemberSubsClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP

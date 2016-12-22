@@ -202,6 +202,9 @@ private: // User declarations
     void ProcessData();
     void PopulateDateTimePicker(char valueChar, TDateTimePicker *dateTime);
     bool CheckMobileNumber(UnicodeString mobile);
+    void UpdatePointsRuleOldMember();
+    void UpdatePointsRuleNewMember();
+    void LoadPointsRuleToContact();
 public: // User declarations
 	TMMContactInfo Info;
 	std::auto_ptr <TStringList> DiscountList;

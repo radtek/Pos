@@ -13387,6 +13387,12 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
 		{
 			MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 		}
+        if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0) &&
+           !SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        {
+            MessageBox("Discounts are disabled for this Member.", "INFORMATION", MB_OK + MB_ICONINFORMATION);
+            AllowDiscount = false;
+        }
 	}
 	DBTransaction.Commit();
 
@@ -13543,7 +13549,7 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, int 
             MessageBox("Member Discount not found in discount table.", "Error", MB_ICONWARNING + MB_OK);
         }
         return isDiscountApplied;
-  }
+    }
 }
 //------------------------------------------------------------------------------------------------------------------------------
 bool TfrmSelectDish::PromptForDiscountDescription(TDiscount &currentDiscount)
@@ -13707,7 +13713,6 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDis
                  }
             }
         }
-
         ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
         CheckDeals(DBTransaction);
 
@@ -13959,6 +13964,10 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
      customerDisp.FirstVisit = false;
 	 eMemberSource MemberSource = emsManual;
 	 TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, Member, MemberSource);
+
+     if (!Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        ManagerDiscount->ClearDiscounts(SeatOrders[SelectedSeat]->Orders->List);
+
      if (Result == lsAccountBlocked)
       {
             MessageBox("Account Blocked " + Member.Name + " " + Member.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);

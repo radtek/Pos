@@ -202,6 +202,7 @@ protected:
      bool IsSCDOrPWDApplied(TPaymentTransaction &PaymentTransaction);
      void PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey);
      void InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, long arcbillKey, UnicodeString header, UnicodeString value);
+     void UpdateSubscriptionDetails( TPaymentTransaction &PaymentTransaction, double amount );
 };
 
 #endif

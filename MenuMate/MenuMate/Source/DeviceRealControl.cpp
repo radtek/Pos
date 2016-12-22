@@ -203,6 +203,7 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 	try
 	{
 		TCsv Csv;
+        int contactsKey = 0;
 		Csv.LoadFromFile(FileName);
 		int ErrorsOccured = 0;
 		std::auto_ptr <TContactStaff> Staff(new TContactStaff(DBTransaction));
@@ -245,6 +246,13 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 				const int LOCADD3 = 32;
 				const int LOCADD4 = 33;
 				const int LOCADD5 = 34;
+//-----------------------------------------------------------
+                const int FINANCIAL = 35;
+                const int ALLOWDISCOUNTS = 36;
+                const int NEVEREARNSPOINTS = 37;
+                const int NEVERREDEEMSPOINTS = 38;
+                const int NEVERPURCHASESPOINTS = 39;
+//-----------------------------------------------------------
 
 				AnsiString MemberNumber = Csv.Cells[MEMBER_NUMBER][i];
 				int SiteID = StrToInt(Csv.Cells[SITE_ID][i]);
@@ -327,7 +335,8 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 					"LAST_MODIFIED      = :LAST_MODIFIED,"
 					"ACCOUNT_NAME       = :ACCOUNT_NAME,"
 					"ACCOUNT_ID         = :ACCOUNT_ID,"
-					"LOCATION_ADDRESS   = :LOCATION_ADDRESS ";
+					"LOCATION_ADDRESS   = :LOCATION_ADDRESS, "
+                    "POINTS_RULES       = :POINTS_RULES ";
 
 					if (Csv.Cells[TOTAL_SPENT][i] != "")
 					{
@@ -385,9 +394,81 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 					{
 						IBInternalQuery->ParamByName("TOTAL_SPENT")->AsCurrency = StrToCurr(Csv.Cells[TOTAL_SPENT][i]);
 					}
+                    int pointsRules = 0;
+                    if(Csv.Cells[NEVEREARNSPOINTS][i] == "Y")
+                    {
+                        pointsRules |= eprNeverEarnsPoints;
+                    }
+                    if(Csv.Cells[NEVERREDEEMSPOINTS][i] == "Y")
+                    {
+                        pointsRules |= eprNoPointsRedemption;
+                    }
+                    if(Csv.Cells[NEVERPURCHASESPOINTS][i] == "Y")
+                    {
+                        pointsRules |= eprNoPointsPurchases;
+                    }
+                    TPointsRulesSet PointsRulesSet;
+                    TPointsRulesSetUtils().Expand(pointsRules,PointsRulesSet);
+                    IBInternalQuery->ParamByName("POINTS_RULES")->AsInteger = TPointsRulesSetUtils().Compress(PointsRulesSet);
+
 
 					IBInternalQuery->ExecQuery();
+                    if(IBInternalQuery->RowsAffected != -1 && IBInternalQuery->RowsAffected != 0)
+                    {
+                        TIBSQL *SelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
+                        SelectQuery->Close();
+                        SelectQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE MEMBER_NUMBER = :MEMBER_NUMBER";
+                        SelectQuery->ParamByName("MEMBER_NUMBER")->AsString = Csv.Cells[MEMBER_NUMBER][i];
+                        SelectQuery->ExecQuery();
+                        if(SelectQuery->RecordCount > 0)
+                        {
+                            int key__ = SelectQuery->FieldByName("CONTACTS_KEY")->AsInteger;
 
+                            TIBSQL *UpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+                            UpdateQuery->Close();
+                            UpdateQuery->SQL->Text = "UPDATE MEMBERSHIP_SUBS_DETAILS SET"
+                            " POINTS_RULES_SUBS = :POINTS_RULES_SUBS,"
+                            " SUBS_PAID = :SUBS_PAID,"
+                            " SUBS_PAID_DATE = :SUBS_PAID_DATE"
+                            " WHERE CONTACTS_KEY = :CONTACTS_KEY";
+                            UpdateQuery->ParamByName("CONTACTS_KEY")->AsInteger = SelectQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+                            int pointsRulesSubs = 0;
+                            if(Csv.Cells[FINANCIAL][i] == "Y")
+                            {
+                                pointsRulesSubs |= eprFinancial;
+                            }
+                            if(Csv.Cells[ALLOWDISCOUNTS][i] == "Y")
+                            {
+                                pointsRulesSubs |= eprAllowDiscounts;
+                            }
+                            if(Csv.Cells[NEVEREARNSPOINTS][i] == "Y")
+                            {
+                                pointsRulesSubs |= eprNeverEarnsPoints;
+                            }
+                            if(Csv.Cells[NEVERREDEEMSPOINTS][i] == "Y")
+                            {
+                                pointsRulesSubs |= eprNoPointsRedemption;
+                            }
+                            if(Csv.Cells[NEVERPURCHASESPOINTS][i] == "Y")
+                            {
+                                pointsRulesSubs |= eprNoPointsPurchases;
+                            }
+                            TPointsRulesSubsSet PointsRulesSubs;
+                            TPointsRulesSetUtils().ExpandSubs(pointsRulesSubs,PointsRulesSubs);
+                            UpdateQuery->ParamByName("POINTS_RULES_SUBS")->AsInteger = TPointsRulesSetUtils().CompressSubs(PointsRulesSubs);
+                            if(PointsRulesSubs.Contains(eprFinancial))
+                            {
+                               UpdateQuery->ParamByName("SUBS_PAID")->AsString = "T";
+                               UpdateQuery->ParamByName("SUBS_PAID_DATE")->AsDateTime = Now();
+                            }
+                            else
+                            {
+                               UpdateQuery->ParamByName("SUBS_PAID")->AsString = "F";
+                               UpdateQuery->ParamByName("SUBS_PAID_DATE")->AsDateTime = Dateutils::EncodeDateTime(1899,12,30,0,0,00,000);
+                            }
+                            UpdateQuery->ExecQuery();
+                        }
+                    }
 					if (IBInternalQuery->RowsAffected == -1 || IBInternalQuery->RowsAffected == 0)
 					{
 						int key;
@@ -395,6 +476,7 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 						IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_CONTACTS, 1) FROM RDB$DATABASE";
 						IBInternalQuery->ExecQuery();
 						key = IBInternalQuery->Fields[0]->AsInteger;
+                        contactsKey = key;
 
 						IBInternalQuery->Close();
 						IBInternalQuery->SQL->Clear();
@@ -402,11 +484,11 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 						"INSERT INTO CONTACTS (" "CONTACTS_KEY," "CONTACT_TYPE," "NAME," "PHONE," "MOBILE," "PHONE_EXTENSION,"
 						"EMAIL," "MAILING_ADDRESS," "INITIALS," "PIN," "TOTAL_SPENT," "MEMBER_NUMBER," "SITE_ID," "CONTACTS_3RDPARTY_KEY,"
 						"FIRST_NAME," "MIDDLE_NAME," "LAST_NAME," "SEX," "TAB_ENALBED," "PAYROLL_ID," "DATEOFBIRTH," "KNOWN_AS,"
-						"CARD_CREATION_DATE," "LAST_MODIFIED," "ACCOUNT_NAME," "ACCOUNT_ID," "LOCATION_ADDRESS," "EARNT_POINTS," "LOADED_POINTS," "ACTIVATION_DATE," "MEMBER_TYPE" ") " "VALUES ("
+						"CARD_CREATION_DATE," "LAST_MODIFIED," "ACCOUNT_NAME," "ACCOUNT_ID," "LOCATION_ADDRESS," "EARNT_POINTS," "LOADED_POINTS," "ACTIVATION_DATE," "MEMBER_TYPE," "POINTS_RULES"") " "VALUES ("
 						":CONTACTS_KEY," ":CONTACT_TYPE," ":NAME," ":PHONE," ":MOBILE," ":PHONE_EXTENSION," ":EMAIL," ":MAILING_ADDRESS,"
 						":INITIALS," ":PIN," ":TOTAL_SPENT," ":MEMBER_NUMBER," ":SITE_ID," ":CONTACTS_3RDPARTY_KEY," ":FIRST_NAME,"
 						":MIDDLE_NAME," ":LAST_NAME," ":SEX," ":TAB_ENALBED," ":PAYROLL_ID," ":DATEOFBIRTH," ":KNOWN_AS,"
-						":CARD_CREATION_DATE," ":LAST_MODIFIED," ":ACCOUNT_NAME," ":ACCOUNT_ID," ":LOCATION_ADDRESS," ":EARNT_POINTS," ":LOADED_POINTS," ":ACTIVATION_DATE," ":MEMBER_TYPE" ");";
+						":CARD_CREATION_DATE," ":LAST_MODIFIED," ":ACCOUNT_NAME," ":ACCOUNT_ID," ":LOCATION_ADDRESS," ":EARNT_POINTS," ":LOADED_POINTS," ":ACTIVATION_DATE," ":MEMBER_TYPE," ":POINTS_RULES"");";
 
 						IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsString = Csv.Cells[MEMBER_NUMBER][i];
 						IBInternalQuery->ParamByName("SITE_ID")->AsInteger = StrToInt(Csv.Cells[SITE_ID][i]);
@@ -467,8 +549,70 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 						IBInternalQuery->ParamByName("LOADED_POINTS")->AsCurrency = 0.0;
 						IBInternalQuery->ParamByName("ACTIVATION_DATE")->AsDateTime = Now();
                         IBInternalQuery->ParamByName("MEMBER_TYPE")->AsInteger = 1;
+                        IBInternalQuery->ParamByName("POINTS_RULES")->AsInteger = TPointsRulesSetUtils().Compress(PointsRulesSet);
 
 						IBInternalQuery->ExecQuery();
+
+                        TIBSQL *InsertQuery = DBTransaction.Query(DBTransaction.AddQuery());
+                        InsertQuery->Close();
+                        InsertQuery->SQL->Text =
+                        "INSERT INTO MEMBERSHIP_SUBS_DETAILS "
+                        " ( MEMBERSHIP_SUBS_KEY, SUBS_PAID_DATE, SUBS_EXPIRY_DATE, SUBS_PAID_AMOUNT, SUBS_PAID_RECEIPT_NO, "
+                        " SUBS_TYPE, SUBS_PAID, POINTS_RULES_SUBS , CONTACTS_KEY, ISLOCAL_MEMBER )"
+                        " VALUES ( :MEMBERSHIP_SUBS_KEY, :SUBS_PAID_DATE, :SUBS_EXPIRY_DATE, :SUBS_PAID_AMOUNT, :SUBS_PAID_RECEIPT_NO, "
+                        " :SUBS_TYPE, :SUBS_PAID, :POINTS_RULES_SUBS , :CONTACTS_KEY, :ISLOCAL_MEMBER ) ";
+                        TIBSQL *GenerateQuery = DBTransaction.Query(DBTransaction.AddQuery());
+                        GenerateQuery->Close();
+                        GenerateQuery->SQL->Text = "SELECT GEN_ID(GEN_MEMBERSHIP_SUBS_KEY, 1) FROM RDB$DATABASE";
+                        GenerateQuery->ExecQuery();
+                        int subsKeyValue =  GenerateQuery->Fields[0]->AsInteger;
+
+						InsertQuery->ParamByName("MEMBERSHIP_SUBS_KEY")->AsInteger = subsKeyValue;
+                        int pointsRulesSubs = 0;
+                        TPointsRulesSubsSet PointsRulesSubs;
+                        if(Csv.Cells[FINANCIAL][i] == "Y")
+                        {
+                            pointsRulesSubs |= eprFinancial;
+                        }
+                        if(Csv.Cells[ALLOWDISCOUNTS][i] == "Y")
+                        {
+                            pointsRulesSubs |= eprAllowDiscounts;
+                        }
+                        if(Csv.Cells[NEVEREARNSPOINTS][i] == "Y")
+                        {
+                            pointsRulesSubs |= eprNeverEarnsPoints;
+                        }
+                        if(Csv.Cells[NEVERREDEEMSPOINTS][i] == "Y")
+                        {
+                            pointsRulesSubs |= eprNoPointsRedemption;
+                        }
+                        if(Csv.Cells[NEVERPURCHASESPOINTS][i] == "Y")
+                        {
+                            pointsRulesSubs |= eprNoPointsPurchases;
+                        }
+                        TPointsRulesSetUtils().ExpandSubs(pointsRulesSubs,PointsRulesSubs);
+                        InsertQuery->ParamByName("POINTS_RULES_SUBS")->AsInteger = TPointsRulesSetUtils().CompressSubs(PointsRulesSubs);
+                        InsertQuery->ParamByName("CONTACTS_KEY")->AsInteger = key;
+                        InsertQuery->ParamByName("ISLOCAL_MEMBER")->AsString = "T";
+                        if(PointsRulesSubs.Contains(eprFinancial))
+                        {
+                           InsertQuery->ParamByName("SUBS_PAID")->AsString = "T";
+                           InsertQuery->ParamByName("SUBS_PAID_DATE")->AsDateTime = Now();
+                           InsertQuery->ParamByName("SUBS_EXPIRY_DATE")->AsDateTime = Dateutils::EncodeDateTime(1899,12,30,0,0,00,000);
+                           InsertQuery->ParamByName("SUBS_PAID_AMOUNT")->AsDouble = 0.0;
+                           InsertQuery->ParamByName("SUBS_PAID_RECEIPT_NO")->AsString = "-";
+                           InsertQuery->ParamByName("SUBS_TYPE")->AsString = "AUTO";
+                        }
+                        else
+                        {
+                           InsertQuery->ParamByName("SUBS_PAID")->AsString = "F";
+                           InsertQuery->ParamByName("SUBS_PAID_DATE")->AsDateTime = Dateutils::EncodeDateTime(1899,12,30,0,0,00,000);
+                           InsertQuery->ParamByName("SUBS_EXPIRY_DATE")->AsDateTime = Dateutils::EncodeDateTime(1899,12,30,0,0,00,000);
+                           InsertQuery->ParamByName("SUBS_PAID_AMOUNT")->AsDouble = 0.0;
+                           InsertQuery->ParamByName("SUBS_PAID_RECEIPT_NO")->AsString = "-";
+                           InsertQuery->ParamByName("SUBS_TYPE")->AsString = "-";
+                        }
+                        InsertQuery->ExecQuery();
 					}
 
 					TMMContactInfo UserInfo;
@@ -503,8 +647,28 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 				List->SaveToFile(FailedFile);
 				TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ("User Failed To Import : Line Number " + IntToStr(i) + " Error Msg : " + E.Message));
 			}
-		}
+        //---------------------------------------------------------------------
+//                IBInternalQuery->Close();
+//                IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_MEMBERSHIP_SUBS_KEY, 1) FROM RDB$DATABASE";
+//                IBInternalQuery->ExecQuery();
+//                int key = IBInternalQuery->Fields[0]->AsInteger;
+//
+//                IBInternalQuery->Close();
+//                IBInternalQuery->SQL->Clear();
+//                IBInternalQuery->SQL->Text =
+//                "INSERT INTO MEMBERSHIP_SUBS_DETAILS (" "MEMBERSHIP_SUBS_KEY," "CONTACTS_KEY," "SUBS_PAID_DATE," "SUBS_EXPIRY_DATE," "SUBS_PAID_AMOUNT," "SUBS_PAID_RECEIPT_NO" ") " "VALUES ("
+//                ":MEMBERSHIP_SUBS_KEY," ":CONTACTS_KEY," ":SUBS_PAID_DATE," ":SUBS_EXPIRY_DATE," ":SUBS_PAID_AMOUNT," ":SUBS_PAID_RECEIPT_NO" ");";
+//
+//                IBInternalQuery->ParamByName("MEMBERSHIP_SUBS_KEY")->AsString = key;
+//                IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactsKey;
+//
+//                IBInternalQuery->ParamByName("SUBS_PAID_DATE")->AsDateTime = "";
+//                IBInternalQuery->ParamByName("SUBS_EXPIRY_DATE")->AsDateTime = "";
+//                IBInternalQuery->ParamByName("SUBS_PAID_AMOUNT")->AsDouble = 0.0;
+//                IBInternalQuery->ParamByName("SUBS_PAID_RECEIPT_NO")->AsString = Csv.Cells[PHONE][i];
+        //---------------------------------------------------------------------
 
+		}
 		if (!DirectoryExists(ExtractFilePath(Application->ExeName) + "Import\\Old"))
 		{
 			ForceDirectories(ExtractFilePath(Application->ExeName) + "Import\\Old");

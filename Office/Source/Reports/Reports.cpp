@@ -4420,6 +4420,24 @@ case DAILY_SALES_REPORT:
             _disableBackAndExcelButton = true;
 			break;
         }
+         case SUBS_REPORTS:
+        {
+            requiredPermission = Security::FinancialReports;
+
+			ReportControl									= new TReportControl;
+			ReportControl->PrintReport					= &TfrmReports::PrintSubReports;
+			TSubReport *SubReport1						= ReportControl->AddSubReport("Subs Report");
+
+			TReportDateFilter *ReportFilter1			= new TReportDateFilter(ReportControl, MMFilterTransaction);
+
+			ReportFilter1->Caption						= "Select the date range Member Subs Report report.";
+			ReportFilter1->ShowGST						= false;
+			ReportFilter1->GSTChecked					= false;
+  			SubReport1->AddFilterIndex(0);
+        	ReportControl->AddFilter(ReportFilter1);
+            _disableBackAndExcelButton = true;
+			break;
+        }
 }
  	if (ReportControl)
 	{
@@ -11081,4 +11099,50 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+void TfrmReports::PrintSubReports(TReportControl *ReportControl)
+{
+    if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+	{
+		dmMMReportData->MMTrans->StartTransaction();
+	}
+	try
+	{
+
+				const AnsiString ReportName = "repSubsReport";
+
+				dmMMReportData->SetupSubsReport(ReportControl->Start, ReportControl->End);
+				if (ReportType == rtExcel)
+				{
+				    std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+					ExcelDataSetsList->AddObject("Member Subs Paid",(TObject *)dmMMReportData->qrSubsReport);
+					ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text ); 
+				}
+				else
+				{
+					if (rvMenuMate->SelectReport(ReportName, false))
+					{
+						AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+						rvMenuMate->SetParam("ReportRange", DateRange);
+                        rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                        rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));
+						rvMenuMate->Execute();
+					}
+					else
+					{
+						Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+					}
+				}
+
+			}
+
+
+	__finally
+	{
+		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
+		{
+			dmMMReportData->MMTrans->Commit();
+		}
+	}
+}
 

@@ -111,7 +111,7 @@ object frmEditCustomer: TfrmEditCustomer
     object tbtnCancel: TTouchBtn
       Tag = -1
       Left = 5
-      Top = 498
+      Top = 478
       Width = 127
       Align = alBottom
       Font.Charset = DEFAULT_CHARSET
@@ -202,6 +202,7 @@ object frmEditCustomer: TfrmEditCustomer
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
+          ExplicitTop = 523
           ExplicitWidth = 149
         end
         object GroupBox2: TGroupBox
@@ -961,8 +962,8 @@ object frmEditCustomer: TfrmEditCustomer
             ScrollBtnRight.DisabledColor = -2147483633
             ScrollBtnRight.LatchedFontColor = -2147483640
             Buttons = {
-              04000000370000006C39B8D92FC48AD2FB3FDD0000003C40844C61D72497FC3F
-              DD0000003C40844C61D72497FC3FDD0000003C40844C61D72497FC3F00008000
+              04000000370000006C39B8D92FC48AD2FB3FD30000003C40844C61D72497FC3F
+              D30000003C40844C61D72497FC3FD30000003C40844C61D72497FC3F00008000
               008000000000800006000000540061006800FFFFFF000B000000000000000000
               00000000000000000000FFFFFF0006000000540061006800FFFFFF000B000000
               00000000000000000000000000000000FFFFFF00000000000100000001000000

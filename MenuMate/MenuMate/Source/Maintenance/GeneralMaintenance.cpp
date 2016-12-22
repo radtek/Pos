@@ -245,6 +245,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
 
 
+
 	int SerialPortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort);
 	if(SerialPortNumber != -1)
 	{
@@ -366,7 +367,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
         cbEmailZedClosingTill->Checked = TGlobalSettings::Instance().EmailZedReports; //MM-4104
         invalid_email_id = false; //MM-4104
         cbRoundOnBilling->Checked = TGlobalSettings::Instance().RoundOnBilling;
-         
+
         tbRoundingOnBilling->Caption = FormatFloat("0.00",TGlobalSettings::Instance().RoundOnBillingAmount);
 
     cbTransferTableOnPrintPrelim->OnClick = NULL;
@@ -444,6 +445,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     isBIRSettingTicked = false;
     cbHideRoundingOnReceipt->Checked = TGlobalSettings::Instance().HideRoundingOnReceipt;
 	cbCashDenominationEntry->Checked = TGlobalSettings::Instance().CashDenominationEntry;
+    cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
 }
 
 //---------------------------------------------------------------------------
@@ -4193,4 +4195,21 @@ void __fastcall TfrmGeneralMaintenance::cbCashDenominationEntryClick(TObject *Se
 	DBTransaction.StartTransaction();
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmCashDenominationEntry, TGlobalSettings::Instance().CashDenominationEntry);
 	DBTransaction.Commit();
+}
+void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
+{
+    if(!TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsThorlinkEnabled /*&& TGlobalSettings::Instance().MembershipType == MembershipTypeERS &&
+        TGlobalSettings::Instance().MembershipType != MembershipTypeEBet && TGlobalSettings::Instance().MembershipType != MembershipTypeExternal*/)
+    {
+        TGlobalSettings::Instance().UseMemberSubs = cbUseMemberSubs->Checked;
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+        DBTransaction.Commit();
+    }
+    else
+    {
+       MessageBox("Functionality works with Menumate Loyalty only, Please disable any other Membership first to use this functionality","Information", MB_OK + MB_ICONINFORMATION);
+       cbUseMemberSubs->Checked = false;
+    }
 }

@@ -2000,6 +2000,8 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 
 					DBTransaction.StartTransaction();
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmLoyaltyMateEnabled,TGlobalSettings::Instance().LoyaltyMateEnabled);
+                    TGlobalSettings::Instance().UseMemberSubs = false;
+                    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
 					DBTransaction.Commit();
 					RefreshLoyaltyMateBtnColor();
 				}
