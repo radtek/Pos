@@ -17,6 +17,8 @@ class TManagerMallSetup
      static void UpdateMallExportSettingValues(Database::TDBTransaction &dbTransaction, TMall &mallInfo);
      static int CheckActiveMallExist(Database::TDBTransaction &dbTransaction);
      static void UpdateINActiveMall(Database::TDBTransaction &dbTransaction);
+ private:
+     static void InsertInToMallExport_Settings_Values(Database::TDBTransaction &dbTransaction, int deviceKey, int mallKey);
 };
 #endif
 

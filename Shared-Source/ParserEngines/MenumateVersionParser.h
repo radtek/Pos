@@ -827,6 +827,8 @@ namespace MenumateVersionParser
         void Insert6_34MallExport_Settings_Values(TDBControl* const inDBControl);
         void Insert6_34Mall_ExportHeader(TDBControl* const inDBControl);
 		void CreateGeneratorAndTableForCashDenominations6_34( TDBControl* const inDBControl );
+        void UpdateMallExportSettingValuesTable6_35(TDBControl* const inDBControl);
+        void Create6_34GeneratorMallExportSettingValues(TDBControl* const inDBControl);
 
     }; // class
 } // namespace

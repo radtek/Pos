@@ -2291,6 +2291,7 @@ void TfrmSetup::UpdateMallInfo()
         dbTransaction.StartTransaction();
         mallInfo.MallId = cbNewMallLoc->ItemIndex;
         mallInfo.MallName = cbNewMallLoc->Text;
+        mallInfo.DeviceKey =  TDeviceRealTerminal::Instance().ID.DeviceKey;
         TMallExportSettings mallSetting;
 
         std::list<TMallExportSettings>::iterator it;

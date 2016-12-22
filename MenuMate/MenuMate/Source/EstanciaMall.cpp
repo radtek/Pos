@@ -661,10 +661,10 @@ double TEstanciaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransac
     try
     {
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE, a.Z_KEY "
-                                        "FROM MALLEXPORT_SALES a "
-                                        "WHERE A.FIELD_INDEX  = :FIELD_INDEX "
-                                        "AND a.Z_KEY = (SELECT MAX(a.Z_KEY) FROM MALLEXPORT_SALES a) ";
+        IBInternalQuery->SQL->Text =
+                                    "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
+                                    "FROM MALLEXPORT_SALES a "
+                                    "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ) ";
 
         IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
         IBInternalQuery->ExecQuery();

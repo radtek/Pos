@@ -13,6 +13,11 @@ void TMall::SetMallId(int mallID)
 {
     _mallId = mallID;
 }
+//--------------------------------------------------------------------------
+void TMall::SetDeviceKey(int deviceKey)
+{
+    _deviceKey = deviceKey;
+}
 //---------------------------------------------------------------------------
 void TMall::SetMallName(UnicodeString mallName)
 {

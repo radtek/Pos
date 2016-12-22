@@ -308,6 +308,9 @@ void TApplyParser::update6_34Tables()
     Insert6_34MallExport_Settings_Mapping(_dbControl);
     Insert6_34MallExport_Settings_Values(_dbControl);
     Insert6_34Mall_ExportHeader(_dbControl);
+    UpdateMallExportSettingValuesTable6_35(_dbControl);
+    Create6_34GeneratorMallExportSettingValues(_dbControl);
+
 }
 //---------------------------------------------------------------------------
 void TApplyParser::Create6_34TableSCDPWDCustomerDetails(TDBControl* const inDBControl)
@@ -722,8 +725,46 @@ void TApplyParser::Insert6_34Mall_ExportHeader(TDBControl* const inDBControl)
     }
 }
 //--------------------------------------------------------------------------------------------------------------------------
-
 //::::::::::::::::::::::::Version 6.34::::::::::::::::::::::::::::::::::::::::::
+
+void TApplyParser::UpdateMallExportSettingValuesTable6_35(TDBControl* const inDBControl)
+{
+    if (tableExists( "MALLEXPORT_SETTINGS_VALUES", inDBControl ) )
+    {
+        executeQuery(
+                "DELETE FROM MALLEXPORT_SETTINGS_VALUES a; ",
+            inDBControl );
+    }
+
+    if (!fieldExists( "MALLEXPORT_SETTINGS_VALUES", "DEVICE_KEY", _dbControl ) )
+    {
+        executeQuery (
+            "ALTER TABLE MALLEXPORT_SETTINGS_VALUES ADD "
+            "DEVICE_KEY INTEGER; ",
+            inDBControl);
+    }
+
+    if (!fieldExists( "MALLEXPORT_SETTINGS_VALUES", "MALL_KEY", _dbControl ) )
+    {
+        executeQuery (
+            "ALTER TABLE MALLEXPORT_SETTINGS_VALUES ADD "
+            "MALL_KEY INTEGER; ",
+            inDBControl);
+    }
+}
 //---------------------------------------------------------------------------
+void TApplyParser::Create6_34GeneratorMallExportSettingValues(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MALL_SETT_VAL_KEY", _dbControl) )
+    {
+        executeQuery(
+        "CREATE GENERATOR GEN_MALL_SETT_VAL_KEY;",
+        inDBControl);
+        executeQuery(
+        "SET GENERATOR GEN_MALL_SETT_VAL_KEY TO 0; ",
+        inDBControl );
+    }
+}
+//--------------------------------------------------------------------------------------------------
 }
 
