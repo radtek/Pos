@@ -186,7 +186,7 @@ void TManagerMallSetup::UpdateINActiveMall(Database::TDBTransaction &dbTransacti
 	}
 }
 //---------------------------------------------------------------------------------------------
-void TManagerMallSetup::InsertInToMallExport_Settings_Values(Database::TDBTransaction &db1Transaction, int deviceKey, int mallKey)
+void TManagerMallSetup::InsertInToMallExport_Settings_Values(Database::TDBTransaction &dbTransaction, int deviceKey, int mallKey)
 {
     try
     {
