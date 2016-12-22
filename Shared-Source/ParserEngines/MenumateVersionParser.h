@@ -79,6 +79,7 @@ namespace MenumateVersionParser
             pv6_32,
             pv6_33,
             pv6_34,
+            pv6_35,
     };
 
     class TApplyParser
@@ -158,6 +159,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_32( TDBControl* const inDBControl );
         PARSER_ERROR apply6_33( TDBControl* const inDBControl );
         PARSER_ERROR apply6_34( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_35( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -827,6 +829,11 @@ namespace MenumateVersionParser
         void Insert6_34MallExport_Settings_Values(TDBControl* const inDBControl);
         void Insert6_34Mall_ExportHeader(TDBControl* const inDBControl);
 		void CreateGeneratorAndTableForCashDenominations6_34( TDBControl* const inDBControl );
+
+        //6.35
+        void upgrade6_35Tables();
+        void update6_35Tables();
+        void UpdateContactIndex_6_35(TDBControl* const inDBControl);
 
     }; // class
 } // namespace

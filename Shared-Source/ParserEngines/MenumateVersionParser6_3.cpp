@@ -40,6 +40,12 @@ void TApplyParser::upgrade6_34Tables()
 	update6_34Tables();
 }
 
+// 6.35
+void TApplyParser::upgrade6_35Tables()
+{
+	update6_35Tables();
+}
+
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -139,7 +145,6 @@ void TApplyParser::UpdateDiscountsTable6_32(TDBControl* const inDBControl)
 	}
 }
 
-//---------------------------------------------------------------------------
 //::::::::::::::::::::::::Version 6.33::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_33Tables()
 {
@@ -200,8 +205,6 @@ void TApplyParser::AlterRoundTimeProcedure6_33( TDBControl* const inDBControl )
 	"END ",
 	inDBControl );
 }//------
-
-
 //------------------------------------------------------------------------------
 void TApplyParser::PopulateZED_StatusForContactTime6_33(TDBControl* const inDBControl)
 {
@@ -252,7 +255,7 @@ void TApplyParser::ModifyCloseZedColumns6_33( TDBControl* const inDBControl )
         inDBControl);
     }
 }
-
+//---------------------------------------------------------------------------
 void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBControl )
 {
 
@@ -288,7 +291,8 @@ void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBCon
             "CONTACTTIME",
         inDBControl );
 }
-//------------------------------------------------------------------------------------
+
+//::::::::::::::::::::::::Version 6.34::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_34Tables()
 {
     Create6_34TableSCDPWDCustomerDetails(_dbControl);
@@ -722,8 +726,44 @@ void TApplyParser::Insert6_34Mall_ExportHeader(TDBControl* const inDBControl)
     }
 }
 //--------------------------------------------------------------------------------------------------------------------------
-
-//::::::::::::::::::::::::Version 6.34::::::::::::::::::::::::::::::::::::::::::
+//::::::::::::::::::::::::Version 6.35::::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_35Tables()
+{
+   UpdateContactIndex_6_35(_dbControl);
+}
+//---------------------------------------------------------------------------
+void TApplyParser::UpdateContactIndex_6_35(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "DROP INDEX CONTACT_INDEX;";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "ALTER TABLE CONTACTS ADD EMAILDUMMY Varchar(80);";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "UPDATE CONTACTS SET EMAILDUMMY = EMAIL;";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "ALTER TABLE CONTACTS DROP EMAIL;";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "ALTER TABLE CONTACTS ALTER EMAILDUMMY TO EMAIL;";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "CREATE UNIQUE INDEX CONTACT_INDEX ON CONTACTS (NAME,EMAIL,CONTACTS_3RDPARTY_KEY, MEMBER_NUMBER, SITE_ID );";
+        InsertQuery->ExecQuery();
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
 //---------------------------------------------------------------------------
 }
 

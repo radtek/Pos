@@ -2392,6 +2392,7 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 			Order.TimeStamp	  = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
 			Order.TimeKey     = IBInternalQuery->FieldByName("TIME_KEY")->AsInteger;
             Order.IsWeighted  = IBInternalQuery->FieldByName("WEIGHTED_SIZE")->AsString == "T";
+
 			if(!SelectingItems || ((SCDChecker.ItemSelectionCheck(DBTransaction, Order.Key, ValidOrderKeys)) &&
                                    (SCDChecker.ItemSelectionCheckPWD(DBTransaction, Order.Key, ValidOrderKeys))))
 			{

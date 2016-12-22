@@ -1522,7 +1522,7 @@ void TDBContacts::GetTierLevelAndMemberType(Database::TDBTransaction &DBTransact
    }
 }
 
-int TDBContacts::GenerateLoyaltymateKey(Database::TDBTransaction &DBTransaction)
+int TDBContacts::GenerateNextMemberEmailNumber(Database::TDBTransaction &DBTransaction)
 {
     int result = -1;
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());

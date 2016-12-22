@@ -72,7 +72,7 @@ class TDBContacts
         static void SetCardCreationDate( Database::TDBTransaction &DBTransaction, int inContactKey, TDateTime inCreationDate);
         static void GetTierLevelAndMemberType(Database::TDBTransaction &DBTransaction,TMMContactInfo &Member);
         static int GetLoyaltyKey(Database::TDBTransaction &dBTransaction, int tabKey );
-        static int GenerateLoyaltymateKey(Database::TDBTransaction &DBTransaction);
+        static int GenerateNextMemberEmailNumber(Database::TDBTransaction &DBTransaction);
         static void GetEarnedAndLoadedPointsBalances(Database::TDBTransaction &DBTransaction,int ContactKey, TContactPoints & Points);
         static bool IsFirstVisitRewarded(Database::TDBTransaction &DBTransaction,int ContactKey);
         static void SetFirstVisitRewardStatus(Database::TDBTransaction &DBTransaction,int ContactKey);

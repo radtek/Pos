@@ -64,6 +64,7 @@ public:
    TSyndCode &SyndCodeByKey(int SyndKey);
    bool ValidateSyndCodes(AnsiString& errorMessage);
    bool CanUseForCommunication(int syndCodeKey);
+   AnsiString GetCommunicationSyndCodeString();
 };
 
 #endif
