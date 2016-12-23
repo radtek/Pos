@@ -298,9 +298,9 @@ void TDBContacts::GetContactDetails(Database::TDBTransaction &DBTransaction, int
          Info.IsFirstVisitRewarded = IBInternalQuery->FieldByName("IS_FIRSTVISIT_REWARDED")->AsString == 'T' ? true : false;
 		 int PointsRules = IBInternalQuery->FieldByName("POINTS_RULES")->AsInteger;
          int PointsRulesSubs = IBInternalQuery->FieldByName("POINTS_RULES_SUBS")->AsInteger;
-         Info.Points.Clear();
          TPointsRulesSetUtils().Expand(PointsRules, Info.Points.PointsRules);
          TPointsRulesSetUtils().ExpandSubs(PointsRulesSubs, Info.Points.PointsRulesSubs);
+         Info.Points.ClearPoints();
          GetPointsBalances(DBTransaction,inContactKey,Info.Points);
          GetContactCards(DBTransaction,inContactKey,Info.Cards);
 		 GetDiscountDetails(DBTransaction, Info.ContactKey, Info);
@@ -494,9 +494,7 @@ void TDBContacts::UpdateDetailstoMemberSubs(Database::TDBTransaction &DBTransact
         " POINTS_RULES_SUBS = :POINTS_RULES_SUBS, SUBS_PAID = :SUBS_PAID"
         " WHERE CONTACTS_KEY = :CONTACTS_KEY";
       if((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && TGlobalSettings::Instance().LoyaltyMateEnabled) ||
-          TGlobalSettings::Instance().MembershipType == MembershipTypeERS || TGlobalSettings::Instance().MembershipType == MembershipTypeEBet ||
-          TGlobalSettings::Instance().MembershipType == MembershipTypeExternal || (TGlobalSettings::Instance().MembershipType == MembershipTypeThor
-          && TGlobalSettings::Instance().IsThorlinkEnabled))
+          TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate)
       {
           int pointRules = 0;
           if(!Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
@@ -549,9 +547,7 @@ void TDBContacts::InsertDetailstoMemberSubs(Database::TDBTransaction &DBTransact
         IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "";
       }
       if((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && TGlobalSettings::Instance().LoyaltyMateEnabled) ||
-          TGlobalSettings::Instance().MembershipType == MembershipTypeERS || TGlobalSettings::Instance().MembershipType == MembershipTypeEBet ||
-          TGlobalSettings::Instance().MembershipType == MembershipTypeExternal || (TGlobalSettings::Instance().MembershipType == MembershipTypeThor
-          && TGlobalSettings::Instance().IsThorlinkEnabled))
+          TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate)
       {
           IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "AUTO";
           IBInternalQuery->ParamByName("SUBS_PAID" )->AsString  = "T";

@@ -4198,8 +4198,7 @@ void __fastcall TfrmGeneralMaintenance::cbCashDenominationEntryClick(TObject *Se
 }
 void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 {
-    if(!TGlobalSettings::Instance().LoyaltyMateEnabled && !TGlobalSettings::Instance().IsThorlinkEnabled /*&& TGlobalSettings::Instance().MembershipType == MembershipTypeERS &&
-        TGlobalSettings::Instance().MembershipType != MembershipTypeEBet && TGlobalSettings::Instance().MembershipType != MembershipTypeExternal*/)
+    if((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && !TGlobalSettings::Instance().LoyaltyMateEnabled))
     {
         TGlobalSettings::Instance().UseMemberSubs = cbUseMemberSubs->Checked;
         Database::TDBTransaction DBTransaction(DBControl);
