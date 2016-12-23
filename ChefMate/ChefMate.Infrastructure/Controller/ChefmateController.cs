@@ -97,9 +97,8 @@ namespace Chefmate.Infrastructure.Controller
             catch (Exception ex)
             {
                 ChefmateLogger.Instance.LogError("ChefmateController.AddOrder", ex.StackTrace);
+                throw ex;
             }
-
-
         }
         public void LoadAllOrders()
         {
@@ -459,24 +458,32 @@ namespace Chefmate.Infrastructure.Controller
         }
         public void AddTerminal(string terminalDisplayName, string terminalAddress, string dbAddress, string dbPath)
         {
-            CurrenTerminal = new Core.Model.Terminal()
+            try
             {
-                DisplayName = terminalDisplayName,
-                TerminalName = Environment.MachineName,
-                TerminalIpAddress = terminalAddress,
-                TerminalType = TerminalType.Kitchen
-            };
-            DbTerminal.AddTerminal(CurrenTerminal);
-            CurrentSettings = new Settings(TerminalType.Kitchen, dbAddress, dbPath, terminalAddress, terminalDisplayName);
-            DbSettings.AddSettings(CurrentSettings, CurrenTerminal.TerminalId);
-            LoadSettings();
-            CurrentSettings.TerminalType = TerminalType.Kitchen;
-            CurrentSettings.DbIpAddress = dbAddress;
-            CurrentSettings.DbPath = dbPath;
-            CurrentSettings.TerminalIpAddress = terminalAddress;
-            CurrentSettings.DisplayName = terminalDisplayName;
-            DbSettings.SaveSettings(CurrentSettings, CurrenTerminal.TerminalId);
-            GetPageInformation();
+                CurrenTerminal = new Core.Model.Terminal()
+                {
+                    DisplayName = terminalDisplayName,
+                    TerminalName = Environment.MachineName,
+                    TerminalIpAddress = terminalAddress,
+                    TerminalType = TerminalType.Kitchen
+                };
+                DbTerminal.AddTerminal(CurrenTerminal);
+                CurrentSettings = new Settings(TerminalType.Kitchen, dbAddress, dbPath, terminalAddress,
+                    terminalDisplayName);
+                DbSettings.AddSettings(CurrentSettings, CurrenTerminal.TerminalId);
+                LoadSettings();
+                CurrentSettings.TerminalType = TerminalType.Kitchen;
+                CurrentSettings.DbIpAddress = dbAddress;
+                CurrentSettings.DbPath = dbPath;
+                CurrentSettings.TerminalIpAddress = terminalAddress;
+                CurrentSettings.DisplayName = terminalDisplayName;
+                DbSettings.SaveSettings(CurrentSettings, CurrenTerminal.TerminalId);
+                GetPageInformation();
+            }
+            catch (Exception ex)
+            {
+                ChefmateLogger.Instance.LogError("AddTerminal : ", ex.Message);
+            }
         }
 
         public void LoadSettings()
@@ -487,11 +494,20 @@ namespace Chefmate.Infrastructure.Controller
         }
         public void SaveSettings()
         {
-            DbSettings.SaveSettings(CurrentSettings, CurrenTerminal.TerminalId);
-            CurrenTerminal.TerminalIpAddress = CurrentSettings.TerminalIpAddress;
-            CurrenTerminal.DisplayName = string.IsNullOrWhiteSpace(CurrentSettings.DisplayName) ? Environment.MachineName : CurrentSettings.DisplayName;
-            CurrenTerminal.TerminalType = CurrentSettings.TerminalType;
-            DbTerminal.UpdateTerminal(CurrenTerminal);
+            try
+            {
+                DbSettings.SaveSettings(CurrentSettings, CurrenTerminal.TerminalId);
+                CurrenTerminal.TerminalIpAddress = CurrentSettings.TerminalIpAddress;
+                CurrenTerminal.DisplayName = string.IsNullOrWhiteSpace(CurrentSettings.DisplayName)
+                    ? Environment.MachineName
+                    : CurrentSettings.DisplayName;
+                CurrenTerminal.TerminalType = CurrentSettings.TerminalType;
+                DbTerminal.UpdateTerminal(CurrenTerminal);
+            }
+            catch (Exception ex)
+            {
+                ChefmateLogger.Instance.LogError("SaveSettings : ", ex.Message);
+            }
         }
         private void GetPageInformation()
         {
@@ -540,16 +556,23 @@ namespace Chefmate.Infrastructure.Controller
 
         private void DoImmediateBump(Order inOrder)
         {
-            inOrder.FilterOrders(CurrentSettings.GroupType, CurrentSettings.OrderInfoDisplay);
-            if (CurrentSettings.OutputTerminal < 0)
+            try
             {
-                foreach (var item in inOrder.Items)
+                inOrder.FilterOrders(CurrentSettings.GroupType, CurrentSettings.OrderInfoDisplay);
+                if (CurrentSettings.OutputTerminal < 0)
                 {
-                    if (item.OrderItemKey > 0)
-                        DbOrderItem.UpdateOrderItemTerminalKey(item.OrderItemKey, 0);
+                    foreach (var item in inOrder.Items)
+                    {
+                        if (item.OrderItemKey > 0)
+                            DbOrderItem.UpdateOrderItemTerminalKey(item.OrderItemKey, 0);
+                    }
                 }
+                OutputController.Instance.OutputOrder(inOrder);
             }
-            OutputController.Instance.OutputOrder(inOrder);
+            catch (Exception ex)
+            {
+                ChefmateLogger.Instance.LogError("DoImmediateBump : ", ex.Message);
+            }
         }
 
     }

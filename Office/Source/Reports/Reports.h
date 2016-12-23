@@ -97,7 +97,6 @@ enum TTreeIndex {
                     CHECK_REMOVAL_INDEX  ,
                     REPRINT_RECEIPT_INDEX   ,
                     REPRINT_ORDER_INDEX   ,
-                    E_JOURNAL_INDEX,
 			LOYALTY_INDEX												,
 					LOYALTY_BIRTHDAYS_INDEX							,
 					LOYALTY_DISC_PRODUCTS_INDEX	    			,
@@ -802,8 +801,7 @@ public:		// User declarations
     void PrintPointSpend(TReportControl *ReportControl);
     void PrintBreakdownCategory(TReportControl *ReportControl);
     void PrintStockReconcialation(TReportControl *ReportControl);
-    void PrintSalesSummaryD(TReportControl *ReportControl);
-    void PrintEJournalReport(TReportControl *ReportControl);
+    void PrintSalesSummaryD(TReportControl *ReportControl); 
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmReports *frmReports;

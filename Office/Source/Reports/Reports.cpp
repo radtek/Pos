@@ -4420,21 +4420,6 @@ case DAILY_SALES_REPORT:
             _disableBackAndExcelButton = true;
 			break;
         }
-        case E_JOURNAL_INDEX:
-        {
-   			requiredPermission = Security::SecurityReports;
-			ReportControl									= new TReportControl;
-			ReportControl->PrintReport					= &TfrmReports::PrintEJournalReport;
-			TSubReport *SubReport0						= ReportControl->AddSubReport("E-Journal Report");
-
-			// Dates
-			TReportDateFilter *ReportFilter0			= new TReportDateFilter(ReportControl, MMFilterTransaction);
-			ReportFilter0->Caption						= "Select the date range for the Reprint Receipt.";
-			SubReport0->AddFilterIndex(0);
-			ReportControl->AddFilter(ReportFilter0);
-            _disableBackAndExcelButton = true;
-        	break;
-        }
 }
  	if (ReportControl)
 	{
@@ -7617,6 +7602,8 @@ void TfrmReports::PrintCredits(TReportControl *ReportControl)
 				AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
 												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
 				rvMenuMate->SetParam("ReportRange", DateRange);
+                rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
+                rvMenuMate->SetParam("CurrentUser", frmLogin->CurrentUser.UserID +" at "+ Now().FormatString("ddddd 'at' hh:nn"));                
 				rvMenuMate->Execute();
 			}
 			else
@@ -8348,11 +8335,10 @@ void TfrmReports::PrintLoyaltyAudit(TReportControl *ReportControl)
 	}
 
 	AnsiString ReportName;
-    AnsiString DateRange;
+
 	try
 	{
 		TReportCheckboxFilter *CustomersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
-
 
 		if (ReportControl->CurrentSubReport == 0)
 		{
@@ -8376,15 +8362,10 @@ void TfrmReports::PrintLoyaltyAudit(TReportControl *ReportControl)
 		{
 			if (rvMenuMate->SelectReport(ReportName, false))
 			{
-
-                DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-                            "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-                rvMenuMate->SetParam("ReportRange", DateRange);
                 Database::TDBTransaction transaction(dmMMData->dbMenuMate);
                 transaction.Start();
         	    TManagerVariable varManager;
                 int val = 1;
-
                 if(varManager.GetInt(transaction, vmEnableSeperateEarntPts, val))
                 {
                     rvMenuMate->SetParam("EarntSpent", "EarntSpent");
@@ -8397,6 +8378,9 @@ void TfrmReports::PrintLoyaltyAudit(TReportControl *ReportControl)
                     rvMenuMate->SetParam("LoadedSpent", "Redeemed");
                     rvMenuMate->SetParam("Loaded", "Purchased");
                 }
+
+
+
 				rvMenuMate->SetParam("CompanyName", CurrentConnection.CompanyName);
 				rvMenuMate->Execute();
 			}
@@ -9558,7 +9542,7 @@ void TfrmReports::PrintMembershipAudit(TReportControl *ReportControl)
 
         try {
                 const AnsiString ReportName = "repLoyaltyMembershipAuditPointsBreakdown";
-                TReportCheckboxFilter *CustomersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
+               TReportCheckboxFilter *CustomersFilter = (TReportCheckboxFilter *)ReportControl->ReportFilter(1);
                dmMMReportData->SetupLoyaltyMembershipAuditItem1(ReportControl->Start, ReportControl->End, CustomersFilter->Selection);
                    if (ReportType == rtExcel)
 				{
@@ -11097,34 +11081,4 @@ void TfrmReports::PrintSalesSummaryD(TReportControl *ReportControl)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void TfrmReports::PrintEJournalReport(TReportControl *ReportControl)
-{
-	const AnsiString ReportName = "repESalesJournal";
-	if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
-	{
-		dmMMReportData->MMTrans->StartTransaction();
-	}
-	try
-	{
 
-		dmMMReportData->SetupEJournal(ReportControl->Start, ReportControl->End);
-        if (rvMenuMate->SelectReport(ReportName, false))
-        {
-            AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-                                            "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-            rvMenuMate->SetParam("ReportRange", DateRange);
-            rvMenuMate->Execute();
-        }
-        else
-        {
-            Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-        }
-	}
-	__finally
-	{
-		if (dmMMReportData->MMTrans->DefaultDatabase->Connected)
-		{
-			dmMMReportData->MMTrans->Commit();
-		}
-	}
-}

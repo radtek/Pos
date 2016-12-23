@@ -227,16 +227,16 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public double GetGiftCardBalance(string inSyndicateCode, ApiRequestViewModel requestViewModel)
+        public GiftCardApiViewModel GetGiftCardBalance(string inSyndicateCode, ApiRequestViewModel requestViewModel)
         {
-            double balance = 0;
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetGiftCardBalance, inSyndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
+            GiftCardApiViewModel response = null;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.GetGiftCardInfo, inSyndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
-                var memberStream = new StreamReader(webResponse.GetResponseStream());
-                balance = Convert.ToDouble(memberStream.ReadToEnd());
+                var responseStream = new StreamReader(webResponse.GetResponseStream());
+                response = JsonUtility.Deserialize<GiftCardApiViewModel>(responseStream.ReadToEnd());
             }
             catch (WebException we)
             {
@@ -250,7 +250,7 @@ namespace Loyaltymate.Sevices
                     webResponse.Close();
                 }
             }
-            return balance;
+            return response;
         }
 
         public ApiPocketVoucherViewModel GetPocketVoucherDetail(string inSyndicateCode, ApiRequestViewModel requestViewModel)

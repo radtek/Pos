@@ -13,7 +13,7 @@ namespace Loyaltymate.Sevices
         bool PostTransaction(PointsTransactionViewModel pointsTransaction, string syndicateCode);
         bool PostInvoiceTransaction(ApiMemberInvoiceTransactionViewModel invoiceTransaction, string syndicateCode);
         ApiCompanyViewModel GetCompanyDetail(string inSyndicateCode);
-        double GetGiftCardBalance(string inSyndicateCode, ApiRequestViewModel requestViewModel);
+        GiftCardApiViewModel GetGiftCardBalance(string inSyndicateCode, ApiRequestViewModel requestViewModel);
         ApiPocketVoucherViewModel GetPocketVoucherDetail(string inSyndicateCode, ApiRequestViewModel requestViewModel);
         List<ApiProcessingResult> PostVoucherTransactions(string inSyndicateCode, ApiVouchersUsageViewModel voucherTransaction);
         bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction);

@@ -7,6 +7,7 @@
 #include "PointsRulesSetUtils.h"
 #include "enumPoints.h"
 #include "DBGroups.h"
+#include "GlobalSettings.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -296,7 +297,7 @@ void TDBContacts::GetContactDetails(Database::TDBTransaction &DBTransaction, int
          Info.IsFirstVisitRewarded = IBInternalQuery->FieldByName("IS_FIRSTVISIT_REWARDED")->AsString == 'T' ? true : false;
 		 int PointsRules = IBInternalQuery->FieldByName("POINTS_RULES")->AsInteger;
          TPointsRulesSetUtils().Expand(PointsRules, Info.Points.PointsRules);
-         Info.Points.Clear();
+         Info.Points.ClearPoints();
          GetPointsBalances(DBTransaction,inContactKey,Info.Points);
          GetContactCards(DBTransaction,inContactKey,Info.Cards);
 		 GetDiscountDetails(DBTransaction, Info.ContactKey, Info);
@@ -620,9 +621,7 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
       TDBContacts::GetPointsBalances(DBTransaction, Info.ContactKey, dbPoints);
 
      // sync the earned points
-      if(Info.Points.getPointsBalance(ptstLoyalty) != (dbPoints.getPointsBalance(ptstLoyalty) +
-                                                       dbPoints.getBirthDayRewardPoints() +
-                                                       dbPoints.getFirstVisitPoints() ))
+      if(Info.Points.getPointsBalance(ptstLoyalty) != dbPoints.getPointsBalance(ptstLoyalty))
       {
             Currency syncPoints = Info.Points.getPointsBalance(ptstLoyalty) - dbPoints.getPointsBalance(ptstLoyalty);
             TDBContacts::setPointsTransactionEntry(
@@ -1285,6 +1284,8 @@ void TDBContacts::setPointsTransactionEntry(
                                 TPointsExportStatus exportStatus,
                                 TDateTime exportTimeStamp)
 {
+ if(adjustment != 0.0)
+ {
      Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
      DBTransaction.RegisterQuery(IBInternalQuery);
 
@@ -1297,10 +1298,9 @@ void TDBContacts::setPointsTransactionEntry(
      IBInternalQuery->ParamByName("ADJUSTMENT_TYPE")->AsInteger = adjustmentType;
      IBInternalQuery->ParamByName("ADJUSTMENT_SUBTYPE")->AsInteger = adjustmentSubType;
      IBInternalQuery->ParamByName("EXPORTED_STATUS")->AsInteger = exportStatus;
-     //IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = NULL;
      IBInternalQuery->ParamByName("ADJUSTMENT")->AsCurrency = adjustment;
-     //IBInternalQuery->ParamByName("MISC")->AsBytes = NULL;
      IBInternalQuery->ExecQuery();
+ }
 }
 //-------------------------------------------------------------------------
 UnicodeString TDBContacts::getPointsTransactionInsertQuery()

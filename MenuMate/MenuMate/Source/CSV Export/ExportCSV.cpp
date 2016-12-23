@@ -250,7 +250,7 @@ void TExportCSV::LoadDataFromDB(std::vector<UnicodeString> &dataToWrite)
             Discount_Date                  =     date.FormatString("mm-dd-yyyy");
 
         Displayed_Terms                =    "Due at end of Month";
-        Sales_Representative_ID        =    query->FieldByName("SalesRepresentativeId")->AsInteger;
+        Sales_Representative_ID        =    "";
         Accounts_Receivable_Account    =    "105-00";
         Sales_Tax_ID                   =    "";
         Invoice_Note                   =    "";

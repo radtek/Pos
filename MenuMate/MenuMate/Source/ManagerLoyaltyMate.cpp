@@ -625,14 +625,14 @@ void TLoyaltyMateGiftVoucherThread::GetGiftVoucherBalance()
 {
    try
 	{
-        double voucherBalance = 0;
+        TGiftCardDetail giftCardDetail;
         TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
 		if(Terminated)
 		{
 			ThreadTerminated();
 			return;
         }
-        MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetGiftVoucherBalance(_syndicateCode, VoucherNumber,voucherBalance);
+        MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetGiftVoucherBalance(_syndicateCode, GiftCardNumber,giftCardDetail);
         OperationSuccessful = response.IsSuccesful;
         if(!OperationSuccessful)
         {
@@ -641,7 +641,10 @@ void TLoyaltyMateGiftVoucherThread::GetGiftVoucherBalance()
         }
 		else
 		{
-           GiftCardBalance = voucherBalance;
+            GiftCardDetail.ResponseMessage = giftCardDetail.ResponseMessage;
+            GiftCardDetail.StatusCode = giftCardDetail.StatusCode;
+            GiftCardDetail.PointBalance = giftCardDetail.PointBalance;
+            GiftCardDetail.ExpiryDate = giftCardDetail.ExpiryDate;
         }
     }
     catch(Exception &E)

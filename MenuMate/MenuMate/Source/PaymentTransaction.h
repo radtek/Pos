@@ -15,6 +15,7 @@
 #include "PatronType.h"
 #include "Discount.h"
 #include "Payment.h"
+#include "CaptureCustomerDetails.h"
 
 
 enum eTransactionType {eTab,eTableSeat,eCash,eAccount,eRoomSale,eCredited,eCreditPurchase,eWeb};
@@ -62,6 +63,7 @@ struct TRedeemGiftVoucherInformation
     Currency TotalSaleAmount;
     Currency RedeemedAmount;
     Currency GiftVoucherAmount;
+    TDateTime ExpiryDate;
 };
 
 class TPaymentTransaction
@@ -177,6 +179,7 @@ class TPaymentTransaction
         bool CheckDiscountApplied(TDiscount CurrentDiscount);
         bool IsVouchersProcessed;
         void makeLogFile(UnicodeString str);
+        SCDPWDCustomerDetails customerDetails;
 };
 
 #endif

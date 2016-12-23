@@ -107,6 +107,7 @@ class TfrmMaintain : public TZForm
     TTouchBtn *btnTierLevels;
     TTouchBtn *btnAccountingInterface;
     TTouchBtn *tbtnCashDrawer;
+    TTouchBtn *tbtnCashDenomination;
 
     //*****************
 
@@ -224,6 +225,7 @@ private:
     void SetupGLCodes();
     void __fastcall RefreshRunRateBoard();
     bool DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransaction);
+    void ManageGiftCardValidations(Database::TDBTransaction &DBTransaction);
     void PeachTreeSettings();
 public: // User declarations
 

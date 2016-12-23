@@ -681,8 +681,7 @@ ContactGroup TfrmEditCustomer::FindGroupData(int groupkey)
 void __fastcall TfrmEditCustomer::tbProximityMouseClick(TObject *Sender)
 {
 	TIBSQL *check_dup_prox_query;
-	std::auto_ptr<
-	  TfrmCardSwipe> frmCardSwipe(TfrmCardSwipe::Create<TfrmCardSwipe>(this));
+	std::auto_ptr<TfrmCardSwipe> frmCardSwipe(TfrmCardSwipe::Create<TfrmCardSwipe>(this));
 	Database::TDBTransaction trans(TDeviceRealTerminal::Instance().DBControl);
 	AnsiString new_prox_str;
 	TModalResult result;

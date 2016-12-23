@@ -465,6 +465,12 @@ public:
     bool ShowVoidOrRefund;
     bool ShowVoidNumber;
     UnicodeString EftPosTipGLCode;
+    int GiftCardValidation;
+    bool ExcludeReceipt;
+    bool ExcludeXReport;
+    bool UseBIRFormatInXZReport;
+    bool HideRoundingOnReceipt;
+	bool CashDenominationEntry;
     UnicodeString CSVPath;
     bool IsEnabledPeachTree;
     UnicodeString CSVExportIP;

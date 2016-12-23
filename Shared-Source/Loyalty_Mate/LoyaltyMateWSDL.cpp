@@ -99,6 +99,16 @@ __fastcall DiscountInfo::~DiscountInfo()
   delete FValue;
 }
 
+__fastcall LoyaltyGiftCardResponse::~LoyaltyGiftCardResponse()
+{
+  delete FGiftCardInfo;
+}
+
+__fastcall GiftCardInfo::~GiftCardInfo()
+{
+  delete FExpiryDate;
+}
+
 __fastcall LoyaltyVoucherResponse::~LoyaltyVoucherResponse()
 {
   delete FVoucherInfo;
@@ -110,6 +120,11 @@ __fastcall VoucherTransactionInfo::~VoucherTransactionInfo()
   for(int i=0; i<FDiscountUsages.Length; i++)
     if (FDiscountUsages[i])
       delete FDiscountUsages[i];
+}
+
+__fastcall VoucherTransactionResponse::~VoucherTransactionResponse()
+{
+  delete FGiftCardExpiryDate;
 }
 
 __fastcall ReleasedVoucherInfo::~ReleasedVoucherInfo()
@@ -174,6 +189,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(TierLevelInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"TierLevelInfo");
   /* LoyaltyGiftCardResponse */
   RemClassRegistry()->RegisterXSClass(__classid(LoyaltyGiftCardResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyGiftCardResponse");
+  /* GiftCardInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(GiftCardInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"GiftCardInfo");
   /* LoyaltyVoucherResponse */
   RemClassRegistry()->RegisterXSClass(__classid(LoyaltyVoucherResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyVoucherResponse");
   /* ArrayOfDiscountUsageInfo */
@@ -182,6 +199,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(VoucherTransactionInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"VoucherTransactionInfo");
   /* DiscountUsageInfo */
   RemClassRegistry()->RegisterXSClass(__classid(DiscountUsageInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"DiscountUsageInfo");
+  /* VoucherTransactionResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(VoucherTransactionResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"VoucherTransactionResponse");
   /* ReleasedVoucherInfo */
   RemClassRegistry()->RegisterXSClass(__classid(ReleasedVoucherInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ReleasedVoucherInfo");
   /* MemberInfo */
@@ -206,12 +225,16 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(TierLevelInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"TierLevelInfo2", L"TierLevelInfo");
   /* LoyaltyGiftCardResponse */
   RemClassRegistry()->RegisterXSClass(__classid(LoyaltyGiftCardResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyGiftCardResponse2", L"LoyaltyGiftCardResponse");
+  /* GiftCardInfo */
+  RemClassRegistry()->RegisterXSClass(__classid(GiftCardInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"GiftCardInfo2", L"GiftCardInfo");
   /* LoyaltyVoucherResponse */
   RemClassRegistry()->RegisterXSClass(__classid(LoyaltyVoucherResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyVoucherResponse2", L"LoyaltyVoucherResponse");
   /* VoucherTransactionInfo */
   RemClassRegistry()->RegisterXSClass(__classid(VoucherTransactionInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"VoucherTransactionInfo2", L"VoucherTransactionInfo");
   /* DiscountUsageInfo */
   RemClassRegistry()->RegisterXSClass(__classid(DiscountUsageInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"DiscountUsageInfo2", L"DiscountUsageInfo");
+  /* VoucherTransactionResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(VoucherTransactionResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"VoucherTransactionResponse2", L"VoucherTransactionResponse");
   /* ReleasedVoucherInfo */
   RemClassRegistry()->RegisterXSClass(__classid(ReleasedVoucherInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"ReleasedVoucherInfo2", L"ReleasedVoucherInfo");
   /* DiscountType */
@@ -232,3 +255,4 @@ static void RegTypes()
 #pragma startup RegTypes 32
 
 };     // NS__
+
