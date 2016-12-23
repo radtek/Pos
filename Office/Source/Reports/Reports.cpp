@@ -4422,7 +4422,7 @@ case DAILY_SALES_REPORT:
         }
          case SUBS_REPORTS:
         {
-            requiredPermission = Security::FinancialReports;
+            requiredPermission = Security::LoyaltyReports;
 
 			ReportControl									= new TReportControl;
 			ReportControl->PrintReport					= &TfrmReports::PrintSubReports;
@@ -4435,7 +4435,7 @@ case DAILY_SALES_REPORT:
 			ReportFilter1->GSTChecked					= false;
   			SubReport1->AddFilterIndex(0);
         	ReportControl->AddFilter(ReportFilter1);
-            _disableBackAndExcelButton = true;
+            //_disableBackAndExcelButton = true;
 			break;
         }
 }

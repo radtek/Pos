@@ -64,7 +64,6 @@ enum TTreeIndex {
                     DEPT_SALES_SUMMARY                        ,
                     PROFIT_LOSS_REPORT                       ,
                     SALES_SUMMARY_D_INDEX                     ,
-                    SUBS_REPORTS                ,
 
 			SALES_INDEX													,
 					CONSUMPTION_INDEX									,
@@ -111,6 +110,7 @@ enum TTreeIndex {
 					LOYALTY_POINTS_INDEX								,
                     RESET_POINTS_INDEX                        , //MM-4579
                     POINT_SPEND_INDEX                        ,
+                    SUBS_REPORTS                ,
 			STOCK_INDEX													,
 					STOCK_DETAILS_INDEX								,
 					STOCK_VALUE_INDEX									,

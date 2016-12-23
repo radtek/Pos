@@ -557,9 +557,9 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
                         InsertQuery->Close();
                         InsertQuery->SQL->Text =
                         "INSERT INTO MEMBERSHIP_SUBS_DETAILS "
-                        " ( MEMBERSHIP_SUBS_KEY, SUBS_PAID_DATE, SUBS_EXPIRY_DATE, SUBS_PAID_AMOUNT, SUBS_PAID_RECEIPT_NO, "
+                        " ( MEMBERSHIP_SUBS_KEY, SUBS_PAID_DATE,  SUBS_PAID_AMOUNT, SUBS_PAID_RECEIPT_NO, "
                         " SUBS_TYPE, SUBS_PAID, POINTS_RULES_SUBS , CONTACTS_KEY, ISLOCAL_MEMBER )"
-                        " VALUES ( :MEMBERSHIP_SUBS_KEY, :SUBS_PAID_DATE, :SUBS_EXPIRY_DATE, :SUBS_PAID_AMOUNT, :SUBS_PAID_RECEIPT_NO, "
+                        " VALUES ( :MEMBERSHIP_SUBS_KEY, :SUBS_PAID_DATE,  :SUBS_PAID_AMOUNT, :SUBS_PAID_RECEIPT_NO, "
                         " :SUBS_TYPE, :SUBS_PAID, :POINTS_RULES_SUBS , :CONTACTS_KEY, :ISLOCAL_MEMBER ) ";
                         TIBSQL *GenerateQuery = DBTransaction.Query(DBTransaction.AddQuery());
                         GenerateQuery->Close();
@@ -598,7 +598,6 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
                         {
                            InsertQuery->ParamByName("SUBS_PAID")->AsString = "T";
                            InsertQuery->ParamByName("SUBS_PAID_DATE")->AsDateTime = Now();
-                           InsertQuery->ParamByName("SUBS_EXPIRY_DATE")->AsDateTime = Dateutils::EncodeDateTime(1899,12,30,0,0,00,000);
                            InsertQuery->ParamByName("SUBS_PAID_AMOUNT")->AsDouble = 0.0;
                            InsertQuery->ParamByName("SUBS_PAID_RECEIPT_NO")->AsString = "-";
                            InsertQuery->ParamByName("SUBS_TYPE")->AsString = "AUTO";

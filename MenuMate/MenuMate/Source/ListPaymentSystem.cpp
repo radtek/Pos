@@ -5948,7 +5948,6 @@ void TListPaymentSystem::UpdateSubscriptionDetails( TPaymentTransaction &Payment
         " SUBS_PAID = :SUBS_PAID, "
         " SUBS_TYPE = :SUBS_TYPE,"
         " SUBS_PAID_DATE = :SUBS_PAID_DATE,"
-        " SUBS_EXPIRY_DATE = :SUBS_EXPIRY_DATE,"
         " SUBS_PAID_AMOUNT = :SUBS_PAID_AMOUNT,"
         " SUBS_PAID_RECEIPT_NO = :SUBS_PAID_RECEIPT_NO,"
         " ISLOCAL_MEMBER = :ISLOCAL_MEMBER "
@@ -5957,7 +5956,6 @@ void TListPaymentSystem::UpdateSubscriptionDetails( TPaymentTransaction &Payment
     IBInternalQueryFirst->ParamByName("POINTS_RULES_SUBS" )->AsInteger = TPointsRulesSetUtils().CompressSubs(PaymentTransaction.Membership.Member.Points.PointsRulesSubs);
     IBInternalQueryFirst->ParamByName("CONTACTS_KEY" )->AsInteger = PaymentTransaction.Membership.Member.ContactKey;
     IBInternalQueryFirst->ParamByName("SUBS_PAID_DATE" )->AsDateTime = Now();
-    IBInternalQueryFirst->ParamByName("SUBS_EXPIRY_DATE" )->AsDateTime = Dateutils::EncodeDateTime(1899,12,30,0,0,00,000);
     IBInternalQueryFirst->ParamByName("SUBS_PAID_AMOUNT" )->AsDouble = amount;
     IBInternalQueryFirst->ParamByName("SUBS_PAID_RECEIPT_NO" )->AsInteger = atoi(PaymentTransaction.InvoiceNumber.t_str());
     IBInternalQueryFirst->ParamByName("SUBS_PAID" )->AsString = "T";

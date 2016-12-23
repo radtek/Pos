@@ -118,59 +118,6 @@ void TfrmEditCustomer::DrawContactDetails()
       UpdatePointsRuleNewMember();
    else
       UpdatePointsRuleOldMember();
-
-//   if (Info.Points.PointsRules.Contains(eprNoPointsRedemption))
-//	  tcbeprNoPointsRedemption->Latched = true;
-//   else
-//	  tcbeprNoPointsRedemption->Latched = false;
-//
-//   if (Info.Points.PointsRules.Contains(eprNoPointsPurchases))
-//	  tcbeprNoPointsPurchases->Latched = true;
-//   else
-//	  tcbeprNoPointsPurchases->Latched = false;
-//
-//   if (Info.Points.PointsRules.Contains(eprEarnsPointsWhileRedeemingPoints))
-//	  tcbeprEarnsPointsWhileRedeemingPoints->Latched = true;
-//   else
-//	  tcbeprEarnsPointsWhileRedeemingPoints->Latched = false;
-//
-//   if (Info.Points.PointsRules.Contains(eprOnlyEarnsPointsWhileRedeemingPoints))
-//	  tcbeprOnlyEarnsPointsWhileRedeemingPoints->Latched = true;
-//   else
-//	  tcbeprOnlyEarnsPointsWhileRedeemingPoints->Latched = false;
-//
-//   if (Info.Points.PointsRules.Contains(eprNeverEarnsPoints))
-//	  tcbeprNeverEarnsPoints->Latched = true;
-//   else
-//	  tcbeprNeverEarnsPoints->Latched = false;
-//
-//   if (Info.Points.PointsRules.Contains(eprAllowedNegitive))
-//	  tcbeprAllowedNegitive->Latched = true;
-//   else
-//	  tcbeprAllowedNegitive->Latched = false;
-//   if(Info.ContactKey != 0)
-//   {
-//     if(Info.Points.PointsRules.Contains(eprFinancial))
-//        tcbeprFinancial->Latched = true;
-//     else
-//        tcbeprFinancial->Latched = false;
-//   }
-//   else
-//   {
-//     if(!TGlobalSettings::Instance().UseMemberSubs)
-//     {
-//        tcbeprFinancial->Latched = true;
-//     }
-//     else
-//     {
-//        tcbeprFinancial->Latched = false;
-//     }
-//
-//   }
-//   if(Info.Points.PointsRules.Contains(eprAllowDiscounts))
-//      tcbeprAllowDiscounts->Latched = true;
-//   else
-//      tcbeprAllowDiscounts->Latched = false;
 }
 //----------------------------------------------------------------------------
 void TfrmEditCustomer::UpdatePointsRuleNewMember()

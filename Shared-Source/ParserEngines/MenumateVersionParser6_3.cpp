@@ -796,6 +796,7 @@ void TApplyParser::Insert6_35MemberSubsDetails(TDBControl* const inDBControl)
 
         for (; !SelectQuery->Eof;)
         {
+            InsertQuery->Close();
             int pointsRules = 0;
             pointsRules = pointsRules | FinancialPaid;
             pointsRules = pointsRules | DiscountsAllowed;
