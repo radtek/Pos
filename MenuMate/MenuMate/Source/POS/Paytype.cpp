@@ -3845,7 +3845,7 @@ void __fastcall TfrmPaymentType::lbeDiscountClick(TObject *Sender)
 	TempUserInfo = TDeviceRealTerminal::Instance().User;
 	bool AllowDiscount = false;
 	AnsiString DiscountMenu = "";
-    if((CurrentTransaction.Membership.Member.ContactKey != 0) && !CurrentTransaction.Membership.Member.Points.PointsRules.Contains(eprAllowDiscounts))
+    if((CurrentTransaction.Membership.Member.ContactKey != 0) && !CurrentTransaction.Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
     {
         MessageBox("Discounts are disabled for this Member.", "INFORMATION", MB_OK + MB_ICONINFORMATION);
         return;
