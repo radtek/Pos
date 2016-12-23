@@ -629,11 +629,13 @@ void TPaymentTransaction::Recalc()
                CurrentSubOrder->ResetPrice();
             }
          }
-         ManagerDiscount->AddDiscountsByTime(DBTransaction, Order);
+         if(Membership.Member.ContactKey == 0 || Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+             ManagerDiscount->AddDiscountsByTime(DBTransaction, Order);
       }
 
       // Sort out Rewards Free Drinks and stuff Here.
-      TManagerFreebie::IsPurchasing(DBTransaction,Orders);
+        if(Membership.Member.ContactKey == 0 || Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+            TManagerFreebie::IsPurchasing(DBTransaction,Orders);
 
 	  ApplyDiscounts();
    }

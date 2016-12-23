@@ -3051,7 +3051,7 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
-    TCashDenominationControllerInterface::Instance()->GetCashDenominations().ResetTotal();
+    TCashDenominationControllerInterface::Instance()->ResetCashDenominations();
     // call to new class to get orders of DC and bill them off by storing
     if(TGlobalSettings::Instance().DrinkCommandServerPort != 0 && TGlobalSettings::Instance().DrinkCommandServerPath.Length() != 0
       && TGlobalSettings::Instance().IsDrinkCommandEnabled)
@@ -3087,8 +3087,7 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 		PrinterExists = false;
 	}
 
-	Database::TDBTransaction DBTransaction(
-	TDeviceRealTerminal::Instance().DBControl);
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
 
 	if (!PrinterExists)
@@ -3333,6 +3332,10 @@ Zed:
             {
 			   DefaultItemQuantities(DBTransaction);
                UpdateContactTimeZedStatus(DBTransaction);
+               if(TGlobalSettings::Instance().CashDenominationEntry)
+                {
+                  TCashDenominationControllerInterface::Instance()->SaveDenominations(DBTransaction,z_key,DeviceName);
+                }
             }
 			DBTransaction.Commit();
             PostDataToXeroAndMyOB(XeroInvoiceDetails, MYOBInvoiceDetails, CompleteZed); //post data to xero and Myob
@@ -4221,14 +4224,14 @@ bool TfrmAnalysis::SendInvoiceToMYOB( TMYOBInvoice* inMYOBInvoice )
 // ---------------------------------------------------------------------------
 bool TfrmAnalysis::GetBlindBalences(Database::TDBTransaction &DBTransaction, TBlindBalances &Balance, AnsiString &DepositBagID, AnsiString DeviceName)
 {
-	if (TGlobalSettings::Instance().EnableBlindBalances)
+	/*if (TGlobalSettings::Instance().EnableBlindBalances)
 	{
 		TBlindBalanceController BlindBalanceController(this, DBTransaction, DeviceName);
 		if(BlindBalanceController.Run() == false)
 		return false;
 		Balance = BlindBalanceController.Get();
 		DepositBagID = BlindBalanceController.GetBagID();
-	}
+	}*/
 	return true;
 
 

@@ -9467,7 +9467,7 @@ void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime En
 			 "LEFT JOIN ARCBILL ON "
 				  "POINTSTRANSACTIONS.INVOICE_NUMBER = ARCBILL.INVOICE_NUMBER "
 		"WHERE "
-			 "(CONTACTS.CONTACT_TYPE = 2 OR CONTACTS.CONTACT_TYPE = 4) AND "
+			 "(CONTACTS.CONTACT_TYPE = 2 OR CONTACTS.CONTACT_TYPE = 4 OR CONTACTS.CONTACT_TYPE = 3) AND "
 			 "ARCBILL.TIME_STAMP >= :StartTime AND "
 			 "ARCBILL.TIME_STAMP < :EndTime ";
 
@@ -9511,7 +9511,7 @@ void TdmMMReportData::SetupLoyaltyAuditSummary(TDateTime StartTime, TDateTime En
 			 "LEFT JOIN DAYARCBILL ON "
 				  "POINTSTRANSACTIONS.INVOICE_NUMBER = DAYARCBILL.INVOICE_NUMBER "
 		"WHERE "
-			 "(CONTACTS.CONTACT_TYPE = 2 OR CONTACTS.CONTACT_TYPE = 4) AND "
+			 "(CONTACTS.CONTACT_TYPE = 2 OR CONTACTS.CONTACT_TYPE = 4 OR CONTACTS.CONTACT_TYPE = 3) AND "
 			 "DAYARCBILL.TIME_STAMP >= :StartTime AND "
 			 "DAYARCBILL.TIME_STAMP < :EndTime ";
 
@@ -9583,7 +9583,7 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			"and Invoice_Count.INVOICE_NUMBER = POINTSTRANSACTIONS.INVOICE_NUMBER "
 
 		"WHERE "
-			 "(CONTACTS.CONTACT_TYPE = 2 OR CONTACTS.CONTACT_TYPE = 4) AND "
+			 "(CONTACTS.CONTACT_TYPE = 2 OR CONTACTS.CONTACT_TYPE = 4 OR CONTACTS.CONTACT_TYPE = 3) AND "
 			 "ARCBILL.TIME_STAMP > :StartTime AND "
 			 "ARCBILL.TIME_STAMP < :EndTime ";
 
@@ -9659,7 +9659,7 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 
 	qrLoyaltyAuditSummary->SQL->Text		=	qrLoyaltyAuditSummary->SQL->Text +
 		"WHERE "
-			 "(CONTACTS.CONTACT_TYPE = 2 OR CONTACTS.CONTACT_TYPE = 4) AND "
+			 "(CONTACTS.CONTACT_TYPE = 2 OR CONTACTS.CONTACT_TYPE = 4 OR CONTACTS.CONTACT_TYPE = 3) AND "
 			 "DAYARCBILL.TIME_STAMP > :StartTime AND "
 			 "DAYARCBILL.TIME_STAMP < :EndTime "
 		"GROUP BY "
@@ -10475,9 +10475,9 @@ void TdmMMReportData::SetupHappyHour(TDateTime StartTime, TDateTime EndTime, TSt
 			"Archive.GST_Percent,"
 			"Sum(Archive.Qty) Item_Count,"
 		    "Cast(Sum(Archive.Price * Archive.Qty ) as Numeric(17,4)) Price, "
-			"Cast(sum(((ARCHIVE.PRICE*ARCHIVE.QTY - ARCHIVE.DISCOUNT )*ARCHIVE.PRICE_LEVEL0)/ARCHIVE.PRICE_LEVEL1)as numeric(17,4)) as PriceLevel0, "
+            "Cast(sum(cast(((ARCHIVE.PRICE*ARCHIVE.QTY - ARCHIVE.DISCOUNT )*ARCHIVE.PRICE_LEVEL0)/ARCHIVE.PRICE_LEVEL1 as numeric(17,4)))as numeric(17,4)) as PriceLevel0, "
 			"Cast(   "
-		   "	(sum(((ARCHIVE.PRICE*ARCHIVE.QTY - ARCHIVE.DISCOUNT )* ARCHIVE.PRICE_LEVEL0)/ARCHIVE.PRICE_LEVEL1)) -  "
+		   "	sum(cast((((ARCHIVE.PRICE*ARCHIVE.QTY - ARCHIVE.DISCOUNT )* ARCHIVE.PRICE_LEVEL0)/ARCHIVE.PRICE_LEVEL1) as numeric(17,4))) - "
 		   "	(Sum(Archive.Price * Archive.Qty )-Sum(Archive.DISCOUNT * Archive.Qty )) as Numeric(17,4)   "
 		   "	) as Difference,  "
 			"Cast(Sum(Archive.Cost * Archive.Qty) as Numeric(17,4)) Cost,"
@@ -10526,9 +10526,9 @@ void TdmMMReportData::SetupHappyHour(TDateTime StartTime, TDateTime EndTime, TSt
 			"DayArchive.GST_Percent,"
 			"Sum(DayArchive.Qty) Item_Count,"
 		"Cast(Sum(DayArchive.Price * DayArchive.Qty ) as Numeric(17,4)) Price, "
-			"Cast(sum(((DayArchive.PRICE*DayArchive.QTY - DayArchive.DISCOUNT )*DayArchive.PRICE_LEVEL0)/DayArchive.PRICE_LEVEL1)as numeric(17,4)) as PriceLevel0, "
+            "Cast(sum(cast(((DayArchive.PRICE*DayArchive.QTY - DayArchive.DISCOUNT )*DayArchive.PRICE_LEVEL0)/DayArchive.PRICE_LEVEL1 as numeric(17,4)))as numeric(17,4)) as PriceLevel0, "
 			"Cast(   "
-		   "	(sum(((DayArchive.PRICE*DayArchive.QTY - DayArchive.DISCOUNT )* DayArchive.PRICE_LEVEL0)/DayArchive.PRICE_LEVEL1)) -  "
+		   "	sum(cast((((DayArchive.PRICE*DayArchive.QTY - DayArchive.DISCOUNT )* DayArchive.PRICE_LEVEL0)/DayArchive.PRICE_LEVEL1) as numeric(17,4))) -  "
 		   "	(Sum(DayArchive.Price * DayArchive.Qty )-Sum(DayArchive.DISCOUNT * DayArchive.Qty )) as Numeric(17,4)   "
 		   "	) as Difference,  "
 			"Cast(Sum(DayArchive.Cost * DayArchive.Qty) as Numeric(17,4)) Cost,"
@@ -10577,9 +10577,9 @@ void TdmMMReportData::SetupHappyHour(TDateTime StartTime, TDateTime EndTime, TSt
 			"Orders.GST_Percent,"
 			"Sum(Orders.Qty) Item_Count,"
 			"Cast(Sum(Orders.Price * Orders.Qty ) as Numeric(17,4)) Price, "
-			"Cast(sum(((Orders.PRICE*Orders.QTY - Orders.DISCOUNT )*Orders.PRICE_LEVEL0)/Orders.PRICE_LEVEL1)as numeric(17,4)) as PriceLevel0, "
+            "Cast(sum(cast(((Orders.PRICE*Orders.QTY - Orders.DISCOUNT )*Orders.PRICE_LEVEL0)/Orders.PRICE_LEVEL1 as numeric(17,4)))as numeric(17,4)) as PriceLevel0, "
 			"Cast(   "
-		   "	(sum(((Orders.PRICE*Orders.QTY - Orders.DISCOUNT )* Orders.PRICE_LEVEL0)/Orders.PRICE_LEVEL1)) -  "
+		   "	sum(cast((((Orders.PRICE*Orders.QTY - Orders.DISCOUNT )* Orders.PRICE_LEVEL0)/Orders.PRICE_LEVEL1) as numeric(17,4))) -   "
 		   "	(Sum(Orders.Price * Orders.Qty )-Sum(Orders.DISCOUNT * Orders.Qty )) as Numeric(17,4)   "
 		   "	) as Difference,  "
 			"Cast(Sum(Orders.Cost * Orders.Qty) as Numeric(17,4)) Cost,"
@@ -16444,7 +16444,8 @@ void TdmMMReportData::SetupSubsReport(TDateTime StartTime, TDateTime EndTime)
              "CONTACTS.CONTACTS_KEY, "
              "CONTACTS.NAME FIRST_NAME, "
              "CONTACTS.LAST_NAME, "
-             "MEMBERSHIP_SUBS_DETAILS.SUBS_PAID as FINANCIAL, "
+             //"MEMBERSHIP_SUBS_DETAILS.SUBS_PAID as FINANCIAL, "
+             " CASE WHEN MEMBERSHIP_SUBS_DETAILS.SUBS_PAID = 'T' THEN 'YES' END As FINANCIAL,"
              "MEMBERSHIP_SUBS_DETAILS.SUBS_PAID_DATE DATE_SUBS_PAID, "
              "MEMBERSHIP_SUBS_DETAILS.SUBS_EXPIRY_DATE DATE_SUBS_EXPIRY, "
              "MEMBERSHIP_SUBS_DETAILS.SUBS_PAID_RECEIPT_NO RECEIPT_NO "
@@ -16455,8 +16456,8 @@ void TdmMMReportData::SetupSubsReport(TDateTime StartTime, TDateTime EndTime)
 
     qrSubsReport->ParamByName("StartTime")->AsDateTime	= StartTime;
     qrSubsReport->ParamByName("EndTime")->AsDateTime	= EndTime;
-    qrSubsReport->ParamByName("SUBS_PAID")->AsDateTime	= "T";
-    qrSubsReport->ParamByName("ISLOCAL_MEMBER")->AsDateTime	= "T";
+    qrSubsReport->ParamByName("SUBS_PAID")->AsString	= "T";
+    qrSubsReport->ParamByName("ISLOCAL_MEMBER")->AsString	= "T";
 
 }
 

@@ -106,6 +106,7 @@ class TContactPoints
     TContactPoints();
     void Assign(TContactPoints &inPoints);
     void Clear();
+    void ClearPoints();
     void ClearBySource(TPointsAssignedSource Source);
     void ClearByAccountType(TPointsTypePair PointsToClear);
     /* Clears all sources except pasDatabase */

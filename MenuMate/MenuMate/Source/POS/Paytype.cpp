@@ -1537,7 +1537,8 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                 return;
             }
 
-            if(TGlobalSettings::Instance().ShowScreenToSelectItemForPoint && !TGlobalSettings::Instance().UseTierLevels)
+            if(TGlobalSettings::Instance().ShowScreenToSelectItemForPoint && !TGlobalSettings::Instance().UseTierLevels &&
+               !CurrentTransaction.Membership.Member.Points.PointsRules.Contains(eprNoPointsRedemption))
             {
                 ShowFormToSelectItems(Payment);
             }

@@ -83,11 +83,12 @@ class TBlindBalanceController
 		bool WarnOperator(void);
 		void LoadBlindBalances(void);
 		void UpdateBlindBalances(AnsiString BagID);
+        bool IsMaster;
    public :
 		TBlindBalances BlindBalances;
 		static TBlindBalances MasterBalance;
-		TBlindBalanceController(TForm *inDisplayOwner,Database::TDBTransaction &inDBTransaction);
-		TBlindBalanceController(TForm *inDisplayOwner,Database::TDBTransaction &inDBTransaction, AnsiString DeviceName);
+		TBlindBalanceController(TForm *inDisplayOwner,Database::TDBTransaction &inDBTransaction,bool isMaster);
+		TBlindBalanceController(TForm *inDisplayOwner,Database::TDBTransaction &inDBTransaction,bool isMaster, AnsiString DeviceName);
 		bool Run();
 		AnsiString GetBagID(void);
 		TBlindBalances Get();
