@@ -2393,9 +2393,6 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
         //Create Set For inserting OrderKeys having no Discount.
         std::set<__int64> orderKeysWithNoDiscount;
 
-        //Create Set For inserting OrderKeys having Discount other than scd pwd.
-        std::set<__int64> allOrderKeys;
-
         if(isSCDOrPWDDiscountExist)
         {
             //Load OrderKeys Having SCD Discount Applied.
@@ -2407,13 +2404,9 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
             //load OrderKeys Which have No Discount..
             LoadOrderKeysWIthoutDiscount(DBTransaction, TabKey, orderKeysWithNoDiscount);
 
-             //load All OrderKeys
-            LoadAllOrderKeys(DBTransaction, TabKey, allOrderKeys);
-
+            //If no order key have scd or pwd discount  then make isSCDOrPWDDiscountExist false.
             isSCDOrPWDDiscountExist = orderKeysWithSCDDiscount.size() == 0 && orderKeysWithPWDDiscount.size() == 0 ? false : true;
         }
-
-        int itemsWithNormalDiscount = allOrderKeys.size() - orderKeysWithNoDiscount.size() - orderKeysWithSCDDiscount.size() -  orderKeysWithPWDDiscount.size();
 
 		for (; !IBInternalQuery->Eof  ;IBInternalQuery->Next())
 		{
@@ -2492,6 +2485,9 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
                 }
             }
 		}
+
+        ///count orderkeys which have normaldiscount applied
+        int itemsWithNormalDiscount = IBInternalQuery->RecordCount - orderKeysWithNoDiscount.size() - orderKeysWithSCDDiscount.size() -  orderKeysWithPWDDiscount.size();
 
         if(SelectingItems && orderKeysWithSCDDiscount.size() > 0  && itemsWithNormalDiscount > 0)
         {
@@ -4893,34 +4889,6 @@ void TDBOrder::LoadOrderKeysWIthoutDiscount(Database::TDBTransaction &DBTransact
         for (; !selectOrderKeysWithoutDiscount->Eof  ;selectOrderKeysWithoutDiscount->Next())
         {
             orderKeysWithoutDiscount.insert(selectOrderKeysWithoutDiscount->FieldByName("ORDER_KEY")->AsInteger);
-        }
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-//--------------------------------------------------------------------------------------------------------------------
-void TDBOrder::LoadAllOrderKeys(Database::TDBTransaction &DBTransaction, int tabKey, std::set<__int64> &orderKeys)
-{
-    try
-    {
-        TIBSQL *selectOrderKeys = DBTransaction.Query(DBTransaction.AddQuery());
-        selectOrderKeys->Close();
-        selectOrderKeys->SQL->Clear();
-        selectOrderKeys->SQL->Text = "SELECT a.ORDER_KEY  "
-                                                    "FROM ORDERS a "
-                                                    "WHERE  a.TAB_KEY = :TAB_KEY "
-                                                "GROUP by 1 "
-                                                "ORDER BY a.ORDER_KEY ";
-
-        selectOrderKeys->ParamByName("TAB_KEY")->AsString = tabKey;
-        selectOrderKeys->ExecQuery();
-
-        for (; !selectOrderKeys->Eof  ;selectOrderKeys->Next())
-        {
-            orderKeys.insert(selectOrderKeys->FieldByName("ORDER_KEY")->AsInteger);
         }
     }
     catch(Exception &E)
