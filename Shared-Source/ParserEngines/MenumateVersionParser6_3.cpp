@@ -786,7 +786,7 @@ void TApplyParser::Insert6_35MemberSubsDetails(TDBControl* const inDBControl)
         TIBSQL *SelectQuery    = transaction.Query( transaction.AddQuery() );
         SelectQuery->Close();
         SelectQuery->SQL->Text = " Select CONTACTS_KEY,POINTS_RULES FROM CONTACTS WHERE CONTACT_TYPE <> 0"
-        "AND CONTACT_TYPE <> 1 AND CONTACT TYPE <> 3 ORDER BY CONTACTS_KEY ";
+        "AND CONTACT_TYPE <> 1 AND CONTACT_TYPE <> 3 ORDER BY CONTACTS_KEY ";
         SelectQuery->ExecQuery();
         InsertQuery->SQL->Text =
         "INSERT INTO MEMBERSHIP_SUBS_DETAILS ( MEMBERSHIP_SUBS_KEY, CONTACTS_KEY, SUBS_PAID_DATE,SUBS_PAID_AMOUNT,"
