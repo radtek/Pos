@@ -208,7 +208,7 @@ void XPriceAdjustmentReportSection::GetPriceAdjustmentQueryForConsolidatedZed(TS
     "(r.BASE_PRICE > r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
     + masterSlaveCondition +
     "and s.SECURITY_EVENT = 'Price Adjust' "
-    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP < :endTime "
+    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
     "group by c.NAME ");
 
     AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
@@ -219,7 +219,7 @@ void XPriceAdjustmentReportSection::GetPriceAdjustmentQueryForConsolidatedZed(TS
     "(r.BASE_PRICE > r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
     + masterSlaveCondition +
     "and s.SECURITY_EVENT = 'Price Adjust' "
-    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP < :endTime "
+    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
     "group by c.NAME ");
 
     AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
@@ -230,7 +230,7 @@ void XPriceAdjustmentReportSection::GetPriceAdjustmentQueryForConsolidatedZed(TS
     "(r.BASE_PRICE < r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
     + masterSlaveCondition +
     "and s.SECURITY_EVENT = 'Price Adjust' "
-    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP < :endTime "
+    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
     "group by c.NAME ");
 
     AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
@@ -241,6 +241,6 @@ void XPriceAdjustmentReportSection::GetPriceAdjustmentQueryForConsolidatedZed(TS
     "(r.BASE_PRICE < r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
     + masterSlaveCondition +
     "and s.SECURITY_EVENT = 'Price Adjust' "
-    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP < :endTime "
+    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
     "group by c.NAME ");
 }

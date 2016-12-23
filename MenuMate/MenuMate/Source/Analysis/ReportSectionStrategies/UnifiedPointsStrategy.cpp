@@ -132,7 +132,7 @@ void UnifiedPointsStrategy::GetPointsDetailsForNormalZed(TIBSQL *ibInternalQuery
 
 void UnifiedPointsStrategy::GetPointsDetailsForConsolidatedZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
 {
-    masterSlaveCondition = "WHERE DAB.TIME_STAMP >=:startTime and DAB.TIME_STAMP < :endTime AND ";
+    masterSlaveCondition = "WHERE DAB.TIME_STAMP >=:startTime and DAB.TIME_STAMP <= :endTime AND ";
 
 	if (!_globalSettings->EnableDepositBagNum)
 	{

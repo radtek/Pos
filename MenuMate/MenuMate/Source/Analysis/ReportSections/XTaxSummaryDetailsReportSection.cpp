@@ -35,12 +35,13 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     ReportType reportType;
 
-    const Currency todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+    const Currency todays_earnings = 0;
     Currency taxExemptSales = 0;
     Currency salesTax = 0, serviceCharge = 0, serviceChargeTax = 0, localTax = 0, profitTax = 0, discountAndSurcharge = 0, zeroratedsales = 0, totaldiscount = 0;
     sales_tax.clear();
     if(IsConsolidatedZed)
     {
+        todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, *_startTime, *_endTime, true);
         salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
         serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName, *_startTime, *_endTime);
         serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
@@ -53,6 +54,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     }
     else
     {
+        todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
         salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName);
         serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName);
         serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName);
@@ -92,7 +94,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     if(_globalSettings->UseBIRFormatInXZReport)
     {
 
-        dataCalculationUtilities->PrinterFormatinTwoSections(printOut); //SetPrinterFormatToMiddle(printOut);
+        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
 
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "";
@@ -264,7 +266,7 @@ void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTra
                                 "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
                                 "INNER JOIN TAXPROFILES DTax on DTax.TYPE = DAOT.TAX_TYPE "
                                 "WHERE TAX_TYPE = '0' " + terminalNamePredicate + " and DAOT.TAX_NAME = DTax.NAME "
-                                "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP < :endTime "
+                                "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP <= :endTime "
                                 "group by "
                                 "DTax.RATE, "
                                 "DAOT.TAX_TYPE ";

@@ -154,6 +154,8 @@ public:
     void GetArcPointsForConsolidatedZed(TIBSQL *qXArcPoints1);
     void GetArcPayForConsolidatedZed(TIBSQL *qrXArcPay);
     void GetArcSurchargeForConsolidatedZed(TIBSQL *qXArcSurcharge);
+    void GetPointsForConsolidatedZed(TIBSQL *qXArcPoints, TDateTime &startTime, TDateTime &endTime);
+    void GetPointsForNormalZed(TIBSQL *qXArcPoints, UnicodeString deviceName);
 };
 
 class THourlyTotals
@@ -220,6 +222,7 @@ public:
     int CalculateLastDayOfMonth(int month);
     TDateTime CalculateSessionTransactionDate(TDateTime trans_date);
     Currency GetAccumulatedZedTotal(Database::TDBTransaction &dbTransaction, TDateTime &startTime, TDateTime &endTime, UnicodeString deviceName);
+    Currency GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, TDateTime &startTime, TDateTime &endTime, bool showendingbal = false);
 };
 
 

@@ -10,6 +10,7 @@ ZBegningEndingInvoiceReportSection::ZBegningEndingInvoiceReportSection(Database:
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
+    IsConsolidatedZed = false;
 }
 
 ZBegningEndingInvoiceReportSection::ZBegningEndingInvoiceReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
@@ -17,6 +18,7 @@ ZBegningEndingInvoiceReportSection::ZBegningEndingInvoiceReportSection(Database:
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
+    IsConsolidatedZed = true;
 }
 
 
@@ -30,6 +32,8 @@ ZBegningEndingInvoiceReportSection::~ZBegningEndingInvoiceReportSection()
 void ZBegningEndingInvoiceReportSection::GetOutput(TPrintout* printOut)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+
+
     const Currency todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
 
     const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
@@ -125,8 +129,6 @@ void ZBegningEndingInvoiceReportSection::GetOutput(TPrintout* printOut,TDateTime
     {
 
         printOut->PrintFormat->Line->ColCount = 4;
-
-
         printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
         printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/2.5;
         printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;

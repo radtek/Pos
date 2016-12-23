@@ -304,7 +304,7 @@ void SeperatePointsStrategy::GetPointDetailsConsolidatedZed(TIBSQL *ibInternalQu
     "LEFT JOIN CONTACTS ON "
     "POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
     "WHERE " + masterSlaveCondition + "ADJUSTMENT_SUBTYPE = 1 AND CONTACTS.MEMBER_TYPE != 2"
-    " and ARCBILL.TIME_STAMP >= :startTime  and ARCBILL.TIME_STAMP < :endTime  "
+    " and ARCBILL.TIME_STAMP >= :startTime  and ARCBILL.TIME_STAMP <= :endTime  "
     "GROUP BY POINTSTRANSACTIONS.CONTACTS_KEY, ADJUSTMENT_TYPE "
     "ORDER BY LOYALTY_KEY;";
 }
@@ -338,7 +338,7 @@ void SeperatePointsStrategy::GetEarnedPointDetailsForConsolidatedZed(TIBSQL *ibI
         "LEFT JOIN ARCBILL ON POINTSTRANSACTIONS.INVOICE_NUMBER = ARCBILL.INVOICE_NUMBER "
         "LEFT JOIN CONTACTS ON POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
         "WHERE " + masterSlaveCondition + "ADJUSTMENT_SUBTYPE = 2 "
-        " and ARCBILL.TIME_STAMP >= :startTime  and ARCBILL.TIME_STAMP < :endTime "
+        " and ARCBILL.TIME_STAMP >= :startTime  and ARCBILL.TIME_STAMP <= :endTime "
         "GROUP BY POINTSTRANSACTIONS.CONTACTS_KEY, ADJUSTMENT_TYPE "
         "ORDER BY LOYALTY_KEY;";
 }

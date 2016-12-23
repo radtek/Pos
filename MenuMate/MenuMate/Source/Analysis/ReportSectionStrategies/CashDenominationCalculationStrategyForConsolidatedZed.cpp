@@ -43,7 +43,7 @@ void CashDenominationCalculationStrategyForConsolidatedZed::GetCashDenominationQ
                                  " from ZED_CASHDENOMINATIONS "
                                  " inner join ZEDS on ZEDS.Z_KEY = ZED_CASHDENOMINATIONS.Z_KEY "
                                  " where "
-                                 " ZEDS.TIME_STAMP >= :startTime and ZEDS.TIME_STAMP < :endTime ";
+                                 " ZEDS.TIME_STAMP >= :startTime and ZEDS.TIME_STAMP <= :endTime ";
 
     if (!_globalSettings->EnableDepositBagNum || _isMasterBalance)
     {

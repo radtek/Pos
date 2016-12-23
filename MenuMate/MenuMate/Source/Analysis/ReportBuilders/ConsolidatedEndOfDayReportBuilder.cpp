@@ -25,7 +25,7 @@ void ConsolidatedEndOfDayReportBuilder::AddCurrentDateDetailsSection(IReport* re
 }
 void ConsolidatedEndOfDayReportBuilder::AddCurrentBegningAndEndingBalance(IReport* report)
 {
-    AddConsolidatedReportSectionToReport(report, mmShowBegningandEndingBalance, true, GetStartTime(), GetEndTime());
+    //AddConsolidatedReportSectionToReport(report, mmShowBegningandEndingBalance, true, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddClientDetailsSection(IReport* report)
@@ -105,12 +105,12 @@ void ConsolidatedEndOfDayReportBuilder::AddAccountPurchasesSection(IReport* repo
 
 void ConsolidatedEndOfDayReportBuilder::AddAccountBalancesTabsSection(IReport* report)
 {
-    AddConsolidatedReportSectionToReport(report, mmAccountBalancesTabsDetailsSection, GetGlobalSettings()->ShowAccountBalancesTabs, GetStartTime(), GetEndTime());
+    //AddConsolidatedReportSectionToReport(report, mmAccountBalancesTabsDetailsSection, GetGlobalSettings()->ShowAccountBalancesTabs, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddAccountBalancesSeatedSection(IReport* report)
 {
-    AddConsolidatedReportSectionToReport(report, mmAccountBalancesSeatedDetailsSection, GetGlobalSettings()->ShowAccountBalances, GetStartTime(), GetEndTime());
+    //AddConsolidatedReportSectionToReport(report, mmAccountBalancesSeatedDetailsSection, GetGlobalSettings()->ShowAccountBalances, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddHourlySalesSection(IReport* report)

@@ -1046,7 +1046,7 @@ Currency ReportFinancialCalculations::GetZeroRatedSales(Database::TDBTransaction
                         "IN ( SELECT ARCHIVE_KEY  FROM ARCORDERTAXES "
                         "WHERE (TAX_TYPE = 0  and TAX_VALUE = 0 ) AND "
                         "ARCORDERTAXES.ARCHIVE_KEY NOT IN (SELECT a.ARCHIVE_KEY FROM ARCORDERDISCOUNTS a WHERE (A.DISCOUNT_GROUPNAME = 'Senior Citizen' AND A.DISCOUNTED_VALUE <> 0) OR (A.DISCOUNT_GROUPNAME = 'Person with Disability'))) "
-                        " and da.TIME_STAMP >= :startTime  and da.TIME_STAMP < :endTime  "
+                        " and da.TIME_STAMP >= :startTime  and da.TIME_STAMP <= :endTime  "
                         "group by "
                         "Da.ARCHIVE_KEY ";
 
@@ -1117,7 +1117,7 @@ Currency ReportFinancialCalculations::GetTotalDiscountValue(Database::TDBTransac
 			"where "
 			"ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' "
 			+ terminalNamePredicate + " And ARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
-			(SecurityTypes[secDiscountedBy]) + "' and ARCBILL.TIME_STAMP >= :startTime  and ARCBILL.TIME_STAMP < :endTime  " ;
+			(SecurityTypes[secDiscountedBy]) + "' and ARCBILL.TIME_STAMP >= :startTime  and ARCBILL.TIME_STAMP <= :endTime  " ;
 
         tr.StartTransaction();
         if(!TGlobalSettings::Instance().EnableDepositBagNum)

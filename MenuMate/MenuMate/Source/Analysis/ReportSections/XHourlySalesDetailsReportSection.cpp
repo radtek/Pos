@@ -135,7 +135,7 @@ AnsiString XHourlySalesDetailsReportSection::GetHourlySalesDetailsForConsolidate
             "SECURITY "
             "LEFT JOIN ARCBILL ON SECURITY.SECURITY_REF = ARCBILL.SECURITY_REF "
             "WHERE Security.SECURITY_REF = ARCBILL.SECURITY_REF AND ARCBILL.ARCBILL_KEY IS NOT NULL AND SECURITY.SECURITY_EVENT = 'Billed By' "
-            " and SECURITY.TIME_STAMP >= :startTime and SECURITY.TIME_STAMP < :endTime "
+            " and SECURITY.TIME_STAMP >= :startTime and SECURITY.TIME_STAMP <= :endTime "
         "GROUP BY 2, 3; ";
 
   return hourlySalesQuery;

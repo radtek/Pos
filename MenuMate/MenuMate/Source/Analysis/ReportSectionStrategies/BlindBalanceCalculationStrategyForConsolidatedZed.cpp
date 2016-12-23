@@ -58,7 +58,7 @@ void BlindBalanceCalculationStrategyForConsolidatedZed::GetBlindBalanceDetailsFo
         "ZEDS.Z_KEY, ZEDS.TERMINAL_NAME "
         "from BLINDBALANCE inner join ZEDS on ZEDS.Z_KEY = BLINDBALANCE.Z_KEY "
          "where "
-         " ZEDS.TIME_STAMP >= :startTime and ZEDS.TIME_STAMP < :endTime "
+         " ZEDS.TIME_STAMP >= :startTime and ZEDS.TIME_STAMP <= :endTime "
          + terminalNamePredicate +
          "GROUP BY BLINDBALANCE.PAYMENT, ZEDS.Z_KEY, ZEDS.TERMINAL_NAME)SubQuery1 "
          "group by SubQuery1.PAYMENT ";
@@ -75,7 +75,7 @@ void BlindBalanceCalculationStrategyForConsolidatedZed::LoadBlindBalanceDetails(
                                         "       from arcbillpay dabp "
                                         "            left join arcbill dab on "
                                         "                 dabp.arcbill_key = dab.arcbill_key "
-                                        "       where dab.TIME_STAMP >= :startTime and dab.TIME_STAMP < :endTime and "
+                                        "       where dab.TIME_STAMP >= :startTime and dab.TIME_STAMP <= :endTime and "
                                         " dabp.pay_type = :pay_type ";
 
         if (!_globalSettings->EnableDepositBagNum || _isMasterBalance)

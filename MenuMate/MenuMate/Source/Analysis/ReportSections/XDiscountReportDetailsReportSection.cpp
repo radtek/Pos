@@ -150,7 +150,6 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                printout->PrintFormat->Line->Columns[0]->Text = "";
             }
             printout->PrintFormat->AddLine();
-			//AddSectionTitle(printout.get(), "Discount Report");
 
 			printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 			printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width / 3;
@@ -416,6 +415,7 @@ DiscountSQL = "select '' NAME, SubQuery1.DESCRIPTION, sum(SubQuery1.DISCOUNTED_V
      "from ARCORDERDISCOUNTS inner join ARCHIVE on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
     "inner join ARCBILL on ARCHIVE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
     " Where ARCBILL.TIME_STAMP >= :startTime and ARCBILL.TIME_STAMP <= :endTime  "
+    " and ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' "
     " GROUP BY ARCORDERDISCOUNTS.DESCRIPTION, ARCBILL.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME)SubQuery1 ";
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {

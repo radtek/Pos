@@ -23,6 +23,8 @@ public:
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    void GetCancelReportsForNormalZed(TIBSQL* cancelsQuery, AnsiString terminalNamePredicate);
+    void GetCancelReportsForConsolidatedZed(TIBSQL* cancelsQuery, AnsiString terminalNamePredicate, TDateTime prevZedTime);
 };
 
 #endif

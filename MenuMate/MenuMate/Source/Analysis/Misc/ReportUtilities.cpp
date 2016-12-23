@@ -275,25 +275,6 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
             terminalNamePredicate = " a.TERMINAL_NAME = :TERMINAL_NAME AND";
         }
 
-        /*if(TGlobalSettings::Instance().UseBIRFormatInXZReport && showendingbal)
-        {
-            qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
-                                " from DAYARCBILL a "
-                                " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-                                " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 or a.DISCOUNT !=0 "
-                                " group by 1,2,3,4,5,6,7,8,9,10 ";
-        }
-        else
-        {
-
-         qrXArcBill->SQL->Text = "select a.ARCBILL_KEY, a.DISCOUNT, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP,a.PATRON_COUNT, a.INVOICE_NUMBER, a.SALES_TYPE, a.BILLED_LOCATION, a.TOTAL "
-                                " from DAYARCBILL a "
-                                " left join DAYARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-                                " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-                                " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable')"
-                                " group by 1,2,3,4,5,6,7,8,9,10 ";
-         }*/
         NormalZedTransaction(qrXArcBill, showendingbal);
 
         if(!TGlobalSettings::Instance().EnableDepositBagNum)
@@ -308,8 +289,9 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
         double first_for_total_time=0;
 
         qXArcPoints->Close();
-        qXArcPoints->SQL->Text = "SELECT * from POINTSTRANSACTIONS a where a.TIME_STAMP >= (select coalesce(max(b.Time_Stamp),'28.12.1889, 19:39:25.000') from ZEDS b where b.TERMINAL_NAME = :ZTERMINAL_NAME)" ;
-        qXArcPoints->ParamByName("ZTERMINAL_NAME")->AsString = deviceName;
+        /*qXArcPoints->SQL->Text = "SELECT * from POINTSTRANSACTIONS a where a.TIME_STAMP >= (select coalesce(max(b.Time_Stamp),'28.12.1889, 19:39:25.000') from ZEDS b where b.TERMINAL_NAME = :ZTERMINAL_NAME)" ;
+        qXArcPoints->ParamByName("ZTERMINAL_NAME")->AsString = deviceName;*/
+        GetPointsForNormalZed(qXArcPoints, deviceName);
         qXArcPoints->ExecQuery();
 
         std::map<AnsiString,TPointTransactions> pointTransaction;
@@ -965,8 +947,8 @@ TTransactionInfo TTransactionInfoProcessor::GetTransactionInfoForConsolidatedZed
         double first_for_total_time=0;
 
         qXArcPoints->Close();
-        qXArcPoints->SQL->Text = "SELECT * from POINTSTRANSACTIONS a where a.TIME_STAMP >= (select coalesce(max(b.Time_Stamp),'28.12.1889, 19:39:25.000') from ZEDS b where b.TERMINAL_NAME = :ZTERMINAL_NAME)" ;
-        qXArcPoints->ParamByName("ZTERMINAL_NAME")->AsString = deviceName;
+
+        GetPointsForConsolidatedZed(qXArcPoints, startTime, endTime);
         qXArcPoints->ExecQuery();
 
         std::map<AnsiString,TPointTransactions> pointTransaction;
@@ -1139,14 +1121,14 @@ Currency DataCalculationUtilities::GetAccumulatedZedTotal(Database::TDBTransacti
         terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";
     }
 
-	qrAccumulatedTotal->SQL->Text = "SELECT SUM(TERMINAL_EARNINGS) AS TOTAL FROM ZEDS  a where a.TIME_STAMP >=:startTime  and a.TIME_STAMP <= :endTime " + terminalNamePredicate ;
+	qrAccumulatedTotal->SQL->Text = "SELECT SUM(TERMINAL_EARNINGS) AS TOTAL FROM ZEDS  a where a.TIME_STAMP <=:startTime " + terminalNamePredicate ;
 
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
         qrAccumulatedTotal->ParamByName("TERMINAL_NAME")->AsString = deviceName;
     }
     qrAccumulatedTotal->ParamByName("StartTime")->AsDateTime = startTime;
-    qrAccumulatedTotal->ParamByName("EndTime")->AsDateTime = endTime;
+    //qrAccumulatedTotal->ParamByName("EndTime")->AsDateTime = endTime;
 	qrAccumulatedTotal->ExecQuery();
 
 	if(qrAccumulatedTotal->FieldByName("TOTAL")->IsNull)
@@ -1160,6 +1142,132 @@ Currency DataCalculationUtilities::GetAccumulatedZedTotal(Database::TDBTransacti
 	qrAccumulatedTotal->Close();
 
 	return accumulatedTotal;
+}
+
+Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, TDateTime &startTime, TDateTime &endTime, bool showendingbal)
+{
+    try
+    {
+        TTransactionInfo TransactionInfo;
+
+        Currency groupGrandTotal = 0;
+        Currency currentFloat = 0;
+        Currency currentSkimsTotal = 0;
+        Currency skims = 0;
+        Currency refloats = 0;
+
+        if(TGlobalSettings::Instance().UseBIRFormatInXZReport || showendingbal)
+        {
+           TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
+           showendingbal = false;
+        }
+        TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfoForConsolidatedZed(dbTransaction, deviceName,startTime, endTime, showendingbal);
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+
+        ibInternalQuery->Close();
+
+        ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount FROM refloat_skim "
+        "Left join zeds on refloat_skim.z_key = zeds.z_key "
+        "WHERE zeds.TERMINAL_NAME = :TERMINAL_NAME AND zeds.TIME_STAMP >= :startTime and  zeds.TIME_STAMP <= :endTime  "
+        "and (refloat_skim.transaction_type = 'Withdrawal' or refloat_skim.transaction_type = 'Deposit')";
+
+        ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        ibInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
+        ibInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
+        ibInternalQuery->ExecQuery();
+
+        for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
+        {
+            if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal")
+            {
+                skims += ibInternalQuery->FieldByName("amount")->AsCurrency;
+            }
+            else
+            {
+                refloats += ibInternalQuery->FieldByName("amount")->AsCurrency;
+            }
+        }
+
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text = "SELECT " "* FROM ZEDS " "WHERE " "TERMINAL_NAME = :TERMINAL_NAME AND " "TIME_STAMP >= :startTime and  TIME_STAMP <= :endTime ";
+        ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        ibInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
+        ibInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
+        ibInternalQuery->ExecQuery();
+
+        if (ibInternalQuery->RecordCount)
+        {
+            currentFloat = ibInternalQuery->FieldByName("INITIAL_FLOAT")->AsCurrency;
+            currentSkimsTotal = ibInternalQuery->FieldByName("SKIMS_TOTAL")->AsCurrency;
+        }
+
+        std::map <int, std::map <UnicodeString, TSumPayments> > ::iterator itPayments;
+        for (itPayments = TransactionInfo.Payments.begin(); itPayments != TransactionInfo.Payments.end(); itPayments++)
+        {
+            Currency roundingTotal = 0;
+            Currency cashValue = 0;
+            Currency changeValue = 0;
+
+            std::map <UnicodeString, TSumPayments> PaymentValues = itPayments->second;
+            if (itPayments->first == 0)
+            {
+                groupGrandTotal += currentFloat;
+                groupGrandTotal += currentSkimsTotal;
+                std::map <UnicodeString, TSumPayments> ::iterator itCurrentPayment = PaymentValues.find(CASH);
+                if (itCurrentPayment != PaymentValues.end())
+                {
+                    groupGrandTotal += itCurrentPayment->second.Total;
+                    roundingTotal += itCurrentPayment->second.Rounding;
+                    groupGrandTotal -= itCurrentPayment->second.CashOut;
+                    cashValue = itCurrentPayment->second.Total;
+                }
+                itCurrentPayment = PaymentValues.find(CHANGE);
+                if (itCurrentPayment != PaymentValues.end())
+                {
+                    groupGrandTotal += itCurrentPayment->second.Total;
+                    changeValue += itCurrentPayment->second.Total;
+                    roundingTotal += itCurrentPayment->second.Rounding;
+                }
+            }
+            std::map <UnicodeString, TSumPayments> ::iterator itCurrentPayment;
+            for (itCurrentPayment = PaymentValues.begin(); itCurrentPayment != PaymentValues.end(); itCurrentPayment++)
+            {
+                if (itCurrentPayment->second.Name.UpperCase() != UpperCase(CHANGE) &&
+                        itCurrentPayment->second.Name.UpperCase() != UpperCase(CREDIT) &&
+                        !(itCurrentPayment->second.Properties & ePayTypeGetVoucherDetails) &&
+                        !(itCurrentPayment->second.Properties & ePayTypeCredit) &&
+                        itCurrentPayment->second.Name.UpperCase() != UpperCase(CASH))
+                {
+                    groupGrandTotal += itCurrentPayment->second.CashOut;
+                    groupGrandTotal += itCurrentPayment->second.Total;
+                }
+            }
+            if (groupGrandTotal != 0 && itPayments->first == 0)
+            {
+                groupGrandTotal -= (currentFloat + currentSkimsTotal);
+            }
+        }
+
+        return groupGrandTotal;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+
+void TTransactionInfoProcessor::GetPointsForNormalZed(TIBSQL *qXArcPoints, UnicodeString deviceName)
+{
+    qXArcPoints->SQL->Text = "SELECT * from POINTSTRANSACTIONS a where a.TIME_STAMP >= (select coalesce(max(b.Time_Stamp),'28.12.1889, 19:39:25.000') from ZEDS b where b.TERMINAL_NAME = :ZTERMINAL_NAME)" ;
+    qXArcPoints->ParamByName("ZTERMINAL_NAME")->AsString = deviceName;
+}
+
+void TTransactionInfoProcessor::GetPointsForConsolidatedZed(TIBSQL *qXArcPoints, TDateTime &startTime, TDateTime &endTime)
+{
+    qXArcPoints->SQL->Text = "SELECT * from POINTSTRANSACTIONS a where a.TIME_STAMP >= :startTime and  a.TIME_STAMP <= :endTime " ;
+    qXArcPoints->ParamByName("startTime")->AsDateTime = startTime;
+    qXArcPoints->ParamByName("endTime")->AsDateTime = endTime;
 }
 
 

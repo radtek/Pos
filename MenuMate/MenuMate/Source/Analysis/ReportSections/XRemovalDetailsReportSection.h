@@ -23,6 +23,8 @@ public:
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    void GetRemovalReportsForNormalZed(TIBSQL* removalsQuery);
+    void GetRemovalReportsForConsolidatedZed(TIBSQL* removalsQuery, TDateTime prevZedTime);
 };
 
 #endif

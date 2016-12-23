@@ -314,7 +314,7 @@ void XPointsReportDetailsReportSection::GetGiftCardOutputForConsolidatedZed(TIBS
                 "GROUP BY POINTSTRANSACTIONS_KEY,INVOICE_NUMBER, CONTACTS_KEY,ADJUSTMENT_TYPE,  C.NAME  "
                 ") PTrans on PTrans.INVOICE_NUMBER = DAB.INVOICE_NUMBER   "
 
-    "WHERE DAB.TIME_STAMP >=:startTime and DAB.TIME_STAMP < :endTime "
+    "WHERE DAB.TIME_STAMP >=:startTime and DAB.TIME_STAMP <= :endTime "
      + masterSlaveCondition +
             "GROUP BY PTrans.CONTACTS_KEY, PTrans.Name  "
             "ORDER BY LOYALTY_KEY " ;
@@ -351,7 +351,7 @@ void XPointsReportDetailsReportSection::GetPointsQueryForConsolidatedZed(TIBSQL 
                         "INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
                         "WHERE PT.ADJUSTMENT_TYPE =:Adjustment_Type   "
                         ")PT1 ON PT1.INVOICE_NUMBER = DAB.INVOICE_NUMBER  "
-           " WHERE DAB.TIME_STAMP >=:startTime and DAB.TIME_STAMP < :endTime "
+           " WHERE DAB.TIME_STAMP >=:startTime and DAB.TIME_STAMP <= :endTime "
              + masterSlaveCondition +
            "GROUP BY PT1.CONTACTS_KEY, PT1.NAME   "
             "ORDER BY PT1.CONTACTS_KEY;  ";

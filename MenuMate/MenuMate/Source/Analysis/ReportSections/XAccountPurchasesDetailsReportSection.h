@@ -21,6 +21,8 @@ public:
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    void GetPurchaseDetailsForConsolidatedZed(TIBSQL *ibInternalQuery);
+    void GetPurchaseDetailsForNormalZed(TIBSQL *ibInternalQuery, TDateTime previousZedTime);
 };
 
 
