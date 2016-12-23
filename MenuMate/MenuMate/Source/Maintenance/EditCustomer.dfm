@@ -6,8 +6,8 @@ object frmEditCustomer: TfrmEditCustomer
   BorderStyle = bsNone
   BorderWidth = 5
   Caption = 'Edit Customer'
-  ClientHeight = 434
-  ClientWidth = 884
+  ClientHeight = 424
+  ClientWidth = 874
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -25,10 +25,10 @@ object frmEditCustomer: TfrmEditCustomer
   PixelsPerInch = 96
   TextHeight = 13
   object pnlButtons: TPanel
-    Left = 747
+    Left = 737
     Top = 0
     Width = 137
-    Height = 434
+    Height = 424
     Align = alRight
     BevelOuter = bvNone
     BorderWidth = 5
@@ -111,7 +111,7 @@ object frmEditCustomer: TfrmEditCustomer
     object tbtnCancel: TTouchBtn
       Tag = -1
       Left = 5
-      Top = 372
+      Top = 362
       Width = 127
       Align = alBottom
       Font.Charset = DEFAULT_CHARSET
@@ -168,8 +168,8 @@ object frmEditCustomer: TfrmEditCustomer
   object pgControl: TPageControl
     Left = 0
     Top = 0
-    Width = 747
-    Height = 434
+    Width = 737
+    Height = 424
     ActivePage = tsUser
     Align = alClient
     TabOrder = 1
@@ -178,8 +178,8 @@ object frmEditCustomer: TfrmEditCustomer
       object Panel1: TPanel
         Left = 0
         Top = 0
-        Width = 739
-        Height = 424
+        Width = 729
+        Height = 414
         Align = alClient
         BevelOuter = bvNone
         Color = 14342874
@@ -187,8 +187,8 @@ object frmEditCustomer: TfrmEditCustomer
         TabOrder = 0
         object lbeSmartCardSpace: TLabel
           Left = 0
-          Top = 407
-          Width = 739
+          Top = 397
+          Width = 729
           Height = 17
           Align = alBottom
           Caption = 'Smart Card Space Used.'
@@ -198,7 +198,7 @@ object frmEditCustomer: TfrmEditCustomer
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          ExplicitTop = 417
+          ExplicitTop = 407
           ExplicitWidth = 149
         end
         object GroupBox2: TGroupBox
@@ -439,7 +439,7 @@ object frmEditCustomer: TfrmEditCustomer
               Font.Height = -15
               Font.Name = 'Tahoma'
               Font.Style = []
-              MaxLength = 20
+              MaxLength = 15
               ParentFont = False
               TabOrder = 2
             end
@@ -456,7 +456,7 @@ object frmEditCustomer: TfrmEditCustomer
               Font.Height = -15
               Font.Name = 'Tahoma'
               Font.Style = []
-              MaxLength = 20
+              MaxLength = 15
               ParentFont = False
               TabOrder = 4
             end
@@ -563,7 +563,7 @@ object frmEditCustomer: TfrmEditCustomer
               Font.Height = -15
               Font.Name = 'Tahoma'
               Font.Style = []
-              MaxLength = 20
+              MaxLength = 6
               ParentFont = False
               TabOrder = 10
             end
@@ -833,8 +833,8 @@ object frmEditCustomer: TfrmEditCustomer
       object Panel2: TPanel
         Left = 0
         Top = 0
-        Width = 739
-        Height = 424
+        Width = 729
+        Height = 414
         Align = alClient
         Color = 14342874
         ParentBackground = False
@@ -842,8 +842,8 @@ object frmEditCustomer: TfrmEditCustomer
         object GroupBox6: TGroupBox
           Left = 1
           Top = 1
-          Width = 737
-          Height = 422
+          Width = 727
+          Height = 412
           Align = alClient
           Caption = 'Contacts Discounts'
           Font.Charset = DEFAULT_CHARSET
@@ -856,8 +856,8 @@ object frmEditCustomer: TfrmEditCustomer
           object tgDiscounts: TTouchGrid
             Left = 2
             Top = 19
-            Width = 733
-            Height = 401
+            Width = 723
+            Height = 391
             Align = alClient
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWhite
@@ -954,8 +954,8 @@ object frmEditCustomer: TfrmEditCustomer
             ScrollBtnRight.DisabledColor = -2147483633
             ScrollBtnRight.LatchedFontColor = -2147483640
             Buttons = {
-              04000000370000006C39B8D92FC48AD2FB3FEA0000003C40844C61D72497FC3F
-              EA0000003C40844C61D72497FC3FEB0000003C40844C61D72497FC3F00008000
+              04000000370000006C39B8D92FC48AD2FB3FE70000003C40844C61D72497FC3F
+              E70000003C40844C61D72497FC3FE70000003C40844C61D72497FC3F00008000
               008000000000800006000000540061006800FFFFFF000B000000000000000000
               00000000000000000000FFFFFF0006000000540061006800FFFFFF000B000000
               00000000000000000000000000000000FFFFFF00000000000100000001000000
@@ -981,8 +981,8 @@ object frmEditCustomer: TfrmEditCustomer
       object TPanel
         Left = 0
         Top = 0
-        Width = 739
-        Height = 424
+        Width = 729
+        Height = 414
         Align = alClient
         BorderWidth = 6
         Color = 14342874
@@ -991,7 +991,7 @@ object frmEditCustomer: TfrmEditCustomer
         object Panel4: TPanel
           Left = 7
           Top = 7
-          Width = 725
+          Width = 715
           Height = 34
           Align = alTop
           BevelOuter = bvLowered
@@ -1123,8 +1123,8 @@ object frmEditCustomer: TfrmEditCustomer
       object Panel7: TPanel
         Left = 0
         Top = 0
-        Width = 739
-        Height = 424
+        Width = 729
+        Height = 414
         Align = alClient
         Color = 14342874
         ParentBackground = False
@@ -1133,7 +1133,7 @@ object frmEditCustomer: TfrmEditCustomer
           Left = 1
           Top = 1
           Width = 424
-          Height = 422
+          Height = 412
           Align = alLeft
           BevelOuter = bvNone
           BorderWidth = 5
@@ -1144,7 +1144,7 @@ object frmEditCustomer: TfrmEditCustomer
             Left = 5
             Top = 39
             Width = 414
-            Height = 378
+            Height = 368
             Align = alClient
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
@@ -1269,8 +1269,8 @@ object frmEditCustomer: TfrmEditCustomer
         object Panel9: TPanel
           Left = 425
           Top = 1
-          Width = 313
-          Height = 422
+          Width = 303
+          Height = 412
           Align = alClient
           BevelOuter = bvNone
           BorderWidth = 5
@@ -1280,8 +1280,8 @@ object frmEditCustomer: TfrmEditCustomer
           object AvailableGroupsGrid: TTouchGrid
             Left = 5
             Top = 39
-            Width = 303
-            Height = 378
+            Width = 293
+            Height = 368
             Align = alClient
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
@@ -1387,7 +1387,7 @@ object frmEditCustomer: TfrmEditCustomer
           object Panel13: TPanel
             Left = 5
             Top = 5
-            Width = 303
+            Width = 293
             Height = 34
             Align = alTop
             BevelOuter = bvLowered
@@ -1412,8 +1412,8 @@ object frmEditCustomer: TfrmEditCustomer
       object Panel10: TPanel
         Left = 0
         Top = 0
-        Width = 739
-        Height = 424
+        Width = 729
+        Height = 414
         Align = alClient
         Color = 14342874
         ParentBackground = False
