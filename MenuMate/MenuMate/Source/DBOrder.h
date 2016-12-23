@@ -17,6 +17,8 @@ class TDBOrder
     static bool IsSCDOrPWDDiscountConfigured(Database::TDBTransaction &DBTransaction);
     static void LoadOrderKeysWIthSCDOrPWDDiscount(Database::TDBTransaction &dBTransaction, int tabKey, std::set<__int64> &orderKeysWithSCDOrPWDDiscount,
                                                 UnicodeString discountGroup);
+    static void LoadOrderKeysWIthoutDiscount(Database::TDBTransaction &dBTransaction, int tabKey, std::set<__int64> &orderKeysWithSCDOrPWDDiscount);
+    static void LoadAllOrderKeys(Database::TDBTransaction &DBTransaction, int tabKey, std::set<__int64> &orderKeys);
 public:
 	TDBOrder();
 	~TDBOrder();

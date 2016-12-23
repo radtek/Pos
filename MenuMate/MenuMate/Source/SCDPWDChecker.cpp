@@ -86,7 +86,7 @@ bool TSCDPWDChecker::PWDCheck(TDiscount inDiscount, TList* Orders, bool isClippS
 }
 
 
-bool TSCDPWDChecker::ItemSelectionCheck(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems)
+bool TSCDPWDChecker::ItemSelectionCheck(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems, bool showMessage)
 {
     bool retVal = true;
     std::set<__int64> keyToCheck;
@@ -98,14 +98,14 @@ bool TSCDPWDChecker::ItemSelectionCheck(Database::TDBTransaction &DBTransaction,
         retVal = checkItemsHaveSCDOrPWDDiscount(DBTransaction, SelectedOrderItems, "Senior Citizen") == checkItemsHaveSCDOrPWDDiscount(DBTransaction, keyToCheck, "Senior Citizen");
     }
 
-    if(!retVal)
+    if(!retVal && showMessage)
     {
         MessageBox("Items with Senior Citizens Discounts and items with Non Senior Citizens Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
     }
 
     return retVal;
 }
-bool TSCDPWDChecker::ItemSelectionCheckPWD(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems)
+bool TSCDPWDChecker::ItemSelectionCheckPWD(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems, bool showMessage)
 {
     bool retVal = true;
     std::set<__int64> keyToCheck;
@@ -117,7 +117,7 @@ bool TSCDPWDChecker::ItemSelectionCheckPWD(Database::TDBTransaction &DBTransacti
         retVal = checkItemsHaveSCDOrPWDDiscount(DBTransaction, SelectedOrderItems, "Person with Disability") == checkItemsHaveSCDOrPWDDiscount(DBTransaction, keyToCheck, "Person with Disability");
     }
 
-    if(!retVal)
+    if(!retVal && showMessage)
     {
         MessageBox("Items with PWD Discounts and items with Non PWD Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
     }
