@@ -1521,7 +1521,7 @@ void TdmMMReportData::SetupHalfHourlyConsolidated(TDateTime StartTime, TDateTime
 			"cast(count(HALFHOUR.ArcBill_Key)as numeric(17,4))  SalesQty, "
             " Cast(0.00 as numeric(17,4)) SalesIncl "
 		"From "
-			"Security, ArcBill,archive, HALFHOUR "
+			"Security, ArcBill, HALFHOUR "
 		"Where "
 			"Security.Security_Ref = ArcBill.Security_Ref and "
 			"ArcBill.ArcBill_Key = HALFHOUR.ArcBill_Key and "
@@ -1563,7 +1563,7 @@ void TdmMMReportData::SetupHalfHourlyConsolidated(TDateTime StartTime, TDateTime
             " Cast(0.00 as numeric(17,4)) SalesIncl "
 
 		"From "
-			"Security, DayArcBill,dayarchive, HALFHOUR "
+			"Security, DayArcBill, HALFHOUR "
 		"Where "
 			"Security.Security_Ref = DayArcBill.Security_Ref and "
 			"DayArcBill.ArcBill_Key = HALFHOUR.ArcBill_Key and "
@@ -5187,7 +5187,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "       cast(coalesce(abp.TIP_AMOUNT,0) as numeric(17,4)) tip "
 "        FROM ARCBILLPAY abp                                                                                                                         "
 "        left join ARCBILL on ARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY                                                                          "
-"        where  abp.CASH_OUT<>'T'      "
+"        where  abp.SUBTOTAL <> 0 and abp.CASH_OUT<>'T'      "
  + selected_tenders +
 "                                                                                                                                                 "
 "        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT,ARCBILL.TOTAL)paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                      "
@@ -5288,7 +5288,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "       cast(coalesce(abp.TIP_AMOUNT,0) as numeric(17,4)) tip "
 "        FROM DAYARCBILLPAY abp                                                                                                                               "
 "        left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY                                                                          "
-"        where   abp.CASH_OUT<>'T'   "
+"        where abp.SUBTOTAL <> 0 and   abp.CASH_OUT<>'T'   "
 + selected_tenders +
 "        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT,DAYARCBILL.TOTAL)paymentPercent on paymentPercent.arcbill_key = qpa.arcbill_key                         "
 "                  inner join (select abp.arcbill_key,                                                             "
