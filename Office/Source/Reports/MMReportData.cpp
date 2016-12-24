@@ -1518,7 +1518,7 @@ void TdmMMReportData::SetupHalfHourlyConsolidated(TDateTime StartTime, TDateTime
 			"(Extract (Hour From ArcBill.Time_Stamp) * 60 * 60) + 1800 As Double Precision) / 86400 as Time)) End_Time,"
 			"cast (Sum(ArcBill.Total) as Numeric(17,4)) Bill_Total,"
 			"cast (Sum(ArcBill.Patron_Count) as Integer) Patron_Count, "
-			"cast(sum(archive.qty) as numeric(17,4))  SalesQty, "
+			"cast(count(HALFHOUR.ArcBill_Key)as numeric(17,4))  SalesQty, "
             " Cast(0.00 as numeric(17,4)) SalesIncl "
 		"From "
 			"Security, ArcBill,archive, HALFHOUR "
@@ -1559,7 +1559,7 @@ void TdmMMReportData::SetupHalfHourlyConsolidated(TDateTime StartTime, TDateTime
 			"(Extract (Hour From DayArcBill.Time_Stamp) * 60 * 60) + 1800 As Double Precision) / 86400 as Time)) End_Time,"
 			"cast (sum(DayArcBill.Total) as Numeric(17,4)) Bill_Total,"
 			"cast (Sum(DayArcBill.Patron_Count) as Integer) Patron_Count, "
-			"cast(sum(dayarchive.qty) as numeric(17,4)) SalesQty, "
+			"cast(count(HALFHOUR.ArcBill_Key)as numeric(17,4)) SalesQty, "
             " Cast(0.00 as numeric(17,4)) SalesIncl "
 
 		"From "

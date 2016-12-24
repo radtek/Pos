@@ -5304,7 +5304,7 @@ void TfrmReports::PrintHalfHourlySales(TReportControl *ReportControl)
 				}
 				else
 				{
-					if (rvMenuMate->SelectReport(ReportName, false))
+					if (rvMenuMate->SelectReport("repHalfHourlySalesSummaryC", false))
 					{
 						AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
 														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
