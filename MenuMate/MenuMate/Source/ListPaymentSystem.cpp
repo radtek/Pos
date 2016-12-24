@@ -923,24 +923,10 @@ bool TListPaymentSystem::CheckForCard(TPaymentTransaction &PaymentTransaction)
 }
 void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &PaymentTransaction )
 {
-     if(PaymentTransaction.Membership.Member.ContactKey != 0 && TGlobalSettings::Instance().UseMemberSubs)
+     if(PaymentTransaction.Membership.Member.ContactKey != 0 && TGlobalSettings::Instance().UseMemberSubs &&
+        !PaymentTransaction.Membership.Member.Points.PointsRulesSubs.Contains(eprFinancial))
      {
-        for(int i = 0; i< PaymentTransaction.Orders->Count; i++)
-        {
-            TItemComplete *itemComplete = (TItemComplete*)PaymentTransaction.Orders->Items[0];
-            if(itemComplete->Item == "Pay Subs" && itemComplete->TabKey == 0)
-              {
-                 int PointRules = 0;
-                 PointRules |= eprFinancial;
-                 PaymentTransaction.Membership.Member.Points.PointsRules >> eprNoPointsRedemption;
-                 PaymentTransaction.Membership.Member.Points.PointsRules >> eprNeverEarnsPoints;
-                 PaymentTransaction.Membership.Member.Points.PointsRules >> eprNoPointsPurchases;
-                 TPointsRulesSetUtils().ExpandSubs(PointRules,PaymentTransaction.Membership.Member.Points.PointsRulesSubs);
-                 TPointsRulesSetUtils().Expand(PointRules,PaymentTransaction.Membership.Member.Points.PointsRules);
-                 UpdateSubscriptionDetails(PaymentTransaction,itemComplete->BillCalcResult.FinalPrice);
-                 break;
-              }
-        }
+        ProcessSubscription(PaymentTransaction);
     }
 	if (PaymentTransaction.Type == eTransQuickSale && PaymentTransaction.SalesType == eTab)
     {
@@ -5970,4 +5956,48 @@ void TListPaymentSystem::UpdateSubscriptionDetails( TPaymentTransaction &Payment
     IBInternalQueryFirst->ParamByName("POINTS_RULES" )->AsInteger = TPointsRulesSetUtils().Compress(PaymentTransaction.Membership.Member.Points.PointsRules);
     IBInternalQueryFirst->ParamByName("CONTACTS_KEY" )->AsInteger = PaymentTransaction.Membership.Member.ContactKey;
     IBInternalQueryFirst->ExecQuery();
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessSubscription( TPaymentTransaction &PaymentTransaction )
+{
+    bool retValue = false;
+    double amountSubs = 0.0;
+    for(int i = 0; i< PaymentTransaction.Orders->Count; i++)
+    {
+        TItemComplete *itemComplete = (TItemComplete*)PaymentTransaction.Orders->Items[0];
+        if(itemComplete->Item == "Pay Subs" && itemComplete->TabKey == 0 && itemComplete->GetQty() >=1
+           && !PaymentTransaction.CreditTransaction && !itemComplete->wasOpenItem)
+        {
+            if(itemComplete->HappyHour)
+            {
+               if(itemComplete->BillCalcResult.FinalPrice >= itemComplete->PriceLevel1)
+               {
+                 amountSubs = itemComplete->PriceLevel1;
+                 retValue = true;
+               }
+            }
+            else
+            {
+               if(itemComplete->BillCalcResult.FinalPrice >= itemComplete->PriceLevel0)
+               {
+                 amountSubs = itemComplete->PriceLevel0;
+                 retValue= true;
+               }
+            }
+            break;
+        }
+    }
+    if(retValue)
+    {
+         int PointRules = 0;
+         PointRules |= eprFinancial;
+         PointRules |= eprAllowDiscounts;
+         PaymentTransaction.Membership.Member.Points.PointsRules >> eprNoPointsRedemption;
+         PaymentTransaction.Membership.Member.Points.PointsRules >> eprNeverEarnsPoints;
+         PaymentTransaction.Membership.Member.Points.PointsRules >> eprNoPointsPurchases;
+         TPointsRulesSetUtils().ExpandSubs(PointRules,PaymentTransaction.Membership.Member.Points.PointsRulesSubs);
+         TPointsRulesSetUtils().Expand(PointRules,PaymentTransaction.Membership.Member.Points.PointsRules);
+         UpdateSubscriptionDetails(PaymentTransaction , amountSubs);
+    }
+    return retValue;
 }

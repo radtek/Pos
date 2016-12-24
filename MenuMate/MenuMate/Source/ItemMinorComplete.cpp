@@ -218,6 +218,7 @@ TItemMinorComplete::TItemMinorComplete() {
     ItemPriceForPointsOriginal = 0;
     printFreeSideForKitchen = false;
     printFreeSideForReceipt = false;
+    wasOpenItem = false;
 }
 
 __fastcall TItemMinorComplete::~TItemMinorComplete() {
@@ -1150,7 +1151,20 @@ void TItemMinorComplete::ThorVouchersDiscountsClear()
 		SubOrder->ThorlinkDiscountByTypeLevelRemove(dsMMSystem);
 	}
 }
-
+void TItemMinorComplete::ClearAllDiscounts()
+{
+	for (std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin(); ptrDiscount != Discounts.end(); )
+	{
+		TDiscount CurrentDiscount = *ptrDiscount;
+        if(CurrentDiscount.Mode == DiscModePoints)
+           ItemPriceForPoints = ItemPriceForPointsOriginal;
+        Discounts.erase(ptrDiscount);
+        ptrDiscount = Discounts.begin();
+        SelectedItems = 0;
+        PrevSelectedItems = 0;
+	}
+    RunBillCalculator();
+}
 void TItemMinorComplete::DiscountsClear()
 {
 	//Discounts.clear();

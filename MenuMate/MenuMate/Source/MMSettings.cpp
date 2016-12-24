@@ -219,6 +219,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
             TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmServiceChargeTaxRate,               TGlobalSettings::Instance().ServiceChargeTaxRate);
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmIsCloudSynced, TGlobalSettings::Instance().IsCloudSyncedForDiscount);
             InitializeMallExportConfig(DBTransaction);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction,  GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
 
         }
 
@@ -376,7 +377,6 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().HideRoundingOnReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmHideRoundingOnReceipt, false);
 		TGlobalSettings::Instance().CashDenominationEntry = TManagerVariable::Instance().GetBool(DBTransaction, vmCashDenominationEntry, false);
         TGlobalSettings::Instance().MembershipPaid = TManagerVariable::Instance().GetBool(DBTransaction, vmMembershipPaid, false);
-        TGlobalSettings::Instance().UseMemberSubs = TManagerVariable::Instance().GetBool(DBTransaction, vmUseMemberSubs, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

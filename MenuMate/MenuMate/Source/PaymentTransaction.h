@@ -80,6 +80,7 @@ class TPaymentTransaction
     void SetRedeemPoints(Currency PointsRedeemed);
     void SetRedeemBDayPoints(Currency &PointsRedeemed);
     void SetRedeemFVPoints(Currency &PointsRedeemed);
+    void CheckDiscountsWithMembership(TItemMinorComplete *Order);
   public:
         AnsiString PartyName;
         Database::TDBTransaction &DBTransaction;

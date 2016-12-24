@@ -536,25 +536,39 @@ void TDBContacts::InsertDetailstoMemberSubs(Database::TDBTransaction &DBTransact
       IBInternalQuery->ParamByName("MEMBERSHIP_SUBS_KEY")->AsInteger = retValue;
       IBInternalQuery->ParamByName("CONTACTS_KEY" )->AsInteger  = inContactKey;
       IBInternalQuery->ParamByName("POINTS_RULES_SUBS" )->AsInteger = TPointsRulesSetUtils().CompressSubs(Info.Points.PointsRulesSubs);
-      if(Info.Points.PointsRulesSubs.Contains(eprFinancial))
+
+      if(TGlobalSettings::Instance().UseMemberSubs)
       {
-        IBInternalQuery->ParamByName("SUBS_PAID" )->AsString = "T";
-        IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "";
+          IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "";
+          IBInternalQuery->ParamByName("SUBS_PAID" )->AsString  = "F";
+          if(Info.Points.PointsRulesSubs.Contains(eprFinancial))
+          {
+              Info.Points.PointsRulesSubs >> eprFinancial;
+              if(!Info.Points.PointsRules.Contains(eprNoPointsPurchases))
+                 Info.Points.PointsRules << eprNoPointsPurchases;
+              if(!Info.Points.PointsRules.Contains(eprNoPointsRedemption))
+                 Info.Points.PointsRules << eprNoPointsRedemption;
+              if(!Info.Points.PointsRules.Contains(eprNeverEarnsPoints))
+                 Info.Points.PointsRules << eprNeverEarnsPoints;
+          }
+          if(Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+            Info.Points.PointsRulesSubs >> eprAllowDiscounts;
       }
       else
       {
-        IBInternalQuery->ParamByName("SUBS_PAID" )->AsString = "F";
-        IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "";
+          IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "AUTO";
+          IBInternalQuery->ParamByName("SUBS_PAID" )->AsString  = "T";
       }
       if((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && TGlobalSettings::Instance().LoyaltyMateEnabled) ||
           TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate)
       {
-          IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "AUTO";
-          IBInternalQuery->ParamByName("SUBS_PAID" )->AsString  = "T";
-          IBInternalQuery->ParamByName("ISLOCAL_MEMBER" )->AsString  = "F";
+         IBInternalQuery->ParamByName("ISLOCAL_MEMBER" )->AsString  = "F";
       }
       else
-          IBInternalQuery->ParamByName("ISLOCAL_MEMBER" )->AsString  = "T";
+      {
+         IBInternalQuery->ParamByName("ISLOCAL_MEMBER" )->AsString  = "T";
+      }
+
       IBInternalQuery->ExecQuery();
    }
    catch(Exception & E)

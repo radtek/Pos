@@ -2001,8 +2001,13 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 					DBTransaction.StartTransaction();
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmLoyaltyMateEnabled,TGlobalSettings::Instance().LoyaltyMateEnabled);
                     TGlobalSettings::Instance().UseMemberSubs = false;
-                    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
-					DBTransaction.Commit();
+                    TManagerVariable &mv = TManagerVariable::Instance();
+
+                    int pk;
+                    if (!(pk = mv.GetProfile(DBTransaction, eSystemProfiles, "Globals")))
+                    pk = mv.SetProfile(DBTransaction, eSystemProfiles, "Globals");
+                    mv.SetProfileBool(DBTransaction, pk, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+                    DBTransaction.Commit();
 					RefreshLoyaltyMateBtnColor();
 				}
 			}  break;

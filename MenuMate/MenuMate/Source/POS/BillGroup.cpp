@@ -4608,10 +4608,6 @@ void TfrmBillGroup::ApplyMembership(Database::TDBTransaction &DBTransaction, TMM
              }
              TPaymentTransaction PaymentTransaction(DBTransaction);
              TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, SelectedItemKeys);
-             if (!MembershipInfo.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
-             {
-               ManagerDiscount->ClearDiscounts(PaymentTransaction.Orders);
-             }
              ManagerDiscount->ClearMemberExemtDiscounts(PaymentTransaction.Orders);
              PaymentTransaction.ApplyMembership(Membership);
              PaymentTransaction.DeleteOrders();

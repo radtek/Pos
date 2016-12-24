@@ -570,23 +570,23 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 						InsertQuery->ParamByName("MEMBERSHIP_SUBS_KEY")->AsInteger = subsKeyValue;
                         int pointsRulesSubs = 0;
                         TPointsRulesSubsSet PointsRulesSubs;
-                        if(Csv.Cells[FINANCIAL][i] == "Y")
+                        if(Csv.Cells[FINANCIAL][i].Trim().UpperCase() == "Y")
                         {
                             pointsRulesSubs |= eprFinancial;
                         }
-                        if(Csv.Cells[ALLOWDISCOUNTS][i] == "Y")
+                        if(Csv.Cells[ALLOWDISCOUNTS][i].Trim().UpperCase() == "Y")
                         {
                             pointsRulesSubs |= eprAllowDiscounts;
                         }
-                        if(Csv.Cells[NEVEREARNSPOINTS][i] == "Y")
+                        if(Csv.Cells[NEVEREARNSPOINTS][i].Trim().UpperCase() == "Y")
                         {
                             pointsRulesSubs |= eprNeverEarnsPoints;
                         }
-                        if(Csv.Cells[NEVERREDEEMSPOINTS][i] == "Y")
+                        if(Csv.Cells[NEVERREDEEMSPOINTS][i].Trim().UpperCase() == "Y")
                         {
                             pointsRulesSubs |= eprNoPointsRedemption;
                         }
-                        if(Csv.Cells[NEVERPURCHASESPOINTS][i] == "Y")
+                        if(Csv.Cells[NEVERPURCHASESPOINTS][i].Trim().UpperCase() == "Y")
                         {
                             pointsRulesSubs |= eprNoPointsPurchases;
                         }
@@ -606,7 +606,6 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
                         {
                            InsertQuery->ParamByName("SUBS_PAID")->AsString = "F";
                            InsertQuery->ParamByName("SUBS_PAID_DATE")->AsDateTime = Dateutils::EncodeDateTime(1899,12,30,0,0,00,000);
-                           InsertQuery->ParamByName("SUBS_EXPIRY_DATE")->AsDateTime = Dateutils::EncodeDateTime(1899,12,30,0,0,00,000);
                            InsertQuery->ParamByName("SUBS_PAID_AMOUNT")->AsDouble = 0.0;
                            InsertQuery->ParamByName("SUBS_PAID_RECEIPT_NO")->AsString = "-";
                            InsertQuery->ParamByName("SUBS_TYPE")->AsString = "-";

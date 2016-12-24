@@ -260,7 +260,7 @@ object frmSelectDiscounts: TfrmSelectDiscounts
             object Label1: TLabel
               Left = 5
               Top = 5
-              Width = 90
+              Width = 452
               Height = 19
               Align = alTop
               Caption = 'Description'
@@ -270,6 +270,7 @@ object frmSelectDiscounts: TfrmSelectDiscounts
               Font.Name = 'Arial'
               Font.Style = [fsBold]
               ParentFont = False
+              ExplicitWidth = 90
             end
             object tbtnReason: TTouchBtn
               Left = 5

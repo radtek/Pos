@@ -606,8 +606,11 @@ void TPaymentTransaction::SetRedeemFVPoints(Currency &PointsRedeemed)
        Membership.Member.Points.Load(Type, redeemedFirstVisitPoints);
    }
 }
+void TPaymentTransaction:: CheckDiscountsWithMembership(TItemMinorComplete *Order)
+{
 
-void TPaymentTransaction::Recalc()
+}
+void TPaymentTransaction::Recalc(TItemComplete *Order)
 {
    if(Orders != NULL)
    {
@@ -619,10 +622,18 @@ void TPaymentTransaction::Recalc()
          { // Do not do this for invoices.
 		 	Order->ResetPrice();
          }
-
+         CheckDiscountsWithMembership(TItemMinorComplete *Order);
+         if(Membership.Member.ContactKey != 0 &&!Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+         {
+            Order->ClearAllDiscounts();
+         }
          for(int j=0; j<Order->SubOrders->Count ; j++)
          {
             TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete *)Order->SubOrders->Items[j];
+             if(Membership.Member.ContactKey != 0 &&!Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+             {
+                CurrentSubOrder->ClearAllDiscounts();
+             }
             CurrentSubOrder->Loyalty_Key = Membership.Member.ContactKey;
             if(SalesType != eAccount)
             { // Do not do this for invoices.
@@ -637,7 +648,7 @@ void TPaymentTransaction::Recalc()
         if(Membership.Member.ContactKey == 0 || Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
             TManagerFreebie::IsPurchasing(DBTransaction,Orders);
 
-	  ApplyDiscounts();
+	     ApplyDiscounts();
    }
    Money.Recalc(*this);
 }
@@ -706,7 +717,8 @@ void TPaymentTransaction::ApplyMembership(TContactMemberApplied inMemberApplied)
    {
        ManagerDiscount->ClearMemberDiscounts(Orders);
        Membership.Assign(inMemberApplied);
-       ApplyMembershipDiscounts();
+       if(Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+          ApplyMembershipDiscounts();
        Recalc();
    }
    else

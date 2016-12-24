@@ -446,6 +446,9 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbHideRoundingOnReceipt->Checked = TGlobalSettings::Instance().HideRoundingOnReceipt;
 	cbCashDenominationEntry->Checked = TGlobalSettings::Instance().CashDenominationEntry;
     cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
+    TManagerVariable::Instance().GetProfileBool( DBTransaction, GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs );
+    DBTransaction.Commit();
+    cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
 }
 
 //---------------------------------------------------------------------------
@@ -4200,15 +4203,30 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 {
     if((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && !TGlobalSettings::Instance().LoyaltyMateEnabled))
     {
-        TGlobalSettings::Instance().UseMemberSubs = cbUseMemberSubs->Checked;
-        Database::TDBTransaction DBTransaction(DBControl);
-        DBTransaction.StartTransaction();
-        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
-        DBTransaction.Commit();
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        int pk;
+        Database::TDBTransaction tr(DBControl);
+
+        tr.StartTransaction();
+        if (!(pk = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        pk = mv.SetProfile(tr, eSystemProfiles, "Globals");
+        tr.Commit();
+
+        TGlobalSettings::Instance().UseMemberSubs =
+        cbUseMemberSubs->Checked;
+
+        tr.StartTransaction();
+        mv.SetProfileBool(tr, pk, vmUseMemberSubs,
+        cbUseMemberSubs->Checked);
+        tr.Commit();
     }
     else
     {
+       if(cbUseMemberSubs->Checked == true)
+       {
        MessageBox("Functionality works with Menumate Loyalty only, Please disable any other Membership first to use this functionality","Information", MB_OK + MB_ICONINFORMATION);
        cbUseMemberSubs->Checked = false;
+       }
     }
 }

@@ -203,6 +203,7 @@ protected:
      void PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey);
      void InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, long arcbillKey, UnicodeString header, UnicodeString value);
      void UpdateSubscriptionDetails( TPaymentTransaction &PaymentTransaction, double amount );
+     bool ProcessSubscription( TPaymentTransaction &PaymentTransaction );
 };
 
 #endif

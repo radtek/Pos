@@ -907,7 +907,11 @@ void __fastcall TfrmSetup::rgMembershipTypeClick(TObject *Sender)
     if(!(rgMembershipType->ItemIndex == MembershipTypeMenuMate && !TGlobalSettings::Instance().LoyaltyMateEnabled))
     {
         TGlobalSettings::Instance().UseMemberSubs = false;
-        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+        TManagerVariable &mv = TManagerVariable::Instance();
+        int pk;
+        if (!(pk = mv.GetProfile(DBTransaction, eSystemProfiles, "Globals")))
+        pk = mv.SetProfile(DBTransaction, eSystemProfiles, "Globals");
+        mv.SetProfileBool(DBTransaction, pk, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
     }
 	TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmMembershipType,TGlobalSettings::Instance().MembershipType);
 	DBTransaction.Commit();

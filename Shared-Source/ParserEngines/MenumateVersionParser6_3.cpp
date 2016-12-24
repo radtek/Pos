@@ -735,6 +735,8 @@ void TApplyParser::update6_35Tables()
     Create6_35MemberSubsGenerator(_dbControl);
     Create6_35MemberSubsDetails(_dbControl);
     Insert6_35MemberSubsDetails(_dbControl);
+    UpdateMallExportSettingValuesTable6_35(_dbControl);
+    Create6_35GeneratorMallExportSettingValues(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_35MemberSubsGenerator(TDBControl* const inDBControl)
@@ -826,5 +828,44 @@ void TApplyParser::Insert6_35MemberSubsDetails(TDBControl* const inDBControl)
     }
 }
 //---------------------------------------------------------------------------
+void TApplyParser::UpdateMallExportSettingValuesTable6_35(TDBControl* const inDBControl)
+{
+    if (tableExists( "MALLEXPORT_SETTINGS_VALUES", inDBControl ) )
+    {
+        executeQuery(
+                "DELETE FROM MALLEXPORT_SETTINGS_VALUES a; ",
+            inDBControl );
+    }
+
+    if (!fieldExists( "MALLEXPORT_SETTINGS_VALUES", "DEVICE_KEY", _dbControl ) )
+    {
+        executeQuery (
+            "ALTER TABLE MALLEXPORT_SETTINGS_VALUES ADD "
+            "DEVICE_KEY INTEGER; ",
+            inDBControl);
+    }
+
+    if (!fieldExists( "MALLEXPORT_SETTINGS_VALUES", "MALL_KEY", _dbControl ) )
+    {
+        executeQuery (
+            "ALTER TABLE MALLEXPORT_SETTINGS_VALUES ADD "
+            "MALL_KEY INTEGER; ",
+            inDBControl);
+    }
+}
+//---------------------------------------------------------------------------
+void TApplyParser::Create6_35GeneratorMallExportSettingValues(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MALL_SETT_VAL_KEY", _dbControl) )
+    {
+        executeQuery(
+        "CREATE GENERATOR GEN_MALL_SETT_VAL_KEY;",
+        inDBControl);
+        executeQuery(
+        "SET GENERATOR GEN_MALL_SETT_VAL_KEY TO 0; ",
+        inDBControl );
+    }
+}
+//--------------------------------------------------------------------------------------------------
 }
 

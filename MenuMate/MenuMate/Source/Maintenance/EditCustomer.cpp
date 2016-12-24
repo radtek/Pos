@@ -127,13 +127,11 @@ void TfrmEditCustomer::UpdatePointsRuleNewMember()
         tcbeprNoPointsRedemption->Latched = true;
         tcbeprNoPointsPurchases->Latched = true;
         tcbeprNeverEarnsPoints->Latched = true;
-        tcbeprAllowDiscounts->Latched = true;
         int PointRule = 0;
         PointRule |= eprNeverEarnsPoints;
         PointRule |= eprNoPointsPurchases;
         PointRule |= eprNoPointsRedemption;
         TPointsRulesSetUtils().Expand(PointRule, Info.Points.PointsRules);
-        PointRule |= eprAllowDiscounts;
         TPointsRulesSetUtils().ExpandSubs(PointRule, Info.Points.PointsRulesSubs);
     }
     else
@@ -1277,12 +1275,38 @@ void __fastcall TfrmEditCustomer::tcbeprFinancialClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tcbeprAllowDiscountsClick(TObject *Sender)
 {
-   if (tcbeprAllowDiscounts->Latched)
-      Info.Points.PointsRulesSubs << eprAllowDiscounts;
+   if(TGlobalSettings::Instance().UseMemberSubs)
+   {
+       if(Info.Points.PointsRulesSubs.Contains(eprFinancial))
+       {
+           if (tcbeprAllowDiscounts->Latched)
+           {
+              Info.Points.PointsRulesSubs << eprAllowDiscounts;
+           }
+           else
+           {
+              Info.Points.PointsRulesSubs >> eprAllowDiscounts;
+              Info.AutoAppliedDiscounts.clear();
+           }
+       }
+       else
+       {
+          Info.Points.PointsRulesSubs >> eprAllowDiscounts;
+          Info.AutoAppliedDiscounts.clear();
+         tcbeprAllowDiscounts->Latched = false;
+       }
+   }
    else
    {
-      Info.Points.PointsRulesSubs >> eprAllowDiscounts;
-      Info.AutoAppliedDiscounts.clear();
+       if (tcbeprAllowDiscounts->Latched)
+       {
+          Info.Points.PointsRulesSubs << eprAllowDiscounts;
+       }
+       else
+       {
+          Info.Points.PointsRulesSubs >> eprAllowDiscounts;
+          Info.AutoAppliedDiscounts.clear();
+       }
    }
 }
 //-----------------------------------------------------------------------------

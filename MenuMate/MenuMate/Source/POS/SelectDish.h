@@ -717,6 +717,7 @@ public:
     std::pair<AnsiString, AnsiString> GetStringPair();
     bool Valid();
 	bool NameAndOrderTypeLoaded();
+    void RemoveChitDiscounts(TMMContactInfo Member);
 
 
 };
