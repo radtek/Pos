@@ -49,6 +49,7 @@ __published:	// IDE-managed Components
     void __fastcall btnReportUpAutoRepeat(TObject *Sender);
     void __fastcall FromDateTimePickerCloseUp(TObject *Sender);
     void __fastcall ToDateTimePickerCloseUp(TObject *Sender);
+    void __fastcall FormShow(TObject *Sender);
 private:	// User declarations
 	int ExitCode;
     void CheckAndPopulateData();
@@ -64,6 +65,7 @@ public:		// User declarations
     const std::auto_ptr<TMemoryStream> CurrentPrintout;
 	void Execute();
     bool IsConsolidatedZed;
+    bool CheckDateRangeForConolidatedZed();
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmEJournal *frmEJournal;

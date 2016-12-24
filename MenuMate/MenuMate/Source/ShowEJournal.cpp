@@ -75,7 +75,8 @@ void __fastcall TfrmEJournal::btnReportUpAutoRepeat(TObject *Sender)
    memReceipt->Perform(WM_VSCROLL, SB_LINEUP, 0);
 }
 //---------------------------------------------------------------------------
-void TfrmEJournal::Execute(){
+void TfrmEJournal::Execute()
+{
 
     btnClosePrint->Enabled = false;
     btnSaveAsPDF->Visible = false;
@@ -142,6 +143,9 @@ void TfrmEJournal::ExtractEJournalReport(EJournalType type)
       ExtractZedReceiptReport(deviceName);
       break;
       case eConsolidatedZed:
+      Processing->Refresh();
+      Processing->Message = "Processing Data for Consolidated Zed.Please Wait...";
+      Processing->Show();
       ExtractConsolidatedZedReport(deviceName);
       break;
    }
@@ -182,10 +186,18 @@ void TfrmEJournal::ExtractZedReceiptReport(AnsiString deviceName)
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractConsolidatedZedReport(AnsiString deviceName)
 {
-   ManagerReceipt->Receipt->Clear();
-   std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-   ManagerReceipt->Receipt = EJournalEngine->ExtractConsolidatedZedReport(FromDateTimePicker->Date,ToDateTimePicker->Date, deviceName);
-   CheckAndPopulateData();
+    ManagerReceipt->Receipt->Clear();
+    if(CheckDateRangeForConolidatedZed())
+    {
+        std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
+        ManagerReceipt->Receipt = EJournalEngine->ExtractConsolidatedZedReport(FromDateTimePicker->Date,ToDateTimePicker->Date, deviceName);
+        CheckAndPopulateData();
+    }
+    else
+    {
+       MessageBox("Date Filter cannot be more than 30 days", "Error", MB_OK + MB_ICONERROR);
+    }
+
 }
 //---------------------------------------------------------------------------
 
@@ -203,4 +215,115 @@ void TfrmEJournal::CheckAndPopulateData()
       btnClosePrint->Enabled = false;
    }
 }
+
+bool TfrmEJournal::CheckDateRangeForConolidatedZed()
+{
+    bool retVal = true;
+    TDateTime date = ToDateTimePicker->Date - FromDateTimePicker->Date;
+    int date_val = StrToInt(date.FormatString("d"));
+
+    unsigned short fromdd, fromdm, fromdy;
+    unsigned short todd, todm, tody;
+    unsigned short th, tm, ts, tms;
+    FromDateTimePicker->Date.DecodeDate(&fromdy, &fromdm, &fromdd);
+    ToDateTimePicker->Date.DecodeDate(&tody, &todm, &todd);
+
+    int fromDay, toDay;
+    int fromMonth, toMonth;
+    int fromYear, toYear;
+
+    fromDay = fromdd;
+    toDay = todd;
+
+    fromMonth = fromdm;
+    toMonth = todm;
+    fromYear = fromdy;
+    toYear = tody;
+
+    if((toYear - tody) == 0)
+    {
+       if((toMonth - fromMonth) >= 0 && (toMonth - fromMonth) < 2)
+       {
+            //MessageBox(IntToStr(fromDay), "Error", MB_OK + MB_ICONERROR);
+            if(fromMonth == 1 || fromMonth == 3 || fromMonth == 5 || fromMonth == 7 || fromMonth == 8 || fromMonth == 10 || fromMonth == 12)
+            {
+                //MessageBox(IntToStr(fromDay), "from", MB_OK + MB_ICONERROR);
+                //MessageBox(IntToStr(toDay), "to", MB_OK + MB_ICONERROR);
+                int totalday = 31 - fromDay;
+                totalday += toDay;
+                //MessageBox(IntToStr(totalday), "31", MB_OK + MB_ICONERROR);
+                if(!(totalday >= 31))
+                {
+                    //MessageBox("Date Filter cannot be more than 30 days", "Kumar", MB_OK + MB_ICONERROR);
+                    retVal = false;
+                }
+            }
+            if(fromMonth == 4 || fromMonth == 6 || fromMonth == 9 || fromMonth == 11)
+            {
+                int totalday = 30 - fromDay;
+                //MessageBox(IntToStr(fromDay), "from", MB_OK + MB_ICONERROR);
+                //MessageBox(IntToStr(toDay), "to", MB_OK + MB_ICONERROR);
+                //MessageBox(IntToStr(30 - fromDay), "from", MB_OK + MB_ICONERROR);
+                totalday += toDay;
+                MessageBox(IntToStr(totalday), "30", MB_OK + MB_ICONERROR);
+                if(totalday >= 31)
+                {
+                    //MessageBox("Date Filter cannot be more than 30 days", "Kumar", MB_OK + MB_ICONERROR);
+                    retVal = false;
+                }
+            }
+            if(fromMonth == 2)
+            {
+                int totalday = 0;
+                if((fromYear % 4) == 0)
+                {
+                    totalday =  29 - fromDay;
+                    totalday += toDay;
+                }
+                else
+                {
+                    totalday = 28 - fromDay;
+                    totalday += toDay;
+                }
+                //MessageBox(IntToStr(totalday), "28", MB_OK + MB_ICONERROR);
+                if(totalday >= 31)
+                {
+                    MessageBox("Date Filter cannot be more than 30 days", "Kumar", MB_OK + MB_ICONERROR);
+                    retVal = false;
+                }
+            }
+
+       }
+       else
+       {
+            retVal = false;
+            //MessageBox(IntToStr((toMonth - fromMonth)), "Error", MB_OK + MB_ICONERROR);
+
+            //MessageBox(IntToStr(date_val), "Error", MB_OK + MB_ICONERROR);
+            //MessageBox(IntToStr(fromDay), "Error", MB_OK + MB_ICONERROR);
+           // MessageBox(IntToStr(fromMonth), "Error", MB_OK + MB_ICONERROR);
+            //MessageBox(IntToStr(fromYear), "Error", MB_OK + MB_ICONERROR);
+            //MessageBox("Date Filter cannot be more than 30 days", "Nitesh", MB_OK + MB_ICONERROR);
+       }
+
+    }
+    else
+    {
+       retVal = false;
+    }
+    return retVal;
+}
+
+void __fastcall TfrmEJournal::FormShow(TObject *Sender)
+{
+    if(IsConsolidatedZed)
+    {
+       frmEJournal->Caption = "Consolidated Zed";
+    }
+    else
+    {
+       frmEJournal->Caption = "E-Journal";
+    }
+}
+//---------------------------------------------------------------------------
 
