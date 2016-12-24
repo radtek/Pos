@@ -357,6 +357,9 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().OpenCashDrawer = TManagerVariable::Instance().GetBool(DBTransaction, vmOpenCashDrawer, false);
         TGlobalSettings::Instance().HideReceiptNumberForRefundItem = TManagerVariable::Instance().GetBool(DBTransaction, vmHideReceiptNumberForRefundItem, false);
         TGlobalSettings::Instance().MergeSimilarItem = TManagerVariable::Instance().GetBool(DBTransaction, vmMergeSimilarItem, false);
+        TGlobalSettings::Instance().IsEnabledPeachTree = TManagerVariable::Instance().GetBool(DBTransaction, vmIsEnabledPeachTree, false);
+        TGlobalSettings::Instance().CSVPath = TManagerVariable::Instance().GetStr(DBTransaction, vmCSVPath, "");
+        TGlobalSettings::Instance().CSVExportIP = TManagerVariable::Instance().GetStr(DBTransaction, vmCSVExportIP, "");
 
         TGlobalSettings::Instance().CaptureRefundRefNo = TManagerVariable::Instance().GetBool(DBTransaction, vmCaptureRefundRefNo, false);
         TGlobalSettings::Instance().HideTaxInvoice = TManagerVariable::Instance().GetBool(DBTransaction, vmHideTaxInvoice, false);

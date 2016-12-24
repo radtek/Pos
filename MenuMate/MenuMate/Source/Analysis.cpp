@@ -58,6 +58,8 @@
 #include "MagicMemoriesSfProgressMonitor.h"
 #include "SalesForceCommAtZed.h"
 #include "CashDenominationController.h"
+#include "ExportCSV.h"
+
 #include <string>
 #include <map>
 #include <cassert>
@@ -2859,8 +2861,7 @@ void __fastcall TfrmAnalysis::btnReportsClick(void)
 	if (AuthenticateReportsAccess(TReportSource::CashDrawer) == lsAccepted)
     {
 		std::auto_ptr <TfrmDropDownFunc> frmDropDown(
-		TfrmDropDownFunc::Create <TfrmDropDownFunc>(this));
-
+		TfrmDropDownFunc::Create <TfrmDropDownFunc>(this));	
 //		if(!TGlobalSettings::Instance().EnableBlindBalances)
 //        {
 //			frmDropDown->AddButton("X Report", &ReportXReport);
@@ -3337,6 +3338,13 @@ Zed:
                   TCashDenominationControllerInterface::Instance()->SaveDenominations(DBTransaction,z_key,DeviceName);
                 }
             }
+            //create CSV
+            if(TGlobalSettings::Instance().IsEnabledPeachTree && CompleteZed)
+            {
+                TExportCSV exportCSV;
+                exportCSV.PostDateToCSV();
+            }
+
 			DBTransaction.Commit();
             PostDataToXeroAndMyOB(XeroInvoiceDetails, MYOBInvoiceDetails, CompleteZed); //post data to xero and Myob
 
