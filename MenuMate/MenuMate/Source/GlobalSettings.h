@@ -471,6 +471,9 @@ public:
     bool UseBIRFormatInXZReport;
     bool HideRoundingOnReceipt;
 	bool CashDenominationEntry;
+    UnicodeString CSVPath;
+    bool IsEnabledPeachTree;
+    UnicodeString CSVExportIP;
     bool MembershipPaid;
     bool UseMemberSubs;
 };
