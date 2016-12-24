@@ -606,11 +606,7 @@ void TPaymentTransaction::SetRedeemFVPoints(Currency &PointsRedeemed)
        Membership.Member.Points.Load(Type, redeemedFirstVisitPoints);
    }
 }
-void TPaymentTransaction:: CheckDiscountsWithMembership(TItemMinorComplete *Order)
-{
-
-}
-void TPaymentTransaction::Recalc(TItemComplete *Order)
+void TPaymentTransaction::Recalc()
 {
    if(Orders != NULL)
    {
@@ -622,7 +618,6 @@ void TPaymentTransaction::Recalc(TItemComplete *Order)
          { // Do not do this for invoices.
 		 	Order->ResetPrice();
          }
-         CheckDiscountsWithMembership(TItemMinorComplete *Order);
          if(Membership.Member.ContactKey != 0 &&!Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
          {
             Order->ClearAllDiscounts();

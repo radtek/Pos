@@ -307,7 +307,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 
 	lbeEntireSiteID->Caption = "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID);
 
-	DBTransaction.Commit();
+//	DBTransaction.Commit();
 	UpdateTimeClockGrid(true);
 
 	switch (TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->NameOnPoleDisplay)
@@ -4223,10 +4223,10 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
     }
     else
     {
-       if(cbUseMemberSubs->Checked == true)
+       if(TGlobalSettings::Instance().UseMemberSubs)
        {
-       MessageBox("Functionality works with Menumate Loyalty only, Please disable any other Membership first to use this functionality","Information", MB_OK + MB_ICONINFORMATION);
-       cbUseMemberSubs->Checked = false;
+           MessageBox("Functionality works with Menumate Loyalty only, Please disable any other Membership first to use this functionality","Information", MB_OK + MB_ICONINFORMATION);
+           cbUseMemberSubs->Checked = false;
        }
     }
 }

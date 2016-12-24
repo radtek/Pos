@@ -13983,22 +13983,7 @@ void TfrmSelectDish::RemoveMembership(Database::TDBTransaction &DBTransaction)
         TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
 	}
 }
-void TfrmSelectDish::RemoveChitDiscounts(TMMContactInfo Member)
-{
-     if(Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
-     {
-        for(int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
-        {
-            TItemComplete* itemComplete = (TItemComplete*)SeatOrders[SelectedSeat]->Orders->Items[i];
-            itemComplete->ClearAllDiscounts();
-             for(int j=0; j<Order->SubOrders->Count ; j++)
-             {
-                TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete *)Order->SubOrders->Items[j];
-                CurrentSubOrder->ClearAllDiscounts();
-             }
-        }
-     }
-}
+
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member)
 {
@@ -14010,7 +13995,6 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
      if (!Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts) && Result == lsAccepted)
      {
         ManagerDiscount->ClearDiscounts(SeatOrders[SelectedSeat]->Orders->List);
-        RemoveChitDiscounts(TMMContactInfo Member);
      }
 
      if (Result == lsAccountBlocked)
@@ -14060,6 +14044,11 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 			for (int i = 0; i < SeatOrders[SeatsToApply[iSeat]]->Orders->Count; i++)
 			{
 				TItemComplete *Order = SeatOrders[SeatsToApply[iSeat]]->Orders->Items[i];
+                if(!Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+                {
+                    ChitNumber.DiscountList.clear();
+                    Order->ClearAllDiscounts();
+                }
 				Order->Loyalty_Key = SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership.ContactKey;
 				Order->ResetPrice();
 
@@ -14067,6 +14056,10 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 				for (int j = 0; j < Order->SubOrders->Count; j++)
 				{
 					TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete*)Order->SubOrders->Items[j];
+                    if(!Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+                    {
+                       CurrentSubOrder->ClearAllDiscounts();
+                    }
 					CurrentSubOrder->Loyalty_Key = SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership.ContactKey;
 					CurrentSubOrder->ResetPrice();
 				}
