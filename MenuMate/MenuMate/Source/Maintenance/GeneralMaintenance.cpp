@@ -1,5 +1,4 @@
-//---------------------------------------------------------------------------
-
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -307,7 +306,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 
 	lbeEntireSiteID->Caption = "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID);
 
-//	DBTransaction.Commit();
+
 	UpdateTimeClockGrid(true);
 
 	switch (TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->NameOnPoleDisplay)
@@ -445,7 +444,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     isBIRSettingTicked = false;
     cbHideRoundingOnReceipt->Checked = TGlobalSettings::Instance().HideRoundingOnReceipt;
 	cbCashDenominationEntry->Checked = TGlobalSettings::Instance().CashDenominationEntry;
-    cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
+
     TManagerVariable::Instance().GetProfileBool( DBTransaction, GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs );
     DBTransaction.Commit();
     cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
@@ -4190,7 +4189,7 @@ void __fastcall TfrmGeneralMaintenance::cbUseBIRFormatInXZReportMouseUp(TObject 
   {
      CheckSettingsOfZed();
   }
-  
+
 void __fastcall TfrmGeneralMaintenance::cbCashDenominationEntryClick(TObject *Sender)
 {
     TGlobalSettings::Instance().CashDenominationEntry = cbCashDenominationEntry->Checked;
@@ -4199,9 +4198,49 @@ void __fastcall TfrmGeneralMaintenance::cbCashDenominationEntryClick(TObject *Se
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmCashDenominationEntry, TGlobalSettings::Instance().CashDenominationEntry);
 	DBTransaction.Commit();
 }
+
+//----------------------------------------------------------------------------
+bool TfrmGeneralMaintenance::IsEligibleForTrue()
+{
+    UnicodeString variable_key = "2001, 7038";
+
+    bool retVal = false;
+    Database::TDBTransaction DBTransaction(DBControl);
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+    DBTransaction.RegisterQuery(IBInternalQuery);
+    DBTransaction.StartTransaction();
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = " SELECT a.INTEGER_VAL, a.Profile_key, a.VARIABLES_KEY FROM VARSPROFILE a where a.VARIABLES_KEY IN (" + variable_key + ") ";
+    //IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 7038;
+    IBInternalQuery->ExecQuery();
+    for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+         if(IBInternalQuery->FieldByName("VARIABLES_KEY")->AsInteger == 2001)
+         {
+             if(IBInternalQuery->FieldByName("INTEGER_VAL")->AsInteger > 0)
+             {
+                retVal = true;
+                break;
+             }
+         }
+         if(IBInternalQuery->FieldByName("VARIABLES_KEY")->AsInteger == 7038)
+         {
+             if(IBInternalQuery->FieldByName("INTEGER_VAL")->AsInteger > 0)
+             {
+                retVal = true;
+                break;
+             }
+         }
+    }
+    DBTransaction.Commit();
+    return retVal;
+}
+//----------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 {
-    if((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && !TGlobalSettings::Instance().LoyaltyMateEnabled))
+    //
+
+    if(!IsEligibleForTrue())
     {
         TManagerVariable &mv = TManagerVariable::Instance();
 
@@ -4223,10 +4262,10 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
     }
     else
     {
-       if(TGlobalSettings::Instance().UseMemberSubs)
+       if(cbUseMemberSubs->Checked)
        {
            MessageBox("Functionality works with Menumate Loyalty only, Please disable any other Membership first to use this functionality","Information", MB_OK + MB_ICONINFORMATION);
            cbUseMemberSubs->Checked = false;
        }
     }
-}
+}

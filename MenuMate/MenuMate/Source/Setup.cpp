@@ -906,6 +906,8 @@ void __fastcall TfrmSetup::rgMembershipTypeClick(TObject *Sender)
 	DBTransaction.StartTransaction();
     if(!(rgMembershipType->ItemIndex == MembershipTypeMenuMate && !TGlobalSettings::Instance().LoyaltyMateEnabled))
     {
+        if(TGlobalSettings::Instance().UseMemberSubs)
+           MessageBox("Member Subscription will be turned off with this functionality.", "Information", MB_OK + MB_ICONINFORMATION);
         TGlobalSettings::Instance().UseMemberSubs = false;
         TManagerVariable &mv = TManagerVariable::Instance();
         int pk;

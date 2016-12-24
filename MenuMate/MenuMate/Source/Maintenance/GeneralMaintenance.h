@@ -581,6 +581,7 @@ private:
         void EnableDisableSectionsForBIRFormat();
         bool isBIRSettingTicked;
         void CheckSettingsOfZed();
+        bool IsEligibleForTrue();
 public:		// User declarations
         TTouchBtn *CurrentButton;
         void __fastcall ReDrawLogs();
