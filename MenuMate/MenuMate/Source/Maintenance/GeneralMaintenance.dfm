@@ -2117,7 +2117,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 423
           Top = 725
           Width = 416
-          Height = 37
+          Height = 42
           Caption = 'Member Subscription'
           TabOrder = 11
           object cbUseMemberSubs: TCheckBox
