@@ -89,13 +89,20 @@ bool TSCDPWDChecker::PWDCheck(TDiscount inDiscount, TList* Orders, bool isClippS
 bool TSCDPWDChecker::ItemSelectionCheck(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems, bool showMessage)
 {
     bool retVal = true;
+    bool itemHasDiscount = true;
+    bool itemHasSCDDiscount = true;
     std::set<__int64> keyToCheck;
     keyToCheck.insert(OrderItemToCheckKey);
 
-    if(SelectedOrderItems.size() > 0 && checkItemsHaveDiscount(DBTransaction, SelectedOrderItems) &&
-        checkItemsHaveDiscount(DBTransaction, keyToCheck))
+    if(showMessage)
     {
-        retVal = checkItemsHaveSCDOrPWDDiscount(DBTransaction, SelectedOrderItems, "Senior Citizen") == checkItemsHaveSCDOrPWDDiscount(DBTransaction, keyToCheck, "Senior Citizen");
+        itemHasDiscount = checkItemsHaveDiscount(DBTransaction, keyToCheck);
+        itemHasSCDDiscount = checkItemsHaveSCDOrPWDDiscount(DBTransaction, keyToCheck, "Senior Citizen");
+    }
+
+    if(SelectedOrderItems.size() > 0 && itemHasDiscount && checkItemsHaveDiscount(DBTransaction, SelectedOrderItems))
+    {
+        retVal = checkItemsHaveSCDOrPWDDiscount(DBTransaction, SelectedOrderItems, "Senior Citizen") == itemHasSCDDiscount;
     }
 
     if(!retVal && showMessage)
@@ -108,13 +115,20 @@ bool TSCDPWDChecker::ItemSelectionCheck(Database::TDBTransaction &DBTransaction,
 bool TSCDPWDChecker::ItemSelectionCheckPWD(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems, bool showMessage)
 {
     bool retVal = true;
+    bool itemHasDiscount = true;
+    bool itemHasPWDDiscount = true;
     std::set<__int64> keyToCheck;
     keyToCheck.insert(OrderItemToCheckKey);
 
-    if(SelectedOrderItems.size() > 0 && checkItemsHaveDiscount(DBTransaction, SelectedOrderItems) &&
-        checkItemsHaveDiscount(DBTransaction, keyToCheck))
+    if(showMessage)
     {
-        retVal = checkItemsHaveSCDOrPWDDiscount(DBTransaction, SelectedOrderItems, "Person with Disability") == checkItemsHaveSCDOrPWDDiscount(DBTransaction, keyToCheck, "Person with Disability");
+        itemHasDiscount = checkItemsHaveDiscount(DBTransaction, keyToCheck);
+        itemHasPWDDiscount = checkItemsHaveSCDOrPWDDiscount(DBTransaction, keyToCheck, "Person with Disability");
+    }
+
+    if(SelectedOrderItems.size() > 0 && itemHasDiscount && checkItemsHaveDiscount(DBTransaction, SelectedOrderItems))
+    {
+        retVal = checkItemsHaveSCDOrPWDDiscount(DBTransaction, SelectedOrderItems, "Person with Disability") == itemHasPWDDiscount;
     }
 
     if(!retVal && showMessage)

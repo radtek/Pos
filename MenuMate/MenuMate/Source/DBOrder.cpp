@@ -2381,7 +2381,10 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 		TSCDPWDChecker SCDChecker;
 
         ///Check whether any discount exist having  SCD Or PWD Discount group.
-        bool isSCDOrPWDDiscountExist = IsSCDOrPWDDiscountConfigured(DBTransaction);
+        bool isSCDOrPWDDiscountExist = false;
+        bool isSCDDiscountExist = IsSCDOrPWDDiscountConfigured(DBTransaction, "Senior Citizen");
+        bool isPWDDiscountExist = IsSCDOrPWDDiscountConfigured(DBTransaction, "Person with Disability");
+        isSCDOrPWDDiscountExist = isSCDDiscountExist || isPWDDiscountExist;
         bool checkSCDOrPWDExist = false;
 
         //Create Set For inserting OrderKeys having SCD Discount.
@@ -2393,14 +2396,20 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
         //Create Set For inserting OrderKeys having no Discount.
         std::set<__int64> orderKeysWithNoDiscount;
 
-        if(isSCDOrPWDDiscountExist)
+        if(isSCDDiscountExist)
         {
             //Load OrderKeys Having SCD Discount Applied.
             LoadOrderKeysWIthSCDOrPWDDiscount(DBTransaction, TabKey, orderKeysWithSCDDiscount, "Senior Citizen");
+        }
 
+        if(isPWDDiscountExist)
+        {
             //Load OrderKeys Having PWD Discount Applied.
             LoadOrderKeysWIthSCDOrPWDDiscount(DBTransaction, TabKey, orderKeysWithPWDDiscount, "Person with Disability");
+        }
 
+        if(isSCDDiscountExist || isPWDDiscountExist)
+        {
             //load OrderKeys Which have No Discount..
             LoadOrderKeysWIthoutDiscount(DBTransaction, TabKey, orderKeysWithNoDiscount);
 
@@ -2427,7 +2436,7 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
                 bool isPWDApplied = false;
                 bool noDiscountApplied = false;
 
-                if(orderKeysWithSCDDiscount.find(Order.Key) != orderKeysWithSCDDiscount.end() || orderKeysWithPWDDiscount.find(Order.Key) != orderKeysWithPWDDiscount.end())
+                if(orderKeysWithSCDDiscount.find(Order.Key) != orderKeysWithSCDDiscount.end() )
                 {
                     isSCDApplied = (SCDChecker.ItemSelectionCheck(DBTransaction, Order.Key, ValidOrderKeys, false));
                 }
@@ -2489,11 +2498,11 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
         ///count orderkeys which have normaldiscount applied
         int itemsWithNormalDiscount = IBInternalQuery->RecordCount - orderKeysWithNoDiscount.size() - orderKeysWithSCDDiscount.size() -  orderKeysWithPWDDiscount.size();
 
-        if(SelectingItems && orderKeysWithSCDDiscount.size() > 0  && itemsWithNormalDiscount > 0)
+        if(SelectingItems && orderKeysWithSCDDiscount.size() > 0  && (itemsWithNormalDiscount > 0 || orderKeysWithPWDDiscount.size() > 0))
         {
             MessageBox("Items with Senior Citizens Discounts and items with Non Senior Citizens Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
         }
-        else if(SelectingItems && orderKeysWithPWDDiscount.size() > 0 && itemsWithNormalDiscount > 0)
+        else if(SelectingItems && orderKeysWithPWDDiscount.size() > 0 && (itemsWithNormalDiscount > 0 || orderKeysWithSCDDiscount.size() > 0))
         {
             MessageBox("Items with PWD Discounts and items with Non PWD Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
         }
@@ -4789,7 +4798,7 @@ int TDBOrder::CheckItemAvailability(Database::TDBTransaction &DBTransaction, int
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-bool TDBOrder::IsSCDOrPWDDiscountConfigured(Database::TDBTransaction &DBTransaction)
+bool TDBOrder::IsSCDOrPWDDiscountConfigured(Database::TDBTransaction &DBTransaction, UnicodeString discountGroup)
 {
     bool isDiscountConfigured = false;
     try
@@ -4805,9 +4814,8 @@ bool TDBOrder::IsSCDOrPWDDiscountConfigured(Database::TDBTransaction &DBTransact
                                     "FROM DISCOUNTS a "
                                     "INNER JOIN DISCOUNTGROUPS_DISCOUNTTYPES DGDT ON A.DISCOUNT_KEY = DGDT.DISCOUNTTYPE_KEY "
                                     "INNER JOIN DISCOUNT_GROUPS ON  DISCOUNT_GROUPS.DISCOUNTGROUPS_KEY = DGDT.DISCOUNTGROUPS_KEY "
-                                    "WHERE DISCOUNT_GROUPS.DISCOUNTGROUP_NAME = :DISCOUNTGROUP_NAME_1 OR  DISCOUNT_GROUPS.DISCOUNTGROUP_NAME = :DISCOUNTGROUP_NAME_2 ";
-        SelectDiscountGroup->ParamByName("DISCOUNTGROUP_NAME_1")->AsString = "Senior Citizen";
-        SelectDiscountGroup->ParamByName("DISCOUNTGROUP_NAME_2")->AsString = "Person with Disability";
+                                    "WHERE DISCOUNT_GROUPS.DISCOUNTGROUP_NAME = :DISCOUNTGROUP_NAME_1 ";
+        SelectDiscountGroup->ParamByName("DISCOUNTGROUP_NAME_1")->AsString = discountGroup;
         SelectDiscountGroup->ExecQuery();
 
         if(SelectDiscountGroup->RecordCount)
