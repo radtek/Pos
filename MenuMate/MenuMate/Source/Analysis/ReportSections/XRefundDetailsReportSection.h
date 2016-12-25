@@ -17,10 +17,11 @@ public:
     ~XRefundDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
-    //virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    void GetRefundItemForConsolidatedZed(TIBSQL *creditQuery, AnsiString terminalNamePredicate, AnsiString deviceName);
+    void GetRefundItemForNormalZed(TIBSQL *creditQuery ,AnsiString terminalNamePredicate, AnsiString deviceName);
 };
 
 

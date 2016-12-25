@@ -172,10 +172,8 @@ void XRemovalDetailsReportSection::GetRemovalReportsForConsolidatedZed(TIBSQL* r
   AnsiString timeFilter = "";
   timeFilter =  " and b.TIME_STAMP >= :startTime and b.TIME_STAMP < :PrevZedTime ";
 
-  //if(prevZedTime > *_endTime)
-  //{
   prevZedTime = *_endTime;
-  //}
+
     removalsQuery->SQL->Text =
         "SELECT  "
                 "b.TIME_STAMP, "

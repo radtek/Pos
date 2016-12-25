@@ -22,7 +22,11 @@ XAccountPurchasesDetailsReportSection::~XAccountPurchasesDetailsReportSection()
 
 void XAccountPurchasesDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    TDateTime previousZedTime = Now();
+    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+    DataCalculationUtilities dataCalcUtils;
+    TDateTime previousZedTime = dataCalcUtils.GetPreviousZedTimeForTerminal(
+                                                                *_dbTransaction,
+                                                                deviceName);//Now();
 
     TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
     ibInternalQuery->Close();

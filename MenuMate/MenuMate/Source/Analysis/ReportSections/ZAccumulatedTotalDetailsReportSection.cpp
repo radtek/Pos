@@ -14,7 +14,7 @@ ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Dat
 }
 
 ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
-	: BaseReportSection(mmXReport, mmAccumulatedTotalDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+	: BaseReportSection(mmConsolidatedZReport, mmAccumulatedTotalDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;

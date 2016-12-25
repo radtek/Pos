@@ -60,6 +60,7 @@ private:	// User declarations
     void ExtractZedReceiptReport(AnsiString deviceName);
     void ExtractZedReceiptAndXReport(AnsiString deviceName);
     void ExtractConsolidatedZedReport(AnsiString deviceName);
+    //TConsolidatedMonthType TypeOfMonth;
 public:		// User declarations
     __fastcall TfrmEJournal(TComponent* Owner);
     const std::auto_ptr<TMemoryStream> CurrentPrintout;

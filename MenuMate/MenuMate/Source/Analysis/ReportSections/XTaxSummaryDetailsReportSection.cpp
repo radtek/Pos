@@ -181,13 +181,6 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
         printOut->PrintFormat->Line->FontInfo.Reset();
 
-        /*if(IsConsolidatedZed)
-        {
-            printOut->PrintFormat->Line->Columns[0]->Text = "Consolidated Zed:";
-            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
-            printOut->PrintFormat->AddLine();
-        }*/
-
         printOut->PrintFormat->Line->Columns[0]->Text = "Sales Tax Total:";
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
         printOut->PrintFormat->AddLine();

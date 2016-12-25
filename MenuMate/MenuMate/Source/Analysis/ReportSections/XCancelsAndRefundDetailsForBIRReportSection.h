@@ -26,6 +26,10 @@ public:
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    void GetRefundDetailsForConsolidatedBirReport(TIBSQL *creditQuery, AnsiString terminalNamePredicate);
+    void GetRefundDetailsForNormalBirReport(TIBSQL *creditQuery, AnsiString terminalNamePredicate);
+    void GetCancelValuesForConsolidatedBirReport(TIBSQL* cancelsQuery, AnsiString terminalNamePredicate);
+    void GetCancelValuesForNormalBirReport(TIBSQL* cancelsQuery, AnsiString terminalNamePredicate);
 };
 
 #endif

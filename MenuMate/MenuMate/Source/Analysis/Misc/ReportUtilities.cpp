@@ -856,9 +856,15 @@ void TTransactionInfoProcessor::ConsolidatedZedTransaction(TIBSQL *qrXArcBill, b
                             " from ARCBILL a "
                             " left join ARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                             " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
-                            " where " + terminalNamePredicate + " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 or a.DISCOUNT !=0 "
-                            " and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime "
-                            " group by 1,2,3,4,5,6,7,8,9,10 ";
+                            " where "
+                            " a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime and "
+                            + terminalNamePredicate +
+                            " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') and a.TOTAL > 0 or a.SALES_TYPE = 6 or (a.TOTAL < 0 and a.DISCOUNT < 0) "
+                            //" and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime "
+                            //" group by 1,2,3,4,5,6,7,8,9,10 ";
+                            " group by 1,5,3,6,7,8,9,10, 2, 4 "
+                            "Order by "
+                            "5 ";
     }
     else
     {

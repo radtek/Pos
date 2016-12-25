@@ -244,31 +244,22 @@ bool TfrmEJournal::CheckDateRangeForConolidatedZed()
     {
        if((toMonth - fromMonth) >= 0 && (toMonth - fromMonth) < 2)
        {
-            //MessageBox(IntToStr(fromDay), "Error", MB_OK + MB_ICONERROR);
-            if(fromMonth == 1 || fromMonth == 3 || fromMonth == 5 || fromMonth == 7 || fromMonth == 8 || fromMonth == 10 || fromMonth == 12)
+            if(fromMonth == cJan || fromMonth == 3 || fromMonth == 5 || fromMonth == 7 || fromMonth == 8 || fromMonth == 10 || fromMonth == 12)
             {
-                //MessageBox(IntToStr(fromDay), "from", MB_OK + MB_ICONERROR);
-                //MessageBox(IntToStr(toDay), "to", MB_OK + MB_ICONERROR);
                 int totalday = 31 - fromDay;
                 totalday += toDay;
-                //MessageBox(IntToStr(totalday), "31", MB_OK + MB_ICONERROR);
                 if(!(totalday >= 31))
                 {
-                    //MessageBox("Date Filter cannot be more than 30 days", "Kumar", MB_OK + MB_ICONERROR);
                     retVal = false;
                 }
             }
             if(fromMonth == 4 || fromMonth == 6 || fromMonth == 9 || fromMonth == 11)
             {
                 int totalday = 30 - fromDay;
-                //MessageBox(IntToStr(fromDay), "from", MB_OK + MB_ICONERROR);
-                //MessageBox(IntToStr(toDay), "to", MB_OK + MB_ICONERROR);
-                //MessageBox(IntToStr(30 - fromDay), "from", MB_OK + MB_ICONERROR);
                 totalday += toDay;
                 MessageBox(IntToStr(totalday), "30", MB_OK + MB_ICONERROR);
                 if(totalday >= 31)
                 {
-                    //MessageBox("Date Filter cannot be more than 30 days", "Kumar", MB_OK + MB_ICONERROR);
                     retVal = false;
                 }
             }
@@ -285,10 +276,8 @@ bool TfrmEJournal::CheckDateRangeForConolidatedZed()
                     totalday = 28 - fromDay;
                     totalday += toDay;
                 }
-                //MessageBox(IntToStr(totalday), "28", MB_OK + MB_ICONERROR);
                 if(totalday >= 31)
                 {
-                    MessageBox("Date Filter cannot be more than 30 days", "Kumar", MB_OK + MB_ICONERROR);
                     retVal = false;
                 }
             }
@@ -297,13 +286,6 @@ bool TfrmEJournal::CheckDateRangeForConolidatedZed()
        else
        {
             retVal = false;
-            //MessageBox(IntToStr((toMonth - fromMonth)), "Error", MB_OK + MB_ICONERROR);
-
-            //MessageBox(IntToStr(date_val), "Error", MB_OK + MB_ICONERROR);
-            //MessageBox(IntToStr(fromDay), "Error", MB_OK + MB_ICONERROR);
-           // MessageBox(IntToStr(fromMonth), "Error", MB_OK + MB_ICONERROR);
-            //MessageBox(IntToStr(fromYear), "Error", MB_OK + MB_ICONERROR);
-            //MessageBox("Date Filter cannot be more than 30 days", "Nitesh", MB_OK + MB_ICONERROR);
        }
 
     }
@@ -318,11 +300,11 @@ void __fastcall TfrmEJournal::FormShow(TObject *Sender)
 {
     if(IsConsolidatedZed)
     {
-       frmEJournal->Caption = "Consolidated Zed";
+       Caption = "Consolidated Zed";
     }
     else
     {
-       frmEJournal->Caption = "E-Journal";
+       Caption = "E-Journal";
     }
 }
 //---------------------------------------------------------------------------

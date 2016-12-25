@@ -23,6 +23,8 @@ public:
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    void GetWriteOffDataforNormalZed(TIBSQL* writeOffQuery);
+    void GetWriteOffDataforConsolidatedZed(TIBSQL* writeOffQuery);
 };
 
 #endif
