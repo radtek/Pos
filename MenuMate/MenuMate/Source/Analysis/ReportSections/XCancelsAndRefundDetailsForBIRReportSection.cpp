@@ -215,9 +215,10 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetCancelValuesForConsolidated
             "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =da.SECURITY_REF "
             "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
         " where "
+        "   SECURITY.TIME_STAMP  >= :startTime and  SECURITY.TIME_STAMP <= :endTime and "
             + terminalNamePredicate
             + " ORDER_TYPE = :ORDER_TYPE "
-              " and SECURITY.TIME_STAMP  >= :startTime and  SECURITY.TIME_STAMP <= :endTime "
+
               " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
                 "OR SECURITY.SECURITY_EVENT = 'CancelY' ) "
                 "group by "
@@ -236,9 +237,10 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetCancelValuesForConsolidated
                     "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =o.SECURITY_REF  "
                     "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
                 " where "
+                "  SECURITY.TIME_STAMP  >= :startTime and  SECURITY.TIME_STAMP <= :endTime and "
                     + terminalNamePredicate
                     + " ORDER_TYPE = :ORDER_TYPE "
-                      " and SECURITY.TIME_STAMP  >= :startTime and  SECURITY.TIME_STAMP <= :endTime "
+
                       " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
                         "OR SECURITY.SECURITY_EVENT = 'CancelY' ) "
                         "group by "
@@ -278,10 +280,12 @@ creditQuery->SQL->Text = "SELECT "
         "FROM ARCHIVE "
         "LEFT JOIN SECURITY ON ARCHIVE.SECURITY_REF = SECURITY.SECURITY_REF "
         "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
-        " WHERE " + terminalNamePredicate + " ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + " " "AND "
+        " WHERE "
+        " SECURITY.TIME_STAMP  >= :startTime and  SECURITY.TIME_STAMP <= :endTime and "
+        + terminalNamePredicate +
+        " ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + " " "AND "
         "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secCredit] + "' "
          "OR "  "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secWriteOff] + "' "
-         " and SECURITY.TIME_STAMP  >= :startTime and  SECURITY.TIME_STAMP <= :endTime "
          "group by "
          "ORDER_TYPE, "
          "SECURITY.TIME_STAMP, "

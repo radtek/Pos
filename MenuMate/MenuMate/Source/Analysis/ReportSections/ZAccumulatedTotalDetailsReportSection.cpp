@@ -41,8 +41,8 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
     if(IsConsolidatedZed)
     {
         openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction, *_startTime, *_endTime, deviceName);
-        startInvoiceNumber = GetStartInvoiceNumberForConsolidatedZed();   // Todo FormatReceiptNo
-        endInvoiceNumber = GetEndInvoiceNumberForConsolidatedZed();       // Todo FormatReceiptNo
+        startInvoiceNumber = GetStartInvoiceNumberForConsolidatedZed(deviceName);   // Todo FormatReceiptNo
+        endInvoiceNumber = GetEndInvoiceNumberForConsolidatedZed(deviceName);       // Todo FormatReceiptNo
     }
     else
     {
@@ -264,9 +264,14 @@ void ZAccumulatedTotalDetailsReportSection::SetPrinterFormatForSingleColumn(TPri
     printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
 }
 
-AnsiString ZAccumulatedTotalDetailsReportSection::GetStartInvoiceNumberForConsolidatedZed()
+AnsiString ZAccumulatedTotalDetailsReportSection::GetStartInvoiceNumberForConsolidatedZed(AnsiString deviceName)
 {
 	AnsiString beginInvoiceNum = 0;
+    AnsiString terminalNamePredicate = "";
+    if(!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " DAB.TERMINAL_NAME = '" + deviceName + "' AND ";
+    }
 
 	TIBSQL *qrStartInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
 	qrStartInvoiceNumber->SQL->Text =  "SELECT "
@@ -274,7 +279,9 @@ AnsiString ZAccumulatedTotalDetailsReportSection::GetStartInvoiceNumberForConsol
                                         "FROM ARCBILL DAB "
                                         "LEFT JOIN ARCHIVE DA on DAB.ARCBILL_KEY = DA.ARCBILL_KEY "
                                         "LEFT JOIN ARCORDERDISCOUNTS DAOD on DA.ARCHIVE_KEY = DAOD.ARCHIVE_KEY "
-                                        "WHERE(COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
+                                        "WHERE "
+                                        + terminalNamePredicate +
+                                        " (COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
                                         "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP <= :endTime "
                                         "GROUP BY DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
                                         "ORDER BY DAB.ARCBILL_KEY " ;
@@ -289,15 +296,20 @@ AnsiString ZAccumulatedTotalDetailsReportSection::GetStartInvoiceNumberForConsol
 	}
 	else
 	{
-		beginInvoiceNum = GetLastEndInvoiceNumber();
+		beginInvoiceNum = "0"; //GetLastEndInvoiceNumber();
 	}
 
 	return beginInvoiceNum;
 }
 
-AnsiString ZAccumulatedTotalDetailsReportSection::GetEndInvoiceNumberForConsolidatedZed()
+AnsiString ZAccumulatedTotalDetailsReportSection::GetEndInvoiceNumberForConsolidatedZed(AnsiString deviceName)
 {
 	AnsiString endInvoiceNum = 0;
+    AnsiString terminalNamePredicate = "";
+    if(!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " DAB.TERMINAL_NAME = '" + deviceName + "' AND ";
+    }
 
 	TIBSQL *qrEndInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
     qrEndInvoiceNumber->SQL->Text = "SELECT "
@@ -305,7 +317,9 @@ AnsiString ZAccumulatedTotalDetailsReportSection::GetEndInvoiceNumberForConsolid
                                     "FROM ARCBILL DAB "
                                     "LEFT JOIN ARCHIVE DA on DAB.ARCBILL_KEY = DA.ARCBILL_KEY "
                                     "LEFT JOIN ARCORDERDISCOUNTS DAOD on DA.ARCHIVE_KEY = DAOD.ARCHIVE_KEY "
-                                    "WHERE(COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
+                                    "WHERE "
+                                    + terminalNamePredicate +
+                                    "(COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
                                     "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP <= :endTime "
                                     "GROUP BY DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
                                     "ORDER BY DAB.ARCBILL_KEY ";
@@ -323,7 +337,7 @@ AnsiString ZAccumulatedTotalDetailsReportSection::GetEndInvoiceNumberForConsolid
 	}
 	else
 	{
-		endInvoiceNum = GetLastEndInvoiceNumber();
+		endInvoiceNum = "0"; //GetLastEndInvoiceNumber();
 	}
 
 	return endInvoiceNum;

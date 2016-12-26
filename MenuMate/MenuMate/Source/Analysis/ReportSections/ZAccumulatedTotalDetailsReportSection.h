@@ -27,8 +27,8 @@ private:
     DataFormatUtilities* dataFormatUtilities;
     DataCalculationUtilities* dataCalculationUtilities;
     AnsiString ExtractInvoiceNumber(AnsiString &inStartInvoiceNumber);
-    AnsiString GetEndInvoiceNumberForConsolidatedZed();
-    AnsiString GetStartInvoiceNumberForConsolidatedZed();
+    AnsiString GetEndInvoiceNumberForConsolidatedZed(AnsiString deviceName);
+    AnsiString GetStartInvoiceNumberForConsolidatedZed(AnsiString deviceName);
     Currency GetTotalEarningsForZed(Currency todaysEarnings, AnsiString deviceName);
 
 };

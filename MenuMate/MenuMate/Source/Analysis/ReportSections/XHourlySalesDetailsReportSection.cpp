@@ -123,6 +123,12 @@ AnsiString XHourlySalesDetailsReportSection::GetHourlySalesDetailsForNormalZed(A
 
 AnsiString XHourlySalesDetailsReportSection::GetHourlySalesDetailsForConsolidatedZed(AnsiString hourlySalesQuery)
 {
+    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+    AnsiString terminalNamePredicate = "";
+    if(!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " SECURITY.TERMINAL_NAME = '" + deviceName + "' AND ";
+    }
    hourlySalesQuery = "SELECT "
             "CAST(SUM(ARCBILL.TOTAL) AS NUMERIC (15,4)) Bill_Total, "
             "CAST(CAST('12/30/1899' AS TIMESTAMP) + "
@@ -134,7 +140,9 @@ AnsiString XHourlySalesDetailsReportSection::GetHourlySalesDetailsForConsolidate
         "FROM "
             "SECURITY "
             "LEFT JOIN ARCBILL ON SECURITY.SECURITY_REF = ARCBILL.SECURITY_REF "
-            "WHERE Security.SECURITY_REF = ARCBILL.SECURITY_REF AND ARCBILL.ARCBILL_KEY IS NOT NULL AND SECURITY.SECURITY_EVENT = 'Billed By' "
+            "WHERE "
+            + terminalNamePredicate +
+            "Security.SECURITY_REF = ARCBILL.SECURITY_REF AND ARCBILL.ARCBILL_KEY IS NOT NULL AND SECURITY.SECURITY_EVENT = 'Billed By' "
             " and SECURITY.TIME_STAMP >= :startTime and SECURITY.TIME_STAMP <= :endTime "
         "GROUP BY 2, 3; ";
 
