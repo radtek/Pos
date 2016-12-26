@@ -335,6 +335,9 @@ void TEstanciaMallField::SetInvoiceNumber(UnicodeString invoiceNumber)
 //----------------------------------------------------------------------------------------
 TEstanciaMall::TEstanciaMall()
 {
+    terminalCondition = " AND a.DEVICE_KEY = :DEVICE_KEY ";
+    isMasterTerminal = TGlobalSettings::Instance().EnableDepositBagNum;
+    deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
 }
 //-------------------------------------------------------------------------------------------------------------
 std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
@@ -920,6 +923,9 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
+        if(!isMasterTerminal)
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY 1,5 ASC; ";
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
@@ -928,6 +934,9 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        if(!isMasterTerminal)
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -1028,6 +1037,9 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
+        if(!isMasterTerminal)
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
                             "GROUP BY 1,2,4,5 "
 
@@ -1050,6 +1062,9 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
+        if(!isMasterTerminal)
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA "
                             "GROUP BY 1,2,4 ,5 "
                             "ORDER BY 5 ASC, 1 ASC ";
@@ -1060,6 +1075,9 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        if(!isMasterTerminal)
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -1096,6 +1114,9 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
+        if(!isMasterTerminal)
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA "
                                 "GROUP BY 1,2,4 "
                                 "ORDER BY 1 ASC ";
@@ -1105,6 +1126,9 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        if(!isMasterTerminal)
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -1196,6 +1220,9 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
+        if(!isMasterTerminal)
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
                                     "GROUP BY 1,2,4,5,6 "
@@ -1216,6 +1243,9 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
+        if(!isMasterTerminal)
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4,5,6 "
                                     "ORDER BY 1 ASC  ";
 
@@ -1224,6 +1254,9 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        if(!isMasterTerminal)
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -1285,6 +1318,10 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
+        if(!isMasterTerminal)
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
+
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4 ";
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
@@ -1292,6 +1329,9 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        if(!isMasterTerminal)
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -1379,6 +1419,9 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
+        if(!isMasterTerminal)
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4,5 "
                                                                 "ORDER BY 1 ASC ";
 
@@ -1387,6 +1430,9 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        if(!isMasterTerminal)
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -1434,7 +1480,7 @@ void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBT
                                       "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
                                       "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND meh.IS_ACTIVE = :IS_ACTIVE "
                                       "AND a.MALL_KEY = :MALL_KEY  ";
-         if(zKey == 0)
+        if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
         }
@@ -1443,6 +1489,9 @@ void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBT
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
+        if(!isMasterTerminal)
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4 ";
 
         IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
@@ -1450,6 +1499,9 @@ void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBT
 
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        if(!isMasterTerminal)
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
 
         IBInternalQuery->ExecQuery();
 

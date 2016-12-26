@@ -233,6 +233,15 @@ class TEstanciaMall : public TMallExport
 {
     private:
 
+    //For terminal condition
+    AnsiString terminalCondition;
+
+    //check whether terminal is master terminal
+    bool isMasterTerminal;
+
+    //Store device key
+    int deviceKey;
+
     //Get Total Patron count for a Bill
     int GetPatronCount(TPaymentTransaction &paymentTransaction);
 
