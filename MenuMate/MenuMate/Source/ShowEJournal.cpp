@@ -242,56 +242,12 @@ bool TfrmEJournal::CheckDateRangeForConolidatedZed()
 
     if((toYear - tody) == 0)
     {
-       if((toMonth - fromMonth) >= 0 && (toMonth - fromMonth) < 2)
-       {
-            if(fromMonth == cJan || fromMonth == 3 || fromMonth == 5 || fromMonth == 7 || fromMonth == 8 || fromMonth == 10 || fromMonth == 12)
-            {
-                int totalday = 31 - fromDay;
-                totalday += toDay;
-                if(!(totalday >= 31))
-                {
-                    retVal = false;
-                }
-            }
-            if(fromMonth == 4 || fromMonth == 6 || fromMonth == 9 || fromMonth == 11)
-            {
-                int totalday = 30 - fromDay;
-                totalday += toDay;
-                MessageBox(IntToStr(totalday), "30", MB_OK + MB_ICONERROR);
-                if(totalday >= 31)
-                {
-                    retVal = false;
-                }
-            }
-            if(fromMonth == 2)
-            {
-                int totalday = 0;
-                if((fromYear % 4) == 0)
-                {
-                    totalday =  29 - fromDay;
-                    totalday += toDay;
-                }
-                else
-                {
-                    totalday = 28 - fromDay;
-                    totalday += toDay;
-                }
-                if(totalday >= 31)
-                {
-                    retVal = false;
-                }
-            }
-
-       }
-       else
-       {
-            retVal = false;
-       }
-
+       retVal = CalculateDateRangeForConolidatedZed(toMonth, fromMonth, fromDay, toDay, fromYear);
     }
     else
     {
-       retVal = false;
+       //retVal = false;
+       retVal = CalculateDateRangeForConolidatedZed(toMonth, fromMonth, fromDay, toDay, fromYear);
     }
     return retVal;
 }
@@ -309,3 +265,54 @@ void __fastcall TfrmEJournal::FormShow(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+bool TfrmEJournal::CalculateDateRangeForConolidatedZed(int toMonth, int fromMonth, int fromDay, int toDay, int fromYear)
+{
+    bool retVal = true;
+    if((toMonth - fromMonth) >= 0 && (toMonth - fromMonth) < 2)
+    {
+        if(fromMonth == cJan || fromMonth == 3 || fromMonth == 5 || fromMonth == 7 || fromMonth == 8 || fromMonth == 10 || fromMonth == 12)
+        {
+            int totalday = 31 - fromDay;
+            totalday += toDay;
+            if(!(totalday >= 31))
+            {
+                retVal = false;
+            }
+        }
+        if(fromMonth == 4 || fromMonth == 6 || fromMonth == 9 || fromMonth == 11)
+        {
+            int totalday = 30 - fromDay;
+            totalday += toDay;
+            MessageBox(IntToStr(totalday), "30", MB_OK + MB_ICONERROR);
+            if(totalday >= 31)
+            {
+                retVal = false;
+            }
+        }
+        if(fromMonth == 2)
+        {
+            int totalday = 0;
+            if((fromYear % 4) == 0)
+            {
+                totalday =  29 - fromDay;
+                totalday += toDay;
+            }
+            else
+            {
+                totalday = 28 - fromDay;
+                totalday += toDay;
+            }
+            if(totalday >= 31)
+            {
+                retVal = false;
+            }
+        }
+
+    }
+    else
+    {
+        retVal = false;
+    }
+
+  return retVal;
+}

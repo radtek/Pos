@@ -861,7 +861,7 @@ void TTransactionInfoProcessor::ConsolidatedZedTransaction(TIBSQL *qrXArcBill, b
                             + terminalNamePredicate +
                             " (COALESCE(c.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') " //and a.TOTAL > 0 or a.SALES_TYPE = 6 or (a.TOTAL < 0 and a.DISCOUNT < 0) "
                             //" and a.TIME_STAMP >= :StartTime and a.TIME_STAMP <= :EndTime "
-                            " and b.ORDER_TYPE != 3 "
+                            " and (COALESCE(b.ORDER_TYPE, 0)) != 3 "
                             " group by 1,2,3,4,5,6,7,8,9,10, 11 ";
                             "Order by "
                             "5 ";

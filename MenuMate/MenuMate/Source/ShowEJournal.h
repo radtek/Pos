@@ -67,6 +67,7 @@ public:		// User declarations
 	void Execute();
     bool IsConsolidatedZed;
     bool CheckDateRangeForConolidatedZed();
+    bool CalculateDateRangeForConolidatedZed(int toMonth, int fromMonth, int fromDay, int toDay, int fromYear);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmEJournal *frmEJournal;

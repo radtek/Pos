@@ -15,7 +15,6 @@ public:
 	~ZBegningEndingInvoiceReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
-    virtual void GetOutput(TPrintout* printout,TDateTime* startTime, TDateTime* endTime);
 
 private:
     AnsiString GetStartInvoiceNumber();
@@ -26,6 +25,9 @@ private:
     DataFormatUtilities* dataFormatUtilities;
     DataCalculationUtilities* dataCalculationUtilities;
     AnsiString ExtractInvoiceNumber(AnsiString &inStartInvoiceNumber);
+    AnsiString GetEndInvoiceNumberForConsolidatedZed(AnsiString deviceName);
+    AnsiString GetStartInvoiceNumberForConsolidatedZed(AnsiString deviceName);
+    Currency GetTotalEarningsForZed(Currency todaysEarnings, AnsiString deviceName);
 };
 
 #endif

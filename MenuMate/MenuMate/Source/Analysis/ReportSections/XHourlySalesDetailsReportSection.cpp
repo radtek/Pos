@@ -95,6 +95,13 @@ void XHourlySalesDetailsReportSection::GetOutput(TPrintout* printOut)
 
 AnsiString XHourlySalesDetailsReportSection::GetHourlySalesDetailsForNormalZed(AnsiString hourlySalesQuery)
 {
+    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+    AnsiString terminalNamePredicate = "";
+    if(!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " SECURITY.TERMINAL_NAME = '" + deviceName + "' AND ";
+    }
+
    hourlySalesQuery = "SELECT "
             "CAST(CAST(EXTRACT(MONTH FROM SECURITY.TIME_STAMP) "
                 "|| '/' || EXTRACT(DAY FROM SECURITY.TIME_STAMP) "
@@ -116,7 +123,9 @@ AnsiString XHourlySalesDetailsReportSection::GetHourlySalesDetailsForNormalZed(A
         "FROM "
             "SECURITY "
             "LEFT JOIN DAYARCBILL ON SECURITY.SECURITY_REF = DAYARCBILL.SECURITY_REF "
-            "WHERE Security.SECURITY_REF = DAYARCBILL.SECURITY_REF AND DAYARCBILL.ARCBILL_KEY IS NOT NULL AND SECURITY.SECURITY_EVENT = 'Billed By' "
+            "WHERE "
+             + terminalNamePredicate +
+            "Security.SECURITY_REF = DAYARCBILL.SECURITY_REF AND DAYARCBILL.ARCBILL_KEY IS NOT NULL AND SECURITY.SECURITY_EVENT = 'Billed By' "
         "GROUP BY 1, 2, 4, 5; ";
   return hourlySalesQuery;
 }

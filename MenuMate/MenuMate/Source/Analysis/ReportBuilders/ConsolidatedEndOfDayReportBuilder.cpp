@@ -25,7 +25,7 @@ void ConsolidatedEndOfDayReportBuilder::AddCurrentDateDetailsSection(IReport* re
 }
 void ConsolidatedEndOfDayReportBuilder::AddCurrentBegningAndEndingBalance(IReport* report)
 {
-    //AddConsolidatedReportSectionToReport(report, mmShowBegningandEndingBalance, true, GetStartTime(), GetEndTime());
+    AddConsolidatedReportSectionToReport(report, mmShowBegningandEndingBalance, true, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddClientDetailsSection(IReport* report)
