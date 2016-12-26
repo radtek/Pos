@@ -769,6 +769,7 @@ void TEstanciaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, 
         salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
         salesData.ArcBillKey = arcBillKey;
         salesData.ZKey = 0;
+        salesData.DeviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
         mallExportSalesData.push_back(salesData);
     }
     catch(Exception &E)

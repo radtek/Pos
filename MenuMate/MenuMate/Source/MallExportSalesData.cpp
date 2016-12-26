@@ -59,6 +59,11 @@ void TMallExportSalesData::SetFieldIndex(int fieldIndex)
     _zKey = zKey;
 }
 //---------------------------------------------------------------------------
+void TMallExportSalesData::SetDeviceKey(int deviceKey)
+{
+    _deviceKey = deviceKey;
+}
+//---------------------------------------------------------------------------
 
 
 

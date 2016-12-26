@@ -9469,19 +9469,47 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales()
         IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
         IBInternalQuery->ExecQuery();
         int ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+        bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
+        int deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        AnsiString terminalCondition = " AND DEVICE_KEY = :DEVICE_KEY ";
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.FIELD_VALUE = :Z_KEY WHERE MALLEXPORT_SALES.Z_KEY = :EXISTING_KEY "
                                         "AND  MALLEXPORT_SALES.FIELD_INDEX = :FIELD_INDEX ";
+
+        if(!isMasterterminal)
+		{
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+        }
+
+
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
         IBInternalQuery->ParamByName("EXISTING_KEY")->AsInteger = 0;
         IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = 33;
+
+        if(!isMasterterminal)
+		{
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+        }
+
         IBInternalQuery->ExecQuery();
 
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.Z_KEY = :Z_KEY WHERE MALLEXPORT_SALES.Z_KEY = :EXISTING_KEY ";
+
+        if(!isMasterterminal)
+		{
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition;
+        }
+
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
         IBInternalQuery->ParamByName("EXISTING_KEY")->AsInteger = 0;
+
+        if(!isMasterterminal)
+		{
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+        }
+
         IBInternalQuery->ExecQuery();
 
         DBTransaction.Commit();

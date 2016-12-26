@@ -17,6 +17,7 @@ class TMallExportSalesData
     UnicodeString _createdBy;
     int _arcBillKey;
     int _zKey;
+    int _deviceKey;
 
     void SetMallExportSalesKey(int mallexportSalesId);
     void SetMallKey(int mallKey);
@@ -28,6 +29,7 @@ class TMallExportSalesData
     void SetCreatedBy(UnicodeString createdBy);
     void SetArcBillKey(int arcBillKey);
     void SetZKey(int zKey);
+    void SetDeviceKey(int deviceKey);
 
     public:
     __property int MallExportSalesId = {read = _mallExportSaleKey, write = SetMallExportSalesKey};
@@ -40,5 +42,6 @@ class TMallExportSalesData
     __property UnicodeString CreatedBy = {read = _createdBy, write = SetCreatedBy};
     __property int ArcBillKey = {read = _arcBillKey, write = SetArcBillKey};
     __property int ZKey = {read = _zKey, write = SetZKey};
+    __property int DeviceKey = {read = _deviceKey, write = SetDeviceKey};
 };
 #endif

@@ -63,32 +63,45 @@ TMall TManagerMallSetup::LoadActiveMallSettings(Database::TDBTransaction &dbTran
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
         ibInternalQuery->SQL->Clear();
-        ibInternalQuery->SQL->Text = "SELECT * FROM MALLS a WHERE a.IS_ACTIVE = 'T'";
-        ibInternalQuery->ExecQuery();
-        mallProperties.MallId = ibInternalQuery->FieldByName("MALL_ID")->AsInteger;
-        mallProperties.MallName = ibInternalQuery->FieldByName("MALL_NAME")->AsString;
-        mallProperties.IsActive = ibInternalQuery->FieldByName("IS_ACTIVE")->AsString;
+        ibInternalQuery->SQL->Text = " SELECT MALLS.MALL_ID, MALLS.MALL_NAME, MALLS.IS_ACTIVE FROM MALLS "
+                                     " INNER JOIN MALLEXPORT_SETTINGS_VALUES ON MALLS.MALL_ID = MALLEXPORT_SETTINGS_VALUES.MALL_KEY "
+                                     " WHERE IS_ACTIVE = :IS_ACTIVE AND DEVICE_KEY = :DEVICE_KEY "
+                                     "GROUP BY 1,2,3 ";
 
-        ibInternalQuery->Close();
-        ibInternalQuery->SQL->Clear();
-        ibInternalQuery->SQL->Text =
+        ibInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        ibInternalQuery->ExecQuery();
+
+        ///if active mall exist and have setting according to corresponding device key
+        if(ibInternalQuery->RecordCount)
+        {
+            mallProperties.MallId = ibInternalQuery->FieldByName("MALL_ID")->AsInteger;
+            mallProperties.MallName = ibInternalQuery->FieldByName("MALL_NAME")->AsString;
+            mallProperties.IsActive = ibInternalQuery->FieldByName("IS_ACTIVE")->AsString;
+            mallProperties.DeviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
+
+            ibInternalQuery->Close();
+            ibInternalQuery->SQL->Clear();
+            ibInternalQuery->SQL->Text =
                                     "SELECT * FROM MALLEXPORT_SETTINGS a "
                                     "INNER JOIN MALLEXPORT_SETTINGS_MAPPING msp ON msp.MALLEXPORT_SETTING_ID = a.MALLEXPORT_SETTING_KEY "
                                     "LEFT JOIN MALLEXPORT_SETTINGS_VALUES msv    on msv.MALLEXPORTSETTING_ID  = a.MALLEXPORT_SETTING_KEY "
-                                    "WHERE msp.MALL_ID = :MALL_ID ";
+                                    " WHERE msp.MALL_ID = :MALL_ID  and msv.DEVICE_KEY = :DEVICE_KEY ";
 
-        ibInternalQuery->ParamByName("MALL_ID")->AsInteger = mallProperties.MallId;
-        ibInternalQuery->ExecQuery();
-        for(; !ibInternalQuery->Eof; ibInternalQuery->Next())
-        {
-            TMallExportSettings settings;
-            settings.MallExportSettingMappingId = ibInternalQuery->FieldByName("MALLEXPORT_SETTING_VALUE_KEY")->AsInteger;
-            settings.MallExportSettingId =  ibInternalQuery->FieldByName("MALLEXPORTSETTING_ID")->AsInteger;
-            settings.Name =  ibInternalQuery->FieldByName("NAME")->AsString;
-            settings.ControlName = ibInternalQuery->FieldByName("CONTROL_NAME")->AsString;
-            settings.Value =  ibInternalQuery->FieldByName("FIELD_VALUE")->AsString;
-            settings.ValueType = ibInternalQuery->FieldByName("FIELD_TYPE")->AsString;
-            mallProperties.MallSettings.push_back(settings);
+            ibInternalQuery->ParamByName("MALL_ID")->AsInteger = mallProperties.MallId;
+            ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = mallProperties.DeviceKey;
+            ibInternalQuery->ExecQuery();
+            for(; !ibInternalQuery->Eof; ibInternalQuery->Next())
+            {
+                TMallExportSettings settings;
+                settings.MallExportSettingMappingId = ibInternalQuery->FieldByName("MALLEXPORT_SETTING_VALUE_KEY")->AsInteger;
+                settings.MallExportSettingId =  ibInternalQuery->FieldByName("MALLEXPORTSETTING_ID")->AsInteger;
+                settings.Name =  ibInternalQuery->FieldByName("NAME")->AsString;
+                settings.ControlName = ibInternalQuery->FieldByName("CONTROL_NAME")->AsString;
+                settings.Value =  ibInternalQuery->FieldByName("FIELD_VALUE")->AsString;
+                settings.ValueType = ibInternalQuery->FieldByName("FIELD_TYPE")->AsString;
+                mallProperties.MallSettings.push_back(settings);
+            }
         }
     }
      catch(Exception &E)
@@ -115,25 +128,24 @@ void TManagerMallSetup::UpdateMallExportSettingValues(Database::TDBTransaction &
         ibInternalQuery->ParamByName("MALL_KEY")->AsString = mallInfo.MallId;
         ibInternalQuery->ExecQuery();
 
-        if(!ibInternalQuery->RecordCount)
+        if(ibInternalQuery->RecordCount)
         {
-            InsertInToMallExport_Settings_Values(dbTransaction, mallInfo.DeviceKey, mallInfo.MallId);
-        }
-
-        std::list<TMallExportSettings>::iterator it;
-        for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
-        {
-            ibInternalQuery->Close();
-            ibInternalQuery->SQL->Clear();
-            ibInternalQuery->SQL->Text = " UPDATE MALLEXPORT_SETTINGS_VALUES SET FIELD_VALUE = :FIELD_VALUE "
-                                            "WHERE MALLEXPORTSETTING_ID = :MALLEXPORTSETTING_ID  "
-                                            "AND DEVICE_KEY = :DEVICE_KEY "
-                                            "AND MALL_KEY = :MALL_KEY ";
-            ibInternalQuery->ParamByName("MALLEXPORTSETTING_ID")->AsInteger = it->MallExportSettingId;
-            ibInternalQuery->ParamByName("FIELD_VALUE")->AsString = it->Value;
-            ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = mallInfo.DeviceKey;
-            ibInternalQuery->ParamByName("MALL_KEY")->AsInteger = mallInfo.MallId;
-            ibInternalQuery->ExecQuery();
+           
+            std::list<TMallExportSettings>::iterator it;
+            for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
+            {
+                ibInternalQuery->Close();
+                ibInternalQuery->SQL->Clear();
+                ibInternalQuery->SQL->Text = " UPDATE MALLEXPORT_SETTINGS_VALUES SET FIELD_VALUE = :FIELD_VALUE "
+                                                "WHERE MALLEXPORTSETTING_ID = :MALLEXPORTSETTING_ID  "
+                                                "AND DEVICE_KEY = :DEVICE_KEY "
+                                                "AND MALL_KEY = :MALL_KEY ";
+                ibInternalQuery->ParamByName("MALLEXPORTSETTING_ID")->AsInteger = it->MallExportSettingId;
+                ibInternalQuery->ParamByName("FIELD_VALUE")->AsString = it->Value;
+                ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = mallInfo.DeviceKey;
+                ibInternalQuery->ParamByName("MALL_KEY")->AsInteger = mallInfo.MallId;
+                ibInternalQuery->ExecQuery();
+            }
         }
     }
     catch(Exception &E)
@@ -151,9 +163,13 @@ int  TManagerMallSetup::CheckActiveMallExist(Database::TDBTransaction &dbTransac
 
     try
 	{
-        ibInternalQuery->SQL->Text = " SELECT MALL_ID FROM MALLS WHERE IS_ACTIVE = :IS_ACTIVE ";
+        ibInternalQuery->SQL->Text = " SELECT MALL_ID FROM MALLS "
+                                     " INNER JOIN MALLEXPORT_SETTINGS_VALUES ON MALLS.MALL_ID = MALLEXPORT_SETTINGS_VALUES.MALL_KEY "
+                                     " WHERE IS_ACTIVE = :IS_ACTIVE AND DEVICE_KEY = :DEVICE_KEY "
+                                     " GROUP BY 1 ";
 
         ibInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
         ibInternalQuery->ExecQuery();
 
         if(ibInternalQuery->RecordCount)
@@ -186,7 +202,7 @@ void TManagerMallSetup::UpdateINActiveMall(Database::TDBTransaction &dbTransacti
 	}
 }
 //---------------------------------------------------------------------------------------------
-void TManagerMallSetup::InsertInToMallExport_Settings_Values(Database::TDBTransaction &dbTransaction, int deviceKey, int mallKey)
+void TManagerMallSetup::InsertInToMallExport_Settings_Values(Database::TDBTransaction &dbTransaction, TMall &mallInfo)
 {
     try
     {
@@ -222,12 +238,26 @@ void TManagerMallSetup::InsertInToMallExport_Settings_Values(Database::TDBTransa
         TIBSQL *insertQuery = dbTransaction.Query(dbTransaction.AddQuery());
         TIBSQL *incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
 
+        std::list<TMallExportSettings>::iterator it;
+
         for(int index = 0; index < numberOfFields; index++)
         {
-
             incrementGenerator->Close();
             incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALL_SETT_VAL_KEY, 1) FROM RDB$DATABASE";
             incrementGenerator->ExecQuery();
+
+            for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
+            {
+               switch(it->MallExportSettingId)
+               {
+                    case 1:
+                    case 2:
+                    case 7:
+                    case 26:
+                          fieldValues[index] = it->Value;
+                          break;
+               }
+            }
 
             insertQuery->Close();
             insertQuery->SQL->Text =
@@ -236,9 +266,88 @@ void TManagerMallSetup::InsertInToMallExport_Settings_Values(Database::TDBTransa
             insertQuery->ParamByName("SETTING_KEY")->AsInteger = settingID[index];
             insertQuery->ParamByName("FIELD_VALUE")->AsString = fieldValues[index];
             insertQuery->ParamByName("FIELD_TYPE")->AsString = fieldTypes[index];
-            insertQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
-            insertQuery->ParamByName("MALL_KEY")->AsInteger = mallKey;
+            insertQuery->ParamByName("DEVICE_KEY")->AsInteger = mallInfo.DeviceKey;
+            insertQuery->ParamByName("MALL_KEY")->AsInteger = mallInfo.MallId;
             insertQuery->ExecQuery();
+        }
+        dbTransaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        dbTransaction.Rollback();
+    }
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------
+void TManagerMallSetup::InsertInToMallExport_Settings_Values(int mallKey)
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        int deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Clear();
+        ibInternalQuery->SQL->Text = "SELECT * FROM MALLEXPORT_SETTINGS_VALUES a WHERE a.DEVICE_KEY = :DEVICE_KEY and a.MALL_KEY = :MALL_KEY ";
+        ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+        ibInternalQuery->ParamByName("MALL_KEY")->AsString = mallKey;
+        ibInternalQuery->ExecQuery();
+
+        if(!ibInternalQuery->RecordCount)
+        {
+             const int numberOfFields = 77;
+             UnicodeString fieldTypes[numberOfFields] =
+             {
+                "UnicodeString", "UnicodeString", "int", "UnicodeString", "UnicodeString", "int", "UnicodeString", "Currency", "UnicodeString", "UnicodeString",
+                "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+                "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+                "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+                "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+                "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+                "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString",
+                "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "UnicodeString", "bool", "bool",  "UnicodeString",
+                "bool", "bool", "UnicodeString"
+             };
+
+             UnicodeString fieldValues[numberOfFields] =
+             {
+                "", "", "", ".txt", "5", "2", "8", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12",
+                "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12",
+                "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "12", "Z", "false", "false",
+                "SNNNNTTMMDDYYYY.B", "true", "true", ""
+             };
+
+             int settingID[numberOfFields] =
+             {
+                1, 2, 7, 16, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17,
+                17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18,
+                19, 20, 21, 24, 25, 26
+             };
+
+            TIBSQL *insertQuery = dbTransaction.Query(dbTransaction.AddQuery());
+            TIBSQL *incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
+
+            for(int index = 0; index < numberOfFields; index++)
+            {
+                incrementGenerator->Close();
+                incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALL_SETT_VAL_KEY, 1) FROM RDB$DATABASE";
+                incrementGenerator->ExecQuery();
+
+                insertQuery->Close();
+                insertQuery->SQL->Text =
+                            "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (:SETTING_VALUE_KEY, :SETTING_KEY, :FIELD_VALUE, :FIELD_TYPE, :DEVICE_KEY, :MALL_KEY) ";
+                insertQuery->ParamByName("SETTING_VALUE_KEY")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+                insertQuery->ParamByName("SETTING_KEY")->AsInteger = settingID[index];
+                insertQuery->ParamByName("FIELD_VALUE")->AsString = fieldValues[index];
+                insertQuery->ParamByName("FIELD_TYPE")->AsString = fieldTypes[index];
+                insertQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+                insertQuery->ParamByName("MALL_KEY")->AsInteger = mallKey;
+                insertQuery->ExecQuery();
+            }
         }
         dbTransaction.Commit();
     }

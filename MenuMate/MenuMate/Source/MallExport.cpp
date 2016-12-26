@@ -82,7 +82,8 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
                     "DATE_CREATED, "
                     "CREATED_BY, "
                     "Z_KEY, "
-                    "ARCBILL_KEY "
+                    "ARCBILL_KEY, "
+                    "DEVICE_KEY "
                     " ) "
             "VALUES ("
                     ":MALLEXPORT_SALE_KEY, "
@@ -94,7 +95,8 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
                     ":DATE_CREATED, "
                     ":CREATED_BY, "
                     ":Z_KEY,"
-                    ":ARCBILL_KEY "
+                    ":ARCBILL_KEY, "
+                    ":DEVICE_KEY "
                     " );";
 
             IBInternalQuery->ParamByName("MALLEXPORT_SALE_KEY")->AsInteger = it->MallExportSalesId;
@@ -107,6 +109,7 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("CREATED_BY")->AsString = it->CreatedBy;
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = it->ZKey;
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = it->DeviceKey;
             IBInternalQuery->ExecQuery();
         }
         isInserted = true;

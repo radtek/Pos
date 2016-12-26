@@ -23,7 +23,6 @@
 #include "MMTouchNumpad.h"
 #include <FileCtrl.hpp>
 #include "MMMessageBox.h"
-#include "ManagerVariable.h"
 #include "ManagerPhysicalPrinter.h"
 #include "ReportDisplay.h"
 #include "SerialConfig.h"
@@ -2175,6 +2174,7 @@ void __fastcall TfrmSetup::cbNewMallLocChange(TObject *Sender)
 {
     if(cbNewMallLoc->ItemIndex != 0)
     {
+        TManagerMallSetup::InsertInToMallExport_Settings_Values(cbNewMallLoc->ItemIndex);
         LoadMallSettingInfo();
     }
     else
@@ -2250,6 +2250,7 @@ void  TfrmSetup::SetupNewMalls()
     {
         UpdateNoMallUI();
     }
+    dbTransaction.Commit();
 }
 //----------------------------------------------------------------------------------------------
 void TfrmSetup::LoadMallSettingInfo()
@@ -2291,7 +2292,7 @@ void TfrmSetup::UpdateMallInfo()
         dbTransaction.StartTransaction();
         mallInfo.MallId = cbNewMallLoc->ItemIndex;
         mallInfo.MallName = cbNewMallLoc->Text;
-        mallInfo.DeviceKey =  TDeviceRealTerminal::Instance().ID.DeviceKey;
+        mallInfo.DeviceKey =  TDeviceRealTerminal::Instance().ID.ProfileKey;
         TMallExportSettings mallSetting;
 
         std::list<TMallExportSettings>::iterator it;
@@ -2320,6 +2321,7 @@ void TfrmSetup::UpdateNoMallUI()
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
+
     UnicodeString controlNameSubString = "";
     TMall mallDetails;
     TGlobalSettings::Instance().mallInfo = mallDetails;
