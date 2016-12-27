@@ -186,6 +186,13 @@ void TfrmEJournal::ExtractZedReceiptReport(AnsiString deviceName)
 //---------------------------------------------------------------------------
 void TfrmEJournal::ExtractConsolidatedZedReport(AnsiString deviceName)
 {
+
+    /*if(CompareDateRangeForConolidatedZed(FromDateTimePicker->DateTime, ToDateTimePicker->DateTime))
+    {
+
+    }*/
+
+
     ManagerReceipt->Receipt->Clear();
     if(CheckDateRangeForConolidatedZed())
     {
@@ -354,6 +361,21 @@ int TfrmEJournal::AddTotalDay(int frommonth, int tomonth, int total, int today)
      total += today;
    }
    return total;
+}
+
+bool TfrmEJournal::CompareDateRangeForConolidatedZed(TDateTime fromdate, TDateTime todate)
+{
+    bool retVal = true;
+    TValueRelationship startResult  = Dateutils::CompareDate(fromdate, todate);
+
+    int value = startResult;
+    if(value > 31)
+    {
+       retVal = false;
+    }
+
+    return retVal;
+
 }
 
 

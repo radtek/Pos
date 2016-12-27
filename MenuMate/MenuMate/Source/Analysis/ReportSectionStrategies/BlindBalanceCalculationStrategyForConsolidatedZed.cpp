@@ -43,7 +43,6 @@ void BlindBalanceCalculationStrategyForConsolidatedZed::BuildSection(TPrintout* 
     {
         ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
     }
-    ibInternalQuery->ExecQuery();
     LoadBlindBalanceDetails(printOut, ibInternalQuery, ibLoadDataQuery, deviceName);
 }
 
@@ -68,6 +67,7 @@ void BlindBalanceCalculationStrategyForConsolidatedZed::GetBlindBalanceDetailsFo
 void BlindBalanceCalculationStrategyForConsolidatedZed::LoadBlindBalanceDetails(TPrintout* printOut, TIBSQL *ibInternalQuery, TIBSQL *ibLoadDataQuery, AnsiString deviceName)
 {
 
+    ibInternalQuery->ExecQuery();
     for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
 	{
 		ibLoadDataQuery->Close();
@@ -75,12 +75,12 @@ void BlindBalanceCalculationStrategyForConsolidatedZed::LoadBlindBalanceDetails(
                                         "       from arcbillpay dabp "
                                         "            left join arcbill dab on "
                                         "                 dabp.arcbill_key = dab.arcbill_key "
-                                        "       where dab.TIME_STAMP >= :startTime and dab.TIME_STAMP <= :endTime and "
+                                        "       where dab.TIME_STAMP >= :startTime and dab.TIME_STAMP <= :endTime and"
                                         " dabp.pay_type = :pay_type ";
 
         if (!_globalSettings->EnableDepositBagNum || _isMasterBalance)
 		{
-			ibLoadDataQuery->SQL->Text = ibInternalQuery->SQL->Text +
+			ibLoadDataQuery->SQL->Text = ibLoadDataQuery->SQL->Text +
 			"             and dab.terminal_name = :terminal_name "
 			"       		  group by dabp.pay_type;";
 			ibLoadDataQuery->ParamByName("terminal_name")->AsString = deviceName;

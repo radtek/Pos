@@ -62,6 +62,7 @@ private:	// User declarations
     void ExtractConsolidatedZedReport(AnsiString deviceName);
     bool CalculateDateForConsolidatedZed(int fromMonth, int fromDay, int toDay, int fromYear, int toMonth);
     int AddTotalDay(int frommonth, int tomonth, int total, int today);
+    bool CompareDateRangeForConolidatedZed(TDateTime fromdate, TDateTime todate);
     //TConsolidatedMonthType TypeOfMonth;
 public:		// User declarations
     __fastcall TfrmEJournal(TComponent* Owner);
