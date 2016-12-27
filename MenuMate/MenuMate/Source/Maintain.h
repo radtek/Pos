@@ -158,7 +158,8 @@ class TfrmMaintain : public TZForm
     TTouchBtn *TouchBtnMemberSalesOnly;
    // void __fastcall TouchBtnMembersaleOnlyClick(TObject *Sender);
    
-
+   TTouchBtn *touchBtnSecurity;
+   void __fastcall TouchBtnSecurityMouseClick(TObject *Sender);
 
     //*****************
 
@@ -226,8 +227,9 @@ private:
     void __fastcall RefreshRunRateBoard();
     bool DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransaction);
     void ManageGiftCardValidations(Database::TDBTransaction &DBTransaction);
+    void EnablePanasonicIntegration();
+    void SaveServerIp(Database::TDBTransaction &dbTransaction);
+    void SaveEnabledState(Database::TDBTransaction &dbTransaction);
 public: // User declarations
-
-public:
 };
 #endif

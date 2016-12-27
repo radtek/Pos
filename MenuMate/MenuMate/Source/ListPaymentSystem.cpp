@@ -68,6 +68,7 @@
 #include "LoyaltyMateUtilities.h"
 #include "ReceiptUtility.h"
 #include "StringTools.h"
+#include "PanasonicAdapter.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -1436,6 +1437,15 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 
     if(isSCDOrPWDApplied)
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
+
+    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+    {
+        TPanasonicAdapter panasonicAdapter;
+      	std::auto_ptr <TStringList> StringReceipt(new TStringList);
+    	LastReceipt->Printouts->PrintToStrings(StringReceipt.get());
+        UnicodeString _lastreceipt = PrepareLastReceiptDataForPanasonic(StringReceipt.get());
+        panasonicAdapter.ConvertTransactionInfoToPanasonicInfo(PaymentTransaction, ArcBillKey, _lastreceipt);
+    }
 }
 
 void TListPaymentSystem::CheckPatronByOrderIdentification(TPaymentTransaction &PaymentTransaction)
@@ -5917,4 +5927,14 @@ void TListPaymentSystem::InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, 
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+}
+//-------------------------------------------------------------------------------------
+UnicodeString TListPaymentSystem::PrepareLastReceiptDataForPanasonic(TStringList *_receipt)
+{
+    UnicodeString _lastreceipt = "";
+    for(int i = 0; i < _receipt->Count; i++)
+    {
+       _lastreceipt += _receipt->Strings[i] + '\n';
+    }
+    return _lastreceipt;
 }

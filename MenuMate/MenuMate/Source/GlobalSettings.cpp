@@ -383,5 +383,7 @@ TGlobalSettings::TGlobalSettings()
     UseBIRFormatInXZReport = false;
     HideRoundingOnReceipt = false;
 	CashDenominationEntry = false;
+    IsPanasonicIntegrationEnabled = false;
+    PanasonicServerIP = "";
 }
 

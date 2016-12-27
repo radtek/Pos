@@ -471,6 +471,8 @@ public:
     bool UseBIRFormatInXZReport;
     bool HideRoundingOnReceipt;
 	bool CashDenominationEntry;
+    bool IsPanasonicIntegrationEnabled;
+    UnicodeString PanasonicServerIP;
 };
 
 #endif

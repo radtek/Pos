@@ -375,6 +375,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EftPosTipGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTipGLCode, "860");
         TGlobalSettings::Instance().HideRoundingOnReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmHideRoundingOnReceipt, false);
 		TGlobalSettings::Instance().CashDenominationEntry = TManagerVariable::Instance().GetBool(DBTransaction, vmCashDenominationEntry, false);
+        TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsPanasonicIntegrationEnabled, false);
+        TGlobalSettings::Instance().PanasonicServerIP = TManagerVariable::Instance().GetStr(DBTransaction, vmPanasonicServerIP, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

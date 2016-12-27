@@ -203,6 +203,9 @@ enum vmVariables
     vmEnableConsolidatedReport,
     vmExcludeReceipt,
     vmExcludeXReport,
+
+     //Panasonic Integration
+    vmIsPanasonicIntegrationEnabled = 9100, vmPanasonicServerIP
 };
 
 // ---------------------------------------------------------------------------
