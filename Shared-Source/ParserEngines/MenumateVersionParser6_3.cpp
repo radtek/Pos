@@ -852,6 +852,13 @@ void TApplyParser::UpdateMallExportSettingValuesTable6_35(TDBControl* const inDB
             "MALL_KEY INTEGER; ",
             inDBControl);
     }
+    if (!fieldExists( "MALLEXPORT_SALES", "DEVICE_KEY", _dbControl ) )
+    {
+        executeQuery (
+            "ALTER TABLE MALLEXPORT_SALES ADD "
+            "DEVICE_KEY INTEGER; ",
+            inDBControl);
+    }
 }
 //---------------------------------------------------------------------------
 void TApplyParser::Create6_35GeneratorMallExportSettingValues(TDBControl* const inDBControl)

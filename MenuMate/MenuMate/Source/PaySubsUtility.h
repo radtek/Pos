@@ -3,8 +3,6 @@
 #ifndef PaySubsUtilityH
 #define PaySubsUtilityH
 #include "GlobalSettings.h"
-#include "DevicerealControl.h"
-#include "ManagerVariable.h"
 #include "PaymentTransaction.h"
 //---------------------------------------------------------------------------
 class TPaySubsUtility
