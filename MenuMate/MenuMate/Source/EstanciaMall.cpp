@@ -386,7 +386,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
 
         fieldData.OldAccumulatedSalesVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
         fieldData.ControlNumber = 0;
-        fieldData.NoOfSalesTransaction = (double)(fieldData.RefundAmountVatable > 0 ? 1 : 0);
+        fieldData.NoOfSalesTransaction = (double)(fieldData.RefundAmountVatable > 0 ? 0 : 1);
         fieldData.SalesType = 1;
         fieldData.OldAccumulatedSalesNonVatable = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 38);
 
@@ -601,7 +601,7 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
         fieldData.SCDDiscountNonVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.scdDiscount) : estanciaDiscounts.scdDiscount*-1);
         fieldData.RefundAmountNonVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);
         fieldData.ReturnedItemsAmountNonVatable += 0;
-        fieldData.OtherTaxesNonVatable += (double)(order->GetQty() < 0 ? fabs(estanciaTaxes.localTax) : estanciaTaxes.localTax*-1);
+        fieldData.OtherTaxesNonVatable += (double)(order->GetQty() < 0 ? estanciaTaxes.localTax : estanciaTaxes.localTax);
         fieldData.ServiceChargeAmountNonVatable +=  (double)(order->GetQty() < 0 ? estanciaTaxes.serviceCharge : estanciaTaxes.serviceCharge);
         fieldData.AdjustmentDiscountNonVatable  += 0;
         fieldData.VoidAmountNonVatable += (double)(cancelOrder->TabContainerName != "" && order->BillCalcResult.BasePrice == 0 ? order->PriceLevel1 : 0);
@@ -1216,7 +1216,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
         //Query for fetching data for writing into daily sales file.
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
-                                             " CAST( case when DAILYDATA.FIELD_INDEX = 32 then SUM(DAILYDATA.FIELD_VALUE) else SUM(DAILYDATA.FIELD_VALUE)*100  end AS INT) FIELD_VALUE, "
+                                             " CAST( case when (DAILYDATA.FIELD_INDEX = 32 or DAILYDATA.FIELD_INDEX = 34)  then SUM(DAILYDATA.FIELD_VALUE) else SUM(DAILYDATA.FIELD_VALUE)*100  end AS INT) FIELD_VALUE, "
                                              "DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY, DAILYDATA.MM_NAME "
                                       "FROM "
                                             "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
@@ -1256,7 +1256,11 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                              "FROM MALLEXPORT_SALES a "
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                                               "WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = 'T' "
-                                             "AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES where Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)-1) "
+                                             "AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES where Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)-1) ";
+            if(!isMasterTerminal)
+			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
                                              "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA2 "
                                              "INNER JOIN MALLEXPORT_HEADER meh on DAILYDATA2.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
@@ -1276,7 +1280,12 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                              "FROM MALLEXPORT_SALES a "
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                                              "WHERE a.FIELD_INDEX  IN( 4,37 ) AND meh.IS_ACTIVE = 'T' "
-                                             "AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) "
+                                             "AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+            if(!isMasterTerminal)
+			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
                                              "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA2 "
                                              "INNER JOIN MALLEXPORT_HEADER meh on DAILYDATA2.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
@@ -1303,7 +1312,13 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                             " FROM MALLEXPORT_SALES a                                                                    "
                                             " INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID               "
                                             " WHERE a.FIELD_INDEX  IN( 31,64 ) AND meh.IS_ACTIVE = 'T'                                   "
-                                            " AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)                  "
+                                            " AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)                  ";
+
+                if(!isMasterTerminal)
+			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
                                             " GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
                                             " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA                                                      "
                          "GROUP BY 1,2,4,5,6 "
@@ -1317,7 +1332,13 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                 "                                             FROM MALLEXPORT_SALES a "
                 "                                             INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                 "                                             WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = 'T' "
-                "                                             AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES where Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)-1) "
+                "                                             AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES where Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)-1) ";
+
+                if(!isMasterTerminal)
+			        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
                 "                                             GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
                 "                                             ORDER BY A.ARCBILL_KEY ASC )DAILYDATA2  "
                 "                                    GROUP BY 1,2,4,5,6)oldSale "
