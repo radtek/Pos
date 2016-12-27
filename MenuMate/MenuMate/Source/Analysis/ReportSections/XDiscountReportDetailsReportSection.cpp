@@ -294,7 +294,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
         {
            if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
            {
-                dataCalcUtils.PrinterFormatinThreeSections(printout);//SetPrinterFormat(printout);
+                dataCalcUtils.PrinterFormatinThreeSections(printout);
                 printout->PrintFormat->Line->Columns[1]->Text = "Discounts";
                 printout->PrintFormat->Line->Columns[2]->Text = "";
                 printout->PrintFormat->Line->Columns[3]->Text = "";
@@ -304,9 +304,9 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                 printout->PrintFormat->Line->Columns[3]->Text = "-----------------------------------------------------------";
                 //printout->PrintFormat->Line->Columns[1]->();
                 printout->PrintFormat->AddLine();
-                dataCalcUtils.PrinterFormatinThreeSections(printout);//SetPrinterFormat(printout);
+                dataCalcUtils.PrinterFormatinThreeSections(printout);
                 printout->PrintFormat->Line->Columns[1]->Text = "Total";
-                printout->PrintFormat->Line->Columns[2]->Text = IntToStr(total_discount_qty);//FloatToStr(total_discount_qty);
+                printout->PrintFormat->Line->Columns[2]->Text = IntToStr(total_discount_qty);
                 printout->PrintFormat->Line->Columns[3]->Text = FloatToStr(fabs(show_discount_totals));
                 printout->PrintFormat->AddLine();
                 SetSingleColumnPrinterFormat(printout);
@@ -407,24 +407,24 @@ UnicodeString XDiscountReportDetailsReportSection::DiscountQueryForNormalZed(Uni
 UnicodeString XDiscountReportDetailsReportSection::DiscountQueryForConsolidatedZed(UnicodeString DiscountSQL, TPrintout* printout)
 {
 
-DiscountSQL = "select '' NAME, SubQuery1.DESCRIPTION, sum(SubQuery1.DISCOUNTED_VALUE) DISCOUNT, count(*)Qty "
-     "from( "
-     "select ARCORDERDISCOUNTS.DESCRIPTION, "
-            "sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNTED_VALUE, "
-            "ARCBILL.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME "
-     "from ARCORDERDISCOUNTS inner join ARCHIVE on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
-    "inner join ARCBILL on ARCHIVE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
-    " Where ARCBILL.TIME_STAMP >= :startTime and ARCBILL.TIME_STAMP <= :endTime  "
-    " and ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' "
-    " GROUP BY ARCORDERDISCOUNTS.DESCRIPTION, ARCBILL.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME)SubQuery1 ";
+    DiscountSQL =
+    "select '' NAME,SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT, sum(ARCHIVE.QTY) QTY, ARCORDERDISCOUNTS.DESCRIPTION "
+    "from " "ARCBILL LEFT JOIN SECURITY ON ARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
+    "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
+    "LEFT JOIN ARCHIVE ON ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
+    "LEFT JOIN ARCORDERDISCOUNTS ON ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
+    " where ARCBILL.TIME_STAMP >= :startTime and ARCBILL.TIME_STAMP <= :endTime and "
+    "ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' "
+    " AND ARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
+    (SecurityTypes[secDiscountedBy]) + "' " ;
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
-       DiscountSQL +=  " where SubQuery1.TERMINAL_NAME = :TERMINAL_NAME  "
-                       " group by SubQuery1.DESCRIPTION ";
+       DiscountSQL +=  " AND ARCBILL.TERMINAL_NAME = :TERMINAL_NAME  "
+                       " group by NAME, ARCORDERDISCOUNTS.DESCRIPTION;  ";
     }
     else
     {
-       DiscountSQL +=  " group by SubQuery1.DESCRIPTION " ;
+       DiscountSQL +=  " group by NAME, ARCORDERDISCOUNTS.DESCRIPTION; " ;
     }
     if (!_globalSettings->UseBIRFormatInXZReport)
     {

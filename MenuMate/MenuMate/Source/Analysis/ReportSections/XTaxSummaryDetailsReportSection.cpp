@@ -51,6 +51,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName, *_startTime, *_endTime);
         totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName, *_startTime, *_endTime);
         GetDifferentTotalSalesTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName, *_startTime, *_endTime), 0.01, _globalSettings->MidPointRoundsDown);
     }
     else
     {
@@ -64,10 +65,8 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
         totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName);
         GetDifferentTotalSalesTax(*_dbTransaction, deviceName);
+        taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
     }
-
-
-    taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
 
     if(_globalSettings->ReCalculateTaxPostDiscount)
     {

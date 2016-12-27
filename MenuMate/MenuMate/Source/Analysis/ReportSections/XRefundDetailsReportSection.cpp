@@ -184,7 +184,7 @@ creditQuery->SQL->Text = "SELECT "
                                 "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
                                 " WHERE "
                                 + terminalNamePredicate +
-                                "and SECURITY.TIME_STAMP >= :startTime and  SECURITY.TIME_STAMP <= :endTime "
+                                " SECURITY.TIME_STAMP >= :startTime and  SECURITY.TIME_STAMP <= :endTime and "
                                 " ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + " " "AND "
                                 "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secCredit] + "' "
                                  "OR "
