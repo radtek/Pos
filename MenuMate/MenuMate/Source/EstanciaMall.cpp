@@ -569,13 +569,13 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
     if(isVatable)
     {
         fieldData.GrossAmountVatable += (double)(order->GetQty() > 0 ? (order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment()))
-                                            : (order->PriceEach_BillCalc()*(order->GetQty()) + (order->TotalAdjustment()*-1)));
+                                            : 0);
         fieldData.PromoSalesAmountVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.promoDiscount) : estanciaDiscounts.promoDiscount*-1);
         fieldData.PWDDiscountVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.pwdDiscount) : estanciaDiscounts.pwdDiscount*-1);
         fieldData.RefundAmountVatable += (double)(order->GetQty() < 0 ? order->PriceEach_BillCalc() : 0);
         fieldData.ReturnedItemsAmountVatable += 0;
         fieldData.OtherTaxesVatable +=  (double)(order->GetQty() < 0 ? fabs(estanciaTaxes.localTax) : estanciaTaxes.localTax*-1);
-        fieldData.ServiceChargeAmountVatable +=  (double)(order->GetQty() < 0 ? estanciaTaxes.serviceCharge : estanciaTaxes.serviceCharge);
+        fieldData.ServiceChargeAmountVatable +=  (double)(order->GetQty() < 0 ? 0 : estanciaTaxes.serviceCharge);
         fieldData.AdjustmentDiscountVatable += 0;
         fieldData.VoidAmountVatable += (double)(cancelOrder->TabContainerName != "" && order->BillCalcResult.BasePrice == 0 ? order->PriceLevel1 : 0);
         fieldData.DiscountCardsVatable += 0;//todo
@@ -596,13 +596,13 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
     else
     {
         fieldData.GrossAmountNonVatable += (double)(order->GetQty() > 0 ? (order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment()))
-                                            : (order->PriceEach_BillCalc()*(order->GetQty()) + (order->TotalAdjustment()*-1)));
+                                            : 0);
         fieldData.PromoSalesAmountNonVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.promoDiscount) : estanciaDiscounts.promoDiscount*-1);
         fieldData.SCDDiscountNonVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.scdDiscount) : estanciaDiscounts.scdDiscount*-1);
         fieldData.RefundAmountNonVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);
         fieldData.ReturnedItemsAmountNonVatable += 0;
         fieldData.OtherTaxesNonVatable += (double)(order->GetQty() < 0 ? estanciaTaxes.localTax : estanciaTaxes.localTax);
-        fieldData.ServiceChargeAmountNonVatable +=  (double)(order->GetQty() < 0 ? estanciaTaxes.serviceCharge : estanciaTaxes.serviceCharge);
+        fieldData.ServiceChargeAmountNonVatable +=  (double)(order->GetQty() < 0 ? 0 : estanciaTaxes.serviceCharge);
         fieldData.AdjustmentDiscountNonVatable  += 0;
         fieldData.VoidAmountNonVatable += (double)(cancelOrder->TabContainerName != "" && order->BillCalcResult.BasePrice == 0 ? order->PriceLevel1 : 0);
         fieldData.DiscountCardsNonVatable +=  0;//todo
