@@ -21,6 +21,7 @@
 #include "DrinkCommandData.h"
 #include "ThorlinkDataObjects.h"
 #include "CaptureCustomerDetails.h"
+#include "PaySubsUtility.h"
 //#include "ThorlinkClient.h"
 
 class TReqPrintJob;
@@ -203,7 +204,7 @@ protected:
      void PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey);
      void InsertSCDOrPWDCustomerDetails(TIBSQL *IBInternalQuery, long arcbillKey, UnicodeString header, UnicodeString value);
      void UpdateSubscriptionDetails( TPaymentTransaction &PaymentTransaction, double amount );
-     bool ProcessSubscription( TPaymentTransaction &PaymentTransaction );
+     void CheckSubscription(TPaymentTransaction &PaymentTransaction);
 };
 
 #endif

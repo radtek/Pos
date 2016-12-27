@@ -1999,6 +1999,8 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 					}
 
 					DBTransaction.StartTransaction();
+                    if(TGlobalSettings::Instance().UseMemberSubs)
+                       MessageBox("Member Subscription will be turned off with this functionality.", "Information", MB_OK + MB_ICONINFORMATION);
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmLoyaltyMateEnabled,TGlobalSettings::Instance().LoyaltyMateEnabled);
                     TGlobalSettings::Instance().UseMemberSubs = false;
                     TManagerVariable &mv = TManagerVariable::Instance();

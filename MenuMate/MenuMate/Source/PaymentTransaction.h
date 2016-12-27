@@ -16,6 +16,7 @@
 #include "Discount.h"
 #include "Payment.h"
 #include "CaptureCustomerDetails.h"
+#include "PaySubsUtility.h"
 
 
 enum eTransactionType {eTab,eTableSeat,eCash,eAccount,eRoomSale,eCredited,eCreditPurchase,eWeb};

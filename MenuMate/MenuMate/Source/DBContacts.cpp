@@ -8,6 +8,7 @@
 #include "enumPoints.h"
 #include "DBGroups.h"
 #include "GlobalSettings.h"
+#include "PaySubsUtility.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -416,12 +417,18 @@ int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int
 	  if (inContactKey != 0)
 	  {
 		 IBInternalQuery->Close();
-		 IBInternalQuery->SQL->Text = " SELECT CONTACTS_KEY FROM CONTACTS WHERE CONTACTS_KEY = :CONTACTS_KEY AND CONTACT_TYPE = :CONTACT_TYPE ";
+		 IBInternalQuery->SQL->Text = " SELECT c.CONTACTS_KEY,c.POINTS_RULES,m.POINTS_RULES_SUBS FROM CONTACTS c LEFT JOIN MEMBERSHIP_SUBS_DETAILS m ON c.CONTACTS_KEY = m.CONTACTS_KEY"
+         " WHERE c.CONTACTS_KEY = :CONTACTS_KEY AND c.CONTACT_TYPE = :CONTACT_TYPE ";
 		 IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
 		 IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = inContactType;
 		 IBInternalQuery->ExecQuery();
 		 if (inContactKey == IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger)
 		 {
+            if(TGlobalSettings::Instance().UseMemberSubs)
+            {
+                int rulesSubs = IBInternalQuery->FieldByName("POINTS_RULES_SUBS")->AsInteger;
+                TPointsRulesSetUtils().ExpandSubs(rulesSubs,Info.Points.PointsRulesSubs);
+            }
 			RetVal = inContactKey;
 			CreateContact = false;
 		 }
@@ -493,8 +500,7 @@ void TDBContacts::UpdateDetailstoMemberSubs(Database::TDBTransaction &DBTransact
         "UPDATE MEMBERSHIP_SUBS_DETAILS SET"
         " POINTS_RULES_SUBS = :POINTS_RULES_SUBS, SUBS_PAID = :SUBS_PAID"
         " WHERE CONTACTS_KEY = :CONTACTS_KEY";
-      if((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && TGlobalSettings::Instance().LoyaltyMateEnabled) ||
-          TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate)
+      if(!TPaySubsUtility::IsLocalLoyalty())
       {
           int pointRules = 0;
           if(!Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
@@ -541,7 +547,7 @@ void TDBContacts::InsertDetailstoMemberSubs(Database::TDBTransaction &DBTransact
       {
           IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "";
           IBInternalQuery->ParamByName("SUBS_PAID" )->AsString  = "F";
-          if(Info.Points.PointsRulesSubs.Contains(eprFinancial))
+          if(Info.Points.PointsRulesSubs.Contains(eprFinancial) && Info.SiteID != TGlobalSettings::Instance().SiteID)
           {
               Info.Points.PointsRulesSubs >> eprFinancial;
               if(!Info.Points.PointsRules.Contains(eprNoPointsPurchases))
@@ -559,8 +565,7 @@ void TDBContacts::InsertDetailstoMemberSubs(Database::TDBTransaction &DBTransact
           IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "AUTO";
           IBInternalQuery->ParamByName("SUBS_PAID" )->AsString  = "T";
       }
-      if((TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && TGlobalSettings::Instance().LoyaltyMateEnabled) ||
-          TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate)
+      if(!TPaySubsUtility::IsLocalLoyalty())
       {
          IBInternalQuery->ParamByName("ISLOCAL_MEMBER" )->AsString  = "F";
       }
@@ -592,7 +597,7 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 	  if (Info.ProxStr != "")
 	  {
       	 IBInternalQuery->Close();
-		 IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE PROX_CARD = :PROX_CARD AND CONTACTS_KEY != :CONTACTS_KEY";
+		 IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS  WHERE PROX_CARD = :PROX_CARD AND CONTACTS_KEY != :CONTACTS_KEY";
 		 IBInternalQuery->ParamByName("PROX_CARD")->AsString = Info.ProxStr;
 		 IBInternalQuery->ParamByName("CONTACTS_KEY")->AsString = inContactKey;
 		 IBInternalQuery->ExecQuery();

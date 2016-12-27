@@ -182,15 +182,29 @@ void TfrmEditCustomer::UpdatePointsRuleOldMember()
    else
 	  tcbeprAllowedNegitive->Latched = false;
 
-   if(Info.Points.PointsRulesSubs.Contains(eprFinancial))
-      tcbeprFinancial->Latched = true;
-   else
-      tcbeprFinancial->Latched = false;
 
-   if(Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
-      tcbeprAllowDiscounts->Latched = true;
+   if(!TGlobalSettings::Instance().UseMemberSubs)
+   {
+      tcbeprFinancial->Visible = false;
+   }
    else
-      tcbeprAllowDiscounts->Latched = false;
+   {
+       if(Info.Points.PointsRulesSubs.Contains(eprFinancial))
+          tcbeprFinancial->Latched = true;
+       else
+          tcbeprFinancial->Latched = false;
+   }
+   if(!TPaySubsUtility::IsLocalLoyalty())
+   {
+      tcbeprAllowDiscounts->Visible = false;
+   }
+   else
+   {
+     if(Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        tcbeprAllowDiscounts->Latched = true;
+     else
+       tcbeprAllowDiscounts->Latched = false;
+   }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::WMDisplayChange(TWMDisplayChange& Message)
@@ -393,7 +407,7 @@ void TfrmEditCustomer::RedrawButtons(TObject * Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tbtnPalmProfileMouseClick(TObject *Sender)
 {
-   if(!Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+   if((TPaySubsUtility::IsLocalLoyalty()) && !Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
    {
       MessageBox("Discounts cannot be configured for the Member. Please allow Discounts for the Member first.", "Information", MB_OK + MB_ICONINFORMATION);
       return;
@@ -484,50 +498,92 @@ void __fastcall TfrmEditCustomer::tgDiscountsMouseClick(TObject *Sender, TMouseB
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tcbeprNoPointsRedemptionClick(TObject *Sender)
 {
-   if (tcbeprNoPointsRedemption->Latched)
-	  Info.Points.PointsRules << eprNoPointsRedemption;
-   else
-	  Info.Points.PointsRules >> eprNoPointsRedemption;
+    if(TGlobalSettings::Instance().UseMemberSubs && !Info.Points.PointsRulesSubs.Contains(eprFinancial))
+    {
+       tcbeprNoPointsRedemption->Latched = Info.Points.PointsRules.Contains(eprNoPointsRedemption);
+    }
+    else
+    {
+       if (tcbeprNoPointsRedemption->Latched)
+          Info.Points.PointsRules << eprNoPointsRedemption;
+       else
+          Info.Points.PointsRules >> eprNoPointsRedemption;
+    }
 }
 // ---------------------------------------------------------------------------
  void __fastcall TfrmEditCustomer::tcbeprNoPointsPurchasesClick(TObject *Sender)
 {
-   if (tcbeprNoPointsPurchases->Latched)
-	  Info.Points.PointsRules << eprNoPointsPurchases;
-   else
-	  Info.Points.PointsRules >> eprNoPointsPurchases;
+    if(TGlobalSettings::Instance().UseMemberSubs && !Info.Points.PointsRulesSubs.Contains(eprFinancial))
+    {
+       tcbeprNoPointsPurchases->Latched = Info.Points.PointsRules.Contains(eprNoPointsPurchases);
+    }
+    else
+    {
+       if (tcbeprNoPointsPurchases->Latched)
+          Info.Points.PointsRules << eprNoPointsPurchases;
+       else
+          Info.Points.PointsRules >> eprNoPointsPurchases;
+    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tcbeprEarnsPointsWhileRedeemingPointsClick(TObject *Sender)
 {
-   if (tcbeprEarnsPointsWhileRedeemingPoints->Latched)
-	  Info.Points.PointsRules << eprEarnsPointsWhileRedeemingPoints;
-   else
-	  Info.Points.PointsRules >> eprEarnsPointsWhileRedeemingPoints;
+    if(TGlobalSettings::Instance().UseMemberSubs && !Info.Points.PointsRulesSubs.Contains(eprFinancial))
+    {
+       tcbeprEarnsPointsWhileRedeemingPoints->Latched = Info.Points.PointsRules.Contains(eprEarnsPointsWhileRedeemingPoints);
+    }
+    else
+    {
+       if (tcbeprEarnsPointsWhileRedeemingPoints->Latched)
+          Info.Points.PointsRules << eprEarnsPointsWhileRedeemingPoints;
+       else
+          Info.Points.PointsRules >> eprEarnsPointsWhileRedeemingPoints;
+    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tcbeprOnlyEarnsPointsWhileRedeemingPointsClick(TObject *Sender)
 {
-   if (tcbeprOnlyEarnsPointsWhileRedeemingPoints->Latched)
-	  Info.Points.PointsRules << eprOnlyEarnsPointsWhileRedeemingPoints;
-   else
-	  Info.Points.PointsRules >> eprOnlyEarnsPointsWhileRedeemingPoints;
+    if(TGlobalSettings::Instance().UseMemberSubs && !Info.Points.PointsRulesSubs.Contains(eprFinancial))
+    {
+       tcbeprOnlyEarnsPointsWhileRedeemingPoints->Latched = Info.Points.PointsRules.Contains(eprOnlyEarnsPointsWhileRedeemingPoints);
+    }
+    else
+    {
+       if (tcbeprOnlyEarnsPointsWhileRedeemingPoints->Latched)
+          Info.Points.PointsRules << eprOnlyEarnsPointsWhileRedeemingPoints;
+       else
+          Info.Points.PointsRules >> eprOnlyEarnsPointsWhileRedeemingPoints;
+    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tcbeprNeverEarnsPointsClick(TObject *Sender)
 {
-   if (tcbeprNeverEarnsPoints->Latched)
-	  Info.Points.PointsRules << eprNeverEarnsPoints;
-   else
-	  Info.Points.PointsRules >> eprNeverEarnsPoints;
+    if(TGlobalSettings::Instance().UseMemberSubs && !Info.Points.PointsRulesSubs.Contains(eprFinancial))
+    {
+       tcbeprNeverEarnsPoints->Latched = Info.Points.PointsRules.Contains(eprNeverEarnsPoints);
+    }
+    else
+    {
+       if (tcbeprNeverEarnsPoints->Latched)
+          Info.Points.PointsRules << eprNeverEarnsPoints;
+       else
+          Info.Points.PointsRules >> eprNeverEarnsPoints;
+    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tcbeprAllowedNegitiveClick(TObject *Sender)
 {
-   if (tcbeprAllowedNegitive->Latched)
-	  Info.Points.PointsRules << eprAllowedNegitive;
-   else
-	  Info.Points.PointsRules >> eprAllowedNegitive;
+    if(TGlobalSettings::Instance().UseMemberSubs && !Info.Points.PointsRulesSubs.Contains(eprFinancial))
+    {
+       tcbeprAllowedNegitive->Latched = Info.Points.PointsRules.Contains(eprAllowedNegitive);
+    }
+    else
+    {
+       if (tcbeprAllowedNegitive->Latched)
+          Info.Points.PointsRules << eprAllowedNegitive;
+       else
+          Info.Points.PointsRules >> eprAllowedNegitive;
+    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tbtnPointsMouseClick(TObject *Sender)

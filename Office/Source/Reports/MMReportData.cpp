@@ -16445,18 +16445,18 @@ void TdmMMReportData::SetupSubsReport(TDateTime StartTime, TDateTime EndTime)
              "CONTACTS.NAME FIRST_NAME, "
              "CONTACTS.LAST_NAME, "
              //"MEMBERSHIP_SUBS_DETAILS.SUBS_PAID as FINANCIAL, "
-             " CASE WHEN MEMBERSHIP_SUBS_DETAILS.SUBS_PAID = 'T' THEN 'YES' END As FINANCIAL,"
+             " CASE WHEN MEMBERSHIP_SUBS_DETAILS.SUBS_PAID = 'T' THEN 'YES' ELSE 'NO' END As FINANCIAL,"
              "MEMBERSHIP_SUBS_DETAILS.SUBS_PAID_DATE DATE_SUBS_PAID, "
              "MEMBERSHIP_SUBS_DETAILS.SUBS_EXPIRY_DATE DATE_SUBS_EXPIRY, "
              "MEMBERSHIP_SUBS_DETAILS.SUBS_PAID_RECEIPT_NO RECEIPT_NO "
             "FROM MEMBERSHIP_SUBS_DETAILS "
             "LEFT JOIN CONTACTS ON  MEMBERSHIP_SUBS_DETAILS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
-            "WHERE  SUBS_PAID_DATE >= :StartTime AND SUBS_PAID_DATE < :EndTime AND SUBS_PAID = :SUBS_PAID AND ISLOCAL_MEMBER = :ISLOCAL_MEMBER "
+            "WHERE  SUBS_PAID_DATE >= :StartTime AND SUBS_PAID_DATE < :EndTime AND ISLOCAL_MEMBER = :ISLOCAL_MEMBER "
             " ORDER BY LAST_NAME";
 
     qrSubsReport->ParamByName("StartTime")->AsDateTime	= StartTime;
     qrSubsReport->ParamByName("EndTime")->AsDateTime	= EndTime;
-    qrSubsReport->ParamByName("SUBS_PAID")->AsString	= "T";
+    //qrSubsReport->ParamByName("SUBS_PAID")->AsString	= "T";
     qrSubsReport->ParamByName("ISLOCAL_MEMBER")->AsString	= "T";
 
 }

@@ -1856,7 +1856,7 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
         TGlobalSettings::Instance().IsDiscountSelected = true;
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
-        if((Membership.Member.ContactKey != 0) && !Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        if((Membership.Member.ContactKey != 0) && TPaySubsUtility::IsLocalLoyalty() && !Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
         {
             MessageBox("Discounts are disabled for this Member.", "INFORMATION", MB_OK + MB_ICONINFORMATION);
             return;

@@ -863,92 +863,101 @@
 				<DependentOn>TierLevelEditor.h</DependentOn>
 				<BuildOrder>635</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DiscountGroup.cpp">
-				<DependentOn>DiscountGroup.h</DependentOn>
-				<BuildOrder>519</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Chefmate\ChefMateSettings.cpp">
-				<Form>frmChefmateSettings</Form>
-				<DependentOn>Chefmate\ChefMateSettings.h</DependentOn>
-				<BuildOrder>396</BuildOrder>
+			<CppCompile Include="ChitNumberGui.cpp">
+				<Form>frmChitNumberGui</Form>
+				<DependentOn>ChitNumberGui.h</DependentOn>
+				<BuildOrder>402</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallExportRegenerateReport.cpp">
 				<Form>frmMallExportRegenerateReport</Form>
 				<DependentOn>MallExportRegenerateReport.h</DependentOn>
 				<BuildOrder>666</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="DiscountGroup.cpp">
+				<DependentOn>DiscountGroup.h</DependentOn>
+				<BuildOrder>519</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportSMManager.cpp">
+				<DependentOn>MallExportSMManager.h</DependentOn>
+				<BuildOrder>518</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PaymentTypeGroupsGUI.cpp">
+				<DependentOn>PaymentTypeGroupsGUI.h</DependentOn>
+				<BuildOrder>503</BuildOrder>
+			</CppCompile>
 			<LibFiles Include="SmartCards\casmcard.lib">
 				<BuildOrder>482</BuildOrder>
 				<BuildOrder>20</BuildOrder>
 			</LibFiles>
-			<CppCompile Include="MallExportSMManager.cpp">
-				<DependentOn>MallExportSMManager.h</DependentOn>
-				<BuildOrder>518</BuildOrder>
+			<CppCompile Include="Chefmate\ChefMateSettings.cpp">
+				<Form>frmChefmateSettings</Form>
+				<DependentOn>Chefmate\ChefMateSettings.h</DependentOn>
+				<BuildOrder>396</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DealManager.cpp">
+				<DependentOn>DealManager.h</DependentOn>
+				<BuildOrder>488</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportDefines.cpp">
+				<DependentOn>MallExportDefines.h</DependentOn>
+				<BuildOrder>657</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Customer Display\Server\IOrderItemsController.cpp">
+				<DependentOn>Customer Display\Server\IOrderItemsController.h</DependentOn>
+				<BuildOrder>549</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Version.cpp">
 				<BuildOrder>155</BuildOrder>
 				<DependentOn>Version.h</DependentOn>
 				<BuildOrder>126</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportDefines.cpp">
-				<DependentOn>MallExportDefines.h</DependentOn>
-				<BuildOrder>657</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportPowerPlantMall.cpp">
-				<DependentOn>MallExportPowerPlantMall.h</DependentOn>
-				<BuildOrder>554</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DealManager.cpp">
-				<DependentOn>DealManager.h</DependentOn>
-				<BuildOrder>488</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="ManagerWebDispatch.cpp">
 				<BuildOrder>84</BuildOrder>
 				<DependentOn>ManagerWebDispatch.h</DependentOn>
 				<BuildOrder>533</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Customer Display\Server\IOrderItemsController.cpp">
-				<DependentOn>Customer Display\Server\IOrderItemsController.h</DependentOn>
-				<BuildOrder>549</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="PaymentTypeGroupsGUI.cpp">
-				<DependentOn>PaymentTypeGroupsGUI.h</DependentOn>
-				<BuildOrder>503</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XRefundDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XRefundDetailsReportSection.h</DependentOn>
-				<BuildOrder>637</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationInterface.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationInterface.h</DependentOn>
-				<BuildOrder>679</BuildOrder>
+			<CppCompile Include="NewBookRoom.cpp">
+				<DependentOn>NewBookRoom.h</DependentOn>
+				<BuildOrder>668</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="PnMOrder.cpp">
 				<DependentOn>PnMOrder.h</DependentOn>
 				<BuildOrder>275</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportTransactionUpdate.cpp">
-				<DependentOn>MallExportTransactionUpdate.h</DependentOn>
-				<BuildOrder>659</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XRefundDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XRefundDetailsReportSection.h</DependentOn>
+				<BuildOrder>637</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallExportSalesTypeManager.cpp">
 				<DependentOn>MallExportSalesTypeManager.h</DependentOn>
 				<BuildOrder>692</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="product-count-down\size_definition_factory.cpp">
-				<BuildOrder>461</BuildOrder>
+			<CppCompile Include="MallExportMegaworldManager.cpp">
+				<DependentOn>MallExportMegaworldManager.h</DependentOn>
+				<BuildOrder>690</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportTransactionUpdate.cpp">
+				<DependentOn>MallExportTransactionUpdate.h</DependentOn>
+				<BuildOrder>659</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationInterface.cpp">
+				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationInterface.h</DependentOn>
+				<BuildOrder>679</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportSalesTypeDBDriver.cpp">
+				<DependentOn>MallExportSalesTypeDBDriver.h</DependentOn>
+				<BuildOrder>695</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\SaveMenu.cpp">
 				<DependentOn>..\..\..\Shared-Source\SaveMenu.h</DependentOn>
 				<BuildOrder>423</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="NewBookRoom.cpp">
-				<DependentOn>NewBookRoom.h</DependentOn>
-				<BuildOrder>668</BuildOrder>
+			<CppCompile Include="MallExportAyalaManager.cpp">
+				<DependentOn>MallExportAyalaManager.h</DependentOn>
+				<BuildOrder>530</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportSalesTypeDBDriver.cpp">
-				<DependentOn>MallExportSalesTypeDBDriver.h</DependentOn>
-				<BuildOrder>695</BuildOrder>
+			<CppCompile Include="product-count-down\size_definition_factory.cpp">
+				<BuildOrder>461</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="SyndCodeGui.cpp">
 				<BuildOrder>68</BuildOrder>
@@ -956,98 +965,98 @@
 				<DependentOn>SyndCodeGui.h</DependentOn>
 				<BuildOrder>599</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportAyalaManager.cpp">
-				<DependentOn>MallExportAyalaManager.h</DependentOn>
-				<BuildOrder>530</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DiscountTypesDriverInterface.cpp">
-				<DependentOn>DiscountTypesDriverInterface.h</DependentOn>
-				<BuildOrder>527</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ContainerOrders.cpp">
-				<BuildOrder>312</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationSendTabDetailsThread.cpp">
 				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationSendTabDetailsThread.h</DependentOn>
 				<BuildOrder>676</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ManagerClippIntegrationHelper.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ManagerClippIntegrationHelper.h</DependentOn>
-				<BuildOrder>671</BuildOrder>
+			<CppCompile Include="DiscountTypesDriverInterface.cpp">
+				<DependentOn>DiscountTypesDriverInterface.h</DependentOn>
+				<BuildOrder>527</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="DelayedPaymentTabs.cpp">
 				<Form>frmDelayedPaymentTabs</Form>
 				<DependentOn>DelayedPaymentTabs.h</DependentOn>
 				<BuildOrder>661</BuildOrder>
 			</CppCompile>
-			<None Include="EnumChit.h">
-				<BuildOrder>410</BuildOrder>
-			</None>
-			<CppCompile Include="LoyaltyMateUtilities.cpp">
-				<DependentOn>LoyaltyMateUtilities.h</DependentOn>
-				<BuildOrder>493</BuildOrder>
+			<CppCompile Include="DBTierLevel.cpp">
+				<DependentOn>DBTierLevel.h</DependentOn>
+				<BuildOrder>634</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DBClippTab.cpp">
-				<DependentOn>DBClippTab.h</DependentOn>
-				<BuildOrder>681</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ManagerClippIntegrationHelper.cpp">
+				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ManagerClippIntegrationHelper.h</DependentOn>
+				<BuildOrder>671</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ContainerOrders.cpp">
+				<BuildOrder>312</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallExportSalesType.cpp">
 				<DependentOn>MallExportSalesType.h</DependentOn>
 				<BuildOrder>693</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="XeroInvoiceBuilder.cpp">
-				<DependentOn>XeroInvoiceBuilder.h</DependentOn>
-				<BuildOrder>364</BuildOrder>
+			<CppCompile Include="LoyaltyMateUtilities.cpp">
+				<DependentOn>LoyaltyMateUtilities.h</DependentOn>
+				<BuildOrder>493</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="product-count-down\managed_item_definition.cpp">
 				<BuildOrder>451</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DBTierLevel.cpp">
-				<DependentOn>DBTierLevel.h</DependentOn>
-				<BuildOrder>634</BuildOrder>
+			<None Include="EnumChit.h">
+				<BuildOrder>410</BuildOrder>
+			</None>
+			<CppCompile Include="XeroInvoiceBuilder.cpp">
+				<DependentOn>XeroInvoiceBuilder.h</DependentOn>
+				<BuildOrder>364</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MMTransactionRecovery.cpp">
-				<DependentOn>MMTransactionRecovery.h</DependentOn>
-				<BuildOrder>621</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWSDL.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWSDL.h</DependentOn>
-				<BuildOrder>672</BuildOrder>
+			<CppCompile Include="MallExportHourlyUpdate.cpp">
+				<DependentOn>MallExportHourlyUpdate.h</DependentOn>
+				<BuildOrder>557</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\MMTimer.cpp">
 				<DependentOn>..\..\..\Shared-Source\MMTimer.h</DependentOn>
 				<BuildOrder>654</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="product-count-down\string_type.cpp">
-				<BuildOrder>425</BuildOrder>
+			<CppCompile Include="MMTransactionRecovery.cpp">
+				<DependentOn>MMTransactionRecovery.h</DependentOn>
+				<BuildOrder>621</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallExportOutputFileDriver.cpp">
 				<DependentOn>MallExportOutputFileDriver.h</DependentOn>
 				<BuildOrder>540</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportPowerPlantMall.cpp">
+				<DependentOn>MallExportPowerPlantMall.h</DependentOn>
+				<BuildOrder>554</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="product-count-down\string_type.cpp">
+				<BuildOrder>425</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWSDL.cpp">
+				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWSDL.h</DependentOn>
+				<BuildOrder>672</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DiscountGroupsManager.cpp">
+				<DependentOn>DiscountGroupsManager.h</DependentOn>
+				<BuildOrder>524</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Chefmate\SaveXMLOrder.cpp">
+				<DependentOn>Chefmate\SaveXMLOrder.h</DependentOn>
+				<BuildOrder>398</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ChitOptionsPrompt.cpp">
+				<BuildOrder>406</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Comms\Comms.cpp">
 				<BuildOrder>201</BuildOrder>
 				<DependentOn>Comms\Comms.h</DependentOn>
 				<BuildOrder>200</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Chefmate\SaveXMLOrder.cpp">
-				<DependentOn>Chefmate\SaveXMLOrder.h</DependentOn>
-				<BuildOrder>398</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportHourlyUpdate.cpp">
-				<DependentOn>MallExportHourlyUpdate.h</DependentOn>
-				<BuildOrder>557</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DiscountGroupsManager.cpp">
-				<DependentOn>DiscountGroupsManager.h</DependentOn>
-				<BuildOrder>524</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="SCDPWDChecker.cpp">
 				<DependentOn>SCDPWDChecker.h</DependentOn>
 				<BuildOrder>546</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ChitOptionsPrompt.cpp">
-				<BuildOrder>406</BuildOrder>
+			<CppCompile Include="ChitNumberController.cpp">
+				<DependentOn>ChitNumberController.h</DependentOn>
+				<BuildOrder>401</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\SelectMember.cpp">
 				<BuildOrder>36</BuildOrder>
@@ -1055,101 +1064,89 @@
 				<DependentOn>POS\SelectMember.h</DependentOn>
 				<BuildOrder>341</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationReadMessageThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationReadMessageThread.h</DependentOn>
-				<BuildOrder>719</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ChitNumberController.cpp">
-				<DependentOn>ChitNumberController.h</DependentOn>
-				<BuildOrder>401</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Chefmate\ChefmateClientManager.cpp">
-				<DependentOn>Chefmate\ChefmateClientManager.h</DependentOn>
-				<BuildOrder>643</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="EftposANZ.cpp">
 				<BuildOrder>263</BuildOrder>
 				<DependentOn>EftposANZ.h</DependentOn>
 				<BuildOrder>180</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Chefmate\TcpStreamSenderSettings.cpp">
-				<DependentOn>Chefmate\TcpStreamSenderSettings.h</DependentOn>
-				<BuildOrder>411</BuildOrder>
+			<CppCompile Include="CSV Export\CSVExportClient.cpp">
+				<DependentOn>CSV Export\CSVExportClient.h</DependentOn>
+				<BuildOrder>733</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DBHappyHour.CPP">
-				<DependentOn>DBHappyHour.h</DependentOn>
-				<BuildOrder>688</BuildOrder>
+			<CppCompile Include="Chefmate\ChefmateClientManager.cpp">
+				<DependentOn>Chefmate\ChefmateClientManager.h</DependentOn>
+				<BuildOrder>643</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationCloseTabThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationCloseTabThread.h</DependentOn>
-				<BuildOrder>680</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationReadMessageThread.cpp">
+				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationReadMessageThread.h</DependentOn>
+				<BuildOrder>719</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="PocketVoucherInterface.cpp">
 				<DependentOn>PocketVoucherInterface.h</DependentOn>
 				<BuildOrder>711</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportShangrilaManager.cpp">
-				<DependentOn>MallExportShangrilaManager.h</DependentOn>
-				<BuildOrder>697</BuildOrder>
+			<CppCompile Include="DBHappyHour.CPP">
+				<DependentOn>DBHappyHour.h</DependentOn>
+				<BuildOrder>688</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\MenuManagerItemSettings.cpp">
 				<Form>frmItemSettings</Form>
 				<DependentOn>POS\MenuManagerItemSettings.h</DependentOn>
 				<BuildOrder>463</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="CSV Export\CSVExportClient.cpp">
-				<DependentOn>CSV Export\CSVExportClient.h</DependentOn>
-				<BuildOrder>733</BuildOrder>
+			<CppCompile Include="Chefmate\TcpStreamSenderSettings.cpp">
+				<DependentOn>Chefmate\TcpStreamSenderSettings.h</DependentOn>
+				<BuildOrder>411</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportSalesTypeAssignment.cpp">
-				<DependentOn>MallExportSalesTypeAssignment.h</DependentOn>
-				<BuildOrder>694</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="CSV Export\CSVExportReceiver.cpp">
-				<DependentOn>CSV Export\CSVExportReceiver.h</DependentOn>
-				<BuildOrder>734</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="CSV Export\ExportCSV.cpp">
-				<DependentOn>CSV Export\ExportCSV.h</DependentOn>
-				<BuildOrder>736</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="CSV Export\CSVExportTcpStreamSender.cpp">
-				<DependentOn>CSV Export\CSVExportTcpStreamSender.h</DependentOn>
-				<BuildOrder>735</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportSalesTypeDriverInterface.cpp">
-				<DependentOn>MallExportSalesTypeDriverInterface.h</DependentOn>
-				<BuildOrder>696</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XReportDateTimeReportSection.cpp">
-				<BuildOrder>722</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="product-count-down\spinlock.cpp">
-				<BuildOrder>462</BuildOrder>
+			<CppCompile Include="MallExportShangrilaManager.cpp">
+				<DependentOn>MallExportShangrilaManager.h</DependentOn>
+				<BuildOrder>697</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="EftposSmartLink.cpp">
 				<DependentOn>EftposSmartLink.h</DependentOn>
 				<BuildOrder>683</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="CSV Export\ExportCSV.cpp">
+				<DependentOn>CSV Export\ExportCSV.h</DependentOn>
+				<BuildOrder>736</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportSalesTypeAssignment.cpp">
+				<DependentOn>MallExportSalesTypeAssignment.h</DependentOn>
+				<BuildOrder>694</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportSalesTypeDriverInterface.cpp">
+				<DependentOn>MallExportSalesTypeDriverInterface.h</DependentOn>
+				<BuildOrder>696</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PaySubsUtility.cpp">
+				<DependentOn>PaySubsUtility.h</DependentOn>
+				<BuildOrder>737</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="CSV Export\CSVExportTcpStreamSender.cpp">
+				<DependentOn>CSV Export\CSVExportTcpStreamSender.h</DependentOn>
+				<BuildOrder>735</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="CSV Export\CSVExportReceiver.cpp">
+				<DependentOn>CSV Export\CSVExportReceiver.h</DependentOn>
+				<BuildOrder>734</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="ManagerCloudSync.cpp">
 				<DependentOn>ManagerCloudSync.h</DependentOn>
 				<BuildOrder>717</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ReceiptUtility.cpp">
-				<DependentOn>ReceiptUtility.h</DependentOn>
-				<BuildOrder>719</BuildOrder>
+			<CppCompile Include="product-count-down\spinlock.cpp">
+				<BuildOrder>462</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ItemSizeCategory.cpp">
 				<DependentOn>ItemSizeCategory.h</DependentOn>
 				<BuildOrder>266</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWriteMessageThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWriteMessageThread.h</DependentOn>
-				<BuildOrder>673</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XReportDateTimeReportSection.cpp">
+				<BuildOrder>722</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MembershipEbetTCP.cpp">
-				<DependentOn>MembershipEbetTCP.h</DependentOn>
-				<BuildOrder>256</BuildOrder>
+			<CppCompile Include="ReceiptUtility.cpp">
+				<DependentOn>ReceiptUtility.h</DependentOn>
+				<BuildOrder>719</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Maintenance\NewUser.cpp">
 				<BuildOrder>146</BuildOrder>
@@ -1157,204 +1154,216 @@
 				<DependentOn>Maintenance\NewUser.h</DependentOn>
 				<BuildOrder>132</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationUploadDetailsThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationUploadDetailsThread.h</DependentOn>
-				<BuildOrder>674</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWriteMessageThread.cpp">
+				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationWriteMessageThread.h</DependentOn>
+				<BuildOrder>673</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="SelectSizesAsList.cpp">
 				<Form>frmSelectSizes</Form>
 				<DependentOn>SelectSizesAsList.h</DependentOn>
 				<BuildOrder>697</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationRequestTabPaymentThread.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationRequestTabPaymentThread.h</DependentOn>
-				<BuildOrder>677</BuildOrder>
+			<CppCompile Include="ImportMenu.cpp">
+				<DependentOn>ImportMenu.h</DependentOn>
+				<BuildOrder>422</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="SalesForceWSDL.cpp">
-				<DependentOn>SalesForceWSDL.h</DependentOn>
-				<BuildOrder>713</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationUploadDetailsThread.cpp">
+				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationUploadDetailsThread.h</DependentOn>
+				<BuildOrder>674</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportMegaworldManager.cpp">
-				<DependentOn>MallExportMegaworldManager.h</DependentOn>
-				<BuildOrder>690</BuildOrder>
+			<CppCompile Include="MembershipEbetTCP.cpp">
+				<DependentOn>MembershipEbetTCP.h</DependentOn>
+				<BuildOrder>256</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MMPaymentSystem.cpp">
 				<DependentOn>MMPaymentSystem.h</DependentOn>
 				<BuildOrder>623</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="XMLOrdermm.cpp">
-				<DependentOn>XMLOrdermm.h</DependentOn>
-				<BuildOrder>352</BuildOrder>
+			<CppCompile Include="SalesForceWSDL.cpp">
+				<DependentOn>SalesForceWSDL.h</DependentOn>
+				<BuildOrder>713</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallExportRobinsonMall.cpp">
 				<DependentOn>MallExportRobinsonMall.h</DependentOn>
 				<BuildOrder>541</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ImportMenu.cpp">
-				<DependentOn>ImportMenu.h</DependentOn>
-				<BuildOrder>422</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationRequestTabPaymentThread.cpp">
+				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationRequestTabPaymentThread.h</DependentOn>
+				<BuildOrder>677</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DeviceInfo.cpp">
-				<DependentOn>DeviceInfo.h</DependentOn>
-				<BuildOrder>243</BuildOrder>
+			<CppCompile Include="XMLOrdermm.cpp">
+				<DependentOn>XMLOrdermm.h</DependentOn>
+				<BuildOrder>352</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationThreadBase.cpp">
-				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationThreadBase.h</DependentOn>
-				<BuildOrder>675</BuildOrder>
+			<CppCompile Include="EftposSyncro.cpp">
+				<DependentOn>EftposSyncro.h</DependentOn>
+				<BuildOrder>682</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallExportShangrilaMall.cpp">
 				<DependentOn>MallExportShangrilaMall.h</DependentOn>
 				<BuildOrder>698</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ProxyMate\Server\SharedMemory\SharedMemory.cpp">
-				<DependentOn>ProxyMate\Server\SharedMemory\SharedMemory.h</DependentOn>
-				<BuildOrder>382</BuildOrder>
+			<CppCompile Include="DeviceInfo.cpp">
+				<DependentOn>DeviceInfo.h</DependentOn>
+				<BuildOrder>243</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Timer.cpp">
 				<Form>frmClockTime</Form>
 				<DependentOn>Timer.h</DependentOn>
 				<BuildOrder>358</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="SmartLinkWSDL.cpp">
-				<DependentOn>SmartLinkWSDL.h</DependentOn>
-				<BuildOrder>684</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationCloseTabThread.cpp">
+				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationCloseTabThread.h</DependentOn>
+				<BuildOrder>680</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="CrcTable.c">
-				<BuildOrder>26</BuildOrder>
-				<BuildOrder>141</BuildOrder>
+			<CppCompile Include="ProxyMate\Server\SharedMemory\SharedMemory.cpp">
+				<DependentOn>ProxyMate\Server\SharedMemory\SharedMemory.h</DependentOn>
+				<BuildOrder>382</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="EftposSyncro.cpp">
-				<DependentOn>EftposSyncro.h</DependentOn>
-				<BuildOrder>682</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\ClippIntegration\ClippIntegrationThreadBase.cpp">
+				<DependentOn>..\..\..\Shared-Source\ClippIntegration\ClippIntegrationThreadBase.h</DependentOn>
+				<BuildOrder>675</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Payment.cpp">
 				<DependentOn>Payment.h</DependentOn>
 				<BuildOrder>292</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ManagerHappyHour.cpp">
-				<DependentOn>ManagerHappyHour.h</DependentOn>
-				<BuildOrder>689</BuildOrder>
+			<CppCompile Include="CrcTable.c">
+				<BuildOrder>26</BuildOrder>
+				<BuildOrder>141</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ListMenu.cpp">
 				<DependentOn>ListMenu.h</DependentOn>
 				<BuildOrder>273</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="product-count-down\item_manager.cpp">
-				<BuildOrder>450</BuildOrder>
+			<CppCompile Include="SmartLinkWSDL.cpp">
+				<DependentOn>SmartLinkWSDL.h</DependentOn>
+				<BuildOrder>684</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Maintenance\TaxMaintenance.cpp">
-				<Form>frmTaxMaintenance</Form>
-				<DependentOn>Maintenance\TaxMaintenance.h</DependentOn>
-				<BuildOrder>501</BuildOrder>
+			<CppCompile Include="ManagerHappyHour.cpp">
+				<DependentOn>ManagerHappyHour.h</DependentOn>
+				<BuildOrder>689</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
 				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
 				<BuildOrder>471</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="product-count-down\item_manager.cpp">
+				<BuildOrder>450</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="product-count-down\i_size_definition_factory.cpp">
+				<BuildOrder>442</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PrinterPhysical.cpp">
+				<DependentOn>PrinterPhysical.h</DependentOn>
+				<BuildOrder>251</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallExportResendReport.cpp">
 				<Form>frmMallExportResendReport</Form>
 				<DependentOn>MallExportResendReport.h</DependentOn>
 				<BuildOrder>556</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="product-count-down\i_size_definition_factory.cpp">
-				<BuildOrder>442</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="BillCalculator\MMBillCalculator.cpp">
-				<DependentOn>BillCalculator\MMBillCalculator.h</DependentOn>
-				<BuildOrder>517</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MMessageFromFileManager.cpp">
-				<DependentOn>MMessageFromFileManager.h</DependentOn>
-				<BuildOrder>353</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DiscountGroupsDBDriver.cpp">
-				<DependentOn>DiscountGroupsDBDriver.h</DependentOn>
-				<BuildOrder>521</BuildOrder>
+			<CppCompile Include="Maintenance\TaxMaintenance.cpp">
+				<Form>frmTaxMaintenance</Form>
+				<DependentOn>Maintenance\TaxMaintenance.h</DependentOn>
+				<BuildOrder>501</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Commission.cpp">
 				<DependentOn>Commission.h</DependentOn>
 				<BuildOrder>356</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ManagerGeneralLedger.cpp">
-				<DependentOn>ManagerGeneralLedger.h</DependentOn>
-				<BuildOrder>474</BuildOrder>
+			<CppCompile Include="MMessageFromFileManager.cpp">
+				<DependentOn>MMessageFromFileManager.h</DependentOn>
+				<BuildOrder>353</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Customer Display\Server\MMCustomerDisplayAdapter.cpp">
 				<DependentOn>Customer Display\Server\MMCustomerDisplayAdapter.h</DependentOn>
 				<BuildOrder>550</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="PrinterPhysical.cpp">
-				<DependentOn>PrinterPhysical.h</DependentOn>
-				<BuildOrder>251</BuildOrder>
+			<CppCompile Include="BillCalculator\MMBillCalculator.cpp">
+				<DependentOn>BillCalculator\MMBillCalculator.h</DependentOn>
+				<BuildOrder>517</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DeviceWeb.cpp">
-				<DependentOn>DeviceWeb.h</DependentOn>
-				<BuildOrder>329</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportUpdate.cpp">
-				<DependentOn>MallExportUpdate.h</DependentOn>
-				<BuildOrder>544</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ListRecipeContainer.cpp">
-				<DependentOn>ListRecipeContainer.h</DependentOn>
-				<BuildOrder>307</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ItemRedirector.cpp">
-				<DependentOn>ItemRedirector.h</DependentOn>
-				<BuildOrder>316</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MenuMate.cpp">
-				<BuildOrder>2</BuildOrder>
-				<BuildOrder>149</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="PrintInfo.cpp">
-				<BuildOrder>50</BuildOrder>
-				<DependentOn>PrintInfo.h</DependentOn>
-				<BuildOrder>383</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportAyalaMall.cpp">
-				<DependentOn>MallExportAyalaMall.h</DependentOn>
-				<BuildOrder>529</BuildOrder>
+			<CppCompile Include="ManagerGeneralLedger.cpp">
+				<DependentOn>ManagerGeneralLedger.h</DependentOn>
+				<BuildOrder>474</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Chefmate\ISaveOrder.cpp">
 				<DependentOn>Chefmate\ISaveOrder.h</DependentOn>
 				<BuildOrder>397</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="ListRecipeContainer.cpp">
+				<DependentOn>ListRecipeContainer.h</DependentOn>
+				<BuildOrder>307</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DeviceWeb.cpp">
+				<DependentOn>DeviceWeb.h</DependentOn>
+				<BuildOrder>329</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MenuMate.cpp">
+				<BuildOrder>2</BuildOrder>
+				<BuildOrder>149</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DealUtilities.cpp">
+				<DependentOn>DealUtilities.h</DependentOn>
+				<BuildOrder>490</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ItemRedirector.cpp">
+				<DependentOn>ItemRedirector.h</DependentOn>
+				<BuildOrder>316</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportUpdate.cpp">
+				<DependentOn>MallExportUpdate.h</DependentOn>
+				<BuildOrder>544</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="SmartCards\SmartCardAPI.cpp">
 				<DependentOn>SmartCards\SmartCardAPI.h</DependentOn>
 				<BuildOrder>402</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Office\Source\TaxProfile\TaxProfile.cpp">
-				<DependentOn>..\..\..\Office\Source\TaxProfile\TaxProfile.h</DependentOn>
-				<BuildOrder>514</BuildOrder>
+			<CppCompile Include="MallExportAyalaMall.cpp">
+				<DependentOn>MallExportAyalaMall.h</DependentOn>
+				<BuildOrder>529</BuildOrder>
 			</CppCompile>
 			<ResFiles Include="brush.res">
 				<BuildOrder>8</BuildOrder>
 				<BuildOrder>147</BuildOrder>
 			</ResFiles>
-			<CppCompile Include="ItemSize.cpp">
-				<DependentOn>ItemSize.h</DependentOn>
-				<BuildOrder>323</BuildOrder>
+			<CppCompile Include="PrintInfo.cpp">
+				<BuildOrder>50</BuildOrder>
+				<DependentOn>PrintInfo.h</DependentOn>
+				<BuildOrder>383</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="IMManager.cpp">
-				<BuildOrder>584</BuildOrder>
-				<DependentOn>IMManager.h</DependentOn>
-				<BuildOrder>101</BuildOrder>
+			<CppCompile Include="..\..\..\Office\Source\TaxProfile\TaxProfile.cpp">
+				<DependentOn>..\..\..\Office\Source\TaxProfile\TaxProfile.h</DependentOn>
+				<BuildOrder>514</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="SelectSaveOption.cpp">
 				<Form>frmSelectSaveOption</Form>
 				<DependentOn>SelectSaveOption.h</DependentOn>
 				<BuildOrder>665</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportPowerPlantManager.cpp">
-				<DependentOn>MallExportPowerPlantManager.h</DependentOn>
-				<BuildOrder>555</BuildOrder>
+			<CppCompile Include="ItemSize.cpp">
+				<DependentOn>ItemSize.h</DependentOn>
+				<BuildOrder>323</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="product-count-down\i_signalling_item_definition_factory.cpp">
 				<BuildOrder>436</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="VerticalSelectUtilities.cpp">
-				<BuildOrder>404</BuildOrder>
+			<None Include="enumContacts.h">
+				<BuildOrder>322</BuildOrder>
+			</None>
+			<CppCompile Include="MallExportPowerPlantManager.cpp">
+				<DependentOn>MallExportPowerPlantManager.h</DependentOn>
+				<BuildOrder>555</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="IMManager.cpp">
+				<BuildOrder>584</BuildOrder>
+				<DependentOn>IMManager.h</DependentOn>
+				<BuildOrder>101</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinyxmlparser.cpp">
+				<BuildOrder>95</BuildOrder>
+				<BuildOrder>518</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\Message.cpp">
 				<BuildOrder>122</BuildOrder>
@@ -1362,115 +1371,101 @@
 				<DependentOn>POS\Message.h</DependentOn>
 				<BuildOrder>115</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ChitNumberGui.cpp">
-				<Form>frmChitNumberGui</Form>
-				<DependentOn>ChitNumberGui.h</DependentOn>
-				<BuildOrder>402</BuildOrder>
+			<CppCompile Include="ListOptionContainer.cpp">
+				<BuildOrder>280</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinyxmlparser.cpp">
-				<BuildOrder>95</BuildOrder>
-				<BuildOrder>518</BuildOrder>
+			<CppCompile Include="VerticalSelectUtilities.cpp">
+				<BuildOrder>404</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ItemMinorComplete.cpp">
 				<DependentOn>ItemMinorComplete.h</DependentOn>
 				<BuildOrder>276</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ListOptionContainer.cpp">
-				<BuildOrder>280</BuildOrder>
-			</CppCompile>
-			<None Include="enumContacts.h">
-				<BuildOrder>322</BuildOrder>
-			</None>
-			<CppCompile Include="MallExportRobinsonManager.cpp">
-				<DependentOn>MallExportRobinsonManager.h</DependentOn>
-				<BuildOrder>542</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="XeroServiceManager.cpp">
-				<DependentOn>XeroServiceManager.h</DependentOn>
-				<BuildOrder>365</BuildOrder>
+			<CppCompile Include="DBGroups.cpp">
+				<DependentOn>DBGroups.h</DependentOn>
+				<BuildOrder>323</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="DiscountGroupsGUI.cpp">
 				<DependentOn>DiscountGroupsGUI.h</DependentOn>
 				<BuildOrder>523</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ManagerMembership.cpp">
-				<BuildOrder>491</BuildOrder>
-				<DependentOn>ManagerMembership.h</DependentOn>
-				<BuildOrder>14</BuildOrder>
+			<CppCompile Include="MallExportRobinsonManager.cpp">
+				<DependentOn>MallExportRobinsonManager.h</DependentOn>
+				<BuildOrder>542</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="CaptNamePhone.cpp">
 				<Form>frmCaptNamePhone</Form>
 				<DependentOn>CaptNamePhone.h</DependentOn>
 				<BuildOrder>631</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="product-count-down\i_signalling_item_definition.cpp">
-				<BuildOrder>435</BuildOrder>
+			<CppCompile Include="DiscountGroupsDBDriver.cpp">
+				<DependentOn>DiscountGroupsDBDriver.h</DependentOn>
+				<BuildOrder>521</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ManagerMembership.cpp">
+				<BuildOrder>491</BuildOrder>
+				<DependentOn>ManagerMembership.h</DependentOn>
+				<BuildOrder>14</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="XeroServiceManager.cpp">
+				<DependentOn>XeroServiceManager.h</DependentOn>
+				<BuildOrder>365</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DiscountTypesManager.cpp">
+				<DependentOn>DiscountTypesManager.h</DependentOn>
+				<BuildOrder>528</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\SelectRMSRoom.cpp">
 				<Form>frmRMSRoom</Form>
 				<DependentOn>POS\SelectRMSRoom.h</DependentOn>
 				<BuildOrder>363</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DBGroups.cpp">
-				<DependentOn>DBGroups.h</DependentOn>
-				<BuildOrder>323</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DiscountTypesManager.cpp">
-				<DependentOn>DiscountTypesManager.h</DependentOn>
-				<BuildOrder>528</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportManager.cpp">
-				<DependentOn>MallExportManager.h</DependentOn>
-				<BuildOrder>538</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="PoleDisplay.cpp">
 				<BuildOrder>560</BuildOrder>
 				<DependentOn>PoleDisplay.h</DependentOn>
 				<BuildOrder>109</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportIMallManager.cpp">
-				<DependentOn>MallExportIMallManager.h</DependentOn>
-				<BuildOrder>535</BuildOrder>
+			<CppCompile Include="product-count-down\i_signalling_item_definition.cpp">
+				<BuildOrder>435</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Item.cpp">
-				<DependentOn>Item.h</DependentOn>
-				<BuildOrder>269</BuildOrder>
+			<CppCompile Include="MallExportManager.cpp">
+				<DependentOn>MallExportManager.h</DependentOn>
+				<BuildOrder>538</BuildOrder>
 			</CppCompile>
 			<LibFiles Include="..\..\..\libs\CadmusCronos.lib">
 				<IgnorePath>true</IgnorePath>
 				<BuildOrder>223</BuildOrder>
 			</LibFiles>
-			<CppCompile Include="Invoice.cpp">
-				<BuildOrder>203</BuildOrder>
-				<DependentOn>Invoice.h</DependentOn>
-				<BuildOrder>200</BuildOrder>
+			<CppCompile Include="MallExportIMallManager.cpp">
+				<DependentOn>MallExportIMallManager.h</DependentOn>
+				<BuildOrder>535</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\SelectItem.cpp">
 				<Form>frmSelectItem</Form>
 				<DependentOn>POS\SelectItem.h</DependentOn>
 				<BuildOrder>551</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DiscountTypesDBDriver.cpp">
-				<DependentOn>DiscountTypesDBDriver.h</DependentOn>
-				<BuildOrder>526</BuildOrder>
+			<CppCompile Include="Customer Display\Server\MMCustomerDisplayThread.cpp">
+				<DependentOn>Customer Display\Server\MMCustomerDisplayThread.h</DependentOn>
+				<BuildOrder>548</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateInterface.cpp">
-				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateInterface.h</DependentOn>
-				<BuildOrder>472</BuildOrder>
+			<CppCompile Include="Invoice.cpp">
+				<BuildOrder>203</BuildOrder>
+				<DependentOn>Invoice.h</DependentOn>
+				<BuildOrder>200</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="PointsRulesSet.cpp">
-				<BuildOrder>623</BuildOrder>
-				<DependentOn>PointsRulesSet.h</DependentOn>
-				<BuildOrder>60</BuildOrder>
+			<CppCompile Include="Item.cpp">
+				<DependentOn>Item.h</DependentOn>
+				<BuildOrder>269</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="SmartCards\SmartCardVer0API.cpp">
 				<BuildOrder>611</BuildOrder>
 				<DependentOn>SmartCards\SmartCardVer0API.h</DependentOn>
 				<BuildOrder>58</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ip_utilities.cpp">
-				<DependentOn>ip_utilities.h</DependentOn>
-				<BuildOrder>414</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateInterface.cpp">
+				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateInterface.h</DependentOn>
+				<BuildOrder>472</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\SplitPayment.cpp">
 				<BuildOrder>98</BuildOrder>
@@ -1478,27 +1473,26 @@
 				<DependentOn>POS\SplitPayment.h</DependentOn>
 				<BuildOrder>123</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Customer Display\Server\MMCustomerDisplayThread.cpp">
-				<DependentOn>Customer Display\Server\MMCustomerDisplayThread.h</DependentOn>
-				<BuildOrder>548</BuildOrder>
+			<CppCompile Include="DiscountTypesDBDriver.cpp">
+				<DependentOn>DiscountTypesDBDriver.h</DependentOn>
+				<BuildOrder>526</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="StaffHours.cpp">
-				<DependentOn>StaffHours.h</DependentOn>
-				<BuildOrder>355</BuildOrder>
+			<CppCompile Include="ip_utilities.cpp">
+				<DependentOn>ip_utilities.h</DependentOn>
+				<BuildOrder>414</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportMegaworldMall.cpp">
-				<DependentOn>MallExportMegaworldMall.h</DependentOn>
-				<BuildOrder>691</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinyxmlerror.cpp">
+				<BuildOrder>86</BuildOrder>
+				<BuildOrder>527</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS_XMLBase.cpp">
 				<BuildOrder>581</BuildOrder>
 				<DependentOn>POS_XMLBase.h</DependentOn>
 				<BuildOrder>102</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="PhoenixHotelSystem.cpp">
-				<BuildOrder>38</BuildOrder>
-				<DependentOn>PhoenixHotelSystem.h</DependentOn>
-				<BuildOrder>353</BuildOrder>
+			<CppCompile Include="StaffHours.cpp">
+				<DependentOn>StaffHours.h</DependentOn>
+				<BuildOrder>355</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MMdata.cpp">
 				<BuildOrder>17</BuildOrder>
@@ -1506,58 +1500,71 @@
 				<DependentOn>MMdata.h</DependentOn>
 				<BuildOrder>150</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Discounts.cpp">
-				<Form>frmDiscounts</Form>
-				<DependentOn>Discounts.h</DependentOn>
-				<BuildOrder>369</BuildOrder>
+			<CppCompile Include="DBClippTab.cpp">
+				<DependentOn>DBClippTab.h</DependentOn>
+				<BuildOrder>681</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PhoenixHotelSystem.cpp">
+				<BuildOrder>38</BuildOrder>
+				<DependentOn>PhoenixHotelSystem.h</DependentOn>
+				<BuildOrder>353</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportMegaworldMall.cpp">
+				<DependentOn>MallExportMegaworldMall.h</DependentOn>
+				<BuildOrder>691</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ItemCompleteSub.cpp">
+				<DependentOn>ItemCompleteSub.h</DependentOn>
+				<BuildOrder>277</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="DBTables.cpp">
 				<DependentOn>DBTables.h</DependentOn>
 				<BuildOrder>297</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinyxmlerror.cpp">
-				<BuildOrder>86</BuildOrder>
-				<BuildOrder>527</BuildOrder>
+			<CppCompile Include="Customer Display\Server\MMCustomerDisplayManager.cpp">
+				<DependentOn>Customer Display\Server\MMCustomerDisplayManager.h</DependentOn>
+				<BuildOrder>551</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ItemCompleteSub.cpp">
-				<DependentOn>ItemCompleteSub.h</DependentOn>
-				<BuildOrder>277</BuildOrder>
+			<CppCompile Include="Discounts.cpp">
+				<Form>frmDiscounts</Form>
+				<DependentOn>Discounts.h</DependentOn>
+				<BuildOrder>369</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\Components BCB6\Eftpos\DPSEFTXLib_OCX.cpp">
 				<BuildOrder>93</BuildOrder>
 				<DependentOn>..\..\Components BCB6\Eftpos\DPSEFTXLib_OCX.h</DependentOn>
 				<BuildOrder>506</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Customer Display\Server\MMCustomerDisplayManager.cpp">
-				<DependentOn>Customer Display\Server\MMCustomerDisplayManager.h</DependentOn>
-				<BuildOrder>551</BuildOrder>
+			<CppCompile Include="ScaleControler.cpp">
+				<BuildOrder>548</BuildOrder>
+				<DependentOn>ScaleControler.h</DependentOn>
+				<BuildOrder>107</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Managers\Database\Generator\GeneratorManager.cpp">
 				<DependentOn>..\..\..\Shared-Source\Managers\Database\Generator\GeneratorManager.h</DependentOn>
 				<BuildOrder>500</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MallExportUpdateAdaptor.cpp">
+				<DependentOn>MallExportUpdateAdaptor.h</DependentOn>
+				<BuildOrder>545</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AutoZReportingSetup.cpp">
+				<Form>frmAutoZReportingSetup</Form>
+				<DependentOn>AutoZReportingSetup.h</DependentOn>
+				<BuildOrder>344</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ItemSide.cpp">
+				<DependentOn>ItemSide.h</DependentOn>
+				<BuildOrder>270</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Weight.cpp">
 				<BuildOrder>557</BuildOrder>
 				<DependentOn>Weight.h</DependentOn>
 				<BuildOrder>110</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ScaleControler.cpp">
-				<BuildOrder>548</BuildOrder>
-				<DependentOn>ScaleControler.h</DependentOn>
-				<BuildOrder>107</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ItemSide.cpp">
-				<DependentOn>ItemSide.h</DependentOn>
-				<BuildOrder>270</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportUpdateAdaptor.cpp">
-				<DependentOn>MallExportUpdateAdaptor.h</DependentOn>
-				<BuildOrder>545</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Tables_ChitNumbers.cpp">
-				<Form>frmTables_ChitNumbers</Form>
-				<DependentOn>Tables_ChitNumbers.h</DependentOn>
-				<BuildOrder>388</BuildOrder>
+			<CppCompile Include="MallExportInputFileDriver.cpp">
+				<DependentOn>MallExportInputFileDriver.h</DependentOn>
+				<BuildOrder>536</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="PSectionInstructionEdit.cpp">
 				<BuildOrder>41</BuildOrder>
@@ -1565,59 +1572,19 @@
 				<DependentOn>PSectionInstructionEdit.h</DependentOn>
 				<BuildOrder>377</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DealUtilities.cpp">
-				<DependentOn>DealUtilities.h</DependentOn>
-				<BuildOrder>490</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportInputFileDriver.cpp">
-				<DependentOn>MallExportInputFileDriver.h</DependentOn>
-				<BuildOrder>536</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="IDealManager.cpp">
-				<DependentOn>IDealManager.h</DependentOn>
-				<BuildOrder>476</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="EftposIceLink.cpp">
 				<BuildOrder>6</BuildOrder>
 				<DependentOn>EftposIceLink.h</DependentOn>
 				<BuildOrder>440</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="AutoZReportingSetup.cpp">
-				<Form>frmAutoZReportingSetup</Form>
-				<DependentOn>AutoZReportingSetup.h</DependentOn>
-				<BuildOrder>344</BuildOrder>
+			<CppCompile Include="Tables_ChitNumbers.cpp">
+				<Form>frmTables_ChitNumbers</Form>
+				<DependentOn>Tables_ChitNumbers.h</DependentOn>
+				<BuildOrder>388</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="SmartCardVer4API.cpp">
-				<DependentOn>SmartCardVer4API.h</DependentOn>
-				<BuildOrder>372</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ManagerDiscount.cpp">
-				<DependentOn>ManagerDiscount.h</DependentOn>
-				<BuildOrder>352</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportFactory.cpp">
-				<DependentOn>MallExportFactory.h</DependentOn>
-				<BuildOrder>532</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="NetMessageKillProc.cpp">
-				<BuildOrder>467</BuildOrder>
-				<DependentOn>NetMessageKillProc.h</DependentOn>
-				<BuildOrder>22</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GUIScale.cpp">
-				<DependentOn>GUIScale.h</DependentOn>
-				<BuildOrder>328</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Maintenance\GeneralMaintenance.cpp">
-				<BuildOrder>138</BuildOrder>
-				<Form>frmGeneralMaintenance</Form>
-				<DependentOn>Maintenance\GeneralMaintenance.h</DependentOn>
-				<BuildOrder>137</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="SendForm.cpp">
-				<Form>frmSendForm</Form>
-				<DependentOn>SendForm.h</DependentOn>
-				<BuildOrder>387</BuildOrder>
+			<CppCompile Include="IDealManager.cpp">
+				<DependentOn>IDealManager.h</DependentOn>
+				<BuildOrder>476</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\ForcedSides.cpp">
 				<BuildOrder>272</BuildOrder>
@@ -1625,25 +1592,56 @@
 				<DependentOn>POS\ForcedSides.h</DependentOn>
 				<BuildOrder>174</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="MallExportFactory.cpp">
+				<DependentOn>MallExportFactory.h</DependentOn>
+				<BuildOrder>532</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="SmartCardVer4API.cpp">
+				<DependentOn>SmartCardVer4API.h</DependentOn>
+				<BuildOrder>372</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="GUIScale.cpp">
+				<DependentOn>GUIScale.h</DependentOn>
+				<BuildOrder>328</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PointsRulesSet.cpp">
+				<BuildOrder>623</BuildOrder>
+				<DependentOn>PointsRulesSet.h</DependentOn>
+				<BuildOrder>60</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="NetMessageKillProc.cpp">
+				<BuildOrder>467</BuildOrder>
+				<DependentOn>NetMessageKillProc.h</DependentOn>
+				<BuildOrder>22</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ManagerDiscount.cpp">
+				<DependentOn>ManagerDiscount.h</DependentOn>
+				<BuildOrder>352</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="LoyaltyMateOperationDialogBox.cpp">
 				<Form>frmLoyaltyMateOperationDialogBox</Form>
 				<DependentOn>LoyaltyMateOperationDialogBox.h</DependentOn>
 				<BuildOrder>495</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XCurrentDateDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XCurrentDateDetailsReportSection.h</DependentOn>
-				<BuildOrder>591</BuildOrder>
+			<CppCompile Include="SendForm.cpp">
+				<Form>frmSendForm</Form>
+				<DependentOn>SendForm.h</DependentOn>
+				<BuildOrder>387</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Modules.cpp">
 				<BuildOrder>458</BuildOrder>
 				<DependentOn>Modules.h</DependentOn>
 				<BuildOrder>3</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="POS\Transfer.cpp">
-				<BuildOrder>68</BuildOrder>
-				<Form>frmTransfer</Form>
-				<DependentOn>POS\Transfer.h</DependentOn>
-				<BuildOrder>155</BuildOrder>
+			<CppCompile Include="Maintenance\GeneralMaintenance.cpp">
+				<BuildOrder>138</BuildOrder>
+				<Form>frmGeneralMaintenance</Form>
+				<DependentOn>Maintenance\GeneralMaintenance.h</DependentOn>
+				<BuildOrder>137</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\XCurrentDateDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XCurrentDateDetailsReportSection.h</DependentOn>
+				<BuildOrder>591</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MMBarcodeReader.cpp">
 				<BuildOrder>278</BuildOrder>
@@ -2471,88 +2469,58 @@
 				<DependentOn>DBTab.h</DependentOn>
 				<BuildOrder>297</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="POS\TCPStreamPrepare.cpp">
+				<DependentOn>POS\TCPStreamPrepare.h</DependentOn>
+				<BuildOrder>685</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\Reports\EndOfDayReport.cpp">
+				<DependentOn>Analysis\Reports\EndOfDayReport.h</DependentOn>
+				<BuildOrder>573</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="ListManager.cpp">
 				<BuildOrder>63</BuildOrder>
 				<Form>frmListManager</Form>
 				<DependentOn>ListManager.h</DependentOn>
 				<BuildOrder>596</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="XMLReceiptmm.cpp">
-				<DependentOn>XMLReceiptmm.h</DependentOn>
-				<BuildOrder>350</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\Reports\EndOfDayReport.cpp">
-				<DependentOn>Analysis\Reports\EndOfDayReport.h</DependentOn>
-				<BuildOrder>573</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Chefmate\ChefmateClient.cpp">
-				<DependentOn>Chefmate\ChefmateClient.h</DependentOn>
-				<BuildOrder>421</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="Casino Security Screen\TransactionAuditScreen.cpp">
 				<Form>frmTransactionAuditScreen</Form>
 				<DependentOn>Casino Security Screen\TransactionAuditScreen.h</DependentOn>
 				<BuildOrder>646</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DealLevel.cpp">
-				<DependentOn>DealLevel.h</DependentOn>
-				<BuildOrder>484</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XComplimentarySalesTotalsDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XComplimentarySalesTotalsDetailsReportSection.h</DependentOn>
-				<BuildOrder>590</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="SeatOrders.cpp">
-				<DependentOn>SeatOrders.h</DependentOn>
-				<BuildOrder>314</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\Misc\ReportManager.cpp">
-				<DependentOn>Analysis\Misc\ReportManager.h</DependentOn>
-				<BuildOrder>566</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="PaymentType.cpp">
-				<DependentOn>PaymentType.h</DependentOn>
-				<BuildOrder>509</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="SetButtonFontSize.cpp">
-				<Form>frmSetButtonFontSize</Form>
-				<DependentOn>SetButtonFontSize.h</DependentOn>
-				<BuildOrder>343</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\SimpleTCP\Stream.cpp">
 				<BuildOrder>208</BuildOrder>
 				<DependentOn>..\..\SimpleTCP\Stream.h</DependentOn>
 				<BuildOrder>179</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.cpp">
-				<Form>frmTouchKeyboard</Form>
-				<DependentOn>..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.h</DependentOn>
-				<BuildOrder>223</BuildOrder>
+			<CppCompile Include="Chefmate\ChefmateClient.cpp">
+				<DependentOn>Chefmate\ChefmateClient.h</DependentOn>
+				<BuildOrder>421</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="SendEmail.cpp">
-				<DependentOn>SendEmail.h</DependentOn>
-				<BuildOrder>660</BuildOrder>
+			<CppCompile Include="XMLReceiptmm.cpp">
+				<DependentOn>XMLReceiptmm.h</DependentOn>
+				<BuildOrder>350</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XMasterBlindBalancesDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XMasterBlindBalancesDetailsReportSection.h</DependentOn>
-				<BuildOrder>594</BuildOrder>
+			<CppCompile Include="Analysis\Misc\ReportManager.cpp">
+				<DependentOn>Analysis\Misc\ReportManager.h</DependentOn>
+				<BuildOrder>566</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XAccountBalancesSeatedDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XAccountBalancesSeatedDetailsReportSection.h</DependentOn>
-				<BuildOrder>580</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XComplimentarySalesTotalsDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XComplimentarySalesTotalsDetailsReportSection.h</DependentOn>
+				<BuildOrder>590</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="db_item_size.cpp">
-				<DependentOn>db_item_size.h</DependentOn>
-				<BuildOrder>467</BuildOrder>
+			<CppCompile Include="SetButtonFontSize.cpp">
+				<Form>frmSetButtonFontSize</Form>
+				<DependentOn>SetButtonFontSize.h</DependentOn>
+				<BuildOrder>343</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSectionDisplayTraits\BaseReportSectionDisplayTraits.cpp">
-				<DependentOn>Analysis\ReportSectionDisplayTraits\BaseReportSectionDisplayTraits.h</DependentOn>
-				<BuildOrder>576</BuildOrder>
+			<CppCompile Include="DealLevel.cpp">
+				<DependentOn>DealLevel.h</DependentOn>
+				<BuildOrder>484</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="NewPaymentType.cpp">
-				<Form>frmNewPaymentType</Form>
-				<DependentOn>NewPaymentType.h</DependentOn>
-				<BuildOrder>125</BuildOrder>
+			<CppCompile Include="PaymentType.cpp">
+				<DependentOn>PaymentType.h</DependentOn>
+				<BuildOrder>509</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="EftPosDialogs.cpp">
 				<BuildOrder>236</BuildOrder>
@@ -2560,154 +2528,191 @@
 				<DependentOn>EftPosDialogs.h</DependentOn>
 				<BuildOrder>211</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\XMasterBlindBalancesDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XMasterBlindBalancesDetailsReportSection.h</DependentOn>
+				<BuildOrder>594</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.cpp">
+				<Form>frmTouchKeyboard</Form>
+				<DependentOn>..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.h</DependentOn>
+				<BuildOrder>223</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="db_item_size.cpp">
+				<DependentOn>db_item_size.h</DependentOn>
+				<BuildOrder>467</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportBuilders\XReportBuilder.cpp">
+				<DependentOn>Analysis\ReportBuilders\XReportBuilder.h</DependentOn>
+				<BuildOrder>570</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\XAccountBalancesSeatedDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XAccountBalancesSeatedDetailsReportSection.h</DependentOn>
+				<BuildOrder>580</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="SendEmail.cpp">
+				<DependentOn>SendEmail.h</DependentOn>
+				<BuildOrder>660</BuildOrder>
+			</CppCompile>
 			<LibFiles Include="..\..\..\libs\PC_Eftpos_Ingenico_CSDEFT.lib">
 				<IgnorePath>true</IgnorePath>
 				<BuildOrder>224</BuildOrder>
 			</LibFiles>
+			<CppCompile Include="NewPaymentType.cpp">
+				<Form>frmNewPaymentType</Form>
+				<DependentOn>NewPaymentType.h</DependentOn>
+				<BuildOrder>125</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\Misc\ReportUtilities.cpp">
+				<DependentOn>Analysis\Misc\ReportUtilities.h</DependentOn>
+				<BuildOrder>564</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSectionDisplayTraits\BaseReportSectionDisplayTraits.cpp">
+				<DependentOn>Analysis\ReportSectionDisplayTraits\BaseReportSectionDisplayTraits.h</DependentOn>
+				<BuildOrder>576</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="POS\GroupGUI.cpp">
 				<Form>frmGroupGUI</Form>
 				<DependentOn>POS\GroupGUI.h</DependentOn>
 				<BuildOrder>333</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\Misc\ReportUtilities.cpp">
-				<DependentOn>Analysis\Misc\ReportUtilities.h</DependentOn>
-				<BuildOrder>564</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XBlindBalancesDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XBlindBalancesDetailsReportSection.h</DependentOn>
+				<BuildOrder>585</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="IBLogs\LogsDB.cpp">
 				<BuildOrder>320</BuildOrder>
 				<DependentOn>IBLogs\LogsDB.h</DependentOn>
 				<BuildOrder>183</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MessageManager.cpp">
-				<BuildOrder>248</BuildOrder>
-				<DependentOn>MessageManager.h</DependentOn>
-				<BuildOrder>213</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XBlindBalancesDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XBlindBalancesDetailsReportSection.h</DependentOn>
-				<BuildOrder>585</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DocketFormat.cpp">
-				<DependentOn>DocketFormat.h</DependentOn>
-				<BuildOrder>494</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Touch Utils\MMTouchNumpad.cpp">
 				<Form>frmTouchNumpad</Form>
 				<DependentOn>..\..\..\Shared-Source\Touch Utils\MMTouchNumpad.h</DependentOn>
 				<BuildOrder>221</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XBreakdownCategoriesDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XBreakdownCategoriesDetailsReportSection.h</DependentOn>
-				<BuildOrder>586</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MembershipEBetGUI.cpp">
-				<DependentOn>MembershipEBetGUI.h</DependentOn>
-				<BuildOrder>255</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="WeightStreamKenkoKK300.cpp">
-				<DependentOn>WeightStreamKenkoKK300.h</DependentOn>
-				<BuildOrder>553</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DBSaleTimes.cpp">
-				<DependentOn>DBSaleTimes.h</DependentOn>
-				<BuildOrder>320</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MagicMemoriesSfProgressMonitor.cpp">
-				<BuildOrder>359</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XServiceChargeSummaryDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XServiceChargeSummaryDetailsReportSection.h</DependentOn>
-				<BuildOrder>599</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="IntaMateTransport.cpp">
 				<BuildOrder>83</BuildOrder>
 				<DependentOn>IntaMateTransport.h</DependentOn>
 				<BuildOrder>587</BuildOrder>
 			</CppCompile>
-			<ResourceCompile Include="VersionRes.rc">
-				<BuildOrder>281</BuildOrder>
-				<BuildOrder>168</BuildOrder>
-			</ResourceCompile>
-			<CppCompile Include="Analysis\ReportSectionStrategies\SessionDateWithoutTimeStrategy.cpp">
-				<DependentOn>Analysis\ReportSectionStrategies\SessionDateWithoutTimeStrategy.h</DependentOn>
-				<BuildOrder>620</BuildOrder>
+			<CppCompile Include="DocketFormat.cpp">
+				<DependentOn>DocketFormat.h</DependentOn>
+				<BuildOrder>494</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MessageManager.cpp">
+				<BuildOrder>248</BuildOrder>
+				<DependentOn>MessageManager.h</DependentOn>
+				<BuildOrder>213</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DBSaleTimes.cpp">
+				<DependentOn>DBSaleTimes.h</DependentOn>
+				<BuildOrder>320</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MembershipEBetGUI.cpp">
+				<DependentOn>MembershipEBetGUI.h</DependentOn>
+				<BuildOrder>255</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\XServiceChargeSummaryDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XServiceChargeSummaryDetailsReportSection.h</DependentOn>
+				<BuildOrder>599</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\XBreakdownCategoriesDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XBreakdownCategoriesDetailsReportSection.h</DependentOn>
+				<BuildOrder>586</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MagicMemoriesSfProgressMonitor.cpp">
+				<BuildOrder>359</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DBOrder.cpp">
+				<DependentOn>DBOrder.h</DependentOn>
+				<BuildOrder>298</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="SmartCards\SmartCardVer3API.cpp">
 				<BuildOrder>66</BuildOrder>
 				<DependentOn>SmartCards\SmartCardVer3API.h</DependentOn>
 				<BuildOrder>605</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\Reports\XReport.cpp">
-				<DependentOn>Analysis\Reports\XReport.h</DependentOn>
-				<BuildOrder>574</BuildOrder>
-			</CppCompile>
+			<ResourceCompile Include="VersionRes.rc">
+				<BuildOrder>281</BuildOrder>
+				<BuildOrder>168</BuildOrder>
+			</ResourceCompile>
 			<CppCompile Include="IDealLevel.cpp">
 				<DependentOn>IDealLevel.h</DependentOn>
 				<BuildOrder>482</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XPatronAverageDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XPatronAverageDetailsReportSection.h</DependentOn>
-				<BuildOrder>595</BuildOrder>
+			<CppCompile Include="SeatOrders.cpp">
+				<DependentOn>SeatOrders.h</DependentOn>
+				<BuildOrder>314</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XAccumulatedTotalDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XAccumulatedTotalDetailsReportSection.h</DependentOn>
-				<BuildOrder>583</BuildOrder>
+			<CppCompile Include="Analysis\Reports\XReport.cpp">
+				<DependentOn>Analysis\Reports\XReport.h</DependentOn>
+				<BuildOrder>574</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DBOrder.cpp">
-				<DependentOn>DBOrder.h</DependentOn>
-				<BuildOrder>298</BuildOrder>
+			<CppCompile Include="Analysis\ReportSectionStrategies\SessionDateWithoutTimeStrategy.cpp">
+				<DependentOn>Analysis\ReportSectionStrategies\SessionDateWithoutTimeStrategy.h</DependentOn>
+				<BuildOrder>620</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="PSectionInstruction.cpp">
 				<DependentOn>PSectionInstruction.h</DependentOn>
 				<BuildOrder>306</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\BaseReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\BaseReportSection.h</DependentOn>
-				<BuildOrder>579</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XAccumulatedTotalDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XAccumulatedTotalDetailsReportSection.h</DependentOn>
+				<BuildOrder>583</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="RoomData.cpp">
 				<DependentOn>RoomData.h</DependentOn>
 				<BuildOrder>366</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="db_item_key_types.cpp">
-				<DependentOn>db_item_key_types.h</DependentOn>
-				<BuildOrder>466</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XPatronAverageDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XPatronAverageDetailsReportSection.h</DependentOn>
+				<BuildOrder>595</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis.cpp">
-				<Form>frmAnalysis</Form>
-				<DependentOn>Analysis.h</DependentOn>
-				<BuildOrder>371</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\BaseReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\BaseReportSection.h</DependentOn>
+				<BuildOrder>579</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallExportCaptialandManager.cpp">
 				<DependentOn>MallExportCaptialandManager.h</DependentOn>
 				<BuildOrder>632</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="db_item_key_types.cpp">
+				<DependentOn>db_item_key_types.h</DependentOn>
+				<BuildOrder>466</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DiscountGroupsAssignment.cpp">
+				<DependentOn>DiscountGroupsAssignment.h</DependentOn>
+				<BuildOrder>520</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\Reports\ZedReport.cpp">
+				<DependentOn>Analysis\Reports\ZedReport.h</DependentOn>
+				<BuildOrder>571</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ManagerChitNumber.cpp">
 				<BuildOrder>80</BuildOrder>
 				<DependentOn>ManagerChitNumber.h</DependentOn>
 				<BuildOrder>647</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DiscountGroupsAssignment.cpp">
-				<DependentOn>DiscountGroupsAssignment.h</DependentOn>
-				<BuildOrder>520</BuildOrder>
+			<CppCompile Include="Analysis.cpp">
+				<Form>frmAnalysis</Form>
+				<DependentOn>Analysis.h</DependentOn>
+				<BuildOrder>371</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\Factories\BaseReportSectionFactory.cpp">
-				<DependentOn>Analysis\Factories\BaseReportSectionFactory.h</DependentOn>
-				<BuildOrder>561</BuildOrder>
+			<CppCompile Include="DealResult.cpp">
+				<DependentOn>DealResult.h</DependentOn>
+				<BuildOrder>490</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="BlindBalanceController.cpp">
 				<BuildOrder>72</BuildOrder>
 				<DependentOn>BlindBalanceController.h</DependentOn>
 				<BuildOrder>653</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ManagerVariable.cpp">
-				<BuildOrder>254</BuildOrder>
-				<DependentOn>ManagerVariable.h</DependentOn>
-				<BuildOrder>177</BuildOrder>
+			<CppCompile Include="ListMenuContainer.cpp">
+				<DependentOn>ListMenuContainer.h</DependentOn>
+				<BuildOrder>274</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DealResult.cpp">
-				<DependentOn>DealResult.h</DependentOn>
-				<BuildOrder>490</BuildOrder>
+			<CppCompile Include="Analysis\Factories\BaseReportSectionFactory.cpp">
+				<DependentOn>Analysis\Factories\BaseReportSectionFactory.h</DependentOn>
+				<BuildOrder>561</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\SelectCurrentMenu.cpp">
 				<BuildOrder>219</BuildOrder>
@@ -2715,24 +2720,27 @@
 				<DependentOn>POS\SelectCurrentMenu.h</DependentOn>
 				<BuildOrder>212</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ListMenuContainer.cpp">
-				<DependentOn>ListMenuContainer.h</DependentOn>
-				<BuildOrder>274</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\Reports\ZedReport.cpp">
-				<DependentOn>Analysis\Reports\ZedReport.h</DependentOn>
-				<BuildOrder>571</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ItemOption.cpp">
-				<BuildOrder>281</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSectionDisplayTraits\PointsReportHeaderTrait.cpp">
-				<DependentOn>Analysis\ReportSectionDisplayTraits\PointsReportHeaderTrait.h</DependentOn>
-				<BuildOrder>577</BuildOrder>
+			<CppCompile Include="POS\MemberCreation.cpp">
+				<Form>frmMemberCreation</Form>
+				<DependentOn>POS\MemberCreation.h</DependentOn>
+				<BuildOrder>641</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\System\MM_Menu.cpp">
 				<DependentOn>..\..\..\Shared-Source\System\MM_Menu.h</DependentOn>
 				<BuildOrder>222</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ItemOption.cpp">
+				<BuildOrder>281</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Request.cpp">
+				<DependentOn>Request.h</DependentOn>
+				<BuildOrder>249</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="POS\Transfer.cpp">
+				<BuildOrder>68</BuildOrder>
+				<Form>frmTransfer</Form>
+				<DependentOn>POS\Transfer.h</DependentOn>
+				<BuildOrder>155</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\GUIDiscount.cpp">
 				<BuildOrder>79</BuildOrder>
@@ -2740,13 +2748,14 @@
 				<DependentOn>POS\GUIDiscount.h</DependentOn>
 				<BuildOrder>632</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Request.cpp">
-				<DependentOn>Request.h</DependentOn>
-				<BuildOrder>249</BuildOrder>
+			<CppCompile Include="Analysis\ReportSectionDisplayTraits\PointsReportHeaderTrait.cpp">
+				<DependentOn>Analysis\ReportSectionDisplayTraits\PointsReportHeaderTrait.h</DependentOn>
+				<BuildOrder>577</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XProductionInfoDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XProductionInfoDetailsReportSection.h</DependentOn>
-				<BuildOrder>597</BuildOrder>
+			<CppCompile Include="..\..\ChefMate\Source\KitchenMod.cpp">
+				<BuildOrder>218</BuildOrder>
+				<DependentOn>..\..\ChefMate\Source\KitchenMod.h</DependentOn>
+				<BuildOrder>215</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\Paytype.cpp">
 				<BuildOrder>56</BuildOrder>
@@ -2754,35 +2763,33 @@
 				<DependentOn>POS\Paytype.h</DependentOn>
 				<BuildOrder>165</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="POS\MemberCreation.cpp">
-				<Form>frmMemberCreation</Form>
-				<DependentOn>POS\MemberCreation.h</DependentOn>
-				<BuildOrder>641</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XDiscountReportDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XDiscountReportDetailsReportSection.h</DependentOn>
+				<BuildOrder>592</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\ChefMate\Source\KitchenMod.cpp">
-				<BuildOrder>218</BuildOrder>
-				<DependentOn>..\..\ChefMate\Source\KitchenMod.h</DependentOn>
-				<BuildOrder>215</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XProductionInfoDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XProductionInfoDetailsReportSection.h</DependentOn>
+				<BuildOrder>597</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSections\XHourlySalesDetailsReportSection.cpp">
 				<DependentOn>Analysis\ReportSections\XHourlySalesDetailsReportSection.h</DependentOn>
 				<BuildOrder>593</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XDiscountReportDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XDiscountReportDetailsReportSection.h</DependentOn>
-				<BuildOrder>592</BuildOrder>
+			<CppCompile Include="ManagerThorVoucher.cpp">
+				<DependentOn>ManagerThorVoucher.h</DependentOn>
+				<BuildOrder>701</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\Factories\XReportSectionFactory.cpp">
 				<DependentOn>Analysis\Factories\XReportSectionFactory.h</DependentOn>
 				<BuildOrder>565</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\Factories\ZedReportSectionFactory.cpp">
-				<DependentOn>Analysis\Factories\ZedReportSectionFactory.h</DependentOn>
-				<BuildOrder>560</BuildOrder>
+			<CppCompile Include="Cashdraw\CashDraw.cpp">
+				<DependentOn>Cashdraw\CashDraw.h</DependentOn>
+				<BuildOrder>625</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ManagerThorVoucher.cpp">
-				<DependentOn>ManagerThorVoucher.h</DependentOn>
-				<BuildOrder>701</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XTaxSummaryDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XTaxSummaryDetailsReportSection.h</DependentOn>
+				<BuildOrder>602</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\Scales.cpp">
 				<BuildOrder>97</BuildOrder>
@@ -2790,9 +2797,22 @@
 				<DependentOn>POS\Scales.h</DependentOn>
 				<BuildOrder>545</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Cashdraw\CashDraw.cpp">
-				<DependentOn>Cashdraw\CashDraw.h</DependentOn>
-				<BuildOrder>625</BuildOrder>
+			<CppCompile Include="Analysis\Factories\ZedReportSectionFactory.cpp">
+				<DependentOn>Analysis\Factories\ZedReportSectionFactory.h</DependentOn>
+				<BuildOrder>560</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="GlobalSettings.cpp">
+				<DependentOn>GlobalSettings.h</DependentOn>
+				<BuildOrder>299</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Casino Security Screen\MMSecurityScreenSettings.cpp">
+				<Form>frmMMSecurityScreenSettings</Form>
+				<DependentOn>Casino Security Screen\MMSecurityScreenSettings.h</DependentOn>
+				<BuildOrder>649</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\ZClientDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\ZClientDetailsReportSection.h</DependentOn>
+				<BuildOrder>607</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ReportDisplayNav.cpp">
 				<BuildOrder>87</BuildOrder>
@@ -2800,196 +2820,184 @@
 				<DependentOn>ReportDisplayNav.h</DependentOn>
 				<BuildOrder>542</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Casino Security Screen\MMSecurityScreenSettings.cpp">
-				<Form>frmMMSecurityScreenSettings</Form>
-				<DependentOn>Casino Security Screen\MMSecurityScreenSettings.h</DependentOn>
-				<BuildOrder>649</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportBuilders\XReportBuilder.cpp">
-				<DependentOn>Analysis\ReportBuilders\XReportBuilder.h</DependentOn>
-				<BuildOrder>570</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="GlobalSettings.cpp">
-				<DependentOn>GlobalSettings.h</DependentOn>
-				<BuildOrder>299</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="Analysis\ReportBuilders\BaseReportBuilder.cpp">
 				<DependentOn>Analysis\ReportBuilders\BaseReportBuilder.h</DependentOn>
 				<BuildOrder>568</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\ZClientDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\ZClientDetailsReportSection.h</DependentOn>
-				<BuildOrder>607</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XTaxSummaryDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XTaxSummaryDetailsReportSection.h</DependentOn>
-				<BuildOrder>602</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="PaymentTypeGroupAssignment.cpp">
-				<DependentOn>PaymentTypeGroupAssignment.h</DependentOn>
-				<BuildOrder>505</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XWriteOffDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XWriteOffDetailsReportSection.h</DependentOn>
-				<BuildOrder>639</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="SecurityPort.cpp">
-				<DependentOn>SecurityPort.h</DependentOn>
-				<BuildOrder>301</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Registry\MMRegistry.cpp">
-				<DependentOn>..\..\..\Shared-Source\Registry\MMRegistry.h</DependentOn>
-				<BuildOrder>224</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinyxml.cpp">
-				<BuildOrder>90</BuildOrder>
-				<BuildOrder>524</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\Factories\ReportSectionDisplayTraitsProvider.cpp">
-				<DependentOn>Analysis\Factories\ReportSectionDisplayTraitsProvider.h</DependentOn>
-				<BuildOrder>563</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ManagerClippIntegration.cpp">
-				<DependentOn>ManagerClippIntegration.h</DependentOn>
-				<BuildOrder>682</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSections\XRemovalDetailsReportSection.cpp">
 				<DependentOn>Analysis\ReportSections\XRemovalDetailsReportSection.h</DependentOn>
 				<BuildOrder>661</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="SecurityPort.cpp">
+				<DependentOn>SecurityPort.h</DependentOn>
+				<BuildOrder>301</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PaymentTypeGroupAssignment.cpp">
+				<DependentOn>PaymentTypeGroupAssignment.h</DependentOn>
+				<BuildOrder>505</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\tinyXML\tinyxml.cpp">
+				<BuildOrder>90</BuildOrder>
+				<BuildOrder>524</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ManagerVariable.cpp">
+				<BuildOrder>254</BuildOrder>
+				<DependentOn>ManagerVariable.h</DependentOn>
+				<BuildOrder>177</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\Registry\MMRegistry.cpp">
+				<DependentOn>..\..\..\Shared-Source\Registry\MMRegistry.h</DependentOn>
+				<BuildOrder>224</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\XWriteOffDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XWriteOffDetailsReportSection.h</DependentOn>
+				<BuildOrder>639</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="POS\DCBillProcessingAtZed.cpp">
 				<DependentOn>POS\DCBillProcessingAtZed.h</DependentOn>
 				<BuildOrder>700</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSectionDisplayTraits\TextValueDisplayFormatTraits.cpp">
-				<DependentOn>Analysis\ReportSectionDisplayTraits\TextValueDisplayFormatTraits.h</DependentOn>
-				<BuildOrder>575</BuildOrder>
+			<CppCompile Include="ManagerClippIntegration.cpp">
+				<DependentOn>ManagerClippIntegration.h</DependentOn>
+				<BuildOrder>682</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Managers\Database\PaymentTypes\PaymentTypeGroupsDriverInterface.cpp">
 				<DependentOn>..\..\..\Shared-Source\Managers\Database\PaymentTypes\PaymentTypeGroupsDriverInterface.h</DependentOn>
 				<BuildOrder>508</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XReportDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XReportDetailsReportSection.h</DependentOn>
-				<BuildOrder>598</BuildOrder>
+			<CppCompile Include="Analysis\Factories\ReportSectionDisplayTraitsProvider.cpp">
+				<DependentOn>Analysis\Factories\ReportSectionDisplayTraitsProvider.h</DependentOn>
+				<BuildOrder>563</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSectionStrategies\ReportSectionDisplayStrategy.cpp">
-				<DependentOn>Analysis\ReportSectionStrategies\ReportSectionDisplayStrategy.h</DependentOn>
-				<BuildOrder>617</BuildOrder>
+			<CppCompile Include="Analysis\ReportSectionDisplayTraits\TextValueDisplayFormatTraits.cpp">
+				<DependentOn>Analysis\ReportSectionDisplayTraits\TextValueDisplayFormatTraits.h</DependentOn>
+				<BuildOrder>575</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Cashdraw\CashDrawFactory.cpp">
 				<DependentOn>Cashdraw\CashDrawFactory.h</DependentOn>
 				<BuildOrder>626</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="CashDrawerPortsList.cpp">
-				<DependentOn>CashDrawerPortsList.h</DependentOn>
-				<BuildOrder>624</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XReportDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XReportDetailsReportSection.h</DependentOn>
+				<BuildOrder>598</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Cashdraw\CashDrawAdvancePOS.cpp">
 				<DependentOn>Cashdraw\CashDrawAdvancePOS.h</DependentOn>
 				<BuildOrder>628</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="RunRateInterface.cpp">
-				<DependentOn>RunRateInterface.h</DependentOn>
-				<BuildOrder>717</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Casino Security Screen\DBSecurityScreenSettings.cpp">
-				<DependentOn>Casino Security Screen\DBSecurityScreenSettings.h</DependentOn>
-				<BuildOrder>655</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\ZReportDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\ZReportDetailsReportSection.h</DependentOn>
-				<BuildOrder>609</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSectionStrategies\SeperatePointsStrategy.cpp">
-				<DependentOn>Analysis\ReportSectionStrategies\SeperatePointsStrategy.h</DependentOn>
-				<BuildOrder>619</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSectionStrategies\FullDateWithTimeStrategy.cpp">
-				<DependentOn>Analysis\ReportSectionStrategies\FullDateWithTimeStrategy.h</DependentOn>
-				<BuildOrder>615</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportAlphalandManager.cpp">
-				<DependentOn>MallExportAlphalandManager.h</DependentOn>
-				<BuildOrder>658</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\SelectPaymentTypeAndValue.cpp">
 				<Form>frmSelectPaymentTypeAndValue</Form>
 				<DependentOn>POS\SelectPaymentTypeAndValue.h</DependentOn>
 				<BuildOrder>656</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ListSecurityRefContainer.cpp">
-				<DependentOn>ListSecurityRefContainer.h</DependentOn>
-				<BuildOrder>249</BuildOrder>
+			<CppCompile Include="CashDrawerPortsList.cpp">
+				<DependentOn>CashDrawerPortsList.h</DependentOn>
+				<BuildOrder>624</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="PHSTCPIP.cpp">
-				<BuildOrder>39</BuildOrder>
-				<DependentOn>PHSTCPIP.h</DependentOn>
-				<BuildOrder>350</BuildOrder>
+			<CppCompile Include="Analysis\ReportSectionStrategies\ReportSectionDisplayStrategy.cpp">
+				<DependentOn>Analysis\ReportSectionStrategies\ReportSectionDisplayStrategy.h</DependentOn>
+				<BuildOrder>617</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="CaptureCustomerDetails.cpp">
-				<Form>frmCaptureDiscountDetails</Form>
-				<DependentOn>CaptureCustomerDetails.h</DependentOn>
-				<BuildOrder>720</BuildOrder>
+			<CppCompile Include="Analysis\ReportSectionStrategies\SeperatePointsStrategy.cpp">
+				<DependentOn>Analysis\ReportSectionStrategies\SeperatePointsStrategy.h</DependentOn>
+				<BuildOrder>619</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ItemUtilities.cpp">
-				<DependentOn>ItemUtilities.h</DependentOn>
-				<BuildOrder>465</BuildOrder>
+			<CppCompile Include="Casino Security Screen\DBSecurityScreenSettings.cpp">
+				<DependentOn>Casino Security Screen\DBSecurityScreenSettings.h</DependentOn>
+				<BuildOrder>655</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="PrintoutChefMate.cpp">
-				<DependentOn>PrintoutChefMate.h</DependentOn>
-				<BuildOrder>246</BuildOrder>
+			<CppCompile Include="MallExportAlphalandManager.cpp">
+				<DependentOn>MallExportAlphalandManager.h</DependentOn>
+				<BuildOrder>658</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="POS\TransferItemOrGuest.cpp">
-				<Form>frmTransferItemOrGuest</Form>
-				<DependentOn>POS\TransferItemOrGuest.h</DependentOn>
-				<BuildOrder>669</BuildOrder>
+			<CppCompile Include="RunRateInterface.cpp">
+				<DependentOn>RunRateInterface.h</DependentOn>
+				<BuildOrder>717</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Cashdraw\PortCashDraw.cpp">
-				<DependentOn>Cashdraw\PortCashDraw.h</DependentOn>
-				<BuildOrder>627</BuildOrder>
+			<CppCompile Include="Analysis\ReportSectionStrategies\FullDateWithTimeStrategy.cpp">
+				<DependentOn>Analysis\ReportSectionStrategies\FullDateWithTimeStrategy.h</DependentOn>
+				<BuildOrder>615</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\TaxRemoval.cpp">
 				<Form>frmTaxRemoval</Form>
 				<DependentOn>POS\TaxRemoval.h</DependentOn>
 				<BuildOrder>552</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="CaptureCustomerDetails.cpp">
+				<Form>frmCaptureDiscountDetails</Form>
+				<DependentOn>CaptureCustomerDetails.h</DependentOn>
+				<BuildOrder>720</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ListSecurityRefContainer.cpp">
+				<DependentOn>ListSecurityRefContainer.h</DependentOn>
+				<BuildOrder>249</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PrintoutChefMate.cpp">
+				<DependentOn>PrintoutChefMate.h</DependentOn>
+				<BuildOrder>246</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Money.cpp">
+				<DependentOn>Money.h</DependentOn>
+				<BuildOrder>703</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ItemUtilities.cpp">
+				<DependentOn>ItemUtilities.h</DependentOn>
+				<BuildOrder>465</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PHSTCPIP.cpp">
+				<BuildOrder>39</BuildOrder>
+				<DependentOn>PHSTCPIP.h</DependentOn>
+				<BuildOrder>350</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="POS\SelectZed.cpp">
 				<Form>frmSelectZed</Form>
 				<DependentOn>POS\SelectZed.h</DependentOn>
 				<BuildOrder>167</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportCapitalandMall.cpp">
-				<DependentOn>MallExportCapitalandMall.h</DependentOn>
-				<BuildOrder>633</BuildOrder>
+			<CppCompile Include="Cashdraw\PortCashDraw.cpp">
+				<DependentOn>Cashdraw\PortCashDraw.h</DependentOn>
+				<BuildOrder>627</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="split.cpp">
 				<DependentOn>split.h</DependentOn>
 				<BuildOrder>646</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\Reports\BaseReport.cpp">
-				<DependentOn>Analysis\Reports\BaseReport.h</DependentOn>
-				<BuildOrder>572</BuildOrder>
+			<CppCompile Include="POS\TransferItemOrGuest.cpp">
+				<Form>frmTransferItemOrGuest</Form>
+				<DependentOn>POS\TransferItemOrGuest.h</DependentOn>
+				<BuildOrder>669</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\ZTotalsDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\ZTotalsDetailsReportSection.h</DependentOn>
-				<BuildOrder>578</BuildOrder>
+			<CppCompile Include="MallExportCapitalandMall.cpp">
+				<DependentOn>MallExportCapitalandMall.h</DependentOn>
+				<BuildOrder>633</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSections\XChargedSalesTotalsDetailsReportSection.cpp">
 				<DependentOn>Analysis\ReportSections\XChargedSalesTotalsDetailsReportSection.h</DependentOn>
 				<BuildOrder>587</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Casino Security Screen\DBTransactionAudit.cpp">
-				<DependentOn>Casino Security Screen\DBTransactionAudit.h</DependentOn>
-				<BuildOrder>652</BuildOrder>
+			<CppCompile Include="Analysis\Reports\BaseReport.cpp">
+				<DependentOn>Analysis\Reports\BaseReport.h</DependentOn>
+				<BuildOrder>572</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MembershipThorlink.cpp">
 				<DependentOn>MembershipThorlink.h</DependentOn>
 				<BuildOrder>702</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportAlphalandMall.cpp">
-				<DependentOn>MallExportAlphalandMall.h</DependentOn>
-				<BuildOrder>657</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\ZBlindBalancesDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\ZBlindBalancesDetailsReportSection.h</DependentOn>
+				<BuildOrder>606</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Casino Security Screen\DBTransactionAudit.cpp">
+				<DependentOn>Casino Security Screen\DBTransactionAudit.h</DependentOn>
+				<BuildOrder>652</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\ZTotalsDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\ZTotalsDetailsReportSection.h</DependentOn>
+				<BuildOrder>578</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Cashdraw\PrinterCashDraw.cpp">
+				<DependentOn>Cashdraw\PrinterCashDraw.h</DependentOn>
+				<BuildOrder>630</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="POS\SelectGlass.cpp">
 				<BuildOrder>86</BuildOrder>
@@ -2997,255 +3005,251 @@
 				<DependentOn>POS\SelectGlass.h</DependentOn>
 				<BuildOrder>121</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="POS\TCPStreamPrepare.cpp">
-				<DependentOn>POS\TCPStreamPrepare.h</DependentOn>
-				<BuildOrder>685</BuildOrder>
+			<CppCompile Include="..\..\..\Shared-Source\Managers\Database\PaymentTypes\PaymentTypesManager.cpp">
+				<DependentOn>..\..\..\Shared-Source\Managers\Database\PaymentTypes\PaymentTypesManager.h</DependentOn>
+				<BuildOrder>507</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Cashdraw\PrinterCashDraw.cpp">
-				<DependentOn>Cashdraw\PrinterCashDraw.h</DependentOn>
-				<BuildOrder>630</BuildOrder>
+			<CppCompile Include="MallExportAlphalandMall.cpp">
+				<DependentOn>MallExportAlphalandMall.h</DependentOn>
+				<BuildOrder>657</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSectionStrategies\MasterBlindBalanceStrategy.cpp">
 				<DependentOn>Analysis\ReportSectionStrategies\MasterBlindBalanceStrategy.h</DependentOn>
 				<BuildOrder>616</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Managers\Database\PaymentTypes\PaymentTypesManager.cpp">
-				<DependentOn>..\..\..\Shared-Source\Managers\Database\PaymentTypes\PaymentTypesManager.h</DependentOn>
-				<BuildOrder>507</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\ZBlindBalancesDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\ZBlindBalancesDetailsReportSection.h</DependentOn>
-				<BuildOrder>606</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="MallExportFederalLandMall.cpp">
-				<DependentOn>MallExportFederalLandMall.h</DependentOn>
-				<BuildOrder>715</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="PocketVoucherWSDL.cpp">
-				<DependentOn>PocketVoucherWSDL.h</DependentOn>
-				<BuildOrder>710</BuildOrder>
+			<CppCompile Include="MallExportOtherDetailsUpdate.cpp">
+				<DependentOn>MallExportOtherDetailsUpdate.h</DependentOn>
+				<BuildOrder>717</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSectionStrategies\BaseReportSectionDisplayStrategy.cpp">
 				<DependentOn>Analysis\ReportSectionStrategies\BaseReportSectionDisplayStrategy.h</DependentOn>
 				<BuildOrder>612</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XTransactionSummaryGroupDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XTransactionSummaryGroupDetailsReportSection.h</DependentOn>
-				<BuildOrder>605</BuildOrder>
+			<CppCompile Include="MallExportFederalLandMall.cpp">
+				<DependentOn>MallExportFederalLandMall.h</DependentOn>
+				<BuildOrder>715</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallExportFederalLandManager.cpp">
 				<DependentOn>MallExportFederalLandManager.h</DependentOn>
 				<BuildOrder>716</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="POS\DrinkCommandData.cpp">
-				<DependentOn>POS\DrinkCommandData.h</DependentOn>
-				<BuildOrder>686</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\ZReportDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\ZReportDetailsReportSection.h</DependentOn>
+				<BuildOrder>609</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="SetupGlCodes.cpp">
-				<Form>frmSetupGlCodes</Form>
-				<DependentOn>SetupGlCodes.h</DependentOn>
-				<BuildOrder>668</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XTransactionSummaryGroupDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XTransactionSummaryGroupDetailsReportSection.h</DependentOn>
+				<BuildOrder>605</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportOtherDetailsUpdate.cpp">
-				<DependentOn>MallExportOtherDetailsUpdate.h</DependentOn>
-				<BuildOrder>717</BuildOrder>
+			<CppCompile Include="PocketVoucherWSDL.cpp">
+				<DependentOn>PocketVoucherWSDL.h</DependentOn>
+				<BuildOrder>710</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ComboForm.cpp">
 				<Form>frmComboForm</Form>
 				<DependentOn>ComboForm.h</DependentOn>
 				<BuildOrder>705</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ManagerLoyaltyVoucher.cpp">
-				<DependentOn>ManagerLoyaltyVoucher.h</DependentOn>
-				<BuildOrder>718</BuildOrder>
+			<CppCompile Include="SetupGlCodes.cpp">
+				<Form>frmSetupGlCodes</Form>
+				<DependentOn>SetupGlCodes.h</DependentOn>
+				<BuildOrder>668</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ThorlinkDataObjects.cpp">
 				<DependentOn>ThorlinkDataObjects.h</DependentOn>
 				<BuildOrder>704</BuildOrder>
 			</CppCompile>
-			<None Include="POS_XMLTransaction.h">
-				<BuildOrder>304</BuildOrder>
-			</None>
-			<CppCompile Include="SelectDateAndTime.cpp">
-				<Form>frmSelectDateTime</Form>
-				<DependentOn>SelectDateAndTime.h</DependentOn>
-				<BuildOrder>662</BuildOrder>
+			<CppCompile Include="POS\DrinkCommandData.cpp">
+				<DependentOn>POS\DrinkCommandData.h</DependentOn>
+				<BuildOrder>686</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ManagerLoyaltyVoucher.cpp">
+				<DependentOn>ManagerLoyaltyVoucher.h</DependentOn>
+				<BuildOrder>718</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="RunRateTcpStreamSender.cpp">
 				<DependentOn>RunRateTcpStreamSender.h</DependentOn>
 				<BuildOrder>716</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Casino Security Screen\MMSecurityEventSearchThread.cpp">
-				<DependentOn>Casino Security Screen\MMSecurityEventSearchThread.h</DependentOn>
-				<BuildOrder>651</BuildOrder>
-			</CppCompile>
+			<None Include="POS_XMLTransaction.h">
+				<BuildOrder>304</BuildOrder>
+			</None>
 			<CppCompile Include="Analysis\ReportSectionStrategies\BlindBalanceCalculationStrategy.cpp">
 				<DependentOn>Analysis\ReportSectionStrategies\BlindBalanceCalculationStrategy.h</DependentOn>
 				<BuildOrder>613</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ProxReader.cpp">
-				<DependentOn>ProxReader.h</DependentOn>
-				<BuildOrder>303</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSectionStrategies\ReportSectionDisplayStrategyProvider.cpp">
-				<DependentOn>Analysis\ReportSectionStrategies\ReportSectionDisplayStrategyProvider.h</DependentOn>
-				<BuildOrder>618</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="ThorlinkWSDL.cpp">
-				<DependentOn>ThorlinkWSDL.h</DependentOn>
-				<BuildOrder>703</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Casino Security Screen\MMSecurityScreenManager.cpp">
-				<DependentOn>Casino Security Screen\MMSecurityScreenManager.h</DependentOn>
-				<BuildOrder>650</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\ZStaffHoursDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\ZStaffHoursDetailsReportSection.h</DependentOn>
-				<BuildOrder>610</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="EnableFloorPlan.cpp">
-				<DependentOn>EnableFloorPlan.h</DependentOn>
-				<BuildOrder>350</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ManagerDelayedPayment.cpp">
 				<DependentOn>ManagerDelayedPayment.h</DependentOn>
 				<BuildOrder>666</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XClientDetailsReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\XClientDetailsReportSection.h</DependentOn>
-				<BuildOrder>588</BuildOrder>
+			<CppCompile Include="Casino Security Screen\MMSecurityEventSearchThread.cpp">
+				<DependentOn>Casino Security Screen\MMSecurityEventSearchThread.h</DependentOn>
+				<BuildOrder>651</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportDBFFile.cpp">
-				<DependentOn>MallExportDBFFile.h</DependentOn>
-				<BuildOrder>642</BuildOrder>
+			<CppCompile Include="SelectDateAndTime.cpp">
+				<Form>frmSelectDateTime</Form>
+				<DependentOn>SelectDateAndTime.h</DependentOn>
+				<BuildOrder>662</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Casino Security Screen\MMSecurityScreenManager.cpp">
+				<DependentOn>Casino Security Screen\MMSecurityScreenManager.h</DependentOn>
+				<BuildOrder>650</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSectionStrategies\ReportSectionDisplayStrategyProvider.cpp">
+				<DependentOn>Analysis\ReportSectionStrategies\ReportSectionDisplayStrategyProvider.h</DependentOn>
+				<BuildOrder>618</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="EnableFloorPlan.cpp">
+				<DependentOn>EnableFloorPlan.h</DependentOn>
+				<BuildOrder>350</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ProxReader.cpp">
+				<DependentOn>ProxReader.h</DependentOn>
+				<BuildOrder>303</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\ZStaffHoursDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\ZStaffHoursDetailsReportSection.h</DependentOn>
+				<BuildOrder>610</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\ZBegningEndingInvoiceReportSection.cpp">
+				<BuildOrder>721</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="TransferComplete.cpp">
 				<DependentOn>TransferComplete.h</DependentOn>
 				<BuildOrder>702</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="BillCalculator\MMBillCalculatorAdapter.cpp">
-				<DependentOn>BillCalculator\MMBillCalculatorAdapter.h</DependentOn>
-				<BuildOrder>515</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XClientDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\XClientDetailsReportSection.h</DependentOn>
+				<BuildOrder>588</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ThorlinkClient.cpp">
 				<DependentOn>ThorlinkClient.h</DependentOn>
 				<BuildOrder>701</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\XCancelsAndRefundDetailsForBIRReportSection.cpp">
-				<BuildOrder>723</BuildOrder>
+			<CppCompile Include="WeightStreamKenkoKK300.cpp">
+				<DependentOn>WeightStreamKenkoKK300.h</DependentOn>
+				<BuildOrder>553</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="PocketVoucherTransport.cpp">
-				<DependentOn>PocketVoucherTransport.h</DependentOn>
-				<BuildOrder>711</BuildOrder>
+			<CppCompile Include="BillCalculator\MMBillCalculatorAdapter.cpp">
+				<DependentOn>BillCalculator\MMBillCalculatorAdapter.h</DependentOn>
+				<BuildOrder>515</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\ZBegningEndingInvoiceReportSection.cpp">
-				<BuildOrder>721</BuildOrder>
+			<CppCompile Include="MallExportDBFFile.cpp">
+				<DependentOn>MallExportDBFFile.h</DependentOn>
+				<BuildOrder>642</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ContactPoints.cpp">
 				<BuildOrder>85</BuildOrder>
 				<DependentOn>ContactPoints.h</DependentOn>
 				<BuildOrder>530</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSectionStrategies\ClientDetailsFromFileStrategy.cpp">
-				<DependentOn>Analysis\ReportSectionStrategies\ClientDetailsFromFileStrategy.h</DependentOn>
-				<BuildOrder>614</BuildOrder>
+			<CppCompile Include="PocketVoucherTransport.cpp">
+				<DependentOn>PocketVoucherTransport.h</DependentOn>
+				<BuildOrder>711</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ManagerVoucherElectronic.cpp">
 				<DependentOn>ManagerVoucherElectronic.h</DependentOn>
 				<BuildOrder>713</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MallExportConsolidatedReceipt.cpp">
-				<DependentOn>MallExportConsolidatedReceipt.h</DependentOn>
-				<BuildOrder>704</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\XCancelsAndRefundDetailsForBIRReportSection.cpp">
+				<BuildOrder>723</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="SalesForceInterface.cpp">
-				<DependentOn>SalesForceInterface.h</DependentOn>
-				<BuildOrder>712</BuildOrder>
+			<CppCompile Include="Analysis\ReportSectionStrategies\ClientDetailsFromFileStrategy.cpp">
+				<DependentOn>Analysis\ReportSectionStrategies\ClientDetailsFromFileStrategy.h</DependentOn>
+				<BuildOrder>614</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSections\ZCashDenominationReportSection.cpp">
 				<DependentOn>Analysis\ReportSections\ZCashDenominationReportSection.h</DependentOn>
 				<BuildOrder>729</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="RunRateTcpStreamSenderSettings.cpp">
-				<DependentOn>RunRateTcpStreamSenderSettings.h</DependentOn>
-				<BuildOrder>715</BuildOrder>
+			<CppCompile Include="MallExportConsolidatedReceipt.cpp">
+				<DependentOn>MallExportConsolidatedReceipt.h</DependentOn>
+				<BuildOrder>704</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MembershipThorlinkGUI.cpp">
 				<DependentOn>MembershipThorlinkGUI.h</DependentOn>
 				<BuildOrder>701</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MYOBIntegration.cpp">
-				<DependentOn>MYOBIntegration.h</DependentOn>
-				<BuildOrder>716</BuildOrder>
+			<CppCompile Include="POS\DrinkCommandManager.cpp">
+				<DependentOn>POS\DrinkCommandManager.h</DependentOn>
+				<BuildOrder>687</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="RunRateTcpStreamSenderSettings.cpp">
+				<DependentOn>RunRateTcpStreamSenderSettings.h</DependentOn>
+				<BuildOrder>715</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="SalesForceInterface.cpp">
+				<DependentOn>SalesForceInterface.h</DependentOn>
+				<BuildOrder>712</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\ZAccumulatedTotalDetailsReportSection.cpp">
+				<BuildOrder>720</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MYOBInvoiceBuilder.cpp">
 				<DependentOn>MYOBInvoiceBuilder.h</DependentOn>
 				<BuildOrder>714</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Money.cpp">
-				<DependentOn>Money.h</DependentOn>
-				<BuildOrder>703</BuildOrder>
+			<CppCompile Include="Analysis\ReportSectionStrategies\CashDenominationCalculationStrategy.cpp">
+				<DependentOn>Analysis\ReportSectionStrategies\CashDenominationCalculationStrategy.h</DependentOn>
+				<BuildOrder>728</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\ZAccumulatedTotalDetailsReportSection.cpp">
-				<BuildOrder>720</BuildOrder>
+			<CppCompile Include="MYOBIntegration.cpp">
+				<DependentOn>MYOBIntegration.h</DependentOn>
+				<BuildOrder>716</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\SalesForceCommAtZed.cpp">
 				<DependentOn>Analysis\SalesForceCommAtZed.h</DependentOn>
 				<BuildOrder>709</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="Analysis\ReportSectionStrategies\CashDenominationCalculationStrategy.cpp">
-				<DependentOn>Analysis\ReportSectionStrategies\CashDenominationCalculationStrategy.h</DependentOn>
-				<BuildOrder>728</BuildOrder>
+			<CppCompile Include="DBDenominations.cpp">
+				<DependentOn>DBDenominations.h</DependentOn>
+				<BuildOrder>731</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="POS\DrinkCommandManager.cpp">
-				<DependentOn>POS\DrinkCommandManager.h</DependentOn>
-				<BuildOrder>687</BuildOrder>
+			<CppCompile Include="RunRateClient.cpp">
+				<DependentOn>RunRateClient.h</DependentOn>
+				<BuildOrder>714</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ShowEJournal.cpp">
 				<Form>frmEJournal</Form>
 				<DependentOn>ShowEJournal.h</DependentOn>
 				<BuildOrder>721</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="EJournalEngine.cpp">
-				<DependentOn>EJournalEngine.h</DependentOn>
-				<BuildOrder>722</BuildOrder>
+			<CppCompile Include="PocketMateXML.cpp">
+				<DependentOn>PocketMateXML.h</DependentOn>
+				<BuildOrder>712</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="RunRateClient.cpp">
-				<DependentOn>RunRateClient.h</DependentOn>
-				<BuildOrder>714</BuildOrder>
+			<CppCompile Include="ThorlinkWSDL.cpp">
+				<DependentOn>ThorlinkWSDL.h</DependentOn>
+				<BuildOrder>703</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSections\XCommissionTipsDetailsReportSection.cpp">
 				<DependentOn>Analysis\ReportSections\XCommissionTipsDetailsReportSection.h</DependentOn>
 				<BuildOrder>589</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="PocketMateXML.cpp">
-				<DependentOn>PocketMateXML.h</DependentOn>
-				<BuildOrder>712</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="CashDenominationController.cpp">
-				<DependentOn>CashDenominationController.h</DependentOn>
-				<BuildOrder>732</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="Analysis\ReportSections\ZMasterCashDenominationReportSection.cpp">
-				<DependentOn>Analysis\ReportSections\ZMasterCashDenominationReportSection.h</DependentOn>
-				<BuildOrder>730</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DBDenominations.cpp">
-				<DependentOn>DBDenominations.h</DependentOn>
-				<BuildOrder>731</BuildOrder>
+			<CppCompile Include="EJournalEngine.cpp">
+				<DependentOn>EJournalEngine.h</DependentOn>
+				<BuildOrder>722</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ManagerEJournal.cpp">
 				<DependentOn>ManagerEJournal.h</DependentOn>
 				<BuildOrder>720</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="ProductSearch\ProductSearch.cpp">
-				<Form>frmProductSearch</Form>
-				<DependentOn>ProductSearch\ProductSearch.h</DependentOn>
-				<BuildOrder>713</BuildOrder>
+			<CppCompile Include="Analysis\ReportSections\ZMasterCashDenominationReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\ZMasterCashDenominationReportSection.h</DependentOn>
+				<BuildOrder>730</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ScaleModel.cpp">
 				<DependentOn>ScaleModel.h</DependentOn>
 				<BuildOrder>736</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="CashDenominationController.cpp">
+				<DependentOn>CashDenominationController.h</DependentOn>
+				<BuildOrder>732</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ProductSearch\ProductSearch.cpp">
+				<Form>frmProductSearch</Form>
+				<DependentOn>ProductSearch\ProductSearch.h</DependentOn>
+				<BuildOrder>713</BuildOrder>
 			</CppCompile>
 			<FormResources Include="SelectDiscounts.dfm"/>
 			<FormResources Include="DealsSetup.dfm"/>
@@ -3280,8 +3284,9 @@
 			<FormResources Include="Locations.dfm"/>
 			<FormResources Include="Security\TimeClock.dfm"/>
 			<FormResources Include="TierLevelEditor.dfm"/>
-			<FormResources Include="Chefmate\ChefMateSettings.dfm"/>
+			<FormResources Include="ChitNumberGui.dfm"/>
 			<FormResources Include="MallExportRegenerateReport.dfm"/>
+			<FormResources Include="Chefmate\ChefMateSettings.dfm"/>
 			<FormResources Include="SyndCodeGui.dfm"/>
 			<FormResources Include="DelayedPaymentTabs.dfm"/>
 			<FormResources Include="POS\SelectMember.dfm"/>
@@ -3289,25 +3294,23 @@
 			<FormResources Include="Maintenance\NewUser.dfm"/>
 			<FormResources Include="SelectSizesAsList.dfm"/>
 			<FormResources Include="Timer.dfm"/>
-			<FormResources Include="Maintenance\TaxMaintenance.dfm"/>
 			<FormResources Include="MallExportResendReport.dfm"/>
+			<FormResources Include="Maintenance\TaxMaintenance.dfm"/>
 			<FormResources Include="SelectSaveOption.dfm"/>
 			<FormResources Include="POS\Message.dfm"/>
-			<FormResources Include="ChitNumberGui.dfm"/>
 			<FormResources Include="CaptNamePhone.dfm"/>
 			<FormResources Include="POS\SelectRMSRoom.dfm"/>
 			<FormResources Include="POS\SelectItem.dfm"/>
 			<FormResources Include="POS\SplitPayment.dfm"/>
 			<FormResources Include="MMdata.dfm"/>
 			<FormResources Include="Discounts.dfm"/>
-			<FormResources Include="Tables_ChitNumbers.dfm"/>
-			<FormResources Include="PSectionInstructionEdit.dfm"/>
 			<FormResources Include="AutoZReportingSetup.dfm"/>
-			<FormResources Include="Maintenance\GeneralMaintenance.dfm"/>
-			<FormResources Include="SendForm.dfm"/>
+			<FormResources Include="PSectionInstructionEdit.dfm"/>
+			<FormResources Include="Tables_ChitNumbers.dfm"/>
 			<FormResources Include="POS\ForcedSides.dfm"/>
 			<FormResources Include="LoyaltyMateOperationDialogBox.dfm"/>
-			<FormResources Include="POS\Transfer.dfm"/>
+			<FormResources Include="SendForm.dfm"/>
+			<FormResources Include="Maintenance\GeneralMaintenance.dfm"/>
 			<FormResources Include="Maintenance\UserMaintenance.dfm"/>
 			<FormResources Include="Maintain.dfm"/>
 			<FormResources Include="POS\ConfirmOrd.dfm"/>
@@ -3351,27 +3354,28 @@
 			<FormResources Include="ListManager.dfm"/>
 			<FormResources Include="Casino Security Screen\TransactionAuditScreen.dfm"/>
 			<FormResources Include="SetButtonFontSize.dfm"/>
+			<FormResources Include="EftPosDialogs.dfm"/>
 			<FormResources Include="..\..\..\Shared-Source\Touch Utils\MMTouchKeyboard.dfm"/>
 			<FormResources Include="NewPaymentType.dfm"/>
-			<FormResources Include="EftPosDialogs.dfm"/>
 			<FormResources Include="POS\GroupGUI.dfm"/>
 			<FormResources Include="..\..\..\Shared-Source\Touch Utils\MMTouchNumpad.dfm"/>
 			<FormResources Include="Analysis.dfm"/>
 			<FormResources Include="POS\SelectCurrentMenu.dfm"/>
+			<FormResources Include="POS\MemberCreation.dfm"/>
+			<FormResources Include="POS\Transfer.dfm"/>
 			<FormResources Include="POS\GUIDiscount.dfm"/>
 			<FormResources Include="POS\Paytype.dfm"/>
-			<FormResources Include="POS\MemberCreation.dfm"/>
 			<FormResources Include="POS\Scales.dfm"/>
-			<FormResources Include="ReportDisplayNav.dfm"/>
 			<FormResources Include="Casino Security Screen\MMSecurityScreenSettings.dfm"/>
+			<FormResources Include="ReportDisplayNav.dfm"/>
 			<FormResources Include="POS\SelectPaymentTypeAndValue.dfm"/>
-			<FormResources Include="CaptureCustomerDetails.dfm"/>
-			<FormResources Include="POS\TransferItemOrGuest.dfm"/>
 			<FormResources Include="POS\TaxRemoval.dfm"/>
+			<FormResources Include="CaptureCustomerDetails.dfm"/>
 			<FormResources Include="POS\SelectZed.dfm"/>
+			<FormResources Include="POS\TransferItemOrGuest.dfm"/>
 			<FormResources Include="POS\SelectGlass.dfm"/>
-			<FormResources Include="SetupGlCodes.dfm"/>
 			<FormResources Include="ComboForm.dfm"/>
+			<FormResources Include="SetupGlCodes.dfm"/>
 			<FormResources Include="SelectDateAndTime.dfm"/>
 			<FormResources Include="ShowEJournal.dfm"/>
 			<FormResources Include="ProductSearch\ProductSearch.dfm"/>

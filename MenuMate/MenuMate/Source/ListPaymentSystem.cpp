@@ -923,11 +923,6 @@ bool TListPaymentSystem::CheckForCard(TPaymentTransaction &PaymentTransaction)
 }
 void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &PaymentTransaction )
 {
-     if(PaymentTransaction.Membership.Member.ContactKey != 0 && TGlobalSettings::Instance().UseMemberSubs &&
-        !PaymentTransaction.Membership.Member.Points.PointsRulesSubs.Contains(eprFinancial))
-     {
-        ProcessSubscription(PaymentTransaction);
-    }
 	if (PaymentTransaction.Type == eTransQuickSale && PaymentTransaction.SalesType == eTab)
     {
          ReceiptPrint(PaymentTransaction, RequestEFTPOSReceipt, false);
@@ -4376,6 +4371,7 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 					SetInvoiceNumber(PaymentTransaction);
 					//MM-2277 Calculate tier level for user
 					CalculateTierLevel(PaymentTransaction);
+                    CheckSubscription(PaymentTransaction);
                     TDeviceRealTerminal::Instance().ManagerMembership->ProcessPoints(PaymentTransaction);
 					ReceiptPrepare(PaymentTransaction, RequestEFTPOSReceipt);
 					StoreInfo(PaymentTransaction);
@@ -4504,6 +4500,7 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                             SetInvoiceNumber(PaymentTransaction);
                             //MM-2277 Calculate tier level for user
                             CalculateTierLevel(PaymentTransaction);
+                            CheckSubscription(PaymentTransaction);
                             TDeviceRealTerminal::Instance().ManagerMembership->ProcessPoints(PaymentTransaction);
                             ReceiptPrepare(PaymentTransaction, RequestEFTPOSReceipt);
                             StoreInfo(PaymentTransaction);
@@ -4658,6 +4655,7 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
 						SetInvoiceNumber(PaymentTransaction);
 						//MM-2277 Calculate tier level for user
 						CalculateTierLevel(PaymentTransaction);
+                        CheckSubscription(PaymentTransaction);
                         TDeviceRealTerminal::Instance().ManagerMembership->ProcessPoints(PaymentTransaction);
 						ReceiptPrepare(PaymentTransaction, RequestEFTPOSReceipt);
 						StoreInfo(PaymentTransaction);
@@ -4764,6 +4762,7 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
             SetInvoiceNumber(PaymentTransaction);
             //MM-2277 Calculate tier level for user
             CalculateTierLevel(PaymentTransaction);
+            CheckSubscription(PaymentTransaction);
             TDeviceRealTerminal::Instance().ManagerMembership->ProcessPoints(PaymentTransaction);
             ReceiptPrepare(PaymentTransaction, RequestEFTPOSReceipt);
             StoreInfo(PaymentTransaction);
@@ -4823,6 +4822,7 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
 					SetInvoiceNumber(PaymentTransaction);
 					//MM-2277 Calculate tier level for user
 			     	CalculateTierLevel(PaymentTransaction);
+                    CheckSubscription(PaymentTransaction);
                     TDeviceRealTerminal::Instance().ManagerMembership->ProcessPoints(PaymentTransaction);
 					ReceiptPrepare(PaymentTransaction, RequestEFTPOSReceipt);
 					StoreInfo(PaymentTransaction);
@@ -4898,6 +4898,7 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
 					SetInvoiceNumber(PaymentTransaction);
 					//MM-2277 Calculate tier level for user
                     CalculateTierLevel(PaymentTransaction);
+                    CheckSubscription(PaymentTransaction);
                     TDeviceRealTerminal::Instance().ManagerMembership->ProcessPoints(PaymentTransaction);
 					ReceiptPrepare(PaymentTransaction, RequestEFTPOSReceipt);
 					StoreInfo(PaymentTransaction);
@@ -4982,6 +4983,7 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 					SetInvoiceNumber(PaymentTransaction);
 					//MM-2277 Calculate tier level for user
                     CalculateTierLevel(PaymentTransaction);
+                    CheckSubscription(PaymentTransaction);
                     TDeviceRealTerminal::Instance().ManagerMembership->ProcessPoints(PaymentTransaction);
 					ReceiptPrepare(PaymentTransaction, RequestEFTPOSReceipt);
 					StoreInfo(PaymentTransaction);
@@ -5951,53 +5953,27 @@ void TListPaymentSystem::UpdateSubscriptionDetails( TPaymentTransaction &Payment
     IBInternalQueryFirst->ExecQuery();
     IBInternalQueryFirst->Close();
     IBInternalQueryFirst->SQL->Text = " UPDATE CONTACTS SET"
-        " POINTS_RULES = :POINTS_RULES "
+        " POINTS_RULES = :POINTS_RULES, "
+        " LAST_MODIFIED = :LAST_MODIFIED "
         " WHERE CONTACTS_KEY = :CONTACTS_KEY ";
     IBInternalQueryFirst->ParamByName("POINTS_RULES" )->AsInteger = TPointsRulesSetUtils().Compress(PaymentTransaction.Membership.Member.Points.PointsRules);
+    TDateTime datetime = Now();
+    PaymentTransaction.Membership.Member.LastModified = datetime;
+    IBInternalQueryFirst->ParamByName("LAST_MODIFIED" )->AsDateTime = datetime;
     IBInternalQueryFirst->ParamByName("CONTACTS_KEY" )->AsInteger = PaymentTransaction.Membership.Member.ContactKey;
     IBInternalQueryFirst->ExecQuery();
 }
 //------------------------------------------------------------------------------
-bool TListPaymentSystem::ProcessSubscription( TPaymentTransaction &PaymentTransaction )
+void TListPaymentSystem::CheckSubscription( TPaymentTransaction &PaymentTransaction )
 {
-    bool retValue = false;
-    double amountSubs = 0.0;
-    for(int i = 0; i< PaymentTransaction.Orders->Count; i++)
-    {
-        TItemComplete *itemComplete = (TItemComplete*)PaymentTransaction.Orders->Items[0];
-        if(itemComplete->Item == "Pay Subs" && itemComplete->TabKey == 0 && itemComplete->GetQty() >=1
-           && !PaymentTransaction.CreditTransaction && !itemComplete->wasOpenItem)
+     if(PaymentTransaction.Membership.Member.ContactKey != 0 && TGlobalSettings::Instance().UseMemberSubs &&
+        !PaymentTransaction.Membership.Member.Points.PointsRulesSubs.Contains(eprFinancial))
+     {
+        double amount = 0.0;
+        if(TPaySubsUtility::IsPaySubsEligible(PaymentTransaction, amount))
         {
-            if(itemComplete->HappyHour)
-            {
-               if(itemComplete->BillCalcResult.FinalPrice >= itemComplete->PriceLevel1)
-               {
-                 amountSubs = itemComplete->PriceLevel1;
-                 retValue = true;
-               }
-            }
-            else
-            {
-               if(itemComplete->BillCalcResult.FinalPrice >= itemComplete->PriceLevel0)
-               {
-                 amountSubs = itemComplete->PriceLevel0;
-                 retValue= true;
-               }
-            }
-            break;
+           UpdateSubscriptionDetails(PaymentTransaction,amount);
+           TDeviceRealTerminal::Instance().ManagerMembership->SaveContactInfoEditedToSmartCard(PaymentTransaction.Membership.Member);
         }
     }
-    if(retValue)
-    {
-         int PointRules = 0;
-         PointRules |= eprFinancial;
-         PointRules |= eprAllowDiscounts;
-         PaymentTransaction.Membership.Member.Points.PointsRules >> eprNoPointsRedemption;
-         PaymentTransaction.Membership.Member.Points.PointsRules >> eprNeverEarnsPoints;
-         PaymentTransaction.Membership.Member.Points.PointsRules >> eprNoPointsPurchases;
-         TPointsRulesSetUtils().ExpandSubs(PointRules,PaymentTransaction.Membership.Member.Points.PointsRulesSubs);
-         TPointsRulesSetUtils().Expand(PointRules,PaymentTransaction.Membership.Member.Points.PointsRules);
-         UpdateSubscriptionDetails(PaymentTransaction , amountSubs);
-    }
-    return retValue;
 }

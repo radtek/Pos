@@ -34,6 +34,7 @@
 #include "Modules.h"
 #include "ZForm.h"
 #include "PaymentTransaction.h"
+#include "PaySubsUtility.h"
 
 #include "ChefmateClientManager.h"
 //---------------------------------------------------------------------------

@@ -3845,7 +3845,8 @@ void __fastcall TfrmPaymentType::lbeDiscountClick(TObject *Sender)
 	TempUserInfo = TDeviceRealTerminal::Instance().User;
 	bool AllowDiscount = false;
 	AnsiString DiscountMenu = "";
-    if((CurrentTransaction.Membership.Member.ContactKey != 0) && !CurrentTransaction.Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+    if((CurrentTransaction.Membership.Member.ContactKey != 0) && TPaySubsUtility::IsLocalLoyalty() &&
+    !CurrentTransaction.Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
     {
         MessageBox("Discounts are disabled for this Member.", "INFORMATION", MB_OK + MB_ICONINFORMATION);
         return;
@@ -3967,7 +3968,8 @@ void TfrmPaymentType::ApplyMembership(TMMContactInfo &Member)
 		CurrentTransaction.ApplyMembership(Member, MemberSource);
 		if (CurrentTransaction.Orders != NULL)
 		{
-            if(!CurrentTransaction.Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+            if(TPaySubsUtility::IsLocalLoyalty() &&
+               !CurrentTransaction.Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
                ManagerDiscount->ClearDiscounts(CurrentTransaction.Orders);
             ManagerDiscount->ClearMemberExemtDiscounts(CurrentTransaction.Orders);
 			TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(CurrentTransaction);
