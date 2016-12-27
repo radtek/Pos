@@ -799,11 +799,11 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport(int zKey)
         std::set<int> keyToCheck2;
 
         //Indexes for which data will not selected
-        int dailySalekeys[8] = {1, 2, 3, 33, 35, 66, 67, 68};
+        int dailySalekeys[12] = {1, 2, 3,4, 5, 33, 35, 37, 38, 66, 67, 68};
         int dailySalekeys2[2] = {33, 35};
 
         //insert these indexes into set.
-        keyToCheck = InsertInToSet(dailySalekeys, 8);
+        keyToCheck = InsertInToSet(dailySalekeys, 12);
         keyToCheck2 = InsertInToSet(dailySalekeys2, 2);
 
         //Prepare Data For Daily Sales File
@@ -1173,6 +1173,9 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
+        Database::TcpIBSQL selectQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(selectQuery);
+
         //Declare Set For storing index
         std::set<int>keysToSelect;
 
@@ -1199,6 +1202,16 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
 
         ///Load MallSetting For writing into file
         LoadMallSettingsForFile(dBTransaction, prepareDataForDSF, keysToSelect, index, zKey);
+
+        selectQuery->Close();
+        selectQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES GROUP BY 1";
+        selectQuery->ExecQuery();
+        bool  recordPresent = false;
+        while(!selectQuery->Eof)
+            selectQuery->Next();
+
+        if(selectQuery->RecordCount > 1)
+           recordPresent = true;
 
         //Query for fetching data for writing into daily sales file.
         IBInternalQuery->Close();
@@ -1227,7 +1240,91 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
                                     "GROUP BY 1,2,4,5,6 "
 
-                                    "UNION ALL "
+        "UNION ALL ";
+
+        if(recordPresent)
+        {
+           IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                          "SELECT DAILYDATA2.FIELD_INDEX, CAST('Old Accumulated Sales' as varchar(50))FIELD, "
+                                              "CAST(SUM(DAILYDATA2.FIELD_VALUE )*100  AS INT) FIELD_VALUE, "
+                                              "DAILYDATA2.VALUE_TYPE, CAST(0 AS INT) Z_KEY, meh.MM_NAME "
+
+                                         "from (SELECT MAX(a.ARCBILL_KEY) ARCBILL_KEY, a.FIELD,  "
+                                                    "CASE WHEN (a.FIELD_INDEX = 5) THEN LPAD(4 ,2,0) "
+                                                    "WHEN (A.FIELD_INDEX = 38) THEN LPAD(37,2,0) END FIELD_INDEX, "
+                                            "CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY)+1 Z_KEY "
+                                             "FROM MALLEXPORT_SALES a "
+                                             "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+                                              "WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = 'T' "
+                                             "AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES where Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)-1) "
+                                             "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
+                                             "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA2 "
+                                             "INNER JOIN MALLEXPORT_HEADER meh on DAILYDATA2.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+
+                                    "GROUP BY 1,2,4,5,6 ";
+        }
+        else
+        {
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                          "SELECT DAILYDATA2.FIELD_INDEX, CAST('Old Accumulated Sales' as varchar(50))FIELD, "
+                                              "CAST(SUM(DAILYDATA2.FIELD_VALUE )*100  AS INT) FIELD_VALUE, "
+                                              "DAILYDATA2.VALUE_TYPE, CAST(0 AS INT) Z_KEY, meh.MM_NAME "
+
+                                         "from (SELECT MAX(a.ARCBILL_KEY) ARCBILL_KEY, a.FIELD,  "
+                                                    " LPAD(A.FIELD_INDEX,2,0) FIELD_INDEX, "
+                                            "CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
+                                             "FROM MALLEXPORT_SALES a "
+                                             "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+                                             "WHERE a.FIELD_INDEX  IN( 4,37 ) AND meh.IS_ACTIVE = 'T' "
+                                             "AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) "
+                                             "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
+                                             "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA2 "
+                                             "INNER JOIN MALLEXPORT_HEADER meh on DAILYDATA2.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+
+                                    "GROUP BY 1,2,4,5,6 ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+
+          "UNION ALL "
+
+            "SELECT oldSale.FIELD_INDEX, "
+                "case when (oldSale.FIELD_INDEX = 5 or oldSale.field_index = 38)  then ('New Accumulated Sales') end FIELD, "
+                "cast(sum(oldSale.FIELD_VALUE) as int)FIELD_VALUE, oldsale.value_type, SUM(oldsale.z_Key)z_Key, meh.MM_Name "
+                "from( "
+                            "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
+                                                                "  CAST(SUM(DAILYDATA.FIELD_VALUE )*100  AS INT) FIELD_VALUE,    "
+                                            " DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY Z_KEY, DAILYDATA.MM_NAME "
+                                      "FROM "
+                                            "(SELECT a.ARCBILL_KEY, a.FIELD,                   "
+                                            " CASE WHEN (a.FIELD_INDEX = 31) THEN LPAD(5,2,0)  "
+                                            " WHEN (a.FIELD_INDEX = 64) THEN LPAD(38,2,0)      "
+                                            " END FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
+                                            " FROM MALLEXPORT_SALES a                                                                    "
+                                            " INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID               "
+                                            " WHERE a.FIELD_INDEX  IN( 31,64 ) AND meh.IS_ACTIVE = 'T'                                   "
+                                            " AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)                  "
+                                            " GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
+                                            " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA                                                      "
+                         "GROUP BY 1,2,4,5,6 "
+                "UNION ALL "
+                "SELECT DAILYDATA2.FIELD_INDEX, DAILYDATA2.FIELD, "
+                "                                              CAST(SUM(DAILYDATA2.FIELD_VALUE )*100  AS INT) FIELD_VALUE,     "
+                "                                          DAILYDATA2.VALUE_TYPE, CAST(0 AS INT) Z_KEY, DAILYDATA2.MM_NAME  "
+
+                "                                         from (SELECT MAX(a.ARCBILL_KEY) ARCBILL_KEY, a.FIELD,  LPAD(a.FIELD_INDEX ,2,0) FIELD_INDEX, "
+                "                                            CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY)+1 Z_KEY "
+                "                                             FROM MALLEXPORT_SALES a "
+                "                                             INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+                "                                             WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = 'T' "
+                "                                             AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES where Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)-1) "
+                "                                             GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
+                "                                             ORDER BY A.ARCBILL_KEY ASC )DAILYDATA2  "
+                "                                    GROUP BY 1,2,4,5,6)oldSale "
+                "INNER JOIN MALLEXPORT_HEADER meh on oldSale.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
+                "GROUP BY 1,2,4,6 "
+
+                 "UNION ALL "
 
                                      "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, cast(a.FIELD_VALUE as int ) FIELD_VALUE , a.VALUE_TYPE, a.Z_KEY, meh.MM_NAME  "
                                      "FROM "
@@ -1573,3 +1670,4 @@ UnicodeString TEstanciaMall::GetExportType()
     return typeOfFile;
 }
 //-----------------------------------------------------------------------------------------------------------------------------
+
