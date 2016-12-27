@@ -1,27 +1,27 @@
 #ifndef ListPaymentSystemH
 #define ListPaymentSystemH
-
 #include <Dateutils.hpp>
-#include "PaymentTransaction.h"
-#include "enum.h"
-#include "Money.h"
 #include <set>
 #include <map>
 #include <DBClient.hpp>
+#include <functional>
+
+#include "PaymentTransaction.h"
+#include "enum.h"
+#include "Money.h"
 #include "SystemEvents.h"
 #include "SplitMoney.h"
 #include "ItemMinorComplete.h"
 #include "ItemComplete.h"
 #include "XeroIntegration.h"
 #include "XeroInvoiceBuilder.h"
-#include <functional>
 #include "MMPaymentSystem.h"
 #include "PaymentTypeGroup.h"
 #include "DBContacts.h"
 #include "DrinkCommandData.h"
 #include "ThorlinkDataObjects.h"
 #include "CaptureCustomerDetails.h"
-//#include "ThorlinkClient.h"
+
 
 class TReqPrintJob;
 class TItemComplete;

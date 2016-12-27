@@ -6,7 +6,6 @@
 #include "SalesForceCommAtZed.h"
 #include <Memory>
 #include "PocketVoucherInterface.h"
-#include "DeviceRealTerminal.h"
 #include "SalesForceInterface.h"
 #include "StockInterface.h"
 //---------------------------------------------------------------------------

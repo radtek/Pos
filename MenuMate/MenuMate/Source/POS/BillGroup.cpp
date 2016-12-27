@@ -29,7 +29,6 @@
 #include "ReceiptManager.h"
 #include "ListSecurityRefContainer.h"
 #include "DBWebUtil.h"
-#include <IBQuery.hpp>
 #include "GUIDiscount.h"
 #include "Message.h"
 #include "MMTouchKeyboard.h"
@@ -41,7 +40,6 @@
 #include "DBTables.h"
 #include "ManagerDiscount.h"
 #include "ManagerPatron.h"
-#include "GUIScale.h"
 #include "FreebieManager.h"
 #include "SCDPWDChecker.h"
 #include "SelectDish.h"

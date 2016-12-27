@@ -6,7 +6,6 @@
 #include "ReferenceManager.h"
 #include "POS_XMLBase.h"
 #include "Money.h"
-#include "RewardsTransaction.h"
 #include "TabCredit.h"
 #include "ContactMemberApplied.h"
 #include "SplitMoney.h"
@@ -64,6 +63,15 @@ struct TRedeemGiftVoucherInformation
     Currency RedeemedAmount;
     Currency GiftVoucherAmount;
     TDateTime ExpiryDate;
+};
+
+class TRewardsTransaction
+{
+   public:
+      TRewardsTransaction() : CardNumber(""),EFTPOSRef(""),Amount(0){};
+      UnicodeString CardNumber;
+      UnicodeString EFTPOSRef;
+      Currency Amount;
 };
 
 class TPaymentTransaction

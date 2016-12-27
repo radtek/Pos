@@ -2672,7 +2672,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Width = 250
             Height = 25
             Caption = 'Enable Cash Denomination Entry'
-            TabOrder = 27
+            TabOrder = 28
             OnClick = cbCashDenominationEntryClick
           end
           object cbDEnableBlindBalances: TCheckBox

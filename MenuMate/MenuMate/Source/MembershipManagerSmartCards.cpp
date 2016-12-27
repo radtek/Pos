@@ -21,7 +21,6 @@
 
 #include "SmartcardPreloader.h"
 #include "ManagerLoyaltyMate.h"
-#include "MMTouchKeyboard.h"
 #include "LoyaltyMateOperationDialogBox.h"
 #include "DBTab.h"
 #include "EditCustomer.h"

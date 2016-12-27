@@ -12,8 +12,6 @@
 
 #include "GeneralMaintenance.h"
 #include "MMMessageBox.h"
-#include "BlindBalanceController.h"
-
 #include "MMTouchKeyboard.h"
 #include "MMTouchNumpad.h"
 #include "DBSaleTimes.h"

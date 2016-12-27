@@ -9,136 +9,124 @@
 #include <oleacc.h>
 #include <math.h>
 #include <inifiles.hpp>
+#include <DateUtils.hpp>
+#include <mshtml.h>
+#include <oleacc.h>
+#include <math.h>
+#include <i_item_manager.hh>
+#include <cassert>
 #include "SelectDish.h"
+#include "GlobalSettings.h"
+
+#include "DBSaleTimes.h"
+#include "DBTab.h"
+#include "DBTierLevel.h"
+#include "MMData.h"
+#include "DBWebUtil.h"
+#include "DBTables.h"
+#include "DBSecurity.h"
+#include "DBOrder.h"
 #include "POSMain.h"
-#include "PayType.h"
-#include "Printing.h"
-#include "Login.h"
+
 #include "Enum.h"
 #include "Comms.h"
 #include "Secure.h"
+#include "ContactStaff.h"
+#include "Message.h"
+#include "ParkedSales.h"
+#include "Contact.h"
+#include "HoldSend.h"
+#include "Invoice.h"
+#include "Rooms.h"
+#include "Weight.h"
+#include "ScaleControler.h"
+#include "EftPos.h"
+#include "Membership.h"
 #include "CardSwipe.h"
+#include "SmartcardPreloader.h"
+#include "SmartCardAPI.h"
+#include "XReport.h"
+#include "Printing.h"
+#include "ReqPrintJob.h"
+#include "Printout.h"
+#include "Reports.h"
+#include "ReportManager.h"
+#include "DropDown.h"
+#include "DropDownVar.h"
+#include "ReportDisplay.h"
+#include "ReportDisplayNav.h"
+#include "GUIDiscount.h"
+#include "GUIScale.h"
+#include "Functions.h"
+#include "WriteOff.h"
+#include "EnableFloorPlan.h"
+#include "DocketManager.h"
+#include "VerticalSelect.h"
+#include "AddTab.h"
+#include "StringTableRes.h"
+#include "ListCourse.h"
+#include "ItemSize.h"
+#include "ItemRecipe.h"
+#include "ItemSizeCategory.h"
+#include "ForcedOptions.h"
+#include "ForcedSides.h"
+#include "SCDPWDChecker.h"
+#include "ListSecurityRefContainer.h"
+#include "OrderUtils.h"
+#include "SelectCurrentMenu.h"
+#include "BillGroup.h"
 #include "Maintain.h"
 #include "SelectTable.h"
 #include "SelectGlass.h"
+#include "SelectReceipt.h"
 #include "GetMoney.h"
-#include "MMTouchKeyboard.h"
 #include "SelectItem.h"
 #include "Processing.h"
 #include "SelectActiveMenus.h"
-#include "Message.h"
-#include "SelectReceipt.h"
-#include "MMTouchNumpad.h"
-#include "DBSaleTimes.h"
-#include "DBTab.h"
-#include "ContactStaff.h"
-#include "ParkedSales.h"
-#include "SelectCurrentMenu.h"
-#include "MMMessageBox.h"
-#include "BillGroup.h"
-#include "ReportManager.h"
-#include "XReport.h"
-#include "DBOrder.h"
+#include "ProductSearch.h"
+#include "EditCustomer.h"
+#include "SelectMember.h"
+#include "SelectDiscounts.h"
+#include "Analysis.h"
+#include "ShowPrintout.h"
+#include "PayType.h"
+#include "ReportUtilities.h"
+#include "CaptNamePhone.h"
+#include "TransactionAuditScreen.h"
+#include "SelectSizesAsList.h"
+#include "SelectPaymentTypeAndValue.h"
+#include "SelectDateAndTime.h"
+#include "SelectSaveOption.h"
+#include "DelayedPaymentTabs.h"
+#include "DrinkCommandData.h"
 #include "ManagerStock.h"
 #include "ManagerVariable.h"
 #include "FreebieManager.h"
 #include "TableManager.h"
 #include "RunManager.h"
-#include "EftPos.h"
-#include "ForcedOptions.h"
-#include "ForcedSides.h"
-#include "DropDown.h"
 #include "ReceiptManager.h"
-#include "Invoice.h"
-#include "Rooms.h"
-#include "DropDownVar.h"
-#include "GUIDiscount.h"
 #include "ManagerDiscount.h"
-#include "GUIScale.h"
-#include "Functions.h"
-#include "Reports.h"
-#include "WriteOff.h"
-#include "EnableFloorPlan.h"
-
-#include "DocketManager.h"
-#include "Membership.h"
-#include "VerticalSelect.h"
-#include "ReportDisplay.h"
-#include "ReportDisplayNav.h"
-#include "AddTab.h"
 #include "ManagerThirdParty.h"
-#include "StringTableRes.h"
-#include "SelectDiscounts.h"
-#include <DateUtils.hpp>
-
-#include <mshtml.h>
-#include <oleacc.h>
-#include <math.h>
-#include "SHDocVw_OCX.h"
-#include "SmartCardAPI.h"
-#include "EditCustomer.h"
-#include "SelectMember.h"
+#include "ManagerPatron.h"
+#include "ProxyMateManager.h"
 #include "ThemeManager.h"
 #include "ManagerWebDispatch.h"
 #include "ManagerReports.h"
 #include "ManagerFloat.h"
-#include "Weight.h"
-#include "ScaleControler.h"
-#include "MMData.h"
-#include "ListSecurityRefContainer.h"
-#include "ReqPrintJob.h"
-#include "GlobalSettings.h"
-#include "Printout.h"
-#include "ParkedSale.h"
-#include "ListCourse.h"
-#include "ItemSize.h"
-#include "DBTables.h"
-#include "DBSecurity.h"
-#include "ManagerPatron.h"
-#include "ItemRecipe.h"
-#include "DBWebUtil.h"
-#include "Analysis.h"
-#include "ShowPrintout.h"
-#include "TcpStreamPrepare.h"
-#include "MagicMemoriesSfService.h"
-#include "MagicMemoriesSfProgressMonitor.h"
-#include "SmartcardPreloader.h"
-#include "ProxyMateManager.h"
-#include <i_item_manager.hh>
-#include "Contact.h"
-#include "OrderUtils.h"
-#include <cassert>
-#include "HoldSend.h"
 #include "DealManager.h"
-#include "ItemSizeCategory.h"
-#include "SCDPWDChecker.h"
-#include "MMCustomerDisplayManager.h"
-#include "ReportUtilities.h"
-#include "CaptNamePhone.h"
-#include "MallExportManager.h"
-#include "DBTierLevel.h"
-#include "TransactionAuditScreen.h"
-#include "SelectPaymentTypeAndValue.h"
-#include "DelayedPaymentTabs.h"
-#include "SelectDateAndTime.h"
-#include "ManagerDelayedPayment.h"
-#include "SelectSaveOption.h"
-#include "ManagerHappyHour.h"
-#include "DrinkCommandData.h"
-#include "ManagerClippIntegration.h"
-#include "SelectSizesAsList.h"
 #include "ReportUtilities.h"
 #include "InitializeDCSession.h"
 #include "ManagerCloudSync.h"
 #include "ManagerLoyaltyVoucher.h"
-#include "ProductSearch.h"
-#include "OrderUtils.h"
 #include "MessageManager.h"
 #include "ManagerEJournal.h"
-using SfIntegration::Sf_svc_iface;
-using SfIntegration::Sf_svc_iface_params;//
-
-
+#include "ManagerClippIntegration.h"
+#include "ManagerHappyHour.h"
+#include "ManagerDelayedPayment.h"
+#include "MallExportManager.h"
+#include "MMTouchKeyboard.h"
+#include "MMMessageBox.h"
+#include "MMTouchNumpad.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -10115,36 +10103,11 @@ void TfrmSelectDish::EnterPaxCount()
 	PaxCountController.Run();
 	PaxCountController.frmListManager->tbtnDelete->Show();
 
-	if(PaxCountController.frmListManager->ShowModal() == mrOk) {
+	if(PaxCountController.frmListManager->ShowModal() == mrOk)
+    {
 		PaxCountController.Save(TDeviceRealTerminal::Instance().ID.Name);
-      //story MM1837 remove
-      /*if (TGlobalSettings::Instance().SalesforceUploadEnabled) {
-         bool                          dummy;
-         Sf_svc_iface_params           p;
-         TPaxCount                     pc = PaxCountController.Get();
-			std::auto_ptr<TfrmProcessing> proc_dlg(
-			  TfrmProcessing::Create<TfrmProcessing>(this));
-			SalesforceProgressMonitor     spm(proc_dlg.get());
-
-         TDeviceRealTerminal::Instance().Registered(&dummy, &p.site);
-
-			p.notification_receiver = &spm;
-
-         p.username       = TGlobalSettings::Instance().SalesforceUsername;
-         p.password       = TGlobalSettings::Instance().SalesforcePassword;
-         p.security_token = TGlobalSettings::Instance().SalesforceSecurityToken;
-
-			proc_dlg->Show();
-         Sf_svc_iface(p).update_pax_kpi(pc.GetDateFrom(), pc.GetDateTo(),
-			                               pc.GetPaxNumber());
-			proc_dlg->Close();
-		}*/
-	}
-
-
-//	PaxCountController.Show();
-//	PaxCount = PaxCountController.Get();
-	DBTransaction.Commit();
+    }
+     DBTransaction.Commit();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AlterFloat()

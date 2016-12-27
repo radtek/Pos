@@ -1,17 +1,16 @@
 #include <i_signalling_item_manager.hh>
 #include <item_definition_altered_message.hh>
-
-#include <Stream.h>
 #include <item_management_network_messaging_fwd.hh>
 #include <i_signalling_item_manager.hh>
 #include <item_management_exceptions.hh>
 #include <Forms.hpp>
-
-namespace item_management {
-namespace network_messaging {
+#include <Stream.h>
+namespace item_management
+{
+namespace network_messaging
+{
 
 using item_management::item_exception;
-
 
 item_definition_altered_message::item_definition_altered_message()
     : enabled_(false),
