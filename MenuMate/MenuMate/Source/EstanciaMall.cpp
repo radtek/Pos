@@ -664,16 +664,54 @@ double TEstanciaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransac
     try
     {
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =
-                                    "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
-                                    "FROM MALLEXPORT_SALES a "
-                                    "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ) ";
+        IBInternalQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY ";
 
-        IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
+        if(!isMasterTerminal)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition;
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 1;
+
+        if(!isMasterTerminal)
+        {
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        }
+
         IBInternalQuery->ExecQuery();
+        bool  recordPresent = false;
 
-        if(IBInternalQuery->RecordCount)
-            oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
+        if(IBInternalQuery->RecordCount )
+           recordPresent = true;
+
+        if(recordPresent)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+                                        "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
+                                        "FROM MALLEXPORT_SALES a "
+                                        "WHERE  a.MALLEXPORT_SALE_KEY = (SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ";
+            if(!isMasterTerminal)
+            {
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+            }
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ")";
+
+            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
+            if(!isMasterTerminal)
+            {
+                IBInternalQuery->ParamByName("DEVICE_KEY")->AsString = TDeviceRealTerminal::Instance().ID.ProfileKey;
+            }
+            IBInternalQuery->ExecQuery();
+
+            if(IBInternalQuery->RecordCount)
+                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
+        }
+        else
+        {
+            oldAccumulatedSales = 0;
+        }
     }
      catch(Exception &E)
 	{
@@ -1204,8 +1242,22 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
         LoadMallSettingsForFile(dBTransaction, prepareDataForDSF, keysToSelect, index, zKey);
 
         selectQuery->Close();
-        selectQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES GROUP BY 1";
+        selectQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY AND a.Z_KEY != :Z_KEY";
+
+        if(!isMasterTerminal)
+        {
+            selectQuery->SQL->Text = selectQuery->SQL->Text + terminalCondition;
+        }
+
+        selectQuery->SQL->Text = selectQuery->SQL->Text + "GROUP BY 1";
+        selectQuery->ParamByName("MALL_KEY")->AsInteger = 1;
+        selectQuery->ParamByName("Z_KEY")->AsInteger = 0;
+
+        if(!isMasterTerminal)
+            selectQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+
         selectQuery->ExecQuery();
+
         bool  recordPresent = false;
         while(!selectQuery->Eof)
             selectQuery->Next();
@@ -1252,16 +1304,23 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                          "from (SELECT MAX(a.ARCBILL_KEY) ARCBILL_KEY, a.FIELD,  "
                                                     "CASE WHEN (a.FIELD_INDEX = 5) THEN LPAD(4 ,2,0) "
                                                     "WHEN (A.FIELD_INDEX = 38) THEN LPAD(37,2,0) END FIELD_INDEX, "
-                                            "CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY)+1 Z_KEY "
+                                            "CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
                                              "FROM MALLEXPORT_SALES a "
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                                               "WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = 'T' "
-                                             "AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES where Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)-1) ";
-            if(!isMasterTerminal)
-			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+                                             "AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES a where Z_KEY = "
+                                                   "(SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES a where Z_KEY NOT IN "
+                                                        "(SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES A ";
+             if(!isMasterTerminal)
+			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "WHERE a.DEVICE_KEY = :DEVICE_KEY ";
 
-                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-                                             "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ")";
+
+             if(!isMasterTerminal)
+			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.DEVICE_KEY = :DEVICE_KEY ";
+
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                                             " )) GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA2 "
                                              "INNER JOIN MALLEXPORT_HEADER meh on DAILYDATA2.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
 
@@ -1280,13 +1339,13 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                              "FROM MALLEXPORT_SALES a "
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                                              "WHERE a.FIELD_INDEX  IN( 4,37 ) AND meh.IS_ACTIVE = 'T' "
-                                             "AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+                                             "AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES ";
             if(!isMasterTerminal)
-			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "where a.DEVICE_KEY = :DEVICE_KEY " ;
 
                 IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
 
-                                             "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
+                                             ") GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA2 "
                                              "INNER JOIN MALLEXPORT_HEADER meh on DAILYDATA2.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
 
@@ -1312,14 +1371,14 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                             " FROM MALLEXPORT_SALES a                                                                    "
                                             " INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID               "
                                             " WHERE a.FIELD_INDEX  IN( 31,64 ) AND meh.IS_ACTIVE = 'T'                                   "
-                                            " AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)                  ";
+                                            " AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES                  ";
 
                 if(!isMasterTerminal)
-			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "WHERE a.DEVICE_KEY = :DEVICE_KEY " ;
 
                 IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
 
-                                            " GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
+                                            " ) GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE  "
                                             " ORDER BY A.ARCBILL_KEY ASC )DAILYDATA                                                      "
                          "GROUP BY 1,2,4,5,6 "
                 "UNION ALL "
@@ -1327,19 +1386,25 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                 "                                              CAST(SUM(DAILYDATA2.FIELD_VALUE )*100  AS INT) FIELD_VALUE,     "
                 "                                          DAILYDATA2.VALUE_TYPE, CAST(0 AS INT) Z_KEY, DAILYDATA2.MM_NAME  "
 
-                "                                         from (SELECT MAX(a.ARCBILL_KEY) ARCBILL_KEY, a.FIELD,  LPAD(a.FIELD_INDEX ,2,0) FIELD_INDEX, "
+                "                                         FROM (SELECT MAX(a.ARCBILL_KEY) ARCBILL_KEY, a.FIELD,  LPAD(a.FIELD_INDEX ,2,0) FIELD_INDEX, "
                 "                                            CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY)+1 Z_KEY "
                 "                                             FROM MALLEXPORT_SALES a "
                 "                                             INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                 "                                             WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = 'T' "
-                "                                             AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES where Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)-1) ";
+                                                            "AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES a "
+                                                                    "WHERE Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES a where Z_KEY NOT IN "
+                                                                            "(SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES A ";
+             if(!isMasterTerminal)
+			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "WHERE a.DEVICE_KEY = :DEVICE_KEY ";
 
-                if(!isMasterTerminal)
-			        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + ")";
+
+             if(!isMasterTerminal)
+			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.DEVICE_KEY = :DEVICE_KEY ";
 
                 IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
 
-                "                                             GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
+                "                                          ) )  GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, meh.MM_NAME, a.FIELD_VALUE "
                 "                                             ORDER BY A.ARCBILL_KEY ASC )DAILYDATA2  "
                 "                                    GROUP BY 1,2,4,5,6)oldSale "
                 "INNER JOIN MALLEXPORT_HEADER meh on oldSale.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
