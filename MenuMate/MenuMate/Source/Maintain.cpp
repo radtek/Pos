@@ -3623,7 +3623,7 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
         Item1.Title = "Panasonic ";
         Item1.Properties["Action"] = IntToStr(1);
         Item1.Properties["Color"] = IntToStr(clGreen);
-        Item1.IsDisabled = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
+        Item1.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
         Item1.CloseSelection = true;
         SelectionForm1->Items.push_back(Item1);
 
