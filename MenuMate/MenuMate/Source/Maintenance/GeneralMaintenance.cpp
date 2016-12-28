@@ -4259,6 +4259,7 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
         mv.SetProfileBool(tr, pk, vmUseMemberSubs,
         cbUseMemberSubs->Checked);
         tr.Commit();
+        MessageBox("All terminals need to be restarted for this selection to work properly","Information", MB_OK + MB_ICONINFORMATION);
     }
     else
     {

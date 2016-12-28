@@ -407,6 +407,8 @@ bool TDBContacts::GetContactExists(Database::TDBTransaction &DBTransaction, int 
 
 int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int inContactKey,TContactType inContactType,TMMContactInfo &Info)
 {
+   int GlobalProfileKey = TManagerVariable::Instance().GetProfile(DBTransaction, eSystemProfiles, "Globals");
+   TManagerVariable::Instance().GetProfileBool(DBTransaction,  GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
    int RetVal = 0;
    try
    {
@@ -424,10 +426,14 @@ int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int
 		 IBInternalQuery->ExecQuery();
 		 if (inContactKey == IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger)
 		 {
-            if(TGlobalSettings::Instance().UseMemberSubs)
+            if(TPaySubsUtility::IsLocalLoyalty())
             {
-                int rulesSubs = IBInternalQuery->FieldByName("POINTS_RULES_SUBS")->AsInteger;
-                TPointsRulesSetUtils().ExpandSubs(rulesSubs,Info.Points.PointsRulesSubs);
+                int newRulesSubs = TPointsRulesSetUtils().CompressSubs(Info.Points.PointsRulesSubs);
+                if(newRulesSubs == 0)
+                {
+                    int rulesSubs = IBInternalQuery->FieldByName("POINTS_RULES_SUBS")->AsInteger;
+                    TPointsRulesSetUtils().ExpandSubs(rulesSubs,Info.Points.PointsRulesSubs);
+                }
             }
 			RetVal = inContactKey;
 			CreateContact = false;
@@ -547,18 +553,16 @@ void TDBContacts::InsertDetailstoMemberSubs(Database::TDBTransaction &DBTransact
       {
           IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "";
           IBInternalQuery->ParamByName("SUBS_PAID" )->AsString  = "F";
-          if(Info.Points.PointsRulesSubs.Contains(eprFinancial) && Info.SiteID != TGlobalSettings::Instance().SiteID)
-          {
-              Info.Points.PointsRulesSubs >> eprFinancial;
+              if(Info.Points.PointsRulesSubs.Contains(eprFinancial))
+                Info.Points.PointsRulesSubs >> eprFinancial;
               if(!Info.Points.PointsRules.Contains(eprNoPointsPurchases))
                  Info.Points.PointsRules << eprNoPointsPurchases;
               if(!Info.Points.PointsRules.Contains(eprNoPointsRedemption))
                  Info.Points.PointsRules << eprNoPointsRedemption;
               if(!Info.Points.PointsRules.Contains(eprNeverEarnsPoints))
                  Info.Points.PointsRules << eprNeverEarnsPoints;
-          }
-          if(Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
-            Info.Points.PointsRulesSubs >> eprAllowDiscounts;
+              if(Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+                 Info.Points.PointsRulesSubs >> eprAllowDiscounts;
       }
       else
       {

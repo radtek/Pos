@@ -25,9 +25,9 @@ bool TPaySubsUtility::IsLocalLoyalty()
 bool TPaySubsUtility::IsPaySubsEligible(TPaymentTransaction &PaymentTransaction,double &amount)
 {
     bool retValue = false;
-    for(int i = 0; i< PaymentTransaction.Orders->Count; i++)
+    for(int itemCount = 0; itemCount< PaymentTransaction.Orders->Count; itemCount++)
     {
-        TItemComplete *itemComplete = (TItemComplete*)PaymentTransaction.Orders->Items[0];
+        TItemComplete *itemComplete = (TItemComplete*)PaymentTransaction.Orders->Items[itemCount];
         if(itemComplete->Item == "Pay Subs" && itemComplete->TabKey == 0 && itemComplete->GetQty() >=1
            && !PaymentTransaction.CreditTransaction && !itemComplete->wasOpenItem)
         {
@@ -47,8 +47,37 @@ bool TPaySubsUtility::IsPaySubsEligible(TPaymentTransaction &PaymentTransaction,
                  retValue= true;
                }
             }
-            break;
+            if(retValue)
+              break;
         }
+        for(int subOrdersCount = 0; subOrdersCount < itemComplete->SubOrders->Count; subOrdersCount++)
+        {
+            TItemComplete *subItem = (TItemComplete*)itemComplete->SubOrders->Items[subOrdersCount];
+            if(subItem->Item == "Pay Subs" && subItem->TabKey == 0 && subItem->GetQty() >=1
+           && !PaymentTransaction.CreditTransaction && !subItem->wasOpenItem)
+            {
+                if(subItem->HappyHour)
+                {
+                   if(subItem->BillCalcResult.FinalPrice >= subItem->PriceLevel1)
+                   {
+                     amount = subItem->PriceLevel1;
+                     retValue = true;
+                   }
+                }
+                else
+                {
+                   if(subItem->BillCalcResult.FinalPrice >= subItem->PriceLevel0)
+                   {
+                     amount = subItem->PriceLevel0;
+                     retValue= true;
+                   }
+                }
+                if(retValue)
+                  break;
+            }
+        }
+        if(retValue)
+          break;
     }
     if(retValue)
     {

@@ -1158,10 +1158,15 @@ void TItemMinorComplete::ClearAllDiscounts()
 		TDiscount CurrentDiscount = *ptrDiscount;
         if(CurrentDiscount.Mode == DiscModePoints)
            ItemPriceForPoints = ItemPriceForPointsOriginal;
-        Discounts.erase(ptrDiscount);
-        ptrDiscount = Discounts.begin();
-        SelectedItems = 0;
-        PrevSelectedItems = 0;
+        if(CurrentDiscount.Mode != DiscModeDeal)
+        {
+            Discounts.erase(ptrDiscount);
+            ptrDiscount = Discounts.begin();
+            SelectedItems = 0;
+            PrevSelectedItems = 0;
+        }
+        else
+          std::advance(ptrDiscount, 1);
 	}
     RunBillCalculator();
 }

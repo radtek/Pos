@@ -1142,12 +1142,16 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 	}
 	else if (DataType == eDiscountCard)
 	{
-		DBTransaction.StartTransaction();
-		ApplyDiscount(DBTransaction, ManagerDiscount->GetDiscount(DBTransaction, Data.SubString(1, 80)), SeatOrders[SelectedSeat]->Orders->List);
-		RedrawSeatOrders();
-		TotalCosts();
-		UpdateExternalDevices();
-		DBTransaction.Commit();
+        if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
+            SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        {
+            DBTransaction.StartTransaction();
+            ApplyDiscount(DBTransaction, ManagerDiscount->GetDiscount(DBTransaction, Data.SubString(1, 80)), SeatOrders[SelectedSeat]->Orders->List);
+            RedrawSeatOrders();
+            TotalCosts();
+            UpdateExternalDevices();
+            DBTransaction.Commit();
+        }
 	}
 	else
 	{
@@ -13512,7 +13516,9 @@ void TfrmSelectDish::AdjustItemQty(Currency Count)
    // Redo the free count.
     if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
     SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
-     TManagerFreebie::IsPurchasing(DBTransaction, List.get());
+    {
+       TManagerFreebie::IsPurchasing(DBTransaction, List.get());
+    }
    CheckDeals(DBTransaction);
    DBTransaction.Commit();
 
@@ -13998,6 +14004,7 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
      if((TPaySubsUtility::IsLocalLoyalty() && !Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts)) && Result == lsAccepted)
      {
         ManagerDiscount->ClearDiscounts(SeatOrders[SelectedSeat]->Orders->List);
+        CheckDeals(DBTransaction);
      }
 
      if (Result == lsAccountBlocked)

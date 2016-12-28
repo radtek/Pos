@@ -103,6 +103,11 @@ void __fastcall TfrmEditCustomer::FormShow(TObject *Sender)
    tbProximity->Enabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
    cbNoEmail->Enabled = Info.EMail == "" || Info.EMail == NULL;
    edEmail->Enabled = Info.EMail == "" || Info.EMail == NULL;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+   int GlobalProfileKey = TManagerVariable::Instance().GetProfile(DBTransaction, eSystemProfiles, "Globals");
+   TManagerVariable::Instance().GetProfileBool(DBTransaction,  GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+    DBTransaction.Commit();
 }
 // ---------------------------------------------------------------------------
 void TfrmEditCustomer::DrawContactDetails()
@@ -136,12 +141,22 @@ void TfrmEditCustomer::UpdatePointsRuleNewMember()
     }
     else
     {
+        tcbeprFinancial->Visible = false;
         tcbeprNoPointsRedemption->Latched = false;
         tcbeprNoPointsPurchases->Latched = false;
         tcbeprEarnsPointsWhileRedeemingPoints->Latched = false;
         tcbeprNeverEarnsPoints->Latched = false;
         tcbeprAllowedNegitive->Latched = false;
         tcbeprFinancial->Latched = true;
+        if(!TPaySubsUtility::IsLocalLoyalty())
+        {
+            tcbeprFinancial->Visible = false;
+            tcbeprAllowDiscounts->Visible = false;
+        }
+        else
+        {
+            tcbeprAllowDiscounts->Visible = true;
+        }
         tcbeprAllowDiscounts->Latched = true;
         int PointRule = 0;
         PointRule |= eprAllowDiscounts;
@@ -1347,9 +1362,10 @@ void __fastcall TfrmEditCustomer::tcbeprAllowDiscountsClick(TObject *Sender)
        }
        else
        {
-          Info.Points.PointsRulesSubs >> eprAllowDiscounts;
-          Info.AutoAppliedDiscounts.clear();
-         tcbeprAllowDiscounts->Latched = false;
+//          Info.Points.PointsRulesSubs >> eprAllowDiscounts;
+//          Info.AutoAppliedDiscounts.clear();
+//         tcbeprAllowDiscounts->Latched = false;
+          tcbeprAllowDiscounts->Latched = Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts);
        }
    }
    else
