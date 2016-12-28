@@ -568,8 +568,8 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
 
     if(isVatable)
     {
-        fieldData.GrossAmountVatable += (double)(order->GetQty() > 0 ? (order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment()))
-                                            : 0);
+        double grossAmount = ((order->PriceEach_BillCalc()*order->GetQty()) + fabs(order->TotalAdjustment()));
+        fieldData.GrossAmountVatable += (order->GetQty() > 0 ? grossAmount : 0);
         fieldData.PromoSalesAmountVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.promoDiscount) : estanciaDiscounts.promoDiscount*-1);
         fieldData.PWDDiscountVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.pwdDiscount) : estanciaDiscounts.pwdDiscount*-1);
         fieldData.RefundAmountVatable += (double)(order->GetQty() < 0 ? order->PriceEach_BillCalc() : 0);
@@ -595,8 +595,9 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
     }
     else
     {
-        fieldData.GrossAmountNonVatable += (double)(order->GetQty() > 0 ? (order->PriceEach_BillCalc()*fabs(order->GetQty()) + fabs(order->TotalAdjustment()))
-                                            : 0);
+       // fieldData.GrossAmountNonVatable =  (double)fieldData.GrossAmountNonVatable;
+        double grossAmount = ((order->PriceEach_BillCalc()*order->GetQty()) + fabs(order->TotalAdjustment()));
+        fieldData.GrossAmountNonVatable += (order->GetQty() > 0 ? grossAmount : 0);
         fieldData.PromoSalesAmountNonVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.promoDiscount) : estanciaDiscounts.promoDiscount*-1);
         fieldData.SCDDiscountNonVatable += (double)(order->GetQty() > 0 ? fabs(estanciaDiscounts.scdDiscount) : estanciaDiscounts.scdDiscount*-1);
         fieldData.RefundAmountNonVatable += (double)(order->GetQty() < 0 ? fabs(order->PriceEach_BillCalc()) : 0);
