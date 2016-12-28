@@ -142,7 +142,7 @@ void XRemovalDetailsReportSection::GetRemovalReportsForNormalZed(TIBSQL* removal
     AnsiString terminalNamePredicate = "";
     if (!_globalSettings->EnableDepositBagNum)
     {
-        terminalNamePredicate = " and SECURITY.TERMINAL_NAME = '" + deviceName + "' and " ;
+        terminalNamePredicate = " and SECURITY.TERMINAL_NAME = '" + deviceName + "' " ;
     }
     removalsQuery->SQL->Text =
         "SELECT  "
@@ -176,7 +176,7 @@ void XRemovalDetailsReportSection::GetRemovalReportsForConsolidatedZed(TIBSQL* r
     AnsiString terminalNamePredicate = "";
     if (!_globalSettings->EnableDepositBagNum)
     {
-        terminalNamePredicate = " and SECURITY.TERMINAL_NAME = '" + deviceName + "' and " ;
+        terminalNamePredicate = " and SECURITY.TERMINAL_NAME = '" + deviceName + "'  " ;
     }
   AnsiString timeFilter = "";
   timeFilter =  " and b.TIME_STAMP >= :startTime and b.TIME_STAMP < :PrevZedTime ";
