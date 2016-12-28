@@ -733,8 +733,11 @@ void TApplyParser::Insert6_34Mall_ExportHeader(TDBControl* const inDBControl)
 void TApplyParser::update6_35Tables()
 {
     Create6_35MemberSubsGenerator(_dbControl);
-    Create6_35MemberSubsDetails(_dbControl);
-    Insert6_35MemberSubsDetails(_dbControl);
+    if(!tableExists( "MEMBERSHIP_SUBS_DETAILS", _dbControl ))
+    {
+        Create6_35MemberSubsDetails(_dbControl);
+        Insert6_35MemberSubsDetails(_dbControl);
+    }
     UpdateMallExportSettingValuesTable6_35(_dbControl);
     Create6_35GeneratorMallExportSettingValues(_dbControl);
 }
@@ -754,25 +757,22 @@ void TApplyParser::Create6_35MemberSubsGenerator(TDBControl* const inDBControl)
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_35MemberSubsDetails(TDBControl* const inDBControl)
 {
-    if ( !tableExists( "MEMBERSHIP_SUBS_DETAILS", _dbControl ) )
-    {
-        executeQuery(
-        "CREATE TABLE MEMBERSHIP_SUBS_DETAILS "
-        "( "
-        "   MEMBERSHIP_SUBS_KEY INTEGER NOT NULL PRIMARY KEY, "
-        "   SUBS_PAID_DATE TIMESTAMP, "
-        "   SUBS_EXPIRY_DATE TIMESTAMP,"
-        "   SUBS_PAID_AMOUNT NUMERIC(15,4),"
-        "   SUBS_PAID_RECEIPT_NO VARCHAR(25),"
-        "   SUBS_TYPE VARCHAR(50),"
-        "   SUBS_PAID T_TRUEFALSE DEFAULT 'F',"
-        "   POINTS_RULES_SUBS INTEGER,"
-        "   CONTACTS_KEY INTEGER,"
-        "   FOREIGN KEY (CONTACTS_KEY) REFERENCES CONTACTS (CONTACTS_KEY)  ON DELETE CASCADE, "
-        "   ISLOCAL_MEMBER T_TRUEFALSE DEFAULT 'F'"
-        ");",
-        inDBControl );
-    }
+    executeQuery(
+    "CREATE TABLE MEMBERSHIP_SUBS_DETAILS "
+    "( "
+    "   MEMBERSHIP_SUBS_KEY INTEGER NOT NULL PRIMARY KEY, "
+    "   SUBS_PAID_DATE TIMESTAMP, "
+    "   SUBS_EXPIRY_DATE TIMESTAMP,"
+    "   SUBS_PAID_AMOUNT NUMERIC(15,4),"
+    "   SUBS_PAID_RECEIPT_NO VARCHAR(25),"
+    "   SUBS_TYPE VARCHAR(50),"
+    "   SUBS_PAID T_TRUEFALSE DEFAULT 'F',"
+    "   POINTS_RULES_SUBS INTEGER,"
+    "   CONTACTS_KEY INTEGER,"
+    "   FOREIGN KEY (CONTACTS_KEY) REFERENCES CONTACTS (CONTACTS_KEY)  ON DELETE CASCADE, "
+    "   ISLOCAL_MEMBER T_TRUEFALSE DEFAULT 'F'"
+    ");",
+    inDBControl );
 }
 //---------------------------------------------------------------------------
 void TApplyParser::Insert6_35MemberSubsDetails(TDBControl* const inDBControl)

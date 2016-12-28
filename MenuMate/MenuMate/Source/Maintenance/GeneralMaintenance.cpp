@@ -447,7 +447,9 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 
     TManagerVariable::Instance().GetProfileBool( DBTransaction, GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs );
     DBTransaction.Commit();
+    cbUseMemberSubs->OnClick = NULL;
     cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
+    cbUseMemberSubs->OnClick = cbUseMemberSubsClick;
 }
 
 //---------------------------------------------------------------------------
