@@ -72,9 +72,17 @@ void __fastcall TfrmSetup::imgCloseClick(TObject *Sender)
 {
     if(cbNewMallLoc->ItemIndex== 1)
     {
-        UpdateMallInfo();
+        if(edTaxRate->Text != "")
+        {
+            UpdateMallInfo();
+            Close();
+        }
+        else
+        {
+            MessageBox("Please Enter Tax Rate", "Error",MB_OK + MB_ICONERROR);
+        }
+
     }
-	Close();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::FormClose(TObject *Sender, TCloseAction &Action)

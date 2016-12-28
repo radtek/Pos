@@ -1308,7 +1308,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                              "FROM MALLEXPORT_SALES a "
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                                               "WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = 'T' "
-                                             "AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES a where Z_KEY = "
+                                             "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES a where Z_KEY = "
                                                    "(SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES a where Z_KEY NOT IN "
                                                         "(SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES A ";
              if(!isMasterTerminal)
@@ -1338,8 +1338,8 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                             "CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
                                              "FROM MALLEXPORT_SALES a "
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                                             "WHERE a.FIELD_INDEX  IN( 4,37 ) AND meh.IS_ACTIVE = 'T' "
-                                             "AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES ";
+                                             "WHERE a.FIELD_INDEX  IN( 4,37 ) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                             "AND a.MALL_KEY = :MALL_KEY AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES ";
             if(!isMasterTerminal)
 			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "where a.DEVICE_KEY = :DEVICE_KEY " ;
 
@@ -1370,8 +1370,8 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                             " END FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY) Z_KEY "
                                             " FROM MALLEXPORT_SALES a                                                                    "
                                             " INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID               "
-                                            " WHERE a.FIELD_INDEX  IN( 31,64 ) AND meh.IS_ACTIVE = 'T'                                   "
-                                            " AND a.MALL_KEY = 1 AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES                  ";
+                                            " WHERE a.FIELD_INDEX  IN( 31,64 ) AND meh.IS_ACTIVE = :IS_ACTIVE                                   "
+                                            " AND a.MALL_KEY = :MALL_KEY AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES                  ";
 
                 if(!isMasterTerminal)
 			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "WHERE a.DEVICE_KEY = :DEVICE_KEY " ;
@@ -1390,8 +1390,8 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                 "                                            CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, meh.MM_NAME, MAX(A.Z_KEY)+1 Z_KEY "
                 "                                             FROM MALLEXPORT_SALES a "
                 "                                             INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
-                "                                             WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = 'T' "
-                                                            "AND a.MALL_KEY = 1 AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES a "
+                "                                             WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                                            "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES a "
                                                                     "WHERE Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES a where Z_KEY NOT IN "
                                                                             "(SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES A ";
              if(!isMasterTerminal)
