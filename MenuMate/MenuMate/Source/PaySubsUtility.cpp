@@ -53,7 +53,7 @@ bool TPaySubsUtility::IsPaySubsEligible(TPaymentTransaction &PaymentTransaction,
         for(int subOrdersCount = 0; subOrdersCount < itemComplete->SubOrders->Count; subOrdersCount++)
         {
             TItemComplete *subItem = (TItemComplete*)itemComplete->SubOrders->Items[subOrdersCount];
-            if(subItem->Item == "Pay Subs" && subItem->TabKey == 0 && subItem->GetQty() >=1
+            if(subItem->Item == "Pay Subs" && itemComplete->TabKey == 0 && subItem->GetQty() >=1
            && !PaymentTransaction.CreditTransaction && !subItem->wasOpenItem)
             {
                 if(subItem->HappyHour)
