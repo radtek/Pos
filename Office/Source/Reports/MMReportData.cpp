@@ -1392,6 +1392,8 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"left join ARCHIVE on ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
 			"left join ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 		"Where "
+        " ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and     "
+
 		    "((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
           "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable') ) and "
 			"Security.Security_Ref = ArcBill.Security_Ref and "
@@ -1434,6 +1436,8 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"left join DAYARCHIVE on DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
 			"left join DAYARCORDERDISCOUNTS on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
 		"Where "
+        "dayARCHIVE.ARCHIVE_KEY not in (Select     dayarchive.ARCHIVE_KEY from   (select *from dayARCHIVE where dayARCHIVE.PRICE=0) dayARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=dayARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "  
+
 		    "((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
           "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable' ) ) and "
            "DAYARCHIVE.PRICE<>0 and "
