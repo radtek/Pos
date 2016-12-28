@@ -296,8 +296,8 @@ void TDBContacts::GetContactDetails(Database::TDBTransaction &DBTransaction, int
          Info.TierLevel = IBInternalQuery->FieldByName("TIER_LEVEL")->AsInteger;
          Info.IsFirstVisitRewarded = IBInternalQuery->FieldByName("IS_FIRSTVISIT_REWARDED")->AsString == 'T' ? true : false;
 		 int PointsRules = IBInternalQuery->FieldByName("POINTS_RULES")->AsInteger;
-         Info.Points.Clear();
          TPointsRulesSetUtils().Expand(PointsRules, Info.Points.PointsRules);
+         Info.Points.ClearPoints();
          GetPointsBalances(DBTransaction,inContactKey,Info.Points);
          GetContactCards(DBTransaction,inContactKey,Info.Cards);
 		 GetDiscountDetails(DBTransaction, Info.ContactKey, Info);
