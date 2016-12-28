@@ -14,22 +14,27 @@
 #pragma link "UniProvider"
 #pragma link "MemDS"
 #pragma resource "*.dfm"
-TfrmDBPanasonic *frmDBPanasonic;
+
 //---------------------------------------------------------------------------
 __fastcall TfrmDBPanasonic::TfrmDBPanasonic(TComponent* Owner)
     : TForm(Owner)
 {
+
+    if(!UniDataBaseConnection->Connected)
+    {
+        UniDataBaseConnection->ConnectString = "Provider Name=SQL Server;Data Source="+ TGlobalSettings::Instance().PanasonicServerIP + ";Initial Catalog=TRANSACTIONDB;User ID=TransactSrv;Password=Z7uQmcJJrXMBuFf9Fp7T85jAs7TWuyhf";
+    }
+
+
 }
 void TfrmDBPanasonic::SendDataToServer(TPanasonicModels &panasonicModels)
 {
     try
     {
+        TUniQuery *UniInsertQuery = new TUniQuery(Owner);
+        UniInsertQuery->Connection = UniDataBaseConnection;
         UniInsertQuery->Close();
         UniInsertQuery->SQL->Clear();
-        if(!UniDataBaseConnection->Connected)
-            UniDataBaseConnection->ConnectString = "Provider Name=SQL Server;Data Source="+ TGlobalSettings::Instance().PanasonicServerIP + ";Initial Catalog=TRANSACTIONDB;User ID=TransactSrv;Password=Z7uQmcJJrXMBuFf9Fp7T85jAs7TWuyhf";
-        UniInsertQuery->Connection = UniDataBaseConnection;
-
         UniInsertQuery->SQL->Text = "INSERT INTO TTRANSACTION "
                                         "(CompleteReceiptData, StoreId, TerminalId, OperatorId, OperatorName, CustomerId, "
                                         "CustomerName, TransactionId, TransactionType, TenderType, TransactionAmount, VoidAmount, RefundAmount, TenderCash, Suspended, "
@@ -75,6 +80,7 @@ void TfrmDBPanasonic::SendDataToServer(TPanasonicModels &panasonicModels)
         UniInsertQuery->ParamByName("OperatorSignOn")->AsBoolean        =  panasonicModels.OperatorSignOn;
         UniInsertQuery->ParamByName("OperatorSignOff")->AsBoolean       =  panasonicModels.OperatorSignOff;
         UniInsertQuery->Execute();
+        delete UniInsertQuery;
     }
     catch(Exception &E)
 	{
@@ -87,10 +93,10 @@ void TfrmDBPanasonic::InsertItemsToTItemList(TPanasonicItemList &itemList)
 {
     try
     {
+        TUniQuery *UniInsertQuery = new TUniQuery(Owner);
+        UniInsertQuery->Connection = UniDataBaseConnection;
         UniInsertQuery->Close();
         UniInsertQuery->SQL->Clear();
-        UniInsertQuery->Connection = UniDataBaseConnection;
-
         UniInsertQuery->SQL->Text = "INSERT INTO TITEMLIST "
                                         "(InternalTransactionID, ProductCode, ProductDescription, UnitPrice, Quantity, Amount, "
                                         "Weight, PriceInquiry, Void, StaffPurchase, Refund, TrainingMode) "
@@ -110,6 +116,7 @@ void TfrmDBPanasonic::InsertItemsToTItemList(TPanasonicItemList &itemList)
         UniInsertQuery->ParamByName("Refund")->AsBoolean                    =  itemList.Refund;
         UniInsertQuery->ParamByName("TrainingMode")->AsBoolean              =  itemList.TrainingMode;
         UniInsertQuery->Execute();
+        delete UniInsertQuery;
     }
     catch(Exception &E)
 	{
@@ -122,10 +129,10 @@ void TfrmDBPanasonic::InsertProductDetailsInToTProduct(TPanasonicProduct &produc
 {
     try
     {
+        TUniQuery *UniInsertQuery = new TUniQuery(Owner);
+        UniInsertQuery->Connection = UniDataBaseConnection;
         UniInsertQuery->Close();
         UniInsertQuery->SQL->Clear();
-        UniInsertQuery->Connection = UniDataBaseConnection;
-
         UniInsertQuery->SQL->Text = "INSERT INTO TPRODUCT "
                                         "(ProductCode, ProductDescription) "
                                 "VALUES (:ProductCode, :ProductDescription)";
@@ -133,6 +140,7 @@ void TfrmDBPanasonic::InsertProductDetailsInToTProduct(TPanasonicProduct &produc
         UniInsertQuery->ParamByName("ProductCode")->AsAnsiString            =  (product.ProductCode).SubString (0,31);
         UniInsertQuery->ParamByName("ProductDescription")->AsAnsiString     =  (product.ProductDescription).SubString (0,31);
         UniInsertQuery->Execute();
+        delete UniInsertQuery;
     }
     catch(Exception &E)
 	{
@@ -145,9 +153,10 @@ void TfrmDBPanasonic::InsertTransactionDBServerInformation(TPanasonicTransaction
 {
     try
     {
+        TUniQuery *UniInsertQuery = new TUniQuery(Owner);
+        UniInsertQuery->Connection = UniDataBaseConnection;
         UniInsertQuery->Close();
         UniInsertQuery->SQL->Clear();
-        UniInsertQuery->Connection = UniDataBaseConnection;
         UnicodeString posName = "";
         UnicodeString posVersion;
         bool isRowExist = false;
@@ -181,6 +190,7 @@ void TfrmDBPanasonic::InsertTransactionDBServerInformation(TPanasonicTransaction
             UniInsertQuery->ParamByName("TransactionDBServerVersion")->AsAnsiString =  (serverInfo.TransactionDBServerVersion).SubString (0,37);
             UniInsertQuery->Execute();
         }
+        delete UniInsertQuery;
     }
     catch(Exception &E)
 	{

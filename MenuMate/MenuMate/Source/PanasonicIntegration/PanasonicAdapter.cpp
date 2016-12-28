@@ -7,7 +7,6 @@
 #include "PanasonicAdapter.h"
 #include "DBPanasonic.h"
 #include "MMLogging.h"
-
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -16,12 +15,16 @@ void TPanasonicAdapter::ConvertTransactionInfoToPanasonicInfo(TPaymentTransactio
 {
     try
     {
+
           //Convert TransactionInfo to panasonic Transaction info so that it can be directly posted to their db.
           ConverTransactionInfoToPanasonicTransactionInfo(paymentTransaction, arcBillKey, receipt);
+
            //Convert TransactionInfo to panasonic Item info so that it can be directly posted to their TItemList Table.
           ConvertTransactionInfoToPanasonicItemList(paymentTransaction, arcBillKey);
+
            //Convert TransactionInfo to panasonic product info .
           ConvertTransactionInfoToPanasonicProduct(paymentTransaction);
+
           //fill transaction db server info.
           ConverTransactionInfoToTransactionDBServerInfo(paymentTransaction);
     }
@@ -54,6 +57,7 @@ long TPanasonicAdapter::GetSiteId(TPaymentTransaction &paymentTransaction)
 //-------------------------------------------------------------------------------------------------------------------------
 void TPanasonicAdapter::ConverTransactionInfoToPanasonicTransactionInfo(TPaymentTransaction &paymentTransaction, long arcBillKey, UnicodeString receipt)
 {
+
       TPanasonicModels panasonicModel;
 
       panasonicModel.StoreId               = GetSiteId(paymentTransaction);
@@ -114,18 +118,23 @@ void TPanasonicAdapter::ConverTransactionInfoToPanasonicTransactionInfo(TPayment
             }
       }
 
+      TfrmDBPanasonic *frmDBPanasonic = new TfrmDBPanasonic(Screen->ActiveForm);
       //posting data to Sql server
       frmDBPanasonic->SendDataToServer(panasonicModel);
+      delete frmDBPanasonic;
+
 }
 //--------------------------------------------------------------------------------
 void TPanasonicAdapter::ConvertTransactionInfoToPanasonicItemList(TPaymentTransaction &paymentTransaction, LongInt arcBillKey)
 {
+
+     TfrmDBPanasonic *frmDBPanasonic = new TfrmDBPanasonic(Screen->ActiveForm);
      TPanasonicItemList itemList;
+
       //For inserting items in titemlist Table
       for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
       {
             TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
-
             itemList.ProductCode                = Order->ThirdPartyCode;
             itemList.ProductDescription         = Order->Item + " " + Order->Size;
             itemList.InternalTransactionId      = arcBillKey;
@@ -138,12 +147,12 @@ void TPanasonicAdapter::ConvertTransactionInfoToPanasonicItemList(TPaymentTransa
             itemList.StaffPurchase              = false;
             itemList.Refund                     = itemList.Quantity > 0 ? false : true;
             itemList.TrainingMode               = false;
+
             frmDBPanasonic->InsertItemsToTItemList(itemList);
 
             for (int subOrderIndex = 0; subOrderIndex < Order->SubOrders->Count; subOrderIndex++)
             {
                 TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub*)Order->SubOrders->Items[subOrderIndex];
-
                 itemList.ProductCode                = CurrentSubOrder->ThirdPartyCode;
                 itemList.ProductDescription         = CurrentSubOrder->Item + " " + CurrentSubOrder->Size;
                 itemList.InternalTransactionId      = arcBillKey;
@@ -159,11 +168,14 @@ void TPanasonicAdapter::ConvertTransactionInfoToPanasonicItemList(TPaymentTransa
                 frmDBPanasonic->InsertItemsToTItemList(itemList);
             }
       }
+      delete frmDBPanasonic;
 }
 //----------------------------------------------------------------------------------------
 void TPanasonicAdapter::ConvertTransactionInfoToPanasonicProduct(TPaymentTransaction &paymentTransaction)
 {
     TPanasonicProduct productinfo;
+    TfrmDBPanasonic *frmDBPanasonic = new TfrmDBPanasonic(Screen->ActiveForm);
+
       //For inserting items in titemlist Table
       for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
       {
@@ -183,6 +195,7 @@ void TPanasonicAdapter::ConvertTransactionInfoToPanasonicProduct(TPaymentTransac
                 frmDBPanasonic->InsertProductDetailsInToTProduct(productinfo);
             }
       }
+      delete frmDBPanasonic;
 }
 //----------------------------------------------------------------------------------------
 void TPanasonicAdapter::ConverTransactionInfoToTransactionDBServerInfo(TPaymentTransaction &paymentTransaction)
@@ -194,8 +207,9 @@ void TPanasonicAdapter::ConverTransactionInfoToTransactionDBServerInfo(TPaymentT
     serverInfo.TransactioDBServerType     =   "TransactionDBServer";
     serverInfo.TransactionDBServerName    =   "TransactionDBServer For " + serverInfo.PosSystemName;
     serverInfo.TransactionDBServerVersion =   "1.00";
-
+    TfrmDBPanasonic *frmDBPanasonic = new TfrmDBPanasonic(Screen->ActiveForm);
     frmDBPanasonic->InsertTransactionDBServerInformation(serverInfo);
+    delete frmDBPanasonic;
 }
 //--------------------------------------------------------------------------------------------
 UnicodeString TPanasonicAdapter::GetPOSVersionInfo(TPaymentTransaction &paymentTransaction)

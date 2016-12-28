@@ -3,7 +3,6 @@
 #ifndef PanasonicModelsH
 #define PanasonicModelsH
 //---------------------------------------------------------------------------
-#endif
 #include <System.hpp>
 #include <DB.hpp>
 
@@ -196,3 +195,4 @@ public:
     __property UnicodeString TransactionDBServerName = {read = _transactionDBServerName, write = SetTransactionDBServerName};
     __property UnicodeString TransactionDBServerVersion = {read = _transactionDBServerVersion, write = SetTransactionDBServerVersion};
 };
+#endif

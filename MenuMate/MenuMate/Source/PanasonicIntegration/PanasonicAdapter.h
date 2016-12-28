@@ -3,7 +3,6 @@
 #ifndef PanasonicAdapterH
 #define PanasonicAdapterH
 //---------------------------------------------------------------------------
-#endif
 
 #include "PaymentTransaction.h"
 
@@ -19,4 +18,4 @@ private:
 public:
     void ConvertTransactionInfoToPanasonicInfo(TPaymentTransaction &PaymentTransaction, long ArcBillKey, UnicodeString receipt);
 };
-
+#endif

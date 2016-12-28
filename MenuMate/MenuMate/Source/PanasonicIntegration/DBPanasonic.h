@@ -18,10 +18,9 @@
 class TfrmDBPanasonic : public TForm
 {
 __published:	// IDE-managed Components
-    TUniConnection *UniDataBaseConnection; 
-    TSQLServerUniProvider *SQLServerUniProvider1;
-    TDataSource *DataSource1;
-    TUniQuery *UniInsertQuery;
+    TUniConnection *UniDataBaseConnection;
+    TSQLServerUniProvider *SQLServerUniProvider;
+    TDataSource *DataSource;
 private:	// User declarations
 public:		// User declarations
     __fastcall TfrmDBPanasonic(TComponent* Owner);
@@ -30,7 +29,7 @@ public:		// User declarations
     void InsertProductDetailsInToTProduct(TPanasonicProduct &product);
     void InsertTransactionDBServerInformation(TPanasonicTransactionDBServerInformation &serverInfo);
 };
-extern PACKAGE TfrmDBPanasonic *frmDBPanasonic;
+
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 #endif
