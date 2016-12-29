@@ -116,12 +116,12 @@ void TMMContactInfo::SaveToStream(TMemoryStream *Stream)
     {
         StreamWrite(Stream, SiteID);
         StreamWrite(Stream, MembershipNumber);
-        StreamWrite(Stream, Name);
+        StreamWrite(Stream, blankValue);
         StreamWrite(Stream, blankValue);
         StreamWrite(Stream, CardCreationDate);
         StreamWrite(Stream, LastModified);
         StreamWrite(Stream, blankValue);
-        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, DateOfBirth);
         StreamWrite(Stream, blankValue);
         StreamWrite(Stream, blankValue);
         StreamWrite(Stream, EMail);
@@ -135,16 +135,16 @@ void TMMContactInfo::SaveToStream(TMemoryStream *Stream)
         StreamWrite(Stream, SiteID);
         StreamWrite(Stream, MembershipNumber);
         StreamWrite(Stream, Name);
-        StreamWrite(Stream, Alias);
+        StreamWrite(Stream, blankValue);
         StreamWrite(Stream, CardCreationDate);
         StreamWrite(Stream, LastModified);
-        StreamWrite(Stream, PoleDisplayName);
+        StreamWrite(Stream, blankValue);
         StreamWrite(Stream, DateOfBirth);
         StreamWrite(Stream, Phone);
         StreamWrite(Stream, Mobile);
         StreamWrite(Stream, EMail);
-        StreamWrite(Stream, MailingAddress);
-        StreamWrite(Stream, Note);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, blankValue);
         StreamWrite(Stream, AutoAppliedDiscountsIDDummy);
         StreamWrite(Stream, Points.PointsRules);
    }
@@ -161,11 +161,11 @@ void TMMContactInfo::SaveToStream(int CardVersion, TMemoryStream *Stream)
            StreamWrite(Stream, SiteID);
            StreamWrite(Stream, MembershipNumber);
            StreamWrite(Stream, CloudUUID);
-           StreamWrite(Stream, Name);
+           StreamWrite(Stream, blankValue);
            StreamWrite(Stream, blankValue);
            StreamWrite(Stream, CardCreationDate);
            StreamWrite(Stream, blankValue);
-           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, DateOfBirth);
            StreamWrite(Stream, blankValue);
            StreamWrite(Stream, blankValue);
            StreamWrite(Stream, EMail);
