@@ -83,6 +83,10 @@ void __fastcall TfrmSetup::imgCloseClick(TObject *Sender)
         }
 
     }
+    else
+    {
+        Close();
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::FormClose(TObject *Sender, TCloseAction &Action)
