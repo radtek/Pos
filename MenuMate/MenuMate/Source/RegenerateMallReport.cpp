@@ -121,16 +121,16 @@ void __fastcall TfrmRegenerateMallReport::cbEndMinChange(TObject *Sender)
 void __fastcall TfrmRegenerateMallReport::edLocationPathMouseUp(TObject *Sender,
           TMouseButton Button, TShiftState Shift, int X, int Y)
 {
-  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
-	frmTouchKeyboard->MaxLength = 300;
-	frmTouchKeyboard->AllowCarriageReturn = false;
-	frmTouchKeyboard->StartWithShiftDown = false;
-	frmTouchKeyboard->KeyboardText = edLocationPath->Text;
-	frmTouchKeyboard->Caption = "Enter File Location";
-	if (frmTouchKeyboard->ShowModal() == mrOk)
-	{
-        edLocationPath->Text = frmTouchKeyboard->KeyboardText;
-	}
+//  	std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+//	frmTouchKeyboard->MaxLength = 300;
+//	frmTouchKeyboard->AllowCarriageReturn = false;
+//	frmTouchKeyboard->StartWithShiftDown = false;
+//	frmTouchKeyboard->KeyboardText = edLocationPath->Text;
+//	frmTouchKeyboard->Caption = "Enter File Location";
+//	if (frmTouchKeyboard->ShowModal() == mrOk)
+//	{
+//        edLocationPath->Text = frmTouchKeyboard->KeyboardText;
+//	}
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmRegenerateMallReport::btnLoadPathMouseClick(TObject *Sender)

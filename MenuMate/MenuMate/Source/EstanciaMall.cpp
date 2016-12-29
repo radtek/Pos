@@ -1061,7 +1061,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
                                             "WHEN (HOURLYDATA.FIELD_INDEX = 66) THEN 4 "
                                             "ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
                                     "HOURLYDATA.FIELD, "
-                                    "SUM(HOURLYDATA.FIELD_VALUE) FIELD_VALUE , "
+                                    "case when (HOURLYDATA.FIELD_INDEX = 66) then LPAD(HOURLYDATA.FIELD_VALUE,2,0) else SUM(HOURLYDATA.FIELD_VALUE) end FIELD_VALUE , "
                                     "HOURLYDATA.VALUE_TYPE , "
                                     "HOURLYDATA.Hour_code  "
                             "FROM "
@@ -1083,7 +1083,8 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
 			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
-                            "GROUP BY 1,2,4,5 "
+                            "GROUP BY HOURLYDATA.FIELD_INDEX,HOURLYDATA.FIELD,HOURLYDATA.VALUE_TYPE , "
+                                    " HOURLYDATA.Hour_code, HOURLYDATA.FIELD_VALUE "
 
        "UNION ALL "
 
@@ -1128,7 +1129,14 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
           TMallExportSalesData salesData;
           salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
           salesData.Field = IBInternalQuery->Fields[1]->AsString;
-          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
+          if(salesData.FieldIndex == 4)
+          {
+                salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsString;
+          }
+          else
+          {
+                 salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
+          }
           salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
           salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
           prepareListForHSF.push_back(salesData);
