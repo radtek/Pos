@@ -198,18 +198,20 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         }
         IBInternalQuery->ExecQuery();
 
+        //Create Export Medium
+        TMallExportTextFile* exporter =  new TMallExportTextFile();
+
        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
        {
             //Fetch z-key
             zKey = IBInternalQuery->Fields[0]->AsInteger;
-
+            
             //Prepare Data For Exporting into File
             preparedData = PrepareDataForExport(zKey);
 
-            //Create Export Medium
-            TMallExportTextFile* exporter =  new TMallExportTextFile();
-            exporter->WriteToFile(preparedData);
+           exporter->WriteToFile(preparedData);
        }
+       delete exporter;
 
        //Display message showing status of file
        if(IBInternalQuery->RecordCount)

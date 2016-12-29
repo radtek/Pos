@@ -1322,7 +1322,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                                              "INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                                               "WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = 'T' "
                                              "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES a where Z_KEY = "
-                                                   "(SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES a where Z_KEY NOT IN "
+                                                   "(SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES a where Z_KEY < "
                                                         "(SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES A ";
              if(!isMasterTerminal)
 			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "WHERE a.DEVICE_KEY = :DEVICE_KEY ";
@@ -1405,7 +1405,7 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
                 "                                             INNER JOIN MALLEXPORT_HEADER meh on a.FIELD_INDEX = meh.MALLEXPORT_HEADER_ID "
                 "                                             WHERE a.FIELD_INDEX  IN( 5,38 ) AND meh.IS_ACTIVE = :IS_ACTIVE "
                                                             "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY) FROM MALLEXPORT_SALES a "
-                                                                    "WHERE Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES a where Z_KEY NOT IN "
+                                                                    "WHERE Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES a where Z_KEY < "
                                                                             "(SELECT MAX(Z_KEY) FROM MALLEXPORT_SALES A ";
              if(!isMasterTerminal)
 			    IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "WHERE a.DEVICE_KEY = :DEVICE_KEY ";
