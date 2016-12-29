@@ -16,7 +16,7 @@ public:
     ~XMasterBlindBalancesDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
-    //virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
+
 };
 
 #endif

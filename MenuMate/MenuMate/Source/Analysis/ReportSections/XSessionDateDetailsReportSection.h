@@ -14,7 +14,7 @@ public:
 	~XSessionDateDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printOut);
-    //virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
+
 private:
     void ShowSessionDate(TPrintout* printOut);
 };

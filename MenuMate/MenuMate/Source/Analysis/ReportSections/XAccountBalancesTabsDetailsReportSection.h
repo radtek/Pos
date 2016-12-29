@@ -17,7 +17,7 @@ public:
     ~XAccountBalancesTabsDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
-    //virtual void GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime);
+
 
 private:
     TMembership* _memberShip;

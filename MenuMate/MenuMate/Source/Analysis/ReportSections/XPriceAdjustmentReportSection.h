@@ -17,7 +17,6 @@ public:
     ~XPriceAdjustmentReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
-    //virtual void GetOutput(TPrintout* printOut,TDateTime* startTime, TDateTime* endTime);
 
 private:
     DataFormatUtilities* dataFormatUtilities;

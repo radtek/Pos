@@ -16,7 +16,6 @@ public:
 
 	virtual void GetOutput(TPrintout* printout);
     void SetPrinterFormatInMiddle(TPrintout* printOut);
-    //virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime);
 
 private:
     AnsiString GetStartInvoiceNumber();

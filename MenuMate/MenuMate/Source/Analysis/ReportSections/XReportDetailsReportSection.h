@@ -14,7 +14,6 @@ public:
 	~XReportDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
-   // virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime);
     void SetPrinterFormatInMiddle(TPrintout* printOut);
 };
 
