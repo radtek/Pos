@@ -542,9 +542,9 @@ void TEstanciaMall::PrepareAllDiscounts(Database::TDBTransaction &dbTransaction,
                 for(int index = 0; index < 5; index++)
                 {
                     if(ptrDiscounts->Name == nonApprovedDiscount[index])
-                        estanciaDiscounts.nonApprovedDiscounts[index] = Order->DiscountValue_BillCalc(ptrDiscounts);
-                    else
-                        estanciaDiscounts.nonApprovedDiscounts[index] = 0.00;
+                        estanciaDiscounts.nonApprovedDiscounts[index] += Order->DiscountValue_BillCalc(ptrDiscounts);
+//                    else
+//                        estanciaDiscounts.nonApprovedDiscounts[index] = 0.00;
                 }
             }
         }
