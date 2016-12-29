@@ -398,7 +398,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
         fieldData.GrossAmountVatable = fieldData.GrossAmountVatable + fieldData.VoidAmountVatable;
         fieldData.VATTaxAmountVatable = (double)((fieldData.GrossAmountVatable - (fieldData.DeductionVatable - fieldData.RefundAmountVatable))*(taxRate/(taxRate + 100)));
         fieldData.NetSalesAmountVatable = (double)(fieldData.GrossAmountVatable - (fieldData.DeductionVatable - fieldData.RefundAmountVatable) - fieldData.VATTaxAmountVatable);
-        fieldData.Amount = (double)(fieldData.RefundAmountVatable > 0.00 ? fieldData.NetSalesAmountVatable*-1 : fieldData.NetSalesAmountVatable);
+        fieldData.Amount = (double)fieldData.NetSalesAmountVatable;
 
         fieldData.DeductionNonVatable = (double)(fieldData.PromoSalesAmountNonVatable + fieldData.SCDDiscountNonVatable + fieldData.RefundAmountNonVatable +
                                         fieldData.ReturnedItemsAmountNonVatable + fieldData.OtherTaxesNonVatable + fieldData.ServiceChargeAmountNonVatable +
@@ -568,9 +568,10 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
     estanciaDiscounts.nonApprovedDiscounts[3] = (order->GetQty() > 0.00 ? fabs(estanciaDiscounts.nonApprovedDiscounts[3]) : estanciaDiscounts.nonApprovedDiscounts[3]*-1);
     estanciaDiscounts.nonApprovedDiscounts[4] = (order->GetQty() > 0.00 ? fabs(estanciaDiscounts.nonApprovedDiscounts[4]) : estanciaDiscounts.nonApprovedDiscounts[4]*-1);
     double itemPrice = order->PriceEach_BillCalc();
+    double grossAmount = order->GetQty() > 0.00 ? ((order->PriceEach_BillCalc()*order->GetQty()) + fabs(order->TotalAdjustment()))
+                                                    : ((order->PriceEach_BillCalc()*order->GetQty()) + order->TotalAdjustment()*-1);
     if(isVatable)
     {
-        double grossAmount = ((order->PriceEach_BillCalc()*order->GetQty()) + fabs(order->TotalAdjustment()));
         double serviceCharge = (double)estanciaTaxes.serviceCharge;
         fieldData.GrossAmountVatable += grossAmount;
         fieldData.PromoSalesAmountVatable += (double)(order->GetQty() > 0.00 ? fabs(estanciaDiscounts.promoDiscount) : estanciaDiscounts.promoDiscount*-1);
@@ -598,8 +599,6 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
     }
     else
     {
-       // fieldData.GrossAmountNonVatable =  (double)fieldData.GrossAmountNonVatable;
-        double grossAmount = ((order->PriceEach_BillCalc()*order->GetQty()) + fabs(order->TotalAdjustment()));
         double serviceCharge = (double)estanciaTaxes.serviceCharge;
         fieldData.GrossAmountNonVatable += grossAmount;
         fieldData.PromoSalesAmountNonVatable += (double)(order->GetQty() > 0.00 ? fabs(estanciaDiscounts.promoDiscount) : estanciaDiscounts.promoDiscount*-1);
@@ -737,7 +736,7 @@ void TEstanciaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction,
     PushFieldsInToList(dbTransaction, mallExportSalesData, "New Accumulated Sales", "Currency", fabs(fieldData.NewAccumulatedSalesVatable), 5, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Gross Amount", "Currency", fieldData.GrossAmountVatable, 6, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Deductions", "Currency", fabs(fieldData.DeductionVatable), 7, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Promo Sale Amount", "Currency", fabs(fieldData.PromoSalesAmountVatable), 8, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Promo Sale Amount", "Currency", fieldData.PromoSalesAmountVatable, 8, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total PWD Discount", "Currency", fieldData.PWDDiscountVatable, 9, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Refund Amount", "Currency", fieldData.RefundAmountVatable, 10, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Returned Items Amount", "Currency", fieldData.ReturnedItemsAmountVatable, 11, arcBillKey);
@@ -765,10 +764,10 @@ void TEstanciaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction,
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Control Number", "int", fieldData.ControlNumber, 33, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Number of Sales Transaction", "int", fieldData.NoOfSalesTransaction, 34, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Sales Type", "int", fieldData.SalesType, 35, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Amount", "Currency", fabs(fieldData.NetSalesAmountVatable), 36, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Amount", "Currency", fieldData.NetSalesAmountVatable, 36, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Old Accumulated Sales", "Currency", fabs(fieldData.OldAccumulatedSalesNonVatable), 37, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "New Accumulated Sales", "Currency", fabs(fieldData.NewAccumulatedSalesNonVatable), 38, arcBillKey);
-    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Gross Amount", "Currency", fabs(fieldData.GrossAmountNonVatable), 39, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Gross Amount", "Currency", fieldData.GrossAmountNonVatable, 39, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Deductions", "Currency", fieldData.DeductionNonVatable, 40, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Promo Sale Amount", "Currency", fieldData.PromoSalesAmountNonVatable, 41, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total SCD Discount", "Currency", fieldData.SCDDiscountNonVatable, 42, arcBillKey);
