@@ -170,6 +170,7 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
     {
         TMallExportPrepareData preparedData;
         int zKey;
+        bool isMasterTerminal = TGlobalSettings::Instance().EnableDepositBagNum;
 
         ///Register Query
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
@@ -178,13 +179,23 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
         //Query for selecting data for invoice file
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =  "SELECT a.Z_KEY FROM MALLEXPORT_SALES a "
-                                        "WHERE a.Z_KEY != :Z_KEY AND a.DATE_CREATED >= :START_TIME AND a.DATE_CREATED < :END_TIME "
-                                        "GROUP BY a.Z_KEY "
-                                        "ORDER BY 1 ASC ";
+                                        "WHERE a.Z_KEY != :Z_KEY AND a.DATE_CREATED >= :START_TIME AND a.DATE_CREATED < :END_TIME ";
+
+        if(!isMasterTerminal)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " AND a.DEVICE_KEY = :DEVICE_KEY ";
+        }
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                                                                "GROUP BY a.Z_KEY "
+                                                                "ORDER BY 1 ASC ";
 
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = 0;
         IBInternalQuery->ParamByName("START_TIME")->AsDateTime = sDate;
         IBInternalQuery->ParamByName("END_TIME")->AsDateTime = eDate;
+        if(!isMasterTerminal)
+        {
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        }
         IBInternalQuery->ExecQuery();
 
        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
