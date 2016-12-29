@@ -4673,4 +4673,18 @@ object dmMMReportData: TdmMMReportData
     Left = 1616
     Top = 128
   end
+  object ravSubsReport: TRvDataSetConnection
+    RuntimeVisibility = rtDeveloper
+    DataSet = qrSubsReport
+    Left = 1218
+    Top = 600
+  end
+  object qrSubsReport: TIBQuery
+    Database = dmMMData.dbMenuMate
+    Transaction = dmMMData.trMenuMate
+    SQL.Strings = (
+      '')
+    Left = 1221
+    Top = 656
+  end
 end

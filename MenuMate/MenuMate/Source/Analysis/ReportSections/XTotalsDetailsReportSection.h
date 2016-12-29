@@ -13,9 +13,11 @@ class XTotalsDetailsReportSection : public BaseReportSection
 {
 public:
 	XTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~XTotalsDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
+
 
 private:
     TMembership* _memberShip;

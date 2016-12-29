@@ -15,6 +15,7 @@ class XComplimentarySalesTotalsDetailsReportSection : public BaseReportSection
 
 public:
     XComplimentarySalesTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XComplimentarySalesTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XComplimentarySalesTotalsDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);

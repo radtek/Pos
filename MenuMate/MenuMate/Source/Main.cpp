@@ -87,6 +87,7 @@
 #include "MallExportDefines.h"
 #include "MMCustomerDisplayManager.h"
 #include "ManagerCloudSync.h"
+#include "CSVExportReceiver.h"
 
 #pragma package(smart_init)
 #pragma link "SHDocVw_OCX"
@@ -354,6 +355,12 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 			TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
 			TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
 		}
+
+        //Posting CSV at specified IP
+        if(TGlobalSettings::Instance().IsEnabledPeachTree)
+        {
+            TCSVExportReceiver::Instance().Initialise(TGlobalSettings::Instance().CSVExportIP, TGlobalSettings::Instance().CSVPath, 47001);
+        }
 
 		// Set up Header and Footer Info.
 		TDeviceRealTerminal::Instance().LoadHdrFtr();

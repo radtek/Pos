@@ -58,6 +58,8 @@
 #include "MagicMemoriesSfProgressMonitor.h"
 #include "SalesForceCommAtZed.h"
 #include "CashDenominationController.h"
+#include "ExportCSV.h"
+
 #include <string>
 #include <map>
 #include <cassert>
@@ -2859,8 +2861,7 @@ void __fastcall TfrmAnalysis::btnReportsClick(void)
 	if (AuthenticateReportsAccess(TReportSource::CashDrawer) == lsAccepted)
     {
 		std::auto_ptr <TfrmDropDownFunc> frmDropDown(
-		TfrmDropDownFunc::Create <TfrmDropDownFunc>(this));
-
+		TfrmDropDownFunc::Create <TfrmDropDownFunc>(this));	
 //		if(!TGlobalSettings::Instance().EnableBlindBalances)
 //        {
 //			frmDropDown->AddButton("X Report", &ReportXReport);
@@ -3051,6 +3052,10 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
+
+    ZedToArchive->Clear();
+    ZedToArchive->Position = 0;
+
     TCashDenominationControllerInterface::Instance()->ResetCashDenominations();
     // call to new class to get orders of DC and bill them off by storing
     if(TGlobalSettings::Instance().DrinkCommandServerPort != 0 && TGlobalSettings::Instance().DrinkCommandServerPath.Length() != 0
@@ -3337,6 +3342,13 @@ Zed:
                   TCashDenominationControllerInterface::Instance()->SaveDenominations(DBTransaction,z_key,DeviceName);
                 }
             }
+            //create CSV
+            if(TGlobalSettings::Instance().IsEnabledPeachTree && CompleteZed)
+            {
+                TExportCSV exportCSV;
+                exportCSV.PostDateToCSV();
+            }
+
 			DBTransaction.Commit();
             PostDataToXeroAndMyOB(XeroInvoiceDetails, MYOBInvoiceDetails, CompleteZed); //post data to xero and Myob
 
@@ -9310,7 +9322,8 @@ void TfrmAnalysis::EmailZedReport(int z_key)
         ZedToMail->SaveToFile(filename);
         ZedToMail->Clear();
         AnsiString emailIds = TGlobalSettings::Instance().SaveEmailId;
-        SendEmailStatus = SendEmail::Send(filename, "Zed Report", emailIds, "");
+        UnicodeString emailSubject = CheckRegistered();
+        SendEmailStatus = SendEmail::Send(filename, emailSubject, emailIds, "");
         if(SendEmailStatus)
         {
             UpdateEmailstatus(z_key);
@@ -9445,4 +9458,18 @@ void TfrmAnalysis::UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransa
 	{
 		throw;
 	}
+}
+
+UnicodeString TfrmAnalysis::CheckRegistered()
+{
+    UnicodeString emailSubject = "Zed Report";
+    bool Registered = false;
+    UnicodeString pRegisteredName = "";
+    TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+    if(Registered)
+    {
+        emailSubject = pRegisteredName;
+    }
+
+    return emailSubject;
 }

@@ -10,9 +10,11 @@ class XCurrentDateDetailsReportSection: public BaseReportSection
 {
 public:
 	XCurrentDateDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XCurrentDateDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~XCurrentDateDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
+
 };
 
 #endif

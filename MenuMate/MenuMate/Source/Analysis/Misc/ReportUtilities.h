@@ -8,6 +8,21 @@
 #include "GlobalSettings.h"
 #include "ReportEnums.h"
 
+struct TPointTransaction
+{
+   public:
+        int   adjustmentType;
+        int  adjustmentSubType;
+        Currency  adjustment;
+        AnsiString  invoiceNo;
+};
+
+struct TPointTransactions
+{
+   public:
+   std::vector<TPointTransaction> PointsTransactions;
+};
+
 const char* const eStrCalculatedTotals[] =
 {
     NULL,
@@ -126,6 +141,21 @@ public:
 
     //We will remove the transaction info object from the map, since we have completed the transaction for the current ZED..
     void RemoveEntryFromMap(UnicodeString deviceName);
+    void NormalZedTransaction(TIBSQL *qrXArcBill, bool showendingbal);
+    void LoadArcPayTransaction(TTransactionInfo* TransactionInfo, TIBSQL *qrXArcPay, bool loop, TIBSQL *qrXArcBill, std::map<AnsiString, TPointTransactions> pointTransaction, std::set<AnsiString> countedInvoiceNumbers, AnsiString currentInvoiceKey);
+    void GetArcPayForNormalZed(TIBSQL *qrXArcPay);
+    void GetArcPointsForNormalZed(TIBSQL *qXArcPoints1);
+    void LoadArcPointTransaction(TIBSQL *qXArcPoints1, TTransactionInfo* TransactionInfo, TIBSQL *qrXArcPay, std::vector<TPointTransaction>::iterator ptrPoints);
+    void GetArcSurchargeForNormalZed(TIBSQL *qXArcSurcharge);
+    void LoadArcPointTransaction(TIBSQL *qXArcSurcharge, TTransactionInfo* TransactionInfo, std::set<AnsiString> countedInvoiceNumbers, AnsiString currentInvoiceKey);
+    void ConsolidatedZedTransaction(TIBSQL *qrXArcBill, bool showendingbal);
+    void GetSurchargeDetailsForConsolidatedZedTransaction(TIBSQL *qXArcSurcharge);
+    TTransactionInfo GetTransactionInfoForConsolidatedZed(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, TDateTime startTime, TDateTime endTime, bool showendingbal = false);
+    void GetArcPointsForConsolidatedZed(TIBSQL *qXArcPoints1);
+    void GetArcPayForConsolidatedZed(TIBSQL *qrXArcPay);
+    void GetArcSurchargeForConsolidatedZed(TIBSQL *qXArcSurcharge);
+    void GetPointsForConsolidatedZed(TIBSQL *qXArcPoints, TDateTime &startTime, TDateTime &endTime);
+    void GetPointsForNormalZed(TIBSQL *qXArcPoints, UnicodeString deviceName);
 };
 
 class THourlyTotals
@@ -191,21 +221,11 @@ public:
     void DataCalculationUtilities::PrinterFormatinThreeSections(TPrintout* printOut);
     int CalculateLastDayOfMonth(int month);
     TDateTime CalculateSessionTransactionDate(TDateTime trans_date);
+    Currency GetAccumulatedZedTotal(Database::TDBTransaction &dbTransaction, TDateTime &startTime, TDateTime &endTime, UnicodeString deviceName);
+    Currency GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, TDateTime &startTime, TDateTime &endTime, bool showendingbal = false);
 };
 
-struct TPointTransaction
-{
-   public:
-        int   adjustmentType;
-        int  adjustmentSubType;
-        Currency  adjustment;
-        AnsiString  invoiceNo;
-};
 
-struct TPointTransactions
-{
-   public:
-   std::vector<TPointTransaction> PointsTransactions;
-};
 
 #endif
+

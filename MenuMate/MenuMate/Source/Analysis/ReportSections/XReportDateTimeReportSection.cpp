@@ -13,6 +13,15 @@ XReportDateTimeReportSection::XReportDateTimeReportSection(Database::TDBTransact
     dataCalculationUtilities = new DataCalculationUtilities;
 }
 
+XReportDateTimeReportSection::XReportDateTimeReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	: BaseReportSection(mmConsolidatedZReport, mmShowBegningandEndingBalance, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
+}
+
+
+
 XReportDateTimeReportSection::~XReportDateTimeReportSection()
 {
     delete dataFormatUtilities;
@@ -66,12 +75,11 @@ void XReportDateTimeReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->AddLine();
 
         printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
-        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd") + "/" + trans_date.FormatString("mm") + "/" + trans_date.FormatString("yyyy"); 
+        printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd") + "/" + trans_date.FormatString("mm") + "/" + trans_date.FormatString("yyyy");
         printOut->PrintFormat->AddLine();
     }
 
 }
-
 void XReportDateTimeReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
 {
     AnsiString prefix1 = TReceiptUtility::ExtractInvoiceNumber(inStartInvoiceNumber);

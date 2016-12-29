@@ -10,6 +10,7 @@ class ZCashDenominationReportSection : public BaseReportSection
 {
 public:
 	ZCashDenominationReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    ZCashDenominationReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~ZCashDenominationReportSection();
 
 	virtual void GetOutput(TPrintout* printOut);

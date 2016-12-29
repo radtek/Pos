@@ -6132,7 +6132,7 @@ void TdmMMReportData::SetupSalesJournal(bool includeSCTaxInTax, TDateTime StartT
    qrSalesJournal1->SQL->Text = qrSalesJournal1->SQL->Text +
          "Cast(Sum( DA.Qty * abs(DA.BASE_PRICE) ) as Numeric(17,4)) Price,  "
          "Cast(Sum( DA.Qty * abs(DA.BASE_PRICE) ) + Sum( COALESCE(DA.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) SubTotal,  "
-         "Cast(Sum( cast(DA.Qty * abs(DA .BASE_PRICE) as Numeric(17,4))) +Sum(COALESCE((T.ServiceCharge),0)) +Sum(COALESCE((T.Tax),0)) +Sum(COALESCE((T.ServiceChargeTax),0))+ Sum(COALESCE(DA.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) total  "
+         "Cast(Sum( cast(DA.Qty * abs(DA .BASE_PRICE) as Numeric(17,4))) +Sum(COALESCE((T.ServiceCharge),0)) +Sum(COALESCE((T.Tax),0)) +Sum(COALESCE((T.ServiceChargeTax),0))+ Sum(COALESCE(DA.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,2)) total  "
       "FROM DAYARCBILL DAB "
          "INNER JOIN DAYARCHIVE DA "
             "ON DAB.ARCBILL_KEY = DA.ARCBILL_KEY "
@@ -6205,7 +6205,7 @@ void TdmMMReportData::SetupSalesJournal(bool includeSCTaxInTax, TDateTime StartT
       qrSalesJournal1->SQL->Text = qrSalesJournal1->SQL->Text +
          "Cast(Sum( DA.Qty *  abs(DA.BASE_PRICE) ) as Numeric(17,4)) Price,  "
          "Cast(Sum( DA.Qty *   abs(DA.BASE_PRICE)  ) + Sum( COALESCE(DA.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) SubTotal,  "
-         "Cast(Sum( cast(DA.Qty * abs(DA .BASE_PRICE) as Numeric(17,4))) +Sum(COALESCE((T.ServiceCharge),0)) +Sum(COALESCE((T.Tax),0)) +Sum(COALESCE((T.ServiceChargeTax),0))+ Sum(COALESCE((DA.DISCOUNT_WITHOUT_TAX),0)) as Numeric(17,4)) total  "
+         "Cast(Sum( cast(DA.Qty * abs(DA .BASE_PRICE) as Numeric(17,4))) +Sum(COALESCE((T.ServiceCharge),0)) +Sum(COALESCE((T.Tax),0)) +Sum(COALESCE((T.ServiceChargeTax),0))+ Sum(COALESCE((DA.DISCOUNT_WITHOUT_TAX),0)) as Numeric(17,2)) total  "
       "FROM ARCBILL DAB "
          "INNER JOIN ARCHIVE DA "
             "ON DAB.ARCBILL_KEY = DA.ARCBILL_KEY "
@@ -16384,7 +16384,7 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                     "FROM ARCORDERDISCOUNTS a "
                     "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
         "LEFT JOIN (SELECT SUM(CAST(COALESCE(ARCBILL.TOTAL,0)  AS NUMERIC(17,4))) Refund_Amount, ARCBILL.Z_KEY FROM ARCBILL "
-                    "WHERE ARCBILL.TOTAL < 0 GROUP BY ARCBILL.Z_KEY)TOTALREFUNDS ON TOTALREFUNDS.z_key = zeds.Z_KEY   " 
+                    "WHERE ARCBILL.TOTAL < 0 GROUP BY ARCBILL.Z_KEY)TOTALREFUNDS ON TOTALREFUNDS.z_key = zeds.Z_KEY   "
         "LEFT JOIN( select SUM(CAST(COALESCE(ARCHIVE.PRICE_LEVEL0,0) * ARCHIVE.QTY AS NUMERIC(17,4))) CANCEL_TOTAL, ARCHIVE.ARCBILL_KEY  "
                             "FROM ARCHIVE  "
                             "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =ARCHIVE.SECURITY_REF  "
@@ -16438,6 +16438,30 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
 
     qrSalesSummaryD->ParamByName("StartTime")->AsDateTime	= StartTime;
     qrSalesSummaryD->ParamByName("EndTime")->AsDateTime	= EndTime;
+
+}
+//--------------------------------------------------------------------
+void TdmMMReportData::SetupSubsReport(TDateTime StartTime, TDateTime EndTime)
+{
+    qrSubsReport->Close();
+	qrSubsReport->SQL->Text =
+            "Select  "
+             "CONTACTS.CONTACTS_KEY, "
+             "CONTACTS.NAME FIRST_NAME, "
+             "CONTACTS.LAST_NAME, "
+             " CASE WHEN MEMBERSHIP_SUBS_DETAILS.SUBS_PAID = 'T' THEN 'YES' ELSE 'NO' END As FINANCIAL,"
+             "MEMBERSHIP_SUBS_DETAILS.SUBS_PAID_DATE DATE_SUBS_PAID, "
+             "MEMBERSHIP_SUBS_DETAILS.SUBS_EXPIRY_DATE DATE_SUBS_EXPIRY, "
+             "MEMBERSHIP_SUBS_DETAILS.SUBS_PAID_RECEIPT_NO RECEIPT_NO "
+            "FROM MEMBERSHIP_SUBS_DETAILS "
+            "LEFT JOIN CONTACTS ON  MEMBERSHIP_SUBS_DETAILS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
+            "WHERE  ACTIVATION_DATE >= :StartTime AND ACTIVATION_DATE < :EndTime AND ISLOCAL_MEMBER = :ISLOCAL_MEMBER "
+            " ORDER BY LAST_NAME";
+
+    qrSubsReport->ParamByName("StartTime")->AsDateTime	= StartTime;
+    qrSubsReport->ParamByName("EndTime")->AsDateTime	= EndTime;
+    //qrSubsReport->ParamByName("SUBS_PAID")->AsString	= "T";
+    qrSubsReport->ParamByName("ISLOCAL_MEMBER")->AsString	= "T";
 
 }
 

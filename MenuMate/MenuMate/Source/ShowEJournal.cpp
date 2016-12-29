@@ -30,9 +30,16 @@ void __fastcall TfrmEJournal::btnGenerateMouseClick(TObject *Sender)
 {
    if(FromDateTimePicker->Date <= ToDateTimePicker->Date)
    {
-      std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
-      EJournalType type = EJournalEngine->CategorizeEJournal(FromDateTimePicker->Date,ToDateTimePicker->Date);
-      ExtractEJournalReport(type);
+      if(!IsConsolidatedZed)
+      {
+          std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
+          EJournalType type = EJournalEngine->CategorizeEJournal(FromDateTimePicker->Date,ToDateTimePicker->Date);
+          ExtractEJournalReport(type);
+      }
+      else
+      {
+          ExtractEJournalReport(eConsolidatedZed);
+      }
    }
    else
    {
@@ -68,7 +75,8 @@ void __fastcall TfrmEJournal::btnReportUpAutoRepeat(TObject *Sender)
    memReceipt->Perform(WM_VSCROLL, SB_LINEUP, 0);
 }
 //---------------------------------------------------------------------------
-void TfrmEJournal::Execute(){
+void TfrmEJournal::Execute()
+{
 
     btnClosePrint->Enabled = false;
     btnSaveAsPDF->Visible = false;
@@ -134,6 +142,12 @@ void TfrmEJournal::ExtractEJournalReport(EJournalType type)
       case eZedReceipt:
       ExtractZedReceiptReport(deviceName);
       break;
+      case eConsolidatedZed:
+      Processing->Refresh();
+      Processing->Message = "Processing Data for Consolidated Zed.Please Wait...";
+      Processing->Show();
+      ExtractConsolidatedZedReport(deviceName);
+      break;
    }
    Processing->Close();
 }
@@ -170,6 +184,28 @@ void TfrmEJournal::ExtractZedReceiptReport(AnsiString deviceName)
    CheckAndPopulateData();
 }
 //---------------------------------------------------------------------------
+void TfrmEJournal::ExtractConsolidatedZedReport(AnsiString deviceName)
+{
+
+    ManagerReceipt->Receipt->Clear();
+    if(CompareDateRangeForConolidatedZed(FromDateTimePicker->DateTime, ToDateTimePicker->DateTime))
+    {
+        std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
+        if(EJournalEngine->CheckZedDataExistsForConolidatedZed(FromDateTimePicker->Date,ToDateTimePicker->Date, deviceName))
+        {
+            ManagerReceipt->Receipt = EJournalEngine->ExtractConsolidatedZedReport(FromDateTimePicker->Date,ToDateTimePicker->Date, deviceName);
+        }
+        CheckAndPopulateData();
+    }
+    else
+    {
+       MessageBox("Date Filter cannot be more than 1 month", "Error", MB_OK + MB_ICONERROR);
+       memReceipt->Clear();
+    }
+
+}
+//---------------------------------------------------------------------------
+
 void TfrmEJournal::CheckAndPopulateData()
 {
    if(ManagerReceipt->Receipt->Size > 0)
@@ -179,9 +215,41 @@ void TfrmEJournal::CheckAndPopulateData()
    }
    else
    {
-      MessageBox("No Sales data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
+      if(!IsConsolidatedZed)
+      {
+         MessageBox("No Sales data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
+      }
+      else
+      {
+         MessageBox("No Zed data found for selected date range. Please check!", "Information", MB_OK + MB_ICONERROR);
+      }
       memReceipt->Clear();
       btnClosePrint->Enabled = false;
    }
 }
+
+void __fastcall TfrmEJournal::FormShow(TObject *Sender)
+{
+    if(IsConsolidatedZed)
+    {
+       Caption = "Consolidated Zed";
+    }
+    else
+    {
+       Caption = "E-Journal";
+    }
+}
+//---------------------------------------------------------------------------
+bool TfrmEJournal::CompareDateRangeForConolidatedZed(TDateTime fromdate, TDateTime todate)
+{
+    bool retVal = true;
+    int value  = Dateutils::DaysBetween(fromdate, todate);
+    if(value > 31)
+    {
+       retVal = false;
+    }
+    return retVal;
+
+}
+
 

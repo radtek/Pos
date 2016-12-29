@@ -10,6 +10,7 @@ class ZReportDetailsReportSection: public BaseReportSection
 {
 public:
 	ZReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    ZReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~ZReportDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);

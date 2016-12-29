@@ -11,6 +11,7 @@ class XAccumulatedTotalDetailsReportSection : public BaseReportSection
 {
 public:
 	XAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~XAccumulatedTotalDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
@@ -25,6 +26,8 @@ private:
     DataFormatUtilities* dataFormatUtilities;
     DataCalculationUtilities* dataCalculationUtilities;
     AnsiString ExtractInvoiceNumber(AnsiString &inStartInvoiceNumber);
+    AnsiString GetEndInvoiceNumber(TDateTime &startTime, TDateTime &endTime);
+    AnsiString GetStartInvoiceNumber(TDateTime &startTime, TDateTime &endTime);
 };
 
 #endif

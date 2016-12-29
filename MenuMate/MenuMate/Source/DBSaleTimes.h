@@ -28,5 +28,11 @@ class TDBSaleTimes
 									 UnicodeString &Dur,UnicodeString &Avg,UnicodeString &Val);
 
 	static TDateTime GetSaleStartTimeFromTimeKey(Database::TDBTransaction &DBTransaction, int inTimeKey);
+    static TDateTime GetSalesAverage(Database::TDBTransaction &DBTransaction, TDateTime &startTime, TDateTime &endTime);
+    static TDateTime GetMakeAverage(Database::TDBTransaction &DBTransaction, TDateTime &startTime, TDateTime &endTime);
+    static bool GetLongestSaleTransForConsolidatedZed(Database::TDBTransaction &DBTransaction,int Offest,UnicodeString &Doc,UnicodeString &Opr,
+				UnicodeString &Qty,UnicodeString &Dur,UnicodeString &Avg,UnicodeString &Val, TDateTime &startTime, TDateTime &endTime);
+    static void GetLongestMakeTransForConsolidatedZed(Database::TDBTransaction &DBTransaction,int Offest,UnicodeString &Doc,UnicodeString &Opr,
+				UnicodeString &Qty,UnicodeString &Dur,UnicodeString &Avg,UnicodeString &Val, TDateTime &startTime, TDateTime &endTime);
 };
 #endif

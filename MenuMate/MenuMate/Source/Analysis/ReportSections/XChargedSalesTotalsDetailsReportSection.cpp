@@ -10,6 +10,13 @@ XChargedSalesTotalsDetailsReportSection::XChargedSalesTotalsDetailsReportSection
     reportFinancialCalculations = new ReportFinancialCalculations;
 }
 
+XChargedSalesTotalsDetailsReportSection::XChargedSalesTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings,TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmXReport, mmChargeSalesTotalsDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    reportFinancialCalculations = new ReportFinancialCalculations;
+}
+
 
 XChargedSalesTotalsDetailsReportSection::~XChargedSalesTotalsDetailsReportSection()
 {
@@ -19,6 +26,11 @@ XChargedSalesTotalsDetailsReportSection::~XChargedSalesTotalsDetailsReportSectio
 
 void XChargedSalesTotalsDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+    if(IsConsolidatedZed)
+    {
+       return;
+    }
+
     TTransactionInfo TransactionInfo;
     AnsiString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
     TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, DeviceName);
