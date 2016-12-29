@@ -41,19 +41,6 @@ MallExportConsolidatedReceipt::~MallExportConsolidatedReceipt()
     delete dataCalculationUtilities;
 }
 
-/*void MallExportConsolidatedReceipt::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
-{
-    if(TGlobalSettings::Instance().MallIndex == AYALAMALL && TGlobalSettings::Instance().EnableConsolidatedReport)
-    {
-        TMallExportInputFileDriver InputManager;
-        AnsiString Date = Now().FormatString("mm/dd/yyyy");
-        UnicodeString GetQuery = "SELECT * FROM MALLEXPORT";
-        std::map<UnicodeString, UnicodeString> DataRead;
-        TDateTime DateVal;
-        UnicodeString SDateValue = "";
-        UnicodeString EDateValue = "";
-    }
-}*/
 
 
 void MallExportConsolidatedReceipt::GetOutput(TPrintout* printOut)

@@ -424,6 +424,30 @@ UnicodeString XDiscountReportDetailsReportSection::DiscountQueryForConsolidatedZ
     {
        DiscountSQL +=  " group by NAME, ARCORDERDISCOUNTS.DESCRIPTION; " ;
     }
+    if(_globalSettings->UseBIRFormatInXZReport)
+    {
+        DiscountSQL = "select '' NAME, SubQuery1.DESCRIPTION, sum(SubQuery1.DISCOUNTED_VALUE) DISCOUNT, count(*)Qty "
+             "from( "
+             "select ARCORDERDISCOUNTS.DESCRIPTION, "
+                    "sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNTED_VALUE, "
+                    "ARCBILL.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME "
+             "from ARCORDERDISCOUNTS inner join ARCHIVE on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
+            "inner join ARCBILL on ARCHIVE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+            " Where ARCBILL.TIME_STAMP >= :startTime and ARCBILL.TIME_STAMP <= :endTime  "
+            " and ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' "
+            " GROUP BY ARCORDERDISCOUNTS.DESCRIPTION, ARCBILL.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME)SubQuery1 ";
+            if(!TGlobalSettings::Instance().EnableDepositBagNum)
+            {
+               DiscountSQL +=  " where SubQuery1.TERMINAL_NAME = :TERMINAL_NAME  "
+                               " group by SubQuery1.DESCRIPTION ";
+            }
+            else
+            {
+               DiscountSQL +=  " group by SubQuery1.DESCRIPTION " ;
+            }
+    }
+
+
     if (!_globalSettings->UseBIRFormatInXZReport)
     {
        AddTitle(printout, "Discount Report");

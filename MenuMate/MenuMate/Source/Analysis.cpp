@@ -9314,7 +9314,8 @@ void TfrmAnalysis::EmailZedReport(int z_key)
         ZedToMail->SaveToFile(filename);
         ZedToMail->Clear();
         AnsiString emailIds = TGlobalSettings::Instance().SaveEmailId;
-        SendEmailStatus = SendEmail::Send(filename, "Zed Report", emailIds, "");
+        UnicodeString emailSubject = CheckRegistered();
+        SendEmailStatus = SendEmail::Send(filename, emailSubject, emailIds, "");
         if(SendEmailStatus)
         {
             UpdateEmailstatus(z_key);
@@ -9449,4 +9450,18 @@ void TfrmAnalysis::UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransa
 	{
 		throw;
 	}
+}
+
+UnicodeString TfrmAnalysis::CheckRegistered()
+{
+    UnicodeString emailSubject = "Zed Report";
+    bool Registered = false;
+    UnicodeString pRegisteredName = "";
+    TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+    if(Registered)
+    {
+        emailSubject = pRegisteredName;
+    }
+
+    return emailSubject;
 }
