@@ -203,6 +203,10 @@ enum vmVariables
     vmEnableConsolidatedReport,
     vmExcludeReceipt,
     vmExcludeXReport,
+    vmMembershipPaid,
+    vmUseMemberSubs,
+    ///PechTree CSV
+    vmCSVPath = 9500, vmIsEnabledPeachTree, vmCSVExportIP
 };
 
 // ---------------------------------------------------------------------------

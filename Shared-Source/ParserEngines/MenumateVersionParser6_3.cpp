@@ -39,6 +39,12 @@ void TApplyParser::upgrade6_34Tables()
 {
 	update6_34Tables();
 }
+ //6.35
+void TApplyParser::upgrade6_35Tables()
+{
+	update6_35Tables();
+}
+
 
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
@@ -321,7 +327,7 @@ void TApplyParser::Create6_34TableSCDPWDCustomerDetails(TDBControl* const inDBCo
         "   ARCBILL_KEY INT NOT NULL, "
 		"   FIELD_HEADER varchar(50),"
         "   FIELD_VALUE VARCHAR(200),"
-        "   DATA_TYPE VARCHAR(25)"
+        "   DATA_TYPE Numeric(15,4)"
 		");",
 		inDBControl );
     }
@@ -723,7 +729,150 @@ void TApplyParser::Insert6_34Mall_ExportHeader(TDBControl* const inDBControl)
 }
 //--------------------------------------------------------------------------------------------------------------------------
 
-//::::::::::::::::::::::::Version 6.34::::::::::::::::::::::::::::::::::::::::::
+//::::::::::::::::::::::::Version 6.35::::::::::::::::::::::::::::::::::::::::::
+void TApplyParser::update6_35Tables()
+{
+    Create6_35MemberSubsGenerator(_dbControl);
+    if(!tableExists( "MEMBERSHIP_SUBS_DETAILS", _dbControl ))
+    {
+        Create6_35MemberSubsDetails(_dbControl);
+        Insert6_35MemberSubsDetails(_dbControl);
+    }
+    UpdateMallExportSettingValuesTable6_35(_dbControl);
+    Create6_35GeneratorMallExportSettingValues(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_35MemberSubsGenerator(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MEMBERSHIP_SUBS_KEY", _dbControl) )
+    {
+        executeQuery(
+        "CREATE GENERATOR GEN_MEMBERSHIP_SUBS_KEY;",
+        inDBControl);
+        executeQuery(
+        "SET GENERATOR GEN_MEMBERSHIP_SUBS_KEY TO 0; ",
+        inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_35MemberSubsDetails(TDBControl* const inDBControl)
+{
+    executeQuery(
+    "CREATE TABLE MEMBERSHIP_SUBS_DETAILS "
+    "( "
+    "   MEMBERSHIP_SUBS_KEY INTEGER NOT NULL PRIMARY KEY, "
+    "   SUBS_PAID_DATE TIMESTAMP, "
+    "   SUBS_EXPIRY_DATE TIMESTAMP,"
+    "   SUBS_PAID_AMOUNT NUMERIC(15,4),"
+    "   SUBS_PAID_RECEIPT_NO VARCHAR(25),"
+    "   SUBS_TYPE VARCHAR(50),"
+    "   SUBS_PAID T_TRUEFALSE DEFAULT 'F',"
+    "   POINTS_RULES_SUBS INTEGER,"
+    "   CONTACTS_KEY INTEGER,"
+    "   FOREIGN KEY (CONTACTS_KEY) REFERENCES CONTACTS (CONTACTS_KEY)  ON DELETE CASCADE, "
+    "   ISLOCAL_MEMBER T_TRUEFALSE DEFAULT 'F'"
+    ");",
+    inDBControl );
+}
 //---------------------------------------------------------------------------
+void TApplyParser::Insert6_35MemberSubsDetails(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+        TIBSQL *SelectGenQuery = transaction.Query( transaction.AddQuery() );
+        SelectGenQuery->Close();
+        InsertQuery->Close();
+        TIBSQL *SelectQuery    = transaction.Query( transaction.AddQuery() );
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = " Select CONTACTS_KEY,POINTS_RULES FROM CONTACTS WHERE CONTACT_TYPE <> 0"
+        "AND CONTACT_TYPE <> 1 AND CONTACT_TYPE <> 3 ORDER BY CONTACTS_KEY ";
+        SelectQuery->ExecQuery();
+        InsertQuery->SQL->Text =
+        "INSERT INTO MEMBERSHIP_SUBS_DETAILS ( MEMBERSHIP_SUBS_KEY, CONTACTS_KEY, SUBS_PAID_DATE,SUBS_PAID_AMOUNT,"
+        " SUBS_PAID_RECEIPT_NO,SUBS_TYPE, POINTS_RULES_SUBS,SUBS_PAID,ISLOCAL_MEMBER)"
+        " VALUES (:MEMBERSHIP_SUBS_KEY, :CONTACTS_KEY, :SUBS_PAID_DATE, :SUBS_PAID_AMOUNT, :SUBS_PAID_RECEIPT_NO,"
+        ":SUBS_TYPE,:POINTS_RULES_SUBS,:SUBS_PAID,:ISLOCAL_MEMBER) ";
+
+        for (; !SelectQuery->Eof;)
+        {
+            InsertQuery->Close();
+            int pointsRules = 0;
+            pointsRules = pointsRules | FinancialPaid;
+            pointsRules = pointsRules | DiscountsAllowed;
+            pointsRules |= SelectQuery->Fields[1]->AsInteger;
+            SelectGenQuery->Close();
+            SelectGenQuery->SQL->Text = "SELECT GEN_ID(GEN_MEMBERSHIP_SUBS_KEY, 1) FROM RDB$DATABASE";
+            SelectGenQuery->ExecQuery();
+            int generator_Val = 0;
+            generator_Val = SelectGenQuery->Fields[0]->AsInteger;
+            InsertQuery->ParamByName("MEMBERSHIP_SUBS_KEY")->AsInteger = generator_Val;
+            InsertQuery->ParamByName("CONTACTS_KEY" )->AsInteger  = SelectQuery->Fields[0]->AsInteger;
+            InsertQuery->ParamByName("SUBS_PAID_DATE" )->AsDateTime  = Now();
+            InsertQuery->ParamByName("SUBS_PAID_AMOUNT" )->AsDouble  = 0.0;
+            InsertQuery->ParamByName("SUBS_PAID_RECEIPT_NO" )->AsString  = "-";
+            InsertQuery->ParamByName("SUBS_TYPE" )->AsString  = "AUTO";         // Old members are registered under this type
+            InsertQuery->ParamByName("POINTS_RULES_SUBS" )->AsInteger = pointsRules;
+            InsertQuery->ParamByName("SUBS_PAID" )->AsString = "T";
+            InsertQuery->ParamByName("ISLOCAL_MEMBER" )->AsString = "T";
+            InsertQuery->ExecQuery();
+            SelectQuery->Next();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------
+void TApplyParser::UpdateMallExportSettingValuesTable6_35(TDBControl* const inDBControl)
+{
+    if (tableExists( "MALLEXPORT_SETTINGS_VALUES", inDBControl ) )
+    {
+        executeQuery(
+                "DELETE FROM MALLEXPORT_SETTINGS_VALUES a; ",
+            inDBControl );
+    }
+
+    if (!fieldExists( "MALLEXPORT_SETTINGS_VALUES", "DEVICE_KEY", _dbControl ) )
+    {
+        executeQuery (
+            "ALTER TABLE MALLEXPORT_SETTINGS_VALUES ADD "
+            "DEVICE_KEY INTEGER; ",
+            inDBControl);
+    }
+
+    if (!fieldExists( "MALLEXPORT_SETTINGS_VALUES", "MALL_KEY", _dbControl ) )
+    {
+        executeQuery (
+            "ALTER TABLE MALLEXPORT_SETTINGS_VALUES ADD "
+            "MALL_KEY INTEGER; ",
+            inDBControl);
+    }
+    if (!fieldExists( "MALLEXPORT_SALES", "DEVICE_KEY", _dbControl ) )
+    {
+        executeQuery (
+            "ALTER TABLE MALLEXPORT_SALES ADD "
+            "DEVICE_KEY INTEGER; ",
+            inDBControl);
+    }
+}
+//---------------------------------------------------------------------------
+void TApplyParser::Create6_35GeneratorMallExportSettingValues(TDBControl* const inDBControl)
+{
+    if( !generatorExists("GEN_MALL_SETT_VAL_KEY", _dbControl) )
+    {
+        executeQuery(
+        "CREATE GENERATOR GEN_MALL_SETT_VAL_KEY;",
+        inDBControl);
+        executeQuery(
+        "SET GENERATOR GEN_MALL_SETT_VAL_KEY TO 0; ",
+        inDBControl );
+    }
+}
+//--------------------------------------------------------------------------------------------------
 }
 
