@@ -840,6 +840,7 @@ namespace MenumateVersionParser
         void Insert6_35MemberSubsDetails(TDBControl* const inDBControl);
         void UpdateMallExportSettingValuesTable6_35(TDBControl* const inDBControl);
         void Create6_35GeneratorMallExportSettingValues(TDBControl* const inDBControl);
+        void UpdateContactIndex_6_35(TDBControl* const inDBControl);
 
     }; // class
 } // namespace
