@@ -1513,7 +1513,7 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
-        if(!isMasterTerminal)
+        //if(!isMasterTerminal)
 			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
 
 
@@ -1525,7 +1525,7 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
 
-        if(!isMasterTerminal)
+       // if(!isMasterTerminal)
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
 
         IBInternalQuery->ExecQuery();
@@ -1614,7 +1614,7 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
-        if(!isMasterTerminal)
+     //   if(!isMasterTerminal)
 			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4,5 "
@@ -1626,7 +1626,7 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
 
-        if(!isMasterTerminal)
+      //  if(!isMasterTerminal)
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
 
         IBInternalQuery->ExecQuery();
@@ -1684,7 +1684,7 @@ void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBT
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
-        if(!isMasterTerminal)
+      //  if(!isMasterTerminal)
 			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4 ";
@@ -1695,7 +1695,7 @@ void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBT
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
 
-        if(!isMasterTerminal)
+      //  if(!isMasterTerminal)
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
 
         IBInternalQuery->ExecQuery();
