@@ -603,7 +603,7 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
         fieldData.GrossAmountNonVatable += grossAmount;
         fieldData.PromoSalesAmountNonVatable += (double)(order->GetQty() > 0.00 ? fabs(estanciaDiscounts.promoDiscount) : estanciaDiscounts.promoDiscount*-1);
         fieldData.SCDDiscountNonVatable += (double)(order->GetQty() > 0.00 ? fabs(estanciaDiscounts.scdDiscount) : estanciaDiscounts.scdDiscount*-1);
-        fieldData.RefundAmountNonVatable += (order->GetQty() < 0.00 ? itemPrice : 0.00);
+        fieldData.RefundAmountNonVatable += (order->GetQty() < 0.00 ? fabs(itemPrice) : 0.00);
         fieldData.ReturnedItemsAmountNonVatable += 0;
         fieldData.OtherTaxesNonVatable += (double)estanciaTaxes.localTax;
         fieldData.ServiceChargeAmountNonVatable +=  serviceCharge;
