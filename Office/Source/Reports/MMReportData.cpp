@@ -133,8 +133,9 @@ _dayArcBillSubQuery =  	" Select "
                                                 "		DayArcBillPay.Note,                   "
                                                 "        		ab.TABLE_NAME TABLE_NUMBER,   "
                                                 "        		ab.price,                     "
-                                                 "      DayArcBillPAY.PAY_TYPE " + tip + " PAY_TYPE, "
-                                                "       DayArcBillPAY.TIP_AMOUNT price, "
+                                                 "      case when (DayArcBillPAY.TIP_AMOUNT > 0 ) then (DayArcBillPAY.PAY_TYPE " + tip + ") else (DayArcBillPAY.PAY_TYPE) end PAY_TYPE,                        "
+                                                // "      DayArcBillPAY.PAY_TYPE " + tip + " PAY_TYPE, "
+                                                "       case when (DayArcBillPAY.TIP_AMOUNT > 0 ) then (DayArcBillPAY.TIP_AMOUNT) else (DAYARCBILL.TOTAL) end price, "
                                                 "       Cast(Null As VarChar(50)) billed_to "
                                     "From "
                                         "DayArcBill Left Join Security On                      "
@@ -144,7 +145,7 @@ _dayArcBillSubQuery =  	" Select "
                                         "      left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM DayArchive a "
                                         "     group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=DayArcBill.ARCBILL_KEY "
                                      "Where "
-                                        "Security.Security_Event = 'Billed By' And coalesce(DayArcBillPAY.TIP_AMOUNT,0) > 0 ";
+                                        "Security.Security_Event = 'Billed By' And (coalesce(DayArcBillPay.TIP_AMOUNT,0) > 0 or DAYARCBILL.TOTAL <= 0) and DAYARCBILLPAY.NOTE != 'Total Change.' ";
 
 
 
@@ -168,8 +169,9 @@ _arcBillSubQuery =      " Select   "
                                                 "		ArcBillPay.Note,                  "
                                                 "        ab.TABLE_NAME TABLE_NUMBER,      "
                                                 "        ab.price ,                        "
-                                                 "     ArcBillPAY.PAY_TYPE " + tip + " PAY_TYPE , "
-                                                "      ArcBillPAY.TIP_AMOUNT price, "
+                                                "      case when (ArcBillPAY.TIP_AMOUNT > 0 ) then (ArcBillPAY.PAY_TYPE " + tip + ") else (ArcBillPAY.PAY_TYPE) end PAY_TYPE,                        "
+                                                // "     ArcBillPAY.PAY_TYPE " + tip + " PAY_TYPE , "
+                                                "      case when (ArcBillPAY.TIP_AMOUNT > 0 ) then (ArcBillPAY.TIP_AMOUNT) else (ARCBILL.TOTAL) end price,                        "
                                                 "       Cast(Null As VarChar(50)) billed_to "
                                     "From "
                                                 "ArcBill Left Join Security On                      "
@@ -179,7 +181,7 @@ _arcBillSubQuery =      " Select   "
                                                 "      left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM Archive a "
                                                 "     group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=ArcBill.ARCBILL_KEY "
                                       "Where "
-                                                "Security.Security_Event = 'Billed By'  And coalesce(ArcBillPAY.TIP_AMOUNT,0) > 0 ";
+                                                "Security.Security_Event = 'Billed By'  And (coalesce(ArcBillPay.TIP_AMOUNT,0) > 0 or ARCBILL.TOTAL <= 0) and ARCBILLPAY.NOTE != 'Total Change.' ";
 
 _groupingForArcbill =
                                               "  GROUP BY ArcBill.ARCBILL_KEY, ArcBill.Time_Stamp,  "
@@ -1195,8 +1197,8 @@ qrCategoryBreakdown->Close();
 			"ArcCategories.Category,"
 			"Sum(Archive.Qty) Item_Count,"
 
-              "Sum(CAST(Archive.BASE_PRICE As Numeric(17,2)) * CAST(Archive.Qty As Numeric(17,4)) ) PriceExc ,    "
-			" Sum(CAST(Archive.Price As Numeric(17,4)) * CAST( abs(Archive.Qty) As Numeric(17,4))+ Archive.Discount ) PriceInc,   "
+              "Sum(CAST(Archive.BASE_PRICE As Numeric(17,2)) * CAST(abs(Archive.Qty) As Numeric(17,4)) ) PriceExc ,   "
+			" Sum(CAST(Archive.Price As Numeric(17,4)) * CAST( Archive.Qty As Numeric(17,4))+ Archive.Discount ) PriceInc,   "
 			" Sum(CAST(Archive.Cost As Numeric(17,4)) * Archive.Qty ) Cost   "
 
 		"From "
@@ -1254,8 +1256,8 @@ qrCategoryBreakdown->Close();
 			"CategoryGroups.Name Category_Group,"
 			"ArcCategories.Category,"
 			"Sum(DayArchive.Qty) Item_Count,"
-		 "Sum(CAST(DayArchive.BASE_PRICE As Numeric(17,2)) * CAST(DayArchive.Qty As Numeric(17,4)) ) PriceExc ,    "
-			" Sum(CAST(DayArchive.Price As Numeric(17,4)) * CAST( abs(DayArchive.Qty) As Numeric(17,4))+ DayArchive.Discount ) PriceInc,   "
+		 "Sum(CAST(DayArchive.BASE_PRICE As Numeric(17,2)) * CAST(abs(DayArchive.Qty) As Numeric(17,4)) ) PriceExc ,    "
+			" Sum(CAST(DayArchive.Price As Numeric(17,4)) * CAST( DayArchive.Qty As Numeric(17,4))+ DayArchive.Discount ) PriceInc,   "
 			" Sum(CAST(DayArchive.Cost As Numeric(17,4)) * DayArchive.Qty ) Cost   "
 		"From "
 			"Security Left Join DayArchive on "
@@ -1313,8 +1315,8 @@ qrCategoryBreakdown->Close();
 			"ArcCategories.Category,"
 			"Sum(Orders.Qty) Item_Count,"
 
-              "Sum(CAST(Orders.BASE_PRICE As Numeric(17,2)) * CAST(Orders.Qty As Numeric(17,4)) ) PriceExc ,    "
-			" Sum(CAST(Orders.Price As Numeric(17,4)) * CAST( Orders.Qty As Numeric(17,4))+ Orders.Discount ) PriceInc,   "
+              "Sum(CAST(Orders.BASE_PRICE As Numeric(17,2)) * CAST(abs(Orders.Qty) As Numeric(17,4)) ) PriceExc ,     "
+			" Sum(CAST(Orders.Price As Numeric(17,4)) * CAST( Orders.Qty As Numeric(17,4))+ Orders.Discount ) PriceInc,    "
 			" Sum(CAST(Orders.Cost As Numeric(17,4)) * Orders.Qty ) Cost   "
 
 		"From "
@@ -14084,7 +14086,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 	qrAdjustSummary->SQL->Text = qrAdjustSummary->SQL->Text +
 	  			"Archive.Order_Type,"
 			"Sum(Archive.Qty) Item_Count,"
-			"cast(Sum(Archive.Qty * Archive.BASE_PRICE - Archive.Qty * Archive.Price_Level0) as numeric(17, 4)) Total "
+			"cast(Sum(Archive.Qty * Archive.PRICE_ADJUST - Archive.Qty * Archive.PRICE_LEVEL1) as numeric(17, 4)) Total "
 		"From "
 			"Security Left Join Archive On "
 				"Security.Security_Ref = Archive.Security_Ref "
@@ -14150,8 +14152,8 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 
       "Select "
         "CanSec.Terminal_Name, "
-        "cast(Archive.PRICE_LEVEL0 * Archive.Qty as numeric(17, 4)) Price, "
-        "cast(1 as int) keyvalue "
+        "cast(sum(Archive.PRICE_LEVEL1 * Archive.Qty) as numeric(17, 4)) Price, "
+        "cast(sum(Archive.Qty)as numeric(17,4)) keyvalue "
 		"From "
 			"Security CanSec Inner Join Archive On "
 				"CanSec.Security_Ref = Archive.Security_Ref "
@@ -14186,14 +14188,15 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"Archive.TIME_STAMP_BILLED < :EndTime and "
 		     "((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
-			"CanSec.Security_Event = 'Cancel' and "
+			"(CanSec.Security_Event = 'Cancel' or CanSec.Security_Event = 'CancelY') and "
 			"OrdSec.Security_Event = 'Ordered By' and "
 			"Archive.Archive_Key Is Not Null "
+            "GROUP by 1 "
  "union all "
 		"Select "
 			"CanSec.Terminal_Name, "			
-			"cast(DayArchive.PRICE_LEVEL0 * DayArchive.Qty as numeric(17, 4)) Price, "
-			"cast(1 as int) keyvalue "
+			 "cast(sum(DayArchive.PRICE_LEVEL1 * DayArchive.Qty) as numeric(17, 4)) Price, "
+        "cast(sum(DayArchive.Qty)as numeric(17,4)) keyvalue "
 		"From "
 			"Security CanSec Inner Join DayArchive On "
 				"CanSec.Security_Ref = DayArchive.Security_Ref "
@@ -14226,14 +14229,15 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"DayArchive.TIME_STAMP_BILLED < :EndTime and "
 		    " (( COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
-			"CanSec.Security_Event = 'Cancel' and "
+			"(CanSec.Security_Event = 'Cancel' or CanSec.Security_Event = 'CancelY') and "
 			"OrdSec.Security_Event = 'Ordered By' and "
 			"DayArchive.Archive_Key Is Not Null "
+             "GROUP by 1 "
 	"union all "
          "Select "
 			"CanSec.Terminal_Name, "
-  			"cast(Orders.BASE_PRICE * Orders.Qty as numeric(17, 4)) Price, "
-         "cast(1 as int) keyvalue  "
+             "cast(sum(Orders.PRICE_LEVEL1 * Orders.Qty) as numeric(17, 4)) Price, "
+            "cast(sum(Orders.Qty)as numeric(17,4)) keyvalue "
        "From "
 			"Security CanSec Left Join Orders On "
 			  "	CanSec.Security_Ref = Orders.Security_Ref "
@@ -14246,9 +14250,10 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 		"Where "
 			 "Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
-			"CanSec.Security_Event = 'Cancel' and "
+			"(CanSec.Security_Event = 'Cancel' or CanSec.Security_Event = 'CancelY') and "
 			"OrdSec.Security_Event = 'Ordered By' and "
-			"Orders.Order_Key Is Not Null ";
+			"Orders.Order_Key Is Not Null "
+            "GROUP by 1 ";
 
       if (Locations && Locations->Count > 0)
 	   {
@@ -14315,7 +14320,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 		"Where "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
 			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Credit' ";
+			"(Security.Security_Event = 'Credit' or Security.Security_Event = 'WriteOff' ) ";
         	if (Locations && Locations->Count > 0)
 	   {
 		   qrRefunds->SQL->Text	=	qrRefunds->SQL->Text + "and (" +
