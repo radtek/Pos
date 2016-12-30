@@ -13,6 +13,12 @@ XWriteOffDetailsReportSection::XWriteOffDetailsReportSection(Database::TDBTransa
     dataFormatUtilities = new DataFormatUtilities;
 }
 
+XWriteOffDetailsReportSection::XWriteOffDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmRefundDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
 XWriteOffDetailsReportSection::~XWriteOffDetailsReportSection()
 {
     delete dataFormatUtilities;
@@ -29,31 +35,15 @@ void XWriteOffDetailsReportSection::GetOutput(TPrintout* printOut)
 
     TIBSQL* writeOffQuery = _dbTransaction->Query( _dbTransaction->AddQuery());
     writeOffQuery->Close();
-    writeOffQuery->SQL->Text =
-                            "SELECT "
-                                "a.WRITEOFF_KEY, "
-                                "a.ITEM, "
-                                "a.STAFF, "
-                                "a.AMOUNT, "
-                                "a.TIME_STAMP, "
-                                "a.REASONS, "
-                                "a.CATEGORY_KEY, "
-                                "a.GROUP_KEY, "
-                                "a.SUPPLIER_KEY, "
-                                "a.MENU_KEY, "
-                                "a.COURSE_KEY, "
-                                "a.ITEM_KEY, "
-                                "a.PARENT_KEY, "
-                                "a.SIZE_NAME, "
-                                "a.TERMINALNAME "
-                            "FROM "
-                                "WRITEOFF a "
-                            "WHERE "
-                                "a.TIME_STAMP > :TIME_STAMP "
-                                "AND a.TERMINALNAME = :TERMINALNAME;";
-
-
-    writeOffQuery->ParamByName("TIME_STAMP")->AsDateTime = prevZedTime;
+    if(IsConsolidatedZed)
+    {
+       GetWriteOffDataforConsolidatedZed(writeOffQuery);
+    }
+    else
+    {
+       GetWriteOffDataforNormalZed(writeOffQuery);
+       writeOffQuery->ParamByName("TIME_STAMP")->AsDateTime = prevZedTime;
+    }
     writeOffQuery->ParamByName("TERMINALNAME")->AsString = deviceName;
     writeOffQuery->ExecQuery();
 
@@ -106,4 +96,58 @@ void XWriteOffDetailsReportSection::GetOutput(TPrintout* printOut)
     }
 }
 
+void XWriteOffDetailsReportSection::GetWriteOffDataforNormalZed(TIBSQL* writeOffQuery)
+{
+    writeOffQuery->SQL->Text =
+                "SELECT "
+                    "a.WRITEOFF_KEY, "
+                    "a.ITEM, "
+                    "a.STAFF, "
+                    "a.AMOUNT, "
+                    "a.TIME_STAMP, "
+                    "a.REASONS, "
+                    "a.CATEGORY_KEY, "
+                    "a.GROUP_KEY, "
+                    "a.SUPPLIER_KEY, "
+                    "a.MENU_KEY, "
+                    "a.COURSE_KEY, "
+                    "a.ITEM_KEY, "
+                    "a.PARENT_KEY, "
+                    "a.SIZE_NAME, "
+                    "a.TERMINALNAME "
+                "FROM "
+                    "WRITEOFF a "
+                "WHERE "
+                    "a.TIME_STAMP > :TIME_STAMP "
+                    "AND a.TERMINALNAME = :TERMINALNAME;";
+}
+
+
+void XWriteOffDetailsReportSection::GetWriteOffDataforConsolidatedZed(TIBSQL* writeOffQuery)
+{
+    writeOffQuery->SQL->Text =
+                "SELECT "
+                    "a.WRITEOFF_KEY, "
+                    "a.ITEM, "
+                    "a.STAFF, "
+                    "a.AMOUNT, "
+                    "a.TIME_STAMP, "
+                    "a.REASONS, "
+                    "a.CATEGORY_KEY, "
+                    "a.GROUP_KEY, "
+                    "a.SUPPLIER_KEY, "
+                    "a.MENU_KEY, "
+                    "a.COURSE_KEY, "
+                    "a.ITEM_KEY, "
+                    "a.PARENT_KEY, "
+                    "a.SIZE_NAME, "
+                    "a.TERMINALNAME "
+                "FROM "
+                    "WRITEOFF a "
+                "WHERE "
+                    "a.TIME_STAMP >= :startTime and  a.TIME_STAMP <= :endTime "
+                    "AND a.TERMINALNAME = :TERMINALNAME;";
+    writeOffQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+    writeOffQuery->ParamByName("endTime")->AsDateTime = *_endTime;
+}
 #pragma package(smart_init)

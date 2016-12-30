@@ -228,3 +228,70 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetLastEndInvoiceNumber()
 	return lastEndInvoiceNum;
 }
 
+AnsiString XAccumulatedTotalDetailsReportSection::GetStartInvoiceNumber(TDateTime &startTime, TDateTime &endTime)
+{
+	AnsiString beginInvoiceNum = 0;
+
+	TIBSQL *qrStartInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
+	qrStartInvoiceNumber->SQL->Text = "SELECT "
+                                        "DAB.INVOICE_NUMBER "
+                                        "FROM ARCBILL DAB "
+                                        "LEFT JOIN ARCHIVE DA on DAB.ARCBILL_KEY = DA.ARCBILL_KEY "
+                                        "LEFT JOIN ARCORDERDISCOUNTS DAOD on DA.ARCHIVE_KEY = DAOD.ARCHIVE_KEY "
+                                        "WHERE(COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
+                                        "and DAB.TIME_STAMP >= :startTime  and DAB.TIME_STAMP <=:endTime  "
+                                        "GROUP BY DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
+                                        "ORDER BY DAB.ARCBILL_KEY ";
+
+    qrStartInvoiceNumber->ParamByName("startTime")->AsDateTime = startTime;
+    qrStartInvoiceNumber->ParamByName("endTime")->AsDateTime = endTime;
+	qrStartInvoiceNumber->ExecQuery();
+
+	if(!qrStartInvoiceNumber->Eof)
+	{
+		beginInvoiceNum = qrStartInvoiceNumber->Fields[0]->AsString;
+	}
+	else
+	{
+		beginInvoiceNum = GetLastEndInvoiceNumber();
+	}
+
+	return beginInvoiceNum;
+}
+
+AnsiString XAccumulatedTotalDetailsReportSection::GetEndInvoiceNumber(TDateTime &startTime, TDateTime &endTime)
+{
+	AnsiString endInvoiceNum = 0;
+
+	TIBSQL *qrEndInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
+    qrEndInvoiceNumber->SQL->Text = "SELECT "
+                                    "DAB.INVOICE_NUMBER "
+                                    "FROM ARCBILL DAB "
+                                    "LEFT JOIN ARCHIVE DA on DAB.ARCBILL_KEY = DA.ARCBILL_KEY "
+                                    "LEFT JOIN ARCORDERDISCOUNTS DAOD on DA.ARCHIVE_KEY = DAOD.ARCHIVE_KEY "
+                                    "WHERE(COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
+                                    "and DAB.TIME_STAMP >= :startTime  and DAB.TIME_STAMP <=:endTime  "
+                                    "GROUP BY DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
+                                    "ORDER BY DAB.ARCBILL_KEY ";
+
+    qrEndInvoiceNumber->ParamByName("startTime")->AsDateTime = startTime;
+    qrEndInvoiceNumber->ParamByName("endTime")->AsDateTime = endTime;
+
+	qrEndInvoiceNumber->ExecQuery();
+
+	if(!qrEndInvoiceNumber->Eof)
+	{
+		for(; !qrEndInvoiceNumber->Eof; qrEndInvoiceNumber->Next())
+		{
+			endInvoiceNum = qrEndInvoiceNumber->Fields[0]->AsString;
+		}
+	}
+	else
+	{
+		endInvoiceNum = GetLastEndInvoiceNumber();
+	}
+
+	return endInvoiceNum;
+}
+
+

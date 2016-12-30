@@ -4,7 +4,8 @@
 enum ReportType
 {
 	mmZReport,
-	mmXReport
+	mmXReport,
+    mmConsolidatedZReport
 };
 
 enum ReportSectionType

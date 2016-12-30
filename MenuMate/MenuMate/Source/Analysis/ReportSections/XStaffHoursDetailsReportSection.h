@@ -12,9 +12,11 @@ class XStaffHoursDetailsReportSection : public BaseReportSection
 
 public:
     XStaffHoursDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XStaffHoursDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XStaffHoursDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
+
 
 private:
     DataFormatUtilities* dataFormatUtilities;

@@ -109,4 +109,9 @@ void __fastcall TfrmReports::btnEJournalMouseClick(TObject *Sender)
 	Close();
 }
 //---------------------------------------------------------------------------
-
+void __fastcall TfrmReports::btnConsolidatedZedMouseClick(TObject *Sender)
+{
+	BtnSelection = 12;
+	Close();
+}
+//---------------------------------------------------------------------------

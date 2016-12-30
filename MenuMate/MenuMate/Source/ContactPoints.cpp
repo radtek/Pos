@@ -36,6 +36,11 @@ void TContactPoints::Clear()
     ExportStatus = pesNone;
 }
 
+void TContactPoints::ClearPoints()
+{
+    PointsStore.clear();
+}
+
 void TContactPoints::ClearBySource(TPointsAssignedSource inSource)
 {
     for (TPointsStore::iterator ptrPointsTransaction = PointsStore.begin();

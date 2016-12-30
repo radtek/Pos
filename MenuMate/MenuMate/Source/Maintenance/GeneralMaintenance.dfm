@@ -223,7 +223,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsEndOfDayOptions
+    ActivePage = tsMembershipOptions
     TabOrder = 1
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'
@@ -1641,7 +1641,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 424
           Top = 365
           Width = 416
-          Height = 110
+          Height = 109
           Caption = 'Location Loyalty Purchase Count'
           Items.Strings = (
             'Disabled'
@@ -1798,7 +1798,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 424
           Top = 195
           Width = 416
-          Height = 83
+          Height = 79
           Caption = 'Synchronise With External Membership.'
           TabOrder = 6
           object Label12: TLabel
@@ -1822,8 +1822,8 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             OnMouseClick = tbtnSyncroniseMembersipMouseClick
           end
           object cbAutoAddWebMembers: TCheckBox
-            Left = 10
-            Top = 55
+            Left = 7
+            Top = 49
             Width = 247
             Height = 20
             Caption = 'Automatically Add Web Members'
@@ -1835,7 +1835,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 423
           Top = 280
           Width = 417
-          Height = 81
+          Height = 79
           Caption = 'Membership Numbers'
           TabOrder = 7
           object Label14: TLabel
@@ -1865,8 +1865,8 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             OnMouseClick = tbMinMembershipNumberClick
           end
           object cbRecycleMembershipNumbers: TCheckBox
-            Left = 8
-            Top = 53
+            Left = 7
+            Top = 51
             Width = 289
             Height = 20
             Caption = 'Recycle Membership Numbers'
@@ -2056,9 +2056,9 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 423
           Top = 595
           Width = 416
-          Height = 135
+          Height = 126
           Caption = 'Tier Level'
-          TabOrder = 11
+          TabOrder = 12
           object Label24: TLabel
             Left = 10
             Top = 95
@@ -2111,6 +2111,23 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbMinRedemptionPointClick
+          end
+        end
+        object grpMemberSubs: TGroupBox
+          Left = 423
+          Top = 725
+          Width = 416
+          Height = 47
+          Caption = 'Member Subscription'
+          TabOrder = 11
+          object cbUseMemberSubs: TCheckBox
+            Left = 8
+            Top = 21
+            Width = 289
+            Height = 20
+            Caption = 'Use Member Subscription'
+            TabOrder = 0
+            OnClick = cbUseMemberSubsClick
           end
         end
       end
@@ -2672,7 +2689,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Width = 250
             Height = 25
             Caption = 'Enable Cash Denomination Entry'
-            TabOrder = 27
+            TabOrder = 28
             OnClick = cbCashDenominationEntryClick
           end
           object cbDEnableBlindBalances: TCheckBox

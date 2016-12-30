@@ -12,13 +12,18 @@ class BaseReportSection : public IReportSection
 {
 public:
 	BaseReportSection(ReportType reportType, ReportSectionType reportSectionType, Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    BaseReportSection(ReportType reportType, ReportSectionType reportSectionType, Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 
     IReportSectionDisplayStrategy*  GetReportSectionStrategy();
     std::vector<IReportSectionDisplayTraits*> GetReportSectionTraits();
 
     virtual bool GetIsEnabled();
     virtual void SetIsEnabled(bool isEnabled);
-
+    virtual TDateTime* GetStartTime();
+    virtual TDateTime* GetEndTime();
+    virtual void SetStartTime(TDateTime* startTime);
+    virtual void SetEndTime(TDateTime* endTime);
+    bool IsConsolidatedZed;
 protected:
     Database::TDBTransaction* _dbTransaction;
     TGlobalSettings* _globalSettings;
@@ -29,6 +34,8 @@ protected:
 
     virtual void SetReportSectionStrategy(IReportSectionDisplayStrategy* reportSectionDisplayStrategy);
     virtual void SetReportSectionTraits(std::vector<IReportSectionDisplayTraits*> reportSectionDisplayTraits);
+    TDateTime* _startTime;
+    TDateTime* _endTime;
 
 private:
     bool _isEnabled;

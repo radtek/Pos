@@ -923,6 +923,17 @@ void __fastcall TfrmSetup::rgMembershipTypeClick(TObject *Sender)
 	TGlobalSettings::Instance().MembershipType = rgMembershipType->ItemIndex;
 	Database::TDBTransaction DBTransaction(IBDatabase);
 	DBTransaction.StartTransaction();
+    if(!(rgMembershipType->ItemIndex == MembershipTypeMenuMate && !TGlobalSettings::Instance().LoyaltyMateEnabled))
+    {
+        if(TGlobalSettings::Instance().UseMemberSubs)
+           MessageBox("Member Subscription will be turned off with this functionality.", "Information", MB_OK + MB_ICONINFORMATION);
+        TGlobalSettings::Instance().UseMemberSubs = false;
+        TManagerVariable &mv = TManagerVariable::Instance();
+        int pk;
+        if (!(pk = mv.GetProfile(DBTransaction, eSystemProfiles, "Globals")))
+        pk = mv.SetProfile(DBTransaction, eSystemProfiles, "Globals");
+        mv.SetProfileBool(DBTransaction, pk, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+    }
 	TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmMembershipType,TGlobalSettings::Instance().MembershipType);
 	DBTransaction.Commit();
 }

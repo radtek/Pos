@@ -8,6 +8,11 @@ ZCashDenominationReportSection::ZCashDenominationReportSection(Database::TDBTran
 }
 
 
+ZCashDenominationReportSection::ZCashDenominationReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmCashDenominationDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
 ZCashDenominationReportSection::~ZCashDenominationReportSection()
 {
 }
@@ -30,4 +35,4 @@ void ZCashDenominationReportSection::GetOutput(TPrintout* printOut)
 		reportSectionDisplayStrategy->BuildSection(printOut);
         return;
 	}
-}
+}

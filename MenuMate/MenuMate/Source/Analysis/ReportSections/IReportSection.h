@@ -20,6 +20,11 @@ public:
 
     //This will be used to display the report section traits..
     virtual std::vector<IReportSectionDisplayTraits*> GetReportSectionTraits() = 0;
+    virtual TDateTime* GetStartTime() = 0;
+    virtual TDateTime* GetEndTime() = 0;
+    virtual void SetStartTime(TDateTime* startTime) = 0;
+    virtual void SetEndTime(TDateTime* endTime) = 0;
+    //virtual void GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime) = 0;
 };
 
 #endif

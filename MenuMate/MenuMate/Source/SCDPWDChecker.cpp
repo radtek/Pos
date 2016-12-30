@@ -86,38 +86,52 @@ bool TSCDPWDChecker::PWDCheck(TDiscount inDiscount, TList* Orders, bool isClippS
 }
 
 
-bool TSCDPWDChecker::ItemSelectionCheck(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems)
+bool TSCDPWDChecker::ItemSelectionCheck(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems, bool showMessage)
 {
     bool retVal = true;
+    bool itemHasDiscount = true;
+    bool itemHasSCDDiscount = true;
     std::set<__int64> keyToCheck;
     keyToCheck.insert(OrderItemToCheckKey);
 
-    if(SelectedOrderItems.size() > 0 && checkItemsHaveDiscount(DBTransaction, SelectedOrderItems) &&
-        checkItemsHaveDiscount(DBTransaction, keyToCheck))
+    if(showMessage)
     {
-        retVal = checkItemsHaveSeniorCitizenDiscount(DBTransaction, SelectedOrderItems) == checkItemsHaveSeniorCitizenDiscount(DBTransaction, keyToCheck);
+        itemHasDiscount = checkItemsHaveDiscount(DBTransaction, keyToCheck);
+        itemHasSCDDiscount = checkItemsHaveSCDOrPWDDiscount(DBTransaction, keyToCheck, "Senior Citizen");
     }
 
-    if(!retVal)
+    if(SelectedOrderItems.size() > 0 && itemHasDiscount && checkItemsHaveDiscount(DBTransaction, SelectedOrderItems))
+    {
+        retVal = checkItemsHaveSCDOrPWDDiscount(DBTransaction, SelectedOrderItems, "Senior Citizen") == itemHasSCDDiscount;
+    }
+
+    if(!retVal && showMessage)
     {
         MessageBox("Items with Senior Citizens Discounts and items with Non Senior Citizens Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
     }
 
     return retVal;
 }
-bool TSCDPWDChecker::ItemSelectionCheckPWD(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems)
+bool TSCDPWDChecker::ItemSelectionCheckPWD(Database::TDBTransaction &DBTransaction, __int64 OrderItemToCheckKey, std::set<__int64> SelectedOrderItems, bool showMessage)
 {
     bool retVal = true;
+    bool itemHasDiscount = true;
+    bool itemHasPWDDiscount = true;
     std::set<__int64> keyToCheck;
     keyToCheck.insert(OrderItemToCheckKey);
 
-    if(SelectedOrderItems.size() > 0 && checkItemsHaveDiscount(DBTransaction, SelectedOrderItems) &&
-        checkItemsHaveDiscount(DBTransaction, keyToCheck))
+    if(showMessage)
     {
-        retVal = checkItemsHavePWDDiscount(DBTransaction, SelectedOrderItems) == checkItemsHavePWDDiscount(DBTransaction, keyToCheck);
+        itemHasDiscount = checkItemsHaveDiscount(DBTransaction, keyToCheck);
+        itemHasPWDDiscount = checkItemsHaveSCDOrPWDDiscount(DBTransaction, keyToCheck, "Person with Disability");
     }
 
-    if(!retVal)
+    if(SelectedOrderItems.size() > 0 && itemHasDiscount && checkItemsHaveDiscount(DBTransaction, SelectedOrderItems))
+    {
+        retVal = checkItemsHaveSCDOrPWDDiscount(DBTransaction, SelectedOrderItems, "Person with Disability") == itemHasPWDDiscount;
+    }
+
+    if(!retVal && showMessage)
     {
         MessageBox("Items with PWD Discounts and items with Non PWD Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
     }
@@ -178,7 +192,7 @@ bool TSCDPWDChecker::checkItemsHaveDiscount(Database::TDBTransaction &DBTransact
 
 }
 
-bool TSCDPWDChecker::checkItemsHavePWDDiscount(Database::TDBTransaction &DBTransaction, std::set<__int64> OrderKeys)
+bool TSCDPWDChecker::checkItemsHaveSCDOrPWDDiscount(Database::TDBTransaction &DBTransaction, std::set<__int64> OrderKeys, UnicodeString discountGroup)
 {
     UnicodeString orderKeysList = getOrderKeysList(OrderKeys);
 
@@ -199,33 +213,9 @@ bool TSCDPWDChecker::checkItemsHavePWDDiscount(Database::TDBTransaction &DBTrans
         "WHERE "
             "O.ORDER_KEY IN (" + orderKeysList + ") "
         "AND "
-            "DG.DISCOUNTGROUP_NAME = 'Person with Disability';";
-    IBInternalQuery->ExecQuery();
+            "DG.DISCOUNTGROUP_NAME = :DISCOUNTGROUP_NAME;";
 
-    return !IBInternalQuery->Eof;
-}
-bool TSCDPWDChecker::checkItemsHaveSeniorCitizenDiscount(Database::TDBTransaction &DBTransaction, std::set<__int64> OrderKeys)
-{
-    UnicodeString orderKeysList = getOrderKeysList(OrderKeys);
-
-    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-    IBInternalQuery->Close();
-    IBInternalQuery->SQL->Clear();
-    IBInternalQuery->SQL->Text =
-        "SELECT "
-            "O.ORDER_KEY "
-        "FROM "
-            "ORDERS O INNER JOIN ORDERDISCOUNTS OD "
-            "ON O.ORDER_KEY = OD.ORDER_KEY "
-            "INNER JOIN DISCOUNTGROUPS_DISCOUNTTYPES DGD "
-            "ON OD.DISCOUNT_KEY = DGD.DISCOUNTTYPE_KEY "
-            "INNER JOIN DISCOUNT_GROUPS DG "
-            "ON DGD.DISCOUNTGROUPS_KEY = DG.DISCOUNTGROUPS_KEY "
-        "WHERE "
-            "O.ORDER_KEY IN (" + orderKeysList + ") "
-        "AND "
-            "DG.DISCOUNTGROUP_NAME = 'Senior Citizen';";
+    IBInternalQuery->ParamByName("DISCOUNTGROUP_NAME")->AsString = discountGroup;
     IBInternalQuery->ExecQuery();
 
     return !IBInternalQuery->Eof;

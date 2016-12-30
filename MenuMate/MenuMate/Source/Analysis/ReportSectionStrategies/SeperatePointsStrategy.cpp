@@ -6,6 +6,15 @@ SeperatePointsStrategy::SeperatePointsStrategy(Database::TDBTransaction* dbTrans
 {
     _pointsReportHeaderTraits = pointsReportHeaderTraits;
     _dataFormatUtilities = new DataFormatUtilities;
+    IsConsolidatedStartegy = false;
+}
+
+SeperatePointsStrategy::SeperatePointsStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, IReportSectionDisplayTraits* pointsReportHeaderTraits, TDateTime* startTime, TDateTime* endTime)
+	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
+{
+    _pointsReportHeaderTraits = pointsReportHeaderTraits;
+    _dataFormatUtilities = new DataFormatUtilities;
+    IsConsolidatedStartegy = true;
 }
 
 void SeperatePointsStrategy::BuildSection(TPrintout* printOut)
@@ -21,18 +30,16 @@ void SeperatePointsStrategy::BuildSection(TPrintout* printOut)
 
 	TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
 	ibInternalQuery->Close();
-	ibInternalQuery->SQL->Text = "SELECT "
-                                    "SUM(ADJUSTMENT) ADJUSTMENT, "
-                                    "ADJUSTMENT_TYPE, "
-                                    "POINTSTRANSACTIONS.CONTACTS_KEY LOYALTY_KEY "
-                                "FROM "
-                                    "POINTSTRANSACTIONS LEFT JOIN DAYARCBILL "
-                                    "ON POINTSTRANSACTIONS.INVOICE_NUMBER = DAYARCBILL.INVOICE_NUMBER "
-                                    "LEFT JOIN CONTACTS ON "
-                                    "POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
-                                "WHERE " + masterSlaveCondition + "ADJUSTMENT_SUBTYPE = 1 AND CONTACTS.MEMBER_TYPE != 2"
-                                "GROUP BY POINTSTRANSACTIONS.CONTACTS_KEY, ADJUSTMENT_TYPE "
-                                "ORDER BY LOYALTY_KEY;";
+    if(IsConsolidatedStartegy)
+    {
+       GetPointDetailsConsolidatedZed(ibInternalQuery, masterSlaveCondition);
+       ibInternalQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+       ibInternalQuery->ParamByName("endTime")->AsDateTime = *_endTime;
+    }
+    else
+    {
+       GetPointDetailsNormalZed(ibInternalQuery, masterSlaveCondition);
+    }
 
     if (!_globalSettings->EnableDepositBagNum)
 	{
@@ -115,7 +122,21 @@ void SeperatePointsStrategy::BuildSection(TPrintout* printOut)
 	}
 
 	ibInternalQuery->Close();
-	ibInternalQuery->SQL->Text = "SELECT "
+
+    if(IsConsolidatedStartegy)
+    {
+        GetEarnedPointDetailsForConsolidatedZed(ibInternalQuery, masterSlaveCondition);
+        ibInternalQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+        ibInternalQuery->ParamByName("endTime")->AsDateTime = *_endTime;
+    }
+    else
+    {
+       GetEarnedPointDetailsForNormalZed(ibInternalQuery, masterSlaveCondition);
+    }
+
+
+
+	/*ibInternalQuery->SQL->Text = "SELECT "
                                         "SUM(ADJUSTMENT) ADJUSTMENT, "
                                         "ADJUSTMENT_TYPE, "
                                         "POINTSTRANSACTIONS.CONTACTS_KEY LOYALTY_KEY "
@@ -124,7 +145,7 @@ void SeperatePointsStrategy::BuildSection(TPrintout* printOut)
                                     "LEFT JOIN CONTACTS ON POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
                                     "WHERE " + masterSlaveCondition + "ADJUSTMENT_SUBTYPE = 2 "
                                     "GROUP BY POINTSTRANSACTIONS.CONTACTS_KEY, ADJUSTMENT_TYPE "
-                                    "ORDER BY LOYALTY_KEY;";
+                                    "ORDER BY LOYALTY_KEY;";*/
 
 	if (!_globalSettings->EnableDepositBagNum)
 	{
@@ -249,3 +270,77 @@ void SeperatePointsStrategy::BuildSection(TPrintout* printOut)
 		printOut->PrintFormat->AddLine();
 	}
 }
+
+void SeperatePointsStrategy::GetPointDetailsNormalZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
+{
+    ibInternalQuery->SQL->Text = "SELECT "
+    "SUM(ADJUSTMENT) ADJUSTMENT, "
+    "ADJUSTMENT_TYPE, "
+    "POINTSTRANSACTIONS.CONTACTS_KEY LOYALTY_KEY "
+    "FROM "
+    "POINTSTRANSACTIONS LEFT JOIN DAYARCBILL "
+    "ON POINTSTRANSACTIONS.INVOICE_NUMBER = DAYARCBILL.INVOICE_NUMBER "
+    "LEFT JOIN CONTACTS ON "
+    "POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
+    "WHERE " + masterSlaveCondition + "ADJUSTMENT_SUBTYPE = 1 AND CONTACTS.MEMBER_TYPE != 2"
+    "GROUP BY POINTSTRANSACTIONS.CONTACTS_KEY, ADJUSTMENT_TYPE "
+    "ORDER BY LOYALTY_KEY;";
+}
+
+void SeperatePointsStrategy::GetPointDetailsConsolidatedZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
+{
+	if (!_globalSettings->EnableDepositBagNum)
+	{
+		masterSlaveCondition = " ARCBILL.TERMINAL_NAME = :TERMINAL_NAME AND ";
+	}
+
+    ibInternalQuery->SQL->Text = "SELECT "
+    "SUM(ADJUSTMENT) ADJUSTMENT, "
+    "ADJUSTMENT_TYPE, "
+    "POINTSTRANSACTIONS.CONTACTS_KEY LOYALTY_KEY "
+    "FROM "
+    "POINTSTRANSACTIONS LEFT JOIN ARCBILL "
+    "ON POINTSTRANSACTIONS.INVOICE_NUMBER = ARCBILL.INVOICE_NUMBER "
+    "LEFT JOIN CONTACTS ON "
+    "POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
+    "WHERE " + masterSlaveCondition + "ADJUSTMENT_SUBTYPE = 1 AND CONTACTS.MEMBER_TYPE != 2"
+    " and ARCBILL.TIME_STAMP >= :startTime  and ARCBILL.TIME_STAMP <= :endTime  "
+    "GROUP BY POINTSTRANSACTIONS.CONTACTS_KEY, ADJUSTMENT_TYPE "
+    "ORDER BY LOYALTY_KEY;";
+}
+
+void SeperatePointsStrategy::GetEarnedPointDetailsForNormalZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
+{
+    ibInternalQuery->SQL->Text = "SELECT "
+            "SUM(ADJUSTMENT) ADJUSTMENT, "
+            "ADJUSTMENT_TYPE, "
+            "POINTSTRANSACTIONS.CONTACTS_KEY LOYALTY_KEY "
+        "FROM POINTSTRANSACTIONS "
+        "LEFT JOIN DAYARCBILL ON POINTSTRANSACTIONS.INVOICE_NUMBER = DAYARCBILL.INVOICE_NUMBER "
+        "LEFT JOIN CONTACTS ON POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
+        "WHERE " + masterSlaveCondition + "ADJUSTMENT_SUBTYPE = 2 "
+        "GROUP BY POINTSTRANSACTIONS.CONTACTS_KEY, ADJUSTMENT_TYPE "
+        "ORDER BY LOYALTY_KEY;";
+}
+
+void SeperatePointsStrategy::GetEarnedPointDetailsForConsolidatedZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition)
+{
+	if (!_globalSettings->EnableDepositBagNum)
+	{
+		masterSlaveCondition = " ARCBILL.TERMINAL_NAME = :TERMINAL_NAME AND ";
+	}
+
+    ibInternalQuery->SQL->Text = "SELECT "
+            "SUM(ADJUSTMENT) ADJUSTMENT, "
+            "ADJUSTMENT_TYPE, "
+            "POINTSTRANSACTIONS.CONTACTS_KEY LOYALTY_KEY "
+        "FROM POINTSTRANSACTIONS "
+        "LEFT JOIN ARCBILL ON POINTSTRANSACTIONS.INVOICE_NUMBER = ARCBILL.INVOICE_NUMBER "
+        "LEFT JOIN CONTACTS ON POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
+        "WHERE " + masterSlaveCondition + "ADJUSTMENT_SUBTYPE = 2 "
+        " and ARCBILL.TIME_STAMP >= :startTime  and ARCBILL.TIME_STAMP <= :endTime "
+        "GROUP BY POINTSTRANSACTIONS.CONTACTS_KEY, ADJUSTMENT_TYPE "
+        "ORDER BY LOYALTY_KEY;";
+}
+
+

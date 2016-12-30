@@ -13,6 +13,7 @@ class BaseReportBuilder : public IReportBuilder
 {
 public:
 	BaseReportBuilder(ReportType reportType, TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction);
+    BaseReportBuilder(ReportType reportType, TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction, TDateTime* startTime, TDateTime* endTime);
 
 	//We are implementing template here, since we need to invoke report creation here but want individual derived classes to implement the report creation.
 	IReport* BuildReport();
@@ -21,6 +22,7 @@ protected:
 	//This method will be overridden in the dervied classes to prepare the report.
 	virtual IReport* PrepareAndCompileSections() = 0;
     virtual int AddReportSectionToReport(IReport* report, ReportSectionType reportSectionType, bool isEnabled);
+    virtual int AddConsolidatedReportSectionToReport(IReport* report, ReportSectionType reportSectionType, bool isEnabled, TDateTime* startTime, TDateTime* endTime);
 
 	//We need to encapsulate the private member variables..
 	TGlobalSettings* GetGlobalSettings();
@@ -29,6 +31,8 @@ protected:
 	ReportType GetCurrentReportType();
 
 	IReportSectionFactory* _reportSectionFactory;
+    TDateTime* GetStartTime();
+    TDateTime* GetEndTime();
 
 private:
 	TPrintout* _printOut;
@@ -37,6 +41,8 @@ private:
 	TGlobalSettings* _globalSettings;
 	Database::TDBTransaction*  _dbTransaction;
     bool ValidateReportSection(ReportSectionType reportSectionType);
+    TDateTime* _startTime;
+    TDateTime* _endTime;
 };
 
 #endif

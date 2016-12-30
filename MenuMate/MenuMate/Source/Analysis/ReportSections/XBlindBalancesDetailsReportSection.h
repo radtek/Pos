@@ -10,6 +10,7 @@ class XBlindBalancesDetailsReportSection : public BaseReportSection
 {
 public:
 	XBlindBalancesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XBlindBalancesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~XBlindBalancesDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printOut);

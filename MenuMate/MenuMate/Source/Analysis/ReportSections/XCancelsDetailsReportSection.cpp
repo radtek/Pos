@@ -13,6 +13,12 @@ XCancelsDetailsReportSection::XCancelsDetailsReportSection(Database::TDBTransact
     dataFormatUtilities = new DataFormatUtilities;
 }
 
+XCancelsDetailsReportSection::XCancelsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmRefundDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
 XCancelsDetailsReportSection::~XCancelsDetailsReportSection()
 {
     delete dataFormatUtilities;
@@ -36,49 +42,15 @@ void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut)
 
     TIBSQL* cancelsQuery = _dbTransaction->Query( _dbTransaction->AddQuery());
     cancelsQuery->Close();
-    cancelsQuery->SQL->Text =
-                        "select "
-                            "CAST(ITEM_NAME AS VARCHAR(50)) ITEM_NAME, "
-                            "PRICE, "
-                            "PRICE_LEVEL0, "
-                            "PRICE_LEVEL1, "
-                            "HAPPY_HOUR HAPPYHOUR, "
-                            "CONTACTS.NAME, "
-                            "SECURITY.NOTE, "
-                            "SECURITY.TIME_STAMP, "
-							"QTY "
-                        "from "
-                            "DAYARCHIVE "
-                            "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =DAYARCHIVE.SECURITY_REF "
-                            "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
-                        " where "
-                            + terminalNamePredicate
-                            + " ORDER_TYPE = :ORDER_TYPE "
-                              " and SECURITY.TIME_STAMP > :PrevZedTime "
-                              " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
-                                "OR SECURITY.SECURITY_EVENT = 'CancelY' ) "
-                        "union all "
 
-                        "select "
-                            "CAST(ITEM_NAME AS VARCHAR(50)) ITEM_NAME, "
-                            "ZED_PRICE, "
-                            "PRICE_LEVEL0,  "
-                            "PRICE_LEVEL1, "
-                            "HAPPYHOUR, "
-                            "CONTACTS.NAME, "
-                            "SECURITY.NOTE, "
-                            "SECURITY.TIME_STAMP, "
-							"QTY "
-                        "from "
-                            "ORDERS  "
-                            "LEFT JOIN SECURITY ON ORDERS.SECURITY_REF =SECURITY.SECURITY_REF "
-                            "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
-                        " where "
-                            + terminalNamePredicate
-                            + " ORDER_TYPE = :ORDER_TYPE "
-                              " and SECURITY.TIME_STAMP > :PrevZedTime "
-                              " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
-                               "OR SECURITY.SECURITY_EVENT = 'CancelY' ) ";
+    if(IsConsolidatedZed)
+    {
+        GetCancelReportsForConsolidatedZed(cancelsQuery, terminalNamePredicate, prevZedTime);
+    }
+    else
+    {
+       GetCancelReportsForNormalZed(cancelsQuery, terminalNamePredicate);
+    }
 
     cancelsQuery->ParamByName("ORDER_TYPE")->AsInteger = CanceledOrder;
     cancelsQuery->ParamByName("PrevZedTime")->AsDateTime = prevZedTime;
@@ -179,5 +151,109 @@ void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut)
     }
     delete _cancelsServerList;
 }
+
+void XCancelsDetailsReportSection::GetCancelReportsForNormalZed(TIBSQL* cancelsQuery, AnsiString terminalNamePredicate)
+{
+  cancelsQuery->SQL->Text =
+        "select "
+            "CAST(ITEM_NAME AS VARCHAR(50)) ITEM_NAME, "
+            "PRICE, "
+            "PRICE_LEVEL0, "
+            "PRICE_LEVEL1, "
+            "HAPPY_HOUR HAPPYHOUR, "
+            "CONTACTS.NAME, "
+            "SECURITY.NOTE, "
+            "SECURITY.TIME_STAMP, "
+            "QTY "
+        "from "
+            "DAYARCHIVE "
+            "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =DAYARCHIVE.SECURITY_REF "
+            "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
+        " where "
+            + terminalNamePredicate
+            + " ORDER_TYPE = :ORDER_TYPE "
+              " and SECURITY.TIME_STAMP > :PrevZedTime "
+              " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
+                "OR SECURITY.SECURITY_EVENT = 'CancelY' ) "
+        "union all "
+
+        "select "
+            "CAST(ITEM_NAME AS VARCHAR(50)) ITEM_NAME, "
+            "ZED_PRICE, "
+            "PRICE_LEVEL0,  "
+            "PRICE_LEVEL1, "
+            "HAPPYHOUR, "
+            "CONTACTS.NAME, "
+            "SECURITY.NOTE, "
+            "SECURITY.TIME_STAMP, "
+            "QTY "
+        "from "
+            "ORDERS  "
+            "LEFT JOIN SECURITY ON ORDERS.SECURITY_REF =SECURITY.SECURITY_REF "
+            "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
+        " where "
+            + terminalNamePredicate
+            + " ORDER_TYPE = :ORDER_TYPE "
+              " and SECURITY.TIME_STAMP > :PrevZedTime "
+              " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
+               "OR SECURITY.SECURITY_EVENT = 'CancelY' ) " ;
+}
+
+void XCancelsDetailsReportSection::GetCancelReportsForConsolidatedZed(TIBSQL* cancelsQuery, AnsiString terminalNamePredicate, TDateTime prevZedTime)
+{
+
+  AnsiString timeFilter = "";
+  timeFilter =  " and SECURITY.TIME_STAMP >= :startTime and SECURITY.TIME_STAMP <= :PrevZedTime ";
+
+  prevZedTime = *_endTime;
+
+  cancelsQuery->SQL->Text =
+        "select "
+            "CAST(ITEM_NAME AS VARCHAR(50)) ITEM_NAME, "
+            "PRICE, "
+            "PRICE_LEVEL0, "
+            "PRICE_LEVEL1, "
+            "HAPPY_HOUR HAPPYHOUR, "
+            "CONTACTS.NAME, "
+            "SECURITY.NOTE, "
+            "SECURITY.TIME_STAMP, "
+            "QTY "
+        "from "
+            "DAYARCHIVE "
+            "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =DAYARCHIVE.SECURITY_REF "
+            "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
+        " where "
+            + terminalNamePredicate
+            + " ORDER_TYPE = :ORDER_TYPE "
+              + timeFilter +
+              " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
+                "OR SECURITY.SECURITY_EVENT = 'CancelY' ) "
+        "union all "
+
+        "select "
+            "CAST(ITEM_NAME AS VARCHAR(50)) ITEM_NAME, "
+            "ZED_PRICE, "
+            "PRICE_LEVEL0,  "
+            "PRICE_LEVEL1, "
+            "HAPPYHOUR, "
+            "CONTACTS.NAME, "
+            "SECURITY.NOTE, "
+            "SECURITY.TIME_STAMP, "
+            "QTY "
+        "from "
+            "ORDERS  "
+            "LEFT JOIN SECURITY ON ORDERS.SECURITY_REF =SECURITY.SECURITY_REF "
+            "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
+        " where "
+            + terminalNamePredicate
+            + " ORDER_TYPE = :ORDER_TYPE "
+              + timeFilter +
+              " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
+               "OR SECURITY.SECURITY_EVENT = 'CancelY' ) " ;
+
+    cancelsQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+}
+
+
 
 #pragma package(smart_init)

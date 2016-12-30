@@ -1856,6 +1856,11 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
         TGlobalSettings::Instance().IsDiscountSelected = true;
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
+        if((Membership.Member.ContactKey != 0) && TPaySubsUtility::IsLocalLoyalty() && !Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        {
+            MessageBox("Discounts are disabled for this Member.", "INFORMATION", MB_OK + MB_ICONINFORMATION);
+            return;
+        }
 		TMMContactInfo TempUserInfo;
 		TempUserInfo = TDeviceRealTerminal::Instance().User;
 		bool AllowDiscount = false;
@@ -1876,6 +1881,7 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 			{
 				MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 			}
+
 		}
 
 		if (AllowDiscount)
@@ -4629,8 +4635,31 @@ void TfrmBillGroup::RemoveMembership(Database::TDBTransaction &DBTransaction)
 	Membership.Clear();
 	lbeMembership->Visible = false;
 	lbeMembership->Caption = "";
-    RemoveMembershipFreeItems(DBTransaction);
-   	RemoveMembershipDiscounts(DBTransaction);
+
+     std::set <__int64> Items;
+    std::auto_ptr <TList> OrdersList(new TList);
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end();
+      advance(itItem, 1))
+    {
+		Items.insert(itItem->first);
+    }
+    TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), Items);
+    // Remove all Free Items.
+    ManagerFreebie->UndoFreeCount(DBTransaction, OrdersList.get());
+
+    ManagerDiscount->ClearMemberDiscounts(OrdersList.get());
+   ManagerDiscount->SetDiscountAmountDB(DBTransaction, OrdersList.get());
+
+    while (OrdersList->Count != 0)
+	{
+		delete(TItemComplete*)OrdersList->Items[0];
+		OrdersList->Delete(0);
+    }
+
+//    RemoveMembershipFreeItems(DBTransaction);
+//   	RemoveMembershipDiscounts(DBTransaction);
+
+
     for (std::set <__int64> ::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end() ; advance(itTabs, 1))
     {
         TDBTab::SetTabOrdersLoyalty(DBTransaction,*itTabs,0);

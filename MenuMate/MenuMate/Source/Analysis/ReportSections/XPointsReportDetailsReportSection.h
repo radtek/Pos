@@ -13,6 +13,7 @@ class XPointsReportDetailsReportSection : public BaseReportSection
 
 public:
     XPointsReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XPointsReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XPointsReportDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
@@ -26,6 +27,10 @@ private:
     void GetBirthdayOutput(TPrintout* printOut);
     void GetOutputForAdjustmentType(int adjustmentType, UnicodeString title, TPrintout* printOut);
     TIBSQL* GetPointsQuery(int adjustmentType);
+    void GetGiftCardOutputForConsolidatedZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition);
+    void GetGiftCardOutputForNormalZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition);
+    void GetPointsQueryForConsolidatedZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition);
+    void GetPointsQueryForNormalZed(TIBSQL *ibInternalQuery, AnsiString masterSlaveCondition);
 };
 
 #endif

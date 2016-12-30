@@ -11,6 +11,6 @@ class TManagerEJournal
     public:
          TManagerEJournal();
 	    ~TManagerEJournal();
-        void TriggerEJournal();
+        void TriggerEJournal(bool isConsolidatedZed = false);
 };
 #endif

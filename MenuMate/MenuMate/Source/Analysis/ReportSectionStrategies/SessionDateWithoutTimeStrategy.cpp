@@ -5,6 +5,11 @@ SessionDateWithoutTimeStrategy::SessionDateWithoutTimeStrategy(Database::TDBTran
 {
 }
 
+SessionDateWithoutTimeStrategy::SessionDateWithoutTimeStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
 void SessionDateWithoutTimeStrategy::BuildSection(TPrintout* printOut)
 {
     UnicodeString currentDate = Date();

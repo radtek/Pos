@@ -15,6 +15,7 @@ class XServiceChargeSummaryDetailsReportSection : public BaseReportSection
 
 public:
     XServiceChargeSummaryDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XServiceChargeSummaryDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XServiceChargeSummaryDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);

@@ -17,6 +17,13 @@ XBilledSalesTotalsDetailsReportSection::XBilledSalesTotalsDetailsReportSection(D
     reportFinancialCalculations = new ReportFinancialCalculations;
 }
 
+XBilledSalesTotalsDetailsReportSection::XBilledSalesTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmBilledSalesTotalsDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    reportFinancialCalculations = new ReportFinancialCalculations;
+}
+
 
 XBilledSalesTotalsDetailsReportSection::~XBilledSalesTotalsDetailsReportSection()
 {
@@ -32,8 +39,17 @@ void XBilledSalesTotalsDetailsReportSection::GetOutput(TPrintout* printOut)
     TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, deviceName);
 
     bool showTaxAndServiceCharge = _globalSettings->RevenueFiguresAreTaxAndServiceChargeInclusive;
+    TFinancialDetails financialDetails;
 
-    TFinancialDetails financialDetails =  reportFinancialCalculations->GetFinancialDetails(*_dbTransaction, TransactionInfo, deviceName);
+    if(IsConsolidatedZed)
+    {
+       financialDetails =  reportFinancialCalculations->GetFinancialDetails(*_dbTransaction, TransactionInfo, deviceName, *_startTime, *_endTime);
+    }
+    else
+    {
+       financialDetails =  reportFinancialCalculations->GetFinancialDetails(*_dbTransaction, TransactionInfo, deviceName);
+    }
+
     AddTitle(printOut, "Billed Sales Totals");
     printOut->PrintFormat->NewLine();
     printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
