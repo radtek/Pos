@@ -219,8 +219,8 @@ void XCancelsDetailsReportSection::GetCancelReportsForConsolidatedZed(TIBSQL* ca
             "SECURITY.TIME_STAMP, "
             "QTY "
         "from "
-            "DAYARCHIVE "
-            "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =DAYARCHIVE.SECURITY_REF "
+            " ARCHIVE "
+            "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF = ARCHIVE.SECURITY_REF "
             "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
         " where "
             + terminalNamePredicate

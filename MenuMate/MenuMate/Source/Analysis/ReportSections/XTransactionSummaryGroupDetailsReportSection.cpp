@@ -43,11 +43,11 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
      _memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
 
     SkimCalculations skimCalculations;
-    skimCalculations.CalculateSkims(*_dbTransaction, deviceName);
 
     TTransactionInfo transactionInfo;
     if(IsConsolidatedZed)
     {
+        skimCalculations.CalculateSkims(*_dbTransaction, deviceName, *_startTime, *_endTime);
         if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
         {
            TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
@@ -56,6 +56,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
     }
     else
     {
+        skimCalculations.CalculateSkims(*_dbTransaction, deviceName);
         if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
         {
            TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
