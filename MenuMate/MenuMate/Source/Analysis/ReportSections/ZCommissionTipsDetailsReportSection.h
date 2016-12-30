@@ -12,6 +12,7 @@ class ZCommissionTipsDetailsReportSection : public BaseReportSection
 
 public:
     ZCommissionTipsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+     ZCommissionTipsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings,TDateTime* startTime, TDateTime* endTime);
     ~ZCommissionTipsDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);

@@ -16,6 +16,12 @@ XAccountBalancesTabsDetailsReportSection::XAccountBalancesTabsDetailsReportSecti
 }
 
 
+XAccountBalancesTabsDetailsReportSection::XAccountBalancesTabsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmAccountBalancesTabsDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
 XAccountBalancesTabsDetailsReportSection::~XAccountBalancesTabsDetailsReportSection()
 {
     delete dataFormatUtilities;

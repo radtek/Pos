@@ -462,6 +462,7 @@ private: // User declarations
     bool PromptForDiscountAmount(TDiscount &currentDiscount);
     bool ApplyDiscount(Database::TDBTransaction &DBTransaction, TDiscount &CurrentDiscount, TList *Orders, bool isInitiallyApplied = true, TDiscountSource DiscountSource = dsMMUser);
     bool isChitDiscountExist;
+    void RemoveChitDiscounts(TMMContactInfo Member);
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
@@ -707,8 +708,6 @@ public:
     std::pair<AnsiString, AnsiString> GetStringPair();
     bool Valid();
 	bool NameAndOrderTypeLoaded();
-
-
 };
 
 extern PACKAGE TfrmSelectDish *frmSelectDish;

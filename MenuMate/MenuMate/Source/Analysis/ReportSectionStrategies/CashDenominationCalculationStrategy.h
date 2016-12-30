@@ -8,6 +8,7 @@ class CashDenominationCalculationStrategy : public BaseReportSectionDisplayStrat
 {
 public:
     CashDenominationCalculationStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, bool isMasterBalance);
+    CashDenominationCalculationStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, bool isMasterBalance, TDateTime* startTime, TDateTime* endTime);
 	virtual void BuildSection(TPrintout* printOut);
 
 protected:

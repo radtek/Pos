@@ -7,6 +7,12 @@ XClientDetailsReportSection::XClientDetailsReportSection(Database::TDBTransactio
 {
 }
 
+XClientDetailsReportSection::XClientDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+     :BaseReportSection(mmXReport, mmClientDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+
+}
+
 
 XClientDetailsReportSection::~XClientDetailsReportSection()
 {
@@ -22,4 +28,3 @@ void XClientDetailsReportSection::GetOutput(TPrintout* printout)
 		reportSectionDisplayStrategy->BuildSection(printout);
 	}
 }
-

@@ -110,6 +110,7 @@ enum TTreeIndex {
 					LOYALTY_POINTS_INDEX								,
                     RESET_POINTS_INDEX                        , //MM-4579
                     POINT_SPEND_INDEX                        ,
+                    SUBS_REPORTS                ,
 			STOCK_INDEX													,
 					STOCK_DETAILS_INDEX								,
 					STOCK_VALUE_INDEX									,
@@ -801,7 +802,8 @@ public:		// User declarations
     void PrintPointSpend(TReportControl *ReportControl);
     void PrintBreakdownCategory(TReportControl *ReportControl);
     void PrintStockReconcialation(TReportControl *ReportControl);
-    void PrintSalesSummaryD(TReportControl *ReportControl); 
+    void PrintSalesSummaryD(TReportControl *ReportControl);
+    void PrintSubReports(TReportControl *ReportControl);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmReports *frmReports;

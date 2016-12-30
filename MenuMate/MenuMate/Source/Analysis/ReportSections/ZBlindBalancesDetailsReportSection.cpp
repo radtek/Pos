@@ -8,6 +8,11 @@ ZBlindBalancesDetailsReportSection::ZBlindBalancesDetailsReportSection(Database:
 {
 }
 
+ZBlindBalancesDetailsReportSection::ZBlindBalancesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmBlindBalancesDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
 
 ZBlindBalancesDetailsReportSection::~ZBlindBalancesDetailsReportSection()
 {
@@ -31,4 +36,4 @@ void ZBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut)
 		reportSectionDisplayStrategy->BuildSection(printOut);
         return;
 	}
-}
+}

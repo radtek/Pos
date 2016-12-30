@@ -16,6 +16,7 @@ class XChargedSalesTotalsDetailsReportSection : public BaseReportSection
 
 public:
     XChargedSalesTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XChargedSalesTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XChargedSalesTotalsDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);

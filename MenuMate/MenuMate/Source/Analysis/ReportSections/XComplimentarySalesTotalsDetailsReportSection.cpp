@@ -11,6 +11,14 @@ XComplimentarySalesTotalsDetailsReportSection::XComplimentarySalesTotalsDetailsR
 }
 
 
+XComplimentarySalesTotalsDetailsReportSection::XComplimentarySalesTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmComplimentarySalesTotalsDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    reportFinancialCalculations = new ReportFinancialCalculations;
+}
+
+
 XComplimentarySalesTotalsDetailsReportSection::~XComplimentarySalesTotalsDetailsReportSection()
 {
     delete dataFormatUtilities;
@@ -21,11 +29,18 @@ void XComplimentarySalesTotalsDetailsReportSection::GetOutput(TPrintout* printOu
 {
     TTransactionInfo TransactionInfo;
     AnsiString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
+    TFinancialDetails FinancialDetails;
 
-    TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, DeviceName);
-
-
-    TFinancialDetails FinancialDetails =  reportFinancialCalculations->GetFinancialDetails(*_dbTransaction,TransactionInfo,DeviceName);
+    if(IsConsolidatedZed)
+    {
+        TTransactionInfoProcessor::Instance().GetTransactionInfoForConsolidatedZed(*_dbTransaction, DeviceName, *_startTime, *_endTime);
+        FinancialDetails = reportFinancialCalculations->GetFinancialDetails(*_dbTransaction, TransactionInfo, DeviceName, *_startTime, *_endTime);
+    }
+    else
+    {
+        TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, DeviceName);
+        FinancialDetails = reportFinancialCalculations->GetFinancialDetails(*_dbTransaction,TransactionInfo,DeviceName);
+    }
 
     AddTitle(printOut, "Complimentary Sales Totals");
 

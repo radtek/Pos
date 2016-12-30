@@ -127,6 +127,7 @@
 #include "MMTouchKeyboard.h"
 #include "MMMessageBox.h"
 #include "MMTouchNumpad.h"
+#include "PaySubsUtility.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -1129,12 +1130,16 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 	}
 	else if (DataType == eDiscountCard)
 	{
-		DBTransaction.StartTransaction();
-		ApplyDiscount(DBTransaction, ManagerDiscount->GetDiscount(DBTransaction, Data.SubString(1, 80)), SeatOrders[SelectedSeat]->Orders->List);
-		RedrawSeatOrders();
-		TotalCosts();
-		UpdateExternalDevices();
-		DBTransaction.Commit();
+        if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
+            SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        {
+            DBTransaction.StartTransaction();
+            ApplyDiscount(DBTransaction, ManagerDiscount->GetDiscount(DBTransaction, Data.SubString(1, 80)), SeatOrders[SelectedSeat]->Orders->List);
+            RedrawSeatOrders();
+            TotalCosts();
+            UpdateExternalDevices();
+            DBTransaction.Commit();
+        }
 	}
 	else
 	{
@@ -3489,7 +3494,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 				PaymentTransaction.ChitNumber = ChitNumber;
                 if(ChitNumber.DiscountList.size() == 0 && ChitNumber.ApplyDiscountsList->Count >0 && !isChitDiscountExist)
                 {
-                    GetChitDiscountList(DBTransaction, ChitNumber.DiscountList);
+                      GetChitDiscountList(DBTransaction, ChitNumber.DiscountList);
                 }
 				break;
 			case ChitCancelled:
@@ -5295,8 +5300,8 @@ void __fastcall TfrmSelectDish::btngridModifyMouseClick(TObject *Sender, TMouseB
 			pcItemModify->ActivePage = tsOverview;
 			break;
 		case eBTDQty:
-			pcItemModifyDisplayQuantity();
-			pcItemModify->ActivePage = tsQuantity;
+            pcItemModifyDisplayQuantity();
+            pcItemModify->ActivePage = tsQuantity;
 			break;
 		case eBTDOptionsPlus:
 			pcItemModifyDisplayOptions(true);
@@ -6304,6 +6309,8 @@ void __fastcall TfrmSelectDish::tgridItemSideItemsMouseClick(TObject *Sender, TM
 				SubItem->PriceLevel0 = 0;
 				SubItem->PriceLevel1 = 0;
 			}
+            if(TGlobalSettings::Instance().UseMemberSubs)
+               SubItem->wasOpenItem = true;
 		}
 		// Apply Member Specific Discounts.
 		std::auto_ptr<TList>OrdersList(new TList);
@@ -9200,6 +9207,11 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
 			{
                 std::auto_ptr<TManagerEJournal> managerEJournal(new TManagerEJournal());
                 managerEJournal->TriggerEJournal();
+			}break;
+		case 12: // Consolidated Zed
+			{
+                std::auto_ptr<TManagerEJournal> managerEJournal(new TManagerEJournal());
+                managerEJournal->TriggerEJournal(true);
 			}break;
 		}
 	}
@@ -12590,6 +12602,10 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
 			Order->PriceLevel0 = 0;
 			Order->PriceLevel1 = 0;
 		}
+        if(TGlobalSettings::Instance().UseMemberSubs)
+        {
+           Order->wasOpenItem = true;
+        }
 	}
 
 	if (Order != NULL)
@@ -12623,7 +12639,11 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
        }
         //if(!itemAdded)
         //  SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
-		TManagerFreebie::IsPurchasing(inDBTransaction, SeatOrders[SelectedSeat]->Orders->List);
+        if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
+            SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        {
+     		TManagerFreebie::IsPurchasing(inDBTransaction, SeatOrders[SelectedSeat]->Orders->List);
+        }
 		CheckDeals(inDBTransaction);
 		ApplyMemberDiscounts(inDBTransaction,false);
 	}
@@ -12778,7 +12798,9 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 
 	// Calculate Membership Pricing.
     itemComplete->ResetPrice();
-	ManagerDiscount->AddDiscountsByTime(DBTransaction, itemComplete);
+    if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0)  || (!TPaySubsUtility::IsLocalLoyalty())
+         || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+	   ManagerDiscount->AddDiscountsByTime(DBTransaction, itemComplete);
 
 	itemComplete->Cost = itemSize->Cost; // Get default cost if assigned.
     itemComplete->MaxRetailPrice = itemSize->MaxRetailPrice;
@@ -13045,7 +13067,10 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
         NewSubOrder->ItemPriceForPointsOriginal = Item->Sizes->SizeGet(SelectedSize)->CostForPoints;
         NewSubOrder->IsCanBePaidForUsingPoints = Item->Sizes->SizeGet(SelectedSize)->CanBePaidForUsingPoints;
         //check item is can be paid by points..
-		ManagerDiscount->AddDiscountsByTime(DBTransaction, NewSubOrder);
+
+        if(((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0 ) || (!TPaySubsUtility::IsLocalLoyalty())
+            || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts)))
+	       ManagerDiscount->AddDiscountsByTime(DBTransaction, NewSubOrder);
 
 		if (Item->Sizes->SizeGet(SelectedSize)->Weighted)
 		{
@@ -13114,7 +13139,11 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
         NewSubOrder->ItemPriceForPoints = Item->Sizes->SizeGet(0)->CostForPoints;
         NewSubOrder->ItemPriceForPointsOriginal = Item->Sizes->SizeGet(0)->CostForPoints;
         NewSubOrder->IsCanBePaidForUsingPoints = Item->Sizes->SizeGet(0)->CanBePaidForUsingPoints;
-		ManagerDiscount->AddDiscountsByTime(DBTransaction, NewSubOrder);
+
+
+    if(((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0 ) || (!TPaySubsUtility::IsLocalLoyalty())
+         || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts)))
+	   ManagerDiscount->AddDiscountsByTime(DBTransaction, NewSubOrder);
 
 		if (Item->Sizes->SizeGet(0)->Weighted)
 		{
@@ -13154,7 +13183,9 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 
 	MasterOrder->SubOrders->SubOrderAdd(NewSubOrder);
 	MasterOrder->MasterContainer = MasterOrder->Size;
-	TManagerFreebie::IsPurchasing(DBTransaction, MasterOrder->SubOrders);
+    if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
+       SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+	  TManagerFreebie::IsPurchasing(DBTransaction, MasterOrder->SubOrders);
 	return NewSubOrder;
 }
 // ---------------------------------------------------------------------------
@@ -13210,12 +13241,16 @@ void TfrmSelectDish::ClearDiscountLists(std::vector<TDiscount> DiscountList)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::GetChitDiscountList(Database::TDBTransaction &dBTransaction, std::vector<TDiscount> DiscountList)
 {
-  TDiscount currentDiscount;
-  for(int i = 0 ; i < ChitNumber.ApplyDiscountsList->Count; i++)
+  if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
+           SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
   {
-    int discount_key = (int)ChitNumber.ApplyDiscountsList->Objects[i];
-    ManagerDiscount->GetDiscount(dBTransaction, discount_key, currentDiscount);
-    ChitNumber.DiscountList.push_back(currentDiscount);
+      TDiscount currentDiscount;
+      for(int i = 0 ; i < ChitNumber.ApplyDiscountsList->Count; i++)
+      {
+        int discount_key = (int)ChitNumber.ApplyDiscountsList->Objects[i];
+        ManagerDiscount->GetDiscount(dBTransaction, discount_key, currentDiscount);
+        ChitNumber.DiscountList.push_back(currentDiscount);
+      }
   }
 }
 // ---------------------------------------------------------------------------
@@ -13351,6 +13386,12 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
 		{
 			MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 		}
+        if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0) && (TPaySubsUtility::IsLocalLoyalty() &&
+           !SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts)))
+        {
+            MessageBox("Discounts are disabled for this Member.", "INFORMATION", MB_OK + MB_ICONINFORMATION);
+            AllowDiscount = false;
+        }
 	}
 	DBTransaction.Commit();
 
@@ -13441,7 +13482,11 @@ void TfrmSelectDish::AdjustItemQty(Currency Count)
    ManageDiscounts();
 
    // Redo the free count.
-   TManagerFreebie::IsPurchasing(DBTransaction, List.get());
+    if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
+    SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+    {
+       TManagerFreebie::IsPurchasing(DBTransaction, List.get());
+    }
    CheckDeals(DBTransaction);
    DBTransaction.Commit();
 
@@ -13507,7 +13552,7 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, int 
             MessageBox("Member Discount not found in discount table.", "Error", MB_ICONWARNING + MB_OK);
         }
         return isDiscountApplied;
-  }
+    }
 }
 //------------------------------------------------------------------------------------------------------------------------------
 bool TfrmSelectDish::PromptForDiscountDescription(TDiscount &currentDiscount)
@@ -13598,7 +13643,7 @@ bool TfrmSelectDish::PromptForDiscountAmount(TDiscount &currentDiscount)
 ///------------------------------------------------------------------------------------------------------------------------
 bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDiscount &CurrentDiscount, TList *Orders, bool isInitiallyApplied, TDiscountSource DiscountSource)
 {
-    if (Orders->Count == 0)
+    if (Orders->Count == 0 )
      return false;
 
     bool ProcessDiscount = true;
@@ -13671,7 +13716,6 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDis
                  }
             }
         }
-
         ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
         CheckDeals(DBTransaction);
 
@@ -13916,6 +13960,7 @@ void TfrmSelectDish::RemoveMembership(Database::TDBTransaction &DBTransaction)
         TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ResetPoints();
 	}
 }
+
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member)
 {
@@ -13923,6 +13968,13 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
      customerDisp.FirstVisit = false;
 	 eMemberSource MemberSource = emsManual;
 	 TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, Member, MemberSource);
+
+     if((TPaySubsUtility::IsLocalLoyalty() && !Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts)) && Result == lsAccepted)
+     {
+        ManagerDiscount->ClearDiscounts(SeatOrders[SelectedSeat]->Orders->List);
+        CheckDeals(DBTransaction);
+     }
+
      if (Result == lsAccountBlocked)
       {
             MessageBox("Account Blocked " + Member.Name + " " + Member.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
@@ -13970,6 +14022,11 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 			for (int i = 0; i < SeatOrders[SeatsToApply[iSeat]]->Orders->Count; i++)
 			{
 				TItemComplete *Order = SeatOrders[SeatsToApply[iSeat]]->Orders->Items[i];
+                if(TPaySubsUtility::IsLocalLoyalty() && !Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+                {
+                    ChitNumber.DiscountList.clear();
+                    Order->ClearAllDiscounts();
+                }
 				Order->Loyalty_Key = SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership.ContactKey;
 				Order->ResetPrice();
 
@@ -13977,15 +14034,24 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 				for (int j = 0; j < Order->SubOrders->Count; j++)
 				{
 					TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete*)Order->SubOrders->Items[j];
+                    if(TPaySubsUtility::IsLocalLoyalty() && !Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+                    {
+                       CurrentSubOrder->ClearAllDiscounts();
+                    }
 					CurrentSubOrder->Loyalty_Key = SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership.ContactKey;
 					CurrentSubOrder->ResetPrice();
 				}
-				ManagerDiscount->AddDiscountsByTime(DBTransaction, Order);
+
+                if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0 ) || (!TPaySubsUtility::IsLocalLoyalty())
+                     || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+                   ManagerDiscount->AddDiscountsByTime(DBTransaction, Order);
 			}
 
 			// Calculate Members Freebie rewards.
 			// Rewards do not cascade though sides, which is the normal discount functionality.
-			TManagerFreebie::IsPurchasing(DBTransaction, SeatOrders[SeatsToApply[iSeat]]->Orders->List);
+          if((!TPaySubsUtility::IsLocalLoyalty()) ||
+             SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+			 TManagerFreebie::IsPurchasing(DBTransaction, SeatOrders[SeatsToApply[iSeat]]->Orders->List);
 
 			// Apply Member Specific Discounts.
 			ApplyMemberDiscounts(DBTransaction);

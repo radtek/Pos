@@ -15,6 +15,7 @@ class MallExportConsolidatedReceipt : public BaseReportSection
 {
 public:
 	MallExportConsolidatedReceipt(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    MallExportConsolidatedReceipt(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~MallExportConsolidatedReceipt();
 
 	virtual void GetOutput(TPrintout* printout);

@@ -15,6 +15,7 @@
 #include "Discount.h"
 #include "Payment.h"
 #include "CaptureCustomerDetails.h"
+#include "PaySubsUtility.h"
 
 
 enum eTransactionType {eTab,eTableSeat,eCash,eAccount,eRoomSale,eCredited,eCreditPurchase,eWeb};
@@ -88,6 +89,7 @@ class TPaymentTransaction
     void SetRedeemPoints(Currency PointsRedeemed);
     void SetRedeemBDayPoints(Currency &PointsRedeemed);
     void SetRedeemFVPoints(Currency &PointsRedeemed);
+    void CheckDiscountsWithMembership(TItemMinorComplete *Order);
   public:
         AnsiString PartyName;
         Database::TDBTransaction &DBTransaction;

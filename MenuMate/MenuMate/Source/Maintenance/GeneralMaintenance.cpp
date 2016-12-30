@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 
 #include <vcl.h>
 #pragma hdrstop
@@ -243,6 +243,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
 
 
+
 	int SerialPortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort);
 	if(SerialPortNumber != -1)
 	{
@@ -304,7 +305,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 
 	lbeEntireSiteID->Caption = "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID);
 
-	DBTransaction.Commit();
+
 	UpdateTimeClockGrid(true);
 
 	switch (TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->NameOnPoleDisplay)
@@ -364,7 +365,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
         cbEmailZedClosingTill->Checked = TGlobalSettings::Instance().EmailZedReports; //MM-4104
         invalid_email_id = false; //MM-4104
         cbRoundOnBilling->Checked = TGlobalSettings::Instance().RoundOnBilling;
-         
+
         tbRoundingOnBilling->Caption = FormatFloat("0.00",TGlobalSettings::Instance().RoundOnBillingAmount);
 
     cbTransferTableOnPrintPrelim->OnClick = NULL;
@@ -442,6 +443,12 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     isBIRSettingTicked = false;
     cbHideRoundingOnReceipt->Checked = TGlobalSettings::Instance().HideRoundingOnReceipt;
 	cbCashDenominationEntry->Checked = TGlobalSettings::Instance().CashDenominationEntry;
+
+    TManagerVariable::Instance().GetProfileBool( DBTransaction, GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs );
+    DBTransaction.Commit();
+    cbUseMemberSubs->OnClick = NULL;
+    cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
+    cbUseMemberSubs->OnClick = cbUseMemberSubsClick;
 }
 
 //---------------------------------------------------------------------------
@@ -4183,7 +4190,7 @@ void __fastcall TfrmGeneralMaintenance::cbUseBIRFormatInXZReportMouseUp(TObject 
   {
      CheckSettingsOfZed();
   }
-  
+
 void __fastcall TfrmGeneralMaintenance::cbCashDenominationEntryClick(TObject *Sender)
 {
     TGlobalSettings::Instance().CashDenominationEntry = cbCashDenominationEntry->Checked;
@@ -4192,3 +4199,75 @@ void __fastcall TfrmGeneralMaintenance::cbCashDenominationEntryClick(TObject *Se
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmCashDenominationEntry, TGlobalSettings::Instance().CashDenominationEntry);
 	DBTransaction.Commit();
 }
+
+//----------------------------------------------------------------------------
+bool TfrmGeneralMaintenance::IsEligibleForTrue()
+{
+    UnicodeString variable_key = "2001, 7038";
+
+    bool retVal = false;
+    Database::TDBTransaction DBTransaction(DBControl);
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+    DBTransaction.RegisterQuery(IBInternalQuery);
+    DBTransaction.StartTransaction();
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = " SELECT a.INTEGER_VAL, a.Profile_key, a.VARIABLES_KEY FROM VARSPROFILE a where a.VARIABLES_KEY IN (" + variable_key + ") ";
+    //IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 7038;
+    IBInternalQuery->ExecQuery();
+    for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+         if(IBInternalQuery->FieldByName("VARIABLES_KEY")->AsInteger == 2001)
+         {
+             if(IBInternalQuery->FieldByName("INTEGER_VAL")->AsInteger > 0)
+             {
+                retVal = true;
+                break;
+             }
+         }
+         if(IBInternalQuery->FieldByName("VARIABLES_KEY")->AsInteger == 7038)
+         {
+             if(IBInternalQuery->FieldByName("INTEGER_VAL")->AsInteger > 0)
+             {
+                retVal = true;
+                break;
+             }
+         }
+    }
+    DBTransaction.Commit();
+    return retVal;
+}
+//----------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
+{
+    //
+
+    if(!IsEligibleForTrue())
+    {
+        TManagerVariable &mv = TManagerVariable::Instance();
+
+        int pk;
+        Database::TDBTransaction tr(DBControl);
+
+        tr.StartTransaction();
+        if (!(pk = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+        pk = mv.SetProfile(tr, eSystemProfiles, "Globals");
+        tr.Commit();
+
+        TGlobalSettings::Instance().UseMemberSubs =
+        cbUseMemberSubs->Checked;
+
+        tr.StartTransaction();
+        mv.SetProfileBool(tr, pk, vmUseMemberSubs,
+        cbUseMemberSubs->Checked);
+        tr.Commit();
+        MessageBox("All terminals need to be restarted for this selection to work properly","Information", MB_OK + MB_ICONINFORMATION);
+    }
+    else
+    {
+       if(cbUseMemberSubs->Checked)
+       {
+           MessageBox("Functionality works with Menumate Loyalty only, Please disable any other Membership first to use this functionality","Information", MB_OK + MB_ICONINFORMATION);
+           cbUseMemberSubs->Checked = false;
+       }
+    }
+}

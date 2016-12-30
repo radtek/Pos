@@ -6,6 +6,11 @@ XMasterBlindBalancesDetailsReportSection::XMasterBlindBalancesDetailsReportSecti
 {
 }
 
+XMasterBlindBalancesDetailsReportSection::XMasterBlindBalancesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmMasterBlindBalancesDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
 
 XMasterBlindBalancesDetailsReportSection::~XMasterBlindBalancesDetailsReportSection()
 {

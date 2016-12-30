@@ -13,6 +13,22 @@ BaseReportSection::BaseReportSection(ReportType reportType, ReportSectionType re
     //We need to inject the traits for the section, these traits will add some additional properties to sections..
     ReportSectionDisplayTraitsProvider* reportSectionDisplayTraitsProvider = new ReportSectionDisplayTraitsProvider(globalSettings);
     _reportSectionDisplayTraits = reportSectionDisplayTraitsProvider->CreateSectionTraits(reportType, reportSectionType);
+    IsConsolidatedZed = false;
+}
+
+
+BaseReportSection::BaseReportSection(ReportType reportType, ReportSectionType reportSectionType, Database::TDBTransaction* dbTransaction,
+            TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime) : _reportType(reportType), _dbTransaction(dbTransaction), _globalSettings(globalSettings),
+            _reportSectionType(reportSectionType), _startTime(startTime), _endTime(endTime)
+{
+	//We need to insert the required strategy to build the section..
+	ReportSectionDisplayStrategyProvider* reportSectionDisplayStrategyProvider = new ReportSectionDisplayStrategyProvider(dbTransaction, globalSettings, startTime, endTime);
+	_reportSectionDisplayStrategy = reportSectionDisplayStrategyProvider->CreateSectionStrategy(reportType, reportSectionType);
+
+    //We need to inject the traits for the section, these traits will add some additional properties to sections..
+    ReportSectionDisplayTraitsProvider* reportSectionDisplayTraitsProvider = new ReportSectionDisplayTraitsProvider(globalSettings);
+    _reportSectionDisplayTraits = reportSectionDisplayTraitsProvider->CreateSectionTraits(reportType, reportSectionType);
+    IsConsolidatedZed = true;
 }
 
 IReportSectionDisplayStrategy* BaseReportSection::GetReportSectionStrategy()
@@ -43,6 +59,26 @@ bool BaseReportSection::GetIsEnabled()
 void BaseReportSection::SetIsEnabled(bool isEnabled)
 {
     _isEnabled =  isEnabled;
+}
+
+void BaseReportSection::SetStartTime(TDateTime* startTime)
+{
+    _startTime =  startTime;
+}
+
+void BaseReportSection::SetEndTime(TDateTime* endTime)
+{
+    _endTime =  endTime;
+}
+
+TDateTime* BaseReportSection::GetStartTime()
+{
+    return _startTime;
+}
+
+TDateTime* BaseReportSection::GetEndTime()
+{
+    return _endTime;
 }
 
 void BaseReportSection::AddTitle(TPrintout* printOut, AnsiString title)

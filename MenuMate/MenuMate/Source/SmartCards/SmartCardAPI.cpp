@@ -744,7 +744,7 @@ void TManagerSmartCard::SaveContactInfo(TMMContactInfo &inContactInfo)
 			   // Write out the Contact Info.
 			   SmartCard->SetVersionInfo();
 			   SmartCard->SetContactInfo(inContactInfo);
-				TContactPoints PointsInfo;
+				TContactPoints PointsInfo = inContactInfo.Points;
 			   SmartCard->SetPointsInfo(PointsInfo);
 			   SmartCard->Save();
 			   CardBlank = false;

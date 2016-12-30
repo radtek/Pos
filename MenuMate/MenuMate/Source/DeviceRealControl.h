@@ -19,6 +19,7 @@
  #include <fstream>
 #include "ManagerMenus.h"
  #include <vector>
+#include "PointsRulesSetUtils.h"
 //---------------------------------------------------------------------------
 struct BarExachange{
         bool IsRequiredBarStockPriceUpdate;
