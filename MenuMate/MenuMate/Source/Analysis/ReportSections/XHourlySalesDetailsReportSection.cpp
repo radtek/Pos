@@ -4,14 +4,12 @@ XHourlySalesDetailsReportSection::XHourlySalesDetailsReportSection(Database::TDB
 	:BaseReportSection(mmXReport, mmAccountBalancesTabsDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XHourlySalesDetailsReportSection::XHourlySalesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings,TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmAccountBalancesTabsDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 

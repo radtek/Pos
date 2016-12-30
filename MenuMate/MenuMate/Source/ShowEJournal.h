@@ -60,8 +60,6 @@ private:	// User declarations
     void ExtractZedReceiptReport(AnsiString deviceName);
     void ExtractZedReceiptAndXReport(AnsiString deviceName);
     void ExtractConsolidatedZedReport(AnsiString deviceName);
-    bool CalculateDateForConsolidatedZed(int fromMonth, int fromDay, int toDay, int fromYear, int toMonth);
-    int AddTotalDay(int frommonth, int tomonth, int total, int today);
     bool CompareDateRangeForConolidatedZed(TDateTime fromdate, TDateTime todate);
     //TConsolidatedMonthType TypeOfMonth;
 public:		// User declarations
@@ -70,7 +68,6 @@ public:		// User declarations
 	void Execute();
     bool IsConsolidatedZed;
     bool CheckDateRangeForConolidatedZed();
-    bool CalculateDateRangeForConolidatedZed(int toMonth, int fromMonth, int fromDay, int toDay, int fromYear);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmEJournal *frmEJournal;

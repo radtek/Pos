@@ -7,14 +7,12 @@ XPatronAverageDetailsReportSection::XPatronAverageDetailsReportSection(Database:
 	:BaseReportSection(mmXReport, mmPatronAverageDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XPatronAverageDetailsReportSection::XPatronAverageDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmXReport, mmPatronAverageDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 

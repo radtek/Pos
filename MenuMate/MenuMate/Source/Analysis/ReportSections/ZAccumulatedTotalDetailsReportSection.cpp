@@ -10,7 +10,6 @@ ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Dat
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = false;
 }
 
 ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
@@ -18,7 +17,6 @@ ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Dat
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = true;
 }
 
 ZAccumulatedTotalDetailsReportSection::~ZAccumulatedTotalDetailsReportSection()

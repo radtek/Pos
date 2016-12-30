@@ -7,7 +7,7 @@ BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTr
 	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings)
 {
     _isMasterBalance = isMasterBalance;
-    IsConsolidatedStartegy = false;
+    //IsConsolidatedStartegy = false;
 }
 
 
@@ -15,7 +15,7 @@ BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTr
 	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
 {
     _isMasterBalance = isMasterBalance;
-    IsConsolidatedStartegy = true;
+    //IsConsolidatedStartegy = true;
 }
 
 void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)

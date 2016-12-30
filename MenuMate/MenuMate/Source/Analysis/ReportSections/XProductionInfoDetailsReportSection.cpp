@@ -5,7 +5,6 @@ XProductionInfoDetailsReportSection::XProductionInfoDetailsReportSection(Databas
 	:BaseReportSection(mmXReport, mmProductionInfoDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 
@@ -13,7 +12,6 @@ XProductionInfoDetailsReportSection::XProductionInfoDetailsReportSection(Databas
 	:BaseReportSection(mmConsolidatedZReport, mmProductionInfoDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 XProductionInfoDetailsReportSection::~XProductionInfoDetailsReportSection()

@@ -13,6 +13,7 @@ BaseReportSection::BaseReportSection(ReportType reportType, ReportSectionType re
     //We need to inject the traits for the section, these traits will add some additional properties to sections..
     ReportSectionDisplayTraitsProvider* reportSectionDisplayTraitsProvider = new ReportSectionDisplayTraitsProvider(globalSettings);
     _reportSectionDisplayTraits = reportSectionDisplayTraitsProvider->CreateSectionTraits(reportType, reportSectionType);
+    IsConsolidatedZed = false;
 }
 
 
@@ -27,6 +28,7 @@ BaseReportSection::BaseReportSection(ReportType reportType, ReportSectionType re
     //We need to inject the traits for the section, these traits will add some additional properties to sections..
     ReportSectionDisplayTraitsProvider* reportSectionDisplayTraitsProvider = new ReportSectionDisplayTraitsProvider(globalSettings);
     _reportSectionDisplayTraits = reportSectionDisplayTraitsProvider->CreateSectionTraits(reportType, reportSectionType);
+    IsConsolidatedZed = true;
 }
 
 IReportSectionDisplayStrategy* BaseReportSection::GetReportSectionStrategy()

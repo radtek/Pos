@@ -3,13 +3,11 @@
 ZReportDetailsReportSection::ZReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSection(mmZReport, mmReportDetailsSection, dbTransaction, globalSettings)
 {
-  IsConsolidatedZed = false;
 }
 
 ZReportDetailsReportSection::ZReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmReportDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
-  IsConsolidatedZed = true;
 }
 
 

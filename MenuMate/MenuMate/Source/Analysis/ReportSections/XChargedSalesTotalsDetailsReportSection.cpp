@@ -8,7 +8,6 @@ XChargedSalesTotalsDetailsReportSection::XChargedSalesTotalsDetailsReportSection
 {
     dataFormatUtilities = new DataFormatUtilities;
     reportFinancialCalculations = new ReportFinancialCalculations;
-    IsConsolidatedZed = false;
 }
 
 XChargedSalesTotalsDetailsReportSection::XChargedSalesTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings,TDateTime* startTime, TDateTime* endTime)
@@ -16,7 +15,6 @@ XChargedSalesTotalsDetailsReportSection::XChargedSalesTotalsDetailsReportSection
 {
     dataFormatUtilities = new DataFormatUtilities;
     reportFinancialCalculations = new ReportFinancialCalculations;
-    IsConsolidatedZed = true;
 }
 
 

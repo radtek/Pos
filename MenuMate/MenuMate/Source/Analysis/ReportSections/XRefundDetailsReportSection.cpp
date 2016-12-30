@@ -7,14 +7,12 @@ XRefundDetailsReportSection::XRefundDetailsReportSection(Database::TDBTransactio
 	:BaseReportSection(mmXReport, mmRefundDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XRefundDetailsReportSection::XRefundDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmRefundDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 

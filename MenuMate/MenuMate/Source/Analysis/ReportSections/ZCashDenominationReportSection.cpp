@@ -5,14 +5,12 @@
 ZCashDenominationReportSection::ZCashDenominationReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSection(mmZReport, mmCashDenominationDetailsSection, dbTransaction, globalSettings)
 {
-  IsConsolidatedZed = false;
 }
 
 
 ZCashDenominationReportSection::ZCashDenominationReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmCashDenominationDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
-   IsConsolidatedZed = true;
 }
 
 ZCashDenominationReportSection::~ZCashDenominationReportSection()

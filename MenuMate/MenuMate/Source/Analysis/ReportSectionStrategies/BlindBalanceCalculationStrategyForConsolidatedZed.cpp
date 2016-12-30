@@ -7,7 +7,6 @@ BlindBalanceCalculationStrategyForConsolidatedZed::BlindBalanceCalculationStrate
 	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
 {
     _isMasterBalance = isMasterBalance;
-    IsConsolidatedStartegy = true;
 }
 
 void BlindBalanceCalculationStrategyForConsolidatedZed::BuildSection(TPrintout* printOut)

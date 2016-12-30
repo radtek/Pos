@@ -11,14 +11,12 @@ XRemovalDetailsReportSection::XRemovalDetailsReportSection(Database::TDBTransact
 	:BaseReportSection(mmXReport, mmShowRemovalSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XRemovalDetailsReportSection::XRemovalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmShowRemovalSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 XRemovalDetailsReportSection::~XRemovalDetailsReportSection()
@@ -47,11 +45,11 @@ void XRemovalDetailsReportSection::GetOutput(TPrintout* printOut)
 
     if(IsConsolidatedZed)
     {
-       GetRemovalReportsForConsolidatedZed(removalsQuery, prevZedTime);
+       GetRemovalReportsForConsolidatedZed(removalsQuery, prevZedTime, deviceName);
     }
     else
     {
-       GetRemovalReportsForNormalZed(removalsQuery);
+       GetRemovalReportsForNormalZed(removalsQuery, deviceName);
     }
 
 
@@ -139,8 +137,13 @@ void XRemovalDetailsReportSection::GetOutput(TPrintout* printOut)
     delete _removalsServerList;
 }
 
-void XRemovalDetailsReportSection::GetRemovalReportsForNormalZed(TIBSQL* removalsQuery)
+void XRemovalDetailsReportSection::GetRemovalReportsForNormalZed(TIBSQL* removalsQuery, AnsiString deviceName)
 {
+    AnsiString terminalNamePredicate = "";
+    if (!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " and SECURITY.TERMINAL_NAME = '" + deviceName + "' and " ;
+    }
     removalsQuery->SQL->Text =
         "SELECT  "
                 "b.TIME_STAMP, "
@@ -160,15 +163,21 @@ void XRemovalDetailsReportSection::GetRemovalReportsForNormalZed(TIBSQL* removal
             "a.USER_KEY = d.CONTACTS_KEY  "
             "WHERE  "
                 "a.SECURITY_EVENT = :SECURITY_EVENT "
+                + terminalNamePredicate +
                 "AND b.TIME_STAMP > :PrevZedTime  "
 
                 "Order By  "
                 "1  "   ;
 }
 
-void XRemovalDetailsReportSection::GetRemovalReportsForConsolidatedZed(TIBSQL* removalsQuery, TDateTime prevZedTime)
+void XRemovalDetailsReportSection::GetRemovalReportsForConsolidatedZed(TIBSQL* removalsQuery, TDateTime prevZedTime, AnsiString deviceName)
 {
 
+    AnsiString terminalNamePredicate = "";
+    if (!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " and SECURITY.TERMINAL_NAME = '" + deviceName + "' and " ;
+    }
   AnsiString timeFilter = "";
   timeFilter =  " and b.TIME_STAMP >= :startTime and b.TIME_STAMP < :PrevZedTime ";
 
@@ -193,7 +202,8 @@ void XRemovalDetailsReportSection::GetRemovalReportsForConsolidatedZed(TIBSQL* r
             "a.USER_KEY = d.CONTACTS_KEY  "
             "WHERE  "
                 "a.SECURITY_EVENT = :SECURITY_EVENT "
-                + timeFilter +
+                + terminalNamePredicate +
+                 timeFilter +
                 "Order By  "
                 "1  "   ;
     removalsQuery->ParamByName("startTime")->AsDateTime = *_startTime;

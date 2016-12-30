@@ -7,14 +7,12 @@ XBreakdownCategoriesDetailsReportSection::XBreakdownCategoriesDetailsReportSecti
 	:BaseReportSection(mmXReport, mmBreakdownCategoriesDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XBreakdownCategoriesDetailsReportSection::XBreakdownCategoriesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmBreakdownCategoriesDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 

@@ -60,40 +60,6 @@ void XAccountBalancesTabsDetailsReportSection::GetOutput(TPrintout* printOut)
        delete TabsList;
 }
 
-/*void XAccountBalancesTabsDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
-{
-    AddTitle(printOut, "Account Balances - Tabs");
-    TStringList *TabsList = new TStringList;
-    GetReportData(TabsList);
-    TabsList->Sort();
-    if (TabsList->Count > 0)
-       {
-            printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-            Currency TotalTabs = 0;
-            printOut->PrintFormat->Line->ColCount = 2;
-            printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 2 / 3;
-            printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-            printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width - (printOut->PrintFormat->Width * 2 / 3);
-            printOut->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
-
-            for (int i = 0; i < TabsList->Count; i++)
-            {
-                    printOut->PrintFormat->Add(TabsList->Strings[i] + "|" + dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)TabsList->Objects[i])->Total) );
-                    TotalTabs += ((TCurrencyTotal*)TabsList->Objects[i])->Total;
-                    delete TabsList->Objects[i];
-            }
-            if (TabsList->Count > 1)
-            {
-                    printOut->PrintFormat->Line->Columns[0]->Text = "";
-                    printOut->PrintFormat->Line->Columns[1]->Line();
-                    printOut->PrintFormat->AddLine();
-                    printOut->PrintFormat->Add( "Total Tabs|" + dataFormatUtilities->FormatMMReportCurrency( TotalTabs ) );
-            }
-       }
-       delete TabsList;
-}*/
-
-
 void XAccountBalancesTabsDetailsReportSection::GetReportData(TStringList *TabsList)
 {
     TIBSQL *qrXTab = _dbTransaction->Query(_dbTransaction->AddQuery());

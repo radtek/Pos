@@ -8,7 +8,6 @@ XDiscountReportDetailsReportSection::XDiscountReportDetailsReportSection(Databas
 	:BaseReportSection(mmXReport, mmDiscountReportDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 
@@ -16,7 +15,6 @@ XDiscountReportDetailsReportSection::XDiscountReportDetailsReportSection(Databas
 	:BaseReportSection(mmConsolidatedZReport, mmDiscountReportDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 XDiscountReportDetailsReportSection::~XDiscountReportDetailsReportSection()

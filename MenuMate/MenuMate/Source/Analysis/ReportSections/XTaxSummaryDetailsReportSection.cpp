@@ -10,7 +10,6 @@ XTaxSummaryDetailsReportSection::XTaxSummaryDetailsReportSection(Database::TDBTr
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
     reportCalculations = new ReportFinancialCalculations;
-    IsConsolidatedZed = false;
 }
 
 XTaxSummaryDetailsReportSection::XTaxSummaryDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
@@ -19,7 +18,6 @@ XTaxSummaryDetailsReportSection::XTaxSummaryDetailsReportSection(Database::TDBTr
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
     reportCalculations = new ReportFinancialCalculations;
-    IsConsolidatedZed = true;
 }
 
 

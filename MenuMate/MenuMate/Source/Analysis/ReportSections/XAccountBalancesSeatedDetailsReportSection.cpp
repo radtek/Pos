@@ -57,40 +57,6 @@ void XAccountBalancesSeatedDetailsReportSection::GetOutput(TPrintout* printOut)
        delete SeatedList;
 }
 
-/*void XAccountBalancesSeatedDetailsReportSection::GetOutput(TPrintout* printOut, TDateTime* startTime, TDateTime* endTime)
-{
-    AddTitle(printOut, "Account Balances - Seated");
-    TStringList *SeatedList = new TStringList;
-    GetReportData(SeatedList);
-    SeatedList->Sort();
-    if (SeatedList->Count > 0)
-    {
-        printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-        Currency TotalSeats = 0;
-        printOut->PrintFormat->Line->ColCount = 2;
-        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 2 / 3;
-        printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width - (printOut->PrintFormat->Width * 2 / 3);
-        printOut->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
-
-        for (int i = 0; i < SeatedList->Count; i++)
-        {
-                printOut->PrintFormat->Add(SeatedList->Strings[i] + "|" + dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)SeatedList->Objects[i])->Total) );
-                TotalSeats += ((TCurrencyTotal*)SeatedList->Objects[i])->Total;
-                delete SeatedList->Objects[i];
-        }
-        if (SeatedList->Count > 1)
-        {
-                printOut->PrintFormat->Line->Columns[0]->Text = "";
-                printOut->PrintFormat->Line->Columns[1]->Line();
-                printOut->PrintFormat->AddLine();
-                printOut->PrintFormat->Add( "Total Seated|" + dataFormatUtilities->FormatMMReportCurrency( TotalSeats ) );
-        }
-    }
-       delete SeatedList;
-}*/
-
-
 void XAccountBalancesSeatedDetailsReportSection::GetReportData(TStringList *SeatedList)
 {
     TIBSQL *qrXTab = _dbTransaction->Query(_dbTransaction->AddQuery());

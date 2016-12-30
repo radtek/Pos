@@ -5,13 +5,11 @@
 XCurrentDateDetailsReportSection::XCurrentDateDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSection(mmXReport, mmCurrentDateDetailsSection, dbTransaction, globalSettings)
 {
-  IsConsolidatedZed = false;
 }
 
 XCurrentDateDetailsReportSection::XCurrentDateDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmCurrentDateDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
-  IsConsolidatedZed = true;
 }
 
 

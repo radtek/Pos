@@ -11,7 +11,6 @@ XReportDateTimeReportSection::XReportDateTimeReportSection(Database::TDBTransact
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = false;
 }
 
 XReportDateTimeReportSection::XReportDateTimeReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
@@ -19,7 +18,6 @@ XReportDateTimeReportSection::XReportDateTimeReportSection(Database::TDBTransact
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = true;
 }
 
 

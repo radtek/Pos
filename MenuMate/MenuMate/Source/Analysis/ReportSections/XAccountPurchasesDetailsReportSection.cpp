@@ -4,7 +4,6 @@ XAccountPurchasesDetailsReportSection::XAccountPurchasesDetailsReportSection(Dat
 	:BaseReportSection(mmXReport, mmAccountPurchasesDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 
@@ -12,7 +11,6 @@ XAccountPurchasesDetailsReportSection::XAccountPurchasesDetailsReportSection(Dat
 	:BaseReportSection(mmConsolidatedZReport, mmAccountPurchasesDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 XAccountPurchasesDetailsReportSection::~XAccountPurchasesDetailsReportSection()

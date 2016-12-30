@@ -187,14 +187,8 @@ void TfrmEJournal::ExtractZedReceiptReport(AnsiString deviceName)
 void TfrmEJournal::ExtractConsolidatedZedReport(AnsiString deviceName)
 {
 
-    /*if(CompareDateRangeForConolidatedZed(FromDateTimePicker->DateTime, ToDateTimePicker->DateTime))
-    {
-
-    }*/
-
-
     ManagerReceipt->Receipt->Clear();
-    if(CheckDateRangeForConolidatedZed())
+    if(CompareDateRangeForConolidatedZed(FromDateTimePicker->DateTime, ToDateTimePicker->DateTime))
     {
         std::auto_ptr<TEJournalEngine> EJournalEngine(new TEJournalEngine());
         if(EJournalEngine->CheckZedDataExistsForConolidatedZed(FromDateTimePicker->Date,ToDateTimePicker->Date, deviceName))
@@ -205,7 +199,7 @@ void TfrmEJournal::ExtractConsolidatedZedReport(AnsiString deviceName)
     }
     else
     {
-       MessageBox("Date Filter cannot be more than 30 days", "Error", MB_OK + MB_ICONERROR);
+       MessageBox("Date Filter cannot be more than 1 month", "Error", MB_OK + MB_ICONERROR);
        memReceipt->Clear();
     }
 
@@ -234,48 +228,6 @@ void TfrmEJournal::CheckAndPopulateData()
    }
 }
 
-bool TfrmEJournal::CheckDateRangeForConolidatedZed()
-{
-    bool retVal = true;
-    TDateTime date = ToDateTimePicker->Date - FromDateTimePicker->Date;
-    int date_val = StrToInt(date.FormatString("d"));
-
-    unsigned short fromdd, fromdm, fromdy;
-    unsigned short todd, todm, tody;
-    unsigned short th, tm, ts, tms;
-    FromDateTimePicker->Date.DecodeDate(&fromdy, &fromdm, &fromdd);
-    ToDateTimePicker->Date.DecodeDate(&tody, &todm, &todd);
-
-    int fromDay, toDay;
-    int fromMonth, toMonth;
-    int fromYear, toYear;
-
-    fromDay = fromdd;
-    toDay = todd;
-
-    fromMonth = fromdm;
-    toMonth = todm;
-    fromYear = fromdy;
-    toYear = tody;
-
-    int year_diff = abs(fromYear - tody);
-    if(FromDateTimePicker->Date.DateString() != ToDateTimePicker->Date.DateString())
-    {
-        if(year_diff < 2)
-        {
-           retVal = CalculateDateRangeForConolidatedZed(toMonth, fromMonth, fromDay, toDay, fromYear);
-        }
-        else
-        {
-           retVal = false;
-        }
-    }
-
-
-
-    return retVal;
-}
-
 void __fastcall TfrmEJournal::FormShow(TObject *Sender)
 {
     if(IsConsolidatedZed)
@@ -288,92 +240,14 @@ void __fastcall TfrmEJournal::FormShow(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
-
-bool TfrmEJournal::CalculateDateRangeForConolidatedZed(int toMonth, int fromMonth, int fromDay, int toDay, int fromYear)
-{
-    bool retVal = true;
-    if(fromMonth == 12 && toMonth == 1)
-    {
-       retVal = CalculateDateForConsolidatedZed(fromMonth, fromDay, toDay, fromYear, toMonth);
-    }
-    else
-    {
-        if((toMonth - fromMonth) >= 0 && (toMonth - fromMonth) < 2)
-        {
-
-            retVal = CalculateDateForConsolidatedZed(fromMonth, fromDay, toDay, fromYear, toMonth);
-        }
-        else
-        {
-            retVal = false;
-        }
-    }
-
-  return retVal;
-}
-
-bool TfrmEJournal::CalculateDateForConsolidatedZed(int fromMonth, int fromDay, int toDay, int fromYear, int toMonth)
-{
-    bool retVal = true;
-    if(fromMonth == 1 || fromMonth == 3 || fromMonth == 5 || fromMonth == 7 || fromMonth == 8 || fromMonth == 10 || fromMonth == 12)
-    {
-        int totalday = 31 - fromDay;
-        totalday = AddTotalDay(fromMonth, toMonth, totalday, toDay);
-        if((totalday > 31))
-        {
-            retVal = false;
-        }
-    }
-    if(fromMonth == 4 || fromMonth == 6 || fromMonth == 9 || fromMonth == 11)
-    {
-        int totalday = 30 - fromDay;
-        totalday = AddTotalDay(fromMonth, toMonth, totalday, toDay);
-        if(totalday > 31)
-        {
-            retVal = false;
-        }
-    }
-    if(fromMonth == 2)
-    {
-        int totalday = 0;
-        if((fromYear % 4) == 0)
-        {
-            totalday =  29 - fromDay;
-            totalday = AddTotalDay(fromMonth, toMonth, totalday, toDay);
-        }
-        else
-        {
-            totalday = 28 - fromDay;
-            totalday = AddTotalDay(fromMonth, toMonth, totalday, toDay);
-        }
-        if(totalday > 31)
-        {
-            retVal = false;
-        }
-    }
-    return retVal;
-}
-
-int TfrmEJournal::AddTotalDay(int frommonth, int tomonth, int total, int today)
-{
-   if(frommonth != tomonth)
-   {
-     total += today;
-   }
-   return total;
-}
-
 bool TfrmEJournal::CompareDateRangeForConolidatedZed(TDateTime fromdate, TDateTime todate)
 {
     bool retVal = true;
-    TValueRelationship startResult  = Dateutils::CompareDate(fromdate, todate);
-
-    int value = startResult;
+    int value  = Dateutils::DaysBetween(fromdate, todate);
     if(value > 31)
     {
        retVal = false;
     }
-
     return retVal;
 
 }

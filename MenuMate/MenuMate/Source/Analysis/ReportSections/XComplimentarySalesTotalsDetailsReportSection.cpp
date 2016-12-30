@@ -8,7 +8,6 @@ XComplimentarySalesTotalsDetailsReportSection::XComplimentarySalesTotalsDetailsR
 {
     dataFormatUtilities = new DataFormatUtilities;
     reportFinancialCalculations = new ReportFinancialCalculations;
-    IsConsolidatedZed = false;
 }
 
 
@@ -17,7 +16,6 @@ XComplimentarySalesTotalsDetailsReportSection::XComplimentarySalesTotalsDetailsR
 {
     dataFormatUtilities = new DataFormatUtilities;
     reportFinancialCalculations = new ReportFinancialCalculations;
-    IsConsolidatedZed = true;
 }
 
 

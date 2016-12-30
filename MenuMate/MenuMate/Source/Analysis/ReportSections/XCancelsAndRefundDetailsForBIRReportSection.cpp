@@ -11,14 +11,12 @@ XCancelsAndRefundDetailsForBIRReportSection::XCancelsAndRefundDetailsForBIRRepor
 	:BaseReportSection(mmXReport, mmRefundCancelDetailsSections, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XCancelsAndRefundDetailsForBIRReportSection::XCancelsAndRefundDetailsForBIRReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmRefundCancelDetailsSections, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 XCancelsAndRefundDetailsForBIRReportSection::~XCancelsAndRefundDetailsForBIRReportSection()

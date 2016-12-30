@@ -28,15 +28,3 @@ void XClientDetailsReportSection::GetOutput(TPrintout* printout)
 		reportSectionDisplayStrategy->BuildSection(printout);
 	}
 }
-
-/*void XClientDetailsReportSection::GetOutput(TPrintout* printout, TDateTime* startTime, TDateTime* endTime)
-{
-    IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
-
-    if (reportSectionDisplayStrategy)
-	{
-		//Call the strategy to build the section..
-		reportSectionDisplayStrategy->BuildSection(printout);
-	}
-} */
-

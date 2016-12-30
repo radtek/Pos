@@ -5,13 +5,11 @@
 XBlindBalancesDetailsReportSection::XBlindBalancesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSection(mmXReport, mmBlindBalancesDetailsSection, dbTransaction, globalSettings)
 {
-   IsConsolidatedZed = false;
 }
 
 XBlindBalancesDetailsReportSection::XBlindBalancesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmBlindBalancesDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
-   IsConsolidatedZed = true;
 }
 
 

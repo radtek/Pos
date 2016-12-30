@@ -7,14 +7,12 @@ XServiceChargeSummaryDetailsReportSection::XServiceChargeSummaryDetailsReportSec
 	:BaseReportSection(mmXReport, mmServiceChargeSummaryDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XServiceChargeSummaryDetailsReportSection::XServiceChargeSummaryDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmXReport, mmServiceChargeSummaryDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 

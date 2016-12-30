@@ -7,7 +7,6 @@ ZStaffHoursDetailsReportSectionForConsolidatedZed::ZStaffHoursDetailsReportSecti
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = true;
 }
 
 
@@ -88,19 +87,17 @@ void ZStaffHoursDetailsReportSectionForConsolidatedZed::GetOutput(TPrintout* pri
 
     for(; !qrstaffHours->Eof; qrstaffHours->Next())
     {
-        printOut->PrintFormat->Line->Columns[0]->Text = qrstaffHours->FieldByName("Name")->AsString; //itStaffHours->second.GetContactName();
+        printOut->PrintFormat->Line->Columns[0]->Text = qrstaffHours->FieldByName("Name")->AsString;
 
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( qrstaffHours->FieldByName("TOTALHOURS")->AsCurrency );
         TotalHours = RoundTo((TotalHours + qrstaffHours->FieldByName("TOTALHOURS")->AsCurrency), -2);
 
         printOut->PrintFormat->AddLine();
 
-        TDateTime t1 = qrstaffHours->FieldByName("Login_DateTime")->AsDateTime; //itStaffHours->second.GetLoggedIn().FormatString("dd/mm/yy HH:nn");
-        TDateTime t2 = qrstaffHours->FieldByName("Logout_DateTime")->AsDateTime;///.FormatString("dd/mm/yy HH:nn");
+        TDateTime t1 = qrstaffHours->FieldByName("Login_DateTime")->AsDateTime;
+        TDateTime t2 = qrstaffHours->FieldByName("Logout_DateTime")->AsDateTime;
         AnsiString str1 = t1.FormatString("dd/mm/yy HH:nn");
         AnsiString str2 = t2.FormatString("dd/mm/yy HH:nn");
-        ///if(itStaffHours->second.GetLogOutNull())
-        //str2 = "???";
         AnsiString str3 = str1 + " - " + str2;
 
         printOut->PrintFormat->Line->Columns[1]->Width = 0;

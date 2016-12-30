@@ -7,14 +7,12 @@ XPointsReportDetailsReportSection::XPointsReportDetailsReportSection(Database::T
 	:BaseReportSection(mmXReport, mmPointsReportDetailsSection, dbTransaction, globalSettings)
 {
     _dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XPointsReportDetailsReportSection::XPointsReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmPointsReportDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     _dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 

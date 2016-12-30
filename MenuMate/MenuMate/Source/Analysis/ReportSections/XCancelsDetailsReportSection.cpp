@@ -11,14 +11,12 @@ XCancelsDetailsReportSection::XCancelsDetailsReportSection(Database::TDBTransact
 	:BaseReportSection(mmXReport, mmRefundDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XCancelsDetailsReportSection::XCancelsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmRefundDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 XCancelsDetailsReportSection::~XCancelsDetailsReportSection()

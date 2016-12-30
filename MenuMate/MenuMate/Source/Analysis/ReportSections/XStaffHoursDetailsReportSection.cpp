@@ -7,7 +7,6 @@ XStaffHoursDetailsReportSection::XStaffHoursDetailsReportSection(Database::TDBTr
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = false;
 }
 
 XStaffHoursDetailsReportSection::XStaffHoursDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
@@ -15,7 +14,6 @@ XStaffHoursDetailsReportSection::XStaffHoursDetailsReportSection(Database::TDBTr
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = true;
 }
 
 

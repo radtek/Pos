@@ -8,14 +8,12 @@ XPriceAdjustmentReportSection::XPriceAdjustmentReportSection(Database::TDBTransa
 	:BaseReportSection(mmXReport, mmShowPriceAdjustmentSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XPriceAdjustmentReportSection::XPriceAdjustmentReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmXReport, mmShowPriceAdjustmentSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 XPriceAdjustmentReportSection::~XPriceAdjustmentReportSection()

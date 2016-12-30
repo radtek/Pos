@@ -9,7 +9,6 @@ XTotalsDetailsReportSection::XTotalsDetailsReportSection(Database::TDBTransactio
 {
     dataFormatUtilities = new DataFormatUtilities;
     reportFinancialCalculations = new ReportFinancialCalculations;
-    IsConsolidatedZed = false;
 }
 
 XTotalsDetailsReportSection::XTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
@@ -17,7 +16,6 @@ XTotalsDetailsReportSection::XTotalsDetailsReportSection(Database::TDBTransactio
 {
     dataFormatUtilities = new DataFormatUtilities;
     reportFinancialCalculations = new ReportFinancialCalculations;
-    IsConsolidatedZed = true;
 }
 
 XTotalsDetailsReportSection::~XTotalsDetailsReportSection()

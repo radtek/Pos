@@ -34,13 +34,15 @@ void CashDenominationCalculationStrategyForConsolidatedZed::GetCashDenominationQ
 {
     TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
     ibInternalQuery->Close();
-    ibInternalQuery->SQL->Text = " select SubQuery1.DENOMINATION_TITLE, sum(SubQuery1.Banking) Banking, sum(SubQuery1.Quantity) qty "
+    ibInternalQuery->SQL->Text = " select SubQuery1.TITLE, sum(SubQuery1.Banking) Banking, SubQuery1.CASHDENOMINATION_KEY, sum(SubQuery1.Quantity) qty "
                                  "from( "
-                                 " select ZED_CASHDENOMINATIONS.DENOMINATION_TITLE, "
+                                 " select CASHDENOMINATIONS.TITLE, "
+                                 " CASHDENOMINATIONS.CASHDENOMINATION_KEY, "
                                  " sum(ZED_CASHDENOMINATIONS.DENOMINATION_VALUE * ZED_CASHDENOMINATIONS.DENOMINATION_QUANTITY) Banking, "
                                  " sum(ZED_CASHDENOMINATIONS.DENOMINATION_QUANTITY) Quantity, "
                                  " ZEDS.Z_KEY, ZEDS.TERMINAL_NAME "
                                  " from ZED_CASHDENOMINATIONS "
+                                 " left join CASHDENOMINATIONS on CASHDENOMINATIONS.TITLE = ZED_CASHDENOMINATIONS.DENOMINATION_TITLE  "
                                  " inner join ZEDS on ZEDS.Z_KEY = ZED_CASHDENOMINATIONS.Z_KEY "
                                  " where "
                                  " ZEDS.TIME_STAMP >= :startTime and ZEDS.TIME_STAMP <= :endTime ";
@@ -49,14 +51,16 @@ void CashDenominationCalculationStrategyForConsolidatedZed::GetCashDenominationQ
     {
         ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text +
         "             and ZEDS.TERMINAL_NAME = :terminal_name and ZED_CASHDENOMINATIONS.TERMINAL_NAME != '' "
-        "       		  GROUP BY ZED_CASHDENOMINATIONS.DENOMINATION_TITLE, ZEDS.Z_KEY, ZEDS.TERMINAL_NAME)SubQuery1 "
-        "              group by SubQuery1.DENOMINATION_TITLE; ";
+        "       		  GROUP BY CASHDENOMINATIONS.TITLE, ZEDS.Z_KEY, ZEDS.TERMINAL_NAME, CASHDENOMINATIONS.CASHDENOMINATION_KEY )SubQuery1 "
+        "              group by SubQuery1.TITLE, SubQuery1.CASHDENOMINATION_KEY "
+        "              order by 3 asc; " ;
         ibInternalQuery->ParamByName("terminal_name")->AsString = deviceName;
     }
     else
     {
-        ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " GROUP BY ZED_CASHDENOMINATIONS.DENOMINATION_TITLE, ZEDS.Z_KEY, ZEDS.TERMINAL_NAME)SubQuery1 "
-                                                                   "              group by SubQuery1.DENOMINATION_TITLE; ";
+        ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " GROUP BY CASHDENOMINATIONS.TITLE, ZEDS.Z_KEY, ZEDS.TERMINAL_NAME, CASHDENOMINATIONS.CASHDENOMINATION_KEY)SubQuery1 "
+                                                                   "              group by SubQuery1.TITLE, SubQuery1.CASHDENOMINATION_KEY  "
+                                                                   "  order by 3 asc; "   ;
     }
 
     ibInternalQuery->ParamByName("startTime")->AsDateTime = *_startTime;
@@ -67,7 +71,7 @@ void CashDenominationCalculationStrategyForConsolidatedZed::GetCashDenominationQ
 
 	for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
 	{
-		printOut->PrintFormat->Line->Columns[0]->Text = ibInternalQuery->FieldByName("DENOMINATION_TITLE")->AsString ;
+		printOut->PrintFormat->Line->Columns[0]->Text = ibInternalQuery->FieldByName("TITLE")->AsString ;
 		printOut->PrintFormat->Line->Columns[1]->Text = FormatFloat("0.00", ibInternalQuery->FieldByName("QTY")->AsDouble);
 		printOut->PrintFormat->Line->Columns[2]->Text = FormatFloat("0.00", ibInternalQuery->FieldByName("Banking")->AsDouble);
 		printOut->PrintFormat->AddLine();

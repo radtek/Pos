@@ -10,7 +10,6 @@ XTransactionSummaryGroupDetailsReportSection::XTransactionSummaryGroupDetailsRep
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = false;
 }
 
 XTransactionSummaryGroupDetailsReportSection::XTransactionSummaryGroupDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
@@ -18,7 +17,6 @@ XTransactionSummaryGroupDetailsReportSection::XTransactionSummaryGroupDetailsRep
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = true;
 }
 
 

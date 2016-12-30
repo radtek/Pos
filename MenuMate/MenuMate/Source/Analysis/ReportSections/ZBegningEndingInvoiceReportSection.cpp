@@ -10,7 +10,6 @@ ZBegningEndingInvoiceReportSection::ZBegningEndingInvoiceReportSection(Database:
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = false;
 }
 
 ZBegningEndingInvoiceReportSection::ZBegningEndingInvoiceReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
@@ -18,7 +17,6 @@ ZBegningEndingInvoiceReportSection::ZBegningEndingInvoiceReportSection(Database:
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
-    IsConsolidatedZed = true;
 }
 
 

@@ -11,14 +11,12 @@ XWriteOffDetailsReportSection::XWriteOffDetailsReportSection(Database::TDBTransa
 	:BaseReportSection(mmXReport, mmRefundDetailsSection, dbTransaction, globalSettings)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = false;
 }
 
 XWriteOffDetailsReportSection::XWriteOffDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
 	:BaseReportSection(mmConsolidatedZReport, mmRefundDetailsSection, dbTransaction, globalSettings, startTime, endTime)
 {
     dataFormatUtilities = new DataFormatUtilities;
-    IsConsolidatedZed = true;
 }
 
 XWriteOffDetailsReportSection::~XWriteOffDetailsReportSection()
