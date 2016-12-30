@@ -1,14 +1,12 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "ManagerLoyaltyVoucher.h"
-#ifdef MenuMate
-#include "DeviceRealTerminal.h"
-#endif
 #ifdef  PalmMate
 #include "Palm.h"
 #endif
 #include <Sysutils.hpp>
+
+#include "ManagerLoyaltyVoucher.h"
 #include "SelectDish.h"
 #include "Requests.h"
 #include "ListPaymentSystem.h"
@@ -22,7 +20,6 @@
 #include "Eftpos.h"
 #include "EftPosDialogs.h"
 #include "Paytype.h"
-#include "ManagerVoucherElectronic.h"
 #include "CardSwipe.h"
 #include "MMTouchKeyboard.h"
 #include "MMTouchNumpad.h"
@@ -62,7 +59,6 @@
 #include "ManagerDelayedPayment.h"
 #include "DrinkCommandManager.h"
 #include "DeviceRealTerminal.h"
-#include "DrinkCommandData.h"
 #include "InitializeDCSession.h"
 #include "MallExportRegenerateReport.h"
 #include "LoyaltyMateUtilities.h"

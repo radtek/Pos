@@ -7,7 +7,6 @@
 #include "PocketVoucherInterface.h"
 #include "DBOrder.h"
 #include "OrderUtils.h"
-#include "Money.h"
 //---------------------------------------------------------------------------
 #ifdef MenuMate
 #include "DeviceRealTerminal.h"

@@ -1397,6 +1397,7 @@ void TItemMinorComplete::DiscountByTypeRemove(TDiscountSource DiscountSource)
 			ptrDiscount++;
 		}
 	}
+	RunBillCalculator();
 }
 
 void TItemMinorComplete::DiscountByTypeRemove(TDiscountMode DiscountMode)
@@ -1416,6 +1417,7 @@ void TItemMinorComplete::DiscountByTypeRemove(TDiscountMode DiscountMode)
 			ptrDiscount++;
 		}
 	}
+	RunBillCalculator();
 }
 
 int TItemMinorComplete::DiscountSize() {

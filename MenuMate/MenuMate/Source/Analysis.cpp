@@ -12,7 +12,6 @@
 #include "MMRegistry.h"
 #include "Analysis.h"
 #include "enum.h"
-#include "enumPoints.h"
 #include "DeviceRealTerminal.h"
 #include "PointsTransaction.h"
 #include "PrintFormat.h"
@@ -44,18 +43,13 @@
 #include "MallExportHourlyUpdate.h"
 #include "MallExportTransactionUpdate.h"
 #include "MallExportOtherDetailsUpdate.h"
-
 #include "MYOBInvoiceBuilder.h"
-#include "DeviceRealTerminal.h"
 #include "DBTables.h"
 #include "DBThirdPartyCodes.h"
 #include "DBSecurity.h"
 #include "ManagerDiscount.h"
 #include "ManagerPatron.h"
 #include "DBGroups.h"
-
-#include "MagicMemoriesSfService.h"
-#include "MagicMemoriesSfProgressMonitor.h"
 #include "SalesForceCommAtZed.h"
 #include "CashDenominationController.h"
 #include "ExportCSV.h"
@@ -63,17 +57,12 @@
 #include "EstanciaMall.h"
 
 #include <string>
-#include <map>
 #include <cassert>
-
-// for mall export
 #include "MallExportManager.h"
 #include "SendEmail.h"
 #include <Dateutils.hpp>
    #include <wininet.h>
 #include <dirent.h>
-using SfIntegration::Sf_svc_iface;
-using SfIntegration::Sf_result;
 
 #include <Math.hpp>
 // ---------------------------------------------------------------------------
@@ -112,12 +101,6 @@ CategoryListXML(new TPOS_XMLBase("List Categories Export"))
 }
 
 TMMContactInfo TfrmAnalysis::lastAuthenticatedUser;
-
-using SfIntegration::Sf_data_object_type;
-using SfIntegration::Sf_notification_receiver;
-using SfIntegration::Sf_notification;
-using SfIntegration::Sf_svc_iface;
-using SfIntegration::Sf_svc_iface_params;
 
 int ResetKey; //MM 4579
 
@@ -3132,8 +3115,6 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 			TCommissionCache Commission;
 			TPrinterReadingsInterface PrinterReading;
 			TPaxCount PaxCount;
-
-			std::auto_ptr<Sf_svc_iface> sfsvc;
 			int z_key;
 
 			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());

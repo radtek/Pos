@@ -5,7 +5,7 @@
 
 #include "ManagerEJournal.h"
 #include "ShowEJournal.h"
-
+#include "GlobalSettings.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)

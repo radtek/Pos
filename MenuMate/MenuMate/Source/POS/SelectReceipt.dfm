@@ -80,7 +80,7 @@ object frmSelectReceipt: TfrmSelectReceipt
       Width = 288
       Height = 263
       AutoSize = True
-      Date = 37497.151888414350000000
+      Date = 37497.793662094900000000
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -21

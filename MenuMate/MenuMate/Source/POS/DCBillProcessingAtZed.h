@@ -8,7 +8,6 @@
 #include "DrinkCommandData.h"
 #include "SeatOrders.h"
 #include "TCPStreamPrepare.h"
-#include "ContactMemberApplied.h"
 //---------------------------------------------------------------------------
 //class TSeatOrders;
 class TDCBillProcessingAtZed
