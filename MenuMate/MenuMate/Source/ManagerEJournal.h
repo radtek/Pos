@@ -4,7 +4,7 @@
 #define ManagerEJournalH
 #include <system.hpp>
 #include <memory>
-#include "GlobalSettings.h"
+
 //---------------------------------------------------------------------------
 class TManagerEJournal
 {

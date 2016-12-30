@@ -1147,6 +1147,343 @@ object frmSetup: TfrmSetup
         OnMouseUp = edConsolidatedDBPathsMouseUp
       end
     end
+    object tsMallSettings: TTabSheet
+      Caption = 'Mall Export Settings'
+      ImageIndex = 2
+      object gbMallsNew: TGroupBox
+        Left = 16
+        Top = 3
+        Width = 737
+        Height = 620
+        Caption = 'Mall'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clBlack
+        Font.Height = -15
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 0
+        object lbMallTenantNo: TLabel
+          Left = 16
+          Top = 94
+          Width = 5
+          Height = 18
+        end
+        object lbMallFileLocation: TLabel
+          Left = 16
+          Top = 152
+          Width = 78
+          Height = 18
+          Caption = 'File Location'
+        end
+        object lbMallClassCode: TLabel
+          Left = 16
+          Top = 210
+          Width = 71
+          Height = 18
+          Caption = 'Class Code'
+        end
+        object lbMallTradeCode: TLabel
+          Left = 16
+          Top = 268
+          Width = 77
+          Height = 18
+          Caption = 'Trade Code'
+        end
+        object lbMallOutletNumber: TLabel
+          Left = 16
+          Top = 326
+          Width = 96
+          Height = 18
+          Caption = 'Outlet Number'
+        end
+        object lbNewMallType: TLabel
+          Left = 16
+          Top = 36
+          Width = 63
+          Height = 18
+          Caption = 'Mall Type'
+        end
+        object lbMallTenantCode: TLabel
+          Left = 14
+          Top = 94
+          Width = 85
+          Height = 18
+          Caption = 'Tenant Code'
+        end
+        object lbMallBranchCode: TLabel
+          Left = 16
+          Top = 384
+          Width = 83
+          Height = 18
+          Caption = 'Branch Code'
+        end
+        object lbMallTerminalNumber: TLabel
+          Left = 14
+          Top = 442
+          Width = 113
+          Height = 18
+          Caption = 'Terminal Number'
+        end
+        object lbMallSerialNumber: TLabel
+          Left = 15
+          Top = 500
+          Width = 90
+          Height = 18
+          Caption = 'Serial Number'
+        end
+        object lbMallFTPPath: TLabel
+          Left = 392
+          Top = 151
+          Width = 60
+          Height = 18
+          Caption = 'FTP Path'
+        end
+        object lbMallFTPUserName: TLabel
+          Left = 392
+          Top = 208
+          Width = 105
+          Height = 18
+          Caption = 'FTP User Name'
+        end
+        object lbMallFTPPassword: TLabel
+          Left = 392
+          Top = 267
+          Width = 92
+          Height = 18
+          Caption = 'FTP Password'
+        end
+        object lbMallFTPServer: TLabel
+          Left = 392
+          Top = 95
+          Width = 73
+          Height = 18
+          Caption = 'FTP Server'
+        end
+        object lbMallConsolidated: TLabel
+          Left = 392
+          Top = 383
+          Width = 146
+          Height = 18
+          Caption = 'Consolidated DB Paths'
+        end
+        object lbTaxRate: TLabel
+          Left = 392
+          Top = 445
+          Width = 61
+          Height = 18
+          Caption = 'Tax Rate'
+        end
+        object cbNewMallLoc: TComboBox
+          Left = 16
+          Top = 64
+          Width = 329
+          Height = 26
+          Style = csDropDownList
+          TabOrder = 0
+          OnChange = cbNewMallLocChange
+        end
+        object edMallTenantNo: TEdit
+          Left = 16
+          Top = 122
+          Width = 330
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 1
+          OnMouseUp = edMallTenantNoMouseUp
+        end
+        object edNewMallPath: TEdit
+          Left = 16
+          Top = 180
+          Width = 331
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 2
+          OnMouseUp = edNewMallPathMouseUp
+        end
+        object edMallClassCode: TEdit
+          Left = 16
+          Top = 238
+          Width = 331
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 3
+        end
+        object edMallTradeCode: TEdit
+          Left = 16
+          Top = 296
+          Width = 329
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 4
+        end
+        object edMallOutletCode: TEdit
+          Left = 16
+          Top = 354
+          Width = 329
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 5
+        end
+        object edMallBranchCode: TEdit
+          Left = 17
+          Top = 410
+          Width = 329
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 6
+        end
+        object edMallTerminalNo: TEdit
+          Left = 16
+          Top = 470
+          Width = 329
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 7
+          OnMouseUp = edMallTerminalNoMouseUp
+        end
+        object edMallSerialNo: TEdit
+          Left = 16
+          Top = 528
+          Width = 329
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 8
+        end
+        object btnResendMallReport: TTouchBtn
+          Left = 408
+          Top = 33
+          Width = 155
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -15
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentColor = True
+          Caption = 'Resend Reports'
+          ButtonColor = clMaroon
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
+          Enabled = False
+          LatchingProperties = [lkLatchColor, lkStayDown]
+        end
+        object btnRegenMallReport: TTouchBtn
+          Left = 580
+          Top = 33
+          Width = 155
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -15
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentColor = True
+          Caption = 'Regenerate Reports'
+          ButtonColor = clMaroon
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
+          Enabled = False
+          LatchingProperties = [lkLatchColor, lkStayDown]
+          OnMouseClick = btnRegenMallReportMouseClick
+        end
+        object btnAssignMallSalesType: TTouchBtn
+          Left = 32
+          Top = 569
+          Width = 329
+          Height = 30
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -15
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          ParentColor = True
+          Caption = 'Assign Sales Type'
+          ButtonColor = clMaroon
+          LatchedColor = clBtnFace
+          DisabledButtonColor = clBtnFace
+          Enabled = False
+          LatchingProperties = [lkLatchColor, lkStayDown]
+        end
+        object edMallFTPServer: TEdit
+          Left = 392
+          Top = 122
+          Width = 330
+          Height = 26
+          Color = clInactiveCaptionText
+          TabOrder = 12
+        end
+        object edMallFTPPath: TEdit
+          Left = 392
+          Top = 179
+          Width = 330
+          Height = 26
+          Color = clInactiveCaptionText
+          TabOrder = 13
+        end
+        object edMallFTPUserName: TEdit
+          Left = 392
+          Top = 235
+          Width = 330
+          Height = 26
+          Color = clInactiveCaptionText
+          TabOrder = 14
+        end
+        object edMallFTPPassword: TEdit
+          Left = 392
+          Top = 294
+          Width = 330
+          Height = 26
+          Color = clInactiveCaptionText
+          TabOrder = 16
+        end
+        object cbEnableMallConsolidatedRep: TCheckBox
+          Left = 392
+          Top = 355
+          Width = 289
+          Height = 20
+          Caption = 'Enable Consolidated Report'
+          Color = clInactiveCaptionText
+          Enabled = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -16
+          Font.Name = 'Arial'
+          Font.Style = []
+          ParentColor = False
+          ParentFont = False
+          TabOrder = 17
+        end
+        object edMallConsolidatedDBPaths: TEdit
+          Left = 392
+          Top = 412
+          Width = 330
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 15
+        end
+        object edTaxRate: TEdit
+          Left = 392
+          Top = 471
+          Width = 330
+          Height = 26
+          Color = clInactiveCaptionText
+          Enabled = False
+          TabOrder = 18
+          OnClick = edTaxRateClick
+        end
+      end
+    end
   end
   object pnlButtons: TPanel
     Left = 918

@@ -1,8 +1,10 @@
 #include <item_definition_altered_message.hh>
 #include <item_definition_altered_message_factory.hh>
 
-namespace item_management {
-namespace network_messaging {
+namespace item_management
+{
+namespace network_messaging
+{
 
 item_definition_altered_message_factory
     ::item_definition_altered_message_factory()

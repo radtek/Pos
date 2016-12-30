@@ -11,7 +11,6 @@
 #include "ManagerHappyHour.h"
 #include "MMTouchKeyboard.h"
 #include "Vector.h"
-#include "DBHappyHour.h"
 #include "GlobalSettings.h"
 #include "MMTouchNumpad.h"
 

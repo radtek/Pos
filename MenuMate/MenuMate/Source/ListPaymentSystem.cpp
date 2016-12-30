@@ -1,14 +1,12 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "ManagerLoyaltyVoucher.h"
-#ifdef MenuMate
-#include "DeviceRealTerminal.h"
-#endif
 #ifdef  PalmMate
 #include "Palm.h"
 #endif
 #include <Sysutils.hpp>
+
+#include "ManagerLoyaltyVoucher.h"
 #include "SelectDish.h"
 #include "Requests.h"
 #include "ListPaymentSystem.h"
@@ -22,7 +20,6 @@
 #include "Eftpos.h"
 #include "EftPosDialogs.h"
 #include "Paytype.h"
-#include "ManagerVoucherElectronic.h"
 #include "CardSwipe.h"
 #include "MMTouchKeyboard.h"
 #include "MMTouchNumpad.h"
@@ -62,13 +59,13 @@
 #include "ManagerDelayedPayment.h"
 #include "DrinkCommandManager.h"
 #include "DeviceRealTerminal.h"
-#include "DrinkCommandData.h"
 #include "InitializeDCSession.h"
 #include "MallExportRegenerateReport.h"
 #include "LoyaltyMateUtilities.h"
 #include "ReceiptUtility.h"
 #include "StringTools.h"
 #include "PointsRulesSetUtils.h"
+#include "EstanciaMall.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -1436,6 +1433,12 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
 
     if(isSCDOrPWDApplied)
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
+    if(TGlobalSettings::Instance().mallInfo.MallId == 1 && TGlobalSettings::Instance().mallInfo.IsActive != "F")
+    {
+        //TODO: Instantiation will happen in a factory based on the active mall in database
+        TMallExport* estanciaMall = new TEstanciaMall();
+        estanciaMall->PushToDatabase(PaymentTransaction, ArcBillKey);
+    }
 }
 
 void TListPaymentSystem::CheckPatronByOrderIdentification(TPaymentTransaction &PaymentTransaction)

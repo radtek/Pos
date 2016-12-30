@@ -5,6 +5,7 @@
 #include "MMSettings.h"
 #include "GlobalSettings.h"
 #include "ManagerVariable.h"
+#include "ManagerMallSetup.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -380,6 +381,9 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().HideRoundingOnReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmHideRoundingOnReceipt, false);
 		TGlobalSettings::Instance().CashDenominationEntry = TManagerVariable::Instance().GetBool(DBTransaction, vmCashDenominationEntry, false);
         TGlobalSettings::Instance().MembershipPaid = TManagerVariable::Instance().GetBool(DBTransaction, vmMembershipPaid, false);
+         int mallIndex = TManagerMallSetup::CheckActiveMallExist(DBTransaction);
+         if(mallIndex != 0)
+            TGlobalSettings::Instance().mallInfo = TManagerMallSetup::LoadActiveMallSettings(DBTransaction);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

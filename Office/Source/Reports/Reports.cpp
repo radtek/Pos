@@ -5322,7 +5322,7 @@ void TfrmReports::PrintHalfHourlySales(TReportControl *ReportControl)
 				}
 				else
 				{
-					if (rvMenuMate->SelectReport(ReportName, false))
+					if (rvMenuMate->SelectReport("repHalfHourlySalesSummaryC", false))
 					{
 						AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
 														"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
@@ -6221,42 +6221,45 @@ void TfrmReports::PrintPatronTypes(TReportControl *ReportControl)
 void TfrmReports::PrintTurnaroundTimes(TReportControl *ReportControl)
 {
 	const AnsiString ReportName = "repTurnAround";
-
-	if (dmMMReportData->ChefMateTrans->DefaultDatabase->Connected)
-	{
-		dmMMReportData->ChefMateTrans->StartTransaction();
-	}
-	try
-	{
-		dmMMReportData->SetupTurnAround(ReportControl->Start, ReportControl->End);
-		if (ReportType == rtExcel)
-		{
-			std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-			ExcelDataSetsList->AddObject("Turn Around",(TObject *)dmMMReportData->qrTurnAround);
-			ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
-		}
-		else
-		{
-			if (rvMenuMate->SelectReport(ReportName, false))
-			{
-				AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
-												"\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
-				rvMenuMate->SetParam("ReportRange", DateRange);
-				rvMenuMate->Execute();
-			}
-			else
-			{
-				Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
-			}
-		}
-	}
-	__finally
-	{
-		if (dmMMReportData->ChefMateTrans->DefaultDatabase->Connected)
-		{
-			dmMMReportData->ChefMateTrans->Commit();
-		}
-	}
+    if (!dmMMReportData->ChefMateTrans->DefaultDatabase->Connected)
+    {
+        Application->MessageBox("ChefMate Database not found!", "Error", MB_OK + MB_ICONERROR);
+        return;
+    }
+    else
+    {
+        try
+        {
+            dmMMReportData->SetupTurnAround(ReportControl->Start, ReportControl->End);
+            if (ReportType == rtExcel)
+            {
+                std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
+                ExcelDataSetsList->AddObject("Turn Around",(TObject *)dmMMReportData->qrTurnAround);
+                ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
+            }
+            else
+            {
+                if (rvMenuMate->SelectReport(ReportName, false))
+                {
+                    AnsiString DateRange =	"From " + ReportControl->Start.FormatString("ddddd 'at' hh:nn") +
+                                                    "\rto " + ReportControl->End.FormatString("ddddd 'at' hh:nn");
+                    rvMenuMate->SetParam("ReportRange", DateRange);
+                    rvMenuMate->Execute();
+                }
+                else
+                {
+                    Application->MessageBox("Report not found!", "Error", MB_OK + MB_ICONERROR);
+                }
+            }
+        }
+        __finally
+        {
+            if (dmMMReportData->ChefMateTrans->DefaultDatabase->Connected)
+            {
+                dmMMReportData->ChefMateTrans->Commit();
+            }
+        }
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmReports::GetChronologicalTableFilter(TReportFilter *ReportFilter)

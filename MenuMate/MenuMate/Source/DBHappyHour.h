@@ -1,6 +1,6 @@
 #ifndef DBHappyHourH
 #define DBHappyHourH
-#include "GlobalSettings.h"
+
 #include "Vector.h"
 #include "MM_DBCore.h"
 

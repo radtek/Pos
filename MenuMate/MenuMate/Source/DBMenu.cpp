@@ -200,8 +200,6 @@ int TDBMenu::SetServingCourse(Database::TDBTransaction &DBTransaction, UnicodeSt
 			 ":SERVINGCOURSE_KITCHEN_NAME," ":DELETED," ":DISPLAY_ORDER," ":SELECTABLE," ":COLOUR);";
 		 IBInternalQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = ServingCourseKey;
 		 IBInternalQuery->ParamByName("SERVINGCOURSE_NAME")->AsString = ServingCourse;
-// Conversion not required as ServingCourseKitchenName is already in UTF8 Format from the Menu.csv
-//		 IBInternalQuery->ParamByName("SERVINGCOURSE_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(ServingCourseKitchenName);
 		 IBInternalQuery->ParamByName("SERVINGCOURSE_KITCHEN_NAME")->AsString = ServingCourseKitchenName;
 		 IBInternalQuery->ParamByName("DELETED")->AsString = Deleted ? "T" : "F";
 		 IBInternalQuery->ParamByName("SELECTABLE")->AsString = Selectable ? "T" : "F";
@@ -236,7 +234,6 @@ int TDBMenu::SetServingCourse(Database::TDBTransaction &DBTransaction, UnicodeSt
 			IBInternalQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = ServingCourseKey;
 			IBInternalQuery->ParamByName("SERVINGCOURSE_NAME")->AsString = ServingCourse;
 			IBInternalQuery->ParamByName("SERVINGCOURSE_KITCHEN_NAME")->AsString = ServingCourseKitchenName;
-			//IBInternalQuery->ParamByName("SERVINGCOURSE_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(ServingCourseKitchenName);
 			IBInternalQuery->ParamByName("DELETED")->AsString = Deleted ? "T" : "F";
 			IBInternalQuery->ParamByName("SELECTABLE")->AsString = Selectable ? "T" : "F";
 			IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = SCOO;

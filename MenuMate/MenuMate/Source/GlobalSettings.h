@@ -4,10 +4,10 @@
 #define GlobalSettingsH
 
 #include "PointsRulesSet.h"
+#include "Mall.h"
 #include <memory>
 #include <Classes.hpp>
 #include <Graphics.hpp>
-
 // ---------------------------------------------------------------------------
 enum eDayTimes {
 	eSunday = 0, eMonday, eTuesday, eWednesday, eThursday, eFriday, eSaturday,
@@ -476,6 +476,7 @@ public:
     UnicodeString CSVExportIP;
     bool MembershipPaid;
     bool UseMemberSubs;
+    TMall mallInfo;
 };
 
 #endif

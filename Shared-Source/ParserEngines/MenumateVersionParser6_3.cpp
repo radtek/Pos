@@ -740,6 +740,7 @@ void TApplyParser::update6_35Tables()
     }
     UpdateMallExportSettingValuesTable6_35(_dbControl);
     Create6_35GeneratorMallExportSettingValues(_dbControl);
+    UpdateContactIndex_6_35(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_35MemberSubsGenerator(TDBControl* const inDBControl)
@@ -820,6 +821,41 @@ void TApplyParser::Insert6_35MemberSubsDetails(TDBControl* const inDBControl)
             InsertQuery->ExecQuery();
             SelectQuery->Next();
         }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------
+void TApplyParser::UpdateContactIndex_6_35(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "DROP INDEX CONTACT_INDEX;";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "ALTER TABLE CONTACTS ADD EMAILDUMMY Varchar(80);";
+        InsertQuery->ExecQuery();
+        transaction.Commit();
+        transaction.StartTransaction();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "UPDATE CONTACTS SET EMAILDUMMY = EMAIL;";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "ALTER TABLE CONTACTS DROP EMAIL;";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "ALTER TABLE CONTACTS ALTER EMAILDUMMY TO EMAIL;";
+        InsertQuery->ExecQuery();
+        InsertQuery->Close();
+        InsertQuery->SQL->Text = "CREATE UNIQUE INDEX CONTACT_INDEX ON CONTACTS (NAME,EMAIL,CONTACTS_3RDPARTY_KEY, MEMBER_NUMBER, SITE_ID );";
+        InsertQuery->ExecQuery();
         transaction.Commit();
     }
     catch( Exception &E )
