@@ -140,7 +140,7 @@ void ConsolidatedEndOfDayReportBuilder::AddStaffHoursSection(IReport* report)
 
 void ConsolidatedEndOfDayReportBuilder::AddCommissionTipsSection(IReport* report)
 {
-    AddConsolidatedReportSectionToReport(report, mmCommissionTipsDetailsSection, GetGlobalSettings()->EnableCommission, GetStartTime(), GetEndTime());
+    //AddConsolidatedReportSectionToReport(report, mmCommissionTipsDetailsSection, GetGlobalSettings()->EnableCommission, GetStartTime(), GetEndTime());
 }
 
 void ConsolidatedEndOfDayReportBuilder::AddRefundSection(IReport* report)
