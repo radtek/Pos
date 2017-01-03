@@ -9,6 +9,13 @@ XStaffHoursDetailsReportSection::XStaffHoursDetailsReportSection(Database::TDBTr
     dataCalculationUtilities = new DataCalculationUtilities;
 }
 
+XStaffHoursDetailsReportSection::XStaffHoursDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmStaffHoursDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
+}
+
 
 XStaffHoursDetailsReportSection::~XStaffHoursDetailsReportSection()
 {

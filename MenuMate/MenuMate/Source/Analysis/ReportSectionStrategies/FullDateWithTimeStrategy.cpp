@@ -5,6 +5,11 @@ FullDateWithTimeStrategy::FullDateWithTimeStrategy(Database::TDBTransaction* dbT
 {
 }
 
+FullDateWithTimeStrategy::FullDateWithTimeStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
 void FullDateWithTimeStrategy::BuildSection(TPrintout* printOut)
 {
 

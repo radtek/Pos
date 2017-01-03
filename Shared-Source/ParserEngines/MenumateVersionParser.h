@@ -9,6 +9,8 @@
 #include <map>
 #define vPaymentAcess        0x40000000
 #define vTaxRemoval          0x80000000
+#define FinancialPaid        0x0000080
+#define DiscountsAllowed     0x0000040
 //---------------------------------------------------------------------------
 
 namespace MenumateVersionParser
@@ -833,6 +835,11 @@ namespace MenumateVersionParser
         //6.35
         void upgrade6_35Tables();
         void update6_35Tables();
+        void Create6_35MemberSubsGenerator(TDBControl* const inDBControl);
+        void Create6_35MemberSubsDetails(TDBControl* const inDBControl);
+        void Insert6_35MemberSubsDetails(TDBControl* const inDBControl);
+        void UpdateMallExportSettingValuesTable6_35(TDBControl* const inDBControl);
+        void Create6_35GeneratorMallExportSettingValues(TDBControl* const inDBControl);
         void UpdateContactIndex_6_35(TDBControl* const inDBControl);
 
     }; // class

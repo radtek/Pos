@@ -12,6 +12,14 @@ XTaxSummaryDetailsReportSection::XTaxSummaryDetailsReportSection(Database::TDBTr
     reportCalculations = new ReportFinancialCalculations;
 }
 
+XTaxSummaryDetailsReportSection::XTaxSummaryDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmTaxSummaryDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
+    reportCalculations = new ReportFinancialCalculations;
+}
+
 
 XTaxSummaryDetailsReportSection::~XTaxSummaryDetailsReportSection()
 {
@@ -23,19 +31,40 @@ XTaxSummaryDetailsReportSection::~XTaxSummaryDetailsReportSection()
 void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-    const Currency todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+    ReportType reportType;
+
+    const Currency todays_earnings = 0;
     Currency taxExemptSales = 0;
-    Currency salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName);
-    Currency serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName);
-    Currency serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName);
-    Currency localTax = reportCalculations->GetLocalTax(*_dbTransaction, deviceName);
-    Currency profitTax = reportCalculations->GetProfitTax(*_dbTransaction, deviceName);
-    Currency discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction);
-    Currency zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
-    Currency totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName);
-
-
-    taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
+    Currency salesTax = 0, serviceCharge = 0, serviceChargeTax = 0, localTax = 0, profitTax = 0, discountAndSurcharge = 0, zeroratedsales = 0, totaldiscount = 0;
+    sales_tax.clear();
+    if(IsConsolidatedZed)
+    {
+        todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, *_startTime, *_endTime, true);
+        salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        localTax = reportCalculations->GetLocalTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        profitTax = reportCalculations->GetProfitTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction, *_startTime, *_endTime);
+        zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        GetDifferentTotalSalesTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName, *_startTime, *_endTime), 0.01, _globalSettings->MidPointRoundsDown);
+    }
+    else
+    {
+        todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+        salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName);
+        serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName);
+        serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName);
+        localTax = reportCalculations->GetLocalTax(*_dbTransaction, deviceName);
+        profitTax = reportCalculations->GetProfitTax(*_dbTransaction, deviceName);
+        discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction);
+        zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
+        totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName);
+        GetDifferentTotalSalesTax(*_dbTransaction, deviceName);
+        taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
+    }
 
     if(_globalSettings->ReCalculateTaxPostDiscount)
     {
@@ -61,9 +90,8 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
 
     if(_globalSettings->UseBIRFormatInXZReport)
     {
-        sales_tax.clear();
-        GetDifferentTotalSalesTax(*_dbTransaction, deviceName);
-        dataCalculationUtilities->PrinterFormatinTwoSections(printOut); //SetPrinterFormatToMiddle(printOut);
+
+        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
 
         printOut->PrintFormat->Line->Columns[0]->Text = "";
         printOut->PrintFormat->Line->Columns[1]->Text = "";
@@ -138,6 +166,8 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         AddTitle(printOut, "Tax Summary");
         printOut->PrintFormat->NewLine();
 
+
+
         IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
 
         if(reportSectionDisplayTraits)
@@ -147,7 +177,6 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
 
         printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
         printOut->PrintFormat->Line->FontInfo.Reset();
-
 
         printOut->PrintFormat->Line->Columns[0]->Text = "Sales Tax Total:";
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
@@ -210,4 +239,42 @@ void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTra
     salesTaxQuery->Close();
 }
 
+void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+    TIBSQL *salesTaxQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "AND DAB.TERMINAL_NAME = :Terminal_Name ";
+    }
 
+
+    salesTaxQuery->SQL->Text = "SELECT "
+                                    "SUM(TAX_VALUE) AS TAXSUM, DTax.RATE "
+                                "FROM ARCORDERTAXES DAOT "
+                                "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                                "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
+                                "INNER JOIN TAXPROFILES DTax on DTax.TYPE = DAOT.TAX_TYPE "
+                                "WHERE TAX_TYPE = '0' " + terminalNamePredicate + " and DAOT.TAX_NAME = DTax.NAME "
+                                "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP <= :endTime "
+                                "group by "
+                                "DTax.RATE, "
+                                "DAOT.TAX_TYPE ";
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+       salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    salesTaxQuery->ParamByName("StartTime")->AsDateTime = startTime;
+    salesTaxQuery->ParamByName("EndTime")->AsDateTime = endTime;
+    salesTaxQuery->ExecQuery();
+    while(!salesTaxQuery->Eof)
+    {
+        TSalesTax sales;
+        sales.Rate = salesTaxQuery->FieldByName("RATE")->AsDouble;
+        sales.TaxSum = salesTaxQuery->FieldByName("TAXSUM")->AsCurrency;
+        sales_tax.push_back(sales);
+        salesTaxQuery->Next();
+    }
+    salesTaxQuery->Close();
+}

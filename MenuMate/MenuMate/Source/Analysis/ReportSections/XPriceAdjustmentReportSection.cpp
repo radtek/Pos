@@ -10,6 +10,12 @@ XPriceAdjustmentReportSection::XPriceAdjustmentReportSection(Database::TDBTransa
     dataFormatUtilities = new DataFormatUtilities;
 }
 
+XPriceAdjustmentReportSection::XPriceAdjustmentReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmXReport, mmShowPriceAdjustmentSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
 XPriceAdjustmentReportSection::~XPriceAdjustmentReportSection()
 {
     delete dataFormatUtilities;
@@ -19,47 +25,25 @@ void XPriceAdjustmentReportSection::GetOutput(TPrintout* printOut)
 {
 	std::auto_ptr<TStringList> AdjustmentsUserList (new TStringList);
 	std::auto_ptr<TStringList> AdjustmentsSQL (new TStringList);
+    AnsiString masterSlaveCondition = "";
+    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
 	if (_globalSettings->ShowPriceAdjustment)
 	{
-		AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
-		"FROM DAYARCHIVE r "
-		"left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-		"left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-		"where "
-		"(r.BASE_PRICE > r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
-		"and r.TERMINAL_NAME = :TERMINAL_NAME "
-		"and s.SECURITY_EVENT = 'Price Adjust' "
-		"group by c.NAME ");
 
-		AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
-		"FROM DAYARCHIVE r "
-		"left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-		"left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-		"where "
-		"(r.BASE_PRICE > r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
-		"and r.TERMINAL_NAME = :TERMINAL_NAME "
-		"and s.SECURITY_EVENT = 'Price Adjust' "
-		"group by c.NAME ");
+        if (!_globalSettings->EnableDepositBagNum)
+        {
+            masterSlaveCondition = " and r.TERMINAL_NAME = :TERMINAL_NAME " ;
+        }
 
-		AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
-		"FROM DAYARCHIVE r "
-		"left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-		"left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-		"where "
-		"(r.BASE_PRICE < r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
-		"and r.TERMINAL_NAME = :TERMINAL_NAME "
-		"and s.SECURITY_EVENT = 'Price Adjust' "
-		"group by c.NAME ");
 
-		AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
-		"FROM DAYARCHIVE r "
-		"left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-		"left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-		"where "
-		"(r.BASE_PRICE < r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
-		"and r.TERMINAL_NAME = :TERMINAL_NAME "
-		"and s.SECURITY_EVENT = 'Price Adjust' "
-		"group by c.NAME ");
+         if(IsConsolidatedZed)
+         {
+            GetPriceAdjustmentQueryForConsolidatedZed(AdjustmentsSQL.get(), masterSlaveCondition);
+         }
+         else
+         {
+            GetPriceAdjustmentQueryForNormalZed(AdjustmentsSQL.get(), masterSlaveCondition);
+         }
      }
      TIBSQL* IBInternalQuery = _dbTransaction->Query( _dbTransaction->AddQuery());
 	 for( int i = 0; i < AdjustmentsSQL->Count; i ++ )
@@ -68,7 +52,15 @@ void XPriceAdjustmentReportSection::GetOutput(TPrintout* printOut)
 
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text = SQL;
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+        if (!_globalSettings->EnableDepositBagNum)
+        {
+            IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        }
+        if(IsConsolidatedZed)
+        {
+           IBInternalQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+           IBInternalQuery->ParamByName("endTime")->AsDateTime = *_endTime;
+        }
 		IBInternalQuery->ExecQuery();
 
 		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -159,4 +151,94 @@ void XPriceAdjustmentReportSection::GetOutput(TPrintout* printOut)
 	    	printOut->PrintFormat->Add("Total |" + dataFormatUtilities->FormatMMReportCurrency( TotalUp ) + "|" + dataFormatUtilities->FormatMMReportCurrency( TotalDown ) );
 
 	}
+}
+
+void XPriceAdjustmentReportSection::GetPriceAdjustmentQueryForNormalZed(TStringList* AdjustmentsSQL, AnsiString masterSlaveCondition)
+{
+    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
+    "FROM DAYARCHIVE r "
+    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+    "where "
+    "(r.BASE_PRICE > r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
+     + masterSlaveCondition +
+    "and s.SECURITY_EVENT = 'Price Adjust' "
+    "group by c.NAME ");
+
+    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
+    "FROM DAYARCHIVE r "
+    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+    "where "
+    "(r.BASE_PRICE > r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
+    + masterSlaveCondition +
+    "and s.SECURITY_EVENT = 'Price Adjust' "
+    "group by c.NAME ");
+
+    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
+    "FROM DAYARCHIVE r "
+    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+    "where "
+    "(r.BASE_PRICE < r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
+    + masterSlaveCondition +
+    "and s.SECURITY_EVENT = 'Price Adjust' "
+    "group by c.NAME ");
+
+    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
+    "FROM DAYARCHIVE r "
+    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+    "where "
+    "(r.BASE_PRICE < r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
+    + masterSlaveCondition +
+    "and s.SECURITY_EVENT = 'Price Adjust' "
+    "group by c.NAME ");
+}
+
+void XPriceAdjustmentReportSection::GetPriceAdjustmentQueryForConsolidatedZed(TStringList* AdjustmentsSQL, AnsiString masterSlaveCondition)
+{
+    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
+    "FROM ARCHIVE r "
+    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+    "where "
+    "(r.BASE_PRICE > r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
+    + masterSlaveCondition +
+    "and s.SECURITY_EVENT = 'Price Adjust' "
+    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
+    "group by c.NAME ");
+
+    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
+    "FROM ARCHIVE r "
+    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+    "where "
+    "(r.BASE_PRICE > r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
+    + masterSlaveCondition +
+    "and s.SECURITY_EVENT = 'Price Adjust' "
+    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
+    "group by c.NAME ");
+
+    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
+    "FROM ARCHIVE r "
+    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+    "where "
+    "(r.BASE_PRICE < r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
+    + masterSlaveCondition +
+    "and s.SECURITY_EVENT = 'Price Adjust' "
+    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
+    "group by c.NAME ");
+
+    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
+    "FROM ARCHIVE r "
+    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+    "where "
+    "(r.BASE_PRICE < r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
+    + masterSlaveCondition +
+    "and s.SECURITY_EVENT = 'Price Adjust' "
+    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
+    "group by c.NAME ");
 }

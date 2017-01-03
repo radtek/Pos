@@ -456,30 +456,42 @@ void __fastcall TfrmSelectReceipt::btnAddTipMouseClick(TObject *Sender)
 						"Cannot add a tip", MB_ICONINFORMATION + MB_OK);
 		return;
 	}
-    TfrmTipAmount *frmTipAmount = new TfrmTipAmount(Screen->ActiveForm);
-	if(frmTipAmount->ShowModal() == mrOk)
+
+
+    if (MessageBox("Are you sure you wish to add a tip on this transaction ?" ,"Add a tip to transaction", MB_OKCANCEL + MB_ICONQUESTION) == IDOK)
 	{
-		Currency tipAmount;
-		tipAmount = frmTipAmount->SelectedTipAmount;
-		if(tipAmount.Val > 0)
-		{
-			double percentageOfIncrement = (tipAmount / originalVisaPaymentAmount) * 100;
-			if(percentageOfIncrement > 50)
-			{
-				MessageBox("You cannot add a tip more than 50% of original payment.",
-						"Failed to add a tip", MB_ICONERROR + MB_OK);
-			}
-			else if( !TDeviceRealTerminal::Instance().PaymentSystem->ProcessTipOnVisaTransaction( arcBillKey, paymentRefNumber, originalVisaPaymentAmount, tipAmount ))
-			{
-				MessageBox("Failed to add a tip on this transaction",
-						"Failed to add a tip", MB_ICONERROR + MB_OK);
-			}
-			else
-				MessageBox("Tip applied successfully",
-						"Tip Applied", MB_ICONINFORMATION + MB_OK);
-		}
-    }
-    delete frmTipAmount;
+        std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (Screen->ActiveForm));
+        frmTouchNumpad->Caption = "Enter Tip Amount";
+        frmTouchNumpad->CURInitial = 0.00;
+        frmTouchNumpad->btnSurcharge->Caption = "Ok";
+        frmTouchNumpad->btnDiscount->Visible = false;
+        frmTouchNumpad->btnSurcharge->Visible = true;
+        frmTouchNumpad->Mode = pmCurrency;
+        if (frmTouchNumpad->ShowModal() == mrOk)
+        {
+            Currency tipAmount;
+            tipAmount = frmTouchNumpad->CURResult;
+            if(tipAmount.Val > 0)
+            {
+                double percentageOfIncrement = (tipAmount / originalVisaPaymentAmount) * 100;
+                if(percentageOfIncrement > 50)
+                {
+                    MessageBox("You cannot add a tip more than 50% of original payment.",
+                            "Failed to add a tip", MB_ICONERROR + MB_OK);
+                }
+                else if( !TDeviceRealTerminal::Instance().PaymentSystem->ProcessTipOnVisaTransaction( arcBillKey, paymentRefNumber, originalVisaPaymentAmount, tipAmount ))
+                {
+                    MessageBox("Failed to add a tip on this transaction",
+                            "Failed to add a tip", MB_ICONERROR + MB_OK);
+                }
+                else
+                    MessageBox("Tip applied successfully",
+                            "Tip Applied", MB_ICONINFORMATION + MB_OK);
+            }
+        }
+
+
+	}
 }
 //---------------------------------------------------------------------------
 void TfrmSelectReceipt::SearchUsingTransactionNumber(UnicodeString inTransactionNumber)

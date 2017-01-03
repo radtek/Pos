@@ -18,9 +18,7 @@
 #include "DBGroups.h"
 #include "MemberCreation.h"
 #include "ContactStaff.h"
-// ---------------------------------------------------------------------------
 #include "MembershipERSGUI.h"
-#include "MembershipGUI.h"
 #include "LoyaltyMateUtilities.h"
 
 

@@ -7,6 +7,7 @@
 #include "GlobalSettings.h"
 #include "DeviceRealTerminal.h"
 #include "ReportManager.h"
+#include "ReportUtilities.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -360,5 +361,50 @@ bool TEJournalEngine::IsCurrentReceiptAvailable(TIBSQL *IBInternalQuery, TDateTi
     return isCurrentReceiptGenerate;
 }
 
+TMemoryStream* TEJournalEngine::ExtractConsolidatedZedReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName)
+{
+    TMemoryStream *ZedReceipt = new TMemoryStream;
+    ZedReceipt->Clear();
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    TTransactionInfo TransactionInfo;
+    TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
+    TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfoForConsolidatedZed(DBTransaction, deviceName, fromSessionDate, toSessionDate);
+
+    ReportManager reportManager;
+    ConsolidatedZedReport* consolidatedzedReport = reportManager.GetConsolidatedZedReport(&TGlobalSettings::Instance(), &DBTransaction, &fromSessionDate, &toSessionDate);
+    consolidatedzedReport->DisplayAndPrint(ZedReceipt);
+
+    return ZedReceipt;
+}
+
+bool TEJournalEngine::CheckZedDataExistsForConolidatedZed(TDateTime from, TDateTime to, AnsiString deviceName)
+{
+    bool retval = false;
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text="SELECT a.Z_KEY FROM ZEDS a where a.TIME_STAMP >= :startTime  and a.TIME_STAMP <= :endTime " + terminalNamePredicate ;
+    IBInternalQuery->ParamByName("startTime")->AsDateTime = from;
+    IBInternalQuery->ParamByName("endTime")->AsDateTime = to;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    IBInternalQuery->ExecQuery();
+    for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+       retval = true;
+       break;
+    }
+    return retval;
+}
 
 

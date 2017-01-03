@@ -5,6 +5,11 @@ ZReportDetailsReportSection::ZReportDetailsReportSection(Database::TDBTransactio
 {
 }
 
+ZReportDetailsReportSection::ZReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmReportDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
 
 ZReportDetailsReportSection::~ZReportDetailsReportSection()
 {
@@ -46,9 +51,18 @@ void ZReportDetailsReportSection::GetOutput(TPrintout* printout)
         printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
         printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width;
 
-        printout->PrintFormat->NewLine();
-        printout->PrintFormat->Line->Columns[0]->Text = "Final (Z)";
-        printout->PrintFormat->AddLine();
+        if(!IsConsolidatedZed)
+        {
+            printout->PrintFormat->NewLine();
+            printout->PrintFormat->Line->Columns[0]->Text = "Final (Z)";
+            printout->PrintFormat->AddLine();
+        }
+        else
+        {
+            printout->PrintFormat->NewLine();
+            printout->PrintFormat->Line->Columns[0]->Text = "Consolidated Zed";
+            printout->PrintFormat->AddLine();
+        }
     }
 }
 void ZReportDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
@@ -61,4 +75,3 @@ void ZReportDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
     printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
     printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/4;
 }
-

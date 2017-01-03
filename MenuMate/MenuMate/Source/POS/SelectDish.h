@@ -11,65 +11,55 @@
 #include <ComCtrls.hpp>
 #include <Buttons.hpp>
 #include <ExtCtrls.hpp>
-
-#include "ConfirmOrd.h"
-#include "Login.h"
+#include <OleCtrls.hpp>
 #include "TouchBtn.h"
 #include "TouchControls.h"
 #include "TouchGrid.h"
 #include "TouchNumpad.h"
-#include <OleCtrls.hpp>
-#include "MM_DBCore.h"
-#include "GlobalSettings.h"
 #include "TouchPages.h"
 #include "ZForm.h"
-#include "ManagerChitNumber.h"
-#include "ManagerThorVoucher.h"
-#include "Discount.h"
-#include "PaymentTransaction.h"
-#include "PatronType.h"
-
-#include "Money.h"
+#include "MM_DBCore.h"
 #include "SystemEvents.h"
 #include "SHDocVw_OCX.h"
 #include <SHDocVw.hpp>
+#include "SendForm.h"
+#include "ConfirmOrd.h"
+#include "Login.h"
+#include "Discount.h"
+#include "PatronType.h"
+#include "Money.h"
 #include "ItemRedirector.h"
 #include "ItemComplete.h"
-#include "ContactMemberApplied.h"
-#include "MMContactInfo.h"
 #include "WebMate.h"
-#include "ManagerParkedSales.h"
-
+#include "MMContactInfo.h"
 #include "MMProxy.h"
-#include "MMTablePickerConnectorServer.h"
+#include "TcpStreamSender.h"
+#include "TCPStreamPrepare.h"
+#include "PatronCount.h"
+#include "RunRateClient.h"
+ #include "Tables_ChitNumbers.h"
 #include "DBHeldOrder.h"
-#include "SendForm.h"
 #include "DBActiveChit.h"
-#include "Tables_ChitNumbers.h"
-
+#include "ProcessWebOrder.h"
+#include "PaymentTransaction.h"
+#include "ContactMemberApplied.h"
+#include "MMTablePickerConnectorServer.h"
+#include "ChefmateClientManager.h"
+#include "ManagerChitNumber.h"
+#include "ManagerThorVoucher.h"
+#include "ManagerParkedSales.h"
+#include "ChitNumberController.h"
+#include "DrinkCommandManager.h"
+#include "MMCustomerDisplayManager.h"
 #include <item_management_network_messaging_fwd.hh>
 #include <vector>
 #include <map>
 #include <memory>
 
+// ---------------------------------------------------------------------------
 #ifndef OrderOnHold
 #define OrderOnHold (OrderHeld && TGlobalSettings::Instance().EnableHoldSend)
 #endif
-
-#include "MMCustomerDisplayManager.h"
-
-#include "ChefmateClientManager.h"
-#include "TcpStreamSender.h"
-#include "ChitNumberController.h"
-#include "DrinkCommandManager.h"
-#include "PatronCount.h"
-
-#include "ProcessWebOrder.h"
-#include "TCPStreamPrepare.h"
-#include "RunRateClient.h"
-
-// ---------------------------------------------------------------------------
-
 // ---------------------------------------------------------------------------
 class TDataBtn;
 class TItem;
@@ -472,6 +462,7 @@ private: // User declarations
     bool PromptForDiscountAmount(TDiscount &currentDiscount);
     bool ApplyDiscount(Database::TDBTransaction &DBTransaction, TDiscount &CurrentDiscount, TList *Orders, bool isInitiallyApplied = true, TDiscountSource DiscountSource = dsMMUser);
     bool isChitDiscountExist;
+    void RemoveChitDiscounts(TMMContactInfo Member);
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
@@ -717,8 +708,6 @@ public:
     std::pair<AnsiString, AnsiString> GetStringPair();
     bool Valid();
 	bool NameAndOrderTypeLoaded();
-
-
 };
 
 extern PACKAGE TfrmSelectDish *frmSelectDish;

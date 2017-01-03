@@ -15,7 +15,6 @@
 #include "ReportDisplayNav.h"
 #include "StringTableRes.h"
 #include <StrUtils.hpp>
-#include "POS_XMLBase.h"
 #include "Invoice.h"
 #include "GlobalSettings.h"
 // ---------------------------------------------------------------------------

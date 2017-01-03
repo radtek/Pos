@@ -5,6 +5,11 @@ XReportDetailsReportSection::XReportDetailsReportSection(Database::TDBTransactio
 {
 }
 
+XReportDetailsReportSection::XReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmXReport, mmReportDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
 
 XReportDetailsReportSection::~XReportDetailsReportSection()
 {
@@ -59,4 +64,3 @@ void XReportDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)
     printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
     printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/4;
 }
-

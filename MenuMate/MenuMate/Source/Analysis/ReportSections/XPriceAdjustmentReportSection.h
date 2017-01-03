@@ -13,12 +13,15 @@ class XPriceAdjustmentReportSection : public BaseReportSection
 
 public:
     XPriceAdjustmentReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XPriceAdjustmentReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XPriceAdjustmentReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    void GetPriceAdjustmentQueryForNormalZed(TStringList* AdjustmentsSQL, AnsiString masterSlaveCondition);
+    void GetPriceAdjustmentQueryForConsolidatedZed(TStringList* AdjustmentsSQL, AnsiString masterSlaveCondition);
 };
 
 

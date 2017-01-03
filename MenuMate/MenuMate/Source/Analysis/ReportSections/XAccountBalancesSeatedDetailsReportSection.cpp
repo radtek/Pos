@@ -12,6 +12,13 @@ XAccountBalancesSeatedDetailsReportSection::XAccountBalancesSeatedDetailsReportS
 }
 
 
+XAccountBalancesSeatedDetailsReportSection::XAccountBalancesSeatedDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmXReport, mmAccountBalancesSeatedDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
+
 XAccountBalancesSeatedDetailsReportSection::~XAccountBalancesSeatedDetailsReportSection()
 {
     delete dataFormatUtilities;

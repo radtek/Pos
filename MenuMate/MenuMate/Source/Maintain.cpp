@@ -1999,8 +1999,17 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
 					}
 
 					DBTransaction.StartTransaction();
+                    if(TGlobalSettings::Instance().UseMemberSubs)
+                       MessageBox("Member Subscription will be turned off with this functionality.", "Information", MB_OK + MB_ICONINFORMATION);
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmLoyaltyMateEnabled,TGlobalSettings::Instance().LoyaltyMateEnabled);
-					DBTransaction.Commit();
+                    TGlobalSettings::Instance().UseMemberSubs = false;
+                    TManagerVariable &mv = TManagerVariable::Instance();
+
+                    int pk;
+                    if (!(pk = mv.GetProfile(DBTransaction, eSystemProfiles, "Globals")))
+                    pk = mv.SetProfile(DBTransaction, eSystemProfiles, "Globals");
+                    mv.SetProfileBool(DBTransaction, pk, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+                    DBTransaction.Commit();
 					RefreshLoyaltyMateBtnColor();
 				}
 			}  break;
@@ -3399,6 +3408,14 @@ void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
     Item3.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     SelectionForm->Items.push_back(Item3);
 
+    TVerticalSelection Item4;
+    Item4.Title = "PeachTree";
+    Item4.Properties["Action"] = IntToStr(4);
+    Item4.Properties["Color"] = IntToStr(clNavy);
+    Item4.CloseSelection = true;
+    //Item4.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
+    SelectionForm->Items.push_back(Item4);
+
     SelectionForm->ShowModal();
     TVerticalSelection SelectedItem;
     if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
@@ -3419,6 +3436,11 @@ void __fastcall TfrmMaintain::btnAccountingInterfaceMouseClick(TObject *Sender)
 			case 3 :
 				{
                    MYOBSettings();
+                   break;
+                }
+            case 4 :
+				{
+                   PeachTreeSettings();
                    break;
                 }
            }
@@ -3607,5 +3629,139 @@ void TfrmMaintain::SetupGLCodes()
    }
    delete frmSetupGlCodes;
 }
+//---------------------------------------------------------------------------
+void TfrmMaintain::PeachTreeSettings()
+{
+    bool keepFormAlive = true;
+    while(keepFormAlive)
+    {
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.Properties["FontColor"] = IntToStr(clWhite);
+        Item.CloseSelection = true;
+        SelectionForm->Items.push_back(Item);
+
+        TVerticalSelection Item1;
+        Item1.Title = UnicodeString("Enable/Disable \r") + UnicodeString((TGlobalSettings::Instance().IsEnabledPeachTree? "Enabled" : "Disabled"));
+        Item1.Properties["Action"] = IntToStr(1);
+        Item1.Properties["Color"] = TGlobalSettings::Instance().IsEnabledPeachTree ? IntToStr(clGreen) : IntToStr(clRed);
+        Item1.CloseSelection = true;
+        SelectionForm->Items.push_back(Item1);
+
+        TVerticalSelection Item2;
+        Item2.Title = "Export CSV Path \r" + TGlobalSettings::Instance().CSVPath;
+        Item2.Properties["Action"] = IntToStr(2);
+        Item2.Properties["Color"] = IntToStr(clNavy);
+        Item2.CloseSelection = true;
+        SelectionForm->Items.push_back(Item2);
+
+        TVerticalSelection Item3;
+        Item3.Title = "Export CSV URL \r" + TGlobalSettings::Instance().CSVExportIP;
+        Item3.Properties["Action"] = IntToStr(3);
+        Item3.Properties["Color"] = IntToStr(clNavy);
+        Item3.CloseSelection = true;
+        SelectionForm->Items.push_back(Item3);
+
+        SelectionForm->ShowModal();
+        TVerticalSelection SelectedItem;
+        if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+            switch(Action)
+            {
+            case 1 :
+                {
+                    std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+                    TVerticalSelection Item;
+                    Item.Title = "Cancel";
+                    Item.Properties["Color"] = "0x000098F5";
+                    Item.Properties["FontColor"] = IntToStr(clWhite);;
+                    Item.CloseSelection = true;
+                    SelectionForm1->Items.push_back(Item);
+
+                    TVerticalSelection Item1;
+                    Item1.Title = "Enable";
+                    Item1.Properties["Action"] = IntToStr(1);
+                    Item1.Properties["Color"] = IntToStr(clGreen);
+                    Item1.CloseSelection = true;
+                    SelectionForm1->Items.push_back(Item1);
+
+                    TVerticalSelection Item2;
+                    Item2.Title = "Disable";
+                    Item2.Properties["Action"] = IntToStr(2);
+                    Item2.Properties["Color"] = IntToStr(clRed);
+                    Item2.CloseSelection = true;
+                    SelectionForm1->Items.push_back(Item2);
+
+                    SelectionForm1->ShowModal();
+                    TVerticalSelection SelectedItem1;
+                    if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+                    {
+                        int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+                        switch(Action)
+                        {
+                        case 1 :
+                            TGlobalSettings::Instance().IsEnabledPeachTree = true;
+                            break;
+                        case 2 :
+                            TGlobalSettings::Instance().IsEnabledPeachTree = false;
+                            break;
+                        }
+
+                        DBTransaction.StartTransaction();
+                        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsEnabledPeachTree,TGlobalSettings::Instance().IsEnabledPeachTree);
+                        DBTransaction.Commit();
+                    }
+                }  break;
+            case 2 :
+                {
+
+                    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+                    frmTouchKeyboard->MaxLength = 200;
+                    frmTouchKeyboard->AllowCarriageReturn = false;
+                    frmTouchKeyboard->StartWithShiftDown = false;
+                    frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().CSVPath;
+                    frmTouchKeyboard->Caption = "Enter Export CSV Path ";
+                    if (frmTouchKeyboard->ShowModal() == mrOk)
+                    {
+                        TGlobalSettings::Instance().CSVPath = frmTouchKeyboard->KeyboardText;
+                        DBTransaction.StartTransaction();
+                        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmCSVPath,TGlobalSettings::Instance().CSVPath);
+                        DBTransaction.Commit();
+                    }
+                }
+                break;
+          case 3 :
+                {
+
+                    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+                    frmTouchKeyboard->MaxLength = 200;
+                    frmTouchKeyboard->AllowCarriageReturn = false;
+                    frmTouchKeyboard->StartWithShiftDown = false;
+                    frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().CSVExportIP;
+                    frmTouchKeyboard->Caption = "Enter Export CSV IP ";
+                    if (frmTouchKeyboard->ShowModal() == mrOk)
+                    {
+                        TGlobalSettings::Instance().CSVExportIP = frmTouchKeyboard->KeyboardText;
+                        DBTransaction.StartTransaction();
+                        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmCSVExportIP,TGlobalSettings::Instance().CSVExportIP);
+                        DBTransaction.Commit();
+                    }
+                }
+                break;
+            }
+        }
+        else
+        {
+            keepFormAlive = false;
+        }
+    }
+}
+//------------------------------------------------------------------------------------------
 
 

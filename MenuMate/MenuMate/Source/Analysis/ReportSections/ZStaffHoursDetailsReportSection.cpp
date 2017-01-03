@@ -7,6 +7,14 @@ ZStaffHoursDetailsReportSection::ZStaffHoursDetailsReportSection(Database::TDBTr
 {
     dataFormatUtilities = new DataFormatUtilities;
     dataCalculationUtilities = new DataCalculationUtilities;
+
+}
+
+ZStaffHoursDetailsReportSection::ZStaffHoursDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmStaffHoursDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
 }
 
 
@@ -89,4 +97,3 @@ void ZStaffHoursDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->AddLine();
     }
 }
-

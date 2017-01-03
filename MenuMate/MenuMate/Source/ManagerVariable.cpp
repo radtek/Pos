@@ -3021,9 +3021,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 					"Enable Run Rate Board.\r"
             	 	"Default is false\r",
 					 vmgMiscEquipment, false);
-    SetVarStr(DBTransaction, vmRunRateBoardIP, "LoyaltyMate WCF Service URL",
-                    "LoyaltyMate WCF Service URL.\r"
-                    "Default is http://localhost:8734/MenumateServices/LoyaltyMate",
+    SetVarStr(DBTransaction, vmRunRateBoardIP, "Run Rate Board IP",
+                    "Run Rate url.\r"
+                    "Default is localhost",
                         vmgMisc, "localhost" );
 
      SetVarBool(DBTransaction, vmShowLargeFonts, "Show Large Fonts",
@@ -3072,11 +3072,6 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                     "This setting will enable or disable Xero.",
                     vmgPOS,
                     false);
-	SetVarBool(DBTransaction, vmIsXeroEnabled,
-                "Enable Xero",
-                "This setting will enable or disable Xero.",
-                vmgPOS,
-                false);
 
 		SetVarBool(DBTransaction,
                     vmIsMYOBEnabled,
@@ -3159,6 +3154,26 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
            "Gift Card Validation Strategy.",
            vmgPOS,
            0);
+
+        SetVarBool(DBTransaction, vmIsEnabledPeachTree, "Enable CSV Export",
+                 "Enable/Disable CSV Export"
+                 "Default is False.",
+                  vmg3rdPartyInterface, false);
+
+	    SetVarStr( DBTransaction, vmCSVPath, "CSV Export Path",
+                "Path where CSV will be export.\r"
+                "Default is RunTime Folder",
+                vmg3rdPartyInterface, "" );
+        SetVarStr(DBTransaction, vmCSVExportIP, "CSV Export IP",
+                    "CSV Export url.\r"
+                    "Default is localhost",
+                        vmg3rdPartyInterface, "localhost" );
+		SetVarBool(DBTransaction,vmMembershipPaid, "Enable Membership Payment",
+		"Default is False",
+		vmgPOS, false);
+		SetVarBool(DBTransaction,vmUseMemberSubs, "Enable Membership Subscription",
+		"Default is False",
+		vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

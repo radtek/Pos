@@ -25,6 +25,8 @@
 #include "TouchBtn.h"
 #include "TouchControls.h"
 #include "ManagerVariable.h"
+#include <list>
+#include "ManagerMallSetup.h"
 //---------------------------------------------------------------------------
 class TfrmSetup : public TZForm
 {
@@ -81,7 +83,7 @@ __published:	// IDE-managed Components
 	TButton *Button2;
 	TRadioGroup *rgMembershipType;
 	TComboBox *cbScalesType;
-    	TComboBox *cbNewbookType;
+    TComboBox *cbNewbookType;
     TTabSheet *tsExport;
     TGroupBox *gbMall;
     TComboBox *cbMallLoc;
@@ -124,6 +126,41 @@ __published:	// IDE-managed Components
     TTouchBtn *btnAssignSalesType;
     TEdit *edConsolidatedDBPaths;
     TCheckBox *cbEnableConsolidatedRep;
+    TComboBox *cbNewMallLoc;
+    TEdit *edMallBranchCode;
+    TEdit *edMallTerminalNo;
+    TEdit *edMallSerialNo;
+
+    TEdit *edNewMallPath;
+    TEdit *edMallClassCode;
+    TEdit *edMallTradeCode;
+    TEdit *edMallOutletCode;
+    TLabel *lbMallTenantCode;
+    TLabel *lbMallFileLocation;
+    TLabel *lbMallClassCode;
+    TLabel *lbMallTradeCode;
+    TLabel *lbMallOutletNumber;
+    TLabel *lbNewMallType;
+    TLabel *lbMallBranchCode;
+    TLabel *lbMallTerminalNumber;
+    TLabel *lbMallSerialNumber;
+    TLabel *lbMallFTPPath;
+    TLabel *lbMallFTPUserName;
+    TLabel *lbMallFTPPassword;
+    TLabel *lbTaxRate;
+    TEdit *edMallFTPServer;
+    TEdit *edMallFTPPath;
+    TEdit *edMallFTPUserName;
+    TEdit *edMallFTPPassword;
+    TLabel *lbMallFTPServer;
+    TEdit *edMallConsolidatedDBPaths;
+    TCheckBox *cbMallEnableConsolidatedRep;
+    TEdit *edMallTenantNo;
+    TGroupBox *gbMallsNew;
+    TTouchBtn *btnResendMallReport;
+    TTouchBtn *btnRegenMallReport;
+    TEdit *edTaxRate;
+
    void __fastcall imgCloseClick(TObject *Sender);
    void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
    void __fastcall FormCreate(TObject *Sender);
@@ -148,83 +185,77 @@ __published:	// IDE-managed Components
 	void __fastcall cbBarCodePortChange(TObject *Sender);
 	void __fastcall cbSecuritySerialPortChange(TObject *Sender);
 	void __fastcall tbtnIPSettingsRefreshMouseClick(TObject *Sender);
-	void __fastcall tbtnReconfigMMDBMouseClick(TObject *Sender);
-	void __fastcall tbtnReconfigMemDBMouseClick(TObject *Sender);
-	void __fastcall tbtnReconfigStockDBMouseClick(TObject *Sender);
-	void __fastcall tbtnReconfigSNTPIPMouseClick(TObject *Sender);
-	void __fastcall tbtnStatusReportMouseClick(TObject *Sender);
-	void __fastcall btnDebuggerTestMouseClick(TObject *Sender);
-   void __fastcall ConfigureClick(TObject *Sender);
-   void __fastcall Button1Click(TObject *Sender);
-   void __fastcall cbProxFormatChange(TObject *Sender);
-   void __fastcall cbWeighScalesChange(TObject *Sender);
-   void __fastcall btnWeighScalesConfigClick(TObject *Sender);
-   void __fastcall tbtnProxSerialConfigClick(TObject *Sender);
-	void __fastcall btnTestScalesClick(TObject *Sender);
-	void __fastcall ConfigPoleDisplayClick(TObject *Sender);
-	void __fastcall rgMembershipTypeClick(TObject *Sender);
-	void __fastcall cbScalesTypeChange(TObject *Sender);
+    void __fastcall tbtnReconfigMMDBMouseClick(TObject *Sender);
+    void __fastcall tbtnReconfigMemDBMouseClick(TObject *Sender);
+    void __fastcall tbtnReconfigStockDBMouseClick(TObject *Sender);
+    void __fastcall tbtnReconfigSNTPIPMouseClick(TObject *Sender);
+    void __fastcall tbtnStatusReportMouseClick(TObject *Sender);
+    void __fastcall btnDebuggerTestMouseClick(TObject *Sender);
+    void __fastcall ConfigureClick(TObject *Sender);
+    void __fastcall Button1Click(TObject *Sender);
+    void __fastcall cbProxFormatChange(TObject *Sender);
+    void __fastcall cbWeighScalesChange(TObject *Sender);
+    void __fastcall btnWeighScalesConfigClick(TObject *Sender);
+    void __fastcall tbtnProxSerialConfigClick(TObject *Sender);
+    void __fastcall btnTestScalesClick(TObject *Sender);
+    void __fastcall ConfigPoleDisplayClick(TObject *Sender);
+    void __fastcall rgMembershipTypeClick(TObject *Sender);
+    void __fastcall cbScalesTypeChange(TObject *Sender);
     void __fastcall cbMallLocChange(TObject *Sender);
     void __fastcall cbNewbookTypeChange(TObject *Sender);
-    void __fastcall edTenantNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-    void __fastcall edMallPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-    void __fastcall edClassCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-    void __fastcall edTradeCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-    void __fastcall edOutletCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-    void __fastcall edBranchCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-    void __fastcall edTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-    void __fastcall edSerialNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
+    void __fastcall edTenantNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edMallPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edClassCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edTradeCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edOutletCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edBranchCodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edSerialNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall cbBarcodeFormatChange(TObject *Sender);
     void __fastcall cbShowCustomerDisplayClick(TObject *Sender);
     void __fastcall btnResendReportMouseClick(TObject *Sender);
-    void __fastcall edFTPServerMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-    void __fastcall edFTPPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-    void __fastcall edFTPUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-    void __fastcall edFTPPasswordMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
+    void __fastcall edFTPServerMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edFTPPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edFTPUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edFTPPasswordMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
 
-      TTouchBtn *tbtnReconfigEmailHost;       //MM-4104
-      TTouchBtn *tbtnReconfigEmailId;
-      TTouchBtn *tbtnReconfigEmailPassword;
-      TTouchBtn *tbtnReconfigEmailHostPort;
+    TTouchBtn *tbtnReconfigEmailHost;       //MM-4104
+    TTouchBtn *tbtnReconfigEmailId;
+    TTouchBtn *tbtnReconfigEmailPassword;
+    TTouchBtn *tbtnReconfigEmailHostPort;
 
-      void __fastcall tbtnReconfigEmailHostMouseClick(TObject *Sender);
-      void __fastcall tbtnReconfigEmailIdMouseClick(TObject *Sender);
-      void __fastcall tbtnReconfigEmailPasswordMouseClick(TObject *Sender);
-      void __fastcall tbtnReconfigEmailHostPortMouseClick(TObject *Sender);
+    void __fastcall tbtnReconfigEmailHostMouseClick(TObject *Sender);
+    void __fastcall tbtnReconfigEmailIdMouseClick(TObject *Sender);
+    void __fastcall tbtnReconfigEmailPasswordMouseClick(TObject *Sender);
+    void __fastcall tbtnReconfigEmailHostPortMouseClick(TObject *Sender);
 
-      UnicodeString DisplayInputForm(UnicodeString initialValue, AnsiString caption);
+    UnicodeString DisplayInputForm(UnicodeString initialValue, AnsiString caption);
 
     void __fastcall btnRegenerateReportMouseClick(TObject *Sender);
     void __fastcall btnAssignSalesTypeMouseClick(TObject *Sender);
-    void __fastcall edConsolidatedDBPathsMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-	void __fastcall cbEnableConsolidatedRepClick(TObject *Sender);
-
-
-      //MM-4104
-
+    void __fastcall edConsolidatedDBPathsMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall cbEnableConsolidatedRepClick(TObject *Sender);
+    void __fastcall edNewMallPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall edMallTenantNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall cbNewMallLocChange(TObject *Sender);
+    void __fastcall edMallTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall btnRegenMallReportMouseClick(TObject *Sender);
+    void __fastcall edTaxRateClick(TObject *Sender);
 
 private:	// User declarations
 	__fastcall TfrmSetup(TComponent* Owner,Database::TDBControl &inIBDatabase);
     void refreshCustomerDisplay();
     void loadCashDrawerPorts();
     void setCashDrawerPort();
-
 	Database::TDBControl &IBDatabase;
-
     bool invalid_id;//MM-4104
+    std::list<TMallExportSettings> settings;
+    void LoadMallSettingInfo();
+    void UpdateMallInfo();
+    TMall mallInfo;
+    void SetupNewMalls();
+    void UpdateNoMallUI();
+    UnicodeString CheckAbsolutePath(UnicodeString path);
 
 public:		// User declarations
 
@@ -279,7 +310,6 @@ public:		// User declarations
     void SetSpecificMall(int MallIdx);
     void CheckMallPath();
     void SaveMESettings();
-
     UnicodeString RenameBranchCode();
     UnicodeString RenameSerialNumber();
     UnicodeString RenameTenantNumber();

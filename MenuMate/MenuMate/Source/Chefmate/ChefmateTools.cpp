@@ -4,8 +4,6 @@
 #pragma hdrstop
 
 #include <cassert>
-
-#include "ip_utilities.h"
 #include "ChefmateTools.h"
 
 //---------------------------------------------------------------------------

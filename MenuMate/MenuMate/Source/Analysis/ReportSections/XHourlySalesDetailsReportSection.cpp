@@ -6,6 +6,12 @@ XHourlySalesDetailsReportSection::XHourlySalesDetailsReportSection(Database::TDB
     dataFormatUtilities = new DataFormatUtilities;
 }
 
+XHourlySalesDetailsReportSection::XHourlySalesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings,TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmAccountBalancesTabsDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
 
 XHourlySalesDetailsReportSection::~XHourlySalesDetailsReportSection()
 {
@@ -14,34 +20,21 @@ XHourlySalesDetailsReportSection::~XHourlySalesDetailsReportSection()
 
 void XHourlySalesDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    AnsiString hourlySalesQuery = "SELECT "
-                                        "CAST(CAST(EXTRACT(MONTH FROM SECURITY.TIME_STAMP) "
-                                            "|| '/' || EXTRACT(DAY FROM SECURITY.TIME_STAMP) "
-                                            "|| '/' || EXTRACT(YEAR FROM SECURITY.TIME_STAMP) AS TIMESTAMP) + "
-                                            "CAST(((EXTRACT(MINUTE FROM SECURITY.TIME_STAMP) / 60) * 60 * 60) + "
-                                            "(EXTRACT(HOUR FROM SECURITY.TIME_STAMP) * 60 * 60) AS DOUBLE PRECISION) / 86400 AS TIMESTAMP) Start_Date, "
-                                        "CAST(CAST(EXTRACT(MONTH FROM SECURITY.TIME_STAMP) "
-                                            "|| '/' || EXTRACT(DAY FROM SECURITY.TIME_STAMP) "
-                                            "|| '/' || EXTRACT(YEAR FROM SECURITY.TIME_STAMP) AS TIMESTAMP) + "
-                                            "CAST(((EXTRACT (MINUTE FROM SECURITY.TIME_STAMP) / 60) * 60 * 60) + "
-                                            "(EXTRACT(HOUR FROM SECURITY.TIME_STAMP) * 60 * 60) + 1800*2  AS DOUBLE PRECISION) / 86400 AS TIMESTAMP) End_Date, "
-                                        "CAST(SUM(DAYARCBILL.TOTAL) AS NUMERIC (15,4)) Bill_Total, "
-                                        "CAST(CAST('12/30/1899' AS TIMESTAMP) + "
-                                             "CAST(((EXTRACT (MINUTE FROM SECURITY.TIME_STAMP) / 60) * 60 * 60) + "
-                                             "(EXTRACT (HOUR FROM SECURITY.TIME_STAMP) * 60 * 60) AS DOUBLE PRECISION) / 86400   AS TIME) Start_Time, "
-                                        "CAST(CAST('12/30/1899' AS TIMESTAMP) + "
-                                             "CAST(((EXTRACT (MINUTE FROM SECURITY.TIME_STAMP) / 60) * 60 * 60) + "
-                                             "(EXTRACT (HOUR FROM SECURITY.TIME_STAMP) * 60 * 60) + 1800*2 AS DOUBLE PRECISION) / 86400  AS TIME) End_Time "
-                                    "FROM "
-                                        "SECURITY "
-                                        "LEFT JOIN DAYARCBILL ON SECURITY.SECURITY_REF = DAYARCBILL.SECURITY_REF "
-                                        "WHERE Security.SECURITY_REF = DAYARCBILL.SECURITY_REF AND DAYARCBILL.ARCBILL_KEY IS NOT NULL AND SECURITY.SECURITY_EVENT = 'Billed By' "
-                                    "GROUP BY 1, 2, 4, 5; ";
-
+    AnsiString hourlySalesQuery = "";
     TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
     ibInternalQuery->Close();
-
-    ibInternalQuery->SQL->Text = hourlySalesQuery;
+    if(IsConsolidatedZed)
+    {
+       hourlySalesQuery = GetHourlySalesDetailsForConsolidatedZed(hourlySalesQuery);
+       ibInternalQuery->SQL->Text = hourlySalesQuery;
+       ibInternalQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+       ibInternalQuery->ParamByName("endTime")->AsDateTime = *_endTime;
+    }
+    else
+    {
+       hourlySalesQuery = GetHourlySalesDetailsForNormalZed(hourlySalesQuery);
+       ibInternalQuery->SQL->Text = hourlySalesQuery;
+    }
     ibInternalQuery->ExecQuery();
 
     if (ibInternalQuery->RecordCount)
@@ -98,3 +91,67 @@ void XHourlySalesDetailsReportSection::GetOutput(TPrintout* printOut)
     }
 }
 
+AnsiString XHourlySalesDetailsReportSection::GetHourlySalesDetailsForNormalZed(AnsiString hourlySalesQuery)
+{
+    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+    AnsiString terminalNamePredicate = "";
+    if(!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " SECURITY.TERMINAL_NAME = '" + deviceName + "' AND ";
+    }
+
+   hourlySalesQuery = "SELECT "
+            "CAST(CAST(EXTRACT(MONTH FROM SECURITY.TIME_STAMP) "
+                "|| '/' || EXTRACT(DAY FROM SECURITY.TIME_STAMP) "
+                "|| '/' || EXTRACT(YEAR FROM SECURITY.TIME_STAMP) AS TIMESTAMP) + "
+                "CAST(((EXTRACT(MINUTE FROM SECURITY.TIME_STAMP) / 60) * 60 * 60) + "
+                "(EXTRACT(HOUR FROM SECURITY.TIME_STAMP) * 60 * 60) AS DOUBLE PRECISION) / 86400 AS TIMESTAMP) Start_Date, "
+            "CAST(CAST(EXTRACT(MONTH FROM SECURITY.TIME_STAMP) "
+                "|| '/' || EXTRACT(DAY FROM SECURITY.TIME_STAMP) "
+                "|| '/' || EXTRACT(YEAR FROM SECURITY.TIME_STAMP) AS TIMESTAMP) + "
+                "CAST(((EXTRACT (MINUTE FROM SECURITY.TIME_STAMP) / 60) * 60 * 60) + "
+                "(EXTRACT(HOUR FROM SECURITY.TIME_STAMP) * 60 * 60) + 1800*2  AS DOUBLE PRECISION) / 86400 AS TIMESTAMP) End_Date, "
+            "CAST(SUM(DAYARCBILL.TOTAL) AS NUMERIC (15,4)) Bill_Total, "
+            "CAST(CAST('12/30/1899' AS TIMESTAMP) + "
+                 "CAST(((EXTRACT (MINUTE FROM SECURITY.TIME_STAMP) / 60) * 60 * 60) + "
+                 "(EXTRACT (HOUR FROM SECURITY.TIME_STAMP) * 60 * 60) AS DOUBLE PRECISION) / 86400   AS TIME) Start_Time, "
+            "CAST(CAST('12/30/1899' AS TIMESTAMP) + "
+                 "CAST(((EXTRACT (MINUTE FROM SECURITY.TIME_STAMP) / 60) * 60 * 60) + "
+                 "(EXTRACT (HOUR FROM SECURITY.TIME_STAMP) * 60 * 60) + 1800*2 AS DOUBLE PRECISION) / 86400  AS TIME) End_Time "
+        "FROM "
+            "SECURITY "
+            "LEFT JOIN DAYARCBILL ON SECURITY.SECURITY_REF = DAYARCBILL.SECURITY_REF "
+            "WHERE "
+             + terminalNamePredicate +
+            "Security.SECURITY_REF = DAYARCBILL.SECURITY_REF AND DAYARCBILL.ARCBILL_KEY IS NOT NULL AND SECURITY.SECURITY_EVENT = 'Billed By' "
+        "GROUP BY 1, 2, 4, 5; ";
+  return hourlySalesQuery;
+}
+
+AnsiString XHourlySalesDetailsReportSection::GetHourlySalesDetailsForConsolidatedZed(AnsiString hourlySalesQuery)
+{
+    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+    AnsiString terminalNamePredicate = "";
+    if(!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " SECURITY.TERMINAL_NAME = '" + deviceName + "' AND ";
+    }
+   hourlySalesQuery = "SELECT "
+            "CAST(SUM(ARCBILL.TOTAL) AS NUMERIC (15,4)) Bill_Total, "
+            "CAST(CAST('12/30/1899' AS TIMESTAMP) + "
+                 "CAST(((EXTRACT (MINUTE FROM SECURITY.TIME_STAMP) / 60) * 60 * 60) + "
+                 "(EXTRACT (HOUR FROM SECURITY.TIME_STAMP) * 60 * 60) AS DOUBLE PRECISION) / 86400   AS TIME) Start_Time, "
+            "CAST(CAST('12/30/1899' AS TIMESTAMP) + "
+                 "CAST(((EXTRACT (MINUTE FROM SECURITY.TIME_STAMP) / 60) * 60 * 60) + "
+                 "(EXTRACT (HOUR FROM SECURITY.TIME_STAMP) * 60 * 60) + 1800*2 AS DOUBLE PRECISION) / 86400  AS TIME) End_Time "
+        "FROM "
+            "SECURITY "
+            "LEFT JOIN ARCBILL ON SECURITY.SECURITY_REF = ARCBILL.SECURITY_REF "
+            "WHERE "
+            + terminalNamePredicate +
+            "Security.SECURITY_REF = ARCBILL.SECURITY_REF AND ARCBILL.ARCBILL_KEY IS NOT NULL AND SECURITY.SECURITY_EVENT = 'Billed By' "
+            " and SECURITY.TIME_STAMP >= :startTime and SECURITY.TIME_STAMP <= :endTime "
+        "GROUP BY 2, 3; ";
+
+  return hourlySalesQuery;
+}

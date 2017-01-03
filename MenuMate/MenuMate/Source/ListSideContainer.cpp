@@ -5,7 +5,6 @@
 
 #include "ListSideContainer.h"
 #include "Item.h"
-#include "ListCourse.h"
 #include "ListMenu.h"
 //---------------------------------------------------------------------------
 

@@ -3,8 +3,10 @@
 #include <item_definition_altered_message_maker.hh>
 #include <memory>
 
-namespace item_management {
-namespace network_messaging {
+namespace item_management
+{
+namespace network_messaging
+{
 
 item_definition_altered_message_maker::item_definition_altered_message_maker()
     : manager_(0x0), factory_(0x0)

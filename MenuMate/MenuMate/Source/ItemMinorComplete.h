@@ -326,6 +326,8 @@ class TItemMinorComplete : public TItemMinor
     bool printFreeSideForKitchen;
     bool printFreeSideForReceipt;
     bool IsTaxTypeExist( BillCalculator::TTaxType taxType );
+    bool wasOpenItem;
+    void ClearAllDiscounts();
 
 private:
         bool is_being_returned_to_stock_;

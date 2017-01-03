@@ -8,12 +8,23 @@
 #include "SeperatePointsStrategy.h"
 #include "UnifiedPointsStrategy.h"
 #include "CashDenominationCalculationStrategy.h"
+#include "BlindBalanceCalculationStrategyForConsolidatedZed.h"
+#include "CashDenominationCalculationStrategyForConsolidatedZed.h"
 
 ReportSectionDisplayStrategyProvider::ReportSectionDisplayStrategyProvider(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 {
 	_globalSettings = globalSettings;
     _dbTransaction = dbTransaction;
 }
+
+ReportSectionDisplayStrategyProvider::ReportSectionDisplayStrategyProvider(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+{
+	_globalSettings = globalSettings;
+    _dbTransaction = dbTransaction;
+    _startTime = startTime;
+    _endTime = endTime;
+}
+
 
 
 ReportSectionDisplayStrategyProvider::~ReportSectionDisplayStrategyProvider()
@@ -87,6 +98,50 @@ IReportSectionDisplayStrategy* ReportSectionDisplayStrategyProvider::CreateSecti
             }
          }
          break;
+        case mmConsolidatedZReport:
+        {
+            switch(reportSectionType)
+            {
+                case mmClientDetailsSection:
+                    reportSectionDisplayStrategy = new ClientDetailsFromFileStrategy(_dbTransaction, _globalSettings, _startTime, _endTime);
+                    break;
+                case mmCurrentDateDetailsSection:
+                    reportSectionDisplayStrategy = new FullDateWithTimeStrategy(_dbTransaction, _globalSettings, _startTime, _endTime);
+                    break;
+                case mmSessionDateDetailsSection:
+                    reportSectionDisplayStrategy = new SessionDateWithoutTimeStrategy(_dbTransaction, _globalSettings, _startTime, _endTime);
+                    break;
+                case mmBlindBalancesDetailsSection:
+                    reportSectionDisplayStrategy = new BlindBalanceCalculationStrategyForConsolidatedZed(_dbTransaction, _globalSettings, false, _startTime, _endTime);
+                    break;
+                case mmMasterBlindBalancesDetailsSection:
+                    reportSectionDisplayStrategy = new BlindBalanceCalculationStrategyForConsolidatedZed(_dbTransaction, _globalSettings, true, _startTime, _endTime);
+                    break;
+                case mmPointsReportDetailsSection:
+                    {
+                        IReportSectionDisplayTraits* pointsReportHeaderTraits = new PointsReportHeaderTrait(mmPointsReportHeaderTrait);
+                        if (_globalSettings->EnableSeperateEarntPts)
+                        {
+                            reportSectionDisplayStrategy = new SeperatePointsStrategy(_dbTransaction, _globalSettings, pointsReportHeaderTraits, _startTime, _endTime);
+                        }
+                        else
+                        {
+                            reportSectionDisplayStrategy = new UnifiedPointsStrategy(_dbTransaction, _globalSettings, pointsReportHeaderTraits, _startTime, _endTime);
+                        }
+                    }
+                    break;
+               case mmCashDenominationDetailsSection:
+                    reportSectionDisplayStrategy = new CashDenominationCalculationStrategyForConsolidatedZed(_dbTransaction, _globalSettings, false, _startTime, _endTime);
+                    break;
+               case mmMasterCashDenominationDetailsSection:
+                    reportSectionDisplayStrategy = new CashDenominationCalculationStrategyForConsolidatedZed(_dbTransaction, _globalSettings, true, _startTime, _endTime);
+                    break;
+                default:
+                    reportSectionDisplayStrategy = NULL;
+                    break;
+            }
+        }
+        break;
         default:
             reportSectionDisplayStrategy = NULL;
             break;

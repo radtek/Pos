@@ -11,6 +11,7 @@ class ZBegningEndingInvoiceReportSection : public BaseReportSection
 {
 public:
 	ZBegningEndingInvoiceReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    ZBegningEndingInvoiceReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~ZBegningEndingInvoiceReportSection();
 
 	virtual void GetOutput(TPrintout* printout);
@@ -24,6 +25,9 @@ private:
     DataFormatUtilities* dataFormatUtilities;
     DataCalculationUtilities* dataCalculationUtilities;
     AnsiString ExtractInvoiceNumber(AnsiString &inStartInvoiceNumber);
+    AnsiString GetEndInvoiceNumberForConsolidatedZed(AnsiString deviceName);
+    AnsiString GetStartInvoiceNumberForConsolidatedZed(AnsiString deviceName);
+    Currency GetTotalEarningsForZed(Currency todaysEarnings, AnsiString deviceName);
 };
 
 #endif

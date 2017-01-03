@@ -146,8 +146,6 @@ void TApplyParser::Alter6_20HappyHour_Profile(TDBControl* const inDBControl)
                        "ADD PRICELEVEL_KEY INTEGER ;",
          			inDBControl );
    	    }
-
-
 }
 //-------------------------------------------------------------------------
 void TApplyParser::Create6_20PriceLevelItemSize(TDBControl* const inDBControl)

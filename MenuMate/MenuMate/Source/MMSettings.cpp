@@ -5,6 +5,7 @@
 #include "MMSettings.h"
 #include "GlobalSettings.h"
 #include "ManagerVariable.h"
+#include "ManagerMallSetup.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -219,6 +220,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
             TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmServiceChargeTaxRate,               TGlobalSettings::Instance().ServiceChargeTaxRate);
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmIsCloudSynced, TGlobalSettings::Instance().IsCloudSyncedForDiscount);
             InitializeMallExportConfig(DBTransaction);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction,  GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
 
         }
 
@@ -356,6 +358,9 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().OpenCashDrawer = TManagerVariable::Instance().GetBool(DBTransaction, vmOpenCashDrawer, false);
         TGlobalSettings::Instance().HideReceiptNumberForRefundItem = TManagerVariable::Instance().GetBool(DBTransaction, vmHideReceiptNumberForRefundItem, false);
         TGlobalSettings::Instance().MergeSimilarItem = TManagerVariable::Instance().GetBool(DBTransaction, vmMergeSimilarItem, false);
+        TGlobalSettings::Instance().IsEnabledPeachTree = TManagerVariable::Instance().GetBool(DBTransaction, vmIsEnabledPeachTree, false);
+        TGlobalSettings::Instance().CSVPath = TManagerVariable::Instance().GetStr(DBTransaction, vmCSVPath, "");
+        TGlobalSettings::Instance().CSVExportIP = TManagerVariable::Instance().GetStr(DBTransaction, vmCSVExportIP, "");
 
         TGlobalSettings::Instance().CaptureRefundRefNo = TManagerVariable::Instance().GetBool(DBTransaction, vmCaptureRefundRefNo, false);
         TGlobalSettings::Instance().HideTaxInvoice = TManagerVariable::Instance().GetBool(DBTransaction, vmHideTaxInvoice, false);
@@ -375,6 +380,10 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EftPosTipGLCode	= TManagerVariable::Instance().GetStr(DBTransaction, vmEftPosTipGLCode, "860");
         TGlobalSettings::Instance().HideRoundingOnReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmHideRoundingOnReceipt, false);
 		TGlobalSettings::Instance().CashDenominationEntry = TManagerVariable::Instance().GetBool(DBTransaction, vmCashDenominationEntry, false);
+        TGlobalSettings::Instance().MembershipPaid = TManagerVariable::Instance().GetBool(DBTransaction, vmMembershipPaid, false);
+         int mallIndex = TManagerMallSetup::CheckActiveMallExist(DBTransaction);
+         if(mallIndex != 0)
+            TGlobalSettings::Instance().mallInfo = TManagerMallSetup::LoadActiveMallSettings(DBTransaction);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)
