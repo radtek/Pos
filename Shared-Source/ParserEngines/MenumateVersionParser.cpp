@@ -94,6 +94,7 @@ PARSER_ERROR TApplyParser::Apply(
         case pv6_32 : return apply6_32( inDBControl );
         case pv6_33 : return apply6_33( inDBControl );
         case pv6_34 : return apply6_34( inDBControl );
+        case pv6_35 : return apply6_35( inDBControl );
 	default: return PE_UNKNOWN_VERSION;
     }
 }

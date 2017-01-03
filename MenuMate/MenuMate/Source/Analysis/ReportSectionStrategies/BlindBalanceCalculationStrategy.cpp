@@ -1,13 +1,21 @@
 #include "BlindBalanceCalculationStrategy.h"
 #include "DeviceRealTerminal.h"
 #include "GlobalSettings.h"
-#include "BlindBalanceController.h"
 
 
 BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, bool isMasterBalance)
 	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings)
 {
     _isMasterBalance = isMasterBalance;
+    //IsConsolidatedStartegy = false;
+}
+
+
+BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, bool isMasterBalance, TDateTime* startTime, TDateTime* endTime)
+	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
+{
+    _isMasterBalance = isMasterBalance;
+    //IsConsolidatedStartegy = true;
 }
 
 void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
@@ -18,7 +26,6 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
 
     TForm* currentForm = Screen->ActiveForm;
     TBlindBalanceController blindBalanceController(currentForm, *_dbTransaction,_isMasterBalance, deviceName);
-
     if(blindBalanceController.Run())
     {
        _dbTransaction->Commit();
@@ -29,7 +36,6 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
         printOut->ContinuePrinting = false;
         return;
     }
-
 
     balance = blindBalanceController.Get();
     bagId = blindBalanceController.GetBagID();
@@ -49,7 +55,11 @@ void BlindBalanceCalculationStrategy::BuildSection(TPrintout* printOut)
 	printOut->PrintFormat->Line->Columns[2]->Text = "Variance ";
 
 	printOut->PrintFormat->AddLine();
+    LoadBlindBalanceDetailsForNormalZed(printOut, ibInternalQuery, balance, deviceName);
+}
 
+void BlindBalanceCalculationStrategy::LoadBlindBalanceDetailsForNormalZed(TPrintout* printOut, TIBSQL *ibInternalQuery, TBlindBalances balance, AnsiString deviceName)
+{
     TBlindBalanceContainer::iterator itBlindBalances = balance.begin();
 	for (itBlindBalances = balance.begin(); itBlindBalances != balance.end(); itBlindBalances++)
 	{

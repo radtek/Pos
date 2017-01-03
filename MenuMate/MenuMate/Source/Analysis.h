@@ -223,6 +223,7 @@ private:	// User declarations
     AnsiString GetCashGlCode(Database::TDBTransaction &DBTransaction);
     void CompleteDLFMallExport();
     TDateTime GetMinDayArchiveTime(Database::TDBTransaction &DBTransaction, TDateTime PrevZedTime);
+    void UpdateZKeyForMallExportSales();
 public:		// User declarations
 	static TLoginSuccess AuthenticateReportsAccess(TReportSource);
 	static const TMMContactInfo &GetLastAuthenticatedUser();
@@ -280,6 +281,7 @@ private:
     void PostDataToXeroAndMyOB(std::vector<TXeroInvoiceDetail>  &XeroInvoiceDetails, std::vector<TMYOBInvoiceDetail>  &MYOBInvoiceDetails, bool CompleteZed);
     void UpdateDLFMall();
     void UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransaction);
+    UnicodeString CheckRegistered();
 
 };
 

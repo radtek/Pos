@@ -23,7 +23,6 @@
 #include "MMTouchNumpad.h"
 #include <FileCtrl.hpp>
 #include "MMMessageBox.h"
-#include "ManagerVariable.h"
 #include "ManagerPhysicalPrinter.h"
 #include "ReportDisplay.h"
 #include "SerialConfig.h"
@@ -40,8 +39,11 @@
 #include "MallExportResendReport.h"
 #include "MallExportManager.h"
 #include "MallExportRegenerateReport.h"
+#include "RegenerateMallReport.h"
 #include "PhoenixHotelSystem.h"
 #include "MallExportSalesTypeAssignment.h"
+#include "Mall.h"
+#include "GUIDiscount.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -68,7 +70,23 @@ void __fastcall TfrmSetup::FormCreate(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::imgCloseClick(TObject *Sender)
 {
-	Close();
+    if(cbNewMallLoc->ItemIndex== 1)
+    {
+        if(edTaxRate->Text != "")
+        {
+            UpdateMallInfo();
+            Close();
+        }
+        else
+        {
+            MessageBox("Please Enter Tax Rate", "Error",MB_OK + MB_ICONERROR);
+        }
+
+    }
+    else
+    {
+        Close();
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::FormClose(TObject *Sender, TCloseAction &Action)
@@ -108,30 +126,30 @@ void __fastcall TfrmSetup::FormResize(TObject *Sender)
 
 void __fastcall TfrmSetup::FormShow(TObject *Sender)
 {
-   // Load up the Header & footers for the printers...
-   FormResize(Sender);
-	RestaurantLayoutsChanged = false;
-	PageControl->ActivePage = tsPrinters;
-   PageControlChange(Sender);
+    // Load up the Header & footers for the printers...
+    FormResize(Sender);
+    RestaurantLayoutsChanged = false;
+    PageControl->ActivePage = tsPrinters;
+    PageControlChange(Sender);
     loadCashDrawerPorts();
-   UpdateLists();
+    UpdateLists();
 
-	bool SecondarySwipe = false;
+    bool SecondarySwipe = false;
 
     // For Mall Export
     InitializeMallExport();
 
-	edTopLine->Text = TGlobalSettings::Instance().PoleDisplayTopLine;
-	edBottomLine->Text = TGlobalSettings::Instance().PoleDisplayBottomLine;
+    edTopLine->Text = TGlobalSettings::Instance().PoleDisplayTopLine;
+    edBottomLine->Text = TGlobalSettings::Instance().PoleDisplayBottomLine;
 
-	rgMembershipType->ItemIndex = TGlobalSettings::Instance().MembershipType;
+    rgMembershipType->ItemIndex = TGlobalSettings::Instance().MembershipType;
     cbBarcodeFormat->ItemIndex =  TGlobalSettings::Instance().BarcodeFormat;
-	Database::TDBTransaction DBTransaction(IBDatabase);
-	DBTransaction.StartTransaction();
-	edSerialKickCharsCount->Text = IntToStr(TManagerVariable::Instance().GetInt(DBTransaction,vmSerialKickPortLength,30));
-	cbUseHighChars->Checked =  TManagerVariable::Instance().GetBool(DBTransaction,vmSerialKickPortHighChars);
+    Database::TDBTransaction DBTransaction(IBDatabase);
+    DBTransaction.StartTransaction();
+    edSerialKickCharsCount->Text = IntToStr(TManagerVariable::Instance().GetInt(DBTransaction,vmSerialKickPortLength,30));
+    cbUseHighChars->Checked =  TManagerVariable::Instance().GetBool(DBTransaction,vmSerialKickPortHighChars);
 
-	DBTransaction.Commit();
+    DBTransaction.Commit();
 
     lbVersion->Caption = "Version : " + GetFileVersionString();
 
@@ -244,7 +262,8 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 		DBTransaction.Commit();
     }
       cbNewbookType->ItemIndex =   TGlobalSettings::Instance().NewBook;
-
+   //load new malls
+   SetupNewMalls();
 }
 
 //---------------------------------------------------------------------------
@@ -904,6 +923,17 @@ void __fastcall TfrmSetup::rgMembershipTypeClick(TObject *Sender)
 	TGlobalSettings::Instance().MembershipType = rgMembershipType->ItemIndex;
 	Database::TDBTransaction DBTransaction(IBDatabase);
 	DBTransaction.StartTransaction();
+    if(!(rgMembershipType->ItemIndex == MembershipTypeMenuMate && !TGlobalSettings::Instance().LoyaltyMateEnabled))
+    {
+        if(TGlobalSettings::Instance().UseMemberSubs)
+           MessageBox("Member Subscription will be turned off with this functionality.", "Information", MB_OK + MB_ICONINFORMATION);
+        TGlobalSettings::Instance().UseMemberSubs = false;
+        TManagerVariable &mv = TManagerVariable::Instance();
+        int pk;
+        if (!(pk = mv.GetProfile(DBTransaction, eSystemProfiles, "Globals")))
+        pk = mv.SetProfile(DBTransaction, eSystemProfiles, "Globals");
+        mv.SetProfileBool(DBTransaction, pk, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+    }
 	TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmMembershipType,TGlobalSettings::Instance().MembershipType);
 	DBTransaction.Commit();
 }
@@ -2043,9 +2073,6 @@ void __fastcall TfrmSetup::tbtnReconfigEmailPasswordMouseClick(TObject *Sender)
 
 }
 
-
-
-
 UnicodeString TfrmSetup::DisplayInputForm(UnicodeString initialValue, AnsiString caption)
 {
     UnicodeString finalvalue;
@@ -2118,8 +2145,6 @@ void __fastcall TfrmSetup::cbNewbookTypeChange(TObject *Sender)
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmNewBook,TGlobalSettings::Instance().NewBook);
 		DBTransaction.Commit();
-
-
 }
 //---------------------------------------------------------------------------
 
@@ -2168,3 +2193,215 @@ UnicodeString TfrmSetup::RenameTenantNumber()
     return Caption;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmSetup::cbNewMallLocChange(TObject *Sender)
+{
+    if(cbNewMallLoc->ItemIndex != 0)
+    {
+        TManagerMallSetup::InsertInToMallExport_Settings_Values(cbNewMallLoc->ItemIndex);
+        LoadMallSettingInfo();
+    }
+    else
+    {
+        UpdateNoMallUI();
+    }
+}
+//------------------------------------------------------------------------------
+void __fastcall TfrmSetup::edNewMallPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+	frmTouchKeyboard->MaxLength = 100;
+	frmTouchKeyboard->AllowCarriageReturn = false;
+	frmTouchKeyboard->StartWithShiftDown = false;
+	frmTouchKeyboard->KeyboardText = edNewMallPath->Text;
+	frmTouchKeyboard->Caption = "Enter File Location";
+	if (frmTouchKeyboard->ShowModal() == mrOk)
+	{
+        edNewMallPath->Text = CheckAbsolutePath(frmTouchKeyboard->KeyboardText);
+
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmSetup::edMallTenantNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+	frmTouchKeyboard->MaxLength = 50;
+	frmTouchKeyboard->AllowCarriageReturn = false;
+	frmTouchKeyboard->StartWithShiftDown = false;
+	frmTouchKeyboard->KeyboardText = edMallTenantNo->Text;
+	frmTouchKeyboard->Caption = "Enter Tenant Code";
+	if (frmTouchKeyboard->ShowModal() == mrOk)
+	{
+        edMallTenantNo->Text = frmTouchKeyboard->KeyboardText;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSetup::edMallTerminalNoMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
+{
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+	frmTouchKeyboard->MaxLength = 20;
+	frmTouchKeyboard->AllowCarriageReturn = false;
+	frmTouchKeyboard->StartWithShiftDown = false;
+	frmTouchKeyboard->KeyboardText = edMallTerminalNo->Text;
+	frmTouchKeyboard->Caption = "Enter Terminal Number";
+	if (frmTouchKeyboard->ShowModal() == mrOk)
+	{
+        edMallTerminalNo->Text = frmTouchKeyboard->KeyboardText;
+	}
+}
+//---------------------------------------------------------------------------
+void  TfrmSetup::SetupNewMalls()
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    cbNewMallLoc->Clear();
+    std::vector<UnicodeString> malllist;
+    cbNewMallLoc->AddItem("None",NULL);
+
+    malllist = TManagerMallSetup::LoadAllMalls(dbTransaction);
+    for (int index = 0; index < malllist.size() ; index++)
+    {
+        cbNewMallLoc->AddItem(malllist[index],NULL);
+    }
+    int mallIndex = TManagerMallSetup::CheckActiveMallExist(dbTransaction);
+    cbNewMallLoc->ItemIndex = mallIndex;
+    if(cbNewMallLoc->ItemIndex != 0)
+        LoadMallSettingInfo();
+    else
+    {
+        UpdateNoMallUI();
+    }
+    dbTransaction.Commit();
+}
+//----------------------------------------------------------------------------------------------
+void TfrmSetup::LoadMallSettingInfo()
+{
+       //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+        TManagerMallSetup::UpdateActiveMall(dbTransaction, cbNewMallLoc->ItemIndex);
+
+        //load all mall settings info
+        mallInfo = TManagerMallSetup::LoadActiveMallSettings(dbTransaction);
+        TGlobalSettings::Instance().mallInfo = mallInfo;
+        std::list<TMallExportSettings>::iterator it;
+        TControl *ChildControl;
+        TEdit* editBox;
+        for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
+        {
+            for (int i = 0; i < gbMallsNew->ControlCount; i++)
+            {
+                ChildControl = gbMallsNew->Controls[i];
+                editBox = (TEdit*)ChildControl;
+                if(it->ControlName == editBox->Name)
+                {
+                    ChildControl->Enabled = true;
+                    editBox->Text = it->Value;
+                    editBox->Color = clWindow;
+                }
+            }
+        }
+        dbTransaction.Commit();
+}
+//-------------------------------------------------------------------------------------
+void TfrmSetup::UpdateMallInfo()
+{
+     //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+        mallInfo.MallId = cbNewMallLoc->ItemIndex;
+        mallInfo.MallName = cbNewMallLoc->Text;
+        mallInfo.DeviceKey =  TDeviceRealTerminal::Instance().ID.ProfileKey;
+        TMallExportSettings mallSetting;
+
+        std::list<TMallExportSettings>::iterator it;
+        TControl *ChildControl;
+        TEdit* editBox;
+        for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
+        {
+            for (int i = 0; i < gbMallsNew->ControlCount; i++)
+            {
+                ChildControl = gbMallsNew->Controls[i];
+                editBox = (TEdit*)ChildControl;
+                if(it->ControlName == editBox->Name)
+                {
+                    it->Value = editBox->Text;
+                }
+            }
+        }
+        TGlobalSettings::Instance().mallInfo =  mallInfo;
+        TManagerMallSetup::UpdateMallExportSettingValues(dbTransaction, mallInfo);
+        dbTransaction.Commit();
+}
+//--------------------------------------------------------------------------------------
+void TfrmSetup::UpdateNoMallUI()
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    UnicodeString controlNameSubString = "";
+    TMall mallDetails;
+    TGlobalSettings::Instance().mallInfo = mallDetails;
+    TManagerMallSetup::UpdateINActiveMall(dbTransaction);
+    TControl *ChildControl;
+    TEdit* editBox;
+    for (int i = 0; i < gbMallsNew->ControlCount; i++)
+    {
+        ChildControl = gbMallsNew->Controls[i];
+        editBox = (TEdit*)ChildControl;
+        controlNameSubString = editBox->Name.SubString(0,2);
+        if(controlNameSubString != "lb" && controlNameSubString != "cb")
+        {
+            editBox->Text = "";
+            editBox->Enabled = false;
+            editBox->Color = clInactiveCaptionText;
+        }
+    }
+    dbTransaction.Commit();
+}
+//-----------------------------------------------------------------------------------------
+UnicodeString TfrmSetup::CheckAbsolutePath(UnicodeString path)
+{
+    UnicodeString MallPathVar = path;
+    std::string StrArray = MallPathVar.t_str();
+    UnicodeString EndOfStr = StrArray[MallPathVar.Length() - 1];
+
+    if(EndOfStr != "\\")
+    {
+        path = path + "\\";
+    }
+    //Check if directory not exist than create it.
+    if (!DirectoryExists(path))
+    {
+        CreateDir(path);
+    }
+    return path;
+}
+//----------------------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnRegenMallReportMouseClick(TObject *Sender)
+{
+    std::auto_ptr<TfrmRegenerateMallReport> frmRegenerateMallReport(TfrmRegenerateMallReport::Create<TfrmRegenerateMallReport>(this));
+    frmRegenerateMallReport->ShowModal();
+}
+//----------------------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::edTaxRateClick(TObject *Sender)
+{
+    std::auto_ptr<TfrmDiscount> frmDiscount(TfrmDiscount::Create<TfrmDiscount>(this));
+    frmDiscount->Mode = DiscModePercent;
+    frmDiscount->tbToggleAmount->Visible = false;
+    frmDiscount->pnlToggle->Visible = false;
+    frmDiscount->PERCInitial = edTaxRate->Text != "" ? StrToCurr(edTaxRate->Text) : 0;
+    frmDiscount->Caption = "Enter Tax Rate";
+    if (frmDiscount->ShowModal() == mrOk)
+    {
+        edTaxRate->Text = frmDiscount->PERCResult;
+    }
+}
+
+

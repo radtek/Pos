@@ -4,6 +4,7 @@ using MenumateServices.DTO.SmartLink;
 using Smartpay.Eftpos;
 using Smartpay.Eftpos.Logging;
 using System.ServiceModel;
+using System.Threading;
 
 namespace MenumateServices.WCFServices
 {
@@ -217,6 +218,7 @@ namespace MenumateServices.WCFServices
                 watch.Start();
                 while (_waitflag)
                 {
+                    Thread.Sleep(1000);
                     if (watch.Elapsed.TotalMinutes > 2.00)
                     {
                         _waitflag = false;

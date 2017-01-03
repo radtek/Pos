@@ -1,7 +1,7 @@
 #include "DBHappyHour.h"
 #include "MM_DBCore.h"
 #include "DeviceRealTerminal.h"
-
+#include "GlobalSettings.h"
 void THappyHour::SetStartTime(TDateTime startTime)
 {
     _startTime = startTime;

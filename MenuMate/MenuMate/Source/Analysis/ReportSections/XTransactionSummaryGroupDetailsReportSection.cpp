@@ -12,6 +12,14 @@ XTransactionSummaryGroupDetailsReportSection::XTransactionSummaryGroupDetailsRep
     dataCalculationUtilities = new DataCalculationUtilities;
 }
 
+XTransactionSummaryGroupDetailsReportSection::XTransactionSummaryGroupDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmTransactionSummaryGroupDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
+}
+
+
 
 XTransactionSummaryGroupDetailsReportSection::~XTransactionSummaryGroupDetailsReportSection()
 {
@@ -21,6 +29,13 @@ XTransactionSummaryGroupDetailsReportSection::~XTransactionSummaryGroupDetailsRe
 
 void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+
+   DisplayBankingSection(printOut);
+}
+
+void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrintout* printOut)
+{
+
     IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
 
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
@@ -28,14 +43,26 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
      _memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
 
     SkimCalculations skimCalculations;
-    skimCalculations.CalculateSkims(*_dbTransaction, deviceName);
 
     TTransactionInfo transactionInfo;
-    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    if(IsConsolidatedZed)
     {
-       TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
+        skimCalculations.CalculateSkims(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+        {
+           TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
+        }
+        transactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfoForConsolidatedZed(*_dbTransaction, deviceName, *_startTime, *_endTime, true);
     }
-    transactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, deviceName, true);
+    else
+    {
+        skimCalculations.CalculateSkims(*_dbTransaction, deviceName);
+        if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+        {
+           TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
+        }
+        transactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, deviceName, true);
+    }
 
 
 
@@ -62,8 +89,6 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
             Currency cashValue = 0;
             Currency changeValue = 0;
 
-           // if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
-            //{
                 if(reportSectionDisplayTraits)
                 {
                     reportSectionDisplayTraits->ApplyTraits(printOut);
@@ -729,8 +754,8 @@ void XTransactionSummaryGroupDetailsReportSection::GetOutput(TPrintout* printOut
             printOut->PrintFormat->AddLine();
         }
     }
-
 }
+
 
 void XTransactionSummaryGroupDetailsReportSection::SetSingleColumnPrinterFormat(TPrintout* printOut)
 {

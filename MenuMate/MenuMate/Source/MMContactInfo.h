@@ -114,12 +114,19 @@ public:
     int LatestLoginContactKey;
     UnicodeString LatestLoginName;
     int PointRule;
+    int PointsRuleSubs;
     bool IsFirstVisitRewarded;
     bool HasTransactions;
     bool ValidateMandatoryField(AnsiString& message);
     bool ValidateLastName(AnsiString& message);
     bool ValidateFirstName(AnsiString& message);
     bool ValidateName(AnsiString& name,AnsiString& message);
+    UnicodeString SubsType;
+    TDateTime SubsPaidDate;
+    double SubsPaidAmount;
+    UnicodeString SubsReceiptNo;
+    UnicodeString SubsPaid;
+    UnicodeString IsLocalMember;
 protected:
 	TMMContactInfo( UnicodeString inName );
 };

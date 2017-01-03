@@ -187,7 +187,6 @@ void TPOS_XMLTransaction::BuildProduct(TPaymentTransaction &PaymentTransaction, 
 	TiXmlElement *EleProduct = new TiXmlElement(xmlEleProduct);
 	EleProduct->SetAttribute(xmlAttrID, _T(""));
 	EleProduct->SetAttribute(xmlAttrMenu, Order->MenuName.t_str());
-	// EleProduct->SetAttribute(xmlAttrCourse,         UnicodeToUTF8AnsiString(Order->Course).c_str() );
 	EleProduct->SetAttribute(xmlAttrCourse, Order->Course.t_str());
 	EleProduct->SetAttribute(xmlAttrItem, Order->Item.t_str());
 	EleProduct->SetAttribute(xmlAttrSize, Order->Size.t_str());
@@ -195,7 +194,6 @@ void TPOS_XMLTransaction::BuildProduct(TPaymentTransaction &PaymentTransaction, 
 	EleProduct->SetAttribute(xmlAttrQty, FormatFloat("0.00", Order->GetQty()).t_str());
   	EleProduct->SetAttribute(xmlTransNo, Order->TransNo.t_str());
 
-	// EleProduct->SetAttribute(xmlAttrServingCourse,  UnicodeToUTF8AnsiString(Order->ServingCourse.Name).c_str() );
 	EleProduct->SetAttribute(xmlAttrServingCourse, Order->ServingCourse.Name.t_str());
 	EleProduct->SetAttribute(xmlAttrCode, Order->ThirdPartyCode.t_str());
 	EleProduct->SetAttribute(xmlEleMemberXmlID, Order->Loyalty_Key);
@@ -224,13 +222,11 @@ void TPOS_XMLTransaction::BuildProductSide(TPaymentTransaction &PaymentTransacti
    TiXmlElement *EleProduct = new TiXmlElement(xmlEleProduct);
    EleProduct->SetAttribute(xmlAttrID, _T(""));
    EleProduct->SetAttribute(xmlAttrMenu, Order->MenuName.t_str());
-   // EleProduct->SetAttribute(xmlAttrCourse,         UnicodeToUTF8AnsiString(Order->Course).c_str() );
    EleProduct->SetAttribute(xmlAttrCourse, Order->Course.t_str());
    EleProduct->SetAttribute(xmlAttrItem, Order->Item.t_str());
    EleProduct->SetAttribute(xmlAttrSize, Order->Size.t_str());
    EleProduct->SetAttribute(xmlAttrQty, FormatFloat("0.00", Order->GetQty()).t_str());
   	EleProduct->SetAttribute(xmlTransNo, Order->TransNo.t_str());
-   // EleProduct->SetAttribute(xmlAttrServingCourse,  UnicodeToUTF8AnsiString(Order->ServingCourse.Name).c_str() );
    EleProduct->SetAttribute(xmlAttrServingCourse, Order->ServingCourse.Name.t_str());
    EleProduct->SetAttribute(xmlAttrCode, Order->ThirdPartyCode.t_str());
    EleProduct->SetAttribute(xmlEleMemberXmlID, Order->Loyalty_Key);

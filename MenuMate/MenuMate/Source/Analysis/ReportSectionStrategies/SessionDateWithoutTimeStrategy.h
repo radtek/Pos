@@ -8,6 +8,7 @@ class SessionDateWithoutTimeStrategy : public BaseReportSectionDisplayStrategy
 {
 public:
     SessionDateWithoutTimeStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    SessionDateWithoutTimeStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	virtual void BuildSection(TPrintout* printOut);
     virtual int CalculateLastDayOfMonth(int month);
 };

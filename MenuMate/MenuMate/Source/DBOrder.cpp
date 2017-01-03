@@ -2362,7 +2362,6 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
     double accumulatedQuantity = 0;
 	try
 	{
-
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
 		IBInternalQuery->Close();
@@ -2380,6 +2379,44 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 		std::set<__int64> ValidOrderKeys;
 		std::set<__int64> OrderKeysThatHaveSides;
 		TSCDPWDChecker SCDChecker;
+
+        ///Check whether any discount exist having  SCD Or PWD Discount group.
+        bool isSCDOrPWDDiscountExist = false;
+        bool isSCDDiscountExist = IsSCDOrPWDDiscountConfigured(DBTransaction, "Senior Citizen");
+        bool isPWDDiscountExist = IsSCDOrPWDDiscountConfigured(DBTransaction, "Person with Disability");
+        isSCDOrPWDDiscountExist = isSCDDiscountExist || isPWDDiscountExist;
+        bool checkSCDOrPWDExist = false;
+
+        //Create Set For inserting OrderKeys having SCD Discount.
+        std::set<__int64> orderKeysWithSCDDiscount;
+
+        //Create Set For inserting OrderKeys having PWD Discount.
+        std::set<__int64> orderKeysWithPWDDiscount;
+
+        //Create Set For inserting OrderKeys having no Discount.
+        std::set<__int64> orderKeysWithNoDiscount;
+
+        if(isSCDDiscountExist)
+        {
+            //Load OrderKeys Having SCD Discount Applied.
+            LoadOrderKeysWIthSCDOrPWDDiscount(DBTransaction, TabKey, orderKeysWithSCDDiscount, "Senior Citizen");
+        }
+
+        if(isPWDDiscountExist)
+        {
+            //Load OrderKeys Having PWD Discount Applied.
+            LoadOrderKeysWIthSCDOrPWDDiscount(DBTransaction, TabKey, orderKeysWithPWDDiscount, "Person with Disability");
+        }
+
+        if(isSCDDiscountExist || isPWDDiscountExist)
+        {
+            //load OrderKeys Which have No Discount..
+            LoadOrderKeysWIthoutDiscount(DBTransaction, TabKey, orderKeysWithNoDiscount);
+
+            //If no order key have scd or pwd discount  then make isSCDOrPWDDiscountExist false.
+            isSCDOrPWDDiscountExist = orderKeysWithSCDDiscount.size() == 0 && orderKeysWithPWDDiscount.size() == 0 ? false : true;
+        }
+
 		for (; !IBInternalQuery->Eof  ;IBInternalQuery->Next())
 		{
 			TPnMOrder Order;
@@ -2392,8 +2429,30 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 			Order.TimeStamp	  = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
 			Order.TimeKey     = IBInternalQuery->FieldByName("TIME_KEY")->AsInteger;
             Order.IsWeighted  = IBInternalQuery->FieldByName("WEIGHTED_SIZE")->AsString == "T";
-			if(!SelectingItems || ((SCDChecker.ItemSelectionCheck(DBTransaction, Order.Key, ValidOrderKeys)) &&
-                                   (SCDChecker.ItemSelectionCheckPWD(DBTransaction, Order.Key, ValidOrderKeys))))
+
+            if(isSCDOrPWDDiscountExist)
+            {
+                bool isSCDApplied = false;
+                bool isPWDApplied = false;
+                bool noDiscountApplied = false;
+
+                if(orderKeysWithSCDDiscount.find(Order.Key) != orderKeysWithSCDDiscount.end() )
+                {
+                    isSCDApplied = (SCDChecker.ItemSelectionCheck(DBTransaction, Order.Key, ValidOrderKeys, false));
+                }
+                else if(orderKeysWithPWDDiscount.find(Order.Key) != orderKeysWithPWDDiscount.end())
+                {
+                    isPWDApplied = (SCDChecker.ItemSelectionCheckPWD(DBTransaction, Order.Key, ValidOrderKeys, false));
+                }
+                else if(orderKeysWithNoDiscount.find(Order.Key) != orderKeysWithNoDiscount.end())
+                {
+                    noDiscountApplied = true;
+                }
+
+                checkSCDOrPWDExist = (isSCDApplied || isPWDApplied || noDiscountApplied);
+            }
+
+			if(!SelectingItems || (!isSCDOrPWDDiscountExist || checkSCDOrPWDExist))
 			{
 				if(Order.GroupNumber != 0)
 				{
@@ -2417,7 +2476,7 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
                 Order.Qty = IBInternalQuery->FieldByName("QTY")->AsFloat;
                 Order.PatronCount = IBInternalQuery->FieldByName("PATRON_COUNT")->AsInteger;
 
-                 if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0)
+                if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0)
                 {
                     Order.IsSide = true;
                 }
@@ -2435,6 +2494,18 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
                 }
             }
 		}
+
+        ///count orderkeys which have normaldiscount applied
+        int itemsWithNormalDiscount = IBInternalQuery->RecordCount - orderKeysWithNoDiscount.size() - orderKeysWithSCDDiscount.size() -  orderKeysWithPWDDiscount.size();
+
+        if(SelectingItems && orderKeysWithSCDDiscount.size() > 0  && (itemsWithNormalDiscount > 0 || orderKeysWithPWDDiscount.size() > 0))
+        {
+            MessageBox("Items with Senior Citizens Discounts and items with Non Senior Citizens Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
+        }
+        else if(SelectingItems && orderKeysWithPWDDiscount.size() > 0 && (itemsWithNormalDiscount > 0 || orderKeysWithSCDDiscount.size() > 0))
+        {
+            MessageBox("Items with PWD Discounts and items with Non PWD Discounts can not be billed at the same time.", "Error", MB_ICONWARNING + MB_OK);
+        }
 
 		for(std::set<__int64>::iterator ptrOrderKeys = OrderKeysThatHaveSides.begin(); ptrOrderKeys != OrderKeysThatHaveSides.end(); ptrOrderKeys++ )
 		{
@@ -4726,4 +4797,113 @@ int TDBOrder::CheckItemAvailability(Database::TDBTransaction &DBTransaction, int
 		throw;
 	}
 }
+//------------------------------------------------------------------------------------------------------------
+bool TDBOrder::IsSCDOrPWDDiscountConfigured(Database::TDBTransaction &DBTransaction, UnicodeString discountGroup)
+{
+    bool isDiscountConfigured = false;
+    try
+    {
+        TIBSQL *SelectDiscountGroup = DBTransaction.Query(DBTransaction.AddQuery());
+        SelectDiscountGroup->Close();
+        SelectDiscountGroup->SQL->Clear();
+        SelectDiscountGroup->SQL->Text =
+                                    "SELECT  a.NAME, "
+                                    "DGDT.DISCOUNTTYPE_KEY, "
+                                    "DGDT.DISCOUNTGROUPS_KEY, "
+                                    "DISCOUNT_GROUPS.DISCOUNTGROUPS_KEY "
+                                    "FROM DISCOUNTS a "
+                                    "INNER JOIN DISCOUNTGROUPS_DISCOUNTTYPES DGDT ON A.DISCOUNT_KEY = DGDT.DISCOUNTTYPE_KEY "
+                                    "INNER JOIN DISCOUNT_GROUPS ON  DISCOUNT_GROUPS.DISCOUNTGROUPS_KEY = DGDT.DISCOUNTGROUPS_KEY "
+                                    "WHERE DISCOUNT_GROUPS.DISCOUNTGROUP_NAME = :DISCOUNTGROUP_NAME_1 ";
+        SelectDiscountGroup->ParamByName("DISCOUNTGROUP_NAME_1")->AsString = discountGroup;
+        SelectDiscountGroup->ExecQuery();
+
+        if(SelectDiscountGroup->RecordCount)
+            isDiscountConfigured = true;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+
+    return isDiscountConfigured;
+}
+//-------------------------------------------------------------------------------------------------------------------
+void TDBOrder::LoadOrderKeysWIthSCDOrPWDDiscount(Database::TDBTransaction &DBTransaction, int tabKey, std::set<__int64> &orderKeysWithSCDOrPWDDiscount,
+                                                UnicodeString discountGroup)
+{
+    try
+    {
+        TIBSQL *selectOrderKeysWithSCDOrPWDDiscount = DBTransaction.Query(DBTransaction.AddQuery());
+        selectOrderKeysWithSCDOrPWDDiscount->Close();
+        selectOrderKeysWithSCDOrPWDDiscount->SQL->Clear();
+        selectOrderKeysWithSCDOrPWDDiscount->SQL->Text =
+                                    "SELECT a.ORDER_KEY "
+                                    "FROM ORDERS a inner join SIZES b "
+                                        "ON a.SIZE_NAME = b.SIZE_NAME "
+                                    "INNER JOIN ORDERDISCOUNTS OD "
+                                        "ON a.ORDER_KEY = OD.ORDER_KEY "
+                                    "INNER JOIN DISCOUNTGROUPS_DISCOUNTTYPES DGD "
+                                        "ON OD.DISCOUNT_KEY = DGD.DISCOUNTTYPE_KEY "
+                                    "INNER JOIN DISCOUNT_GROUPS DG "
+                                        "ON DGD.DISCOUNTGROUPS_KEY = DG.DISCOUNTGROUPS_KEY "
+                                    "WHERE a.TAB_KEY = :TAB_KEY AND "
+                                        "DG.DISCOUNTGROUP_NAME = :DISCOUNTGROUP_NAME "
+                                    "GROUP by 1 "
+                                    "ORDER BY a.ORDER_KEY ";
+
+        selectOrderKeysWithSCDOrPWDDiscount->ParamByName("TAB_KEY")->AsString = tabKey;
+        selectOrderKeysWithSCDOrPWDDiscount->ParamByName("DISCOUNTGROUP_NAME")->AsString = discountGroup;
+        selectOrderKeysWithSCDOrPWDDiscount->ExecQuery();
+
+        for (; !selectOrderKeysWithSCDOrPWDDiscount->Eof  ;selectOrderKeysWithSCDOrPWDDiscount->Next())
+        {
+            orderKeysWithSCDOrPWDDiscount.insert(selectOrderKeysWithSCDOrPWDDiscount->FieldByName("ORDER_KEY")->AsInteger);
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//--------------------------------------------------------------------------------------------------------------------
+void TDBOrder::LoadOrderKeysWIthoutDiscount(Database::TDBTransaction &DBTransaction, int tabKey, std::set<__int64> &orderKeysWithoutDiscount)
+{
+    try
+    {
+        TIBSQL *selectOrderKeysWithoutDiscount = DBTransaction.Query(DBTransaction.AddQuery());
+        selectOrderKeysWithoutDiscount->Close();
+        selectOrderKeysWithoutDiscount->SQL->Clear();
+        selectOrderKeysWithoutDiscount->SQL->Text = "SELECT a.ORDER_KEY  "
+                                                    "FROM ORDERS a "
+                                                    "WHERE a.ORDER_KEY NOT IN (SELECT a.ORDER_KEY "
+                                                                            "FROM ORDERS a "
+                                                                            "INNER JOIN ORDERDISCOUNTS OD "
+                                                                                "ON a.ORDER_KEY = OD.ORDER_KEY "
+                                                                            "LEFT JOIN DISCOUNTGROUPS_DISCOUNTTYPES DGD "
+                                                                                "ON OD.DISCOUNT_KEY = DGD.DISCOUNTTYPE_KEY "
+                                                                            "LEFT JOIN DISCOUNT_GROUPS DG "
+                                                                                "ON DGD.DISCOUNTGROUPS_KEY = DG.DISCOUNTGROUPS_KEY "
+                                                                            "WHERE a.TAB_KEY = :TAB_KEY  "
+                                                                            ") AND a.TAB_KEY = :TAB_KEY "
+                                                "GROUP by 1 "
+                                                "ORDER BY a.ORDER_KEY ";
+
+        selectOrderKeysWithoutDiscount->ParamByName("TAB_KEY")->AsString = tabKey;
+        selectOrderKeysWithoutDiscount->ExecQuery();
+
+        for (; !selectOrderKeysWithoutDiscount->Eof  ;selectOrderKeysWithoutDiscount->Next())
+        {
+            orderKeysWithoutDiscount.insert(selectOrderKeysWithoutDiscount->FieldByName("ORDER_KEY")->AsInteger);
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//--------------------------------------------------------------------------------------------------------------------
 

@@ -387,8 +387,6 @@ int TManagerMenus::SetServingCourse(Database::TDBTransaction &DBTransaction, Uni
 			 ":SERVINGCOURSE_KITCHEN_NAME," ":DELETED," ":DISPLAY_ORDER," ":SELECTABLE," ":COLOUR);";
 		 IBInternalQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = ServingCourseKey;
 		 IBInternalQuery->ParamByName("SERVINGCOURSE_NAME")->AsString = ServingCourse;
-// Conversion not required as ServingCourseKitchenName is already in UTF8 Format from the Menu.csv
-//		 IBInternalQuery->ParamByName("SERVINGCOURSE_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(ServingCourseKitchenName);
 		 IBInternalQuery->ParamByName("SERVINGCOURSE_KITCHEN_NAME")->AsString = ServingCourseKitchenName;
 		 IBInternalQuery->ParamByName("DELETED")->AsString = Deleted ? "T" : "F";
 		 IBInternalQuery->ParamByName("SELECTABLE")->AsString = Selectable ? "T" : "F";
@@ -423,7 +421,6 @@ int TManagerMenus::SetServingCourse(Database::TDBTransaction &DBTransaction, Uni
 			IBInternalQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = ServingCourseKey;
 			IBInternalQuery->ParamByName("SERVINGCOURSE_NAME")->AsString = ServingCourse;
 			IBInternalQuery->ParamByName("SERVINGCOURSE_KITCHEN_NAME")->AsString = ServingCourseKitchenName;
-			//IBInternalQuery->ParamByName("SERVINGCOURSE_KITCHEN_NAME")->AsString = UnicodeToUTF8AnsiString(ServingCourseKitchenName);
 			IBInternalQuery->ParamByName("DELETED")->AsString = Deleted ? "T" : "F";
 			IBInternalQuery->ParamByName("SELECTABLE")->AsString = Selectable ? "T" : "F";
 			IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = SCOO;
@@ -1203,7 +1200,6 @@ void TManagerMenus::BuildXMLMenu(Database::TDBControl &DBControl, TPOS_XMLBase &
 			   TiXmlElement *EleServingCourse = new TiXmlElement(xmlEleServingCourse);
 			   EleServingCourse->SetAttribute(xmlAttrXmlID, ServingCoursesInfo.ServingCourses[i].Key);
 			   EleServingCourse->SetAttribute(xmlAttrName, ServingCoursesInfo.ServingCourses[i].ServingCourse_Name.t_str());
-			   // EleServingCourse->SetAttribute(xmlAttrKitchenName, UnicodeToUTF8AnsiString(ServingCoursesInfo.ServingCourses[i].ServingCourse_Kitchen_Name).c_str() );
 			   EleServingCourse->SetAttribute(xmlAttrKitchenName, ServingCoursesInfo.ServingCourses[i].ServingCourse_Kitchen_Name.t_str());
 			   if (ServingCoursesInfo.ServingCourses[i].ServingCourse_Kitchen_Name == UnicodeString(""))
 			   {
@@ -1227,7 +1223,6 @@ void TManagerMenus::BuildXMLMenu(Database::TDBControl &DBControl, TPOS_XMLBase &
 
 			EleCourse->SetAttribute(xmlAttrID, _T(""));
 			EleCourse->SetAttribute(xmlAttrName, CourseInfo.Course_Name.t_str());
-			// EleCourse->SetAttribute(xmlAttrKitchenName, UnicodeToUTF8AnsiString(CourseInfo.Course_Kitchen_Name).c_str() );
 			EleCourse->SetAttribute(xmlAttrKitchenName, CourseInfo.Course_Kitchen_Name.t_str());
 			if (CourseInfo.Course_Kitchen_Name == UnicodeString(""))
 			{
@@ -1247,7 +1242,6 @@ void TManagerMenus::BuildXMLMenu(Database::TDBControl &DBControl, TPOS_XMLBase &
 			   EleItem->SetAttribute(xmlAttrID, _T(""));
 			   EleItem->SetAttribute(xmlAttrXmlID, ItemInfo.Key);
 			   EleItem->SetAttribute(xmlAttrName, ItemInfo.Item_Name.t_str());
-			   // EleItem->SetAttribute(xmlAttrKitchenName, UnicodeToUTF8AnsiString(ItemInfo.Item_Kitchen_Name).c_str() );
 			   EleItem->SetAttribute(xmlAttrKitchenName, ItemInfo.Item_Kitchen_Name.t_str());
 			   if (ItemInfo.Item_Kitchen_Name == UnicodeString(""))
 			   {
@@ -1370,7 +1364,6 @@ void TManagerMenus::BuildXMLMenu(Database::TDBControl &DBControl, TPOS_XMLBase &
 
 				  EleOption->SetAttribute(xmlAttrID, CourseInfo.Options[i].Option_ID);
 				  EleOption->SetAttribute(xmlAttrName, CourseInfo.Options[i].Option_Name.t_str());
-				  // EleOption->SetAttribute(xmlAttrKitchenName, UnicodeToUTF8AnsiString(CourseInfo.Options[i].Option_Kitchen_Name).c_str() );
 				  EleOption->SetAttribute(xmlAttrKitchenName, CourseInfo.Options[i].Option_Kitchen_Name.t_str());
 				  if (CourseInfo.Options[i].Option_Kitchen_Name == UnicodeString(""))
 				  {

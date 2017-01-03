@@ -12,6 +12,13 @@ ZCommissionTipsDetailsReportSection::ZCommissionTipsDetailsReportSection(Databas
 }
 
 
+ZCommissionTipsDetailsReportSection::ZCommissionTipsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmZReport, mmCommissionTipsDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
+}
+
 ZCommissionTipsDetailsReportSection::~ZCommissionTipsDetailsReportSection()
 {
     delete dataFormatUtilities;

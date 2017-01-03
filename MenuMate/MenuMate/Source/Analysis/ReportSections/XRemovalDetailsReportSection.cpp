@@ -13,6 +13,12 @@ XRemovalDetailsReportSection::XRemovalDetailsReportSection(Database::TDBTransact
     dataFormatUtilities = new DataFormatUtilities;
 }
 
+XRemovalDetailsReportSection::XRemovalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmShowRemovalSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
 XRemovalDetailsReportSection::~XRemovalDetailsReportSection()
 {
     delete dataFormatUtilities;
@@ -36,29 +42,17 @@ void XRemovalDetailsReportSection::GetOutput(TPrintout* printOut)
 
     TIBSQL* removalsQuery = _dbTransaction->Query( _dbTransaction->AddQuery());
     removalsQuery->Close();
-    removalsQuery->SQL->Text =
-                            "SELECT  "
-                                    "b.TIME_STAMP, "
-                                    "b.ITEM_NAME,  "
-                                    "b.PRICE,  "
-                                    "d.NAME  "
 
-                                "FROM  "
-                                    "SECURITY a  "
-                                "INNER JOIN  "
-                                    "CANCELITEMS b "
-                                "ON "
-                                    "a.SECURITY_REF = b.SECURITY_REF  "
-                                "INNER JOIN  "
-                                " CONTACTS d "
-                                "ON "
-                                "a.USER_KEY = d.CONTACTS_KEY  "
-                                "WHERE  "
-                                    "a.SECURITY_EVENT = :SECURITY_EVENT "
-                                    "AND b.TIME_STAMP > :PrevZedTime  "
+    if(IsConsolidatedZed)
+    {
+       GetRemovalReportsForConsolidatedZed(removalsQuery, prevZedTime, deviceName);
+       prevZedTime = *_endTime;
+    }
+    else
+    {
+       GetRemovalReportsForNormalZed(removalsQuery, deviceName);
+    }
 
-                                    "Order By  "
-                                    "1  "   ;
 
     removalsQuery->ParamByName("PrevZedTime")->AsDateTime = prevZedTime;
     removalsQuery->ParamByName("SECURITY_EVENT")->AsString = UnicodeString(SecurityTypes[secCheckRemoval]);
@@ -143,5 +137,77 @@ void XRemovalDetailsReportSection::GetOutput(TPrintout* printOut)
     }
     delete _removalsServerList;
 }
+
+void XRemovalDetailsReportSection::GetRemovalReportsForNormalZed(TIBSQL* removalsQuery, AnsiString deviceName)
+{
+    AnsiString terminalNamePredicate = "";
+    if (!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " and a.TERMINAL_NAME = '" + deviceName + "' " ;
+    }
+    removalsQuery->SQL->Text =
+        "SELECT  "
+                "b.TIME_STAMP, "
+                "b.ITEM_NAME,  "
+                "b.PRICE,  "
+                "d.NAME  "
+
+            "FROM  "
+                "SECURITY a  "
+            "INNER JOIN  "
+                "CANCELITEMS b "
+            "ON "
+                "a.SECURITY_REF = b.SECURITY_REF  "
+            "INNER JOIN  "
+            " CONTACTS d "
+            "ON "
+            "a.USER_KEY = d.CONTACTS_KEY  "
+            "WHERE  "
+                "a.SECURITY_EVENT = :SECURITY_EVENT "
+                + terminalNamePredicate +
+                "AND b.TIME_STAMP > :PrevZedTime  "
+
+                "Order By  "
+                "1  "   ;
+}
+
+void XRemovalDetailsReportSection::GetRemovalReportsForConsolidatedZed(TIBSQL* removalsQuery, TDateTime prevZedTime, AnsiString deviceName)
+{
+
+    AnsiString terminalNamePredicate = "";
+    if (!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " and a.TERMINAL_NAME = '" + deviceName + "'  " ;
+    }
+  AnsiString timeFilter = "";
+  timeFilter =  " b.TIME_STAMP >= :startTime and b.TIME_STAMP <= :PrevZedTime and ";
+
+    removalsQuery->SQL->Text =
+        "SELECT  "
+                "b.TIME_STAMP, "
+                "b.ITEM_NAME,  "
+                "b.PRICE,  "
+                "d.NAME  "
+
+            "FROM  "
+                "SECURITY a  "
+            "INNER JOIN  "
+                "CANCELITEMS b "
+            "ON "
+                "a.SECURITY_REF = b.SECURITY_REF  "
+            "INNER JOIN  "
+            " CONTACTS d "
+            "ON "
+            "a.USER_KEY = d.CONTACTS_KEY  "
+            "WHERE  "
+                 + timeFilter +
+                "a.SECURITY_EVENT = :SECURITY_EVENT "
+                + terminalNamePredicate +
+
+                "Order By  "
+                "1  "   ;
+    removalsQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+}
+
 
 #pragma package(smart_init)

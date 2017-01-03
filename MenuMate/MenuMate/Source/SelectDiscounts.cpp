@@ -226,10 +226,13 @@ void __fastcall TfrmSelectDiscounts::FormResize(TObject *Sender)
 void __fastcall TfrmSelectDiscounts::tgridItemPriceMouseClick(TObject *Sender, TMouseButton Button, TShiftState Shift,
    TGridButton *GridButton)
 {
-   Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-   DBTransaction.StartTransaction();
-   DiscountSingleItem(DBTransaction, GridButton);
-   DBTransaction.Commit();
+    if((Member.ContactKey == 0) || Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+    {
+       Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+       DBTransaction.StartTransaction();
+       DiscountSingleItem(DBTransaction, GridButton);
+       DBTransaction.Commit();
+    }
 }
 
 // ---------------------------------------------------------------------------

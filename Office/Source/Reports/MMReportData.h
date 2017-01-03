@@ -262,6 +262,8 @@ TRvDataSetConnection *ravCheckRemoval;      //MM-4327
     TIBQuery *qrEJournal;
     TRvDataSetConnection *ravESalesJournal;
     TClientDataSet *cdsReceipt;
+    TRvDataSetConnection *ravSubsReport;
+    TIBQuery *qrSubsReport;
 
 	void __fastcall qrMenuAfterScroll(TDataSet *DataSet);
 	void __fastcall qrAveSummaryAfterScroll(TDataSet *DataSet);
@@ -426,6 +428,7 @@ public:		// User declarations
     AnsiString addressOfTaxPayer;
     AnsiString tinNumber;
     AnsiString serialNo;
+    void SetupSubsReport(TDateTime StartTime, TDateTime EndTime);
 };
 
 

@@ -16,12 +16,10 @@
 #include "MMLogging.h"
 #include "DBGroups.h"
 #include "Users.h"
-#include "DeviceRealControl.h"
 #include "DeviceRealTerminal.h"
 #include "DBContacts.h"
 #include "GlobalSettings.h"
 #include "ManagerLoyaltyMate.h"
-#include "DeviceRealTerminal.h"
 #include "PointsRulesSetUtils.h"
 #include "LoyaltyMateUtilities.h"
 //---------------------------------------------------------------------------

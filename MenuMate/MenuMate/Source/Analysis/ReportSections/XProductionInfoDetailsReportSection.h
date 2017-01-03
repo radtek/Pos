@@ -12,6 +12,7 @@ class XProductionInfoDetailsReportSection : public BaseReportSection
 
 public:
     XProductionInfoDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XProductionInfoDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XProductionInfoDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);

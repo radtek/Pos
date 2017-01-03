@@ -19,6 +19,7 @@
 #include <set>
 
 
+
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -606,7 +607,6 @@ void TPaymentTransaction::SetRedeemFVPoints(Currency &PointsRedeemed)
        Membership.Member.Points.Load(Type, redeemedFirstVisitPoints);
    }
 }
-
 void TPaymentTransaction::Recalc()
 {
    if(Orders != NULL)
@@ -619,23 +619,36 @@ void TPaymentTransaction::Recalc()
          { // Do not do this for invoices.
 		 	Order->ResetPrice();
          }
-
+         if(Membership.Member.ContactKey != 0 && TPaySubsUtility::IsLocalLoyalty() &&
+           !Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+         {
+            Order->ClearAllDiscounts();
+         }
          for(int j=0; j<Order->SubOrders->Count ; j++)
          {
             TItemMinorComplete *CurrentSubOrder = (TItemMinorComplete *)Order->SubOrders->Items[j];
+             if(Membership.Member.ContactKey != 0 && TPaySubsUtility::IsLocalLoyalty() &&
+               !Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+             {
+                CurrentSubOrder->ClearAllDiscounts();
+             }
             CurrentSubOrder->Loyalty_Key = Membership.Member.ContactKey;
             if(SalesType != eAccount)
             { // Do not do this for invoices.
                CurrentSubOrder->ResetPrice();
             }
          }
-         ManagerDiscount->AddDiscountsByTime(DBTransaction, Order);
+         if(Membership.Member.ContactKey == 0 || (!TPaySubsUtility::IsLocalLoyalty()) ||
+            Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+             ManagerDiscount->AddDiscountsByTime(DBTransaction, Order);
       }
 
       // Sort out Rewards Free Drinks and stuff Here.
-      TManagerFreebie::IsPurchasing(DBTransaction,Orders);
+        if(Membership.Member.ContactKey == 0 || (!TPaySubsUtility::IsLocalLoyalty()) ||
+           Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+            TManagerFreebie::IsPurchasing(DBTransaction,Orders);
 
-	  ApplyDiscounts();
+	     ApplyDiscounts();
    }
    Money.Recalc(*this);
 }
@@ -704,7 +717,9 @@ void TPaymentTransaction::ApplyMembership(TContactMemberApplied inMemberApplied)
    {
        ManagerDiscount->ClearMemberDiscounts(Orders);
        Membership.Assign(inMemberApplied);
-       ApplyMembershipDiscounts();
+       if((!TPaySubsUtility::IsLocalLoyalty()) ||
+           Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+          ApplyMembershipDiscounts();
        Recalc();
    }
    else

@@ -10,6 +10,7 @@ class ZBlindBalancesDetailsReportSection : public BaseReportSection
 {
 public:
 	ZBlindBalancesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    ZBlindBalancesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
 	~ZBlindBalancesDetailsReportSection();
 
 	virtual void GetOutput(TPrintout* printOut);

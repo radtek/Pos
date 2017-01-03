@@ -15,12 +15,15 @@ class XCancelsDetailsReportSection : public BaseReportSection
 
 public:
     XCancelsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XCancelsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XCancelsDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
 
 private:
     DataFormatUtilities* dataFormatUtilities;
+    void GetCancelReportsForNormalZed(TIBSQL* cancelsQuery, AnsiString terminalNamePredicate);
+    void GetCancelReportsForConsolidatedZed(TIBSQL* cancelsQuery, AnsiString terminalNamePredicate, TDateTime prevZedTime);
 };
 
 #endif

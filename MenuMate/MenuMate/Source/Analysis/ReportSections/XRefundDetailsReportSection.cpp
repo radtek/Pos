@@ -9,6 +9,13 @@ XRefundDetailsReportSection::XRefundDetailsReportSection(Database::TDBTransactio
     dataFormatUtilities = new DataFormatUtilities;
 }
 
+XRefundDetailsReportSection::XRefundDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmRefundDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
+
 XRefundDetailsReportSection::~XRefundDetailsReportSection()
 {
     delete dataFormatUtilities;
@@ -27,21 +34,15 @@ void XRefundDetailsReportSection::GetOutput(TPrintout* printOut)
 
     TIBSQL *creditQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
     creditQuery->Close();
-    creditQuery->SQL->Text = "SELECT "
-                                    "ITEM_NAME, "
-                                    "PRICE, "
-                                    "QTY, "
-                                    "REDEEMED, "
-                                    "ORDER_TYPE, "
-                                    "CONTACTS.NAME, "
-                                    "SECURITY.NOTE, "
-                                    "SECURITY.TIME_STAMP "
-                                "FROM DAYARCHIVE "
-                                "LEFT JOIN SECURITY ON DAYARCHIVE.SECURITY_REF = SECURITY.SECURITY_REF "
-                                "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
-                                " WHERE " + terminalNamePredicate + " ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + " " "AND "
-                                "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secCredit] + "' "
-                                 "OR "  "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secWriteOff] + "' "  "ORDER BY " "CONTACTS.NAME";
+    if(IsConsolidatedZed)
+    {
+       GetRefundItemForConsolidatedZed(creditQuery, terminalNamePredicate, deviceName);
+    }
+    else
+    {
+       GetRefundItemForNormalZed(creditQuery, terminalNamePredicate, deviceName);
+    }
+
     creditQuery->ExecQuery();
 
     for (; !creditQuery->Eof; creditQuery->Next())
@@ -140,3 +141,57 @@ void XRefundDetailsReportSection::GetOutput(TPrintout* printOut)
     }
     delete _creditServerList;
 }
+
+void XRefundDetailsReportSection::GetRefundItemForNormalZed(TIBSQL *creditQuery, AnsiString terminalNamePredicate, AnsiString deviceName)
+{
+   creditQuery->SQL->Text = "SELECT "
+                                    "ITEM_NAME, "
+                                    "PRICE, "
+                                    "QTY, "
+                                    "REDEEMED, "
+                                    "ORDER_TYPE, "
+                                    "CONTACTS.NAME, "
+                                    "SECURITY.NOTE, "
+                                    "SECURITY.TIME_STAMP "
+                                "FROM DAYARCHIVE "
+                                "LEFT JOIN SECURITY ON DAYARCHIVE.SECURITY_REF = SECURITY.SECURITY_REF "
+                                "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
+                                " WHERE " + terminalNamePredicate + " ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + " " "AND "
+                                "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secCredit] + "' "
+                                 "OR "  "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secWriteOff] + "' "  "ORDER BY " "CONTACTS.NAME";
+}
+
+void XRefundDetailsReportSection::GetRefundItemForConsolidatedZed(TIBSQL *creditQuery, AnsiString terminalNamePredicate, AnsiString deviceName)
+{
+if(!_globalSettings->EnableDepositBagNum)
+{
+    terminalNamePredicate = " ARCHIVE.TERMINAL_NAME = '" + deviceName + "' AND ";
+}
+
+creditQuery->SQL->Text = "SELECT "
+                                    "SECURITY.TIME_STAMP, "
+                                    "ITEM_NAME, "
+                                    "PRICE, "
+                                    "QTY, "
+                                    "REDEEMED, "
+                                    "ORDER_TYPE, "
+                                    "CONTACTS.NAME, "
+                                    "SECURITY.NOTE "
+
+                                "FROM ARCHIVE "
+                                "LEFT JOIN SECURITY ON ARCHIVE.SECURITY_REF = SECURITY.SECURITY_REF "
+                                "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
+                                " WHERE "
+                                " SECURITY.TIME_STAMP >= :startTime and  SECURITY.TIME_STAMP <= :endTime and "
+                                + terminalNamePredicate +
+                                " ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + " " "AND "
+
+                                "( SECURITY.SECURITY_EVENT = '" + SecurityTypes[secCredit] + "' "
+                                 "OR "
+                                 "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secWriteOff] + "' )"
+                                 "ORDER BY " "SECURITY.TIME_STAMP";
+  creditQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+  creditQuery->ParamByName("endTime")->AsDateTime = *_endTime;
+}
+
+

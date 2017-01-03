@@ -8,6 +8,7 @@
 #include "enumPoints.h"
 #include "DBGroups.h"
 #include "GlobalSettings.h"
+#include "PaySubsUtility.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -238,7 +239,8 @@ void TDBContacts::GetContactDetails(Database::TDBTransaction &DBTransaction, int
 
 	  IBInternalQuery->Close();
 	  IBInternalQuery->SQL->Text =
-		  " SELECT * FROM CONTACTS WHERE CONTACTS_KEY = :CONTACTS_KEY";
+		  " SELECT * FROM CONTACTS c LEFT JOIN MEMBERSHIP_SUBS_DETAILS m ON c.CONTACTS_KEY = m.CONTACTS_KEY "
+          " WHERE c.CONTACTS_KEY = :CONTACTS_KEY";
 	  IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
 	  IBInternalQuery->ExecQuery();
 	  if (IBInternalQuery->RecordCount)
@@ -296,8 +298,10 @@ void TDBContacts::GetContactDetails(Database::TDBTransaction &DBTransaction, int
          Info.TierLevel = IBInternalQuery->FieldByName("TIER_LEVEL")->AsInteger;
          Info.IsFirstVisitRewarded = IBInternalQuery->FieldByName("IS_FIRSTVISIT_REWARDED")->AsString == 'T' ? true : false;
 		 int PointsRules = IBInternalQuery->FieldByName("POINTS_RULES")->AsInteger;
+         int PointsRulesSubs = IBInternalQuery->FieldByName("POINTS_RULES_SUBS")->AsInteger;
          TPointsRulesSetUtils().Expand(PointsRules, Info.Points.PointsRules);
-         Info.Points.Clear();
+         TPointsRulesSetUtils().ExpandSubs(PointsRulesSubs, Info.Points.PointsRulesSubs);
+         Info.Points.ClearPoints();
          GetPointsBalances(DBTransaction,inContactKey,Info.Points);
          GetContactCards(DBTransaction,inContactKey,Info.Cards);
 		 GetDiscountDetails(DBTransaction, Info.ContactKey, Info);
@@ -403,6 +407,8 @@ bool TDBContacts::GetContactExists(Database::TDBTransaction &DBTransaction, int 
 
 int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int inContactKey,TContactType inContactType,TMMContactInfo &Info)
 {
+   int GlobalProfileKey = TManagerVariable::Instance().GetProfile(DBTransaction, eSystemProfiles, "Globals");
+   TManagerVariable::Instance().GetProfileBool(DBTransaction,  GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
    int RetVal = 0;
    try
    {
@@ -413,12 +419,22 @@ int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int
 	  if (inContactKey != 0)
 	  {
 		 IBInternalQuery->Close();
-		 IBInternalQuery->SQL->Text = " SELECT CONTACTS_KEY FROM CONTACTS WHERE CONTACTS_KEY = :CONTACTS_KEY AND CONTACT_TYPE = :CONTACT_TYPE ";
+		 IBInternalQuery->SQL->Text = " SELECT c.CONTACTS_KEY,c.POINTS_RULES,m.POINTS_RULES_SUBS FROM CONTACTS c LEFT JOIN MEMBERSHIP_SUBS_DETAILS m ON c.CONTACTS_KEY = m.CONTACTS_KEY"
+         " WHERE c.CONTACTS_KEY = :CONTACTS_KEY AND c.CONTACT_TYPE = :CONTACT_TYPE ";
 		 IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
 		 IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = inContactType;
 		 IBInternalQuery->ExecQuery();
 		 if (inContactKey == IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger)
 		 {
+            if(TPaySubsUtility::IsLocalLoyalty())
+            {
+                int newRulesSubs = TPointsRulesSetUtils().CompressSubs(Info.Points.PointsRulesSubs);
+                if(newRulesSubs == 0)
+                {
+                    int rulesSubs = IBInternalQuery->FieldByName("POINTS_RULES_SUBS")->AsInteger;
+                    TPointsRulesSetUtils().ExpandSubs(rulesSubs,Info.Points.PointsRulesSubs);
+                }
+            }
 			RetVal = inContactKey;
 			CreateContact = false;
 		 }
@@ -440,10 +456,10 @@ int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int
 		 IBInternalQuery->SQL->Text =
 			 "INSERT INTO CONTACTS (" "CONTACTS_KEY," "CONTACT_TYPE," "NAME, LAST_NAME," "PIN," "SITE_ID," "CARD_CREATION_DATE,"
 			 "CONTACTS_3RDPARTY_KEY," "MEMBER_NUMBER, ACCOUNT_PROFILE,LAST_VISIT, LAST_BIRTHDAY_PROCESSED ,TIER_LEVEL, "
-                         " ACTIVATION_DATE,MEMBER_TYPE,MAILING_ADDRESS,PHONE,MOBILE,TITLE,DATEOFBIRTH,MEMBER_CARD_CODE,IS_FIRSTVISIT_REWARDED) " "VALUES (" ":CONTACTS_KEY, :CONTACT_TYPE, :NAME, :LAST_NAME, :PIN, :SITE_ID,"
+                         " ACTIVATION_DATE,MEMBER_TYPE,MAILING_ADDRESS,PHONE,MOBILE,TITLE,DATEOFBIRTH,MEMBER_CARD_CODE,IS_FIRSTVISIT_REWARDED,POINTS_RULES) " "VALUES (" ":CONTACTS_KEY, :CONTACT_TYPE, :NAME, :LAST_NAME, :PIN, :SITE_ID,"
 			 ":CARD_CREATION_DATE, :CONTACTS_3RDPARTY_KEY, :MEMBER_NUMBER, :ACCOUNT_PROFILE, :LAST_VISIT, "
                          ":LAST_BIRTHDAY_PROCESSED ,:TIER_LEVEL ,:ACTIVATION_DATE,:MEMBER_TYPE,:MAILING_ADDRESS,:PHONE,:MOBILE,:TITLE,"
-                         ":DATEOFBIRTH,:MEMBER_CARD_CODE,:IS_FIRSTVISIT_REWARDED);";
+                         ":DATEOFBIRTH,:MEMBER_CARD_CODE,:IS_FIRSTVISIT_REWARDED,:POINTS_RULES);";
 		 IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = RetVal;
 		 IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = inContactType;
 		 IBInternalQuery->ParamByName("NAME")->AsString = Info.Name;
@@ -466,7 +482,9 @@ int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int
          IBInternalQuery->ParamByName("MAILING_ADDRESS")->AsString = Info.MailingAddress;
          IBInternalQuery->ParamByName("MEMBER_CARD_CODE")->AsString = Info.MemberCode;
          IBInternalQuery->ParamByName("IS_FIRSTVISIT_REWARDED")->AsString = Info.IsFirstVisitRewarded ? 'T' : 'F';
+         IBInternalQuery->ParamByName("POINTS_RULES")->AsInteger = Info.PointRule;
 		 IBInternalQuery->ExecQuery();
+         TDBContacts::InsertDetailstoMemberSubs(DBTransaction, RetVal,inContactType,Info);
 	  }
    }
    catch(Exception & E)
@@ -476,7 +494,100 @@ int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int
    }
    return RetVal;
 }
+//-----------------------------------------------------------------------------
+void TDBContacts::UpdateDetailstoMemberSubs(Database::TDBTransaction &DBTransaction, int inContactKey,TContactType inContactType,TMMContactInfo &Info)
+{
+   try
+   {
+	  Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	  DBTransaction.RegisterQuery(IBInternalQuery);
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text =
+        "UPDATE MEMBERSHIP_SUBS_DETAILS SET"
+        " POINTS_RULES_SUBS = :POINTS_RULES_SUBS, SUBS_PAID = :SUBS_PAID"
+        " WHERE CONTACTS_KEY = :CONTACTS_KEY";
+      if(!TPaySubsUtility::IsLocalLoyalty())
+      {
+          int pointRules = 0;
+          if(!Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+            pointRules |= eprAllowDiscounts;
+          if(!Info.Points.PointsRulesSubs.Contains(eprFinancial))
+            pointRules |= eprFinancial;
+          TPointsRulesSetUtils().ExpandSubs(pointRules,Info.Points.PointsRulesSubs);
+      }
+      IBInternalQuery->ParamByName("POINTS_RULES_SUBS" )->AsInteger = TPointsRulesSetUtils().CompressSubs(Info.Points.PointsRulesSubs);
+      IBInternalQuery->ParamByName("CONTACTS_KEY" )->AsInteger = inContactKey;
+      if(Info.Points.PointsRulesSubs.Contains(eprFinancial))
+        IBInternalQuery->ParamByName("SUBS_PAID" )->AsString = "T";
+      else
+        IBInternalQuery->ParamByName("SUBS_PAID" )->AsString = "F";
+      IBInternalQuery->ExecQuery();
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+	  throw;
+   }
 
+}
+//-----------------------------------------------------------------------------
+void TDBContacts::InsertDetailstoMemberSubs(Database::TDBTransaction &DBTransaction, int inContactKey,TContactType inContactType,TMMContactInfo &Info)
+{
+   try
+   {
+	  Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	  DBTransaction.RegisterQuery(IBInternalQuery);
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_MEMBERSHIP_SUBS_KEY, 1) FROM RDB$DATABASE";
+      IBInternalQuery->ExecQuery();
+      int retValue = IBInternalQuery->Fields[0]->AsInteger;
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text =
+        "INSERT INTO MEMBERSHIP_SUBS_DETAILS ( MEMBERSHIP_SUBS_KEY, CONTACTS_KEY,POINTS_RULES_SUBS,SUBS_PAID,SUBS_TYPE,ISLOCAL_MEMBER )"
+        " VALUES (:MEMBERSHIP_SUBS_KEY, :CONTACTS_KEY,:POINTS_RULES_SUBS,:SUBS_PAID,:SUBS_TYPE,:ISLOCAL_MEMBER)";
+      IBInternalQuery->ParamByName("MEMBERSHIP_SUBS_KEY")->AsInteger = retValue;
+      IBInternalQuery->ParamByName("CONTACTS_KEY" )->AsInteger  = inContactKey;
+      IBInternalQuery->ParamByName("POINTS_RULES_SUBS" )->AsInteger = TPointsRulesSetUtils().CompressSubs(Info.Points.PointsRulesSubs);
+
+      if(TGlobalSettings::Instance().UseMemberSubs)
+      {
+          IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "";
+          IBInternalQuery->ParamByName("SUBS_PAID" )->AsString  = "F";
+              if(Info.Points.PointsRulesSubs.Contains(eprFinancial))
+                Info.Points.PointsRulesSubs >> eprFinancial;
+              if(!Info.Points.PointsRules.Contains(eprNoPointsPurchases))
+                 Info.Points.PointsRules << eprNoPointsPurchases;
+              if(!Info.Points.PointsRules.Contains(eprNoPointsRedemption))
+                 Info.Points.PointsRules << eprNoPointsRedemption;
+              if(!Info.Points.PointsRules.Contains(eprNeverEarnsPoints))
+                 Info.Points.PointsRules << eprNeverEarnsPoints;
+              if(Info.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+                 Info.Points.PointsRulesSubs >> eprAllowDiscounts;
+      }
+      else
+      {
+          IBInternalQuery->ParamByName("SUBS_TYPE" )->AsString  = "AUTO";
+          IBInternalQuery->ParamByName("SUBS_PAID" )->AsString  = "T";
+      }
+      if(!TPaySubsUtility::IsLocalLoyalty())
+      {
+         IBInternalQuery->ParamByName("ISLOCAL_MEMBER" )->AsString  = "F";
+      }
+      else
+      {
+         IBInternalQuery->ParamByName("ISLOCAL_MEMBER" )->AsString  = "T";
+      }
+
+      IBInternalQuery->ExecQuery();
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+	  throw;
+   }
+
+}
+//-----------------------------------------------------------------------------
 void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int inContactKey,TContactType inContactType, TMMContactInfo &Info)
 {
    try
@@ -490,7 +601,7 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 	  if (Info.ProxStr != "")
 	  {
       	 IBInternalQuery->Close();
-		 IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE PROX_CARD = :PROX_CARD AND CONTACTS_KEY != :CONTACTS_KEY";
+		 IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS  WHERE PROX_CARD = :PROX_CARD AND CONTACTS_KEY != :CONTACTS_KEY";
 		 IBInternalQuery->ParamByName("PROX_CARD")->AsString = Info.ProxStr;
 		 IBInternalQuery->ParamByName("CONTACTS_KEY")->AsString = inContactKey;
 		 IBInternalQuery->ExecQuery();
@@ -616,6 +727,7 @@ void TDBContacts::SetContactDetails(Database::TDBTransaction &DBTransaction, int
       IBInternalQuery->ParamByName("IS_FIRSTVISIT_REWARDED")->AsString = Info.IsFirstVisitRewarded ? 'T' : 'F';
 	  IBInternalQuery->ExecQuery();
 
+      TDBContacts::UpdateDetailstoMemberSubs(DBTransaction, inContactKey,inContactType,Info);
       // try to match the current database points with the points in current info object. if they are different, add a sync record to database
       TContactPoints dbPoints;
       TDBContacts::GetPointsBalances(DBTransaction, Info.ContactKey, dbPoints);

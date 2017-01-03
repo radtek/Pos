@@ -497,3 +497,318 @@ TDateTime TDBSaleTimes::GetSaleStartTimeFromTimeKey(Database::TDBTransaction &DB
 
 	return SaleStartTime;
 }
+
+TDateTime TDBSaleTimes::GetSalesAverage(Database::TDBTransaction &DBTransaction, TDateTime &startTime, TDateTime &endTime)
+{
+   TDateTime Total;
+
+   TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+	IBInternalQuery->Close();
+	IBInternalQuery->SQL->Clear();
+	IBInternalQuery->SQL->Text =
+		"SELECT "
+		" AVG (SALE_END_TIME - SALE_START_TIME) AVGERAGE"
+		" FROM"
+		" TURNAROUNDTIMES"
+		" WHERE SALE_START_TIME >=:startTime AND"
+		" SALE_END_TIME < :endTime ";
+		//" SALE_START_TIME > :SALE_START_TIME";
+
+	IBInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
+    IBInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
+	IBInternalQuery->ExecQuery();
+
+	Total = IBInternalQuery->FieldByName("AVGERAGE")->AsFloat;
+
+	return Total;
+}
+
+TDateTime TDBSaleTimes::GetMakeAverage(Database::TDBTransaction &DBTransaction, TDateTime &startTime, TDateTime &endTime)
+{
+    TDateTime Total;
+
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+	IBInternalQuery->Close();
+	IBInternalQuery->SQL->Clear();
+	IBInternalQuery->SQL->Text =
+		"SELECT "
+		" AVG (MAKE_END_TIME - MAKE_START_TIME) AVGERAGE"
+		" FROM"
+		" TURNAROUNDTIMES"
+		" WHERE MAKE_START_TIME >=:startTime  AND"
+		" MAKE_END_TIME < :endTime  ";
+		//" MAKE_START_TIME > :MAKE_START_TIME";
+
+	IBInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
+    IBInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
+	IBInternalQuery->ExecQuery();
+
+	Total = IBInternalQuery->FieldByName("AVGERAGE")->AsFloat;
+
+	return Total;
+}
+
+bool TDBSaleTimes::GetLongestSaleTransForConsolidatedZed(Database::TDBTransaction &DBTransaction,int Offest,UnicodeString &Doc,UnicodeString &Opr,
+				UnicodeString &Qty,UnicodeString &Dur,UnicodeString &Avg,UnicodeString &Val, TDateTime &startTime, TDateTime &endTime)
+{
+
+   bool retVal = false;
+	try
+   {
+      TDateTime Total;
+      TDateTime From;
+
+
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Clear();
+		IBInternalQuery->SQL->Text =
+		"SELECT MAX(TIME_STAMP)TIME_STAMP FROM ZEDS";
+		IBInternalQuery->ExecQuery();
+
+		From = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Clear();
+		IBInternalQuery->SQL->Text =
+      /*"SELECT TIME_KEY,SALE_START_TIME, SALE_END_TIME, (SALE_END_TIME - SALE_START_TIME) DURATION "
+      " FROM TURNAROUNDTIMES "
+      " WHERE SALE_START_TIME IS NOT NULL AND "
+      " SALE_END_TIME IS NOT NULL AND"
+      " SALE_START_TIME > :SALE_START_TIME"
+      " ORDER BY 4 DESC";*/
+        " SELECT a.TIME_KEY,SALE_START_TIME, SALE_END_TIME, (SALE_END_TIME - SALE_START_TIME) DURATION from ARCHIVE a "
+        " left join ARCORDERDISCOUNTS b "
+        " on a.ARCHIVE_KEY = b.ARCHIVE_KEY "
+        " left join TURNAROUNDTIMES c  "
+        " on a.TIME_KEY = c.TIME_KEY  "
+        " where (( a.DISCOUNT = 0  ) or b.DISCOUNT_KEY > 0 and b.DISCOUNT_GROUPNAME <> 'Non-Chargeable' ) and "
+        " c.SALE_START_TIME >=:startTime AND "
+        " c.SALE_END_TIME < :endTime  "
+        //" c.SALE_START_TIME > :SALE_START_TIME"
+        " group by 1,2,3,4 "
+        " ORDER BY 4 DESC";
+
+      IBInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
+      IBInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
+      IBInternalQuery->ExecQuery();
+
+      int i = 0;
+      for (; i < Offest ; i++)
+      {
+         IBInternalQuery->Next();
+      }
+      retVal = IBInternalQuery->Eof;
+		if(!IBInternalQuery->Eof && IBInternalQuery->RecordCount && (i == Offest))
+      {
+         int TimeKey = 0;
+         TimeKey = IBInternalQuery->FieldByName("TIME_KEY")->AsInteger;
+         TDateTime Temp = IBInternalQuery->FieldByName("DURATION")->AsFloat;
+         unsigned short hour = 0, min = 0, sec = 0, msec = 0;
+         Temp.DecodeTime(&hour,&min,&sec,&msec);
+			Dur = /*IntToStr(hour)+ ":" + */IntToStr(min)+ ":" + IntToStr(sec);
+			TDateTime Average =  GetSalesAverage(DBTransaction, startTime, endTime);
+	      TDateTime AvgDiff = Temp - Average;
+         AvgDiff.DecodeTime(&hour,&min,&sec,&msec);
+         if(Temp > Average)
+         {
+         	Avg = "+" + IntToStr(min)+ ":" + IntToStr(sec);
+         }
+         else
+         {
+         	Avg = "-" + IntToStr(min)+ ":" + IntToStr(sec);
+         }
+			// Quantiy of Items.
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Clear();
+			IBInternalQuery->SQL->Text = "SELECT COUNT(ARCHIVE_KEY) AMOUNT FROM ARCHIVE WHERE TIME_KEY = :TIME_KEY" ;
+			IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = TimeKey;
+			IBInternalQuery->ExecQuery();
+			Qty = IntToStr(IBInternalQuery->FieldByName("AMOUNT")->AsInteger);
+
+			// Value of Items.
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Clear();
+			IBInternalQuery->SQL->Text = "SELECT SUM(PRICE) TOTAL FROM ARCHIVE WHERE TIME_KEY = :TIME_KEY" ;
+			IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = TimeKey;
+			IBInternalQuery->ExecQuery();
+			Val = FloatToStrF(IBInternalQuery->FieldByName("TOTAL")->AsFloat,ffNumber,15,2);
+			//Val = FloatToStrF(IBInternalQuery->FieldByName("TOTAL")->AsFloat,ffCurrency,15,2);
+
+			// Security Ref (Used to Find Operator)
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Clear();
+			IBInternalQuery->SQL->Text = "SELECT SECURITY_REF,ARCBILL_KEY FROM ARCHIVE WHERE TIME_KEY = :TIME_KEY" ;
+			IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = TimeKey;
+			IBInternalQuery->ExecQuery();
+			int SecRef = IBInternalQuery->FieldByName("SECURITY_REF")->AsInteger;
+			int ArcBillKey = IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger;
+
+			// Operator
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Clear();
+			IBInternalQuery->SQL->Text = "SELECT TO_VAL FROM SECURITY WHERE SECURITY_REF = :SECURITY_REF AND SECURITY_EVENT = :SECURITY_EVENT" ;
+			IBInternalQuery->ParamByName("SECURITY_REF")->AsInteger = SecRef;
+			IBInternalQuery->ParamByName("SECURITY_EVENT")->AsString = SecurityTypes[secOrderedBy];
+			IBInternalQuery->ExecQuery();
+			Opr = IBInternalQuery->FieldByName("TO_VAL")->AsString;
+
+			// Docket Number.
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Clear();
+			IBInternalQuery->SQL->Text = " select INVOICE_NUMBER,ARCBILL_KEY from ( "
+                                         " select a.ARCBILL_KEY ,a.INVOICE_NUMBER from ARCBILL a  "
+                                         " left join ARCHIVE b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                         " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                                         " where (( a.DISCOUNT = 0 ) or c.DISCOUNT_GROUPNAME <> 'Non-Chargeable' and c.DISCOUNTED_VALUE <> 0 )"
+                                         " group by 1,2) where ARCBILL_KEY = :ARCBILL_KEY ";
+			IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+			IBInternalQuery->ExecQuery();
+            Doc = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
+
+		}
+		else
+		{
+			Doc = "";
+			Opr = "";
+			Qty = "";
+			Dur = "";
+			Avg = "";
+			Val = "";
+		}
+
+	}
+	catch (Exception &E)
+   {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+      Doc = "";
+      Opr = "";
+      Qty = "";
+      Dur = "";
+      Avg = "";
+      Val = "";
+   }
+   return retVal;
+}
+
+void TDBSaleTimes::GetLongestMakeTransForConsolidatedZed(Database::TDBTransaction &DBTransaction,int Offest,UnicodeString &Doc,UnicodeString &Opr,
+				UnicodeString &Qty,UnicodeString &Dur,UnicodeString &Avg,UnicodeString &Val, TDateTime &startTime, TDateTime &endTime)
+{
+	try
+   {
+      //TDateTime From;
+      TDateTime Total;
+
+
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+		IBInternalQuery->Close();
+      IBInternalQuery->SQL->Clear();
+		IBInternalQuery->SQL->Text =
+      "SELECT TIME_KEY,MAKE_START_TIME, MAKE_END_TIME, (MAKE_END_TIME - MAKE_START_TIME) DURATION "
+      " FROM TURNAROUNDTIMES "
+      " WHERE MAKE_START_TIME >=:startTime AND  "
+      " MAKE_END_TIME < :endTime "
+      //" MAKE_START_TIME > :MAKE_START_TIME"
+      " ORDER BY 4 DESC";
+
+      IBInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
+      IBInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
+      IBInternalQuery->ExecQuery();
+
+      IBInternalQuery->ExecQuery();
+
+      int i = 0;
+      for (; i < Offest ; i++)
+      {
+         IBInternalQuery->Next();
+      }
+
+		if(!IBInternalQuery->Eof && IBInternalQuery->RecordCount && (i == Offest))
+		{
+         int TimeKey = 0;
+         TimeKey = IBInternalQuery->FieldByName("TIME_KEY")->AsInteger;
+         TDateTime Temp = IBInternalQuery->FieldByName("DURATION")->AsFloat;
+         unsigned short hour = 0, min = 0, sec = 0, msec = 0;
+         Temp.DecodeTime(&hour,&min,&sec,&msec);
+         Dur = /*IntToStr(hour)+ ":" + */IntToStr(min)+ ":" + IntToStr(sec);
+			TDateTime Average =  GetMakeAverage(DBTransaction);
+	      TDateTime AvgDiff = Temp - Average;
+         AvgDiff.DecodeTime(&hour,&min,&sec,&msec);
+         if(Temp > Average)
+         {
+         	Avg = "+" + IntToStr(min)+ ":" + IntToStr(sec);
+         }
+         else
+         {
+         	Avg = "-" + IntToStr(min)+ ":" + IntToStr(sec);
+         }
+
+
+			// Quantiy of Items.
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Clear();
+			IBInternalQuery->SQL->Text = "SELECT COUNT(ARCHIVE_KEY) AMOUNT FROM ARCHIVE WHERE TIME_KEY = :TIME_KEY" ;
+			IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = TimeKey;
+			IBInternalQuery->ExecQuery();
+			Qty = IntToStr(IBInternalQuery->FieldByName("AMOUNT")->AsInteger);
+
+			// Value of Items.
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Clear();
+			IBInternalQuery->SQL->Text = "SELECT SUM(PRICE) TOTAL FROM ARCHIVE WHERE TIME_KEY = :TIME_KEY" ;
+			IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = TimeKey;
+			IBInternalQuery->ExecQuery();
+			Val = FloatToStrF(IBInternalQuery->FieldByName("TOTAL")->AsFloat,ffCurrency,15,2);
+
+			// Security Ref (Used to Find Operator)
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Clear();
+			IBInternalQuery->SQL->Text = "SELECT SECURITY_REF,ARCBILL_KEY FROM ARCHIVE WHERE TIME_KEY = :TIME_KEY" ;
+			IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = TimeKey;
+			IBInternalQuery->ExecQuery();
+			int SecRef = IBInternalQuery->FieldByName("SECURITY_REF")->AsInteger;
+			int ArcBillKey = IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger;
+
+			// Operator
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Clear();
+			IBInternalQuery->SQL->Text = "SELECT TO_VAL FROM SECURITY WHERE SECURITY_REF = :SECURITY_REF AND SECURITY_EVENT = :SECURITY_EVENT" ;
+			IBInternalQuery->ParamByName("SECURITY_REF")->AsInteger = SecRef;
+			IBInternalQuery->ParamByName("SECURITY_EVENT")->AsString = SecurityTypes[secOrderedBy];
+			IBInternalQuery->ExecQuery();
+			Opr = IBInternalQuery->FieldByName("TO_VAL")->AsString;
+
+			// Docket Number.
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Clear();
+			IBInternalQuery->SQL->Text = "SELECT INVOICE_NUMBER FROM ARCBILL WHERE ARCBILL_KEY = :ARCBILL_KEY";
+			IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+			IBInternalQuery->ExecQuery();
+			Doc = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
+		}
+		else
+		{
+			Doc = "";
+			Opr = "";
+			Qty = "";
+			Dur = "";
+			Avg = "";
+			Val = "";
+		}
+
+	}
+	catch (Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		Doc = "";
+		Opr = "";
+		Qty = "";
+		Dur = "";
+		Avg = "";
+		Val = "";
+	}
+}

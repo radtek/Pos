@@ -14,7 +14,7 @@
 #include "TouchControls.h"
 #include "ZForm.h"
 #include "DBHappyHour.h"
-#include "GlobalSettings.h"
+
 //---------------------------------------------------------------------------
 class TfrmHappyHourSettings : public TZForm
 {

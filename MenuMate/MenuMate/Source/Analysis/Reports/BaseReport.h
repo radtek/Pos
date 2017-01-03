@@ -40,6 +40,7 @@ public:
 protected:
 	std::vector<IReportSection*> _sections;
     TPrintout* SetupPrintOutInstance();
+    TPrintout* SetupPrintOutInstanceForConsolidatedZed();
 };
 
 #endif

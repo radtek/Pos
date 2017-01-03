@@ -21,7 +21,6 @@
 
 #include "SmartcardPreloader.h"
 #include "ManagerLoyaltyMate.h"
-#include "MMTouchKeyboard.h"
 #include "LoyaltyMateOperationDialogBox.h"
 #include "DBTab.h"
 #include "EditCustomer.h"
@@ -1361,7 +1360,7 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
 
    if(!smartCardHasUUID && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(SmartCardContact.CloudUUID))
    {
-     AddDefaultPoints(DBTransaction,pointsToSync,SmartCardContact.ContactKey);
+      AddDefaultPoints(DBTransaction,pointsToSync,SmartCardContact.ContactKey);
       TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- CardInsertedhandler");
    }
    DBTransaction.Commit();
@@ -1609,8 +1608,8 @@ bool TManagerMembershipSmartCards::SavePointsTransactionsToSmartCard(TContactPoi
 		if (ManagerSmartCards->Enabled)
 		{
 			/* If they havnt got the card inserted,
-		Dont mark these points as exported and export them next time
-		*/
+		       Dont mark these points as exported and export them next time
+		    */
 			if (ManagerSmartCards->CardOk && (Points.HasTransactions() || Points.HasHeldTransactions()))
 			{
 				bool Abort = false;
@@ -1632,7 +1631,7 @@ bool TManagerMembershipSmartCards::SavePointsTransactionsToSmartCard(TContactPoi
 						ManagerSmartCards->GetContactInfo(SmartCardContact);
 						SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
                         UnicodeString UUID = TDBContacts::GetMemberCloudId(DBTransaction,SmartCardContact.ContactKey);
-                         if(TGlobalSettings::Instance().LoyaltyMateEnabled
+                        if(TGlobalSettings::Instance().LoyaltyMateEnabled
                              && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UUID)
                              && !PointsFromCloud)
                                 {
@@ -1648,9 +1647,7 @@ bool TManagerMembershipSmartCards::SavePointsTransactionsToSmartCard(TContactPoi
 						BeginMemberTransaction();
 						ManagerSmartCards->SaveContactPoints(Points);
 						EndMemberTransaction();
-
-						DBTransaction.Commit(); // commiting the transaction here so the record will be saved in the database only if they are written on to the card
-
+    					DBTransaction.Commit();
 						Complete = true;
 						Points.setExportStatus(pesExported);
 						Points.TimeStampExported = Now();
@@ -1755,17 +1752,14 @@ void TManagerMembershipSmartCards::SaveContactInfoEditedToSmartCard(TMMContactIn
 					frmProcessing->Title = "Do NOT remove smartcard.";
 					frmProcessing->Show();
 					frmProcessing->Repaint();
-
 					BeginMemberTransaction();
 					ManagerSmartCards->SaveContactInfo(inContactInfo);
-
 					EndMemberTransaction();
 					Complete = true;
 				}
 				else
 				{
-					if (CustomMessageBox("Failed to Save to Smart Card.\rIncorrect Smart Card in Reader.", "Failed to Save to Smart Card.",
-								MB_ICONQUESTION, "Retry", "Dont Issue Card") == IDOK)
+					if (CustomMessageBox("Failed to Save to Smart Card.\rIncorrect Smart Card in Reader.", "Failed to Save to Smart Card.",MB_ICONQUESTION, "Retry", "Dont Issue Card") == IDOK)
 					{
 						Abort = false;
 						Complete = false;

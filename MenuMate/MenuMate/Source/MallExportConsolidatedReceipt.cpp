@@ -28,11 +28,20 @@ MallExportConsolidatedReceipt::MallExportConsolidatedReceipt(Database::TDBTransa
     dataCalculationUtilities = new DataCalculationUtilities;
 }
 
+MallExportConsolidatedReceipt::MallExportConsolidatedReceipt(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	: BaseReportSection(mmZReport, mmMallExportConsolidatedReceipt, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
+}
+
 MallExportConsolidatedReceipt::~MallExportConsolidatedReceipt()
 {
     delete dataFormatUtilities;
     delete dataCalculationUtilities;
 }
+
+
 
 void MallExportConsolidatedReceipt::GetOutput(TPrintout* printOut)
 {

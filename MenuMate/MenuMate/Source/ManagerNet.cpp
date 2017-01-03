@@ -5,7 +5,7 @@
 
 #include "ManagerNet.h"
 #include "enum.h"
-#include "ManagerVariable.h"
+
 
 #include <spinlock.hh>
 
