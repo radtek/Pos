@@ -14096,6 +14096,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
          "Left Join ARCBILL On "
 				 " Archive.ArcBill_Key=ArcBill.ArcBill_Key "
 	"Where "
+            "Archive.Order_Type != 2 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
 			"Archive.TIME_STAMP_BILLED < :EndTime and "
 			"Security.Security_Event = 'Price Adjust' and "
