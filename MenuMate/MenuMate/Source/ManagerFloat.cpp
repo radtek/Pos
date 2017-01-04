@@ -258,9 +258,6 @@ void TManagerFloat::SetFloat(Database::TDBTransaction &DBTransaction,TMMContactI
 	   //	   runReason(FloatSkimData);
 		   FloatSkimData.InsertToDatabase(DBTransaction);
 		   DBTransaction.Commit();
-
-
-
 }
 
 

@@ -3174,6 +3174,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarBool(DBTransaction,vmUseMemberSubs, "Enable Membership Subscription",
 		"Default is False",
 		vmgPOS, false);
+        SetVarBool(DBTransaction, vmFloatWithdrawFromCash, "Float Withdraw From Cash",
+                 "If this setting is on float withdraw will happen from cash"
+                 "Default is False.",
+                  vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

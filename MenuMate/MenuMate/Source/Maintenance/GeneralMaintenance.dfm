@@ -245,7 +245,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 49
           Width = 433
-          Height = 720
+          Height = 745
           Caption = 'P.O.S Options'
           ParentBackground = False
           TabOrder = 5
@@ -570,6 +570,15 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Hide Rounding On Receipt'
             TabOrder = 21
             OnClick = cbHideRoundingOnReceiptClick
+          end
+          object cbFloatWithdrawFromCash: TCheckBox
+            Left = 8
+            Top = 710
+            Width = 412
+            Height = 25
+            Caption = 'Float Withdraw From Cash'
+            TabOrder = 25
+            OnClick = cbFloatWithdrawFromCashClick
           end
         end
         object GroupBox5: TGroupBox

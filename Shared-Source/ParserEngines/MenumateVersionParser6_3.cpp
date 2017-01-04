@@ -44,7 +44,11 @@ void TApplyParser::upgrade6_35Tables()
 {
 	update6_35Tables();
 }
-
+//--------------------------------------------------------------------------6.36..................
+void TApplyParser::upgrade6_36Tables()
+{
+	update6_36Tables();
+}
 
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
@@ -910,5 +914,21 @@ void TApplyParser::Create6_35GeneratorMallExportSettingValues(TDBControl* const 
     }
 }
 //--------------------------------------------------------------------------------------------------
+void TApplyParser::update6_36Tables()
+{
+    AlterTableRefloat_Skim6_36(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::AlterTableRefloat_Skim6_36( TDBControl* const inDBControl )
+{
+    if ( !fieldExists( "REFLOAT_SKIM ", "Is_Float_Withdrawn_From_Cash ", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REFLOAT_SKIM "
+        "ADD Is_Float_Withdrawn_From_Cash T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+    }
+}
+
 }
 
