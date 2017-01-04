@@ -180,6 +180,8 @@ public:
     Currency CurrentSkimsTotal;
     Currency Skims;
     Currency Refloats;
+    Currency CashWithdrawl;
+    int CashWithdrawlCount;
 };
 
 class TCurrencyTotal : public TObject

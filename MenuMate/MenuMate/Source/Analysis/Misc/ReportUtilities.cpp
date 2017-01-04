@@ -86,6 +86,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
         Currency currentSkimsTotal = 0;
         Currency skims = 0;
         Currency refloats = 0;
+        Currency cashWithdrawl = 0;
 
         if(TGlobalSettings::Instance().UseBIRFormatInXZReport || showendingbal)
         {
@@ -97,7 +98,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
 
         ibInternalQuery->Close();
 
-        ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount FROM refloat_skim "
+        ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount, refloat_skim.IS_FLOAT_WITHDRAWN_FROM_CASH FROM refloat_skim "
         "Left join zeds on refloat_skim.z_key = zeds.z_key "
         "WHERE zeds.TERMINAL_NAME = :TERMINAL_NAME AND zeds.TIME_STAMP IS NULL "
         "and (refloat_skim.transaction_type = 'Withdrawal' or refloat_skim.transaction_type = 'Deposit')";
@@ -107,7 +108,11 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
 
         for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
         {
-            if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal")
+            if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal" && ibInternalQuery->FieldByName("IS_FLOAT_WITHDRAWN_FROM_CASH")->AsString == "T" )
+            {
+                cashWithdrawl += ibInternalQuery->FieldByName("amount")->AsCurrency;
+            }
+            else if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal")
             {
                 skims += ibInternalQuery->FieldByName("amount")->AsCurrency;
             }
@@ -171,7 +176,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
             }
             if (groupGrandTotal != 0 && itPayments->first == 0)
             {
-                groupGrandTotal -= (currentFloat + currentSkimsTotal);
+                groupGrandTotal -= (currentFloat + currentSkimsTotal - cashWithdrawl);
             }
         }
 
@@ -445,7 +450,7 @@ void SkimCalculations::CalculateSkims(Database::TDBTransaction &dbTransaction, U
     TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
 
     ibInternalQuery->Close();
-    ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount FROM refloat_skim "
+    ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount, refloat_skim.IS_FLOAT_WITHDRAWN_FROM_CASH FROM refloat_skim "
                                     "Left join zeds on refloat_skim.z_key = zeds.z_key "
                                     "WHERE zeds.TERMINAL_NAME = :TERMINAL_NAME AND zeds.TIME_STAMP IS NULL "
                                     "and (refloat_skim.transaction_type = 'Withdrawal' or refloat_skim.transaction_type = 'Deposit')";
@@ -455,7 +460,12 @@ void SkimCalculations::CalculateSkims(Database::TDBTransaction &dbTransaction, U
 
     for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
     {
-        if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal")
+        if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal" && ibInternalQuery->FieldByName("IS_FLOAT_WITHDRAWN_FROM_CASH")->AsString == "T" )
+        {
+            CashWithdrawl += ibInternalQuery->FieldByName("amount")->AsCurrency;
+            CashWithdrawlCount++;
+        }
+        else if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal" )
         {
             Skims += ibInternalQuery->FieldByName("amount")->AsCurrency;
         }
@@ -1161,6 +1171,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
         Currency currentSkimsTotal = 0;
         Currency skims = 0;
         Currency refloats = 0;
+        Currency cashWithdrawl = 0;
 
         if(TGlobalSettings::Instance().UseBIRFormatInXZReport || showendingbal)
         {
@@ -1172,7 +1183,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
 
         ibInternalQuery->Close();
 
-        ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount FROM refloat_skim "
+        ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount, REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH FROM refloat_skim "
         "Left join zeds on refloat_skim.z_key = zeds.z_key "
         "WHERE zeds.TERMINAL_NAME = :TERMINAL_NAME AND zeds.TIME_STAMP >= :startTime and  zeds.TIME_STAMP <= :endTime  and zeds.TIME_STAMP IS NOT NULL "
         "and (refloat_skim.transaction_type = 'Withdrawal' or refloat_skim.transaction_type = 'Deposit')";
@@ -1184,7 +1195,11 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
 
         for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
         {
-            if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal")
+            if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal" && ibInternalQuery->FieldByName("IS_FLOAT_WITHDRAWN_FROM_CASH")->AsString == "T" )
+            {
+                cashWithdrawl += ibInternalQuery->FieldByName("amount")->AsCurrency;
+            }
+            else if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal")
             {
                 skims += ibInternalQuery->FieldByName("amount")->AsCurrency;
             }
@@ -1250,7 +1265,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
             }
             if (groupGrandTotal != 0 && itPayments->first == 0)
             {
-                groupGrandTotal -= (currentFloat + currentSkimsTotal);
+                groupGrandTotal -= (currentFloat + currentSkimsTotal - cashWithdrawl);
             }
         }
 
@@ -1284,7 +1299,7 @@ void SkimCalculations::CalculateSkims(Database::TDBTransaction &dbTransaction, U
 
       ibInternalQuery->Close();
 
-        ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount FROM refloat_skim "
+        ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount, refloat_skim.IS_FLOAT_WITHDRAWN_FROM_CASH FROM refloat_skim "
         "Left join zeds on refloat_skim.z_key = zeds.z_key "
         "WHERE zeds.TERMINAL_NAME = :TERMINAL_NAME AND zeds.TIME_STAMP >= :startTime and  zeds.TIME_STAMP <= :endTime  "
         "and (refloat_skim.transaction_type = 'Withdrawal' or refloat_skim.transaction_type = 'Deposit')";
@@ -1297,7 +1312,12 @@ void SkimCalculations::CalculateSkims(Database::TDBTransaction &dbTransaction, U
 
     for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
     {
-        if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal")
+        if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal" && ibInternalQuery->FieldByName("IS_FLOAT_WITHDRAWN_FROM_CASH")->AsString == "T" )
+        {
+            CashWithdrawl += ibInternalQuery->FieldByName("amount")->AsCurrency;
+            CashWithdrawlCount++;
+        }
+        else if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal")
         {
             Skims += ibInternalQuery->FieldByName("amount")->AsCurrency;
         }

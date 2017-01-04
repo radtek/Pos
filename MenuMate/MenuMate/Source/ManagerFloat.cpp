@@ -57,18 +57,20 @@ void TManagerFloat::AlterFloat(Database::TDBTransaction &DBTransaction,TMMContac
 						FormatFloat("$0.00",CurrentSkimsTotal + frmTouchNumpad->CURResult),Now(),
                         TDeviceRealTerminal::Instance().ID.Name);
 
-		 IBInternalQuery->Close();
-         IBInternalQuery->SQL->Text =
-			"UPDATE ZEDS "
-			"SET "
-			   "SKIMS_TOTAL	= :SKIMS_TOTAL "
-			"WHERE "
-			"TERMINAL_NAME = :TERMINAL_NAME AND "
-			"TIME_STAMP IS NULL";
-		 IBInternalQuery->ParamByName("SKIMS_TOTAL")->AsCurrency = CurrentSkimsTotal + frmTouchNumpad->CURResult;
-		 IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
-		 IBInternalQuery->ExecQuery();
-
+        if(frmTouchNumpad->CURResult > 0 && !TGlobalSettings::Instance().FloatWithdrawFromCash)
+        {
+             IBInternalQuery->Close();
+             IBInternalQuery->SQL->Text =
+                "UPDATE ZEDS "
+                "SET "
+                   "SKIMS_TOTAL	= :SKIMS_TOTAL "
+                "WHERE "
+                "TERMINAL_NAME = :TERMINAL_NAME AND "
+                "TIME_STAMP IS NULL";
+             IBInternalQuery->ParamByName("SKIMS_TOTAL")->AsCurrency = CurrentSkimsTotal + frmTouchNumpad->CURResult;
+             IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+             IBInternalQuery->ExecQuery();
+        }
 
 		 int Zed_Key;
 		 IBInternalQuery->Close();
@@ -95,8 +97,6 @@ void TManagerFloat::AlterFloat(Database::TDBTransaction &DBTransaction,TMMContac
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
 
-
-
 		   if((double)frmTouchNumpad->CURResult)
 		   {
 				TFloatSkimData FloatSkimData(Owner, UserInfo, temp, frmTouchNumpad->CURResult, Zed_Key);
@@ -114,8 +114,6 @@ void TManagerFloat::AlterFloat(Database::TDBTransaction &DBTransaction,TMMContac
    {
 	  MessageBox("You must Set the Float first.", "Error",	MB_OK + MB_ICONWARNING);
    }
-
-
 }
 
 void TManagerFloat::SetFloat(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo)

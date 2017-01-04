@@ -35,8 +35,8 @@ void TFloatSkimData::InsertToDatabase(Database::TDBTransaction &DBTransaction)
 
 	  IBInternalQuery->Close();
 	  IBInternalQuery->SQL->Text =
-		" INSERT INTO REFLOAT_SKIM(REFLOAT_SKIM_KEY, TRANSACTION_TYPE, AMOUNT, STAFF, TERMINAL_NAME, TIME_STAMP, Z_KEY, REASONS) "
-		" VALUES (:REFLOAT_SKIM_KEY, :TRANSACTION_TYPE, :AMOUNT, :STAFF, :TERMINAL_NAME, :TIME_STAMP, :Z_KEY, :REASONS);";
+		" INSERT INTO REFLOAT_SKIM(REFLOAT_SKIM_KEY, TRANSACTION_TYPE, AMOUNT, STAFF, TERMINAL_NAME, TIME_STAMP, Z_KEY, REASONS, IS_FLOAT_WITHDRAWN_FROM_CASH) "
+		" VALUES (:REFLOAT_SKIM_KEY, :TRANSACTION_TYPE, :AMOUNT, :STAFF, :TERMINAL_NAME, :TIME_STAMP, :Z_KEY, :REASONS, :IS_FLOAT_WITHDRAWN_FROM_CASH);";
 	  IBInternalQuery->ParamByName("REFLOAT_SKIM_KEY")->AsInteger = Skim_Float_Key;
 	  IBInternalQuery->ParamByName("TRANSACTION_TYPE")->AsString = Transaction_types[TransType];
 	  IBInternalQuery->ParamByName("AMOUNT")->AsCurrency = Amount;
@@ -45,9 +45,8 @@ void TFloatSkimData::InsertToDatabase(Database::TDBTransaction &DBTransaction)
 	  IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
 	  IBInternalQuery->ParamByName("Z_KEY")->AsInteger = Z_Key;
 	  IBInternalQuery->ParamByName("REASONS")->AsString = Reason;
+      IBInternalQuery->ParamByName("IS_FLOAT_WITHDRAWN_FROM_CASH")->AsString = TGlobalSettings::Instance().FloatWithdrawFromCash == 1 ? "T" : "F";
 	  IBInternalQuery->ExecQuery();
-
-
    }
    catch(Exception & E)
    {
