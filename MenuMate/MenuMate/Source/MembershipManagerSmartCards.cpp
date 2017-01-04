@@ -2137,6 +2137,7 @@ AnsiString TManagerMembershipSmartCards::GetActivationEmailFromUser()
 	frmTouchKeyboard->AllowCarriageReturn = false;
 	frmTouchKeyboard->StartWithShiftDown = false;
 	frmTouchKeyboard->KeyboardText = "";
+    frmTouchKeyboard->MaxLength = 50;
 	frmTouchKeyboard->Caption = "Enter Registered Email For Loyaltymate";
 	if (frmTouchKeyboard->ShowModal() == mrOk)
 	{

@@ -716,12 +716,12 @@ bool TMembership::CheckSiteIndex(Database::TDBTransaction &DBTransaction, int in
    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
    IBInternalQuery->Close();
    IBInternalQuery->SQL->Text = " SELECT CONTACTS_KEY" " FROM " "  CONTACTS" " WHERE" " NAME = :NAME AND "
-   // " CONTACT_TYPE = :CONTACT_TYPE AND "
+    " EMAIL = :EMAIL AND "
    " CONTACTS_3RDPARTY_KEY = :CONTACTS_3RDPARTY_KEY AND " " SITE_ID = :SITE_ID AND " " MEMBER_NUMBER = :MEMBER_NUMBER AND "
 	   " CONTACTS_KEY != :CONTACTS_KEY";
 
    IBInternalQuery->ParamByName("NAME")->AsString = Info.Name;
-   // IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = ContactType;
+   IBInternalQuery->ParamByName("EMAIL")->AsString = Info.EMail;
    IBInternalQuery->ParamByName("CONTACTS_3RDPARTY_KEY")->AsInteger = Info.ExternalKey;
    IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Info.SiteID;
    IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsString = Info.MembershipNumber;

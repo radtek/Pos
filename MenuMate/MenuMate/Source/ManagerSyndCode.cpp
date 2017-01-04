@@ -390,6 +390,21 @@ TSyndCode TManagerSyndCode::GetCommunicationSyndCode()
    return retval;
 }
 
+AnsiString TManagerSyndCode::GetCommunicationSyndCodeString()
+{
+   AnsiString retval = "";
+   for (First(false);!Eof();Next(false))
+   {
+      TSyndCode CurrentSyndCode = SyndCode();
+      if(CurrentSyndCode.UseForCom)
+      {
+         retval = CurrentSyndCode.OriginalSyndCode;
+         break;
+      }
+   }
+   return retval;
+}
+
 std::map <int, TSyndCode> TManagerSyndCode::GetSyndCodes(bool EnabledCodesOnly)
 {
 	std::map <int, TSyndCode> Codes;
