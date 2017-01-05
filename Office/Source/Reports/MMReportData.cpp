@@ -15166,13 +15166,18 @@ void TdmMMReportData::SetupCheckRemoval(TDateTime StartTime, TDateTime EndTime) 
 		qrDSRSurcharge->ParamByName("StartTime")->AsDateTime	= StartTime;
 		qrDSRSurcharge->ParamByName("EndTime")->AsDateTime	= EndTime;
 
-		qrDSRPay->Close();
+	qrDSRPay->Close();
 		qrDSRPay->SQL->Text =
-		"select  "
+		"select Tabletemp.PAYMENT_NAME,Sum(Tabletemp.SUBTOTAL) SUBTOTAL from ( "
+       "select  "
 		"UPPER(ARCBILLPAY.PAY_TYPE) PAYMENT_NAME, cast(SUM(ARCBILLPAY.SUBTOTAL)as numeric(17,4)) SUBTOTAL  "
 		"FROM ARCBILLPAY inner JOIN ARCBILL ON ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY inner join security on security.SECURITY_REF=ARCBILL.SECURITY_REF "
 		"WHERE ArcBillPay.Properties != 131072 and Security.Security_Event = 'Billed By' and ARCBILL.TIME_STAMP >=:StartTime AND ARCBILL.TIME_STAMP <:EndTime "
-		"GROUP BY UPPER(ARCBILLPAY.PAY_TYPE) ";
+		"GROUP BY UPPER(ARCBILLPAY.PAY_TYPE) " 
+		"union all "
+		"SELECT  Cast('CASH' as VarChar(50)) PAYMENT_NAME, SUM(a.AMOUNT) SubTotal FROM REFLOAT_SKIM a inner JOIN ZEDS on zeds.Z_KEY=a.Z_KEY "
+		 "WHERE A.TRANSACTION_TYPE='Withdrawal'  and zeds.TIME_STAMP >=:StartTime AND zeds.TIME_STAMP <:EndTime GROUP BY 1 "
+		" ) Tabletemp group by 1 "       ;
 		qrDSRPay->ParamByName("StartTime")->AsDateTime	= StartTime;
 		qrDSRPay->ParamByName("EndTime")->AsDateTime	= EndTime;
 
