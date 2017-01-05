@@ -5336,7 +5336,9 @@ void TdmMMReportData::SetupSkimming( TDateTime StartTime, TDateTime EndTime)
                 "Refloat_Skim left join zeds on refloat_skim.Z_KEY = zeds.z_key "
             "Where "
                 "Refloat_Skim.Time_Stamp >= :StartTime And "
-                "Refloat_Skim.Time_Stamp < :EndTime "
+                "Refloat_Skim.Time_Stamp < :EndTime and "
+                "Refloat_Skim.REFLOAT_SKIM_KEY NOT IN( SELECT REFLOAT_SKIM_KEY FROM REFLOAT_SKIM WHERE (REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' AND REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T') "
+                                                    "and Refloat_Skim.Time_Stamp >= :StartTime And Refloat_Skim.Time_Stamp < :EndTime) "
             "Order by 3, 4;";
 
 
