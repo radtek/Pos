@@ -170,7 +170,7 @@ object frmEditCustomer: TfrmEditCustomer
     Top = 0
     Width = 667
     Height = 530
-    ActivePage = tsPoints
+    ActivePage = tsUser
     Align = alClient
     TabOrder = 1
     object tsUser: TTabSheet
@@ -439,7 +439,7 @@ object frmEditCustomer: TfrmEditCustomer
               Font.Height = -15
               Font.Name = 'Tahoma'
               Font.Style = []
-              MaxLength = 20
+              MaxLength = 15
               ParentFont = False
               TabOrder = 2
             end
@@ -456,7 +456,7 @@ object frmEditCustomer: TfrmEditCustomer
               Font.Height = -15
               Font.Name = 'Tahoma'
               Font.Style = []
-              MaxLength = 20
+              MaxLength = 15
               ParentFont = False
               TabOrder = 4
             end
@@ -471,7 +471,7 @@ object frmEditCustomer: TfrmEditCustomer
               Font.Height = -13
               Font.Name = 'Tahoma'
               Font.Style = []
-              MaxLength = 150
+              MaxLength = 100
               ParentFont = False
               TabOrder = 5
             end
@@ -495,7 +495,7 @@ object frmEditCustomer: TfrmEditCustomer
               Font.Height = -13
               Font.Name = 'Tahoma'
               Font.Style = []
-              MaxLength = 150
+              MaxLength = 100
               ParentFont = False
               TabOrder = 7
             end
@@ -512,7 +512,7 @@ object frmEditCustomer: TfrmEditCustomer
               Font.Height = -15
               Font.Name = 'Tahoma'
               Font.Style = []
-              MaxLength = 55
+              MaxLength = 50
               ParentFont = False
               TabOrder = 3
             end
@@ -529,7 +529,7 @@ object frmEditCustomer: TfrmEditCustomer
               Font.Height = -15
               Font.Name = 'Tahoma'
               Font.Style = []
-              MaxLength = 20
+              MaxLength = 10
               ParentFont = False
               TabOrder = 8
             end
@@ -563,7 +563,7 @@ object frmEditCustomer: TfrmEditCustomer
               Font.Height = -15
               Font.Name = 'Tahoma'
               Font.Style = []
-              MaxLength = 20
+              MaxLength = 6
               ParentFont = False
               TabOrder = 10
             end

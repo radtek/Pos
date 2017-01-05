@@ -12,7 +12,7 @@
 #include "SmartCardVer5API.h"
 #include "SmartCardVer6API.h"
 #include <ctype.h>
-
+#include "GlobalSettings.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -110,44 +110,88 @@ bool TMMContactInfo::ValidEmail()
 
 void TMMContactInfo::SaveToStream(TMemoryStream *Stream)
 {
+   UnicodeString blankValue = "";
    Stream->Position = 0;
-   StreamWrite(Stream, SiteID);
-   StreamWrite(Stream, MembershipNumber);
-   StreamWrite(Stream, Name);
-   StreamWrite(Stream, Alias);
-   StreamWrite(Stream, CardCreationDate);
-   StreamWrite(Stream, LastModified);
-   StreamWrite(Stream, PoleDisplayName);
-   StreamWrite(Stream, DateOfBirth);
-   StreamWrite(Stream, Phone);
-   StreamWrite(Stream, Mobile);
-   StreamWrite(Stream, EMail);
-   StreamWrite(Stream, MailingAddress);
-   StreamWrite(Stream, Note);
-   StreamWrite(Stream, AutoAppliedDiscountsIDDummy);
-   StreamWrite(Stream, Points.PointsRules);
+   if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+        StreamWrite(Stream, SiteID);
+        StreamWrite(Stream, MembershipNumber);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, CardCreationDate);
+        StreamWrite(Stream, LastModified);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, DateOfBirth);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, EMail);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, AutoAppliedDiscountsIDDummy);
+        StreamWrite(Stream, Points.PointsRules);
+   }
+   else
+   {
+        StreamWrite(Stream, SiteID);
+        StreamWrite(Stream, MembershipNumber);
+        StreamWrite(Stream, Name);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, CardCreationDate);
+        StreamWrite(Stream, LastModified);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, DateOfBirth);
+        StreamWrite(Stream, Phone);
+        StreamWrite(Stream, Mobile);
+        StreamWrite(Stream, EMail);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, blankValue);
+        StreamWrite(Stream, AutoAppliedDiscountsIDDummy);
+        StreamWrite(Stream, Points.PointsRules);
+   }
 }
 
 void TMMContactInfo::SaveToStream(int CardVersion, TMemoryStream *Stream)
 {
+    UnicodeString blankValue = "";
     if(CardVersion >= SMART_CARD_VERSION_SIX)
     {
        Stream->Position = 0;
-       StreamWrite(Stream, SiteID);
-       StreamWrite(Stream, MembershipNumber);
-       StreamWrite(Stream, CloudUUID);
-       StreamWrite(Stream, Name);
-       StreamWrite(Stream, Alias);
-       StreamWrite(Stream, CardCreationDate);
-       StreamWrite(Stream, PoleDisplayName);
-       StreamWrite(Stream, DateOfBirth);
-       StreamWrite(Stream, Phone);
-       StreamWrite(Stream, Mobile);
-       StreamWrite(Stream, EMail);
-       StreamWrite(Stream, MailingAddress);
-       StreamWrite(Stream, Note);
-       StreamWrite(Stream, AutoAppliedDiscountsIDDummy);
-       StreamWrite(Stream, Points.PointsRules);
+       if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+       {
+           StreamWrite(Stream, SiteID);
+           StreamWrite(Stream, MembershipNumber);
+           StreamWrite(Stream, CloudUUID);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, CardCreationDate);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, DateOfBirth);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, EMail);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, AutoAppliedDiscountsIDDummy);
+           StreamWrite(Stream, Points.PointsRules);
+       }
+       else
+       {
+           StreamWrite(Stream, SiteID);
+           StreamWrite(Stream, MembershipNumber);
+           StreamWrite(Stream, CloudUUID);
+           StreamWrite(Stream, Name);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, CardCreationDate);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, DateOfBirth);
+           StreamWrite(Stream, Phone);
+           StreamWrite(Stream, Mobile);
+           StreamWrite(Stream, EMail);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, blankValue);
+           StreamWrite(Stream, AutoAppliedDiscountsIDDummy);
+           StreamWrite(Stream, Points.PointsRules);
+       }
     }
     else
         SaveToStream(Stream);

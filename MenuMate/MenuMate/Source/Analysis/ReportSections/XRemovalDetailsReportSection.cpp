@@ -46,6 +46,7 @@ void XRemovalDetailsReportSection::GetOutput(TPrintout* printOut)
     if(IsConsolidatedZed)
     {
        GetRemovalReportsForConsolidatedZed(removalsQuery, prevZedTime, deviceName);
+       prevZedTime = *_endTime;
     }
     else
     {
@@ -179,9 +180,7 @@ void XRemovalDetailsReportSection::GetRemovalReportsForConsolidatedZed(TIBSQL* r
         terminalNamePredicate = " and a.TERMINAL_NAME = '" + deviceName + "'  " ;
     }
   AnsiString timeFilter = "";
-  timeFilter =  " and b.TIME_STAMP >= :startTime and b.TIME_STAMP < :PrevZedTime ";
-
-  prevZedTime = *_endTime;
+  timeFilter =  " b.TIME_STAMP >= :startTime and b.TIME_STAMP <= :PrevZedTime and ";
 
     removalsQuery->SQL->Text =
         "SELECT  "
@@ -201,9 +200,10 @@ void XRemovalDetailsReportSection::GetRemovalReportsForConsolidatedZed(TIBSQL* r
             "ON "
             "a.USER_KEY = d.CONTACTS_KEY  "
             "WHERE  "
+                 + timeFilter +
                 "a.SECURITY_EVENT = :SECURITY_EVENT "
                 + terminalNamePredicate +
-                 timeFilter +
+
                 "Order By  "
                 "1  "   ;
     removalsQuery->ParamByName("startTime")->AsDateTime = *_startTime;
