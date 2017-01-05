@@ -215,14 +215,10 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                     transactionInfo.CalculatedTotals[itCurrentPayment->second.Name] = Total;
                 }
 
-                if(!TGlobalSettings::Instance().UseBIRFormatInXZReport && itCurrentPayment->second.Name == "Cash" && skimCalculations.CashWithdrawl != 0.00)
+                if(itCurrentPayment->second.Name == "Cash" && skimCalculations.CashWithdrawl != 0.00)
                 {
-                    printOut->PrintFormat->Line->Columns[0]->Text = "Cash Withdrawal(" + IntToStr(skimCalculations.CashWithdrawlCount) + ")";
-                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(skimCalculations.CashWithdrawl);
-                    printOut->PrintFormat->AddLine();
-                    printOut->PrintFormat->Line->Columns[0]->Text = "Net Cash";
-                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount + skimCalculations.CashWithdrawl);
-                    printOut->PrintFormat->AddLine();
+                    groupGrandTotal += skimCalculations.CashWithdrawl;
+                    DisplayCashWithdrawlSection(printOut, skimCalculations, itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount);
                 }
 
                 if (itCurrentPayment->second.TipAmount != 0)
@@ -319,7 +315,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                 if (itPayments->first == 0)
                 {
                     printOut->PrintFormat->Line->Columns[0]->Text = "Subtotal";
-                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal + skimCalculations.CashWithdrawl );
+                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal );
                     printOut->PrintFormat->AddLine();
 
                     groupGrandTotal -= (skimCalculations.CurrentFloat + skimCalculations.CurrentSkimsTotal);
@@ -332,7 +328,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                     printOut->PrintFormat->AddLine();
                 }
 
-                printOut->PrintFormat->Add("Total |" + dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal + skimCalculations.CashWithdrawl));
+                printOut->PrintFormat->Add("Total |" + dataFormatUtilities->FormatMMReportCurrency( groupGrandTotal));
                 printOut->PrintFormat->Line->Columns[0]->Text = "";
                 printOut->PrintFormat->Line->Columns[1]->DoubleLine();
                 printOut->PrintFormat->AddLine();
@@ -779,4 +775,29 @@ void XTransactionSummaryGroupDetailsReportSection::SetSingleColumnPrinterFormat(
     printOut->PrintFormat->Line->ColCount = 1;
     printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
     printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+}
+//-------------------------------------------------------------------------------------------
+void XTransactionSummaryGroupDetailsReportSection::DisplayCashWithdrawlSection(TPrintout* printOut, SkimCalculations &skimCalculations, Currency cashTotal)
+{
+    int startIndex = 0, endIndex = 1;
+    if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    {
+        printOut->PrintFormat->Line->Columns[0]->Text = "Cash Withdrawal(" + IntToStr(skimCalculations.CashWithdrawlCount) + ")";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(skimCalculations.CashWithdrawl);
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[0]->Text = "Net Cash";
+        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(cashTotal + skimCalculations.CashWithdrawl);
+        printOut->PrintFormat->AddLine();
+    }
+    else
+    {
+        Currency total = cashTotal + skimCalculations.CashWithdrawl;
+        printOut->PrintFormat->Line->Columns[1]->Text = "Cash Withdrawal";
+        printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(skimCalculations.CashWithdrawlCount);
+        printOut->PrintFormat->Line->Columns[3]->Text =  "(" + CurrToStrF(fabs(skimCalculations.CashWithdrawl), ffNumber, CurrencyDecimals) + ")";
+        printOut->PrintFormat->AddLine();
+        printOut->PrintFormat->Line->Columns[1]->Text = "Net Cash";
+        printOut->PrintFormat->Line->Columns[3]->Text =  total < 0.00 ? "(" + CurrToStrF(fabs(total), ffNumber, CurrencyDecimals) + ")" : dataFormatUtilities->FormatMMReportCurrency(total);
+        printOut->PrintFormat->AddLine();
+    }
 }

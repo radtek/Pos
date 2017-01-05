@@ -24,7 +24,7 @@ private:
     DataFormatUtilities* dataFormatUtilities;
     DataCalculationUtilities* dataCalculationUtilities;
     void DisplayBankingSection(TPrintout* printOut);
-
+    void DisplayCashWithdrawlSection(TPrintout* printOut, SkimCalculations &skimCalculations, Currency cashTotal);
 };
 
 

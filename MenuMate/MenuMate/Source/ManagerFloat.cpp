@@ -57,7 +57,7 @@ void TManagerFloat::AlterFloat(Database::TDBTransaction &DBTransaction,TMMContac
 						FormatFloat("$0.00",CurrentSkimsTotal + frmTouchNumpad->CURResult),Now(),
                         TDeviceRealTerminal::Instance().ID.Name);
 
-        if(frmTouchNumpad->CURResult > 0 && !TGlobalSettings::Instance().FloatWithdrawFromCash)
+        if((frmTouchNumpad->CURResult > 0 && TGlobalSettings::Instance().FloatWithdrawFromCash)||(!TGlobalSettings::Instance().FloatWithdrawFromCash))
         {
              IBInternalQuery->Close();
              IBInternalQuery->SQL->Text =

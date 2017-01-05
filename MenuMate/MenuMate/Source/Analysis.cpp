@@ -574,7 +574,8 @@ void TfrmAnalysis::PrintFloatAdjustments(Database::TDBTransaction &DBTransaction
 		"Terminal_Name, "
 		"Time_Stamp, "
 		"Z_Key, "
-		"Reasons "
+		"Reasons, "
+        "IS_FLOAT_WITHDRAWN_FROM_CASH "
 		"From "
 		"Refloat_Skim "
 		"Where "
@@ -656,19 +657,22 @@ void TfrmAnalysis::PrintFloatAdjustments(Database::TDBTransaction &DBTransaction
 
 				for (; !FloatDetailsQuery->Eof; FloatDetailsQuery->Next())
 				{
-					const UnicodeString SetFloat = "Set Float";
-					UnicodeString TransType = FloatDetailsQuery->FieldByName("Transaction_Type")->AsString == "Initial" ? SetFloat : FloatDetailsQuery->FieldByName("Reasons")->AsString;;
+                    if(!(FloatDetailsQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal" && FloatDetailsQuery->FieldByName("IS_FLOAT_WITHDRAWN_FROM_CASH")->AsString == "T"))
+                    {
+                        const UnicodeString SetFloat = "Set Float";
+                        UnicodeString TransType = FloatDetailsQuery->FieldByName("Transaction_Type")->AsString == "Initial" ? SetFloat : FloatDetailsQuery->FieldByName("Reasons")->AsString;;
 
 
-					Printout->PrintFormat->Line->Columns[0]->Text = FloatDetailsQuery->FieldByName("STAFF")->AsString;
-					Printout->PrintFormat->Line->Columns[1]->Text = FloatDetailsQuery->FieldByName("TIME_STAMP")->AsDateTime.FormatString("HH:MM:SS ");
-					Printout->PrintFormat->Line->Columns[2]->Text = TransType;
-					Printout->PrintFormat->Line->Columns[3]->Text = FloatToStrF(FloatDetailsQuery->FieldByName("AMOUNT")->AsFloat, ffNumber, 18, CurrencyDecimals);
+                        Printout->PrintFormat->Line->Columns[0]->Text = FloatDetailsQuery->FieldByName("STAFF")->AsString;
+                        Printout->PrintFormat->Line->Columns[1]->Text = FloatDetailsQuery->FieldByName("TIME_STAMP")->AsDateTime.FormatString("HH:MM:SS ");
+                        Printout->PrintFormat->Line->Columns[2]->Text = TransType;
+                        Printout->PrintFormat->Line->Columns[3]->Text = FloatToStrF(FloatDetailsQuery->FieldByName("AMOUNT")->AsFloat, ffNumber, 18, CurrencyDecimals);
 
 
 
-					total += FloatDetailsQuery->FieldByName("AMOUNT")->AsFloat;
-					Printout->PrintFormat->AddLine();
+                        total += FloatDetailsQuery->FieldByName("AMOUNT")->AsFloat;
+                        Printout->PrintFormat->AddLine();
+                    }
 				}
 
 				FloatDetailsQuery->Close();
