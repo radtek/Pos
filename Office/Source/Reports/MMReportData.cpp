@@ -745,13 +745,14 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 
 	qrCashup->Close();
 	qrCashup->SQL->Text =
+		"Select  AB.Terminal_Name, UPPER(AB.Pay_Type) Pay_Type,AB.Group_number,	Sum (AB.SubTotal) SubTotal,	cast((Sum (AB.Trans_Count)  )   as  int) Trans_Count "
+	"FROM(	"
 		"Select "
-			"Security.Terminal_Name,"
-			"UPPER(ArcBillPay.Pay_Type) Pay_Type,"
-			"ArcBillPay.Group_number,"
-		 //	"ArcBillPay.Properties,"
-			"Sum (ArcBillPay.SubTotal) SubTotal,"
-
+			"Security.Terminal_Name, "
+			"UPPER(ArcBillPay.Pay_Type) Pay_Type, "
+			"ArcBillPay.Group_number, "
+		 //	"ArcBillPay.Properties, "
+			"Sum (ArcBillPay.SubTotal) SubTotal, "
          "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
 	"From ArcBill "
   "inner join Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
@@ -771,24 +772,39 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 	}
 	qrCashup->SQL->Text		=	qrCashup->SQL->Text +
 		"Group By "
-			"Security.Terminal_Name,"
-			"ArcBillPay.Tax_Free,"
-			"ArcBillPay.Group_number,"
+			"Security.Terminal_Name, "
+			"ArcBillPay.Tax_Free, "
+			"ArcBillPay.Group_number, "
 			"UPPER(ArcBillPay.Pay_Type) "
 		  //	"ArcBillPay.Properties "
-		"Having "
+		   	"Having "
 			"Count (ArcBillPay.ArcBillPay_Key) > 0 "
-		"Order By "
-			"Security.Terminal_Name Asc, "
-			"ArcBillPay.Tax_Free Desc, "
-			"ArcBillPay.Group_number,"
-			"UPPER(ArcBillPay.Pay_Type) Asc";
-	for (int i=0; i<Terminals->Count; i++)
+
+		 " union all	"
+        "SELECT a.TERMINAL_NAME, Cast('CASH' as VarChar(50)) Pay_Type,  Cast(0 as Integer) Group_number,   SUM(a.AMOUNT) SubTotal, "
+        "COUNT(a.AMOUNT) Trans_Count FROM REFLOAT_SKIM a WHERE A.TRANSACTION_TYPE='Withdrawal' and "
+        "a.Time_Stamp >= :StartTime and "
+        "a.Time_Stamp < :EndTime   "        ;
+  if (Terminals->Count > 0)
+	{
+		qrCashup->SQL->Text	=	qrCashup->SQL->Text + "and (" +
+										ParamString(Terminals->Count, "a.TERMINAL_NAME", "TerminalParam") + ")";
+	}
+	qrCashup->SQL->Text		=	qrCashup->SQL->Text +
+"GROUP BY 1,2,3  "   
+
+") AB "
+"GROUP BY 1, 2,3 "
+   	"Order By "
+			"1 Asc "    ;
+
+            	for (int i=0; i<Terminals->Count; i++)
 	{
 		qrCashup->ParamByName("TerminalParam" + IntToStr(i))->AsString = Terminals->Strings[i];
 	}
 	qrCashup->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrCashup->ParamByName("EndTime")->AsDateTime		= EndTime;
+
 
 	qrCashupTotal->Close();
 	qrCashupTotal->SQL->Text =
