@@ -928,14 +928,6 @@ void TApplyParser::AlterTableRefloat_Skim6_36( TDBControl* const inDBControl )
         "ADD Is_Float_Withdrawn_From_Cash T_TRUEFALSE DEFAULT 'F' ; ",
         inDBControl);
     }
-
-    if ( !fieldExists( "REFLOAT_SKIM ", "BILLED_LOCATION ", _dbControl ) )
-    {
-        executeQuery (
-        "ALTER TABLE REFLOAT_SKIM "
-        "ADD BILLED_LOCATION Varchar(25) ; ",
-        inDBControl);
-    }
 }
 
 }
