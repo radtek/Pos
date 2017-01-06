@@ -12492,7 +12492,26 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
     qrAccumulatedTotals->ParamByName("EndTime")->AsDateTime = EndTime;
 
     qrPaymentTotal->Close();
-    qrPaymentTotal->SQL->Text = "Select ";
+    qrPaymentTotal->SQL->Text = "SELECT ";
+
+    if (Locations)
+    {
+        qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+        "SALES_SUMMARY_PAYMENT.LOCATION, ";
+    }
+    else
+    {
+        qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+        "CAST('ALL LOCATION' As Varchar(25)) LOCATION,";
+    }
+
+    qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+
+          "SALES_SUMMARY_PAYMENT.PAYMENTGROUP_NAME, "
+          "SALES_SUMMARY_PAYMENT.PAYMENT_NAME, "
+          "CAST(SUM(SALES_SUMMARY_PAYMENT.SUBTOTAL) AS NUMERIC(17,4)) SUBTOTAL "
+    "FROM "
+    "(Select ";
 
     if (Locations)
     {
@@ -12523,6 +12542,36 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
         qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
         ", ARCBILL.BILLED_LOCATION ";
     }
+
+    qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+
+    "UNION ALL "
+            "SELECT ";
+    if (Locations)
+    {
+        qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+        "LOCATIONS.NAME BILLED_LOCATION,";
+    }
+    else
+    {
+        qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+        "CAST('ALL LOCATION' As Varchar(25)) LOCATION,";
+    }
+
+    qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+
+        "Cast('' as VarChar(25)) PAYMENTGROUP_NAME, "
+        "Cast('CASH' as VarChar(50)) PAYMENT_NAME, "
+        "cast(SUM(a.AMOUNT) as numeric(17,4)) SubTotal "
+
+     "FROM REFLOAT_SKIM a "
+          "LEFT JOIN DEVICES ON a.TERMINAL_NAME = DEVICES.DEVICE_NAME "
+          "LEFT JOIN LOCATIONS ON DEVICES.LOCATION_KEY = LOCATIONS.LOCATION_KEY  "
+     "WHERE (A.TRANSACTION_TYPE='Withdrawal' and a.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T') "
+            "AND A.TIME_STAMP BETWEEN :StartTime AND :EndTime "
+       "GROUP BY 1 ) SALES_SUMMARY_PAYMENT "
+    "GROUP BY 2,3,1 ";
+       
     qrPaymentTotal->ParamByName("StartTime")->AsDateTime = StartTime;
     qrPaymentTotal->ParamByName("EndTime")->AsDateTime = EndTime;
 
