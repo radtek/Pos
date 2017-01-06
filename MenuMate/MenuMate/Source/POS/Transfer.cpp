@@ -1483,6 +1483,13 @@ TModalResult TfrmTransfer::AddNewTab(Database::TDBTransaction &DBTransaction)
    frmAddTab->LoadDetails(DBTransaction, 0);
    DBTransaction.Commit();
    DBTransaction.StartTransaction();
+   TMMContactInfo currentUserInfo = TDeviceRealTerminal::Instance().User;
+   std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
+   if (!Staff->TestAccessLevel(TDeviceRealTerminal::Instance().User, CheckAccountCreation))
+   {
+        MessageBox("You do not have the privileges to create a new tab!", "Error", MB_OK + MB_ICONERROR);
+        return mrAbort;
+   }
    if (frmAddTab->ShowModal() == mrOk)
    {
 	  bool TabExists = false;
