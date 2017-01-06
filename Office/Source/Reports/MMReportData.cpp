@@ -751,15 +751,14 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 			"Security.Terminal_Name, "
 			"UPPER(ArcBillPay.Pay_Type) Pay_Type, "
 			"ArcBillPay.Group_number, "
-		 //	"ArcBillPay.Properties, "
 			"Sum (ArcBillPay.SubTotal) SubTotal, "
          "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
-	"From ArcBill "
-  "inner join Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
-  "inner join ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
-  "Where "
-   "ArcBill.Time_Stamp >= :StartTime and "
-   "ArcBill.Time_Stamp < :EndTime and "
+            "From ArcBill "
+            "inner join Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
+            "inner join ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
+            "Where "
+            "ArcBill.Time_Stamp >= :StartTime and "
+            "ArcBill.Time_Stamp < :EndTime and "
          "ArcBillPay.Properties != 131072 and "
 			"Security.Security_Event = 'Billed By' and "
 			"ArcBillPay.SubTotal <> 0  ";
@@ -776,26 +775,25 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 			"ArcBillPay.Tax_Free, "
 			"ArcBillPay.Group_number, "
 			"UPPER(ArcBillPay.Pay_Type) "
-		  //	"ArcBillPay.Properties "
 		   	"Having "
 			"Count (ArcBillPay.ArcBillPay_Key) > 0 "
 
-		 " union all	"
+		 " UNION ALL	"
         "SELECT a.TERMINAL_NAME, Cast('CASH' as VarChar(50)) Pay_Type,  Cast(0 as Integer) Group_number,   SUM(a.AMOUNT) SubTotal, "
-        "COUNT(a.AMOUNT) Trans_Count FROM REFLOAT_SKIM a WHERE A.TRANSACTION_TYPE='Withdrawal' and "
+        "COUNT(a.AMOUNT) Trans_Count FROM REFLOAT_SKIM a WHERE A.TRANSACTION_TYPE='Withdrawal' and a.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' and "
         "a.Time_Stamp >= :StartTime and "
         "a.Time_Stamp < :EndTime   "        ;
-  if (Terminals->Count > 0)
-	{
-		qrCashup->SQL->Text	=	qrCashup->SQL->Text + "and (" +
-										ParamString(Terminals->Count, "a.TERMINAL_NAME", "TerminalParam") + ")";
-	}
-	qrCashup->SQL->Text		=	qrCashup->SQL->Text +
-"GROUP BY 1,2,3  "   
+    if (Terminals->Count > 0)
+    {
+        qrCashup->SQL->Text	=	qrCashup->SQL->Text + "and (" +
+                                        ParamString(Terminals->Count, "a.TERMINAL_NAME", "TerminalParam") + ")";
+    }
+    qrCashup->SQL->Text		=	qrCashup->SQL->Text +
+    "GROUP BY 1,2,3  "
 
-") AB "
-"GROUP BY 1, 2,3 "
-   	"Order By "
+    ") AB "
+    "GROUP BY 1, 2,3 "
+    "Order By "
 			"1 Asc "    ;
 
             	for (int i=0; i<Terminals->Count; i++)
@@ -808,18 +806,23 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 
 	qrCashupTotal->Close();
 	qrCashupTotal->SQL->Text =
-		"Select "
+
+        "Select  CASHUP_TOTAL.Pay_Type, "
+                "CASHUP_TOTAL.Group_number,	"
+                "Sum (CASHUP_TOTAL.SubTotal) SubTotal, "
+                "cast((Sum (CASHUP_TOTAL.Trans_Count)  )   as  int) Trans_Count "
+	    "FROM "
+		"(Select "
 			"UPPER(ArcBillPay.Pay_Type) Pay_Type,"
 			"ArcBillPay.Group_number,"
-		  //	"ArcBillPay.Properties,"
 			"Sum (ArcBillPay.SubTotal) SubTotal,"
             
          "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
 
         "From ArcBill "
-  "inner join Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
-  "inner join ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
-  "Where "
+  "INNER JOIN Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
+  "INNER JOIN ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
+  "WHERE "
    "ArcBill.Time_Stamp >= :StartTime and "
    "ArcBill.Time_Stamp < :EndTime and "
          "ArcBillPay.Properties != 131072 and "
@@ -835,13 +838,31 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 			"ArcBillPay.Tax_Free,"
 			"ArcBillPay.Group_number,"
 			"UPPER(ArcBillPay.Pay_Type)  "
-		   //	"ArcBillPay.Properties "
 		"Having "
 			"Count (ArcBillPay.ArcBillPay_Key) > 0 "
-		"Order By "
-			"ArcBillPay.Tax_Free Desc,"
-			"ArcBillPay.Group_number,"
-			"UPPER(ArcBillPay.Pay_Type) Asc";
+
+       "UNION ALL "
+        "SELECT Cast('CASH' as VarChar(50)) Pay_Type,  "
+                "Cast(0 as Integer) Group_number,   "
+                "SUM(a.AMOUNT) SubTotal, "
+                "COUNT(a.AMOUNT) Trans_Count "
+        "FROM REFLOAT_SKIM a "
+        "WHERE (A.TRANSACTION_TYPE= 'Withdrawal' and a.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T') AND  "
+        "a.Time_Stamp >= :StartTime and "
+        "a.Time_Stamp < :EndTime   ";
+    if (Terminals->Count > 0)
+    {
+        qrCashupTotal->SQL->Text	=	qrCashupTotal->SQL->Text + "and (" +
+                                        ParamString(Terminals->Count, "a.TERMINAL_NAME", "TerminalParam") + ")";
+    }
+    qrCashupTotal->SQL->Text		=	qrCashupTotal->SQL->Text +
+        "GROUP BY 2,1 "
+        ")CASHUP_TOTAL "
+    "GROUP BY CASHUP_TOTAL.Group_number, "
+        "CASHUP_TOTAL.Pay_Type "
+    "Order By "
+         "CASHUP_TOTAL.Group_number ASC, CASHUP_TOTAL.Pay_Type  ";
+
 
 	for (int i=0; i<Terminals->Count; i++)
 	{
