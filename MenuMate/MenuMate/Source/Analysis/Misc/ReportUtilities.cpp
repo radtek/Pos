@@ -448,6 +448,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
 
 void SkimCalculations::CalculateSkims(Database::TDBTransaction &dbTransaction, UnicodeString deviceName)
 {
+    CashWithdrawlCount = 0;
     TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
 
     ibInternalQuery->Close();
@@ -1295,8 +1296,7 @@ void TTransactionInfoProcessor::GetPointsForConsolidatedZed(TIBSQL *qXArcPoints,
 
 void SkimCalculations::CalculateSkims(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, TDateTime &startTime, TDateTime &endTime)
 {
-
-
+     CashWithdrawlCount = 0;
       TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
 
       ibInternalQuery->Close();

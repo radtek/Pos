@@ -779,7 +779,6 @@ void XTransactionSummaryGroupDetailsReportSection::SetSingleColumnPrinterFormat(
 //-------------------------------------------------------------------------------------------
 void XTransactionSummaryGroupDetailsReportSection::DisplayCashWithdrawlSection(TPrintout* printOut, SkimCalculations &skimCalculations, Currency cashTotal)
 {
-    int startIndex = 0, endIndex = 1;
     if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
     {
         printOut->PrintFormat->Line->Columns[0]->Text = "Cash Withdrawal(" + IntToStr(skimCalculations.CashWithdrawlCount) + ")";
