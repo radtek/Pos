@@ -129,7 +129,14 @@ void TFloatSkimData::PrintDocket(void)
 
 	  Printout->PrintFormat->Line->Columns[0]->Text = UserInfo.Name;
 	  Printout->PrintFormat->AddLine();
-	  Printout->PrintFormat->Line->Columns[0]->Text = Transaction_types[TransType] + " of " + FormatFloat("$0.00", Amount);
+      if(TGlobalSettings::Instance().FloatWithdrawFromCash && Transaction_types[TransType] == "Withdrawal")
+      {
+	    Printout->PrintFormat->Line->Columns[0]->Text = "Cash Withdrawal of " + FormatFloat("$0.00", Amount);
+      }
+      else
+      {
+        Printout->PrintFormat->Line->Columns[0]->Text = Transaction_types[TransType] + " of " + FormatFloat("$0.00", Amount);
+      }
 	  Printout->PrintFormat->AddLine();
 	  Printout->PrintFormat->Line->Columns[0]->Text = Reason;
 	  Printout->PrintFormat->AddLine();

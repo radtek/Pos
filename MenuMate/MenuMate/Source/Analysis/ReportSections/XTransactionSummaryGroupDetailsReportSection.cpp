@@ -797,6 +797,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayCashWithdrawlSection(T
         printOut->PrintFormat->Line->Columns[3]->Text =  "(" + CurrToStrF(fabs(skimCalculations.CashWithdrawl), ffNumber, CurrencyDecimals) + ")";
         printOut->PrintFormat->AddLine();
         printOut->PrintFormat->Line->Columns[1]->Text = "Net Cash";
+        printOut->PrintFormat->Line->Columns[2]->Text = "";
         printOut->PrintFormat->Line->Columns[3]->Text =  total < 0.00 ? "(" + CurrToStrF(fabs(total), ffNumber, CurrencyDecimals) + ")" : dataFormatUtilities->FormatMMReportCurrency(total);
         printOut->PrintFormat->AddLine();
     }

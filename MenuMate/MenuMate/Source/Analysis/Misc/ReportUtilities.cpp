@@ -87,6 +87,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
         Currency skims = 0;
         Currency refloats = 0;
         Currency cashWithdrawl = 0;
+        int CashWithdrawlCount = 0;
 
         if(TGlobalSettings::Instance().UseBIRFormatInXZReport || showendingbal)
         {
@@ -1172,6 +1173,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
         Currency skims = 0;
         Currency refloats = 0;
         Currency cashWithdrawl = 0;
+        int CashWithdrawlCount = 0;
 
         if(TGlobalSettings::Instance().UseBIRFormatInXZReport || showendingbal)
         {
