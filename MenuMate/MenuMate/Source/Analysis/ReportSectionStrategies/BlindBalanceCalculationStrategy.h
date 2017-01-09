@@ -17,8 +17,8 @@ protected:
     bool _isConsolidatedStrategy;
 
 private:
-void LoadBlindBalanceDetailsForNormalZed(TPrintout* printOut, TIBSQL *ibInternalQuery, TBlindBalances balance, AnsiString deviceName);
-
+    void LoadBlindBalanceDetailsForNormalZed(TPrintout* printOut, TIBSQL *ibInternalQuery, TBlindBalances balance, AnsiString deviceName);
+    Currency CalculateCashWithdrawl(TIBSQL *ibInternalQuery, UnicodeString deviceName);
 };
 
 #endif

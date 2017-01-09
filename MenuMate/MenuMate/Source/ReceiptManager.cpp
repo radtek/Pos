@@ -47,25 +47,24 @@ bool TManagerReceipt::ReceiptsExist()
 	  TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
 	  IBInternalQuery->Close();
-      IBInternalQuery->SQL->Text = " select a.INVOICE_NUMBER  from DAYARCBILL a "
-                                   "LEFT JOIN dayarchive on DAYARCHIVE.ARCBILL_KEY = a.ARCBILL_KEY "
-                                    " Where DAYARCHIVE.ARCHIVE_KEY not in "
-                                     " (Select ARCHIVE_KEY from  DAYARCORDERDISCOUNTS where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Non-Chargeable' or "
-                                     "  DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary') "
-                                    " and  a.TERMINAL_NAME = :TERMINAL_NAME "
-                                   " group by 1 ";
+
+     IBInternalQuery->SQL->Text = "select a.INVOICE_NUMBER from DAYARCBILL a"
+                           " Where a.TERMINAL_NAME = :TERMINAL_NAME  and a.ARCBILL_KEY not in"
+                           " (Select b.ARCBILL_KEY from DAYARCHIVE b"
+                           " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                           " where c.DISCOUNT_GROUPNAME = 'Non-Chargeable' or c.DISCOUNT_GROUPNAME = 'Complimentary')"
+                           " group by 1";
 
 	  IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
 	  IBInternalQuery->ExecQuery();
 	  if (IBInternalQuery->RecordCount == 0)
 	  {
 		 IBInternalQuery->Close();
-      IBInternalQuery->SQL->Text = " select a.INVOICE_NUMBER  from ARCBILL a "
-                                   "LEFT JOIN archive on ARCHIVE.ARCBILL_KEY = a.ARCBILL_KEY "
-                                   " Where ARCHIVE.ARCHIVE_KEY not in "
-                                   " (Select ARCHIVE_KEY from  ARCORDERDISCOUNTS where ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Non-Chargeable' or "
-                                   "  ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary') "
-                                   " and  a.TERMINAL_NAME = :TERMINAL_NAME "
+         IBInternalQuery->SQL->Text = " select a.INVOICE_NUMBER  from ARCBILL a "
+                                   " Where a.TERMINAL_NAME = :TERMINAL_NAME  and a.ARCBILL_KEY not in"
+                                   " (Select b.ARCBILL_KEY from  ARCHIVE b "
+                                   " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                                   " where c.DISCOUNT_GROUPNAME = 'Non-Chargeable' or c.DISCOUNT_GROUPNAME = 'Complimentary') "
                                    " group by 1 ";
 		 IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
 		 IBInternalQuery->ExecQuery();
@@ -196,10 +195,10 @@ void TManagerReceipt::GetLastReceipt(Database::TDBTransaction &DBTransaction)
 
 	  IBInternalQuery->Close();
       IBInternalQuery->SQL->Text = " select MAX(a.ARCBILL_KEY)  from DAYARCBILL a "
-                                    "LEFT JOIN DAYARCHIVE on DAYARCHIVE.ARCBILL_KEY = a.ARCBILL_KEY "
-                                    " Where DAYARCHIVE.ARCHIVE_KEY not in "
-                                     " (Select ARCHIVE_KEY from  DAYARCORDERDISCOUNTS where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Non-Chargeable' or "
-                                     "  DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary') "
+                                    " Where a.ARCBILL_KEY not in "
+                                   " (Select b.ARCBILL_KEY from  DAYARCHIVE b "
+                                     " left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                                     " where c.DISCOUNT_GROUPNAME = 'Non-Chargeable' or c.DISCOUNT_GROUPNAME = 'Complimentary') "
                                     " and RECEIPT is not null and a.TERMINAL_NAME = :TERMINAL_NAME  ";
 
 	  IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
@@ -209,10 +208,10 @@ void TManagerReceipt::GetLastReceipt(Database::TDBTransaction &DBTransaction)
 	  {
 		 IBInternalQuery->Close();
             IBInternalQuery->SQL->Text = " select MAX(a.ARCBILL_KEY)  from ARCBILL a "
-                                         "LEFT JOIN archive on ARCHIVE.ARCBILL_KEY = a.ARCBILL_KEY "
-                                         " Where ARCHIVE.ARCHIVE_KEY not in "
-                                          " (Select ARCHIVE_KEY from  ARCORDERDISCOUNTS where ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Non-Chargeable' or "
-                                          "  ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary') "
+                                         " Where a.ARCBILL_KEY not in "
+                                        " (Select b.ARCBILL_KEY from  ARCHIVE b "
+                                        " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                                         " where c.DISCOUNT_GROUPNAME = 'Non-Chargeable' or c.DISCOUNT_GROUPNAME = 'Complimentary') "
                                           " and RECEIPT is not null and a.TERMINAL_NAME = :TERMINAL_NAME  " ;
 		 IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
 		 IBInternalQuery->ExecQuery();
@@ -245,20 +244,23 @@ void TManagerReceipt::Open()
 
    try
    {
-	  AnsiString Format = "SELECT 1 TABLETYPE, a.ARCBILL_KEY, a.TIME_STAMP From ARCBILL a "
-                          "LEFT JOIN archive on ARCHIVE.ARCBILL_KEY = a.ARCBILL_KEY "
-                          " Where ARCHIVE.ARCHIVE_KEY not in "
-                          " (Select ARCHIVE_KEY from  ARCORDERDISCOUNTS where ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Non-Chargeable' or "
-                          "  ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary') %0:s "
+
+      AnsiString Format = "SELECT 1 TABLETYPE, a.ARCBILL_KEY, a.TIME_STAMP From ARCBILL a "
+                           "Where a.ARCBILL_KEY not in "
+                           " ( Select b.ARCBILL_KEY from ARCHIVE b "
+                            " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                            " where c.DISCOUNT_GROUPNAME = 'Non-Chargeable' or "
+                            " c.DISCOUNT_GROUPNAME = 'Complimentary') %0:s "
                            "GROUP BY TABLETYPE,ARCBILL_KEY,TIME_STAMP "
-           "Union All "
-		  "Select 2 TABLETYPE, a.ARCBILL_KEY, a.TIME_STAMP From DAYARCBILL a "
-                  "LEFT JOIN DAYARCHIVE on DAYARCHIVE.ARCBILL_KEY = a.ARCBILL_KEY "
-                  " Where DAYARCHIVE.ARCHIVE_KEY not in "
-                  " (Select ARCHIVE_KEY from  DAYARCORDERDISCOUNTS where DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Non-Chargeable' or "
-                  "  DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME = 'Complimentary') %0:s "
-               "group by TABLETYPE,ARCBILL_KEY,TIME_STAMP "
-          "Order By 3 Desc;";
+             "Union All "
+             "Select 2 TABLETYPE, a.ARCBILL_KEY, a.TIME_STAMP From DAYARCBILL a "
+             "Where a.ARCBILL_KEY not in "
+             "(Select b.ARCBILL_KEY from DAYARCHIVE b "
+             "left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+             "where c.DISCOUNT_GROUPNAME = 'Non-Chargeable' or c.DISCOUNT_GROUPNAME = 'Complimentary') %0:s "
+             "group by TABLETYPE,ARCBILL_KEY,TIME_STAMP "
+             "Order By 3 Desc; " ;
+
 
 	  AnsiString SQLWhereText;
 	  TVarRec args[1];
