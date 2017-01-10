@@ -219,6 +219,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                 {
                     groupGrandTotal += skimCalculations.CashWithdrawl;
                     DisplayCashWithdrawlSection(printOut, skimCalculations, itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount);
+                    total_payment += skimCalculations.CashWithdrawlCount;
                 }
 
                 if (itCurrentPayment->second.TipAmount != 0)
