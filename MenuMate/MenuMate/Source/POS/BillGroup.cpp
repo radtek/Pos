@@ -1607,6 +1607,7 @@ void __fastcall TfrmBillGroup::tbtnSplitMouseClick(TObject *Sender)
 			"\r\rYou may need to reboot the system.", "Error", MB_OK + MB_ICONERROR);
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
+    applyWaiterStationSettingsIfEnabled();
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::tbtnCancelMouseClick(TObject *Sender)
@@ -1696,6 +1697,7 @@ void __fastcall TfrmBillGroup::tbtnSelectZoneMouseClick(TObject *Sender)
 {
 	SelectedZone();
     TGlobalSettings::Instance().IsPOSOffline = true;
+    applyWaiterStationSettingsIfEnabled();
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
@@ -3842,6 +3844,7 @@ void TfrmBillGroup::ClearTabOnDelayedPaymentSelection(Database::TDBTransaction &
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::ResetForm()
 {
+    applyWaiterStationSettingsIfEnabled();
 	Database::TDBTransaction DBTransaction(DBControl);
 	TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 	DBTransaction.StartTransaction();
