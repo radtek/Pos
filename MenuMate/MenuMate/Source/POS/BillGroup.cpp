@@ -314,11 +314,6 @@ void __fastcall TfrmBillGroup::SelectZone(Messages::TMessage& Message)
 	{
         ClipTabInTable =false;
 
-		/*if (TGlobalSettings::Instance().TabsEnabled)
-		{
-		  	CurrentDisplayMode = eTabs;
-		   	CurrentTabType = TabNormal;
-		}*/
 		CurrentSelectedTab = 0;
 
 		UpdateRightButtonDisplay(NULL);
