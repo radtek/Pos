@@ -3261,13 +3261,12 @@ Zed:
 
 						IBInternalQuery->Close();
 						IBInternalQuery->SQL->Text =
-						"UPDATE ZEDS " "SET " "TIME_STAMP	= :TIME_STAMP, " "REPORT	= :REPORT " "WHERE " "Z_KEY = :Z_KEY";
+						"UPDATE ZEDS " "SET " "TIME_STAMP	= :TIME_STAMP, " "REPORT	= :REPORT, TRANS_DATE = :TRANS_DATE " "WHERE " "Z_KEY = :Z_KEY";
 						IBInternalQuery->ParamByName("Z_KEY")->AsInteger = Zedkey;
 						ZedToArchive->Position = 0;
-
-
 						IBInternalQuery->ParamByName("REPORT")->LoadFromStream( FormattedZed(ZedToArchive));
 						IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+                        IBInternalQuery->ParamByName("TRANS_DATE")->AsDateTime = trans_date;
 						IBInternalQuery->ExecQuery();
 						UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
 						UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);

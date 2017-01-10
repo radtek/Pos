@@ -88,7 +88,8 @@ void TEJournalEngine::GetZReport(TIBSQL *IBInternalQuery,TDateTime fromSessionDa
 
     IBInternalQuery->Close();
     IBInternalQuery->SQL->Text="select a.REPORT, a.Z_KEY from ZEDS a Where a.TRANS_DATE >= :From_DATE "
-                                "and a.TRANS_DATE <= :To_DATE " + terminalNamePredicate ;
+                                "and a.TRANS_DATE <= :To_DATE " + terminalNamePredicate +
+                                " order by a.Z_KEY ";
     IBInternalQuery->ParamByName("From_DATE")->AsDateTime = fromSessionDate;
     IBInternalQuery->ParamByName("To_DATE")->AsDateTime = toSessionDate;
 
@@ -157,7 +158,7 @@ bool TEJournalEngine::IsXReportAvailable(TIBSQL *IBInternalQuery, int z_key, Ans
     if(z_key > 0)
     {
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text="SELECT a.Z_KEY FROM ZEDS a where a.Z_KEY > :Z_KEY " + terminalNamePredicate ;
+        IBInternalQuery->SQL->Text="SELECT a.Z_KEY FROM ZEDS a where a.Z_KEY > :Z_KEY and a.TIME_STAMP is not null " + terminalNamePredicate ;
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = z_key;
         if(!TGlobalSettings::Instance().EnableDepositBagNum)
         {
