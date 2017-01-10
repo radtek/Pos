@@ -19,7 +19,7 @@ int DataCalculationUtilities::GetZedKey(Database::TDBTransaction &dbTransaction)
 
     TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
     ibInternalQuery->Close();
-    ibInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
+    ibInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS WHERE ZEDS.TIME_STAMP IS NOT NULL ";
     ibInternalQuery->ExecQuery();
     zKey = ibInternalQuery->Fields[0]->AsInteger;
 

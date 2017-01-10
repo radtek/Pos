@@ -172,9 +172,7 @@ private:	// User declarations
 	TPrintFormat &SetupCommonPrintZedFormat(TPrintFormat &pf);
 	void PrintAccumulatedZed(TPrintout &po, const Currency &todays_earnings, Currency &EODValue);
 	Currency GetSiteAccumulatedZed();
-	void UpdateTerminalAccumulatedZed(Database::TDBTransaction &tr, Currency accumulated_total);
 	Currency grand_total_eod;
-	void UpdateTerminalEarnings(Database::TDBTransaction &tr, Currency terminal_earnings);
 	void PrintTaxSummary(TPrintout &po, const Currency &todays_earnings);
 	void PrintServiceChargeSummary(TPrintout &po);
 	void SaveVariable(vmVariables vmVar, int CompName);
