@@ -3747,11 +3747,6 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
                    cashWithdrawal != 0)
                 {
                     paymentAmount = paymentAmount + cashWithdrawal;
-                    MessageBox(paymentAmount, "gone", MB_OK);
-                }
-                else
-                {
-                   MessageBox(cashWithdrawal, " not gone", MB_OK);
                 }
                 AddInvoiceItem(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString,
                              -1 * paymentAmount, AccountCode,0);
