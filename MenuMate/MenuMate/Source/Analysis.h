@@ -222,6 +222,7 @@ private:	// User declarations
     void CompleteDLFMallExport();
     TDateTime GetMinDayArchiveTime(Database::TDBTransaction &DBTransaction, TDateTime PrevZedTime);
     void UpdateZKeyForMallExportSales();
+    double GetCashWithdrawal(Database::TDBTransaction &DBTransaction);
 public:		// User declarations
 	static TLoginSuccess AuthenticateReportsAccess(TReportSource);
 	static const TMMContactInfo &GetLastAuthenticatedUser();
