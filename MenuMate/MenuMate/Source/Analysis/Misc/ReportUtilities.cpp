@@ -1361,6 +1361,36 @@ int DataCalculationUtilities::GetZedNumber(Database::TDBTransaction &dbTransacti
     zKey = TGlobalSettings::Instance().ZCount;
     return zKey;
 }
+//-------------------------------------------------------------------------------------------------------------------------
+Currency DataCalculationUtilities::CalculateCashWithdrawl(TIBSQL *ibInternalQuery, UnicodeString deviceName)
+{
+    Currency cashWithdrawl = 0.00;
+    try
+    {
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount, refloat_skim.IS_FLOAT_WITHDRAWN_FROM_CASH FROM refloat_skim "
+                                        "Left join zeds on refloat_skim.z_key = zeds.z_key "
+                                        "WHERE zeds.TERMINAL_NAME = :TERMINAL_NAME AND zeds.TIME_STAMP IS NULL "
+                                        "and (refloat_skim.transaction_type = :transaction_type AND refloat_skim.IS_FLOAT_WITHDRAWN_FROM_CASH = :IS_FLOAT_WITHDRAWN_FROM_CASH)";
+
+        ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        ibInternalQuery->ParamByName("transaction_type")->AsString = "Withdrawal";
+        ibInternalQuery->ParamByName("IS_FLOAT_WITHDRAWN_FROM_CASH")->AsString = "T";
+        ibInternalQuery->ExecQuery();
+
+        for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
+        {
+            cashWithdrawl += ibInternalQuery->FieldByName("amount")->AsCurrency;
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+    }
+
+    return cashWithdrawl;
+}
 
 
 

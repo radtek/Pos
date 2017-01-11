@@ -227,6 +227,7 @@ public:
     Currency GetAccumulatedZedTotal(Database::TDBTransaction &dbTransaction, TDateTime &startTime, TDateTime &endTime, UnicodeString deviceName);
     Currency GetTotalEarnings(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, TDateTime &startTime, TDateTime &endTime, bool showendingbal = false);
     int GetZedNumber(Database::TDBTransaction &dbTransaction);
+    Currency CalculateCashWithdrawl(TIBSQL *ibInternalQuery, UnicodeString deviceName);
 };
 
 
