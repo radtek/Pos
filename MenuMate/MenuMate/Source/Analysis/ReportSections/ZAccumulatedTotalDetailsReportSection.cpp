@@ -83,7 +83,7 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->AddLine();
         if(!IsConsolidatedZed)
         {
-            int value = dataCalculationUtilities->GetZedKey(*_dbTransaction);
+            int value = dataCalculationUtilities->GetZedNumber(*_dbTransaction);
             value += 1;
             printOut->PrintFormat->Line->Columns[1]->Text = "Z-Counter";
             printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(value);
