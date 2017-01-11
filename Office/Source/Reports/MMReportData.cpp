@@ -133,8 +133,9 @@ _dayArcBillSubQuery =  	" Select "
                                                 "		DayArcBillPay.Note,                   "
                                                 "        		ab.TABLE_NAME TABLE_NUMBER,   "
                                                 "        		ab.price,                     "
-                                                 "      DayArcBillPAY.PAY_TYPE " + tip + " PAY_TYPE, "
-                                                "       DayArcBillPAY.TIP_AMOUNT price, "
+                                                 "      case when (DayArcBillPAY.TIP_AMOUNT > 0 ) then (DayArcBillPAY.PAY_TYPE " + tip + ") else (DayArcBillPAY.PAY_TYPE) end PAY_TYPE,                        "
+                                                // "      DayArcBillPAY.PAY_TYPE " + tip + " PAY_TYPE, "
+                                                "       case when (DayArcBillPAY.TIP_AMOUNT > 0 ) then (DayArcBillPAY.TIP_AMOUNT) else (DAYARCBILL.TOTAL) end price, "
                                                 "       Cast(Null As VarChar(50)) billed_to "
                                     "From "
                                         "DayArcBill Left Join Security On                      "
@@ -144,7 +145,7 @@ _dayArcBillSubQuery =  	" Select "
                                         "      left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM DayArchive a "
                                         "     group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=DayArcBill.ARCBILL_KEY "
                                      "Where "
-                                        "Security.Security_Event = 'Billed By' And coalesce(DayArcBillPAY.TIP_AMOUNT,0) > 0 ";
+                                        "Security.Security_Event = 'Billed By' And (coalesce(DayArcBillPay.TIP_AMOUNT,0) > 0 or DAYARCBILL.TOTAL <= 0) and DAYARCBILLPAY.NOTE != 'Total Change.' ";
 
 
 
@@ -168,8 +169,9 @@ _arcBillSubQuery =      " Select   "
                                                 "		ArcBillPay.Note,                  "
                                                 "        ab.TABLE_NAME TABLE_NUMBER,      "
                                                 "        ab.price ,                        "
-                                                 "     ArcBillPAY.PAY_TYPE " + tip + " PAY_TYPE , "
-                                                "      ArcBillPAY.TIP_AMOUNT price, "
+                                                "      case when (ArcBillPAY.TIP_AMOUNT > 0 ) then (ArcBillPAY.PAY_TYPE " + tip + ") else (ArcBillPAY.PAY_TYPE) end PAY_TYPE,                        "
+                                                // "     ArcBillPAY.PAY_TYPE " + tip + " PAY_TYPE , "
+                                                "      case when (ArcBillPAY.TIP_AMOUNT > 0 ) then (ArcBillPAY.TIP_AMOUNT) else (ARCBILL.TOTAL) end price,                        "
                                                 "       Cast(Null As VarChar(50)) billed_to "
                                     "From "
                                                 "ArcBill Left Join Security On                      "
@@ -179,7 +181,7 @@ _arcBillSubQuery =      " Select   "
                                                 "      left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM Archive a "
                                                 "     group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=ArcBill.ARCBILL_KEY "
                                       "Where "
-                                                "Security.Security_Event = 'Billed By'  And coalesce(ArcBillPAY.TIP_AMOUNT,0) > 0 ";
+                                                "Security.Security_Event = 'Billed By'  And (coalesce(ArcBillPay.TIP_AMOUNT,0) > 0 or ARCBILL.TOTAL <= 0) and ARCBILLPAY.NOTE != 'Total Change.' ";
 
 _groupingForArcbill =
                                               "  GROUP BY ArcBill.ARCBILL_KEY, ArcBill.Time_Stamp,  "
@@ -1195,8 +1197,8 @@ qrCategoryBreakdown->Close();
 			"ArcCategories.Category,"
 			"Sum(Archive.Qty) Item_Count,"
 
-              "Sum(CAST(Archive.BASE_PRICE As Numeric(17,2)) * CAST(Archive.Qty As Numeric(17,4)) ) PriceExc ,    "
-			" Sum(CAST(Archive.Price As Numeric(17,4)) * CAST( abs(Archive.Qty) As Numeric(17,4))+ Archive.Discount ) PriceInc,   "
+              "Sum(CAST(Archive.BASE_PRICE As Numeric(17,2)) * CAST(abs(Archive.Qty) As Numeric(17,4)) ) PriceExc ,   "
+			" Sum(CAST(Archive.Price As Numeric(17,4)) * CAST( Archive.Qty As Numeric(17,4))+ Archive.Discount ) PriceInc,   "
 			" Sum(CAST(Archive.Cost As Numeric(17,4)) * Archive.Qty ) Cost   "
 
 		"From "
@@ -1254,8 +1256,8 @@ qrCategoryBreakdown->Close();
 			"CategoryGroups.Name Category_Group,"
 			"ArcCategories.Category,"
 			"Sum(DayArchive.Qty) Item_Count,"
-		 "Sum(CAST(DayArchive.BASE_PRICE As Numeric(17,2)) * CAST(DayArchive.Qty As Numeric(17,4)) ) PriceExc ,    "
-			" Sum(CAST(DayArchive.Price As Numeric(17,4)) * CAST( abs(DayArchive.Qty) As Numeric(17,4))+ DayArchive.Discount ) PriceInc,   "
+		 "Sum(CAST(DayArchive.BASE_PRICE As Numeric(17,2)) * CAST(abs(DayArchive.Qty) As Numeric(17,4)) ) PriceExc ,    "
+			" Sum(CAST(DayArchive.Price As Numeric(17,4)) * CAST( DayArchive.Qty As Numeric(17,4))+ DayArchive.Discount ) PriceInc,   "
 			" Sum(CAST(DayArchive.Cost As Numeric(17,4)) * DayArchive.Qty ) Cost   "
 		"From "
 			"Security Left Join DayArchive on "
@@ -1313,8 +1315,8 @@ qrCategoryBreakdown->Close();
 			"ArcCategories.Category,"
 			"Sum(Orders.Qty) Item_Count,"
 
-              "Sum(CAST(Orders.BASE_PRICE As Numeric(17,2)) * CAST(Orders.Qty As Numeric(17,4)) ) PriceExc ,    "
-			" Sum(CAST(Orders.Price As Numeric(17,4)) * CAST( Orders.Qty As Numeric(17,4))+ Orders.Discount ) PriceInc,   "
+              "Sum(CAST(Orders.BASE_PRICE As Numeric(17,2)) * CAST(abs(Orders.Qty) As Numeric(17,4)) ) PriceExc ,     "
+			" Sum(CAST(Orders.Price As Numeric(17,4)) * CAST( Orders.Qty As Numeric(17,4))+ Orders.Discount ) PriceInc,    "
 			" Sum(CAST(Orders.Cost As Numeric(17,4)) * Orders.Qty ) Cost   "
 
 		"From "
@@ -3449,7 +3451,7 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
             "cast(0.00 as numeric(17,4)) PriceExcl, "
             "cast(0.00 as numeric(17,4)) Profit "
 		"From "
-			"Security Left Join Archive on "
+			"Archive Left Join Security on "
 				"Security.Security_Ref = Archive.Security_Ref "
 			"Left Join Contacts on "
 				"Security.User_Key = Contacts.Contacts_Key "
@@ -3520,7 +3522,7 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
              "cast(0.00 as numeric(17,4)) PriceExcl, "
             "cast(0.00 as numeric(17,4)) Profit "
 		"From "
-			"Security Left Join DayArchive on "
+			"DayArchive Left Join Security on "
 				"Security.Security_Ref = DayArchive.Security_Ref "
 			"Left Join Contacts on "
 				"Security.User_Key = Contacts.Contacts_Key "
@@ -3590,7 +3592,7 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
             "cast(0.00 as numeric(17,4)) PriceExcl, "
             "cast(0.00 as numeric(17,4)) Profit "
 		"From "
-			"Security Left Join Orders on "
+			"Orders Left Join Security on "
 				"Security.Security_Ref = Orders.Security_Ref "
               + _taxJoins + ///For selecting tax
 			"Left Join Contacts on "
@@ -3666,7 +3668,7 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
         "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 
       "From "
-         "Security Left Join Archive On "
+         "Archive Left Join Security On "
             "Security.Security_Ref = Archive.Security_Ref "
          "Left Join ArcCategories On "
             "Archive.Category_Key = ArcCategories.Category_Key "
@@ -3723,7 +3725,7 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
          "Sum(DayArchive.Cost * DayArchive.Qty) Cost, "
          "Cast(Sum(abs(DayArchive.QTY ) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
       "From "
-         "Security Left Join DayArchive On "
+         "DayArchive  Left Join Security On "
             "Security.Security_Ref = DayArchive.Security_Ref "
          "Left Join ArcCategories On "
             "DayArchive.Category_Key = ArcCategories.Category_Key "
@@ -3781,7 +3783,7 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
          "Sum(Orders.Cost * Orders.Qty) Cost, "
         +  _selectSalesIncl + //For Selecting salesIncl column
       "From "
-         "Security Left Join Orders On "
+         "Orders  Left Join Security On "
             "Security.Security_Ref = Orders.Security_Ref "
          + _taxJoins + ///For selecting tax
          "Left Join ArcCategories On "
@@ -3846,7 +3848,7 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
 		"cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE + Archive.DISCOUNT_WITHOUT_TAX) )  - Sum(Archive.Cost) as Numeric(15,2)) Profit, "
         "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
      "From "
-         "Security Left Join Archive On "
+         "Archive  Left Join Security On "
             "Security.Security_Ref = Archive.Security_Ref "
      "LEFT JOIN ( "
                  "SELECT "
@@ -3898,7 +3900,7 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
           "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 
       "From "
-         "Security Left Join DayArchive On "
+         "DayArchive  Left Join Security On "
             "Security.Security_Ref = DayArchive.Security_Ref "
           "LEFT JOIN ( "
 				 "SELECT "
@@ -3949,7 +3951,7 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
 		 "cast(Sum((Orders.Qty * Orders.BASE_PRICE+ Orders.Discount) ) - Sum(Orders.Cost) as Numeric(15,2)) Profit, "
           +  _selectSalesIncl + //For Selecting salesIncl column
       "From "
-         "Security Left Join Orders On "
+         "Orders  Left Join Security On "
             "Security.Security_Ref = Orders.Security_Ref "
          "Left Join Contacts On "
             "Security.User_Key = Contacts.Contacts_Key "
@@ -4487,7 +4489,7 @@ void TdmMMReportData::SetupPatronTypes(TDateTime StartTime, TDateTime EndTime,TS
 			"PatronCount.Patron_Count,"
 			"ArcBill.Total "
 		"From "
-			"Security Left  Join ArcBill On "
+			"ArcBill Left  Join Security On  "
 				"Security.Security_Ref = ArcBill.Security_Ref "
 			"Right Join PatronCount On "
 				"ArcBill.ArcBill_key = PatronCount.ArcBill_key "
@@ -4510,7 +4512,7 @@ void TdmMMReportData::SetupPatronTypes(TDateTime StartTime, TDateTime EndTime,TS
 			"DayPatronCount.Patron_Count,"
 			"DayArcBill.Total "
 		"From "
-			"Security Left Join DayArcBill On "
+			" DayArcBill Left Join Security On "
 				"Security.Security_Ref = DayArcBill.Security_Ref "
 			"Right Join DayPatronCount On "
 				"DayArcBill.ArcBill_key = DayPatronCount.ArcBill_key "
@@ -5002,12 +5004,12 @@ void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
     "    ArcBillPay.ARCBILL_KEY,                                                                                                       "
     "    ArcBillPay.PAY_TYPE,                                                                                                          "          
     "    cast((100* COALESCE(sum(ArcBillPay.SUBTOTAL),0))/                                                                             "
-    "    Sum(ArcBill.TOTAL)                                                                                                            "
+    "    ArcBill.TOTAL                                                                                                            "
     "     as numeric(17, 4)) AS PayTypeTotal                                                                                           "                 
     "    FROM ArcBillPay                                                                                                               "                   
     "    left join ArcBill on ArcBill.ARCBILL_KEY=ArcBillPay.ARCBILL_KEY                                                               "             
-    "    where  ArcBillPay.SUBTOTAL > 0 and ArcBillPay.CASH_OUT<>'T'                                                                   "
-    "    group by ArcBillPay.PAY_TYPE ,ArcBillPay.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key            "
+    "    where  ArcBillPay.SUBTOTAL > 0  " //and ArcBillPay.CASH_OUT<>'T'                                                                   "
+    "    group by ArcBillPay.PAY_TYPE ,ArcBillPay.ARCBILL_KEY, ArcBill.TOTAL)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key            "
 	"	Where                                                                                                                          "
 	"		Security.Security_Event = 'Billed By' And                                                                                  "
     "       ArcBillPay.SubTotal>0   and "
@@ -5060,12 +5062,12 @@ void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
     "    DAYARCBILLPAY.ARCBILL_KEY,                                                                                                       "
     "    DAYARCBILLPAY.PAY_TYPE,                                                                                                          "
     "    cast((100* COALESCE(sum(DAYARCBILLPAY.SUBTOTAL),0))/                                                                             "
-    "    Sum(DAYARCBILL.TOTAL)                                                                                                            "
+    "    DAYARCBILL.TOTAL                                                                                                            "
     "     as numeric(17, 4)) AS PayTypeTotal                                                                                              "
     "    FROM DAYARCBILLPAY                                                                                                               "
     "    left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=DAYARCBILLPAY.ARCBILL_KEY                                                         "
-    "    where  DAYARCBILLPAY.SUBTOTAL > 0 and DAYARCBILLPAY.CASH_OUT<>'T'                                                                "
-    "    group by DAYARCBILLPAY.PAY_TYPE ,DAYARCBILLPAY.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key         "
+    "    where  DAYARCBILLPAY.SUBTOTAL > 0  " //and DAYARCBILLPAY.CASH_OUT<>'T'                                                                "
+    "    group by DAYARCBILLPAY.PAY_TYPE ,DAYARCBILLPAY.ARCBILL_KEY, DAYARCBILL.TOTAL)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key         "
 	"	Where                                                                             "
 	"		Security.Security_Event = 'Billed By' And                                     "
     "       DayArcBillPay.SubTotal>0   and "
@@ -5436,12 +5438,12 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
     "    ARCBILLPAY.ARCBILL_KEY,                                                                                                          "
     "    ARCBILLPAY.PAY_TYPE,                                                                                                             "
     "    cast((100* COALESCE(sum(ARCBILLPAY.SUBTOTAL),0))/                                                                                "
-    "    Sum(ArcBill.TOTAL)                                                                                                               "
+    "    ArcBill.TOTAL                                                                                                               "
     "     as numeric(17, 4)) AS PayTypeTotal                                                                                              "
     "    FROM ARCBILLPAY                                                                                                                  "
     "    left join ArcBill on ArcBill.ARCBILL_KEY=ARCBILLPAY.ARCBILL_KEY                                                                  "
-    "    where  ARCBILLPAY.SUBTOTAL > 0 and ARCBILLPAY.CASH_OUT<>'T'                                                                      "
-    "    group by ARCBILLPAY.PAY_TYPE ,ARCBILLPAY.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key               "
+    "    where  ARCBILLPAY.SUBTOTAL > 0 " ///and ARCBILLPAY.CASH_OUT<>'T'                                                                      "
+    "    group by ARCBILLPAY.PAY_TYPE ,ARCBILLPAY.ARCBILL_KEY, ArcBill.TOTAL)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key               "
 	"	Where                                                                                                                             "
     "     ARCBILLPAY.SubTotal>0   and                                                                                                     "
 	"	ArcBill.Time_Stamp >= :StartTime And                                                                                              "
@@ -5517,13 +5519,13 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
     "    DAYARCBILLPAY.ARCBILL_KEY,                                                                                                  "              
     "    DAYARCBILLPAY.PAY_TYPE,                                                                                                     "
     "    cast((100* COALESCE(sum(DAYARCBILLPAY.SUBTOTAL),0))/                                                                        "     
-    "    Sum(DAYARCBILL.TOTAL)                                                                                                       "     
+    "    DAYARCBILL.TOTAL                                                                                                      "
     "     as numeric(17, 4)) AS PayTypeTotal                                                                                         "
     "    FROM DAYARCBILLPAY                                                                                                          "                       
     "    left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=DAYARCBILLPAY.ARCBILL_KEY                                                    "
-    "    where  DAYARCBILLPAY.SUBTOTAL > 0 and DAYARCBILLPAY.CASH_OUT<>'T'                                                           "     
+    "    where  DAYARCBILLPAY.SUBTOTAL > 0   " //and DAYARCBILLPAY.CASH_OUT<>'T'                                                           "
     "                                                                                                                                "
-    "    group by DAYARCBILLPAY.PAY_TYPE ,DAYARCBILLPAY.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key    "  
+    "    group by DAYARCBILLPAY.PAY_TYPE ,DAYARCBILLPAY.ARCBILL_KEY, DAYARCBILL.TOTAL)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key    "  
 	"	Where                                                                                                                        "
     "     DayArcBillPay.SubTotal>0   and                                                                                             "
 	"	DayArcBill.Time_Stamp >= :StartTime And                                                                                        "
@@ -5766,6 +5768,8 @@ void TdmMMReportData::SetupBillDetails(TDateTime StartTime, TDateTime EndTime, T
                     "case when (c.name is null) then 'Non-member transaction'else (c.name ||' '|| c.LAST_NAME) end billed_to "
                     "From POINTSTRANSACTIONS "
                     "left join contacts c on c.contacts_key = POINTSTRANSACTIONS.contacts_key "
+                    " where POINTSTRANSACTIONS.Time_Stamp >= :StartTime And   "
+			"POINTSTRANSACTIONS.Time_Stamp < :EndTime   "
                     "Group By 1,2 "
                     "union all "
                     "Select ab.INVOICE_NUMBER, "
@@ -5773,6 +5777,7 @@ void TdmMMReportData::SetupBillDetails(TDateTime StartTime, TDateTime EndTime, T
                     "From ARCHIVE "
                     "left join contacts c on c.contacts_key = ARCHIVE.LOYALTY_KEY "
                     "left join ARCBILL ab on ab.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY   "
+                    "where	ARCHIVE.Time_Stamp >= :StartTime And    ARCHIVE.Time_Stamp < :EndTime   "
                     "Group By "
                     "1,2) c on c.INVOICE_NUMBER = ArcBill.INVOICE_NUMBER "
 
@@ -5785,8 +5790,8 @@ void TdmMMReportData::SetupBillDetails(TDateTime StartTime, TDateTime EndTime, T
 	"Where "  
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' and "
-			"Security.Time_Stamp >= :StartTime And "
-			"Security.Time_Stamp < :EndTime And "
+			"ArcBill.Time_Stamp >= :StartTime And "
+			"ArcBill.Time_Stamp < :EndTime And "
 			"Security.Security_Event = 'Billed By' ";
 	if (Invoices->Count)
 	{
@@ -13807,7 +13812,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 
 			"cast(Sum(Archive.Cost * Archive.Qty) as numeric(17, 4))  Cost "
 		"From "
-			"Security Left Join ArcBill on "
+			"ArcBill  Left Join Security on "
 				"Security.Security_Ref = ArcBill.Security_Ref "
 			"Left Join Archive on "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
@@ -13940,7 +13945,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"  Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Orders_Total ,	"
 			"Max(ArcBill.Patron_Count) Patron_Count "
 		"From "
-			"Security Left Join ArcBill on "
+			"ArcBill  Left Join Security on "
 				"Security.Security_Ref = ArcBill.Security_Ref "
 			"Left Join Archive on "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
@@ -14084,23 +14089,18 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 	qrAdjustSummary->SQL->Text = qrAdjustSummary->SQL->Text +
 	  			"Archive.Order_Type,"
 			"Sum(Archive.Qty) Item_Count,"
-			"cast(Sum(Archive.Qty * Archive.BASE_PRICE - Archive.Qty * Archive.Price_Level0) as numeric(17, 4)) Total "
+			"cast(Sum(Archive.Qty * Archive.PRICE_ADJUST - Archive.Qty * Archive.PRICE_LEVEL1) as numeric(17, 4)) Total "
 		"From "
-			"Security Left Join Archive On "
+			"Archive  Left Join Security On "
 				"Security.Security_Ref = Archive.Security_Ref "
          "Left Join ARCBILL On "
 				 " Archive.ArcBill_Key=ArcBill.ArcBill_Key "
-          " LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
-		"FROM ARCORDERDISCOUNTS a "
-		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
-		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 	"Where "
+            "Archive.Order_Type != 2 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
 			"Archive.TIME_STAMP_BILLED < :EndTime and "
 			"Security.Security_Event = 'Price Adjust' and "
-			"Archive.Price <> Archive.Price_Level0 and "
-            "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
-          "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' " ;
+			"Archive.Price <> Archive.Price_Level0  " ;
       	if (Locations && Locations->Count > 0)
 	{
 		qrAdjustSummary->SQL->Text	=	qrAdjustSummary->SQL->Text + "and (" +
@@ -14125,6 +14125,8 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 		}
 	}
 
+   
+
 	qrWeightedGP->Close();
 	qrWeightedGP->SQL->Text =
 
@@ -14145,126 +14147,39 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 
 
 //-----
- qrCancelsAdj->Close();
-	qrCancelsAdj->SQL->Text =
+    qrCancelsAdj->Close();
+    qrCancelsAdj->SQL->Text =
 
-      "Select "
-        "CanSec.Terminal_Name, "
-        "cast(Archive.PRICE_LEVEL0 * Archive.Qty as numeric(17, 4)) Price, "
-        "cast(1 as int) keyvalue "
-		"From "
-			"Security CanSec Inner Join Archive On "
-				"CanSec.Security_Ref = Archive.Security_Ref "
-			"Inner Join Contacts CanContact On "
-				"CanContact.Contacts_Key = CanSec.User_Key "
-			"Left Join ArcBill On "
-				"Archive.ArcBill_Key = ArcBill.ArcBill_Key "
-			"Left Join Security OrdSec On "
-				"OrdSec.Security_Ref = Archive.Security_Ref "
-			"Left Join Contacts OrdContact On "
-				"OrdContact.Contacts_Key = OrdSec.User_Key "
-        "LEFT JOIN ( "		
+            "Select "
+            "OrdSec.Terminal_Name,  "
+            "cast(sum(Archive.PRICE_LEVEL0 * Archive.Qty) as numeric(17, 4)) Price, "
+            "cast(sum(Archive.Qty) as numeric(17, 4)) keyvalue "
+      "From "
+       "Archive "
+       "Left Join ArcBill On Archive.ArcBill_Key = ArcBill.ArcBill_Key "
+       "Left Join Security OrdSec On OrdSec.Security_Ref = Archive.Security_Ref "
+      "Where "
+          "Archive.TIME_STAMP_BILLED >= :StartTime and  "
+       "Archive.TIME_STAMP_BILLED < :EndTime and  "
+       "(OrdSec.Security_Event = 'Cancel' or OrdSec.Security_Event = 'CancelY' ) ";
 
-					 "SELECT "
-						"ARCORDERTAXES.ARCHIVE_KEY, " 
-						"MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS VAT, "
-						"MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
-						"MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge "
-				  "FROM (SELECT  a.ARCHIVE_KEY,a.TAX_TYPE, "
-						"Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
-						"FROM ARCORDERTAXES a "
-						"group by  a.TAX_TYPE  , a.ARCHIVE_KEY "
-						"order by 1 )  ARCORDERTAXES "
-						"GROUP BY ARCORDERTAXES.ARCHIVE_KEY ) "
-						"AOT ON Archive.ARCHIVE_KEY = AOT.ARCHIVE_KEY "
-     "LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
-		"FROM ARCORDERDISCOUNTS a "
-		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
-		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
-		"Where "
-             "Archive.TIME_STAMP_BILLED >= :StartTime and "
-			"Archive.TIME_STAMP_BILLED < :EndTime and "
-		     "((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
-             "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
-			"CanSec.Security_Event = 'Cancel' and "
-			"OrdSec.Security_Event = 'Ordered By' and "
-			"Archive.Archive_Key Is Not Null "
- "union all "
-		"Select "
-			"CanSec.Terminal_Name, "			
-			"cast(DayArchive.PRICE_LEVEL0 * DayArchive.Qty as numeric(17, 4)) Price, "
-			"cast(1 as int) keyvalue "
-		"From "
-			"Security CanSec Inner Join DayArchive On "
-				"CanSec.Security_Ref = DayArchive.Security_Ref "
-			"Inner Join Contacts CanContact On "
-				"CanContact.Contacts_Key = CanSec.User_Key " 
-			"Left Join DayArcBill On "
-				"DayArchive.ArcBill_Key = DayArcBill.ArcBill_Key "
-			"Left Join Security OrdSec On "
-				"OrdSec.Security_Ref = DayArchive.Security_Ref "
-			"Left Join Contacts OrdContact On "
-				"OrdContact.Contacts_Key = OrdSec.User_Key "
-	"LEFT JOIN (  SELECT "
-						"DAYARCORDERTAXES.ARCHIVE_KEY, " 
-						"MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 0 THEN DAYARCORDERTAXES.TAX_VALUE END) AS VAT, "
-						"MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 2 THEN DAYARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
-						"MIN(CASE WHEN DAYARCORDERTAXES.TAX_TYPE = 3 THEN DAYARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge " 
-				 " FROM (SELECT  a.ARCHIVE_KEY,a.TAX_TYPE, "
-						"Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
-						"FROM DAYARCORDERTAXES a "
-						"group by  a.TAX_TYPE  , a.ARCHIVE_KEY "
-						"order by 1 )  DAYARCORDERTAXES "
-						"GROUP BY DAYARCORDERTAXES.ARCHIVE_KEY ) "
-						"AOT ON DayArchive.ARCHIVE_KEY = AOT.ARCHIVE_KEY "
-		"Left join (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
-		"FROM DAYARCORDERDISCOUNTS a "
-		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
-		"DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-	"Where "
-           "DayArchive.TIME_STAMP_BILLED >= :StartTime and "
-			"DayArchive.TIME_STAMP_BILLED < :EndTime and "
-		    " (( COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
-             "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
-			"CanSec.Security_Event = 'Cancel' and "
-			"OrdSec.Security_Event = 'Ordered By' and "
-			"DayArchive.Archive_Key Is Not Null "
-	"union all "
-         "Select "
-			"CanSec.Terminal_Name, "
-  			"cast(Orders.BASE_PRICE * Orders.Qty as numeric(17, 4)) Price, "
-         "cast(1 as int) keyvalue  "
-       "From "
-			"Security CanSec Left Join Orders On "
-			  "	CanSec.Security_Ref = Orders.Security_Ref "
-			"Left Join Contacts CanContact On  "
-				"CanContact.Contacts_Key = CanSec.User_Key  "
-			"Left Join Security OrdSec On "
-				"OrdSec.Security_Ref = Orders.Security_Ref "
-			"Left Join Contacts OrdContact On  "
-				"OrdContact.Contacts_Key = OrdSec.User_Key  "
-		"Where "
-			 "Orders.Time_Stamp >= :StartTime and "
-			"Orders.Time_Stamp < :EndTime and "
-			"CanSec.Security_Event = 'Cancel' and "
-			"OrdSec.Security_Event = 'Ordered By' and "
-			"Orders.Order_Key Is Not Null ";
+        if (Locations && Locations->Count > 0)
+        {
+            qrCancelsAdj->SQL->Text	=	qrCancelsAdj->SQL->Text + "and (" +
+                                        ParamString(Locations->Count, "ArcBill.BILLED_LOCATION", "LocationParam") + ")";
+        }
 
-      if (Locations && Locations->Count > 0)
-	   {
-		   qrCancelsAdj->SQL->Text	=	qrCancelsAdj->SQL->Text + "and (" +
-											ParamString(Locations->Count, "orders.ORDER_LOCATION", "LocationParam") + ")";
-	   }
-   qrCancelsAdj->ParamByName("StartTime")->AsDateTime	= StartTime;
-	qrCancelsAdj->ParamByName("EndTime")->AsDateTime	= EndTime;
-   	if (Locations)
-	{
-		for (int i=0; i<Locations->Count; i++)
-		{
-			qrCancelsAdj->ParamByName("LocationParam" + IntToStr(i))->AsString = Locations->Strings[i];
-		}
-	}
-   	
+        qrCancelsAdj->SQL->Text	=	qrCancelsAdj->SQL->Text + "GROUP BY 1 ";
+        qrCancelsAdj->ParamByName("StartTime")->AsDateTime	= StartTime;
+        qrCancelsAdj->ParamByName("EndTime")->AsDateTime	= EndTime;
+        if (Locations)
+        {
+            for (int i=0; i<Locations->Count; i++)
+            {
+                qrCancelsAdj->ParamByName("LocationParam" + IntToStr(i))->AsString = Locations->Strings[i];
+            }
+        }
+
 
 //-------for refunds
    qrRefunds->Close();
@@ -14273,7 +14188,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 	if (Locations)
 	{
 		qrRefunds->SQL->Text = qrRefunds->SQL->Text +
-			"ArcBill.Billed_Location Location,";
+			"a.ORDER_LOCATION Location, ";
 	}
 	else
 	{
@@ -14281,46 +14196,23 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"Cast('All Locations' As Varchar(25)) Location,";
 	}
 	qrRefunds->SQL->Text = qrRefunds->SQL->Text +
-  //		"Select "
-			"Security.Terminal_Name,"
 
- " Cast((abs(Archive.QTY) * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.Discount,0)) as Numeric(17,4)) Total_Price, "
-    " Cast((abs(Archive.QTY) * Archive.BASE_PRICE +COALESCE(AOT.VAT,0)+COALESCE( AOT.ServiceCharge,0) + COALESCE( AOT.OtherServiceCharge,0)+ COALESCE(Archive.Discount,0)) as Numeric(17,4)) Price, "
+        "Cast( sum(a.PRICE*a.QTY) as Numeric(17,4)) Total_Price, "
+        "Cast(sum(a.QTY) as Numeric(17,4)) keyvalue  "
+    "From  "
+    "Archive a Inner Join  Security On "
+        "a.Security_Ref = Security.Security_Ref  "
+    "Where "
+			"a.TIME_STAMP_BILLED >= :StartTime and  "
+		 	"a.TIME_STAMP_BILLED < :EndTime and "
+			"(Security.Security_Event = 'Credit' or Security.Security_Event = 'WriteOff' ) ";
 
-	  "cast(1 as int) keyvalue  "
-		"From "
-			"Security Inner Join Archive On "
-				"Security.Security_Ref = Archive.Security_Ref "
-			"Inner Join Contacts On "
-				"Contacts.Contacts_Key = Security.User_Key "
-
-" LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
-		"FROM ARCORDERDISCOUNTS a "
-		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
-		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
-		"LEFT JOIN ( "
-					 "SELECT "
-						"ARCORDERTAXES.ARCHIVE_KEY,  "
-						"MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS VAT, "
-						"MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
-						"MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS OtherServiceCharge "
-				  "FROM (SELECT  a.ARCHIVE_KEY,a.TAX_TYPE, "
-						"Cast(Sum(a.TAX_VALUE ) as Numeric(17,4)) TAX_VALUE "
-						"FROM ARCORDERTAXES a "
-						"group by  a.TAX_TYPE  , a.ARCHIVE_KEY "
-						"order by 1 )  ARCORDERTAXES "
-						"GROUP BY ARCORDERTAXES.ARCHIVE_KEY ) "
-						"AOT ON Archive.ARCHIVE_KEY = AOT.ARCHIVE_KEY "
-                   "left join ARCBILL on ARCHIVE.ARCBILL_KEY=ARCBILL.ARCBILL_KEY "
-		"Where "
-			"Archive.TIME_STAMP_BILLED >= :StartTime and "
-			"Archive.TIME_STAMP_BILLED < :EndTime and "
-			"Security.Security_Event = 'Credit' ";
-        	if (Locations && Locations->Count > 0)
-	   {
-		   qrRefunds->SQL->Text	=	qrRefunds->SQL->Text + "and (" +
-											ParamString(Locations->Count, "ArcBill.Billed_Location", "LocationParam") + ")";
-	   }
+    if (Locations && Locations->Count > 0)
+    {
+        qrRefunds->SQL->Text	=	qrRefunds->SQL->Text + "and (" +
+                                    ParamString(Locations->Count, "a.ORDER_LOCATION ", "LocationParam") + ")";
+    }
+     qrRefunds->SQL->Text	=	qrRefunds->SQL->Text + " GROUP BY 1";
 
 	qrRefunds->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrRefunds->ParamByName("EndTime")->AsDateTime	= EndTime;
@@ -16273,49 +16165,49 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
              "select  "
                      "cast ( 'Name Of Tax Payer' as varchar(30)) Header, "
                      "cast ( '" + nameOfTaxPayer + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
              "UNION ALL "
              "select  "
                       "cast ( 'Address Of Tax Payer' as varchar(30)) Header, "
                      "cast ( '" + addressOfTaxPayer + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
              "UNION ALL "
              "select  "
                       "cast ( 'Tin No.' as varchar(30)) Header, "
                      "cast ( '" + tinNumber + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
             "UNION ALL "
              "select  "
                       "cast ( 'Machine Name' as varchar(30)) Header, "
                      "cast ( '" + dmMMData->GetTerminalName() + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
             "UNION ALL "
              "select  "
                       "cast ( 'Software Name & Version No.' as varchar(30)) Header, "
                      "cast ( 'Menumate POS V6' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
               "UNION ALL "
              "select  "
                       "cast ( 'Serial Number' as varchar(30)) Header, "
                      "cast ( '" + serialNo + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
              "UNION ALL "
              "select  "
                       "cast ( 'User ID' as varchar(30)) Header, "
                      "cast ( '" + frmLogin->CurrentUser.UserID + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
              "UNION ALL "
              "select  "
                       "cast ( 'Date & Time Generated' as varchar(30)) Header, "
                      "cast ( '" + Now().FormatString("ddddd 'at' hh:nn") + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data " ;
 
      qrSalesSummaryD->Close();
@@ -16419,9 +16311,9 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                         "ARCORDERTAXES.ARCHIVE_KEY NOT IN (SELECT a.ARCHIVE_KEY FROM ARCORDERDISCOUNTS a WHERE (A.DISCOUNT_GROUPNAME = 'Senior Citizen' AND A.DISCOUNTED_VALUE <> 0) OR (A.DISCOUNT_GROUPNAME = 'Person with Disability'))))zero_rated on ARCHIVE.ARCHIVE_KEY = zero_rated.archive_key "
         "left join(select cast(sum(coalesce(ARCBILLPAY.ROUNDING,0)) as numeric(17,4))rounding_amount, ARCBILL.Z_KEY from ARCBILLPAY inner join ARCBILL on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
                     "group by ARCBILL.Z_KEY)ROUNDING on ZEDS.Z_KEY = rounding.z_key "
-        "LEFT JOIN( SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY FROM ARCBILL where ARCBILL.TIME_STAMP IN(SELECT    MIN(ARCBILL.TIME_STAMP) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ) BEGINV ON BEGINV.Z_KEY = ARCBILL.Z_KEY "
-        "LEFT JOIN( SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY FROM ARCBILL where ARCBILL.TIME_STAMP IN(SELECT    MAX(ARCBILL.TIME_STAMP) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ) ENDINV ON ENDINV.Z_KEY = ARCBILL.Z_KEY "
-        "Where "
+      "LEFT JOIN(SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY  FROM ARCBILL right join (SELECT    MIN(ARCBILL.TIME_STAMP) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ab on ARCBILL.TIME_STAMP=ab.min_ARCBILL_KEY    ) BEGINV ON BEGINV.Z_KEY = ARCBILL.Z_KEY "
+"LEFT JOIN(  SELECT  ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY  FROM ARCBILL right join (SELECT    max(ARCBILL.TIME_STAMP) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ab on ARCBILL.TIME_STAMP=ab.min_ARCBILL_KEY  ) ENDINV ON ENDINV.Z_KEY = ARCBILL.Z_KEY "
+  "Where "
                         "((   "
                      "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
                      "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary')) "

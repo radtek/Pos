@@ -281,8 +281,8 @@ AnsiString ZAccumulatedTotalDetailsReportSection::GetStartInvoiceNumberForConsol
                                         + terminalNamePredicate +
                                         " (COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
                                         "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP <= :endTime "
-                                        "GROUP BY DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
-                                        "ORDER BY DAB.ARCBILL_KEY " ;
+                                        "GROUP BY DAB.TIME_STAMP, DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
+                                        "ORDER BY DAB.TIME_STAMP " ;
 
     qrStartInvoiceNumber->ParamByName("startTime")->AsDateTime = *_startTime;
     qrStartInvoiceNumber->ParamByName("endTime")->AsDateTime = *_endTime;
@@ -319,8 +319,8 @@ AnsiString ZAccumulatedTotalDetailsReportSection::GetEndInvoiceNumberForConsolid
                                     + terminalNamePredicate +
                                     "(COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
                                     "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP <= :endTime "
-                                    "GROUP BY DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
-                                    "ORDER BY DAB.ARCBILL_KEY ";
+                                    "GROUP BY DAB.TIME_STAMP, DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
+                                    "ORDER BY DAB.TIME_STAMP ";
 
     qrEndInvoiceNumber->ParamByName("startTime")->AsDateTime = *_startTime;
     qrEndInvoiceNumber->ParamByName("endTime")->AsDateTime = *_endTime;

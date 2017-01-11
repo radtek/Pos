@@ -174,6 +174,7 @@ public:
     SkimCalculations() : CurrentFloat(0), CurrentSkimsTotal(0), Skims(0), Refloats(0) { };
 
     void CalculateSkims(Database::TDBTransaction &dbTransaction, UnicodeString deviceName);
+    void CalculateSkims(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, TDateTime &startTime, TDateTime &endTime);
 
     Currency CurrentFloat;
     Currency CurrentSkimsTotal;

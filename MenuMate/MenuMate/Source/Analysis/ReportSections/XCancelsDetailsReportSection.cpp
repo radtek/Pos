@@ -46,6 +46,7 @@ void XCancelsDetailsReportSection::GetOutput(TPrintout* printOut)
     if(IsConsolidatedZed)
     {
         GetCancelReportsForConsolidatedZed(cancelsQuery, terminalNamePredicate, prevZedTime);
+        prevZedTime = *_endTime;
     }
     else
     {
@@ -203,12 +204,13 @@ void XCancelsDetailsReportSection::GetCancelReportsForConsolidatedZed(TIBSQL* ca
 {
 
   AnsiString timeFilter = "";
-  timeFilter =  " and SECURITY.TIME_STAMP >= :startTime and SECURITY.TIME_STAMP <= :PrevZedTime ";
+  timeFilter =  " SECURITY.TIME_STAMP >= :startTime and SECURITY.TIME_STAMP <= :PrevZedTime  and ";
 
-  prevZedTime = *_endTime;
+
 
   cancelsQuery->SQL->Text =
         "select "
+            "SECURITY.TIME_STAMP, "
             "CAST(ITEM_NAME AS VARCHAR(50)) ITEM_NAME, "
             "PRICE, "
             "PRICE_LEVEL0, "
@@ -216,21 +218,21 @@ void XCancelsDetailsReportSection::GetCancelReportsForConsolidatedZed(TIBSQL* ca
             "HAPPY_HOUR HAPPYHOUR, "
             "CONTACTS.NAME, "
             "SECURITY.NOTE, "
-            "SECURITY.TIME_STAMP, "
             "QTY "
         "from "
-            "DAYARCHIVE "
-            "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF =DAYARCHIVE.SECURITY_REF "
+            " ARCHIVE "
+            "LEFT JOIN SECURITY ON SECURITY.SECURITY_REF = ARCHIVE.SECURITY_REF "
             "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
         " where "
+         + timeFilter
             + terminalNamePredicate
             + " ORDER_TYPE = :ORDER_TYPE "
-              + timeFilter +
               " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
                 "OR SECURITY.SECURITY_EVENT = 'CancelY' ) "
         "union all "
 
         "select "
+            "SECURITY.TIME_STAMP, "
             "CAST(ITEM_NAME AS VARCHAR(50)) ITEM_NAME, "
             "ZED_PRICE, "
             "PRICE_LEVEL0,  "
@@ -238,16 +240,15 @@ void XCancelsDetailsReportSection::GetCancelReportsForConsolidatedZed(TIBSQL* ca
             "HAPPYHOUR, "
             "CONTACTS.NAME, "
             "SECURITY.NOTE, "
-            "SECURITY.TIME_STAMP, "
             "QTY "
         "from "
             "ORDERS  "
             "LEFT JOIN SECURITY ON ORDERS.SECURITY_REF =SECURITY.SECURITY_REF "
             "LEFT JOIN CONTACTS ON CONTACTS.CONTACTS_KEY = SECURITY.USER_KEY "
         " where "
+             + timeFilter
             + terminalNamePredicate
             + " ORDER_TYPE = :ORDER_TYPE "
-              + timeFilter +
               " and (SECURITY.SECURITY_EVENT = :SECURITY_EVENT "
                "OR SECURITY.SECURITY_EVENT = 'CancelY' ) " ;
 

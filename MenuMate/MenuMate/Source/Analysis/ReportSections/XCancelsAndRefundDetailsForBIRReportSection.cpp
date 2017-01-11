@@ -271,10 +271,11 @@ void XCancelsAndRefundDetailsForBIRReportSection::GetRefundDetailsForConsolidate
 {
 
 creditQuery->SQL->Text = "SELECT "
+            "SECURITY.TIME_STAMP, "
             "sum(PRICE) PRICE,  "
             "ORDER_TYPE, "
-            "CONTACTS.NAME, "
-            "SECURITY.TIME_STAMP "
+            "CONTACTS.NAME "
+
         "FROM ARCHIVE "
         "LEFT JOIN SECURITY ON ARCHIVE.SECURITY_REF = SECURITY.SECURITY_REF "
         "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
@@ -282,13 +283,13 @@ creditQuery->SQL->Text = "SELECT "
         " SECURITY.TIME_STAMP  >= :startTime and  SECURITY.TIME_STAMP <= :endTime and "
         + terminalNamePredicate +
         " ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + " " "AND "
-        "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secCredit] + "' "
-         "OR "  "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secWriteOff] + "' "
+        " (SECURITY.SECURITY_EVENT = '" + SecurityTypes[secCredit] + "' "
+         "OR "  "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secWriteOff] + "' ) "
          "group by "
          "ORDER_TYPE, "
          "SECURITY.TIME_STAMP, "
          "CONTACTS.NAME "
-         "ORDER BY CONTACTS.NAME ";
+         "ORDER BY SECURITY.TIME_STAMP ";
 }
 
 

@@ -621,7 +621,6 @@ void TTransactionInfoProcessor::NormalZedTransaction(TIBSQL *qrXArcBill, bool sh
      }
 }
 
-
 void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* TransactionInfo, TIBSQL *qrXArcPay, bool loop, TIBSQL *qrXArcBill, std::map<AnsiString,TPointTransactions> pointTransaction, std::set<AnsiString> countedInvoiceNumbers, AnsiString currentInvoiceKey)
 {
     for (; !qrXArcPay->Eof; qrXArcPay->Next())
@@ -738,6 +737,7 @@ void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* Transact
         }
     }
 }
+
 void TTransactionInfoProcessor::GetArcPayForNormalZed(TIBSQL *qrXArcPay)
 {
     qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
@@ -1174,7 +1174,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
 
         ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount FROM refloat_skim "
         "Left join zeds on refloat_skim.z_key = zeds.z_key "
-        "WHERE zeds.TERMINAL_NAME = :TERMINAL_NAME AND zeds.TIME_STAMP >= :startTime and  zeds.TIME_STAMP <= :endTime  "
+        "WHERE zeds.TERMINAL_NAME = :TERMINAL_NAME AND zeds.TIME_STAMP >= :startTime and  zeds.TIME_STAMP <= :endTime  and zeds.TIME_STAMP IS NOT NULL "
         "and (refloat_skim.transaction_type = 'Withdrawal' or refloat_skim.transaction_type = 'Deposit')";
 
         ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
@@ -1274,6 +1274,52 @@ void TTransactionInfoProcessor::GetPointsForConsolidatedZed(TIBSQL *qXArcPoints,
     qXArcPoints->SQL->Text = "SELECT * from POINTSTRANSACTIONS a where a.TIME_STAMP >= :startTime and  a.TIME_STAMP <= :endTime " ;
     qXArcPoints->ParamByName("startTime")->AsDateTime = startTime;
     qXArcPoints->ParamByName("endTime")->AsDateTime = endTime;
+}
+
+void SkimCalculations::CalculateSkims(Database::TDBTransaction &dbTransaction, UnicodeString deviceName, TDateTime &startTime, TDateTime &endTime)
+{
+
+
+      TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+
+      ibInternalQuery->Close();
+
+        ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount FROM refloat_skim "
+        "Left join zeds on refloat_skim.z_key = zeds.z_key "
+        "WHERE zeds.TERMINAL_NAME = :TERMINAL_NAME AND zeds.TIME_STAMP >= :startTime and  zeds.TIME_STAMP <= :endTime  "
+        "and (refloat_skim.transaction_type = 'Withdrawal' or refloat_skim.transaction_type = 'Deposit')";
+
+    ibInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
+    ibInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
+
+    ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+    ibInternalQuery->ExecQuery();
+
+    for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
+    {
+        if(ibInternalQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal")
+        {
+            Skims += ibInternalQuery->FieldByName("amount")->AsCurrency;
+        }
+        else
+        {
+            Refloats += ibInternalQuery->FieldByName("amount")->AsCurrency;
+        }
+    }
+
+
+    ibInternalQuery->Close();
+    ibInternalQuery->SQL->Text = "SELECT SUM(INITIAL_FLOAT) INITIAL, SUM(SKIMS_TOTAL) SKIMS FROM ZEDS " "WHERE " "TERMINAL_NAME = :TERMINAL_NAME AND " "TIME_STAMP >= :startTime and  TIME_STAMP <= :endTime ";
+    ibInternalQuery->ParamByName("startTime")->AsDateTime = startTime;
+    ibInternalQuery->ParamByName("endTime")->AsDateTime = endTime;
+    ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+    ibInternalQuery->ExecQuery();
+
+    if (ibInternalQuery->RecordCount)
+    {
+        CurrentFloat = ibInternalQuery->FieldByName("INITIAL")->AsCurrency;
+        CurrentSkimsTotal = ibInternalQuery->FieldByName("SKIMS")->AsCurrency;
+    }
 }
 
 
