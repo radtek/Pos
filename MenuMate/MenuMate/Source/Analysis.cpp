@@ -2131,7 +2131,7 @@ void TfrmAnalysis::PrintConsumption(Database::TDBTransaction &DBTransaction)
 	}
 }
 // ---------------------------------------------------------------------------
-void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembership *Membership, UnicodeString DeviceName)
+void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembership *Membership, UnicodeString DeviceName, int zedKey)
 {
 	long NewBillingKey;
 	try
@@ -2216,11 +2216,12 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			IBDayWebArchive->Close();
 			IBDayWebArchive->SQL->Text = "select * from DAYARCWEB where DAYARCWEB.ARCBILL_KEY = :ARCBILL_KEY";
 
-            int Zedkey;
+            int Zedkey = zedKey;
+            /*int Zedkey;
             IBZedQuery->Close();
             IBZedQuery->SQL->Text = "SELECT GEN_ID(GEN_ZED, 0) FROM RDB$DATABASE";
             IBZedQuery->ExecQuery();
-            Zedkey = IBZedQuery->Fields[0]->AsInteger;
+            Zedkey = IBZedQuery->Fields[0]->AsInteger;*/
 
 			IBArchive->Close();
 			IBArchive->SQL->Text = "insert into ARCHIVE " "(ARCHIVE.ARCHIVE_KEY, ARCHIVE.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME, "
@@ -3040,6 +3041,7 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 
     ZedToArchive->Clear();
     ZedToArchive->Position = 0;
+    int Zedkey = 0;
 
     TCashDenominationControllerInterface::Instance()->ResetCashDenominations();
     // call to new class to get orders of DC and bill them off by storing
@@ -3187,7 +3189,7 @@ Zed:
 					IBInternalQuery->Close();
 					IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
 					IBInternalQuery->ExecQuery();
-					int Zedkey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+					Zedkey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
 					BagID = "To Be Zed";
 					UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
 					UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
@@ -3218,7 +3220,7 @@ Zed:
 						IBInternalQuery->ExecQuery();
 						int PrevZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
 
-						int Zedkey;
+
 						IBInternalQuery->Close();
 						IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ZED, 1) FROM RDB$DATABASE";
 						IBInternalQuery->ExecQuery();
@@ -3251,7 +3253,7 @@ Zed:
 					}
 					else
 					{
-						int Zedkey = z_key = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+						Zedkey = z_key = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
 						int CurrentSecurityRef = IBInternalQuery->FieldByName("SECURITY_REF")->AsInteger;
 
 						TDBSecurity::ProcessSecurity(DBTransaction, CurrentSecurityRef,
@@ -3295,7 +3297,7 @@ Zed:
 				Processing->Message = "Updating Archives...";
 				Processing->Show();
 
-                UpdateArchive(IBInternalQuery, DBTransaction, DeviceName);  // update archive..
+                UpdateArchive(IBInternalQuery, DBTransaction, DeviceName, Zedkey);  // update archive..
 
                 Processing->Close();
 				Processing->Message = "Archiving Report...";
@@ -9167,7 +9169,7 @@ void TfrmAnalysis::ClearParkedSale(Database::TDBTransaction &DBTransaction)
     }
 }
 
-void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransaction &DBTransaction, UnicodeString DeviceName)
+void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransaction &DBTransaction, UnicodeString DeviceName, int zedKey)
 {
    try
    {
@@ -9178,11 +9180,11 @@ void TfrmAnalysis::UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransacti
             IBInternalQuery->ExecQuery();
             for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
             {
-                UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), IBInternalQuery->FieldByName("DEVICE_NAME")->AsString);
+                UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), IBInternalQuery->FieldByName("DEVICE_NAME")->AsString, zedKey);
             }
         }
         else
-        UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), DeviceName);
+        UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), DeviceName, zedKey);
    }
     catch(Exception & E)
     {

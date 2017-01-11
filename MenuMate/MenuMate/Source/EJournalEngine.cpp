@@ -369,6 +369,11 @@ TMemoryStream* TEJournalEngine::ExtractConsolidatedZedReport(TDateTime fromSessi
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
 
+    fromSessionDate = GetStartTimeForConolidatedZed(fromSessionDate, deviceName);
+    MessageBox(DateToStr(fromSessionDate), "StartTime", MB_OK + MB_ICONERROR);
+    toSessionDate = GetEndTimeForConolidatedZed(toSessionDate, deviceName);
+    MessageBox(DateToStr(toSessionDate), "EndTime", MB_OK + MB_ICONERROR);
+
     TTransactionInfo TransactionInfo;
     TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
     TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfoForConsolidatedZed(DBTransaction, deviceName, fromSessionDate, toSessionDate);
@@ -409,3 +414,83 @@ bool TEJournalEngine::CheckZedDataExistsForConolidatedZed(TDateTime from, TDateT
 }
 
 
+TDateTime TEJournalEngine::GetStartTimeForConolidatedZed(TDateTime from, AnsiString deviceName)
+{
+    TDateTime retval = from;
+    int z_key = 0;
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text="SELECT first(1) a.Z_KEY FROM ZEDS a where a.TIME_STAMP >= :startTime " + terminalNamePredicate ;
+    IBInternalQuery->ParamByName("startTime")->AsDateTime = from;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    IBInternalQuery->ExecQuery();
+    if(IBInternalQuery->RecordCount)
+    {
+       z_key = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+    }
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text="SELECT first(1) a.TIME_STAMP FROM ARCBILL a where a.Z_KEY = :Z_KEY " + terminalNamePredicate +
+                                " order by a.TIME_STAMP ";
+    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = z_key;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    IBInternalQuery->ExecQuery();
+    if(IBInternalQuery->RecordCount)
+    {
+       retval = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+    }
+    return retval;
+}
+
+TDateTime TEJournalEngine::GetEndTimeForConolidatedZed(TDateTime to, AnsiString deviceName)
+{
+    TDateTime retval = to;
+    int z_key = 0;
+    AnsiString terminalNamePredicate = "";
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        terminalNamePredicate = "and a.TERMINAL_NAME = :TERMINAL_NAME ";
+    }
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text="SELECT first(1) a.Z_KEY FROM ZEDS a where a.TIME_STAMP <= :endTime  " + terminalNamePredicate +
+                                " order by a.TIME_STAMP desc ";
+    IBInternalQuery->ParamByName("endTime")->AsDateTime = to;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    IBInternalQuery->ExecQuery();
+    if(IBInternalQuery->RecordCount)
+    {
+       z_key = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+    }
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text="SELECT first(1) a.TIME_STAMP FROM ARCBILL a where a.Z_KEY = :Z_KEY " + terminalNamePredicate +
+                                " order by a.TIME_STAMP desc ";
+    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = z_key;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+        IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+    }
+    IBInternalQuery->ExecQuery();
+    if(IBInternalQuery->RecordCount)
+    {
+       retval = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+    }
+    return retval;
+}
