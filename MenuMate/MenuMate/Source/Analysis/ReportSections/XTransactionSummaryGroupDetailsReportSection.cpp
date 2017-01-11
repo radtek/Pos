@@ -175,6 +175,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
         }
 
         std::map <UnicodeString, TSumPayments> ::iterator itCurrentPayment;
+        bool isCashPaymentExist = false;
         for (itCurrentPayment = PaymentValues.begin(); itCurrentPayment != PaymentValues.end(); itCurrentPayment++)
         {
             if (itCurrentPayment->second.Name.UpperCase() != UpperCase(CHANGE)
@@ -217,6 +218,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
 
                 if(itCurrentPayment->second.Name == "Cash" && skimCalculations.CashWithdrawl != 0.00)
                 {
+                    isCashPaymentExist = true;
                     groupGrandTotal += skimCalculations.CashWithdrawl;
                     DisplayCashWithdrawlSection(printOut, skimCalculations, itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount);
                     total_payment += skimCalculations.CashWithdrawlCount;
@@ -273,6 +275,13 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                 groupGrandTotal += itCurrentPayment->second.CashOut;
                 groupGrandTotal += itCurrentPayment->second.Total;
             }
+        }
+
+        if(!isCashPaymentExist && transactionInfo.Payments.size() > 0)
+        {
+            groupGrandTotal += skimCalculations.CashWithdrawl;
+            DisplayCashWithdrawlSection(printOut, skimCalculations, 0);
+            total_payment += skimCalculations.CashWithdrawlCount;
         }
 
         if (groupGrandTotal != 0)
@@ -736,7 +745,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
 
             if(skimCalculations.CashWithdrawl != 0.00)
             {
-                printOut->PrintFormat->Line->Columns[0]->Text = "Cash Withdrawls";
+                printOut->PrintFormat->Line->Columns[0]->Text = "Cash Withdrawals";
                 printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( skimCalculations.CashWithdrawl );
                 printOut->PrintFormat->AddLine();
             }
@@ -767,6 +776,14 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
             printOut->PrintFormat->AddLine();
             printOut->PrintFormat->AddLine();
         }
+    }
+
+    if(transactionInfo.Payments.size() == 0 && skimCalculations.CashWithdrawl != 0.00 && !TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    {
+            printOut->PrintFormat->NewLine();
+            groupGrandTotal += skimCalculations.CashWithdrawl;
+            total_payment += skimCalculations.CashWithdrawlCount;
+            DisplayCashWithdrawlSection(printOut, skimCalculations, 0.00);
     }
 }
 

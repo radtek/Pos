@@ -181,6 +181,11 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
             }
         }
 
+        if(TransactionInfo.Payments.size() == 0 && cashWithdrawl != 0 && !TGlobalSettings::Instance().UseBIRFormatInXZReport)
+        {
+            groupGrandTotal += cashWithdrawl;
+        }
+
         return groupGrandTotal;
     }
     catch(Exception &E)
@@ -1266,7 +1271,7 @@ Currency DataCalculationUtilities::GetTotalEarnings(Database::TDBTransaction &db
                     groupGrandTotal += itCurrentPayment->second.Total;
                 }
             }
-            if (groupGrandTotal != 0 && itPayments->first == 0)
+            if (groupGrandTotal != 0 && itPayments->first == 0 && !TGlobalSettings::Instance().UseBIRFormatInXZReport)
             {
                 groupGrandTotal -= (currentFloat + currentSkimsTotal - cashWithdrawl);
             }
