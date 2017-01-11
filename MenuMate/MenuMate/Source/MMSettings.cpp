@@ -385,6 +385,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
          if(mallIndex != 0)
             TGlobalSettings::Instance().mallInfo = TManagerMallSetup::LoadActiveMallSettings(DBTransaction);
         TGlobalSettings::Instance().FloatWithdrawFromCash = TManagerVariable::Instance().GetBool(DBTransaction, vmFloatWithdrawFromCash, false);
+        TGlobalSettings::Instance().CashWithdrawalGLCode = TManagerVariable::Instance().GetStr(DBTransaction, vmCashWithdrawal, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

@@ -478,6 +478,7 @@ public:
     bool UseMemberSubs;
     TMall mallInfo;
     bool FloatWithdrawFromCash;
+    UnicodeString CashWithdrawalGLCode;
 };
 
 #endif

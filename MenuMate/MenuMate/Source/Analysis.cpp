@@ -3715,9 +3715,14 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
        {
           cashWithdrawal = 0;
           cashWithdrawal = GetCashWithdrawal(DBTransaction);
+          UnicodeString glCodecashWithdrawal = "";
+          if(TGlobalSettings::Instance().CashWithdrawalGLCode == NULL)
+              glCodecashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
+          else
+              glCodecashWithdrawal = "416";
           if(cashWithdrawal != 0)
           {
-            AddInvoiceItem(XeroInvoiceDetail,"Cash WithDrawal", RoundTo((cashWithdrawal),-2),floatGlCode, 0);
+            AddInvoiceItem(XeroInvoiceDetail,"Cash WithDrawal", RoundTo((cashWithdrawal),-2),glCodecashWithdrawal, 0);
           }
        }
 
@@ -4039,9 +4044,14 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
            {
               double cashWithdrawal = 0;
               cashWithdrawal = GetCashWithdrawal(DBTransaction);
+              UnicodeString glCodecashWithdrawal = "";
+              if(TGlobalSettings::Instance().CashWithdrawalGLCode == NULL)
+                  glCodecashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
+              else
+                  glCodecashWithdrawal = "6-3300";
               if(cashWithdrawal != 0)
               {
-                AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Cash WithDrawal", RoundTo((cashWithdrawal),-2),0.0, jobCode, "ZeroTax");
+                AddMYOBInvoiceItem(MYOBInvoiceDetail,glCodecashWithdrawal,"Cash WithDrawal", RoundTo((cashWithdrawal),-2),0.0, jobCode, "ZeroTax");
               }
            }
          IBInternalQuery->ExecQuery();
