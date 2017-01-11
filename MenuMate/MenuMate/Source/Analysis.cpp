@@ -2217,11 +2217,6 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			IBDayWebArchive->SQL->Text = "select * from DAYARCWEB where DAYARCWEB.ARCBILL_KEY = :ARCBILL_KEY";
 
             int Zedkey = zedKey;
-            /*int Zedkey;
-            IBZedQuery->Close();
-            IBZedQuery->SQL->Text = "SELECT GEN_ID(GEN_ZED, 0) FROM RDB$DATABASE";
-            IBZedQuery->ExecQuery();
-            Zedkey = IBZedQuery->Fields[0]->AsInteger;*/
 
 			IBArchive->Close();
 			IBArchive->SQL->Text = "insert into ARCHIVE " "(ARCHIVE.ARCHIVE_KEY, ARCHIVE.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME, "
