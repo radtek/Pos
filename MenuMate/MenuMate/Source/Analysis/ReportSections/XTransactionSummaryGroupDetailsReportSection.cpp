@@ -277,7 +277,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
             }
         }
 
-        if(!isCashPaymentExist && transactionInfo.Payments.size() > 0)
+        if(!isCashPaymentExist && transactionInfo.Payments.size() > 0 && skimCalculations.CashWithdrawl != 0.00)
         {
             groupGrandTotal += skimCalculations.CashWithdrawl;
             DisplayCashWithdrawlSection(printOut, skimCalculations, 0);
