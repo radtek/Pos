@@ -8,6 +8,12 @@ XProductionInfoDetailsReportSection::XProductionInfoDetailsReportSection(Databas
 }
 
 
+XProductionInfoDetailsReportSection::XProductionInfoDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmProductionInfoDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
 XProductionInfoDetailsReportSection::~XProductionInfoDetailsReportSection()
 {
     delete dataFormatUtilities;
@@ -15,6 +21,7 @@ XProductionInfoDetailsReportSection::~XProductionInfoDetailsReportSection()
 
 void XProductionInfoDetailsReportSection::GetOutput(TPrintout* printOut)
 {
+    TDateTime total;
     printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
     printOut->PrintFormat->Line->ColCount = 1;
     printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
@@ -35,7 +42,14 @@ void XProductionInfoDetailsReportSection::GetOutput(TPrintout* printOut)
     printOut->PrintFormat->Line->Columns[0]->Text = "Average Sale Time (Minutes)";
 
     unsigned short hour = 0, minute = 0, second = 0, milliSecond = 0;
-    TDateTime total = TDBSaleTimes::GetSalesAverage(*_dbTransaction);
+    if(IsConsolidatedZed)
+    {
+        total = TDBSaleTimes::GetSalesAverage(*_dbTransaction, *_startTime, *_endTime);
+    }
+    else
+    {
+        total = TDBSaleTimes::GetSalesAverage(*_dbTransaction);
+    }
     total.DecodeTime(&hour, &minute, &second, &milliSecond);
 
     printOut->PrintFormat->Line->Columns[1]->Text = (IntToStr(hour) + ":" + IntToStr(minute) + ":" + IntToStr(second));
@@ -47,7 +61,14 @@ void XProductionInfoDetailsReportSection::GetOutput(TPrintout* printOut)
     minute = 0;
     second = 0;
     milliSecond = 0;
-    total = TDBSaleTimes::GetMakeAverage(*_dbTransaction);
+    if(IsConsolidatedZed)
+    {
+        total = TDBSaleTimes::GetMakeAverage(*_dbTransaction, *_startTime, *_endTime);
+    }
+    else
+    {
+        total = TDBSaleTimes::GetMakeAverage(*_dbTransaction);
+    }
     total.DecodeTime(&hour, &minute, &second, &milliSecond);
 
     printOut->PrintFormat->Line->Columns[1]->Text = (IntToStr(hour) + ":" + IntToStr(minute) + ":" + IntToStr(second));
@@ -85,7 +106,15 @@ void XProductionInfoDetailsReportSection::GetOutput(TPrintout* printOut)
     int offset = 0;
     while(counter < 10)
     {
-        bool isEOF =  TDBSaleTimes::GetLongestSaleTrans(*_dbTransaction, offset, Doc, Opr, Qty, Dur, Avg, Val);
+        bool isEOF;
+        if(IsConsolidatedZed)
+        {
+            isEOF =  TDBSaleTimes::GetLongestSaleTransForConsolidatedZed(*_dbTransaction, offset, Doc, Opr, Qty, Dur, Avg, Val, *_startTime, *_endTime);
+        }
+        else
+        {
+            isEOF =  TDBSaleTimes::GetLongestSaleTrans(*_dbTransaction, offset, Doc, Opr, Qty, Dur, Avg, Val);
+        }
         if (Doc != "")
         {
             printOut->PrintFormat->Add(Doc + "|" + Opr + "|" + Qty + "|" + Dur + "|" + Avg + "|" + Val);
@@ -126,7 +155,15 @@ void XProductionInfoDetailsReportSection::GetOutput(TPrintout* printOut)
 
     for (int i = 0; i < 10; i++)
     {
-        TDBSaleTimes::GetLongestMakeTrans(*_dbTransaction, i, Doc, Opr, Qty, Dur, Avg, Val);
+        if(IsConsolidatedZed)
+        {
+           TDBSaleTimes::GetLongestMakeTransForConsolidatedZed(*_dbTransaction, i, Doc, Opr, Qty, Dur, Avg, Val, *_startTime, *_endTime);
+        }
+        else
+        {
+           TDBSaleTimes::GetLongestMakeTrans(*_dbTransaction, i, Doc, Opr, Qty, Dur, Avg, Val);
+        }
+        //TDBSaleTimes::GetLongestMakeTrans(*_dbTransaction, i, Doc, Opr, Qty, Dur, Avg, Val);
         if (Doc != "")
         {
             printOut->PrintFormat->Add(Doc + "|" + Opr + "|" + Qty + "|" + Dur + "|" + Avg + "|" + Val);

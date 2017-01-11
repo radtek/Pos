@@ -13,6 +13,7 @@ class XTransactionSummaryGroupDetailsReportSection : public BaseReportSection
 
 public:
     XTransactionSummaryGroupDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XTransactionSummaryGroupDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XTransactionSummaryGroupDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
@@ -22,6 +23,7 @@ private:
     TMembership* _memberShip;
     DataFormatUtilities* dataFormatUtilities;
     DataCalculationUtilities* dataCalculationUtilities;
+    void DisplayBankingSection(TPrintout* printOut);
 
 };
 

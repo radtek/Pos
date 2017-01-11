@@ -25,6 +25,7 @@ class XTaxSummaryDetailsReportSection : public BaseReportSection
 
 public:
     XTaxSummaryDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XTaxSummaryDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XTaxSummaryDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
@@ -38,6 +39,7 @@ private:
     ReportFinancialCalculations* reportCalculations;
 
     TMembership* _memberShip;
+    void GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime);
 };
 
 

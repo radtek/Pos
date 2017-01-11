@@ -544,9 +544,9 @@ int TContact::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int in
 		 IBInternalQuery->Close();
 		 IBInternalQuery->SQL->Text =
 			 "INSERT INTO CONTACTS (" "CONTACTS_KEY," "CONTACT_TYPE," "NAME," "PIN," "SITE_ID," "CARD_CREATION_DATE,"
-			 "CONTACTS_3RDPARTY_KEY," "MEMBER_NUMBER, ACTIVATION_DATE,MEMBER_TYPE,MAILING_ADDRESS,PHONE,MOBILE,TITLE,DATEOFBIRTH) " "VALUES (" ":CONTACTS_KEY," ":CONTACT_TYPE," ":NAME," ":PIN," ":SITE_ID,"
+			 "CONTACTS_3RDPARTY_KEY," "MEMBER_NUMBER, ACTIVATION_DATE,MEMBER_TYPE,MAILING_ADDRESS,PHONE,MOBILE,TITLE,DATEOFBIRTH,POINTS_RULES) " "VALUES (" ":CONTACTS_KEY," ":CONTACT_TYPE," ":NAME," ":PIN," ":SITE_ID,"
 			 ":CARD_CREATION_DATE," ":CONTACTS_3RDPARTY_KEY," ":MEMBER_NUMBER, :ACTIVATION_DATE,:MEMBER_TYPE,:MAILING_ADDRESS,"
-                         ":PHONE, :MOBILE, :TITLE, :DATEOFBIRTH);";
+                         ":PHONE, :MOBILE, :TITLE, :DATEOFBIRTH, :POINTS_RULES);";
 		 IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = RetVal;
 		 IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = ContactType;
 		 IBInternalQuery->ParamByName("NAME")->AsString = Info.Name;
@@ -555,13 +555,14 @@ int TContact::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int in
 		 IBInternalQuery->ParamByName("CARD_CREATION_DATE")->AsDateTime = Info.CardCreationDate;
 		 IBInternalQuery->ParamByName("CONTACTS_3RDPARTY_KEY")->AsInteger = 0;
 		 IBInternalQuery->ParamByName("MEMBER_NUMBER")->AsInteger = 0;
-                 IBInternalQuery->ParamByName("ACTIVATION_DATE")->AsDateTime = Now();
-                 IBInternalQuery->ParamByName("MEMBER_TYPE")->AsInteger = Info.MemberType;
-                 IBInternalQuery->ParamByName("DATEOFBIRTH")->AsDateTime = Info.DateOfBirth;
-                 IBInternalQuery->ParamByName("TITLE")->AsString = Info.Title;
-                 IBInternalQuery->ParamByName("PHONE")->AsString = Info.Phone  ;
+         IBInternalQuery->ParamByName("ACTIVATION_DATE")->AsDateTime = Now();
+         IBInternalQuery->ParamByName("MEMBER_TYPE")->AsInteger = Info.MemberType;
+         IBInternalQuery->ParamByName("DATEOFBIRTH")->AsDateTime = Info.DateOfBirth;
+         IBInternalQuery->ParamByName("TITLE")->AsString = Info.Title;
+         IBInternalQuery->ParamByName("PHONE")->AsString = Info.Phone  ;
 		 IBInternalQuery->ParamByName("MOBILE")->AsString = Info.Mobile ;
-                 IBInternalQuery->ParamByName("MAILING_ADDRESS")->AsString = Info.MailingAddress;
+         IBInternalQuery->ParamByName("MAILING_ADDRESS")->AsString = Info.MailingAddress;
+         IBInternalQuery->ParamByName("POINTS_RULES")->AsInteger = Info.PointRule;
 		 IBInternalQuery->ExecQuery();
 	  }
    }

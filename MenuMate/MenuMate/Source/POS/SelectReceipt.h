@@ -16,7 +16,7 @@
 #include "TouchControls.h"
 #include "ZForm.h"
 #include <ComCtrls.hpp>
-#include "TipAmount.h"
+
 
 //---------------------------------------------------------------------------
 class TfrmSelectReceipt : public TZForm

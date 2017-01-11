@@ -232,10 +232,29 @@ object frmReports: TfrmReports
       ParentColor = True
       Caption = 'E-Journal'
       ButtonColor = 6052441
-      LatchedColor = -16777201
-      DisabledButtonColor = -16777201
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnEJournalMouseClick
+    end
+    object btnConsolidatedZed: TTouchBtn
+      Left = 470
+      Top = 150
+      Width = 145
+      Height = 65
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Consolidated Zed'
+      ButtonColor = 6052441
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnConsolidatedZedMouseClick
     end
   end
   object Panel1: TPanel

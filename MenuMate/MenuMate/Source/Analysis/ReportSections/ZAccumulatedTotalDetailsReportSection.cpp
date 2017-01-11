@@ -12,6 +12,13 @@ ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Dat
     dataCalculationUtilities = new DataCalculationUtilities;
 }
 
+ZAccumulatedTotalDetailsReportSection::ZAccumulatedTotalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	: BaseReportSection(mmConsolidatedZReport, mmAccumulatedTotalDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    dataCalculationUtilities = new DataCalculationUtilities;
+}
+
 ZAccumulatedTotalDetailsReportSection::~ZAccumulatedTotalDetailsReportSection()
 {
     delete dataFormatUtilities;
@@ -22,21 +29,27 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
 {
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
     const Currency todaysEarnings = 0;
-    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+    const Currency openingBalance = 0;
+    const Currency closingBalance = 0;
+    AnsiString startInvoiceNumber = "0";
+    AnsiString endInvoiceNumber = "0";
+
+    todaysEarnings = GetTotalEarningsForZed(todaysEarnings, deviceName);
+
+    if(IsConsolidatedZed)
     {
-       todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+        openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction, *_startTime, *_endTime, deviceName);
+        startInvoiceNumber = GetStartInvoiceNumberForConsolidatedZed(deviceName);   // Todo FormatReceiptNo
+        endInvoiceNumber = GetEndInvoiceNumberForConsolidatedZed(deviceName);       // Todo FormatReceiptNo
     }
     else
     {
-       todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
+        openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
+        startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
+        endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
     }
-    const Currency openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
-	const Currency closingBalance = openingBalance + todaysEarnings;
+	closingBalance = openingBalance + todaysEarnings;
 
-
-
-	AnsiString startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
-	AnsiString endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
     FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
 
     if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
@@ -68,11 +81,14 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[1]->Text = "Grand Total";
         printOut->PrintFormat->Line->Columns[2]->Text = "";
         printOut->PrintFormat->AddLine();
-        int value = dataCalculationUtilities->GetZedKey(*_dbTransaction);
-        value += 1;
-        printOut->PrintFormat->Line->Columns[1]->Text = "Z-Counter";
-        printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(value);
-        printOut->PrintFormat->AddLine();
+        if(!IsConsolidatedZed)
+        {
+            int value = dataCalculationUtilities->GetZedKey(*_dbTransaction);
+            value += 1;
+            printOut->PrintFormat->Line->Columns[1]->Text = "Z-Counter";
+            printOut->PrintFormat->Line->Columns[2]->Text = IntToStr(value);
+            printOut->PrintFormat->AddLine();
+        }
 
         dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
         printOut->PrintFormat->Line->ColCount = 5;
@@ -86,14 +102,11 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[4]->Width = printOut->PrintFormat->Width * 1/5 + 4;
 
         printOut->PrintFormat->Line->Columns[0]->Alignment = taRightJustify;
-        //printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/3.5;
         printOut->PrintFormat->Line->Columns[0]->Text = "__";
         printOut->PrintFormat->Line->Columns[1]->Line();
         printOut->PrintFormat->Line->Columns[2]->Line();
         printOut->PrintFormat->Line->Columns[3]->Line();
         printOut->PrintFormat->Line->Columns[4]->Line();
-        //printOut->PrintFormat->Line->Columns[3]->Width = printOut->PrintFormat->Width * 1/3.5;
-        //printOut->PrintFormat->Line->Columns[3]->Text = "_________";
         printOut->PrintFormat->AddLine();
     }
     else
@@ -105,9 +118,12 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(openingBalance);
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Z Report:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(todaysEarnings);
-        printOut->PrintFormat->AddLine();
+        if(!IsConsolidatedZed)
+        {
+            printOut->PrintFormat->Line->Columns[0]->Text = "Z Report:";
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(todaysEarnings);
+            printOut->PrintFormat->AddLine();
+        }
 
         printOut->PrintFormat->Line->Columns[0]->Text = "Accumulated Total:";
         printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(closingBalance);
@@ -121,9 +137,12 @@ void ZAccumulatedTotalDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(endInvoiceNumber);
         printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[0]->Text = "Z Reading No:";
-        printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(_globalSettings->ZCount);
-        printOut->PrintFormat->AddLine();
+        if(!IsConsolidatedZed)
+        {
+            printOut->PrintFormat->Line->Columns[0]->Text = "Z Reading No:";
+            printOut->PrintFormat->Line->Columns[1]->Text = UnicodeString(_globalSettings->ZCount);
+            printOut->PrintFormat->AddLine();
+        }
     }
 
 }
@@ -241,6 +260,112 @@ void ZAccumulatedTotalDetailsReportSection::SetPrinterFormatForSingleColumn(TPri
     printOut->PrintFormat->Line->ColCount = 1;
     printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
     printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+}
+
+AnsiString ZAccumulatedTotalDetailsReportSection::GetStartInvoiceNumberForConsolidatedZed(AnsiString deviceName)
+{
+	AnsiString beginInvoiceNum = 0;
+    AnsiString terminalNamePredicate = "";
+    if(!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " DAB.TERMINAL_NAME = '" + deviceName + "' AND ";
+    }
+
+	TIBSQL *qrStartInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
+	qrStartInvoiceNumber->SQL->Text =  "SELECT "
+                                        "DAB.INVOICE_NUMBER "
+                                        "FROM ARCBILL DAB "
+                                        "LEFT JOIN ARCHIVE DA on DAB.ARCBILL_KEY = DA.ARCBILL_KEY "
+                                        "LEFT JOIN ARCORDERDISCOUNTS DAOD on DA.ARCHIVE_KEY = DAOD.ARCHIVE_KEY "
+                                        "WHERE "
+                                        + terminalNamePredicate +
+                                        " (COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
+                                        "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP <= :endTime "
+                                        "GROUP BY DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
+                                        "ORDER BY DAB.ARCBILL_KEY " ;
+
+    qrStartInvoiceNumber->ParamByName("startTime")->AsDateTime = *_startTime;
+    qrStartInvoiceNumber->ParamByName("endTime")->AsDateTime = *_endTime;
+	qrStartInvoiceNumber->ExecQuery();
+
+	if(!qrStartInvoiceNumber->Eof)
+	{
+		beginInvoiceNum = qrStartInvoiceNumber->Fields[0]->AsString;
+	}
+	else
+	{
+		beginInvoiceNum = "0"; //GetLastEndInvoiceNumber();
+	}
+
+	return beginInvoiceNum;
+}
+
+AnsiString ZAccumulatedTotalDetailsReportSection::GetEndInvoiceNumberForConsolidatedZed(AnsiString deviceName)
+{
+	AnsiString endInvoiceNum = 0;
+    AnsiString terminalNamePredicate = "";
+    if(!_globalSettings->EnableDepositBagNum)
+    {
+        terminalNamePredicate = " DAB.TERMINAL_NAME = '" + deviceName + "' AND ";
+    }
+
+	TIBSQL *qrEndInvoiceNumber = _dbTransaction->Query(_dbTransaction->AddQuery());
+    qrEndInvoiceNumber->SQL->Text = "SELECT "
+                                        "DAB.INVOICE_NUMBER "
+                                    "FROM ARCBILL DAB "
+                                    "LEFT JOIN ARCHIVE DA on DAB.ARCBILL_KEY = DA.ARCBILL_KEY "
+                                    "LEFT JOIN ARCORDERDISCOUNTS DAOD on DA.ARCHIVE_KEY = DAOD.ARCHIVE_KEY "
+                                    "WHERE "
+                                    + terminalNamePredicate +
+                                    "(COALESCE(DAOD.DISCOUNT_GROUPNAME, 0)<> 'Non-Chargeable') "
+                                    "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP <= :endTime "
+                                    "GROUP BY DAB.ARCBILL_KEY, DAB.INVOICE_NUMBER "
+                                    "ORDER BY DAB.ARCBILL_KEY ";
+
+    qrEndInvoiceNumber->ParamByName("startTime")->AsDateTime = *_startTime;
+    qrEndInvoiceNumber->ParamByName("endTime")->AsDateTime = *_endTime;
+	qrEndInvoiceNumber->ExecQuery();
+
+	if(!qrEndInvoiceNumber->Eof)
+	{
+		for(; !qrEndInvoiceNumber->Eof; qrEndInvoiceNumber->Next())
+		{
+			endInvoiceNum = qrEndInvoiceNumber->Fields[0]->AsString;
+		}
+	}
+	else
+	{
+		endInvoiceNum = "0"; //GetLastEndInvoiceNumber();
+	}
+
+	return endInvoiceNum;
+}
+
+Currency ZAccumulatedTotalDetailsReportSection::GetTotalEarningsForZed(Currency todaysEarnings, AnsiString deviceName)
+{
+    if(!IsConsolidatedZed)
+    {
+        if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+        {
+           todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+        }
+        else
+        {
+           todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName);
+        }
+    }
+    else
+    {
+        //if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+        //{
+           todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, *_startTime, *_endTime, true);
+        //}
+        //else
+        //{
+        //   todaysEarnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, *_startTime, *_endTime);
+        //}
+    }
+    return todaysEarnings;
 }
 
 

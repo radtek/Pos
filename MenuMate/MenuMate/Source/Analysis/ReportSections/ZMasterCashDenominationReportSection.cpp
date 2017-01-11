@@ -14,6 +14,11 @@ ZMasterCashDenominationReportSection::ZMasterCashDenominationReportSection(Datab
 {
 }
 
+ZMasterCashDenominationReportSection::ZMasterCashDenominationReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmMasterCashDenominationDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
 ZMasterCashDenominationReportSection::~ZMasterCashDenominationReportSection()
 {
 }

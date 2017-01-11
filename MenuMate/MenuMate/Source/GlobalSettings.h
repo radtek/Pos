@@ -4,10 +4,10 @@
 #define GlobalSettingsH
 
 #include "PointsRulesSet.h"
+#include "Mall.h"
 #include <memory>
 #include <Classes.hpp>
 #include <Graphics.hpp>
-
 // ---------------------------------------------------------------------------
 enum eDayTimes {
 	eSunday = 0, eMonday, eTuesday, eWednesday, eThursday, eFriday, eSaturday,
@@ -471,6 +471,12 @@ public:
     bool UseBIRFormatInXZReport;
     bool HideRoundingOnReceipt;
 	bool CashDenominationEntry;
+    UnicodeString CSVPath;
+    bool IsEnabledPeachTree;
+    UnicodeString CSVExportIP;
+    bool MembershipPaid;
+    bool UseMemberSubs;
+    TMall mallInfo;
     bool IsPanasonicIntegrationEnabled;
     UnicodeString PanasonicServerIP;
 };

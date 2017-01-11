@@ -11,6 +11,13 @@ XTotalsDetailsReportSection::XTotalsDetailsReportSection(Database::TDBTransactio
     reportFinancialCalculations = new ReportFinancialCalculations;
 }
 
+XTotalsDetailsReportSection::XTotalsDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+    : BaseReportSection(mmConsolidatedZReport, mmTotalsDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+    reportFinancialCalculations = new ReportFinancialCalculations;
+}
+
 XTotalsDetailsReportSection::~XTotalsDetailsReportSection()
 {
 }
@@ -21,9 +28,16 @@ void XTotalsDetailsReportSection::GetOutput(TPrintout* printOut)
     AnsiString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
 
     TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(*_dbTransaction, DeviceName);
+    TFinancialDetails FinancialDetails;
 
-
-    TFinancialDetails FinancialDetails =  reportFinancialCalculations->GetFinancialDetails(*_dbTransaction,TransactionInfo,DeviceName);
+    if(IsConsolidatedZed)
+    {
+       FinancialDetails =  reportFinancialCalculations->GetFinancialDetails(*_dbTransaction,TransactionInfo,DeviceName, *_startTime, *_endTime);
+    }
+    else
+    {
+       FinancialDetails =  reportFinancialCalculations->GetFinancialDetails(*_dbTransaction,TransactionInfo,DeviceName);
+    }
 
     AddTitle(printOut, "Totals");
 

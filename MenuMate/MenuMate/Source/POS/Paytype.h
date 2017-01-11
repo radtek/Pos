@@ -22,6 +22,7 @@
  #include "Money.h"
 #include "MallExportDefines.h"
 #include "ComboForm.h"
+#include "PaySubsUtility.h"
 //---------------------------------------------------------------------------
 class TfrmPaymentType : public TZForm
 {

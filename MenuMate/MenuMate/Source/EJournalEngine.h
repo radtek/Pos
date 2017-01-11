@@ -5,7 +5,7 @@
 #include <DateUtils.hpp>
 #include "ReceiptManager.h"
 //---------------------------------------------------------------------------
-enum EJournalType {eZed,eZedX,eZEDReceiptX,eZedReceipt};
+enum EJournalType {eZed,eZedX,eZEDReceiptX,eZedReceipt, eConsolidatedZed};
 
 class TEJournalEngine
 {
@@ -17,6 +17,8 @@ class TEJournalEngine
         TMemoryStream* ExtractZedReceiptReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName);
         TMemoryStream* ExtractZedReceiptAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName);
         TMemoryStream* ExtractZedAndXReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName);
+        TMemoryStream* ExtractConsolidatedZedReport(TDateTime fromSessionDate,TDateTime toSessionDate, AnsiString deviceName);
+        bool CheckZedDataExistsForConolidatedZed(TDateTime from, TDateTime to, AnsiString deviceName);
     private:
         EJournalType journalType;
         void CheckDataExist(TDateTime fromSessionDate,TDateTime toSessionDate);
@@ -26,5 +28,7 @@ class TEJournalEngine
         void DisplayXReport(TMemoryStream* XReceipt);
         void GetCurrentRunningReceipt(TIBSQL *IBGetCurrentRunningReciptQuery,AnsiString deviceName);
         bool IsCurrentReceiptAvailable(TIBSQL *IBInternalQuery, TDateTime toSessionDate, AnsiString deviceName);
+
+
 };
 #endif

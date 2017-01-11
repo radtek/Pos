@@ -12,9 +12,11 @@ class XMasterBlindBalancesDetailsReportSection : public BaseReportSection
 
 public:
     XMasterBlindBalancesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings);
+    XMasterBlindBalancesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime);
     ~XMasterBlindBalancesDetailsReportSection();
 
     virtual void GetOutput(TPrintout* printOut);
+
 };
 
 #endif

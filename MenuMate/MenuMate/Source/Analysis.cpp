@@ -12,7 +12,6 @@
 #include "MMRegistry.h"
 #include "Analysis.h"
 #include "enum.h"
-#include "enumPoints.h"
 #include "DeviceRealTerminal.h"
 #include "PointsTransaction.h"
 #include "PrintFormat.h"
@@ -44,32 +43,26 @@
 #include "MallExportHourlyUpdate.h"
 #include "MallExportTransactionUpdate.h"
 #include "MallExportOtherDetailsUpdate.h"
-
 #include "MYOBInvoiceBuilder.h"
-#include "DeviceRealTerminal.h"
 #include "DBTables.h"
 #include "DBThirdPartyCodes.h"
 #include "DBSecurity.h"
 #include "ManagerDiscount.h"
 #include "ManagerPatron.h"
 #include "DBGroups.h"
-
-#include "MagicMemoriesSfService.h"
-#include "MagicMemoriesSfProgressMonitor.h"
 #include "SalesForceCommAtZed.h"
 #include "CashDenominationController.h"
-#include <string>
-#include <map>
-#include <cassert>
+#include "ExportCSV.h"
 
-// for mall export
+#include "EstanciaMall.h"
+
+#include <string>
+#include <cassert>
 #include "MallExportManager.h"
 #include "SendEmail.h"
 #include <Dateutils.hpp>
    #include <wininet.h>
 #include <dirent.h>
-using SfIntegration::Sf_svc_iface;
-using SfIntegration::Sf_result;
 
 #include <Math.hpp>
 // ---------------------------------------------------------------------------
@@ -108,12 +101,6 @@ CategoryListXML(new TPOS_XMLBase("List Categories Export"))
 }
 
 TMMContactInfo TfrmAnalysis::lastAuthenticatedUser;
-
-using SfIntegration::Sf_data_object_type;
-using SfIntegration::Sf_notification_receiver;
-using SfIntegration::Sf_notification;
-using SfIntegration::Sf_svc_iface;
-using SfIntegration::Sf_svc_iface_params;
 
 int ResetKey; //MM 4579
 
@@ -2859,8 +2846,7 @@ void __fastcall TfrmAnalysis::btnReportsClick(void)
 	if (AuthenticateReportsAccess(TReportSource::CashDrawer) == lsAccepted)
     {
 		std::auto_ptr <TfrmDropDownFunc> frmDropDown(
-		TfrmDropDownFunc::Create <TfrmDropDownFunc>(this));
-
+		TfrmDropDownFunc::Create <TfrmDropDownFunc>(this));	
 //		if(!TGlobalSettings::Instance().EnableBlindBalances)
 //        {
 //			frmDropDown->AddButton("X Report", &ReportXReport);
@@ -3051,6 +3037,10 @@ TPrintout* TfrmAnalysis::SetupPrintOutInstance()
 // ------------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::btnZReportClick(void)
 {
+
+    ZedToArchive->Clear();
+    ZedToArchive->Position = 0;
+
     TCashDenominationControllerInterface::Instance()->ResetCashDenominations();
     // call to new class to get orders of DC and bill them off by storing
     if(TGlobalSettings::Instance().DrinkCommandServerPort != 0 && TGlobalSettings::Instance().DrinkCommandServerPath.Length() != 0
@@ -3125,8 +3115,6 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 			TCommissionCache Commission;
 			TPrinterReadingsInterface PrinterReading;
 			TPaxCount PaxCount;
-
-			std::auto_ptr<Sf_svc_iface> sfsvc;
 			int z_key;
 
 			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -3337,6 +3325,13 @@ Zed:
                   TCashDenominationControllerInterface::Instance()->SaveDenominations(DBTransaction,z_key,DeviceName);
                 }
             }
+            //create CSV
+            if(TGlobalSettings::Instance().IsEnabledPeachTree && CompleteZed)
+            {
+                TExportCSV exportCSV;
+                exportCSV.PostDateToCSV();
+            }
+
 			DBTransaction.Commit();
             PostDataToXeroAndMyOB(XeroInvoiceDetails, MYOBInvoiceDetails, CompleteZed); //post data to xero and Myob
 
@@ -3383,8 +3378,16 @@ Zed:
 			if(CompleteZed)
 			{
                 UpdateMallExportDetails();
+                UpdateZKeyForMallExportSales();
+                 if(TGlobalSettings::Instance().mallInfo.MallId == 1 && TGlobalSettings::Instance().mallInfo.IsActive != "F")
+                {
+                    //TODO: Instantiation will happen in a factory based on the active mall in database
+                    TMallExport* estanciaMall = new TEstanciaMall();
+                    estanciaMall->Export();
+                }
             }
-            //
+
+
       }
       catch(Exception & E)
       {
@@ -9310,7 +9313,8 @@ void TfrmAnalysis::EmailZedReport(int z_key)
         ZedToMail->SaveToFile(filename);
         ZedToMail->Clear();
         AnsiString emailIds = TGlobalSettings::Instance().SaveEmailId;
-        SendEmailStatus = SendEmail::Send(filename, "Zed Report", emailIds, "");
+        UnicodeString emailSubject = CheckRegistered();
+        SendEmailStatus = SendEmail::Send(filename, emailSubject, emailIds, "");
         if(SendEmailStatus)
         {
             UpdateEmailstatus(z_key);
@@ -9445,4 +9449,83 @@ void TfrmAnalysis::UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransa
 	{
 		throw;
 	}
+}
+
+UnicodeString TfrmAnalysis::CheckRegistered()
+{
+    UnicodeString emailSubject = "Zed Report";
+    bool Registered = false;
+    UnicodeString pRegisteredName = "";
+    TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+    if(Registered)
+    {
+        emailSubject = pRegisteredName;
+    }
+
+    return emailSubject;
+}
+///--------------------------------------------------------------------------------------------------
+void TfrmAnalysis::UpdateZKeyForMallExportSales()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
+        IBInternalQuery->ExecQuery();
+        int ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+        bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
+        int deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        AnsiString terminalCondition = " AND DEVICE_KEY = :DEVICE_KEY ";
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.FIELD_VALUE = :Z_KEY WHERE MALLEXPORT_SALES.Z_KEY = :EXISTING_KEY "
+                                        "AND  MALLEXPORT_SALES.FIELD_INDEX = :FIELD_INDEX ";
+
+        if(!isMasterterminal)
+		{
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
+        }
+
+
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+        IBInternalQuery->ParamByName("EXISTING_KEY")->AsInteger = 0;
+        IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = 33;
+
+        if(!isMasterterminal)
+		{
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+        }
+
+        IBInternalQuery->ExecQuery();
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.Z_KEY = :Z_KEY WHERE MALLEXPORT_SALES.Z_KEY = :EXISTING_KEY ";
+
+        if(!isMasterterminal)
+		{
+			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition;
+        }
+
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+        IBInternalQuery->ParamByName("EXISTING_KEY")->AsInteger = 0;
+
+        if(!isMasterterminal)
+		{
+            IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+        }
+
+        IBInternalQuery->ExecQuery();
+
+        DBTransaction.Commit();
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
 }

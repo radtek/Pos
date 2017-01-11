@@ -10,6 +10,13 @@ XDiscountReportDetailsReportSection::XDiscountReportDetailsReportSection(Databas
     dataFormatUtilities = new DataFormatUtilities;
 }
 
+
+XDiscountReportDetailsReportSection::XDiscountReportDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmDiscountReportDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
 XDiscountReportDetailsReportSection::~XDiscountReportDetailsReportSection()
 {
     delete dataFormatUtilities;
@@ -33,64 +40,25 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
         terminalNamePredicate = " where SubQuery1.TERMINAL_NAME = :TERMINAL_NAME  ";
     }
 
-    if (_globalSettings->UseBIRFormatInXZReport)
+    if(IsConsolidatedZed)
     {
-		DiscountSQL = "select '' NAME, SubQuery1.DESCRIPTION, sum(SubQuery1.DISCOUNTED_VALUE) DISCOUNT, count(*)Qty "
-                     "from( "
-                     "select DAYARCORDERDISCOUNTS.DESCRIPTION, "
-                            "sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNTED_VALUE, "
-                            "DAYARCBILL.ARCBILL_KEY, DAYARCHIVE.TERMINAL_NAME "
-                     "from DAYARCORDERDISCOUNTS inner join DAYARCHIVE on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-                    "inner join DAYARCBILL on DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
-                    " GROUP BY DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCBILL.ARCBILL_KEY, DAYARCHIVE.TERMINAL_NAME)SubQuery1 ";
-                    if(!TGlobalSettings::Instance().EnableDepositBagNum)
-                    {
-                       DiscountSQL +=  " where SubQuery1.TERMINAL_NAME = :TERMINAL_NAME  "
-                                       " group by SubQuery1.DESCRIPTION ";
-                    }
-                    else
-                    {
-                       DiscountSQL +=  " group by SubQuery1.DESCRIPTION " ;
-                    }
-
+       DiscountSQL = DiscountQueryForConsolidatedZed(DiscountSQL, printout);
     }
     else
     {
-        AddTitle(printout, "Discount Report");
-		if (_globalSettings->SummariseDiscountOnZed)
-		{
-			DiscountSQL =
-			"select '' NAME,SUM(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT, sum(DAYARCHIVE.QTY) QTY,DAYARCORDERDISCOUNTS.DESCRIPTION "
-			"from " "DAYARCBILL LEFT JOIN SECURITY ON DAYARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
-			"LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
-			"LEFT JOIN DAYARCHIVE ON DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
-			"LEFT JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-			"where "
-			"DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' AND "
-			"DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME " "AND DAYARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
-			(SecurityTypes[secDiscountedBy]) + "' " "group by NAME,DAYARCORDERDISCOUNTS.DESCRIPTION; ";
-		}
-		else
-		{
-			DiscountSQL = "select SUM(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT, "
-			"DAYARCBILL.ARCBILL_KEY,CONTACTS.NAME,DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCHIVE.TIME_STAMP_BILLED " "from "
-			"DAYARCBILL LEFT JOIN SECURITY ON DAYARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
-			"LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
-			"LEFT JOIN DAYARCHIVE ON DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
-			"LEFT JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-			"where "
-			"DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' AND "
-			"DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME " "AND DAYARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
-			(SecurityTypes[secDiscountedBy]) + "' "
-			"group by DAYARCBILL.ARCBILL_KEY,CONTACTS.NAME,DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCHIVE.TIME_STAMP_BILLED;";
-		}
-     }
+       DiscountSQL = DiscountQueryForNormalZed(DiscountSQL, printout);
+    }
 
 		qrDiscount->Close();
 		qrDiscount->SQL->Text = DiscountSQL;
         if(!TGlobalSettings::Instance().EnableDepositBagNum)
         {
            qrDiscount->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        }
+        if(IsConsolidatedZed)
+        {
+           qrDiscount->ParamByName("startTime")->AsDateTime = *_startTime;
+           qrDiscount->ParamByName("endTime")->AsDateTime = *_endTime;
         }
 		qrDiscount->ExecQuery();
 
@@ -115,7 +83,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                     }
                     else
                     {
-                        if (TGlobalSettings::Instance().SummariseDiscountOnZed)
+                        if (TGlobalSettings::Instance().SummariseDiscountOnZed || IsConsolidatedZed)
                         {
                             ((TStringList*)DiscountServerList->Objects[Index])->AddObject
                             (qrDiscount->FieldByName("DESCRIPTION")->AsString + " |x" + qrDiscount->FieldByName("QTY")->AsString,
@@ -142,7 +110,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                     }
                     else
                     {
-                        if (TGlobalSettings::Instance().SummariseDiscountOnZed)
+                        if (TGlobalSettings::Instance().SummariseDiscountOnZed || IsConsolidatedZed)
                         {
                             ((TStringList*)DiscountServerList->Objects[Index])->AddObject
                             (qrDiscount->FieldByName("DESCRIPTION")->AsString + " |x" + qrDiscount->FieldByName("QTY")->AsString,
@@ -180,7 +148,6 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                printout->PrintFormat->Line->Columns[0]->Text = "";
             }
             printout->PrintFormat->AddLine();
-			//AddSectionTitle(printout.get(), "Discount Report");
 
 			printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 			printout->PrintFormat->Line->Columns[0]->Width = printout->PrintFormat->Width / 3;
@@ -195,7 +162,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
             }
             if(!TGlobalSettings::Instance().UseBIRFormatInXZReport)
             {
-                if (TGlobalSettings::Instance().SummariseDiscountOnZed)
+                if (TGlobalSettings::Instance().SummariseDiscountOnZed || IsConsolidatedZed)
                 {
                     printout->PrintFormat->Add("Name | Items | Total");
                 }
@@ -216,7 +183,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 				printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
 				printout->PrintFormat->Add(DiscountServerList->Strings[i]);
 
-				if (TGlobalSettings::Instance().SummariseDiscountOnZed || TGlobalSettings::Instance().UseBIRFormatInXZReport)
+				if (TGlobalSettings::Instance().SummariseDiscountOnZed || TGlobalSettings::Instance().UseBIRFormatInXZReport || IsConsolidatedZed)
 				{
 					// ...followed by the items discounted by that user.
 					printout->PrintFormat->Line->ColCount = 3;
@@ -238,10 +205,6 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                             if(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total < 0)
                             {
                                 printout->PrintFormat->Add("|" + ((TStringList*)DiscountServerList->Objects[i])->Strings[j] + "|" + "(" +CurrToStrF(fabs(((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total ), ffNumber, CurrencyDecimals) + ")" );
-                                //printout->PrintFormat->Line->Columns[1]->Text = ((TStringList*)DiscountServerList->Objects[i])->Strings[j];
-                                //printout->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Count);
-                                //printout->PrintFormat->Line->Columns[3]->Text = dataFormatUtilities->FormatMMReportCurrency( ((TCurrencyTotal*)((TStringList*)DiscountServerList->Objects[i])->Objects[j])->Total);
-                                //printout->PrintFormat->AddLine();
                             }
                             else
                             {
@@ -287,7 +250,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
             if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
             {
                 dataCalcUtils.PrinterFormatinThreeSections(printout);
-                
+
                 
                 printout->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
                 printout->PrintFormat->Line->Columns[1]->Text = "-----------------------------------------------------------";
@@ -329,7 +292,7 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
         {
            if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
            {
-                dataCalcUtils.PrinterFormatinThreeSections(printout);//SetPrinterFormat(printout);
+                dataCalcUtils.PrinterFormatinThreeSections(printout);
                 printout->PrintFormat->Line->Columns[1]->Text = "Discounts";
                 printout->PrintFormat->Line->Columns[2]->Text = "";
                 printout->PrintFormat->Line->Columns[3]->Text = "";
@@ -339,9 +302,9 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
                 printout->PrintFormat->Line->Columns[3]->Text = "-----------------------------------------------------------";
                 //printout->PrintFormat->Line->Columns[1]->();
                 printout->PrintFormat->AddLine();
-                dataCalcUtils.PrinterFormatinThreeSections(printout);//SetPrinterFormat(printout);
+                dataCalcUtils.PrinterFormatinThreeSections(printout);
                 printout->PrintFormat->Line->Columns[1]->Text = "Total";
-                printout->PrintFormat->Line->Columns[2]->Text = IntToStr(total_discount_qty);//FloatToStr(total_discount_qty);
+                printout->PrintFormat->Line->Columns[2]->Text = IntToStr(total_discount_qty);
                 printout->PrintFormat->Line->Columns[3]->Text = FloatToStr(fabs(show_discount_totals));
                 printout->PrintFormat->AddLine();
                 SetSingleColumnPrinterFormat(printout);
@@ -356,11 +319,139 @@ void XDiscountReportDetailsReportSection::GetOutput(TPrintout* printout)
 
  }
 
-
-
 void XDiscountReportDetailsReportSection::SetSingleColumnPrinterFormat(TPrintout* printOut)
 {
     printOut->PrintFormat->Line->ColCount = 1;
     printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
     printOut->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
 }
+
+UnicodeString XDiscountReportDetailsReportSection::DiscountQueryForNormalZed(UnicodeString DiscountSQL, TPrintout* printout)
+{
+    if (_globalSettings->UseBIRFormatInXZReport)
+    {
+		DiscountSQL = "select '' NAME, SubQuery1.DESCRIPTION, sum(SubQuery1.DISCOUNTED_VALUE) DISCOUNT, count(*)Qty "
+                     "from( "
+                     "select DAYARCORDERDISCOUNTS.DESCRIPTION, "
+                            "sum(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNTED_VALUE, "
+                            "DAYARCBILL.ARCBILL_KEY, DAYARCHIVE.TERMINAL_NAME "
+                     "from DAYARCORDERDISCOUNTS inner join DAYARCHIVE on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+                    "inner join DAYARCBILL on DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
+                    " GROUP BY DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCBILL.ARCBILL_KEY, DAYARCHIVE.TERMINAL_NAME)SubQuery1 ";
+                    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+                    {
+                       DiscountSQL +=  " where SubQuery1.TERMINAL_NAME = :TERMINAL_NAME  "
+                                       " group by SubQuery1.DESCRIPTION ";
+                    }
+                    else
+                    {
+                       DiscountSQL +=  " group by SubQuery1.DESCRIPTION " ;
+                    }
+
+    }
+    else
+    {
+        AddTitle(printout, "Discount Report");
+		if (_globalSettings->SummariseDiscountOnZed)
+		{
+			DiscountSQL =
+			"select '' NAME,SUM(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT, sum(DAYARCHIVE.QTY) QTY,DAYARCORDERDISCOUNTS.DESCRIPTION "
+			"from " "DAYARCBILL LEFT JOIN SECURITY ON DAYARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
+			"LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
+			"LEFT JOIN DAYARCHIVE ON DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
+			"LEFT JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+			"where "
+			"DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' "
+			" AND DAYARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
+			(SecurityTypes[secDiscountedBy]) + "' " ;
+            if(!TGlobalSettings::Instance().EnableDepositBagNum)
+            {
+               DiscountSQL +=  " AND DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME  "
+                               " group by NAME,DAYARCORDERDISCOUNTS.DESCRIPTION;  ";
+            }
+            else
+            {
+               DiscountSQL +=  " group by NAME,DAYARCORDERDISCOUNTS.DESCRIPTION; " ;
+            }
+
+		}
+		else
+		{
+			DiscountSQL = "select SUM(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT, "
+			"DAYARCBILL.ARCBILL_KEY,CONTACTS.NAME,DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCHIVE.TIME_STAMP_BILLED " "from "
+			"DAYARCBILL LEFT JOIN SECURITY ON DAYARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
+			"LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
+			"LEFT JOIN DAYARCHIVE ON DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
+			"LEFT JOIN DAYARCORDERDISCOUNTS ON DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+			"where "
+			"DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' AND "
+			" DAYARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
+			(SecurityTypes[secDiscountedBy]) + "' ";
+            if(!TGlobalSettings::Instance().EnableDepositBagNum)
+            {
+               DiscountSQL +=  " AND DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME  "
+                               "group by DAYARCBILL.ARCBILL_KEY,CONTACTS.NAME,DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCHIVE.TIME_STAMP_BILLED;";
+            }
+            else
+            {
+               DiscountSQL +=  "group by DAYARCBILL.ARCBILL_KEY,CONTACTS.NAME,DAYARCORDERDISCOUNTS.DESCRIPTION, DAYARCHIVE.TIME_STAMP_BILLED;";
+            }
+
+		}
+     }
+     return DiscountSQL;
+}
+
+UnicodeString XDiscountReportDetailsReportSection::DiscountQueryForConsolidatedZed(UnicodeString DiscountSQL, TPrintout* printout)
+{
+
+    DiscountSQL =
+    "select '' NAME,SUM(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNT, sum(ARCHIVE.QTY) QTY, ARCORDERDISCOUNTS.DESCRIPTION "
+    "from " "ARCBILL LEFT JOIN SECURITY ON ARCBILL.SECURITY_REF = SECURITY.SECURITY_REF "
+    "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
+    "LEFT JOIN ARCHIVE ON ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
+    "LEFT JOIN ARCORDERDISCOUNTS ON ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
+    " where ARCBILL.TIME_STAMP >= :startTime and ARCBILL.TIME_STAMP <= :endTime and "
+    "ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' "
+    " AND ARCHIVE.DISCOUNT != 0 " "AND SECURITY.SECURITY_EVENT = '" + UnicodeString
+    (SecurityTypes[secDiscountedBy]) + "' " ;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    {
+       DiscountSQL +=  " AND ARCBILL.TERMINAL_NAME = :TERMINAL_NAME  "
+                       " group by NAME, ARCORDERDISCOUNTS.DESCRIPTION;  ";
+    }
+    else
+    {
+       DiscountSQL +=  " group by NAME, ARCORDERDISCOUNTS.DESCRIPTION; " ;
+    }
+    if(_globalSettings->UseBIRFormatInXZReport)
+    {
+        DiscountSQL = "select '' NAME, SubQuery1.DESCRIPTION, sum(SubQuery1.DISCOUNTED_VALUE) DISCOUNT, count(*)Qty "
+             "from( "
+             "select ARCORDERDISCOUNTS.DESCRIPTION, "
+                    "sum(ARCORDERDISCOUNTS.DISCOUNTED_VALUE) DISCOUNTED_VALUE, "
+                    "ARCBILL.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME "
+             "from ARCORDERDISCOUNTS inner join ARCHIVE on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
+            "inner join ARCBILL on ARCHIVE.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
+            " Where ARCBILL.TIME_STAMP >= :startTime and ARCBILL.TIME_STAMP <= :endTime  "
+            " and ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Non-Chargeable' AND ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME <> 'Complimentary' "
+            " GROUP BY ARCORDERDISCOUNTS.DESCRIPTION, ARCBILL.ARCBILL_KEY, ARCHIVE.TERMINAL_NAME)SubQuery1 ";
+            if(!TGlobalSettings::Instance().EnableDepositBagNum)
+            {
+               DiscountSQL +=  " where SubQuery1.TERMINAL_NAME = :TERMINAL_NAME  "
+                               " group by SubQuery1.DESCRIPTION ";
+            }
+            else
+            {
+               DiscountSQL +=  " group by SubQuery1.DESCRIPTION " ;
+            }
+    }
+
+
+    if (!_globalSettings->UseBIRFormatInXZReport)
+    {
+       AddTitle(printout, "Discount Report");
+    }
+    return DiscountSQL;
+}
+

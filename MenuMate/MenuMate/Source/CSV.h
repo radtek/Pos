@@ -6,7 +6,6 @@
 class TCsv
 {
 private:
-	TStringList *fStrings;
 	UnicodeString GetCells(int ACol, int ARow);
 	void SetCells(int ACol, int ARow, const UnicodeString Value);
 	UnicodeString ColumnText(UnicodeString Row, int ACol);
@@ -15,6 +14,7 @@ private:
 public:
 	TCsv();
 	~TCsv();
+    TStringList *fStrings;
 	void LoadFromFile(const UnicodeString FileName);
 	void SaveToFile(const UnicodeString FileName);
 	bool AppendToFile(const UnicodeString FileName);

@@ -7,6 +7,12 @@ XCurrentDateDetailsReportSection::XCurrentDateDetailsReportSection(Database::TDB
 {
 }
 
+XCurrentDateDetailsReportSection::XCurrentDateDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmCurrentDateDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
+
 
 XCurrentDateDetailsReportSection::~XCurrentDateDetailsReportSection()
 {
@@ -29,11 +35,14 @@ void XCurrentDateDetailsReportSection::GetOutput(TPrintout* printout)
         const TMMContactInfo &staff_member = TfrmAnalysis::GetLastAuthenticatedUser();
         printout->PrintFormat->Line->Columns[0]->Text =staff_member.Name;
         printout->PrintFormat->AddLine();
-        DataCalculationUtilities* dataCalculationUtilities = new DataCalculationUtilities;
-        int value = dataCalculationUtilities->GetZedKey(*_dbTransaction);
-        value += 1;
-        printout->PrintFormat->Line->Columns[0]->Text = "#" + IntToStr(value);
-        printout->PrintFormat->AddLine();
+        if(!IsConsolidatedZed)
+        {
+            DataCalculationUtilities* dataCalculationUtilities = new DataCalculationUtilities;
+            int value = dataCalculationUtilities->GetZedKey(*_dbTransaction);
+            value += 1;
+            printout->PrintFormat->Line->Columns[0]->Text = "#" + IntToStr(value);
+            printout->PrintFormat->AddLine();
+        }
     }
 
         

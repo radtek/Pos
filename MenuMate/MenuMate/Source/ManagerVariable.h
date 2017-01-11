@@ -203,9 +203,13 @@ enum vmVariables
     vmEnableConsolidatedReport,
     vmExcludeReceipt,
     vmExcludeXReport,
+    vmMembershipPaid,
+    vmUseMemberSubs,
+    ///PechTree CSV
+    vmCSVPath = 9500, vmIsEnabledPeachTree, vmCSVExportIP,
 
      //Panasonic Integration
-    vmIsPanasonicIntegrationEnabled = 9100, vmPanasonicServerIP
+    vmIsPanasonicIntegrationEnabled = 9600, vmPanasonicServerIP
 };
 
 // ---------------------------------------------------------------------------

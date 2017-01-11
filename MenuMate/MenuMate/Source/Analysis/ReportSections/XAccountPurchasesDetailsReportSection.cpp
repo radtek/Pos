@@ -7,6 +7,12 @@ XAccountPurchasesDetailsReportSection::XAccountPurchasesDetailsReportSection(Dat
 }
 
 
+XAccountPurchasesDetailsReportSection::XAccountPurchasesDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSection(mmConsolidatedZReport, mmAccountPurchasesDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+    dataFormatUtilities = new DataFormatUtilities;
+}
+
 XAccountPurchasesDetailsReportSection::~XAccountPurchasesDetailsReportSection()
 {
     delete dataFormatUtilities;
@@ -14,24 +20,23 @@ XAccountPurchasesDetailsReportSection::~XAccountPurchasesDetailsReportSection()
 
 void XAccountPurchasesDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    TDateTime previousZedTime = Now();
+    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+    DataCalculationUtilities dataCalcUtils;
+    TDateTime previousZedTime = dataCalcUtils.GetPreviousZedTimeForTerminal(
+                                                                *_dbTransaction,
+                                                                deviceName);//Now();
 
     TIBSQL *ibInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
     ibInternalQuery->Close();
 
-    ibInternalQuery->SQL->Text = "SELECT "
-                                        "GROUPS.NAME GROUPNAME, "
-                                        "CONTACTS.NAME CONTACTNAME, "
-                                        "INVOICES.TOTAL_INC TOTAL, "
-                                        "INVOICES.INVOICE_NUMBER INVOICE_NUMBER "
-                                    "FROM CONTACTGROUPS "
-                                    "LEFT JOIN GROUPS ON CONTACTGROUPS.GROUPS_KEY = GROUPS.GROUPS_KEY "
-                                    "LEFT JOIN CONTACTS ON CONTACTGROUPS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
-                                    "LEFT JOIN INVOICES ON CONTACTGROUPS.CONTACTS_KEY = INVOICES.CONTACTS_KEY "
-                                    "WHERE INVOICES.CREATION_DATE > :CREATION_DATE "
-                                    "ORDER BY 1, 2 ";
-
-    ibInternalQuery->ParamByName("CREATION_DATE")->AsDateTime = previousZedTime;
+    if(IsConsolidatedZed)
+    {
+       GetPurchaseDetailsForConsolidatedZed(ibInternalQuery);
+    }
+    else
+    {
+       GetPurchaseDetailsForNormalZed(ibInternalQuery, previousZedTime);
+    }
     ibInternalQuery->ExecQuery();
 
 
@@ -238,4 +243,38 @@ void XAccountPurchasesDetailsReportSection::GetOutput(TPrintout* printOut)
         printOut->PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
         printOut->PrintFormat->AddLine();
     }
+}
+
+void XAccountPurchasesDetailsReportSection::GetPurchaseDetailsForNormalZed(TIBSQL *ibInternalQuery, TDateTime previousZedTime)
+{
+    ibInternalQuery->SQL->Text = "SELECT "
+            "GROUPS.NAME GROUPNAME, "
+            "CONTACTS.NAME CONTACTNAME, "
+            "INVOICES.TOTAL_INC TOTAL, "
+            "INVOICES.INVOICE_NUMBER INVOICE_NUMBER "
+        "FROM CONTACTGROUPS "
+        "LEFT JOIN GROUPS ON CONTACTGROUPS.GROUPS_KEY = GROUPS.GROUPS_KEY "
+        "LEFT JOIN CONTACTS ON CONTACTGROUPS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
+        "LEFT JOIN INVOICES ON CONTACTGROUPS.CONTACTS_KEY = INVOICES.CONTACTS_KEY "
+        "WHERE INVOICES.CREATION_DATE > :CREATION_DATE "
+        "ORDER BY 1, 2 ";
+    ibInternalQuery->ParamByName("CREATION_DATE")->AsDateTime = previousZedTime;
+
+}
+void XAccountPurchasesDetailsReportSection::GetPurchaseDetailsForConsolidatedZed(TIBSQL *ibInternalQuery)
+{
+    ibInternalQuery->SQL->Text = "SELECT "
+            "GROUPS.NAME GROUPNAME, "
+            "CONTACTS.NAME CONTACTNAME, "
+            "INVOICES.TOTAL_INC TOTAL, "
+            "INVOICES.INVOICE_NUMBER INVOICE_NUMBER "
+        "FROM CONTACTGROUPS "
+        "LEFT JOIN GROUPS ON CONTACTGROUPS.GROUPS_KEY = GROUPS.GROUPS_KEY "
+        "LEFT JOIN CONTACTS ON CONTACTGROUPS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
+        "LEFT JOIN INVOICES ON CONTACTGROUPS.CONTACTS_KEY = INVOICES.CONTACTS_KEY "
+        "WHERE INVOICES.CREATION_DATE >= :startTime and INVOICES.CREATION_DATE <= :endTime "
+        "ORDER BY 1, 2 ";
+  ibInternalQuery->ParamByName("startTime")->AsDateTime = *_startTime;
+  ibInternalQuery->ParamByName("endTime")->AsDateTime = *_endTime;
+
 }

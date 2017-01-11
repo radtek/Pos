@@ -25,6 +25,8 @@ class TDBContacts
                                         TPointsExportStatus exportStatus,
                                         TDateTime exportTimeStamp);
         static UnicodeString getPointsTransactionInsertQuery();
+        static void InsertDetailstoMemberSubs(Database::TDBTransaction &DBTransaction, int inContactKey,TContactType inContactType,TMMContactInfo &Info);
+        static void UpdateDetailstoMemberSubs(Database::TDBTransaction &DBTransaction, int inContactKey,TContactType inContactType,TMMContactInfo &Info);
 
 
 	public:

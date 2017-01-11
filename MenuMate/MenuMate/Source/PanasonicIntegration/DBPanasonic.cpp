@@ -24,8 +24,6 @@ __fastcall TfrmDBPanasonic::TfrmDBPanasonic(TComponent* Owner)
     {
         UniDataBaseConnection->ConnectString = "Provider Name=SQL Server;Data Source="+ TGlobalSettings::Instance().PanasonicServerIP + ";Initial Catalog=TRANSACTIONDB;User ID=TransactSrv;Password=Z7uQmcJJrXMBuFf9Fp7T85jAs7TWuyhf";
     }
-
-
 }
 void TfrmDBPanasonic::SendDataToServer(TPanasonicModels &panasonicModels)
 {

@@ -1,5 +1,4 @@
 #include "ManagerHappyHour.h"
-#include "DBHappyHour.h"
 #include "MM_DBCore.h"
 #include "DeviceRealTerminal.h"
 #include "DateUtils.hpp"

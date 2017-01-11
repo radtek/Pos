@@ -6,7 +6,6 @@
 #include "ReferenceManager.h"
 #include "POS_XMLBase.h"
 #include "Money.h"
-#include "RewardsTransaction.h"
 #include "TabCredit.h"
 #include "ContactMemberApplied.h"
 #include "SplitMoney.h"
@@ -16,6 +15,7 @@
 #include "Discount.h"
 #include "Payment.h"
 #include "CaptureCustomerDetails.h"
+#include "PaySubsUtility.h"
 
 
 enum eTransactionType {eTab,eTableSeat,eCash,eAccount,eRoomSale,eCredited,eCreditPurchase,eWeb};
@@ -66,6 +66,15 @@ struct TRedeemGiftVoucherInformation
     TDateTime ExpiryDate;
 };
 
+class TRewardsTransaction
+{
+   public:
+      TRewardsTransaction() : CardNumber(""),EFTPOSRef(""),Amount(0){};
+      UnicodeString CardNumber;
+      UnicodeString EFTPOSRef;
+      Currency Amount;
+};
+
 class TPaymentTransaction
 {
 
@@ -80,6 +89,7 @@ class TPaymentTransaction
     void SetRedeemPoints(Currency PointsRedeemed);
     void SetRedeemBDayPoints(Currency &PointsRedeemed);
     void SetRedeemFVPoints(Currency &PointsRedeemed);
+    void CheckDiscountsWithMembership(TItemMinorComplete *Order);
   public:
         AnsiString PartyName;
         Database::TDBTransaction &DBTransaction;

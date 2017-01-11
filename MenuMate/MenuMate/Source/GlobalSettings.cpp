@@ -383,6 +383,11 @@ TGlobalSettings::TGlobalSettings()
     UseBIRFormatInXZReport = false;
     HideRoundingOnReceipt = false;
 	CashDenominationEntry = false;
+    CSVPath = "";
+    IsEnabledPeachTree = false;
+    CSVExportIP = "";
+    MembershipPaid = false;
+    UseMemberSubs = false;
     IsPanasonicIntegrationEnabled = false;
     PanasonicServerIP = "";
 }

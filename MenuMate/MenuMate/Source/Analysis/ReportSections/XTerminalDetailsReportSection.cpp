@@ -7,6 +7,12 @@ XTerminalDetailsReportSection::XTerminalDetailsReportSection(Database::TDBTransa
 }
 
 
+XTerminalDetailsReportSection::XTerminalDetailsReportSection(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+    :BaseReportSection(mmConsolidatedZReport, mmClientDetailsSection, dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
+
 XTerminalDetailsReportSection::~XTerminalDetailsReportSection()
 {
 }

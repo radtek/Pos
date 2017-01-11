@@ -29,7 +29,6 @@
 #include "ReceiptManager.h"
 #include "ListSecurityRefContainer.h"
 #include "DBWebUtil.h"
-#include <IBQuery.hpp>
 #include "GUIDiscount.h"
 #include "Message.h"
 #include "MMTouchKeyboard.h"
@@ -41,7 +40,6 @@
 #include "DBTables.h"
 #include "ManagerDiscount.h"
 #include "ManagerPatron.h"
-#include "GUIScale.h"
 #include "FreebieManager.h"
 #include "SCDPWDChecker.h"
 #include "SelectDish.h"
@@ -1856,6 +1854,11 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
         TGlobalSettings::Instance().IsDiscountSelected = true;
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
+        if((Membership.Member.ContactKey != 0) && TPaySubsUtility::IsLocalLoyalty() && !Membership.Member.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        {
+            MessageBox("Discounts are disabled for this Member.", "INFORMATION", MB_OK + MB_ICONINFORMATION);
+            return;
+        }
 		TMMContactInfo TempUserInfo;
 		TempUserInfo = TDeviceRealTerminal::Instance().User;
 		bool AllowDiscount = false;
@@ -1876,6 +1879,7 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 			{
 				MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 			}
+
 		}
 
 		if (AllowDiscount)

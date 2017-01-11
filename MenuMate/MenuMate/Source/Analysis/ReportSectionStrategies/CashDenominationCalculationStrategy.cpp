@@ -7,6 +7,14 @@ CashDenominationCalculationStrategy::CashDenominationCalculationStrategy(Databas
 	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings)
 {
     _isMasterBalance = isMasterBalance;
+    IsConsolidatedStartegy = false;
+}
+
+CashDenominationCalculationStrategy::CashDenominationCalculationStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, bool isMasterBalance, TDateTime* startTime, TDateTime* endTime)
+	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
+{
+   _isMasterBalance = isMasterBalance;
+   IsConsolidatedStartegy = true;
 }
 
 void CashDenominationCalculationStrategy::BuildSection(TPrintout* printOut)

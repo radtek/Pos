@@ -157,4 +157,3 @@ TPrintout* BaseReport::SetupPrintOutInstance()
     //std::bind2nd(std::mem_fun(&IReportSection::GetOutput), printOut));
     return printOut;
 }
-

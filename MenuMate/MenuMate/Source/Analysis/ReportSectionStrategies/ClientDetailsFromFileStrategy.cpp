@@ -7,6 +7,11 @@ ClientDetailsFromFileStrategy::ClientDetailsFromFileStrategy(Database::TDBTransa
 {
 }
 
+ClientDetailsFromFileStrategy::ClientDetailsFromFileStrategy(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings, TDateTime* startTime, TDateTime* endTime)
+	:BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
+{
+}
+
 void ClientDetailsFromFileStrategy::BuildSection(TPrintout* printOut)
 {
     TDeviceRealTerminal::Instance().LoadHdrFtr();
