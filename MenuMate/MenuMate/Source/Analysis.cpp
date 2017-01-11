@@ -3553,6 +3553,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
     AnsiString CompanyName = GetCompanyName(DBTransaction);
     AnsiString TerminalName = GetTerminalName();
     AnsiString terminalNamePredicate = "";
+    double cashWithdrawal = 0;
     if(TGlobalSettings::Instance().EndOfDay > 0)
     {
        nextDay =   RecodeTime(nextDay,TGlobalSettings::Instance().EndOfDay,0,0,0);
@@ -3687,7 +3688,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         if(floatGlCode != "" && floatGlCode != NULL && floatAmount != 0)
         {
              if(floatAmount<0)
-                    AddInvoiceItem(XeroInvoiceDetail,"Float WithDraw", floatAmount, floatGlCode, 0);
+                    AddInvoiceItem(XeroInvoiceDetail,"Float WithDrawal", floatAmount, floatGlCode, 0);
              else
                   AddInvoiceItem(XeroInvoiceDetail,"Float Deposit", floatAmount, floatGlCode, 0);
 
@@ -3709,7 +3710,16 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
                      // in case of when payment is post to glcodes and if float amount is not equal to zero then make float adjustment against it
                       AddInvoiceItem(XeroInvoiceDetail,"Float Adjustment",-1 * floatAmount, cashGlCode, 0);
               }
-        }
+       }
+       if(TGlobalSettings::Instance().FloatWithdrawFromCash && !TGlobalSettings::Instance().PostMoneyAsPayment)
+       {
+          cashWithdrawal = 0;
+          cashWithdrawal = GetCashWithdrawal(DBTransaction);
+          if(cashWithdrawal != 0)
+          {
+            AddInvoiceItem(XeroInvoiceDetail,"Cash WithDrawal", RoundTo((cashWithdrawal),-2),floatGlCode, 0);
+          }
+       }
 
      IBInternalQuery->ExecQuery();
      for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -3732,8 +3742,19 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
               }
               else
               {
+                double paymentAmount = RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4);
+                if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Cash" && TGlobalSettings::Instance().FloatWithdrawFromCash &&
+                   cashWithdrawal != 0)
+                {
+                    paymentAmount = paymentAmount + cashWithdrawal;
+                    MessageBox(paymentAmount, "gone", MB_OK);
+                }
+                else
+                {
+                   MessageBox(cashWithdrawal, " not gone", MB_OK);
+                }
                 AddInvoiceItem(XeroInvoiceDetail,IBInternalQuery->FieldByName("PAY_TYPE")->AsString,
-                             -1 * RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -4), AccountCode,0);
+                             -1 * paymentAmount, AccountCode,0);
               }
            }
 
@@ -4010,16 +4031,24 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
            AnsiString cashGlCode= GetCashGlCode(DBTransaction);
            floatAmount = RoundTo(floatAmount, -2);
            catTotal = RoundTo(catTotal, -2);
-
+           bool addAdjustmentNode = true;
            if(RoundTo((floatAmount),-2)  != 0.00)
            {
                if(floatAmount<0)
-                   AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Float WithDraw", RoundTo((floatAmount),-2),0.0, jobCode, "ZeroTax");
+                   AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Float WithDrawal", RoundTo((floatAmount),-2),0.0, jobCode, "ZeroTax");
                else
                    AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Float Deposit", RoundTo((floatAmount),-2),0.0, jobCode, "ZeroTax");
-
                AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Float Adjustment",-1 * RoundTo((floatAmount),-2),0.0, jobCode, "ZeroTax");
-            }
+           }
+           if(TGlobalSettings::Instance().FloatWithdrawFromCash)
+           {
+              double cashWithdrawal = 0;
+              cashWithdrawal = GetCashWithdrawal(DBTransaction);
+              if(cashWithdrawal != 0)
+              {
+                AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Cash WithDrawal", RoundTo((cashWithdrawal),-2),0.0, jobCode, "ZeroTax");
+              }
+           }
          IBInternalQuery->ExecQuery();
          for (; !IBInternalQuery->Eof; )
           {
@@ -9514,4 +9543,17 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
+}
+double TfrmAnalysis::GetCashWithdrawal(Database::TDBTransaction &DBTransaction)
+{
+    double cashWithdrawal = 0;
+    TIBSQL *IBWithdrawalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBWithdrawalQuery->Close();
+    IBWithdrawalQuery->SQL->Text = "SELECT SUM(a.AMOUNT) as withdrawal FROM REFLOAT_SKIM a "
+                               "WHERE a.AMOUNT < 0 and a.TRANSACTION_TYPE = 'Withdrawal' and IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' and "
+                               "a.Z_KEY in (Select MAX(ZEDS.Z_KEY) FROM ZEDS where ZEDS.TIME_STAMP is null) ";
+    IBWithdrawalQuery->ExecQuery();
+    cashWithdrawal = IBWithdrawalQuery->FieldByName("withdrawal")->AsDouble;
+//    MessageBox(cashWithdrawal, "value", MB_OK);
+    return cashWithdrawal;
 }

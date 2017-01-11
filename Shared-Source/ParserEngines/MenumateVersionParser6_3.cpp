@@ -921,11 +921,11 @@ void TApplyParser::update6_36Tables()
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableRefloat_Skim6_36( TDBControl* const inDBControl )
 {
-    if ( !fieldExists( "REFLOAT_SKIM ", "Is_Float_Withdrawn_From_Cash ", _dbControl ) )
+    if ( !fieldExists( "REFLOAT_SKIM ", "IS_FLOAT_WITHDRAWN_FROM_CASH", _dbControl ) )
     {
         executeQuery (
         "ALTER TABLE REFLOAT_SKIM "
-        "ADD Is_Float_Withdrawn_From_Cash T_TRUEFALSE DEFAULT 'F' ; ",
+        "ADD IS_FLOAT_WITHDRAWN_FROM_CASH T_TRUEFALSE DEFAULT 'F' ; ",
         inDBControl);
     }
 }
