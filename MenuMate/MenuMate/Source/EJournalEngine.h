@@ -28,8 +28,8 @@ class TEJournalEngine
         void DisplayXReport(TMemoryStream* XReceipt);
         void GetCurrentRunningReceipt(TIBSQL *IBGetCurrentRunningReciptQuery,AnsiString deviceName);
         bool IsCurrentReceiptAvailable(TIBSQL *IBInternalQuery, TDateTime toSessionDate, AnsiString deviceName);
-        TDateTime GetStartTimeForConolidatedZed(TDateTime from, AnsiString deviceName);
-        TDateTime GetEndTimeForConolidatedZed(TDateTime from, AnsiString deviceName);
+        int GetStartTimeForConolidatedZed(TDateTime from, AnsiString deviceName);
+        TDateTime GetEndTimeForConolidatedZed(TDateTime from, AnsiString deviceName, int z_key);
 
 
 };

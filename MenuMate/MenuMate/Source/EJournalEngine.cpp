@@ -369,10 +369,10 @@ TMemoryStream* TEJournalEngine::ExtractConsolidatedZedReport(TDateTime fromSessi
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
 
-    fromSessionDate = GetStartTimeForConolidatedZed(fromSessionDate, deviceName);
-    MessageBox(DateToStr(fromSessionDate), "StartTime", MB_OK + MB_ICONERROR);
-    toSessionDate = GetEndTimeForConolidatedZed(toSessionDate, deviceName);
-    MessageBox(DateToStr(toSessionDate), "EndTime", MB_OK + MB_ICONERROR);
+    //int z_key = GetStartTimeForConolidatedZed(fromSessionDate, deviceName);
+    //MessageBox(DateToStr(fromSessionDate), "StartTime", MB_OK + MB_ICONERROR);
+    //toSessionDate = GetEndTimeForConolidatedZed(toSessionDate, deviceName, z_key);
+    //MessageBox(DateToStr(toSessionDate), "EndTime", MB_OK + MB_ICONERROR);
 
     TTransactionInfo TransactionInfo;
     TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
@@ -414,7 +414,7 @@ bool TEJournalEngine::CheckZedDataExistsForConolidatedZed(TDateTime from, TDateT
 }
 
 
-TDateTime TEJournalEngine::GetStartTimeForConolidatedZed(TDateTime from, AnsiString deviceName)
+int TEJournalEngine::GetStartTimeForConolidatedZed(TDateTime from, AnsiString deviceName)
 {
     TDateTime retval = from;
     int z_key = 0;
@@ -451,13 +451,12 @@ TDateTime TEJournalEngine::GetStartTimeForConolidatedZed(TDateTime from, AnsiStr
     {
        retval = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
     }
-    return retval;
+    return z_key;
 }
 
-TDateTime TEJournalEngine::GetEndTimeForConolidatedZed(TDateTime to, AnsiString deviceName)
+TDateTime TEJournalEngine::GetEndTimeForConolidatedZed(TDateTime to, AnsiString deviceName, int z_key)
 {
     TDateTime retval = to;
-    int z_key = 0;
     AnsiString terminalNamePredicate = "";
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
@@ -467,9 +466,10 @@ TDateTime TEJournalEngine::GetEndTimeForConolidatedZed(TDateTime to, AnsiString 
     DBTransaction.StartTransaction();
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     IBInternalQuery->Close();
-    IBInternalQuery->SQL->Text="SELECT first(1) a.Z_KEY FROM ZEDS a where a.TIME_STAMP <= :endTime  " + terminalNamePredicate +
+    IBInternalQuery->SQL->Text="SELECT first(1) a.Z_KEY FROM ZEDS a where a.Z_KEY > :Z_KEY " + terminalNamePredicate +
                                 " order by a.TIME_STAMP desc ";
-    IBInternalQuery->ParamByName("endTime")->AsDateTime = to;
+    //IBInternalQuery->ParamByName("endTime")->AsDateTime = to;
+    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = z_key;
     if(!TGlobalSettings::Instance().EnableDepositBagNum)
     {
         IBInternalQuery->ParamByName("Terminal_Name")->AsString = deviceName;
