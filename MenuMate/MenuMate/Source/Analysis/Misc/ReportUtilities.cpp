@@ -19,7 +19,7 @@ int DataCalculationUtilities::GetZedKey(Database::TDBTransaction &dbTransaction)
 
     TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
     ibInternalQuery->Close();
-    ibInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS WHERE ZEDS.TIME_STAMP IS NOT NULL ";
+    ibInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS ";
     ibInternalQuery->ExecQuery();
     zKey = ibInternalQuery->Fields[0]->AsInteger;
 
@@ -1342,6 +1342,19 @@ void SkimCalculations::CalculateSkims(Database::TDBTransaction &dbTransaction, U
         CurrentFloat = ibInternalQuery->FieldByName("INITIAL")->AsCurrency;
         CurrentSkimsTotal = ibInternalQuery->FieldByName("SKIMS")->AsCurrency;
     }
+}
+
+
+int DataCalculationUtilities::GetZedNumber(Database::TDBTransaction &dbTransaction)
+{
+    int zKey = 0;
+	int GlobalProfileKey = TManagerVariable::Instance().GetProfile(dbTransaction, eSystemProfiles, "Globals");
+	if (GlobalProfileKey != 0)
+	{
+        TManagerVariable::Instance().GetProfileInt(dbTransaction,GlobalProfileKey,vmZCount, TGlobalSettings::Instance().ZCount);
+    }
+    zKey = TGlobalSettings::Instance().ZCount;
+    return zKey;
 }
 
 
