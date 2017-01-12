@@ -219,6 +219,7 @@ public:		// User declarations
 private:
     void SendPointValueToRunRate( TPaymentTransaction &inTransaction );
     int extractPatronCountForMallExport(TPaymentTransaction &paymentTransaction);
+    void UpdateContainerList();
 
 };
 #endif

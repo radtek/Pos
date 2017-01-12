@@ -326,24 +326,26 @@ void TfrmTransfer::UpdateDestSeatDetails(Database::TDBTransaction &DBTransaction
             {
                 tabname = lbDisplayTransferto->Items->Strings[0];
                 key = GetTabKeyFromListBox(lbDisplayTransferto, 0);
+                btnTransferTo->Caption = "Tabs";
             }
-			btnTransferTo->Caption = "Tabs";
+
 			break;
 		 case TabStaff:
             if(lbDisplayTransferto->Count > 0)
             {
                 tabname = lbDisplayTransferto->Items->Strings[0];
                 key = GetTabKeyFromListBox(lbDisplayTransferto, 0);
+                btnTransferTo->Caption = "Staff";
             }
-			btnTransferTo->Caption = "Staff";
+
 			break;
         case TabClipp:
             if(lbDisplayTransferto->Count > 0)
             {
                 tabname = lbDisplayTransferto->Items->Strings[0];
                 key = GetTabKeyFromListBox(lbDisplayTransferto, 0);
+                btnTransferTo->Caption = "Clipp Tabs";
             }
-			btnTransferTo->Caption = "Clipp Tabs";
 			break;
         }
         ClearListBox(lbDisplayTransferto);
@@ -353,7 +355,6 @@ void TfrmTransfer::UpdateDestSeatDetails(Database::TDBTransaction &DBTransaction
 	  {
          ClearListBox(lbDisplayTransferto);
 		 btnTransferTo->Caption = "Members";
-
 		 int TabKey = TDBTab::GetTabByOwner(DBTransaction, TempDestUserInfo.ContactKey);
 
 		 if (TabKey != 0)
@@ -2155,7 +2156,7 @@ TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransactio
     {
         int tabKey = SelectedItem.Properties["TabKey"];
         ClearListBox(listbox);
-        btntransfer->Caption = title;
+        //btntransfer->Caption = title;
         if(tabKey == -1)
         {
            Retval = AddNewTab(DBTransaction);

@@ -310,21 +310,9 @@ void __fastcall TfrmBillGroup::FormClose(TObject *Sender, TCloseAction &Action)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::SelectZone(Messages::TMessage& Message)
 {
-	if (SelectedZone() == eNoDisplayMode)
+	if(SelectedZone() == eNoDisplayMode)
 	{
-        ClipTabInTable =false;
-
-		CurrentSelectedTab = 0;
-
-		UpdateRightButtonDisplay(NULL);
-		Database::TDBTransaction DBTransaction(DBControl);
-		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-		DBTransaction.StartTransaction();
-		UpdateTableDetails(DBTransaction);
-		TabStateChanged(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
-        TMembership* memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
-		DBTransaction.Commit();
-
+       UpdateContainerList();
 	}
 }
 // ---------------------------------------------------------------------------
@@ -1690,9 +1678,15 @@ void __fastcall TfrmBillGroup::tbtnCancelMouseClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::tbtnSelectZoneMouseClick(TObject *Sender)
 {
-	SelectedZone();
-    TGlobalSettings::Instance().IsPOSOffline = true;
-    applyWaiterStationSettingsIfEnabled();
+	if (SelectedZone() != eNoDisplayMode)//SelectedZone();
+    {
+        TGlobalSettings::Instance().IsPOSOffline = true;
+        applyWaiterStationSettingsIfEnabled();
+    }
+    else
+    {
+       UpdateContainerList();
+    }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::CardSwipe(Messages::TMessage& Message)
@@ -4090,12 +4084,12 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 	DBTransaction.StartTransaction();
 	if (SelectionForm->ShowModal() != mrCancel)
 	{
-		tbtnSelectZone->Caption = SelectionForm->Title;
+        tbtnSelectZone->Caption = SelectionForm->Title;
 		switch(int(SelectionForm->SelectedTabType))
 		{
 		case TabNormal:
 			{
-				CurrentDisplayMode = eTabs;
+                CurrentDisplayMode = eTabs;
 				CurrentTabType = TabNormal;
 				UpdateRightButtonDisplay(NULL);
 				CurrentTable = 1;
@@ -4103,7 +4097,7 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 			}break;
 		case TabStaff:
 			{
-				CurrentDisplayMode = eTabs;
+                CurrentDisplayMode = eTabs;
 				CurrentTabType = TabStaff;
 				UpdateRightButtonDisplay(NULL);
 				CurrentTable = 1;
@@ -4175,6 +4169,7 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 				// Runs new web app of floorPlan
 				if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
 				{
+
                     CurrentDisplayMode = eTables;
                     CurrentTabType     = TabTableSeat;
                     UpdateRightButtonDisplay(NULL);
@@ -4183,6 +4178,12 @@ eDisplayMode TfrmBillGroup::SelectedZone()
                     CheckLinkedTable(floorPlanReturnParams.TabContainerNumber);
                     ResetForm();
 				}
+                else
+                {
+                    CurrentDisplayMode = eNoDisplayMode;
+                    UpdateRightButtonDisplay(NULL);
+                    ResetForm();
+                }
 			}break;
 		case TabRoom:
 			{
@@ -4878,6 +4879,22 @@ Currency TfrmBillGroup::GetAvailableRedeemPoints(TMMContactInfo &Member)
     }
 
   return points;
+}
+
+void TfrmBillGroup::UpdateContainerList()
+{
+    ClipTabInTable =false;
+
+    CurrentSelectedTab = 0;
+
+    UpdateRightButtonDisplay(NULL);
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    UpdateTableDetails(DBTransaction);
+    TabStateChanged(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
+    TMembership* memberShip = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
+    DBTransaction.Commit();
 }
 
 
