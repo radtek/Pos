@@ -369,8 +369,8 @@ TMemoryStream* TEJournalEngine::ExtractConsolidatedZedReport(TDateTime fromSessi
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
 
-    fromSessionDate = GetStartTimeForConolidatedZed(fromSessionDate, toSessionDate, deviceName);
-    toSessionDate = GetEndTimeForConolidatedZed(fromSessionDate, toSessionDate, deviceName);
+    //fromSessionDate = GetStartTimeForConolidatedZed(fromSessionDate, toSessionDate, deviceName);
+    //toSessionDate = GetEndTimeForConolidatedZed(fromSessionDate, toSessionDate, deviceName);
 
     TTransactionInfo TransactionInfo;
     TTransactionInfoProcessor::Instance().RemoveEntryFromMap(deviceName);
