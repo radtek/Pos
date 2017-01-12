@@ -366,7 +366,8 @@ TGlobalSettings::TGlobalSettings()
     EnableConsolidatedReport = false;
     ShowDarkBackground = false;
     OpenCashDrawer = false;
-    HideReceiptNumberForRefundItem = false;
+//    HideReceiptNumberForRefundItem = false;
+    CashWithdrawalGLCode = "";
     MergeSimilarItem = true;
     HideTaxInvoice = false;
     ExportReprintReceipt = false;
@@ -389,6 +390,6 @@ TGlobalSettings::TGlobalSettings()
     MembershipPaid = false;
     UseMemberSubs = false;
     FloatWithdrawFromCash = false;
-    CashWithdrawalGLCode = "";
+//    CashWithdrawalGLCode = "";
 }
 

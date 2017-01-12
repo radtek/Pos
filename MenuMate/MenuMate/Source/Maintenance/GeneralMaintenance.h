@@ -314,7 +314,7 @@ __published:	// IDE-managed Components
         TCheckBox *cbItemSearch;
         TCheckBox *cbShowDarkBackgroundInPOS;
         TCheckBox *cbOpenCashDrawer;
-        TCheckBox *cbHideReceiptNumber;
+//        TCheckBox *cbHideReceiptNumber;
         TGroupBox *gbItemBilling;
         TCheckBox *cbMergeSimilarItem;
         //TCheckBox *cbShowLocalTaxandProfitTax;
@@ -548,7 +548,7 @@ __published:	// IDE-managed Components
         void __fastcall cbItemSearchClick(TObject *Sender);   //cbShowDarkBackgroundInPOS
         void __fastcall cbShowDarkBackgroundInPOSClick(TObject *Sender);
         void __fastcall cbOpenCashDrawerClick(TObject *Sender);
-        void __fastcall cbHideReceiptNumberClick(TObject *Sender);
+//        void __fastcall cbHideReceiptNumberClick(TObject *Sender);
         void __fastcall cbMergeSimilarItemClick(TObject *Sender);
         //void __fastcall cbShowLocalTaxandProfitTaxClick(TObject *Sender);
         void __fastcall cbUseBIRFormatInXZReportClick(TObject *Sender);
