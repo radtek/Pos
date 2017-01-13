@@ -48,7 +48,7 @@ void TManagerFloat::AlterFloat(Database::TDBTransaction &DBTransaction,TMMContac
 	  {
           if(TGlobalSettings::Instance().FloatWithdrawFromCash && frmTouchNumpad->CURResult < 0)
           {
-              if(GetAccumulatedCashSales(DBTransaction) < fabs(frmTouchNumpad->CURResult))
+              if((GetAccumulatedCashSales(DBTransaction) + GetCashWithdrawal(DBTransaction))< fabs(frmTouchNumpad->CURResult))
               {
                  MessageBox("You can not withdraw an amount more than accumulated Cash Sales.", "Error",	MB_OK + MB_ICONWARNING);
                  return;
@@ -270,12 +270,28 @@ double TManagerFloat::GetAccumulatedCashSales(Database::TDBTransaction &DBTransa
     double cashTotal = 0.0;
     TIBSQL *IBCashQuery = DBTransaction.Query(DBTransaction.AddQuery());
     IBCashQuery->Close();
-    IBCashQuery->SQL->Text = "SELECT SUM(a.SUBTOTAL) as Total FROM DAYARCBILLPAY a "
-                                   "WHERE a.PAY_TYPE = 'Cash' ";
+    IBCashQuery->SQL->Text = "SELECT SUM(a.SUBTOTAL) as Total FROM DAYARCBILLPAY a LEFT JOIN DAYARCBILL d on d.ARCBILL_KEY = a.ARCBILL_KEY "
+                                   "WHERE a.PAY_TYPE = 'Cash' and d.TERMINAL_NAME = :TERMINAL_NAME ";
 
+    IBCashQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
     IBCashQuery->ExecQuery();
     cashTotal = IBCashQuery->FieldByName("Total")->AsDouble;
     return cashTotal;
+}
+//----------------------------------------------------------------------------
+double TManagerFloat::GetCashWithdrawal(Database::TDBTransaction &DBTransaction)
+{
+    double cashWithdrawal = 0;
+    TIBSQL *IBWithdrawalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBWithdrawalQuery->Close();
+    IBWithdrawalQuery->SQL->Text = "SELECT SUM(a.AMOUNT) as withdrawal FROM REFLOAT_SKIM a "
+                                   "WHERE a.AMOUNT < 0 and a.TRANSACTION_TYPE = 'Withdrawal' and IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' and "
+                                   "a.TERMINAL_NAME = :TERMINAL_NAME and "
+                                   "a.Z_KEY in (Select MAX(ZEDS.Z_KEY) FROM ZEDS where ZEDS.TIME_STAMP is null) ";
+    IBWithdrawalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+    IBWithdrawalQuery->ExecQuery();
+    cashWithdrawal = IBWithdrawalQuery->FieldByName("withdrawal")->AsDouble;
+    return cashWithdrawal;
 }
 
 
