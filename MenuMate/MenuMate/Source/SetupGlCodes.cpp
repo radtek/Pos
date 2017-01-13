@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "SetupGlCodes.h"
+#include "GlobalSettings.h"
 #include "MMTouchKeyboard.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -77,7 +78,16 @@ void __fastcall TfrmSetupGlCodes::FormShow(TObject *Sender)
   btnTabAmountRefunded->Caption = "Tab Deposit/Credit Refunded \r" + TabDepositCreditRefunded;
   btnFloatGlCode->Caption = "Float \r" + FloatGLCode;
   btnEftPosTip->Caption = "EftPos Tip \r" + EftPosTip;
-  btnCashWidthwral->Caption = "Cash Withdrawal \r" + CashWithdrawal;
+  if(TGlobalSettings::Instance().FloatWithdrawFromCash)
+  {
+      btnCashWidthwral->Enabled = true;
+      btnCashWidthwral->Caption = "Cash Withdrawal \r" + CashWithdrawal;
+  }
+  else
+  {
+      btnCashWidthwral->Enabled = false;
+      btnCashWidthwral->Caption = "Cash Withdrawal \r";
+  }
 }
 //---------------------------------------------------------------------------
 void TfrmSetupGlCodes::ShowKeyBoard(AnsiString KeyBoardCaption,AnsiString& KeyBoardText)

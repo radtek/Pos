@@ -3678,7 +3678,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
        bool addFloatAdjustmentToPayments = false;
        bool addEachPaymentNode = true;
       // get the final float amount (Float Deposit - float withdrwal)
-       GetFloatAmounts(DBTransaction, floatAmount);
+       GetFloatAmounts(DBTransaction, floatAmount,terminalNamePredicate);
        AnsiString cashGlCode= GetCashGlCode(DBTransaction);
        floatGlCode = TGlobalSettings::Instance().FloatGLCode;
 
@@ -4027,7 +4027,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
            bool addFloatAdjustmentToPayments = false;
            bool addEachPaymentNode = true;
           // get the final float amount (Float Deposit - float withdrwal)
-           GetFloatAmounts(DBTransaction, floatAmount);
+           GetFloatAmounts(DBTransaction, floatAmount,terminalNamePredicate);
            AnsiString cashGlCode= GetCashGlCode(DBTransaction);
            floatAmount = RoundTo(floatAmount, -2);
            catTotal = RoundTo(catTotal, -2);
@@ -9049,38 +9049,42 @@ void TfrmAnalysis::GetTabCreditReceivedRefunded(Database::TDBTransaction &DBTran
 
 }
 //------------------------------------------------------------------------------------------------------
-void TfrmAnalysis::GetFloatAmounts(Database::TDBTransaction &DBTransaction,double &floatAmount)
+void TfrmAnalysis::GetFloatAmounts(Database::TDBTransaction &DBTransaction,double &floatAmount,AnsiString terminalNamePredicate)
 {
+   AnsiString TerminalName = GetTerminalName();
    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
    IBInternalQuery->SQL->Text =   "SELECT "
-                                        "zeds.z_Key, "
+                                        "a.z_Key, "
                                      //   "cast((CASE WHEN REFLOAT_SKIM.TRANSACTION_TYPE ='Initial' THEN refloat_skim.amount else 0 END) as numeric(17, 4)) AS Zed_InitialFloat, "
-                                        "cast((CASE WHEN refloat_skim.amount > 0 and REFLOAT_SKIM.TRANSACTION_TYPE <>'Initial' THEN refloat_skim.amount else 0 END) as numeric(17, 4)) AS Zed_Deposit, "
+                                        "cast((CASE WHEN refloat_skim.amount > 0 and REFLOAT_SKIM.TRANSACTION_TYPE <> 'Initial' THEN refloat_skim.amount else 0 END) as numeric(17, 4)) AS Zed_Deposit, "
                                         "cast((CASE WHEN refloat_skim.amount < 0 THEN refloat_skim.amount else 0 END) as numeric(17, 4)) AS Zed_Withdraw, "
                                         "REFLOAT_SKIM.TRANSACTION_TYPE "
-								   "FROM ZEDS "
-                                   "left join refloat_skim on zeds.z_key = REFLOAT_SKIM.Z_KEY  "
-                                   "WHERE  zeds.TIME_STAMP is null  ";
+								   "FROM ZEDS a "
+                                   "left join refloat_skim on a.z_key = REFLOAT_SKIM.Z_KEY  "
+                                   "WHERE  a.TIME_STAMP is null " + terminalNamePredicate ;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+    {
+     IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
+    }
     IBInternalQuery->ExecQuery();
-
-       if(IBInternalQuery->RecordCount > 0)
-       {
-            for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-            {
+    if(IBInternalQuery->RecordCount > 0)
+    {
+        for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
 //                 if(IBInternalQuery->FieldByName("Zed_InitialFloat")->AsDouble != 0)
 //                 {
 //                    floatAmount += IBInternalQuery->FieldByName("Zed_InitialFloat")->AsDouble;
 //                 }
-                  if(IBInternalQuery->FieldByName("Zed_Deposit")->AsDouble != 0)
-                 {
-                    floatAmount += IBInternalQuery->FieldByName("Zed_Deposit")->AsDouble;
-                 }
-                  if(IBInternalQuery->FieldByName("Zed_Withdraw")->AsDouble != 0)
-                 {
-                    floatAmount += IBInternalQuery->FieldByName("Zed_Withdraw")->AsDouble;
-                 }
-            }
-       }
+              if(IBInternalQuery->FieldByName("Zed_Deposit")->AsDouble != 0)
+             {
+                floatAmount += IBInternalQuery->FieldByName("Zed_Deposit")->AsDouble;
+             }
+              if(IBInternalQuery->FieldByName("Zed_Withdraw")->AsDouble != 0)
+             {
+                floatAmount += IBInternalQuery->FieldByName("Zed_Withdraw")->AsDouble;
+             }
+        }
+    }
 
 }
 
@@ -9555,10 +9559,9 @@ double TfrmAnalysis::GetCashWithdrawal(Database::TDBTransaction &DBTransaction)
     TIBSQL *IBWithdrawalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     IBWithdrawalQuery->Close();
     IBWithdrawalQuery->SQL->Text = "SELECT SUM(a.AMOUNT) as withdrawal FROM REFLOAT_SKIM a "
-                               "WHERE a.AMOUNT < 0 and a.TRANSACTION_TYPE = 'Withdrawal' and IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' and "
-                               "a.Z_KEY in (Select MAX(ZEDS.Z_KEY) FROM ZEDS where ZEDS.TIME_STAMP is null) ";
+                                   "WHERE a.AMOUNT < 0 and a.TRANSACTION_TYPE = 'Withdrawal' and IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' and "
+                                   "a.Z_KEY in (Select MAX(ZEDS.Z_KEY) FROM ZEDS where ZEDS.TIME_STAMP is null) ";
     IBWithdrawalQuery->ExecQuery();
     cashWithdrawal = IBWithdrawalQuery->FieldByName("withdrawal")->AsDouble;
-//    MessageBox(cashWithdrawal, "value", MB_OK);
     return cashWithdrawal;
 }

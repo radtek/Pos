@@ -3601,7 +3601,7 @@ void TfrmMaintain::SetupGLCodes()
   frmSetupGlCodes->TabDepositCreditRefunded = TGlobalSettings::Instance().TabDepositCreditRefundedGLCode;
   frmSetupGlCodes->FloatGLCode = TGlobalSettings::Instance().FloatGLCode;
   frmSetupGlCodes->EftPosTip = TGlobalSettings::Instance().EftPosTipGLCode;
-//  frmSetupGlCodes->CashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
+  frmSetupGlCodes->CashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
   if(frmSetupGlCodes->ShowModal() == mrOk)
    {
         TGlobalSettings::Instance().PointsPurchasedGLCode = frmSetupGlCodes->PointsPurchased;
@@ -3614,7 +3614,7 @@ void TfrmMaintain::SetupGLCodes()
         TGlobalSettings::Instance().TabDepositCreditRefundedGLCode = frmSetupGlCodes->TabDepositCreditRefunded ;
         TGlobalSettings::Instance().FloatGLCode = frmSetupGlCodes->FloatGLCode ;
         TGlobalSettings::Instance().EftPosTipGLCode = frmSetupGlCodes->EftPosTip;
-//        TGlobalSettings::Instance().CashWithdrawalGLCode = frmSetupGlCodes->CashWithdrawal;
+        TGlobalSettings::Instance().CashWithdrawalGLCode = frmSetupGlCodes->CashWithdrawal;
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmPointsPurchasedGLCode, TGlobalSettings::Instance().PointsPurchasedGLCode );
@@ -3627,7 +3627,7 @@ void TfrmMaintain::SetupGLCodes()
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmTabDepositCreditRefundedGLCode, TGlobalSettings::Instance().TabDepositCreditRefundedGLCode );
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmFloatGLCode, TGlobalSettings::Instance().FloatGLCode );
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmEftPosTipGLCode, TGlobalSettings::Instance().EftPosTipGLCode);
-//        TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmCashWithdrawal, TGlobalSettings::Instance().CashWithdrawalGLCode);
+        TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmCashWithdrawal, TGlobalSettings::Instance().CashWithdrawalGLCode);
         DBTransaction.Commit();
    }
    delete frmSetupGlCodes;

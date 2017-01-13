@@ -217,7 +217,7 @@ private:	// User declarations
     void AddInvoicePayment(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiString Description,double unitAmount,AnsiString AccountCode,double taxAmount);
     void GetTabCreditReceivedRefunded(Database::TDBTransaction &DBTransaction,double &TabCreditReceived, double &TabRefundReceived,
                                  TDateTime startTime,TDateTime endTime);
-    void GetFloatAmounts(Database::TDBTransaction &DBTransaction,double &floatAmount);
+    void GetFloatAmounts(Database::TDBTransaction &DBTransaction,double &floatAmount,AnsiString terminalNamePredicate);
     AnsiString GetCashGlCode(Database::TDBTransaction &DBTransaction);
     void CompleteDLFMallExport();
     TDateTime GetMinDayArchiveTime(Database::TDBTransaction &DBTransaction, TDateTime PrevZedTime);
