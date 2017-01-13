@@ -68,7 +68,7 @@ class TfrmAnalysis : public TZForm
 private:	// User declarations
 	__fastcall TfrmAnalysis(TComponent* Owner);
 
-	void UpdateArchive(Database::TDBTransaction &DBTransaction,TMembership *Membership,UnicodeString DeviceName);
+	void UpdateArchive(Database::TDBTransaction &DBTransaction,TMembership *Membership,UnicodeString DeviceName, int zedKey);
 	void __fastcall TfrmAnalysis::VariantDBAssign(TIBXSQLVAR *InData,TIBXSQLVAR *OutData);
 	bool __fastcall TfrmAnalysis::ParamExists(TIBSQL *IBSQL, AnsiString FieldName);
 	//	bool ProcessAccounts();
@@ -273,7 +273,7 @@ private:
     void EmailZedReport(int z_key);
     void UpdateMallExportDetails();
     void ClearParkedSale(Database::TDBTransaction &DBTransaction);
-    void UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransaction &DBTransaction, UnicodeString DeviceName);
+    void UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransaction &DBTransaction, UnicodeString DeviceName, int zedKey);
     void UpdateStock(bool UpdateingStock);
     void ResetPoints();
     void OpenCashDrawer();
