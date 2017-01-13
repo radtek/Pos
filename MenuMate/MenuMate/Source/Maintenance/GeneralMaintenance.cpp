@@ -435,7 +435,6 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbItemSearch->Checked= TGlobalSettings::Instance().ItemSearch;
     cbShowDarkBackgroundInPOS->Checked = TGlobalSettings::Instance().ShowDarkBackground;
     cbOpenCashDrawer->Checked = TGlobalSettings::Instance().OpenCashDrawer;
-//    cbHideReceiptNumber->Checked = TGlobalSettings::Instance().HideReceiptNumberForRefundItem;
     cbMergeSimilarItem->Checked = TGlobalSettings::Instance().MergeSimilarItem;
     cbExcludeReceipt->Checked = TGlobalSettings::Instance().ExcludeReceipt;
     cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
