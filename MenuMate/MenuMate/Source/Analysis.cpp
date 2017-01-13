@@ -3688,7 +3688,9 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
         if(floatGlCode != "" && floatGlCode != NULL && floatAmount != 0)
         {
              if(floatAmount<0)
+             {
                     AddInvoiceItem(XeroInvoiceDetail,"Float WithDrawal", floatAmount, floatGlCode, 0);
+             }
              else
                   AddInvoiceItem(XeroInvoiceDetail,"Float Deposit", floatAmount, floatGlCode, 0);
 

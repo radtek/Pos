@@ -567,7 +567,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 685
             Width = 412
             Height = 25
-            Caption = 'Float Withdraw From Cash'
+            Caption = 'Float Withdrawal From Cash'
             TabOrder = 24
             OnClick = cbFloatWithdrawFromCashClick
           end
