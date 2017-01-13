@@ -574,7 +574,8 @@ void TfrmAnalysis::PrintFloatAdjustments(Database::TDBTransaction &DBTransaction
 		"Terminal_Name, "
 		"Time_Stamp, "
 		"Z_Key, "
-		"Reasons "
+		"Reasons, "
+        "IS_FLOAT_WITHDRAWN_FROM_CASH "
 		"From "
 		"Refloat_Skim "
 		"Where "
@@ -656,19 +657,22 @@ void TfrmAnalysis::PrintFloatAdjustments(Database::TDBTransaction &DBTransaction
 
 				for (; !FloatDetailsQuery->Eof; FloatDetailsQuery->Next())
 				{
-					const UnicodeString SetFloat = "Set Float";
-					UnicodeString TransType = FloatDetailsQuery->FieldByName("Transaction_Type")->AsString == "Initial" ? SetFloat : FloatDetailsQuery->FieldByName("Reasons")->AsString;;
+                    if(!(FloatDetailsQuery->FieldByName("Transaction_Type")->AsString == "Withdrawal" && FloatDetailsQuery->FieldByName("IS_FLOAT_WITHDRAWN_FROM_CASH")->AsString == "T"))
+                    {
+                        const UnicodeString SetFloat = "Set Float";
+                        UnicodeString TransType = FloatDetailsQuery->FieldByName("Transaction_Type")->AsString == "Initial" ? SetFloat : FloatDetailsQuery->FieldByName("Reasons")->AsString;;
 
 
-					Printout->PrintFormat->Line->Columns[0]->Text = FloatDetailsQuery->FieldByName("STAFF")->AsString;
-					Printout->PrintFormat->Line->Columns[1]->Text = FloatDetailsQuery->FieldByName("TIME_STAMP")->AsDateTime.FormatString("HH:MM:SS ");
-					Printout->PrintFormat->Line->Columns[2]->Text = TransType;
-					Printout->PrintFormat->Line->Columns[3]->Text = FloatToStrF(FloatDetailsQuery->FieldByName("AMOUNT")->AsFloat, ffNumber, 18, CurrencyDecimals);
+                        Printout->PrintFormat->Line->Columns[0]->Text = FloatDetailsQuery->FieldByName("STAFF")->AsString;
+                        Printout->PrintFormat->Line->Columns[1]->Text = FloatDetailsQuery->FieldByName("TIME_STAMP")->AsDateTime.FormatString("HH:MM:SS ");
+                        Printout->PrintFormat->Line->Columns[2]->Text = TransType;
+                        Printout->PrintFormat->Line->Columns[3]->Text = FloatToStrF(FloatDetailsQuery->FieldByName("AMOUNT")->AsFloat, ffNumber, 18, CurrencyDecimals);
 
 
 
-					total += FloatDetailsQuery->FieldByName("AMOUNT")->AsFloat;
-					Printout->PrintFormat->AddLine();
+                        total += FloatDetailsQuery->FieldByName("AMOUNT")->AsFloat;
+                        Printout->PrintFormat->AddLine();
+                    }
 				}
 
 				FloatDetailsQuery->Close();
@@ -3158,7 +3162,6 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 			Processing->Show();
 
 			DataCalculationUtilities* dataCalculationUtilities;
-			Currency TotalEarnings = dataCalculationUtilities->GetTotalEarnings(DBTransaction, DeviceName);
             TDateTime trans_date = dataCalculationUtilities->CalculateSessionTransactionDate(Now());
 			ReportManager reportManager;
 			ZedReport* zedReport = reportManager.GetZedReport(&TGlobalSettings::Instance(), &DBTransaction);
@@ -3170,6 +3173,11 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 			ZedCancel    = !CompleteZed;
 			if (CompleteZed)
 			{
+                //Get terminal earning
+                Currency TotalEarnings = dataCalculationUtilities->GetTotalEarnings(DBTransaction, DeviceName);
+                //Get Accumulated zed
+                Currency AccumulatedZedTotal = dataCalculationUtilities->GetAccumulatedZedTotal(DBTransaction);
+                AccumulatedZedTotal +=  TotalEarnings;
 
               OpenCashDrawer();
               if(TGlobalSettings::Instance().EnableBlindBalances)
@@ -3226,12 +3234,14 @@ Zed:
                         int EMAIL_STATUS = 0;
 						IBInternalQuery->Close();                                                          //
 						IBInternalQuery->SQL->Text =
-						"INSERT INTO ZEDS (" "Z_KEY," "INITIAL_FLOAT," "TERMINAL_NAME," "TIME_STAMP," "REPORT," "SECURITY_REF," "EMAIL_STATUS," "TRANS_DATE) "
-						"VALUES (" ":Z_KEY," ":INITIAL_FLOAT," ":TERMINAL_NAME," ":TIME_STAMP," ":REPORT," ":SECURITY_REF," ":EMAIL_STATUS," ":TRANS_DATE); ";
+						"INSERT INTO ZEDS ( Z_KEY, INITIAL_FLOAT, TERMINAL_NAME, TIME_STAMP, REPORT, SECURITY_REF, EMAIL_STATUS, TRANS_DATE, TERMINAL_EARNINGS, ZED_TOTAL ) "
+						"VALUES (:Z_KEY, :INITIAL_FLOAT, :TERMINAL_NAME, :TIME_STAMP, :REPORT, :SECURITY_REF, :EMAIL_STATUS, :TRANS_DATE, :TERMINAL_EARNINGS, :ZED_TOTAL ); ";
 						IBInternalQuery->ParamByName("Z_KEY")->AsInteger = Zedkey;
 						IBInternalQuery->ParamByName("INITIAL_FLOAT")->AsCurrency = 0;
 						IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
 						IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+                        IBInternalQuery->ParamByName("TERMINAL_EARNINGS")->AsCurrency = TotalEarnings;
+                        IBInternalQuery->ParamByName("ZED_TOTAL")->AsCurrency = AccumulatedZedTotal;
 						ZedToArchive->Position = 0;
 
 						IBInternalQuery->ParamByName("REPORT")->LoadFromStream( FormattedZed(ZedToArchive));
@@ -3261,13 +3271,15 @@ Zed:
 
 						IBInternalQuery->Close();
 						IBInternalQuery->SQL->Text =
-						"UPDATE ZEDS " "SET " "TIME_STAMP	= :TIME_STAMP, " "REPORT	= :REPORT " "WHERE " "Z_KEY = :Z_KEY";
+						"UPDATE ZEDS " "SET " "TIME_STAMP	= :TIME_STAMP, " "REPORT	= :REPORT, " "TERMINAL_EARNINGS = :TERMINAL_EARNINGS, " "ZED_TOTAL = :ZED_TOTAL " "WHERE " "Z_KEY = :Z_KEY";
 						IBInternalQuery->ParamByName("Z_KEY")->AsInteger = Zedkey;
 						ZedToArchive->Position = 0;
 
 
 						IBInternalQuery->ParamByName("REPORT")->LoadFromStream( FormattedZed(ZedToArchive));
 						IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+                        IBInternalQuery->ParamByName("TERMINAL_EARNINGS")->AsCurrency = TotalEarnings;
+                        IBInternalQuery->ParamByName("ZED_TOTAL")->AsCurrency = AccumulatedZedTotal;
 						IBInternalQuery->ExecQuery();
 						UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
 						UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
@@ -3310,12 +3322,6 @@ Zed:
 			Processing->Message = "Committing Data...";
 			Processing->Show();
 
-            if(!zedReport->SkipZedProcess)
-            {
-                UpdateTerminalEarnings(DBTransaction, TotalEarnings);
-                Currency AccumulatedZedTotal = dataCalculationUtilities->GetAccumulatedZedTotal(DBTransaction);
-                UpdateTerminalAccumulatedZed(DBTransaction, AccumulatedZedTotal);
-            }
 			if (CompleteZed)
             {
 			   DefaultItemQuantities(DBTransaction);
@@ -6854,26 +6860,6 @@ Currency TfrmAnalysis::GetSiteAccumulatedZed()
 	qr->Close();
 
 	return accumulated_total;
-}
-// ---------------------------------------------------------------------------
-// This function is for updating the DB for a new Accumulated Totals
-void TfrmAnalysis::UpdateTerminalAccumulatedZed(Database::TDBTransaction &tr, Currency accumulated_total)
-{
-	TIBSQL *qr = tr.Query(tr.AddQuery());
-	qr->SQL->Text = "UPDATE ZEDS SET ZED_TOTAL=:ZEDTOT WHERE ZED_TOTAL IS NULL";
-	qr->ParamByName("ZEDTOT")->AsCurrency = accumulated_total;
-	qr->ExecQuery();
-	qr->Close();
-}
-// ---------------------------------------------------------------------------
-// This function is for updating the table ZEDS column TERMINAL_EARNINGS for a new Daily earnings
-void TfrmAnalysis::UpdateTerminalEarnings(Database::TDBTransaction &tr, Currency terminal_earnings)
-{
-	TIBSQL *qr = tr.Query(tr.AddQuery());
-	qr->SQL->Text = "UPDATE ZEDS SET TERMINAL_EARNINGS=:TEREARN WHERE TERMINAL_EARNINGS IS NULL";
-	qr->ParamByName("TEREARN")->AsCurrency = terminal_earnings;
-	qr->ExecQuery();
-	qr->Close();
 }
 // ---------------------------------------------------------------------------
 Currency TfrmAnalysis::GetTotalSalesTax()

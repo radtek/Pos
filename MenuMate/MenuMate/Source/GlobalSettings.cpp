@@ -388,6 +388,7 @@ TGlobalSettings::TGlobalSettings()
     CSVExportIP = "";
     MembershipPaid = false;
     UseMemberSubs = false;
+    FloatWithdrawFromCash = false;
     IsPanasonicIntegrationEnabled = false;
     PanasonicServerIP = "";
 }

@@ -67,6 +67,7 @@
 #include "PointsRulesSetUtils.h"
 #include "EstanciaMall.h"
 #include "PanasonicAdapter.h"
+#include "PanasonicThread.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -889,6 +890,13 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 	}
 
 	Busy = false;
+
+    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+    {
+        TPanasonicThread* sendDataToServerThread = new TPanasonicThread();
+        sendDataToServerThread->Start();
+    }
+
 	return PaymentComplete;
 }
 
@@ -1439,15 +1447,6 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
         //TODO: Instantiation will happen in a factory based on the active mall in database
         TMallExport* estanciaMall = new TEstanciaMall();
         estanciaMall->PushToDatabase(PaymentTransaction, ArcBillKey);
-    }
-
-    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-    {
-        TPanasonicAdapter panasonicAdapter;
-      	std::auto_ptr <TStringList> StringReceipt(new TStringList);
-    	LastReceipt->Printouts->PrintToStrings(StringReceipt.get());
-        UnicodeString _lastreceipt = PrepareLastReceiptDataForPanasonic(StringReceipt.get());
-        panasonicAdapter.ConvertTransactionInfoToPanasonicInfo(PaymentTransaction, ArcBillKey, _lastreceipt);
     }
 }
 

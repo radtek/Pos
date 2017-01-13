@@ -325,6 +325,7 @@ __published:	// IDE-managed Components
 		TCheckBox *cbCashDenominationEntry;
         TGroupBox *grpMemberSubs;
         TCheckBox *cbUseMemberSubs;
+        TCheckBox *cbFloatWithdrawFromCash;
 
         //**********
         void __fastcall FormShow(TObject *Sender);
@@ -560,6 +561,7 @@ __published:	// IDE-managed Components
         void __fastcall cbHideRoundingOnReceiptClick(TObject *Sender);
 		void __fastcall cbCashDenominationEntryClick(TObject *Sender);
         void __fastcall cbUseMemberSubsClick(TObject *Sender);
+        void __fastcall cbFloatWithdrawFromCashClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP

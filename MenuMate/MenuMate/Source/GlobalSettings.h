@@ -477,6 +477,7 @@ public:
     bool MembershipPaid;
     bool UseMemberSubs;
     TMall mallInfo;
+    bool FloatWithdrawFromCash;
     bool IsPanasonicIntegrationEnabled;
     UnicodeString PanasonicServerIP;
 };
