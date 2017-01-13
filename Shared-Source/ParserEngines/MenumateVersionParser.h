@@ -847,6 +847,8 @@ namespace MenumateVersionParser
         void upgrade6_36Tables();
         void update6_36Tables();
         void AlterTableRefloat_Skim6_36(TDBControl* const inDBControl);
+        void Update6_36TableSCDPWDCustomerDetails(TDBControl* const inDBControl);
+        bool CheckDataTypeOfColumn(TDBControl* const inDBControl);
     }; // class
 } // namespace
 

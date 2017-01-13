@@ -46,15 +46,23 @@ void TManagerFloat::AlterFloat(Database::TDBTransaction &DBTransaction,TMMContac
 	  frmTouchNumpad->Mode = pmCurrency;
       if (frmTouchNumpad->ShowModal() == mrOk)
 	  {
+          if(TGlobalSettings::Instance().FloatWithdrawFromCash && frmTouchNumpad->CURResult < 0)
+          {
+              if(GetAccumulatedCashSales(DBTransaction) < fabs(frmTouchNumpad->CURResult))
+              {
+                 MessageBox("You can not withdraw an amount more than accumulated Cash Sales.", "Error",	MB_OK + MB_ICONWARNING);
+                 return;
+              }
+          }
          int CurrentSecurityRef     = 	IBInternalQuery->FieldByName("SECURITY_REF")->AsInteger;
-		 Currency CurrentSkimsTotal   = 	IBInternalQuery->FieldByName("SKIMS_TOTAL")->AsCurrency;
+         Currency CurrentSkimsTotal   = 	IBInternalQuery->FieldByName("SKIMS_TOTAL")->AsCurrency;
 
-		 TDBSecurity::ProcessSecurity(
-						DBTransaction,
+         TDBSecurity::ProcessSecurity(
+                        DBTransaction,
                         CurrentSecurityRef,
-						UserInfo.ContactKey,
+                        UserInfo.ContactKey,
                         SecurityTypes[secFloatAdjust],FormatFloat("$0.00",CurrentSkimsTotal),
-						FormatFloat("$0.00",CurrentSkimsTotal + frmTouchNumpad->CURResult),Now(),
+                        FormatFloat("$0.00",CurrentSkimsTotal + frmTouchNumpad->CURResult),Now(),
                         TDeviceRealTerminal::Instance().ID.Name);
 
         if((frmTouchNumpad->CURResult > 0 && TGlobalSettings::Instance().FloatWithdrawFromCash)||(!TGlobalSettings::Instance().FloatWithdrawFromCash))
@@ -72,43 +80,43 @@ void TManagerFloat::AlterFloat(Database::TDBTransaction &DBTransaction,TMMContac
              IBInternalQuery->ExecQuery();
         }
 
-		 int Zed_Key;
-		 IBInternalQuery->Close();
-		 IBInternalQuery->SQL->Text =
-			"SELECT "
-			"Z_KEY FROM ZEDS "
-			"WHERE "
-			"TERMINAL_NAME = :TERMINAL_NAME AND "
-			"TIME_STAMP IS NULL";
+         int Zed_Key;
+         IBInternalQuery->Close();
+         IBInternalQuery->SQL->Text =
+            "SELECT "
+            "Z_KEY FROM ZEDS "
+            "WHERE "
+            "TERMINAL_NAME = :TERMINAL_NAME AND "
+            "TIME_STAMP IS NULL";
 
-		 IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
-		 IBInternalQuery->ExecQuery();
+         IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+         IBInternalQuery->ExecQuery();
 
-		 Zed_Key = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
-		 FloatSkimTransaction temp;
+         Zed_Key = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+         FloatSkimTransaction temp;
 
-		   if(frmTouchNumpad->CURResult < 0)
-				temp = eSkim;
-		   else if(frmTouchNumpad->CURResult == 0)
-				temp = eNochange;
-		   else
-				temp = eRefloat;
+           if(frmTouchNumpad->CURResult < 0)
+                temp = eSkim;
+           else if(frmTouchNumpad->CURResult == 0)
+                temp = eNochange;
+           else
+                temp = eRefloat;
 
-			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-			DBTransaction.StartTransaction();
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
 
-		   if((double)frmTouchNumpad->CURResult)
-		   {
-				TFloatSkimData FloatSkimData(Owner, UserInfo, temp, frmTouchNumpad->CURResult, Zed_Key);
-				FloatSkimData.runReason();
-				FloatSkimData.InsertToDatabase(DBTransaction);
-				DBTransaction.Commit();
-				if (temp != eNochange)
-					TComms::Instance().KickLocalDraw(DBTransaction);
+           if((double)frmTouchNumpad->CURResult)
+           {
+                TFloatSkimData FloatSkimData(Owner, UserInfo, temp, frmTouchNumpad->CURResult, Zed_Key);
+                FloatSkimData.runReason();
+                FloatSkimData.InsertToDatabase(DBTransaction);
+                DBTransaction.Commit();
+                if (temp != eNochange)
+                    TComms::Instance().KickLocalDraw(DBTransaction);
 
-				FloatSkimData.PrintDocket();
-		   }
-	  }
+                FloatSkimData.PrintDocket();
+           }
+      }
    }
    else
    {
@@ -256,6 +264,18 @@ void TManagerFloat::SetFloat(Database::TDBTransaction &DBTransaction,TMMContactI
 	   //	   runReason(FloatSkimData);
 		   FloatSkimData.InsertToDatabase(DBTransaction);
 		   DBTransaction.Commit();
+}
+double TManagerFloat::GetAccumulatedCashSales(Database::TDBTransaction &DBTransaction)
+{
+    double cashTotal = 0.0;
+    TIBSQL *IBCashQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBCashQuery->Close();
+    IBCashQuery->SQL->Text = "SELECT SUM(a.SUBTOTAL) as Total FROM DAYARCBILLPAY a "
+                                   "WHERE a.PAY_TYPE = 'Cash' ";
+
+    IBCashQuery->ExecQuery();
+    cashTotal = IBCashQuery->FieldByName("Total")->AsDouble;
+    return cashTotal;
 }
 
 

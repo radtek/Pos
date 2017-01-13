@@ -4367,6 +4367,11 @@ void __fastcall TfrmAnalysis::btnReprintZClick(void)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmAnalysis::tbSetFloatClick(void)
 {
+    if(TGlobalSettings::Instance().EnableDontClearZedData)
+    {
+       MessageBox("Slave terminal can not perform Float function", "Warning", MB_OK + MB_ICONQUESTION);
+       return;
+    }
 	try
 	{
 		TMMContactInfo TempUserInfo;
@@ -9051,7 +9056,6 @@ void TfrmAnalysis::GetTabCreditReceivedRefunded(Database::TDBTransaction &DBTran
 //------------------------------------------------------------------------------------------------------
 void TfrmAnalysis::GetFloatAmounts(Database::TDBTransaction &DBTransaction,double &floatAmount,AnsiString terminalNamePredicate)
 {
-   AnsiString TerminalName = GetTerminalName();
    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
    IBInternalQuery->SQL->Text =   "SELECT "
                                         "a.z_Key, "
@@ -9061,11 +9065,8 @@ void TfrmAnalysis::GetFloatAmounts(Database::TDBTransaction &DBTransaction,doubl
                                         "REFLOAT_SKIM.TRANSACTION_TYPE "
 								   "FROM ZEDS a "
                                    "left join refloat_skim on a.z_key = REFLOAT_SKIM.Z_KEY  "
-                                   "WHERE  a.TIME_STAMP is null " + terminalNamePredicate ;
-    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
-    {
-     IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
-    }
+                                   "WHERE  a.TIME_STAMP is null  and a.TERMINAL_NAME = :TERMINAL_NAME"  ;
+    IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
     IBInternalQuery->ExecQuery();
     if(IBInternalQuery->RecordCount > 0)
     {
@@ -9560,7 +9561,9 @@ double TfrmAnalysis::GetCashWithdrawal(Database::TDBTransaction &DBTransaction)
     IBWithdrawalQuery->Close();
     IBWithdrawalQuery->SQL->Text = "SELECT SUM(a.AMOUNT) as withdrawal FROM REFLOAT_SKIM a "
                                    "WHERE a.AMOUNT < 0 and a.TRANSACTION_TYPE = 'Withdrawal' and IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' and "
+                                   "a.TERMINAL_NAME = :TERMINAL_NAME and "
                                    "a.Z_KEY in (Select MAX(ZEDS.Z_KEY) FROM ZEDS where ZEDS.TIME_STAMP is null) ";
+    IBWithdrawalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
     IBWithdrawalQuery->ExecQuery();
     cashWithdrawal = IBWithdrawalQuery->FieldByName("withdrawal")->AsDouble;
     return cashWithdrawal;

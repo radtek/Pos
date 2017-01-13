@@ -16,7 +16,7 @@ class TManagerFloat
 {
    private :
 	  TForm *Owner;
-
+      double GetAccumulatedCashSales(Database::TDBTransaction &DBTransaction);
 
  //	  TFloatSkimData FloatSkimData;
    public :
