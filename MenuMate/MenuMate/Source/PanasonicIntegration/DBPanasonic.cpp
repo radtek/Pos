@@ -6,6 +6,7 @@
 #include "DBPanasonic.h"
 #include "MMLogging.h"
 #include "GlobalSettings.h"
+#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "DBAccess"
@@ -13,23 +14,24 @@
 #pragma link "Uni"
 #pragma link "UniProvider"
 #pragma link "MemDS"
-#pragma resource "*.dfm"
 
 //---------------------------------------------------------------------------
-__fastcall TfrmDBPanasonic::TfrmDBPanasonic(TComponent* Owner)
-    : TForm(Owner)
+TDBPanasonic::TDBPanasonic()
 {
-
+    UniDataBaseConnection = new TUniConnection(NULL);
+    SQLServerUniProvider = new TSQLServerUniProvider(NULL);
+    DataSource = new TDataSource(NULL);
+    UniInsertQuery = new TUniQuery(NULL);
+    CoInitialize(NULL);
     if(!UniDataBaseConnection->Connected)
     {
         UniDataBaseConnection->ConnectString = "Provider Name=SQL Server;Data Source="+ TGlobalSettings::Instance().PanasonicServerIP + ";Initial Catalog=TRANSACTIONDB;User ID=TransactSrv;Password=Z7uQmcJJrXMBuFf9Fp7T85jAs7TWuyhf";
     }
 }
-void TfrmDBPanasonic::SendDataToServer(TPanasonicModels &panasonicModels)
+void TDBPanasonic::SendDataToServer(TPanasonicModels &panasonicModels)
 {
     try
     {
-        TUniQuery *UniInsertQuery = new TUniQuery(Owner);
         UniInsertQuery->Connection = UniDataBaseConnection;
         UniInsertQuery->Close();
         UniInsertQuery->SQL->Clear();
@@ -78,7 +80,6 @@ void TfrmDBPanasonic::SendDataToServer(TPanasonicModels &panasonicModels)
         UniInsertQuery->ParamByName("OperatorSignOn")->AsBoolean        =  panasonicModels.OperatorSignOn;
         UniInsertQuery->ParamByName("OperatorSignOff")->AsBoolean       =  panasonicModels.OperatorSignOff;
         UniInsertQuery->Execute();
-        delete UniInsertQuery;
     }
     catch(Exception &E)
 	{
@@ -87,11 +88,10 @@ void TfrmDBPanasonic::SendDataToServer(TPanasonicModels &panasonicModels)
 	}
 }
 //---------------------------------------------------------------------------
-void TfrmDBPanasonic::InsertItemsToTItemList(TPanasonicItemList &itemList)
+void TDBPanasonic::InsertItemsToTItemList(TPanasonicItemList &itemList)
 {
     try
     {
-        TUniQuery *UniInsertQuery = new TUniQuery(Owner);
         UniInsertQuery->Connection = UniDataBaseConnection;
         UniInsertQuery->Close();
         UniInsertQuery->SQL->Clear();
@@ -114,7 +114,6 @@ void TfrmDBPanasonic::InsertItemsToTItemList(TPanasonicItemList &itemList)
         UniInsertQuery->ParamByName("Refund")->AsBoolean                    =  itemList.Refund;
         UniInsertQuery->ParamByName("TrainingMode")->AsBoolean              =  itemList.TrainingMode;
         UniInsertQuery->Execute();
-        delete UniInsertQuery;
     }
     catch(Exception &E)
 	{
@@ -123,11 +122,10 @@ void TfrmDBPanasonic::InsertItemsToTItemList(TPanasonicItemList &itemList)
 	}
 }
 //---------------------------------------------------------------------------
-void TfrmDBPanasonic::InsertProductDetailsInToTProduct(TPanasonicProduct &product)
+void TDBPanasonic::InsertProductDetailsInToTProduct(TPanasonicProduct &product)
 {
     try
     {
-        TUniQuery *UniInsertQuery = new TUniQuery(Owner);
         UniInsertQuery->Connection = UniDataBaseConnection;
         UniInsertQuery->Close();
         UniInsertQuery->SQL->Clear();
@@ -138,7 +136,6 @@ void TfrmDBPanasonic::InsertProductDetailsInToTProduct(TPanasonicProduct &produc
         UniInsertQuery->ParamByName("ProductCode")->AsAnsiString            =  (product.ProductCode).SubString (0,31);
         UniInsertQuery->ParamByName("ProductDescription")->AsAnsiString     =  (product.ProductDescription).SubString (0,31);
         UniInsertQuery->Execute();
-        delete UniInsertQuery;
     }
     catch(Exception &E)
 	{
@@ -147,11 +144,10 @@ void TfrmDBPanasonic::InsertProductDetailsInToTProduct(TPanasonicProduct &produc
 	}
 }
 //---------------------------------------------------------------------------
-void TfrmDBPanasonic::InsertTransactionDBServerInformation(TPanasonicTransactionDBServerInformation &serverInfo)
+void TDBPanasonic::InsertTransactionDBServerInformation(TPanasonicTransactionDBServerInformation &serverInfo)
 {
     try
     {
-        TUniQuery *UniInsertQuery = new TUniQuery(Owner);
         UniInsertQuery->Connection = UniDataBaseConnection;
         UniInsertQuery->Close();
         UniInsertQuery->SQL->Clear();
@@ -188,7 +184,6 @@ void TfrmDBPanasonic::InsertTransactionDBServerInformation(TPanasonicTransaction
             UniInsertQuery->ParamByName("TransactionDBServerVersion")->AsAnsiString =  (serverInfo.TransactionDBServerVersion).SubString (0,37);
             UniInsertQuery->Execute();
         }
-        delete UniInsertQuery;
     }
     catch(Exception &E)
 	{

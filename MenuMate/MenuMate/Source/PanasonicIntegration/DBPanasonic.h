@@ -15,15 +15,16 @@
 #include "MemDS.hpp"
 #include "PanasonicModels.h"
 //---------------------------------------------------------------------------
-class TfrmDBPanasonic : public TForm
+class TDBPanasonic
 {
-__published:	// IDE-managed Components
+private:	// User declarations
     TUniConnection *UniDataBaseConnection;
     TSQLServerUniProvider *SQLServerUniProvider;
     TDataSource *DataSource;
-private:	// User declarations
+    TUniQuery *UniInsertQuery;
+    TComponent *Owner;
 public:		// User declarations
-    __fastcall TfrmDBPanasonic(TComponent* Owner);
+    TDBPanasonic();
     void SendDataToServer(TPanasonicModels &panasonicModels);
     void InsertItemsToTItemList(TPanasonicItemList &itemList);
     void InsertProductDetailsInToTProduct(TPanasonicProduct &product);
