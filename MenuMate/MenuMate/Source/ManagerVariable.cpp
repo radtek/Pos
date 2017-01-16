@@ -3083,10 +3083,6 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                  "Open Cash Drawer after Zed"
                  "Default is False.",
                   vmgPOS, false);
-     SetVarBool(DBTransaction, vmHideReceiptNumberForRefundItem, "Hide Receipt Number when Refund Item",
-                 "Hide Receipt Number when Refund Item"
-                 "Default is False.",
-                  vmgPOS, false);
        SetVarBool(DBTransaction, vmMergeSimilarItem, "Merge Similar item",
                  "Merge Similar item"
                  "Default is True.",
@@ -3174,6 +3170,14 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarBool(DBTransaction,vmUseMemberSubs, "Enable Membership Subscription",
 		"Default is False",
 		vmgPOS, false);
+        SetVarBool(DBTransaction, vmFloatWithdrawFromCash, "Float Withdraw From Cash",
+                 "If this setting is on float withdraw will happen from cash"
+                 "Default is False.",
+                  vmgPOS, false);
+        SetVarStr( DBTransaction, vmCashWithdrawal, "Cash Withdrawal GLCode",
+                "Cash Withdrawal GLCode."
+                "Default is null",
+                vmg3rdPartyInterface, "" );
 	}
 	catch(Exception &E)
 	{

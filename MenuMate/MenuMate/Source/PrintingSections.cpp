@@ -6258,7 +6258,7 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
                  pPrinter->Line->Columns[0]->Text = "VOID";
                  pPrinter->AddLine();
              }
-            if(!TGlobalSettings::Instance().HideReceiptNumberForRefundItem ||
+            if(//!TGlobalSettings::Instance().HideReceiptNumberForRefundItem ||
                 !(PrintJob->Transaction->CreditTransaction))
             {
                 PrintTaxInvoice(PrintJob);

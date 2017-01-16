@@ -91,11 +91,11 @@ TABLE_ROW4_HEADER,                                                            \
 	 </td>                                                                     \
   </tr>"
 
-TABLE_ROW4 , "<tr bgcolor=""#$BFBDBB"">                                        \
+TABLE_ROW4 , "<tr bgcolor=""#$BFBDBB"" width=""100%"">                                        \
 	 <td width=""15%""><b>%ROWTITLE1%</b></td> 						               \
-	 <td width=""25%"">%ROWCONTENT1%</td>			                              \
+	 <td style=""word-break: break-all;word-wrap: break-word;"" width=""35%""><div>%ROWCONTENT1%</div></td>			                              \
 	 <td width=""15%""><b>%ROWTITLE2%</b></td>                                 \
-	 <td width=""25%"">%ROWCONTENT2%</td>		                                 \
+	 <td style=""word-break: break-all;word-wrap: break-word;"" width=""35%"">%ROWCONTENT2%</td>		                                 \
   </tr>"
 
 TABLE_ROW4S , "<tr bgcolor=""#BFBDBB"">                                    \

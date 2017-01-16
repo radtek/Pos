@@ -35,7 +35,7 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
 
     const Currency todays_earnings = 0;
     Currency taxExemptSales = 0;
-    Currency salesTax = 0, serviceCharge = 0, serviceChargeTax = 0, localTax = 0, profitTax = 0, discountAndSurcharge = 0, zeroratedsales = 0, totaldiscount = 0;
+    Currency salesTax = 0, serviceCharge = 0, serviceChargeTax = 0, localTax = 0, profitTax = 0, discountAndSurcharge = 0, zeroratedsales = 0, totaldiscount = 0, cashWithdrawal = 0;
     sales_tax.clear();
     if(IsConsolidatedZed)
     {
@@ -64,6 +64,10 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
         totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName);
         GetDifferentTotalSalesTax(*_dbTransaction, deviceName);
         taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
+        TIBSQL *IBInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
+        cashWithdrawal = dataCalculationUtilities->CalculateCashWithdrawl(IBInternalQuery,deviceName);
+        if(todays_earnings == 0)
+            cashWithdrawal = 0;
     }
 
     if(_globalSettings->ReCalculateTaxPostDiscount)
@@ -75,11 +79,11 @@ void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
     if(_globalSettings->UseBIRFormatInXZReport)
     {
 
-        taxSales = (((todays_earnings - discountAndSurcharge) - (taxExemptSales -zeroratedsales)  - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax)) - zeroratedsales;
+        taxSales = (((todays_earnings - cashWithdrawal - discountAndSurcharge) - (taxExemptSales -zeroratedsales)  - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax)) - zeroratedsales;
     }
     else
     {
-       taxSales = (((todays_earnings - discountAndSurcharge) - taxExemptSales - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax));
+       taxSales = (((todays_earnings - cashWithdrawal - discountAndSurcharge) - taxExemptSales - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax));
     }
 
 

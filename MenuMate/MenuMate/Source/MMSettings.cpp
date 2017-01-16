@@ -356,7 +356,6 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
 	    TGlobalSettings::Instance().IsXeroEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsXeroEnabled, false);
         TGlobalSettings::Instance().IsMYOBEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsMYOBEnabled, false);
         TGlobalSettings::Instance().OpenCashDrawer = TManagerVariable::Instance().GetBool(DBTransaction, vmOpenCashDrawer, false);
-        TGlobalSettings::Instance().HideReceiptNumberForRefundItem = TManagerVariable::Instance().GetBool(DBTransaction, vmHideReceiptNumberForRefundItem, false);
         TGlobalSettings::Instance().MergeSimilarItem = TManagerVariable::Instance().GetBool(DBTransaction, vmMergeSimilarItem, false);
         TGlobalSettings::Instance().IsEnabledPeachTree = TManagerVariable::Instance().GetBool(DBTransaction, vmIsEnabledPeachTree, false);
         TGlobalSettings::Instance().CSVPath = TManagerVariable::Instance().GetStr(DBTransaction, vmCSVPath, "");
@@ -384,6 +383,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
          int mallIndex = TManagerMallSetup::CheckActiveMallExist(DBTransaction);
          if(mallIndex != 0)
             TGlobalSettings::Instance().mallInfo = TManagerMallSetup::LoadActiveMallSettings(DBTransaction);
+        TGlobalSettings::Instance().FloatWithdrawFromCash = TManagerVariable::Instance().GetBool(DBTransaction, vmFloatWithdrawFromCash, false);
+        TGlobalSettings::Instance().CashWithdrawalGLCode = TManagerVariable::Instance().GetStr(DBTransaction, vmCashWithdrawal, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

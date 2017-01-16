@@ -68,7 +68,7 @@ class TfrmAnalysis : public TZForm
 private:	// User declarations
 	__fastcall TfrmAnalysis(TComponent* Owner);
 
-	void UpdateArchive(Database::TDBTransaction &DBTransaction,TMembership *Membership,UnicodeString DeviceName);
+	void UpdateArchive(Database::TDBTransaction &DBTransaction,TMembership *Membership,UnicodeString DeviceName, int zedKey);
 	void __fastcall TfrmAnalysis::VariantDBAssign(TIBXSQLVAR *InData,TIBXSQLVAR *OutData);
 	bool __fastcall TfrmAnalysis::ParamExists(TIBSQL *IBSQL, AnsiString FieldName);
 	//	bool ProcessAccounts();
@@ -172,9 +172,7 @@ private:	// User declarations
 	TPrintFormat &SetupCommonPrintZedFormat(TPrintFormat &pf);
 	void PrintAccumulatedZed(TPrintout &po, const Currency &todays_earnings, Currency &EODValue);
 	Currency GetSiteAccumulatedZed();
-	void UpdateTerminalAccumulatedZed(Database::TDBTransaction &tr, Currency accumulated_total);
 	Currency grand_total_eod;
-	void UpdateTerminalEarnings(Database::TDBTransaction &tr, Currency terminal_earnings);
 	void PrintTaxSummary(TPrintout &po, const Currency &todays_earnings);
 	void PrintServiceChargeSummary(TPrintout &po);
 	void SaveVariable(vmVariables vmVar, int CompName);
@@ -219,11 +217,12 @@ private:	// User declarations
     void AddInvoicePayment(TXeroInvoiceDetail &XeroInvoiceDetail,AnsiString Description,double unitAmount,AnsiString AccountCode,double taxAmount);
     void GetTabCreditReceivedRefunded(Database::TDBTransaction &DBTransaction,double &TabCreditReceived, double &TabRefundReceived,
                                  TDateTime startTime,TDateTime endTime);
-    void GetFloatAmounts(Database::TDBTransaction &DBTransaction,double &floatAmount);
+    void GetFloatAmounts(Database::TDBTransaction &DBTransaction,double &floatAmount,AnsiString terminalNamePredicate);
     AnsiString GetCashGlCode(Database::TDBTransaction &DBTransaction);
     void CompleteDLFMallExport();
     TDateTime GetMinDayArchiveTime(Database::TDBTransaction &DBTransaction, TDateTime PrevZedTime);
     void UpdateZKeyForMallExportSales();
+    double GetCashWithdrawal(Database::TDBTransaction &DBTransaction);
 public:		// User declarations
 	static TLoginSuccess AuthenticateReportsAccess(TReportSource);
 	static const TMMContactInfo &GetLastAuthenticatedUser();
@@ -274,7 +273,7 @@ private:
     void EmailZedReport(int z_key);
     void UpdateMallExportDetails();
     void ClearParkedSale(Database::TDBTransaction &DBTransaction);
-    void UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransaction &DBTransaction, UnicodeString DeviceName);
+    void UpdateArchive(TIBSQL *IBInternalQuery, Database::TDBTransaction &DBTransaction, UnicodeString DeviceName, int zedKey);
     void UpdateStock(bool UpdateingStock);
     void ResetPoints();
     void OpenCashDrawer();

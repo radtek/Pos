@@ -4,6 +4,7 @@
 #include "BaseReportSectionDisplayStrategy.h"
 #include "Printout.h"
 #include "BlindBalanceController.h"
+#include "ReportUtilities.h"
 
 class BlindBalanceCalculationStrategy : public BaseReportSectionDisplayStrategy
 {
@@ -17,8 +18,8 @@ protected:
     bool _isConsolidatedStrategy;
 
 private:
-void LoadBlindBalanceDetailsForNormalZed(TPrintout* printOut, TIBSQL *ibInternalQuery, TBlindBalances balance, AnsiString deviceName);
-
+    void LoadBlindBalanceDetailsForNormalZed(TPrintout* printOut, TIBSQL *ibInternalQuery, TBlindBalances balance, AnsiString deviceName);
+    DataCalculationUtilities* dataCalculationUtilities;
 };
 
 #endif

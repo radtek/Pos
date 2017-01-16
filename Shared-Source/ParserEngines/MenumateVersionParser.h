@@ -82,6 +82,7 @@ namespace MenumateVersionParser
             pv6_33,
             pv6_34,
             pv6_35,
+            pv6_36,
     };
 
     class TApplyParser
@@ -162,6 +163,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_33( TDBControl* const inDBControl );
         PARSER_ERROR apply6_34( TDBControl* const inDBControl );
         PARSER_ERROR apply6_35( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_36( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -842,6 +844,11 @@ namespace MenumateVersionParser
         void Create6_35GeneratorMallExportSettingValues(TDBControl* const inDBControl);
         void UpdateContactIndex_6_35(TDBControl* const inDBControl);
 
+        void upgrade6_36Tables();
+        void update6_36Tables();
+        void AlterTableRefloat_Skim6_36(TDBControl* const inDBControl);
+        void Update6_36TableSCDPWDCustomerDetails(TDBControl* const inDBControl);
+        bool CheckDataTypeOfColumn(TDBControl* const inDBControl);
     }; // class
 } // namespace
 

@@ -451,7 +451,7 @@ public:
     bool IsCloudSyncedForDiscount;
     bool ShowDarkBackground;
     bool OpenCashDrawer;
-    bool HideReceiptNumberForRefundItem;
+    UnicodeString CashWithdrawalGLCode;
     bool MergeSimilarItem;
 
     bool HideTaxInvoice;
@@ -477,6 +477,7 @@ public:
     bool MembershipPaid;
     bool UseMemberSubs;
     TMall mallInfo;
+    bool FloatWithdrawFromCash;
 };
 
 #endif

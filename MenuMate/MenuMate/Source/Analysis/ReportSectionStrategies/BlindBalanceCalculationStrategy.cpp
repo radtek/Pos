@@ -7,6 +7,7 @@ BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTr
 	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings)
 {
     _isMasterBalance = isMasterBalance;
+     dataCalculationUtilities = new DataCalculationUtilities;
     //IsConsolidatedStartegy = false;
 }
 
@@ -15,6 +16,7 @@ BlindBalanceCalculationStrategy::BlindBalanceCalculationStrategy(Database::TDBTr
 	: BaseReportSectionDisplayStrategy(dbTransaction, globalSettings, startTime, endTime)
 {
     _isMasterBalance = isMasterBalance;
+     dataCalculationUtilities = new DataCalculationUtilities;
     //IsConsolidatedStartegy = true;
 }
 
@@ -89,7 +91,18 @@ void BlindBalanceCalculationStrategy::LoadBlindBalanceDetailsForNormalZed(TPrint
 		ibInternalQuery->ExecQuery();
 
 		itBlindBalances->second.SystemBalance = ibInternalQuery->FieldByName("total")->AsCurrency;
-		double tempBalance = itBlindBalances->second.BlindBalance - itBlindBalances->second.SystemBalance;
+		double tempBalance;
+
+        if(itBlindBalances->first == "Cash")
+        {
+            Currency cashWithdrawl =  0.00;
+            cashWithdrawl = dataCalculationUtilities->CalculateCashWithdrawl(ibInternalQuery, deviceName);
+            tempBalance = itBlindBalances->second.BlindBalance - (itBlindBalances->second.SystemBalance + cashWithdrawl);
+        }
+        else
+        {
+            tempBalance = itBlindBalances->second.BlindBalance - itBlindBalances->second.SystemBalance;
+        }
 
 		printOut->PrintFormat->Line->Columns[2]->Text = FormatFloat("0.00", tempBalance);
 		printOut->PrintFormat->AddLine();
@@ -97,3 +110,5 @@ void BlindBalanceCalculationStrategy::LoadBlindBalanceDetailsForNormalZed(TPrint
 		ibInternalQuery->Close();
 	}
 }
+//----------------------------------------------------------------------------------------------------------------------------
+

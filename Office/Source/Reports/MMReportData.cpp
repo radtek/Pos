@@ -745,20 +745,20 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 
 	qrCashup->Close();
 	qrCashup->SQL->Text =
+		"Select  AB.Terminal_Name, UPPER(AB.Pay_Type) Pay_Type,AB.Group_number,	Sum (AB.SubTotal) SubTotal,	cast((Sum (AB.Trans_Count)  )   as  int) Trans_Count "
+	"FROM(	"
 		"Select "
-			"Security.Terminal_Name,"
-			"UPPER(ArcBillPay.Pay_Type) Pay_Type,"
-			"ArcBillPay.Group_number,"
-		 //	"ArcBillPay.Properties,"
-			"Sum (ArcBillPay.SubTotal) SubTotal,"
-
+			"Security.Terminal_Name, "
+			"UPPER(ArcBillPay.Pay_Type) Pay_Type, "
+			"ArcBillPay.Group_number, "
+			"Sum (ArcBillPay.SubTotal) SubTotal, "
          "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
-	"From ArcBill "
-  "inner join Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
-  "inner join ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
-  "Where "
-   "ArcBill.Time_Stamp >= :StartTime and "
-   "ArcBill.Time_Stamp < :EndTime and "
+            "From ArcBill "
+            "inner join Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
+            "inner join ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
+            "Where "
+            "ArcBill.Time_Stamp >= :StartTime and "
+            "ArcBill.Time_Stamp < :EndTime and "
          "ArcBillPay.Properties != 131072 and "
 			"Security.Security_Event = 'Billed By' and "
 			"ArcBillPay.SubTotal <> 0  ";
@@ -771,39 +771,58 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 	}
 	qrCashup->SQL->Text		=	qrCashup->SQL->Text +
 		"Group By "
-			"Security.Terminal_Name,"
-			"ArcBillPay.Tax_Free,"
-			"ArcBillPay.Group_number,"
+			"Security.Terminal_Name, "
+			"ArcBillPay.Tax_Free, "
+			"ArcBillPay.Group_number, "
 			"UPPER(ArcBillPay.Pay_Type) "
-		  //	"ArcBillPay.Properties "
-		"Having "
+		   	"Having "
 			"Count (ArcBillPay.ArcBillPay_Key) > 0 "
-		"Order By "
-			"Security.Terminal_Name Asc, "
-			"ArcBillPay.Tax_Free Desc, "
-			"ArcBillPay.Group_number,"
-			"UPPER(ArcBillPay.Pay_Type) Asc";
-	for (int i=0; i<Terminals->Count; i++)
+
+		 " UNION ALL	"
+        "SELECT a.TERMINAL_NAME, Cast('CASH' as VarChar(50)) Pay_Type,  Cast(0 as Integer) Group_number,   SUM(a.AMOUNT) SubTotal, "
+        "COUNT(a.AMOUNT) Trans_Count FROM REFLOAT_SKIM a WHERE A.TRANSACTION_TYPE='Withdrawal' and a.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' and "
+        "a.Time_Stamp >= :StartTime and "
+        "a.Time_Stamp < :EndTime   "        ;
+    if (Terminals->Count > 0)
+    {
+        qrCashup->SQL->Text	=	qrCashup->SQL->Text + "and (" +
+                                        ParamString(Terminals->Count, "a.TERMINAL_NAME", "TerminalParam") + ")";
+    }
+    qrCashup->SQL->Text		=	qrCashup->SQL->Text +
+    "GROUP BY 1,2,3  "
+
+    ") AB "
+    "GROUP BY 1, 2,3 "
+    "Order By "
+			"1 Asc "    ;
+
+            	for (int i=0; i<Terminals->Count; i++)
 	{
 		qrCashup->ParamByName("TerminalParam" + IntToStr(i))->AsString = Terminals->Strings[i];
 	}
 	qrCashup->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrCashup->ParamByName("EndTime")->AsDateTime		= EndTime;
 
+
 	qrCashupTotal->Close();
 	qrCashupTotal->SQL->Text =
-		"Select "
+
+        "Select  CASHUP_TOTAL.Pay_Type, "
+                "CASHUP_TOTAL.Group_number,	"
+                "Sum (CASHUP_TOTAL.SubTotal) SubTotal, "
+                "cast((Sum (CASHUP_TOTAL.Trans_Count)  )   as  int) Trans_Count "
+	    "FROM "
+		"(Select "
 			"UPPER(ArcBillPay.Pay_Type) Pay_Type,"
 			"ArcBillPay.Group_number,"
-		  //	"ArcBillPay.Properties,"
 			"Sum (ArcBillPay.SubTotal) SubTotal,"
             
          "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
 
         "From ArcBill "
-  "inner join Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
-  "inner join ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
-  "Where "
+  "INNER JOIN Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
+  "INNER JOIN ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
+  "WHERE "
    "ArcBill.Time_Stamp >= :StartTime and "
    "ArcBill.Time_Stamp < :EndTime and "
          "ArcBillPay.Properties != 131072 and "
@@ -819,13 +838,31 @@ void TdmMMReportData::SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrin
 			"ArcBillPay.Tax_Free,"
 			"ArcBillPay.Group_number,"
 			"UPPER(ArcBillPay.Pay_Type)  "
-		   //	"ArcBillPay.Properties "
 		"Having "
 			"Count (ArcBillPay.ArcBillPay_Key) > 0 "
-		"Order By "
-			"ArcBillPay.Tax_Free Desc,"
-			"ArcBillPay.Group_number,"
-			"UPPER(ArcBillPay.Pay_Type) Asc";
+
+       "UNION ALL "
+        "SELECT Cast('CASH' as VarChar(50)) Pay_Type,  "
+                "Cast(0 as Integer) Group_number,   "
+                "SUM(a.AMOUNT) SubTotal, "
+                "COUNT(a.AMOUNT) Trans_Count "
+        "FROM REFLOAT_SKIM a "
+        "WHERE (A.TRANSACTION_TYPE= 'Withdrawal' and a.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T') AND  "
+        "a.Time_Stamp >= :StartTime and "
+        "a.Time_Stamp < :EndTime   ";
+    if (Terminals->Count > 0)
+    {
+        qrCashupTotal->SQL->Text	=	qrCashupTotal->SQL->Text + "and (" +
+                                        ParamString(Terminals->Count, "a.TERMINAL_NAME", "TerminalParam") + ")";
+    }
+    qrCashupTotal->SQL->Text		=	qrCashupTotal->SQL->Text +
+        "GROUP BY 2,1 "
+        ")CASHUP_TOTAL "
+    "GROUP BY CASHUP_TOTAL.Group_number, "
+        "CASHUP_TOTAL.Pay_Type "
+    "Order By "
+         "CASHUP_TOTAL.Group_number ASC, CASHUP_TOTAL.Pay_Type  ";
+
 
 	for (int i=0; i<Terminals->Count; i++)
 	{
@@ -3451,7 +3488,7 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
             "cast(0.00 as numeric(17,4)) PriceExcl, "
             "cast(0.00 as numeric(17,4)) Profit "
 		"From "
-			"Security Left Join Archive on "
+			"Archive Left Join Security on "
 				"Security.Security_Ref = Archive.Security_Ref "
 			"Left Join Contacts on "
 				"Security.User_Key = Contacts.Contacts_Key "
@@ -3522,7 +3559,7 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
              "cast(0.00 as numeric(17,4)) PriceExcl, "
             "cast(0.00 as numeric(17,4)) Profit "
 		"From "
-			"Security Left Join DayArchive on "
+			"DayArchive Left Join Security on "
 				"Security.Security_Ref = DayArchive.Security_Ref "
 			"Left Join Contacts on "
 				"Security.User_Key = Contacts.Contacts_Key "
@@ -3592,7 +3629,7 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
             "cast(0.00 as numeric(17,4)) PriceExcl, "
             "cast(0.00 as numeric(17,4)) Profit "
 		"From "
-			"Security Left Join Orders on "
+			"Orders Left Join Security on "
 				"Security.Security_Ref = Orders.Security_Ref "
               + _taxJoins + ///For selecting tax
 			"Left Join Contacts on "
@@ -3668,7 +3705,7 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
         "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 
       "From "
-         "Security Left Join Archive On "
+         "Archive Left Join Security On "
             "Security.Security_Ref = Archive.Security_Ref "
          "Left Join ArcCategories On "
             "Archive.Category_Key = ArcCategories.Category_Key "
@@ -3725,7 +3762,7 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
          "Sum(DayArchive.Cost * DayArchive.Qty) Cost, "
          "Cast(Sum(abs(DayArchive.QTY ) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
       "From "
-         "Security Left Join DayArchive On "
+         "DayArchive  Left Join Security On "
             "Security.Security_Ref = DayArchive.Security_Ref "
          "Left Join ArcCategories On "
             "DayArchive.Category_Key = ArcCategories.Category_Key "
@@ -3783,7 +3820,7 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
          "Sum(Orders.Cost * Orders.Qty) Cost, "
         +  _selectSalesIncl + //For Selecting salesIncl column
       "From "
-         "Security Left Join Orders On "
+         "Orders  Left Join Security On "
             "Security.Security_Ref = Orders.Security_Ref "
          + _taxJoins + ///For selecting tax
          "Left Join ArcCategories On "
@@ -3848,7 +3885,7 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
 		"cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE + Archive.DISCOUNT_WITHOUT_TAX) )  - Sum(Archive.Cost) as Numeric(15,2)) Profit, "
         "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
      "From "
-         "Security Left Join Archive On "
+         "Archive  Left Join Security On "
             "Security.Security_Ref = Archive.Security_Ref "
      "LEFT JOIN ( "
                  "SELECT "
@@ -3900,7 +3937,7 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
           "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 
       "From "
-         "Security Left Join DayArchive On "
+         "DayArchive  Left Join Security On "
             "Security.Security_Ref = DayArchive.Security_Ref "
           "LEFT JOIN ( "
 				 "SELECT "
@@ -3951,7 +3988,7 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
 		 "cast(Sum((Orders.Qty * Orders.BASE_PRICE+ Orders.Discount) ) - Sum(Orders.Cost) as Numeric(15,2)) Profit, "
           +  _selectSalesIncl + //For Selecting salesIncl column
       "From "
-         "Security Left Join Orders On "
+         "Orders  Left Join Security On "
             "Security.Security_Ref = Orders.Security_Ref "
          "Left Join Contacts On "
             "Security.User_Key = Contacts.Contacts_Key "
@@ -4489,7 +4526,7 @@ void TdmMMReportData::SetupPatronTypes(TDateTime StartTime, TDateTime EndTime,TS
 			"PatronCount.Patron_Count,"
 			"ArcBill.Total "
 		"From "
-			"Security Left  Join ArcBill On "
+			"ArcBill Left  Join Security On  "
 				"Security.Security_Ref = ArcBill.Security_Ref "
 			"Right Join PatronCount On "
 				"ArcBill.ArcBill_key = PatronCount.ArcBill_key "
@@ -4512,7 +4549,7 @@ void TdmMMReportData::SetupPatronTypes(TDateTime StartTime, TDateTime EndTime,TS
 			"DayPatronCount.Patron_Count,"
 			"DayArcBill.Total "
 		"From "
-			"Security Left Join DayArcBill On "
+			" DayArcBill Left Join Security On "
 				"Security.Security_Ref = DayArcBill.Security_Ref "
 			"Right Join DayPatronCount On "
 				"DayArcBill.ArcBill_key = DayPatronCount.ArcBill_key "
@@ -5004,12 +5041,12 @@ void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
     "    ArcBillPay.ARCBILL_KEY,                                                                                                       "
     "    ArcBillPay.PAY_TYPE,                                                                                                          "          
     "    cast((100* COALESCE(sum(ArcBillPay.SUBTOTAL),0))/                                                                             "
-    "    Sum(ArcBill.TOTAL)                                                                                                            "
+    "    ArcBill.TOTAL                                                                                                            "
     "     as numeric(17, 4)) AS PayTypeTotal                                                                                           "                 
     "    FROM ArcBillPay                                                                                                               "                   
     "    left join ArcBill on ArcBill.ARCBILL_KEY=ArcBillPay.ARCBILL_KEY                                                               "             
-    "    where  ArcBillPay.SUBTOTAL > 0  and ArcBillPay.CASH_OUT<>'T'                                                                   "
-    "    group by ArcBillPay.PAY_TYPE ,ArcBillPay.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key            "
+    "    where  ArcBillPay.SUBTOTAL > 0  " //and ArcBillPay.CASH_OUT<>'T'                                                                   "
+    "    group by ArcBillPay.PAY_TYPE ,ArcBillPay.ARCBILL_KEY, ArcBill.TOTAL)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key            "
 	"	Where                                                                                                                          "
 	"		Security.Security_Event = 'Billed By' And                                                                                  "
     "       ArcBillPay.SubTotal>0   and "
@@ -5062,12 +5099,12 @@ void TdmMMReportData::SetupBillPayments(AnsiString InvoiceNumber)
     "    DAYARCBILLPAY.ARCBILL_KEY,                                                                                                       "
     "    DAYARCBILLPAY.PAY_TYPE,                                                                                                          "
     "    cast((100* COALESCE(sum(DAYARCBILLPAY.SUBTOTAL),0))/                                                                             "
-    "    Sum(DAYARCBILL.TOTAL)                                                                                                            "
+    "    DAYARCBILL.TOTAL                                                                                                            "
     "     as numeric(17, 4)) AS PayTypeTotal                                                                                              "
     "    FROM DAYARCBILLPAY                                                                                                               "
     "    left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=DAYARCBILLPAY.ARCBILL_KEY                                                         "
-    "    where  DAYARCBILLPAY.SUBTOTAL > 0  and DAYARCBILLPAY.CASH_OUT<>'T'                                                                "
-    "    group by DAYARCBILLPAY.PAY_TYPE ,DAYARCBILLPAY.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key         "
+    "    where  DAYARCBILLPAY.SUBTOTAL > 0  " //and DAYARCBILLPAY.CASH_OUT<>'T'                                                                "
+    "    group by DAYARCBILLPAY.PAY_TYPE ,DAYARCBILLPAY.ARCBILL_KEY, DAYARCBILL.TOTAL)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key         "
 	"	Where                                                                             "
 	"		Security.Security_Event = 'Billed By' And                                     "
     "       DayArcBillPay.SubTotal>0   and "
@@ -5336,7 +5373,9 @@ void TdmMMReportData::SetupSkimming( TDateTime StartTime, TDateTime EndTime)
                 "Refloat_Skim left join zeds on refloat_skim.Z_KEY = zeds.z_key "
             "Where "
                 "Refloat_Skim.Time_Stamp >= :StartTime And "
-                "Refloat_Skim.Time_Stamp < :EndTime "
+                "Refloat_Skim.Time_Stamp < :EndTime and "
+                "Refloat_Skim.REFLOAT_SKIM_KEY NOT IN( SELECT REFLOAT_SKIM_KEY FROM REFLOAT_SKIM WHERE (REFLOAT_SKIM.TRANSACTION_TYPE = 'Withdrawal' AND REFLOAT_SKIM.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T') "
+                                                    "and Refloat_Skim.Time_Stamp >= :StartTime And Refloat_Skim.Time_Stamp < :EndTime) "
             "Order by 3, 4;";
 
 
@@ -5438,12 +5477,12 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
     "    ARCBILLPAY.ARCBILL_KEY,                                                                                                          "
     "    ARCBILLPAY.PAY_TYPE,                                                                                                             "
     "    cast((100* COALESCE(sum(ARCBILLPAY.SUBTOTAL),0))/                                                                                "
-    "    Sum(ArcBill.TOTAL)                                                                                                               "
+    "    ArcBill.TOTAL                                                                                                               "
     "     as numeric(17, 4)) AS PayTypeTotal                                                                                              "
     "    FROM ARCBILLPAY                                                                                                                  "
     "    left join ArcBill on ArcBill.ARCBILL_KEY=ARCBILLPAY.ARCBILL_KEY                                                                  "
-    "    where  ARCBILLPAY.SUBTOTAL > 0  and ARCBILLPAY.CASH_OUT<>'T'                                                                      "
-    "    group by ARCBILLPAY.PAY_TYPE ,ARCBILLPAY.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key               "
+    "    where  ARCBILLPAY.SUBTOTAL > 0 " ///and ARCBILLPAY.CASH_OUT<>'T'                                                                      "
+    "    group by ARCBILLPAY.PAY_TYPE ,ARCBILLPAY.ARCBILL_KEY, ArcBill.TOTAL)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key               "
 	"	Where                                                                                                                             "
     "     ARCBILLPAY.SubTotal>0   and                                                                                                     "
 	"	ArcBill.Time_Stamp >= :StartTime And                                                                                              "
@@ -5519,13 +5558,13 @@ void TdmMMReportData::SetupBillPayments(TDateTime StartTime, TDateTime EndTime, 
     "    DAYARCBILLPAY.ARCBILL_KEY,                                                                                                  "              
     "    DAYARCBILLPAY.PAY_TYPE,                                                                                                     "
     "    cast((100* COALESCE(sum(DAYARCBILLPAY.SUBTOTAL),0))/                                                                        "     
-    "    Sum(DAYARCBILL.TOTAL)                                                                                                       "     
+    "    DAYARCBILL.TOTAL                                                                                                      "
     "     as numeric(17, 4)) AS PayTypeTotal                                                                                         "
     "    FROM DAYARCBILLPAY                                                                                                          "                       
     "    left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=DAYARCBILLPAY.ARCBILL_KEY                                                    "
-    "    where  DAYARCBILLPAY.SUBTOTAL > 0  and DAYARCBILLPAY.CASH_OUT<>'T'                                                           "
+    "    where  DAYARCBILLPAY.SUBTOTAL > 0   " //and DAYARCBILLPAY.CASH_OUT<>'T'                                                           "
     "                                                                                                                                "
-    "    group by DAYARCBILLPAY.PAY_TYPE ,DAYARCBILLPAY.ARCBILL_KEY)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key    "  
+    "    group by DAYARCBILLPAY.PAY_TYPE ,DAYARCBILLPAY.ARCBILL_KEY, DAYARCBILL.TOTAL)paymentPercent on paymentPercent.arcbill_key = ab.arcbill_key    "  
 	"	Where                                                                                                                        "
     "     DayArcBillPay.SubTotal>0   and                                                                                             "
 	"	DayArcBill.Time_Stamp >= :StartTime And                                                                                        "
@@ -12453,7 +12492,26 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
     qrAccumulatedTotals->ParamByName("EndTime")->AsDateTime = EndTime;
 
     qrPaymentTotal->Close();
-    qrPaymentTotal->SQL->Text = "Select ";
+    qrPaymentTotal->SQL->Text = "SELECT ";
+
+    if (Locations)
+    {
+        qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+        "SALES_SUMMARY_PAYMENT.LOCATION, ";
+    }
+    else
+    {
+        qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+        "CAST('ALL LOCATION' As Varchar(25)) LOCATION,";
+    }
+
+    qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+
+          "SALES_SUMMARY_PAYMENT.PAYMENTGROUP_NAME, "
+          "SALES_SUMMARY_PAYMENT.PAYMENT_NAME, "
+          "CAST(SUM(SALES_SUMMARY_PAYMENT.SUBTOTAL) AS NUMERIC(17,4)) SUBTOTAL "
+    "FROM "
+    "(Select ";
 
     if (Locations)
     {
@@ -12484,6 +12542,36 @@ void TdmMMReportData::SetupSalesSummaryB(TDateTime StartTime, TDateTime EndTime,
         qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
         ", ARCBILL.BILLED_LOCATION ";
     }
+
+    qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+
+    "UNION ALL "
+            "SELECT ";
+    if (Locations)
+    {
+        qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+        "LOCATIONS.NAME BILLED_LOCATION,";
+    }
+    else
+    {
+        qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+        "CAST('ALL LOCATION' As Varchar(25)) LOCATION,";
+    }
+
+    qrPaymentTotal->SQL->Text = qrPaymentTotal->SQL->Text +
+
+        "Cast('' as VarChar(25)) PAYMENTGROUP_NAME, "
+        "Cast('CASH' as VarChar(50)) PAYMENT_NAME, "
+        "cast(SUM(a.AMOUNT) as numeric(17,4)) SubTotal "
+
+     "FROM REFLOAT_SKIM a "
+          "LEFT JOIN DEVICES ON a.TERMINAL_NAME = DEVICES.DEVICE_NAME "
+          "LEFT JOIN LOCATIONS ON DEVICES.LOCATION_KEY = LOCATIONS.LOCATION_KEY  "
+     "WHERE (A.TRANSACTION_TYPE='Withdrawal' and a.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T') "
+            "AND A.TIME_STAMP BETWEEN :StartTime AND :EndTime "
+       "GROUP BY 1 ) SALES_SUMMARY_PAYMENT "
+    "GROUP BY 2,3,1 ";
+       
     qrPaymentTotal->ParamByName("StartTime")->AsDateTime = StartTime;
     qrPaymentTotal->ParamByName("EndTime")->AsDateTime = EndTime;
 
@@ -13812,7 +13900,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 
 			"cast(Sum(Archive.Cost * Archive.Qty) as numeric(17, 4))  Cost "
 		"From "
-			"Security Left Join ArcBill on "
+			"ArcBill  Left Join Security on "
 				"Security.Security_Ref = ArcBill.Security_Ref "
 			"Left Join Archive on "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
@@ -13945,7 +14033,7 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"  Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Orders_Total ,	"
 			"Max(ArcBill.Patron_Count) Patron_Count "
 		"From "
-			"Security Left Join ArcBill on "
+			"ArcBill  Left Join Security on "
 				"Security.Security_Ref = ArcBill.Security_Ref "
 			"Left Join Archive on "
 				"ArcBill.ArcBill_Key = Archive.ArcBill_Key "
@@ -14091,11 +14179,12 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 			"Sum(Archive.Qty) Item_Count,"
 			"cast(Sum(Archive.Qty * Archive.PRICE_ADJUST - Archive.Qty * Archive.PRICE_LEVEL1) as numeric(17, 4)) Total "
 		"From "
-			"Security Left Join Archive On "
+			"Archive  Left Join Security On "
 				"Security.Security_Ref = Archive.Security_Ref "
          "Left Join ARCBILL On "
 				 " Archive.ArcBill_Key=ArcBill.ArcBill_Key "
 	"Where "
+            "Archive.Order_Type != 2 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
 			"Archive.TIME_STAMP_BILLED < :EndTime and "
 			"Security.Security_Event = 'Price Adjust' and "
@@ -14733,8 +14822,26 @@ void TdmMMReportData::BillTendersByTerminal(TDateTime StartTime, TDateTime EndTi
 void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TStrings *Locations, TStrings *Terminals)
 {
 
+    AnsiString cashWithdrawlSubQuery =
+                "Cast('CASH' as VarChar(50)) Pay_Type,  "
+                "Cast(0 as Integer) Group_number,   "
+                "SUM(a.AMOUNT) SubTotal, "
+                "LOCATIONS.NAME BILLED_LOCATION, "
+                "COUNT(a.AMOUNT) Trans_Count "
+            "FROM REFLOAT_SKIM a "
+                "LEFT JOIN DEVICES ON a.TERMINAL_NAME = DEVICES.DEVICE_NAME  "
+                "LEFT JOIN LOCATIONS ON DEVICES.LOCATION_KEY = LOCATIONS.LOCATION_KEY "
+            "WHERE (A.TRANSACTION_TYPE='Withdrawal' and a.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T') and "
+                "a.Time_Stamp >= :StartTime and "
+                "a.Time_Stamp < :EndTime   ";
+
 	qrCashup->Close();
 	qrCashup->SQL->Text =
+    "Select  CASHUP.Terminal_Name, UPPER(CASHUP.Pay_Type) Pay_Type, "
+    "CASHUP.Group_number,	Sum (CASHUP.SubTotal) SubTotal,	"
+    "CASHUP.BILLED_LOCATION, "
+    "cast((Sum (CASHUP.Trans_Count)  )   as  int) Trans_Count "
+	"FROM(	"
 		"Select "
 			"Security.Terminal_Name,"
 			"UPPER(ArcBillPay.Pay_Type) Pay_Type,"
@@ -14745,9 +14852,9 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
          "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
 
 		"From "
-			"(Security Left Outer Join ArcBill on "
-			"Security.Security_Ref = ArcBill.Security_Ref) "
-			"Left Outer Join ArcBillPay on "
+			"(ArcBill INNER JOIN Security  on "
+			" ArcBill.Security_Ref = Security.Security_Ref) "
+			" INNER JOIN ArcBillPay on "
 			"ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
 		"Where "
 			"ARCBILL.Time_Stamp >= :StartTime and "
@@ -14775,12 +14882,30 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
          "ARCBILL.BILLED_LOCATION "
 		"Having "
 			"Count (ArcBillPay.ArcBillPay_Key) > 0 "
-		"Order By "
-			"Security.Terminal_Name Asc, "
-			"ArcBillPay.Tax_Free Desc, "
-			"ArcBillPay.Group_number,"
-         "ARCBILL.BILLED_LOCATION, "
-			"UPPER(ArcBillPay.Pay_Type)  Asc";
+
+         " UNION ALL "
+         " SELECT a.TERMINAL_NAME, ";
+
+        qrCashup->SQL->Text	=	qrCashup->SQL->Text + cashWithdrawlSubQuery;
+
+    if (Terminals->Count > 0)
+    {
+        qrCashup->SQL->Text	=	qrCashup->SQL->Text + "and (" +
+                                    ParamString(Terminals->Count, "a.TERMINAL_NAME", "TerminalParam") + ")";
+    }
+    if (Locations && Locations->Count > 0)
+    {
+        qrCashup->SQL->Text	=	qrCashup->SQL->Text + "and (" +
+                                        ParamString(Locations->Count, "LOCATIONS.NAME", "LocationParam") + ")";
+    }
+	qrCashup->SQL->Text		=	qrCashup->SQL->Text +
+    
+    " GROUP BY 5,3,1   "
+    ") CASHUP "
+    
+    "GROUP BY 1, 3,2,5 "
+    "Order By "
+			"2,1 asc,5  "    ;
 	for (int i=0; i<Terminals->Count; i++)
 	{
 		qrCashup->ParamByName("TerminalParam" + IntToStr(i))->AsString = Terminals->Strings[i];
@@ -14798,19 +14923,23 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 
 	qrCashupTotal->Close();
 	qrCashupTotal->SQL->Text =
-		"Select "
-			"UPPER(ArcBillPay.Pay_Type) Pay_Type,"
-			"ArcBillPay.Group_number,"
-		   //	"ArcBillPay.Properties,"
-			"Sum (ArcBillPay.SubTotal) SubTotal,"
-			"cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count ,"
-         "ARCBILL.BILLED_LOCATION "
 
-		"From "
-			"(Security Left Outer Join ArcBill on "
-			"Security.Security_Ref = ArcBill.Security_Ref) "
-			"Left Outer Join ArcBillPay on "
-			"ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
+        "Select  CASHUP_TOTAL.Pay_Type, "
+                "CASHUP_TOTAL.Group_number,	"
+                "Sum (CASHUP_TOTAL.SubTotal) SubTotal, "
+                "cast((Sum (CASHUP_TOTAL.Trans_Count)  )   as  int) Trans_Count, "
+                "CASHUP_TOTAL.BILLED_LOCATION "
+	    "FROM "
+		"(Select "
+			"UPPER(ArcBillPay.Pay_Type) Pay_Type, "
+			"ArcBillPay.Group_number,"
+			"Sum (ArcBillPay.SubTotal) SubTotal,"
+            "ARCBILL.BILLED_LOCATION, "
+            "cast(Count (distinct ArcBillPay.ArcBill_Key) as int) Trans_Count "
+
+         "From ArcBill "
+          "INNER JOIN Security on Security.SECURITY_REF=ARCBILL.SECURITY_REF "
+          "INNER JOIN ARCBILLPAY on ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
 		"Where "
 			"ARCBILL.Time_Stamp >= :StartTime and "
 			"ARCBILL.Time_Stamp < :EndTime and "
@@ -14832,15 +14961,33 @@ void TdmMMReportData::SetupCashupLT(TDateTime StartTime, TDateTime EndTime,  TSt
 			"ArcBillPay.Tax_Free,"
 			"ArcBillPay.Group_number,"
 			"UPPER(ArcBillPay.Pay_Type),"
-		   //	"ArcBillPay.Properties, "
          "ARCBILL.BILLED_LOCATION "
 		"Having "
-			"Count (ArcBillPay.ArcBillPay_Key) > 0 "
-		"Order By "
-			"ArcBillPay.Tax_Free Desc,"
-			"ArcBillPay.Group_number,"
-			"UPPER(ArcBillPay.Pay_Type) Asc, "
-         "ARCBILL.BILLED_LOCATION " ;
+			"Count (ArcBillPay.ArcBillPay_Key) > 0 " 
+
+    " UNION ALL "
+    " SELECT ";
+
+        qrCashupTotal->SQL->Text	=	qrCashupTotal->SQL->Text + cashWithdrawlSubQuery;
+
+    if (Terminals->Count > 0)
+    {
+        qrCashupTotal->SQL->Text	=	qrCashupTotal->SQL->Text + "and (" +
+                                    ParamString(Terminals->Count, "a.TERMINAL_NAME", "TerminalParam") + ")";
+    }
+    if (Locations && Locations->Count > 0)
+    {
+        qrCashupTotal->SQL->Text	=	qrCashupTotal->SQL->Text + "and (" +
+                                        ParamString(Locations->Count, "LOCATIONS.NAME", "LocationParam") + ")";
+    }
+	qrCashupTotal->SQL->Text		=	qrCashupTotal->SQL->Text +
+    
+    " GROUP BY 4,2,1    "
+    ") CASHUP_TOTAL "
+    
+    "GROUP BY 1,2,5 "
+    "Order By "
+			"2,1 asc,5 "    ;
 
 	for (int i=0; i<Terminals->Count; i++)
 	{
@@ -15163,13 +15310,18 @@ void TdmMMReportData::SetupCheckRemoval(TDateTime StartTime, TDateTime EndTime) 
 		qrDSRSurcharge->ParamByName("StartTime")->AsDateTime	= StartTime;
 		qrDSRSurcharge->ParamByName("EndTime")->AsDateTime	= EndTime;
 
-		qrDSRPay->Close();
+	qrDSRPay->Close();
 		qrDSRPay->SQL->Text =
-		"select  "
+		"select Tabletemp.PAYMENT_NAME,Sum(Tabletemp.SUBTOTAL) SUBTOTAL from ( "
+       "select  "
 		"UPPER(ARCBILLPAY.PAY_TYPE) PAYMENT_NAME, cast(SUM(ARCBILLPAY.SUBTOTAL)as numeric(17,4)) SUBTOTAL  "
 		"FROM ARCBILLPAY inner JOIN ARCBILL ON ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY inner join security on security.SECURITY_REF=ARCBILL.SECURITY_REF "
 		"WHERE ArcBillPay.Properties != 131072 and Security.Security_Event = 'Billed By' and ARCBILL.TIME_STAMP >=:StartTime AND ARCBILL.TIME_STAMP <:EndTime "
-		"GROUP BY UPPER(ARCBILLPAY.PAY_TYPE) ";
+		"GROUP BY UPPER(ARCBILLPAY.PAY_TYPE) " 
+		"union all "
+		"SELECT  Cast('CASH' as VarChar(50)) PAYMENT_NAME, SUM(a.AMOUNT) SubTotal FROM REFLOAT_SKIM a "
+		 "WHERE A.TRANSACTION_TYPE='Withdrawal'  and a.TIME_STAMP >=:StartTime AND a.TIME_STAMP <:EndTime and a.IS_FLOAT_WITHDRAWN_FROM_CASH = 'T' GROUP BY 1 "
+		" ) Tabletemp group by 1 "       ;
 		qrDSRPay->ParamByName("StartTime")->AsDateTime	= StartTime;
 		qrDSRPay->ParamByName("EndTime")->AsDateTime	= EndTime;
 
@@ -16164,49 +16316,49 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
              "select  "
                      "cast ( 'Name Of Tax Payer' as varchar(30)) Header, "
                      "cast ( '" + nameOfTaxPayer + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
              "UNION ALL "
              "select  "
                       "cast ( 'Address Of Tax Payer' as varchar(30)) Header, "
                      "cast ( '" + addressOfTaxPayer + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
              "UNION ALL "
              "select  "
                       "cast ( 'Tin No.' as varchar(30)) Header, "
                      "cast ( '" + tinNumber + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
             "UNION ALL "
              "select  "
                       "cast ( 'Machine Name' as varchar(30)) Header, "
                      "cast ( '" + dmMMData->GetTerminalName() + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
             "UNION ALL "
              "select  "
                       "cast ( 'Software Name & Version No.' as varchar(30)) Header, "
                      "cast ( 'Menumate POS V6' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
               "UNION ALL "
              "select  "
                       "cast ( 'Serial Number' as varchar(30)) Header, "
                      "cast ( '" + serialNo + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
              "UNION ALL "
              "select  "
                       "cast ( 'User ID' as varchar(30)) Header, "
                      "cast ( '" + frmLogin->CurrentUser.UserID + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data "
              "UNION ALL "
              "select  "
                       "cast ( 'Date & Time Generated' as varchar(30)) Header, "
                      "cast ( '" + Now().FormatString("ddddd 'at' hh:nn") + "' as varchar(50)) Data "
-                     "from Arcbill "
+                     "from VERSIONHISTORY "
                      "GROUP BY Header, Data " ;
 
      qrSalesSummaryD->Close();
@@ -16310,9 +16462,9 @@ void TdmMMReportData::SetupSalesSummaryD(TDateTime StartTime, TDateTime EndTime)
                         "ARCORDERTAXES.ARCHIVE_KEY NOT IN (SELECT a.ARCHIVE_KEY FROM ARCORDERDISCOUNTS a WHERE (A.DISCOUNT_GROUPNAME = 'Senior Citizen' AND A.DISCOUNTED_VALUE <> 0) OR (A.DISCOUNT_GROUPNAME = 'Person with Disability'))))zero_rated on ARCHIVE.ARCHIVE_KEY = zero_rated.archive_key "
         "left join(select cast(sum(coalesce(ARCBILLPAY.ROUNDING,0)) as numeric(17,4))rounding_amount, ARCBILL.Z_KEY from ARCBILLPAY inner join ARCBILL on ARCBILLPAY.ARCBILL_KEY = ARCBILL.ARCBILL_KEY "
                     "group by ARCBILL.Z_KEY)ROUNDING on ZEDS.Z_KEY = rounding.z_key "
-        "LEFT JOIN( SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY FROM ARCBILL where ARCBILL.TIME_STAMP IN(SELECT    MIN(ARCBILL.TIME_STAMP) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ) BEGINV ON BEGINV.Z_KEY = ARCBILL.Z_KEY "
-        "LEFT JOIN( SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY FROM ARCBILL where ARCBILL.TIME_STAMP IN(SELECT    MAX(ARCBILL.TIME_STAMP) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ) ENDINV ON ENDINV.Z_KEY = ARCBILL.Z_KEY "
-        "Where "
+      "LEFT JOIN(SELECT ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY  FROM ARCBILL right join (SELECT    MIN(ARCBILL.TIME_STAMP) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ab on ARCBILL.TIME_STAMP=ab.min_ARCBILL_KEY    ) BEGINV ON BEGINV.Z_KEY = ARCBILL.Z_KEY "
+"LEFT JOIN(  SELECT  ARCBILL.INVOICE_NUMBER, ARCBILL.Z_KEY  FROM ARCBILL right join (SELECT    max(ARCBILL.TIME_STAMP) min_ARCBILL_KEY  FROM ARCBILL GROUP BY ARCBILL.Z_KEY) ab on ARCBILL.TIME_STAMP=ab.min_ARCBILL_KEY  ) ENDINV ON ENDINV.Z_KEY = ARCBILL.Z_KEY "
+  "Where "
                         "((   "
                      "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
                      "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary')) "
