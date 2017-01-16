@@ -40,14 +40,24 @@ void TWeightStreamStdTypeA::GetWeight(TWeight &Weight)
     logList->SaveToFile(ExtractFilePath(Application->ExeName)+ "WeightLog.txt");
     delete logList;
 
-    UnicodeString WeightStr = UnformattedWeightStr.SubString(UnformattedWeightStr.Pos("\r")+1,7);
+//    UnicodeString WeightStr = UnformattedWeightStr.SubString(UnformattedWeightStr.Pos("\r")+1,7);
+    UnicodeString WeightStr = UnformattedWeightStr.SubString(UnformattedWeightStr.Pos(".")-3,7);
     double dblWeight = StrToFloatDef(WeightStr.Trim(), -1);
     if (dblWeight == -1)
     {
-		Weight.SetWeight_Invalid(dblWeight);
+        if(TDeviceRealTerminal::Instance().Scales->Counter <= 2)
+        {
+            TDeviceRealTerminal::Instance().Scales->Counter++;
+        }
+        else if(TDeviceRealTerminal::Instance().Scales->Counter >= 3)
+        {
+            TDeviceRealTerminal::Instance().Scales->Counter = 0;
+            Weight.SetWeight_Invalid(dblWeight);
+        }
     }
     else
     {
+        TDeviceRealTerminal::Instance().Scales->Counter = 0;
         RecentWeightsList.insert(RecentWeightsList.begin(), dblWeight);
         if (RecentWeightsList.size() > 3)
         {
