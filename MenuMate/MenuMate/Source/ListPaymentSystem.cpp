@@ -66,6 +66,7 @@
 #include "StringTools.h"
 #include "PointsRulesSetUtils.h"
 #include "EstanciaMall.h"
+//#include "PanasonicAdapter.h"
 #include "PanasonicThread.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
@@ -5997,3 +5998,12 @@ void TListPaymentSystem::CheckSubscription( TPaymentTransaction &PaymentTransact
     }
 }
 //-------------------------------------------------------------------------------------
+UnicodeString TListPaymentSystem::PrepareLastReceiptDataForPanasonic(TStringList *_receipt)
+{
+    UnicodeString _lastreceipt = "";
+    for(int i = 0; i < _receipt->Count; i++)
+    {
+       _lastreceipt += _receipt->Strings[i] + '\n';
+    }
+    return _lastreceipt;
+}

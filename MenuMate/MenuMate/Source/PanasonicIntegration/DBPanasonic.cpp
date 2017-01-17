@@ -6,7 +6,6 @@
 #include "DBPanasonic.h"
 #include "MMLogging.h"
 #include "GlobalSettings.h"
-#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "DBAccess"

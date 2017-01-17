@@ -3865,6 +3865,10 @@ void TfrmMaintain::EnablePanasonicIntegration()
         else
         {
             keepFormAlive = false;
+            if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP == "")
+            {
+                TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
+            }
         }
         dbTransaction.Commit();
     }
@@ -3887,46 +3891,53 @@ void TfrmMaintain::SaveServerIp(Database::TDBTransaction &dbTransaction)
 //-----------------------------------------------------------------------------------------------------------
 void TfrmMaintain::SaveEnabledState(Database::TDBTransaction &dbTransaction)
 {
-    std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-    TVerticalSelection Item;
-    Item.Title = "Cancel";
-    Item.Properties["Color"] = "0x000098F5";
-    Item.Properties["FontColor"] = IntToStr(clWhite);;
-    Item.CloseSelection = true;
-    SelectionForm1->Items.push_back(Item);
-
-    TVerticalSelection Item1;
-    Item1.Title = "Enable";
-    Item1.Properties["Action"] = IntToStr(1);
-    Item1.Properties["Color"] = IntToStr(clGreen);
-    Item1.CloseSelection = true;
-    SelectionForm1->Items.push_back(Item1);
-
-    TVerticalSelection Item2;
-    Item2.Title = "Disable";
-    Item2.Properties["Action"] = IntToStr(2);
-    Item2.Properties["Color"] = IntToStr(clRed);
-    Item2.CloseSelection = true;
-    SelectionForm1->Items.push_back(Item2);
-
-    SelectionForm1->ShowModal();
-    TVerticalSelection SelectedItem1;
-
-     if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+    if(TGlobalSettings::Instance().PanasonicServerIP != "")
     {
-        int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
-        switch(Action)
-        {
-            case 1 :
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
 
-                TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = true;
-                break;
-            case 2 :
-                TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
-                break;
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.Properties["FontColor"] = IntToStr(clWhite);;
+        Item.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item);
+
+        TVerticalSelection Item1;
+        Item1.Title = "Enable";
+        Item1.Properties["Action"] = IntToStr(1);
+        Item1.Properties["Color"] = IntToStr(clGreen);
+        Item1.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item1);
+
+        TVerticalSelection Item2;
+        Item2.Title = "Disable";
+        Item2.Properties["Action"] = IntToStr(2);
+        Item2.Properties["Color"] = IntToStr(clRed);
+        Item2.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item2);
+
+        SelectionForm1->ShowModal();
+        TVerticalSelection SelectedItem1;
+
+         if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+            switch(Action)
+            {
+                case 1 :
+
+                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = true;
+                    break;
+                case 2 :
+                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
+                    break;
+            }
+            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
         }
-        TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
+    }
+    else
+    {
+        MessageBox("Please Set Server IP First.", "Error", MB_OK + MB_ICONERROR);
     }
 }
 

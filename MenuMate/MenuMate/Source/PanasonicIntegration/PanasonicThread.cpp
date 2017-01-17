@@ -34,21 +34,20 @@ void  __fastcall TPanasonicThread::Execute()
 	}
 }
 //------------------------------------------------------------------------------
-void TPanasonicThread::GetContactIdAndSiteId(Database::TDBTransaction &dbTransaction, int contactKey)
+UnicodeString TPanasonicThread::GetMenmberName(Database::TDBTransaction &dbTransaction, int contactKey)
 {
-    long Retval;
+    UnicodeString Retval = "";
     TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
     IBInternalQuery->Close();
     try
 	{
-        IBInternalQuery->SQL->Text = "SELECT a.CONTACT_ID,a.SITE_ID FROM CONTACTS a where a.CONTACTS_KEY = :CONTACTS_KEY ";
+        IBInternalQuery->SQL->Text = "SELECT a.SITE_ID, a.FIRST_NAME, a.LAST_NAME FROM CONTACTS a where a.CONTACTS_KEY = :CONTACTS_KEY ";
         IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
         IBInternalQuery->ExecQuery();
 
         if(IBInternalQuery->RecordCount)
         {
-            contactId = IBInternalQuery->FieldByName("CONTACT_ID")->AsInteger;
-            siteId = IBInternalQuery->FieldByName("SITE_ID")->AsInteger;
+            Retval = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
         }
     }
     catch(Exception &E)
@@ -56,8 +55,28 @@ void TPanasonicThread::GetContactIdAndSiteId(Database::TDBTransaction &dbTransac
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+    return Retval;
 }
 //----------------------------------------------------------------------------------------------------------------------
+int TPanasonicThread::GetSiteId(Database::TDBTransaction &dbTransaction)
+{
+    int Retval;
+    TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+    IBInternalQuery->Close();
+    try
+	{
+        IBInternalQuery->SQL->Text = "SELECT INTEGER_VAL FROM VARSPROFILE where VARSPROFILE.VARIABLES_KEY = :VARIABLES_KEY";
+        IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 9;
+        IBInternalQuery->ExecQuery();
+        Retval = IBInternalQuery->RecordCount > 0 ? IBInternalQuery->Fields[0]->AsInteger : 0;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return Retval;
+}
 void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransaction &dbTransaction )
 {
     try
@@ -66,32 +85,43 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
         TIBSQL *selectPaymentType = dbTransaction.Query(dbTransaction.AddQuery());
         IBInternalQuery->Close();
         int arcBillKey;
-        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP, a.TOTAL, a.CONTACTS_KEY, a.INVOICE_NUMBER, a.RECEIPT "
+        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP, a.TOTAL, a.CONTACTS_KEY, a.INVOICE_NUMBER, "
+                                     "a.RECEIPT, SECURITY.USER_KEY , ARC.LOYALTY_KEY "
                                     "FROM ARCBILL a "
+                                    "INNER JOIN SECURITY ON A.SECURITY_REF = SECURITY.SECURITY_REF "
+                                    "INNER JOIN (SELECT AB.ARCBILL_KEY, ARC.LOYALTY_KEY FROM ARCBILL AB INNER JOIN ARCHIVE ARC ON "
+                                    "AB.ARCBILL_KEY = ARC.ARCBILL_KEY WHERE AB.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER GROUP BY 1,2)ARC ON "
+                                        "A.ARCBILL_KEY = ARC.ARCBILL_KEY "
                                     "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER "
                                     "UNION ALL "
-                                    "SELECT a.ARCBILL_KEY, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP, a.TOTAL, a.CONTACTS_KEY, a.INVOICE_NUMBER, a.RECEIPT "
+                                    "SELECT a.ARCBILL_KEY, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP, a.TOTAL, a.CONTACTS_KEY, a.INVOICE_NUMBER, "
+                                    "a.RECEIPT, SECURITY.USER_KEY, ARC.LOYALTY_KEY  "
                                     "FROM DAYARCBILL a "
+                                    "INNER JOIN SECURITY ON A.SECURITY_REF = SECURITY.SECURITY_REF "
+                                    "INNER JOIN (SELECT AB.ARCBILL_KEY, ARC.LOYALTY_KEY FROM DAYARCBILL AB INNER JOIN DAYARCHIVE ARC ON "
+                                    "AB.ARCBILL_KEY = ARC.ARCBILL_KEY WHERE AB.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER GROUP BY 1,2)ARC ON "
+                                        "A.ARCBILL_KEY = ARC.ARCBILL_KEY "
                                     "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER ";
         IBInternalQuery->ParamByName("IS_POSTED_TO_PANASONIC_SERVER")->AsString = "F";
         IBInternalQuery->ExecQuery();
 
         TPanasonicModels panasonicModel;
         TDBPanasonic* dbPanasonic = new TDBPanasonic();
+        int contactKey = 0, loyaltyKey = 0;
+        int siteId = GetSiteId(dbTransaction);
 
         for(; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
-            contactId = 0;
             siteId = 0;
-            int contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            contactKey = IBInternalQuery->FieldByName("USER_KEY")->AsInteger;
             arcBillKey =  IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger;
-            GetContactIdAndSiteId(dbTransaction, contactKey);
+            loyaltyKey = IBInternalQuery->FieldByName("LOYALTY_KEY")->AsInteger;
             panasonicModel.StoreId               = siteId;
             panasonicModel.Terminald             = IBInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
-            panasonicModel.OperatorId            = contactId;
+            panasonicModel.OperatorId            = contactKey;
             panasonicModel.OperatorName          = IBInternalQuery->FieldByName("STAFF_NAME")->AsString;
-            panasonicModel.CustomerId            = contactKey;
-            panasonicModel.CustomerName          = "";//todo
+            panasonicModel.CustomerId            = loyaltyKey;
+            panasonicModel.CustomerName          = GetMenmberName(dbTransaction, loyaltyKey);
             panasonicModel.TransactionId         = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
             panasonicModel.TransactionType       = "Billed By";
             panasonicModel.ProductListId         = arcBillKey;
