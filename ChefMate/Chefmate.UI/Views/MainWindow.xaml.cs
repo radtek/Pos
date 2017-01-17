@@ -475,6 +475,8 @@ namespace Chefmate.UI.Views
             if (itemHeight <= height && !orderGuiIndex.IsLastItempartial)
             {
                 orderGuiIndex.IsLastItempartial = false;
+                orderGuiIndex.ItemSideIndex = 0;
+                orderGuiIndex.ItemOptionIndex = 0;
                 orderGuiIndex.GroupItemIndex++;
                 height -= itemHeight;
                 return inItem;
@@ -483,9 +485,14 @@ namespace Chefmate.UI.Views
             {
                 var item = new Item(inItem);
                 if (!orderGuiIndex.IsLastItempartial)
+                {
                     height -= ChefmateConstants.UnitHeight;
+                    orderGuiIndex.ItemSideIndex = 0;
+                    orderGuiIndex.ItemOptionIndex = 0;
+                }
                 else
                     item.DisplayAttributes.IsHeaderVisible = false;
+
                 while (height > ChefmateConstants.UnitHeight && orderGuiIndex.ItemSideIndex < inItem.Sides.Count)
                 {
                     var side = new Side(inItem.Sides[orderGuiIndex.ItemSideIndex]);
