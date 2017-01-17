@@ -366,7 +366,7 @@ TGlobalSettings::TGlobalSettings()
     EnableConsolidatedReport = false;
     ShowDarkBackground = false;
     OpenCashDrawer = false;
-    HideReceiptNumberForRefundItem = false;
+    CashWithdrawalGLCode = "";
     MergeSimilarItem = true;
     HideTaxInvoice = false;
     ExportReprintReceipt = false;

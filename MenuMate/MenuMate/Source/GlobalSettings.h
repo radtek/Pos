@@ -451,7 +451,7 @@ public:
     bool IsCloudSyncedForDiscount;
     bool ShowDarkBackground;
     bool OpenCashDrawer;
-    bool HideReceiptNumberForRefundItem;
+    UnicodeString CashWithdrawalGLCode;
     bool MergeSimilarItem;
 
     bool HideTaxInvoice;

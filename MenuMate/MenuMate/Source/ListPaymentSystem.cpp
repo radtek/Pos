@@ -3104,14 +3104,7 @@ void TListPaymentSystem::SetInvoiceNumber(TPaymentTransaction &PaymentTransactio
             }
              else
              {
-                 if(TGlobalSettings::Instance().HideReceiptNumberForRefundItem && PaymentTransaction.CreditTransaction)
-                 {
-                    PaymentTransaction.InvoiceNumber = "";
-                 }
-                 else
-                 {
                     PaymentTransaction.InvoiceNumber = Invoice->GetNextInvoiceNumber(PaymentTransaction.DBTransaction,PaymentTransaction.TypeOfSale);
-                 }
              }
 
       }

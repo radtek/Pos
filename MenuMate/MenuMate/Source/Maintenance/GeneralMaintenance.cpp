@@ -435,7 +435,6 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbItemSearch->Checked= TGlobalSettings::Instance().ItemSearch;
     cbShowDarkBackgroundInPOS->Checked = TGlobalSettings::Instance().ShowDarkBackground;
     cbOpenCashDrawer->Checked = TGlobalSettings::Instance().OpenCashDrawer;
-    cbHideReceiptNumber->Checked = TGlobalSettings::Instance().HideReceiptNumberForRefundItem;
     cbMergeSimilarItem->Checked = TGlobalSettings::Instance().MergeSimilarItem;
     cbExcludeReceipt->Checked = TGlobalSettings::Instance().ExcludeReceipt;
     cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
@@ -4031,15 +4030,6 @@ void __fastcall TfrmGeneralMaintenance::cbOpenCashDrawerClick(TObject *Sender)
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmOpenCashDrawer, TGlobalSettings::Instance().OpenCashDrawer);
-	DBTransaction.Commit();
-}
-//------------------------------------------------------------------------------------------------------
-void __fastcall TfrmGeneralMaintenance::cbHideReceiptNumberClick(TObject *Sender)
-{
-    TGlobalSettings::Instance().HideReceiptNumberForRefundItem = cbHideReceiptNumber->Checked;
-	Database::TDBTransaction DBTransaction(DBControl);
-	DBTransaction.StartTransaction();
-	TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmHideReceiptNumberForRefundItem, TGlobalSettings::Instance().HideReceiptNumberForRefundItem);
 	DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------------------------------------------------------------

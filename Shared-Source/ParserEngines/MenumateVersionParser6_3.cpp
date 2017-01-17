@@ -55,7 +55,6 @@ void TApplyParser::upgrade6_37Tables()
 	update6_37Tables();
 }
 
-
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -923,11 +922,12 @@ void TApplyParser::Create6_35GeneratorMallExportSettingValues(TDBControl* const 
 void TApplyParser::update6_36Tables()
 {
     AlterTableRefloat_Skim6_36(_dbControl);
+    Update6_36TableSCDPWDCustomerDetails(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableRefloat_Skim6_36( TDBControl* const inDBControl )
 {
-    if ( !fieldExists( "REFLOAT_SKIM ", "IS_FLOAT_WITHDRAWN_FROM_CASH ", _dbControl ) )
+    if ( !fieldExists( "REFLOAT_SKIM ", "IS_FLOAT_WITHDRAWN_FROM_CASH", _dbControl ) )
     {
         executeQuery (
         "ALTER TABLE REFLOAT_SKIM "
@@ -935,7 +935,42 @@ void TApplyParser::AlterTableRefloat_Skim6_36( TDBControl* const inDBControl )
         inDBControl);
     }
 }
-//-----------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+bool TApplyParser::CheckDataTypeOfColumn(TDBControl* const inDBControl)
+{
+    bool retval = false;
+    if( tableExists( "SCD_PWD_CUSTOMER_DETAILS", inDBControl ) )
+    {
+
+        TDBTransaction transaction( *_dbControl );
+        transaction.StartTransaction();
+        TIBSQL *SelectQuery = transaction.Query( transaction.AddQuery() );
+        SelectQuery->Close();
+        SelectQuery->SQL->Text =
+        " SELECT RF.RDB$RELATION_NAME as TABLE_NAME, "
+        " RF.RDB$FIELD_NAME as COLUMN_NAME, "
+        " F.RDB$FIELD_TYPE "
+        " FROM RDB$FIELDS F "
+        " JOIN RDB$RELATION_FIELDS RF on RF.RDB$FIELD_SOURCE = F.RDB$FIELD_NAME "
+        " WHERE RF.RDB$RELATION_NAME = 'SCD_PWD_CUSTOMER_DETAILS' and RF.RDB$FIELD_NAME = 'DATA_TYPE' ";
+        SelectQuery->ExecQuery();
+
+        if(SelectQuery->FieldByName("RDB$FIELD_TYPE")->AsInteger == 16)
+        {
+           retval = true;
+        }
+    }
+    return retval;
+}
+//-------------------------------------------------------------------------------------------------
+void TApplyParser::Update6_36TableSCDPWDCustomerDetails(TDBControl* const inDBControl)
+{
+    if(CheckDataTypeOfColumn(_dbControl))
+    {
+       executeQuery( "ALTER TABLE SCD_PWD_CUSTOMER_DETAILS ALTER DATA_TYPE TYPE VARCHAR(25) ;", inDBControl);
+    }
+}
+//-------------------------------------------------------------------------------------------------
 void TApplyParser::update6_37Tables()
 {
     AlterTable6_37(_dbControl);
@@ -950,7 +985,6 @@ void TApplyParser::AlterTable6_37( TDBControl* const inDBControl )
         "ADD IS_POSTED_TO_PANASONIC_SERVER T_TRUEFALSE DEFAULT 'F' ; ",
         inDBControl);
     }
-
     if ( !fieldExists( "DAYARCBILL ", "IS_POSTED_TO_PANASONIC_SERVER ", _dbControl ) )
     {
         executeQuery (

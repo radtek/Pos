@@ -245,7 +245,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 49
           Width = 433
-          Height = 745
+          Height = 720
           Caption = 'P.O.S Options'
           ParentBackground = False
           TabOrder = 5
@@ -553,18 +553,9 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             TabOrder = 23
             OnClick = cbNotifyForManuallyEnteredWeightClicked
           end
-          object cbHideReceiptNumber: TCheckBox
-            Left = 8
-            Top = 660
-            Width = 412
-            Height = 25
-            Caption = 'Hide Receipt Number for Refund Order'
-            TabOrder = 24
-            OnClick = cbHideReceiptNumberClick
-          end
           object cbHideRoundingOnReceipt: TCheckBox
             Left = 8
-            Top = 685
+            Top = 660
             Width = 412
             Height = 25
             Caption = 'Hide Rounding On Receipt'
@@ -573,11 +564,11 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbFloatWithdrawFromCash: TCheckBox
             Left = 8
-            Top = 710
+            Top = 685
             Width = 412
             Height = 25
-            Caption = 'Float Withdraw From Cash'
-            TabOrder = 25
+            Caption = 'Float Withdrawal From Cash'
+            TabOrder = 24
             OnClick = cbFloatWithdrawFromCashClick
           end
         end

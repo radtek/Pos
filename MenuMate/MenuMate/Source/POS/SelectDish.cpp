@@ -10125,6 +10125,11 @@ void TfrmSelectDish::EnterPaxCount()
 void TfrmSelectDish::AlterFloat()
 {
 	// Display Reports List
+    if(TGlobalSettings::Instance().EnableDontClearZedData)
+    {
+       MessageBox("Slave terminal can not perform Float function", "Warning", MB_OK + MB_ICONQUESTION);
+       return;
+    }
 	std::auto_ptr<TfrmVerticalSelect>SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
 
 	TVerticalSelection Item;

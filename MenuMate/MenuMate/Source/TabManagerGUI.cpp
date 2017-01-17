@@ -683,43 +683,54 @@ void __fastcall TfrmTabManager::TouchButtonTabClick(TObject *Sender)
 void __fastcall TfrmTabManager::btnAddNewTabClick(TObject *Sender)
 {
 	std::auto_ptr <TfrmAddTab> frmAddTab(TfrmAddTab::Create(this));
+    bool IsUserAccess = true;
 
 	Database::TDBTransaction DBTransaction(DBControl);
 	TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 	DBTransaction.StartTransaction();
-	frmAddTab->LoadDetails(DBTransaction, 0);
-	DBTransaction.Commit();
 
-	if (CurrentTabType == TabMember && TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ReadOnlyInterface)
-	{
-		MessageBox("You must Add,Edit and Delete members from your 3rd party Membership software.", "Warning", MB_ICONWARNING + MB_OK);
-	}
-	if (CurrentTabType == TabMember)
-	{
-		TempUserInfo.Clear();
-		TDeviceRealTerminal::Instance().ManagerMembership->AddMember(TempUserInfo);
-		ShowTabsDetails();
-	}
-	else if (frmAddTab->ShowModal() == mrOk)
-	{
-		DBTransaction.StartTransaction();
-		if (TDBTab::GetTab(DBTransaction, frmAddTab->TabName, TabNormal) != 0)
-		{
-			MessageBox("A Tab with this name already exists. Please select a different name.", "Warning", MB_OK + MB_ICONWARNING);
-		}
-		else
-		{
-			int TabyKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
-			TDBTab::SetTabDetails(DBTransaction, TabyKey, frmAddTab->TabName, frmAddTab->TabIDType, frmAddTab->TabIDNumber,
-			frmAddTab->TabIDExpiry, TabNormal);
-			TDBTab::SetTabCard(DBTransaction, TabyKey, frmAddTab->CardString);
-			SelectedTable = 0;
-			SelectedSeat = 0;
-			SelectedTabName = frmAddTab->TabName;
-		}
-		DBTransaction.Commit();
-	}
-	ShowTabsDetails();
+    TMMContactInfo currentUserInfo = TDeviceRealTerminal::Instance().User;
+    std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
+    if (!Staff->TestAccessLevel(TDeviceRealTerminal::Instance().User, CheckAccountCreation))
+    {
+        MessageBox("You do not have the privileges to create a new tab!", "Error", MB_OK + MB_ICONERROR);
+        IsUserAccess = false;
+    }
+    frmAddTab->LoadDetails(DBTransaction, 0);
+    DBTransaction.Commit();
+    if(IsUserAccess)
+    {
+        if (CurrentTabType == TabMember && TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->ReadOnlyInterface)
+        {
+            MessageBox("You must Add,Edit and Delete members from your 3rd party Membership software.", "Warning", MB_ICONWARNING + MB_OK);
+        }
+        if (CurrentTabType == TabMember)
+        {
+            TempUserInfo.Clear();
+            TDeviceRealTerminal::Instance().ManagerMembership->AddMember(TempUserInfo);
+            ShowTabsDetails();
+        }
+        else if (frmAddTab->ShowModal() == mrOk)
+        {
+            DBTransaction.StartTransaction();
+            if (TDBTab::GetTab(DBTransaction, frmAddTab->TabName, TabNormal) != 0)
+            {
+                MessageBox("A Tab with this name already exists. Please select a different name.", "Warning", MB_OK + MB_ICONWARNING);
+            }
+            else
+            {
+                int TabyKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
+                TDBTab::SetTabDetails(DBTransaction, TabyKey, frmAddTab->TabName, frmAddTab->TabIDType, frmAddTab->TabIDNumber,
+                frmAddTab->TabIDExpiry, TabNormal);
+                TDBTab::SetTabCard(DBTransaction, TabyKey, frmAddTab->CardString);
+                SelectedTable = 0;
+                SelectedSeat = 0;
+                SelectedTabName = frmAddTab->TabName;
+            }
+            DBTransaction.Commit();
+        }
+        ShowTabsDetails();
+    }
 }
 // ---------------------------------------------------------------------------
 
@@ -1613,6 +1624,11 @@ void __fastcall TfrmTabManager::btnTabCreditClick(TObject *Sender)
 
 void __fastcall TfrmTabManager::btnRemoveTabClick(TObject *Sender)
 {
+    bool IsUserAccess = true;
+	Database::TDBTransaction DBTransaction(DBControl);
+	TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+
+
 	if (!SelectedTab)
 	{
 		MessageBox("Please select a Tab to Work with.", "Error", MB_OK + MB_ICONERROR);
@@ -1621,16 +1637,27 @@ void __fastcall TfrmTabManager::btnRemoveTabClick(TObject *Sender)
 
 	try
 	{
-		if (MessageBox("Are you sure you wish to remove this Tab?", "Warning", MB_YESNO + MB_ICONWARNING) == ID_YES)
-		{
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			TDBTab::CloseTab(DBTransaction, SelectedTab);
-			DBTransaction.Commit();
-			SelectedTab = 0;
-			ShowTabsDetails();
-		   	RefreshTabDetails();
-		}
+        DBTransaction.StartTransaction();
+        TMMContactInfo currentUserInfo = TDeviceRealTerminal::Instance().User;
+        std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
+        if (!Staff->TestAccessLevel(TDeviceRealTerminal::Instance().User, CheckAccountCreation))
+        {
+            MessageBox("You do not have the privileges to remove a tab!", "Error", MB_OK + MB_ICONERROR);
+            IsUserAccess = false;
+        }
+        DBTransaction.Commit();
+        if(IsUserAccess)
+        {
+            if (MessageBox("Are you sure you wish to remove this Tab?", "Warning", MB_YESNO + MB_ICONWARNING) == ID_YES)
+            {
+                DBTransaction.StartTransaction();
+                TDBTab::CloseTab(DBTransaction, SelectedTab);
+                DBTransaction.Commit();
+                SelectedTab = 0;
+                ShowTabsDetails();
+                RefreshTabDetails();
+            }
+        }
 	}
 	catch(Exception & E)
 	{

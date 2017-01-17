@@ -4,7 +4,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Setup GL Codes'
-  ClientHeight = 413
+  ClientHeight = 475
   ClientWidth = 829
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
     Left = 6
     Top = 6
     Width = 680
-    Height = 405
+    Height = 467
     Color = 14342874
     ParentBackground = False
     TabOrder = 0
@@ -215,12 +215,31 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnEftPosTipMouseClick
     end
+    object btnCashWidthwral: TTouchBtn
+      Left = 15
+      Top = 390
+      Width = 300
+      Height = 60
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindow
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Cash Withdrawal'
+      ButtonColor = clNavy
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnCashWidthwralMouseClick
+    end
   end
   object Panel2: TPanel
     Left = 690
     Top = 6
     Width = 136
-    Height = 405
+    Height = 467
     Color = 14342874
     ParentBackground = False
     TabOrder = 1
@@ -245,7 +264,7 @@ object frmSetupGlCodes: TfrmSetupGlCodes
     end
     object btnCancel: TTouchBtn
       Left = 8
-      Top = 337
+      Top = 398
       Width = 120
       Height = 60
       Font.Charset = DEFAULT_CHARSET
