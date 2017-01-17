@@ -3714,7 +3714,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
           cashWithdrawal = 0;
           cashWithdrawal = GetCashWithdrawal(DBTransaction);
           UnicodeString glCodecashWithdrawal = "";
-          if(TGlobalSettings::Instance().CashWithdrawalGLCode == NULL)
+            if(TGlobalSettings::Instance().CashWithdrawalGLCode.Trim().Length() == 0 || TGlobalSettings::Instance().CashWithdrawalGLCode == NULL)
                 glCodecashWithdrawal = "416";
           else
                 glCodecashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
@@ -4044,9 +4044,10 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
               double cashWithdrawal = 0;
               cashWithdrawal = GetCashWithdrawal(DBTransaction);
               UnicodeString glCodecashWithdrawal = "";
-              if(TGlobalSettings::Instance().CashWithdrawalGLCode == NULL)
+
+                if(TGlobalSettings::Instance().CashWithdrawalGLCode.Trim().Length() == 0 || TGlobalSettings::Instance().CashWithdrawalGLCode == NULL)
                     glCodecashWithdrawal = "6-3300";
-              else
+                else
                     glCodecashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
 
               if(cashWithdrawal != 0)
