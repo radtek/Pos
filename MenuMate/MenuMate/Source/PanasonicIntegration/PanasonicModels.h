@@ -116,6 +116,7 @@ public:
     __property bool OperatorSignOn = {read = _operatorSignOn, write = SetOperatorSignOnFlag};
     __property bool OperatorSignOff = {read = _operatorSignOff, write = SetOperatorSignOffFlag};
     __property UnicodeString LastReceipt = {read = _lastReceipt, write = SetLastReceipt};
+    TPanasonicModels();
 };
 
 class TPanasonicItemList
@@ -158,6 +159,7 @@ public:
     __property bool StaffPurchase = {read = _staffPurchase, write = SetStaffPurchase};
     __property bool Refund = {read = _refund, write = SetRefund};
     __property bool TrainingMode = {read = _trainingMode, write = SetTrainingMode};
+    TPanasonicItemList();
 };
 
 class TPanasonicProduct
@@ -170,6 +172,7 @@ private:
 public:
     __property UnicodeString ProductCode = {read = _productCode, write = SetProductCode};
     __property UnicodeString ProductDescription = {read = _productDescription, write = SetProductDescription};
+    TPanasonicProduct();
 };
 
 class TPanasonicTransactionDBServerInformation
@@ -194,5 +197,6 @@ public:
     __property UnicodeString TransactioDBServerType = {read = _transactioDBServerType, write = SetTransactioDBServerType};
     __property UnicodeString TransactionDBServerName = {read = _transactionDBServerName, write = SetTransactionDBServerName};
     __property UnicodeString TransactionDBServerVersion = {read = _transactionDBServerVersion, write = SetTransactionDBServerVersion};
+    TPanasonicTransactionDBServerInformation();
 };
 #endif

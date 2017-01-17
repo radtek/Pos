@@ -186,6 +186,9 @@ void TPanasonicModels::SetLastReceipt(UnicodeString lastrecipt)
     _lastReceipt = lastrecipt;
 }
 //---------------------------------------------------------------------------
+TPanasonicModels::TPanasonicModels()
+{
+}
 void TPanasonicItemList::SetProductCode(UnicodeString productCode)
 {
     _productCode = productCode;
@@ -246,6 +249,9 @@ void TPanasonicItemList::SetTrainingMode(bool trainingMode)
     _trainingMode = trainingMode;
 }
 //---------------------------------------------------------------------------
+TPanasonicItemList::TPanasonicItemList()
+{
+}
 void TPanasonicProduct::SetProductCode(UnicodeString productCode)
 {
     _productCode = productCode;
@@ -254,6 +260,10 @@ void TPanasonicProduct::SetProductCode(UnicodeString productCode)
 void TPanasonicProduct::SetProductDescription(UnicodeString productDescription)
 {
     _productDescription = productDescription;
+}
+//---------------------------------------------------------------------------
+TPanasonicProduct::TPanasonicProduct()
+{
 }
 //---------------------------------------------------------------------------
 void TPanasonicTransactionDBServerInformation::SetPosSystemType(UnicodeString posSystemType)
@@ -286,3 +296,6 @@ void TPanasonicTransactionDBServerInformation::SetTransactionDBServerVersion(Uni
     _transactionDBServerVersion = transactionDBServerVersion;
 }
 //---------------------------------------------------------------------------
+TPanasonicTransactionDBServerInformation::TPanasonicTransactionDBServerInformation()
+{
+}

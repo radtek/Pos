@@ -10,7 +10,7 @@
 class TPanasonicThread : public TThread
 {
     private:
-        UnicodeString GetMenmberName(Database::TDBTransaction &dbTransaction, int contactKey);
+        UnicodeString GetMemberName(Database::TDBTransaction &dbTransaction, int contactKey);
         void ConvertTransactionInfoToPanasonicInfo(Database::TDBTransaction &dbTransaction );
         void ConvertTransactionInfoToPanasonicItemList(Database::TDBTransaction &dbTransaction, int arcBill_Key);
         void ConverTransactionInfoToTransactionDBServerInfo(Database::TDBTransaction &dbTransaction);

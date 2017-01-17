@@ -34,7 +34,7 @@ void  __fastcall TPanasonicThread::Execute()
 	}
 }
 //------------------------------------------------------------------------------
-UnicodeString TPanasonicThread::GetMenmberName(Database::TDBTransaction &dbTransaction, int contactKey)
+UnicodeString TPanasonicThread::GetMemberName(Database::TDBTransaction &dbTransaction, int contactKey)
 {
     UnicodeString Retval = "";
     TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
@@ -105,7 +105,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
         IBInternalQuery->ParamByName("IS_POSTED_TO_PANASONIC_SERVER")->AsString = "F";
         IBInternalQuery->ExecQuery();
 
-        TPanasonicModels panasonicModel;
+        TPanasonicModels* panasonicModel = new TPanasonicModels();
         TDBPanasonic* dbPanasonic = new TDBPanasonic();
         int contactKey = 0, loyaltyKey = 0;
         int siteId = GetSiteId(dbTransaction);
@@ -116,42 +116,42 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             contactKey = IBInternalQuery->FieldByName("USER_KEY")->AsInteger;
             arcBillKey =  IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger;
             loyaltyKey = IBInternalQuery->FieldByName("LOYALTY_KEY")->AsInteger;
-            panasonicModel.StoreId               = siteId;
-            panasonicModel.Terminald             = IBInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
-            panasonicModel.OperatorId            = contactKey;
-            panasonicModel.OperatorName          = IBInternalQuery->FieldByName("STAFF_NAME")->AsString;
-            panasonicModel.CustomerId            = loyaltyKey;
-            panasonicModel.CustomerName          = GetMenmberName(dbTransaction, loyaltyKey);
-            panasonicModel.TransactionId         = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
-            panasonicModel.TransactionType       = "Billed By";
-            panasonicModel.ProductListId         = arcBillKey;
-            panasonicModel.TransactionAmount     = IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
-            panasonicModel.AgeRestricted         = false;
-            panasonicModel.Suspended             = false;
-            panasonicModel.CashOut               = false;
-            panasonicModel.Cash                  = false;
-            panasonicModel.TimeZoneOfET          = Now();
-            panasonicModel.TimeZoneOfST          = Now();
-            panasonicModel.DayLightTimeOfET      = Now();
-            panasonicModel.DayLightTimeOfST      = Now();
-            panasonicModel.StartTime             = Now();
-            panasonicModel.EndTime               = Now();
-            panasonicModel.CreditCard = false;
-            panasonicModel.Cheque = false;
-            panasonicModel.EFTPOS = false;
+            panasonicModel->StoreId               = siteId;
+            panasonicModel->Terminald             = IBInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
+            panasonicModel->OperatorId            = contactKey;
+            panasonicModel->OperatorName          = IBInternalQuery->FieldByName("STAFF_NAME")->AsString;
+            panasonicModel->CustomerId            = loyaltyKey;
+            panasonicModel->CustomerName          = GetMemberName(dbTransaction, loyaltyKey);
+            panasonicModel->TransactionId         = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
+            panasonicModel->TransactionType       = "Billed By";
+            panasonicModel->ProductListId         = arcBillKey;
+            panasonicModel->TransactionAmount     = IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
+            panasonicModel->AgeRestricted         = false;
+            panasonicModel->Suspended             = false;
+            panasonicModel->CashOut               = false;
+            panasonicModel->Cash                  = false;
+            panasonicModel->TimeZoneOfET          = Now();
+            panasonicModel->TimeZoneOfST          = Now();
+            panasonicModel->DayLightTimeOfET      = Now();
+            panasonicModel->DayLightTimeOfST      = Now();
+            panasonicModel->StartTime             = Now();
+            panasonicModel->EndTime               = Now();
+            panasonicModel->CreditCard = false;
+            panasonicModel->Cheque = false;
+            panasonicModel->EFTPOS = false;
             //      Receipt->Clear();
             //      IBInternalQuery->FieldByName("RECEIPT")->SaveToStream(Receipt);
-            panasonicModel.LastReceipt           = IBInternalQuery->FieldByName("RECEIPT")->AsString;
+            panasonicModel->LastReceipt           = IBInternalQuery->FieldByName("RECEIPT")->AsString;
 
             if(IBInternalQuery->FieldByName("TOTAL")->AsCurrency < 0)
             {
-                panasonicModel.RefundAmount = IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
-                panasonicModel.Purchase = false;
+                panasonicModel->RefundAmount = IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
+                panasonicModel->Purchase = false;
             }
             else
             {
-                panasonicModel.RefundAmount = 0;
-                panasonicModel.Purchase = true;
+                panasonicModel->RefundAmount = 0;
+                panasonicModel->Purchase = true;
             }
 
             selectPaymentType->Close();
@@ -171,25 +171,25 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
              {
                     if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 4097)
                     {
-                        panasonicModel.TenderCash = selectPaymentType->FieldByName("SUBTOTAL")->AsCurrency;
-                        panasonicModel.Cash = true;
+                        panasonicModel->TenderCash = selectPaymentType->FieldByName("SUBTOTAL")->AsCurrency;
+                        panasonicModel->Cash = true;
                     }
                     else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 13)
                     {
-                        panasonicModel.CreditCard = true;
+                        panasonicModel->CreditCard = true;
                     }
                     else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 1)
                     {
-                        panasonicModel.Cheque = true;
+                        panasonicModel->Cheque = true;
                     }
                     else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 15)
                     {
-                        panasonicModel.EFTPOS = true;
-                        panasonicModel.CashOut = selectPaymentType->FieldByName("CASH_OUT")->AsString == "T" ? true : false;
+                        panasonicModel->EFTPOS = true;
+                        panasonicModel->CashOut = selectPaymentType->FieldByName("CASH_OUT")->AsString == "T" ? true : false;
                     }
               }
 
-                dbPanasonic->SendDataToServer(panasonicModel);
+                dbPanasonic->SendDataToServer(*panasonicModel);
 
                 //Convert TransactionInfo to panasonic Item info so that it can be directly posted to their TItemList Table.
                 ConvertTransactionInfoToPanasonicItemList(dbTransaction, arcBillKey);
@@ -201,6 +201,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
                  UpdateArcBillAndDayArcBill(dbTransaction, arcBillKey);
         }
          delete dbPanasonic;
+         delete panasonicModel;
     }
     catch(Exception &E)
 	{
@@ -215,10 +216,10 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicItemList(Database::TDBTr
     try
     {
         TDBPanasonic* dbPanasonic = new TDBPanasonic();
-        TPanasonicItemList itemList;
+        TPanasonicItemList *itemList = new TPanasonicItemList();
         UnicodeString itemName = "" , sizename = "";
 
-        TPanasonicProduct productinfo;
+        TPanasonicProduct *productinfo = new TPanasonicProduct();
 
         TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         IBInternalQuery->Close();
@@ -240,28 +241,30 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicItemList(Database::TDBTr
         {
             itemName = IBInternalQuery->FieldByName("ITEM_NAME")->AsString;
             sizename = IBInternalQuery->FieldByName("SIZE_NAME")->AsString;
-            itemList.ProductCode                = IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger;
-            itemList.ProductDescription         = itemName + " " + sizename ;
-            itemList.InternalTransactionId      = arcBillKey;
-            itemList.UnitPrice                  = IBInternalQuery->FieldByName("HAPPY_HOUR")->AsString == "T" ? IBInternalQuery->FieldByName("PRICE_LEVEL1")->AsCurrency
+            itemList->ProductCode                = IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger;
+            itemList->ProductDescription         = itemName + " " + sizename ;
+            itemList->InternalTransactionId      = arcBillKey;
+            itemList->UnitPrice                  = IBInternalQuery->FieldByName("HAPPY_HOUR")->AsString == "T" ? IBInternalQuery->FieldByName("PRICE_LEVEL1")->AsCurrency
                                                     : IBInternalQuery->FieldByName("PRICE_LEVEL0")->AsCurrency;
-            itemList.Quantity                   = IBInternalQuery->FieldByName("QTY")->AsCurrency;
-            itemList.Amount                     = itemList.Quantity*itemList.UnitPrice;
-            itemList.Weight                     = 0;
-            itemList.PriceInquiry               = false;
-            itemList.Void                       = IBInternalQuery->FieldByName("ORDER_TYPE")->AsInteger == 2 ? true : false;
-            itemList.StaffPurchase              = false;
-            itemList.Refund                     = itemList.Quantity > 0 ? false : true;
-            itemList.TrainingMode               = false;
+            itemList->Quantity                   = IBInternalQuery->FieldByName("QTY")->AsCurrency;
+            itemList->Amount                     = itemList->Quantity*itemList->UnitPrice;
+            itemList->Weight                     = 0;
+            itemList->PriceInquiry               = false;
+            itemList->Void                       = IBInternalQuery->FieldByName("ORDER_TYPE")->AsInteger == 2 ? true : false;
+            itemList->StaffPurchase              = false;
+            itemList->Refund                     = itemList->Quantity > 0 ? false : true;
+            itemList->TrainingMode               = false;
 
-            dbPanasonic->InsertItemsToTItemList(itemList);
+            dbPanasonic->InsertItemsToTItemList(*itemList);
 
-            productinfo.ProductCode                = itemList.ProductCode;
-            productinfo.ProductDescription         = itemList.ProductDescription;
+            productinfo->ProductCode                = itemList->ProductCode;
+            productinfo->ProductDescription         = itemList->ProductDescription;
 
-            dbPanasonic->InsertProductDetailsInToTProduct(productinfo);
+            dbPanasonic->InsertProductDetailsInToTProduct(*productinfo);
         }
         delete dbPanasonic;
+        delete itemList;
+        delete productinfo;
     }
     catch(Exception &E)
 	{
@@ -272,16 +275,17 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicItemList(Database::TDBTr
 //----------------------------------------------------------------------------------------
 void TPanasonicThread::ConverTransactionInfoToTransactionDBServerInfo(Database::TDBTransaction &dbTransaction)
 {
-    TPanasonicTransactionDBServerInformation serverInfo;
-    serverInfo.PosSystemType              =   "Windows";
-    serverInfo.PosSystemName              =   TDeviceRealTerminal::Instance().ID.Name;
-    serverInfo.PosSystemVersion           =   GetPOSVersionInfo(dbTransaction);
-    serverInfo.TransactioDBServerType     =   "TransactionDBServer";
-    serverInfo.TransactionDBServerName    =   "TransactionDBServer For " + serverInfo.PosSystemName;
-    serverInfo.TransactionDBServerVersion =   "1.00";
+    TPanasonicTransactionDBServerInformation *serverInfo = new TPanasonicTransactionDBServerInformation();
+    serverInfo->PosSystemType              =   "Windows";
+    serverInfo->PosSystemName              =   TDeviceRealTerminal::Instance().ID.Name;
+    serverInfo->PosSystemVersion           =   GetPOSVersionInfo(dbTransaction);
+    serverInfo->TransactioDBServerType     =   "TransactionDBServer";
+    serverInfo->TransactionDBServerName    =   "TransactionDBServer For " + serverInfo->PosSystemName;
+    serverInfo->TransactionDBServerVersion =   "1.00";
     TDBPanasonic* dbPanasonic = new TDBPanasonic();
-    dbPanasonic->InsertTransactionDBServerInformation(serverInfo);
+    dbPanasonic->InsertTransactionDBServerInformation(*serverInfo);
     delete dbPanasonic;
+    delete serverInfo;
 }
 //--------------------------------------------------------------------------------------------
 UnicodeString TPanasonicThread::GetPOSVersionInfo(Database::TDBTransaction &dbTransaction)

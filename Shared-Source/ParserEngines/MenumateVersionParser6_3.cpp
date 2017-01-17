@@ -49,6 +49,12 @@ void TApplyParser::upgrade6_36Tables()
 {
 	update6_36Tables();
 }
+//--------------------------------------------------------------------------6.37..................
+void TApplyParser::upgrade6_37Tables()
+{
+	update6_37Tables();
+}
+
 
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
@@ -917,7 +923,6 @@ void TApplyParser::Create6_35GeneratorMallExportSettingValues(TDBControl* const 
 void TApplyParser::update6_36Tables()
 {
     AlterTableRefloat_Skim6_36(_dbControl);
-    AlterTable6_36(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::AlterTableRefloat_Skim6_36( TDBControl* const inDBControl )
@@ -931,7 +936,12 @@ void TApplyParser::AlterTableRefloat_Skim6_36( TDBControl* const inDBControl )
     }
 }
 //-----------------------------------------------------------------------------------------
-void TApplyParser::AlterTable6_36( TDBControl* const inDBControl )
+void TApplyParser::update6_37Tables()
+{
+    AlterTable6_37(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::AlterTable6_37( TDBControl* const inDBControl )
 {
     if ( !fieldExists( "ARCBILL ", "IS_POSTED_TO_PANASONIC_SERVER ", _dbControl ) )
     {
