@@ -189,7 +189,7 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                    ManagerSmartCards->GetContactInfo(creationDateInfo);
                    creationDateInfo.CardCreationDate = Now();
                    TDBContacts::SetCardCreationDate(DBTransaction, Info.ContactKey, creationDateInfo.CardCreationDate);
-                   TManagerMembershipSmartCards::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.CloudUUID);
+                   TManagerMembershipSmartCards::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.MemberCode);
                 }
                else
                 {

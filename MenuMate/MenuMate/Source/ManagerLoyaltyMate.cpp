@@ -58,7 +58,7 @@ bool TManagerLoyaltyMate::CreateMemberOnCloud(TSyndCode syndicateCode,TMMContact
         if(createResponse.IsSuccesful)
         {
             info.CloudUUID = createResponse.UUID;
-
+            info.MemberCode = createResponse.MemberCode;
             result = true;
         }
         else
