@@ -3,7 +3,7 @@
 
 #pragma hdrstop
 
-#include "PanasonicThread.h"
+#include "ManagerPanasonic.h"
 #include "DBPanasonic.h"
 #include "PanasonicModels.h"
 
@@ -11,11 +11,80 @@
 
 #pragma package(smart_init)
 
+TManagerPanasonic* TManagerPanasonic::instance = NULL;
+
+TManagerPanasonic::TManagerPanasonic()
+    :panasonicThreadTerminated(true),
+     panasonicThread(NULL)
+{
+    panasonicThreadTimer = new TTimer(NULL);
+    panasonicThreadTimer->Enabled = false;
+    panasonicThreadTimer->Interval = 1000;
+    panasonicThreadTimer->OnTimer = OnPanasonicThreadTimerTick;
+
+    StartPanasonicThreadTimer();
+}
+//-------------------------------------------------------------------------------------------
+TManagerPanasonic::~TManagerPanasonic()
+{
+    delete panasonicThread;
+    delete panasonicThreadTimer;
+}
+//---------------------------------------------------------------------------
 TPanasonicThread::TPanasonicThread() : TThread(true)
 {
     FreeOnTerminate = true;
 }
 //-------------------------------------------------------------------------------
+void __fastcall TManagerPanasonic::PanasonicTheadTerminate( TObject* sender )
+{
+    panasonicThreadTerminated = true;
+    StartPanasonicThreadTimer();
+}
+//---------------------------------------------------------------------------
+void TManagerPanasonic::InitiatePanasonicThread()
+{
+    // initiate the thread if it is invalid
+    if( panasonicThreadTerminated )
+    {
+        panasonicThread = new TPanasonicThread();
+        panasonicThread->OnTerminate = PanasonicTheadTerminate;
+    }
+}
+//-----------------------------------------------------------
+void __fastcall TManagerPanasonic::OnPanasonicThreadTimerTick(TObject *Sender)
+{
+    if(panasonicThreadTerminated )
+    {
+        InitiatePanasonicThread();
+        StartPanasonicThread();
+    }
+    else
+    {
+        StopPanasonicThreadTimer();
+    }
+}
+//------------------------------------------------------------------------------------------------------
+void TManagerPanasonic::StartPanasonicThread()
+{
+    if( panasonicThreadTerminated )
+    {
+        panasonicThreadTerminated = false;
+        StopPanasonicThreadTimer();
+        panasonicThread->Start();
+    }
+}
+//---------------------------------------------------------------------------
+void TManagerPanasonic::StartPanasonicThreadTimer()
+{
+    panasonicThreadTimer->Enabled = true;
+}
+//---------------------------------------------------------------------------
+void TManagerPanasonic::StopPanasonicThreadTimer()
+{
+    panasonicThreadTimer->Enabled = false;
+}
+//-------------------------------------------------------------------------------------
 void  __fastcall TPanasonicThread::Execute()
 {
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -77,6 +146,7 @@ int TPanasonicThread::GetSiteId(Database::TDBTransaction &dbTransaction)
 	}
     return Retval;
 }
+//--------------------------------------------------------------------------------------------------------------------------
 void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransaction &dbTransaction )
 {
     try

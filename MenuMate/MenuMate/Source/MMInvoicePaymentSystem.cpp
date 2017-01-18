@@ -10,7 +10,6 @@
 #include "ManagerPatron.h"
 #include "Invoice.h"
 #include "ReceiptManager.h"
-#include "PanasonicThread.h"
 
 //---------------------------------------------------------------------------
 
@@ -70,11 +69,6 @@ bool TMMInvoicePaymentSystem::ProcessTransaction(TPaymentTransaction &MasterPaym
 	Reset(MasterPaymentTransaction);
 	TDeviceRealTerminal::Instance().ProcessingController.Pop();
 	OnAfterTransactionComplete.Occured();
-    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-    {
-        TPanasonicThread* sendDataToServerThread = new TPanasonicThread();
-        sendDataToServerThread->Start();
-    }
 }
 //---------------------------------------------------------------------------
 

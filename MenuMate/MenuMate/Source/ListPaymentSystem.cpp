@@ -66,8 +66,6 @@
 #include "StringTools.h"
 #include "PointsRulesSetUtils.h"
 #include "EstanciaMall.h"
-//#include "PanasonicAdapter.h"
-#include "PanasonicThread.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -890,13 +888,6 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 	}
 
 	Busy = false;
-
-    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-    {
-        TPanasonicThread* sendDataToServerThread = new TPanasonicThread();
-        sendDataToServerThread->Start();
-    }
-
 	return PaymentComplete;
 }
 

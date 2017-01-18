@@ -88,6 +88,7 @@
 #include "MMCustomerDisplayManager.h"
 #include "ManagerCloudSync.h"
 #include "CSVExportReceiver.h"
+#include "ManagerPanasonic.h"
 
 #pragma package(smart_init)
 #pragma link "SHDocVw_OCX"
@@ -440,6 +441,10 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		openCustomerDisplayServer();
          if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
             TManagerClippIntegration::Instance();
+
+        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            TManagerPanasonic::Instance();
+
         SyncCompanyDetails();
        //initialize this variable when application starts..
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmNotifyLastWebOrder, TGlobalSettings::Instance().NotifyPOSForLastWebOrder);

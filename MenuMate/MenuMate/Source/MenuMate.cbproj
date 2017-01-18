@@ -3,7 +3,7 @@
 			<ProjectGuid>{192EBDBE-B1AC-4977-ACF9-0BDD61E6D32A}</ProjectGuid>
 			<ProjectType>CppVCLApplication</ProjectType>
 			<MainSource>MenuMate.cpp</MainSource>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<ProjectVersion>12.0</ProjectVersion>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -3270,8 +3270,8 @@
 				<DependentOn>Analysis\Factories\ConsolidatedZedReportSectionFactory.h</DependentOn>
 				<BuildOrder>739</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="PanasonicIntegration\PanasonicThread.cpp">
-				<DependentOn>PanasonicIntegration\PanasonicThread.h</DependentOn>
+			<CppCompile Include="PanasonicIntegration\ManagerPanasonic.cpp">
+				<DependentOn>PanasonicIntegration\ManagerPanasonic.h</DependentOn>
 				<BuildOrder>749</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="Analysis\ReportSectionStrategies\BlindBalanceCalculationStrategyForConsolidatedZed.cpp">

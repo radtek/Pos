@@ -55,6 +55,7 @@
 #include "DBTables.h"
 #include "GroupGUI.h"
 #include "DBGroups.h"
+#include "ManagerPanasonic.h"
 
 //#include "VerticalSelect.h"
 #include "ManagerPatron.h"
@@ -3770,41 +3771,37 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
 {
     std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
 
+    TVerticalSelection Item;
+    Item.Title = "Cancel";
+    Item.Properties["Color"] = "0x000098F5";
+    Item.Properties["FontColor"] = IntToStr(clWhite);;
+    Item.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item);
 
 
+    TVerticalSelection Item1;
+    Item1.Title = "Panasonic ";
+    Item1.Properties["Action"] = IntToStr(1);
+    Item1.Properties["Color"] = IntToStr(clGreen);
+    Item1.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
+    Item1.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item1);
 
-
-
-
-
-        TVerticalSelection Item;
-        Item.Title = "Cancel";
-        Item.Properties["Color"] = "0x000098F5";
-        Item.Properties["FontColor"] = IntToStr(clWhite);;
-        Item.CloseSelection = true;
-        SelectionForm1->Items.push_back(Item);
-
-
-        TVerticalSelection Item1;
-        Item1.Title = "Panasonic ";
-        Item1.Properties["Action"] = IntToStr(1);
-        Item1.Properties["Color"] = IntToStr(clGreen);
-        Item1.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
-        Item1.CloseSelection = true;
-        SelectionForm1->Items.push_back(Item1);
-
-        SelectionForm1->ShowModal();
-        TVerticalSelection SelectedItem1;
-        if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+    SelectionForm1->ShowModal();
+    TVerticalSelection SelectedItem1;
+    if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+    {
+        int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+        switch(Action)
         {
-            int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
-            switch(Action)
-            {
-                case 1 :
-                    EnablePanasonicIntegration();
-                    break;
-            }
+            case 1 :
+                EnablePanasonicIntegration();
+                break;
         }
+    }
+
+    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            TManagerPanasonic::Instance();
 }
 //-------------------------------------------------------------------------------------
 
@@ -3868,9 +3865,11 @@ void TfrmMaintain::EnablePanasonicIntegration()
         else
         {
             keepFormAlive = false;
-            if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP == "")
+            if((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP == "") ||
+                (!TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP != ""))
             {
                 TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
+                TGlobalSettings::Instance().PanasonicServerIP = "";
             }
         }
         dbTransaction.Commit();
