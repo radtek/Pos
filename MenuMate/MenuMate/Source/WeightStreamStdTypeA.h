@@ -15,7 +15,6 @@ class TWeightStreamStdTypeA : public IWeightStreamConverter
       TWeightStreamStdTypeA(unsigned char *Buffer, int BufferSize);
       std::auto_ptr<TMemoryStream> Stream;
       static std::vector<double> RecentWeightsList;
-      UnicodeString GetFormattedString(UnicodeString unFormattedString);
    public:
       static TWeightStreamStdTypeA* Create(unsigned char *Buffer, int BufferSize);   // Uses the default constructor
       void GetWeight(TWeight &Weight);

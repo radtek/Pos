@@ -84,31 +84,3 @@ void TWeightStreamStdTypeA::GetStable(bool &Stable)
         Stable = AllMatch;
     }
 }
-
-UnicodeString TWeightStreamStdTypeA::GetFormattedString(UnicodeString unFormattedString)
-{
-   TStringList* logList = new TStringList();
-   if(FileExists(ExtractFilePath(Application->ExeName)+ "WeightLog.txt"))
-    {
-        logList->LoadFromFile(ExtractFilePath(Application->ExeName)+ "WeightLog.txt");
-    }
-   logList->Add(unFormattedString);
-   logList->SaveToFile(ExtractFilePath(Application->ExeName)+ "WeightLog.txt");
-   delete logList;
-
-   UnicodeString orgString = unFormattedString;
-   UnicodeString WeightStr = "-1";
-   //char* charArray = orgString.t_str();
-   int pos = unFormattedString.Pos("\r");
-   /*for(int i = 0; i < unFormattedString.Length() ; i++)
-   {
-      if(charArray[i] == '\r')
-      {
-        pos = i;
-        break;
-      }
-   }*/
-   if(pos + 3 != unFormattedString.Length())
-      WeightStr = unFormattedString.SubString(pos + 3, 7);
-   return WeightStr;
-}
