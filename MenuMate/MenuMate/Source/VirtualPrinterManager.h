@@ -26,8 +26,9 @@ class TManagerVirtualPrinter : public TManager
 	virtual ~TManagerVirtualPrinter();
 	void Initialise();
 	static void InitialisePrinters(Database::TDBTransaction &DBTransaction,int inDeviceKey);
+    static void InitialisePrinters(Database::TDBTransaction &DBTransaction, int inDeviceKey,AnsiString DeviceName);
 	static void CreateWindowsConnection(Database::TDBTransaction &DBTransaction,int inDeviceKey);
-
+    static void CreateWindowsConnection(Database::TDBTransaction &DBTransaction,int inDeviceKey,AnsiString DeviceName);
 	static int DBCheckVirtualPrinterByName(Database::TDBTransaction &DBTransaction,UnicodeString Name);
 	static void DBReAssignPrinter(Database::TDBTransaction &DBTransaction,int PrinterKey,int PhysicalPrinterKey);
     static int DBAddPrinter(Database::TDBTransaction &DBTransaction,TPrinterVirtual inPrinter);
@@ -43,6 +44,7 @@ class TManagerVirtualPrinter : public TManager
 	static void DeletePrinter(Database::TDBTransaction &DBTransaction,int inPrinterKey);
 
     static void DBLoadPrinters(Database::TDBTransaction &DBTransaction,std::vector<TPrinterVirtual> &VirtualPrinters);
+    static void DBLoadPrinters(Database::TDBTransaction &DBTransaction,std::vector<TPrinterVirtual> &VirtualPrinters,AnsiString DeviceName);
     static void DBLoadPrinters(Database::TDBTransaction &DBTransaction,int DeviceKey,std::vector<TPrinterVirtual> &DevicePrinters,bool isChefmatePrinter=false);
     static TStringList* LoadChefmatePrinter(Database::TDBTransaction &DBTransaction,TItemComplete* inOrderItem);
 };
