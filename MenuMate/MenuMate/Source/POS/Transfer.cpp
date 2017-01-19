@@ -1489,6 +1489,7 @@ TModalResult TfrmTransfer::AddNewTab(Database::TDBTransaction &DBTransaction)
    if (!Staff->TestAccessLevel(TDeviceRealTerminal::Instance().User, CheckAccountCreation))
    {
         MessageBox("You do not have the privileges to create a new tab!", "Error", MB_OK + MB_ICONERROR);
+        btnTransferTo->Caption = "Select";
         return mrAbort;
    }
    if (frmAddTab->ShowModal() == mrOk)
@@ -1527,6 +1528,7 @@ TModalResult TfrmTransfer::AddNewTab(Database::TDBTransaction &DBTransaction)
    else
    {
       Retval = mrAbort;
+      btnTransferTo->Caption = "Select";
    }
    return Retval;
 }
@@ -2156,7 +2158,7 @@ TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransactio
     {
         int tabKey = SelectedItem.Properties["TabKey"];
         ClearListBox(listbox);
-        //btntransfer->Caption = title;
+        btntransfer->Caption = title;
         if(tabKey == -1)
         {
            Retval = AddNewTab(DBTransaction);
