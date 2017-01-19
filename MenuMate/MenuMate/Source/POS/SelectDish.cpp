@@ -5034,8 +5034,25 @@ void TfrmSelectDish::RemoveItem(Database::TDBTransaction &DBTransaction)
                        ListItem->ItemObject = NULL;
                        delete Item;
                     }
+
               }
               suffleDiscounds = true;
+              // update discount list..
+              /*int count = DiscountDetails.size();
+              for(std::vector<TDiscountDetails>::iterator it = DiscountDetails.begin(); it != DiscountDetails.end(); ++it)
+              {
+                 for(int k = 0; k < it->OrderList->Count; k++)
+                 {
+                     TItemMinorComplete *CheckItem = (TItemMinorComplete *)it->OrderList->Items[k];
+                     if(CheckItem == Item)
+                     {
+                        //int index = it->OrderList->IndexOf(CheckItem);
+                        it->OrderList->Remove(CheckItem);
+                        break;
+                     }
+                 }
+              }*/
+
           }
         }
 
@@ -13509,35 +13526,121 @@ void TfrmSelectDish::AdjustItemQty(Currency Count)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ManageDiscounts()
 {
-   std::map<int,TList*> DiscountMap;
+   std::map<TDiscount, TList*> DiscountMap;
+   TDiscountDetails discountdetails;
+   bool isAdded = false;
+   //bool isItemAdded = false;
+   //int count = DiscountDetails.size();
    std::vector<TDiscountMode> exemptFilter;
    exemptFilter.push_back(DiscModeDeal);
    exemptFilter.push_back(DiscModeCombo);
    for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
-	{
+   {
+        bool isItemAdded = false;
 		TItemMinorComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
 		for(std::vector<TDiscount>::iterator ptrDiscount = Item->Discounts.begin(); ptrDiscount != Item->Discounts.end(); ++ptrDiscount)
         {
              if(ptrDiscount->Source != dsMMMembership && ptrDiscount->Mode != DiscModeDeal && ptrDiscount->Mode != DiscModeCombo &&
                ptrDiscount->Source != dsMMLocationReward && ptrDiscount->Source != dsMMMembershipReward)
             {
-               if(DiscountMap[ptrDiscount->DiscountKey] == NULL)
-                {
-                  DiscountMap[ptrDiscount->DiscountKey] = new TList();
-                }
-                DiscountMap[ptrDiscount->DiscountKey]->Add(Item);
+
+               TDiscount CurrentDiscount = *ptrDiscount;
+               if(DiscountMap[CurrentDiscount] == NULL)
+               {
+                  DiscountMap[CurrentDiscount] = new TList();
+               }
+               DiscountMap[CurrentDiscount]->Add(Item);
+
+               /*for(std::vector<TDiscountDetails>::iterator it = DiscountDetails.begin(); it != DiscountDetails.end(); ++it)
+               {
+                  for(int ii = 0; ii < it->OrderList->Count; ii++)
+                  {
+                      TItemMinorComplete *CheckItem = (TItemMinorComplete*)it->OrderList->Items[ii];
+                      if(ptrDiscount->DiscountKey == it->Discount.DiscountKey && it->Discount.Type == ptrDiscount->Type)
+                      {
+                          if(CheckItem->Item_ID == Item->Item_ID && CheckItem->Size == Item->Size && CheckItem->GetQty() == Item->GetQty())
+                          {
+                             isItemAdded = true;
+                          }
+                          isAdded = true;
+                          //else
+                          //{
+                             //it->OrderList->Add(Item);
+                          //}
+                      }
+                  }
+                  if(!isItemAdded)
+                  {
+                     it->OrderList->Add(Item);
+                  }
+
+               }
+               if(!isAdded)
+               {
+                   discountdetails.Discount = CurrentDiscount;
+                   discountdetails.OrderList = new TList();
+                   discountdetails.OrderList->Add(Item);
+                   DiscountDetails.push_back(discountdetails);
+               }*/
+
+               /*for(std::vector<TDiscountDetails>::iterator it = DiscountDetails.begin(); it != DiscountDetails.end(); ++it)
+               {
+                  if(ptrDiscount->DiscountKey == it->Discount.DiscountKey)
+                  {
+
+                  }
+               }
+
+               for(std::vector<TDiscountDetails>::iterator it = DiscountDetails.begin(); it != DiscountDetails.end(); ++it)
+               {
+                  if(ptrDiscount->DiscountKey == it->Discount.DiscountKey && Item->ItemKey == it->Items->ItemKey && Item->GetQty() == it->Items->GetQty())
+                  {
+
+                  }
+               }*/
+
+
+
+               /*for(std::vector<TDiscountDetails>::iterator it = DiscountDetails.begin(); it != DiscountDetails.end(); ++it)
+               {
+                  if(ptrDiscount->DiscountKey == it->Discount.DiscountKey && Item->ItemKey == it->Items->ItemKey && Item->GetQty() == it->Items->GetQty())
+                  {
+                     isAdded = true;
+                  }
+
+               }
+               if(!isAdded)
+               {
+                   discountdetails.Discount = CurrentDiscount;
+                   discountdetails.Items = Item;
+                   DiscountDetails.push_back(discountdetails);
+               }*/
             }
         }
         Item->DiscountsClearByFilter(exemptFilter);
 	}
-   Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-   DBTransaction.StartTransaction();
-   ApplyMemberDiscounts(DBTransaction,false);
-   for (std::map<int, TList*>::iterator i = DiscountMap.begin(); i != DiscountMap.end(); ++i)
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    ApplyMemberDiscounts(DBTransaction,false);
+    for (std::map<TDiscount, TList*>::iterator i = DiscountMap.begin(); i != DiscountMap.end(); ++i)
     {
-      ApplyDiscount(DBTransaction,i->first,i->second,false);
-	}
-  DBTransaction.Commit();
+        TDiscount CurrentDiscount = i->first;
+        if(CurrentDiscount.Mode == DiscModeCurrency)
+        {
+           CurrentDiscount.Amount = CurrentDiscount.OriginalAmount;
+        }
+        ApplyDiscount(DBTransaction, CurrentDiscount, i->second, false);
+    }
+    /*for(std::vector<TDiscountDetails>::iterator it = DiscountDetails.begin(); it != DiscountDetails.end(); ++it)
+    {
+      TDiscount CurrentDiscount = it->Discount;
+      if(CurrentDiscount.Mode == DiscModeCurrency)
+      {
+         CurrentDiscount.Amount = CurrentDiscount.OriginalAmount;
+      }
+      ApplyDiscount(DBTransaction, CurrentDiscount, it->OrderList, false);
+    }*/
+    DBTransaction.Commit();
 }
 // ---------------------------------------------------------------------------
 bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, int DiscountKey, TList *Orders,
@@ -13611,6 +13714,7 @@ bool TfrmSelectDish::PromptForDiscountAmount(TDiscount &currentDiscount)
             if (frmDiscount->Mode == DiscModeCurrency)
             {
                 currentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+                currentDiscount.OriginalAmount = currentDiscount.Amount;
                 if (currentDiscount.Amount != frmDiscount->CURResult)
                 {
                    MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -13619,6 +13723,7 @@ bool TfrmSelectDish::PromptForDiscountAmount(TDiscount &currentDiscount)
            if (frmDiscount->Mode == DiscModeItem)
             {
                 currentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+                currentDiscount.OriginalAmount = currentDiscount.Amount;
                 if (currentDiscount.Amount != frmDiscount->CURResult)
                 {
                    MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -13627,6 +13732,7 @@ bool TfrmSelectDish::PromptForDiscountAmount(TDiscount &currentDiscount)
             else if (frmDiscount->Mode == DiscModeSetPrice)
             {
                 currentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+                currentDiscount.OriginalAmount = currentDiscount.Amount;
                 if (currentDiscount.Amount != frmDiscount->CURResult)
                 {
                    MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -13722,6 +13828,7 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDis
             }
         }
         ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
+
         CheckDeals(DBTransaction);
 
         if( CurrentDiscount.Source == dsMMMebersPoints && SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0)

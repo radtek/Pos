@@ -49,6 +49,7 @@ class TDiscount
 {
 private :
 	Currency amount;
+    Currency originalamount;
 public:
 	bool operator==(TDiscount &rhs);
 
@@ -109,6 +110,8 @@ public:
 		}
 		return Retval;
 	}friend bool operator < (const TDiscount & f1, const TDiscount & f2);
+    Currency setOriginalAmount(Currency originalamount);
+    __property Currency OriginalAmount = {read=originalamount, write=setOriginalAmount};
 };
 
 bool operator < (const TDiscount & f1, const TDiscount & f2)

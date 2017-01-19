@@ -392,7 +392,7 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
 			if (frmDiscount->Mode == DiscModeCurrency)
 			{
 			   CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
-
+               CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 			   if (CurrentDiscount.Amount != frmDiscount->CURResult)
 			   {
 				  MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -402,6 +402,7 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
             else if (frmDiscount->Mode == DiscModeItem)
 			{
 			   CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+               CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 
 			   if (CurrentDiscount.Amount != frmDiscount->CURResult)
 			   {
@@ -412,6 +413,7 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
 			else if (frmDiscount->Mode == DiscModeSetPrice || frmDiscount->Mode == DiscModeCombo)
 			{
 			   CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+               CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 			   if (CurrentDiscount.Amount != frmDiscount->CURResult)
 			   {
 				  MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);

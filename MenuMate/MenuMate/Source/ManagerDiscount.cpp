@@ -237,6 +237,7 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
 		Discount.MaximumValue = 0;
 		Discount.Source = dsMMMebersPoints;
 		Discount.Group = 0;
+        Discount.OriginalAmount = 0;
 		ReturnVal = true;
 	}
 	else if(DiscountKey == dsMMDealKey)
@@ -289,6 +290,7 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
             Discount.DailyUsageAllowedPerMember  = IBInternalQuery->FieldByName("DAILY_USE_PER_MEMBER")->AsInteger;
             Discount.IsCloudDiscount = IBInternalQuery->FieldByName("IS_CLOUD_DISCOUNT")->AsString == "T";
             Discount.IsMembershipDiscount = IBInternalQuery->FieldByName("IS_MEMBERSHIP_DISCOUNT")->AsString == "T";
+            Discount.OriginalAmount = IBInternalQuery->FieldByName("AMOUNT")->AsCurrency;
 			GetDiscountCategories(DBTransaction,DiscountKey,Discount);
 			ReturnVal = true;
 		}
@@ -1382,6 +1384,7 @@ void TManagerDiscount::CopyDiscountDetails(TDiscount& destination,TDiscount& sou
     destination.DailyUsageAllowedPerMember = source.DailyUsageAllowedPerMember;
     destination.MembersOnly = source.MembersOnly;
     destination.MembersExempt = source.MembersExempt;
+    destination.OriginalAmount = source.OriginalAmount;
 }
 //---------------------------------------------------------------------------
 Currency TManagerDiscount::GetOrderTotal(TList *DiscountItems,TDiscount DiscountToBeApplied, double maxDiscountQty)

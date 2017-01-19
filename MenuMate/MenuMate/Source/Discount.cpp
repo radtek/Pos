@@ -49,6 +49,7 @@ void TDiscount::Clear()
    DailyUsageAllowedPerMember = 0;
    ProductPriority = ppCheapest;
    IsMembershipDiscount = false;
+   OriginalAmount = 0;
 }
 
 bool
@@ -73,7 +74,8 @@ TDiscount::operator==(TDiscount &rhs)
           && MaxItemAffected == rhs.MaxItemAffected
           && MinItemRequired == rhs.MinItemRequired
           && IsCloudDiscount == rhs.IsCloudDiscount
-          && DailyUsageAllowedPerMember == rhs.DailyUsageAllowedPerMember;
+          && DailyUsageAllowedPerMember == rhs.DailyUsageAllowedPerMember
+          && OriginalAmount == rhs.OriginalAmount;
 }
 
 UnicodeString TDiscount::GetDescription() const
@@ -133,6 +135,19 @@ Currency TDiscount::setAmount(Currency inAmount)
 		amount = inAmount;
     }
     return amount;
+}
+
+Currency TDiscount::setOriginalAmount(Currency inAmount)
+{
+    if(Source == dsMMMebersPoints && inAmount > MaximumValue)
+    {
+    	originalamount = MaximumValue;
+    }
+    else
+    {
+		originalamount = inAmount;
+    }
+    return originalamount;
 }
 
 bool TDiscount::ContainsCatKey(TListCategoryContainer *Categories) const

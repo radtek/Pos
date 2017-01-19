@@ -79,6 +79,14 @@ enum eBtnToDisplay
 
 typedef Set <eBtnToDisplay, eBTDOverView, eBTDNone> TBtnToDisplay;
 
+struct TDiscountDetails
+{
+  public:
+      TDiscount Discount;
+      TList *OrderList;
+      //TItemMinorComplete* Items;
+};
+
 class TfrmSelectDish : public TZForm
 {
    friend TZForm;
@@ -660,6 +668,8 @@ public: // User declarations
     void RefreshMenu();
     bool check;
     bool IsTextBoxFocused();
+    //std::vector<TDiscountDetails> DiscountDetails;
+
  };
 // ---------------------------------------------------------------------------
 
