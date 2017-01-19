@@ -23,11 +23,11 @@ void TManagerVirtualPrinter::InitialisePrinters(Database::TDBTransaction &DBTran
    CreateWindowsConnection(DBTransaction,inDeviceKey);
 }
 
-/*void TManagerVirtualPrinter::ReloadPrinters(Database::TDBTransaction &DBTransaction)
+void TManagerVirtualPrinter::InitialisePrinters(Database::TDBTransaction &DBTransaction, int inDeviceKey,AnsiString DeviceName)
 {
-	VirtualPrinters.clear();
-	DBLoadPrinters(DBTransaction);
-}*/
+   // ReloadPrinters(DBTransaction);
+   CreateWindowsConnection(DBTransaction,inDeviceKey,DeviceName);
+}
 
 void TManagerVirtualPrinter::CreateWindowsConnection(Database::TDBTransaction &DBTransaction,int inDeviceKey)
 {
@@ -59,6 +59,104 @@ void TManagerVirtualPrinter::CreateWindowsConnection(Database::TDBTransaction &D
 		}
 	}
 }
+
+void TManagerVirtualPrinter::CreateWindowsConnection(Database::TDBTransaction &DBTransaction,int inDeviceKey,AnsiString DeviceName)
+{
+	//Create any Windows printers as necessary.
+	std::auto_ptr<TManagerPhysicalPrinter> ManagerPhysicalPrinter(new TManagerPhysicalPrinter);
+	std::vector<TPrinterVirtual> VirtualPrinters;
+
+	DBLoadPrinters(DBTransaction,VirtualPrinters,DeviceName);
+
+	for (std::vector<TPrinterVirtual>::iterator ptrVirtualPrinters = VirtualPrinters.begin();
+		  ptrVirtualPrinters != VirtualPrinters.end();
+		  ptrVirtualPrinters++)
+	{
+		TPrinterPhysical PrinterPhysical = ManagerPhysicalPrinter->GetPhysicalPrinter(DBTransaction,ptrVirtualPrinters->PhysicalPrinterKey);
+
+		if (PrinterPhysical.Type == ptWindows_Printer)
+		{
+			HANDLE hPrinter = NULL;
+			bool PrinterExists = OpenPrinter(PrinterPhysical.UNCName().t_str(), &hPrinter, NULL);
+			if (!PrinterExists)
+			{
+				PrinterExists = AddPrinterConnection(PrinterPhysical.UNCName().t_str());
+			}
+
+			if (hPrinter)
+			{
+				ClosePrinter(hPrinter);
+			}
+		}
+	}
+}
+
+void TManagerVirtualPrinter::DBLoadPrinters(Database::TDBTransaction &DBTransaction,std::vector<TPrinterVirtual> &VirtualPrinters)
+{
+
+	try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+		" SELECT "
+		" VIRTUALPRINTER.VIRTUALPRINTER_KEY,VIRTUALPRINTER.NAME,VIRTUALPRINTER.PHYSICALPRINTER_KEY "
+		" FROM VIRTUALPRINTER "
+		" ORDER BY "
+		"  VIRTUALPRINTER.NAME";
+		IBInternalQuery->ExecQuery();
+
+		for (; !IBInternalQuery->Eof ; IBInternalQuery->Next())
+		{
+			TPrinterVirtual PrinterVirtual;
+			PrinterVirtual.VirtualPrinterKey = IBInternalQuery->FieldByName("VIRTUALPRINTER_KEY")->AsInteger;
+			PrinterVirtual.VirtualPrinterName = IBInternalQuery->FieldByName("NAME")->AsString;
+			PrinterVirtual.PhysicalPrinterKey = IBInternalQuery->FieldByName("PHYSICALPRINTER_KEY")->AsInteger;
+			VirtualPrinters.push_back(PrinterVirtual);
+		}
+
+	}
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+
+void TManagerVirtualPrinter::DBLoadPrinters(Database::TDBTransaction &DBTransaction,std::vector<TPrinterVirtual> &VirtualPrinters,AnsiString DeviceName)
+{
+
+	try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+		"SELECT a.VIRTUALPRINTER_KEY,a.NAME,a.PHYSICALPRINTER_KEY FROM VIRTUALPRINTER a  "
+        "Left Join PHYSICALPRINTER b on a.PHYSICALPRINTER_KEY = b.PHYSICALPRINTER_KEY "
+        "where b.COMPUTER_NAME = :COMPUTER_NAME order by a.NAME ";
+        IBInternalQuery->ParamByName("COMPUTER_NAME")->AsString = DeviceName;
+		IBInternalQuery->ExecQuery();
+
+		for (; !IBInternalQuery->Eof ; IBInternalQuery->Next())
+		{
+			TPrinterVirtual PrinterVirtual;
+			PrinterVirtual.VirtualPrinterKey = IBInternalQuery->FieldByName("VIRTUALPRINTER_KEY")->AsInteger;
+			PrinterVirtual.VirtualPrinterName = IBInternalQuery->FieldByName("NAME")->AsString;
+			PrinterVirtual.PhysicalPrinterKey = IBInternalQuery->FieldByName("PHYSICALPRINTER_KEY")->AsInteger;
+			VirtualPrinters.push_back(PrinterVirtual);
+		}
+
+	}
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+
+
 
 int TManagerVirtualPrinter::DBAddPrinter(Database::TDBTransaction &DBTransaction,TPrinterVirtual inPrinter)
 {
@@ -302,38 +400,6 @@ int TManagerVirtualPrinter::DBCheckVirtualPrinter(Database::TDBTransaction &DBTr
 	return RetVal;
 }
 
-void TManagerVirtualPrinter::DBLoadPrinters(Database::TDBTransaction &DBTransaction,std::vector<TPrinterVirtual> &VirtualPrinters)
-{
-	
-	try
-	{
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		" SELECT "
-		" VIRTUALPRINTER.VIRTUALPRINTER_KEY,VIRTUALPRINTER.NAME,VIRTUALPRINTER.PHYSICALPRINTER_KEY "
-		" FROM VIRTUALPRINTER "
-		" ORDER BY "
-		"  VIRTUALPRINTER.NAME";
-		IBInternalQuery->ExecQuery();
-		
-		for (; !IBInternalQuery->Eof ; IBInternalQuery->Next())
-		{
-			TPrinterVirtual PrinterVirtual;
-			PrinterVirtual.VirtualPrinterKey = IBInternalQuery->FieldByName("VIRTUALPRINTER_KEY")->AsInteger;
-			PrinterVirtual.VirtualPrinterName = IBInternalQuery->FieldByName("NAME")->AsString;
-			PrinterVirtual.PhysicalPrinterKey = IBInternalQuery->FieldByName("PHYSICALPRINTER_KEY")->AsInteger;
-			VirtualPrinters.push_back(PrinterVirtual);
-		}
-		
-	}
-	catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;		
-	}
-}
 
 TPrinterVirtual * TManagerVirtualPrinter::GetVirtualPrinterByKey(Database::TDBTransaction &DBTransaction,int VirtualPrinterKey)
 {
