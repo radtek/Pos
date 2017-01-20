@@ -50,6 +50,9 @@ void TDiscount::Clear()
    ProductPriority = ppCheapest;
    IsMembershipDiscount = false;
    OriginalAmount = 0;
+   OriginalPercentAmount = 0;
+   DiscountAppliedTime = 0;
+   //IsInitiallyPrompt = false;
 }
 
 bool
@@ -75,7 +78,8 @@ TDiscount::operator==(TDiscount &rhs)
           && MinItemRequired == rhs.MinItemRequired
           && IsCloudDiscount == rhs.IsCloudDiscount
           && DailyUsageAllowedPerMember == rhs.DailyUsageAllowedPerMember
-          && OriginalAmount == rhs.OriginalAmount;
+          && OriginalAmount == rhs.OriginalAmount
+          && OriginalPercentAmount == rhs.OriginalPercentAmount;
 }
 
 UnicodeString TDiscount::GetDescription() const

@@ -422,6 +422,7 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
 			else
 			{
 			   CurrentDiscount.PercentAmount = frmDiscount->PERCResult;
+               CurrentDiscount.OriginalPercentAmount = CurrentDiscount.PercentAmount;
 			}
 		 }
 		 else
@@ -432,6 +433,7 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
 
 	  if (ProcessDiscount)
 	  {
+         CurrentDiscount.DiscountAppliedTime = Now();
 		 ManagerDiscount->ClearDiscount(Orders, CurrentDiscount);
 		 ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
 	  }
