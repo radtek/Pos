@@ -288,7 +288,8 @@ void __fastcall TScaleModel::GetData(TObject *Sender, int count)
 					}
 
 					Convert->GetWeight(NewWeight);
-					Convert->GetStable(NewStable);
+                    if(TDeviceRealTerminal::Instance().Scales->Counter == 0)
+    					Convert->GetStable(NewStable);
 
 					if (NewStable != Stable)
 					{

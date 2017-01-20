@@ -53,5 +53,6 @@ public:
     bool Open(int PortNum);
     void Close();
     TComPort *GetTComPort();
+    int Counter;
 };
 #endif

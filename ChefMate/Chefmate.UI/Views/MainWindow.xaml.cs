@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -42,6 +43,7 @@ namespace Chefmate.UI.Views
         private double _cordY;
         private double _maxHeight;
         private GuiStyles _guiStyles;
+        private ProcessingBox _processingBox;
         public MainWindow()
         {
             InitializeComponent();
@@ -54,6 +56,7 @@ namespace Chefmate.UI.Views
                 IsRecallEnabled = ChefmateController.Instance.CurrentSettings.TerminalType == TerminalType.Kitchen;
                 SetFont();
             }
+            _processingBox = new ProcessingBox();
             this.DataContext = this;
         }
 
@@ -62,20 +65,34 @@ namespace Chefmate.UI.Views
         {
             try
             {
-                this.Dispatcher.BeginInvoke(new Action(() =>
+                Task.Factory.StartNew(() =>
                 {
+                    this.Dispatcher.Invoke(new Action(() =>
+                    {
+                        _processingBox.ProcessingMessage = "Loading Orders";
+                        _processingBox.Show();
+                    }));
                     ChefmateController.Instance.LoadAllOrders();
-                    RedrawOrders();
-                    AnalyticalData.TotalOrdersCount += TotalOrders.Count;
-                    AnalyticalData.CurrentOrdersCount += TotalOrders.Count;
-                    TotalOrders.ForEach(s => { AnalyticalData.CurrentItems += s.Items.Count; });
-                    UpdateOrderInfoDisplay();
-                    this.IsEnabled = true;
-                }));
+
+                }).ContinueWith((t) =>
+                {
+                    this.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+
+                        RedrawOrders();
+                        AnalyticalData.TotalOrdersCount += TotalOrders.Count;
+                        AnalyticalData.CurrentOrdersCount += TotalOrders.Count;
+                        TotalOrders.ForEach(s => { AnalyticalData.CurrentItems += s.Items.Count; });
+                        UpdateOrderInfoDisplay();
+                        this.IsEnabled = true;
+                        _processingBox.Close();
+                    }));
+                });
             }
             catch (Exception ex)
             {
                 this.IsEnabled = true;
+                _processingBox.Close();
                 ChefmateLogger.Instance.LogError("LoadAllOrders", ex.Message);
             }
         }
@@ -304,7 +321,7 @@ namespace Chefmate.UI.Views
         {
             ParentScroller.PageLeft();
             var position = ParentScroller.HorizontalOffset;
-            var offset = position > 0 ? position - OrderWidth * ChefmateController.Instance.PageColumns : 0; 
+            var offset = position > 0 ? position - OrderWidth * ChefmateController.Instance.PageColumns : 0;
             //ParentScroller.ScrollToHorizontalOffset(offset);
             UpdateNavigationButtonDisplay(offset);
         }
@@ -475,6 +492,8 @@ namespace Chefmate.UI.Views
             if (itemHeight <= height && !orderGuiIndex.IsLastItempartial)
             {
                 orderGuiIndex.IsLastItempartial = false;
+                orderGuiIndex.ItemSideIndex = 0;
+                orderGuiIndex.ItemOptionIndex = 0;
                 orderGuiIndex.GroupItemIndex++;
                 height -= itemHeight;
                 return inItem;
@@ -483,9 +502,14 @@ namespace Chefmate.UI.Views
             {
                 var item = new Item(inItem);
                 if (!orderGuiIndex.IsLastItempartial)
+                {
                     height -= ChefmateConstants.UnitHeight;
+                    orderGuiIndex.ItemSideIndex = 0;
+                    orderGuiIndex.ItemOptionIndex = 0;
+                }
                 else
                     item.DisplayAttributes.IsHeaderVisible = false;
+
                 while (height > ChefmateConstants.UnitHeight && orderGuiIndex.ItemSideIndex < inItem.Sides.Count)
                 {
                     var side = new Side(inItem.Sides[orderGuiIndex.ItemSideIndex]);
@@ -545,7 +569,7 @@ namespace Chefmate.UI.Views
                 if (canAdd)
                 {
                     webOrder.ArrivalTime = DateTime.Now;
-                    if (DbOrder.UpdateOrderArrivalTime(webOrder.OrderKey)) 
+                    if (DbOrder.UpdateOrderArrivalTime(webOrder.OrderKey))
                     {
                         ordersToRemove.Add(webOrder.OrderKey);
                         TotalOrders.Add(webOrder);
