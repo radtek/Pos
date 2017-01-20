@@ -86,10 +86,10 @@ void __fastcall TfrmMemberCreation::EditCustomerBasicDetails(TObject *Sender)
     if (frmTouchKeyboard->ShowModal() == mrOk)
     {
          CustomerInfoPointers[btn->Tag] =  frmTouchKeyboard->KeyboardText;
-         Info.EMail=  CustomerInfoPointers[0];
+         Info.EMail=  CustomerInfoPointers[0].Trim();
          Info.Name=  CustomerInfoPointers[1].Trim();
          Info.Surname = CustomerInfoPointers[2].Trim();
-         Info.Phone =  CustomerInfoPointers[3];
+         Info.Phone =  CustomerInfoPointers[3].Trim();
 		 DisplayCustomerDataFromPointers();
 	}
 }

@@ -171,6 +171,12 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                    // calling the protected method from MembershipManagerSmartCards
                     TSyndCode syndicateCode =  GetSyndicateCodeManager().GetCommunicationSyndCode();
                     bool memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(syndicateCode, Info);
+                    if(memberCreationSuccess && ManagerSmartCards->CardOk)
+                    {
+                          DBTransaction.StartTransaction();
+                          TManagerMembershipSmartCards::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.MemberCode);
+                          DBTransaction.Commit();
+                    }
 			   }
 
                if(ManagerSmartCards->CardOk)
@@ -189,7 +195,6 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                    ManagerSmartCards->GetContactInfo(creationDateInfo);
                    creationDateInfo.CardCreationDate = Now();
                    TDBContacts::SetCardCreationDate(DBTransaction, Info.ContactKey, creationDateInfo.CardCreationDate);
-                   TManagerMembershipSmartCards::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.MemberCode);
                 }
                else
                 {
