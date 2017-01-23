@@ -84,7 +84,15 @@ struct TDiscountDetails
   public:
       TDiscount Discount;
       TList *OrderList;
+      TDateTime DiscountTime;
       //TItemMinorComplete* Items;
+};
+
+struct TMembershipDiscountDetails
+{
+  public:
+      TDiscountMode Mode;
+      double Amount;
 };
 
 class TfrmSelectDish : public TZForm
@@ -668,7 +676,9 @@ public: // User declarations
     void RefreshMenu();
     bool check;
     bool IsTextBoxFocused();
-    //std::vector<TDiscountDetails> DiscountDetails;
+    // method to check open discount for membership..
+    bool CheckMembershipDiscountApplied();
+    std::map<int, TMembershipDiscountDetails> OpenDiscountAmount;
 
  };
 // ---------------------------------------------------------------------------

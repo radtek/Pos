@@ -60,13 +60,13 @@ void __fastcall TfrmDiscount::FormShow(TObject *Sender)
 		lbeEnteredValue->Caption = FormatFloat("$0.00",fabs(wrkCurAmount));
 		pnlToggle->Caption = "Set Price";
 	}
-	else if (Mode == DiscModeCombo)
+	/*else if (Mode == DiscModeCombo)
 	{
 		pnl00->Caption = "00";
 		wrkCurAmount = CURInitial;
 		lbeEnteredValue->Caption = FormatFloat("$0.00",fabs(wrkCurAmount));
 		pnlToggle->Caption = "Combo";
-	}
+	}*/
    else	if (Mode == DiscModeItem)
 	{
 		pnl00->Caption = "00";
@@ -333,11 +333,11 @@ void __fastcall TfrmDiscount::btnCLRMouseUp(TObject *Sender,
 		wrkPercAmount = 0;
 		lbeEnteredValue->Caption = FloatToStrF(wrkPercAmount, ffNumber	, 18, 1) + " %";
    }
-	else if (Mode == DiscModeCombo)
+	/*else if (Mode == DiscModeCombo)
 	{
 		wrkCurAmount = 0;
 		lbeEnteredValue->Caption = CurrToStrF(wrkCurAmount, ffCurrency, CurrencyDecimals);
-	}
+	}*/
     else if (Mode == DiscModeItem)
 	{
 		wrkCurAmount = 0;
@@ -409,7 +409,7 @@ void __fastcall TfrmDiscount::pnlToggleClick(TObject *Sender)
 {
 	if (Mode == DiscModeCurrency)
 	{
-		Mode = DiscModeCombo;
+		/*Mode = DiscModeCombo;
 		pnl00->Caption = "00";
 		if (TotalValue != 0)
 		{
@@ -418,10 +418,7 @@ void __fastcall TfrmDiscount::pnlToggleClick(TObject *Sender)
 		lbeEnteredValue->Caption = CurrToStrF(wrkCurAmount, ffCurrency, CurrencyDecimals);
 		pnlToggle->Caption = "Combo";
         ValueTypeBeforeSetPrice = ValueType;
-        ValueType = avtNone;
-	}
-	else if (Mode == DiscModeCombo)
-	{
+        ValueType = avtNone;*/
 		Mode = DiscModePercent;
 		PercentDecimal = false;
 		pnl00->Caption = ".";
@@ -433,6 +430,19 @@ void __fastcall TfrmDiscount::pnlToggleClick(TObject *Sender)
 		pnlToggle->Caption = "% Mode";
         ValueType = ValueTypeBeforeSetPrice;
 	}
+	/*else if (Mode == DiscModeCombo)
+	{
+		Mode = DiscModePercent;
+		PercentDecimal = false;
+		pnl00->Caption = ".";
+		if (TotalValue != 0)
+		{
+			wrkPercAmount = double(int(1000 * wrkCurAmount / TotalValue)) / 10;
+		}
+		lbeEnteredValue->Caption = FloatToStr(wrkPercAmount) + " %";
+		pnlToggle->Caption = "% Mode";
+        ValueType = ValueTypeBeforeSetPrice;
+	}*/
 	else if (Mode == DiscModePercent)
 	{
 		Mode = DiscModeSetPrice;
