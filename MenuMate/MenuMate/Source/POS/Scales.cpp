@@ -6,6 +6,7 @@
 #include "Scales.h"
 #include "MMMessageBox.h"
 #include "MMTouchNumpad.h"
+#include "DeviceRealTerminal.h"
 #include "MMPrice.h"
 #include "Rounding.h"
 
@@ -31,6 +32,7 @@ __fastcall TfrmScales::TfrmScales(TComponent* Owner,TWeighScale *inScales,TPoleD
    UnitPrice = 0;
    lbUnitPrice->Caption = FormatFloat("0.00",UnitPrice);
    lbPackagingWeight->Caption = TareWeight.ToStringWithUnit();
+   TDeviceRealTerminal::Instance().Scales->Counter = 0;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

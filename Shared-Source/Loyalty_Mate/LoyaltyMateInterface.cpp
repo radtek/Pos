@@ -795,12 +795,14 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyResponse
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyMemberResponse* inWCFResponse )
 {
-     return MMLoyaltyServiceResponse(
+     MMLoyaltyServiceResponse memberResponse = MMLoyaltyServiceResponse(
                 inWCFResponse->Successful,
                 AnsiString( inWCFResponse->Message.t_str() ),
                 AnsiString( inWCFResponse->Description.t_str() ),
                 ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
                 AnsiString( inWCFResponse->MemberInfo->UniqueId.t_str() ) );
+     memberResponse.MemberCode = inWCFResponse->MemberInfo->MemberCardCode;
+     return memberResponse;
 }
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyCompanyResponse* inWCFResponse )

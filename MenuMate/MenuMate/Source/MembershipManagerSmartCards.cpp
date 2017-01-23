@@ -1447,6 +1447,7 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
 
     if(memberCreationSuccess)
     {
+       UpdateMemberCardCodeToDB(DBTransaction,SmartCardContact,SmartCardContact.MemberCode);
        AddDefaultPoints(DBTransaction,Points,SmartCardContact.ContactKey);
         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- Loyaltymate operation");
     }

@@ -1191,9 +1191,9 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                 if(EftTrans->FinalAmount != "")
                                 {
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
-                                   if(FinalAmount != Pay)
+                                   if(FinalAmount != (Pay + CashOut))
                                    {
-                                       Payment->TipAmount = FinalAmount - Pay;
+                                       Payment->TipAmount = FinalAmount - (Pay + CashOut);
                                        Payment->SetPay(FinalAmount);
                                    }
                                 }

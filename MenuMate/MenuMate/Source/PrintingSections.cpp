@@ -6258,30 +6258,26 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
                  pPrinter->Line->Columns[0]->Text = "VOID";
                  pPrinter->AddLine();
              }
-            if(//!TGlobalSettings::Instance().HideReceiptNumberForRefundItem ||
-                !(PrintJob->Transaction->CreditTransaction))
+            PrintTaxInvoice(PrintJob);
+            if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
+                && TGlobalSettings::Instance().ShowVoidNumber)
             {
-                PrintTaxInvoice(PrintJob);
-                if(TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction)
-                    && TGlobalSettings::Instance().ShowVoidNumber)
-                {
-                    pPrinter->Line->Columns[0]->Text    =   "Void No.";
-                }
-                else
-                    pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().ReceiptNumberLabel.Trim();
-                if(PrintJob->Transaction->TypeOfSale == RegularSale)
-                {
-                     AnsiString invoiceNumber = (AnsiString)PrintJob->Transaction->InvoiceNumber;
-                     AnsiString prefix = TReceiptUtility::ExtractInvoiceNumber(invoiceNumber);
-                     pPrinter->Line->Columns[0]->Text += prefix +
-                               TReceiptUtility::ModifyInvoiceNumber(invoiceNumber, ReceiptLength);
-                }
-                else
-                {
-                      pPrinter->Line->Columns[0]->Text += PrintJob->Transaction->InvoiceNumber;
-                }
-                pPrinter->AddLine();
+                pPrinter->Line->Columns[0]->Text    =   "Void No.";
             }
+            else
+                pPrinter->Line->Columns[0]->Text = TGlobalSettings::Instance().ReceiptNumberLabel.Trim();
+            if(PrintJob->Transaction->TypeOfSale == RegularSale)
+            {
+                 AnsiString invoiceNumber = (AnsiString)PrintJob->Transaction->InvoiceNumber;
+                 AnsiString prefix = TReceiptUtility::ExtractInvoiceNumber(invoiceNumber);
+                 pPrinter->Line->Columns[0]->Text += prefix +
+                           TReceiptUtility::ModifyInvoiceNumber(invoiceNumber, ReceiptLength);
+            }
+            else
+            {
+                  pPrinter->Line->Columns[0]->Text += PrintJob->Transaction->InvoiceNumber;
+            }
+            pPrinter->AddLine();
 		}
 	}
 }

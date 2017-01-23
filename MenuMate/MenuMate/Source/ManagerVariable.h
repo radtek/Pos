@@ -116,6 +116,7 @@ enum vmVariables
     vmShowDarkBackgroundInPOS,
     vmIsCloudSynced,
     vmOpenCashDrawer,
+    vmHideReceiptNumberForRefundItem,
     vmMergeSimilarItem,
     vmHideRoundingOnReceipt,
 	vmCashDenominationEntry,

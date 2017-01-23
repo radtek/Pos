@@ -80,7 +80,7 @@ class MMLoyaltyServiceResponse
         AnsiString            Description;
         MMLoyaltyResponseCode ResponseCode;
         AnsiString            UUID;
-
+        AnsiString            MemberCode;
         MMLoyaltyServiceResponse(bool  inSuccess,AnsiString inMessage,AnsiString  inDescription,MMLoyaltyResponseCode inResponseCode,AnsiString inUUID)
             : IsSuccesful(inSuccess),Message(inMessage),Description(inDescription),ResponseCode(inResponseCode),UUID(inUUID)
         {

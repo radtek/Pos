@@ -247,6 +247,7 @@ void __fastcall TfrmEditCustomer::btnOkClick(TObject *Sender)
 {
     edFirstName->Text = edFirstName->Text.Trim();
     edLastName->Text = edLastName->Text.Trim();
+    edEmail->Text = edEmail->Text.Trim();
     if(cbNoEmail->Checked && TGlobalSettings::Instance().LoyaltyMateEnabled)
     {
        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);

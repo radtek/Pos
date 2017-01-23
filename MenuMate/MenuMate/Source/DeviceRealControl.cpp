@@ -497,16 +497,16 @@ void TDeviceRealControl::UpdatePeople(Database::TDBTransaction &DBTransaction, A
 						IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = StrToInt(Csv.Cells[TYPE][i]);
 						IBInternalQuery->ParamByName("CONTACTS_3RDPARTY_KEY")->AsInteger = 0;
 						IBInternalQuery->ParamByName("NAME")->AsString = Csv.Cells[NAME][i];
-						IBInternalQuery->ParamByName("PHONE")->AsString = Csv.Cells[PHONE][i];
-						IBInternalQuery->ParamByName("MOBILE")->AsString = Csv.Cells[CELL_PHONE][i];
+						IBInternalQuery->ParamByName("PHONE")->AsString = Csv.Cells[PHONE][i].Trim();
+						IBInternalQuery->ParamByName("MOBILE")->AsString = Csv.Cells[CELL_PHONE][i].Trim();
 						IBInternalQuery->ParamByName("PHONE_EXTENSION")->AsString = Csv.Cells[PHONE_EXT][i];
-						IBInternalQuery->ParamByName("EMAIL")->AsString = Csv.Cells[EMAIL][i];
-						IBInternalQuery->ParamByName("MAILING_ADDRESS")->AsString = Csv.Cells[MAILADD1][i];
+						IBInternalQuery->ParamByName("EMAIL")->AsString = Csv.Cells[EMAIL][i].Trim();
+						IBInternalQuery->ParamByName("MAILING_ADDRESS")->AsString = Csv.Cells[MAILADD1][i].Trim();
 						IBInternalQuery->ParamByName("INITIALS")->AsString = Csv.Cells[INITIALS][i];
 
-						IBInternalQuery->ParamByName("FIRST_NAME")->AsString = Csv.Cells[FIRST_NAME][i];
-						IBInternalQuery->ParamByName("MIDDLE_NAME")->AsString = Csv.Cells[MIDDLE_NAME][i];
-						IBInternalQuery->ParamByName("LAST_NAME")->AsString = Csv.Cells[LAST_NAME][i];
+						IBInternalQuery->ParamByName("FIRST_NAME")->AsString = Csv.Cells[FIRST_NAME][i].Trim();
+						IBInternalQuery->ParamByName("MIDDLE_NAME")->AsString = Csv.Cells[MIDDLE_NAME][i].Trim();
+						IBInternalQuery->ParamByName("LAST_NAME")->AsString = Csv.Cells[LAST_NAME][i].Trim();
 						IBInternalQuery->ParamByName("SEX")->AsString = Csv.Cells[SEX][i];
 						bool TabEnabled = ((UpperCase(Csv.Cells[TAB_ENALBED][i]) == "T") ? true : false) ||
 						((UpperCase(Csv.Cells[TAB_ENALBED][i]) == "TRUE") ? true : false);

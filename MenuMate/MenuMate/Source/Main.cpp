@@ -261,7 +261,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		TManagerThirdParty::Instance().Initialise(TDeviceRealTerminal::Instance().ID.Product);
 		TManagerPhysicalPrinter ManagerPhysicalPrinter;
 		ManagerPhysicalPrinter.Initialise(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey,TDeviceRealTerminal::Instance().ID.ComputerName);
-		TManagerVirtualPrinter::InitialisePrinters(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey);
+		TManagerVirtualPrinter::InitialisePrinters(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey,TDeviceRealTerminal::Instance().ID.ComputerName);
+        //TManagerVirtualPrinter::InitialisePrinters(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey);
 		TManagerChitNumber::Instance().Initialise(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey);
 		Receipt->Initialise(DBBootTransaction);
 		if(!TDBGroups::GroupExists(DBBootTransaction, "No Contacts Group"))
