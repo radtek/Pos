@@ -159,7 +159,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
                                      "a.RECEIPT, SECURITY.USER_KEY , ARC.LOYALTY_KEY "
                                     "FROM ARCBILL a "
                                     "INNER JOIN SECURITY ON A.SECURITY_REF = SECURITY.SECURITY_REF "
-                                    "INNER JOIN (SELECT AB.ARCBILL_KEY, ARC.LOYALTY_KEY FROM ARCBILL AB INNER JOIN ARCHIVE ARC ON "
+                                    "INNER JOIN (SELECT AB.ARCBILL_KEY, ARC.LOYALTY_KEY FROM ARCBILL AB LEFT JOIN ARCHIVE ARC ON "
                                     "AB.ARCBILL_KEY = ARC.ARCBILL_KEY WHERE AB.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER GROUP BY 1,2)ARC ON "
                                         "A.ARCBILL_KEY = ARC.ARCBILL_KEY "
                                     "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER "
@@ -168,7 +168,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
                                     "a.RECEIPT, SECURITY.USER_KEY, ARC.LOYALTY_KEY  "
                                     "FROM DAYARCBILL a "
                                     "INNER JOIN SECURITY ON A.SECURITY_REF = SECURITY.SECURITY_REF "
-                                    "INNER JOIN (SELECT AB.ARCBILL_KEY, ARC.LOYALTY_KEY FROM DAYARCBILL AB INNER JOIN DAYARCHIVE ARC ON "
+                                    "INNER JOIN (SELECT AB.ARCBILL_KEY, ARC.LOYALTY_KEY FROM DAYARCBILL AB LEFT JOIN DAYARCHIVE ARC ON "
                                     "AB.ARCBILL_KEY = ARC.ARCBILL_KEY WHERE AB.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER GROUP BY 1,2)ARC ON "
                                         "A.ARCBILL_KEY = ARC.ARCBILL_KEY "
                                     "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER ";
