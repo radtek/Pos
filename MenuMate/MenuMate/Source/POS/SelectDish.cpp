@@ -13320,6 +13320,7 @@ void TfrmSelectDish::ApplyMemberDiscounts(Database::TDBTransaction &DBTransactio
               int k = Item->Discounts.size();
               for(std::vector<TDiscount>::iterator ptrDiscount = Item->Discounts.begin(); ptrDiscount != Item->Discounts.end(); ++ptrDiscount)
               {
+                 TDiscount CurrentDiscount = *ptrDiscount;
                  if(ptrDiscount->Mode == DiscModePercent)
                  {
                     OpenDiscountAmount[ptrDiscount->DiscountKey].Mode = DiscModePercent;
@@ -13560,7 +13561,7 @@ void TfrmSelectDish::AdjustItemQty(Currency Count)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ManageDiscounts()
 {
-   std::map<int, TDiscountDetails> DiscountMap;
+   std::map<TDateTime, TDiscountDetails> DiscountMap;
    bool isDiscountAdded = false;
    std::vector<TDiscountMode> exemptFilter;
    exemptFilter.push_back(DiscModeDeal);
@@ -13574,11 +13575,51 @@ void TfrmSelectDish::ManageDiscounts()
         {
              TDiscount CurrentDiscount = *ptrDiscount;
              TDateTime discountTime = CurrentDiscount.DiscountAppliedTime;
-             if(ptrDiscount->Mode != DiscModeDeal && ptrDiscount->Mode != DiscModeCombo &&
+             if(ptrDiscount->Source != dsMMMembership && ptrDiscount->Mode != DiscModeDeal && ptrDiscount->Mode != DiscModeCombo &&
                ptrDiscount->Source != dsMMLocationReward && ptrDiscount->Source != dsMMMembershipReward)
             {
 
-                for (std::map<int, TDiscountDetails>::iterator i = DiscountMap.begin(); i != DiscountMap.end(); ++i)
+                for (std::map<TDateTime, TDiscountDetails>::iterator i = DiscountMap.begin(); i != DiscountMap.end(); ++i)
+                {
+                    if(i->second.Discount.DiscountKey == ptrDiscount->DiscountKey && i->second.Discount.Mode == ptrDiscount->Mode)
+                    {
+                        if(i->second.Discount.Mode == DiscModeCurrency || i->second.Discount.Mode == DiscModePoints || i->second.Discount.Mode == DiscModeCombo)
+                        {
+                              if(i->second.Discount.OriginalAmount == ptrDiscount->OriginalAmount && i->second.DiscountTime == ptrDiscount->DiscountAppliedTime)
+                              {
+                                 isDiscountAdded = true;
+                              }
+                        }
+                        if(i->second.Discount.Mode == DiscModePercent)
+                        {
+                              if(i->second.Discount.OriginalPercentAmount == ptrDiscount->OriginalPercentAmount && i->second.DiscountTime == ptrDiscount->DiscountAppliedTime)
+                              {
+                                 isDiscountAdded = true;
+                              }
+                        }
+                        if(i->second.Discount.Mode == DiscModeItem)
+                        {
+                              if(i->second.Discount.OriginalAmount == ptrDiscount->OriginalAmount && i->first == ptrDiscount->DiscountAppliedTime)
+                              {
+                                 isDiscountAdded = true;
+                              }
+                        }
+                    }
+                }
+                if(!isDiscountAdded)
+                {
+                    DiscountMap[CurrentDiscount.DiscountAppliedTime].OrderList = new TList();
+                    DiscountMap[CurrentDiscount.DiscountAppliedTime].Discount = CurrentDiscount;
+                    DiscountMap[CurrentDiscount.DiscountAppliedTime].DiscountTime = CurrentDiscount.DiscountAppliedTime;
+                    DiscountMap[CurrentDiscount.DiscountAppliedTime].OrderList->Add(Item);
+                }
+                else
+                {
+                    DiscountMap[CurrentDiscount.DiscountAppliedTime].OrderList->Add(Item);
+                }
+
+
+                /*for (std::map<int, TDiscountDetails>::iterator i = DiscountMap.begin(); i != DiscountMap.end(); ++i)
                 {
                     if(i->second.Discount.DiscountKey == ptrDiscount->DiscountKey && i->second.Discount.Mode == ptrDiscount->Mode)
                     {
@@ -13615,21 +13656,21 @@ void TfrmSelectDish::ManageDiscounts()
                 else
                 {
                     DiscountMap[CurrentDiscount.DiscountKey].OrderList->Add(Item);
-                }
+                }*/
             }
         }
-        Item->DiscountsClearByFilter(exemptFilter);
+        //Item->DiscountsClearByFilter(exemptFilter);
 
 	}
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     ApplyMemberDiscounts(DBTransaction,false);
 
-    for (std::map<int, TDiscountDetails>::iterator i = DiscountMap.begin(); i != DiscountMap.end(); ++i)
+    for (std::map<TDateTime, TDiscountDetails>::iterator i = DiscountMap.begin(); i != DiscountMap.end(); ++i)
     {
         TDiscount CurrentDiscount = i->second.Discount;
-        //MessageBox(CurrentDiscount.OriginalAmount, "Error", MB_ICONWARNING + MB_OK);
-        if(CurrentDiscount.Mode == DiscModeCurrency || CurrentDiscount.Mode == DiscModePoints || CurrentDiscount.Mode == DiscModeItem)
+        MessageBox(CurrentDiscount.OriginalAmount, "Error", MB_ICONWARNING + MB_OK);
+        if(CurrentDiscount.Mode == DiscModeCurrency || CurrentDiscount.Mode == DiscModePoints || CurrentDiscount.Mode == DiscModeItem || CurrentDiscount.Mode == DiscModeCombo)
         {
            CurrentDiscount.Amount = CurrentDiscount.OriginalAmount;
            //MessageBox(CurrentDiscount.OriginalAmount, "Error", MB_ICONWARNING + MB_OK);
@@ -13709,7 +13750,10 @@ bool TfrmSelectDish::PromptForDiscountAmount(TDiscount &currentDiscount)
         frmDiscount->CURInitial = currentDiscount.Amount;
         frmDiscount->PERCInitial = currentDiscount.PercentAmount;
         frmDiscount->TotalValue = InitialMoney.GrandTotal;
-
+        if(frmDiscount->Mode == DiscModeCombo)
+        {
+           frmDiscount->IsComboDiscount = true;
+        }
         if (frmDiscount->ShowModal() == mrOk)
         {
             currentDiscount.Mode = frmDiscount->Mode;
@@ -13819,18 +13863,19 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDis
        for(std::map<int, TMembershipDiscountDetails>::iterator ii = OpenDiscountAmount.begin(); ii != OpenDiscountAmount.end(); ++ii)
        {
            TMembershipDiscountDetails _membershipDiscountDetails;
-           if(ii->first == CurrentDiscount.DiscountKey && CurrentDiscount.Type == 3)
+           if(ii->first == CurrentDiscount.DiscountKey && (CurrentDiscount.Type == dtPromptAmount || CurrentDiscount.Type == dtPromptDescriptionAmount))
            {
                if(ii->second.Mode == DiscModePercent)
                {
-                 CurrentDiscount.Mode = ii->second.Mode;
-                 CurrentDiscount.PercentAmount = ii->second.Amount;
-                 CurrentDiscount.OriginalPercentAmount = CurrentDiscount.PercentAmount;
+                  CurrentDiscount.Mode = ii->second.Mode;
+                  CurrentDiscount.PercentAmount = ii->second.Amount;
+                  CurrentDiscount.OriginalPercentAmount = CurrentDiscount.PercentAmount;
                }
                else
                {
-                 CurrentDiscount.Amount = ii->second.Amount;
-                 CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
+                  CurrentDiscount.Mode = ii->second.Mode;
+                  CurrentDiscount.Amount = ii->second.Amount;
+                  CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
                }
            }
        }

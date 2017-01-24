@@ -389,7 +389,7 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
 		 if (frmDiscount->ShowModal() == mrOk)
 		 {
 			CurrentDiscount.Mode = frmDiscount->Mode;
-			if (frmDiscount->Mode == DiscModeCurrency)
+			if (frmDiscount->Mode == DiscModeCurrency || frmDiscount->Mode == DiscModePoints)
 			{
 			   CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;

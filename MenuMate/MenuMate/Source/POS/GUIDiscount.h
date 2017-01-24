@@ -78,6 +78,8 @@ public:		// User declarations
    TAdjustmentValueType ValueType;
    TAdjustmentValueType ValueTypeBeforeSetPrice;
    void ForceType(TAdjustmentValueType inValueType);
+   bool IsNewDiscount;
+   bool IsComboDiscount;
 };
 //---------------------------------------------------------------------------
 #endif

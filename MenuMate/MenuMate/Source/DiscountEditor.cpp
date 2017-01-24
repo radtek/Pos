@@ -195,6 +195,7 @@ void __fastcall TfrmDiscountEdit::btnAmountClick(TObject *Sender)
 	frmDiscount->PERCInitial = 0;
 	frmDiscount->TotalValue = 0;
 	frmDiscount->Mode = CurrentDiscount.Mode;
+    frmDiscount->IsNewDiscount = true;
 
 	if(CurrentDiscount.Mode == DiscModePercent)
 	{
