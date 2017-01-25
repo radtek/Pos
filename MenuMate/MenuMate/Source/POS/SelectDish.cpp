@@ -13311,30 +13311,7 @@ void TfrmSelectDish::ApplyMemberDiscounts(Database::TDBTransaction &DBTransactio
     //bool isDiscountApplied = true;
 	if (SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0)
 	{
-        if(SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0 && !isInitiallyApplied)
-        {
-           // Extract open Discount and assign the open discount amount to Current discount amount
-           for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
-           {
-              TItemMinorComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
-              int k = Item->Discounts.size();
-              for(std::vector<TDiscount>::iterator ptrDiscount = Item->Discounts.begin(); ptrDiscount != Item->Discounts.end(); ++ptrDiscount)
-              {
-                 TDiscount CurrentDiscount = *ptrDiscount;
-                 if(ptrDiscount->Mode == DiscModePercent)
-                 {
-                    OpenDiscountAmount[ptrDiscount->DiscountKey].Mode = DiscModePercent;
-                    OpenDiscountAmount[ptrDiscount->DiscountKey].Amount = ptrDiscount->OriginalPercentAmount;
-                 }
-                 else
-                 {
-                    OpenDiscountAmount[ptrDiscount->DiscountKey].Mode = DiscModeCurrency;
-                    OpenDiscountAmount[ptrDiscount->DiscountKey].Amount = ptrDiscount->OriginalAmount;
-                 }
-              }
-           }
-
-        }
+        GetMembershipOpenDiscount(isInitiallyApplied);
 		// Apply Member Specific Discounts.
         ManagerDiscount->ClearMemberDiscounts(SeatOrders[SelectedSeat]->Orders->List);
         ManagerDiscount->ClearMemberExemtDiscounts(SeatOrders[SelectedSeat]->Orders->List);
@@ -13568,7 +13545,6 @@ void TfrmSelectDish::ManageDiscounts()
    exemptFilter.push_back(DiscModeCombo);
    for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
    {
-        bool isItemAdded = false;
         isDiscountAdded = false;
 		TItemMinorComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
 		for(std::vector<TDiscount>::iterator ptrDiscount = Item->Discounts.begin(); ptrDiscount != Item->Discounts.end(); ++ptrDiscount)
@@ -13617,50 +13593,8 @@ void TfrmSelectDish::ManageDiscounts()
                 {
                     DiscountMap[CurrentDiscount.DiscountAppliedTime].OrderList->Add(Item);
                 }
-
-
-                /*for (std::map<int, TDiscountDetails>::iterator i = DiscountMap.begin(); i != DiscountMap.end(); ++i)
-                {
-                    if(i->second.Discount.DiscountKey == ptrDiscount->DiscountKey && i->second.Discount.Mode == ptrDiscount->Mode)
-                    {
-                        if(i->second.Discount.Mode == DiscModeCurrency || i->second.Discount.Mode == DiscModePoints)
-                        {
-                              if(i->second.Discount.OriginalAmount == ptrDiscount->OriginalAmount && i->second.DiscountTime == ptrDiscount->DiscountAppliedTime)
-                              {
-                                 isDiscountAdded = true;
-                              }
-                        }
-                        if(i->second.Discount.Mode == DiscModePercent)
-                        {
-                              if(i->second.Discount.OriginalPercentAmount == ptrDiscount->OriginalPercentAmount && i->second.DiscountTime == ptrDiscount->DiscountAppliedTime)
-                              {
-                                 isDiscountAdded = true;
-                              }
-                        }
-                        if(i->second.Discount.Mode == DiscModeItem)
-                        {
-                              if(i->second.Discount.OriginalAmount == ptrDiscount->OriginalAmount && i->first == ptrDiscount->DiscountAppliedTime)
-                              {
-                                 isDiscountAdded = true;
-                              }
-                        }
-                    }
-                }
-                if(!isDiscountAdded)
-                {
-                    DiscountMap[CurrentDiscount.DiscountKey].OrderList = new TList();
-                    DiscountMap[CurrentDiscount.DiscountKey].Discount = CurrentDiscount;
-                    DiscountMap[CurrentDiscount.DiscountKey].DiscountTime = CurrentDiscount.DiscountAppliedTime;
-                    DiscountMap[CurrentDiscount.DiscountKey].OrderList->Add(Item);
-                }
-                else
-                {
-                    DiscountMap[CurrentDiscount.DiscountKey].OrderList->Add(Item);
-                }*/
             }
         }
-        //Item->DiscountsClearByFilter(exemptFilter);
-
 	}
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
@@ -13669,16 +13603,13 @@ void TfrmSelectDish::ManageDiscounts()
     for (std::map<TDateTime, TDiscountDetails>::iterator i = DiscountMap.begin(); i != DiscountMap.end(); ++i)
     {
         TDiscount CurrentDiscount = i->second.Discount;
-        MessageBox(CurrentDiscount.OriginalAmount, "Error", MB_ICONWARNING + MB_OK);
         if(CurrentDiscount.Mode == DiscModeCurrency || CurrentDiscount.Mode == DiscModePoints || CurrentDiscount.Mode == DiscModeItem || CurrentDiscount.Mode == DiscModeCombo)
         {
            CurrentDiscount.Amount = CurrentDiscount.OriginalAmount;
-           //MessageBox(CurrentDiscount.OriginalAmount, "Error", MB_ICONWARNING + MB_OK);
         }
         if(CurrentDiscount.Mode == DiscModePercent)
         {
            CurrentDiscount.PercentAmount = CurrentDiscount.OriginalPercentAmount;
-           //MessageBox(CurrentDiscount.OriginalPercentAmount, "Error", MB_ICONWARNING + MB_OK);
         }
         ApplyDiscount(DBTransaction, CurrentDiscount, i->second.OrderList, CurrentDiscount.Source);
     }
@@ -13856,30 +13787,8 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDis
         ProcessDiscount = PromptForDiscountAmount(CurrentDiscount);
     }
 
-    // assign discount amount for membership discount for open discount.....
-    if(SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0 && !isInitiallyApplied)
-    {
-       // Extract open Discount and assign the open discount amount to Current discount amount
-       for(std::map<int, TMembershipDiscountDetails>::iterator ii = OpenDiscountAmount.begin(); ii != OpenDiscountAmount.end(); ++ii)
-       {
-           TMembershipDiscountDetails _membershipDiscountDetails;
-           if(ii->first == CurrentDiscount.DiscountKey && (CurrentDiscount.Type == dtPromptAmount || CurrentDiscount.Type == dtPromptDescriptionAmount))
-           {
-               if(ii->second.Mode == DiscModePercent)
-               {
-                  CurrentDiscount.Mode = ii->second.Mode;
-                  CurrentDiscount.PercentAmount = ii->second.Amount;
-                  CurrentDiscount.OriginalPercentAmount = CurrentDiscount.PercentAmount;
-               }
-               else
-               {
-                  CurrentDiscount.Mode = ii->second.Mode;
-                  CurrentDiscount.Amount = ii->second.Amount;
-                  CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
-               }
-           }
-       }
-    }
+    // apply open discount for membership
+    ApplyMembershipOpenDiscount(CurrentDiscount, isInitiallyApplied);
 
     if (ProcessDiscount)
     {
@@ -14620,5 +14529,63 @@ bool TfrmSelectDish::CheckMembershipDiscountApplied()
 
     }
     return retVal;
+}
+
+void TfrmSelectDish::GetMembershipOpenDiscount(bool isInitiallyApplied)
+{
+    //bool isDiscountApplied = true;
+
+    if(SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0 && !isInitiallyApplied)
+    {
+       // Extract open Discount and assign the open discount amount to Current discount amount
+       for (int i = 0; i < SeatOrders[SelectedSeat]->Orders->Count; i++)
+       {
+          TItemMinorComplete *Item = SeatOrders[SelectedSeat]->Orders->Items[i];
+          int k = Item->Discounts.size();
+          for(std::vector<TDiscount>::iterator ptrDiscount = Item->Discounts.begin(); ptrDiscount != Item->Discounts.end(); ++ptrDiscount)
+          {
+             TDiscount CurrentDiscount = *ptrDiscount;
+             if(ptrDiscount->Mode == DiscModePercent)
+             {
+                OpenDiscountAmount[ptrDiscount->DiscountKey].Mode = DiscModePercent;
+                OpenDiscountAmount[ptrDiscount->DiscountKey].Amount = ptrDiscount->OriginalPercentAmount;
+             }
+             else
+             {
+                OpenDiscountAmount[ptrDiscount->DiscountKey].Mode = DiscModeCurrency;
+                OpenDiscountAmount[ptrDiscount->DiscountKey].Amount = ptrDiscount->OriginalAmount;
+             }
+          }
+       }
+
+    }
+
+}
+void TfrmSelectDish::ApplyMembershipOpenDiscount(TDiscount &CurrentDiscount, bool isInitiallyApplied)
+{
+    // assign discount amount for membership discount for open discount.....
+    if(SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0 && !isInitiallyApplied)
+    {
+       // Extract open Discount and assign the open discount amount to Current discount amount
+       for(std::map<int, TMembershipDiscountDetails>::iterator ii = OpenDiscountAmount.begin(); ii != OpenDiscountAmount.end(); ++ii)
+       {
+           TMembershipDiscountDetails _membershipDiscountDetails;
+           if(ii->first == CurrentDiscount.DiscountKey && (CurrentDiscount.Type == dtPromptAmount || CurrentDiscount.Type == dtPromptDescriptionAmount))
+           {
+               if(ii->second.Mode == DiscModePercent)
+               {
+                  CurrentDiscount.Mode = ii->second.Mode;
+                  CurrentDiscount.PercentAmount = ii->second.Amount;
+                  CurrentDiscount.OriginalPercentAmount = CurrentDiscount.PercentAmount;
+               }
+               else
+               {
+                  CurrentDiscount.Mode = ii->second.Mode;
+                  CurrentDiscount.Amount = ii->second.Amount;
+                  CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
+               }
+           }
+       }
+    }
 }
 

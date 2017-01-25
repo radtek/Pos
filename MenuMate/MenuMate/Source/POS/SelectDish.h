@@ -679,6 +679,9 @@ public: // User declarations
     // method to check open discount for membership..
     bool CheckMembershipDiscountApplied();
     std::map<int, TMembershipDiscountDetails> OpenDiscountAmount;
+    void GetMembershipOpenDiscount(bool isInitiallyApplied);
+    void ApplyMembershipOpenDiscount(TDiscount &CurrentDiscount, bool isInitiallyApplied);
+
 
  };
 // ---------------------------------------------------------------------------

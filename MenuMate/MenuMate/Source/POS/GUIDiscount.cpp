@@ -353,11 +353,9 @@ void __fastcall TfrmDiscount::btnCLRMouseUp(TObject *Sender,
    }
 	else if (Mode == DiscModeCombo)
 	{
-        if(IsNewDiscount)
-        {
-            wrkCurAmount = 0;
-            lbeEnteredValue->Caption = CurrToStrF(wrkCurAmount, ffCurrency, CurrencyDecimals);
-        }
+        wrkCurAmount = 0;
+        lbeEnteredValue->Caption = CurrToStrF(wrkCurAmount, ffCurrency, CurrencyDecimals);
+
 	}
     else if (Mode == DiscModeItem)
 	{
