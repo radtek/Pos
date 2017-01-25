@@ -860,7 +860,10 @@ void TPaymentTransaction::LoadDiscount(int DiscountKey, TDiscountSource Discount
 			else
 			{
 				CurrentDiscount.PercentAmount = frmDiscount->PERCResult;
-                CurrentDiscount.OriginalPercentAmount = CurrentDiscount.PercentAmount;
+                if(frmDiscount->Mode == DiscModePercent)
+                {
+                   CurrentDiscount.OriginalAmount = CurrentDiscount.PercentAmount;
+                }
 			}
 		}
 		else

@@ -238,7 +238,6 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
 		Discount.Source = dsMMMebersPoints;
 		Discount.Group = 0;
         Discount.OriginalAmount = 0;
-        Discount.OriginalPercentAmount = 0;
 		ReturnVal = true;
 	}
 	else if(DiscountKey == dsMMDealKey)
@@ -291,8 +290,14 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
             Discount.DailyUsageAllowedPerMember  = IBInternalQuery->FieldByName("DAILY_USE_PER_MEMBER")->AsInteger;
             Discount.IsCloudDiscount = IBInternalQuery->FieldByName("IS_CLOUD_DISCOUNT")->AsString == "T";
             Discount.IsMembershipDiscount = IBInternalQuery->FieldByName("IS_MEMBERSHIP_DISCOUNT")->AsString == "T";
-            Discount.OriginalAmount = IBInternalQuery->FieldByName("AMOUNT")->AsCurrency;
-            Discount.OriginalPercentAmount = IBInternalQuery->FieldByName("PERCENTAGE")->AsFloat;
+            if(Discount.Mode == DiscModePercent)
+            {
+               Discount.OriginalAmount = IBInternalQuery->FieldByName("PERCENTAGE")->AsFloat;
+            }
+            else
+            {
+               Discount.OriginalAmount = IBInternalQuery->FieldByName("AMOUNT")->AsCurrency;
+            }
             Discount.DiscountAppliedTime = Now();
 			GetDiscountCategories(DBTransaction,DiscountKey,Discount);
 			ReturnVal = true;
@@ -1388,7 +1393,7 @@ void TManagerDiscount::CopyDiscountDetails(TDiscount& destination,TDiscount& sou
     destination.MembersOnly = source.MembersOnly;
     destination.MembersExempt = source.MembersExempt;
     destination.OriginalAmount = source.OriginalAmount;
-    destination.OriginalPercentAmount = source.OriginalPercentAmount;
+    //destination.OriginalAmount = source.PercentAmount;
     destination.DiscountAppliedTime = source.DiscountAppliedTime;
 }
 //---------------------------------------------------------------------------

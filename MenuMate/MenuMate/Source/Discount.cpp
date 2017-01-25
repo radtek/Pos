@@ -50,7 +50,6 @@ void TDiscount::Clear()
    ProductPriority = ppCheapest;
    IsMembershipDiscount = false;
    OriginalAmount = 0;
-   OriginalPercentAmount = 0;
    DiscountAppliedTime = 0;
 }
 
@@ -78,7 +77,6 @@ TDiscount::operator==(TDiscount &rhs)
           && IsCloudDiscount == rhs.IsCloudDiscount
           && DailyUsageAllowedPerMember == rhs.DailyUsageAllowedPerMember
           && OriginalAmount == rhs.OriginalAmount
-          && OriginalPercentAmount == rhs.OriginalPercentAmount
           && DiscountAppliedTime == rhs.DiscountAppliedTime;
 }
 

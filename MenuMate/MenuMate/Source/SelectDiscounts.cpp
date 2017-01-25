@@ -422,7 +422,10 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
 			else
 			{
 			   CurrentDiscount.PercentAmount = frmDiscount->PERCResult;
-               CurrentDiscount.OriginalPercentAmount = CurrentDiscount.PercentAmount;
+               if(frmDiscount->Mode == DiscModePercent)
+               {
+                  CurrentDiscount.OriginalAmount = CurrentDiscount.PercentAmount;
+               }
 			}
 		 }
 		 else
