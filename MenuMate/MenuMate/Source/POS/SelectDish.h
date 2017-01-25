@@ -85,7 +85,6 @@ struct TDiscountDetails
       TDiscount Discount;
       TList *OrderList;
       TDateTime DiscountTime;
-      //TItemMinorComplete* Items;
 };
 
 struct TMembershipDiscountDetails

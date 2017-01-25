@@ -14569,7 +14569,6 @@ void TfrmSelectDish::ApplyMembershipOpenDiscount(TDiscount &CurrentDiscount, boo
        // Extract open Discount and assign the open discount amount to Current discount amount
        for(std::map<int, TMembershipDiscountDetails>::iterator ii = OpenDiscountAmount.begin(); ii != OpenDiscountAmount.end(); ++ii)
        {
-           TMembershipDiscountDetails _membershipDiscountDetails;
            if(ii->first == CurrentDiscount.DiscountKey && (CurrentDiscount.Type == dtPromptAmount || CurrentDiscount.Type == dtPromptDescriptionAmount))
            {
                if(ii->second.Mode == DiscModePercent)
