@@ -7508,6 +7508,11 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
             {
                 DoCloundSync();
 			}break;
+            case 16:
+            {
+                CheckGiftCardBalance();
+			}break;
+
         }
        if (askForLogin)
        {
@@ -14269,6 +14274,37 @@ void TfrmSelectDish::DoCloundSync()
         RedrawSeatOrders();
         HighlightSelectedItem();
      }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void TfrmSelectDish::CheckGiftCardBalance()
+{
+    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+    frmTouchKeyboard->MaxLength = 50;
+    frmTouchKeyboard->AllowCarriageReturn = false;
+    frmTouchKeyboard->StartWithShiftDown = false;
+    frmTouchKeyboard->MustHaveValue = true;
+    frmTouchKeyboard->KeyboardText = "";
+    frmTouchKeyboard->Caption = "Enter Gift Card Number";
+    if (frmTouchKeyboard->ShowModal() == mrOk && frmTouchKeyboard->KeyboardText.Trim() != "")
+    {
+        AnsiString giftCardNumber = frmTouchKeyboard->KeyboardText.Trim();
+        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+        TGiftCardDetail GiftCardDetail;
+        ManagerLoyaltyVoucher.GetGiftVoucherDetail(giftCardNumber,GiftCardDetail);
+        switch(GiftCardDetail.StatusCode)
+        {
+             case 1:
+             MessageBox("The gift card with number " + giftCardNumber + " has "+ FormatFloat("0.00",GiftCardDetail.PointBalance) +" balance.", "Information", MB_OK + MB_ICONINFORMATION);
+             break;
+             case 2:
+             case 4:
+             MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
+             break;
+             case 3:
+             MessageBox("Gift Card expired.", "Warning", MB_OK + MB_ICONINFORMATION);
+             break;
+        }
+    }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tedtSearchItemChange(TObject *Sender)
