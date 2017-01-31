@@ -54,15 +54,13 @@ void TManagerPanasonic::InitiatePanasonicThread()
 //-----------------------------------------------------------
 void __fastcall TManagerPanasonic::OnPanasonicThreadTimerTick(TObject *Sender)
 {
-    if(panasonicThreadTerminated )
+    if(panasonicThreadTerminated && IsPendingRecordForPostingToServerExist())
     {
         InitiatePanasonicThread();
         StartPanasonicThread();
     }
     else
-    {
         StopPanasonicThreadTimer();
-    }
 }
 //------------------------------------------------------------------------------------------------------
 void TManagerPanasonic::StartPanasonicThread()
@@ -209,8 +207,6 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             panasonicModel->CreditCard = false;
             panasonicModel->Cheque = false;
             panasonicModel->EFTPOS = false;
-            //      Receipt->Clear();
-            //      IBInternalQuery->FieldByName("RECEIPT")->SaveToStream(Receipt);
             panasonicModel->LastReceipt           = IBInternalQuery->FieldByName("RECEIPT")->AsString;
 
             if(IBInternalQuery->FieldByName("TOTAL")->AsCurrency < 0)
@@ -278,7 +274,6 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-
 }
 //----------------------------------------------------------------------------------------------------------------
 void TPanasonicThread::ConvertTransactionInfoToPanasonicItemList(Database::TDBTransaction &dbTransaction, int arcBillKey)
@@ -409,4 +404,46 @@ void TPanasonicThread::UpdateArcBillAndDayArcBill(Database::TDBTransaction &dbTr
 		throw;
 	}
 }
+//--------------------------------------------------------------------------------------------------------------------
+bool TManagerPanasonic::IsPendingRecordForPostingToServerExist()
+{
+    bool isRecordExist = false;
+
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY "
+                                    "FROM ARCBILL a "
+                                    "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER "
+                                    "UNION ALL "
+                                    "SELECT a.ARCBILL_KEY "
+                                    "FROM DAYARCBILL a "
+                                    "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER ";
+        IBInternalQuery->ParamByName("IS_POSTED_TO_PANASONIC_SERVER")->AsString = "F";
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount)
+            isRecordExist = true;
+
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+        dbTransaction.Rollback();
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return isRecordExist;
+}
+//---------------------------------------------------------------------------------------------------------------------------
+void TManagerPanasonic::TriggerTransactionSync()
+{
+    InitiatePanasonicThread();
+    StartPanasonicThread();
+}
+
 

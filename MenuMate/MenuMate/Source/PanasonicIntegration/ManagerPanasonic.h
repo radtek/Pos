@@ -45,6 +45,7 @@ class TManagerPanasonic
         void StartPanasonicThreadTimer();
         void StopPanasonicThreadTimer();
         void __fastcall OnPanasonicThreadTimerTick(TObject *Sender);
+        bool IsPendingRecordForPostingToServerExist();
 
     public:
 
@@ -56,5 +57,6 @@ class TManagerPanasonic
             return instance;
         }
 
+        void TriggerTransactionSync();
 };
 #endif

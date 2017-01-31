@@ -58,7 +58,7 @@
 #include "DBTierLevel.h"
 #include "ManagerDelayedPayment.h"
 #include "DrinkCommandManager.h"
-#include "DeviceRealTerminal.h"
+//#include "DeviceRealTerminal.h"
 #include "InitializeDCSession.h"
 #include "MallExportRegenerateReport.h"
 #include "LoyaltyMateUtilities.h"
@@ -66,6 +66,7 @@
 #include "StringTools.h"
 #include "PointsRulesSetUtils.h"
 #include "EstanciaMall.h"
+#include "ManagerPanasonic.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -888,6 +889,11 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 	}
 
 	Busy = false;
+
+    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+    {
+        TManagerPanasonic::Instance()->TriggerTransactionSync();
+    }
 	return PaymentComplete;
 }
 

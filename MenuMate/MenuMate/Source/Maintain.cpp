@@ -12,7 +12,7 @@
 #include "DeviceWeb.h"
 #include "FileCtrl.hpp"
 #ifdef MenuMate
-#include "DeviceRealTerminal.h"
+//#include "DeviceRealTerminal.h"
 
 #endif
 #ifdef  PalmMate
@@ -3801,7 +3801,7 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
     }
 
     if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-            TManagerPanasonic::Instance();
+            TManagerPanasonic::Instance()->TriggerTransactionSync();
 }
 //-------------------------------------------------------------------------------------
 
