@@ -20,8 +20,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
   WindowState = wsMaximized
   OnResize = FormResize
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   DesignSize = (
     1009
     768)
@@ -228,98 +226,115 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
         Width = 842
         Height = 758
-        Align = alClient
         Color = 14342874
         ParentBackground = False
         TabOrder = 0
+        DesignSize = (
+          842
+          758)
         object GroupBox10: TGroupBox
           Left = 8
           Top = 49
           Width = 433
-          Height = 720
+          Height = 700
+          Anchors = [akLeft]
           Caption = 'P.O.S Options'
           ParentBackground = False
           TabOrder = 5
+          DesignSize = (
+            433
+            700)
           object Label4: TLabel
             Left = 16
-            Top = 154
+            Top = 150
             Width = 156
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Max non service period.'
+            ExplicitTop = 154
           end
           object Label13: TLabel
             Left = 280
-            Top = 283
+            Top = 281
             Width = 119
             Height = 18
+            Anchors = [akLeft]
             Caption = 'MenuMate Subnet'
+            ExplicitTop = 283
           end
           object Label15: TLabel
             Left = 12
-            Top = 413
+            Top = 401
             Width = 112
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Tab Credit Group'
+            ExplicitTop = 413
           end
           object cbRevertCourse: TCheckBox
             Left = 8
-            Top = 20
+            Top = 19
             Width = 297
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Return to first course after sale'
             TabOrder = 0
             OnClick = cbRevertCourseClick
           end
           object cbForceTender: TCheckBox
             Left = 8
-            Top = 45
+            Top = 44
             Width = 297
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Force tender sales.'
             TabOrder = 2
             OnClick = cbForceTenderClick
           end
           object cbFTEFTSales: TCheckBox
             Left = 8
-            Top = 70
+            Top = 67
             Width = 313
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Do not force tender on EFT sales.'
             TabOrder = 1
             OnClick = cbFTEFTSalesClick
+            ExplicitTop = 68
           end
           object cbCaptureCustomerName: TCheckBox
             Left = 8
-            Top = 95
+            Top = 92
             Width = 353
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Capture Customer Name'
             TabOrder = 12
             OnClick = cbCaptureCustomerNameClick
+            ExplicitTop = 93
           end
           object cbHoldSend: TCheckBox
             Left = 8
-            Top = 120
+            Top = 116
             Width = 353
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Use Hold and Send Function'
             TabOrder = 11
             OnClick = cbHoldSendClick
+            ExplicitTop = 117
           end
           object btnNonService: TTouchBtn
             Left = 249
-            Top = 145
+            Top = 141
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -333,63 +348,80 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnNonServiceClick
+            ExplicitTop = 142
           end
           object cbForcedSidesFirst: TCheckBox
             Left = 8
-            Top = 180
+            Top = 175
             Width = 385
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Forced Sides before Forced Options'
             TabOrder = 5
             OnClick = cbForcedSidesFirstClick
+            ExplicitTop = 176
           end
           object cbForcedReasons: TCheckBox
             Left = 8
-            Top = 205
+            Top = 198
             Width = 409
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Force Reasons for credit, cancels and discounts.'
             TabOrder = 3
             OnClick = cbForcedReasonsClick
+            ExplicitTop = 200
           end
           object cbPromptPatronCount: TCheckBox
             Left = 8
-            Top = 230
+            Top = 223
             Width = 401
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Prompt For Patron Count.'
             TabOrder = 6
             OnClick = cbPromptPatronCountClick
+            ExplicitTop = 225
           end
           object cbPromptPatronCountOnTableSales: TCheckBox
             Left = 8
-            Top = 255
+            Top = 247
             Width = 401
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Prompt For Patron Count On Table Sales Only.'
             TabOrder = 7
             OnClick = cbPromptPatronCountOnTableSalesClick
+            ExplicitTop = 249
           end
           object cbRounding: TCheckBox
             Left = 8
-            Top = 280
+            Top = 272
             Width = 401
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Rounding Mid point rounds down.'
             TabOrder = 8
             OnClick = cbRoundingClick
+            ExplicitTop = 274
           end
           object GroupBox11: TGroupBox
             Left = 3
-            Top = 320
+            Top = 310
             Width = 249
             Height = 81
+            Anchors = [akLeft]
             TabOrder = 4
+            ExplicitTop = 313
+            DesignSize = (
+              249
+              81)
             object Label5: TLabel
               Left = 24
               Top = 40
               Width = 32
               Height = 18
+              Anchors = [akLeft]
               Caption = 'After'
             end
             object Label6: TLabel
@@ -397,6 +429,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
               Top = 40
               Width = 53
               Height = 18
+              Anchors = [akLeft]
               Caption = 'seconds'
             end
             object Label7: TLabel
@@ -404,6 +437,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
               Top = 0
               Width = 121
               Height = 18
+              Anchors = [akLeft]
               Caption = 'Auto logout in POS'
               OnClick = lbeUseAutoLogoutClick
             end
@@ -437,9 +471,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object tbtnMMSubNet: TTouchBtn
             Left = 296
-            Top = 311
+            Top = 302
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -453,12 +488,14 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnMMSubNetClick
+            ExplicitTop = 304
           end
           object tbtnTabCreditGroup: TTouchBtn
             Left = 296
-            Top = 375
+            Top = 364
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -471,105 +508,128 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
+            ExplicitTop = 367
           end
           object cbDisableSaveConfirmation: TCheckBox
             Left = 8
-            Top = 435
+            Top = 423
             Width = 377
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Disable Confirmation on Save'
             TabOrder = 9
             OnClick = cbDisableSaveConfirmationClick
+            ExplicitTop = 426
           end
           object cbDisableReceiptOnConfirmation: TCheckBox
             Left = 8
-            Top = 460
+            Top = 447
             Width = 377
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Disable Receipt on Confirmation'
             TabOrder = 10
             OnClick = cbDisableReceiptOnConfirmationClick
+            ExplicitTop = 450
           end
           object cbShowVoucherDetails: TCheckBox
             Left = 8
-            Top = 485
+            Top = 472
             Width = 377
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Voucher Details'
             TabOrder = 15
             OnClick = cbEnableShowVoucherDetails
+            ExplicitTop = 475
           end
           object cbEnablePhoneOrders: TCheckBox
             Left = 8
-            Top = 510
+            Top = 495
             Width = 377
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Enable Phone Orders'
             TabOrder = 17
             OnClick = cbEnablePhoneOrdersMouseClick
+            ExplicitTop = 499
           end
           object cbNagUserToSelectChit: TCheckBox
             Left = 8
-            Top = 535
+            Top = 520
             Width = 412
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Prompt for a chit on every new order'
             TabOrder = 16
             OnClick = cbNagUserToSelectChitClicked
+            ExplicitTop = 524
           end
           object cbUseMenuDefaultPatronCount: TCheckBox
             Left = 8
-            Top = 560
+            Top = 544
             Width = 412
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Calculate default patron count from menu'
             TabOrder = 19
             OnClick = cbUseMenuDefaultPatronCountClicked
+            ExplicitTop = 548
           end
           object cbEnableTableMode: TCheckBox
             Left = 8
-            Top = 585
+            Top = 569
             Width = 412
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Enable Table Display On Start-up'
             TabOrder = 18
             OnClick = cbEnableTableModeClick
+            ExplicitTop = 573
           end
           object cbEnableParkedSales: TCheckBox
             Left = 8
-            Top = 610
+            Top = 593
             Width = 412
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Enable Parked Sales'
             TabOrder = 20
             OnClick = cbEnableParkedSalesClicked
+            ExplicitTop = 597
           end
           object cbNotifyForManuallyEnteredWeight: TCheckBox
             Left = 8
-            Top = 635
+            Top = 618
             Width = 412
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Notify for Manually Entered Weight'
             TabOrder = 23
             OnClick = cbNotifyForManuallyEnteredWeightClicked
+            ExplicitTop = 622
           end
           object cbHideRoundingOnReceipt: TCheckBox
             Left = 8
-            Top = 660
+            Top = 641
             Width = 412
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Hide Rounding On Receipt'
             TabOrder = 21
             OnClick = cbHideRoundingOnReceiptClick
+            ExplicitTop = 646
           end
           object cbFloatWithdrawFromCash: TCheckBox
             Left = 8
-            Top = 685
+            Top = 665
             Width = 412
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Float Withdrawal From Cash'
             TabOrder = 24
             OnClick = cbFloatWithdrawFromCashClick
+            ExplicitTop = 670
           end
         end
         object GroupBox5: TGroupBox
@@ -580,11 +640,15 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Caption = 'Production Tracking'
           ParentBackground = False
           TabOrder = 0
+          DesignSize = (
+            401
+            50)
           object cbSaleAndMakeTimes: TCheckBox
             Left = 8
             Top = 21
             Width = 361
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Enable Sale && Make Time Tracking.'
             TabOrder = 0
             OnClick = cbSaleAndMakeTimesClick
@@ -592,62 +656,80 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox6: TGroupBox
           Left = 447
-          Top = 101
+          Top = 100
           Width = 401
-          Height = 105
+          Height = 90
+          Anchors = [akLeft]
           Caption = 'Storage Settings'
           ParentBackground = False
           TabOrder = 1
+          DesignSize = (
+            401
+            90)
           object lbeSeatLabel: TLabel
             Left = 8
-            Top = 71
+            Top = 59
             Width = 67
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Seat Label'
+            ExplicitTop = 71
           end
           object edSeatLabel: TEdit
             Left = 96
-            Top = 71
+            Top = 59
             Width = 210
             Height = 26
+            Anchors = [akLeft]
             MaxLength = 6
             TabOrder = 0
             OnMouseUp = edSeatLabelMouseUp
+            ExplicitTop = 70
           end
           object cbTableSeats: TCheckBox
             Left = 8
-            Top = 48
+            Top = 40
             Width = 297
             Height = 17
+            Anchors = [akLeft]
             Caption = 'Enable Table Seat Interface'
             TabOrder = 1
             OnClick = cbTableSeatsClick
+            ExplicitTop = 47
           end
           object cbTabsInterface: TCheckBox
             Left = 8
-            Top = 24
+            Top = 20
             Width = 297
             Height = 17
+            Anchors = [akLeft]
             Caption = 'Enable Tabs Interface'
             TabOrder = 2
             OnClick = cbTabsInterfaceClick
+            ExplicitTop = 24
           end
         end
         object GroupBox21: TGroupBox
           Left = 447
-          Top = 215
+          Top = 190
           Width = 401
-          Height = 49
+          Height = 45
+          Anchors = [akLeft]
           Caption = 'Invoicing'
           TabOrder = 3
+          DesignSize = (
+            401
+            45)
           object cbDisableInternalInvoicing: TCheckBox
             Left = 8
-            Top = 21
+            Top = 18
             Width = 250
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Disable internal invoicing'
             TabOrder = 0
             OnClick = cbDisableInternalInvoicingClick
+            ExplicitTop = 21
           end
         end
         object Panel2: TPanel
@@ -669,51 +751,63 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox19: TGroupBox
           Left = 447
-          Top = 480
+          Top = 425
           Width = 401
-          Height = 117
+          Height = 115
+          Anchors = [akLeft]
           Caption = 'Scales'
           ParentBackground = False
           TabOrder = 4
+          DesignSize = (
+            401
+            115)
           object setWeightLimit: TLabel
             Left = 27
-            Top = 85
+            Top = 83
             Width = 105
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Set Weight Limit'
+            ExplicitTop = 85
           end
           object cbSacleAutoConvertWeights: TCheckBox
             Left = 8
             Top = 15
             Width = 361
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Allow Auto conversion of weights.'
             TabOrder = 0
             OnClick = cbSacleAutoConvertWeightsClick
           end
           object cbScaleEnterWeight: TCheckBox
             Left = 8
-            Top = 36
+            Top = 35
             Width = 361
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Allow to enter weight.'
             TabOrder = 1
             OnClick = cbScaleEnterWeightClick
+            ExplicitTop = 36
           end
           object cbScaleEnterPrice: TCheckBox
             Left = 8
-            Top = 58
+            Top = 57
             Width = 361
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Allow to enter price.'
             TabOrder = 2
             OnClick = cbScaleEnterPriceClick
+            ExplicitTop = 58
           end
           object tbEnterWeight: TTouchBtn
             Left = 250
-            Top = 80
+            Top = 78
             Width = 150
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -727,20 +821,26 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbEnterWeightClick
+            ExplicitTop = 80
           end
         end
         object GroupBox23: TGroupBox
           Left = 447
-          Top = 600
+          Top = 540
           Width = 401
           Height = 49
+          Anchors = [akLeft]
           Caption = 'Item Search'
           TabOrder = 8
+          DesignSize = (
+            401
+            49)
           object cbItemSearch: TCheckBox
             Left = 8
             Top = 21
             Width = 250
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Enable Item Search'
             TabOrder = 0
             OnClick = cbItemSearchClick
@@ -748,16 +848,21 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBoxEJournal: TGroupBox
           Left = 447
-          Top = 652
+          Top = 590
           Width = 401
           Height = 70
+          Anchors = [akLeft]
           Caption = 'E Journal'
           TabOrder = 7
+          DesignSize = (
+            401
+            70)
           object cbExcludeReceipt: TCheckBox
             Left = 8
             Top = 21
             Width = 250
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Do not include Receipt'
             TabOrder = 1
             OnClick = cbExcludeReceiptClick
@@ -767,6 +872,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 40
             Width = 250
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Do not include X Report'
             TabOrder = 0
             OnClick = cbExcludeXReportClick
@@ -774,61 +880,76 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object gbItemBilling: TGroupBox
           Left = 447
-          Top = 270
+          Top = 235
           Width = 401
-          Height = 200
+          Height = 190
+          Anchors = [akLeft]
           Caption = 'Item Billing'
           TabOrder = 6
+          DesignSize = (
+            401
+            190)
           object cbDisplayTaxExempt: TCheckBox
             Left = 8
-            Top = 21
+            Top = 19
             Width = 377
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Enable Tax Removal'
             TabOrder = 6
             OnClick = cbDisplayTaxExemptClick
+            ExplicitTop = 21
           end
           object cbSkipConfirmationOnFastTender: TCheckBox
             Left = 8
-            Top = 46
+            Top = 43
             Width = 350
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Skip Confirmation on Fast Tender Shortcuts'
             TabOrder = 1
             OnClick = cbSkipConfirmationOnFastTenderClick
+            ExplicitTop = 46
           end
           object cbTransferTableOnPrintPrelim: TCheckBox
             Left = 8
-            Top = 71
+            Top = 67
             Width = 320
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Delayed Payment'
             TabOrder = 2
             OnClick = cbTransferTableOnPrintPrelimClick
+            ExplicitTop = 71
           end
           object cbEnableCancelCheckRemoval: TCheckBox
             Left = 8
-            Top = 96
+            Top = 91
             Width = 370
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Enable Security Check on Cancel at Payment Tender'
             TabOrder = 3
             OnClick = cbEnableCancelCheckRemovalClick
+            ExplicitTop = 96
           end
           object cbRoundOnBilling: TCheckBox
             Left = 8
-            Top = 121
+            Top = 114
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Round On Billing'
             TabOrder = 5
             OnClick = cbRoundOnBillingClick
+            ExplicitTop = 121
           end
           object tbRoundingOnBilling: TTouchBtn
             Left = 313
-            Top = 121
+            Top = 114
             Width = 80
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -842,24 +963,29 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbRoundingOnBillingClick
+            ExplicitTop = 121
           end
           object cbDeleteItemSizeAfterSale: TCheckBox
             Left = 8
-            Top = 147
+            Top = 139
             Width = 250
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Delete ItemSize After Sale'
             TabOrder = 0
             OnClick = cbDeleteItemSizeAfterSaleClick
+            ExplicitTop = 147
           end
           object cbMergeSimilarItem: TCheckBox
             Left = 8
-            Top = 171
+            Top = 162
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Merge Similar Items for Billing'
             TabOrder = 4
             OnClick = cbMergeSimilarItemClick
+            ExplicitTop = 171
           end
         end
       end
@@ -867,10 +993,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     object tsPointOfSaleDisplay: TTabSheet
       Caption = 'Point Of Sale Display.'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel14: TPanel
         Left = 0
         Top = 0
@@ -1096,10 +1218,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Staff Options.'
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel4: TPanel
         Left = 0
         Top = 0
@@ -1434,19 +1552,17 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Membership Options.'
       ImageIndex = 3
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel5: TPanel
         Left = 0
         Top = 0
         Width = 842
         Height = 758
-        Align = alClient
         Color = 14342874
         ParentBackground = False
         TabOrder = 0
+        DesignSize = (
+          842
+          758)
         object GroupBox1: TGroupBox
           Left = 8
           Top = 42
@@ -1454,11 +1570,15 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Height = 65
           Caption = 'Member Search'
           TabOrder = 0
+          DesignSize = (
+            409
+            65)
           object Label1: TLabel
             Left = 26
             Top = 40
             Width = 224
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Number of Member Quick Buttons'
           end
           object cbIncrementalSearch: TCheckBox
@@ -1466,6 +1586,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 20
             Width = 393
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Enable Incremental searches for Members'
             TabOrder = 0
             OnClick = cbIncrementalSearchClick
@@ -1475,6 +1596,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 20
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -1492,23 +1614,30 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox7: TGroupBox
           Left = 8
-          Top = 110
+          Top = 106
           Width = 409
-          Height = 249
+          Height = 240
+          Anchors = [akLeft]
           Caption = 'Points'
           TabOrder = 1
+          DesignSize = (
+            409
+            240)
           object Label3: TLabel
             Left = 8
-            Top = 22
+            Top = 21
             Width = 159
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Payment Group Number'
+            ExplicitTop = 22
           end
           object tbtnPointsGroup: TTouchBtn
             Left = 313
-            Top = 12
+            Top = 11
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -1522,21 +1651,25 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnPointsGroupClick
+            ExplicitTop = 12
           end
           object cbEarnPoints: TCheckBox
             Left = 8
-            Top = 42
+            Top = 40
             Width = 303
             Height = 20
+            Anchors = [akLeft]
             Caption = 'You can earn points while redeeming points'
             TabOrder = 2
             OnClick = cbEarnPointsClick
+            ExplicitTop = 42
           end
           object cbOnlyEarnPoints: TCheckBox
             Left = 8
-            Top = 62
+            Top = 59
             Width = 393
             Height = 20
+            Anchors = [akLeft]
             Caption = 'You can only earn points from redeemed points'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
@@ -1546,75 +1679,91 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             ParentFont = False
             TabOrder = 4
             OnClick = cbOnlyEarnPointsClick
+            ExplicitTop = 62
           end
           object cbSeparatePts: TCheckBox
             Left = 8
-            Top = 82
+            Top = 79
             Width = 353
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Separate Earnt and Loaded Points'
             TabOrder = 10
             OnClick = cbSeparatePtsClick
+            ExplicitTop = 82
           end
           object cbCountPointSpentInRevenue: TCheckBox
             Left = 8
-            Top = 102
+            Top = 98
             Width = 353
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Points Spent Not Counted As Revenue'
             TabOrder = 1
             OnClick = cbCountPointSpentInRevenueClick
+            ExplicitTop = 102
           end
           object cbOnlyFullProducts: TCheckBox
             Left = 8
-            Top = 122
+            Top = 117
             Width = 393
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Only Allow Points to be Spent on Full Products'
             TabOrder = 3
             OnClick = cbOnlyFullProductsClick
+            ExplicitTop = 122
           end
           object cbRedeemOnSelectedItems: TCheckBox
             Left = 8
-            Top = 162
+            Top = 156
             Width = 396
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Points to be Redeemed on Selected Items Only'
             TabOrder = 5
             OnClick = cbRedeemOnSelectedItemsClick
+            ExplicitTop = 162
           end
           object cbEarnPointsOnWeight: TCheckBox
             Left = 8
-            Top = 142
+            Top = 137
             Width = 396
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Calculate Earnt Points on Weight'
             TabOrder = 6
             OnClick = cbEarnPointsOnWeightClick
+            ExplicitTop = 142
           end
           object cbRefundPoints: TCheckBox
             Left = 8
-            Top = 182
+            Top = 175
             Width = 390
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Allow Refund Points'
             TabOrder = 7
             OnClick = cbRefundPointsClick
+            ExplicitTop = 182
           end
           object cbPointOnly: TCheckBox
             Left = 8
-            Top = 202
+            Top = 194
             Width = 300
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Only Allow Member Sales'
             TabOrder = 9
             OnClick = cbPointOnlyClick
+            ExplicitTop = 202
           end
           object cbShowScreenToSelectItems: TCheckBox
             Left = 8
-            Top = 222
+            Top = 214
             Width = 300
-            Height = 25
+            Height = 24
+            Anchors = [akLeft]
             Caption = 'Show Item Points Screen'
             TabOrder = 0
             OnClick = cbShowScreenToSelectItemsClick
@@ -1639,9 +1788,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object rgLocationFreeSalesRules: TRadioGroup
           Left = 424
-          Top = 365
+          Top = 295
           Width = 416
-          Height = 109
+          Height = 100
+          Anchors = [akLeft]
           Caption = 'Location Loyalty Purchase Count'
           Items.Strings = (
             'Disabled'
@@ -1654,9 +1804,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object rgMemberFreeSalesRules: TRadioGroup
           Left = 424
-          Top = 480
+          Top = 395
           Width = 416
-          Height = 113
+          Height = 100
+          Anchors = [akLeft]
           Caption = 'Member Loyalty Purchase Count'
           Items.Strings = (
             'Disabled'
@@ -1670,21 +1821,28 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 423
           Top = 42
           Width = 417
-          Height = 150
+          Height = 125
+          Anchors = [akLeft]
           Caption = 'Lucky Draw'
           TabOrder = 5
+          DesignSize = (
+            417
+            125)
           object Label10: TLabel
             Left = 8
-            Top = 65
+            Top = 53
             Width = 224
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Lucky Member Period ( In Hours )'
+            ExplicitTop = 65
           end
           object tbtnLuckMemberPeriod: TTouchBtn
             Left = 312
-            Top = 65
+            Top = 52
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -1698,12 +1856,14 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnLuckMemberPeriodClick
+            ExplicitTop = 65
           end
           object tbtnLuckMemberPeriodDay: TTouchBtn
             Left = 16
-            Top = 22
+            Top = 16
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -1717,12 +1877,14 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnLuckMemberPeriodDayClick
+            ExplicitTop = 22
           end
           object tbtnLuckMemberPeriodWeek: TTouchBtn
             Left = 160
-            Top = 22
+            Top = 16
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -1736,12 +1898,14 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnLuckMemberPeriodWeekClick
+            ExplicitTop = 22
           end
           object tbtnLuckMemberPeriodMonth: TTouchBtn
             Left = 312
-            Top = 22
+            Top = 16
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -1755,21 +1919,25 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnLuckMemberPeriodMonthClick
+            ExplicitTop = 22
           end
           object cbEnableMemberSpendChits: TCheckBox
             Left = 10
-            Top = 115
+            Top = 94
             Width = 273
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Enable Member spend Chits'
             TabOrder = 4
             OnClick = cbEnableMemberSpendChitsClick
+            ExplicitTop = 115
           end
           object tbtnMemberSpendChitValue: TTouchBtn
             Left = 288
-            Top = 110
+            Top = 89
             Width = 113
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -1783,36 +1951,46 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnMemberSpendChitValueClick
+            ExplicitTop = 110
           end
           object cbDrawByLocation: TCheckBox
             Left = 10
-            Top = 90
+            Top = 73
             Width = 273
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Draw From this Location Only'
             TabOrder = 6
             OnClick = cbDrawByLocationClick
+            ExplicitTop = 90
           end
         end
         object GroupBox2: TGroupBox
           Left = 424
-          Top = 195
+          Top = 168
           Width = 416
-          Height = 79
+          Height = 60
+          Anchors = [akLeft]
           Caption = 'Synchronise With External Membership.'
           TabOrder = 6
+          DesignSize = (
+            416
+            60)
           object Label12: TLabel
             Left = 10
-            Top = 25
+            Top = 17
             Width = 173
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Synchronise Member Info.'
+            ExplicitTop = 20
           end
           object tbtnSyncroniseMembersip: TTouchBtn
             Left = 279
-            Top = 18
+            Top = 9
             Width = 122
             Height = 41
+            Anchors = [akLeft]
             ParentColor = True
             Caption = 'Synchronise'
             ButtonColor = 9933970
@@ -1820,36 +1998,46 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnSyncroniseMembersipMouseClick
+            ExplicitTop = 18
           end
           object cbAutoAddWebMembers: TCheckBox
             Left = 7
-            Top = 49
+            Top = 35
             Width = 247
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Automatically Add Web Members'
             TabOrder = 1
             OnClick = cbAutoAddWebMembersClick
+            ExplicitTop = 49
           end
         end
         object GroupBox15: TGroupBox
           Left = 423
-          Top = 280
+          Top = 230
           Width = 417
-          Height = 79
+          Height = 68
+          Anchors = [akLeft]
           Caption = 'Membership Numbers'
           TabOrder = 7
+          DesignSize = (
+            417
+            68)
           object Label14: TLabel
             Left = 8
-            Top = 27
+            Top = 16
             Width = 199
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Minimum Membership Number'
+            ExplicitTop = 20
           end
           object tbMinMembershipNumber: TTouchBtn
             Left = 312
-            Top = 20
+            Top = 15
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -1863,12 +2051,14 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbMinMembershipNumberClick
+            ExplicitTop = 20
           end
           object cbRecycleMembershipNumbers: TCheckBox
             Left = 7
-            Top = 51
-            Width = 289
-            Height = 20
+            Top = 39
+            Width = 226
+            Height = 18
+            Anchors = [akLeft]
             Caption = 'Recycle Membership Numbers'
             TabOrder = 1
             OnClick = cbRecycleMembershipNumbersClick
@@ -1876,60 +2066,75 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox16: TGroupBox
           Left = 10
-          Top = 470
+          Top = 450
           Width = 408
-          Height = 130
+          Height = 115
+          Anchors = [akLeft]
           Caption = 'Membership Smart Cards'
           TabOrder = 8
+          DesignSize = (
+            408
+            115)
           object lbeEntireSiteID: TLabel
             Left = 267
-            Top = 17
+            Top = 18
             Width = 54
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Site ID :'
             OnMouseUp = lbeEntireSiteIDMouseUp
+            ExplicitTop = 19
           end
           object cbEnableMembershipSmartCards: TCheckBox
             Left = 9
-            Top = 22
+            Top = 19
             Width = 252
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Enable Membership Smart Cards'
             TabOrder = 0
             OnClick = cbEnableMembershipSmartCardsClick
+            ExplicitTop = 20
           end
           object cbvmAllowSmartCardNotPresentMemberTransactions: TCheckBox
             Left = 9
-            Top = 41
+            Top = 38
             Width = 367
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Allow card not present member transactions'
             TabOrder = 1
             OnClick = cbvmAllowSmartCardNotPresentMemberTransactionsClick
+            ExplicitTop = 40
           end
           object cbvmAllowMemberDetailscreen: TCheckBox
             Left = 9
-            Top = 60
+            Top = 52
             Width = 385
             Height = 23
+            Anchors = [akLeft]
             Caption = 'Enable Member Details screen'
             TabOrder = 2
             OnClick = cbvmAllowMemberDetailscreenClick
+            ExplicitTop = 55
           end
           object cbvmMandatoryMembershipCard: TCheckBox
             Left = 9
-            Top = 80
+            Top = 71
             Width = 385
             Height = 23
+            Anchors = [akLeft]
             Caption = 'Mandatory Membership Card'
             TabOrder = 4
             OnClick = cbvmMandatoryMembershipCardClick
+            ExplicitTop = 75
           end
           object cbGiftCardOnly: TCheckBox
             Left = 9
-            Top = 100
-            Width = 385
-            Height = 23
+            Top = 91
+            Width = 126
+            Height = 22
+            Anchors = [akLeft]
             Caption = 'Gift Card Only'
             TabOrder = 3
             OnClick = cbGiftCardOnlyClick
@@ -1937,9 +2142,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object rgMemberNameOnRecipt: TRadioGroup
           Left = 9
-          Top = 360
+          Top = 350
           Width = 408
-          Height = 108
+          Height = 100
+          Anchors = [akLeft]
           Caption = 'Receipt Membership Name Display'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
@@ -1957,48 +2163,57 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox3: TGroupBox
           Left = 8
-          Top = 600
+          Top = 565
           Width = 409
-          Height = 156
+          Height = 124
+          Anchors = [akLeft]
           Caption = 'Notifications'
           TabOrder = 10
+          DesignSize = (
+            409
+            124)
           object lbeBirthdayBuffer: TLabel
             Left = 9
-            Top = 50
+            Top = 38
             Width = 101
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Birthday Days :'
           end
           object lbeFirstVisitPoint: TLabel
             Left = 9
-            Top = 117
+            Top = 85
             Width = 150
             Height = 18
+            Anchors = [akLeft]
             Caption = 'First Visit Bonus Points:'
           end
           object cbNotifyBirthday: TCheckBox
             Left = 9
-            Top = 24
-            Width = 289
+            Top = 18
+            Width = 200
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Show Birthday Notification'
             TabOrder = 0
             OnClick = cbNotifyBirthdayClick
           end
           object cbAcknowledgeFirstVisit: TCheckBox
             Left = 9
-            Top = 82
-            Width = 225
+            Top = 60
+            Width = 176
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Acknowledge First Visit'
             TabOrder = 1
             OnClick = cbAcknowledgeFirstVisitClick
           end
           object tbRestLastVisit: TTouchBtn
             Left = 298
-            Top = 78
+            Top = 50
             Width = 80
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -2015,9 +2230,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object tbFirstVisitPoint: TTouchBtn
             Left = 298
-            Top = 117
+            Top = 85
             Width = 80
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -2034,9 +2250,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object tbBirthdayBuffer: TTouchBtn
             Left = 297
-            Top = 39
+            Top = 15
             Width = 80
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -2054,50 +2271,63 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object grpTierLevel: TGroupBox
           Left = 423
-          Top = 595
+          Top = 495
           Width = 416
-          Height = 126
+          Height = 100
+          Anchors = [akLeft]
           Caption = 'Tier Level'
           TabOrder = 12
+          DesignSize = (
+            416
+            100)
           object Label24: TLabel
             Left = 10
-            Top = 95
+            Top = 74
             Width = 176
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Minimum Redemption Point'
+            ExplicitTop = 95
           end
           object cbEnableTierLevels: TCheckBox
             Left = 8
-            Top = 21
+            Top = 15
             Width = 289
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Use Tier Levels'
             TabOrder = 1
             OnClick = cbEnableTierLevelsClick
+            ExplicitTop = 21
           end
           object cbAllowPointPaymentByWeight: TCheckBox
             Left = 10
-            Top = 45
+            Top = 34
             Width = 289
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Allow Point Payment By Weight (grams)'
             TabOrder = 2
             OnClick = cbAllowPointPaymentByWeightClick
+            ExplicitTop = 45
           end
           object cbAllowPointPaymentByValue: TCheckBox
             Left = 10
-            Top = 70
+            Top = 53
             Width = 289
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Allow Point Payment By Value (Points)'
             TabOrder = 0
             OnClick = cbAllowPointPaymentByValueClick
+            ExplicitTop = 70
           end
           object tbMinRedemptionPoint: TTouchBtn
             Left = 312
-            Top = 85
+            Top = 64
             Width = 89
             Height = 33
+            Anchors = [akLeft]
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clBlack
             Font.Height = -15
@@ -2111,23 +2341,30 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbMinRedemptionPointClick
+            ExplicitTop = 85
           end
         end
         object grpMemberSubs: TGroupBox
           Left = 423
-          Top = 725
+          Top = 595
           Width = 416
-          Height = 47
+          Height = 40
+          Anchors = [akLeft]
           Caption = 'Member Subscription'
           TabOrder = 11
+          DesignSize = (
+            416
+            40)
           object cbUseMemberSubs: TCheckBox
             Left = 8
-            Top = 21
+            Top = 16
             Width = 289
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Use Member Subscription'
             TabOrder = 0
             OnClick = cbUseMemberSubsClick
+            ExplicitTop = 21
           end
         end
       end
@@ -2136,10 +2373,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'EFTPos.'
       ImageIndex = 4
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel6: TPanel
         Left = 0
         Top = 0
@@ -2149,6 +2382,9 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         Color = 14342874
         ParentBackground = False
         TabOrder = 0
+        DesignSize = (
+          842
+          758)
         object Label9: TLabel
           Left = 8
           Top = 56
@@ -2160,16 +2396,21 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox9: TGroupBox
           Left = 8
-          Top = 88
+          Top = 75
           Width = 505
           Height = 250
+          Anchors = [akLeft]
           Caption = 'Integrated EFTPOS'
           TabOrder = 0
+          DesignSize = (
+            505
+            250)
           object cbIntegratedEftposANZ: TCheckBox
             Left = 8
             Top = 25
             Width = 273
             Height = 20
+            Anchors = [akLeft]
             Caption = 'EFTPOS NZ'
             TabOrder = 0
             OnClick = cbIntegratedEftposANZClick
@@ -2179,6 +2420,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 50
             Width = 273
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Provenco'
             TabOrder = 1
             OnClick = cbIntegratedEftposSyncroClick
@@ -2188,6 +2430,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 75
             Width = 321
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Ingenico and PC-EFTPOS Australia'
             TabOrder = 2
             OnClick = cbIntegratedEftposIngenicoClick
@@ -2197,6 +2440,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 100
             Width = 257
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Cadmus Keylink (One Way)'
             TabOrder = 3
             OnClick = cbIntegratedEftposCadmusClick
@@ -2206,6 +2450,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 150
             Width = 257
             Height = 20
+            Anchors = [akLeft]
             Caption = 'ICELink ICE 5000 / Hypercom'
             TabOrder = 4
             OnClick = cbICELinkClick
@@ -2215,6 +2460,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 175
             Width = 257
             Height = 20
+            Anchors = [akLeft]
             Caption = 'DPS Payment Express'
             TabOrder = 5
             OnClick = cbIntegratedEftposDPSClick
@@ -2224,6 +2470,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 200
             Width = 257
             Height = 20
+            Anchors = [akLeft]
             Caption = 'EFTPOS SmartPay'
             TabOrder = 8
             OnClick = cbIntegratedEftposSmartPayClick
@@ -2233,6 +2480,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 225
             Width = 257
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Enable Tipping Transactions'
             TabOrder = 7
             OnClick = cbEnableDPSTippingClick
@@ -2242,6 +2490,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 125
             Width = 257
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Cadmus Cronos'
             TabOrder = 6
             OnClick = cbCadmusCronosClick
@@ -2266,9 +2515,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox13: TGroupBox
           Left = 8
-          Top = 350
+          Top = 325
           Width = 497
-          Height = 145
+          Height = 130
+          Anchors = [akLeft]
           Caption = 'EFTPOS Serial Port ( Cadmus Keylink and ICE Link Only )'
           TabOrder = 2
           object Label20: TLabel
@@ -2334,18 +2584,19 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object cbDuplicateEftPos: TCheckBox
           Left = 8
-          Top = 500
+          Top = 460
           Width = 289
           Height = 20
+          Anchors = [akLeft]
           Caption = 'Duplicate EFTPOS Receipt'
           TabOrder = 3
           OnClick = cbDuplicateEftPosClick
         end
         object smartLinkGroupBox: TGroupBox
           Left = 8
-          Top = 530
+          Top = 480
           Width = 497
-          Height = 100
+          Height = 90
           Caption = 'SmartLink Ip Address '
           TabOrder = 5
           object tbtnSmartLinkIp: TTouchBtn
@@ -2370,14 +2621,15 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox20: TGroupBox
           Left = 8
-          Top = 640
+          Top = 570
           Width = 497
-          Height = 105
+          Height = 70
+          Anchors = [akLeft]
           Caption = 'AA Rewards '
           TabOrder = 4
           object cbEnableAARewards: TCheckBox
             Left = 8
-            Top = 61
+            Top = 40
             Width = 473
             Height = 20
             Caption = 'Intergrated AA Rewards ( Provenco Eftpos Only )'
@@ -2386,7 +2638,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbAARewardsReminder: TCheckBox
             Left = 8
-            Top = 29
+            Top = 20
             Width = 289
             Height = 20
             Caption = 'AA Rewards Reminder'
@@ -2400,10 +2652,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Logging'
       ImageIndex = 5
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel7: TPanel
         Left = 0
         Top = 0
@@ -2619,24 +2867,23 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Magic Memories'
       ImageIndex = 6
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel3: TPanel
         Left = 0
         Top = 0
         Width = 842
         Height = 758
-        Align = alClient
         Color = 14342874
         ParentBackground = False
         TabOrder = 0
+        DesignSize = (
+          842
+          758)
         object lblEndOfDay: TLabel
           Left = 8
           Top = 364
           Width = 137
           Height = 27
+          Anchors = [akLeft]
           AutoSize = False
           Caption = 'Session Start Time: '
           Color = 14342874
@@ -2671,14 +2918,19 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 49
           Width = 475
           Height = 750
+          Anchors = [akLeft]
           Caption = 'Zed Print'
           ParentBackground = False
           TabOrder = 15
+          DesignSize = (
+            475
+            750)
           object cbShowSessionDate: TCheckBox
             Left = 8
             Top = 20
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Session Date On Zed'
             TabOrder = 0
             OnClick = cbShowSessionDateClick
@@ -2688,6 +2940,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 45
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Enable Cash Denomination Entry'
             TabOrder = 28
             OnClick = cbCashDenominationEntryClick
@@ -2697,6 +2950,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 70
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Enable Zed Blind Balances'
             TabOrder = 22
             OnClick = cbDEnableBlindBalancesClick
@@ -2706,6 +2960,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 95
             Width = 280
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Transaction Summary Groups'
             TabOrder = 23
             OnClick = cbShowTransactionSummaryGroupsClick
@@ -2715,6 +2970,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 120
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Billed Sales Totals'
             TabOrder = 6
             OnClick = cbShowBilledSalesTotalsClick
@@ -2724,6 +2980,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 145
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Complimentary Sales Totals'
             TabOrder = 7
             OnClick = cbShowComplimentarySalesTotalsClick
@@ -2733,6 +2990,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 170
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Charged Sales Totals'
             TabOrder = 8
             OnClick = cbShowChargedSalesTotalsClick
@@ -2742,6 +3000,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 195
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Totals'
             TabOrder = 9
             OnClick = cbShowTotalsClick
@@ -2751,6 +3010,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 220
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Breakdown Categories'
             TabOrder = 10
             OnClick = cbShowBreakdownCategoriesClick
@@ -2760,6 +3020,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 245
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Removals Report'
             TabOrder = 24
             OnClick = cbShowRemovalReportClick
@@ -2769,6 +3030,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 270
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Discount Report'
             TabOrder = 11
             OnClick = cbShowDiscountReportClick
@@ -2778,6 +3040,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 295
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Points Report'
             TabOrder = 13
             OnClick = cbShowPointsReportClick
@@ -2787,6 +3050,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 320
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Patron Averages'
             TabOrder = 15
             OnClick = cbShowPatronAveragesClick
@@ -2796,6 +3060,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 345
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Production Info'
             TabOrder = 16
             OnClick = cbShowProductionInfoClick
@@ -2805,6 +3070,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 370
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Account Purchases'
             TabOrder = 17
             OnClick = cbShowAccountPurchasesClick
@@ -2814,6 +3080,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 395
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Account Balances Tabs'
             TabOrder = 18
             OnClick = cbShowAccountBalancesTabsClick
@@ -2823,6 +3090,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 420
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Account Balances - Seated'
             TabOrder = 19
             OnClick = cbShowAccountBalancesClick
@@ -2832,6 +3100,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 445
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Hourly Sales'
             TabOrder = 20
             OnClick = cbShowHourlySalesClick
@@ -2841,6 +3110,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 470
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Accumulated Total'
             TabOrder = 1
             OnClick = cbShowAccumulatedTotalClick
@@ -2850,6 +3120,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 495
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Tax Summary'
             TabOrder = 12
             OnClick = cbShowTaxSummaryClick
@@ -2859,6 +3130,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 520
             Width = 250
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Show Service Charge Summary'
             TabOrder = 14
             OnClick = cbShowServiceChargeSummaryClick
@@ -2868,6 +3140,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 545
             Width = 217
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Enable Staff Hours'
             TabOrder = 2
             OnClick = EnableStaffHoursOnClick
@@ -2877,6 +3150,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 570
             Width = 243
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Enable Commission / Tips'
             TabOrder = 21
             OnClick = cbEnableCommissionClick
@@ -2886,6 +3160,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 595
             Width = 370
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Revenue figures are tax and service charge inclusive'
             TabOrder = 3
             OnClick = cbRevenueFiguresAreTaxAndServiceChargeInclusiveClick
@@ -2895,6 +3170,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 620
             Width = 289
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Show points earned on Zed'
             TabOrder = 4
             OnClick = cbPointsOnZedClick
@@ -2904,6 +3180,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 645
             Width = 329
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Show Invoice Information on Zed'
             TabOrder = 25
             OnClick = cbShowInvoiceInfoClick
@@ -2913,6 +3190,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 670
             Width = 329
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Revenue Figures are discount inclusive'
             TabOrder = 5
             OnClick = cbRevenueFiguresAreDiscountInclusiveClick
@@ -2922,6 +3200,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 695
             Width = 329
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Show Price Adjustment on Zed'
             TabOrder = 27
             OnClick = cbShowPriceAdjustmentClick
@@ -2931,6 +3210,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Top = 720
             Width = 329
             Height = 20
+            Anchors = [akLeft]
             Caption = 'Use BIR Format in X and Z Report'
             TabOrder = 26
             OnClick = cbUseBIRFormatInXZReportClick
@@ -2951,6 +3231,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 392
           Width = 243
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Post Z to Accounting System'
           TabOrder = 18
           OnClick = cbPostToXeroClick
@@ -2960,6 +3241,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 439
           Width = 243
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Money posts to GL accounts'
           TabOrder = 19
           OnClick = cbPostMoneyToGLAccountsClick
@@ -2969,6 +3251,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 414
           Width = 390
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Money posts as payments Against Daily Summary Inv.'
           TabOrder = 17
           OnClick = cbPostMoneyAsPaymentsClick
@@ -2978,6 +3261,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 464
           Width = 243
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Enable Pax Count'
           TabOrder = 3
           OnClick = cbEnablePaxCountClick
@@ -2987,6 +3271,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 314
           Width = 314
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Master Terminal'
           TabOrder = 5
           OnClick = cbDepositBagNumClick
@@ -2996,6 +3281,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 339
           Width = 314
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Slave Terminal'
           TabOrder = 8
           OnClick = cbDontClearDataOnZedClick
@@ -3005,15 +3291,16 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 539
           Width = 377
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Display Stock Purchase Weborders on X/Y Report'
           TabOrder = 10
-          OnClick = cbDisplayStockPurchaseWebordersClick
         end
         object cbEnableHideCredCancels: TCheckBox
           Left = 8
           Top = 564
           Width = 353
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Hide Refunds,Cancels and Write-Off s from Zed'
           TabOrder = 12
           OnClick = cbHideCredsCancelsClick
@@ -3023,6 +3310,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 489
           Width = 329
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Open Cash Drawer'
           TabOrder = 20
           OnClick = cbOpenCashDrawerClick
@@ -3032,6 +3320,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 514
           Width = 377
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Summarise Discounts on Zed'
           TabOrder = 6
           OnClick = cbSummariseDiscountsonZedClick
@@ -3042,6 +3331,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Width = 100
           Height = 27
           Style = csDropDownList
+          Anchors = [akLeft]
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -16
@@ -3057,6 +3347,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 589
           Width = 340
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Combine Service Charge Tax and Service Charge'
           TabOrder = 14
           OnClick = cbCombineServiceChargeAndServiceChargeTaxClick
@@ -3066,6 +3357,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 614
           Width = 340
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Combine Service Charge Tax and Sales Tax'
           TabOrder = 13
           OnClick = cbCombineServiceChargeTaxAndSalesTaxClick
@@ -3073,8 +3365,9 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         object cbEmailZedClosingTill: TCheckBox
           Left = 8
           Top = 639
-          Width = 340
+          Width = 209
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Email Zed When Closing Till'
           TabOrder = 16
           OnClick = cbEmailZedClosingTillClick
@@ -3084,6 +3377,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 639
           Width = 121
           Height = 45
+          Anchors = [akLeft]
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWhite
           Font.Height = -15
@@ -3100,8 +3394,8 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           OnMouseClick = tbtnConfigureEmailClick
         end
         object cbEnableClientDetails: TCheckBox
-          Left = 8
-          Top = 49
+          Left = 7
+          Top = 48
           Width = 243
           Height = 25
           Caption = 'Enable Client Details'
@@ -3113,6 +3407,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 264
           Width = 307
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Warn If Open Tables and Tabs'
           TabOrder = 9
           OnClick = cbWarnIfOpenTableAndTabsClick
@@ -3122,6 +3417,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 289
           Width = 307
           Height = 25
+          Anchors = [akLeft]
           Caption = 'Stop If Open Tables and Tabs'
           TabOrder = 11
           OnClick = cbStopIfOpenTableAndTabsClick
@@ -3131,6 +3427,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 75
           Width = 317
           Height = 182
+          Anchors = [akLeft]
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWhite
           Font.Height = -16
@@ -3154,13 +3451,16 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Font.Name = 'Arial'
             Font.Style = [fsBold]
             ParentFont = False
+            DesignSize = (
+              307
+              172)
             object tbzedHeaderText: TRichEdit
               Left = 0
               Top = 0
               Width = 307
               Height = 172
-              Align = alClient
               Alignment = taCenter
+              Anchors = [akLeft]
               Color = clWhite
               Font.Charset = ANSI_CHARSET
               Font.Color = clBlack
@@ -3179,57 +3479,67 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Top = 685
           Width = 387
           Height = 124
+          Anchors = [akLeft]
           Caption = 'Member Reset Points'
           ParentBackground = False
           TabOrder = 1
+          DesignSize = (
+            387
+            124)
           object lbeDay: TLabel
             Left = 241
-            Top = 52
+            Top = 40
             Width = 33
             Height = 18
+            Anchors = [akLeft]
             Caption = 'Days'
           end
           object cbResetPointBalancedPointPurchased: TCheckBox
             Left = 3
-            Top = 25
+            Top = 15
             Width = 170
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Point Purchased'
             TabOrder = 1
             OnClick = cbResetMemberPointPurchasedClick
           end
           object cbResetPointBalancedPointRedeemed: TCheckBox
             Left = 3
-            Top = 50
+            Top = 35
             Width = 157
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Point Redemeed'
             TabOrder = 2
             OnClick = cbResetMemberPointRedeemedClick
           end
           object cbResetPointBalancedPointEarned: TCheckBox
             Left = 3
-            Top = 72
+            Top = 55
             Width = 147
-            Height = 25
+            Height = 20
+            Anchors = [akLeft]
             Caption = 'Point Earned'
             TabOrder = 4
             OnClick = cbResetMemberPointEarnedClick
           end
           object edDay: TEdit
             Left = 179
-            Top = 48
+            Top = 36
             Width = 50
             Height = 26
+            Anchors = [akLeft]
             Enabled = False
             TabOrder = 3
             OnClick = edDayClick
           end
           object cbConfirmResetPoint: TCheckBox
             Left = 3
-            Top = 96
+            Top = 73
             Width = 303
             Height = 25
+            Anchors = [akLeft]
             Caption = 'Confirm Points Reset At The End of Day'
             TabOrder = 0
             OnClick = cbConfirmResetPointClick
@@ -3240,10 +3550,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     object tsCustomerDisplay: TTabSheet
       Caption = 'Customer Display.'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel16: TPanel
         Left = 0
         Top = 0

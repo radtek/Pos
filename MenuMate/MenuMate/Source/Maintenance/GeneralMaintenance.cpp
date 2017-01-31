@@ -103,7 +103,7 @@ void __fastcall TfrmGeneralMaintenance::cbEnableExtendedDisplayClicked(TObject *
 
 void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 {
-	FormResize(NULL);
+	FormResize(this);
 	Database::TDBTransaction DBTransaction(DBControl);
 	TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 	DBTransaction.StartTransaction();
@@ -454,7 +454,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::WMDisplayChange(TWMDisplayChange& Message)
 {
-	FormResize(NULL);
+	FormResize(this);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::FormResize(TObject *Sender)
@@ -468,12 +468,120 @@ void __fastcall TfrmGeneralMaintenance::FormResize(TObject *Sender)
 			ScaleBy(Screen->Width, Temp);
 	 }
   //	}
+    int TempHeight = ClientHeight;
 	pnlButtons->Top = Pages->Left;
 	pnlButtons->Left = ClientWidth - pnlButtons->Width - Pages->Left;
 	pnlButtons->Height = ClientHeight - (Pages->Left*2);
 	Pages->Top = Pages->Left;
 	Pages->Width = pnlButtons->Left - (Pages->Left*2);
 	Pages->Height =  ClientHeight - (Pages->Left*2);
+
+    Panel1->Height = (ClientHeight - (Pages->Left*2));
+    Panel1->Width = pnlButtons->Left;
+    //members screen layout.
+    Panel5->Height = (TempHeight - (Pages->Left*2));
+    Panel5->Width = pnlButtons->Left;
+
+    Panel3->Height = (TempHeight - (Pages->Left*2));
+    Panel3->Width = pnlButtons->Left;
+    GroupBox10->Top = GroupBox5->Top;
+    //Start arrange member screen controls...
+    if(Pages->ActivePage == tsMembershipOptions)
+    {
+        GroupBox7->Top = (GroupBox1->Height + GroupBox1->Top);
+        rgMemberNameOnRecipt->Top = (GroupBox7->Height + GroupBox7->Top);
+        GroupBox16->Top = rgMemberNameOnRecipt->Top + rgMemberNameOnRecipt->Height;
+        GroupBox3->Top = (GroupBox16->Height + GroupBox16->Top);
+        GroupBox14->Top = GroupBox1->Top;
+        GroupBox2->Top = (GroupBox14->Height + GroupBox14->Top);
+        GroupBox15->Top = (GroupBox2->Height + GroupBox2->Top);
+        rgLocationFreeSalesRules->Top = (GroupBox15->Height + GroupBox15->Top);
+        rgMemberFreeSalesRules->Top = rgLocationFreeSalesRules->Top + rgLocationFreeSalesRules->Height;
+        grpTierLevel->Top = rgMemberFreeSalesRules->Top + rgMemberFreeSalesRules->Height;
+        grpMemberSubs->Top = grpTierLevel->Top + grpTierLevel->Height;
+    }
+    if(TempHeight < 850)
+    {
+        if(Pages->ActivePage == tsPointOfSale)
+        {
+           GroupBox10->Height = Panel1->ClientHeight - GroupBox10->Top; //- (GroupBox10->Left);
+        }
+        if(Pages->ActivePage == tsMembershipOptions)
+        {
+            //end arrange member screen controls...
+            tbBirthdayBuffer->Height = lbeBirthdayBuffer->Height + lbeFirstVisitPoint->Left;
+            tbRestLastVisit->Height = lbeBirthdayBuffer->Height + lbeFirstVisitPoint->Left;
+            tbFirstVisitPoint->Height = lbeBirthdayBuffer->Height + lbeFirstVisitPoint->Left;
+            int leftValue = GroupBox3->Left;
+        }
+
+        if(Pages->ActivePage == tsEndOfDayOptions)
+        {
+
+           GroupBox25->Height = TempHeight - (GroupBox26->Left*8);
+           tpZedInfo->Height = TempHeight - (cbEnableClientDetails->Height + cbWarnIfOpenTableAndTabs->Height + cbStopIfOpenTableAndTabs->Height + cbDepositBagNum->Height + cbDontClearDataOnZed->Height + lblEndOfDay->Height + cbPostToXero->Height + cbPostMoneyAsPayments->Height+ cbPostMoneyToGLAccounts->Height + cbEnablePaxCount->Height +cbOpenCashDrawer->Height + cbSummariseDiscountsonZed->Height +cbDisplayStockPurchaseWeborders->Height + cbEnableHideCredCancels->Height + cbCombineServiceChargeAndServiceChargeTax->Height + cbCombineServiceChargeTaxAndSalesTax->Height + cbEmailZedClosingTill->Height + GroupBox26->Height + tbtnConfigureEmail->Height + (GroupBox26->Left*4)); //150;
+        }
+        if(Pages->ActivePage == tsEftPos)
+        {
+           GroupBox9->Top = Label9->Top + Label9->Height;
+           GroupBox13->Top = GroupBox9->Top + GroupBox9->Height;
+           cbDuplicateEftPos->Top = GroupBox13->Top + GroupBox13->Height;
+           smartLinkGroupBox->Top = cbDuplicateEftPos->Top + cbDuplicateEftPos->Height;
+           GroupBox20->Top = smartLinkGroupBox->Top + smartLinkGroupBox->Height;
+        }
+    }
+    if(TempHeight < 1000 && ClientWidth != 1600)
+    {
+        if(Pages->ActivePage == tsEndOfDayOptions)
+        {
+           GroupBox25->Height = TempHeight - (GroupBox26->Left*8);
+           tpZedInfo->Height = TempHeight - (cbEnableClientDetails->Height + cbWarnIfOpenTableAndTabs->Height + cbStopIfOpenTableAndTabs->Height + cbDepositBagNum->Height + cbDontClearDataOnZed->Height + lblEndOfDay->Height + cbPostToXero->Height + cbPostMoneyAsPayments->Height+ cbPostMoneyToGLAccounts->Height + cbEnablePaxCount->Height +cbOpenCashDrawer->Height + cbSummariseDiscountsonZed->Height +cbDisplayStockPurchaseWeborders->Height + cbEnableHideCredCancels->Height + cbCombineServiceChargeAndServiceChargeTax->Height + cbCombineServiceChargeTaxAndSalesTax->Height + cbEmailZedClosingTill->Height + GroupBox26->Height + tbtnConfigureEmail->Height + (GroupBox26->Left*4)); //150;
+        }
+        if(TempHeight == 920)
+        {
+            if(Pages->ActivePage == tsPointOfSale)
+            {
+               GroupBox10->Height = Panel1->ClientHeight - GroupBox10->Top;
+            }
+        }
+    }
+
+    GroupBox6->Top = GroupBox5->Top + GroupBox5->Height;
+    GroupBox21->Top = GroupBox6->Top + GroupBox6->Height;
+    gbItemBilling->Top = GroupBox21->Top + GroupBox21->Height;
+    GroupBox19->Top = gbItemBilling->Top + gbItemBilling->Height;
+    GroupBox23->Top = GroupBox19->Top + GroupBox19->Height;
+    GroupBoxEJournal->Top = GroupBox23->Top + GroupBox23->Height;
+
+    GroupBox25->Top = cbEnableClientDetails->Top;
+    GroupBox26->Top = tbtnConfigureEmail->Top + tbtnConfigureEmail->Height;
+
+    tpZedInfo->Top = cbEnableClientDetails->Top + cbEnableClientDetails->Height;
+    cbWarnIfOpenTableAndTabs->Top = tpZedInfo->Height + tpZedInfo->Top;
+    cbStopIfOpenTableAndTabs->Top = cbWarnIfOpenTableAndTabs->Top + cbWarnIfOpenTableAndTabs->Height;
+    cbDepositBagNum->Top = cbStopIfOpenTableAndTabs->Top + cbStopIfOpenTableAndTabs->Height;
+    cbDontClearDataOnZed->Top = cbDepositBagNum->Top + cbDepositBagNum->Height;
+    lblEndOfDay->Top = cbDontClearDataOnZed->Top + cbDontClearDataOnZed->Height;
+    cbEndOfDay->Top = cbDontClearDataOnZed->Top + cbDontClearDataOnZed->Height + (GroupBox26->Left);
+    cbPostToXero->Top = cbEndOfDay->Top + cbEndOfDay->Height;
+    cbPostMoneyAsPayments->Top = cbPostToXero->Top + cbPostToXero->Height;
+    cbPostMoneyToGLAccounts->Top = cbPostMoneyAsPayments->Top + cbPostMoneyAsPayments->Height;
+    cbEnablePaxCount->Top = cbPostMoneyToGLAccounts->Top + cbPostMoneyToGLAccounts->Height;
+    cbOpenCashDrawer->Top = cbEnablePaxCount->Top + cbEnablePaxCount->Height;
+    cbSummariseDiscountsonZed->Top = cbOpenCashDrawer->Top + cbOpenCashDrawer->Height;
+    cbDisplayStockPurchaseWeborders->Top = cbSummariseDiscountsonZed->Top + cbSummariseDiscountsonZed->Height;
+    cbEnableHideCredCancels->Top = cbDisplayStockPurchaseWeborders->Top + cbDisplayStockPurchaseWeborders->Height;
+    cbCombineServiceChargeAndServiceChargeTax->Top = cbEnableHideCredCancels->Top + cbEnableHideCredCancels->Height;
+    cbCombineServiceChargeTaxAndSalesTax->Top = cbCombineServiceChargeAndServiceChargeTax->Top + cbCombineServiceChargeAndServiceChargeTax->Height;
+    cbEmailZedClosingTill->Top = cbCombineServiceChargeTaxAndSalesTax->Top + cbCombineServiceChargeTaxAndSalesTax->Height;
+    tbtnConfigureEmail->Top = cbEmailZedClosingTill->Top + (GroupBox26->Left);
+    GroupBox26->Top =  tbtnConfigureEmail->Top + tbtnConfigureEmail->Height; //150;
+    //eftpos screen alignment.....
+    GroupBox9->Top = Label9->Top + Label9->Height;
+    GroupBox13->Top = GroupBox9->Top + GroupBox9->Height;
+    cbDuplicateEftPos->Top = GroupBox13->Top + GroupBox13->Height;
+    smartLinkGroupBox->Top = cbDuplicateEftPos->Top + cbDuplicateEftPos->Height;
+    GroupBox20->Top = smartLinkGroupBox->Top + smartLinkGroupBox->Height;
 }
 //---------------------------------------------------------------------------
 
@@ -885,6 +993,7 @@ void __fastcall TfrmGeneralMaintenance::tbPOSClick(TObject *Sender)
 {
 	Pages->ActivePage = tsPointOfSale;
 	RedrawButtons(Sender);
+    FormResize(this);
 }
 //---------------------------------------------------------------------------
 
@@ -900,6 +1009,7 @@ void __fastcall TfrmGeneralMaintenance::tbMembershipClick(TObject *Sender)
 {
 	Pages->ActivePage = tsMembershipOptions;
     RedrawButtons(Sender);
+    FormResize(this);
 }
 //---------------------------------------------------------------------------
 
@@ -908,6 +1018,7 @@ void __fastcall TfrmGeneralMaintenance::tbEftposClick(TObject *Sender)
 {
 	Pages->ActivePage = tsEftPos;
 	RedrawButtons(Sender);
+    FormResize(this);
 }
 //---------------------------------------------------------------------------
 
@@ -2166,6 +2277,7 @@ void __fastcall TfrmGeneralMaintenance::tbEndOfDayClick(TObject *Sender)
 {
 	Pages->ActivePage = tsEndOfDayOptions;
 	RedrawButtons(Sender);
+    FormResize(this);
 }
 //---------------------------------------------------------------------------
 
