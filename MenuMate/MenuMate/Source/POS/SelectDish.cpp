@@ -14295,6 +14295,7 @@ void TfrmSelectDish::CheckGiftCardBalance()
         {
              case 1:
              case 3:
+             case 4:
              {
                  AnsiString messageString = "Gift Card ("+ giftCardNumber +") - Remaining Balance is "+ FormatFloat("0.00",GiftCardDetail.PointBalance);
                   if((double)GiftCardDetail.ExpiryDate > double(0))
@@ -14303,7 +14304,6 @@ void TfrmSelectDish::CheckGiftCardBalance()
              }
              break;
              case 2:
-             case 4:
              MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
              break;
         }
