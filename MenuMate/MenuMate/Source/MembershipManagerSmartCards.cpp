@@ -2534,32 +2534,34 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromBarcode(TMMContactInfo &MM
    MMContactInfo.MemberCode = memberCode;
    if(ManagerSyndicateCode.GetCommunicationSyndCode().Valid())
    {
-       memberDownloadStatus = runMemberDownloadThread(ManagerSyndicateCode.GetCommunicationSyndCode(),MMContactInfo,false,true,false,MemberNotExist);
-       
-       if(MemberNotExist)
+        memberDownloadStatus = runMemberDownloadThread(ManagerSyndicateCode.GetCommunicationSyndCode(),MMContactInfo,false,true,false,MemberNotExist);
+        if(MemberNotExist)
         {
-           TGlobalSettings::Instance().IsPOSOffline = false;
+            TGlobalSettings::Instance().IsPOSOffline = false;
+            MMContactInfo.MemberCode = oldCode;
         }
-       else
+        else
         {
-           TGlobalSettings::Instance().IsPOSOffline = !memberDownloadStatus;
+            TGlobalSettings::Instance().IsPOSOffline = !memberDownloadStatus;
+            if(memberDownloadStatus)
+             MMContactInfo.MemberCode = memberCode;
         }
 
-       if(TGlobalSettings::Instance().IsPOSOffline)
-       {
-          MMContactInfo.MemberCode = oldCode;
-         MessageBox( "Unable to read data from Cloud. Members may not be able to spend their points for the time being.", "Message", MB_ICONINFORMATION + MB_OK);
-       }
+        if(TGlobalSettings::Instance().IsPOSOffline)
+        {
+            MMContactInfo.MemberCode = oldCode;
+            MessageBox( "Unable to read data from Cloud. Members may not be able to spend their points for the time being.", "Message", MB_ICONINFORMATION + MB_OK);
+        }
 
-       MembershipSystem->CurrentYearPoints  = MMContactInfo.CurrentYearPoint;
-       MembershipSystem->PreviousYearPoints = MMContactInfo.PreviousYearPoint;
-       MembershipSystem->AvailableBDPoint  = MMContactInfo.AvailableBDPoint;
-       MembershipSystem->AvailableFVPoint = MMContactInfo.AvailableFVPoint;
-       MembershipSystem->MemberVouchers = MMContactInfo.MemberVouchers;
-       }
+        MembershipSystem->CurrentYearPoints  = MMContactInfo.CurrentYearPoint;
+        MembershipSystem->PreviousYearPoints = MMContactInfo.PreviousYearPoint;
+        MembershipSystem->AvailableBDPoint  = MMContactInfo.AvailableBDPoint;
+        MembershipSystem->AvailableFVPoint = MMContactInfo.AvailableFVPoint;
+        MembershipSystem->MemberVouchers = MMContactInfo.MemberVouchers;
+   }
    else
    {
-      MessageBox( "Syndicate Code is not valid.", "Message", MB_ICONINFORMATION + MB_OK);
+       MessageBox( "Syndicate Code is not valid.", "Message", MB_ICONINFORMATION + MB_OK);
    }
    return MemberNotExist;
 }
@@ -2701,7 +2703,8 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
 
          if(canAddMember)
          {
-                 AddMember(UserInfo,true);
+            UserInfo.MemberCode = memberCardCode;
+            AddMember(UserInfo,true);
          }
       }
       else if(!TGlobalSettings::Instance().IsPOSOffline)
@@ -2761,6 +2764,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
          }
          if(updateMember)
          {
+            UserInfo.MemberCode = memberCardCode;
             bool memberCreationSuccess = createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(),UserInfo);
             addDefaultPoints = memberCreationSuccess;
          }
