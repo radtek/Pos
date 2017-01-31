@@ -14298,6 +14298,8 @@ void TfrmSelectDish::CheckGiftCardBalance()
              case 4:
              {
                  AnsiString messageString = "Gift Card ("+ giftCardNumber +") - Remaining Balance is "+ FormatFloat("0.00",GiftCardDetail.PointBalance);
+                 if((double)GiftCardDetail.StartDate > double(0) && GiftCardDetail.StatusCode == 4)
+                    messageString += " and Valid From " + GiftCardDetail.StartDate.FormatString("DD-MM-YYYY");
                   if((double)GiftCardDetail.ExpiryDate > double(0))
                     messageString += " and Expiry Date is " + GiftCardDetail.ExpiryDate.FormatString("DD-MM-YYYY");
                  MessageBox(messageString, "Information", MB_OK + MB_ICONINFORMATION);

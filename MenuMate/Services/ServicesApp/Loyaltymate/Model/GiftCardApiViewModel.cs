@@ -11,6 +11,7 @@ namespace Loyaltymate.Model
         public double PointBalance { get; set; }
         public string GiftCardNumber { get; set; }
         public DateTime? ExpiryDate { get; set; }
+        public DateTime? StartDate { get; set; }
         public GiftCardStatus Result { get; set; }
     }
 }

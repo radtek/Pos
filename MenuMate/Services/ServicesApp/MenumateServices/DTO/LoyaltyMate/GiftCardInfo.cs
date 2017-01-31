@@ -16,6 +16,8 @@ namespace MenumateServices.DTO.LoyaltyMate
         [DataMember]
         public DateTime ExpiryDate { get; set; }
         [DataMember]
+        public DateTime StartDate { get; set; }
+        [DataMember]
         public string ResponseMessage { get; set; }
         [DataMember]
         public int StatusCode { get; set; }
