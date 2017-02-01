@@ -96,14 +96,6 @@ int TfrmFunctions::GetBtnSelection(void)
 
 void __fastcall TfrmFunctions::FormCreate(TObject *Sender)
 {
-   /* Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-   	DBTransaction.StartTransaction();
-    std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-
-  bool UserForceHappyHourRight = Staff->TestAccessLevel( TDeviceRealTerminal::Instance().User, CheckAllowForcedHappyHour);
-
-      DBTransaction.Commit();  */
-
 	if (TGlobalSettings::Instance().ForceHappyHour)
 	{
 			BtnHappyHour->Caption = "Cancel Forced Happy Hour";
@@ -124,6 +116,8 @@ void __fastcall TfrmFunctions::FormCreate(TObject *Sender)
        {
           btnAssignBarcode->Visible = true;
        }
+       btnSync->Visible = TGlobalSettings::Instance().LoyaltyMateEnabled;
+       btnGiftCard->Visible = TGlobalSettings::Instance().LoyaltyMateEnabled;
 
 }
 //---------------------------------------------------------------------------
@@ -172,6 +166,13 @@ void __fastcall TfrmFunctions::btnAssignBarcodeMouseClick(TObject *Sender)
 void __fastcall TfrmFunctions::btnSyncMouseClick(TObject *Sender)
 {
    BtnSelection = 15;
+    Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmFunctions::btnGiftCardMouseClick(TObject *Sender)
+{
+   BtnSelection = 16;
     Close();
 }
 //---------------------------------------------------------------------------

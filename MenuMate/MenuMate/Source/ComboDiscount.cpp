@@ -91,7 +91,12 @@ void TComboDiscount::addOrderToCollection(TItemMinorComplete* or, int index)
         subprice += sub->GrandTotalExcCombo();
     }
     Orders.insert(or);
-    ComboGUI.LoadGUI(or->Item, (or->GrandTotalExcCombo() + subprice)/or->GetQty(), index);
+    double price = 0.0;
+    if(or->GetQty() > 1.0)
+      price = (or->GrandTotalExcCombo() + subprice) / or->GetQty();
+    else                                                                         // Order List comes from Select Dish so it provides Qty with 1 or less than 1 only
+      price = (or->GrandTotalExcCombo() + subprice);
+    ComboGUI.LoadGUI(or->Item, price, index);
 }
 
 TfrmComboGUI::TfrmComboGUI()

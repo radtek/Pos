@@ -7508,6 +7508,11 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
             {
                 DoCloundSync();
 			}break;
+            case 16:
+            {
+                CheckGiftCardBalance();
+			}break;
+
         }
        if (askForLogin)
        {
@@ -14269,6 +14274,42 @@ void TfrmSelectDish::DoCloundSync()
         RedrawSeatOrders();
         HighlightSelectedItem();
      }
+}
+//----------------------------------------------------------------------------------------------------------------------
+void TfrmSelectDish::CheckGiftCardBalance()
+{
+    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+    frmTouchKeyboard->MaxLength = 50;
+    frmTouchKeyboard->AllowCarriageReturn = false;
+    frmTouchKeyboard->StartWithShiftDown = false;
+    frmTouchKeyboard->MustHaveValue = true;
+    frmTouchKeyboard->KeyboardText = "";
+    frmTouchKeyboard->Caption = "Enter Gift Card Number";
+    if (frmTouchKeyboard->ShowModal() == mrOk && frmTouchKeyboard->KeyboardText.Trim() != "")
+    {
+        AnsiString giftCardNumber = frmTouchKeyboard->KeyboardText.Trim();
+        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+        TGiftCardDetail GiftCardDetail;
+        ManagerLoyaltyVoucher.GetGiftVoucherDetail(giftCardNumber,GiftCardDetail);
+        switch(GiftCardDetail.StatusCode)
+        {
+             case 1:
+             case 3:
+             case 4:
+             {
+                 AnsiString messageString = "Gift Card ("+ giftCardNumber +") - Remaining Balance is "+ FormatFloat("0.00",GiftCardDetail.PointBalance);
+                 if((double)GiftCardDetail.StartDate > double(0) && GiftCardDetail.StatusCode == 4)
+                    messageString += " and Valid From " + GiftCardDetail.StartDate.FormatString("DD-MM-YYYY");
+                  if((double)GiftCardDetail.ExpiryDate > double(0))
+                    messageString += " and Expiry Date is " + GiftCardDetail.ExpiryDate.FormatString("DD-MM-YYYY");
+                 MessageBox(messageString, "Information", MB_OK + MB_ICONINFORMATION);
+             }
+             break;
+             case 2:
+             MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
+             break;
+        }
+    }
 }
 //----------------------------------------------------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tedtSearchItemChange(TObject *Sender)
