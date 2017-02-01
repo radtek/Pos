@@ -2237,6 +2237,7 @@ void __fastcall TfrmBillGroup::ApplyDiscount(Database::TDBTransaction &DBTransac
 
       TPaymentTransaction PaymentTransaction(DBTransaction);
       TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, SelectedItemKeys);
+      ManagerDiscount->ClearDiscount(PaymentTransaction.Orders, CurrentDiscount); // clear already applied discount from saved sales...
       ManagerDiscount->AddDiscount(PaymentTransaction.Orders, CurrentDiscount);
    	  PaymentTransaction.ApplyMembership(Membership);
       ManagerDiscount->SetDiscountAmountDB(DBTransaction, PaymentTransaction.Orders);

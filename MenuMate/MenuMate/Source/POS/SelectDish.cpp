@@ -13224,8 +13224,13 @@ void TfrmSelectDish::AssignDiscountLists()
    TSCDPWDChecker SCDChecker;
    isChitDiscountExist = false;
 
+   if(SeatOrders[SelectedSeat]->Orders->Count == 0)
+   {
+       return;
+   }
+
    for(int i=0; i < ChitNumber.DiscountList.size(); i++)
-    {
+   {
          if(ChitNumber.DiscountList[i].IsComplimentaryDiscount())
           {
             TypeOfSale = ComplimentarySale;
