@@ -338,7 +338,14 @@ ChitResult TfrmSelectDish::InitializeChit()
         result = controller.GetDefaultChitNumber(ChitNumber);
         tbtnChitNumber->Visible = result != ChitDisabled;
         if (tbtnChitNumber->Visible)
+        {
             tbtnChitNumber->Caption = ChitNumber.Name;
+
+        }
+        if (ChitNumber.Valid())
+        {
+            GetChitDiscountList(transaction, ChitNumber.DiscountList);
+        }
         transaction.Commit();
     }
 
@@ -8834,6 +8841,7 @@ void TfrmSelectDish::ResetPOS()
       CustAddress = "";
 
   RefreshMenu();
+  InitializeChit(); // initialize default chit...
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()
