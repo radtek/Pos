@@ -416,6 +416,14 @@ void TLoyaltyMateInterface::ReadGiftCardInfo(GiftCardInfo* inVoucherInfo,TGiftCa
        inVoucherInfo->ExpiryDate->Second,inVoucherInfo->ExpiryDate->Millisecond);
 
      }
+
+     if(inVoucherInfo->StartDate != NULL)
+     {
+       GiftCardDetail.StartDate = Dateutils::EncodeDateTime(inVoucherInfo->StartDate->Year,
+       inVoucherInfo->StartDate->Month,inVoucherInfo->StartDate->Day,inVoucherInfo->StartDate->Hour,inVoucherInfo->StartDate->Minute,
+       inVoucherInfo->StartDate->Second,inVoucherInfo->StartDate->Millisecond);
+
+     }
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateInterface::ReadContactInfo(LoyaltyMemberResponse* inWCFResponse,TMMContactInfo& outContactInfo,bool replacePoints )
@@ -795,12 +803,14 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyResponse
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyMemberResponse* inWCFResponse )
 {
-     return MMLoyaltyServiceResponse(
+     MMLoyaltyServiceResponse memberResponse = MMLoyaltyServiceResponse(
                 inWCFResponse->Successful,
                 AnsiString( inWCFResponse->Message.t_str() ),
                 AnsiString( inWCFResponse->Description.t_str() ),
                 ( MMLoyaltyResponseCode )inWCFResponse->ResponseCode,
                 AnsiString( inWCFResponse->MemberInfo->UniqueId.t_str() ) );
+     memberResponse.MemberCode = inWCFResponse->MemberInfo->MemberCardCode;
+     return memberResponse;
 }
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyCompanyResponse* inWCFResponse )

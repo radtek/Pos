@@ -1447,6 +1447,7 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
 
     if(memberCreationSuccess)
     {
+       UpdateMemberCardCodeToDB(DBTransaction,SmartCardContact,SmartCardContact.MemberCode);
        AddDefaultPoints(DBTransaction,Points,SmartCardContact.ContactKey);
         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- Loyaltymate operation");
     }
@@ -2537,6 +2538,7 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromBarcode(TMMContactInfo &MM
        
        if(MemberNotExist)
         {
+           MMContactInfo.MemberCode = oldCode;
            TGlobalSettings::Instance().IsPOSOffline = false;
         }
        else
@@ -2546,7 +2548,7 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromBarcode(TMMContactInfo &MM
 
        if(TGlobalSettings::Instance().IsPOSOffline)
        {
-          MMContactInfo.MemberCode = oldCode;
+         MMContactInfo.MemberCode = oldCode;
          MessageBox( "Unable to read data from Cloud. Members may not be able to spend their points for the time being.", "Message", MB_ICONINFORMATION + MB_OK);
        }
 

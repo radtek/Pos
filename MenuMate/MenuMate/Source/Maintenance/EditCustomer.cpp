@@ -98,8 +98,8 @@ void __fastcall TfrmEditCustomer::FormShow(TObject *Sender)
    {
      DateTimePicker1->Date = Now();
    }
-   btnSwipe->Enabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
-   tbProximity->Enabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
+   //btnSwipe->Enabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
+   //tbProximity->Enabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
    cbNoEmail->Enabled = Info.EMail == "" || Info.EMail == NULL;
    edEmail->Enabled = Info.EMail == "" || Info.EMail == NULL;
    if(TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate || !TGlobalSettings::Instance().LoyaltyMateEnabled)
@@ -247,6 +247,7 @@ void __fastcall TfrmEditCustomer::btnOkClick(TObject *Sender)
 {
     edFirstName->Text = edFirstName->Text.Trim();
     edLastName->Text = edLastName->Text.Trim();
+    edEmail->Text = edEmail->Text.Trim();
     if(cbNoEmail->Checked && TGlobalSettings::Instance().LoyaltyMateEnabled)
     {
        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
