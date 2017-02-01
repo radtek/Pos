@@ -221,7 +221,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsMembershipOptions
+    ActivePage = tsEndOfDayOptions
     TabOrder = 1
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'
@@ -305,7 +305,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Do not force tender on EFT sales.'
             TabOrder = 1
             OnClick = cbFTEFTSalesClick
-            ExplicitTop = 68
           end
           object cbCaptureCustomerName: TCheckBox
             Left = 8
@@ -316,7 +315,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Capture Customer Name'
             TabOrder = 12
             OnClick = cbCaptureCustomerNameClick
-            ExplicitTop = 93
           end
           object cbHoldSend: TCheckBox
             Left = 8
@@ -327,7 +325,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Use Hold and Send Function'
             TabOrder = 11
             OnClick = cbHoldSendClick
-            ExplicitTop = 117
           end
           object btnNonService: TTouchBtn
             Left = 249
@@ -348,7 +345,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = btnNonServiceClick
-            ExplicitTop = 142
           end
           object cbForcedSidesFirst: TCheckBox
             Left = 8
@@ -359,7 +355,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Show Forced Sides before Forced Options'
             TabOrder = 5
             OnClick = cbForcedSidesFirstClick
-            ExplicitTop = 176
           end
           object cbForcedReasons: TCheckBox
             Left = 8
@@ -370,7 +365,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Force Reasons for credit, cancels and discounts.'
             TabOrder = 3
             OnClick = cbForcedReasonsClick
-            ExplicitTop = 200
           end
           object cbPromptPatronCount: TCheckBox
             Left = 8
@@ -381,7 +375,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Prompt For Patron Count.'
             TabOrder = 6
             OnClick = cbPromptPatronCountClick
-            ExplicitTop = 225
           end
           object cbPromptPatronCountOnTableSales: TCheckBox
             Left = 8
@@ -392,7 +385,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Prompt For Patron Count On Table Sales Only.'
             TabOrder = 7
             OnClick = cbPromptPatronCountOnTableSalesClick
-            ExplicitTop = 249
           end
           object cbRounding: TCheckBox
             Left = 8
@@ -403,7 +395,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Rounding Mid point rounds down.'
             TabOrder = 8
             OnClick = cbRoundingClick
-            ExplicitTop = 274
           end
           object GroupBox11: TGroupBox
             Left = 3
@@ -412,7 +403,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Height = 81
             Anchors = [akLeft]
             TabOrder = 4
-            ExplicitTop = 313
             DesignSize = (
               249
               81)
@@ -488,7 +478,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnMMSubNetClick
-            ExplicitTop = 304
           end
           object tbtnTabCreditGroup: TTouchBtn
             Left = 296
@@ -508,7 +497,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
-            ExplicitTop = 367
           end
           object cbDisableSaveConfirmation: TCheckBox
             Left = 8
@@ -519,7 +507,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Disable Confirmation on Save'
             TabOrder = 9
             OnClick = cbDisableSaveConfirmationClick
-            ExplicitTop = 426
           end
           object cbDisableReceiptOnConfirmation: TCheckBox
             Left = 8
@@ -530,7 +517,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Disable Receipt on Confirmation'
             TabOrder = 10
             OnClick = cbDisableReceiptOnConfirmationClick
-            ExplicitTop = 450
           end
           object cbShowVoucherDetails: TCheckBox
             Left = 8
@@ -541,7 +527,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Show Voucher Details'
             TabOrder = 15
             OnClick = cbEnableShowVoucherDetails
-            ExplicitTop = 475
           end
           object cbEnablePhoneOrders: TCheckBox
             Left = 8
@@ -552,7 +537,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Phone Orders'
             TabOrder = 17
             OnClick = cbEnablePhoneOrdersMouseClick
-            ExplicitTop = 499
           end
           object cbNagUserToSelectChit: TCheckBox
             Left = 8
@@ -563,7 +547,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Prompt for a chit on every new order'
             TabOrder = 16
             OnClick = cbNagUserToSelectChitClicked
-            ExplicitTop = 524
           end
           object cbUseMenuDefaultPatronCount: TCheckBox
             Left = 8
@@ -574,7 +557,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Calculate default patron count from menu'
             TabOrder = 19
             OnClick = cbUseMenuDefaultPatronCountClicked
-            ExplicitTop = 548
           end
           object cbEnableTableMode: TCheckBox
             Left = 8
@@ -585,7 +567,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Table Display On Start-up'
             TabOrder = 18
             OnClick = cbEnableTableModeClick
-            ExplicitTop = 573
           end
           object cbEnableParkedSales: TCheckBox
             Left = 8
@@ -596,7 +577,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Parked Sales'
             TabOrder = 20
             OnClick = cbEnableParkedSalesClicked
-            ExplicitTop = 597
           end
           object cbNotifyForManuallyEnteredWeight: TCheckBox
             Left = 8
@@ -607,7 +587,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Notify for Manually Entered Weight'
             TabOrder = 23
             OnClick = cbNotifyForManuallyEnteredWeightClicked
-            ExplicitTop = 622
           end
           object cbHideRoundingOnReceipt: TCheckBox
             Left = 8
@@ -618,7 +597,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Hide Rounding On Receipt'
             TabOrder = 21
             OnClick = cbHideRoundingOnReceiptClick
-            ExplicitTop = 646
           end
           object cbFloatWithdrawFromCash: TCheckBox
             Left = 8
@@ -629,7 +607,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Float Withdrawal From Cash'
             TabOrder = 24
             OnClick = cbFloatWithdrawFromCashClick
-            ExplicitTop = 670
           end
         end
         object GroupBox5: TGroupBox
@@ -684,7 +661,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             MaxLength = 6
             TabOrder = 0
             OnMouseUp = edSeatLabelMouseUp
-            ExplicitTop = 70
           end
           object cbTableSeats: TCheckBox
             Left = 8
@@ -695,7 +671,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Table Seat Interface'
             TabOrder = 1
             OnClick = cbTableSeatsClick
-            ExplicitTop = 47
           end
           object cbTabsInterface: TCheckBox
             Left = 8
@@ -706,7 +681,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Tabs Interface'
             TabOrder = 2
             OnClick = cbTabsInterfaceClick
-            ExplicitTop = 24
           end
         end
         object GroupBox21: TGroupBox
@@ -729,7 +703,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Disable internal invoicing'
             TabOrder = 0
             OnClick = cbDisableInternalInvoicingClick
-            ExplicitTop = 21
           end
         end
         object Panel2: TPanel
@@ -789,7 +762,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Allow to enter weight.'
             TabOrder = 1
             OnClick = cbScaleEnterWeightClick
-            ExplicitTop = 36
           end
           object cbScaleEnterPrice: TCheckBox
             Left = 8
@@ -800,7 +772,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Allow to enter price.'
             TabOrder = 2
             OnClick = cbScaleEnterPriceClick
-            ExplicitTop = 58
           end
           object tbEnterWeight: TTouchBtn
             Left = 250
@@ -821,7 +792,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbEnterWeightClick
-            ExplicitTop = 80
           end
         end
         object GroupBox23: TGroupBox
@@ -898,7 +868,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Tax Removal'
             TabOrder = 6
             OnClick = cbDisplayTaxExemptClick
-            ExplicitTop = 21
           end
           object cbSkipConfirmationOnFastTender: TCheckBox
             Left = 8
@@ -909,7 +878,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Skip Confirmation on Fast Tender Shortcuts'
             TabOrder = 1
             OnClick = cbSkipConfirmationOnFastTenderClick
-            ExplicitTop = 46
           end
           object cbTransferTableOnPrintPrelim: TCheckBox
             Left = 8
@@ -920,7 +888,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Delayed Payment'
             TabOrder = 2
             OnClick = cbTransferTableOnPrintPrelimClick
-            ExplicitTop = 71
           end
           object cbEnableCancelCheckRemoval: TCheckBox
             Left = 8
@@ -931,7 +898,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Security Check on Cancel at Payment Tender'
             TabOrder = 3
             OnClick = cbEnableCancelCheckRemovalClick
-            ExplicitTop = 96
           end
           object cbRoundOnBilling: TCheckBox
             Left = 8
@@ -942,7 +908,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Round On Billing'
             TabOrder = 5
             OnClick = cbRoundOnBillingClick
-            ExplicitTop = 121
           end
           object tbRoundingOnBilling: TTouchBtn
             Left = 313
@@ -963,7 +928,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbRoundingOnBillingClick
-            ExplicitTop = 121
           end
           object cbDeleteItemSizeAfterSale: TCheckBox
             Left = 8
@@ -974,7 +938,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Delete ItemSize After Sale'
             TabOrder = 0
             OnClick = cbDeleteItemSizeAfterSaleClick
-            ExplicitTop = 147
           end
           object cbMergeSimilarItem: TCheckBox
             Left = 8
@@ -985,7 +948,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Merge Similar Items for Billing'
             TabOrder = 4
             OnClick = cbMergeSimilarItemClick
-            ExplicitTop = 171
           end
         end
       end
@@ -1651,7 +1613,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnPointsGroupClick
-            ExplicitTop = 12
           end
           object cbEarnPoints: TCheckBox
             Left = 8
@@ -1662,7 +1623,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'You can earn points while redeeming points'
             TabOrder = 2
             OnClick = cbEarnPointsClick
-            ExplicitTop = 42
           end
           object cbOnlyEarnPoints: TCheckBox
             Left = 8
@@ -1679,7 +1639,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             ParentFont = False
             TabOrder = 4
             OnClick = cbOnlyEarnPointsClick
-            ExplicitTop = 62
           end
           object cbSeparatePts: TCheckBox
             Left = 8
@@ -1690,7 +1649,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Separate Earnt and Loaded Points'
             TabOrder = 10
             OnClick = cbSeparatePtsClick
-            ExplicitTop = 82
           end
           object cbCountPointSpentInRevenue: TCheckBox
             Left = 8
@@ -1701,7 +1659,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Points Spent Not Counted As Revenue'
             TabOrder = 1
             OnClick = cbCountPointSpentInRevenueClick
-            ExplicitTop = 102
           end
           object cbOnlyFullProducts: TCheckBox
             Left = 8
@@ -1712,7 +1669,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Only Allow Points to be Spent on Full Products'
             TabOrder = 3
             OnClick = cbOnlyFullProductsClick
-            ExplicitTop = 122
           end
           object cbRedeemOnSelectedItems: TCheckBox
             Left = 8
@@ -1723,7 +1679,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Points to be Redeemed on Selected Items Only'
             TabOrder = 5
             OnClick = cbRedeemOnSelectedItemsClick
-            ExplicitTop = 162
           end
           object cbEarnPointsOnWeight: TCheckBox
             Left = 8
@@ -1734,7 +1689,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Calculate Earnt Points on Weight'
             TabOrder = 6
             OnClick = cbEarnPointsOnWeightClick
-            ExplicitTop = 142
           end
           object cbRefundPoints: TCheckBox
             Left = 8
@@ -1745,7 +1699,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Allow Refund Points'
             TabOrder = 7
             OnClick = cbRefundPointsClick
-            ExplicitTop = 182
           end
           object cbPointOnly: TCheckBox
             Left = 8
@@ -1756,7 +1709,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Only Allow Member Sales'
             TabOrder = 9
             OnClick = cbPointOnlyClick
-            ExplicitTop = 202
           end
           object cbShowScreenToSelectItems: TCheckBox
             Left = 8
@@ -1856,11 +1808,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnLuckMemberPeriodClick
-            ExplicitTop = 65
           end
           object tbtnLuckMemberPeriodDay: TTouchBtn
             Left = 16
-            Top = 16
+            Top = 18
             Width = 89
             Height = 33
             Anchors = [akLeft]
@@ -1877,11 +1828,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnLuckMemberPeriodDayClick
-            ExplicitTop = 22
           end
           object tbtnLuckMemberPeriodWeek: TTouchBtn
             Left = 160
-            Top = 16
+            Top = 18
             Width = 89
             Height = 33
             Anchors = [akLeft]
@@ -1898,11 +1848,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnLuckMemberPeriodWeekClick
-            ExplicitTop = 22
           end
           object tbtnLuckMemberPeriodMonth: TTouchBtn
             Left = 312
-            Top = 16
+            Top = 18
             Width = 89
             Height = 33
             Anchors = [akLeft]
@@ -1919,7 +1868,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnLuckMemberPeriodMonthClick
-            ExplicitTop = 22
           end
           object cbEnableMemberSpendChits: TCheckBox
             Left = 10
@@ -1930,7 +1878,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Member spend Chits'
             TabOrder = 4
             OnClick = cbEnableMemberSpendChitsClick
-            ExplicitTop = 115
           end
           object tbtnMemberSpendChitValue: TTouchBtn
             Left = 288
@@ -1951,7 +1898,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnMemberSpendChitValueClick
-            ExplicitTop = 110
           end
           object cbDrawByLocation: TCheckBox
             Left = 10
@@ -1962,7 +1908,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Draw From this Location Only'
             TabOrder = 6
             OnClick = cbDrawByLocationClick
-            ExplicitTop = 90
           end
         end
         object GroupBox2: TGroupBox
@@ -1998,7 +1943,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnSyncroniseMembersipMouseClick
-            ExplicitTop = 18
           end
           object cbAutoAddWebMembers: TCheckBox
             Left = 7
@@ -2009,7 +1953,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Automatically Add Web Members'
             TabOrder = 1
             OnClick = cbAutoAddWebMembersClick
-            ExplicitTop = 49
           end
         end
         object GroupBox15: TGroupBox
@@ -2051,7 +1994,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbMinMembershipNumberClick
-            ExplicitTop = 20
           end
           object cbRecycleMembershipNumbers: TCheckBox
             Left = 7
@@ -2094,29 +2036,26 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Membership Smart Cards'
             TabOrder = 0
             OnClick = cbEnableMembershipSmartCardsClick
-            ExplicitTop = 20
           end
           object cbvmAllowSmartCardNotPresentMemberTransactions: TCheckBox
             Left = 9
-            Top = 38
+            Top = 36
             Width = 367
             Height = 20
             Anchors = [akLeft]
             Caption = 'Allow card not present member transactions'
             TabOrder = 1
             OnClick = cbvmAllowSmartCardNotPresentMemberTransactionsClick
-            ExplicitTop = 40
           end
           object cbvmAllowMemberDetailscreen: TCheckBox
             Left = 9
-            Top = 52
+            Top = 53
             Width = 385
             Height = 23
             Anchors = [akLeft]
             Caption = 'Enable Member Details screen'
             TabOrder = 2
             OnClick = cbvmAllowMemberDetailscreenClick
-            ExplicitTop = 55
           end
           object cbvmMandatoryMembershipCard: TCheckBox
             Left = 9
@@ -2127,7 +2066,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Mandatory Membership Card'
             TabOrder = 4
             OnClick = cbvmMandatoryMembershipCardClick
-            ExplicitTop = 75
           end
           object cbGiftCardOnly: TCheckBox
             Left = 9
@@ -2298,7 +2236,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Use Tier Levels'
             TabOrder = 1
             OnClick = cbEnableTierLevelsClick
-            ExplicitTop = 21
           end
           object cbAllowPointPaymentByWeight: TCheckBox
             Left = 10
@@ -2309,7 +2246,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Allow Point Payment By Weight (grams)'
             TabOrder = 2
             OnClick = cbAllowPointPaymentByWeightClick
-            ExplicitTop = 45
           end
           object cbAllowPointPaymentByValue: TCheckBox
             Left = 10
@@ -2320,7 +2256,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Allow Point Payment By Value (Points)'
             TabOrder = 0
             OnClick = cbAllowPointPaymentByValueClick
-            ExplicitTop = 70
           end
           object tbMinRedemptionPoint: TTouchBtn
             Left = 312
@@ -2341,7 +2276,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbMinRedemptionPointClick
-            ExplicitTop = 85
           end
         end
         object grpMemberSubs: TGroupBox
@@ -2364,7 +2298,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Use Member Subscription'
             TabOrder = 0
             OnClick = cbUseMemberSubsClick
-            ExplicitTop = 21
           end
         end
       end
@@ -2882,7 +2815,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 364
           Width = 137
-          Height = 27
+          Height = 25
           Anchors = [akLeft]
           AutoSize = False
           Caption = 'Session Start Time: '
@@ -3230,7 +3163,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 392
           Width = 243
-          Height = 25
+          Height = 24
           Anchors = [akLeft]
           Caption = 'Post Z to Accounting System'
           TabOrder = 18
@@ -3331,7 +3264,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Width = 100
           Height = 27
           Style = csDropDownList
-          Anchors = [akLeft]
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -16
@@ -3345,7 +3277,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         object cbCombineServiceChargeAndServiceChargeTax: TCheckBox
           Left = 8
           Top = 589
-          Width = 340
+          Width = 360
           Height = 25
           Anchors = [akLeft]
           Caption = 'Combine Service Charge Tax and Service Charge'

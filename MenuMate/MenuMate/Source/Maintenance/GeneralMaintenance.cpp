@@ -459,6 +459,10 @@ void __fastcall TfrmGeneralMaintenance::WMDisplayChange(TWMDisplayChange& Messag
 //---------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::FormResize(TObject *Sender)
 {
+   const int stdMinScreenHeight = 850;
+   const int stdMaxScreenHeight = 1000;
+   const int stdScreenWidth = 1600;
+   const int screenHeight = 920;
    //	if (Tag != Screen->Width)
   //	{
 		int Temp = Tag;
@@ -486,8 +490,8 @@ void __fastcall TfrmGeneralMaintenance::FormResize(TObject *Sender)
     Panel3->Width = pnlButtons->Left;
     GroupBox10->Top = GroupBox5->Top;
     //Start arrange member screen controls...
-    if(Pages->ActivePage == tsMembershipOptions)
-    {
+    //if(Pages->ActivePage == tsMembershipOptions)
+   // {
         GroupBox7->Top = (GroupBox1->Height + GroupBox1->Top);
         rgMemberNameOnRecipt->Top = (GroupBox7->Height + GroupBox7->Top);
         GroupBox16->Top = rgMemberNameOnRecipt->Top + rgMemberNameOnRecipt->Height;
@@ -499,8 +503,8 @@ void __fastcall TfrmGeneralMaintenance::FormResize(TObject *Sender)
         rgMemberFreeSalesRules->Top = rgLocationFreeSalesRules->Top + rgLocationFreeSalesRules->Height;
         grpTierLevel->Top = rgMemberFreeSalesRules->Top + rgMemberFreeSalesRules->Height;
         grpMemberSubs->Top = grpTierLevel->Top + grpTierLevel->Height;
-    }
-    if(TempHeight < 850)
+    //}
+    if(TempHeight < stdMinScreenHeight)
     {
         if(Pages->ActivePage == tsPointOfSale)
         {
@@ -512,7 +516,6 @@ void __fastcall TfrmGeneralMaintenance::FormResize(TObject *Sender)
             tbBirthdayBuffer->Height = lbeBirthdayBuffer->Height + lbeFirstVisitPoint->Left;
             tbRestLastVisit->Height = lbeBirthdayBuffer->Height + lbeFirstVisitPoint->Left;
             tbFirstVisitPoint->Height = lbeBirthdayBuffer->Height + lbeFirstVisitPoint->Left;
-            int leftValue = GroupBox3->Left;
         }
 
         if(Pages->ActivePage == tsEndOfDayOptions)
@@ -530,14 +533,14 @@ void __fastcall TfrmGeneralMaintenance::FormResize(TObject *Sender)
            GroupBox20->Top = smartLinkGroupBox->Top + smartLinkGroupBox->Height;
         }
     }
-    if(TempHeight < 1000 && ClientWidth != 1600)
+    if(TempHeight < stdMaxScreenHeight && ClientWidth != stdScreenWidth)
     {
         if(Pages->ActivePage == tsEndOfDayOptions)
         {
            GroupBox25->Height = TempHeight - (GroupBox26->Left*8);
            tpZedInfo->Height = TempHeight - (cbEnableClientDetails->Height + cbWarnIfOpenTableAndTabs->Height + cbStopIfOpenTableAndTabs->Height + cbDepositBagNum->Height + cbDontClearDataOnZed->Height + lblEndOfDay->Height + cbPostToXero->Height + cbPostMoneyAsPayments->Height+ cbPostMoneyToGLAccounts->Height + cbEnablePaxCount->Height +cbOpenCashDrawer->Height + cbSummariseDiscountsonZed->Height +cbDisplayStockPurchaseWeborders->Height + cbEnableHideCredCancels->Height + cbCombineServiceChargeAndServiceChargeTax->Height + cbCombineServiceChargeTaxAndSalesTax->Height + cbEmailZedClosingTill->Height + GroupBox26->Height + tbtnConfigureEmail->Height + (GroupBox26->Left*4)); //150;
         }
-        if(TempHeight == 920)
+        if(TempHeight == screenHeight)
         {
             if(Pages->ActivePage == tsPointOfSale)
             {
@@ -562,7 +565,7 @@ void __fastcall TfrmGeneralMaintenance::FormResize(TObject *Sender)
     cbDepositBagNum->Top = cbStopIfOpenTableAndTabs->Top + cbStopIfOpenTableAndTabs->Height;
     cbDontClearDataOnZed->Top = cbDepositBagNum->Top + cbDepositBagNum->Height;
     lblEndOfDay->Top = cbDontClearDataOnZed->Top + cbDontClearDataOnZed->Height;
-    cbEndOfDay->Top = cbDontClearDataOnZed->Top + cbDontClearDataOnZed->Height + (GroupBox26->Left);
+    cbEndOfDay->Top = cbDontClearDataOnZed->Top + cbDontClearDataOnZed->Height - (GroupBox26->Left);
     cbPostToXero->Top = cbEndOfDay->Top + cbEndOfDay->Height;
     cbPostMoneyAsPayments->Top = cbPostToXero->Top + cbPostToXero->Height;
     cbPostMoneyToGLAccounts->Top = cbPostMoneyAsPayments->Top + cbPostMoneyAsPayments->Height;
@@ -993,7 +996,7 @@ void __fastcall TfrmGeneralMaintenance::tbPOSClick(TObject *Sender)
 {
 	Pages->ActivePage = tsPointOfSale;
 	RedrawButtons(Sender);
-    FormResize(this);
+    //FormResize(this);
 }
 //---------------------------------------------------------------------------
 
@@ -1009,7 +1012,7 @@ void __fastcall TfrmGeneralMaintenance::tbMembershipClick(TObject *Sender)
 {
 	Pages->ActivePage = tsMembershipOptions;
     RedrawButtons(Sender);
-    FormResize(this);
+    //FormResize(this);
 }
 //---------------------------------------------------------------------------
 
@@ -1018,7 +1021,7 @@ void __fastcall TfrmGeneralMaintenance::tbEftposClick(TObject *Sender)
 {
 	Pages->ActivePage = tsEftPos;
 	RedrawButtons(Sender);
-    FormResize(this);
+    //FormResize(this);
 }
 //---------------------------------------------------------------------------
 
