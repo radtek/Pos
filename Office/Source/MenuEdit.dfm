@@ -335,7 +335,7 @@ object frmMenuEdit: TfrmMenuEdit
                 Font.Height = -11
                 Font.Name = 'Tahoma'
                 Font.Style = []
-                ItemHeight = 13
+                ItemHeight = 0
                 ParentFont = False
                 TabOrder = 5
                 OnChange = cbServingCourseChange
@@ -553,7 +553,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 13
+                    ItemHeight = 0
                     ParentFont = False
                     TabOrder = 0
                     OnChange = cbItemNameChange
@@ -1997,7 +1997,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 13
+                    ItemHeight = 0
                     ParentFont = False
                     Sorted = True
                     TabOrder = 6
@@ -2214,7 +2214,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 13
+                    ItemHeight = 0
                     ParentFont = False
                     Sorted = True
                     TabOrder = 3
