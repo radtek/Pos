@@ -335,7 +335,7 @@ object frmMenuEdit: TfrmMenuEdit
                 Font.Height = -11
                 Font.Name = 'Tahoma'
                 Font.Style = []
-                ItemHeight = 0
+                ItemHeight = 13
                 ParentFont = False
                 TabOrder = 5
                 OnChange = cbServingCourseChange
@@ -553,7 +553,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 0
+                    ItemHeight = 13
                     ParentFont = False
                     TabOrder = 0
                     OnChange = cbItemNameChange
@@ -1997,7 +1997,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 0
+                    ItemHeight = 13
                     ParentFont = False
                     Sorted = True
                     TabOrder = 6
@@ -2214,7 +2214,7 @@ object frmMenuEdit: TfrmMenuEdit
                     Font.Height = -11
                     Font.Name = 'Tahoma'
                     Font.Style = []
-                    ItemHeight = 0
+                    ItemHeight = 13
                     ParentFont = False
                     Sorted = True
                     TabOrder = 3
@@ -4798,5 +4798,21 @@ object frmMenuEdit: TfrmMenuEdit
     Transaction = StockTransaction
     Left = 40
     Top = 248
+  end
+  object qrGetTaxSettings: TIBSQL
+    Database = dmMMData.dbMenuMate
+    ParamCheck = False
+    SQL.Strings = (
+      'SELECT      '
+      
+        'MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8000 THEN VARSPROFILE.' +
+        'INTEGER_VAL END) AS IsTax,     '
+      
+        'MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8001 THEN VARSPROFILE.' +
+        'INTEGER_VAL END) AS IsSeviceCharge '
+      'FROM VARSPROFILE ')
+    Transaction = MMTransaction
+    Left = 144
+    Top = 296
   end
 end
