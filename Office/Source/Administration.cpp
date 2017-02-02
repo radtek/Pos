@@ -1936,7 +1936,14 @@ std::string TimportMenu::delUnnecessary(std::string &str)
                                 qrAddStockLocation->ParamByName("Location")->AsString               = ImportCSV->Cells[9][i].Trim();
                                 qrAddStockLocation->ParamByName("Max_Level")->AsFloat               = StrToFloat(ImportCSV->Cells[11][i].Trim());
                                 qrAddStockLocation->ParamByName("Min_Level")->AsFloat               = StrToFloat(ImportCSV->Cells[10][i].Trim());
-                                qrAddStockLocation->ParamByName("On_Hand")->AsFloat                 = 1;
+                                if(!normalImport)
+                                {
+                                   qrAddStockLocation->ParamByName("On_Hand")->AsFloat                 = 1;
+                                }
+                                else
+                                {
+                                   qrAddStockLocation->ParamByName("On_Hand")->AsFloat                 = 0;
+                                }
                                 qrAddStockLocation->ParamByName("Average_Cost")->AsFloat            = StrToFloat(ImportCSV->Cells[13][i].Trim());
                                 qrAddStockLocation->ParamByName("Latest_Cost")->AsFloat             = StrToFloat(ImportCSV->Cells[13][i].Trim());
                                 qrAddStockLocation->ParamByName("Initialised")->AsString            = "F";
