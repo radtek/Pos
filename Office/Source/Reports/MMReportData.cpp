@@ -305,24 +305,24 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
 			cdsMenu->FieldDefs->Add("COURSE_NAME", ftString, 25);
 			cdsMenu->FieldDefs->Add("ITEM_NAME", ftString, 50);
 			cdsMenu->FieldDefs->Add("SIZE_NAME", ftString, 50);
-			cdsMenu->FieldDefs->Add("PRICE", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("PRICEEXC", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("MENU_COST", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("SPECIAL_PRICE", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("SPECIAL_PRICEEXC", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("DIFFERENCE", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("POINTS_PERCENT", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("GST_PERCENT", ftCurrency, 0);
+			cdsMenu->FieldDefs->Add("PRICE", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("PRICEEXC", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("MENU_COST", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("SPECIAL_PRICE", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("SPECIAL_PRICEEXC", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("DIFFERENCE", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("POINTS_PERCENT", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("GST_PERCENT", ftCurrency, 0.00);
 			cdsMenu->FieldDefs->Add("CODE", ftString, 25);
-			cdsMenu->FieldDefs->Add("QTY", ftCurrency, 0);
+			cdsMenu->FieldDefs->Add("QTY", ftCurrency, 0.00);
 			cdsMenu->FieldDefs->Add("LOCATION", ftString, 25);
-        cdsMenu->FieldDefs->Add("BasePrice", ftCurrency, 0);
+        cdsMenu->FieldDefs->Add("BasePrice", ftCurrency, 0.00);
 			//cdsMenu->FieldDefs->Add("COST", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("COST_TIMES_QTY", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("PROFIT", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("GP", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("GP_POINTS", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("GP_SPECIAL_PRICE", ftCurrency, 0);
+			cdsMenu->FieldDefs->Add("COST_TIMES_QTY", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("PROFIT", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("GP", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("GP_POINTS", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("GP_SPECIAL_PRICE", ftCurrency, 0.00);
 			cdsMenu->CreateDataSet();
 		 }
 		 catch (Exception &E)
@@ -496,7 +496,7 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
                 {
                     if(BasePrice > 0)
                     {
-					   cdsMenu->FieldByName("GP")->AsCurrency = (cdsMenu->FieldByName("PROFIT")->AsCurrency / BasePrice) * 100; // when base price > 0...
+					   cdsMenu->FieldByName("GP")->AsCurrency = (Currency) ((double)cdsMenu->FieldByName("PROFIT")->AsCurrency / (double)BasePrice) * 100; // when base price > 0...
                     }
                     else
                     {
@@ -555,7 +555,9 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
 			cdsMenu->FieldByName("PROFIT")->AsCurrency = BasePrice - cdsMenu->FieldByName("COST_TIMES_QTY")->AsCurrency;
 		 // GP
 		 if (BasePrice != 0.00)
-			cdsMenu->FieldByName("GP")->AsCurrency =  (cdsMenu->FieldByName("PROFIT")->AsCurrency / BasePrice) * 100  ;
+         {
+			cdsMenu->FieldByName("GP")->AsCurrency = (Currency) (((double)cdsMenu->FieldByName("PROFIT")->AsCurrency / (double)BasePrice) * 100 ) ;
+         }
 		 // Special Price GP
 		 if (SpecialPriceExc != 0.00)
 			cdsMenu->FieldByName("GP_SPECIAL_PRICE")->AsCurrency = (1 - (cdsMenu->FieldByName("COST_TIMES_QTY")->AsCurrency / SpecialPriceExc)) * 100;

@@ -2136,7 +2136,7 @@ void TfrmMenuEdit::RefreshItemRecipe(TItemSizeNode *DrinkCostData)
 		edItemCost->Value = TotalItemCost;//0;
 		edCostGST->Enabled = false;
 
-		double GP = 0.0;
+		Currency GP = 0.00;
         //populating items prices and g.p 's
 
         for(int key =1; key<= noOfPriceLevels; key++)
@@ -2152,12 +2152,12 @@ void TfrmMenuEdit::RefreshItemRecipe(TItemSizeNode *DrinkCostData)
 
             if (PriceExc != 0)
             {
-                GP = (1 - (edItemCost->Value / PriceExc)) * 100;
+                GP = (Currency)(1 - ((double)edItemCost->Value / (double)PriceExc)) * 100;
             }
             sgItemsize->Cells[2][key] = CurrToStrF(GP, ffFixed, CurrencyDecimals);
            //nePriceGP->Value = GP;
 
-            GP = 0.0;
+            GP = 0.00;
         }    
 
 		edRecipeQty->Enabled = true;
@@ -2210,7 +2210,7 @@ void __fastcall TfrmMenuEdit::edLocChange(TObject *Sender)
 			}
 			edItemCost->Value = TotalItemCost;
 
-			double GP = 0.0;
+			Currency GP = 0.00;
 
             for(int key =1; key<= noOfPriceLevels; key++)
             {
@@ -2224,10 +2224,10 @@ void __fastcall TfrmMenuEdit::edLocChange(TObject *Sender)
 
                 if (PriceExc != 0)
                 {
-                    GP = (1 - (TotalItemCost / PriceExc)) * 100;
+                    GP = (Currency)(1 - ((double)TotalItemCost / (double)PriceExc)) * 100;
                 }
                 sgItemsize->Cells[2][key] = CurrToStrF(GP, ffFixed, CurrencyDecimals);
-                GP = 0.0;
+                GP = 0.00;
             }
 		}
 	}
@@ -2324,7 +2324,7 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 
         std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpIT = ItemSizeData->ItemSizePriceLevels.begin();
         std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpEnd = ItemSizeData->ItemSizePriceLevels.end();
-        double GP = 0.0;
+        Currency GP = 0.00;
         rowIndex = 1;
 
         for ( ; grpIT != grpEnd; ++grpIT )
@@ -2342,10 +2342,10 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 
                 if (PriceExc != 0)
                 {
-                    GP = (1 - (ItemSizeData->Cost / PriceExc)) * 100;
+                    GP = (Currency)(1 - ((double)ItemSizeData->Cost / (double)PriceExc)) * 100;
                 }
                 sgItemsize->Cells[2][rowIndex] = CurrToStrF(GP, ffFixed, CurrencyDecimals);
-                GP = 0;
+                GP = 0.00;
                 for(int i=0; i<3; i++)
                 {
                     sgItemsize->Objects[0][(*grpIT).second.PriceLevelKey]	= ItemSizeData;
@@ -13403,7 +13403,7 @@ int ACol, int ARow, const AnsiString Value)
  	if (Value != "" && (ARow >= 1))
 	{
        	Currency CurVal = 0.00;
-        double GP = 0.0;
+        Currency GP = 0.00;
         TEditorNode *CurrentNodeData = (TEditorNode *)tvMenu->Selected->Data;
         if (CurrentNodeData->NodeType == ITEM_SIZE_NODE)
         {
@@ -13435,10 +13435,10 @@ int ACol, int ARow, const AnsiString Value)
 
                                     if (PriceExc != 0)
                                     {
-                                        GP = (1 - (edItemCost->Value / PriceExc)) * 100;
+                                        GP = (Currency)(1 - ((double)edItemCost->Value / (double)PriceExc)) * 100;
                                     }
                                     sgItemsize->Cells[2][i] = CurrToStrF(GP, ffFixed, CurrencyDecimals);
-                                    GP = 0;
+                                    GP = 0.00;
                                     DrinkCostData->Price = CurVal;
                                     MenuEdited = true;
                                     RelabelDrinkCosts();
@@ -13460,10 +13460,10 @@ int ACol, int ARow, const AnsiString Value)
                                 
                                 if (PriceExc != 0)
                                 {
-                                    GP = (1 - (edItemCost->Value / PriceExc)) * 100;
+                                    GP = (Currency)(1 - ((double)edItemCost->Value / (double)PriceExc)) * 100;
                                 }
                                 sgItemsize->Cells[2][ARow] = CurrToStrF(GP, ffFixed, CurrencyDecimals);
-                                GP = 0.0;
+                                GP = 0.00;
                                 DrinkCostData->SpecialPrice = CurVal;
                                 MenuEdited = true;
                                 RelabelDrinkCosts();
