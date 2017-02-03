@@ -107,6 +107,7 @@ __fastcall LoyaltyGiftCardResponse::~LoyaltyGiftCardResponse()
 __fastcall GiftCardInfo::~GiftCardInfo()
 {
   delete FExpiryDate;
+  delete FStartDate;
 }
 
 __fastcall LoyaltyVoucherResponse::~LoyaltyVoucherResponse()

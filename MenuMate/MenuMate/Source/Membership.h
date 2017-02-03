@@ -41,6 +41,7 @@ struct TGiftCardDetail
         int StatusCode; //Available = 1, NotAvailable = 2,  Expired = 3 , NotStarted = 4
         double PointBalance;
         TDateTime ExpiryDate;
+        TDateTime StartDate;
 };
 
 class TVoucherUsageDetail

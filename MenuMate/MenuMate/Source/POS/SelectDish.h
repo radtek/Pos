@@ -463,7 +463,7 @@ private: // User declarations
     bool ApplyDiscount(Database::TDBTransaction &DBTransaction, TDiscount &CurrentDiscount, TList *Orders, bool isInitiallyApplied = true, TDiscountSource DiscountSource = dsMMUser);
     bool isChitDiscountExist;
     void RemoveChitDiscounts(TMMContactInfo Member);
-
+    void CheckGiftCardBalance();
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

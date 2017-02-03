@@ -827,10 +827,6 @@ void TManagerReceipt::PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt)
 {
     TPrintout *Printout = new TPrintout;
     Printout->Printer = TComms::Instance().ReceiptPrinter;
-    std::auto_ptr <TStringList> StringReceipt(new TStringList);
-    Get(StringReceipt.get());
-    DuplicateReceipt->Position = 0;
-    StringReceipt->SaveToStream(DuplicateReceipt);
     Printout->PrintToPrinterStream(DuplicateReceipt,TComms::Instance().ReceiptPrinter.UNCName());
     delete Printout;
 }
