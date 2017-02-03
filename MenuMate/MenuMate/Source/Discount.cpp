@@ -57,6 +57,7 @@ void TDiscount::Clear()
 bool TDiscount::operator==(TDiscount &rhs)
 {
 	return Mode == rhs.Mode
+          && AppliedMode == rhs.AppliedMode
           && Source == rhs.Source
           && Type == rhs.Type
           && Amount == rhs.Amount
