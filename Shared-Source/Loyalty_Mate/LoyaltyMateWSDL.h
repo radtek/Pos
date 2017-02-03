@@ -1048,6 +1048,8 @@ private:
   bool            FPointBalance_Specified;
   UnicodeString   FResponseMessage;
   bool            FResponseMessage_Specified;
+  TXSDateTime*    FStartDate;
+  bool            FStartDate_Specified;
   int             FStatusCode;
   bool            FStatusCode_Specified;
   void __fastcall SetExpiryDate(int Index, TXSDateTime* _prop_val)
@@ -1066,6 +1068,10 @@ private:
   {  FResponseMessage = _prop_val; FResponseMessage_Specified = true;  }
   bool __fastcall ResponseMessage_Specified(int Index)
   {  return FResponseMessage_Specified;  }
+  void __fastcall SetStartDate(int Index, TXSDateTime* _prop_val)
+  {  FStartDate = _prop_val; FStartDate_Specified = true;  }
+  bool __fastcall StartDate_Specified(int Index)
+  {  return FStartDate_Specified;  }
   void __fastcall SetStatusCode(int Index, int _prop_val)
   {  FStatusCode = _prop_val; FStatusCode_Specified = true;  }
   bool __fastcall StatusCode_Specified(int Index)
@@ -1078,6 +1084,7 @@ __published:
   __property UnicodeString GiftCardNumber = { index=(IS_OPTN|IS_NLBL), read=FGiftCardNumber, write=SetGiftCardNumber, stored = GiftCardNumber_Specified };
   __property double     PointBalance = { index=(IS_OPTN), read=FPointBalance, write=SetPointBalance, stored = PointBalance_Specified };
   __property UnicodeString ResponseMessage = { index=(IS_OPTN|IS_NLBL), read=FResponseMessage, write=SetResponseMessage, stored = ResponseMessage_Specified };
+  __property TXSDateTime*  StartDate = { index=(IS_OPTN), read=FStartDate, write=SetStartDate, stored = StartDate_Specified };
   __property int        StatusCode = { index=(IS_OPTN), read=FStatusCode, write=SetStatusCode, stored = StatusCode_Specified };
 };
 
