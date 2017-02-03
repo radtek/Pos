@@ -109,7 +109,7 @@ private:
     int ValidateCardExistanceUsingUUID(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
 protected:
     bool createMemberOnLoyaltyMate(TSyndCode syndicateCode, TMMContactInfo &inContactInfo);   //this method is protected so it can be called from ManagerMembershipGUI
-    void UpdateMemberCardCodeToDB(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode);
+
 };
 
 #endif

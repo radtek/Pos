@@ -171,10 +171,11 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                    // calling the protected method from MembershipManagerSmartCards
                     TSyndCode syndicateCode =  GetSyndicateCodeManager().GetCommunicationSyndCode();
                     bool memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(syndicateCode, Info);
-                    if(memberCreationSuccess && ManagerSmartCards->CardOk)
+                    if(memberCreationSuccess)
                     {
                           DBTransaction.StartTransaction();
-                          TManagerMembershipSmartCards::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.MemberCode);
+                          MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, Info.ContactKey, Info);
+                          TDBContacts::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.MemberCode);
                           DBTransaction.Commit();
                     }
 			   }
@@ -256,8 +257,6 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
                {
                     if (ManagerSmartCards->CardBlank)
                     {
-                        Database::TDBTransaction DBTransaction(DBControl);
-                        RegisterTransaction(DBTransaction);
                         TMMContactInfo Info;
                         AddMember(Info);
                     }
@@ -288,6 +287,20 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
                         {
                             Info = frmEditCustomer->Info;
 
+                            if(frmEditCustomer->IsProxCardChange &&
+                               TGlobalSettings::Instance().LoyaltyMateEnabled &&
+                               TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(Info.CloudUUID))
+                            {
+                               if(TManagerMembershipSmartCards::UpdateMemberCardCode(DBTransaction,Info,Info.ProxStr))
+                               {
+                                  Info.MemberCode = Info.ProxStr;
+                               }
+                               else
+                               {
+                                  return mrCancel;
+                               }
+                            }
+
                             if (Info.MembershipNumber == "")
                             {
                                 if (MembershipSystem->RecycleMemberNumber)
@@ -298,61 +311,54 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
                                 {
                                     Info.MembershipNumber = MembershipSystem->GetNextMemberNumber(DBTransaction);
                                 }
-                        }
+                            }
 
-                        ManagerDiscount->DiscountKeyToCode(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
-                        /* Even though we have a parent transaction for all the updates, we need a seperate transaction for this setContactdetails method
-                            because while the current transaction is not committed yet, the SaveContactInfoEditedToSmartCard will fire card update event,
-                            SelectDish will catch the event, tries to load the contact from database, at that point old information will be picked up. */
-                        Database::TDBTransaction DBSetMemberTransaction(DBControl);
-                        DBSetMemberTransaction.StartTransaction();
-                        MembershipSystem->SetContactDetails(DBSetMemberTransaction,Info.ContactKey,Info);
-                        DBSetMemberTransaction.Commit();
+                            ManagerDiscount->DiscountKeyToCode(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
+                            MembershipSystem->SetContactDetails(DBTransaction,Info.ContactKey,Info);
+                            if(ManagerSmartCards->CardOk)
+                            {
+                              SaveContactInfoEditedToSmartCard(Info);
+                            }
+                            else
+                            {
+                              SyncBarcodeMemberDetailWithCloud(Info);
+                            }
 
-                        if(ManagerSmartCards->CardOk)
-                        {
-						  SaveContactInfoEditedToSmartCard(Info);
-                        }
-                        else
-                        {
-                          SyncBarcodeMemberDetailWithCloud(Info);
-                        }
+                            // Update Tab Removal.
+                            int TabKey = TDBTab::GetTabByOwner(DBTransaction, Info.ContactKey);
+                            if (Info.TabEnabled == true && TabKey == 0) {
+                                TabKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
+                                TDBTab::SetTabOwner(DBTransaction, TabKey, Info.ContactKey, TabMember);
+                                TDBTab::SetTabName(DBTransaction, TabKey, Info.Name);
+                                TDBTab::SetTabPermanent(DBTransaction, TabKey, true);
+                            }
+                            else if (Info.TabEnabled == true && TabKey != 0)
+                            {
+                                TDBTab::SetTabPermanent(DBTransaction, TabKey, true);
+                            }
+                            else if (Info.TabEnabled == false && TabKey != 0)
+                            {
+                                TDBTab::SetTabPermanent(DBTransaction, TabKey, false);
+                            }
 
-                        // Update Tab Removal.
-						int TabKey = TDBTab::GetTabByOwner(DBTransaction, Info.ContactKey);
-                        if (Info.TabEnabled == true && TabKey == 0) {
-							TabKey = TDBTab::GetOrCreateTab(DBTransaction, 0);
-							TDBTab::SetTabOwner(DBTransaction, TabKey, Info.ContactKey, TabMember);
-							TDBTab::SetTabName(DBTransaction, TabKey, Info.Name);
-							TDBTab::SetTabPermanent(DBTransaction, TabKey, true);
-						}
-						else if (Info.TabEnabled == true && TabKey != 0)
-						{
-							TDBTab::SetTabPermanent(DBTransaction, TabKey, true);
-						}
-						else if (Info.TabEnabled == false && TabKey != 0)
-						{
-							TDBTab::SetTabPermanent(DBTransaction, TabKey, false);
-                        }
+                            if (frmEditCustomer->ClearAllCards)
+                            {
+                                MembershipSystem->DeleteContactCards(DBTransaction, Info.ContactKey);
+                            }
 
-						if (frmEditCustomer->ClearAllCards)
-						{
-							MembershipSystem->DeleteContactCards(DBTransaction, Info.ContactKey);
-                        }
+                            TDBContacts::RemoveCurrentGroups(DBTransaction,Info.ContactKey);
+                            for (int i = 0; i < Info.currentGroups.size(); i++)
+                            {
+                                TDBContacts::SetCurrentGroups(DBTransaction,Info.ContactKey,Info.currentGroups.at(i));
+                            }
+                            TDBContacts::SetSummaGroup(DBTransaction,Info.ContactKey, Info);
 
-                        TDBContacts::RemoveCurrentGroups(DBTransaction,Info.ContactKey);
-                        for (int i = 0; i < Info.currentGroups.size(); i++)
-                        {
-                            TDBContacts::SetCurrentGroups(DBTransaction,Info.ContactKey,Info.currentGroups.at(i));
-                        }
-                        TDBContacts::SetSummaGroup(DBTransaction,Info.ContactKey, Info);
-
-                        if (!Info.currentGroups.size())
-                        {
-                            ContactGroup GroupKey;
-                            GroupKey.Key = TDBGroups::FindGroup(DBTransaction,"No Contacts Group");
-                            TDBContacts::SetCurrentGroups(DBTransaction,Info.ContactKey,GroupKey);
-                        }
+                            if (!Info.currentGroups.size())
+                            {
+                                ContactGroup GroupKey;
+                                GroupKey.Key = TDBGroups::FindGroup(DBTransaction,"No Contacts Group");
+                                TDBContacts::SetCurrentGroups(DBTransaction,Info.ContactKey,GroupKey);
+                            }
 
                     }
                     EndMemberTransaction();

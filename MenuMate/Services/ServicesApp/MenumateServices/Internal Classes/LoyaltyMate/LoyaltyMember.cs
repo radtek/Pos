@@ -457,6 +457,7 @@ namespace MenumateServices.LoyaltyMate
         {
             return new ApiMemberInvoiceTransactionViewModel()
             {
+                TransactionDate = inTransactionInfo.TransactionDate,
                 SpendAmount = inTransactionInfo.PointsDelta,
                 SiteCode = inTransactionInfo.SiteCode,
                 InvoiceNumber = inTransactionInfo.InvoiceNumber,

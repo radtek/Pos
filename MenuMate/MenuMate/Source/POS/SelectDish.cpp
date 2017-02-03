@@ -5411,8 +5411,8 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 			ButtonsSet << eBTDMemberFavourites;
 			ButtonsSet << eBTDMemberPoints;
             ButtonsSet << eBTDThorVouchers;
-
-			ButtonsSet << eBTDRemove;
+ 			ButtonsSet << eBTDRemove;
+            ButtonsSet << eBTDChangeBarcode;
 		}
 		else if (ListItem->ItemType.Contains(itServingCourseDisplay))
 		{
@@ -5536,6 +5536,18 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Caption = Caption;
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Tag = int(eBTDDiscountDetails);
 		}
+
+		if (ButtonsSet.Contains(eBTDChangeBarcode) &&
+            TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]  &&
+            TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate  &&
+            TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardInserted)
+		{
+			btngridModify->RowCount++;
+			AnsiString Caption = "Assign Barcode";
+			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Caption = Caption;
+			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Tag = int(eBTDChangeBarcode);
+		}
+
 
 		if (ButtonsSet.Contains(eBTDRemove))
 		{
@@ -5880,6 +5892,10 @@ void TfrmSelectDish::pcItemModifyDisplayMember(eBtnToDisplay ButtonID)
 			TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberFavouritesInfo(DBTransaction, Member, Report.get());
 			TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberStop(DBTransaction, Member, Report.get());
 		}
+        else if(ButtonID == eBTDChangeBarcode)
+        {
+           AssignBarcodeToMember();
+        }
 		else if (ButtonID == eBTDMemberPoints)
 		{
 			TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberStart(DBTransaction, Member, Report.get());
@@ -7499,10 +7515,6 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
             case 13:
             {
                 OpenTransactionAuditScreen();
-			}break;
-            case 14:
-            {
-                AssignBarcodeToMember();
 			}break;
             case 15:
             {
@@ -13828,6 +13840,7 @@ void TfrmSelectDish::AssignBarcodeToMember()
            }
          if(TDeviceRealTerminal::Instance().ManagerMembership->UpdateMemberCardCode(DBTransaction, TempUserInfo, memberCardCode))
          {
+            TDBContacts::UpdateMemberCardCodeToDB(DBTransaction, TempUserInfo, memberCardCode);
             TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->FormatCardToFactory();
             MessageBox("Please Remove Card From Reader.", "Information", MB_OK);
          }

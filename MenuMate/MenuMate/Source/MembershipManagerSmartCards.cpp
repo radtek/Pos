@@ -1447,7 +1447,7 @@ void TManagerMembershipSmartCards::performLoyaltyMateOperations()
 
     if(memberCreationSuccess)
     {
-       UpdateMemberCardCodeToDB(DBTransaction,SmartCardContact,SmartCardContact.MemberCode);
+       TDBContacts::UpdateMemberCardCodeToDB(DBTransaction,SmartCardContact,SmartCardContact.MemberCode);
        AddDefaultPoints(DBTransaction,Points,SmartCardContact.ContactKey);
         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- Loyaltymate operation");
     }
@@ -2736,6 +2736,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
    }
    else if(!TGlobalSettings::Instance().IsPOSOffline)
    {
+       bool updateRequired = false;
        if (memberNotExist)
        {
          AnsiString message = "For Loyaltymate, you will need to update your ";
@@ -2767,9 +2768,24 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
             UserInfo.MemberCode = memberCardCode;
             bool memberCreationSuccess = createMemberOnLoyaltyMate(ManagerSyndicateCode.GetCommunicationSyndCode(),UserInfo);
             addDefaultPoints = memberCreationSuccess;
+            if(memberCreationSuccess)
+            {
+                updateRequired = true;
+            }
          }
        }
-       else if (!TGlobalSettings::Instance().IsPOSOffline && !memberNotExist)
+       else if(UserInfo.MemberCode != memberCardCode)
+       {
+          UserInfo.MemberCode = memberCardCode;
+          updateRequired = true;
+       }
+
+       if(updateRequired && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
+       {
+          UpdateMemberCardCode(DBTransaction,UserInfo,memberCardCode);
+       }
+
+       if ((!TGlobalSettings::Instance().IsPOSOffline && !memberNotExist))
        {
            MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
            if(TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
@@ -2841,41 +2857,15 @@ bool TManagerMembershipSmartCards::UpdateMemberCardCode(Database::TDBTransaction
 	result = memberUpdationThread->OperationSuccessful;
 
 	if(!result)
+    {
     	MessageBox(memberUpdationThread->ErrorMessage,"Failed to update member", MB_ICONERROR + MB_OK);
-    else
-       {
-         UpdateMemberCardCodeToDB(DBTransaction,UserInfo,memberCardCode);
-       }
+    }
 
 	// cleanup
 	delete _lmOperationDialogBox;
 	delete memberUpdationThread;
 
 	return result;
-}
-
-void TManagerMembershipSmartCards::UpdateMemberCardCodeToDB(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode)
-{
-  try
-	{
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		"UPDATE "
-		"CONTACTS "
-		"SET "
-        "MEMBER_CARD_CODE = :MEMBER_CARD_CODE "
-		"WHERE "
-		"CONTACTS_KEY = :CONTACTS_KEY";
-		IBInternalQuery->ParamByName("MEMBER_CARD_CODE")->AsString = memberCardCode;
-		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = UserInfo.ContactKey;
-		IBInternalQuery->ExecQuery();
-	}
-	catch(Exception & E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
-		throw;
-	}
 }
 
 void TManagerMembershipSmartCards::LinkMembers(Database::TDBTransaction &DBTransaction, int contactToReplace, int contactKey)

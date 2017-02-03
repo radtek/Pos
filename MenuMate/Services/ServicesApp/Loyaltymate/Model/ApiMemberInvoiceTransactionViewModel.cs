@@ -6,7 +6,7 @@ namespace Loyaltymate.Model
     {
         public string InvoiceNumber { get; set; }
         public double SpendAmount { get; set; }
-
+        public DateTime TransactionDate { get; set; }
         public string MemberUniqueId { get; set; }
 
         public long SiteCode { get; set; }

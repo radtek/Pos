@@ -420,6 +420,7 @@ TLoginSuccess TMembership::FindMember(Database::TDBTransaction &DBTransaction, T
 	  {
 		 UserInfo.ContactKey = GetContactByCard(DBTransaction, UserInfo);
 	  }
+
 	  if (UserInfo.ContactKey == 0 && UserInfo.ProxStr != "")
 	  {
 		 UserInfo.ContactKey = GetContactByProx(DBTransaction, UserInfo.ProxStr);
@@ -3034,6 +3035,7 @@ bool TMembership::UpdateMemberCardCode(Database::TDBTransaction &DBTransaction,T
 {
   return UpdateMemberCardCode(DBTransaction, UserInfo,memberCardCode);
 }
+
 
 void TMembership::ResetPoints()
 {

@@ -72,8 +72,6 @@ class TManagerMembership
     bool IsPOFMemberSelectionEnabled(){ return POFMemberSelectionEnabled; }
     virtual bool MemberCodeScanned(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode);
     virtual bool UpdateMemberCardCode(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode);
-
-
 };
 
 #endif

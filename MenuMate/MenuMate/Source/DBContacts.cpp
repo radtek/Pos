@@ -171,7 +171,6 @@ int TDBContacts::GetContactByEmail(Database::TDBTransaction &DBTransaction,AnsiS
 	return RetVal;
 }
 
-
 AnsiString TDBContacts::GetContactProxCard(Database::TDBTransaction &DBTransaction,int ContactKey)
 {
    AnsiString RetVal = 0;
@@ -196,7 +195,6 @@ AnsiString TDBContacts::GetContactProxCard(Database::TDBTransaction &DBTransacti
 
 	return RetVal;
 }
-
 
 int TDBContacts::GetContactByNamePhone(Database::TDBTransaction &DBTransaction,UnicodeString Name, UnicodeString Phone)
 {
@@ -812,7 +810,7 @@ void TDBContacts::SetContactCard(Database::TDBTransaction &DBTransaction, int in
       {
           if(IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger != inContactKey)
           {
-          	DeleteContactCard(DBTransaction, Card, IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger);
+              DeleteContactCard(DBTransaction, Card, IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger);
           }
           else
           {
@@ -1309,7 +1307,7 @@ bool TDBContacts::GetContactCards(Database::TDBTransaction &DBTransaction,int in
 		// Contact Cards.
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
-		 "select SWIPE_CARD from CONTACTCARDS where CONTACTS_KEY = :CONTACTS_KEY AND IS_ACTIVE='T'";
+		 "select SWIPE_CARD from CONTACTCARDS where CONTACTS_KEY = :CONTACTS_KEY AND IS_ACTIVE='T' ORDER BY CONTACTCARDS_KEY";
 		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = inContactsKey;
 		IBInternalQuery->ExecQuery();
 		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -1501,6 +1499,29 @@ UnicodeString TDBContacts::GetMemberCloudId(Database::TDBTransaction &DBTransact
    return result;
 }
 
+void TDBContacts::UpdateMemberCardCodeToDB(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode)
+{
+  try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+		"UPDATE "
+		"CONTACTS "
+		"SET "
+        "MEMBER_CARD_CODE = :MEMBER_CARD_CODE "
+		"WHERE "
+		"CONTACTS_KEY = :CONTACTS_KEY";
+		IBInternalQuery->ParamByName("MEMBER_CARD_CODE")->AsString = memberCardCode;
+		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = UserInfo.ContactKey;
+		IBInternalQuery->ExecQuery();
+	}
+	catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+		throw;
+	}
+}
 
 void TDBContacts::SaveCustomerAndNumber( Database::TDBTransaction &DBTransaction, TCustomer Customer )
 {
