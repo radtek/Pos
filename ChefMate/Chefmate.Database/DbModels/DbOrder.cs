@@ -22,7 +22,7 @@ namespace Chefmate.Database.DbModels
             FbTransaction fbTransaction = fbConnection.BeginTransaction();
             try
             {
-                
+
                 order.OrderKey = DatabaseCore.Instance.GetGeneratorValue("GEN_ORDERS");
                 var fbParameters = new List<QueryParameter>();
                 fbParameters.Add(new QueryParameter("ORDER_KEY", order.OrderKey));
@@ -250,7 +250,8 @@ namespace Chefmate.Database.DbModels
             var groupKeys = new List<int>();
             groups.ForEach(s => groupKeys.Add(s.OrderGroupKey));
             var items = new ObservableCollection<Item>();
-            items = !isBumped ? DbOrderItem.GetOrderItems(groupKeys, groupType, terminalKey) : DbOrderItem.GetBumpedOrderItems(groupKeys, groupType, terminalKey);
+            if (groupKeys.Count > 0)
+                items = !isBumped ? DbOrderItem.GetOrderItems(groupKeys, groupType, terminalKey) : DbOrderItem.GetBumpedOrderItems(groupKeys, groupType, terminalKey);
             return items;
         }
 

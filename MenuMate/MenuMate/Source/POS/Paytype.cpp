@@ -2213,11 +2213,13 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
          MessageBox("The gift card with code " + voucherCode + " has zero balance.", "Warning", MB_OK + MB_ICONINFORMATION);
          break;
          case 2:
-         case 4:
          MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
          break;
          case 3:
          MessageBox("Gift Card expired.", "Warning", MB_OK + MB_ICONINFORMATION);
+         break;
+         case 4:
+         MessageBox("Gift Card not valid and will start from " + GiftCardDetail.StartDate.FormatString("DD-MM-YYYY"), "Warning", MB_OK + MB_ICONINFORMATION);
          break;
        }
       CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";

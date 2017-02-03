@@ -201,7 +201,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             var result = new GiftCardInfo();
             if (inGiftCardInfo.ExpiryDate.HasValue)
                 result.ExpiryDate = inGiftCardInfo.ExpiryDate.Value;
-
+            if (inGiftCardInfo.StartDate.HasValue)
+                result.StartDate = inGiftCardInfo.StartDate.Value;
             result.GiftCardNumber = inGiftCardInfo.GiftCardNumber;
             result.PointBalance = inGiftCardInfo.PointBalance;
             result.StatusCode = (int)inGiftCardInfo.Result;
