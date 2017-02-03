@@ -22,6 +22,7 @@ TDiscount::TDiscount()
 void TDiscount::Clear()
 {
    Mode = DiscModeCurrency;
+   AppliedMode = DiscModeCurrency;
    Source = dsMMUser;
    Type = dtFixed;
    Amount = 0;
@@ -53,8 +54,7 @@ void TDiscount::Clear()
    DiscountAppliedTime = 0;
 }
 
-bool
-TDiscount::operator==(TDiscount &rhs)
+bool TDiscount::operator==(TDiscount &rhs)
 {
 	return Mode == rhs.Mode
           && Source == rhs.Source
@@ -137,19 +137,6 @@ Currency TDiscount::setAmount(Currency inAmount)
 		amount = inAmount;
     }
     return amount;
-}
-
-Currency TDiscount::setOriginalAmount(Currency inAmount)
-{
-    if(Source == dsMMMebersPoints && inAmount > MaximumValue)
-    {
-    	originalamount = MaximumValue;
-    }
-    else
-    {
-		originalamount = inAmount;
-    }
-    return originalamount;
 }
 
 bool TDiscount::ContainsCatKey(TListCategoryContainer *Categories) const

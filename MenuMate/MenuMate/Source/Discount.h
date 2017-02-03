@@ -52,7 +52,6 @@ private :
     Currency originalamount;
 public:
 	bool operator==(TDiscount &rhs);
-
 	TDiscountMode Mode;
 	TDiscountType Type;
 	UnicodeString DiscountCode;
@@ -80,7 +79,6 @@ public:
     int DailyUsageAllowedPerMember;
     TProductPriority ProductPriority;
     bool IsMembershipDiscount;
-
     std::set<int> CategoryFilterKeys;
     std::vector<TDiscountGroup> DiscountGroupList;
 	void Clear();
@@ -110,8 +108,8 @@ public:
 		}
 		return Retval;
 	}friend bool operator < (const TDiscount & f1, const TDiscount & f2);
-    Currency setOriginalAmount(Currency originalamount);
-    __property Currency OriginalAmount = {read=originalamount, write=setOriginalAmount};
+    TDiscountMode AppliedMode;
+    Currency OriginalAmount;
     TDateTime DiscountAppliedTime;
 };
 
