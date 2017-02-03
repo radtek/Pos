@@ -21,6 +21,8 @@ __fastcall TfrmDiscount::TfrmDiscount(TComponent* Owner)
 	: TZForm(Owner)
 {
 	ForcedType = avtNone;
+    IsNewDiscount = false;
+    IsComboDiscount = false;
 }
 //---------------------------------------------------------------------------
 
@@ -38,50 +40,66 @@ void __fastcall TfrmDiscount::FormShow(TObject *Sender)
 	FormResize(NULL);
    ValueTypeBeforeSetPrice = avtDiscount;
 
-	if (Mode == DiscModeCurrency)
-	{
-		pnl00->Caption = "00";
-		wrkCurAmount = CURInitial;
-		lbeEnteredValue->Caption = CurrToStrF(fabs(wrkCurAmount), ffCurrency, CurrencyDecimals);
-		pnlToggle->Caption = "$ Mode";
-	}
-	else if (Mode == DiscModePercent)
-	{
-		pnl00->Caption = ".";
-		wrkPercAmount = PERCInitial;
-		PercentDecimal = false;
-		lbeEnteredValue->Caption =  FloatToStrF(fabs(wrkPercAmount), ffNumber, 18, 1)  + " %";
-		pnlToggle->Caption = "% Mode";
-	}
-	else if (Mode == DiscModeSetPrice)
-	{
-		pnl00->Caption = "00";
-		wrkCurAmount = CURInitial;
-		lbeEnteredValue->Caption = FormatFloat("$0.00",fabs(wrkCurAmount));
-		pnlToggle->Caption = "Set Price";
-	}
-	else if (Mode == DiscModeCombo)
-	{
-		pnl00->Caption = "00";
-		wrkCurAmount = CURInitial;
-		lbeEnteredValue->Caption = FormatFloat("$0.00",fabs(wrkCurAmount));
-		pnlToggle->Caption = "Combo";
-	}
-   else	if (Mode == DiscModeItem)
-	{
-		pnl00->Caption = "00";
-		wrkCurAmount = CURInitial;
-		lbeEnteredValue->Caption = CurrToStrF(fabs(wrkCurAmount), ffCurrency, CurrencyDecimals);
-		pnlToggle->Caption = "Item Mode";
-	}
-    else if (Mode == DiscModePoints)
-	{
-		pnl00->Caption = "00";
-		wrkCurAmount = CURInitial;
-		lbeEnteredValue->Caption = CurrToStrF(fabs(wrkCurAmount), ffNumber, CurrencyDecimals);
-		pnlToggle->Caption = "Point Mode";
+   if(!IsComboDiscount)
+   {
+        if (Mode == DiscModeCurrency)
+        {
+            pnl00->Caption = "00";
+            wrkCurAmount = CURInitial;
+            lbeEnteredValue->Caption = CurrToStrF(fabs(wrkCurAmount), ffCurrency, CurrencyDecimals);
+            pnlToggle->Caption = "$ Mode";
+        }
+        else if (Mode == DiscModePercent)
+        {
+            pnl00->Caption = ".";
+            wrkPercAmount = PERCInitial;
+            PercentDecimal = false;
+            lbeEnteredValue->Caption =  FloatToStrF(fabs(wrkPercAmount), ffNumber, 18, 1)  + " %";
+            pnlToggle->Caption = "% Mode";
+        }
+        else if (Mode == DiscModeSetPrice)
+        {
+            pnl00->Caption = "00";
+            wrkCurAmount = CURInitial;
+            lbeEnteredValue->Caption = FormatFloat("$0.00",fabs(wrkCurAmount));
+            pnlToggle->Caption = "Set Price";
+        }
+        else if (Mode == DiscModeCombo)
+        {
+            if(IsNewDiscount)
+            {
+                pnl00->Caption = "00";
+                wrkCurAmount = CURInitial;
+                lbeEnteredValue->Caption = FormatFloat("$0.00",fabs(wrkCurAmount));
+                pnlToggle->Caption = "Combo";
+            }
+        }
+       else	if (Mode == DiscModeItem)
+        {
+            pnl00->Caption = "00";
+            wrkCurAmount = CURInitial;
+            lbeEnteredValue->Caption = CurrToStrF(fabs(wrkCurAmount), ffCurrency, CurrencyDecimals);
+            pnlToggle->Caption = "Item Mode";
+        }
+        else if (Mode == DiscModePoints)
+        {
+            pnl00->Caption = "00";
+            wrkCurAmount = CURInitial;
+            lbeEnteredValue->Caption = CurrToStrF(fabs(wrkCurAmount), ffNumber, CurrencyDecimals);
+            pnlToggle->Caption = "Point Mode";
+        }
     }
+    else
+    {
+        if (Mode == DiscModeCombo)
+        {
+            pnl00->Caption = "00";
+            wrkCurAmount = CURInitial;
+            lbeEnteredValue->Caption = FormatFloat("$0.00",fabs(wrkCurAmount));
+            pnlToggle->Caption = "Combo";
 
+        }
+    }
 
 	if (Mode == DiscModeCurrency)
 	{
@@ -335,8 +353,9 @@ void __fastcall TfrmDiscount::btnCLRMouseUp(TObject *Sender,
    }
 	else if (Mode == DiscModeCombo)
 	{
-		wrkCurAmount = 0;
-		lbeEnteredValue->Caption = CurrToStrF(wrkCurAmount, ffCurrency, CurrencyDecimals);
+        wrkCurAmount = 0;
+        lbeEnteredValue->Caption = CurrToStrF(wrkCurAmount, ffCurrency, CurrencyDecimals);
+
 	}
     else if (Mode == DiscModeItem)
 	{
@@ -409,29 +428,49 @@ void __fastcall TfrmDiscount::pnlToggleClick(TObject *Sender)
 {
 	if (Mode == DiscModeCurrency)
 	{
-		Mode = DiscModeCombo;
-		pnl00->Caption = "00";
-		if (TotalValue != 0)
-		{
-			wrkCurAmount = RoundToNearest(double(wrkPercAmount) * TotalValue / 100,MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
-		}
-		lbeEnteredValue->Caption = CurrToStrF(wrkCurAmount, ffCurrency, CurrencyDecimals);
-		pnlToggle->Caption = "Combo";
-        ValueTypeBeforeSetPrice = ValueType;
-        ValueType = avtNone;
+        if(IsNewDiscount)
+        {
+            Mode = DiscModeCombo;
+            pnl00->Caption = "00";
+            if (TotalValue != 0)
+            {
+                wrkCurAmount = RoundToNearest(double(wrkPercAmount) * TotalValue / 100,MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
+            }
+            lbeEnteredValue->Caption = CurrToStrF(wrkCurAmount, ffCurrency, CurrencyDecimals);
+            pnlToggle->Caption = "Combo";
+            ValueTypeBeforeSetPrice = ValueType;
+            ValueType = avtNone;
+        }
+		/**/
+        else
+        {
+            Mode = DiscModePercent;
+            PercentDecimal = false;
+            pnl00->Caption = ".";
+            if (TotalValue != 0)
+            {
+                wrkPercAmount = double(int(1000 * wrkCurAmount / TotalValue)) / 10;
+            }
+            lbeEnteredValue->Caption = FloatToStr(wrkPercAmount) + " %";
+            pnlToggle->Caption = "% Mode";
+            ValueType = ValueTypeBeforeSetPrice;
+        }
 	}
 	else if (Mode == DiscModeCombo)
 	{
-		Mode = DiscModePercent;
-		PercentDecimal = false;
-		pnl00->Caption = ".";
-		if (TotalValue != 0)
-		{
-			wrkPercAmount = double(int(1000 * wrkCurAmount / TotalValue)) / 10;
-		}
-		lbeEnteredValue->Caption = FloatToStr(wrkPercAmount) + " %";
-		pnlToggle->Caption = "% Mode";
-        ValueType = ValueTypeBeforeSetPrice;
+        if(IsNewDiscount)
+        {
+            Mode = DiscModePercent;
+            PercentDecimal = false;
+            pnl00->Caption = ".";
+            if (TotalValue != 0)
+            {
+                wrkPercAmount = double(int(1000 * wrkCurAmount / TotalValue)) / 10;
+            }
+            lbeEnteredValue->Caption = FloatToStr(wrkPercAmount) + " %";
+            pnlToggle->Caption = "% Mode";
+            ValueType = ValueTypeBeforeSetPrice;
+        }
 	}
 	else if (Mode == DiscModePercent)
 	{

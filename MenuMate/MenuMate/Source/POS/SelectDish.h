@@ -79,6 +79,22 @@ enum eBtnToDisplay
 
 typedef Set <eBtnToDisplay, eBTDOverView, eBTDNone> TBtnToDisplay;
 
+struct TDiscountDetails
+{
+  public:
+      TDiscount Discount;
+      TList *OrderList;
+      TDateTime DiscountTime;
+};
+
+struct TMembershipDiscountList
+{
+  public:
+      TDiscount Discount;
+      int DiscountKey;
+      bool IsApplied;
+};
+
 class TfrmSelectDish : public TZForm
 {
    friend TZForm;

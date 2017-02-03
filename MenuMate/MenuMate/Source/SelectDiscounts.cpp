@@ -389,10 +389,10 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
 		 if (frmDiscount->ShowModal() == mrOk)
 		 {
 			CurrentDiscount.Mode = frmDiscount->Mode;
-			if (frmDiscount->Mode == DiscModeCurrency)
+			if (frmDiscount->Mode == DiscModeCurrency || frmDiscount->Mode == DiscModePoints)
 			{
 			   CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
-
+               CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 			   if (CurrentDiscount.Amount != frmDiscount->CURResult)
 			   {
 				  MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -402,6 +402,7 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
             else if (frmDiscount->Mode == DiscModeItem)
 			{
 			   CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+               CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 
 			   if (CurrentDiscount.Amount != frmDiscount->CURResult)
 			   {
@@ -412,6 +413,7 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
 			else if (frmDiscount->Mode == DiscModeSetPrice || frmDiscount->Mode == DiscModeCombo)
 			{
 			   CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+               CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 			   if (CurrentDiscount.Amount != frmDiscount->CURResult)
 			   {
 				  MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -420,6 +422,10 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
 			else
 			{
 			   CurrentDiscount.PercentAmount = frmDiscount->PERCResult;
+               if(frmDiscount->Mode == DiscModePercent)
+               {
+                  CurrentDiscount.OriginalAmount = CurrentDiscount.PercentAmount;
+               }
 			}
 		 }
 		 else
@@ -430,6 +436,7 @@ void __fastcall TfrmSelectDiscounts::ApplyDiscount(Database::TDBTransaction &DBT
 
 	  if (ProcessDiscount)
 	  {
+         CurrentDiscount.DiscountAppliedTime = Now();
 		 ManagerDiscount->ClearDiscount(Orders, CurrentDiscount);
 		 ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
 	  }

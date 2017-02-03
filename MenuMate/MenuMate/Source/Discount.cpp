@@ -22,6 +22,7 @@ TDiscount::TDiscount()
 void TDiscount::Clear()
 {
    Mode = DiscModeCurrency;
+   AppliedMode = DiscModeCurrency;
    Source = dsMMUser;
    Type = dtFixed;
    Amount = 0;
@@ -49,12 +50,14 @@ void TDiscount::Clear()
    DailyUsageAllowedPerMember = 0;
    ProductPriority = ppCheapest;
    IsMembershipDiscount = false;
+   OriginalAmount = 0;
+   DiscountAppliedTime = 0;
 }
 
-bool
-TDiscount::operator==(TDiscount &rhs)
+bool TDiscount::operator==(TDiscount &rhs)
 {
 	return Mode == rhs.Mode
+          && AppliedMode == rhs.AppliedMode
           && Source == rhs.Source
           && Type == rhs.Type
           && Amount == rhs.Amount
@@ -73,7 +76,9 @@ TDiscount::operator==(TDiscount &rhs)
           && MaxItemAffected == rhs.MaxItemAffected
           && MinItemRequired == rhs.MinItemRequired
           && IsCloudDiscount == rhs.IsCloudDiscount
-          && DailyUsageAllowedPerMember == rhs.DailyUsageAllowedPerMember;
+          && DailyUsageAllowedPerMember == rhs.DailyUsageAllowedPerMember
+          && OriginalAmount == rhs.OriginalAmount
+          && DiscountAppliedTime == rhs.DiscountAppliedTime;
 }
 
 UnicodeString TDiscount::GetDescription() const
