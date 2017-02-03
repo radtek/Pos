@@ -325,6 +325,9 @@ __published:	// IDE-managed Components
         TGroupBox *grpMemberSubs;
         TCheckBox *cbUseMemberSubs;
         TCheckBox *cbFloatWithdrawFromCash;
+        TGroupBox *GroupBox25;
+        TGroupBox *GroupBox26;
+        TLabel *lblEndOfDay;
 
         //**********
         void __fastcall FormShow(TObject *Sender);
