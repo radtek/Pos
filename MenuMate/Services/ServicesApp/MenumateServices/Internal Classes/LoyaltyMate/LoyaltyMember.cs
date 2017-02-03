@@ -94,6 +94,21 @@ namespace MenumateServices.LoyaltyMate
                             ex.Message,
                             LoyaltyResponseCode.AuthenticationFailed);
             }
+            catch (LoyaltymateOperationException ex)
+            {
+                if (ex.Message.Contains("Card Code"))
+                {
+                    return CreateResponseError(ex.Message,
+                            @"Card Code Already In Use.",
+                            LoyaltyResponseCode.UpdateMemberFailed);
+                }
+                else
+                {
+                    return CreateResponseError(ex.Message,
+                            @"Loyaltymate error.",
+                            LoyaltyResponseCode.UpdateMemberFailed);
+                }
+            }
             catch (Exception ex)
             {
                 return CreateResponseError(
@@ -122,6 +137,23 @@ namespace MenumateServices.LoyaltyMate
                             ex.Message,
                             LoyaltyResponseCode.AuthenticationFailed,
                             inInfo);
+            }
+            catch (LoyaltymateOperationException ex)
+            {
+                if (ex.Message.Contains("Card Code"))
+                {
+                    return CreateMemberResponseError(ex.Message,
+                            @"Card Code Already In Use.",
+                            LoyaltyResponseCode.CreateMemberFailed,
+                            CreateMemberInfo(@""));
+                }
+                else
+                {
+                    return CreateMemberResponseError(ex.Message,
+                            @"Loyaltymate error.",
+                            LoyaltyResponseCode.CreateMemberFailed,
+                            CreateMemberInfo(@""));
+                }
             }
             catch (Exception exc)
             {

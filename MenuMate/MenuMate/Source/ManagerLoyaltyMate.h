@@ -21,6 +21,13 @@
 #define UPGRADE_CARD_IF_NEEDED 0x01
 
 
+struct TaskResult
+{
+   bool OperationSuccussful;
+   AnsiString ErrorMessage;
+};
+
+
 class TLoyaltyMateThread: public TThread
 {
     private:
@@ -219,7 +226,7 @@ class TManagerLoyaltyMate
         // Sync memeber information with the cloud. All operations will be performed here using a new thread
         void SyncMemberDetailsWithCloud(TSyndCode syndicateCode,TMMContactInfo info);
         // creates the member on the cloud.
-        bool CreateMemberOnCloud(TSyndCode syndicateCode,TMMContactInfo &info);
+        TaskResult CreateMemberOnCloud(TSyndCode syndicateCode,TMMContactInfo &info);
         void TriggerPointSync();
 };
 //--------------------------------------------------------------------------

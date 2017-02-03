@@ -281,6 +281,7 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
                        frmEditCustomer->Editing = true;
                        frmEditCustomer->Info = Info;
                        frmEditCustomer->MemberType = Info.MemberType;
+                       AnsiString ProxCard = Info.ProxStr;
                        TModalResult Result = frmEditCustomer->ShowModal();
 
                         if (Result == mrOk)
@@ -297,6 +298,7 @@ TManagerMembershipGUI::EditMember(Database::TDBTransaction & DBTransaction,TMMCo
                                }
                                else
                                {
+                                  Info.ProxStr = ProxCard;
                                   return mrCancel;
                                }
                             }
