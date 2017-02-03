@@ -11,14 +11,14 @@ class TPanasonicThread : public TThread
 {
     private:
         //TTimer* panasonicThreadTimer;
-        UnicodeString GetMemberName(Database::TDBTransaction &dbTransaction, int contactKey);
+        void GetMemberNameAndCustomerID(Database::TDBTransaction &dbTransaction, UnicodeString invoiceNo, int &contactKey, UnicodeString &memberName);
         void ConvertTransactionInfoToPanasonicInfo(Database::TDBTransaction &dbTransaction );
         void ConvertTransactionInfoToPanasonicItemList(Database::TDBTransaction &dbTransaction, int arcBill_Key);
         void ConverTransactionInfoToTransactionDBServerInfo(Database::TDBTransaction &dbTransaction);
         UnicodeString GetPOSVersionInfo(Database::TDBTransaction &dbTransaction);
         void UpdateArcBillAndDayArcBill(Database::TDBTransaction &dbTransaction, int arcBillKey);
         int GetSiteId(Database::TDBTransaction &dbTransaction);
-       // void __fastcall OnPanasonicThreadTimerTick(TObject *Sender);
+        TDateTime GetStartDateTime(Database::TDBTransaction &dbTransaction, int arcBillKey);
     protected:
         virtual void __fastcall Execute();
     public:

@@ -101,20 +101,23 @@ void  __fastcall TPanasonicThread::Execute()
 	}
 }
 //------------------------------------------------------------------------------
-UnicodeString TPanasonicThread::GetMemberName(Database::TDBTransaction &dbTransaction, int contactKey)
+void TPanasonicThread::GetMemberNameAndCustomerID(Database::TDBTransaction &dbTransaction, UnicodeString invoiceNo, int &contactKey,
+                                                    UnicodeString &memberName)
 {
-    UnicodeString Retval = "";
     TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
     IBInternalQuery->Close();
     try
 	{
-        IBInternalQuery->SQL->Text = "SELECT a.SITE_ID, a.FIRST_NAME, a.LAST_NAME FROM CONTACTS a where a.CONTACTS_KEY = :CONTACTS_KEY ";
-        IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
+        IBInternalQuery->SQL->Text = "SELECT PT.CONTACTS_KEY,a.NAME, a.LAST_NAME FROM POINTSTRANSACTIONS PT "
+                                        "INNER JOIN CONTACTS a  ON PT.CONTACTS_KEY = A.CONTACTS_KEY "
+                                        "WHERE PT.INVOICE_NUMBER = :INVOICE_NUMBER ";
+        IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNo;
         IBInternalQuery->ExecQuery();
 
         if(IBInternalQuery->RecordCount)
         {
-            Retval = IBInternalQuery->FieldByName("FIRST_NAME")->AsString;
+            contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            memberName = IBInternalQuery->FieldByName("NAME")->AsString + " " + IBInternalQuery->FieldByName("LAST_NAME")->AsString;
         }
     }
     catch(Exception &E)
@@ -122,7 +125,6 @@ UnicodeString TPanasonicThread::GetMemberName(Database::TDBTransaction &dbTransa
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return Retval;
 }
 //----------------------------------------------------------------------------------------------------------------------
 int TPanasonicThread::GetSiteId(Database::TDBTransaction &dbTransaction)
@@ -144,6 +146,26 @@ int TPanasonicThread::GetSiteId(Database::TDBTransaction &dbTransaction)
 	}
     return Retval;
 }
+//-------------------------------------------------------------------------------------------------------------------------
+TDateTime TPanasonicThread::GetStartDateTime(Database::TDBTransaction &dbTransaction, int arcBillKey)
+{
+    TDateTime startDate;
+    TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+    IBInternalQuery->Close();
+    try
+	{
+        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY, MIN(a.TIME_STAMP) START_TIME  FROM DAYARCHIVE a  WHERE a.ARCBILL_KEY = :ARCBILL_KEY GROUP BY 1 ";
+        IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcBillKey;
+        IBInternalQuery->ExecQuery();
+        startDate = IBInternalQuery->Fields[1]->AsDateTime;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return startDate;
+}
 //--------------------------------------------------------------------------------------------------------------------------
 void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransaction &dbTransaction )
 {
@@ -154,28 +176,23 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
         IBInternalQuery->Close();
         int arcBillKey;
         IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP, a.TOTAL, a.CONTACTS_KEY, a.INVOICE_NUMBER, "
-                                     "a.RECEIPT, SECURITY.USER_KEY , ARC.LOYALTY_KEY "
+                                     "a.RECEIPT, SECURITY.USER_KEY "
                                     "FROM ARCBILL a "
                                     "INNER JOIN SECURITY ON A.SECURITY_REF = SECURITY.SECURITY_REF "
-                                    "INNER JOIN (SELECT AB.ARCBILL_KEY, ARC.LOYALTY_KEY FROM ARCBILL AB LEFT JOIN ARCHIVE ARC ON "
-                                    "AB.ARCBILL_KEY = ARC.ARCBILL_KEY WHERE AB.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER GROUP BY 1,2)ARC ON "
-                                        "A.ARCBILL_KEY = ARC.ARCBILL_KEY "
                                     "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER "
                                     "UNION ALL "
                                     "SELECT a.ARCBILL_KEY, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP, a.TOTAL, a.CONTACTS_KEY, a.INVOICE_NUMBER, "
-                                    "a.RECEIPT, SECURITY.USER_KEY, ARC.LOYALTY_KEY  "
+                                    "a.RECEIPT, SECURITY.USER_KEY  "
                                     "FROM DAYARCBILL a "
                                     "INNER JOIN SECURITY ON A.SECURITY_REF = SECURITY.SECURITY_REF "
-                                    "INNER JOIN (SELECT AB.ARCBILL_KEY, ARC.LOYALTY_KEY FROM DAYARCBILL AB LEFT JOIN DAYARCHIVE ARC ON "
-                                    "AB.ARCBILL_KEY = ARC.ARCBILL_KEY WHERE AB.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER GROUP BY 1,2)ARC ON "
-                                        "A.ARCBILL_KEY = ARC.ARCBILL_KEY "
                                     "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER ";
         IBInternalQuery->ParamByName("IS_POSTED_TO_PANASONIC_SERVER")->AsString = "F";
         IBInternalQuery->ExecQuery();
 
         TPanasonicModels* panasonicModel = new TPanasonicModels();
         TDBPanasonic* dbPanasonic = new TDBPanasonic();
-        int contactKey = 0, loyaltyKey = 0;
+        int contactKey = 0, customerID = 0;
+        UnicodeString memberName = "";
         int siteId = GetSiteId(dbTransaction);
 
         for(; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -183,14 +200,20 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             siteId = 0;
             contactKey = IBInternalQuery->FieldByName("USER_KEY")->AsInteger;
             arcBillKey =  IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger;
-            loyaltyKey = IBInternalQuery->FieldByName("LOYALTY_KEY")->AsInteger;
+            memberName = "";
+            customerID = 0;
+
+            TDateTime startDateTime = GetStartDateTime(dbTransaction, arcBillKey);
             panasonicModel->StoreId               = siteId;
             panasonicModel->Terminald             = IBInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
             panasonicModel->OperatorId            = contactKey;
             panasonicModel->OperatorName          = IBInternalQuery->FieldByName("STAFF_NAME")->AsString;
-            panasonicModel->CustomerId            = loyaltyKey;
-            panasonicModel->CustomerName          = GetMemberName(dbTransaction, loyaltyKey);
             panasonicModel->TransactionId         = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
+
+            //GetMemberNameAndCustomerID
+            GetMemberNameAndCustomerID(dbTransaction, panasonicModel->TransactionId, customerID, memberName);
+            panasonicModel->CustomerId            = customerID;
+            panasonicModel->CustomerName          = memberName;
             panasonicModel->TransactionType       = "Billed By";
             panasonicModel->ProductListId         = arcBillKey;
             panasonicModel->TransactionAmount     = IBInternalQuery->FieldByName("TOTAL")->AsCurrency;
@@ -198,12 +221,12 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             panasonicModel->Suspended             = false;
             panasonicModel->CashOut               = false;
             panasonicModel->Cash                  = false;
-            panasonicModel->TimeZoneOfET          = Now();
-            panasonicModel->TimeZoneOfST          = Now();
-            panasonicModel->DayLightTimeOfET      = Now();
-            panasonicModel->DayLightTimeOfST      = Now();
-            panasonicModel->StartTime             = Now();
-            panasonicModel->EndTime               = Now();
+            panasonicModel->TimeZoneOfET          = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+            panasonicModel->TimeZoneOfST          = startDateTime;
+            panasonicModel->DayLightTimeOfET      = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
+            panasonicModel->DayLightTimeOfST      = startDateTime;
+            panasonicModel->StartTime             = startDateTime;
+            panasonicModel->EndTime               = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
             panasonicModel->CreditCard = false;
             panasonicModel->Cheque = false;
             panasonicModel->EFTPOS = false;
