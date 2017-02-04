@@ -623,8 +623,10 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
                 grossPrice += fabs(order->CancelledBillCalcResult.GrossPrice);
             }
 
-            if((order->GetQty() > 0) || isRefundedOrder( order ))
+            if(order->CancelledBillCalcResult.GrossPrice > 0)
+            {
                grossPrice += fabs(order->BillCalcResult.TotalDiscount);
+            }
         }
         else if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
         {
