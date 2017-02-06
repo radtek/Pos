@@ -8,8 +8,8 @@ namespace Loyaltymate.Sevices
         ApiMemberViewModel SaveMember(ApiMemberViewModel member, string syndicateCode);
         ApiMemberViewModel GetMemberByUniqueId(ApiRequestViewModel requestViewModel, string syndicateCode);
         ApiMemberViewModel GetMemberByCardCode(ApiRequestViewModel requestViewModel, string syndicateCode);
-        ApiMemberViewModel GetMemberByEmail(ApiRequestViewModel requestViewModel, string inSyndicateCode);
-        bool UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode);
+        ApiMemberViewModel GetMemberByEmail(ApiRequestViewModel requestViewModelrequestViewModel, string inSyndicateCode);
+        bool UpdateMemberCardCode(string inSyndicateCode, ApiUpdateCardCodeRequestViewModel requestViewModel);
         bool PostTransaction(PointsTransactionViewModel pointsTransaction, string syndicateCode);
         bool PostInvoiceTransaction(ApiMemberInvoiceTransactionViewModel invoiceTransaction, string syndicateCode);
         ApiCompanyViewModel GetCompanyDetail(string inSyndicateCode);

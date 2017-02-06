@@ -78,7 +78,7 @@ namespace MenumateServices.LoyaltyMate
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.UpdateMemberCardCode(inSyndicateCode, uniqueId, memberCardCode);
+                var response = loyaltymateService.UpdateMemberCardCode(inSyndicateCode, CreateUpdateCardCodeRequest(uniqueId, memberCardCode));
                 if (response)
                     return CreateResponseNoError();
                 else
@@ -506,6 +506,16 @@ namespace MenumateServices.LoyaltyMate
                 SiteCode = requestInfo.SiteCode
             };
         }
+        ApiUpdateCardCodeRequestViewModel CreateUpdateCardCodeRequest(string uniqueId, string memberCardCode)
+        {
+            return new ApiUpdateCardCodeRequestViewModel()
+            {
+                UniqueId = uniqueId,
+                MemberCardCode = memberCardCode,
+            };
+        }
+
+
         #endregion
 
 

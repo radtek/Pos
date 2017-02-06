@@ -855,7 +855,6 @@ namespace MenumateVersionParser
         void upgrade6_37Tables();
         void update6_37Tables();
         void UpdateContacts6_37(TDBControl* const inDBControl);
-
     }; // class
 } // namespace
 

@@ -981,6 +981,7 @@ void TApplyParser::UpdateContacts6_37( TDBControl* const inDBControl )
     {
         TIBSQL *FetchQuery    = transaction.Query(transaction.AddQuery());
         TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+        TIBSQL *UpdateSwipeCardQuery    = transaction.Query(transaction.AddQuery());
         FetchQuery->Close();
         FetchQuery->SQL->Text =    "select c.CONTACTS_KEY,c.SWIPE_CARD from CONTACTCARDS c where c.CONTACTCARDS_KEY in "
                                     "(select CARD_KEY From  "
@@ -990,6 +991,7 @@ void TApplyParser::UpdateContacts6_37( TDBControl* const inDBControl )
                                     "group by a.CONTACTS_KEY))";
 
         UpdateQuery->SQL->Text =  "UPDATE CONTACTS A SET A.PROX_CARD =:PROX_CARD WHERE A.CONTACTS_KEY = :CONTACTS_KEY";
+        UpdateSwipeCardQuery->SQL->Text =  "UPDATE CONTACTCARDS A SET A.IS_ACTIVE ='F' WHERE A.CONTACTS_KEY = :CONTACTS_KEY";
         FetchQuery->ExecQuery();
         for (; !FetchQuery->Eof;)
         {
@@ -997,6 +999,8 @@ void TApplyParser::UpdateContacts6_37( TDBControl* const inDBControl )
             UpdateQuery->ParamByName("CONTACTS_KEY")->AsInteger = FetchQuery->FieldByName("CONTACTS_KEY")->AsInteger;
             UpdateQuery->ParamByName("PROX_CARD")->AsString = FetchQuery->FieldByName("SWIPE_CARD")->AsString;
             UpdateQuery->ExecQuery();
+            UpdateSwipeCardQuery->ParamByName("CONTACTS_KEY")->AsInteger = FetchQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            UpdateSwipeCardQuery->ExecQuery();
             FetchQuery->Next();
         }
         transaction.Commit();
@@ -1006,5 +1010,7 @@ void TApplyParser::UpdateContacts6_37( TDBControl* const inDBControl )
         transaction.Rollback();
     }
 }
+
+
 }
 

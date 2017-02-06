@@ -2723,14 +2723,15 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
          }
             //Member not exist in local DB and check that email member is not smartcard member
          int localEmailContactKey = TDBContacts::GetContactByEmail(DBTransaction,UserInfo.EMail);
-         MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
          if(localEmailContactKey != 0 && localEmailContactKey != UserInfo.ContactKey && !HasCard(DBTransaction,localEmailContactKey))
           {
             pointsToSync.Clear();
             TDBContacts::GetPointsBalances(DBTransaction, localEmailContactKey, pointsToSync);
-            LinkMembers(DBTransaction, localEmailContactKey, UserInfo.ContactKey);
             addDefaultPoints = true;
+            UserInfo.ContactKey = localEmailContactKey;
           }
+
+         MembershipSystem->SetContactDetails(DBTransaction, UserInfo.ContactKey, UserInfo);
          MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, UserInfo.ContactKey, UserInfo);
       }
    }
