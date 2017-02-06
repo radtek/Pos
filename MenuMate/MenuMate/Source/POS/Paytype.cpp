@@ -2213,11 +2213,13 @@ void TfrmPaymentType::ProcessLoyaltyGiftVoucherVoucher(AnsiString voucherCode,TP
          MessageBox("The gift card with code " + voucherCode + " has zero balance.", "Warning", MB_OK + MB_ICONINFORMATION);
          break;
          case 2:
-         case 4:
          MessageBox("Gift Card not found please try another card.", "Warning", MB_OK + MB_ICONINFORMATION);
          break;
          case 3:
          MessageBox("Gift Card expired.", "Warning", MB_OK + MB_ICONINFORMATION);
+         break;
+         case 4:
+         MessageBox("Gift Card not valid and will start from " + GiftCardDetail.StartDate.FormatString("DD-MM-YYYY"), "Warning", MB_OK + MB_ICONINFORMATION);
          break;
        }
       CurrentTransaction.RedeemGiftVoucherInformation->VoucherNumber = "";
@@ -4058,7 +4060,7 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 			{
 				CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE,
 				TGlobalSettings::Instance().MidPointRoundsDown);
-
+                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 				if (CurrentDiscount.Amount != frmDiscount->CURResult)
 				{
 					MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -4068,6 +4070,7 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 			{
 				CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE,
 				TGlobalSettings::Instance().MidPointRoundsDown);
+                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 				if (CurrentDiscount.Amount != frmDiscount->CURResult)
 				{
 					MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -4077,14 +4080,29 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 			{
 				CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE,
 				TGlobalSettings::Instance().MidPointRoundsDown);
+                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 				if (CurrentDiscount.Amount != frmDiscount->CURResult)
 				{
 					MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
 				}
 			}
+            //add changes for open discount combo...
+            else if (frmDiscount->Mode == DiscModeCombo)
+            {
+                CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
+                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
+                if (CurrentDiscount.Amount != frmDiscount->CURResult)
+                {
+                   MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
+                }
+            }
 			else
 			{
 				CurrentDiscount.PercentAmount = frmDiscount->PERCResult;
+                if(frmDiscount->Mode == DiscModePercent)
+                {
+                   CurrentDiscount.OriginalAmount = CurrentDiscount.PercentAmount;
+                }
 			}
 		}
 		else
@@ -4095,6 +4113,7 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
 
 	if (ProcessDiscount)
 	{
+         CurrentDiscount.DiscountAppliedTime = Now();
          CurrentTransaction.DiscountReason = CurrentDiscount.Description;
 		 CurrentTransaction.Discounts.clear();
          ManagerDiscount->ClearDiscount(CurrentTransaction.Orders, CurrentDiscount);

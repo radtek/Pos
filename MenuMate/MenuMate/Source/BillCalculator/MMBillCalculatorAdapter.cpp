@@ -200,7 +200,7 @@ TDiscountInfo TMMBillCalculatorAdapter::ConvertDiscountToDiscountInfo( TDiscount
     discountInfo.MembersOnly = inDiscount->MembersOnly;
     setDiscountGroupListFromList( inDiscount->DiscountGroupList, discountInfo );
 
-    switch ( inDiscount->Mode )
+    switch ( inDiscount->AppliedMode )
     {
         case DiscModePoints:
             discountInfo.Value        = 0;

@@ -79,6 +79,22 @@ enum eBtnToDisplay
 
 typedef Set <eBtnToDisplay, eBTDOverView, eBTDNone> TBtnToDisplay;
 
+struct TDiscountDetails
+{
+  public:
+      TDiscount Discount;
+      TList *OrderList;
+      TDateTime DiscountTime;
+};
+
+struct TMembershipDiscountList
+{
+  public:
+      TDiscount Discount;
+      int DiscountKey;
+      bool IsApplied;
+};
+
 class TfrmSelectDish : public TZForm
 {
    friend TZForm;
@@ -463,7 +479,7 @@ private: // User declarations
     bool ApplyDiscount(Database::TDBTransaction &DBTransaction, TDiscount &CurrentDiscount, TList *Orders, bool isInitiallyApplied = true, TDiscountSource DiscountSource = dsMMUser);
     bool isChitDiscountExist;
     void RemoveChitDiscounts(TMMContactInfo Member);
-
+    void CheckGiftCardBalance();
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
    void __fastcall CardSwipe(Messages::TMessage& Message);

@@ -600,6 +600,8 @@ bool TMenuLoadDB::GetNextItemSize(Menu::TItemSizeInfo *ItemSizeInfo)
              ItemSizeInfo->ItemSizePriceLevels.clear();
              GeTItemSizePriceLevels(sqlMenu->FieldByName("ItemSize_Key")->AsInteger , &ItemSizeInfo->ItemSizePriceLevels );
             //:::::::::::::::::::::::::::::::::::::::::::::
+             ItemSizeInfo->ItemSizeTaxPercent.clear();
+             GeTItemSizeTaxPercentage(sqlMenu->FieldByName("ItemSize_Key")->AsInteger , ItemSizeInfo->ItemSizeTaxPercent);
 
 
 				while(sqlMenu->FieldByName("ItemSize_Key")->AsInteger == fLastItemSize && !sqlMenu->Eof)
@@ -790,21 +792,20 @@ bool TMenuLoadDB::GetThirdPartyCodes( std::vector<TThirdPartyCodeInfo>& outCodes
 	return Success;
 }
 // ---------------------------------------------------------------------------
+void TMenuLoadDB::GeTItemSizePriceLevels(int inItemSizeKey, std::map<int,TItemSizePriceLevel>* ItemSizePriceLevels )
+{
+    Database::TcpIBSQL sqlitemSizePriceLevels( new TIBSQL( NULL ) );
 
-  void TMenuLoadDB::GeTItemSizePriceLevels(int inItemSizeKey, std::map<int,TItemSizePriceLevel>* ItemSizePriceLevels )
- {
-   Database::TcpIBSQL sqlitemSizePriceLevels( new TIBSQL( NULL ) );
+    this->dbTransaction.RegisterQuery( sqlitemSizePriceLevels );
+    sqlitemSizePriceLevels->Close();
+    sqlitemSizePriceLevels->SQL->Text = ItemSizePriceLevel;
+    sqlitemSizePriceLevels->ParamByName( "itemsize_key" )->AsInteger = inItemSizeKey;
+    sqlitemSizePriceLevels->ParamByName( "isEnabled" )->AsString= "T";
 
-   this->dbTransaction.RegisterQuery( sqlitemSizePriceLevels );
-   sqlitemSizePriceLevels->Close();
-   sqlitemSizePriceLevels->SQL->Text = ItemSizePriceLevel;
-   sqlitemSizePriceLevels->ParamByName( "itemsize_key" )->AsInteger = inItemSizeKey;
-   sqlitemSizePriceLevels->ParamByName( "isEnabled" )->AsString= "T";
+    sqlitemSizePriceLevels->ExecQuery();
 
-   sqlitemSizePriceLevels->ExecQuery();
-
-   while( !sqlitemSizePriceLevels->Eof )
-   {
+    while( !sqlitemSizePriceLevels->Eof )
+    {
      TItemSizePriceLevel priceLevel;
 
       priceLevel.PriceLevelKey =sqlitemSizePriceLevels->FieldByName( "PRICELEVEL_KEY" )->AsInteger;
@@ -814,7 +815,27 @@ bool TMenuLoadDB::GetThirdPartyCodes( std::vector<TThirdPartyCodeInfo>& outCodes
       ItemSizePriceLevels->insert ( std::pair<int,TItemSizePriceLevel>(priceLevel.PriceLevelKey,priceLevel ) );
 
       sqlitemSizePriceLevels->Next();
-   }
+    }
+}
+// ---------------------------------------------------------------------------
+void TMenuLoadDB::GeTItemSizeTaxPercentage(int inItemSizeKey, std::vector<TItemSizeTaxesPercentage> &itemSizeTaxPercentage)
+{
+    Database::TcpIBSQL sqlitemSizeTaxPercent( new TIBSQL( NULL ) );
 
-  
- }
+    this->dbTransaction.RegisterQuery( sqlitemSizeTaxPercent );
+    sqlitemSizeTaxPercent->Close();
+    sqlitemSizeTaxPercent->SQL->Text = ItemSizeTaxPercent;
+    sqlitemSizeTaxPercent->ParamByName( "itemsize_key" )->AsInteger = inItemSizeKey;
+
+    sqlitemSizeTaxPercent->ExecQuery();
+
+    if( !sqlitemSizeTaxPercent->Eof )
+    {
+        TItemSizeTaxesPercentage taxTypePecent;
+
+        taxTypePecent.SalesTaxPercent = sqlitemSizeTaxPercent->FieldByName( "Tax" )->AsCurrency;
+        taxTypePecent.ServiceChargePercent = sqlitemSizeTaxPercent->FieldByName( "ServiceCharge" )->AsCurrency;
+
+        itemSizeTaxPercentage.push_back(taxTypePecent);  
+    }
+}

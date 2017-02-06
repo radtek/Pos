@@ -649,6 +649,7 @@ void TLoyaltyMateGiftVoucherThread::GetGiftVoucherBalance()
             GiftCardDetail.StatusCode = giftCardDetail.StatusCode;
             GiftCardDetail.PointBalance = giftCardDetail.PointBalance;
             GiftCardDetail.ExpiryDate = giftCardDetail.ExpiryDate;
+            GiftCardDetail.StartDate = giftCardDetail.StartDate;
         }
     }
     catch(Exception &E)

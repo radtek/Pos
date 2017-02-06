@@ -379,7 +379,8 @@ Currency TItemMinorComplete::TotalAdjustmentExcCombo() const
 	// Add up the Total Value.
 	Currency OrdersTotal = Price();
 	for (std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin();
-		ptrDiscount != Discounts.end(); std::advance(ptrDiscount, 1)) {
+		ptrDiscount != Discounts.end(); std::advance(ptrDiscount, 1))
+        {
 		Currency CurrentDiscountValue = 0;
 		TDiscount CurrentDiscount = *ptrDiscount;
 		if ( DiscountApplies(CurrentDiscount)
@@ -1006,22 +1007,29 @@ bool TItemMinorComplete::DiscountApplied(int DiscountKey)
 	return discount_present;
 }
 
-void TItemMinorComplete::DiscountCredit() {
+void TItemMinorComplete::DiscountCredit()
+{
 	for (std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin();
-		ptrDiscount != Discounts.end(); std::advance(ptrDiscount, 1)) {
+		ptrDiscount != Discounts.end(); std::advance(ptrDiscount, 1))
+         {
 		TDiscount CurrentDiscount = *ptrDiscount;
-		if (ptrDiscount->Mode == DiscModePercent) {
+		if (ptrDiscount->Mode == DiscModePercent)
+        {
 		}
-		else if (ptrDiscount->Mode == DiscModeSetPrice) {
+		else if (ptrDiscount->Mode == DiscModeSetPrice)
+         {
 			ptrDiscount->Amount = -ptrDiscount->Amount;
 		}
-		else if (CurrentDiscount.Mode == DiscModeCurrency) {
+		else if (CurrentDiscount.Mode == DiscModeCurrency)
+        {
 			ptrDiscount->Amount = -ptrDiscount->Amount;
 		}
-		else if (ptrDiscount->Mode == DiscModeCombo) {
+		else if (ptrDiscount->Mode == DiscModeCombo)
+         {
 			ptrDiscount->Amount = -ptrDiscount->Amount;
 		}
-        else if (ptrDiscount->Mode == DiscModeDeal) {
+        else if (ptrDiscount->Mode == DiscModeDeal)
+        {
             ptrDiscount->Amount = -ptrDiscount->Amount;
         }
          //************4278*********************/
@@ -1052,23 +1060,29 @@ TDiscount TItemMinorComplete::DiscountFind(int DiscountKey)
 	return ReturnDiscount;
 }
 
-bool TItemMinorComplete::DiscountFind(TDiscountMode Mode) {
+bool TItemMinorComplete::DiscountFind(TDiscountMode Mode)
+{
 	std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin();
-	for (; ptrDiscount != Discounts.end(); std::advance(ptrDiscount, 1)) {
+	for (; ptrDiscount != Discounts.end(); std::advance(ptrDiscount, 1))
+    {
 		TDiscount CurrentDiscount = *ptrDiscount;
-		if (CurrentDiscount.Mode == Mode) {
+		if (CurrentDiscount.Mode == Mode)
+        {
 			return true;
 		}
 	}
 	return false;
 }
 
-Currency TItemMinorComplete::DiscountGet(TDiscountMode Mode) {
+Currency TItemMinorComplete::DiscountGet(TDiscountMode Mode)
+{
 	Currency temp = 0;
 	std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin();
-	for (; ptrDiscount != Discounts.end(); std::advance(ptrDiscount, 1)) {
+	for (; ptrDiscount != Discounts.end(); std::advance(ptrDiscount, 1))
+    {
 		TDiscount CurrentDiscount = *ptrDiscount;
-		if (CurrentDiscount.Mode == Mode) {
+		if (CurrentDiscount.Mode == Mode)
+        {
 			temp += CurrentDiscount.ComboAmount;
 		}
 	}
@@ -1151,6 +1165,7 @@ void TItemMinorComplete::ThorVouchersDiscountsClear()
 		SubOrder->ThorlinkDiscountByTypeLevelRemove(dsMMSystem);
 	}
 }
+
 void TItemMinorComplete::ClearAllDiscounts()
 {
 	for (std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin(); ptrDiscount != Discounts.end(); )
@@ -1170,6 +1185,7 @@ void TItemMinorComplete::ClearAllDiscounts()
 	}
     RunBillCalculator();
 }
+
 void TItemMinorComplete::DiscountsClear()
 {
 	//Discounts.clear();

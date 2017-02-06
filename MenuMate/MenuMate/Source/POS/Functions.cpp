@@ -99,6 +99,9 @@ void __fastcall TfrmFunctions::FormCreate(TObject *Sender)
 	{
 			BtnLuckyMember->Visible = true;
 	}
+       btnSync->Visible = TGlobalSettings::Instance().LoyaltyMateEnabled;
+       btnGiftCard->Visible = TGlobalSettings::Instance().LoyaltyMateEnabled;
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmFunctions::btnPaxCountMouseClick(TObject *Sender)
@@ -134,6 +137,13 @@ void __fastcall TfrmFunctions::btnLiveTransactionMouseClick(TObject *Sender)
 void __fastcall TfrmFunctions::btnSyncMouseClick(TObject *Sender)
 {
    BtnSelection = 15;
+    Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmFunctions::btnGiftCardMouseClick(TObject *Sender)
+{
+   BtnSelection = 16;
     Close();
 }
 //---------------------------------------------------------------------------

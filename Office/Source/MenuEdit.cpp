@@ -370,6 +370,25 @@ void __fastcall TfrmMenuEdit::FormShow(TObject *Sender)
     //insert priceLevels Name in map
     LoadPriceLevelNames();
 
+    //Store Tax Settings..
+    if (qrGetTaxSettings->Database->Connected && !qrGetTaxSettings->Transaction->InTransaction)
+    {
+        qrGetTaxSettings->Transaction->StartTransaction();
+        qrGetTaxSettings->Close();
+        qrGetTaxSettings->ExecQuery();
+        if(qrGetTaxSettings->RecordCount>0)
+        {
+            isItemPriceIncludedTax	=	 qrGetTaxSettings->Fields[0]->AsInteger == 1 ? true : false;
+            isItemPriceIncludeServiceCharge =  qrGetTaxSettings->Fields[1]->AsInteger == 1 ? true : false;
+        }
+        else
+        {
+            isItemPriceIncludedTax	=  false;
+            isItemPriceIncludeServiceCharge = false;
+        }
+        qrGetTaxSettings->Transaction->Commit();
+    }
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMenuEdit::WMSysCommand(TWMSysCommand& Message)
@@ -1547,6 +1566,7 @@ TEditorNode *TItemSizeNode::Duplicate()
     //Duplicating prices
     NewNodeType->ItemSizePriceLevels			= ItemSizePriceLevels;
     NewNodeType->PriceLevelsName			= PriceLevelsName;
+    NewNodeType->ItemSizeTaxPercent         = ItemSizeTaxPercent;
 	NewNodeType->MaxRetailPrice = MaxRetailPrice;
 	NewNodeType->SpecialPrice					 = SpecialPrice;
 	NewNodeType->GST								 = GST;
@@ -2116,21 +2136,28 @@ void TfrmMenuEdit::RefreshItemRecipe(TItemSizeNode *DrinkCostData)
 		edItemCost->Value = TotalItemCost;//0;
 		edCostGST->Enabled = false;
 
-		double GP = 0;
+		Currency GP = 0.00;
         //populating items prices and g.p 's
 
         for(int key =1; key<= noOfPriceLevels; key++)
         {
 
-            Currency PriceExc = (DrinkCostData->ItemSizePriceLevels[key].Price * 100.0) / (100.0);
+            Currency PriceExc = DrinkCostData->ItemSizePriceLevels[key].Price;
+
+            ///Calculate PriceExcl According to taxsettings..
+            if(DrinkCostData->ItemSizeTaxPercent.size())
+            {
+                PriceExc = GetPriceExclusiveAmount(PriceExc, DrinkCostData->ItemSizeTaxPercent[0].SalesTaxPercent, DrinkCostData->ItemSizeTaxPercent[0].ServiceChargePercent);
+            }
+
             if (PriceExc != 0)
             {
-                GP = (1 - (edItemCost->Value / PriceExc)) * 100;
+                GP = (Currency)(1 - ((double)edItemCost->Value / (double)PriceExc)) * 100;
             }
             sgItemsize->Cells[2][key] = CurrToStrF(GP, ffFixed, CurrencyDecimals);
            //nePriceGP->Value = GP;
 
-            GP = 0;
+            GP = 0.00;
         }    
 
 		edRecipeQty->Enabled = true;
@@ -2183,17 +2210,24 @@ void __fastcall TfrmMenuEdit::edLocChange(TObject *Sender)
 			}
 			edItemCost->Value = TotalItemCost;
 
-			double GP = 0;
+			Currency GP = 0.00;
 
             for(int key =1; key<= noOfPriceLevels; key++)
             {
-                Currency PriceExc = (ItemSizeData->ItemSizePriceLevels[key].Price * 100.0) / (100.0 + ItemSizeData->GST);
+                Currency PriceExc = ItemSizeData->ItemSizePriceLevels[key].Price;
+
+                ///Calculate PriceExcl According to taxsettings..
+                if(ItemSizeData->ItemSizeTaxPercent.size())
+                {
+                    PriceExc = GetPriceExclusiveAmount(PriceExc, ItemSizeData->ItemSizeTaxPercent[0].SalesTaxPercent, ItemSizeData->ItemSizeTaxPercent[0].ServiceChargePercent);
+                }
+
                 if (PriceExc != 0)
                 {
-                    GP = (1 - (TotalItemCost / PriceExc)) * 100;
+                    GP = (Currency)(1 - ((double)TotalItemCost / (double)PriceExc)) * 100;
                 }
                 sgItemsize->Cells[2][key] = CurrToStrF(GP, ffFixed, CurrencyDecimals);
-                GP = 0;
+                GP = 0.00;
             }
 		}
 	}
@@ -2290,20 +2324,28 @@ void TfrmMenuEdit::RefreshItemSize(TItemSizeNode *ItemSizeData)
 
         std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpIT = ItemSizeData->ItemSizePriceLevels.begin();
         std::map<int,Menu::TItemSizePriceLevel>::const_iterator grpEnd = ItemSizeData->ItemSizePriceLevels.end();
-        Currency GP = 0;
+        Currency GP = 0.00;
         rowIndex = 1;
-       
+
         for ( ; grpIT != grpEnd; ++grpIT )
         {
 
                 sgItemsize->Cells[1][rowIndex] = CurrToStrF((*grpIT).second.Price, ffFixed, CurrencyDecimals);
-                Currency PriceExc = ((*grpIT).second.Price * 100.0) / (100.0);
+
+                Currency PriceExc = (*grpIT).second.Price;
+
+                 ///Calculate PriceExcl According to taxsettings..
+                if(ItemSizeData->ItemSizeTaxPercent.size())
+                {
+                    PriceExc = GetPriceExclusiveAmount(PriceExc, ItemSizeData->ItemSizeTaxPercent[0].SalesTaxPercent, ItemSizeData->ItemSizeTaxPercent[0].ServiceChargePercent);
+                }
+
                 if (PriceExc != 0)
                 {
-                    GP = (1 - (ItemSizeData->Cost / PriceExc)) * 100;
+                    GP = (Currency)(1 - ((double)ItemSizeData->Cost / (double)PriceExc)) * 100;
                 }
                 sgItemsize->Cells[2][rowIndex] = CurrToStrF(GP, ffFixed, CurrencyDecimals);
-                GP = 0;
+                GP = 0.00;
                 for(int i=0; i<3; i++)
                 {
                     sgItemsize->Objects[0][(*grpIT).second.PriceLevelKey]	= ItemSizeData;
@@ -11421,6 +11463,14 @@ TTreeNode *TfrmMenuEdit::AddMenuSize(TTreeNode *ItemNode, Menu::TItemSizeInfo *I
         }
     }
 
+    ///Load Taxes
+    for (unsigned i=0; i<ItemSizeInfo->ItemSizeTaxPercent.size(); i++)
+	{
+		Menu::TItemSizeTaxesPercentage itemSizeTaxPercent;
+        itemSizeTaxPercent.SalesTaxPercent = ItemSizeInfo->ItemSizeTaxPercent[i].SalesTaxPercent;
+        itemSizeTaxPercent.ServiceChargePercent = ItemSizeInfo->ItemSizeTaxPercent[i].ServiceChargePercent;
+        ItemSizeData->ItemSizeTaxPercent.push_back(itemSizeTaxPercent);
+	} 
 
 	for (unsigned i=0; i<ItemSizeInfo->Recipes.size(); i++)
 	{
@@ -13352,8 +13402,8 @@ int ACol, int ARow, const AnsiString Value)
 {  
  	if (Value != "" && (ARow >= 1))
 	{
-       	Currency CurVal;
-        Currency GP;
+       	Currency CurVal = 0.00;
+        Currency GP = 0.00;
         TEditorNode *CurrentNodeData = (TEditorNode *)tvMenu->Selected->Data;
         if (CurrentNodeData->NodeType == ITEM_SIZE_NODE)
         {
@@ -13367,21 +13417,28 @@ int ACol, int ARow, const AnsiString Value)
                   if(CheckIfNumeric(Value) )
                   {
                      CurVal = StrToCurr(Value);
-			
+
                         if(ARow == 1)
                         {
                             if (CurVal != DrinkCostData->Price)
                             {
                                 for(int i=1; i<sgItemsize->RowCount;i++)
                                 {
-                                      DrinkCostData->ItemSizePriceLevels[i].Price = CurVal;
-                                    Currency PriceExc = (CurVal* 100.0) / (100.0);
+                                    DrinkCostData->ItemSizePriceLevels[i].Price = CurVal;
+                                    Currency PriceExc = CurVal;
+
+                                    ///Calculate PriceExcl According to taxsettings..
+                                    if(DrinkCostData->ItemSizeTaxPercent.size())
+                                    {
+                                        PriceExc = GetPriceExclusiveAmount(PriceExc, DrinkCostData->ItemSizeTaxPercent[0].SalesTaxPercent, DrinkCostData->ItemSizeTaxPercent[0].ServiceChargePercent);
+                                    }
+
                                     if (PriceExc != 0)
                                     {
-                                        GP = (1 - (edItemCost->Value / PriceExc)) * 100;
+                                        GP = (Currency)(1 - ((double)edItemCost->Value / (double)PriceExc)) * 100;
                                     }
                                     sgItemsize->Cells[2][i] = CurrToStrF(GP, ffFixed, CurrencyDecimals);
-                                    GP = 0;
+                                    GP = 0.00;
                                     DrinkCostData->Price = CurVal;
                                     MenuEdited = true;
                                     RelabelDrinkCosts();
@@ -13393,13 +13450,20 @@ int ACol, int ARow, const AnsiString Value)
                             if(CurVal != DrinkCostData->ItemSizePriceLevels[ARow].Price)
                             {
                                 DrinkCostData->ItemSizePriceLevels[ARow].Price = CurVal;
-                                Currency PriceExc = (CurVal* 100.0) / (100.0);
+                                Currency PriceExc = CurVal;
+
+                                ///Calculate PriceExcl According to taxsettings..
+                                if(DrinkCostData->ItemSizeTaxPercent.size())
+                                {
+                                    PriceExc = GetPriceExclusiveAmount(PriceExc, DrinkCostData->ItemSizeTaxPercent[0].SalesTaxPercent, DrinkCostData->ItemSizeTaxPercent[0].ServiceChargePercent);
+                                }
+                                
                                 if (PriceExc != 0)
                                 {
-                                    GP = (1 - (edItemCost->Value / PriceExc)) * 100;
+                                    GP = (Currency)(1 - ((double)edItemCost->Value / (double)PriceExc)) * 100;
                                 }
                                 sgItemsize->Cells[2][ARow] = CurrToStrF(GP, ffFixed, CurrencyDecimals);
-                                GP = 0;
+                                GP = 0.00;
                                 DrinkCostData->SpecialPrice = CurVal;
                                 MenuEdited = true;
                                 RelabelDrinkCosts();
@@ -13599,5 +13663,26 @@ int TfrmMenuEdit::UpdateSizeItem(AnsiString SizeName)
     }
 }
 //---------------------------------------------------------------------------
+Currency TfrmMenuEdit::GetPriceExclusiveAmount(Currency menuPrice, Currency saleTaxPercentage, Currency serviceChargePercentage)
+{
+    Currency priceExcl = 0.00;
+    if(isItemPriceIncludedTax && isItemPriceIncludeServiceCharge)
+    {
+        priceExcl = (100*menuPrice)/(100 + saleTaxPercentage + serviceChargePercentage);
+    }
+    else if(isItemPriceIncludedTax && !isItemPriceIncludeServiceCharge)
+    {
+        priceExcl = (100*menuPrice)/(100 + saleTaxPercentage);
+    }
+    else if(!isItemPriceIncludedTax && isItemPriceIncludeServiceCharge)
+    {
+        priceExcl = (100*menuPrice)/(100 + serviceChargePercentage);
+    }
+    else if(!isItemPriceIncludedTax && !isItemPriceIncludeServiceCharge)
+    {
+        priceExcl = menuPrice;
+    }
+    return priceExcl;
+}
 
 

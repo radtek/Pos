@@ -4799,4 +4799,20 @@ object frmMenuEdit: TfrmMenuEdit
     Left = 40
     Top = 248
   end
+  object qrGetTaxSettings: TIBSQL
+    Database = dmMMData.dbMenuMate
+    ParamCheck = False
+    SQL.Strings = (
+      'SELECT      '
+      
+        'MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8000 THEN VARSPROFILE.' +
+        'INTEGER_VAL END) AS IsTax,     '
+      
+        'MIN(CASE WHEN VARSPROFILE.VARIABLES_KEY = 8001 THEN VARSPROFILE.' +
+        'INTEGER_VAL END) AS IsSeviceCharge '
+      'FROM VARSPROFILE ')
+    Transaction = MMTransaction
+    Left = 144
+    Top = 296
+  end
 end

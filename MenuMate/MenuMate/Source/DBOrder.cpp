@@ -1941,7 +1941,7 @@ void TDBOrder::SetOrderDiscounts(Database::TDBTransaction &DBTransaction,TItemMi
 			IBInternalQuery->ParamByName("DISCOUNTED_VALUE")->AsCurrency = Order->DiscountValue_BillCalc(ptrDiscounts);
 			IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = ptrDiscounts->Rounding;
 			IBInternalQuery->ParamByName("DISCOUNT_TYPE")->AsInteger = ptrDiscounts->Type;
-			IBInternalQuery->ParamByName("DISCOUNT_MODE")->AsInteger = ptrDiscounts->Mode;
+			IBInternalQuery->ParamByName("DISCOUNT_MODE")->AsInteger = ptrDiscounts->AppliedMode;
 			IBInternalQuery->ParamByName("SOURCE")->AsInteger = ptrDiscounts->Source;
 			IBInternalQuery->ParamByName("APPEARANCE_ORDER")->AsInteger = ptrDiscounts->AppearanceOrder;
 			IBInternalQuery->ParamByName("PRIORITY")->AsInteger = ptrDiscounts->Priority;
@@ -4179,6 +4179,7 @@ void TDBOrder::LoadOrderDiscounts(Database::TDBTransaction &DBTransaction,TItemM
 			Discount.Rounding = IBInternalQuery->FieldByName("ROUNDING")->AsCurrency;
 			Discount.Type = static_cast<TDiscountType>(IBInternalQuery->FieldByName("DISCOUNT_TYPE")->AsInteger);
 			Discount.Mode = static_cast<TDiscountMode>(IBInternalQuery->FieldByName("DISCOUNT_MODE")->AsInteger);
+            Discount.AppliedMode = static_cast<TDiscountMode>(IBInternalQuery->FieldByName("DISCOUNT_MODE")->AsInteger);
 			Discount.Source = static_cast<TDiscountSource>(IBInternalQuery->FieldByName("SOURCE")->AsInteger);
 			Discount.MembersOnly = IBInternalQuery->FieldByName("MEMBERS_ONLY")->AsString == "T";
 			Discount.MembersExempt = IBInternalQuery->FieldByName("MEMBERS_EXEMPT")->AsString == "T";

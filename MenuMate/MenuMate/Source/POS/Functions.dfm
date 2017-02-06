@@ -1,12 +1,12 @@
 object frmFunctions: TfrmFunctions
   Tag = 1024
-  Left = 351
+  Left = 370
   Top = 281
   BorderIcons = []
   BorderStyle = bsDialog
   BorderWidth = 6
   Caption = 'Functions'
-  ClientHeight = 407
+  ClientHeight = 409
   ClientWidth = 622
   Color = clBlack
   Font.Charset = ANSI_CHARSET
@@ -24,11 +24,12 @@ object frmFunctions: TfrmFunctions
     Left = 0
     Top = 0
     Width = 489
-    Height = 407
+    Height = 409
     Align = alLeft
     Color = 14342874
     ParentBackground = False
     TabOrder = 0
+    ExplicitHeight = 486
     object BtnCallAway: TTouchBtn
       Left = 8
       Top = 8
@@ -297,16 +298,36 @@ object frmFunctions: TfrmFunctions
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnSyncMouseClick
     end
+    object btnGiftCard: TTouchBtn
+      Left = 328
+      Top = 329
+      Width = 145
+      Height = 65
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Check Gift Card Balance '
+      ButtonColor = 6052441
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnGiftCardMouseClick
+    end
   end
   object Panel1: TPanel
     Left = 493
     Top = 0
     Width = 129
-    Height = 407
+    Height = 409
     Align = alRight
     Color = 14342874
     ParentBackground = False
     TabOrder = 1
+    ExplicitHeight = 486
     object btnOk: TTouchBtn
       Left = 9
       Top = 8
