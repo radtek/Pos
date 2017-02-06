@@ -9942,7 +9942,7 @@ void TdmMMReportData::SetupLoyaltyDetails(TStrings *Customers)
 	qrLoyalty->Close();
 	qrLoyalty->SQL->Text =
 		"Select "
-			"Name,"
+			"Name ||' '|| a.LAST_NAME as Name, "
 			"Title,"
 			"Sex,"
 			"DateOfBirth \"Birthday\","
