@@ -9942,7 +9942,7 @@ void TdmMMReportData::SetupLoyaltyDetails(TStrings *Customers)
 	qrLoyalty->Close();
 	qrLoyalty->SQL->Text =
 		"Select "
-			"Name ||' '|| a.LAST_NAME as Name, "
+			"Name ||' '|| LAST_NAME as Name, "
 			"Title,"
 			"Sex,"
 			"DateOfBirth \"Birthday\","
@@ -9975,7 +9975,7 @@ void TdmMMReportData::SetupNewLoyaltyDetails(TDateTime StartTime, TDateTime EndT
 	qrLoyalty->Close();
 	qrLoyalty->SQL->Text =
 		"Select "
-			"Name,"
+			"Name ||' '|| LAST_NAME as Name,"
 			"Title,"
 			"Sex,"
 			"DateOfBirth \"Birthday\","
@@ -10002,7 +10002,7 @@ void TdmMMReportData::SetupAlteredLoyaltyDetails(TDateTime StartTime, TDateTime 
 	qrLoyalty->Close();
 	qrLoyalty->SQL->Text =
 		"Select "
-			"Name,"
+			"Name ||' '|| LAST_NAME as Name,"
 			"Title,"
 			"Sex,"
 			"DateOfBirth \"Birthday\","
