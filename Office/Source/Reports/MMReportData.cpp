@@ -15106,7 +15106,7 @@ void TdmMMReportData::SalesSummaryLT(TDateTime StartTime, TDateTime EndTime,  TS
 		qrSalesSummary->ParamByName("TerminalParam" + IntToStr(i))->AsString = Terminals->Strings[i];
 	}
 }
-
+//---------------------------------------------------------------------------------------------------------------------------------
 //MM-2966
 void TdmMMReportData::SetupConsolidatedSalesByItem(TDateTime StartTime, TDateTime EndTime)
 {   try
@@ -15213,6 +15213,7 @@ void TdmMMReportData::SetupCheckRemoval(TDateTime StartTime, TDateTime EndTime) 
 
 
 }
+//---------------------------------------------------------------------------------------------------------------------------------
 //MM-4101
 
  void TdmMMReportData::SetupDSRSummary(TDateTime StartTime, TDateTime EndTime,TStrings *Menus)
@@ -15334,6 +15335,7 @@ void TdmMMReportData::SetupCheckRemoval(TDateTime StartTime, TDateTime EndTime) 
 
 
 }
+//---------------------------------------------------------------------------------------------------------------------------------
 void TdmMMReportData::SetupDSRSum(TDateTime StartTime, TDateTime EndTime)
 {    	qrDSRSum->Close();
 		qrDSRSum->SQL->Text =
@@ -15408,6 +15410,7 @@ void TdmMMReportData::SetupDSRSum(TDateTime StartTime, TDateTime EndTime)
 
 
 }
+//---------------------------------------------------------------------------------------------------------------------------------
 void TdmMMReportData::ResetPoints(TDateTime StartTime, TDateTime EndTime, int i) //MM-4579
 {
    qrResetPoints->Close();
@@ -15462,7 +15465,7 @@ void TdmMMReportData::ResetPoints(TDateTime StartTime, TDateTime EndTime, int i)
 	qrResetPoints->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrResetPoints->ParamByName("EndTime")->AsDateTime	= EndTime;
 }
-
+//---------------------------------------------------------------------------------------------------------------------------------
  void TdmMMReportData::SetupReprintOrder(TDateTime StartTime, TDateTime EndTime)   //MM-4766
 {
 	qrReprintOrder->Close();
@@ -15781,6 +15784,7 @@ void TdmMMReportData::SetupProfiltLoss(TDateTime StartTime, TDateTime EndTime, T
     qrProfiltLoss->ParamByName("EndTime")->AsDateTime		= EndTime;
 
 }
+//---------------------------------------------------------------------------------------------------------------------------------
 void TdmMMReportData::SetupPointSpend(TDateTime StartTime, TDateTime EndTime, TStrings *Categories, TStrings *payments)
 {
 	qrPointSpend->Close();
@@ -16034,14 +16038,10 @@ qrPointSpend->ParamByName("StartTime")->AsDateTime	= StartTime;
 qrPointSpend->ParamByName("EndTime")->AsDateTime	= EndTime;
 
 }
-
-
-
+//---------------------------------------------------------------------------------------
 
 void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDateTime EndTime, TStrings *Names)
-
 {
-
 	qrMembershipAuditPointsBreakdown->Close();
 	qrMembershipAuditPointsBreakdown->SQL->Text =
 		"select "
@@ -16256,16 +16256,9 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 		}
 	}
 
-
-
-
-        qrMembershipAuditPointsBreakdown->ParamByName("StartTime")->AsDateTime	= StartTime;
-	  qrMembershipAuditPointsBreakdown->ParamByName("EndTime")->AsDateTime	= EndTime;
-
+    qrMembershipAuditPointsBreakdown->ParamByName("StartTime")->AsDateTime	= StartTime;
+    qrMembershipAuditPointsBreakdown->ParamByName("EndTime")->AsDateTime	= EndTime;
 }
-
-
-
 
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupBreakdownCategory(TStrings *Menus)
