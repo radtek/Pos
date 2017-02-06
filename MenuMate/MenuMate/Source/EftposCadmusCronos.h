@@ -3,7 +3,7 @@
 #ifndef EftposCadmusCronosH
 #define EftposCadmusCronosH
 //---------------------------------------------------------------------------
-#include "CadmusEftposLib_OCX.h"
+
 #include <OleServer.hpp>
 #include <memory>
 #include "Eftpos.h"
@@ -11,7 +11,7 @@
 #include <safearry.h>
 #include <map>
 #include <utility>
-
+#include "CadmusEftposLib_OCX.h"
 
 #define EFT_STATE_TIMEOUT 30
 enum TEftPosCadmusCronosStates { EftCC_Connecting = 0,EftCC_Disconnecting,EftCC_Purchase,EftCC_Refund,
