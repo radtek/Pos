@@ -87,7 +87,7 @@ bool TDBContacts::GetContactDetailsBySwipeCard(Database::TDBTransaction &DBTrans
     bool RetVal = false;
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     IBInternalQuery->Close();
-    IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTCARDS WHERE SWIPE_CARD = :SWIPE_CARD";
+    IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTCARDS WHERE SWIPE_CARD = :SWIPE_CARD AND IS_ACTIVE = 'T'";
     IBInternalQuery->ParamByName("SWIPE_CARD")->AsString = cardCode;
     IBInternalQuery->ExecQuery();
     if(IBInternalQuery->RecordCount)
