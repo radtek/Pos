@@ -17,7 +17,7 @@
 //---------------------------------------------------------------------------
 TDBPanasonic::TDBPanasonic()
 {
-    UniDataBaseConnection = new TUniConnection(NULL);
+   UniDataBaseConnection = new TUniConnection(NULL);
     SQLServerUniProvider = new TSQLServerUniProvider(NULL);
     DataSource = new TDataSource(NULL);
     UniInsertQuery = new TUniQuery(NULL);

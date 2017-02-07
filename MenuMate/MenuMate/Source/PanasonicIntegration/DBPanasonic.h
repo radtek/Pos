@@ -18,13 +18,13 @@
 class TDBPanasonic
 {
 private:	// User declarations
-    TUniConnection *UniDataBaseConnection;
     TSQLServerUniProvider *SQLServerUniProvider;
     TDataSource *DataSource;
     TUniQuery *UniInsertQuery;
     TComponent *Owner;
 public:		// User declarations
     TDBPanasonic();
+    TUniConnection *UniDataBaseConnection;
     void SendDataToServer(TPanasonicModels &panasonicModels);
     void InsertItemsToTItemList(TPanasonicItemList &itemList);
     void InsertProductDetailsInToTProduct(TPanasonicProduct &product);

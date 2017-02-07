@@ -4,7 +4,6 @@
 #pragma hdrstop
 
 #include "ManagerPanasonic.h"
-#include "DBPanasonic.h"
 #include "PanasonicModels.h"
 
 //---------------------------------------------------------------------------
@@ -169,6 +168,10 @@ TDateTime TPanasonicThread::GetStartDateTime(Database::TDBTransaction &dbTransac
 //--------------------------------------------------------------------------------------------------------------------------
 void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransaction &dbTransaction )
 {
+    TPanasonicModels* panasonicModel = new TPanasonicModels();
+    TDBPanasonic* dbPanasonic = new TDBPanasonic();
+    dbPanasonic->UniDataBaseConnection->Open();
+    dbPanasonic->UniDataBaseConnection->StartTransaction();
     try
     {
         TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
@@ -179,18 +182,17 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
                                      "a.RECEIPT, SECURITY.USER_KEY "
                                     "FROM ARCBILL a "
                                     "INNER JOIN SECURITY ON A.SECURITY_REF = SECURITY.SECURITY_REF "
-                                    "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER "
+                                    "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER AND A.TERMINAL_NAME = :TERMINAL_NAME "
                                     "UNION ALL "
                                     "SELECT a.ARCBILL_KEY, a.TERMINAL_NAME, a.STAFF_NAME, a.TIME_STAMP, a.TOTAL, a.CONTACTS_KEY, a.INVOICE_NUMBER, "
                                     "a.RECEIPT, SECURITY.USER_KEY  "
                                     "FROM DAYARCBILL a "
                                     "INNER JOIN SECURITY ON A.SECURITY_REF = SECURITY.SECURITY_REF "
-                                    "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER ";
+                                    "WHERE A.IS_POSTED_TO_PANASONIC_SERVER = :IS_POSTED_TO_PANASONIC_SERVER AND A.TERMINAL_NAME = :TERMINAL_NAME ";
         IBInternalQuery->ParamByName("IS_POSTED_TO_PANASONIC_SERVER")->AsString = "F";
+        IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
         IBInternalQuery->ExecQuery();
 
-        TPanasonicModels* panasonicModel = new TPanasonicModels();
-        TDBPanasonic* dbPanasonic = new TDBPanasonic();
         int contactKey = 0, customerID = 0;
         UnicodeString memberName = "";
         int siteId = GetSiteId(dbTransaction);
@@ -281,29 +283,33 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
                 dbPanasonic->SendDataToServer(*panasonicModel);
 
                 //Convert TransactionInfo to panasonic Item info so that it can be directly posted to their TItemList Table.
-                ConvertTransactionInfoToPanasonicItemList(dbTransaction, arcBillKey);
+                ConvertTransactionInfoToPanasonicItemList(*dbPanasonic, dbTransaction, arcBillKey);
 
                 //fill transaction db server info.
-                ConverTransactionInfoToTransactionDBServerInfo(dbTransaction);
+                ConverTransactionInfoToTransactionDBServerInfo(*dbPanasonic, dbTransaction);
 
                 //Update flag if data posted to panasonic server
                  UpdateArcBillAndDayArcBill(dbTransaction, arcBillKey);
         }
-         delete dbPanasonic;
-         delete panasonicModel;
+        dbPanasonic->UniDataBaseConnection->Commit();
+        dbPanasonic->UniDataBaseConnection->Close();
+
     }
     catch(Exception &E)
 	{
+        dbPanasonic->UniDataBaseConnection->Rollback();
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+    delete dbPanasonic;
+    delete panasonicModel;
 }
 //----------------------------------------------------------------------------------------------------------------
-void TPanasonicThread::ConvertTransactionInfoToPanasonicItemList(Database::TDBTransaction &dbTransaction, int arcBillKey)
+void TPanasonicThread::ConvertTransactionInfoToPanasonicItemList(TDBPanasonic &dbPanasonic, Database::TDBTransaction &dbTransaction, int arcBillKey)
 {
     try
     {
-        TDBPanasonic* dbPanasonic = new TDBPanasonic();
+      //  TDBPanasonic* dbPanasonic = new TDBPanasonic();
         TPanasonicItemList *itemList = new TPanasonicItemList();
         UnicodeString itemName = "" , sizename = "";
 
@@ -343,14 +349,13 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicItemList(Database::TDBTr
             itemList->Refund                     = itemList->Quantity > 0 ? false : true;
             itemList->TrainingMode               = false;
 
-            dbPanasonic->InsertItemsToTItemList(*itemList);
+            dbPanasonic.InsertItemsToTItemList(*itemList);
 
             productinfo->ProductCode                = itemList->ProductCode;
             productinfo->ProductDescription         = itemList->ProductDescription;
 
-            dbPanasonic->InsertProductDetailsInToTProduct(*productinfo);
+            dbPanasonic.InsertProductDetailsInToTProduct(*productinfo);
         }
-        delete dbPanasonic;
         delete itemList;
         delete productinfo;
     }
@@ -361,7 +366,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicItemList(Database::TDBTr
 	}
 }
 //----------------------------------------------------------------------------------------
-void TPanasonicThread::ConverTransactionInfoToTransactionDBServerInfo(Database::TDBTransaction &dbTransaction)
+void TPanasonicThread::ConverTransactionInfoToTransactionDBServerInfo(TDBPanasonic &dbPanasonic, Database::TDBTransaction &dbTransaction)
 {
     TPanasonicTransactionDBServerInformation *serverInfo = new TPanasonicTransactionDBServerInformation();
     serverInfo->PosSystemType              =   "Windows";
@@ -370,9 +375,8 @@ void TPanasonicThread::ConverTransactionInfoToTransactionDBServerInfo(Database::
     serverInfo->TransactioDBServerType     =   "TransactionDBServer";
     serverInfo->TransactionDBServerName    =   "TransactionDBServer For " + serverInfo->PosSystemName;
     serverInfo->TransactionDBServerVersion =   "1.00";
-    TDBPanasonic* dbPanasonic = new TDBPanasonic();
-    dbPanasonic->InsertTransactionDBServerInformation(*serverInfo);
-    delete dbPanasonic;
+   // TDBPanasonic* dbPanasonic = new TDBPanasonic();
+    dbPanasonic.InsertTransactionDBServerInformation(*serverInfo);
     delete serverInfo;
 }
 //--------------------------------------------------------------------------------------------

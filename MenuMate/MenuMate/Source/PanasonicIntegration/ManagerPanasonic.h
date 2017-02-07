@@ -4,6 +4,7 @@
 #define ManagerPanasonicH
 #include <Classes.hpp>
 #include "DeviceRealTerminal.h"
+#include "DBPanasonic.h"
 
 //---------------------------------------------------------------------------
 
@@ -13,8 +14,8 @@ class TPanasonicThread : public TThread
         //TTimer* panasonicThreadTimer;
         void GetMemberNameAndCustomerID(Database::TDBTransaction &dbTransaction, UnicodeString invoiceNo, int &contactKey, UnicodeString &memberName);
         void ConvertTransactionInfoToPanasonicInfo(Database::TDBTransaction &dbTransaction );
-        void ConvertTransactionInfoToPanasonicItemList(Database::TDBTransaction &dbTransaction, int arcBill_Key);
-        void ConverTransactionInfoToTransactionDBServerInfo(Database::TDBTransaction &dbTransaction);
+        void ConvertTransactionInfoToPanasonicItemList(TDBPanasonic &dbPanasonic, Database::TDBTransaction &dbTransaction, int arcBill_Key);
+        void ConverTransactionInfoToTransactionDBServerInfo(TDBPanasonic &dbPanasonic, Database::TDBTransaction &dbTransaction);
         UnicodeString GetPOSVersionInfo(Database::TDBTransaction &dbTransaction);
         void UpdateArcBillAndDayArcBill(Database::TDBTransaction &dbTransaction, int arcBillKey);
         int GetSiteId(Database::TDBTransaction &dbTransaction);

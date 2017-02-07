@@ -3865,11 +3865,12 @@ void TfrmMaintain::EnablePanasonicIntegration()
         else
         {
             keepFormAlive = false;
-            if((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP == "") ||
-                (!TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP != ""))
+            if((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP == "") )
             {
                 TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
                 TGlobalSettings::Instance().PanasonicServerIP = "";
+                TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmPanasonicServerIP,TGlobalSettings::Instance().PanasonicServerIP);
+                TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
             }
         }
         dbTransaction.Commit();
