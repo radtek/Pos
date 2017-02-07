@@ -349,6 +349,19 @@ const AnsiString TaxProfileKeysSQL =
          "WHERE  "
                "a.ITEMSIZE_KEY = :ITEMSIZE_KEY and a.ISENABLED = :isEnabled ";
 
+const AnsiString ItemSizeTaxPercent =
+        "SELECT a.ITEMSIZE_KEY, "
+                 "Sum(TAXPROFILES.RATE) RATE, "
+                 "cast(sum(CASE WHEN TAXPROFILES.TYPE = 2 THEN TAXPROFILES.RATE END) as numeric(17, 4)) AS ServiceCharge, "
+                 "cast(sum(CASE WHEN TAXPROFILES.TYPE = 0 THEN  TAXPROFILES.RATE END) as numeric(17, 4)) AS Tax  "
+        "FROM ITEMSIZE a  "
+         "left join  TAXPROFILES_ITEMSIZE on TAXPROFILES_ITEMSIZE.ITEMSIZE_KEY=a.ITEMSIZE_KEY "
+         "left join TAXPROFILES on TAXPROFILES.PROFILE_KEY=TAXPROFILES_ITEMSIZE.PROFILE_KEY "
+         "WHERE  "
+               "a.ITEMSIZE_KEY = :ITEMSIZE_KEY "
+         "GROUP BY "
+         "a.ITEMSIZE_KEY ";
+
 //---------------------------------------------------------------------------
 class TDBKey
 {
@@ -393,6 +406,13 @@ class TPriceLevelsName
     public:
         int PriceLevelKey;
         AnsiString PriceLevelName;
+};
+//---------------------------------------------------------------------------
+class TItemSizeTaxesPercentage
+{
+    public:
+        Currency SalesTaxPercent;
+        Currency ServiceChargePercent;
 };
 //---------------------------------------------------------------------------
 class TItemSizeInfo : public TDBKey
@@ -451,6 +471,7 @@ public:
    std::set<__int32> TaxProfileKeys;
    std::map<int,TItemSizePriceLevel> ItemSizePriceLevels;
    Currency	PriceForPoints;
+   std::vector<TItemSizeTaxesPercentage> ItemSizeTaxPercent;
 };
 //---------------------------------------------------------------------------
 class TItemSideInfo : public TDBKey
@@ -755,6 +776,7 @@ public:
 
     bool GetThirdPartyCodes( std::vector<TThirdPartyCodeInfo>& outCodes );
     void GeTItemSizePriceLevels(int inItemSizeKey, std::map<int,TItemSizePriceLevel>* ItemSizePriceLevels );
+    void GeTItemSizeTaxPercentage(int inItemSizeKey, std::vector<TItemSizeTaxesPercentage> &itemSizeTaxPercentage);
 };
 //---------------------------------------------------------------------------
 /*class TMenuLoadFile : public TMenuLoad

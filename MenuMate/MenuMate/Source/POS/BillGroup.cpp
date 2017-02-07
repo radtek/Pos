@@ -2175,7 +2175,7 @@ void __fastcall TfrmBillGroup::ApplyDiscount(Database::TDBTransaction &DBTransac
 			{
 				CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE,
 					TGlobalSettings::Instance().MidPointRoundsDown);
-
+                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 				if (CurrentDiscount.Amount != frmDiscount->CURResult)
 				{
 					MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -2185,16 +2185,27 @@ void __fastcall TfrmBillGroup::ApplyDiscount(Database::TDBTransaction &DBTransac
 			{
 				CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE,
 					TGlobalSettings::Instance().MidPointRoundsDown);
+                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 				if (CurrentDiscount.Amount != frmDiscount->CURResult)
 				{
 					MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
 				}
 			}
-            	if (frmDiscount->Mode == DiscModeItem)
+			else if (frmDiscount->Mode == DiscModeCombo)
 			{
 				CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE,
 					TGlobalSettings::Instance().MidPointRoundsDown);
-
+                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
+				if (CurrentDiscount.Amount != frmDiscount->CURResult)
+				{
+					MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
+				}
+			}
+            if (frmDiscount->Mode == DiscModeItem)
+			{
+				CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE,
+					TGlobalSettings::Instance().MidPointRoundsDown);
+                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 				if (CurrentDiscount.Amount != frmDiscount->CURResult)
 				{
 					MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -2203,6 +2214,10 @@ void __fastcall TfrmBillGroup::ApplyDiscount(Database::TDBTransaction &DBTransac
 			else
 			{
 				CurrentDiscount.PercentAmount = frmDiscount->PERCResult;
+                if(frmDiscount->Mode == DiscModePercent)
+                {
+                   CurrentDiscount.OriginalAmount = CurrentDiscount.PercentAmount;
+                }
 			}
 		}
 		else
@@ -2213,6 +2228,7 @@ void __fastcall TfrmBillGroup::ApplyDiscount(Database::TDBTransaction &DBTransac
 
 	if (ProcessDiscount)
 	{
+      CurrentDiscount.DiscountAppliedTime = Now();
       std::set <__int64> SelectedItemKeys;
       for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
       {
@@ -2221,6 +2237,7 @@ void __fastcall TfrmBillGroup::ApplyDiscount(Database::TDBTransaction &DBTransac
 
       TPaymentTransaction PaymentTransaction(DBTransaction);
       TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, SelectedItemKeys);
+      ManagerDiscount->ClearDiscount(PaymentTransaction.Orders, CurrentDiscount); // clear already applied discount from saved sales...
       ManagerDiscount->AddDiscount(PaymentTransaction.Orders, CurrentDiscount);
    	  PaymentTransaction.ApplyMembership(Membership);
       ManagerDiscount->SetDiscountAmountDB(DBTransaction, PaymentTransaction.Orders);

@@ -831,7 +831,7 @@ void TPaymentTransaction::LoadDiscount(int DiscountKey, TDiscountSource Discount
 			{
 				CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE,
 					TGlobalSettings::Instance().MidPointRoundsDown);
-
+                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 				if (CurrentDiscount.Amount != frmDiscount->CURResult)
 				{
 					MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -841,6 +841,7 @@ void TPaymentTransaction::LoadDiscount(int DiscountKey, TDiscountSource Discount
 			{
 				CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE,
 					TGlobalSettings::Instance().MidPointRoundsDown);
+                    CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 				if (CurrentDiscount.Amount != frmDiscount->CURResult)
 				{
 					MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -850,6 +851,7 @@ void TPaymentTransaction::LoadDiscount(int DiscountKey, TDiscountSource Discount
 			{
 				CurrentDiscount.Amount = RoundToNearest(frmDiscount->CURResult, MIN_CURRENCY_VALUE,
 					TGlobalSettings::Instance().MidPointRoundsDown);
+                CurrentDiscount.OriginalAmount = CurrentDiscount.Amount;
 				if (CurrentDiscount.Amount != frmDiscount->CURResult)
 				{
 					MessageBox("The Discount has been rounded!.", "Warning", MB_ICONWARNING + MB_OK);
@@ -858,6 +860,10 @@ void TPaymentTransaction::LoadDiscount(int DiscountKey, TDiscountSource Discount
 			else
 			{
 				CurrentDiscount.PercentAmount = frmDiscount->PERCResult;
+                if(frmDiscount->Mode == DiscModePercent)
+                {
+                   CurrentDiscount.OriginalAmount = CurrentDiscount.PercentAmount;
+                }
 			}
 		}
 		else
@@ -865,6 +871,10 @@ void TPaymentTransaction::LoadDiscount(int DiscountKey, TDiscountSource Discount
 			ProcessDiscount = false;
 		}
 	}
+    if(ProcessDiscount)
+    {
+       CurrentDiscount.DiscountAppliedTime = Now();
+    }
 
 	if (ProcessDiscount)
 	{

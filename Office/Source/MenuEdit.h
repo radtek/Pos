@@ -452,6 +452,7 @@ class TfrmMenuEdit : public TForm
     TIBSQL *qrLocations;
     TLabel *lblPriceForPoint;
     TNumericEdit *nePriceForPoint;
+    TIBSQL *qrGetTaxSettings;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall tvMenuGetImageIndex(TObject *Sender,
 	TTreeNode *Node);
@@ -982,6 +983,9 @@ private:
     void LoadRecipeLocations(AnsiString stockcode);
     bool CheckIfNumeric(AnsiString Value);
     int UpdateSizeItem(AnsiString SizeName);
+    Currency GetPriceExclusiveAmount(Currency menuPrice, Currency saleTaxPercentage, Currency serviceChargePercentage);
+    bool isItemPriceIncludedTax;
+    bool isItemPriceIncludeServiceCharge;
 
 public:		// User declarations
 	__fastcall TfrmMenuEdit(TComponent* Owner);
@@ -1419,6 +1423,7 @@ public:
 
    std::map<int,Menu::TItemSizePriceLevel> ItemSizePriceLevels;
    std::map<int,Menu::TPriceLevelsName> PriceLevelsName;
+   std::vector<Menu::TItemSizeTaxesPercentage> ItemSizeTaxPercent;
    Currency CostForPoints;
 
 private:

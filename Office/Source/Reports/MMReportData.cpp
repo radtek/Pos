@@ -305,24 +305,24 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
 			cdsMenu->FieldDefs->Add("COURSE_NAME", ftString, 25);
 			cdsMenu->FieldDefs->Add("ITEM_NAME", ftString, 50);
 			cdsMenu->FieldDefs->Add("SIZE_NAME", ftString, 50);
-			cdsMenu->FieldDefs->Add("PRICE", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("PRICEEXC", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("MENU_COST", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("SPECIAL_PRICE", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("SPECIAL_PRICEEXC", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("DIFFERENCE", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("POINTS_PERCENT", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("GST_PERCENT", ftCurrency, 0);
+			cdsMenu->FieldDefs->Add("PRICE", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("PRICEEXC", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("MENU_COST", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("SPECIAL_PRICE", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("SPECIAL_PRICEEXC", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("DIFFERENCE", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("POINTS_PERCENT", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("GST_PERCENT", ftCurrency, 0.00);
 			cdsMenu->FieldDefs->Add("CODE", ftString, 25);
-			cdsMenu->FieldDefs->Add("QTY", ftCurrency, 0);
+			cdsMenu->FieldDefs->Add("QTY", ftCurrency, 0.00);
 			cdsMenu->FieldDefs->Add("LOCATION", ftString, 25);
-        cdsMenu->FieldDefs->Add("BasePrice", ftCurrency, 0);
+        cdsMenu->FieldDefs->Add("BasePrice", ftCurrency, 0.00);
 			//cdsMenu->FieldDefs->Add("COST", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("COST_TIMES_QTY", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("PROFIT", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("GP", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("GP_POINTS", ftCurrency, 0);
-			cdsMenu->FieldDefs->Add("GP_SPECIAL_PRICE", ftCurrency, 0);
+			cdsMenu->FieldDefs->Add("COST_TIMES_QTY", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("PROFIT", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("GP", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("GP_POINTS", ftCurrency, 0.00);
+			cdsMenu->FieldDefs->Add("GP_SPECIAL_PRICE", ftCurrency, 0.00);
 			cdsMenu->CreateDataSet();
 		 }
 		 catch (Exception &E)
@@ -364,8 +364,7 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
 			"ItemSize.Size_Name, "
 			"ItemSize.Price, "
 			"cast((ItemSize.Price * 100) / (ItemSize.GST_Percent + 100) as Numeric(17,4)) PriceExc, "
-		 //	"ItemSize.Cost Menu_Cost, "
-"cast((ItemSize.Cost * 100) / (ItemSize.COST_GST_PERCENT + 100) as Numeric(17,4)) Menu_Cost, "
+            "cast(ItemSize.Cost as Numeric(17,4)) Menu_Cost,"
 			"ItemSize.Special_Price, "
 			"cast((ItemSize.Special_Price * 100) / (ItemSize.GST_Percent + 100) as Numeric(17,4)) Special_PriceExc, "
 			"ItemSize.Price - ItemSize.Special_Price Difference, "
@@ -374,9 +373,9 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
 			"Recipe.Stock_Code Code, "
 			"Recipe.Qty, "
 			"Recipe.Stock_Location Location  ,   "
-            "cast((CASE WHEN VP.IsTax = 1 AND VP.IsSeviceCharge=1 THEN  (ItemSize.Price*100/(100+ coalesce(TAXP.ServiceCharge,0)+TAXP.Tax)) "
-                    " WHEN VP.IsTax = 1 AND VP.IsSeviceCharge=0 THEN  (ItemSize.Price*100/(100  +TAXP.Tax)) "
-                    "  WHEN VP.IsTax = 0 AND VP.IsSeviceCharge=1 THEN  (ItemSize.Price*100/(100 + coalesce(TAXP.ServiceCharge,0)+TAXP.Tax) ) "
+            "cast((CASE WHEN VP.IsTax = 1 AND VP.IsSeviceCharge=1 THEN  (ItemSize.Price*100/(100+ coalesce(TAXP.ServiceCharge,0)+coalesce(TAXP.Tax,0))) "
+                    " WHEN VP.IsTax = 1 AND VP.IsSeviceCharge=0 THEN  (ItemSize.Price*100/(100  +coalesce(TAXP.Tax,0))) "
+                    "  WHEN VP.IsTax = 0 AND VP.IsSeviceCharge=1 THEN  (ItemSize.Price*100/(100 + coalesce(TAXP.ServiceCharge,0))) "
                     " else ItemSize.Price   "
             "END) as numeric(17, 4)) AS BasePrice "
 	 	 "From  "
@@ -497,7 +496,7 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
                 {
                     if(BasePrice > 0)
                     {
-					   cdsMenu->FieldByName("GP")->AsCurrency = (cdsMenu->FieldByName("PROFIT")->AsCurrency / BasePrice) * 100; // when base price > 0...
+					   cdsMenu->FieldByName("GP")->AsCurrency = (Currency) ((double)cdsMenu->FieldByName("PROFIT")->AsCurrency / (double)BasePrice) * 100; // when base price > 0...
                     }
                     else
                     {
@@ -556,7 +555,9 @@ void TdmMMReportData::SetupMenuProfit(TDateTime StartTime, TDateTime EndTime, TS
 			cdsMenu->FieldByName("PROFIT")->AsCurrency = BasePrice - cdsMenu->FieldByName("COST_TIMES_QTY")->AsCurrency;
 		 // GP
 		 if (BasePrice != 0.00)
-			cdsMenu->FieldByName("GP")->AsCurrency =  (cdsMenu->FieldByName("PROFIT")->AsCurrency / BasePrice) * 100  ;
+         {
+			cdsMenu->FieldByName("GP")->AsCurrency = (Currency) (((double)cdsMenu->FieldByName("PROFIT")->AsCurrency / (double)BasePrice) * 100 ) ;
+         }
 		 // Special Price GP
 		 if (SpecialPriceExc != 0.00)
 			cdsMenu->FieldByName("GP_SPECIAL_PRICE")->AsCurrency = (1 - (cdsMenu->FieldByName("COST_TIMES_QTY")->AsCurrency / SpecialPriceExc)) * 100;
@@ -9617,13 +9618,15 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			 "SUM(POINTSTRANSACTIONS.ADJUSTMENT) POINTS,"
 			 "Cast(ARCBILL.TOTAL / Invoice_number_count as Numeric(17,4)) TOTAL_SPENT "
 		"FROM "
+        "(select * from POINTSTRANSACTIONS where POINTSTRANSACTIONS.TIME_STAMP > :StartTime AND  POINTSTRANSACTIONS.TIME_STAMP < :EndTime)  "
 			 "POINTSTRANSACTIONS LEFT JOIN CONTACTS ON "
 				  "POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
-			 "LEFT JOIN ARCBILL ON "
+			 "LEFT JOIN (select * from ARCBILL where  ARCBILL.TIME_STAMP > :StartTime AND  ARCBILL.TIME_STAMP < :EndTime)ARCBILL ON "
 				  "POINTSTRANSACTIONS.INVOICE_NUMBER = ARCBILL.INVOICE_NUMBER "
 			"left join "
 			"( "
 			  "select count(POINTSTRANSACTIONS.INVOICE_NUMBER) as Invoice_number_count, POINTSTRANSACTIONS.CONTACTS_KEY contact_key, POINTSTRANSACTIONS.INVOICE_NUMBER  from POINTSTRANSACTIONS "
+              "where POINTSTRANSACTIONS.TIME_STAMP > :StartTime AND  POINTSTRANSACTIONS.TIME_STAMP < :EndTime   "
 			  "group by "
 			  "POINTSTRANSACTIONS.INVOICE_NUMBER, "
 			  "POINTSTRANSACTIONS.CONTACTS_KEY "
@@ -9677,14 +9680,16 @@ void TdmMMReportData::SetupLoyaltyAudit(TDateTime StartTime, TDateTime EndTime, 
 			 "SUM(POINTSTRANSACTIONS.ADJUSTMENT) POINTS,"
              "Cast(DAYARCBILL.TOTAL / Invoice_number_count as Numeric(17,4)) TOTAL_SPENT "
 		"FROM "
+         "(select * from POINTSTRANSACTIONS where POINTSTRANSACTIONS.TIME_STAMP > :StartTime AND  POINTSTRANSACTIONS.TIME_STAMP < :EndTime)  "
 			 "POINTSTRANSACTIONS LEFT JOIN CONTACTS ON "
 				  "POINTSTRANSACTIONS.CONTACTS_KEY = CONTACTS.CONTACTS_KEY "
-			 "LEFT JOIN DAYARCBILL ON "
+				 "LEFT JOIN (select * from DAYARCBILL where  DAYARCBILL.TIME_STAMP > :StartTime AND  DAYARCBILL.TIME_STAMP < :EndTime)DAYARCBILL ON "
 				  "POINTSTRANSACTIONS.INVOICE_NUMBER = DAYARCBILL.INVOICE_NUMBER "
 
 			"left join "
 			"( "
 			  "select count(POINTSTRANSACTIONS.INVOICE_NUMBER) as Invoice_number_count,POINTSTRANSACTIONS.CONTACTS_KEY contact_key, POINTSTRANSACTIONS.INVOICE_NUMBER  from POINTSTRANSACTIONS "
+              "where POINTSTRANSACTIONS.TIME_STAMP > :StartTime AND  POINTSTRANSACTIONS.TIME_STAMP < :EndTime "
 			  "group by "
 			  "POINTSTRANSACTIONS.INVOICE_NUMBER, "
 			  "POINTSTRANSACTIONS.CONTACTS_KEY "

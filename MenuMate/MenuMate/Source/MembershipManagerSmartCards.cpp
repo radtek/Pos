@@ -2702,7 +2702,8 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
 
          if(canAddMember)
          {
-                 AddMember(UserInfo,true);
+            UserInfo.MemberCode = memberCardCode;
+            AddMember(UserInfo,true);
          }
       }
       else if(!TGlobalSettings::Instance().IsPOSOffline)

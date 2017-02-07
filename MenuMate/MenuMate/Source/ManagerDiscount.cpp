@@ -237,6 +237,7 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
 		Discount.MaximumValue = 0;
 		Discount.Source = dsMMMebersPoints;
 		Discount.Group = 0;
+        Discount.OriginalAmount = 0;
 		ReturnVal = true;
 	}
 	else if(DiscountKey == dsMMDealKey)
@@ -289,6 +290,15 @@ bool TManagerDiscount::GetDiscount(Database::TDBTransaction &DBTransaction,long 
             Discount.DailyUsageAllowedPerMember  = IBInternalQuery->FieldByName("DAILY_USE_PER_MEMBER")->AsInteger;
             Discount.IsCloudDiscount = IBInternalQuery->FieldByName("IS_CLOUD_DISCOUNT")->AsString == "T";
             Discount.IsMembershipDiscount = IBInternalQuery->FieldByName("IS_MEMBERSHIP_DISCOUNT")->AsString == "T";
+            if(Discount.Mode == DiscModePercent)
+            {
+               Discount.OriginalAmount = IBInternalQuery->FieldByName("PERCENTAGE")->AsFloat;
+            }
+            else
+            {
+               Discount.OriginalAmount = IBInternalQuery->FieldByName("AMOUNT")->AsCurrency;
+            }
+            Discount.DiscountAppliedTime = Now();
 			GetDiscountCategories(DBTransaction,DiscountKey,Discount);
 			ReturnVal = true;
 		}
@@ -900,7 +910,7 @@ int __fastcall SortByFinalPriceDesc(void *Item1,void *Item2)
 //---------------------------------------------------------------------------
 void  TManagerDiscount::AddDiscount(TList *DiscountItems,TDiscount DiscountToBeApplied)
 {
-
+    DiscountToBeApplied.AppliedMode = DiscountToBeApplied.Mode;
     TList *allItems = new TList();
     TItemMinorComplete *order;
     TItemMinorComplete *side;
@@ -968,7 +978,6 @@ void  TManagerDiscount::AddSetPriceDiscount(TList *DiscountItems,TDiscount Disco
                               ? orderQty : DiscountToBeApplied.MaxItemAffected;
     Currency discount = RoundToNearest(DiscountToBeApplied.Amount, DiscountToBeApplied.Rounding, TGlobalSettings::Instance().MidPointRoundsDown);
 
-
     //Calculate order Total then calculate discount amount
     Currency order_total = GetOrderTotal(DiscountItems,DiscountToBeApplied,maxDiscountQty);
     Currency offset  = order_total - (maxDiscountQty * discount);
@@ -978,7 +987,7 @@ void  TManagerDiscount::AddSetPriceDiscount(TList *DiscountItems,TDiscount Disco
         Currency amount = DiscountToBeApplied.MaximumValue;
         if(offset < 0)
            amount = -1 * amount;
-        DiscountToBeApplied.Mode = DiscModeCurrency;
+        DiscountToBeApplied.AppliedMode = DiscModeCurrency;
         DiscountToBeApplied.Amount = amount;
         AddCurrencyModeDiscount(DiscountItems,DiscountToBeApplied);
         return;
@@ -1006,7 +1015,7 @@ void  TManagerDiscount::AddSetPriceDiscount(TList *DiscountItems,TDiscount Disco
          }
          else
          {
-           scaled_discount.Mode = DiscModeCurrency;
+           scaled_discount.AppliedMode = DiscModeCurrency;
            scaled_discount.Amount =  0;
            order->DiscountAdd(scaled_discount);
          }
@@ -1036,7 +1045,7 @@ void  TManagerDiscount::AddPercentageModeDiscount(TList *DiscountItems,TDiscount
     if(discountedAmount >  scaled_discount.MaximumValue && scaled_discount.MaximumValue > 0)
     {
        scaled_discount.Amount =  isSurcharge ? -1 * scaled_discount.MaximumValue : scaled_discount.MaximumValue;
-       scaled_discount.Mode = DiscModeCurrency;
+       scaled_discount.AppliedMode = DiscModeCurrency;
        AddCurrencyModeDiscount(DiscountItems,scaled_discount);
        return;
     }
@@ -1055,7 +1064,7 @@ void  TManagerDiscount::AddPercentageModeDiscount(TList *DiscountItems,TDiscount
          }
         else
          {
-           scaled_discount.Mode = DiscModeCurrency;
+           scaled_discount.AppliedMode = DiscModeCurrency;
            scaled_discount.Amount =  0;
            order->DiscountAdd(scaled_discount);
          }
@@ -1118,7 +1127,7 @@ void  TManagerDiscount::AddCurrencyModeDiscount(TList *DiscountItems,TDiscount D
          }
          else
          {
-           scaled_discount.Mode = DiscModeCurrency;
+           scaled_discount.AppliedMode = DiscModeCurrency;
            scaled_discount.Amount =  0;
            order->DiscountAdd(scaled_discount);
          }
@@ -1162,7 +1171,7 @@ void  TManagerDiscount::AddComboDiscount(TList *DiscountItems,TDiscount Discount
          }
          else
          {
-           scaled_discount.Mode = DiscModeCurrency;
+           scaled_discount.AppliedMode = DiscModeCurrency;
            scaled_discount.Amount =  0;
            order->DiscountAdd(scaled_discount);
          }
@@ -1190,6 +1199,7 @@ void  TManagerDiscount::AddDealDiscount(TList *DiscountItems,TDiscount DiscountT
 		scaled_discount.DiscountKey = DiscountToBeApplied.DiscountKey;
 		scaled_discount.Source = DiscountToBeApplied.Source;
 		scaled_discount.Mode = DiscModeDeal;
+        scaled_discount.AppliedMode = DiscModeDeal;
 		scaled_discount.Priority = DiscountToBeApplied.Priority;
         scaled_discount.IsCloudDiscount = DiscountToBeApplied.IsCloudDiscount;
         scaled_discount.DiscountCode = DiscountToBeApplied.DiscountCode;
@@ -1300,7 +1310,7 @@ void  TManagerDiscount::AddItemModeDiscount(TList *DiscountItems,TDiscount Disco
     if(maxDiscountValue > scaled_discount.MaximumValue && scaled_discount.MaximumValue > 0)
     {
        scaled_discount.Amount =  isSurcharge ? -1 * scaled_discount.MaximumValue : scaled_discount.MaximumValue;
-       scaled_discount.Mode = DiscModeCurrency;
+       scaled_discount.AppliedMode = DiscModeCurrency;
        AddCurrencyModeDiscount(DiscountItems,scaled_discount);
        return;
     }
@@ -1316,7 +1326,7 @@ void  TManagerDiscount::AddItemModeDiscount(TList *DiscountItems,TDiscount Disco
          }
          else if(maxDiscountQty > 0)
          {
-           scaled_discount.Mode = DiscModeCurrency;
+           scaled_discount.AppliedMode = DiscModeCurrency;
            itemDiscount = discount;
            if(discount * order->GetQty() >  order->GrandTotal())
               itemDiscount = order->GrandTotal()/order->GetQty();
@@ -1325,7 +1335,7 @@ void  TManagerDiscount::AddItemModeDiscount(TList *DiscountItems,TDiscount Disco
          }
         else
          {
-           scaled_discount.Mode = DiscModeCurrency;
+           scaled_discount.AppliedMode = DiscModeCurrency;
            scaled_discount.Amount =  0;
            order->DiscountAdd(scaled_discount);
          }
@@ -1375,6 +1385,7 @@ void TManagerDiscount::CopyDiscountDetails(TDiscount& destination,TDiscount& sou
     destination.Name 		= source.Name;
 	destination.Description = source.Description;
     destination.Mode = source.Mode;
+    destination.AppliedMode = source.AppliedMode;
     destination.MaxItemAffected = source.MaxItemAffected;
     destination.MinItemRequired = source.MinItemRequired;
     destination.IsCloudDiscount = source.IsCloudDiscount;
@@ -1382,6 +1393,8 @@ void TManagerDiscount::CopyDiscountDetails(TDiscount& destination,TDiscount& sou
     destination.DailyUsageAllowedPerMember = source.DailyUsageAllowedPerMember;
     destination.MembersOnly = source.MembersOnly;
     destination.MembersExempt = source.MembersExempt;
+    destination.OriginalAmount = source.OriginalAmount;
+    destination.DiscountAppliedTime = source.DiscountAppliedTime;
 }
 //---------------------------------------------------------------------------
 Currency TManagerDiscount::GetOrderTotal(TList *DiscountItems,TDiscount DiscountToBeApplied, double maxDiscountQty)
