@@ -228,7 +228,7 @@ object frmReports: TfrmReports
             Left = 8
             Top = 56
             Width = 417
-            Height = 137
+            Height = 150
             Caption = 'Reports'
             TabOrder = 1
             OnClick = rgReportsClick
@@ -369,7 +369,7 @@ object frmReports: TfrmReports
             Height = 153
             AutoSize = True
             CalColors.TitleBackColor = clNavy
-            Date = 37581.0756507176
+            Date = 37581.8014760417
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -388,7 +388,7 @@ object frmReports: TfrmReports
             Height = 153
             AutoSize = True
             CalColors.TitleBackColor = clMaroon
-            Date = 36795.0756507176
+            Date = 36795.8014760417
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
