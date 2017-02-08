@@ -191,7 +191,13 @@ _groupingForArcbill =
                                                 "Security.Terminal_Name,                                  "
                                                 "Security.From_Val ,                                      "
                                                 "ArcBillPay.Note,                                      "
-                                              " ab.TABLE_NAME, ab.price, ArcBillPAY.PAY_TYPE, ArcBillPAY.TIP_AMOUNT "; 
+                                              " ab.TABLE_NAME, ab.price, ArcBillPAY.PAY_TYPE, ArcBillPAY.TIP_AMOUNT ";
+
+////Query For Getting Total Points..
+
+_pointsTransactionQuery =       "Inner join(SELECT  SUM(ADJUSTMENT) TOTAL, a.CONTACTS_KEY "
+                                "FROM POINTSTRANSACTIONS a "
+                                "GROUP BY CONTACTS_KEY)PT ON CONTACTS.CONTACTS_KEY = PT.CONTACTS_KEY ";
 
 }
 //---------------------------------------------------------------------------
@@ -8905,12 +8911,15 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"Archive.Order_Location,"
 			"Contacts.Name,"
 			"cast('' as varchar(10)) ItemName,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"Sum(Archive.Price * archive.qty) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
 			"Sum(Archive.Redeemed) Total_Points_Redeemed "
 		"From "
 			"Archive Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
+
+              +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime And ";
@@ -8930,7 +8939,7 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"Archive.Order_Location,"
 			"Archive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Union All "
 
@@ -8938,12 +8947,15 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"Archive.Order_Location,"
 			"Contacts.Name,"
 			"cast('VIP Credit' as varchar(10)) ItemName,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"Sum(Archive.Qty * Archive.Price) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
 			"Sum(Archive.Redeemed) Total_Points_Redeemed "
 		"From "
 			"Archive Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime And ";
@@ -8963,7 +8975,7 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"Archive.Order_Location,"
 			"Archive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Union All "
 
@@ -8971,12 +8983,15 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"DayArchive.Order_Location,"
 			"Contacts.Name,"
 			"cast('' as varchar(10)) ItemName,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"Sum(DayArchive.Qty * DayArchive.Price) Total_Spent,"
 			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
 			"Sum(DayArchive.Redeemed) Total_Points_Redeemed "
 		"From "
 			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"DayArchive.Time_Stamp_Billed > :StartTime And "
 			"DayArchive.Time_Stamp_Billed < :EndTime And ";
@@ -8996,7 +9011,7 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"DayArchive.Order_Location,"
 			"DayArchive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total  "
 
 		"Union All "
 
@@ -9004,12 +9019,15 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"DayArchive.Order_Location,"
 			"Contacts.Name,"
 			"cast('VIP Credit' as varchar(10)) ItemName,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total  Total_Points,"
 			"Sum(DayArchive.Qty * DayArchive.Price) Total_Spent,"
 			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
 			"Sum(DayArchive.Redeemed) Total_Points_Redeemed "
 		"From "
 			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+            
 		"Where "
 			"DayArchive.Time_Stamp_Billed > :StartTime And "
 			"DayArchive.Time_Stamp_Billed < :EndTime And "
@@ -9029,7 +9047,7 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"DayArchive.Order_Location,"
 			"DayArchive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total  "
 
 		"Order By "
 			"1,2";
@@ -9082,13 +9100,16 @@ void TdmMMReportData::SetupLoyaltyHistoryLocation(TDateTime StartTime, TDateTime
 		"Select "
 			"cast(Archive.Order_Location as varchar(25)) Order_Location,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"cast(Sum(Archive.Price * Archive.Qty) as numeric(17,4)) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
 			"Sum(Archive.Redeemed) Total_Points_Redeemed, "
 			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
 		"From "
 			"Archive Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
+
+              +  _pointsTransactionQuery +    ////For Selecting points of a member
+              
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime  ";
@@ -9107,20 +9128,23 @@ void TdmMMReportData::SetupLoyaltyHistoryLocation(TDateTime StartTime, TDateTime
 			"Archive.Order_Location,"
 			"Archive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total  "
 
 		"Union All "
 
 		"Select "
 			"cast(DayArchive.Order_Location as varchar(25)) Order_Location,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"cast(Sum(DayArchive.Price * DayArchive.Qty) as numeric(17,4)) Total_Spent,"
 			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
 			"Sum(DayArchive.Redeemed) Total_Points_Redeemed, "
 			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
 		"From "
 			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"DayArchive.Time_Stamp_Billed > :StartTime And "
 			"DayArchive.Time_Stamp_Billed < :EndTime  ";
@@ -9139,7 +9163,7 @@ void TdmMMReportData::SetupLoyaltyHistoryLocation(TDateTime StartTime, TDateTime
 			"DayArchive.Order_Location,"
 			"DayArchive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Union All "
 
@@ -9219,13 +9243,16 @@ void TdmMMReportData::SetupLoyaltyHistoryDates(TDateTime StartTime, TDateTime En
 			"cast(Archive.Order_Location as varchar(25)) Order_Location,"
             "cast(Archive.Time_Stamp as timestamp) TIME_STAMP, "
 			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"cast(Sum(Archive.Price * Archive.Qty) as numeric(17,4)) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
 			"Sum(Archive.Redeemed) Total_Points_Redeemed, "
 			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
 		"From "
 			"Archive Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
+
+              +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime ";
@@ -9240,7 +9267,7 @@ void TdmMMReportData::SetupLoyaltyHistoryDates(TDateTime StartTime, TDateTime En
             "Archive.Time_Stamp, "
 			"Archive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Union All "
 
@@ -9248,13 +9275,16 @@ void TdmMMReportData::SetupLoyaltyHistoryDates(TDateTime StartTime, TDateTime En
 			"cast(DayArchive.Order_Location as varchar(25)) Order_Location,"
             "DayArchive.Time_Stamp TIME_STAMP, "
 			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"cast(Sum(DayArchive.Price * DayArchive.Qty) as numeric(17,4)) Total_Spent,"
 			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
 			"Sum(DayArchive.Redeemed) Total_Points_Redeemed, "
 			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
 		"From "
 			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+            
 		"Where "
 			"DayArchive.Time_Stamp_Billed > :StartTime And "
 			"DayArchive.Time_Stamp_Billed < :EndTime ";
@@ -9270,7 +9300,7 @@ void TdmMMReportData::SetupLoyaltyHistoryDates(TDateTime StartTime, TDateTime En
             "DayArchive.Time_Stamp, "
 			"DayArchive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Order By "
 			"1,2";
@@ -9294,7 +9324,7 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 		"Select "
 			"cast(Archive.Order_Location as varchar(25)) Order_Location,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points, "
 			"cast(Sum(Archive.Price * Archive.Qty) as numeric(17,4)) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
 			"Sum(Archive.Redeemed) Total_Points_Redeemed, "
@@ -9302,6 +9332,9 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 		"From "
 			"Archive "
          "Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+
         " Left join ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 			//"Inner Join Security On Archive.Security_Ref = Security.Security_Ref "
 		"Where "
@@ -9325,14 +9358,14 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 			"Archive.Order_Location,"
 			"Archive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Union All "
 
 		"Select "
 			"cast(DayArchive.Order_Location as varchar(25)) Order_Location,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points, "
 			"cast(Sum(DayArchive.Price * DayArchive.Qty) as numeric(17,4)) Total_Spent,"
 			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
 			"Sum(DayArchive.Redeemed) Total_Points_Redeemed, "
@@ -9340,6 +9373,9 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 		"From "
 			"DayArchive "
          "Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
+
+          +  _pointsTransactionQuery +    ////For Selecting points of a member  
+
 	   	" Left join DAYARCORDERDISCOUNTS on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
 			//"Inner Join Security On DayArchive.Security_Ref = Security.Security_Ref "
 		"Where "
@@ -9363,7 +9399,7 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 			"DayArchive.Order_Location,"
 			"DayArchive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Order By "
 			"1,2";
@@ -9765,19 +9801,18 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"'' as  Name, "
 			"cast('Sales' as varchar(10)) ItemName, "
 			"Archive.Time_Stamp_Billed Time_Stamp, "
-			"cast(sum(Contacts.Total_Spent) as numeric(17, 4)) Total_Points,"
+			"cast(sum(PT.Total) as numeric(17, 4)) Total_Points,"
 			"cast(Sum(Archive.Qty * Archive.Price + Archive.Discount) as numeric(17, 4)) Total_Spent,"
 			"cast(Sum(Archive.Points_Earned) as numeric(17, 4)) Total_Points_Earned,"
 			"cast(Sum(Archive.Redeemed) as numeric(17, 4)) Total_Points_Redeemed "
 		"From "
 			"Archive Left Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
-			//"Inner Join Security On Archive.Security_Ref = Security.Security_Ref "
+
+              +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime And "
-			//"Security.Time_Stamp > :StartTime And "
-			//"Security.Time_Stamp < :EndTime And "
-			//"Security.Security_Event = 'Ordered By' and "
 			"Archive.Item_Name <> '" + CurrentConnection.VIPCreditName + "' "; //'VIP CREDIT' ";
 	if (Locations->Count > 0)
 	{
@@ -9795,19 +9830,18 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"'' as  Name, "
 			"cast('VIP Credit' as varchar(10)) ItemName,"
 			"Archive.Time_Stamp_Billed Time_Stamp, "
-			"cast(sum(Contacts.Total_Spent) as numeric(17, 4)) Total_Points,"
+			"cast(sum(PT.Total) as numeric(17, 4)) Total_Points,"
 			"cast(Sum(Archive.Qty * Archive.Price + Archive.Discount)  as numeric(17, 4)) Total_Spent,"
 			"cast(Sum(Archive.Points_Earned) as numeric(17, 4)) Total_Points_Earned,"
 			"cast(Sum(Archive.Redeemed) as numeric(17, 4)) Total_Points_Redeemed "
 		"From "
 			"Archive Left Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
-			//"Inner Join Security On Archive.Security_Ref = Security.Security_Ref "
+
+             +  _pointsTransactionQuery +    ////For Selecting points of a member
+             
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime And "
-			//"Security.Time_Stamp > :StartTime And "
-			//"Security.Time_Stamp < :EndTime And "
-			//"Security.Security_Event = 'Ordered By' and "
 			"Archive.Item_Name = '" + CurrentConnection.VIPCreditName + "' ";
 	if (Locations->Count > 0)
 	{
@@ -9825,19 +9859,18 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"'' as  Name, "
 			"cast('Sales' as varchar(10)) ItemName,"
 			"DayArchive.Time_Stamp_Billed Time_Stamp,"
-			"cast(sum(Contacts.Total_Spent) as numeric(17, 4)) Total_Points,"
+			"cast(sum(PT.Total) as numeric(17, 4)) Total_Points,"
 			"cast(Sum(DayArchive.Qty * DayArchive.Price + DayArchive.Discount) as numeric(17, 4)) Total_Spent,"
 			"cast(Sum(DayArchive.Points_Earned) as numeric(17, 4)) Total_Points_Earned,"
 			"cast(Sum(DayArchive.Redeemed) as numeric(17, 4)) Total_Points_Redeemed "
 		"From "
 			"DayArchive Left Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
-			//"Inner Join Security On DayArchive.Security_Ref = Security.Security_Ref "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+            
 		"Where "
 			"DayArchive.Time_Stamp_Billed > :StartTime And "
 			"DayArchive.Time_Stamp_Billed < :EndTime And "
-			//"Security.Time_Stamp > :StartTime And "
-			//"Security.Time_Stamp < :EndTime And "
-			//"Security.Security_Event = 'Ordered By' and "
 			"DayArchive.Item_Name <> '" + CurrentConnection.VIPCreditName + "' ";
 	if (Locations->Count > 0)
 	{
@@ -9855,19 +9888,18 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"'' as  Name, "
 			"cast('VIP Credit' as varchar(10)) ItemName,"
 			"DayArchive.Time_Stamp_Billed Time_Stamp,"
-			"cast(sum(Contacts.Total_Spent) as numeric(17, 4)) Total_Points,"
+			"cast(sum(PT.Total) as numeric(17, 4)) Total_Points,"
 			"cast(Sum(DayArchive.Qty * DayArchive.Price + DayArchive.Discount) as numeric(17, 4)) Total_Spent,"
 			"cast(Sum(DayArchive.Points_Earned) as numeric(17, 4)) Total_Points_Earned,"
 			"cast(Sum(DayArchive.Redeemed) as numeric(17, 4)) Total_Points_Redeemed "
 		"From "
 			"DayArchive Left Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
-			//"DayArchive Inner Join Security On DayArchive.Security_Ref = Security.Security_Ref "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"DayArchive.Time_Stamp_Billed > :StartTime And "
 			"DayArchive.Time_Stamp_Billed < :EndTime And "
-			//"Security.Time_Stamp > :StartTime And "
-			//"Security.Time_Stamp < :EndTime And "
-			//"Security.Security_Event = 'Ordered By' and "
 			"DayArchive.Item_Name = '" + CurrentConnection.VIPCreditName + "' ";
 	if (Locations->Count > 0)
 	{
