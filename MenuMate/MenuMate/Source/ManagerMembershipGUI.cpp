@@ -97,6 +97,7 @@ bool TManagerMembershipGUI::GetMembershipDetailsFromGUI(Database::TDBTransaction
 				if(add_member_screen->Info.ProxStr.Length() == 0)
 				{
 					contact_info.ProxStr = str;
+                    contact_info.MemberCode = str;
 				}
             }
             return add_member_screen->ModalResult == mrOk;

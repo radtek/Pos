@@ -74,7 +74,7 @@ class TMMCustomerDisplayManager;
 enum eBtnToDisplay
 {
    eBTDOverView, eBTDQty, eBTDOptionsPlus, eBTDOptionsMinus, eBTDSetMenu, eBTDSides, eBTDPrice, eBTDMembership, eBTDMemberPurchases,
-   eBTDMemberFavourites, eBTDMemberPoints , eBTDDiscountDetails,eBTDRemove ,eBTDThorVouchers, eBTDNone,eBTDChangeBarcode,
+   eBTDMemberFavourites, eBTDMemberPoints , eBTDDiscountDetails,eBTDRemove ,eBTDThorVouchers, eBTDChangeBarcode,eBTDNone,
 };
 
 typedef Set <eBtnToDisplay, eBTDOverView, eBTDNone> TBtnToDisplay;

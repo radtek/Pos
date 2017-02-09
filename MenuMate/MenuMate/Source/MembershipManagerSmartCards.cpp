@@ -2726,12 +2726,13 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
          if(localEmailContactKey != 0 && localEmailContactKey != UserInfo.ContactKey)
           {
             if(!HasCard(DBTransaction,localEmailContactKey) &&
-                TLoyaltyMateUtilities::GetMemberCloudId(DBTransaction,localEmailContactKey) != UserInfo.CloudUUID)
+                TLoyaltyMateUtilities::GetMemberCloudId(DBTransaction,localEmailContactKey) == "")
             {
                 pointsToSync.Clear();
                 TDBContacts::GetPointsBalances(DBTransaction, localEmailContactKey, pointsToSync);
                 addDefaultPoints = true;
             }
+            UserInfo.ProxStr = TDBContacts::GetContactProxCard(DBTransaction,localEmailContactKey);
             UserInfo.ContactKey = localEmailContactKey;
           }
 
