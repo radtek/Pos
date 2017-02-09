@@ -196,7 +196,7 @@ _groupingForArcbill =
 ////Query For Getting Total Points..
 
 _pointsTransactionQuery =       "Inner join(SELECT  SUM(ADJUSTMENT) TOTAL, a.CONTACTS_KEY "
-                                "FROM POINTSTRANSACTIONS a "
+                                "FROM POINTSTRANSACTIONS a  "
                                 "GROUP BY CONTACTS_KEY)PT ON CONTACTS.CONTACTS_KEY = PT.CONTACTS_KEY ";
 
 }
@@ -8011,10 +8011,11 @@ void TdmMMReportData::SetupLoyaltyPoints(TStrings *Customers)
             "Earnt_Points,"
             "Loaded_Points,"
 			"Cast(0 As Numeric(17,4)) Points_Redeemed,"
-			"Total_Spent Points_Remaining,"
+			"PT.Total Points_Remaining,"
 			"DateOfBirth \"Birthday\" "
 		"From "
 			"Contacts "
+              +  _pointsTransactionQuery +    ////For Selecting points of a member
 		"Where "
 			"Contact_Type in (2,4) ";
 	if (Customers->Count > 0)
