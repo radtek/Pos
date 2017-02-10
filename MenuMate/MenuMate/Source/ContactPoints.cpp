@@ -752,6 +752,14 @@ void TContactPoints::Recalc(TList *OrdersList,int memberType,bool isRefundTransa
     {
         CalcEarned(OrdersList);
     }
+     else if(isRefundTransaction)
+    {
+        for (int i=0; i < OrdersList->Count; i++)
+        {
+            TItemMinorComplete *Order = (TItemMinorComplete *) OrdersList->Items[i];
+            Order->PointsEarned = 0;
+        }
+    }
 	ReAssignRedeemed(OrdersList);
 }
 
