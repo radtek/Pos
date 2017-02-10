@@ -859,6 +859,7 @@ namespace MenumateVersionParser
         void POPULATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl );
         void CREATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );
         void POPULATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );
+        void AlterTable6_37(TDBControl* const inDBControl);
     }; // class
 } // namespace
 

@@ -977,6 +977,7 @@ void TApplyParser::update6_37Tables()
 	POPULATEDSR_PIVOT_BY_ITEMProcedure6_37( _dbControl ) ;
     CREATEDSRPIVOTProcedure6_37( _dbControl ) ;
 	POPULATEDSRPIVOTProcedure6_37( _dbControl ) ;
+    AlterTable6_37(_dbControl);
 }
 //--------------------------------------------------------------------------------------------------
 void TApplyParser::CREATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl )
@@ -1783,6 +1784,24 @@ void TApplyParser::POPULATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl 
 		transaction.Rollback();
 		throw;
 	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::AlterTable6_37( TDBControl* const inDBControl )
+{
+    if ( !fieldExists( "ARCBILL ", "IS_POSTED_TO_PANASONIC_SERVER ", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ARCBILL "
+        "ADD IS_POSTED_TO_PANASONIC_SERVER T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+    }
+    if ( !fieldExists( "DAYARCBILL ", "IS_POSTED_TO_PANASONIC_SERVER ", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE DAYARCBILL "
+        "ADD IS_POSTED_TO_PANASONIC_SERVER T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+    }
 }
 
 }
