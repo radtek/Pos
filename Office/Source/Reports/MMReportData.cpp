@@ -10001,10 +10001,10 @@ void TdmMMReportData::SetupLoyaltyBirthdays(TStrings *Months)
 	qrLoyalty->Close();
 	qrLoyalty->SQL->Text =
 		"Select "
-			"Name,"
+			"(Name ||' '|| LAST_NAME) Name, "
 			"cast(Total_Spent as numeric(17, 4)) Points_Earnt,"
 			"Cast(0 As Numeric(17,4)) Points_Redeemed,"
-			"cast(Total_Spent as numeric(17, 4)) Points_Remaining,"
+			"cast((SELECT distinct SUM(ADJUSTMENT) TOTAL FROM POINTSTRANSACTIONS a WHERE CONTACTS_KEY = CONTACTS.CONTACTS_KEY) as numeric(17, 4)) Points_Remaining,"
 			"DateOfBirth \"Birthday\","
 			"DateOfBirth DOB_Month,"
 			"Extract(Month From DateOfBirth) Birthday_Month,"
