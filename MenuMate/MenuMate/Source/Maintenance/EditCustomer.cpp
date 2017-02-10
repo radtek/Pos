@@ -444,9 +444,9 @@ void TfrmEditCustomer::RedrawDiscounts()
    tgDiscounts->ColCount = 0;
    tgDiscounts->RowCount = 0;
 
+   tgDiscounts->RowCount = DiscountList->Count/3;
+   tgDiscounts->RowCount += 1;
    tgDiscounts->ColCount = 3;
-   tgDiscounts->RowCount = 8;
-
    for (int i = 0; i < tgDiscounts->RowCount; i++)
    {
 	  for (int j = 0; j < tgDiscounts->ColCount; j++)
