@@ -223,6 +223,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
             panasonicModel->Suspended             = false;
             panasonicModel->CashOut               = false;
             panasonicModel->Cash                  = false;
+            panasonicModel->VoidAmount            = 0;
             panasonicModel->TimeZoneOfET          = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
             panasonicModel->TimeZoneOfST          = startDateTime;
             panasonicModel->DayLightTimeOfET      = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
