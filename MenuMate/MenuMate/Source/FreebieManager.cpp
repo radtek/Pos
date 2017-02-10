@@ -144,7 +144,9 @@ void TManagerFreebie::MakeFree(Database::TDBTransaction & DBTransaction, TItemMi
 		RewardDiscount.Name = "Member Reward";
 		RewardDiscount.Source = dsMMMembershipReward;
 		RewardDiscount.Mode = DiscModePercent;
+        RewardDiscount.AppliedMode = DiscModePercent;
 		RewardDiscount.PercentAmount = Item->MemberFreeSaleDiscount;
+        RewardDiscount.OriginalAmount = Item->MemberFreeSaleDiscount;
 		RewardDiscount.Rounding = MIN_CURRENCY_VALUE;
 		Item->DiscountAdd(RewardDiscount);
 
@@ -172,7 +174,9 @@ void TManagerFreebie::MakeFree(Database::TDBTransaction & DBTransaction, TItemMi
 		RewardDiscount.Name = "Location Reward";
 		RewardDiscount.Source = dsMMLocationReward;
 		RewardDiscount.Mode = DiscModePercent;
+        RewardDiscount.AppliedMode = DiscModePercent;
 		RewardDiscount.PercentAmount = Item->LocationFreeSaleDiscount;
+        RewardDiscount.OriginalAmount = Item->LocationFreeSaleDiscount;
 		RewardDiscount.Rounding = MIN_CURRENCY_VALUE;
 		Item->DiscountAdd(RewardDiscount);
 
