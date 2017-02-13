@@ -290,6 +290,7 @@ private:	// User declarations
     AnsiString _groupingForDayArcbill;
     AnsiString _arcBillSubQuery;
     AnsiString _groupingForArcbill;
+    AnsiString _pointsTransactionQuery;
 
 public:		// User declarations
 	__fastcall TdmMMReportData(TComponent* Owner);
