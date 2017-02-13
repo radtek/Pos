@@ -9134,41 +9134,6 @@ void TdmMMReportData::SetupLoyaltyHistoryLocation(TDateTime StartTime, TDateTime
 		"Union All "
 
 		"Select "
-			"cast(DayArchive.Order_Location as varchar(25)) Order_Location,"
-			"Contacts.Name,"
-			"PT.Total Total_Points,"
-			"cast(Sum(DayArchive.Price * DayArchive.Qty) as numeric(17,4)) Total_Spent,"
-			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
-			"Sum(DayArchive.Redeemed) Total_Points_Redeemed, "
-			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
-		"From "
-			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
-
-            +  _pointsTransactionQuery +    ////For Selecting points of a member
-
-		"Where "
-			"DayArchive.Time_Stamp_Billed > :StartTime And "
-			"DayArchive.Time_Stamp_Billed < :EndTime  ";
-	if (Names && Names->Count > 0)
-	{
-		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
-	}
-	if (Locations->Count > 0)
-	{
-		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Locations->Count, "DayArchive.Order_Location", "LocationParam") + ")";
-	}
-	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
-		"Group By "
-			"DayArchive.Order_Location,"
-			"DayArchive.Loyalty_Key,"
-			"Contacts.Name,"
-			"PT.Total "
-
-		"Union All "
-
-		"Select "
 			"cast(ArcBill.Billed_Location as varchar(25)) Order_Location,"
 			"CT.NAME,"
 			"cast(0 as numeric(17, 4)) Total_Points,"
@@ -9191,32 +9156,6 @@ void TdmMMReportData::SetupLoyaltyHistoryLocation(TDateTime StartTime, TDateTime
 	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
 		"Group By "
 			"ArcBill.Billed_Location,CT.NAME "
-
-		"Union All "
-
-		"Select "
-			"cast(DayArcBill.Billed_Location as varchar(25)) Order_Location,"
-			"CT.NAME, "
-			"cast(0 as numeric(17, 4)) Total_Points,"
-			"cast(0 as numeric(17, 4)) Total_Spent,"
-			"cast(0 as numeric(17, 4))  Total_Points_Earned,"
-			"cast(0 as numeric(17, 4))  Total_Points_Redeemed,"
-			"Sum(DayArcSurcharge.SubTotal) Total_Points_Loaded "
-		"From "
-			"DayArcSurcharge Left Join DayArcBill On "
-				"DayArcSurcharge.Arcbill_Key = DayArcBill.Arcbill_Key "
-            "INNER JOIN POINTSTRANSACTIONS PT on DayArcBill.INVOICE_NUMBER = PT.INVOICE_NUMBER "
-			"INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
-			"Left Join Security On "
-				"DayArcBill.Security_Ref = Security.Security_Ref "
-		"Where "
-			"DayArcBill.Time_Stamp > :StartTime And "
-			"DayArcBill.Time_Stamp < :EndTime And "
-			"Security.Security_Event = 'Billed By' And "
-			"DayArcSurcharge.Properties = 65536 ";
-	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
-		"Group By "
-			"DayArcBill.Billed_Location, CT.NAME "
 
 		"Order By "
 			"1,2";
@@ -9271,39 +9210,6 @@ void TdmMMReportData::SetupLoyaltyHistoryDates(TDateTime StartTime, TDateTime En
 			"Archive.Order_Location,"
             "Archive.Time_Stamp, "
 			"Archive.Loyalty_Key,"
-			"Contacts.Name,"
-			"PT.Total "
-
-		"Union All "
-
-		"Select "
-			"cast(DayArchive.Order_Location as varchar(25)) Order_Location,"
-            "DayArchive.Time_Stamp TIME_STAMP, "
-			"Contacts.Name,"
-			"PT.Total Total_Points,"
-			"cast(Sum(DayArchive.Price * DayArchive.Qty) as numeric(17,4)) Total_Spent,"
-			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
-			"Sum(DayArchive.Redeemed) Total_Points_Redeemed, "
-			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
-		"From "
-			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
-
-            +  _pointsTransactionQuery +    ////For Selecting points of a member
-            
-		"Where "
-			"DayArchive.Time_Stamp_Billed > :StartTime And "
-			"DayArchive.Time_Stamp_Billed < :EndTime ";
-
-	if (Locations->Count > 0)
-	{
-		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Locations->Count, "DayArchive.Order_Location", "LocationParam") + ")";
-	}
-	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
-		"Group By "
-			"DayArchive.Order_Location,"
-            "DayArchive.Time_Stamp, "
-			"DayArchive.Loyalty_Key,"
 			"Contacts.Name,"
 			"PT.Total "
 
@@ -9367,46 +9273,6 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 
 		"Union All "
 
-		"Select "
-			"cast(DayArchive.Order_Location as varchar(25)) Order_Location,"
-			"Contacts.Name,"
-			"PT.Total Total_Points, "
-			"cast(Sum(DayArchive.Price * DayArchive.Qty) as numeric(17,4)) Total_Spent,"
-			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
-			"Sum(DayArchive.Redeemed) Total_Points_Redeemed, "
-			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
-		"From "
-			"DayArchive "
-         "Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
-
-          +  _pointsTransactionQuery +    ////For Selecting points of a member  
-
-	   	" Left join DAYARCORDERDISCOUNTS on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-			//"Inner Join Security On DayArchive.Security_Ref = Security.Security_Ref "
-		"Where "
-		    " ((DAYARCORDERDISCOUNTS.DISCOUNT_KEY>0 and "
-            " DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME<> 'Non-Chargeable' and "
-            " DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME<> 'Complimentary') or DAYArchive.DISCOUNT =0) and "
-			"DayArchive.Time_Stamp_Billed > :StartTime And "
-			"DayArchive.Time_Stamp_Billed < :EndTime  " ;
-	if (Names && Names->Count > 0)
-	{
-		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
-	}
-	if (Locations->Count > 0)
-	{
-		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Locations->Count, "DayArchive.Order_Location", "LocationParam") + ")";
-	}
-	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
-		"Group By "
-			"DayArchive.Order_Location,"
-			"DayArchive.Loyalty_Key,"
-			"Contacts.Name,"
-			"PT.Total "
-    "Union All "
-
     "Select "
 			"cast(ArcBill.Billed_Location as varchar(25)) Order_Location,"
 			"CT.NAME,"
@@ -9440,42 +9306,6 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
 		"Group By "
 			"ArcBill.Billed_Location,CT.NAME "
-
-		"Union All "
-
-		"Select "
-			"cast(DayArcBill.Billed_Location as varchar(25)) Order_Location,"
-			"CT.NAME, "
-			"cast(0 as numeric(17, 4)) Total_Points,"
-			"cast(0 as numeric(17, 4)) Total_Spent,"
-			"cast(0 as numeric(17, 4))  Total_Points_Earned,"
-			"cast(0 as numeric(17, 4))  Total_Points_Redeemed,"
-			"Sum(DayArcSurcharge.SubTotal) Total_Points_Loaded "
-		"From "
-			"DayArcSurcharge Left Join DayArcBill On "
-				"DayArcSurcharge.Arcbill_Key = DayArcBill.Arcbill_Key "
-            "INNER JOIN POINTSTRANSACTIONS PT on DayArcBill.INVOICE_NUMBER = PT.INVOICE_NUMBER "
-			"INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
-			"Left Join Security On "
-				"DayArcBill.Security_Ref = Security.Security_Ref "
-		"Where "
-			"DayArcBill.Time_Stamp > :StartTime And "
-			"DayArcBill.Time_Stamp < :EndTime And "
-			"Security.Security_Event = 'Billed By' And "
-			"DayArcSurcharge.Properties = 65536 ";
-		if (Names && Names->Count > 0)
-	{
-		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Names->Count, "CT.NAME", "NamesParam") + ")";
-	}
-	if (Locations->Count > 0)
-	{
-		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Locations->Count, "DayArcBill.Billed_Location", "LocationParam") + ")";
-	}
-	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
-		"Group By "
-			"DayArcBill.Billed_Location, CT.NAME "
 
 		"Order By "
 			"1,2";
