@@ -124,8 +124,8 @@ void TMembership::LoyaltyAddValue(Database::TDBTransaction &DBTransaction, TPoin
 		}
         else if(PointsTransaction.PointsTransactionType == pttRefund)
 		{
-            IBInternalQuery->ParamByName("SPENTVALUE")->AsCurrency = -PointsTransaction.Adjustment;  ////MM-5999 value changed from +ve to -ve
-
+            IBInternalQuery->ParamByName("SPENTVALUE")->AsCurrency = -spentValue;  ////MM-5999 value changed from +ve to -ve
+            spentValue = 0;
 		}
 		IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = ContactType;
 		IBInternalQuery->ExecQuery();
@@ -157,7 +157,7 @@ void TMembership::LoyaltyAddValue(Database::TDBTransaction &DBTransaction, TPoin
 		}
         else if(PointsTransaction.PointsTransactionType == pttRefund)
 		{
-               IBInternalQuery->ParamByName("SPENTVALUE")->AsCurrency = -PointsTransaction.Adjustment;  ///MM-5999 value changed from +ve to -ve
+               IBInternalQuery->ParamByName("SPENTVALUE")->AsCurrency = -spentValue;  ///MM-5999 value changed from +ve to -ve
 
 
 		}

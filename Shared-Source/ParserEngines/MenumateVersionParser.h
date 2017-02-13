@@ -538,8 +538,8 @@ namespace MenumateVersionParser
         void UpdatePaymentAccessToContacts6_00( TDBControl* const indbControl );
         void updateCHITTable6_00( TDBControl* const indbControl );
         void UpdateTaxRemovalToContacts6_00(TDBControl* const indbControl);
-        void CREATEDSRPIVOTProcedure6_00( TDBControl* const inDBControl );
-        void POPULATEDSRPIVOTProcedure6_00( TDBControl* const inDBControl );
+        /*void CREATEDSRPIVOTProcedure6_00( TDBControl* const inDBControl );
+        void POPULATEDSRPIVOTProcedure6_00( TDBControl* const inDBControl );*/ //Now moved to 6.37
         void create6_00TablesForMallExportHourly( TDBControl* const inDBControl );
         void migrateData6_00();
         std::map<Currency, int> migrateTaxProfiles6_00( TDBTransaction* const inDBTransaction );
@@ -578,8 +578,9 @@ namespace MenumateVersionParser
         void update6_04Tables();
         void ModifyContactsColumns6_04(TDBControl* const inDBControl);
         void UpdateLocationColumns6_04(TDBControl* const inDBControl);
-        void CREATEDSR_PIVOT_BY_ITEMProcedure6_04( TDBControl* const inDBControl );
-        void POPULATEDSR_PIVOT_BY_ITEMProcedure6_04( TDBControl* const inDBControl );
+        //Following two functions now moved to 6.37
+        /*void CREATEDSR_PIVOT_BY_ITEMProcedure6_04( TDBControl* const inDBControl );
+        void POPULATEDSR_PIVOT_BY_ITEMProcedure6_04( TDBControl* const inDBControl ); */
 
         //6.05
         void upgrade6_05Tables();
@@ -852,8 +853,12 @@ namespace MenumateVersionParser
         void Update6_36TableSCDPWDCustomerDetails(TDBControl* const inDBControl);
         bool CheckDataTypeOfColumn(TDBControl* const inDBControl);
 
-        void upgrade6_37Tables(); //6.37
+        void upgrade6_37Tables();
         void update6_37Tables();
+        void CREATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl );
+        void POPULATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl );
+        void CREATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );
+        void POPULATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );
         void AlterTable6_37(TDBControl* const inDBControl);
     }; // class
 } // namespace
