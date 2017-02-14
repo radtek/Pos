@@ -753,7 +753,8 @@ void TLoyaltyMateInterface::SyncLoyaltymateAttrs(const TMMContactInfo* const inC
 bool TLoyaltyMateInterface::UpdateLoyaltymateAttrs(const TMMContactInfo* const inContactInfo )
 {
     if( ( inContactInfo->CloudUUID != NULL ) &&
-        ( inContactInfo->CloudUUID != ""   ) )
+        ( inContactInfo->CloudUUID != ""   ) &&
+        ( inContactInfo->ContactKey > 0 )   )
     {
         AnsiString sql = "UPDATE LOYALTYATTRIBUTES "
                          "SET UUID    = '"        + inContactInfo->CloudUUID + "', "
@@ -769,6 +770,9 @@ bool TLoyaltyMateInterface::UpdateLoyaltymateAttrs(const TMMContactInfo* const i
 //---------------------------------------------------------------------------
 void TLoyaltyMateInterface::AddLoyaltymateAttrs(const TMMContactInfo* const inContactInfo )
 {
+    if(inContactInfo->ContactKey == 0)
+      return;
+
     int key = GenerateTableKey( "GEN_LOYALTYATTRIBUTES", &TDeviceRealTerminal::Instance().DBControl );
     AnsiString sql = "INSERT INTO LOYALTYATTRIBUTES "
                      "("

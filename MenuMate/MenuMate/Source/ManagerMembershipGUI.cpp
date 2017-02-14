@@ -99,6 +99,10 @@ bool TManagerMembershipGUI::GetMembershipDetailsFromGUI(Database::TDBTransaction
 					contact_info.ProxStr = str;
                     contact_info.MemberCode = str;
 				}
+                else
+                {
+                     contact_info.MemberCode = contact_info.ProxStr;
+                }
             }
             return add_member_screen->ModalResult == mrOk;
         }
@@ -142,6 +146,7 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
    AnsiString cardCode = Info.MemberCode;
    MembershipSystem->ResetPoints();
    TModalResult Result = mrCancel;
+   bool memberCreationSuccess = false;
    if (MembershipSystem->ReadOnlyInterface)
    {
       MessageBox("You must Add,Edit and Delete Members from your 3rd Party Membership software.", "Warning", MB_ICONWARNING + MB_OK);
@@ -161,25 +166,31 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
 		   if (GetMembershipDetailsFromGUI(DBTransaction, Info, triggered_by_preloaded_card))
 		   {
                Info.ActivationDate = Now();
-               Info.MemberCode = cardCode;
-			   ManagerDiscount->DiscountKeyToCode(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
-			   MembershipSystem->SetContactDetails(DBTransaction, Info.ContactKey, Info);
+               if(Info.ProxStr.Length() == 0)
+                  Info.MemberCode = cardCode;
                bool IsSmartCardEnabled =TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership,false);
-			   DBTransaction.Commit();
-
-			   if (TGlobalSettings::Instance().LoyaltyMateEnabled && Info.CloudUUID == "" && (IsSmartCardEnabled || IsBarcodeCard))
+               if (TGlobalSettings::Instance().LoyaltyMateEnabled && Info.CloudUUID == "" && (IsSmartCardEnabled || IsBarcodeCard))
 			   {
-                   // calling the protected method from MembershipManagerSmartCards
+                    // calling the protected method from MembershipManagerSmartCards
                     TSyndCode syndicateCode =  GetSyndicateCodeManager().GetCommunicationSyndCode();
-                    bool memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(syndicateCode, Info);
-                    if(memberCreationSuccess)
-                    {
-                          DBTransaction.StartTransaction();
-                          MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, Info.ContactKey, Info);
-                          TDBContacts::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.MemberCode);
-                          DBTransaction.Commit();
-                    }
-			   }
+                    memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(syndicateCode, Info);
+               }
+
+               if(memberCreationSuccess)
+               {
+                  ManagerDiscount->DiscountKeyToCode(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
+			      MembershipSystem->SetContactDetails(DBTransaction, Info.ContactKey, Info);
+                  DBTransaction.Commit();
+                  DBTransaction.StartTransaction();
+                  MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, Info.ContactKey, Info);
+                  TDBContacts::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.MemberCode);
+                  DBTransaction.Commit();
+               }
+               else
+               {
+                       DBTransaction.Rollback();
+                       return mrCancel;
+               }
 
                if(ManagerSmartCards->CardOk)
                 {
