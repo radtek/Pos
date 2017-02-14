@@ -27,6 +27,7 @@ class TManagerMembershipGUI : public TManagerMembershipSmartCards
 	void Initialise(Database::TDBTransaction &DBTransaction);
     bool AddGiftCard(Database::TDBTransaction &tr,TMMContactInfo &Info);
     bool GiftCardSecurityCheck(Database::TDBTransaction &tr);
+
 };
 
 #endif

@@ -124,8 +124,8 @@ void TMembership::LoyaltyAddValue(Database::TDBTransaction &DBTransaction, TPoin
 		}
         else if(PointsTransaction.PointsTransactionType == pttRefund)
 		{
-            IBInternalQuery->ParamByName("SPENTVALUE")->AsCurrency = -PointsTransaction.Adjustment;  ////MM-5999 value changed from +ve to -ve
-
+            IBInternalQuery->ParamByName("SPENTVALUE")->AsCurrency = -spentValue;  ////MM-5999 value changed from +ve to -ve
+            spentValue = 0;
 		}
 		IBInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = ContactType;
 		IBInternalQuery->ExecQuery();
@@ -157,7 +157,7 @@ void TMembership::LoyaltyAddValue(Database::TDBTransaction &DBTransaction, TPoin
 		}
         else if(PointsTransaction.PointsTransactionType == pttRefund)
 		{
-               IBInternalQuery->ParamByName("SPENTVALUE")->AsCurrency = -PointsTransaction.Adjustment;  ///MM-5999 value changed from +ve to -ve
+               IBInternalQuery->ParamByName("SPENTVALUE")->AsCurrency = -spentValue;  ///MM-5999 value changed from +ve to -ve
 
 
 		}
@@ -622,7 +622,23 @@ void TMembership::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 	  return;
    try
    {
-	  // Update Member Number if Blank.
+
+      GenerateMembershipNumber(DBTransaction, Info);
+	  // Proform Unique checks here so no indexes are Violated.
+	  CheckSiteIndex(DBTransaction, inContactKey, Info);
+	  OnBeforeSaveMember.Occured(Info);
+ 	  TContact::SetContactDetails(DBTransaction, inContactKey, Info);
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+	  throw;
+   }
+}
+
+void TMembership::GenerateMembershipNumber(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
+{
+      // Update Member Number if Blank.
 	  if (Info.MembershipNumber == NULL   || Info.MembershipNumber == "")
 	  {
 		 if (RecycleMemberNumber)
@@ -634,17 +650,6 @@ void TMembership::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 			Info.MembershipNumber = GetNextMemberNumber(DBTransaction);
 		 }
 	  }
-
-	  // Proform Unique checks here so no indexes are Violated.
-	  CheckSiteIndex(DBTransaction, inContactKey, Info);
-	  OnBeforeSaveMember.Occured(Info);
- 	  TContact::SetContactDetails(DBTransaction, inContactKey, Info);
-   }
-   catch(Exception & E)
-   {
-	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
-	  throw;
-   }
 }
 
 void TMembership::SetContactLoyaltyAttributes(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info)

@@ -220,7 +220,7 @@ public:
     TDateTime GetLastBirthdayProcessed(Database::TDBTransaction &DBTransaction, int ContactKey);
     UnicodeString GetNextRecycledMemberNumber(Database::TDBTransaction &DBTransaction);
     UnicodeString GetNextMemberNumber(Database::TDBTransaction &DBTransaction);
-
+    void GenerateMembershipNumber(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info);
     void virtual SyncMembers(Database::TDBTransaction &DBTransaction, TfrmProcessing *Progress);
     void virtual GetKioskDisplayMsg(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info, std::map <UnicodeString,UnicodeString> &Data);
     bool virtual ValidateVisit(TMMContactInfo &UserInfo);

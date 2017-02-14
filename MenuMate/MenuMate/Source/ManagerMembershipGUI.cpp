@@ -171,6 +171,7 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                bool IsSmartCardEnabled =TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership,false);
                if (TGlobalSettings::Instance().LoyaltyMateEnabled && Info.CloudUUID == "" && (IsSmartCardEnabled || IsBarcodeCard))
 			   {
+                    MembershipSystem->GenerateMembershipNumber(DBTransaction,Info);
                     // calling the protected method from MembershipManagerSmartCards
                     TSyndCode syndicateCode =  GetSyndicateCodeManager().GetCommunicationSyndCode();
                     memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(syndicateCode, Info);

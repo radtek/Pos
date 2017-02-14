@@ -5804,7 +5804,7 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 				if (ReportType == rtExcel)
 				{
 					std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-					ExcelDataSetsList->AddObject("Consumption",(TObject *)dmMMReportData->qrConsumption);
+					ExcelDataSetsList->AddObject("Consumption",(TObject *)dmMMReportData->qrDayConsumption);
 					ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
 				}
                 else

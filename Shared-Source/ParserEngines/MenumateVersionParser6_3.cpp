@@ -965,15 +965,1272 @@ void TApplyParser::Update6_36TableSCDPWDCustomerDetails(TDBControl* const inDBCo
        executeQuery( "ALTER TABLE SCD_PWD_CUSTOMER_DETAILS ALTER DATA_TYPE TYPE VARCHAR(25) ;", inDBControl);
     }
 }
-
-//::::::::::::::::::::::::Version 6.37::::::::::::::::::::::::::::::::::::::::::
+//--------------------------------------------------------------------------------------------------
 void TApplyParser::update6_37Tables()
 {
+    CREATEDSR_PIVOT_BY_ITEMProcedure6_37( _dbControl ) ;
+	POPULATEDSR_PIVOT_BY_ITEMProcedure6_37( _dbControl ) ;
+    CREATEDSRPIVOTProcedure6_37( _dbControl ) ;
+	POPULATEDSRPIVOTProcedure6_37( _dbControl ) ;
+    AlterTable6_37(_dbControl);
     UpdateContacts6_37(_dbControl);
 }
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::CREATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl )
+{
+	TDBTransaction transaction( *inDBControl );
+	try
+	{
+		executeQuery(
+		"RECREATE PROCEDURE CREATE_DSR_BY_ITEM ( "
+		"ATABLENAME Varchar(50), "
+		"STARTTIME Timestamp, "
+		"ENDTIME Timestamp ) "
+		"RETURNS ( "
+		"ASTMNT Varchar(8000) ) "
+		"AS "
+		"DECLARE VARIABLE StmtArcBill VARCHAR(8000); "
+		"DECLARE VARIABLE StmtMenuName VARCHAR(8000); "
+		"DECLARE VARIABLE StmtArcOrderTax VARCHAR(8000); "
+		"DECLARE VARIABLE MenuDiscountStmt VARCHAR(8000); "
+		"DECLARE VARIABLE ArcBillPay VARCHAR(50); "
+		"DECLARE VARIABLE MenuName VARCHAR(50); "
+		"DECLARE VARIABLE ArcOrderTax VARCHAR(50);  "
+		"DECLARE VARIABLE MenuDiscountCol VARCHAR(50);  "
+		"DECLARE VARIABLE colname VARCHAR(50); "
+		"DECLARE VARIABLE MenuDiscountColData VARCHAR(50); "
+		"BEGIN StmtArcBill = '';  "
+		"for "
+		"SELECT distinct upper(ARCBILL_PAY.PAY_TYPE) "
+		"FROM ARCBILLPAY ARCBILL_PAY left join arcbill on  ARCBILL.ARCBILL_KEY=ARCBILL_PAY.ARCBILL_KEY  "
+		"where ARCBILL.TIME_STAMP>=:StartTime and ARCBILL.TIME_STAMP<:Endtime  "
+		"order by 1 into ArcBillPay "
+		"do begin "
+		"ArcBillPay=REPLACE ( ArcBillPay, '(', ''); "
+		"ArcBillPay=REPLACE ( ArcBillPay, ')', ''); "
+        "ArcBillPay=REPLACE (ArcBillPay, '''','');  "
+		"if (ArcBillPay <> '') "
+		"then "
+		"StmtArcBill = StmtArcBill || ', ' || REPLACE (ArcBillPay, ' ', '') || ' VARCHAR(50)'; "
+		"end "
+		"StmtArcBill = substring(StmtArcBill from 2); "
+		"StmtMenuName = ''; "
+		"for "
+		"SELECT distinct upper(a.MENU_NAME) FROM ARCHIVE a "
+		"left join arcbill on  ARCBILL.ARCBILL_KEY=a.ARCBILL_KEY "
+		"where a.MENU_NAME<>'' and ARCBILL.TIME_STAMP>=:StartTime and ARCBILL.TIME_STAMP<:Endtime "
+		"order by 1 "
+		"into MenuName "
+		"do begin "
+		"MenuName=REPLACE ( MenuName, '(', ''); "
+		"MenuName=REPLACE ( MenuName, ')', ''); "
+        "MenuName=REPLACE (MenuName, '''',''); "
+		"if (MenuName <> '') "
+		"then "
+		"StmtMenuName = StmtMenuName || ', ' ||REPLACE ( REPLACE (REPLACE (MenuName, ' ', ''), '.', '' ),'-','' ) || ' VARCHAR(50)'; "
+		"end "
+		"StmtMenuName = substring(StmtMenuName from 2); "
+		"MenuDiscountStmt = ''; "
+		"for "
+		"SELECT distinct upper(a.MENU_NAME) FROM ARCHIVE a "
+		"left join arcbill on  ARCBILL.ARCBILL_KEY=a.ARCBILL_KEY "
+		"where a.MENU_NAME<>'' and ARCBILL.TIME_STAMP>=:StartTime and ARCBILL.TIME_STAMP<:Endtime "
+		"order by 1 "
+		"into MenuDiscountCol "
+		"do begin "
+		"MenuDiscountCol=REPLACE ( MenuDiscountCol, '(', ''); "
+		"MenuDiscountCol=REPLACE ( MenuDiscountCol, ')', ''); "
+        "MenuDiscountCol=REPLACE (MenuDiscountCol, '''','');  "
+		"if (MenuDiscountCol <> '')  "
+		"then MenuDiscountColData='_Discount_Amount'; "
+		"if (MenuDiscountCol <> '')  "
+		"then "
+		"MenuDiscountStmt = MenuDiscountStmt|| ', ' ||REPLACE ( REPLACE (REPLACE (MenuDiscountCol, ' ', ''), '.', '' ),'-','' )|| ''|| MenuDiscountColData || ' VARCHAR(50)'; "
+		"if (MenuDiscountCol <> '')  "
+		"then  "
+		"MenuDiscountColData='_Surcharge_Amount'; "
+		"if (MenuDiscountCol <> '') "
+		"then MenuDiscountStmt = MenuDiscountStmt|| ', ' ||REPLACE ( REPLACE (REPLACE (MenuDiscountCol, ' ', ''), '.', '' ),'-','' ) || ''|| MenuDiscountColData || ' VARCHAR(50)';  "
+		"end "
+		"MenuDiscountStmt = substring(MenuDiscountStmt from 2); "
+		"StmtArcOrderTax = ''; "
+		"for  "
+		"SELECT  distinct upper(a.TAX_NAME) FROM ARCORDERTAXES a  "
+		"left join ARCHIVE on  ARCHIVE.ARCHIVE_KEY=a.ARCHIVE_KEY  "
+		"left join arcbill on  ARCBILL.ARCBILL_KEY=ARCHIVE.ARCBILL_KEY  "
+		"where a.TAX_NAME<>'' and ARCBILL.TIME_STAMP>=:StartTime and ARCBILL.TIME_STAMP<:Endtime "
+		"order by 1  "
+		"into  "
+		"ArcOrderTax  "
+		"do begin  "
+		"ArcOrderTax=REPLACE ( ArcOrderTax, '(', ''); "
+		"ArcOrderTax=REPLACE ( ArcOrderTax, ')', ''); "
+        "ArcOrderTax=REPLACE (ArcOrderTax, '''',''); "
+		"if (ArcOrderTax <> '') then ArcOrderTax='Tax_' ||ArcOrderTax;  "
+		"StmtArcOrderTax = StmtArcOrderTax || ', ' ||REPLACE (ArcOrderTax, ' ', '') || ' VARCHAR(50)'; "
+		"StmtArcOrderTax =REPLACE (StmtArcOrderTax,',  VARCHAR(50),',''); "
+		"end  "
+		"if (exists(select 1 from RDB$RELATIONS where RDB$RELATION_NAME = 'DSRREPORTBYITEM' ))  "
+		"THEN BEGIN  "
+		"AStmnt = 'drop table DSRREPORTBYITEM;'; "
+		"execute statement AStmnt; "
+		"END "
+		"Astmnt = 'CREATE TABLE '||ATableName||' (SRNO Integer,  INVOICE_NUMBER  VARCHAR(50) ,TIME_STAMP Timestamp , ITEMNAME VARCHAR(50) , BILLAMOUNT  Numeric(15,4) , ' || StmtMenuName || ',' || MenuDiscountStmt || ', '  ||StmtArcOrderTax || ',SUB_TOTAL_TAX Numeric(15,4),TOTAL_AMOUNT Numeric(15,4),' || StmtArcBill || ');'; "
+		"AStmnt=REPLACE (AStmnt, ', ,,', ',');  "
+		"AStmnt=REPLACE (AStmnt, ',,', ','); "
+		"AStmnt=REPLACE (AStmnt, ',)', ')');  "
+		"AStmnt=REPLACE (AStmnt, ', ,', ','); "
+		"AStmnt=REPLACE (AStmnt, ',)', ')');  "
+		"AStmnt=REPLACE (AStmnt, '.', ''); "
+		"AStmnt=REPLACE (AStmnt, '%', ''); "
+		"AStmnt=REPLACE ( AStmnt, '.', ''); "
+		"AStmnt=REPLACE ( AStmnt, '<', '');  "
+		"AStmnt=REPLACE ( AStmnt, '>', '');  "
+		"AStmnt=REPLACE ( AStmnt, '?', '');  "
+		"AStmnt=REPLACE ( AStmnt, '^', '');  "
+		"AStmnt=REPLACE ( AStmnt, '&', ''); "
+		"AStmnt=REPLACE ( AStmnt, '-', '');  "
+		"AStmnt=REPLACE ( AStmnt, '--', '');  "
+		"AStmnt=REPLACE ( AStmnt, '!', ''); "
+		"AStmnt=REPLACE ( AStmnt, '*', ''); "
+		"AStmnt=REPLACE ( AStmnt, '#', ''); "
+		"AStmnt=REPLACE ( AStmnt, '+', ''); "
+		"AStmnt=REPLACE ( AStmnt, '{', ''); "
+		"AStmnt=REPLACE ( AStmnt, '[', ''); "
+		"AStmnt=REPLACE ( AStmnt, '', ''); "
+		"AStmnt=REPLACE ( AStmnt, '/', ''); "
+		"AStmnt=REPLACE ( AStmnt, '!', '');  "
+		"AStmnt=REPLACE ( AStmnt, ':', ''); "
+		"AStmnt=REPLACE ( AStmnt, ';', ''); "
+		"AStmnt=REPLACE (AStmnt, '0.00%', '');  "
+		"AStmnt=REPLACE (AStmnt, '000%', ''); "
+		"AStmnt=REPLACE (AStmnt, '@', ''); "
+		"AStmnt=REPLACE (AStmnt, '000', ''); "
+		"AStmnt=REPLACE (AStmnt, '00', '');  "
+		"AStmnt=REPLACE (AStmnt, ', VARCHAR(50),',''); "
+		"AStmnt=REPLACE (AStmnt, ',  VARCHAR(50),','');   "
+        "AStmnt=REPLACE (AStmnt, '''',''); "
+		"execute statement AStmnt;  "
+		"SUSPEND;   "
+		"END ",	inDBControl );
+		/*
+"GRANT EXECUTE "
+"ON PROCEDURE CREATE_DSR_PIVOT TO  SYSDBA " ;       */
+	}
+	catch(Exception &exception)
+	{
+		transaction.Rollback();
+		throw;
+	}
+}
+//-----------------------------------------------------
+void TApplyParser::POPULATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl )
+{
+	TDBTransaction transaction( *inDBControl );
+	try
+	{
+		executeQuery(
+		"RECREATE PROCEDURE POPULATE_DSR_BY_ITEM ( ATABLENAME Varchar(50), STARTTIME Timestamp, ENDTIME Timestamp ) "
+		"AS "
+		"DECLARE VARIABLE stmnt VARCHAR(8000); "
+		"DECLARE VARIABLE updatestmt VARCHAR(8000); "
+		"DECLARE VARIABLE updatetaxstmt VARCHAR(8000); "
+		"DECLARE VARIABLE updatemenustmt VARCHAR(8000); "
+		"DECLARE VARIABLE UpdateMenuDiscountstmt VARCHAR(8000); "
+		"DECLARE VARIABLE UpdatePayTypeStmt VARCHAR(8000); "
+		"DECLARE VARIABLE RegNum VARCHAR(50); "
+		"DECLARE VARIABLE AN VARCHAR(50); "
+		"DECLARE VARIABLE PAY_TYPE VARCHAR(50); "
+		"DECLARE VARIABLE ARCBILL_KEY Integer; "
+		"DECLARE VARIABLE INVOICE_NUMBER VARCHAR(50); "
+		"DECLARE VARIABLE TIME_STAMP VARCHAR(50); "
+		"DECLARE VARIABLE ITEMNAME VARCHAR(50); "
+		"DECLARE VARIABLE ITEM_NAME Timestamp ; "
+		"DECLARE VARIABLE SIZE_NAME VARCHAR(50) ; "
+		"DECLARE VARIABLE PRICE Numeric(15,4); "
+		"DECLARE VARIABLE QTY VARCHAR(50); "
+		"DECLARE VARIABLE VAT VARCHAR(50) ; "
+		"DECLARE VARIABLE SERVICECHARGE  VARCHAR(50); "
+		"DECLARE VARIABLE AMOUNT VARCHAR(50); "
+		"DECLARE VARIABLE ARCORDERTAXES_KEY VARCHAR(50); "
+		"DECLARE VARIABLE ARCHIVE_KEY VARCHAR(50); "
+		"DECLARE VARIABLE TAX_NAME VARCHAR (50); "
+		"DECLARE VARIABLE TAX_VALUE VARCHAR(50); "
+		"DECLARE VARIABLE TAX_TYPE VARCHAR(50);  "
+		"DECLARE VARIABLE MENU_NAME VARCHAR(50); "
+		"DECLARE VARIABLE SUBTOTAL VARCHAR(50); "
+		"DECLARE VARIABLE ARCBILLPAY_KEY VARCHAR(50); "
+		"DECLARE VARIABLE TOTAL VARCHAR(50); "
+		"DECLARE VARIABLE DISCOUNT VARCHAR(50); "
+		"DECLARE VARIABLE SURCHARGE VARCHAR(50); "
+		"DECLARE VARIABLE MenuDiscountColData VARCHAR(50); "
+		"DECLARE VARIABLE Course_Name VARCHAR(50); "
+		"DECLARE VARIABLE Item_Count VARCHAR(50); "
+		"DECLARE VARIABLE NETSALE VARCHAR(50); "
+		"DECLARE VARIABLE TAXSUM VARCHAR(50); "
+		"DECLARE VARIABLE TOTALAMOUNT Numeric(15,4); "
+		"DECLARE VARIABLE COMP VARCHAR(50); "
+		"DECLARE VARIABLE AK bigint=0; "
+		"BEGIN "
+
+		"execute  statement 'delete from '||ATableName||';'; COMP='0'; FOR select  a.ARCHIVE_KEY from archive a  where a.TIME_STAMP>=:StartTime and a.TIME_STAMP<:Endtime  order by 1 into RegNum  "
+		"DO begin stmnt = 'INSERT INTO '||ATABLENAME||' (SRNO) VALUES('''|| RegNum||''')';  "
+		"execute statement stmnt;  "
+		"end FOR SELECT b.ARCHIVE_KEY , a.TIME_STAMP, CAST(b.qty*coalesce(b.PRICE,0) AS NUMERIC(17,4)) PRICE, a.INVOICE_NUMBER,b.ITEM_NAME FROM ARCBILL a "
+                    "left join ARCHIVE b on a.ARCBILL_KEY=b.ARCBILL_KEY where b.TIME_STAMP>=:StartTime and b.TIME_STAMP<:Endtime  "
+		"INTO ARCBILL_KEY , TIME_STAMP ,TOTAL   , INVOICE_NUMBER , ITEMNAME "
+		"DO begin  ITEMNAME=REPLACE ( ITEMNAME, '''', ''); "
+
+		"updatestmt ='UPDATE '|| ATABLENAME||' set TIME_STAMP = '''||TIME_STAMP ||''' , BILLAMOUNT = '''||TOTAL||''' , INVOICE_NUMBER = '''|| INVOICE_NUMBER||''' , ITEMNAME = '''|| ITEMNAME||'''  WHERE SRNO = '''||ARCBILL_KEY||''''; "
+		"execute statement updatestmt;  "
+		"end "
+		"FOR "
+		" SELECT  b.ARCHIVE_KEY, a.PAY_TYPE, SUM(a.SUBTOTAL)AS SUBTOTAL,c.INVOICE_NUMBER  FROM  ARCHIVE b LEFT join  ARCBILLPAY a ON b .ARCBILL_KEY=A.ARCBILL_KEY left join ARCBILL c on b.ARCBILL_KEY=c.ARCBILL_KEY  "
+		"where b .TIME_STAMP>=:StartTime and b .TIME_STAMP<:Endtime  "
+		"GROUP BY  b.ARCHIVE_KEY, a.PAY_TYPE,c.INVOICE_NUMBER  INTO ARCBILL_KEY, PAY_TYPE , SUBTOTAL,INVOICE_NUMBER  "
+
+		/*	"SELECT  b.ARCHIVE_KEY, a.PAY_TYPE, SUM(a.SUBTOTAL) AS SUBTOTAL FROM ARCBILLPAY a LEFT join ARCHIVE b ON b .ARCBILL_KEY=A.ARCBILL_KEY where b .TIME_STAMP>=:StartTime and b .TIME_STAMP<:Endtime  "
+			"GROUP BY  b.ARCHIVE_KEY, a.PAY_TYPE  INTO ARCBILL_KEY, PAY_TYPE , SUBTOTAL  "  */
+		"DO begin     "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ', ,,', ','); "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ',,', ',');  "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ',)', ')');  "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ', ,', ',');   "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ',)', ')');    "
+		"PAY_TYPE=REPLACE (PAY_TYPE, '.', '');    "
+		"PAY_TYPE=REPLACE (PAY_TYPE, '%', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '.', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '<', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '>', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '?', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '^', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '&', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '-', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '--', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '!', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '*', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '#', ''); "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '@', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '(', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, ')', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '+', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '{', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '[', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '/', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '!', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, ':', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, ';', '');   "
+        "PAY_TYPE=REPLACE (PAY_TYPE, '''',''); "
+		"if (PAY_TYPE <> '') then  "
+		"if( (comp='0')or (comp<>INVOICE_NUMBER)or (comp = INVOICE_NUMBER and AK=ARCBILL_KEY ))then  "
+		"begin UpdatePayTypeStmt = 'UPDATE '||ATABLENAME||' set ' || upper(REPLACE (PAY_TYPE, ' ', '') )|| ' = ''' || SUBTOTAL|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''' and ''' || SUBTOTAL||'''!=0' ; "
+		"COMP= INVOICE_NUMBER; "
+		"AK=ARCBILL_KEY; "
+		"execute statement UpdatePayTypeStmt; "
+		"end  "
+		"else  "
+		"begin UpdatePayTypeStmt = 'UPDATE '||ATABLENAME||' set ' || upper(REPLACE (PAY_TYPE, ' ', '') )|| ' = ''' || ''|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''' and ''' || SUBTOTAL||'''!=0' ;  "
+		"execute statement UpdatePayTypeStmt;  "
+		"end "
+		"end "
+		/*"if (PAY_TYPE <> '') then  "
+			"UpdatePayTypeStmt = 'UPDATE '||ATABLENAME||' set ' || upper(REPLACE (PAY_TYPE, ' ', '') )|| ' = ''' || SUBTOTAL|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''' and ''' || SUBTOTAL||'''!=0' ;  "
+			"if (PAY_TYPE <> '')  "
+			"then execute statement UpdatePayTypeStmt;  "
+			"end    "   */
+		"FOR SELECT AC.ARCHIVE_KEY, a.TAX_NAME, sum(a.TAX_VALUE) TAX_VALUE, a.TAX_TYPE FROM ARCORDERTAXES a inner join ARCHIVE AC on "
+                        "AC.ARCHIVE_KEY=a.ARCHIVE_KEY INNER JOIN ARCBILL AB ON AB.ARCBILL_KEY=AC.ARCBILL_KEY "
+                        "where  a.TAX_NAME<>'' and AC.TIME_STAMP>=:StartTime and  AC.TIME_STAMP<:Endtime  GROUP BY AC.ARCHIVE_KEY,   a.TAX_NAME, "
+                        "a.TAX_TYPE INTO ARCBILL_KEY , TAX_NAME  , TAX_VALUE   , TAX_TYPE "
+		"DO begin     "
+		"TAX_NAME='Tax_' ||TAX_NAME; "
+		"TAX_NAME=REPLACE (TAX_NAME, '0.00%', ''); "
+		"TAX_NAME=REPLACE (TAX_NAME, '000%', '');  "
+		"TAX_NAME=REPLACE (TAX_NAME, '000', '');   "
+		"TAX_NAME=REPLACE (TAX_NAME, '00', '');  "
+		"TAX_NAME=REPLACE (TAX_NAME, ', ,,', ','); "
+		"TAX_NAME=REPLACE (TAX_NAME, ',,', ',');   "
+		"TAX_NAME=REPLACE (TAX_NAME, ',)', ')');   "
+		"TAX_NAME=REPLACE (TAX_NAME, ', ,', ',');  "
+		"TAX_NAME=REPLACE (TAX_NAME, ',)', ')');  "
+		"TAX_NAME=REPLACE (TAX_NAME, '.', '');    "
+		"TAX_NAME=REPLACE (TAX_NAME, '%', '');    "
+		"TAX_NAME=REPLACE ( TAX_NAME, '.', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '<', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '>', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '?', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '^', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '&', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '@', ''); "
+		"TAX_NAME=REPLACE ( TAX_NAME, '-', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '--', ''); "
+		"TAX_NAME=REPLACE ( TAX_NAME, '!', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '*', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '#', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '(', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, ')', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '+', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '{', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '[', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '', '');    "
+		"TAX_NAME=REPLACE ( TAX_NAME, '/', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '!', '');    "
+		"TAX_NAME=REPLACE ( TAX_NAME, ':', '');    "
+		"TAX_NAME=REPLACE ( TAX_NAME, ';', '');    "
+        "TAX_NAME=REPLACE (TAX_NAME, '''',''); "
+		"updatetaxstmt = 'UPDATE '||ATABLENAME||' set ' ||upper(REPLACE (TAX_NAME, ' ', '') ) || ' = ''' || TAX_VALUE|| '''  WHERE SRNO = ''' || ARCBILL_KEY||'''';  "
+		"execute statement updatetaxstmt;  "
+		"end   "
+		"for select AB.ARCHIVE_KEY,  SUM(TAX_VALUE) TAX_VALUE   FROM ( SELECT AC.ARCHIVE_KEY,AC.TIME_STAMP,  sum(a.TAX_VALUE) TAX_VALUE "
+            "FROM ARCORDERTAXES a INNER JOIN ARCHIVE AC on AC.ARCHIVE_KEY=a.ARCHIVE_KEY where a.TAX_NAME<>'' AND AC.TIME_STAMP>=:StartTime and  AC.TIME_STAMP<:Endtime  group BY AC.ARCHIVE_KEY,AC.TIME_STAMP) AB "
+            "WHERE  AB.TIME_STAMP>=:StartTime and  AB.TIME_STAMP<:Endtime  "
+		"group BY 1  into ARCBILL_KEY ,TAXSUM DO begin stmnt = ''; "
+		"stmnt = 'UPDATE '||ATABLENAME||' set SUB_TOTAL_TAX = ''' || TAXSUM|| '''  WHERE SRNO = ''' || ARCBILL_KEY||'''';  "
+		"execute statement stmnt; "
+		"end  "
+		"FOR Select  ARCHIVE.ARCHIVE_KEY,ARCHIVE.MENU_NAME MENU_NAME, COALESCE( Cast(Sum(Archive.Discount) as Numeric(15,4)), 0) Discount, "
+                "COALESCE (Cast(Sum(Archive.Surcharge) as Numeric(15,4)),0) Surcharge, "
+                "Cast(Sum (abs(Archive.Qty) *  (COALESCE(Archive.BASE_PRICE,0))+ COALESCE(Archive.Discount, 0) + COALESCE(Archive.Surcharge, 0)) as Numeric(15,4)) SubTotal  "
+             "From ARCHIVE Ab  Left Join   ( Select    ARCHIVE.ARCBILL_KEY, ARCHIVE.ARCHIVE_KEY, Archive.Qty, ARCHIVE.BASE_PRICE  , "
+                "ARCHIVE.MENU_NAME, MIN(CASE WHEN Archive.DISCOUNT_WITHOUT_TAX >= 0 THEN COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0) END)    AS Surcharge, "
+                "MIN(CASE WHEN Archive.DISCOUNT_WITHOUT_TAX < 0 THEN COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0) END) AS Discount From Archive Where "
+                "(Archive.Order_Type = 3 or Archive.Order_Type = 0) AND (Archive.TIME_STAMP>=:StartTime and  Archive.TIME_STAMP<:Endtime) "
+                "  Group By ARCHIVE.ARCBILL_KEY,ARCHIVE.ARCHIVE_KEY , ARCHIVE.BASE_PRICE,ARCHIVE.MENU_NAME,Archive.Qty ) Archive on Ab.ARCHIVE_KEY = "
+                "Archive.ARCHIVE_KEY WHERE Ab.TIME_STAMP>=:StartTime and  Ab.TIME_STAMP<:Endtime Group By ARCHIVE.ARCHIVE_KEY, ARCHIVE.MENU_NAME Having Count(Archive.Archive_Key) > 0 "
+        "Into ARCBILL_KEY,MENU_NAME,DISCOUNT, SURCHARGE ,SubTotal "
+		"DO begin MENU_NAME=REPLACE (MENU_NAME, ', ,,', ',');  "
+		"MENU_NAME=REPLACE (MENU_NAME, ',,', ',');     "
+		"MENU_NAME=REPLACE (MENU_NAME, ',)', ')');    "
+		"MENU_NAME=REPLACE (MENU_NAME, ', ,', ',');   "
+		"MENU_NAME=REPLACE (MENU_NAME, ',)', ')');  "
+		"MENU_NAME=REPLACE (MENU_NAME, '.', '');     "
+		"MENU_NAME=REPLACE (MENU_NAME, '%', '');     "
+		"MENU_NAME=REPLACE ( MENU_NAME, '.', '');    "
+		"MENU_NAME=REPLACE ( MENU_NAME, '<', '');     "
+		"MENU_NAME=REPLACE ( MENU_NAME, '>', '');    "
+		"MENU_NAME=REPLACE ( MENU_NAME, '?', '');    "
+		"MENU_NAME=REPLACE ( MENU_NAME, '^', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '&', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '-', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '--', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '!', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '*', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '#', ''); "
+		"MENU_NAME=REPLACE ( MENU_NAME, '@', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '(', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, ')', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '+', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '{', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '[', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '/', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '!', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, ':', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, ';', '');  "
+        "MENU_NAME=REPLACE (MENU_NAME, '''','');  "
+		"updatemenustmt='';  "
+		"if (MENU_NAME <> '')  "
+		"then "
+		"updatemenustmt = 'UPDATE '||ATABLENAME||' set ' || upper(REPLACE (REPLACE (REPLACE (MENU_NAME, ' ', ''), '.', '' ),'-','' ))|| ' = ''' || SubTotal|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''''; "
+		"if (MENU_NAME <> '') "
+		"then  "
+		"execute statement updatemenustmt; "
+		"MenuDiscountColData='_Discount_Amount'; "
+		"if (MENU_NAME <> '') then  "
+		"UpdateMenuDiscountstmt = 'UPDATE '||ATABLENAME||' set ' ||upper(REPLACE ( REPLACE (REPLACE (MENU_NAME, ' ', ''), '.', '' ),'-','' )) || ''|| MenuDiscountColData || ' = ''' || DISCOUNT|| ''' WHERE SRNO = ''' || ARCBILL_KEY||'''';  "
+		"if (MENU_NAME <> '') then execute statement UpdateMenuDiscountstmt;  "
+		"stmnt = '';  "
+		"MenuDiscountColData='_Surcharge_Amount'; "
+		"if (MENU_NAME <> '') then stmnt = 'UPDATE '||ATABLENAME||' set ' || upper(REPLACE (REPLACE (REPLACE (MENU_NAME, ' ', ''), '.', '' ),'-','' ))|| ''|| MenuDiscountColData || ' = ''' || SURCHARGE|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''''; "
+		"if (MENU_NAME <> '')  "
+		"then execute statement stmnt; "
+		"end       "
+		"FOR  SELECT  TM.archive_key, SUM(TM.SubTotal + COALESCE( TM.TAX_VALUE,0)) Total "
+                "FROM ( SELECT AC.ARCHIVE_KEY,AC.TIME_STAMP, TA.SubTotal, sum(a.TAX_VALUE) TAX_VALUE FROM ARCHIVE   AC left join ARCORDERTAXES a  on "
+                "AC.ARCHIVE_KEY = a.ARCHIVE_KEY   INNER JOIN ( SELECT ARCHIVE.ARCHIVE_KEY, Cast(Sum(abs(Archive.Qty) * (COALESCE(Archive.BASE_PRICE,0)) "
+                    " + COALESCE (Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(15,4)) SubTotal  "
+                                "From  Archive Left Join ArcCategories on Archive.Category_Key = ArcCategories.Category_Key  "
+                    " Left Join CategoryGroups on ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key  "
+                " Where  (Archive.Order_Type = 3 or Archive.Order_Type = 0) AND Archive.TIME_STAMP>=:StartTime and   Archive.TIME_STAMP<:Endtime "
+                "Group By ARCHIVE.ARCHIVE_KEY Having Count (Archive.Archive_Key) > 0 ) TA on TA.ARCHIVE_KEY = AC.ARCHIVE_KEY  Where a.TAX_NAME<>'' "
+                "AND AC.TIME_STAMP>=:StartTime and   AC.TIME_STAMP<:Endtime   GROUP BY 1,2,3) TM "
+                " WHERE TM.TIME_STAMP>=:StartTime and   TM.TIME_STAMP<:Endtime  group BY 1  INTO ARCBILL_KEY,  TOTALAMOUNT DO begin stmnt = '';        "
+		" stmnt='UPDATE '||ATABLENAME||' set TOTAL_AMOUNT = ''' || TOTALAMOUNT|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''''; "
+		"execute statement stmnt; "
+		"end "
+		"SUSPEND;   "
+		"END " , inDBControl );
+	}
+	catch(Exception &exception)
+	{
+		transaction.Rollback();
+		throw;
+	}
+}
+//-----------------------------------------------------
+void TApplyParser::CREATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl )
+{	TDBTransaction transaction( *inDBControl );
+	try
+	{
+		executeQuery(
+		"RECREATE PROCEDURE CREATE_DSR_PIVOT ( "
+		"ATABLENAME Varchar(50), "
+		"STARTTIME Timestamp, "
+		"ENDTIME Timestamp ) "
+		"RETURNS ( "
+		"ASTMNT Varchar(8000) ) "
+		"AS "
+		"DECLARE VARIABLE StmtArcBill VARCHAR(8000); "
+		"DECLARE VARIABLE StmtMenuName VARCHAR(8000); "
+		"DECLARE VARIABLE StmtArcOrderTax VARCHAR(8000); "
+		"DECLARE VARIABLE MenuDiscountStmt VARCHAR(8000); "
+		"DECLARE VARIABLE ArcBillPay VARCHAR(50); "
+		"DECLARE VARIABLE MenuName VARCHAR(50); "
+		"DECLARE VARIABLE ArcOrderTax VARCHAR(50);  "
+		"DECLARE VARIABLE MenuDiscountCol VARCHAR(50);  "
+		"DECLARE VARIABLE colname VARCHAR(50); "
+		"DECLARE VARIABLE MenuDiscountColData VARCHAR(50); "
+		"BEGIN StmtArcBill = '';  "
+		"for "
+		"SELECT distinct upper(ARCBILL_PAY.PAY_TYPE) "
+		"FROM ARCBILLPAY ARCBILL_PAY left join arcbill on  ARCBILL.ARCBILL_KEY=ARCBILL_PAY.ARCBILL_KEY  "
+		"where ARCBILL.TIME_STAMP>=:StartTime and ARCBILL.TIME_STAMP<:Endtime  "
+		"order by 1 into ArcBillPay "
+		"do begin "
+		"ArcBillPay=REPLACE ( ArcBillPay, '(', ''); "
+		"ArcBillPay=REPLACE ( ArcBillPay, ')', ''); "
+        "ArcBillPay=REPLACE (ArcBillPay, '''','');  "
+		"if (ArcBillPay <> '') "
+		"then "
+		"StmtArcBill = StmtArcBill || ', ' || REPLACE (ArcBillPay, ' ', '') || ' VARCHAR(50)'; "
+		"end "
+		"StmtArcBill = substring(StmtArcBill from 2); "
+		"StmtMenuName = ''; "
+		"for "
+		"SELECT distinct upper(a.MENU_NAME) FROM ARCHIVE a "
+		"left join arcbill on  ARCBILL.ARCBILL_KEY=a.ARCBILL_KEY "
+		"where a.MENU_NAME<>'' and ARCBILL.TIME_STAMP>=:StartTime and ARCBILL.TIME_STAMP<:Endtime "
+		"order by 1 "
+		"into MenuName "
+		"do begin "
+		"MenuName=REPLACE ( MenuName, '(', ''); "
+		"MenuName=REPLACE ( MenuName, ')', ''); "
+        "MenuName=REPLACE (MenuName, '''','');  "
+		"if (MenuName <> '') "
+		"then "
+		"StmtMenuName = StmtMenuName || ', ' ||REPLACE ( REPLACE (REPLACE (MenuName, ' ', ''), '.', '' ),'-','' ) || ' VARCHAR(50)'; "
+		"end "
+		"StmtMenuName = substring(StmtMenuName from 2); "
+		"MenuDiscountStmt = ''; "
+		"for "
+		"SELECT distinct upper(a.MENU_NAME) FROM ARCHIVE a "
+		"left join arcbill on  ARCBILL.ARCBILL_KEY=a.ARCBILL_KEY "
+		"where a.MENU_NAME<>'' and ARCBILL.TIME_STAMP>=:StartTime and ARCBILL.TIME_STAMP<:Endtime "
+		"order by 1 "
+		"into MenuDiscountCol "
+		"do begin "
+		"MenuDiscountCol=REPLACE ( MenuDiscountCol, '(', ''); "
+		"MenuDiscountCol=REPLACE ( MenuDiscountCol, ')', ''); "
+         "MenuDiscountCol=REPLACE (MenuDiscountCol, '''','');  "
+		"if (MenuDiscountCol <> '')  "
+		"then MenuDiscountColData='_Discount_Amount'; "
+		"if (MenuDiscountCol <> '')  "
+		"then "
+		"MenuDiscountStmt = MenuDiscountStmt|| ', ' ||REPLACE ( REPLACE (REPLACE (MenuDiscountCol, ' ', ''), '.', '' ),'-','' )|| ''|| MenuDiscountColData || ' VARCHAR(50)'; "
+		"if (MenuDiscountCol <> '')  "
+		"then  "
+		"MenuDiscountColData='_Surcharge_Amount'; "
+		"if (MenuDiscountCol <> '') "
+		"then MenuDiscountStmt = MenuDiscountStmt|| ', ' ||REPLACE ( REPLACE (REPLACE (MenuDiscountCol, ' ', ''), '.', '' ),'-','' ) || ''|| MenuDiscountColData || ' VARCHAR(50)';  "
+		"end "
+		"MenuDiscountStmt = substring(MenuDiscountStmt from 2); "
+		"StmtArcOrderTax = ''; "
+		"for  "
+		"SELECT  distinct upper(a.TAX_NAME) FROM ARCORDERTAXES a  "
+		"left join ARCHIVE on  ARCHIVE.ARCHIVE_KEY=a.ARCHIVE_KEY  "
+		"left join arcbill on  ARCBILL.ARCBILL_KEY=ARCHIVE.ARCBILL_KEY  "
+		"where a.TAX_NAME<>'' and ARCBILL.TIME_STAMP>=:StartTime and ARCBILL.TIME_STAMP<:Endtime "
+		"order by 1  "
+		"into  "
+		"ArcOrderTax  "
+		"do begin  "
+		"ArcOrderTax=REPLACE ( ArcOrderTax, '(', ''); "
+		"ArcOrderTax=REPLACE ( ArcOrderTax, ')', ''); "
+        "ArcOrderTax=REPLACE (ArcOrderTax, '''','');  "
+		"if (ArcOrderTax <> '') then ArcOrderTax='Tax_' ||ArcOrderTax;  "
+		"StmtArcOrderTax = StmtArcOrderTax || ', ' ||REPLACE (ArcOrderTax, ' ', '') || ' VARCHAR(50)'; "
+		"StmtArcOrderTax =REPLACE (StmtArcOrderTax,',  VARCHAR(50),',''); "
+		"end  "
+		"if (exists(select 1 from RDB$RELATIONS where RDB$RELATION_NAME = 'DSRREPORT' ))  "
+		"THEN BEGIN  "
+		"AStmnt = 'drop table DSRREPORT;'; "
+		"execute statement AStmnt; "
+		"END "
+		"Astmnt = 'CREATE TABLE '||ATableName||' (SRNO Integer, Location VARCHAR(50) , INVOICE_NUMBER  VARCHAR(50) ,TIME_STAMP Timestamp ,BILLAMOUNT  Numeric(15,4) , ' || StmtMenuName || ',' || MenuDiscountStmt || ', '  ||StmtArcOrderTax || ',SUB_TOTAL_TAX Numeric(15,4),TOTAL_AMOUNT Numeric(15,4),' || StmtArcBill || ');'; "
+		"AStmnt=REPLACE (AStmnt, ', ,,', ',');  "
+		"AStmnt=REPLACE (AStmnt, ',,', ','); "
+		"AStmnt=REPLACE (AStmnt, ',)', ')');  "
+		"AStmnt=REPLACE (AStmnt, ', ,', ','); "
+		"AStmnt=REPLACE (AStmnt, ',)', ')');  "
+		"AStmnt=REPLACE (AStmnt, '.', ''); "
+		"AStmnt=REPLACE (AStmnt, '%', ''); "
+		"AStmnt=REPLACE ( AStmnt, '.', ''); "
+		"AStmnt=REPLACE ( AStmnt, '<', '');  "
+		"AStmnt=REPLACE ( AStmnt, '>', '');  "
+		"AStmnt=REPLACE ( AStmnt, '?', '');  "
+		"AStmnt=REPLACE ( AStmnt, '^', '');  "
+		"AStmnt=REPLACE ( AStmnt, '&', ''); "
+		"AStmnt=REPLACE ( AStmnt, '-', '');  "
+		"AStmnt=REPLACE ( AStmnt, '--', '');  "
+		"AStmnt=REPLACE ( AStmnt, '!', ''); "
+		"AStmnt=REPLACE ( AStmnt, '*', ''); "
+		"AStmnt=REPLACE ( AStmnt, '#', ''); "
+		"AStmnt=REPLACE ( AStmnt, '+', ''); "
+		"AStmnt=REPLACE ( AStmnt, '{', ''); "
+		"AStmnt=REPLACE ( AStmnt, '[', ''); "
+		"AStmnt=REPLACE ( AStmnt, '', ''); "
+		"AStmnt=REPLACE ( AStmnt, '/', ''); "
+		"AStmnt=REPLACE ( AStmnt, '!', '');  "
+		"AStmnt=REPLACE ( AStmnt, ':', ''); "
+		"AStmnt=REPLACE ( AStmnt, ';', ''); "
+		"AStmnt=REPLACE (AStmnt, '0.00%', '');  "
+		"AStmnt=REPLACE (AStmnt, '000%', ''); "
+		"AStmnt=REPLACE (AStmnt, '@', ''); "
+		"AStmnt=REPLACE (AStmnt, '000', ''); "
+		"AStmnt=REPLACE (AStmnt, '00', '');  "
+		"AStmnt=REPLACE (AStmnt, ', VARCHAR(50),',''); "
+		"AStmnt=REPLACE (AStmnt, ',  VARCHAR(50),','');   "
+        "AStmnt=REPLACE (AStmnt, '''','');  "
+		"execute statement AStmnt;  "
+		"SUSPEND;   "
+		"END ",	inDBControl );
+		/*
+"GRANT EXECUTE "
+"ON PROCEDURE CREATE_DSR_PIVOT TO  SYSDBA " ;       */
+	}
+	catch(Exception &exception)
+	{
+		transaction.Rollback();
+		throw;
+	}
+}
+//---------------------------------------------------------------------------
+void TApplyParser::POPULATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl )
+{ TDBTransaction transaction( *inDBControl );
+	try
+	{
+		executeQuery(
+		"RECREATE PROCEDURE POPULATE_DSR_PIVOT ( ATABLENAME Varchar(50), STARTTIME Timestamp, ENDTIME Timestamp ) "
+		"AS "
+		"DECLARE VARIABLE stmnt VARCHAR(8000); "
+		"DECLARE VARIABLE updatestmt VARCHAR(8000); "
+		"DECLARE VARIABLE updatetaxstmt VARCHAR(8000); "
+		"DECLARE VARIABLE updatemenustmt VARCHAR(8000); "
+		"DECLARE VARIABLE UpdateMenuDiscountstmt VARCHAR(8000); "
+		"DECLARE VARIABLE UpdatePayTypeStmt VARCHAR(8000); "
+		"DECLARE VARIABLE RegNum VARCHAR(50); "
+		"DECLARE VARIABLE AN VARCHAR(50); "
+		"DECLARE VARIABLE PAY_TYPE VARCHAR(50); "
+		"DECLARE VARIABLE ARCBILL_KEY Integer; "
+		"DECLARE VARIABLE INVOICE_NUMBER VARCHAR(50); "
+		"DECLARE VARIABLE TIME_STAMP VARCHAR(50); "
+		"DECLARE VARIABLE ITEM_NAME Timestamp ; "
+		"DECLARE VARIABLE SIZE_NAME VARCHAR(50) ; "
+		"DECLARE VARIABLE PRICE Numeric(15,4); "
+		"DECLARE VARIABLE QTY VARCHAR(50); "
+		"DECLARE VARIABLE VAT VARCHAR(50) ; "
+		"DECLARE VARIABLE SERVICECHARGE  VARCHAR(50); "
+		"DECLARE VARIABLE AMOUNT VARCHAR(50); "
+		"DECLARE VARIABLE ARCORDERTAXES_KEY VARCHAR(50); "
+		"DECLARE VARIABLE ARCHIVE_KEY VARCHAR(50); "
+		"DECLARE VARIABLE TAX_NAME VARCHAR (50); "
+		"DECLARE VARIABLE TAX_VALUE VARCHAR(50); "
+		"DECLARE VARIABLE TAX_TYPE VARCHAR(50);  "
+		"DECLARE VARIABLE MENU_NAME VARCHAR(50); "
+		"DECLARE VARIABLE SUBTOTAL VARCHAR(50); "
+		"DECLARE VARIABLE ARCBILLPAY_KEY VARCHAR(50); "
+		"DECLARE VARIABLE TOTAL VARCHAR(50); "
+		"DECLARE VARIABLE DISCOUNT VARCHAR(50); "
+		"DECLARE VARIABLE SURCHARGE VARCHAR(50); "
+		"DECLARE VARIABLE MenuDiscountColData VARCHAR(50); "
+		"DECLARE VARIABLE Course_Name VARCHAR(50); "
+		"DECLARE VARIABLE Item_Count VARCHAR(50); "
+		"DECLARE VARIABLE NETSALE VARCHAR(50); "
+		"DECLARE VARIABLE TAXSUM VARCHAR(50); "
+		"DECLARE VARIABLE TOTALAMOUNT Numeric(15,4); "
+        "DECLARE VARIABLE ORDER_LOCATION VARCHAR(50); "
+		"BEGIN "
+		"execute  statement 'delete from '||ATableName||';'; FOR SELECT a.ARCBILL_KEY FROM ARCBILL a  where a.TIME_STAMP>=:StartTime and a.TIME_STAMP<:Endtime  order by 1 into RegNum  "
+		"DO begin stmnt = 'INSERT INTO '||ATABLENAME||' (SRNO) VALUES('''|| RegNum||''')';  "
+		"execute statement stmnt;  "
+		"end FOR SELECT a.ARCBILL_KEY,  a.TIME_STAMP, a.TOTAL, a.INVOICE_NUMBER FROM ARCBILL a where a.TIME_STAMP>=:StartTime and a.TIME_STAMP<:Endtime  "
+		"INTO ARCBILL_KEY , TIME_STAMP ,TOTAL   , INVOICE_NUMBER  "
+		"DO begin  "
+		"updatestmt ='UPDATE '|| ATABLENAME||' set TIME_STAMP = '''||TIME_STAMP ||''' , BILLAMOUNT = '''||TOTAL||''' , INVOICE_NUMBER = '''|| INVOICE_NUMBER||'''   WHERE SRNO = '''||ARCBILL_KEY||''''; "
+		"execute statement updatestmt;  "
+		"end "
+		"FOR "
+		"SELECT  a.ARCBILL_KEY, a.PAY_TYPE, SUM(a.SUBTOTAL) AS SUBTOTAL FROM ARCBILLPAY a LEFT join ARCBILL ON ARCBILL.ARCBILL_KEY=A.ARCBILL_KEY "
+            "WHERE ARCBILL.TIME_STAMP>=:StartTime and ARCBILL.TIME_STAMP<:Endtime  "
+		"GROUP BY  a.ARCBILL_KEY, a.PAY_TYPE INTO ARCBILL_KEY, PAY_TYPE , SUBTOTAL  "
+		"DO begin     "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ', ,,', ','); "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ',,', ',');  "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ',)', ')');  "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ', ,', ',');   "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ',)', ')');    "
+		"PAY_TYPE=REPLACE (PAY_TYPE, '.', '');    "
+		"PAY_TYPE=REPLACE (PAY_TYPE, '%', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '.', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '<', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '>', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '?', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '^', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '&', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '-', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '--', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '!', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '*', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '#', ''); "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '@', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '(', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, ')', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '+', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '{', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '[', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '/', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '!', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, ':', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, ';', '');   "
+        "PAY_TYPE=REPLACE (PAY_TYPE, '''','');  "
+		"if (PAY_TYPE <> '') then  "
+		"UpdatePayTypeStmt = 'UPDATE '||ATABLENAME||' set ' || upper(REPLACE (PAY_TYPE, ' ', '') )|| ' = ''' || SUBTOTAL|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''' and ''' || SUBTOTAL||'''!=0' ;  "
+		"if (PAY_TYPE <> '')  "
+		"then execute statement UpdatePayTypeStmt;  "
+		"end     "
+		"FOR SELECT AB.ARCBILL_KEY, a.TAX_NAME, sum(a.TAX_VALUE) TAX_VALUE, a.TAX_TYPE FROM ARCORDERTAXES a INNER JOIN ARCHIVE AC on "
+                    "AC.ARCHIVE_KEY=a.ARCHIVE_KEY INNER JOIN ARCBILL AB ON AB.ARCBILL_KEY=AC.ARCBILL_KEY WHERE  a.TAX_NAME<>'' and "
+                    "AC.TIME_STAMP>=:StartTime and  AC.TIME_STAMP<:Endtime GROUP BY AB.ARCBILL_KEY,   a.TAX_NAME, a.TAX_TYPE INTO ARCBILL_KEY , TAX_NAME  , TAX_VALUE   , TAX_TYPE  "
+		"DO begin     "
+		"TAX_NAME='Tax_' ||TAX_NAME; "
+		"TAX_NAME=REPLACE (TAX_NAME, '0.00%', ''); "
+		"TAX_NAME=REPLACE (TAX_NAME, '000%', '');  "
+		"TAX_NAME=REPLACE (TAX_NAME, '000', '');   "
+		"TAX_NAME=REPLACE (TAX_NAME, '00', '');  "
+		"TAX_NAME=REPLACE (TAX_NAME, ', ,,', ','); "
+		"TAX_NAME=REPLACE (TAX_NAME, ',,', ',');   "
+		"TAX_NAME=REPLACE (TAX_NAME, ',)', ')');   "
+		"TAX_NAME=REPLACE (TAX_NAME, ', ,', ',');  "
+		"TAX_NAME=REPLACE (TAX_NAME, ',)', ')');  "
+		"TAX_NAME=REPLACE (TAX_NAME, '.', '');    "
+		"TAX_NAME=REPLACE (TAX_NAME, '%', '');    "
+		"TAX_NAME=REPLACE ( TAX_NAME, '.', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '<', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '>', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '?', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '^', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '&', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '@', ''); "
+		"TAX_NAME=REPLACE ( TAX_NAME, '-', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '--', ''); "
+		"TAX_NAME=REPLACE ( TAX_NAME, '!', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '*', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '#', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '(', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, ')', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '+', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '{', '');  "
+		"TAX_NAME=REPLACE ( TAX_NAME, '[', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '', '');    "
+		"TAX_NAME=REPLACE ( TAX_NAME, '/', '');   "
+		"TAX_NAME=REPLACE ( TAX_NAME, '!', '');    "
+		"TAX_NAME=REPLACE ( TAX_NAME, ':', '');    "
+		"TAX_NAME=REPLACE ( TAX_NAME, ';', '');    "
+        "TAX_NAME=REPLACE (TAX_NAME, '''','');  "
+		"updatetaxstmt = 'UPDATE '||ATABLENAME||' set ' ||upper(REPLACE (TAX_NAME, ' ', '') ) || ' = ''' || TAX_VALUE|| '''  WHERE SRNO = ''' || ARCBILL_KEY||'''';  "
+		"execute statement updatetaxstmt;  "
+		"end  for "
+		"SELECT ARCBILL_KEY,  SUM(TAX_VALUE) TAX_VALUE   "
+            "FROM ( SELECT AB.ARCBILL_KEY,AB.TIME_STAMP,  sum(a.TAX_VALUE) TAX_VALUE FROM ARCORDERTAXES a INNER JOIN ARCHIVE AC on AC.ARCHIVE_KEY=a.ARCHIVE_KEY "
+                    "INNER JOIN ARCBILL AB ON AB.ARCBILL_KEY=AC.ARCBILL_KEY where a.TAX_NAME<>''  AND AB.TIME_STAMP >= :StartTime AND AB.TIME_STAMP < :Endtime "
+                    "GROUP BY AB.ARCBILL_KEY,AB.TIME_STAMP) AB where  AB.TIME_STAMP>=:StartTime and  AB.TIME_STAMP<:Endtime group BY 1   "
+		"into ARCBILL_KEY ,TAXSUM DO begin stmnt = '';  "
+		"stmnt = 'UPDATE '||ATABLENAME||' set SUB_TOTAL_TAX = ''' || TAXSUM|| '''  WHERE SRNO = ''' || ARCBILL_KEY||'''';  "
+		"execute statement stmnt; "
+		"end  "
+		"FOR  SELECT  a.ARCBILL_KEY, a.PAY_TYPE, SUM(a.SUBTOTAL) AS SUBTOTAL FROM ARCBILLPAY a LEFT JOIN ARCBILL ON ARCBILL.ARCBILL_KEY=A.ARCBILL_KEY "
+                "WHERE ARCBILL.TIME_STAMP>=:StartTime and  ARCBILL.TIME_STAMP<:Endtime GROUP BY  a.ARCBILL_KEY, a.PAY_TYPE INTO ARCBILL_KEY, PAY_TYPE , SUBTOTAL "
+		" DO begin "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ', ,,', ','); "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ',,', ',');  "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ',)', ')');  "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ', ,', ','); "
+		"PAY_TYPE=REPLACE (PAY_TYPE, ',)', ')');   "
+		"PAY_TYPE=REPLACE (PAY_TYPE, '.', '');    "
+		"PAY_TYPE=REPLACE (PAY_TYPE, '%', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '.', '');    "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '<', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '>', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '?', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '^', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '&', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '-', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '--', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '!', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '*', ''); "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '@', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '#', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '(', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, ')', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '+', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '{', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '[', ''); "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '', '');   "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '/', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, '!', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, ':', '');  "
+		"PAY_TYPE=REPLACE ( PAY_TYPE, ';', '');  "
+        "PAY_TYPE=REPLACE (PAY_TYPE, '''','');  "
+		"if (PAY_TYPE <> '') then  "
+		"UpdatePayTypeStmt = 'UPDATE '||ATABLENAME||' set ' || upper(REPLACE (PAY_TYPE, ' ', '') )|| ' = ''' || SUBTOTAL|| ''' WHERE SRNO = ''' || ARCBILL_KEY||'''  and ''' || SUBTOTAL||'''!=0' ;  "
+		"if (PAY_TYPE <> '')  "
+		"then execute statement UpdatePayTypeStmt;  "
+		"end  "
+		"FOR Select  ARCHIVE.ARCBILL_KEY,Ab.ORDER_LOCATION,ARCHIVE.MENU_NAME MENU_NAME, COALESCE( Cast(Sum(Archive.Discount) as Numeric(15,4)), 0) Discount, "
+                    "COALESCE (Cast(Sum(Archive.Surcharge) as Numeric(15,4)), 0) Surcharge, Cast(Sum (abs(Archive.Qty) * "
+                    "(COALESCE(Archive.BASE_PRICE,0))+ COALESCE(Archive.Discount, 0)+ COALESCE(Archive.Surcharge, 0)) as Numeric(15,4)) SubTotal  From ARCHIVE Ab  Left Join "
+                    "( Select    ARCHIVE.ARCBILL_KEY,ARCHIVE.TIME_STAMP, ARCHIVE.ARCHIVE_KEY, Archive.Qty, ARCHIVE.BASE_PRICE  , ARCHIVE.MENU_NAME, "
+                    "MIN(CASE WHEN Archive.DISCOUNT_WITHOUT_TAX >= 0 THEN COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0) END)  AS Surcharge, MIN(CASE WHEN Archive.DISCOUNT_WITHOUT_TAX < 0 "
+                    "THEN COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0) END) AS Discount From Archive Where (Archive.Order_Type = 3 or Archive.Order_Type = 0) AND  "
+                    "(Archive.TIME_STAMP>=:StartTime and  Archive.TIME_STAMP<:Endtime) Group By ARCHIVE.ARCBILL_KEY,ARCHIVE.ARCHIVE_KEY , ARCHIVE.BASE_PRICE, "
+                    "ARCHIVE.MENU_NAME,Archive.Qty, ARCHIVE.TIME_STAMP ) Archive on Ab.ARCHIVE_KEY = Archive.ARCHIVE_KEY WHERE Archive.TIME_STAMP>=:StartTime and  "
+                    "Archive.TIME_STAMP<:Endtime Group By ARCHIVE.ARCBILL_KEY, ARCHIVE.MENU_NAME,Ab.ORDER_LOCATION Having Count(Archive.Archive_Key) > 0 "
+                    "Into ARCBILL_KEY,ORDER_LOCATION,MENU_NAME,DISCOUNT, SURCHARGE ,SubTotal         "
+		"DO begin MENU_NAME=REPLACE (MENU_NAME, ', ,,', ',');  "
+		"MENU_NAME=REPLACE (MENU_NAME, ',,', ',');     "
+		"MENU_NAME=REPLACE (MENU_NAME, ',)', ')');    "
+		"MENU_NAME=REPLACE (MENU_NAME, ', ,', ',');   "
+		"MENU_NAME=REPLACE (MENU_NAME, ',)', ')');  "
+		"MENU_NAME=REPLACE (MENU_NAME, '.', '');     "
+		"MENU_NAME=REPLACE (MENU_NAME, '%', '');     "
+		"MENU_NAME=REPLACE ( MENU_NAME, '.', '');    "
+		"MENU_NAME=REPLACE ( MENU_NAME, '<', '');     "
+		"MENU_NAME=REPLACE ( MENU_NAME, '>', '');    "
+		"MENU_NAME=REPLACE ( MENU_NAME, '?', '');    "
+		"MENU_NAME=REPLACE ( MENU_NAME, '^', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '&', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '-', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '--', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '!', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '*', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '#', ''); "
+		"MENU_NAME=REPLACE ( MENU_NAME, '@', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '(', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, ')', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '+', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '{', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '[', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '', '');   "
+		"MENU_NAME=REPLACE ( MENU_NAME, '/', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, '!', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, ':', '');  "
+		"MENU_NAME=REPLACE ( MENU_NAME, ';', '');  "
+        "MENU_NAME=REPLACE (MENU_NAME, '''','');  "
+		"updatemenustmt='';  "
+		"if (MENU_NAME <> '')  "
+		"then "
+		"updatemenustmt = 'UPDATE '||ATABLENAME||' set ' || upper(REPLACE (REPLACE (REPLACE (MENU_NAME, ' ', ''), '.', '' ),'-','' ))|| ' = ''' || SubTotal|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''''; "
+		"if (MENU_NAME <> '') "
+		"then  "
+		"execute statement updatemenustmt; "
+		"MenuDiscountColData='_Discount_Amount'; "
+		"if (MENU_NAME <> '') then  "
+		"UpdateMenuDiscountstmt = 'UPDATE '||ATABLENAME||' set ' ||upper(REPLACE ( REPLACE (REPLACE (MENU_NAME, ' ', ''), '.', '' ),'-','' )) || ''|| MenuDiscountColData || ' = ''' || DISCOUNT|| ''' WHERE SRNO = ''' || ARCBILL_KEY||'''';  "
+		"if (MENU_NAME <> '') then execute statement UpdateMenuDiscountstmt;  "
+		"stmnt = '';  "
+        " stmnt='UPDATE '||ATABLENAME||' set Location = ''' || ORDER_LOCATION|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''''; execute statement stmnt;   "
+         	"stmnt = '';  "
+		"MenuDiscountColData='_Surcharge_Amount'; "
+		"if (MENU_NAME <> '') then stmnt = 'UPDATE '||ATABLENAME||' set ' || upper(REPLACE (REPLACE (REPLACE (MENU_NAME, ' ', ''), '.', '' ),'-','' ))|| ''|| MenuDiscountColData || ' = ''' || SURCHARGE|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''''; "
+		"if (MENU_NAME <> '')  "
+		"then execute statement stmnt; "
+		"end       "
+		"FOR  "
+		"select  TM.ARCBILL_KEY, SUM(TM.SubTotal + COALESCE( TM.TAX_VALUE,0)) Total "
+                "FROM ( SELECT AB.ARCBILL_KEY,AB.TIME_STAMP, TA.SubTotal, sum(a.TAX_VALUE) TAX_VALUE FROM ARCHIVE   AC "
+                "left join ARCORDERTAXES a  on AC.ARCHIVE_KEY = a.ARCHIVE_KEY INNER JOIN ARCBILL AB ON AB.ARCBILL_KEY = AC.ARCBILL_KEY  "
+                "inner join ( select ARCHIVE.ARCBILL_KEY, Cast(Sum(abs(Archive.Qty) * (COALESCE(Archive.BASE_PRICE,0))+ "
+                "COALESCE (Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(15,4)) SubTotal  "
+                "From  Archive Left Join ArcCategories on Archive.Category_Key = ArcCategories.Category_Key  Left Join CategoryGroups on "
+                "ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key  Where  (Archive.Order_Type = 3 or Archive.Order_Type = 0) "
+                "AND Archive.TIME_STAMP>= :StartTime and   Archive.TIME_STAMP< :Endtime "
+                "Group By ARCHIVE.ARCBILL_KEY Having Count (Archive.Archive_Key) > 0 ) TA on TA.ARCBILL_KEY = AB.ARCBILL_KEY  Where a.TAX_NAME<>''  "
+                " AND AB.TIME_STAMP>=:StartTime and   AB.TIME_STAMP<:Endtime GROUP BY 1,2,3) TM where   TM.TIME_STAMP>=:StartTime and   TM.TIME_STAMP<:Endtime  group BY 1  "
+        " INTO ARCBILL_KEY,  TOTALAMOUNT DO begin stmnt = '';        "
+		" stmnt='UPDATE '||ATABLENAME||' set TOTAL_AMOUNT = ''' || TOTALAMOUNT|| ''' WHERE SRNO = ''' || ARCBILL_KEY||''''; "
+		"execute statement stmnt; "
+		"end "
+		"SUSPEND;   "
+		"END "  ,	inDBControl );
+	}
+	catch(Exception &exception)
+	{
+		transaction.Rollback();
+		throw;
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::AlterTable6_37( TDBControl* const inDBControl )
+{
+    if ( !fieldExists( "ARCBILL ", "IS_POSTED_TO_PANASONIC_SERVER ", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE ARCBILL "
+        "ADD IS_POSTED_TO_PANASONIC_SERVER T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+    }
+    if ( !fieldExists( "DAYARCBILL ", "IS_POSTED_TO_PANASONIC_SERVER ", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE DAYARCBILL "
+        "ADD IS_POSTED_TO_PANASONIC_SERVER T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+    }
+}
+
 //------------------------------------------------------------------------------
 void TApplyParser::UpdateContacts6_37( TDBControl* const inDBControl )
 {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     TDBTransaction transaction( *_dbControl );
     transaction.StartTransaction();
@@ -1013,4 +2270,5 @@ void TApplyParser::UpdateContacts6_37( TDBControl* const inDBControl )
 
 
 }
+
 
