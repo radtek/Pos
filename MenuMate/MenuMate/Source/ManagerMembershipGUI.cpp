@@ -169,7 +169,7 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                if(Info.ProxStr.Length() == 0)
                   Info.MemberCode = cardCode;
                bool IsSmartCardEnabled =TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership,false);
-               if (TGlobalSettings::Instance().LoyaltyMateEnabled && Info.CloudUUID == "" && (IsSmartCardEnabled || IsBarcodeCard))
+               if (TGlobalSettings::Instance().LoyaltyMateEnabled && Info.CloudUUID == "")
 			   {
                     MembershipSystem->GenerateMembershipNumber(DBTransaction,Info);
                     // calling the protected method from MembershipManagerSmartCards
