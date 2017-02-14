@@ -13988,13 +13988,14 @@ void TfrmSelectDish::AssignBarcodeToMember()
          if (frmCardSwipe->ModalResult == mrOk)
            {
               memberCardCode = AnsiString(frmCardSwipe->SwipeString).SubString(1, 50);
+              if(TDeviceRealTerminal::Instance().ManagerMembership->UpdateMemberCardCode(DBTransaction, TempUserInfo, memberCardCode))
+              {
+                TDBContacts::UpdateMemberCardCodeToDB(DBTransaction, TempUserInfo, memberCardCode);
+                TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->FormatCardToFactory();
+                MessageBox("Please Remove Card From Reader.", "Information", MB_OK);
+              }
            }
-         if(TDeviceRealTerminal::Instance().ManagerMembership->UpdateMemberCardCode(DBTransaction, TempUserInfo, memberCardCode))
-         {
-            TDBContacts::UpdateMemberCardCodeToDB(DBTransaction, TempUserInfo, memberCardCode);
-            TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->FormatCardToFactory();
-            MessageBox("Please Remove Card From Reader.", "Information", MB_OK);
-         }
+
          DBTransaction.Commit();
       }
       else
