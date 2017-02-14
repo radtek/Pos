@@ -177,15 +177,18 @@ TModalResult TManagerMembershipGUI::AddMember(TMMContactInfo & Info,bool IsBarco
                     memberCreationSuccess = TManagerMembershipSmartCards::createMemberOnLoyaltyMate(syndicateCode, Info);
                }
 
-               if(memberCreationSuccess)
+               if(memberCreationSuccess || !TGlobalSettings::Instance().LoyaltyMateEnabled)
                {
                   ManagerDiscount->DiscountKeyToCode(DBTransaction, Info.AutoAppliedDiscountsID, Info.AutoAppliedDiscounts);
 			      MembershipSystem->SetContactDetails(DBTransaction, Info.ContactKey, Info);
                   DBTransaction.Commit();
-                  DBTransaction.StartTransaction();
-                  MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, Info.ContactKey, Info);
-                  TDBContacts::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.MemberCode);
-                  DBTransaction.Commit();
+                  if(memberCreationSuccess)
+                  {
+                      DBTransaction.StartTransaction();
+                      MembershipSystem->SetContactLoyaltyAttributes(DBTransaction, Info.ContactKey, Info);
+                      TDBContacts::UpdateMemberCardCodeToDB(DBTransaction,Info,Info.MemberCode);
+                      DBTransaction.Commit();
+                  }
                }
                else
                {
