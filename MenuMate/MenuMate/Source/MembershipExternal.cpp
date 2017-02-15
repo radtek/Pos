@@ -534,7 +534,7 @@ void TMembershipExternal::GetReportMemberInfo(Database::TDBTransaction &DBTransa
 {
    TMembership::GetReportMemberInfo(DBTransaction, Member, Report);
    // Add the notes block to the report.
-   UnicodeString TempRow = LoadStr(TABLE_ROW4);
+   UnicodeString TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Account Info");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", Member.AccountInfo == "" ? UnicodeString("&nbsp;") : Member.AccountInfo);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", UnicodeString("&nbsp;"));

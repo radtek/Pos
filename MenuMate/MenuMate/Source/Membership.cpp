@@ -864,7 +864,7 @@ TLoginSuccess TMembership::GetSubsPaid(Database::TDBTransaction &DBTransaction, 
 void TMembership::GetReportMemberStart(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member, TStringList *Report)
 {
    // Start the Member Table.
-   UnicodeString Temp = LoadStr(HTML_START);
+   UnicodeString Temp = HTML_START;
    Temp = AnsiReplaceStr(Temp, "%TITLE%", "Member Report");
    Report->Add(Temp);
 }
@@ -1025,22 +1025,22 @@ void TMembership::GetReportMemberInfo(Database::TDBTransaction &DBTransaction, T
    GetContactDetails(DBTransaction,Member.ContactKey,ContactInfo);
 
    // Add the Membership Block.
-   UnicodeString Temp = LoadStr(TABLE_START);
+   UnicodeString Temp = TABLE_START;
    Report->Add(Temp);
-   Temp = LoadStr(TABLE_ROW4_HEADER);
+   Temp = TABLE_ROW4_HEADER;
    Temp = ReplaceStr(Temp, "%TABLETITLE%", "Member Information");
    //MessageBox(ContactInfo.Name +" "+ContactInfo.Surname + "'s Birthday" + "\n" , "Happy Birthday", MB_OK + MB_ICONINFORMATION);
    Temp = ReplaceStr(Temp, "%TABLEHEADER%", " " + ContactInfo.Title + " " + ContactInfo.Name +" "+ContactInfo.Surname + " (" + ContactInfo.MembershipNumber + ")");
    //MessageBox(Temp + "'s Temp" + "\n" , "Happy Birthday", MB_OK + MB_ICONINFORMATION);
    Report->Add(Temp);
 
-   UnicodeString TempRow = LoadStr(TABLE_ROW4);
+   UnicodeString TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Alias");
    TempRow = ReplaceStr(TempRow, "%ROWCONTENT1%", ContactInfo.Alias == "" ? ContactInfo.Name+" "+ContactInfo.Surname : ContactInfo.Alias);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Initials");
    TempRow = ReplaceStr(TempRow, "%ROWCONTENT2%", ContactInfo.Initials == "" ? UnicodeString("&nbsp;") : ContactInfo.Initials);
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
 
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Location Address");
    UnicodeString TempAdd = ContactInfo.LocationAddress;
@@ -1056,60 +1056,60 @@ void TMembership::GetReportMemberInfo(Database::TDBTransaction &DBTransaction, T
    TempAdd = AnsiReplaceStr(TempAdd, "\r", "<br>");
    TempRow = ReplaceStr(TempRow, "%ROWCONTENT2%", TempAdd);
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Phone");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", ContactInfo.Phone == "" ? UnicodeString("&nbsp;") : ContactInfo.Phone);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "EMail");
    TempRow = ReplaceStr(TempRow, "%ROWCONTENT2%", ContactInfo.EMail == "" ? UnicodeString("&nbsp;") : ContactInfo.EMail);
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "DOB");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", ContactInfo.DateOfBirth.FormatString(" dd/mm/yyyy "));
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Mobile");
    TempRow = ReplaceStr(TempRow, "%ROWCONTENT2%", ContactInfo.Mobile == "" ? UnicodeString("&nbsp;") : ContactInfo.Mobile);
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Gender");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", ContactInfo.Sex == "" ? UnicodeString("&nbsp;") : ContactInfo.Sex);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Last Purchase");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", GetLastVisit(DBTransaction, Member.ContactKey).FormatString(" dd-mm-yy "));
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Total Spent");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", FormatFloat("0.00", LoyaltyGetSpendValue(DBTransaction, Member.ContactKey)));
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Current Points");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", FormatFloat("0.00", LoyaltyGetValue(DBTransaction, Member.ContactKey)));
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Tier level");
    TDBTierLevel::GetTierLevelOfMember(DBTransaction,Member);
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", TDBTierLevel::GetTierLevelName(DBTransaction,Member.TierLevel));
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%",  "Current Year Points");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", FormatFloat("0.00",GetEarnedPointsForCurrentYear(DBTransaction, Member)));
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_STOP);
+   TempRow = TABLE_STOP;
    Report->Add(TempRow);
 }
 
 void TMembership::GetReportMemberInfoRestricted(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member, TStringList *Report)
 {
    // Add the Membership Block.
-   AnsiString Temp = LoadStr(TABLE_START);
+   AnsiString Temp = TABLE_START;
    Report->Add(Temp);
-   Temp = LoadStr(TABLE_ROW4_HEADER);
+   Temp = TABLE_ROW4_HEADER;
    Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Member Information");
    Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " " + Member.Title + " " + Member.Name + " (" + Member.MembershipNumber + ")");
    Report->Add(Temp);
 
-   AnsiString TempRow = LoadStr(TABLE_ROW4);
+   AnsiString TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Information");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", "Restricted");
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Access");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", "Denied");
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
 
-   TempRow = LoadStr(TABLE_STOP);
+   TempRow = TABLE_STOP;
    Report->Add(TempRow);
 }
 
@@ -1130,9 +1130,9 @@ void TMembership::GetReportMemberFavouritesInfo(Database::TDBTransaction &DBTran
    if (IBInternalQuery->RecordCount)
    {
 	  // Add the Membership Block.
-	  UnicodeString Temp = LoadStr(TABLE_START);
+	  UnicodeString Temp = TABLE_START;
 	  Report->Add(Temp);
-	  Temp = LoadStr(TABLE_ROW6_HEADER);
+	  Temp = TABLE_ROW6_HEADER;
 	  Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Member Information");
 	  Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " " + Member.Title + " " + Member.Name + " (" + Member.MembershipNumber + ")");
 	  Report->Add(Temp);
@@ -1140,7 +1140,7 @@ void TMembership::GetReportMemberFavouritesInfo(Database::TDBTransaction &DBTran
 	  // Add the Membership Block.
 	  for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
 	  {
-		 UnicodeString TempRow = LoadStr(TABLE_ROW6A);
+		 UnicodeString TempRow = TABLE_ROW6A;
 		 TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Qty :");
 		 TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", IBInternalQuery->FieldByName("QTY")->AsString);
 		 TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Item :");
@@ -1151,7 +1151,7 @@ void TMembership::GetReportMemberFavouritesInfo(Database::TDBTransaction &DBTran
 		 Report->Add(TempRow);
 	  }
 
-	  Temp = LoadStr(TABLE_STOP);
+	  Temp = TABLE_STOP;
 	  Report->Add(Temp);
    }
 }
@@ -1172,9 +1172,9 @@ void TMembership::GetReportMemberPointsInfo(Database::TDBTransaction &DBTransact
 {
    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-   UnicodeString Temp = LoadStr(TABLE_START);
+   UnicodeString Temp = TABLE_START;
    Report->Add(Temp);
-   Temp = LoadStr(TABLE_ROW2_HEADER);
+   Temp = TABLE_ROW2_HEADER;
    Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Points Information");
    Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " " + Member.Title + " " + Member.Name + " (" + Member.MembershipNumber + ")");
    Report->Add(Temp);
@@ -1193,7 +1193,7 @@ void TMembership::GetReportMemberPointsInfo(Database::TDBTransaction &DBTransact
 	  TransactionCount = IBInternalQuery->FieldByName("TRANSCOUNT")->AsString;
    }
 
-   UnicodeString TempRow = LoadStr(TABLE_ROW2);
+   UnicodeString TempRow = TABLE_ROW2;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Transactions :");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", TransactionCount);
    Report->Add(TempRow);
@@ -1206,45 +1206,45 @@ void TMembership::GetReportMemberPointsInfo(Database::TDBTransaction &DBTransact
     {
        if(ptr->first.ExportStatus == pesNone && PrintedHeldTitle == false)
         {
-           TempRow = LoadStr(TABLE_ROW2);
+           TempRow = TABLE_ROW2;
            TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Store Balance :");
            TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", Member.Points.getPointsBalance());
            Report->Add(TempRow);
 
-           TempRow = LoadStr(TABLE_ROW2);
+           TempRow = TABLE_ROW2;
            TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "&nbsp");
            TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", "&nbsp");
            Report->Add(TempRow);
 
-           TempRow = LoadStr(TABLE_ROW2);
+           TempRow = TABLE_ROW2;
            TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Store Points Held :");
            TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", "&nbsp");
            Report->Add(TempRow);
            PrintedHeldTitle = true;
         }
-        UnicodeString TempRow = LoadStr(TABLE_ROW2);
+        UnicodeString TempRow = TABLE_ROW2;
         TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", ptr->first.Name());
         TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", FormatFloat("0.00", ptr->second));
         Report->Add(TempRow);
     }
 
 
-    TempRow = LoadStr(TABLE_ROW2);
+    TempRow = TABLE_ROW2;
     TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Held Total :");
     TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", Member.Points.getPointsHeldTotal());
     Report->Add(TempRow);
 
-   Temp = LoadStr(TABLE_STOP);
+   Temp = TABLE_STOP;
    Report->Add(Temp);
 
-   Temp = LoadStr(TABLE_START);
+   Temp = TABLE_START;
    Report->Add(Temp);
-   Temp = LoadStr(TABLE_ROW4_HEADER);
+   Temp = TABLE_ROW4_HEADER;
    Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Points History");
    Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " " + Member.Title + " " + Member.Name + " (" + Member.MembershipNumber + ")");
    Report->Add(Temp);
 
-   TempRow = LoadStr(TABLE_ROW4S);
+   TempRow = TABLE_ROW4S;
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "35%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "15%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "25%");
@@ -1271,7 +1271,7 @@ void TMembership::GetReportMemberPointsInfo(Database::TDBTransaction &DBTransact
    IBInternalQuery->ExecQuery();
    for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
    {
-	  TempRow = LoadStr(TABLE_ROW4S);
+	  TempRow = TABLE_ROW4S;
 	  TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "35%");
 	  TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "15%");
 	  TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "25%");
@@ -1327,7 +1327,7 @@ void TMembership::GetReportMemberPointsInfo(Database::TDBTransaction &DBTransact
 	  Report->Add(TempRow);
    }
 
-   Temp = LoadStr(TABLE_STOP);
+   Temp = TABLE_STOP;
    Report->Add(Temp);
 }
 
@@ -1335,13 +1335,13 @@ void TMembership::GetReportPointsTransactions(Database::TDBTransaction &DBTransa
 {
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-	UnicodeString Temp = LoadStr(HTML_START);
+	UnicodeString Temp = HTML_START;
 	Temp = AnsiReplaceStr(Temp, "%TITLE%", "Points Transaction Report");
 	Report->Add(Temp);
 
-	Temp = LoadStr(TABLE_START);
+	Temp = TABLE_START;
 	Report->Add(Temp);
-	Temp = LoadStr(TABLE_ROW8_HEADER);
+	Temp = TABLE_ROW8_HEADER;
 	Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Points Transactions");
 	Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " Last 30 Days ");
 	Report->Add(Temp);
@@ -1377,7 +1377,7 @@ void TMembership::GetReportPointsTransactions(Database::TDBTransaction &DBTransa
 		}
 	}
 
-	UnicodeString TempRow = LoadStr(TABLE_ROW8S);
+	UnicodeString TempRow = TABLE_ROW8S;
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 8; j++)
 			TempRow = AnsiReplaceStr(TempRow, Headers[i][j], Headers1[i][j]);
@@ -1448,7 +1448,7 @@ void TMembership::GetReportPointsTransactions(Database::TDBTransaction &DBTransa
 				("INVOICE_NUMBER")->AsString !=
 				ProcessingInvoiceNumber)) {
 			// Write it out.
-			TempRow = LoadStr(TABLE_ROW8S);
+			TempRow = TABLE_ROW8S;
 
 
 
@@ -1484,11 +1484,11 @@ void TMembership::GetReportPointsTransactions(Database::TDBTransaction &DBTransa
 				Points[j] = 0;
 		}
 	}
-	Temp = LoadStr(TABLE_STOP);
+	Temp = TABLE_STOP;
 	Report->Add(Temp);
 
 	// Start the Member Table.
-	Temp = LoadStr(HTML_BODY_STOP);
+	Temp = HTML_BODY_STOP;
 	Report->Add(Temp);
 }
 
@@ -1498,13 +1498,13 @@ void TMembership::GetReportPointsTransactions(Database::TDBTransaction &DBTransa
 
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-	UnicodeString Temp = LoadStr(HTML_START);
+	UnicodeString Temp = HTML_START;
 	Temp = AnsiReplaceStr(Temp, "%TITLE%", "Points Transaction Report");
 	Report->Add(Temp);
 
-	Temp = LoadStr(TABLE_START);
+	Temp = TABLE_START;
 	Report->Add(Temp);
-	Temp = LoadStr(TABLE_ROW9_HEADER);
+	Temp = TABLE_ROW9_HEADER;
 	Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Points Transactions");
 	Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " Last 30 Days ");
 	Report->Add(Temp);
@@ -1537,7 +1537,7 @@ void TMembership::GetReportPointsTransactions(Database::TDBTransaction &DBTransa
 		}
 	}
 
-	UnicodeString TempRow = LoadStr(TABLE_ROW9S);
+	UnicodeString TempRow = TABLE_ROW9S;
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 9; j++)
 			TempRow = AnsiReplaceStr(TempRow, Headers[i][j], Headers1[i][j]);
@@ -1614,7 +1614,7 @@ void TMembership::GetReportPointsTransactions(Database::TDBTransaction &DBTransa
 	{
 		AnsiString InvoiceNumber = IntToStr((*itKey).first);
 		InvoiceData D = (*itKey).second;
-		TempRow = LoadStr(TABLE_ROW9S);
+		TempRow = TABLE_ROW9S;
 		int i = 0;
 
 		for(i; i < 6; i++)
@@ -1643,11 +1643,11 @@ void TMembership::GetReportPointsTransactions(Database::TDBTransaction &DBTransa
 
 		Report->Add(TempRow);
 	}
-	Temp = LoadStr(TABLE_STOP);
+	Temp = TABLE_STOP;
 	Report->Add(Temp);
 
 	// Start the Member Table.
-	Temp = LoadStr(HTML_BODY_STOP);
+	Temp = HTML_BODY_STOP;
 	Report->Add(Temp);
 }
 
@@ -1667,9 +1667,9 @@ void TMembership::GetReportMemberAudit(Database::TDBTransaction &DBTransaction, 
 	  PrevZedTime = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
    }
 
-   UnicodeString Temp = LoadStr(TABLE_START);
+   UnicodeString Temp = TABLE_START;
    Report->Add(Temp);
-   Temp = LoadStr(TABLE_ROW7_HEADER);
+   Temp = TABLE_ROW7_HEADER;
    Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "<a href=" ":internal:[ShowReportPointsInformation]:{" + IntToStr(Member.ContactKey)
 	  + "}" ">" + "Points Activity " + Member.Name + " (" + Member.MembershipNumber + ") " + "</a>");
    Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " Since Last Zed. ");
@@ -1683,7 +1683,7 @@ void TMembership::GetReportMemberAudit(Database::TDBTransaction &DBTransaction, 
 
    bool EnableSeperateEarntPts = TGlobalSettings::Instance().EnableSeperateEarntPts;
 
-   UnicodeString TempRow = LoadStr(TABLE_ROW7S);
+   UnicodeString TempRow = TABLE_ROW7S;
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "08%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "18%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "22%");
@@ -1808,7 +1808,7 @@ void TMembership::GetReportMemberAudit(Database::TDBTransaction &DBTransaction, 
 		};
 
 
-		TempRow = LoadStr(TABLE_ROW7S);
+		TempRow = TABLE_ROW7S;
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "08%");
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "18%");
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "22%");
@@ -1858,7 +1858,7 @@ void TMembership::GetReportMemberAudit(Database::TDBTransaction &DBTransaction, 
             /*AU Loyalty Redeemed */FormatFloat("0.00", Totals[5]) } // Acc Spent
 		};
 
-   TempRow = LoadStr(TABLE_ROW7S);
+   TempRow = TABLE_ROW7S;
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "08%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "18%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "22%");
@@ -1883,11 +1883,11 @@ void TMembership::GetReportMemberAudit(Database::TDBTransaction &DBTransaction, 
 	TempRow = AnsiReplaceStr(TempRow, "%COL7%", Data[EnableSeperateEarntPts][3]);
    Report->Add(TempRow);
 
-   Temp = LoadStr(TABLE_STOP);
+   Temp = TABLE_STOP;
    Report->Add(Temp);
 
    // Start the Member Table.
-   Temp = LoadStr(HTML_BODY_STOP);
+   Temp = HTML_BODY_STOP;
    Report->Add(Temp);
 
 	/* struct HtmlLine
@@ -1948,12 +1948,12 @@ void TMembership::GetReportMemberAudit(Database::TDBTransaction &DBTransaction, 
    // Add the Membership Block.
    UnicodeString TempRow = LoadStr(TABLE_START);
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW7_HEADER);
+   TempRow = TABLE_ROW7_HEADER;
    TempRow = AnsiReplaceStr(TempRow, "%TABLETITLE%", "Member Information");
    TempRow = AnsiReplaceStr(TempRow, "%TABLEHEADER%", " " + Member.Title + " " + Member.Name + " ("+ Member.MembershipNumber + ")");
    Report->Add(TempRow);
 
-   TempRow = LoadStr(TABLE_ROW7S);
+   TempRow = TABLE_ROW7S;
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%","15%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%","30%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%","15%");
@@ -1984,7 +1984,7 @@ void TMembership::GetReportMemberAudit(Database::TDBTransaction &DBTransaction, 
    for (;!IBInternalQuery->Eof ;IBInternalQuery->Next())
    {
    //Write it out.
-   TempRow = LoadStr(TABLE_ROW7S);
+   TempRow = TABLE_ROW7S;
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%","15%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%","30%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%","15%");
@@ -2015,7 +2015,7 @@ void TMembership::GetReportMemberAudit(Database::TDBTransaction &DBTransaction, 
    TotalDiscount += IBInternalQuery->FieldByName("DISCOUNT")->AsFloat;
    }
 
-   TempRow = LoadStr(TABLE_ROW7S);
+   TempRow = TABLE_ROW7S;
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%","15%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%","30%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%","15%");
@@ -2040,7 +2040,7 @@ void TMembership::GetReportMemberAudit(Database::TDBTransaction &DBTransaction, 
 	TempRow = AnsiReplaceStr(TempRow, "%COL7%", "<b>" + FormatFloat("$0.00",TotalDiscount) + "</b>");
 	Report->Add(TempRow);
 
-	TempRow = LoadStr(TABLE_STOP);
+	TempRow = TABLE_STOP;
 	Report->Add(TempRow);
 	} */
 }
@@ -2049,18 +2049,18 @@ void TMembership::GetReportPointsTransferred(Database::TDBTransaction &DBTransac
 {
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-   UnicodeString Temp = LoadStr(HTML_START);
+   UnicodeString Temp = HTML_START;
 	Temp = AnsiReplaceStr(Temp, "%TITLE%", "Points Held & Transferred Report");
    Report->Add(Temp);
 
-   Temp = LoadStr(TABLE_START);
+   Temp = TABLE_START;
 	Report->Add(Temp);
-   Temp = LoadStr(TABLE_ROW7_HEADER);
+   Temp = TABLE_ROW7_HEADER;
 	Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Points Held & Transferred");
    Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " Last 30 Days ");
 	Report->Add(Temp);
 
-	UnicodeString TempRow = LoadStr(TABLE_ROW7S);
+	UnicodeString TempRow = TABLE_ROW7S;
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "08%");
 	TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "18%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "22%");
@@ -2143,7 +2143,7 @@ void TMembership::GetReportPointsTransferred(Database::TDBTransaction &DBTransac
 	  if (IBInternalQuery->Eof || (IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString != ProcessingInvoiceNumber))
 	  {
 		 // Write it out.
-		 TempRow = LoadStr(TABLE_ROW7S);
+		 TempRow = TABLE_ROW7S;
 		 TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "08%");
 		 TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "18%");
 		 TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "22%");
@@ -2181,11 +2181,11 @@ void TMembership::GetReportPointsTransferred(Database::TDBTransaction &DBTransac
 		 TotalPointsTampered = 0.00;
 	  }
 	}
-	Temp = LoadStr(TABLE_STOP);
+	Temp = TABLE_STOP;
 	Report->Add(Temp);
 
 	// Start the Member Table.
-	Temp = LoadStr(HTML_BODY_STOP);
+	Temp = HTML_BODY_STOP;
 	Report->Add(Temp);
 }
 
@@ -2206,13 +2206,13 @@ void TMembership::GetReportPointsTransferred(Database::TDBTransaction &DBTransac
     // TODO 1 -o Michael -c Before Release : Testing Required
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-	UnicodeString Temp = LoadStr(HTML_START);
+	UnicodeString Temp = HTML_START;
 	Temp = AnsiReplaceStr(Temp, "%TITLE%", "Points Transferred Report");
 	Report->Add(Temp);
 
-	Temp = LoadStr(TABLE_START);
+	Temp = TABLE_START;
 	Report->Add(Temp);
-	Temp = LoadStr(TABLE_ROW7_HEADER);
+	Temp = TABLE_ROW7_HEADER;
 	Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Points Transferred");
 	Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " Last 30 Days ");
 	Report->Add(Temp);
@@ -2245,7 +2245,7 @@ void TMembership::GetReportPointsTransferred(Database::TDBTransaction &DBTransac
 		}
 	}
 
-	UnicodeString TempRow = LoadStr(TABLE_ROW7S);
+	UnicodeString TempRow = TABLE_ROW7S;
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 7; j++)
 			TempRow = AnsiReplaceStr(TempRow, Headers[i][j], Headers1[i][j]);
@@ -2320,7 +2320,7 @@ void TMembership::GetReportPointsTransferred(Database::TDBTransaction &DBTransac
 	{
 		AnsiString InvoiceNumber = IntToStr((*itKey).first);
 		InvoiceData D = (*itKey).second;
-		TempRow = LoadStr(TABLE_ROW7S);
+		TempRow = TABLE_ROW7S;
 		int i = 0;
 
 		for(i; i < 6; i++)
@@ -2346,11 +2346,11 @@ void TMembership::GetReportPointsTransferred(Database::TDBTransaction &DBTransac
 
 		Report->Add(TempRow);
 	}
-	Temp = LoadStr(TABLE_STOP);
+	Temp = TABLE_STOP;
 	Report->Add(Temp);
 
 	// Start the Member Table.
-	Temp = LoadStr(HTML_BODY_STOP);
+	Temp = HTML_BODY_STOP;
 	Report->Add(Temp);
 
 
@@ -2364,12 +2364,12 @@ void TMembership::GetReportPointsTransferred(Database::TDBTransaction &DBTransac
 
    Temp = LoadStr(TABLE_START);
 	Report->Add(Temp);
-   Temp = LoadStr(TABLE_ROW7_HEADER);
+   Temp = TABLE_ROW7_HEADER;
 	Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Points Held & Transferred");
    Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " Last 30 Days ");
 	Report->Add(Temp);
 
-	UnicodeString TempRow = LoadStr(TABLE_ROW7S);
+	UnicodeString TempRow = TABLE_ROW7S;
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "08%");
 	TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "18%");
    TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "22%");
@@ -2456,7 +2456,7 @@ void TMembership::GetReportPointsTransferred(Database::TDBTransaction &DBTransac
 	  if (IBInternalQuery->Eof || (IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString != ProcessingInvoiceNumber))
 	  {
 		 // Write it out.
-		 TempRow = LoadStr(TABLE_ROW7S);
+		 TempRow = TABLE_ROW7S;
 		 TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "08%");
 		 TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "18%");
 		 TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "22%");
@@ -2494,7 +2494,7 @@ void TMembership::GetReportPointsTransferred(Database::TDBTransaction &DBTransac
 		 TotalPointsTampered = 0.00;
 	  }
 	}
-	Temp = LoadStr(TABLE_STOP);
+	Temp = TABLE_STOP;
 	Report->Add(Temp);
 
 	// Start the Member Table.
@@ -2519,9 +2519,9 @@ void TMembership::GetReportMemberPurchaseInfo(Database::TDBTransaction &DBTransa
    if (IBInternalQuery->RecordCount)
    {
 	  // Add the Membership Block.
-	  UnicodeString Temp = LoadStr(TABLE_START);
+	  UnicodeString Temp = TABLE_START;
 	  Report->Add(Temp);
-	  Temp = LoadStr(TABLE_ROW6_HEADER);
+	  Temp = TABLE_ROW6_HEADER;
 	  Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Member Information");
 	  Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " " + Member.Title + " " + Member.Name + " (" + Member.MembershipNumber + ")");
 	  Report->Add(Temp);
@@ -2529,7 +2529,7 @@ void TMembership::GetReportMemberPurchaseInfo(Database::TDBTransaction &DBTransa
 	  // Add the Membership Block.
 	  for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
 	  {
-		 UnicodeString TempRow = LoadStr(TABLE_ROW6);
+		 UnicodeString TempRow = TABLE_ROW6;
 		 TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Date :");
 		 TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime.FormatString
 			("dd-mm-yy hh-nn am/pm"));
@@ -2541,7 +2541,7 @@ void TMembership::GetReportMemberPurchaseInfo(Database::TDBTransaction &DBTransa
 		 Report->Add(TempRow);
 	  }
 
-	  Temp = LoadStr(TABLE_STOP);
+	  Temp = TABLE_STOP;
 	  Report->Add(Temp);
    }
 }
@@ -2549,14 +2549,14 @@ void TMembership::GetReportMemberPurchaseInfo(Database::TDBTransaction &DBTransa
 void TMembership::GetReportMemberStop(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member, TStringList *Report)
 {
    // Start the Member Table.
-   UnicodeString Temp = LoadStr(HTML_BODY_STOP);
+   UnicodeString Temp = HTML_BODY_STOP;
    Report->Add(Temp);
 }
 
 void TMembership::GetReportStop(Database::TDBTransaction &DBTransaction, TStringList *Report)
 {
    // Start the Member Table.
-   UnicodeString Temp = LoadStr(HTML_BODY_STOP);
+   UnicodeString Temp = HTML_BODY_STOP;
    Report->Add(Temp);
 }
 
@@ -2695,7 +2695,7 @@ TLoginSuccess TMembership::Login(Database::TDBTransaction &DBTransaction, TMMCon
 void TMembership::GetReportMemberOnPremisesStart(Database::TDBTransaction &DBTransaction, TStringList *Report)
 {
    // Start the Member Table.
-   UnicodeString Temp = LoadStr(HTML_START);
+   UnicodeString Temp = HTML_START;
    Temp = AnsiReplaceStr(Temp, "%TITLE%", "Members On Premises Report");
    Report->Add(Temp);
 }
@@ -2712,13 +2712,13 @@ void TMembership::GetReportMemberOnPremisesInfo(Database::TDBTransaction &DBTran
    if (IBInternalQuery->RecordCount)
    {
 	  // Add the Membership Block.
-	  UnicodeString Temp = LoadStr(TABLE_START);
+	  UnicodeString Temp = TABLE_START;
 	  Report->Add(Temp);
-	  Temp = LoadStr(TABLE_ROW7_HEADER);
+	  Temp = TABLE_ROW7_HEADER;
 	  Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Members On Premises (24 hr)");
 	  Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", "");
 	  Report->Add(Temp);
- 		UnicodeString TempRow = LoadStr(TABLE_ROW7S);
+ 		UnicodeString TempRow = TABLE_ROW7S;
         TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "15%");
         TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "15%");
         TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "15%");
@@ -2745,7 +2745,7 @@ void TMembership::GetReportMemberOnPremisesInfo(Database::TDBTransaction &DBTran
 	  // Add the Membership Block.
 	  for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
 	  {
-      	   UnicodeString TempRow = LoadStr(TABLE_ROW7S);
+      	   UnicodeString TempRow = TABLE_ROW7S;
            TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "15%");
            TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "15%");
            TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "15%");
@@ -2782,7 +2782,7 @@ void TMembership::GetReportMemberOnPremisesInfo(Database::TDBTransaction &DBTran
            Report->Add(TempRow);
   	  }
 
-	  Temp = LoadStr(TABLE_STOP);
+	  Temp = TABLE_STOP;
 	  Report->Add(Temp);
    }
 }

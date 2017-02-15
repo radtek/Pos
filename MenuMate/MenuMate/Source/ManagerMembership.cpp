@@ -298,20 +298,20 @@ TLoginSuccess TManagerMembership::FindMember(Database::TDBTransaction &DBTransac
 void TManagerMembership::GetReportMemberInfo(TMMContactInfo &Member, TSyndCode &SyndCode, UnicodeString Title, TStringList *Report)
 {
    // Add the Membership Block.
-   UnicodeString Temp = LoadStr(TABLE_START);
+   UnicodeString Temp = TABLE_START;
    Report->Add(Temp);
-   Temp = LoadStr(TABLE_ROW4_HEADER);
+   Temp = TABLE_ROW4_HEADER;
    Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", Title);
    Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", " " + Member.Title + " " + Member.Name + " (" + Member.MembershipNumber + ")");
    Report->Add(Temp);
 
-   UnicodeString TempRow = LoadStr(TABLE_ROW4);
+   UnicodeString TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Alias");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", Member.Alias == "" ? UnicodeString("&nbsp;") : Member.Alias);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Initials");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", Member.Initials == "" ? UnicodeString("&nbsp;") : Member.Initials);
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
 
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Location Address");
    UnicodeString TempAdd = Member.LocationAddress;
@@ -327,31 +327,31 @@ void TManagerMembership::GetReportMemberInfo(TMMContactInfo &Member, TSyndCode &
    TempAdd = AnsiReplaceStr(TempAdd, "\r", "<br>");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", TempAdd);
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Phone");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", Member.Phone == "" ? UnicodeString("&nbsp;") : Member.Phone);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "EMail");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", Member.EMail == "" ? UnicodeString("&nbsp;") : Member.EMail);
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "DOB");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", Member.DateOfBirth.FormatString(" dd/mm/yyyy "));
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Mobile");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", Member.Mobile == "" ? UnicodeString("&nbsp;") : Member.Mobile);
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Gender");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", Member.Sex == "" ? UnicodeString("&nbsp;") : Member.Sex);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Last Modified");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%", Member.LastModified.FormatString(" dd-mm-yy "));
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_ROW4);
+   TempRow = TABLE_ROW4;
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Syndicate Coding");
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", SyndCode.Name);
    TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", UnicodeString("&nbsp;"));
    TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT2%",  UnicodeString("&nbsp;"));
    Report->Add(TempRow);
-   TempRow = LoadStr(TABLE_STOP);
+   TempRow = TABLE_STOP;
    Report->Add(TempRow);
 
    Member.Points.toHTML(Report);

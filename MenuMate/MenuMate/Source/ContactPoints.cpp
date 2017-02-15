@@ -722,11 +722,11 @@ void TContactPoints::Add(std::vector <TPointsTransaction> &Transactions)
 
 void TContactPoints::toHTML(TStringList *Report)
 {
-    UnicodeString Temp = LoadStr(TABLE_START);
+    UnicodeString Temp = TABLE_START;
     std::map<TPointsType, Currency>::iterator ptr = PointsStore.begin();
     for(; ptr != PointsStore.end(); advance(ptr,1))
     {
-        UnicodeString TempRow = LoadStr(TABLE_ROW4);
+        UnicodeString TempRow = TABLE_ROW4;
         TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", ptr->first.Name());
         TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", FormatFloat("0.00", ptr->second));
         advance(ptr,1);
@@ -742,7 +742,7 @@ void TContactPoints::toHTML(TStringList *Report)
         }
         Report->Add(TempRow);
     }
-    UnicodeString TempRow = LoadStr(TABLE_STOP);
+    UnicodeString TempRow = TABLE_STOP;
     Report->Add(TempRow);
 }
 

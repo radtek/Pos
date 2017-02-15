@@ -1818,16 +1818,16 @@ void TManagerDiscount::GetReportDiscountInfo(Database::TDBTransaction &DBTransac
 	try
 	{
 		Report->Add("<br>");
-		UnicodeString Temp = LoadStr(TABLE_START);
+		UnicodeString Temp = TABLE_START;
 		Report->Add(Temp);
 
-		Temp = LoadStr(TABLE_ROW4_HEADER);
+		Temp = TABLE_ROW4_HEADER;
 		Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Discounts");
 		Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", "&nbsp;");
 		Report->Add(Temp);
 
 		UnicodeString TempRow = "";
-		TempRow = LoadStr(TABLE_ROW4);
+		TempRow = TABLE_ROW4;
 		TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", 	"Name");
 		TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", "");
 		TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", 	"Percent");
@@ -1841,7 +1841,7 @@ void TManagerDiscount::GetReportDiscountInfo(Database::TDBTransaction &DBTransac
 		{
 			TDiscount CurrentDiscount;
 			GetDiscount(DBTransaction,*ptrDiscountKey, CurrentDiscount);
-			TempRow = LoadStr(TABLE_ROW4);
+			TempRow = TABLE_ROW4;
 			TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", CurrentDiscount.Name);
 			TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", UnicodeString("&nbsp;"));
 			TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", FormatFloat("0.0 %",CurrentDiscount.PercentAmount) );
@@ -1850,7 +1850,7 @@ void TManagerDiscount::GetReportDiscountInfo(Database::TDBTransaction &DBTransac
 			Report->Add(TempRow);
 		}
 
-		Temp = LoadStr(TABLE_STOP);
+		Temp =TABLE_STOP;
 		Report->Add(Temp);
 	}
 	catch(Exception &E)
@@ -1869,16 +1869,16 @@ void TManagerDiscount::GetReportItemDiscounts(TItemMinorComplete *Item,TStringLi
 	try
 	{
 		Report->Add("<br>");
-		UnicodeString Temp = LoadStr(TABLE_START);
+		UnicodeString Temp = TABLE_START;
 		Report->Add(Temp);
 
-		Temp = LoadStr(TABLE_ROW4_HEADER);
+		Temp = TABLE_ROW4_HEADER;
 		Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Item Discounts");
 		Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", Item->Item + " " + Item->Size);
 		Report->Add(Temp);
 
 		UnicodeString TempRow = "";
-		TempRow = LoadStr(TABLE_ROW4S);
+		TempRow = TABLE_ROW4S;
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%","40%");
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%","20%");
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%","20%");
@@ -1893,7 +1893,7 @@ void TManagerDiscount::GetReportItemDiscounts(TItemMinorComplete *Item,TStringLi
 		TempRow = AnsiReplaceStr(TempRow, "%COL4%","<b>Price</b>");
 		Report->Add(TempRow);
 
-		TempRow = LoadStr(TABLE_ROW4S);
+		TempRow = TABLE_ROW4S;
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%","40%");
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%","20%");
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%","20%");
@@ -1908,7 +1908,7 @@ void TManagerDiscount::GetReportItemDiscounts(TItemMinorComplete *Item,TStringLi
 		TempRow = AnsiReplaceStr(TempRow, "%COL4%", FormatFloat("$0.00",Item->Price()));
 		Report->Add(TempRow);
 
-		TempRow = LoadStr(TABLE_ROW4S);
+		TempRow = TABLE_ROW4S;
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%","40%");
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%","20%");
 		TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%","20%");
@@ -1929,7 +1929,7 @@ void TManagerDiscount::GetReportItemDiscounts(TItemMinorComplete *Item,TStringLi
 			Currency ItemBalance = Item->Price();
 			for (std::vector<TDiscount>::const_iterator ptrDiscounts = Item->Discounts.begin();ptrDiscounts != Item->Discounts.end(); std::advance(ptrDiscounts,1))
 			{
-				TempRow = LoadStr(TABLE_ROW4S);
+				TempRow = TABLE_ROW4S;
 				TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%","40%");
 				TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%","20%");
 				TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%","20%");
@@ -1969,7 +1969,7 @@ void TManagerDiscount::GetReportItemDiscounts(TItemMinorComplete *Item,TStringLi
 				Report->Add(TempRow);
 			}
 			DiscountMidPointRoundsDown = MidPointRoundsDown != Item->TotalAdjustment() < 0;
-			TempRow = LoadStr(TABLE_ROW4S);
+			TempRow = TABLE_ROW4S;
 			TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%","40%");
 			TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%","20%");
 			TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%","20%");
@@ -1984,7 +1984,7 @@ void TManagerDiscount::GetReportItemDiscounts(TItemMinorComplete *Item,TStringLi
 			TempRow = AnsiReplaceStr(TempRow, "%COL4%",FormatFloat("<b>$0.00</b>",RoundToNearest(Item->TotalPriceAdjustment(), 0.01, MidPointRoundsDown)));
 			Report->Add(TempRow);
 		}
-		Temp = LoadStr(TABLE_STOP);
+		Temp = TABLE_STOP;
 		Report->Add(Temp);
 
 	}
@@ -1997,14 +1997,14 @@ void TManagerDiscount::GetReportItemDiscounts(TItemMinorComplete *Item,TStringLi
 //---------------------------------------------------------------------------
 void TManagerDiscount::GetReportItemDiscountsHeader(TStringList *Report)
 {
-	UnicodeString Temp = LoadStr(HTML_START);
+	UnicodeString Temp = HTML_START;
 	Temp = AnsiReplaceStr(Temp, "%TITLE%", "Discount Information");
 	Report->Add(Temp);
 }
 //---------------------------------------------------------------------------
 void TManagerDiscount::GetReportItemDiscountsFooter(TStringList *Report)
 {
-	UnicodeString Temp = LoadStr(HTML_BODY_STOP);
+	UnicodeString Temp = HTML_BODY_STOP;
 	Report->Add(Temp);
 }
 //---------------------------------------------------------------------------
