@@ -977,7 +977,7 @@ void TApplyParser::update6_37Tables()
 	POPULATEDSR_PIVOT_BY_ITEMProcedure6_37( _dbControl ) ;
     CREATEDSRPIVOTProcedure6_37( _dbControl ) ;
 	POPULATEDSRPIVOTProcedure6_37( _dbControl ) ;
-    AlterTable6_37(_dbControl);
+    //AlterTable6_37(_dbControl);
 }
 //--------------------------------------------------------------------------------------------------
 void TApplyParser::CREATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl )
