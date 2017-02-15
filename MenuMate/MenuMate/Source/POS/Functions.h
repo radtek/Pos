@@ -47,7 +47,6 @@ __published:	// IDE-managed Components
     TTouchBtn *tbtnSearchItem;
         TTouchBtn *btnChangeCard;
     TTouchBtn *btnLiveTransaction;
-    TTouchBtn *btnAssignBarcode;
     TTouchBtn *btnSync;
     TTouchBtn *btnGiftCard;
 
@@ -66,7 +65,6 @@ __published:	// IDE-managed Components
     void __fastcall tbtnSearchItemMouseClick(TObject *Sender);
     void __fastcall btnChangeCardMouseClick(TObject *Sender);
     void __fastcall btnLiveTransactionMouseClick(TObject *Sender);
-    void __fastcall btnAssignBarcodeMouseClick(TObject *Sender);
     void __fastcall btnSyncMouseClick(TObject *Sender);
     void __fastcall btnGiftCardMouseClick(TObject *Sender);
 

@@ -718,8 +718,9 @@ bool TManagerMembership::UpdateMemberCardCode(Database::TDBTransaction &DBTransa
    catch(Exception & E)
    {
 	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-	  MessageBox("Unable to load Member information.\r" + E.Message, "Error", MB_OK + MB_ICONERROR);
+	  MessageBox("Unable to update Member information.\r" + E.Message, "Error", MB_OK + MB_ICONERROR);
    }
    return false;
 }
+
 

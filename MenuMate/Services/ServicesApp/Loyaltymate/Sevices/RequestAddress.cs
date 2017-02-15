@@ -10,7 +10,7 @@
         public const string GetMemberByUniqueId = "api/MemberApi/MemberByUniqueId";
         public const string GetMemberByCardCode = "api/MemberApi/MemberByCode";
         public const string GetMemberByEmail = "api/MemberApi/GetMemberByEmail";
-        public const string UpdateMemberCardCode = "api/MemberApi/UpdateMemberCardCode";
+        public const string UpdateMemberCardCode = "api/v2Pos/MemberApi/UpdateMemberCardCode";
         //Points Transaction
         public const string PostTransaction = "api/MembershipTransaction/Save";
         public const string PostInvoiceTransaction = "api/MembershipTransaction/InvoiceTransaction";

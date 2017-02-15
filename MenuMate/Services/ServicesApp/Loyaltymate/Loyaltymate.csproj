@@ -69,6 +69,7 @@
     <Compile Include="Model\ApiReleasedVoucherViewModel.cs" />
     <Compile Include="Model\ApiRequestViewModel.cs" />
     <Compile Include="Model\ApiTierLevelViewModel.cs" />
+    <Compile Include="Model\ApiUpdateCardCodeRequestViewModel.cs" />
     <Compile Include="Model\ApiVouchersUsageViewModel.cs" />
     <Compile Include="Model\ApiVoucherUsageRequestViewModel.cs" />
     <Compile Include="Model\ApiVoucherViewModel.cs" />

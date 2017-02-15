@@ -420,6 +420,7 @@ TLoginSuccess TMembership::FindMember(Database::TDBTransaction &DBTransaction, T
 	  {
 		 UserInfo.ContactKey = GetContactByCard(DBTransaction, UserInfo);
 	  }
+
 	  if (UserInfo.ContactKey == 0 && UserInfo.ProxStr != "")
 	  {
 		 UserInfo.ContactKey = GetContactByProx(DBTransaction, UserInfo.ProxStr);
@@ -621,7 +622,23 @@ void TMembership::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 	  return;
    try
    {
-	  // Update Member Number if Blank.
+
+      GenerateMembershipNumber(DBTransaction, Info);
+	  // Proform Unique checks here so no indexes are Violated.
+	  CheckSiteIndex(DBTransaction, inContactKey, Info);
+	  OnBeforeSaveMember.Occured(Info);
+ 	  TContact::SetContactDetails(DBTransaction, inContactKey, Info);
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+	  throw;
+   }
+}
+
+void TMembership::GenerateMembershipNumber(Database::TDBTransaction &DBTransaction,TMMContactInfo &Info)
+{
+      // Update Member Number if Blank.
 	  if (Info.MembershipNumber == NULL   || Info.MembershipNumber == "")
 	  {
 		 if (RecycleMemberNumber)
@@ -633,17 +650,6 @@ void TMembership::SetContactDetails(Database::TDBTransaction &DBTransaction, int
 			Info.MembershipNumber = GetNextMemberNumber(DBTransaction);
 		 }
 	  }
-
-	  // Proform Unique checks here so no indexes are Violated.
-	  CheckSiteIndex(DBTransaction, inContactKey, Info);
-	  OnBeforeSaveMember.Occured(Info);
- 	  TContact::SetContactDetails(DBTransaction, inContactKey, Info);
-   }
-   catch(Exception & E)
-   {
-	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
-	  throw;
-   }
 }
 
 void TMembership::SetContactLoyaltyAttributes(Database::TDBTransaction &DBTransaction, int inContactKey, TMMContactInfo &Info)
@@ -3034,6 +3040,7 @@ bool TMembership::UpdateMemberCardCode(Database::TDBTransaction &DBTransaction,T
 {
   return UpdateMemberCardCode(DBTransaction, UserInfo,memberCardCode);
 }
+
 
 void TMembership::ResetPoints()
 {
