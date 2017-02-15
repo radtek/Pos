@@ -165,7 +165,7 @@ void TManagerMembershipSmartCards::GetReportMemberCardsInfo(Database::TDBTransac
 TStringList *Report)
 {
 	// Start the Member Table.
-	AnsiString Temp = LoadStr(HTML_START);
+	AnsiString Temp = HTML_START;
 	Temp = AnsiReplaceStr(Temp, "%TITLE%", "Card Report");
 	Report->Add(Temp);
 
@@ -207,7 +207,7 @@ void TManagerMembershipSmartCards::GetReportCardInfo(Database::TDBTransaction &D
 TStringList *Report)
 {
 	// Start the Member Table.
-	UnicodeString Temp = LoadStr(HTML_START);
+	UnicodeString Temp = HTML_START;
 	Temp = AnsiReplaceStr(Temp, "%TITLE%", "Card Report");
 	Report->Add(Temp);
 
@@ -540,7 +540,7 @@ void TManagerMembershipSmartCards::ExploreCard()
 	}
 
 	// Start the Member Table.
-	AnsiString Temp = LoadStr(HTML_BODY_STOP);
+	AnsiString Temp = HTML_BODY_STOP;
 	Report->Add(Temp);
 
 	// Pull the Info of the current card and format it into HTML, Add it to the report.
