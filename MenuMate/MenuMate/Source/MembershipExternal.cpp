@@ -9,7 +9,8 @@
 #include "Rounding.h"
 #include "MMContactInfo.h"
 #include "MembershipExternalXML.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include "DBContacts.h"
 #pragma package(smart_init)
 

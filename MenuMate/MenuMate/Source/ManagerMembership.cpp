@@ -13,7 +13,8 @@
 #include "DBTab.h"
 #include "Processing.h"
 #include "ReportDisplayNav.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include <StrUtils.hpp>
 #include "Invoice.h"
 #include "GlobalSettings.h"

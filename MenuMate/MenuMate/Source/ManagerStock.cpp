@@ -12,7 +12,8 @@
 #endif
 
 #include "ManagerStock.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include "MMLogging.h"
 #include "ItemRecipe.h"
 #include "ListCourse.h"

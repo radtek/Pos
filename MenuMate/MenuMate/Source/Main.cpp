@@ -70,7 +70,8 @@
 #include "EftposDPS.h"
 #include "EftposIceLink.h"
 #include "EftposCadmusCronos.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include <StrUtils.hpp>
 #include "VerticalSelect.h"
 #include "WeighScale.h"

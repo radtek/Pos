@@ -6,7 +6,8 @@
 #include "MMMessageBox.h"
 #include <Memory>
 
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include <StrUtils.hpp>
 
 #include "DBSecurity.h"

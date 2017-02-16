@@ -16,7 +16,8 @@
 #include "Printing.h"
 #include "Locations.h"
 #include "MMTouchNumpad.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include "DBContacts.h"
 #include "split.h"
 //---------------------------------------------------------------------------

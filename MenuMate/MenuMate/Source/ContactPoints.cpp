@@ -8,7 +8,8 @@
 #include "SmartCardAPI.h"
 #include "rounding.h"
 #include "GlobalSettings.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include "ItemMinorComplete.h"
 #include <math.h>
 #include <algorithm>

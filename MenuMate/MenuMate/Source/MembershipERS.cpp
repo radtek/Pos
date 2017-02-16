@@ -11,7 +11,8 @@
 #include "DB_Utilities.h"
 #include <DateUtils.hpp>
 #include "MMContactInfo.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 
 #pragma package(smart_init)
 

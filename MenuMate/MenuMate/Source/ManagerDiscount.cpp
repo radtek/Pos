@@ -17,7 +17,8 @@
 #include <memory>
 #include "Money.h"
 #include <math.h>
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include "DBOrder.h"
 #include <StrUtils.hpp>
 #include "rounding.h"
