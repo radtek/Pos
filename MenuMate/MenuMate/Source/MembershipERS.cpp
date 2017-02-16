@@ -11,7 +11,8 @@
 #include "DB_Utilities.h"
 #include <DateUtils.hpp>
 #include "MMContactInfo.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 
 #pragma package(smart_init)
 
@@ -1199,13 +1200,13 @@ void TMembershipERS::GetReportMemberOnPremisesInfo(Database::TDBTransaction &DBT
    if (IBInternalQuery->RecordCount)
    {
 	  // Add the Membership Block.
-	  UnicodeString Temp = LoadStr(TABLE_START);
+	  UnicodeString Temp = TABLE_START;
 	  Report->Add(Temp);
-	  Temp = LoadStr(TABLE_ROW7_HEADER);
+	  Temp = TABLE_ROW7_HEADER;
 	  Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Members On Premises (24 hr)");
 	  Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", "");
 	  Report->Add(Temp);
- 		UnicodeString TempRow = LoadStr(TABLE_ROW7S);
+ 		UnicodeString TempRow = TABLE_ROW7S;
         TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "15%");
         TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "15%");
         TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "15%");
@@ -1232,7 +1233,7 @@ void TMembershipERS::GetReportMemberOnPremisesInfo(Database::TDBTransaction &DBT
 	  // Add the Membership Block.
 	  for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
 	  {
-      	   UnicodeString TempRow = LoadStr(TABLE_ROW7S);
+      	   UnicodeString TempRow = TABLE_ROW7S;
            TempRow = AnsiReplaceStr(TempRow, "%SIZEC1%", "15%");
            TempRow = AnsiReplaceStr(TempRow, "%SIZEC2%", "15%");
            TempRow = AnsiReplaceStr(TempRow, "%SIZEC3%", "15%");
@@ -1268,7 +1269,7 @@ void TMembershipERS::GetReportMemberOnPremisesInfo(Database::TDBTransaction &DBT
             }
            Report->Add(TempRow);
   	  }
-	  Temp = LoadStr(TABLE_STOP);
+	  Temp = TABLE_STOP;
 	  Report->Add(Temp);
    }
 }
