@@ -3869,9 +3869,9 @@ void TfrmMaintain::EnablePanasonicIntegration()
             {
                 TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
                 TGlobalSettings::Instance().PanasonicServerIP = "";
-                TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmPanasonicServerIP,TGlobalSettings::Instance().PanasonicServerIP);
-                TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
             }
+            TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmPanasonicServerIP,TGlobalSettings::Instance().PanasonicServerIP);
+            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
         }
         dbTransaction.Commit();
     }
