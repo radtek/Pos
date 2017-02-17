@@ -5367,6 +5367,10 @@ void __fastcall TfrmSelectDish::btngridModifyMouseClick(TObject *Sender, TMouseB
 			tbtnMemberDisplayPageUp->Visible = true;
 			tbtnMemberDisplayPageDown->Visible = true;
 			break;
+        case eBTDChangeBarcode:
+            AssignBarcodeToMember();
+            GridButton->Latched = false;
+            break;
 		default:
 			pcItemModify->ActivePage = tsOverview;
 		}
@@ -5377,7 +5381,7 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 {
 	if (lbDisplay->ItemIndex > -1)
 	{
-		const int MaxButtonCount = 6;
+		const int MaxButtonCount = 7;
 
 		TItemRedirector *ListItem = (TItemRedirector*)lbDisplay->Items->Objects[lbDisplay->ItemIndex];
 
@@ -5432,13 +5436,15 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 		else if (ListItem->ItemType.Contains(itMembershipDisplay) || ListItem->ItemType.Contains(itMembershipDisplayNote) ||
 					ListItem->ItemType.Contains(itEarntPts) || ListItem->ItemType.Contains(itLoadedPts))
 		{
-			ButtonsSet << eBTDMembership;
-			ButtonsSet << eBTDMemberPurchases;
-			ButtonsSet << eBTDMemberFavourites;
-			ButtonsSet << eBTDMemberPoints;
+            ButtonsSet << eBTDMembership;
+            ButtonsSet << eBTDMemberPurchases;
+            ButtonsSet << eBTDMemberFavourites;
+            ButtonsSet << eBTDMemberPoints;
             ButtonsSet << eBTDThorVouchers;
+            ButtonsSet << eBTDChangeBarcode;
+            ButtonsSet << eBTDRemove;
 
-			ButtonsSet << eBTDRemove;
+
 		}
 		else if (ListItem->ItemType.Contains(itServingCourseDisplay))
 		{
@@ -5499,12 +5505,24 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 		}
 
         if ((ButtonsSet.Contains(eBTDThorVouchers))
-            && (TGlobalSettings::Instance().IsThorlinkSelected || TGlobalSettings::Instance().LoyaltyMateEnabled))
+          && (TGlobalSettings::Instance().IsThorlinkSelected || TGlobalSettings::Instance().LoyaltyMateEnabled))
 		{
 			btngridModify->RowCount++;
 			AnsiString Caption = "Vouchers";
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Caption = Caption;
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Tag = int(eBTDThorVouchers);
+		}
+
+
+        if (ButtonsSet.Contains(eBTDChangeBarcode) &&
+            TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]  &&
+            TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate  &&
+            TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardInserted)
+		{
+			btngridModify->RowCount++;
+			AnsiString Caption = "Assign Barcode";
+			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Caption = Caption;
+			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Tag = int(eBTDChangeBarcode);
 		}
 
 		if (ButtonsSet.Contains(eBTDQty))
@@ -5562,6 +5580,9 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Caption = Caption;
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Tag = int(eBTDDiscountDetails);
 		}
+
+
+
 
 		if (ButtonsSet.Contains(eBTDRemove))
 		{
@@ -7525,10 +7546,6 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
             case 13:
             {
                 OpenTransactionAuditScreen();
-			}break;
-            case 14:
-            {
-                AssignBarcodeToMember();
 			}break;
             case 15:
             {
@@ -13972,12 +13989,14 @@ void TfrmSelectDish::AssignBarcodeToMember()
          if (frmCardSwipe->ModalResult == mrOk)
            {
               memberCardCode = AnsiString(frmCardSwipe->SwipeString).SubString(1, 50);
+              if(TDeviceRealTerminal::Instance().ManagerMembership->UpdateMemberCardCode(DBTransaction, TempUserInfo, memberCardCode))
+              {
+                TDBContacts::UpdateMemberCardCodeToDB(DBTransaction, TempUserInfo, memberCardCode);
+                TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->FormatCardToFactory();
+                MessageBox("Please Remove Card From Reader.", "Information", MB_OK);
+              }
            }
-         if(TDeviceRealTerminal::Instance().ManagerMembership->UpdateMemberCardCode(DBTransaction, TempUserInfo, memberCardCode))
-         {
-            TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->FormatCardToFactory();
-            MessageBox("Please Remove Card From Reader.", "Information", MB_OK);
-         }
+
          DBTransaction.Commit();
       }
       else

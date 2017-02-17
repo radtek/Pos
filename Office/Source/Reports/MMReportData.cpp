@@ -13837,8 +13837,8 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 	qrSalesSummary->SQL->Text = qrSalesSummary->SQL->Text +
 			"CategoryGroups.Name Category_Group,"
 			"Sum(Archive.Qty) Item_Count,"
-           " Cast(Sum(Archive.QTY * Archive.BASE_PRICE+Archive.Qty ) as Numeric(17,4)) PriceExc ,  "
-             "   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) PriceInc , "
+           //" Cast(Sum(Archive.QTY * Archive.BASE_PRICE+Archive.Qty ) as Numeric(17,4)) PriceExc ,  "
+             "   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Sales_Exc , "
              "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) Sales_Inc, "
 
 			"cast(Sum(Archive.Cost * Archive.Qty) as numeric(17, 4))  Cost "
@@ -14530,8 +14530,8 @@ void TdmMMReportData::BillTendersByTerminal(TDateTime StartTime, TDateTime EndTi
 			"CategoryGroups.Name Category_Group,"
 			"Sum(Archive.Qty) Item_Count,"
            " Cast(Sum(Archive.QTY * Archive.BASE_PRICE+Archive.Qty ) as Numeric(17,4)) PriceExc ,  "
-             "   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) PriceInc , "
-
+             "   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) Sales_Inc , "
+             
 			"cast(Sum(Archive.Cost * Archive.Qty) as numeric(17, 4))  Cost ,"
          "SECURITY.TERMINAL_NAME "
 		"From "
@@ -14967,7 +14967,8 @@ void TdmMMReportData::SalesSummaryLT(TDateTime StartTime, TDateTime EndTime,  TS
 			"CategoryGroups.Name Category_Group,"
 			"Sum(Archive.Qty) Item_Count,"
            " Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE+Archive.Qty ) as Numeric(17,4)) PriceExc ,  "
-             "   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) PriceInc , "
+             //"   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) PriceInc , "
+             "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) Sales_Inc, "
 
 			"cast(Sum(Archive.Cost * Archive.Qty) as numeric(17, 4))  Cost ,"
          "SECURITY.TERMINAL_NAME "

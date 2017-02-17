@@ -855,6 +855,7 @@ namespace MenumateVersionParser
 
         void upgrade6_37Tables();
         void update6_37Tables();
+        void UpdateContacts6_37(TDBControl* const inDBControl);
         void CREATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl );
         void POPULATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl );
         void CREATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );

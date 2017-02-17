@@ -69,7 +69,6 @@ Source: {#GetEnv('BASEDIR')}\Runtime\ChefMate.exe; DestDir: {app}; Flags: ignore
 Source: {#GetEnv('BASEDIR')}\Static Files\Office.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Office Version 5.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\ZSummaryReports.txt; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
-Source: {#GetEnv('BASEDIR')}\Static Files\Owner Details.txt; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Runtime\JoinMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\DBTrim.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\help\DB_Trim\DB_Trim_Help_Index.html; DestDir: {app}\help\DB_Trim\; Flags: ignoreversion
@@ -88,6 +87,10 @@ Source: {#GetEnv('BASEDIR')}\Static Files\zip.exe; DestDir: {app}; Flags: ignore
 
 Source: {#GetEnv('BASEDIR')}\Static Files\Palm\MenuMate Bluetooth.prc; DestDir: {app}\Palm; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\CASMCARD.DLL; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\dac140.bpl; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\unidac140.bpl; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\msprovider140.bpl; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\tdsprovider140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\porttalk.sys; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\help\vncviewer.exe; DestDir: {app}\help; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\help\winvnc.exe; DestDir: {app}\help; Flags: ignoreversion

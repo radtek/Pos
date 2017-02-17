@@ -21,19 +21,16 @@ void TApplyParser::upgrade6_31Tables()
 {
 	update6_31Tables();
 }
-
 // 6.32
 void TApplyParser::upgrade6_32Tables()
 {
 	update6_32Tables();
 }
-
 // 6.33
 void TApplyParser::upgrade6_33Tables()
 {
 	update6_33Tables();
 }
-
 // 6.34
 void TApplyParser::upgrade6_34Tables()
 {
@@ -44,17 +41,16 @@ void TApplyParser::upgrade6_35Tables()
 {
 	update6_35Tables();
 }
-//--------------------------------------------------------------------------6.36..................
+//6.36
 void TApplyParser::upgrade6_36Tables()
 {
 	update6_36Tables();
 }
-//--------------------------------------------------------------------------6.36..................
+//6.37
 void TApplyParser::upgrade6_37Tables()
 {
 	update6_37Tables();
 }
-
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -154,7 +150,6 @@ void TApplyParser::UpdateDiscountsTable6_32(TDBControl* const inDBControl)
 	}
 }
 
-//---------------------------------------------------------------------------
 //::::::::::::::::::::::::Version 6.33::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_33Tables()
 {
@@ -215,8 +210,6 @@ void TApplyParser::AlterRoundTimeProcedure6_33( TDBControl* const inDBControl )
 	"END ",
 	inDBControl );
 }//------
-
-
 //------------------------------------------------------------------------------
 void TApplyParser::PopulateZED_StatusForContactTime6_33(TDBControl* const inDBControl)
 {
@@ -267,7 +260,7 @@ void TApplyParser::ModifyCloseZedColumns6_33( TDBControl* const inDBControl )
         inDBControl);
     }
 }
-
+//------------------------------------------------------------------------------------
 void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBControl )
 {
 
@@ -303,7 +296,8 @@ void TApplyParser::ReCreateRoundedContactTimeView6_33( TDBControl* const inDBCon
             "CONTACTTIME",
         inDBControl );
 }
-//------------------------------------------------------------------------------------
+
+//::::::::::::::::::::::::Version 6.33::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_34Tables()
 {
     Create6_34TableSCDPWDCustomerDetails(_dbControl);
@@ -918,7 +912,8 @@ void TApplyParser::Create6_35GeneratorMallExportSettingValues(TDBControl* const 
         inDBControl );
     }
 }
-//--------------------------------------------------------------------------------------------------
+
+//::::::::::::::::::::::::Version 6.36::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_36Tables()
 {
     AlterTableRefloat_Skim6_36(_dbControl);
@@ -978,6 +973,7 @@ void TApplyParser::update6_37Tables()
     CREATEDSRPIVOTProcedure6_37( _dbControl ) ;
 	POPULATEDSRPIVOTProcedure6_37( _dbControl ) ;
     AlterTable6_37(_dbControl);
+    UpdateContacts6_37(_dbControl);
 }
 //--------------------------------------------------------------------------------------------------
 void TApplyParser::CREATEDSR_PIVOT_BY_ITEMProcedure6_37( TDBControl* const inDBControl )
@@ -1804,5 +1800,46 @@ void TApplyParser::AlterTable6_37( TDBControl* const inDBControl )
     }
 }
 
+//------------------------------------------------------------------------------
+void TApplyParser::UpdateContacts6_37( TDBControl* const inDBControl )
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *FetchQuery    = transaction.Query(transaction.AddQuery());
+        TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+        TIBSQL *UpdateSwipeCardQuery    = transaction.Query(transaction.AddQuery());
+        FetchQuery->Close();
+        FetchQuery->SQL->Text =    "select c.CONTACTS_KEY,c.SWIPE_CARD from CONTACTCARDS c where c.CONTACTCARDS_KEY in "
+                                    "(select CARD_KEY From  "
+                                    "(SELECT max(a.CONTACTCARDS_KEY) CARD_KEY,a.CONTACTS_KEY FROM CONTACTCARDS a  "
+                                    "left join CONTACTS b on a.CONTACTS_KEY = b.CONTACTS_KEY "
+                                    "where b.CONTACT_TYPE = 2  "
+                                    "group by a.CONTACTS_KEY))";
+
+        UpdateQuery->SQL->Text =  "UPDATE CONTACTS A SET A.PROX_CARD =:PROX_CARD WHERE A.CONTACTS_KEY = :CONTACTS_KEY";
+        UpdateSwipeCardQuery->SQL->Text =  "UPDATE CONTACTCARDS A SET A.IS_ACTIVE ='F' WHERE A.CONTACTS_KEY = :CONTACTS_KEY";
+        FetchQuery->ExecQuery();
+        for (; !FetchQuery->Eof;)
+        {
+            UpdateQuery->Close();
+            UpdateQuery->ParamByName("CONTACTS_KEY")->AsInteger = FetchQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            UpdateQuery->ParamByName("PROX_CARD")->AsString = FetchQuery->FieldByName("SWIPE_CARD")->AsString;
+            UpdateQuery->ExecQuery();
+            UpdateSwipeCardQuery->ParamByName("CONTACTS_KEY")->AsInteger = FetchQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            UpdateSwipeCardQuery->ExecQuery();
+            FetchQuery->Next();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
 }
+
+
+}
+
 

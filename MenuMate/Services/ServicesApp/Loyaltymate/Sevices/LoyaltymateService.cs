@@ -115,15 +115,11 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public bool UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode)
+        public bool UpdateMemberCardCode(string inSyndicateCode, ApiUpdateCardCodeRequestViewModel requestViewModel)
         {
             bool response = false;
-            var parameters = new List<KeyValuePair<string, string>>();
-            parameters.Add(new KeyValuePair<string, string>("uniqueId", uniqueId));
-            parameters.Add(new KeyValuePair<string, string>("memberCardCode", memberCardCode));
-            var request = Utility.WebUtility.CreateRequest(RequestAddress.UpdateMemberCardCode, inSyndicateCode, parameters,
-                WebRequestMethods.Http.Post);
-            request.ContentLength = 0;
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.UpdateMemberCardCode, inSyndicateCode, null,
+                WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
             {
