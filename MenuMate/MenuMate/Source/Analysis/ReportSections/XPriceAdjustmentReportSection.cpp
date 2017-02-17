@@ -29,12 +29,10 @@ void XPriceAdjustmentReportSection::GetOutput(TPrintout* printOut)
     AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
 	if (_globalSettings->ShowPriceAdjustment)
 	{
-
         if (!_globalSettings->EnableDepositBagNum)
         {
             masterSlaveCondition = " and r.TERMINAL_NAME = :TERMINAL_NAME " ;
         }
-
 
          if(IsConsolidatedZed)
          {
@@ -149,96 +147,111 @@ void XPriceAdjustmentReportSection::GetOutput(TPrintout* printOut)
 			printOut->PrintFormat->Line->Columns[2]->Line();
 	 		printOut->PrintFormat->AddLine();
 	    	printOut->PrintFormat->Add("Total |" + dataFormatUtilities->FormatMMReportCurrency( TotalUp ) + "|" + dataFormatUtilities->FormatMMReportCurrency( TotalDown ) );
-
 	}
 }
 
 void XPriceAdjustmentReportSection::GetPriceAdjustmentQueryForNormalZed(TStringList* AdjustmentsSQL, AnsiString masterSlaveCondition)
 {
-    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
-    "FROM DAYARCHIVE r "
-    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-    "where "
-    "(r.BASE_PRICE > r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
-     + masterSlaveCondition +
-    "and s.SECURITY_EVENT = 'Price Adjust' "
-    "group by c.NAME ");
+    try
+    {
+        AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
+        "FROM DAYARCHIVE r "
+        "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+        "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+        "where "
+        "(r.BASE_PRICE > r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
+         + masterSlaveCondition +
+        "and s.SECURITY_EVENT = 'Price Adjust' "
+        "group by c.NAME ");
 
-    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
-    "FROM DAYARCHIVE r "
-    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-    "where "
-    "(r.BASE_PRICE > r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
-    + masterSlaveCondition +
-    "and s.SECURITY_EVENT = 'Price Adjust' "
-    "group by c.NAME ");
+        AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
+        "FROM DAYARCHIVE r "
+        "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+        "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+        "where "
+        "(r.BASE_PRICE > r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
+        + masterSlaveCondition +
+        "and s.SECURITY_EVENT = 'Price Adjust' "
+        "group by c.NAME ");
 
-    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
-    "FROM DAYARCHIVE r "
-    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-    "where "
-    "(r.BASE_PRICE < r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
-    + masterSlaveCondition +
-    "and s.SECURITY_EVENT = 'Price Adjust' "
-    "group by c.NAME ");
+        AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
+        "FROM DAYARCHIVE r "
+        "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+        "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+        "where "
+        "(r.BASE_PRICE < r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
+        + masterSlaveCondition +
+        "and s.SECURITY_EVENT = 'Price Adjust' "
+        "group by c.NAME ");
 
-    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
-    "FROM DAYARCHIVE r "
-    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-    "where "
-    "(r.BASE_PRICE < r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
-    + masterSlaveCondition +
-    "and s.SECURITY_EVENT = 'Price Adjust' "
-    "group by c.NAME ");
+        AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
+        "FROM DAYARCHIVE r "
+        "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+        "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+        "where "
+        "(r.BASE_PRICE < r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
+        + masterSlaveCondition +
+        "and s.SECURITY_EVENT = 'Price Adjust' "
+        "group by c.NAME ");
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }
 
 void XPriceAdjustmentReportSection::GetPriceAdjustmentQueryForConsolidatedZed(TStringList* AdjustmentsSQL, AnsiString masterSlaveCondition)
 {
-    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
-    "FROM ARCHIVE r "
-    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-    "where "
-    "(r.BASE_PRICE > r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
-    + masterSlaveCondition +
-    "and s.SECURITY_EVENT = 'Price Adjust' "
-    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
-    "group by c.NAME ");
+    try
+    {
+        AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
+        "FROM ARCHIVE r "
+        "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+        "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+        "where "
+        "(r.BASE_PRICE > r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
+        + masterSlaveCondition +
+        "and s.SECURITY_EVENT = 'Price Adjust' "
+        "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
+        "group by c.NAME ");
 
-    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
-    "FROM ARCHIVE r "
-    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-    "where "
-    "(r.BASE_PRICE > r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
-    + masterSlaveCondition +
-    "and s.SECURITY_EVENT = 'Price Adjust' "
-    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
-    "group by c.NAME ");
+        AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
+        "FROM ARCHIVE r "
+        "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+        "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+        "where "
+        "(r.BASE_PRICE > r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
+        + masterSlaveCondition +
+        "and s.SECURITY_EVENT = 'Price Adjust' "
+        "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
+        "group by c.NAME ");
 
-    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
-    "FROM ARCHIVE r "
-    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-    "where "
-    "(r.BASE_PRICE < r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
-    + masterSlaveCondition +
-    "and s.SECURITY_EVENT = 'Price Adjust' "
-    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
-    "group by c.NAME ");
+        AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL0*r.QTY) Adjustment,  c.NAME "
+        "FROM ARCHIVE r "
+        "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+        "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+        "where "
+        "(r.BASE_PRICE < r.PRICE_LEVEL0 and r.HAPPY_HOUR = 'F') "
+        + masterSlaveCondition +
+        "and s.SECURITY_EVENT = 'Price Adjust' "
+        "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
+        "group by c.NAME ");
 
-    AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
-    "FROM ARCHIVE r "
-    "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
-    "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
-    "where "
-    "(r.BASE_PRICE < r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
-    + masterSlaveCondition +
-    "and s.SECURITY_EVENT = 'Price Adjust' "
-    "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
-    "group by c.NAME ");
+        AdjustmentsSQL->Add("SELECT SUM(r.BASE_PRICE*r.QTY - r.PRICE_LEVEL1*r.QTY) Adjustment,  c.NAME "
+        "FROM ARCHIVE r "
+        "left join SECURITY s on r.SECURITY_REF = s.SECURITY_REF "
+        "left join CONTACTS c on s.USER_KEY = c.CONTACTS_KEY "
+        "where "
+        "(r.BASE_PRICE < r.PRICE_LEVEL1 and r.HAPPY_HOUR = 'T') "
+        + masterSlaveCondition +
+        "and s.SECURITY_EVENT = 'Price Adjust' "
+        "and r.TIME_STAMP >= :startTime and r.TIME_STAMP <= :endTime "
+        "group by c.NAME ");
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }
