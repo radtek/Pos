@@ -29,110 +29,126 @@ ZBegningEndingInvoiceReportSection::~ZBegningEndingInvoiceReportSection()
 
 void ZBegningEndingInvoiceReportSection::GetOutput(TPrintout* printOut)
 {
-    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-    const Currency todaysEarnings = 0;
-    const Currency openingBalance = 0;
-    const Currency closingBalance = 0;
-    AnsiString startInvoiceNumber = "0";
-    AnsiString endInvoiceNumber = "0";
-
-    todaysEarnings = GetTotalEarningsForZed(todaysEarnings, deviceName);
-
-    if(IsConsolidatedZed)
+    try
     {
-        openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction, *_startTime, *_endTime, deviceName);
-        startInvoiceNumber = GetStartInvoiceNumberForConsolidatedZed(deviceName);   // Todo FormatReceiptNo
-        endInvoiceNumber = GetEndInvoiceNumberForConsolidatedZed(deviceName);       // Todo FormatReceiptNo
-    }
-    else
-    {
-        openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
-        startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
-        endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
-    }
+        AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+        const Currency todaysEarnings = 0;
+        const Currency openingBalance = 0;
+        const Currency closingBalance = 0;
+        AnsiString startInvoiceNumber = "0";
+        AnsiString endInvoiceNumber = "0";
 
-	closingBalance = openingBalance + todaysEarnings;
-    TDateTime trans_date = dataCalculationUtilities->CalculateSessionTransactionDate(Now());
-    FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
+        todaysEarnings = GetTotalEarningsForZed(todaysEarnings, deviceName);
 
-    IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
-
-    if(reportSectionDisplayTraits)
-    {
-        reportSectionDisplayTraits->ApplyTraits(printOut);
-    }
-
-    if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
-    {
-
-        printOut->PrintFormat->Line->ColCount = 4;
-
-
-        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
-        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/2.5;
-        printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-        printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/2.5;
-        printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-        printOut->PrintFormat->Line->FontInfo.Reset();
-
-        if(!IsConsolidatedZed)
+        if(IsConsolidatedZed)
         {
+            openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction, *_startTime, *_endTime, deviceName);
+            startInvoiceNumber = GetStartInvoiceNumberForConsolidatedZed(deviceName);   // Todo FormatReceiptNo
+            endInvoiceNumber = GetEndInvoiceNumberForConsolidatedZed(deviceName);       // Todo FormatReceiptNo
+        }
+        else
+        {
+            openingBalance = dataCalculationUtilities->GetAccumulatedZedTotal(*_dbTransaction);
+            startInvoiceNumber = GetStartInvoiceNumber();   // Todo FormatReceiptNo
+            endInvoiceNumber = GetEndInvoiceNumber();       // Todo FormatReceiptNo
+        }
+
+        closingBalance = openingBalance + todaysEarnings;
+        TDateTime trans_date = dataCalculationUtilities->CalculateSessionTransactionDate(Now());
+        FormatInvoiceNumber(startInvoiceNumber,endInvoiceNumber);
+
+        IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
+
+        if(reportSectionDisplayTraits)
+        {
+            reportSectionDisplayTraits->ApplyTraits(printOut);
+        }
+
+        if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
+        {
+
+            printOut->PrintFormat->Line->ColCount = 4;
+
+
+            printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width * 1/5;
+            printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1/2.5;
+            printOut->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+            printOut->PrintFormat->Line->Columns[2]->Width = printOut->PrintFormat->Width  * 1/2.5;
+            printOut->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
+            printOut->PrintFormat->Line->FontInfo.Reset();
+
+            if(!IsConsolidatedZed)
+            {
+                printOut->PrintFormat->Line->Columns[0]->Text = "";
+                printOut->PrintFormat->Line->Columns[1]->Text = "Report Date:";
+                printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("dd") + "/" + Now().FormatString("mm") + "/" + Now().FormatString("yyyy");
+                printOut->PrintFormat->AddLine();
+                printOut->PrintFormat->Line->Columns[0]->Text = "";
+                printOut->PrintFormat->Line->Columns[1]->Text = "Report Time:";
+                printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("hh:nn AM/PM");
+                printOut->PrintFormat->AddLine();
+                printOut->PrintFormat->Line->Columns[0]->Text = "";
+                printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
+                printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd") + "/" + trans_date.FormatString("mm") + "/" + trans_date.FormatString("yyyy");
+                printOut->PrintFormat->AddLine();
+            }
             printOut->PrintFormat->Line->Columns[0]->Text = "";
-            printOut->PrintFormat->Line->Columns[1]->Text = "Report Date:";
-            printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("dd") + "/" + Now().FormatString("mm") + "/" + Now().FormatString("yyyy");
+            printOut->PrintFormat->Line->Columns[1]->Text = "Beg. S.I. # ";
+            printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(startInvoiceNumber);
             printOut->PrintFormat->AddLine();
             printOut->PrintFormat->Line->Columns[0]->Text = "";
-            printOut->PrintFormat->Line->Columns[1]->Text = "Report Time:";
-            printOut->PrintFormat->Line->Columns[2]->Text = Now().FormatString("hh:nn AM/PM");
+            printOut->PrintFormat->Line->Columns[1]->Text = "End. S.I. # ";
+            printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(endInvoiceNumber);
             printOut->PrintFormat->AddLine();
             printOut->PrintFormat->Line->Columns[0]->Text = "";
-            printOut->PrintFormat->Line->Columns[1]->Text = "Tran Date:";
-            printOut->PrintFormat->Line->Columns[2]->Text = trans_date.FormatString("dd") + "/" + trans_date.FormatString("mm") + "/" + trans_date.FormatString("yyyy");
+            printOut->PrintFormat->Line->Columns[1]->Text = "";
+            printOut->PrintFormat->Line->Columns[2]->Text = "";
+            printOut->PrintFormat->AddLine();
+            printOut->PrintFormat->Line->Columns[0]->Text = "";
+            printOut->PrintFormat->Line->Columns[1]->Text = "Beginning Balance";
+            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(openingBalance, ffNumber, CurrencyDecimals);
+            printOut->PrintFormat->AddLine();
+            printOut->PrintFormat->Line->Columns[0]->Text = "";
+            printOut->PrintFormat->Line->Columns[1]->Text = "Ending Balance";
+            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(closingBalance, ffNumber, CurrencyDecimals);
             printOut->PrintFormat->AddLine();
         }
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "Beg. S.I. # ";
-        printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(startInvoiceNumber);
-        printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "End. S.I. # ";
-        printOut->PrintFormat->Line->Columns[2]->Text = UnicodeString(endInvoiceNumber);
-        printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "";
-        printOut->PrintFormat->Line->Columns[2]->Text = "";
-        printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "Beginning Balance";
-        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(openingBalance, ffNumber, CurrencyDecimals);
-        printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "Ending Balance";
-        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(closingBalance, ffNumber, CurrencyDecimals);
-        printOut->PrintFormat->AddLine();
     }
-
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }
 void ZBegningEndingInvoiceReportSection::FormatInvoiceNumber(AnsiString &inStartInvoiceNumber,AnsiString &inEndInvoiceNumber)
 {
-    AnsiString prefix1 = TReceiptUtility::ExtractInvoiceNumber(inStartInvoiceNumber);
-    if(StrToInt(inStartInvoiceNumber) > 0 )//&& StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+    try
     {
-        int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
-        inStartInvoiceNumber = TReceiptUtility::LeftPadString(inStartInvoiceNumber, "0", noOfDigits);
+        AnsiString prefix1 = TReceiptUtility::ExtractInvoiceNumber(inStartInvoiceNumber);
+        if(StrToInt(inStartInvoiceNumber) > 0 )//&& StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+        {
+            int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+            inStartInvoiceNumber = TReceiptUtility::LeftPadString(inStartInvoiceNumber, "0", noOfDigits);
 
+        }
+        inStartInvoiceNumber = prefix1 + inStartInvoiceNumber;
+
+        AnsiString prefix2 = TReceiptUtility::ExtractInvoiceNumber(inEndInvoiceNumber);
+        if(StrToInt(inEndInvoiceNumber) > 0 )//&& StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+        {
+            int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
+            inEndInvoiceNumber = TReceiptUtility::LeftPadString(inEndInvoiceNumber, "0", noOfDigits);
+
+        }
+        inEndInvoiceNumber = prefix2 + inEndInvoiceNumber;
     }
-    inStartInvoiceNumber = prefix1 + inStartInvoiceNumber;
-
-    AnsiString prefix2 = TReceiptUtility::ExtractInvoiceNumber(inEndInvoiceNumber);
-    if(StrToInt(inEndInvoiceNumber) > 0 )//&& StrToInt(TGlobalSettings::Instance().ReceiptDigits) > 0)
+    catch(Exception &E)
     {
-        int noOfDigits = StrToInt(TGlobalSettings::Instance().ReceiptDigits);
-        inEndInvoiceNumber = TReceiptUtility::LeftPadString(inEndInvoiceNumber, "0", noOfDigits);
-
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
     }
-    inEndInvoiceNumber = prefix2 + inEndInvoiceNumber;
 }
+
 AnsiString ZBegningEndingInvoiceReportSection::GetStartInvoiceNumber()
 {
 	AnsiString beginInvoiceNum = 0;
