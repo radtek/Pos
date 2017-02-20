@@ -17,8 +17,6 @@ XReportDetailsReportSection::~XReportDetailsReportSection()
 
 void XReportDetailsReportSection::GetOutput(TPrintout* printout)
 {
-    try
-    {
         if(TGlobalSettings::Instance().UseBIRFormatInXZReport)
         {
             printout->PrintFormat->Line->ColCount = 4;
@@ -53,12 +51,6 @@ void XReportDetailsReportSection::GetOutput(TPrintout* printout)
             printout->PrintFormat->Line->Columns[0]->Text = "Preliminary (X) Till Not Closed Off";
             printout->PrintFormat->AddLine();
         }
-    }
-    catch(Exception &E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        throw;
-    }
 }
 
 void XReportDetailsReportSection::SetPrinterFormatInMiddle(TPrintout* printOut)

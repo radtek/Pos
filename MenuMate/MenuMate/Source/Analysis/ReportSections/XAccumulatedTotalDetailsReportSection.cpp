@@ -327,6 +327,11 @@ AnsiString XAccumulatedTotalDetailsReportSection::GetEndInvoiceNumber(TDateTime 
             endInvoiceNum = GetLastEndInvoiceNumber();
         }
     }
+     catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 	return endInvoiceNum;
 }
 
