@@ -3178,6 +3178,15 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                 "Cash Withdrawal GLCode."
                 "Default is null",
                 vmg3rdPartyInterface, "" );
+        SetVarBool(DBTransaction,vmIsPanasonicIntegrationEnabled, "Enable Panasonic",
+						"Enable Panasonic Integration for posting receipt on Server.\r"
+						"Default is false\r",
+						 vmg3rdPartyInterface, false);
+
+		SetVarStr(DBTransaction,vmPanasonicServerIP, "Enter Server IP",
+					"Enter IP Address for Server.\r"
+            	 	"Default is localhost\r",
+					 vmg3rdPartyInterface, "localhost");
 	}
 	catch(Exception &E)
 	{

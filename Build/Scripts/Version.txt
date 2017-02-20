@@ -3,4 +3,4 @@
 3.0 - 17 Apr 2016 - Santosh[Pocket Voucher]
 4.0 - 19 May 2016 - Santosh[Chefmate]
 5.0 - 5 Sept 2016 - Santosh[MYOB]
-6.0 - 17 Oct 2016 - Santosh[BIR]
+6.0 - 16 Feb 2016 - Lalit [Panasonic]
