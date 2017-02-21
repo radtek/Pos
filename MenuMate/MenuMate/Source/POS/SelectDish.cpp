@@ -2018,7 +2018,6 @@ void __fastcall TfrmSelectDish::tmPosRefreshTimer(TObject *Sender)
 			TDeviceRealTerminal::Instance().Menus->UpdateSync[TDeviceRealTerminal::Instance().Menus->VisibleMenu->MenuKey] = TDeviceRealTerminal::Instance().Menus->VisibleMenu->EnabledStateSync;
 			RedrawMenu();
 		}
-
               // BarExachange barexchang;
 	}
 }
@@ -2039,7 +2038,6 @@ void __fastcall TfrmSelectDish::tiClockTimer(TObject *Sender)
 	TCHAR szTime[64];
 
 	int Length = GetTimeFormat(NULL, NULL, NULL, _T("h':'mm':'ss tt"), szTime, sizeof(szTime));
-
 	AnsiString TheTime = " ";
 	for (int i = 0; i < Length; i++)
 	{
@@ -3240,6 +3238,7 @@ void TfrmSelectDish::RedrawItems()
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::ListTimerTimer(TObject *Sender)
 {
+
 	if (lbDisplay->ItemIndex < 0)
 		return;
 
@@ -4509,7 +4508,13 @@ void TfrmSelectDish::LockOutUser()
                         else
                         {
                             TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "Staff not swapped out Contact ID's Match: " + IntToStr(TDeviceRealTerminal::Instance().User.ContactID));
+                            
                         }
+                        if (Result == lsAccepted)
+                        {
+                           UpdateMenuItemsAfterLoginScreen();
+                        }
+
                     }
                     else if (Result == lsDenied)
                     {
@@ -4549,6 +4554,7 @@ void TfrmSelectDish::LockOutUser()
       // tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit
                               //&& Result == lsAccepted;
         InitializeQuickPaymentOptions();
+       
 	}
 }
 // ---------------------------------------------------------------------------
@@ -7423,7 +7429,7 @@ void __fastcall TfrmSelectDish::tgridServingCourseMouseClick(TObject *Sender, TM
 void __fastcall TfrmSelectDish::tbtnUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
 	OnLockOutTimer(NULL);
-    CheckUpdateMenuSetting();
+    //CheckUpdateMenuSetting();
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnChitNumberMouseClick(TObject *)
@@ -7885,6 +7891,7 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
                 if(frmPOSMain->MenuEdited)
                 {
 
+                    WriteMenuUpdateSetting(true); /// update menu variable for multiple pos
                     RedrawMenu();
                     std::auto_ptr<TNetMessageMenuChanged> Request( new TNetMessageMenuChanged );
                     Request->Broadcast         = true;
@@ -7895,7 +7902,6 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
                         Request->Menu_Names[Menu->MenuName] = eMenuAddReplace;
                     }
                     TDeviceRealTerminal::Instance().ManagerNet->SendToAll(Request.get());
-                    WriteMenuUpdateSetting(true); /// update menu variable for multiple pos
                 }
             }
 		else if (frmPOSMain->SendHeldOrders)
@@ -12317,9 +12323,9 @@ void TfrmSelectDish::YesGoForSessionWithDC(int memPoints, AnsiString memberPoint
             Request->Menu_Names[Menu->MenuName] = eMenuAddReplace;
             TDeviceRealTerminal::Instance().Menus->UpdateMenuChanged(TDeviceRealTerminal::Instance().DBControl,Request.get() );
         }
-
         TDeviceRealTerminal::Instance().Menus->SwapInNewMenus();
-    }}// ---------------------------------------------------------------------------void TfrmSelectDish::HideSoldItems(Database::TDBTransaction &DBTransaction,TList *OrdersList){    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)         {
+    }
+}// ---------------------------------------------------------------------------void TfrmSelectDish::HideSoldItems(Database::TDBTransaction &DBTransaction,TList *OrdersList){    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)         {
             for (int i = 0; i < OrdersList->Count; i++)
             {
                 TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];
@@ -12529,7 +12535,8 @@ bool TfrmSelectDish::ReadMenuUpdateSetting(Database::TDBTransaction &DBTransacti
             for (;!IBInternalQuery->Eof; IBInternalQuery->Next())
             {
                 int integral_value = IBInternalQuery->FieldByName("INTEGER_VAL")->AsInteger;
-                if (integral_value > 0)                {                     return retVal = true;                }            }
+                if (integral_value > 0)
+                {                     return retVal = true;                }            }
         }        return retVal;
     }
     catch(Exception & E)
@@ -12813,13 +12820,14 @@ TItemComplete * TfrmSelectDish::createItemComplete(
      if(isItemUsingPCD)
      {
 		itemComplete->ClaimAvailability();
+        
      }
     int item_avilability = TDBOrder::CheckItemAvailability(dBTransaction, Item->ItemKey, itemSize->Name);
     dBTransaction.Commit();
-    if(item_avilability == 0)
+    /*if(item_avilability == 0)
     {
         WriteMenuUpdateSetting(true); /// update menu variable for multiple pos
-    }
+    }*/
 
 	itemComplete->SizeKitchenName = itemSize->SizeKitchenName;
     itemComplete->GSTPercent = itemSize->GSTPercent;
@@ -13006,7 +13014,6 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 
 	CurrentTimeKey = TDBSaleTimes::OpenSaleStartTime(DBTransaction, CurrentTimeKey);
 	itemComplete->TimeKey = CurrentTimeKey;
-
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	return itemComplete;
 
@@ -14608,4 +14615,11 @@ void TfrmSelectDish::SetPOSBackgroundColor()
         tbtnParkSales->ButtonColor = clWhite;
     }
 
+}
+
+void TfrmSelectDish::UpdateMenuItemsAfterLoginScreen()
+{
+    RedrawItems();
+    RedrawItemSideCourses();
+    RedrawSetMenuItems();
 }

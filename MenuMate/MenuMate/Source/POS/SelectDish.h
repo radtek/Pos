@@ -676,6 +676,7 @@ public: // User declarations
     void RefreshMenu();
     bool check;
     bool IsTextBoxFocused();
+    void UpdateMenuItemsAfterLoginScreen();
  };
 // ---------------------------------------------------------------------------
 
