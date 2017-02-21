@@ -1295,64 +1295,72 @@ void TfrmAnalysis::PrintPointsReport(Database::TDBTransaction &DBTransaction, TP
 
 void TfrmAnalysis::PrintTipsAudit(Database::TDBTransaction &DBTransaction, TPrintout *Printout)
 {
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-	Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-	Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
 
-	AddSectionTitle(Printout, "Tips Audit");
-	Printout->PrintFormat->Line->ColCount = 2;
+        AddSectionTitle(Printout, "Tips Audit");
+        Printout->PrintFormat->Line->ColCount = 2;
 
-	Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-	Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width / 2;
-	Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-	Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width / 2;
-	Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
-	Printout->PrintFormat->Add("Receipt Number | Tip Amount");
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width / 2;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width / 2;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+        Printout->PrintFormat->Add("Receipt Number | Tip Amount");
 
-	Printout->PrintFormat->Line->ColCount = 1;
-	Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
-	Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-	Printout->PrintFormat->Line->Columns[0]->Line();
-	Printout->PrintFormat->AddLine();
+        Printout->PrintFormat->Line->ColCount = 1;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+        Printout->PrintFormat->Line->Columns[0]->Line();
+        Printout->PrintFormat->AddLine();
 
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text =
-	"SELECT "
-	"DAB.INVOICE_NUMBER,"
-	"DABP.SUBTOTAL "
-	"FROM "
-	"DAYARCBILLPAY DABP INNER JOIN DAYARCBILL DAB "
-	"ON DABP.ARCBILL_KEY = DAB.ARCBILL_KEY "
-	"WHERE "
-	"DABP.PAY_TYPE = 'Tip';";
-	IBInternalQuery->ExecQuery();
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "SELECT "
+        "DAB.INVOICE_NUMBER,"
+        "DABP.SUBTOTAL "
+        "FROM "
+        "DAYARCBILLPAY DABP INNER JOIN DAYARCBILL DAB "
+        "ON DABP.ARCBILL_KEY = DAB.ARCBILL_KEY "
+        "WHERE "
+        "DABP.PAY_TYPE = 'Tip';";
+        IBInternalQuery->ExecQuery();
 
-	Printout->PrintFormat->Line->ColCount = 2;
-	Currency tipSubTotal = 0;
+        Printout->PrintFormat->Line->ColCount = 2;
+        Currency tipSubTotal = 0;
 
-	for (; !IBInternalQuery->Eof  ;IBInternalQuery->Next())
+        for (; !IBInternalQuery->Eof  ;IBInternalQuery->Next())
+        {
+            int receiptNumber  = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsInteger;
+            Currency tipAmount = IBInternalQuery->FieldByName("SUBTOTAL")->AsCurrency;
+            tipSubTotal += tipAmount;
+
+            Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+            Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width / 2;
+            Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+            Printout->PrintFormat->Line->Columns[0]->Text = IntToStr(receiptNumber);
+            Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width / 2;
+            Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+            Printout->PrintFormat->Line->Columns[1]->Text = FormatMMReportCurrency(tipAmount);
+            Printout->PrintFormat->AddLine();
+        }
+
+        // Write out subtotal.
+        PrintoutFormatForTxtValue(Printout);
+        Printout->PrintFormat->Line->Columns[0]->Text = "";
+        Printout->PrintFormat->Line->Columns[1]->Line();
+        Printout->PrintFormat->AddLine();
+        Printout->PrintFormat->Add("SubTotal |" + FormatMMReportCurrency( tipSubTotal ) );
+    }
+    catch(Exception & E)
 	{
-		int receiptNumber  = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsInteger;
-		Currency tipAmount = IBInternalQuery->FieldByName("SUBTOTAL")->AsCurrency;
-		tipSubTotal += tipAmount;
-
-		Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-		Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width / 2;
-		Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-		Printout->PrintFormat->Line->Columns[0]->Text = IntToStr(receiptNumber);
-		Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width / 2;
-		Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
-		Printout->PrintFormat->Line->Columns[1]->Text = FormatMMReportCurrency(tipAmount);
-		Printout->PrintFormat->AddLine();
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
 	}
-
-	// Write out subtotal.
-	PrintoutFormatForTxtValue(Printout);
-	Printout->PrintFormat->Line->Columns[0]->Text = "";
-	Printout->PrintFormat->Line->Columns[1]->Line();
-	Printout->PrintFormat->AddLine();
-	Printout->PrintFormat->Add("SubTotal |" + FormatMMReportCurrency( tipSubTotal ) );
 }
 
 void TfrmAnalysis::PrintWriteOff(Database::TDBTransaction &DBTransaction, UnicodeString DeviceName)
@@ -1504,9 +1512,6 @@ void TfrmAnalysis::PrintWriteOff(Database::TDBTransaction &DBTransaction, Unicod
 			Printout->PrintFormat->Line->Columns[2]->Text = "";
 		}
 
-
-
-
 		IBTerminalQuery->ExecQuery();
 
 		for (; !IBTerminalQuery->Eof; IBTerminalQuery->Next())
@@ -1517,12 +1522,10 @@ void TfrmAnalysis::PrintWriteOff(Database::TDBTransaction &DBTransaction, Unicod
 
 		IBTerminalQuery->Close();
 
-
 		Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 		Printout->PrintFormat->Line->ColCount = 1;
 		Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
 		Printout->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-
 
 		AddSectionTitle(Printout.get(), "Write Off Audit");
 		Printout->PrintFormat->Line->ColCount = 4;
@@ -1632,141 +1635,146 @@ void TfrmAnalysis::PrintWriteOff(Database::TDBTransaction &DBTransaction, Unicod
 		pfmt->Line->Columns[1]->Alignment = taRightJustify; \
 	}
 
-void TfrmAnalysis::SiteSummaryReport(
-Database::TDBTransaction &transaction,
-TPrintout *pout,
-TDateTime last_zedded)
+void TfrmAnalysis::SiteSummaryReport(Database::TDBTransaction &transaction, TPrintout *pout, TDateTime last_zedded)
 {
-	static const AnsiString subsection_name[2] = {
-		"Summary by POS Terminal",
-		"Summary by Item Category"
-	};
+    try
+    {
+        static const AnsiString subsection_name[2] = {
+            "Summary by POS Terminal",
+            "Summary by Item Category"
+        };
 
-	static const AnsiString query_str(
-	"select aggregated_archive.pos_terminal, "
-	"       cg.name category_name, "
-	"       aggregated_archive.category_total "
-	"from (select terminal_name pos_terminal, "
-	"             category_key, "
-	"             sum((price *qty)) category_total "
-	"      from archive where time_stamp >= :base_time "
-	"                   group by pos_terminal, "
-	"                            category_key "
-	"      union "
-	"      select terminal_name pos_terminal, "
-	"             category_key, "
-	"             sum((price * qty)) category_total "
-	"      from dayarchive where time_stamp >= :base_time "
-	"                      group by pos_terminal, "
-	"                               category_key) aggregated_archive "
-	"inner join arccategories ac "
-	"      on ac.category_key = aggregated_archive.category_key "
-	"inner join categorygroups cg "
-	"      on cg.categorygroups_key = ac.categorygroups_key;");
+        static const AnsiString query_str(
+        "select aggregated_archive.pos_terminal, "
+        "       cg.name category_name, "
+        "       aggregated_archive.category_total "
+        "from (select terminal_name pos_terminal, "
+        "             category_key, "
+        "             sum((price *qty)) category_total "
+        "      from archive where time_stamp >= :base_time "
+        "                   group by pos_terminal, "
+        "                            category_key "
+        "      union "
+        "      select terminal_name pos_terminal, "
+        "             category_key, "
+        "             sum((price * qty)) category_total "
+        "      from dayarchive where time_stamp >= :base_time "
+        "                      group by pos_terminal, "
+        "                               category_key) aggregated_archive "
+        "inner join arccategories ac "
+        "      on ac.category_key = aggregated_archive.category_key "
+        "inner join categorygroups cg "
+        "      on cg.categorygroups_key = ac.categorygroups_key;");
 
-	TPrintFormat *pfmt = pout->PrintFormat;
-	float grand_total = 0;
-	TDateTime fromDateTime;
-	std::map<AnsiString, float> totals[2];
-	std::map<AnsiString, float>::const_iterator walker;
-	TIBSQL *query = transaction.Query(transaction.AddQuery());
-	unsigned short year;
-	unsigned short month;
-	unsigned short day;
-	unsigned short hour;
-	unsigned short minute;
-	unsigned short dummy;
+        TPrintFormat *pfmt = pout->PrintFormat;
+        float grand_total = 0;
+        TDateTime fromDateTime;
+        std::map<AnsiString, float> totals[2];
+        std::map<AnsiString, float>::const_iterator walker;
+        TIBSQL *query = transaction.Query(transaction.AddQuery());
+        unsigned short year;
+        unsigned short month;
+        unsigned short day;
+        unsigned short hour;
+        unsigned short minute;
+        unsigned short dummy;
 
-	query->SQL->Text = query_str;
+        query->SQL->Text = query_str;
 
-	/*
-	* This chunk of code extracts the individual date components
-		* and performs bitshifting as to translate the current time
-		* into a single integer value that can be quickly and
-	* efficiently compared and in a way that takes account for
-	* the case when the time on the reporting POS is less than
-		* 5am of a new day. The bit operation results to one if it
-	* is earlier than 5am the current day, this result is
-		* subtracted from the current datetime which reduces the
-		* date by one - sourcing the data from the previous day.
-	*/
+        /*
+        * This chunk of code extracts the individual date components
+            * and performs bitshifting as to translate the current time
+            * into a single integer value that can be quickly and
+        * efficiently compared and in a way that takes account for
+        * the case when the time on the reporting POS is less than
+            * 5am of a new day. The bit operation results to one if it
+        * is earlier than 5am the current day, this result is
+            * subtracted from the current datetime which reduces the
+            * date by one - sourcing the data from the previous day.
+        */
 
-	Now().DecodeDate(&year, &month, &day);
-	Now().DecodeTime(&hour, &minute, &dummy, &dummy);
+        Now().DecodeDate(&year, &month, &day);
+        Now().DecodeTime(&hour, &minute, &dummy, &dummy);
 
-	/* An example:
-		* fromDateTime { y: 2011, m: 09, d:23, h:5, m:0 }
-	* hour = 02, minute = 43.
-	*
-	* We want to translate the time into a single 16bit
-	* value. We can achieve this by combining the two
-	* components. We know how many bits each component
-	* requires by the limits of X hours in a day and Y
-	* minutes in an hour - 24 and 60 respectively but
-	* practically, in this case, the limit for minutes
-	* is 59. The number 24 requires only 5bits, the
-	* number 54 requires 6 (2^5 = 32, 2^6 = 64).
-	*
-	* A worked example with the above values:
-	* Hour 2, 0000_0000_0000_0010, shifted by 6.
-	*         0000_0000_1000_0000.
-	*               '----' hour encoded.
-	* Minute 43, 0000_0000_0010_1011
-	*                        '-----' minute encoded.
-	* Combined:
-	*            0000_0000_1010_1011 = 0xAB (171 dec).
-	*
-	* 5am is 0000_0001_0100_0000 = 0x140 (320 dec).
-	*/
-	fromDateTime = TDateTime(year, month, day, 5, 0, 0, 0);
-	fromDateTime -= ((hour << 6) | minute) < 0x140;
+        /* An example:
+            * fromDateTime { y: 2011, m: 09, d:23, h:5, m:0 }
+        * hour = 02, minute = 43.
+        *
+        * We want to translate the time into a single 16bit
+        * value. We can achieve this by combining the two
+        * components. We know how many bits each component
+        * requires by the limits of X hours in a day and Y
+        * minutes in an hour - 24 and 60 respectively but
+        * practically, in this case, the limit for minutes
+        * is 59. The number 24 requires only 5bits, the
+        * number 54 requires 6 (2^5 = 32, 2^6 = 64).
+        *
+        * A worked example with the above values:
+        * Hour 2, 0000_0000_0000_0010, shifted by 6.
+        *         0000_0000_1000_0000.
+        *               '----' hour encoded.
+        * Minute 43, 0000_0000_0010_1011
+        *                        '-----' minute encoded.
+        * Combined:
+        *            0000_0000_1010_1011 = 0xAB (171 dec).
+        *
+        * 5am is 0000_0001_0100_0000 = 0x140 (320 dec).
+        */
+        fromDateTime = TDateTime(year, month, day, 5, 0, 0, 0);
+        fromDateTime -= ((hour << 6) | minute) < 0x140;
 
-	query->ParamByName("base_time")->AsDateTime = fromDateTime;
-	query->ExecQuery();
+        query->ParamByName("base_time")->AsDateTime = fromDateTime;
+        query->ExecQuery();
 
-	/* We write and display the totals via table indices as it
-	avoids an if statement the loop body. Branches are expensive. */
-	for (float i; !query->Eof; grand_total += i, query->Next()) {
-		i = query->FieldByName("category_total")->AsFloat;
-		totals[0][
-		query->FieldByName("pos_terminal")->AsString] += i;
-		totals[1][
-		query->FieldByName("category_name")->AsString] += i;
-	}
-	query->Close();
+        /* We write and display the totals via table indices as it
+        avoids an if statement the loop body. Branches are expensive. */
+        for (float i; !query->Eof; grand_total += i, query->Next()) {
+            i = query->FieldByName("category_total")->AsFloat;
+            totals[0][
+            query->FieldByName("pos_terminal")->AsString] += i;
+            totals[1][
+            query->FieldByName("category_name")->AsString] += i;
+        }
+        query->Close();
 
-	/* Defined simply to shorten the formatting expression as to fit within the
-80 margin limit. Keeps things readable. */
-#define FriendlyFormatTime(date_time) \
-		((date_time).FormatString("yyyy/mm/dd h:mm am/pm"))
+        /* Defined simply to shorten the formatting expression as to fit within the
+    80 margin limit. Keeps things readable. */
+    #define FriendlyFormatTime(date_time) \
+            ((date_time).FormatString("yyyy/mm/dd h:mm am/pm"))
 
-	AddSectionTitle(pout, "Site Summary");
-	pfmt->Line->ColCount = 1;
-	pfmt->Line->Columns[0]->Alignment = taCenter;
-	pfmt->Line->Columns[0]->Width = pfmt->NormalWidth;
-	pfmt->Line->Columns[0]->Text =
-	FriendlyFormatTime(query->ParamByName("base_time")->AsDateTime) +
-	" to " + FriendlyFormatTime(TDateTime::CurrentDateTime());
-	pfmt->AddLine();
+        AddSectionTitle(pout, "Site Summary");
+        pfmt->Line->ColCount = 1;
+        pfmt->Line->Columns[0]->Alignment = taCenter;
+        pfmt->Line->Columns[0]->Width = pfmt->NormalWidth;
+        pfmt->Line->Columns[0]->Text =
+        FriendlyFormatTime(query->ParamByName("base_time")->AsDateTime) +
+        " to " + FriendlyFormatTime(TDateTime::CurrentDateTime());
+        pfmt->AddLine();
 
-#undef FriendlyFormatTime
+    #undef FriendlyFormatTime
 
-	for (int i = 0; i < 2; i++) {
-		AddSubSectionTitle(pout, subsection_name[i]);
-		SetSiteSummaryFormatting();
-		for (walker = totals[i].begin();
-		walker != totals[i].end(); pfmt->AddLine(), walker++) {
-			pfmt->Line->Columns[0]->Text = "  " + walker->first;
-			pfmt->Line->Columns[1]->Text =
-			FormatFloat("0.00", walker->second);
-		}
-		pfmt->Line->Columns[0]->Text = "";
-		pfmt->Line->Columns[1]->Line();
-		pfmt->AddLine();
-		pfmt->Line->Columns[0]->Text = "  Total";
-		pfmt->Line->Columns[1]->Text = FormatFloat("0.00",
-		grand_total);
-		pfmt->AddLine();
+        for (int i = 0; i < 2; i++) {
+            AddSubSectionTitle(pout, subsection_name[i]);
+            SetSiteSummaryFormatting();
+            for (walker = totals[i].begin();
+            walker != totals[i].end(); pfmt->AddLine(), walker++) {
+                pfmt->Line->Columns[0]->Text = "  " + walker->first;
+                pfmt->Line->Columns[1]->Text =
+                FormatFloat("0.00", walker->second);
+            }
+            pfmt->Line->Columns[0]->Text = "";
+            pfmt->Line->Columns[1]->Line();
+            pfmt->AddLine();
+            pfmt->Line->Columns[0]->Text = "  Total";
+            pfmt->Line->Columns[1]->Text = FormatFloat("0.00",
+            grand_total);
+            pfmt->AddLine();
+        }
+    }
+    catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
 	}
 }
 
@@ -1861,68 +1869,71 @@ void TfrmAnalysis::PaxCountReport(Database::TDBTransaction &transaction, TPrinto
 
 void TfrmAnalysis::WriteBlindBalance(Database::TDBTransaction &DBTransaction, TPrintout *Printout, AnsiString Title, TBlindBalances Balances, AnsiString DeviceName, bool t)
 {
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        AddSectionTitle(Printout, Title);
+        Printout->PrintFormat->NewLine();
+        PrintoutFormatForTxtValue(Printout);
+        Printout->PrintFormat->Line->ColCount = 3;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 4/10;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[0]->Text =  "Payment Type";
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width / 3;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Text = "Blind Balance $";
+        Printout->PrintFormat->Line->Columns[2]->Width = Printout->PrintFormat->Width - Printout->PrintFormat->Line->Columns[0]->Width - Printout->PrintFormat->Line->Columns[1]->Width;
+        Printout->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
+        Printout->PrintFormat->Line->Columns[2]->Text = "Variance $";
+        Printout->PrintFormat->AddLine();
+        TBlindBalanceContainer::iterator itBlindBalances = Balances.begin();
+        for (itBlindBalances = Balances.begin(); itBlindBalances != Balances.end(); itBlindBalances++)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            "select sum(dabp.subtotal) total "
+            "       from dayarcbillpay dabp "
+            "            left join dayarcbill dab on "
+            "                 dabp.arcbill_key = dab.arcbill_key "
+            "       where dabp.pay_type = :pay_type ";
+            if (!TGlobalSettings::Instance().EnableDepositBagNum || t)
+            {
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                "             and dab.terminal_name = :terminal_name "
+                "       		  group by dabp.pay_type;";
+                IBInternalQuery->ParamByName("terminal_name")->AsString = DeviceName;
+            }
+            else
+            {
+                IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                "       group by dabp.pay_type;";
+            }
+            Printout->PrintFormat->Line->Columns[0]->Text =
+            itBlindBalances->first;
+            Printout->PrintFormat->Line->Columns[1]->Text =
+            FormatFloat("0.00", itBlindBalances->second.BlindBalance);
 
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	AddSectionTitle(Printout, Title);
-	Printout->PrintFormat->NewLine();
-	PrintoutFormatForTxtValue(Printout);
-	Printout->PrintFormat->Line->ColCount = 3;
-	Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 4/10;
-	Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-	Printout->PrintFormat->Line->Columns[0]->Text =  "Payment Type";
-	Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width / 3;
-	Printout->PrintFormat->Line->Columns[1]->Alignment = taLeftJustify;
-	Printout->PrintFormat->Line->Columns[1]->Text = "Blind Balance $";
-	Printout->PrintFormat->Line->Columns[2]->Width = Printout->PrintFormat->Width - Printout->PrintFormat->Line->Columns[0]->Width - Printout->PrintFormat->Line->Columns[1]->Width;
-	Printout->PrintFormat->Line->Columns[2]->Alignment = taRightJustify;
-	Printout->PrintFormat->Line->Columns[2]->Text = "Variance $";
-	Printout->PrintFormat->AddLine();
-	TBlindBalanceContainer::iterator itBlindBalances = Balances.begin();
-	for (itBlindBalances = Balances.begin(); itBlindBalances != Balances.end(); itBlindBalances++)
+            IBInternalQuery->ParamByName("pay_type")->AsString =
+            itBlindBalances->first;
+            IBInternalQuery->ExecQuery();
+
+            itBlindBalances->second.SystemBalance =
+            IBInternalQuery->FieldByName("total")->AsCurrency;
+            double temp = itBlindBalances->second.BlindBalance
+            - itBlindBalances->second.SystemBalance;
+
+            Printout->PrintFormat->Line->Columns[2]->Text =
+            FormatFloat("0.00", temp);
+            Printout->PrintFormat->AddLine();
+
+            IBInternalQuery->Close();
+        }
+    }
+    catch(Exception & E)
 	{
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		"select sum(dabp.subtotal) total "
-		"       from dayarcbillpay dabp "
-		"            left join dayarcbill dab on "
-		"                 dabp.arcbill_key = dab.arcbill_key "
-		"       where dabp.pay_type = :pay_type ";
-		if (!TGlobalSettings::Instance().EnableDepositBagNum || t)
-		{
-			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-			"             and dab.terminal_name = :terminal_name "
-			"       		  group by dabp.pay_type;";
-			IBInternalQuery->ParamByName("terminal_name")->AsString = DeviceName;
-		}
-		else
-		{
-			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-			"       group by dabp.pay_type;";
-		}
-		Printout->PrintFormat->Line->Columns[0]->Text =
-		itBlindBalances->first;
-		Printout->PrintFormat->Line->Columns[1]->Text =
-		FormatFloat("0.00", itBlindBalances->second.BlindBalance);
-
-		IBInternalQuery->ParamByName("pay_type")->AsString =
-		itBlindBalances->first;
-		IBInternalQuery->ExecQuery();
-
-		itBlindBalances->second.SystemBalance =
-		IBInternalQuery->FieldByName("total")->AsCurrency;
-		double temp = itBlindBalances->second.BlindBalance
-		- itBlindBalances->second.SystemBalance;
-
-		Printout->PrintFormat->Line->Columns[2]->Text =
-		FormatFloat("0.00", temp);
-		Printout->PrintFormat->AddLine();
-
-		IBInternalQuery->Close();
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
 	}
-
-
-
-
 }
 
 void TfrmAnalysis::PrintConsumption(Database::TDBTransaction &DBTransaction)
@@ -4205,62 +4216,78 @@ void TfrmAnalysis::AddMYOBInvoiceItem(TMYOBInvoiceDetail &MYOBInvoiceDetail,Ansi
 void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransaction,double &PurchasedPoints, double &PurchasedVoucher,
                                  TDateTime startTime,TDateTime endTime)
 {
-    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    IBInternalQuery->SQL->Text =    "select cast(sum(f.SUBTOTAL) as numeric(17,2)) PointsTotal from "
-                                    "(Select distinct a.ARCBILL_KEY from DAYARCBILL a "
-                                    "left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-                                    "where b.NOTE <> 'Total Change.' and b.CHARGED_TO_XERO <> 'T' and "
-                                    "a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME) e "
-                                    "left join "
-                                    "(select c.ARCBILL_KEY,c.SUBTOTAL from DAYARCSURCHARGE c where "
-                                    "c.PAY_TYPE = 'Points') f on e.ARCBILL_KEY = f.ARCBILL_KEY ";
-    IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
-    IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = endTime;
-    IBInternalQuery->ExecQuery();
-    if(!IBInternalQuery->Eof)
+    try
     {
-      PurchasedPoints = IBInternalQuery->FieldByName("PointsTotal")->AsFloat;
-    }
-    std::vector<TPayment> Payments;
-    TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction,Payments);
-    for (std::vector <TPayment> ::iterator ptrPayment = Payments.begin(); ptrPayment != Payments.end(); ptrPayment++)
-		{
-            if(ptrPayment->Properties & ePayTypeGetVoucherDetails)
-             {
-                IBInternalQuery->Close();
-                IBInternalQuery->SQL->Text =    "select cast(sum(f.SUBTOTAL) as numeric(17,2)) VoucherTotal from "
-                                                "(Select distinct a.ARCBILL_KEY from DAYARCBILL a "
-                                                "left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
-                                                "where b.NOTE <> 'Total Change.' and b.CHARGED_TO_XERO <> 'T' and "
-                                                "a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME) e "
-                                                "left join "
-                                                "(select c.ARCBILL_KEY,c.SUBTOTAL from DAYARCSURCHARGE c where "
-                                                "c.PAY_TYPE = :PAYTYPE) f on e.ARCBILL_KEY = f.ARCBILL_KEY ";
-                IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
-                IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = endTime;
-                IBInternalQuery->ParamByName("PAYTYPE")->AsString = ptrPayment->Name;
-                IBInternalQuery->ExecQuery();
-                if(!IBInternalQuery->Eof)
-                {
-                  PurchasedVoucher += IBInternalQuery->FieldByName("VoucherTotal")->AsFloat;
-                }
-             }
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->SQL->Text =    "select cast(sum(f.SUBTOTAL) as numeric(17,2)) PointsTotal from "
+                                        "(Select distinct a.ARCBILL_KEY from DAYARCBILL a "
+                                        "left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                        "where b.NOTE <> 'Total Change.' and b.CHARGED_TO_XERO <> 'T' and "
+                                        "a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME) e "
+                                        "left join "
+                                        "(select c.ARCBILL_KEY,c.SUBTOTAL from DAYARCSURCHARGE c where "
+                                        "c.PAY_TYPE = 'Points') f on e.ARCBILL_KEY = f.ARCBILL_KEY ";
+        IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
+        IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = endTime;
+        IBInternalQuery->ExecQuery();
+        if(!IBInternalQuery->Eof)
+        {
+          PurchasedPoints = IBInternalQuery->FieldByName("PointsTotal")->AsFloat;
         }
+        std::vector<TPayment> Payments;
+        TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction,Payments);
+        for (std::vector <TPayment> ::iterator ptrPayment = Payments.begin(); ptrPayment != Payments.end(); ptrPayment++)
+            {
+                if(ptrPayment->Properties & ePayTypeGetVoucherDetails)
+                 {
+                    IBInternalQuery->Close();
+                    IBInternalQuery->SQL->Text =    "select cast(sum(f.SUBTOTAL) as numeric(17,2)) VoucherTotal from "
+                                                    "(Select distinct a.ARCBILL_KEY from DAYARCBILL a "
+                                                    "left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                                    "where b.NOTE <> 'Total Change.' and b.CHARGED_TO_XERO <> 'T' and "
+                                                    "a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME) e "
+                                                    "left join "
+                                                    "(select c.ARCBILL_KEY,c.SUBTOTAL from DAYARCSURCHARGE c where "
+                                                    "c.PAY_TYPE = :PAYTYPE) f on e.ARCBILL_KEY = f.ARCBILL_KEY ";
+                    IBInternalQuery->ParamByName("STARTTIME")->AsDateTime = startTime;
+                    IBInternalQuery->ParamByName("ENDTIME")->AsDateTime = endTime;
+                    IBInternalQuery->ParamByName("PAYTYPE")->AsString = ptrPayment->Name;
+                    IBInternalQuery->ExecQuery();
+                    if(!IBInternalQuery->Eof)
+                    {
+                      PurchasedVoucher += IBInternalQuery->FieldByName("VoucherTotal")->AsFloat;
+                    }
+                 }
+            }
+    }
+    catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
 }
 
 AnsiString TfrmAnalysis::GetCompanyName(Database::TDBTransaction &DBTransaction)
 {
-    AnsiString CompanyName = "";
-    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    IBInternalQuery->SQL->Text = "SELECT a.COMPANY FROM REGISTRATION a where a.TERMINAL_NAME = :TERMINAL_NAME";
-    IBInternalQuery->Close();
-    IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
-    IBInternalQuery->ExecQuery();
-    if(!IBInternalQuery->Eof)
-     {
-       CompanyName = IBInternalQuery->FieldByName("COMPANY")->AsString;
-     }
-    return CompanyName;
+    try
+    {
+        AnsiString CompanyName = "";
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->SQL->Text = "SELECT a.COMPANY FROM REGISTRATION a where a.TERMINAL_NAME = :TERMINAL_NAME";
+        IBInternalQuery->Close();
+        IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
+        IBInternalQuery->ExecQuery();
+        if(!IBInternalQuery->Eof)
+         {
+           CompanyName = IBInternalQuery->FieldByName("COMPANY")->AsString;
+         }
+        return CompanyName;
+    }
+    catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
 }
 
 void TfrmAnalysis::CreateXeroInvoiceAndSend(std::vector<TXeroInvoiceDetail>  &XeroInvoiceDetails)
@@ -5017,27 +5044,43 @@ void __fastcall TfrmAnalysis::btnUpdateStockClick(void)
 // ---------------------------------------------------------------------------
 bool TfrmAnalysis::UpdateStockAllowed(Database::TDBTransaction &DBTransaction)
 {
-	bool RetVal = false;
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    try
+    {
+        bool RetVal = false;
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_UPDATE_STOCK_ON_ZED, 1) FROM RDB$DATABASE";
-	IBInternalQuery->ExecQuery();
-	int key = IBInternalQuery->Fields[0]->AsInteger;
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_UPDATE_STOCK_ON_ZED, 1) FROM RDB$DATABASE";
+        IBInternalQuery->ExecQuery();
+        int key = IBInternalQuery->Fields[0]->AsInteger;
 
-	if (key == 1)
+        if (key == 1)
+        {
+            RetVal = true;
+        }
+        return RetVal;
+    }
+    catch(Exception & E)
 	{
-		RetVal = true;
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
 	}
-	return RetVal;
 }
 
 void TfrmAnalysis::UpdateStockComplete(Database::TDBTransaction &DBTransaction)
 {
-	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-	IBInternalQuery->Close();
-	IBInternalQuery->SQL->Text = "SET GENERATOR GEN_UPDATE_STOCK_ON_ZED TO 0;";
-	IBInternalQuery->ExecQuery();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SET GENERATOR GEN_UPDATE_STOCK_ON_ZED TO 0;";
+        IBInternalQuery->ExecQuery();
+    }
+    catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
 }
 
 TFinancialDetails TfrmAnalysis::GetFinancialDetails(Database::TDBTransaction &DBTransaction, TTransactionInfo &TransactionInfo,
@@ -6074,159 +6117,183 @@ void TfrmAnalysis::BuildXMLTotalsCategories(UnicodeString CatName, TCatTotal &Ca
 
 void TfrmAnalysis::BuildXMLTotalsDiscount(Database::TDBTransaction &DBTransaction)
 {
-	if (TDeviceRealTerminal::Instance().IMManager->Registered)
+    try
+    {
+        if (TDeviceRealTerminal::Instance().IMManager->Registered)
+        {
+            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+            // Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+            // DBTransaction.RegisterQuery(IBInternalQuery);
+
+            // Check For a header and add a root node if there isnt one.
+            TiXmlHandle hDoc(&DiscountTotalsXML->Doc);
+            TiXmlElement* pElement = NULL;
+            pElement = hDoc.FirstChild(xmlEleTotalsDiscounts).ToElement();
+            if (!pElement)
+            {
+                DiscountTotalsXML->Doc.Clear();
+                TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
+                DiscountTotalsXML->Doc.LinkEndChild(decl);
+                // Insert DOCTYPE definiation here.
+                pElement = new TiXmlElement(xmlEleTotalsDiscounts);
+                pElement->SetAttribute(xmlAttrID, AnsiString(DiscountTotalsXML->IntaMateID).c_str());
+                pElement->SetAttribute(xmlAttrTerminalID, TDeviceRealTerminal::Instance().IMManager->POSID);
+                pElement->SetAttribute(xmlAttrSiteID,TGlobalSettings::Instance().SiteID);
+                DiscountTotalsXML->Doc.LinkEndChild(pElement);
+            }
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            "select COUNT(DAYARCORDERDISCOUNTS.DISCOUNT_KEY) QTY, SUM(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) TOTAL, DAYARCORDERDISCOUNTS.DISCOUNT_KEY, DAYARCORDERDISCOUNTS.NAME from DAYARCORDERDISCOUNTS"
+            " LEFT JOIN DAYARCHIVE ON DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY"
+            " LEFT JOIN DAYARCBILL ON DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY"
+            " where " " DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME "
+            " group by DAYARCORDERDISCOUNTS.DISCOUNT_KEY,DAYARCORDERDISCOUNTS.NAME";
+
+            UnicodeString DeviceName = GetTerminalName();
+            IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+            IBInternalQuery->ExecQuery();
+
+            for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+            {
+                // Add this payment type to the end.
+                TiXmlElement *Discount = new TiXmlElement(xmlEleDiscount);
+                Discount->SetAttribute(xmlAttrID, IBInternalQuery->FieldByName("DISCOUNT_KEY")->AsInteger);
+                Discount->SetAttribute(xmlAttrName, IBInternalQuery->FieldByName("NAME")->AsString.t_str());
+                Discount->SetAttribute(xmlAttrQty, FormatFloat("0.00", IBInternalQuery->FieldByName("QTY")->AsFloat).t_str());
+                Discount->SetAttribute(xmlAttrTotal, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL")->AsCurrency).t_str());
+                Discount->SetAttribute(xmlAttrDate, Now().FormatString("dd/mm/yyyy").t_str());
+                Discount->SetAttribute(xmlAttrTime, Now().FormatString("hh:nn:ss").t_str());
+                pElement->LinkEndChild(Discount);
+            }
+        }
+    }
+    catch(Exception & E)
 	{
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-		// Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-		// DBTransaction.RegisterQuery(IBInternalQuery);
-
-		// Check For a header and add a root node if there isnt one.
-		TiXmlHandle hDoc(&DiscountTotalsXML->Doc);
-		TiXmlElement* pElement = NULL;
-		pElement = hDoc.FirstChild(xmlEleTotalsDiscounts).ToElement();
-		if (!pElement)
-		{
-			DiscountTotalsXML->Doc.Clear();
-			TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
-			DiscountTotalsXML->Doc.LinkEndChild(decl);
-			// Insert DOCTYPE definiation here.
-			pElement = new TiXmlElement(xmlEleTotalsDiscounts);
-			pElement->SetAttribute(xmlAttrID, AnsiString(DiscountTotalsXML->IntaMateID).c_str());
-			pElement->SetAttribute(xmlAttrTerminalID, TDeviceRealTerminal::Instance().IMManager->POSID);
-			pElement->SetAttribute(xmlAttrSiteID,TGlobalSettings::Instance().SiteID);
-			DiscountTotalsXML->Doc.LinkEndChild(pElement);
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		"select COUNT(DAYARCORDERDISCOUNTS.DISCOUNT_KEY) QTY, SUM(DAYARCORDERDISCOUNTS.DISCOUNTED_VALUE) TOTAL, DAYARCORDERDISCOUNTS.DISCOUNT_KEY, DAYARCORDERDISCOUNTS.NAME from DAYARCORDERDISCOUNTS"
-		" LEFT JOIN DAYARCHIVE ON DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DAYARCHIVE.ARCHIVE_KEY"
-		" LEFT JOIN DAYARCBILL ON DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY"
-		" where " " DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME "
-		" group by DAYARCORDERDISCOUNTS.DISCOUNT_KEY,DAYARCORDERDISCOUNTS.NAME";
-
-		UnicodeString DeviceName = GetTerminalName();
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-
-		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-		{
-			// Add this payment type to the end.
-			TiXmlElement *Discount = new TiXmlElement(xmlEleDiscount);
-			Discount->SetAttribute(xmlAttrID, IBInternalQuery->FieldByName("DISCOUNT_KEY")->AsInteger);
-			Discount->SetAttribute(xmlAttrName, IBInternalQuery->FieldByName("NAME")->AsString.t_str());
-			Discount->SetAttribute(xmlAttrQty, FormatFloat("0.00", IBInternalQuery->FieldByName("QTY")->AsFloat).t_str());
-			Discount->SetAttribute(xmlAttrTotal, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL")->AsCurrency).t_str());
-			Discount->SetAttribute(xmlAttrDate, Now().FormatString("dd/mm/yyyy").t_str());
-			Discount->SetAttribute(xmlAttrTime, Now().FormatString("hh:nn:ss").t_str());
-			pElement->LinkEndChild(Discount);
-		}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
 	}
 }
 
 void TfrmAnalysis::BuildXMLTotalsHourlySales(Database::TDBTransaction &DBTransaction)
 {
-	if (TDeviceRealTerminal::Instance().IMManager->Registered)
+    try
+    {
+        if (TDeviceRealTerminal::Instance().IMManager->Registered)
+        {
+            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            // Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+            // DBTransaction.RegisterQuery(IBInternalQuery);
+
+            // Check For a header and add a root node if there isnt one.
+            TiXmlHandle hDoc(&HourlyTotalsXML->Doc);
+            TiXmlElement* pElement = NULL;
+            pElement = hDoc.FirstChild(xmlEleTotalsHourlySales).ToElement();
+            if (!pElement)
+            {
+                HourlyTotalsXML->Doc.Clear();
+                TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
+                HourlyTotalsXML->Doc.LinkEndChild(decl);
+                // Insert DOCTYPE definiation here.
+                pElement = new TiXmlElement(xmlEleTotalsHourlySales);
+                pElement->SetAttribute(xmlAttrID, AnsiString(HourlyTotalsXML->IntaMateID).c_str());
+                pElement->SetAttribute(xmlAttrTerminalID, TDeviceRealTerminal::Instance().IMManager->POSID);
+                pElement->SetAttribute(xmlAttrSiteID,TGlobalSettings::Instance().SiteID);
+                HourlyTotalsXML->Doc.LinkEndChild(pElement);
+            }
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            "select DAYARCBILL.ARCBILL_KEY,DAYARCBILL.TIME_STAMP,ARCHIVE_KEY from DAYARCBILL "
+            "left join DAYARCHIVE on DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
+            "where DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME order by DAYARCBILL.TIME_STAMP";
+            UnicodeString DeviceName = GetTerminalName();
+            IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+            IBInternalQuery->ExecQuery();
+
+            int CurrentARCBILL_KEY = 0;
+            std::map <UnicodeString, TCalculatedTotals> HourlyTotals;
+            TCalculatedTotals BaseSales;
+            for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+            {
+                if( CurrentARCBILL_KEY != IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger)
+                {
+                    CurrentARCBILL_KEY = IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger;
+                    BaseSales = HourlyTotals[IBInternalQuery->FieldByName("time_stamp")->AsDateTime.FormatString("yyyy-mm-dd-hh")];
+                    BaseSales.TimeStamp = IBInternalQuery->FieldByName("time_stamp")->AsDateTime;
+                    BaseSales.Qty = BaseSales.Qty + 1;
+                }
+                GetSummaGrossNet(DBTransaction,IBInternalQuery->FieldByName("ARCHIVE_KEY")->AsInteger,BaseSales);
+                HourlyTotals[IBInternalQuery->FieldByName("time_stamp")->AsDateTime.FormatString("yyyy-mm-dd-hh")] = BaseSales;
+            }
+
+            std::map <UnicodeString, TCalculatedTotals> ::iterator itTotals = HourlyTotals.begin();
+            for (itTotals = HourlyTotals.begin(); itTotals != HourlyTotals.end(); advance(itTotals, 1))
+            {
+                TiXmlElement *HourlySale = new TiXmlElement(xmlEleHour);
+                HourlySale->SetAttribute(xmlAttrID, itTotals->second.TimeStamp.FormatString("hh").t_str());
+
+                HourlySale->SetAttribute(xmlAttrTotalIncSurcharges, FormatFloat("0.00", itTotals->second.RawTotal).t_str());
+                HourlySale->SetAttribute(xmlAttrTotal, FormatFloat("0.00", itTotals->second.Total).t_str());
+                HourlySale->SetAttribute(xmlAttrTotalExcGST, FormatFloat("0.00", itTotals->second.Total - itTotals->second.TaxContent).t_str());
+                HourlySale->SetAttribute(xmlAttrGSTContent, FormatFloat("0.00",itTotals->second.TaxContent).t_str());
+                HourlySale->SetAttribute(xmlAttrQty, FormatFloat("0.00", itTotals->second.Qty).t_str());
+                HourlySale->SetAttribute(xmlAttrDate, itTotals->second.TimeStamp.FormatString("YYYYMMDDHHMMSS").t_str());
+                pElement->LinkEndChild(HourlySale);
+            }
+        }
+    }
+    catch(Exception & E)
 	{
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		// Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-		// DBTransaction.RegisterQuery(IBInternalQuery);
-
-		// Check For a header and add a root node if there isnt one.
-		TiXmlHandle hDoc(&HourlyTotalsXML->Doc);
-		TiXmlElement* pElement = NULL;
-		pElement = hDoc.FirstChild(xmlEleTotalsHourlySales).ToElement();
-		if (!pElement)
-		{
-			HourlyTotalsXML->Doc.Clear();
-			TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
-			HourlyTotalsXML->Doc.LinkEndChild(decl);
-			// Insert DOCTYPE definiation here.
-			pElement = new TiXmlElement(xmlEleTotalsHourlySales);
-			pElement->SetAttribute(xmlAttrID, AnsiString(HourlyTotalsXML->IntaMateID).c_str());
-			pElement->SetAttribute(xmlAttrTerminalID, TDeviceRealTerminal::Instance().IMManager->POSID);
-			pElement->SetAttribute(xmlAttrSiteID,TGlobalSettings::Instance().SiteID);
-			HourlyTotalsXML->Doc.LinkEndChild(pElement);
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		"select DAYARCBILL.ARCBILL_KEY,DAYARCBILL.TIME_STAMP,ARCHIVE_KEY from DAYARCBILL "
-		"left join DAYARCHIVE on DAYARCHIVE.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
-		"where DAYARCBILL.TERMINAL_NAME = :TERMINAL_NAME order by DAYARCBILL.TIME_STAMP";
-		UnicodeString DeviceName = GetTerminalName();
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-
-		int CurrentARCBILL_KEY = 0;
-		std::map <UnicodeString, TCalculatedTotals> HourlyTotals;
-		TCalculatedTotals BaseSales;
-		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-		{
-			if( CurrentARCBILL_KEY != IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger)
-			{
-				CurrentARCBILL_KEY = IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger;
-				BaseSales = HourlyTotals[IBInternalQuery->FieldByName("time_stamp")->AsDateTime.FormatString("yyyy-mm-dd-hh")];
-				BaseSales.TimeStamp = IBInternalQuery->FieldByName("time_stamp")->AsDateTime;
-				BaseSales.Qty = BaseSales.Qty + 1;
-			}
-			GetSummaGrossNet(DBTransaction,IBInternalQuery->FieldByName("ARCHIVE_KEY")->AsInteger,BaseSales);
-			HourlyTotals[IBInternalQuery->FieldByName("time_stamp")->AsDateTime.FormatString("yyyy-mm-dd-hh")] = BaseSales;
-		}
-
-		std::map <UnicodeString, TCalculatedTotals> ::iterator itTotals = HourlyTotals.begin();
-		for (itTotals = HourlyTotals.begin(); itTotals != HourlyTotals.end(); advance(itTotals, 1))
-		{
-			TiXmlElement *HourlySale = new TiXmlElement(xmlEleHour);
-			HourlySale->SetAttribute(xmlAttrID, itTotals->second.TimeStamp.FormatString("hh").t_str());
-
-			HourlySale->SetAttribute(xmlAttrTotalIncSurcharges, FormatFloat("0.00", itTotals->second.RawTotal).t_str());
-			HourlySale->SetAttribute(xmlAttrTotal, FormatFloat("0.00", itTotals->second.Total).t_str());
-			HourlySale->SetAttribute(xmlAttrTotalExcGST, FormatFloat("0.00", itTotals->second.Total - itTotals->second.TaxContent).t_str());
-			HourlySale->SetAttribute(xmlAttrGSTContent, FormatFloat("0.00",itTotals->second.TaxContent).t_str());
-			HourlySale->SetAttribute(xmlAttrQty, FormatFloat("0.00", itTotals->second.Qty).t_str());
-			HourlySale->SetAttribute(xmlAttrDate, itTotals->second.TimeStamp.FormatString("YYYYMMDDHHMMSS").t_str());
-			pElement->LinkEndChild(HourlySale);
-		}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
 	}
 }
 
 void TfrmAnalysis::BuildXMLTotalsPatronCounts(Database::TDBTransaction &DBTransaction)
 {
-	if(TDeviceRealTerminal::Instance().IMManager->Registered)
+    try
+    {
+        if(TDeviceRealTerminal::Instance().IMManager->Registered)
+        {
+            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            // Check For a header and add a root node if there isnt one.
+            TiXmlHandle hDoc(&PatronCountXML->Doc);
+            TiXmlElement* pElement = NULL;
+            pElement = hDoc.FirstChild(xmlEleTotalsPatron).ToElement();
+            if (!pElement)
+            {
+                PatronCountXML->Doc.Clear();
+                TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "UTF-8", "" );
+                PatronCountXML->Doc.LinkEndChild( decl );
+                // Insert DOCTYPE definiation here.
+                pElement = new TiXmlElement( xmlEleTotalsPatron );
+                pElement->SetAttribute(xmlAttrID, PatronCountXML->IntaMateID.t_str());
+                pElement->SetAttribute(xmlAttrTerminalID, TDeviceRealTerminal::Instance().IMManager->POSID);
+                pElement->SetAttribute(xmlAttrSiteID,TGlobalSettings::Instance().SiteID);
+                PatronCountXML->Doc.LinkEndChild( pElement );
+            }
+
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+            " SELECT sum(r.PATRON_COUNT) TOTALS, r.PATRON_TYPE FROM DAYPATRONCOUNT r "
+            " group by r.PATRON_TYPE;";
+            IBInternalQuery->ExecQuery();
+
+            for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+            {
+                TiXmlElement *PatronType = new TiXmlElement( xmlElePatronType );
+                PatronType->SetAttribute(xmlAttrID,       IBInternalQuery->FieldByName("PATRON_TYPE")->AsString.t_str());
+                PatronType->SetAttribute(xmlAttrQty,      FormatFloat("0.00",IBInternalQuery->FieldByName("TOTALS")->AsInteger).t_str());
+                pElement->LinkEndChild( PatronType );
+            }
+        }
+    }
+    catch(Exception & E)
 	{
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		// Check For a header and add a root node if there isnt one.
-		TiXmlHandle hDoc(&PatronCountXML->Doc);
-		TiXmlElement* pElement = NULL;
-		pElement = hDoc.FirstChild(xmlEleTotalsPatron).ToElement();
-		if (!pElement)
-		{
-			PatronCountXML->Doc.Clear();
-			TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "UTF-8", "" );
-			PatronCountXML->Doc.LinkEndChild( decl );
-			// Insert DOCTYPE definiation here.
-			pElement = new TiXmlElement( xmlEleTotalsPatron );
-			pElement->SetAttribute(xmlAttrID, PatronCountXML->IntaMateID.t_str());
-			pElement->SetAttribute(xmlAttrTerminalID, TDeviceRealTerminal::Instance().IMManager->POSID);
-			pElement->SetAttribute(xmlAttrSiteID,TGlobalSettings::Instance().SiteID);
-			PatronCountXML->Doc.LinkEndChild( pElement );
-		}
-
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text =
-		" SELECT sum(r.PATRON_COUNT) TOTALS, r.PATRON_TYPE FROM DAYPATRONCOUNT r "
-		" group by r.PATRON_TYPE;";
-		IBInternalQuery->ExecQuery();
-
-		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-		{
-			TiXmlElement *PatronType = new TiXmlElement( xmlElePatronType );
-			PatronType->SetAttribute(xmlAttrID,       IBInternalQuery->FieldByName("PATRON_TYPE")->AsString.t_str());
-			PatronType->SetAttribute(xmlAttrQty,      FormatFloat("0.00",IBInternalQuery->FieldByName("TOTALS")->AsInteger).t_str());
-			pElement->LinkEndChild( PatronType );
-		}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
 	}
 }
 
@@ -6307,125 +6374,141 @@ void TfrmAnalysis::BuildXMLListCalculated(TPOS_XMLBase &Data)
 
 void TfrmAnalysis::BuildXMLTotalsProducts(Database::TDBTransaction &DBTransaction)
 {
-	if (TDeviceRealTerminal::Instance().IMManager->Registered)
+    try
+    {
+        if (TDeviceRealTerminal::Instance().IMManager->Registered)
+        {
+            // Check For a header and add a root node if there isnt one.
+            TiXmlHandle hDoc(&ProductTotalsXML->Doc);
+            TiXmlElement* pElement = NULL;
+            pElement = hDoc.FirstChild(xmlEleTotalsProducts).ToElement();
+            if (!pElement)
+            {
+                ProductTotalsXML->Doc.Clear();
+                TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
+                ProductTotalsXML->Doc.LinkEndChild(decl);
+                // Insert DOCTYPE definiation here.
+                pElement = new TiXmlElement(xmlEleTotalsProducts);
+                pElement->SetAttribute(xmlAttrID, AnsiString(ProductTotalsXML->IntaMateID).c_str());
+                pElement->SetAttribute(xmlAttrTerminalID,  TDeviceRealTerminal::Instance().IMManager->POSID);
+                pElement->SetAttribute(xmlAttrSiteID,  TGlobalSettings::Instance().SiteID);
+                ProductTotalsXML->Doc.LinkEndChild(pElement);
+            }
+
+            UnicodeString DeviceName = GetTerminalName();
+            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text = "SELECT "
+            " SUM (DAYARCHIVE.PRICE + DAYARCHIVE.DISCOUNT) TOTAL,"
+            " SUM( ((((DAYARCHIVE.PRICE * DAYARCHIVE.QTY) + DAYARCHIVE.DISCOUNT) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_EXCL, "
+            " SUM( ((DAYARCHIVE.PRICE + DAYARCHIVE.DISCOUNT)* DAYARCHIVE.QTY) - ((((DAYARCHIVE.PRICE + DAYARCHIVE.DISCOUNT)* DAYARCHIVE.QTY) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_TAX, "
+            " SUM (DAYARCHIVE.QTY) TOTALQTY, MENU_NAME , COURSE_NAME , ITEM_NAME , SIZE_NAME,THIRDPARTYCODES_KEY, PLU "
+            " FROM"
+            " DAYARCHIVE"
+            " WHERE TERMINAL_NAME = :TERMINAL_NAME"
+            " AND ( ORDER_TYPE = " + IntToStr(NormalOrder) + " "
+            " OR    ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + ") "
+            " GROUP BY MENU_NAME , COURSE_NAME , ITEM_NAME , SIZE_NAME, THIRDPARTYCODES_KEY, PLU ";
+            IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+            IBInternalQuery->ExecQuery();
+
+            // FinancialDetails.BilledSales
+            for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+            {
+                // Retrive Grand Totals.
+                // Add this payment type to the end.
+                TiXmlElement *EleProduct = new TiXmlElement(xmlEleProduct);
+                EleProduct->SetAttribute(xmlAttrID, _T(""));
+                EleProduct->SetAttribute(xmlAttrMenu, IBInternalQuery->FieldByName("MENU_NAME")->AsString.t_str());
+                EleProduct->SetAttribute(xmlAttrCourse, IBInternalQuery->FieldByName("COURSE_NAME")->AsString.t_str());
+                EleProduct->SetAttribute(xmlAttrItem, IBInternalQuery->FieldByName("ITEM_NAME")->AsString.t_str());
+                EleProduct->SetAttribute(xmlAttrSize, IBInternalQuery->FieldByName("SIZE_NAME")->AsString.t_str());
+                EleProduct->SetAttribute(xmlAttrPLU,  IBInternalQuery->FieldByName("PLU")->AsString.t_str());
+                EleProduct->SetAttribute(xmlAttrCode, TDBThirdPartyCodes::GetThirdPartyCodeByKey(DBTransaction,
+                IBInternalQuery->FieldByName("THIRDPARTYCODES_KEY")->AsInteger).t_str());
+                EleProduct->SetAttribute(xmlAttrQty, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTALQTY")->AsCurrency).t_str());
+                EleProduct->SetAttribute(xmlAttrTotal, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL")->AsCurrency).t_str());
+                EleProduct->SetAttribute(xmlAttrTotalExcGST, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL_EXCL")->AsCurrency).t_str());
+                EleProduct->SetAttribute(xmlAttrGSTContent, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL_TAX")->AsCurrency).t_str());
+                EleProduct->SetAttribute(xmlAttrDate, Now().FormatString("dd/mm/yyyy").t_str());
+                EleProduct->SetAttribute(xmlAttrTime, Now().FormatString("hh:nn:ss").t_str());
+                pElement->LinkEndChild(EleProduct);
+            }
+        }
+    }
+    catch(Exception & E)
 	{
-		// Check For a header and add a root node if there isnt one.
-		TiXmlHandle hDoc(&ProductTotalsXML->Doc);
-		TiXmlElement* pElement = NULL;
-		pElement = hDoc.FirstChild(xmlEleTotalsProducts).ToElement();
-		if (!pElement)
-		{
-			ProductTotalsXML->Doc.Clear();
-			TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
-			ProductTotalsXML->Doc.LinkEndChild(decl);
-			// Insert DOCTYPE definiation here.
-			pElement = new TiXmlElement(xmlEleTotalsProducts);
-			pElement->SetAttribute(xmlAttrID, AnsiString(ProductTotalsXML->IntaMateID).c_str());
-			pElement->SetAttribute(xmlAttrTerminalID,  TDeviceRealTerminal::Instance().IMManager->POSID);
-			pElement->SetAttribute(xmlAttrSiteID,  TGlobalSettings::Instance().SiteID);
-			ProductTotalsXML->Doc.LinkEndChild(pElement);
-		}
-
-		UnicodeString DeviceName = GetTerminalName();
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "SELECT "
-		" SUM (DAYARCHIVE.PRICE + DAYARCHIVE.DISCOUNT) TOTAL,"
-		" SUM( ((((DAYARCHIVE.PRICE * DAYARCHIVE.QTY) + DAYARCHIVE.DISCOUNT) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_EXCL, "
-		" SUM( ((DAYARCHIVE.PRICE + DAYARCHIVE.DISCOUNT)* DAYARCHIVE.QTY) - ((((DAYARCHIVE.PRICE + DAYARCHIVE.DISCOUNT)* DAYARCHIVE.QTY) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_TAX, "
-		" SUM (DAYARCHIVE.QTY) TOTALQTY, MENU_NAME , COURSE_NAME , ITEM_NAME , SIZE_NAME,THIRDPARTYCODES_KEY, PLU "
-		" FROM"
-		" DAYARCHIVE"
-		" WHERE TERMINAL_NAME = :TERMINAL_NAME"
-		" AND ( ORDER_TYPE = " + IntToStr(NormalOrder) + " "
-		" OR    ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + ") "
-		" GROUP BY MENU_NAME , COURSE_NAME , ITEM_NAME , SIZE_NAME, THIRDPARTYCODES_KEY, PLU ";
-		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-		IBInternalQuery->ExecQuery();
-
-		// FinancialDetails.BilledSales
-		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-		{
-			// Retrive Grand Totals.
-			// Add this payment type to the end.
-			TiXmlElement *EleProduct = new TiXmlElement(xmlEleProduct);
-			EleProduct->SetAttribute(xmlAttrID, _T(""));
-			EleProduct->SetAttribute(xmlAttrMenu, IBInternalQuery->FieldByName("MENU_NAME")->AsString.t_str());
-			EleProduct->SetAttribute(xmlAttrCourse, IBInternalQuery->FieldByName("COURSE_NAME")->AsString.t_str());
-			EleProduct->SetAttribute(xmlAttrItem, IBInternalQuery->FieldByName("ITEM_NAME")->AsString.t_str());
-			EleProduct->SetAttribute(xmlAttrSize, IBInternalQuery->FieldByName("SIZE_NAME")->AsString.t_str());
-			EleProduct->SetAttribute(xmlAttrPLU,  IBInternalQuery->FieldByName("PLU")->AsString.t_str());
-			EleProduct->SetAttribute(xmlAttrCode, TDBThirdPartyCodes::GetThirdPartyCodeByKey(DBTransaction,
-			IBInternalQuery->FieldByName("THIRDPARTYCODES_KEY")->AsInteger).t_str());
-			EleProduct->SetAttribute(xmlAttrQty, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTALQTY")->AsCurrency).t_str());
-			EleProduct->SetAttribute(xmlAttrTotal, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL")->AsCurrency).t_str());
-			EleProduct->SetAttribute(xmlAttrTotalExcGST, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL_EXCL")->AsCurrency).t_str());
-			EleProduct->SetAttribute(xmlAttrGSTContent, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL_TAX")->AsCurrency).t_str());
-			EleProduct->SetAttribute(xmlAttrDate, Now().FormatString("dd/mm/yyyy").t_str());
-			EleProduct->SetAttribute(xmlAttrTime, Now().FormatString("hh:nn:ss").t_str());
-			pElement->LinkEndChild(EleProduct);
-		}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
 	}
 }
 
 void TfrmAnalysis::BuildXMLTotalsStaff(Database::TDBTransaction &DBTransaction)
 {
-	if (TDeviceRealTerminal::Instance().IMManager->Registered)
+    try
+    {
+        if (TDeviceRealTerminal::Instance().IMManager->Registered)
+        {
+            TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+            // Ordered By Data.
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text = "Select "
+            "Contacts.Contacts_Key,Contacts.Name,Contacts.CONTACT_ID,Contacts.PAYROLL_ID, "
+            "Count(DayArchive.Qty) QTY, "
+            "Sum(DayArchive.Price) TOTAL, "
+            " SUM( ((((DAYARCHIVE.PRICE * DAYARCHIVE.QTY)) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_EXCL, "
+            "Sum( ((DayArchive.Price * DAYARCHIVE.QTY)) - ((((DayArchive.Price * DAYARCHIVE.QTY)) * 100) / (DayArchive.GST_PERCENT + 100.0)) ) TOTAL_TAX "
+            "From "
+            "Security Left Join DayArchive on " "Security.Security_Ref = DayArchive.Security_Ref " "Left Join Contacts on "
+            "Security.user_key = Contacts.Contacts_Key " "Where " "(DayArchive.Order_Type = 3 or " "DayArchive.Order_Type = 0) and "
+            "Security.Security_Event = '" + UnicodeString(SecurityTypes[secOrderedBy]) + "' " "Group By "
+            "Contacts.Contacts_Key,Contacts.Name,Contacts.CONTACT_ID,Contacts.PAYROLL_ID " "Having " "Count(DayArchive.Archive_Key) > 0 ";
+
+            IBInternalQuery->ExecQuery();
+            // Ordered By Sold By Data.
+
+            // Check For a header and add a root node if there isnt one.
+            TiXmlHandle hDoc(&StaffTotalsXML->Doc);
+            TiXmlElement* pElement = NULL;
+            pElement = hDoc.FirstChild(xmlEleTotalsStaff).ToElement();
+            if (!pElement)
+            {
+                StaffTotalsXML->Doc.Clear();
+                TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
+                StaffTotalsXML->Doc.LinkEndChild(decl);
+                // Insert DOCTYPE definiation here.
+                pElement = new TiXmlElement(xmlEleTotalsStaff);
+                pElement->SetAttribute(xmlAttrID, AnsiString(StaffTotalsXML->IntaMateID).c_str());
+                pElement->SetAttribute(xmlAttrTerminalID, TDeviceRealTerminal::Instance().IMManager->POSID);
+                pElement->SetAttribute(xmlAttrSiteID,TGlobalSettings::Instance().SiteID);
+                StaffTotalsXML->Doc.LinkEndChild(pElement);
+            }
+
+            // FinancialDetails.BilledSales
+            for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+            {
+                // Retrive Grand Totals.
+                // Add this payment type to the end.
+                TiXmlElement *EleStaff = new TiXmlElement(xmlEleStaff);
+                EleStaff->SetAttribute(xmlAttrID, IBInternalQuery->FieldByName("CONTACT_ID")->AsInteger);
+                EleStaff->SetAttribute(xmlAttrXmlID, IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger);
+                EleStaff->SetAttribute(xmlAttrName, IBInternalQuery->FieldByName("Name")->AsString.t_str());
+                EleStaff->SetAttribute(xmlAttrPayrollID, IBInternalQuery->FieldByName("PAYROLL_ID")->AsString.t_str());
+                EleStaff->SetAttribute(xmlAttrQty, FormatFloat("0.00", IBInternalQuery->FieldByName("QTY")->AsCurrency).t_str());
+                EleStaff->SetAttribute(xmlAttrTotal, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL")->AsCurrency).t_str());
+                EleStaff->SetAttribute(xmlAttrTotalExcGST, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL_EXCL")->AsCurrency).t_str());
+                EleStaff->SetAttribute(xmlAttrGSTContent, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL_TAX")->AsCurrency).t_str());
+                EleStaff->SetAttribute(xmlAttrDate, Now().FormatString("dd/mm/yyyy").t_str());
+                EleStaff->SetAttribute(xmlAttrTime, Now().FormatString("hh:nn:ss").t_str());
+                pElement->LinkEndChild(EleStaff);
+            }
+        }
+    }
+    catch(Exception & E)
 	{
-		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-		// Ordered By Data.
-		IBInternalQuery->Close();
-		IBInternalQuery->SQL->Text = "Select "
-		"Contacts.Contacts_Key,Contacts.Name,Contacts.CONTACT_ID,Contacts.PAYROLL_ID, "
-		"Count(DayArchive.Qty) QTY, "
-		"Sum(DayArchive.Price) TOTAL, "
-		" SUM( ((((DAYARCHIVE.PRICE * DAYARCHIVE.QTY)) * 100) / (DAYARCHIVE.GST_PERCENT + 100.0)) ) TOTAL_EXCL, "
-		"Sum( ((DayArchive.Price * DAYARCHIVE.QTY)) - ((((DayArchive.Price * DAYARCHIVE.QTY)) * 100) / (DayArchive.GST_PERCENT + 100.0)) ) TOTAL_TAX "
-		"From "
-		"Security Left Join DayArchive on " "Security.Security_Ref = DayArchive.Security_Ref " "Left Join Contacts on "
-		"Security.user_key = Contacts.Contacts_Key " "Where " "(DayArchive.Order_Type = 3 or " "DayArchive.Order_Type = 0) and "
-		"Security.Security_Event = '" + UnicodeString(SecurityTypes[secOrderedBy]) + "' " "Group By "
-		"Contacts.Contacts_Key,Contacts.Name,Contacts.CONTACT_ID,Contacts.PAYROLL_ID " "Having " "Count(DayArchive.Archive_Key) > 0 ";
-
-		IBInternalQuery->ExecQuery();
-		// Ordered By Sold By Data.
-
-		// Check For a header and add a root node if there isnt one.
-		TiXmlHandle hDoc(&StaffTotalsXML->Doc);
-		TiXmlElement* pElement = NULL;
-		pElement = hDoc.FirstChild(xmlEleTotalsStaff).ToElement();
-		if (!pElement)
-		{
-			StaffTotalsXML->Doc.Clear();
-			TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
-			StaffTotalsXML->Doc.LinkEndChild(decl);
-			// Insert DOCTYPE definiation here.
-			pElement = new TiXmlElement(xmlEleTotalsStaff);
-			pElement->SetAttribute(xmlAttrID, AnsiString(StaffTotalsXML->IntaMateID).c_str());
-			pElement->SetAttribute(xmlAttrTerminalID, TDeviceRealTerminal::Instance().IMManager->POSID);
-			pElement->SetAttribute(xmlAttrSiteID,TGlobalSettings::Instance().SiteID);
-			StaffTotalsXML->Doc.LinkEndChild(pElement);
-		}
-
-		// FinancialDetails.BilledSales
-		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
-		{
-			// Retrive Grand Totals.
-			// Add this payment type to the end.
-			TiXmlElement *EleStaff = new TiXmlElement(xmlEleStaff);
-			EleStaff->SetAttribute(xmlAttrID, IBInternalQuery->FieldByName("CONTACT_ID")->AsInteger);
-			EleStaff->SetAttribute(xmlAttrXmlID, IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger);
-			EleStaff->SetAttribute(xmlAttrName, IBInternalQuery->FieldByName("Name")->AsString.t_str());
-			EleStaff->SetAttribute(xmlAttrPayrollID, IBInternalQuery->FieldByName("PAYROLL_ID")->AsString.t_str());
-			EleStaff->SetAttribute(xmlAttrQty, FormatFloat("0.00", IBInternalQuery->FieldByName("QTY")->AsCurrency).t_str());
-			EleStaff->SetAttribute(xmlAttrTotal, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL")->AsCurrency).t_str());
-			EleStaff->SetAttribute(xmlAttrTotalExcGST, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL_EXCL")->AsCurrency).t_str());
-			EleStaff->SetAttribute(xmlAttrGSTContent, FormatFloat("0.00", IBInternalQuery->FieldByName("TOTAL_TAX")->AsCurrency).t_str());
-			EleStaff->SetAttribute(xmlAttrDate, Now().FormatString("dd/mm/yyyy").t_str());
-			EleStaff->SetAttribute(xmlAttrTime, Now().FormatString("hh:nn:ss").t_str());
-			pElement->LinkEndChild(EleStaff);
-		}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
 	}
 }
 
