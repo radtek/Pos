@@ -115,3 +115,9 @@ void __fastcall TfrmReports::btnConsolidatedZedMouseClick(TObject *Sender)
 	Close();
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmReports::btnHavanaReportMouseClick(TObject *Sender)
+{
+	BtnSelection = 13;
+	Close();
+}
+//---------------------------------------------------------------------------

@@ -129,6 +129,7 @@
 #include "MMMessageBox.h"
 #include "MMTouchNumpad.h"
 #include "PaySubsUtility.h"
+#include "ManagerReportExport.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -9261,6 +9262,11 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
 			{
                 std::auto_ptr<TManagerEJournal> managerEJournal(new TManagerEJournal());
                 managerEJournal->TriggerEJournal(true);
+			}break;
+        case 13: // Havana Report
+			{
+                std::auto_ptr<TManagerReportExport> managerReportExport(new TManagerReportExport());
+                managerReportExport->ExportReport();
 			}break;
 		}
 	}
