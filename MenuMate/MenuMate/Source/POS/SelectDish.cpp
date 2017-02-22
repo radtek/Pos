@@ -160,9 +160,7 @@ void TfrmSelectDish::RemoveSideItemFromItem(
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::ItemAlteredRefresh(Messages::TMessage &Message)
 {
-    RedrawItems();
-    RedrawItemSideCourses();
-    RedrawSetMenuItems();
+   UpdateMenuItemsAfterLoginScreen();
 }
 // ---------------------------------------------------------------------------
 __fastcall TfrmSelectDish::TfrmSelectDish(TComponent* Owner) : TZForm(Owner), ParkedSales(new TManagerParkedSales())
@@ -12476,88 +12474,6 @@ void TfrmSelectDish::WriteMenuUpdateSetting(bool retVal)
     }
 }
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::UpdateMenuEditSetting()
-{
-    try
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-
-        IBInternalQuery->SQL->Text ="UPDATE VARSPROFILE a SET a.INTEGER_VAL =:INTEGER_VAL "
-        " where a.VARIABLES_KEY = 4135 and a.PROFILE_KEY= :PROFILE_KEY "  ;
-        IBInternalQuery->ParamByName("PROFILE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 0;
-        IBInternalQuery->ExecQuery();
-        DBTransaction.Commit();
-    }
-    catch(Exception & E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        throw;
-    }
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::CheckUpdateMenuSetting()
-{
- try
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        TGlobalSettings::Instance().UpdateMenu = ReadMenuUpdateSetting(DBTransaction);
-        if(TGlobalSettings::Instance().UpdateMenu)
-        {
-             UpdateMenuItem(true);
-             UpdateMenuEditSetting();
-        }
-        DBTransaction.Commit();
-    }
-    catch(Exception & E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        throw;
-    }
-}
-// ---------------------------------------------------------------------------
-bool TfrmSelectDish::ReadMenuUpdateSetting(Database::TDBTransaction &DBTransaction)
-{
-    try
-    {
-        bool retVal = false;
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();        IBInternalQuery->SQL->Text =
-                  "SELECT a.INTEGER_VAL FROM VARSPROFILE a where a.VARIABLES_KEY = 4135 and a.PROFILE_KEY= :PROFILE_KEY " ;
-
-        IBInternalQuery->ParamByName("PROFILE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        IBInternalQuery->ExecQuery();
-        if(IBInternalQuery->RecordCount)        {
-            for (;!IBInternalQuery->Eof; IBInternalQuery->Next())
-            {
-                int integral_value = IBInternalQuery->FieldByName("INTEGER_VAL")->AsInteger;
-                if (integral_value > 0)
-                {                     return retVal = true;                }            }
-        }        return retVal;
-    }
-    catch(Exception & E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        throw;
-    }
-}// ---------------------------------------------------------------------------
-void TfrmSelectDish::UpdateMenuItem(bool displaymessage)
-{
-    RedrawMenu();
-    std::auto_ptr<TNetMessageMenuChanged> Request( new TNetMessageMenuChanged );
-    Request->Broadcast         = false;
-    Request->CompareToDataBase = true;
-    for (int i = 0; i < TDeviceRealTerminal::Instance().Menus->Current->Count; i++)
-    {
-        TListMenu *Menu = TDeviceRealTerminal::Instance().Menus->Current->MenuGet(i);
-        Request->Menu_Names[Menu->MenuName] = eMenuAddReplace;
-    }
-    TDeviceRealTerminal::Instance().Menus->UpdateMenuChanged(TDeviceRealTerminal::Instance().DBControl,Request.get(), displaymessage);
-}
 //-----------------------------------------------------------------------------------------------------------------
 bool  TfrmSelectDish::CheckCreditLimitExceeds(Database::TDBTransaction &dBTransaction, int tabKey)
 {
@@ -12822,7 +12738,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 		itemComplete->ClaimAvailability();
         
      }
-    int item_avilability = TDBOrder::CheckItemAvailability(dBTransaction, Item->ItemKey, itemSize->Name);
+    //int item_avilability = TDBOrder::CheckItemAvailability(dBTransaction, Item->ItemKey, itemSize->Name);
     dBTransaction.Commit();
     /*if(item_avilability == 0)
     {
@@ -14616,7 +14532,6 @@ void TfrmSelectDish::SetPOSBackgroundColor()
     }
 
 }
-
 void TfrmSelectDish::UpdateMenuItemsAfterLoginScreen()
 {
     RedrawItems();

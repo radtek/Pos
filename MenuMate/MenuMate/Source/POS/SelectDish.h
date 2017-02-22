@@ -459,15 +459,11 @@ private: // User declarations
     bool GetValue(Database::TDBTransaction &DBTransaction);
     void UpdateValue();
     void WriteMenuUpdateSetting(bool retVal);
-    void CheckUpdateMenuSetting();
-    bool ReadMenuUpdateSetting(Database::TDBTransaction &DBTransaction);
-    void UpdateMenuItem(bool displaymessage);
     bool CheckCreditLimitExceeds(Database::TDBTransaction &dBTransaction,int tabKey);
     bool CheckTabIsInUse(Database::TDBTransaction &dBTransaction, int tabKey);
     bool ShowTabLockedMessage(AnsiString creditMessage);
     bool CheckCreditLimitForTable(Database::TDBTransaction &dBTransaction,int tabKey, Currency OrdersTotal);
     bool ShowTabCreditLimitExceedsMessage(Database::TDBTransaction &dBTransaction, Currency CreditLimit);
-    void UpdateMenuEditSetting();
     void SendPointValueToRunRate( TPaymentTransaction &inTransaction );
     void DoCloundSync();
     void AddSearchedItemToSeat();
