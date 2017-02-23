@@ -195,7 +195,7 @@ std::vector<UnicodeString> THavanaReport::LoadDataFromDB(Database::TDBTransactio
 
             while (!ibInternalQuery->Eof)
             {
-                day = ibInternalQuery->FieldByName("DAY")->AsInteger;
+                day = ibInternalQuery->FieldByName("Bill_Day")->AsInteger;
                 netTotal = ibInternalQuery->FieldByName("NetTotal")->AsCurrency;
                 gst = ibInternalQuery->FieldByName("GST")->AsCurrency;
                 grossTotal == ibInternalQuery->FieldByName("GrossTotal")->AsCurrency;
@@ -203,6 +203,10 @@ std::vector<UnicodeString> THavanaReport::LoadDataFromDB(Database::TDBTransactio
 
                 OutputValue = day + format + netTotal + format + gst + format + grossTotal + format + "\n";
                 DataToWrite.push_back(store.t_str());
+
+                ///todo next payment type selection
+
+                ibInternalQuery->Next();
             }
         }
         CreateColumn.close();
