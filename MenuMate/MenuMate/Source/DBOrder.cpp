@@ -140,7 +140,7 @@ __int64 TDBOrder::SplitOrderToQuantity(Database::TDBTransaction &DBTransaction,_
         SubOrder->RunBillCalculator();
     }
     Order->SetQtyCustom(quantity - quantityToSplit);
-	Order->Cost -= OrderImage->Cost;
+	//Order->Cost -= OrderImage->Cost;
 	Order->Redeemed -= OrderImage->Redeemed;
     Order->PatronCount(itemPatronCount, false);
 
@@ -366,7 +366,7 @@ bool TDBOrder::DeductOrder(TItemMinorComplete * const Order1,TItemMinorComplete 
 	const double new_quantity = order_1_qty - order_2_qty;  //MM-6306 : double data type in place of currency
 
 	Order1->SetQtyCustom(new_quantity);
-	Order1->Cost -= Order2->Cost;
+	//Order1->Cost -= Order2->Cost;
 	Order1->Redeemed -= Order2->Redeemed;
 
 	if (alter_patron_count == false)
