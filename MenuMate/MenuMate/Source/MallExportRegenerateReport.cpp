@@ -75,6 +75,9 @@ __fastcall TfrmMallExportRegenerateReport::TfrmMallExportRegenerateReport(TCompo
         edLocationPath->Enabled = false;
         edLocationPath->Color = clInactiveCaptionText;
     }
+
+    sbAllTerminals->Visible = false;
+    sbThisTerminal->Visible = false;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallExportRegenerateReport::btnOkMouseClick(TObject *Sender)

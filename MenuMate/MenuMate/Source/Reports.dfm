@@ -256,6 +256,25 @@ object frmReports: TfrmReports
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnConsolidatedZedMouseClick
     end
+    object btnHavanaReport: TTouchBtn
+      Left = 17
+      Top = 221
+      Width = 145
+      Height = 65
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -19
+      Font.Name = 'Ariel'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Havana Report'
+      ButtonColor = 6052441
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnHavanaReportMouseClick
+    end
   end
   object Panel1: TPanel
     Left = 633

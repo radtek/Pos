@@ -29,6 +29,7 @@
 #include "MallExportDataManager.h"
 #include <IBQuery.hpp>
 #include "MM_DBCore.h"
+#include <Buttons.hpp>
 //---------------------------------------------------------------------------
 class TfrmMallExportRegenerateReport : public TZForm
 {
@@ -55,6 +56,8 @@ __published:	// IDE-managed Components
     TLabel *lbGenPath;
     TTouchBtn *btnLoadPath;
     TGroupBox *gbRegenReport;
+    TSpeedButton *sbAllTerminals;
+    TSpeedButton *sbThisTerminal;
     void __fastcall btnOkMouseClick(TObject *Sender);
     void __fastcall btnCancelMouseClick(TObject *Sender);
     void __fastcall mcStartDateClick(TObject *Sender);
