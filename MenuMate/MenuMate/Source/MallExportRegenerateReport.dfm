@@ -53,6 +53,7 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+      OnClick = sbAllClick
     end
     object sbThisTerminal: TSpeedButton
       Left = 448
@@ -67,6 +68,7 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+      OnClick = sbThisTerminalClick
     end
     object gbRegenReport: TGroupBox
       Left = 16

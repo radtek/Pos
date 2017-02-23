@@ -65,6 +65,12 @@ void TManagerReportExport::PrepareDataForCSVFile(TDateTime SDate, TDateTime EDat
         //Clear DataToWrite Vector
         dataToWrite.erase (dataToWrite.begin(),dataToWrite.end());
 
+        //Load all data into vector
+        dataToWrite =  report->LoadDataFromDB(dbTransaction, SDate, EDate, isAllTerminalSelected);
+
+        //calling existing mall function for insert Data into CSV
+        exportCSV.GenerateTXT(dataToWrite, reportExportPath, "ZTXTDATA");
+
         //Commit the transaction as we have completed all the transactions
         dbTransaction.Commit();
     }
