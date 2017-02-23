@@ -9,7 +9,7 @@
 class TManagerReportExport
 {
     private:
-
+    bool isAllTerminalSelected;
     void CreateFileExportPath(UnicodeString &path);
     void PrepareDataForCSVFile(TDateTime SDate, TDateTime EDate, UnicodeString reportExportPath);
     public:

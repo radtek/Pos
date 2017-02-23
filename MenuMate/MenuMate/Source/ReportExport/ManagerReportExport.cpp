@@ -23,6 +23,7 @@ void TManagerReportExport::ExportReport()
     TModalResult result = MallExportRegenerateReport->ShowModal();
     TDateTime SDate = MallExportRegenerateReport->SDate;
     TDateTime EDate = MallExportRegenerateReport->EDate;
+    isAllTerminalSelected = MallExportRegenerateReport->isAllTerminalsSelected;
     UnicodeString reportExportPath = MallExportRegenerateReport->edLocationPath->Text;
     if(result == mrOk)
     {
@@ -55,7 +56,7 @@ void TManagerReportExport::PrepareDataForCSVFile(TDateTime SDate, TDateTime EDat
     {
         std::vector<UnicodeString> dataToWrite;
         THavanaReport* report = new THavanaReport();
-        dataToWrite =  report->CreateHeaderFormat(dbTransaction, SDate, EDate);
+        dataToWrite =  report->CreateHeaderFormat(dbTransaction, SDate, EDate, isAllTerminalSelected);
 
         //Use Federal Mall's Function of printing Header
         TMallExportOutputDBDriver  exportCSV;

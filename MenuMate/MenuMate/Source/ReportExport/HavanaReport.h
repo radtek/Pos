@@ -11,7 +11,8 @@ class THavanaReport
 
     public:
     THavanaReport();
-    std::vector<UnicodeString> CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate);
+    std::vector<UnicodeString> CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate,
+                                                    bool isAllTerminalSelected);
     std::vector<UnicodeString> LoadDataFromDB(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate);
 
 };

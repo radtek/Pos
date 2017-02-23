@@ -14,7 +14,7 @@ THavanaReport::THavanaReport()
 {
 }
 //-----------------------------------------------------------------------------
-std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate)
+std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate, bool isAllTerminalSelected)
 {
     std::vector<UnicodeString> DataToWrite;
     try
@@ -22,6 +22,7 @@ std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransa
         UnicodeString store = "";
         UnicodeString format = ",";
         UnicodeString newLine = "\n";
+        UnicodeString terminalCondition = "";
         std::ofstream CreateColumn;
 
         //Creating CSV header
@@ -34,12 +35,20 @@ std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransa
             ibInternalQuery->Close();
             ibInternalQuery->SQL->Text = "SELECT UPPER(ABP.PAY_TYPE) PAY_TYPE "
                                          "FROM ARCBILL AB INNER JOIN ARCBILLPAY ABP ON AB.ARCBILL_KEY = ABP.ARCBILL_KEY "
-                                         "WHERE AB.TIME_STAMP >= :START_TIME AND AB.TIME_STAMP < :END_TIME "
-                                         "GROUP BY UPPER(ABP.PAY_TYPE) "
+                                         "WHERE AB.TIME_STAMP >= :START_TIME AND AB.TIME_STAMP < :END_TIME ";
+
+            if (!isAllTerminalSelected)
+            {
+                terminalCondition = " AND  AB.TERMINAL_NAME = :TERMINAL_NAME ";
+            }
+
+            ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text +
+                                        "GROUP BY UPPER(ABP.PAY_TYPE) "
                                          "ORDER BY 1 ASC ";
 
             ibInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
             ibInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
+            ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 
             ibInternalQuery->ExecQuery();
 
@@ -56,12 +65,20 @@ std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransa
             ibInternalQuery->Close();
             ibInternalQuery->SQL->Text =  "SELECT a.MENU_NAME "
                                             "FROM ARCHIVE a "
-                                            "WHERE a.TIME_STAMP_BILLED >= :START_TIME and a.TIME_STAMP_BILLED < :END_TIME "
-                                            "GROUP BY A.MENU_NAME "
+                                            "WHERE a.TIME_STAMP_BILLED >= :START_TIME and a.TIME_STAMP_BILLED < :END_TIME ";
+
+            if (!isAllTerminalSelected)
+            {
+                terminalCondition = " AND  AB.TERMINAL_NAME = :TERMINAL_NAME ";
+            }
+
+            ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text +
+                                           "GROUP BY A.MENU_NAME "
                                             "ORDER BY A.MENU_NAME ASC ";
 
             ibInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
             ibInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
+            ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 
             ibInternalQuery->ExecQuery();
 

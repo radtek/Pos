@@ -4275,3 +4275,12 @@ void TfrmMallExportRegenerateReport::RegenerateFederalLandExport()
     ResetMallExportValues();
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMallExportRegenerateReport::sbAllClick(TObject *Sender)
+{
+    isAllTerminalsSelected = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMallExportRegenerateReport::sbThisTerminalClick(TObject *Sender)
+{
+    isAllTerminalsSelected = false;
+}

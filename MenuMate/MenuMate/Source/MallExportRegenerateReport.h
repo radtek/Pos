@@ -70,6 +70,8 @@ __published:	// IDE-managed Components
     void __fastcall edLocationPathMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
     void __fastcall btnLoadPathMouseClick(TObject *Sender);
+    void __fastcall sbThisTerminalClick(TObject *Sender);
+    void __fastcall sbAllClick(TObject *Sender);
 private:	// User declarations
 
     Database::TDBTransaction *dbTransaction;
@@ -298,6 +300,7 @@ public:		// User declarations
     int EndH;
     int StartM;
     int EndM;
+    bool isAllTerminalsSelected;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmMallExportRegenerateReport *frmMallExportRegenerateReport;
