@@ -2,18 +2,16 @@
 
 #ifndef ManagerReportExportH
 #define ManagerReportExportH
-#include "MallExportRegenerateReport.h"
 #include "HavanaReport.h"
+#include "ReportExport.h"
 //---------------------------------------------------------------------------
 
 class TManagerReportExport
 {
     private:
-    bool isAllTerminalSelected;
-    void CreateFileExportPath(UnicodeString &path);
-    void PrepareDataForCSVFile(TDateTime SDate, TDateTime EDate, UnicodeString reportExportPath);
+    
     public:
-    void ExportReport();
+    void ExportReport(int index);
 
 };
 #endif

@@ -14,6 +14,11 @@ THavanaReport::THavanaReport()
 {
 }
 //-----------------------------------------------------------------------------
+void THavanaReport::PostDataToFile()
+{
+    
+}
+//-----------------------------------------------------------------------------
 std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate, bool isAllTerminalSelected)
 {
     std::vector<UnicodeString> DataToWrite;
@@ -64,7 +69,7 @@ std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransa
     return DataToWrite;
 }
 //------------------------------------------------------------------------------
-std::vector<UnicodeString> THavanaReport::LoadDataFromDB(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate, bool isAllTerminalSelected)
+std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate, bool isAllTerminalSelected)
 {
     std::vector<UnicodeString> DataToWrite;
     try
@@ -442,4 +447,53 @@ UnicodeString THavanaReport::RemoveCommas(UnicodeString str)
         }
     }
    return retVal;
+}
+//--------------------------------------------------------------------------------------------------------
+void THavanaReport::CreateFileExportPath(UnicodeString &reportExportPath)
+{
+    UnicodeString Format = ".csv";
+     //Check if directory not exist than create it.
+    if (!DirectoryExists(reportExportPath))
+    {
+        CreateDir(reportExportPath);
+    }
+
+    //CSV will be created with Following Name
+    reportExportPath = reportExportPath + Now().FormatString("ddmmyyyyhhnnss") + Format;
+}
+//--------------------------------------------------------------------------------------------------------
+void THavanaReport::PrepareDataForCSVFile(TDateTime SDate, TDateTime EDate, UnicodeString reportExportPath, bool isAllTerminalSelected)
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        std::vector<UnicodeString> dataToWrite;
+        dataToWrite =  CreateHeaderFormat(dbTransaction, SDate, EDate, isAllTerminalSelected);
+
+        //Use Federal Mall's Function of printing Header
+        TMallExportOutputDBDriver  exportCSV;
+        exportCSV.GenerateTXT(dataToWrite, reportExportPath, "ZTXTHEADER");
+
+        //Clear DataToWrite Vector
+        dataToWrite.erase (dataToWrite.begin(),dataToWrite.end());
+
+        //Load all data into vector
+        dataToWrite =  PrepareDataForExport(dbTransaction, SDate, EDate, isAllTerminalSelected);
+
+        //calling existing mall function for insert Data into CSV
+        exportCSV.GenerateTXT(dataToWrite, reportExportPath, "ZTXTDATA");
+
+        //Commit the transaction as we have completed all the transactions
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+        dbTransaction.Rollback();
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }

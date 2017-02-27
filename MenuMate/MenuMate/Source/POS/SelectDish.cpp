@@ -9266,7 +9266,7 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
         case 13: // Havana Report
 			{
                 std::auto_ptr<TManagerReportExport> managerReportExport(new TManagerReportExport());
-                managerReportExport->ExportReport();
+                managerReportExport->ExportReport(1);
 			}break;
 		}
 	}
