@@ -159,7 +159,7 @@ std::vector<UnicodeString> THavanaReport::LoadDataFromDB(Database::TDBTransactio
                 year = ibInternalQuery->FieldByName("Bill_Year")->AsInteger;
                 netTotal = ibInternalQuery->FieldByName("NetTotal")->AsCurrency;
                 gst = ibInternalQuery->FieldByName("GST")->AsCurrency;
-                grossTotal == ibInternalQuery->FieldByName("GrossTotal")->AsCurrency;
+                grossTotal = ibInternalQuery->FieldByName("GrossTotal")->AsCurrency;
                 rounding = "";
 
                 OutputValue = day + format + netTotal + format + gst + format + grossTotal + format + rounding + format;
@@ -201,7 +201,7 @@ std::vector<UnicodeString> THavanaReport::LoadDataFromDB(Database::TDBTransactio
                 while(!paymentTypeQuery->Eof)
                 {
                     paymentName = paymentTypeQuery->FieldByName("PAY_TYPE")->AsString;
-
+                    paymentName = RemoveCommas(paymentName);
                     std::map<UnicodeString, UnicodeString>::iterator it = paymentTypes.find(paymentName);
 
                     if (it != paymentTypes.end())
@@ -219,7 +219,8 @@ std::vector<UnicodeString> THavanaReport::LoadDataFromDB(Database::TDBTransactio
                     OutputValue += itpaymentTypes->second + format;
                 }
 
-                OutputValue += paymentTotal + format + rounding + format;
+                OutputValue += paymentTotal;
+                OutputValue += format + rounding + format;
 
                 menuTypeQuery->Close();
                 menuTypeQuery->SQL->Text =
@@ -289,13 +290,13 @@ std::vector<UnicodeString> THavanaReport::LoadDataFromDB(Database::TDBTransactio
 
                 while(!menuTypeQuery->Eof)
                 {
-                    menuName = menuTypeQuery->FieldByName("PAY_TYPE")->AsString;
-
+                    menuName = menuTypeQuery->FieldByName("MENU_NAME")->AsString;
+                    menuName = RemoveCommas(menuName);
                     std::map<UnicodeString, UnicodeString>::iterator it = menuNames.find(menuName);
 
                     if (it != menuNames.end())
                     {
-                        it->second = menuTypeQuery->FieldByName("TOTAL")->AsCurrency;
+                        it->second = menuTypeQuery->FieldByName("GrossTotal")->AsCurrency;
                         menuTotal += StrToCurr(it->second);
                     }
 
@@ -309,7 +310,8 @@ std::vector<UnicodeString> THavanaReport::LoadDataFromDB(Database::TDBTransactio
                 }
 
                 rounding = paymentTotal - menuTotal;
-                OutputValue += menuTotal + format + rounding + newLine;
+                OutputValue += menuTotal ;
+                OutputValue += format + rounding + newLine;
 
                 DataToWrite.push_back(OutputValue.t_str());
 
@@ -363,6 +365,7 @@ std::map<UnicodeString,UnicodeString> THavanaReport::LoadAllPaymentTypes(Databas
         while (!ibInternalQuery->Eof)
         {
             paymentType = ibInternalQuery->FieldByName("PAY_TYPE")->AsString;
+            paymentType = RemoveCommas(paymentType);
             paymentTypes.insert ( std::pair<UnicodeString,UnicodeString>(paymentType,"") );
             ibInternalQuery->Next();
         }
@@ -410,6 +413,7 @@ std::map<UnicodeString,UnicodeString> THavanaReport::LoadAllMenus(Database::TDBT
         while (!ibInternalQuery->Eof)
         {
             menuName = ibInternalQuery->FieldByName("MENU_NAME")->AsString;
+            menuName = RemoveCommas(menuName);
             menus.insert ( std::pair<UnicodeString,UnicodeString>(menuName,"") );
             ibInternalQuery->Next();
         }
@@ -420,4 +424,22 @@ std::map<UnicodeString,UnicodeString> THavanaReport::LoadAllMenus(Database::TDBT
 		throw;
 	}
     return menus;
+}
+//-----------------------------------------------------------------------------------------------------
+UnicodeString THavanaReport::RemoveCommas(UnicodeString str)
+{
+    UnicodeString retVal = "";
+    const char* line = str.t_str();
+    for(int index = 0; line[index] != '\0'; index++)
+    {
+        if (line[index] == ',')
+        {
+            continue;
+        }
+        else
+        {
+            retVal+= (line[index]);
+        }
+    }
+   return retVal;
 }

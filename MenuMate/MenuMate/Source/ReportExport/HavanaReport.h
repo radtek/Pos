@@ -15,6 +15,8 @@ class THavanaReport
     std::map<UnicodeString,UnicodeString> LoadAllMenus(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate,
                                                     bool isAllTerminalSelected);
 
+    UnicodeString RemoveCommas(UnicodeString value);
+
     public:
     THavanaReport();
     std::vector<UnicodeString> CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate,
