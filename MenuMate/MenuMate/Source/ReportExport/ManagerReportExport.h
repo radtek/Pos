@@ -2,8 +2,6 @@
 
 #ifndef ManagerReportExportH
 #define ManagerReportExportH
-#include "HavanaReport.h"
-#include "ReportExport.h"
 //---------------------------------------------------------------------------
 
 class TManagerReportExport

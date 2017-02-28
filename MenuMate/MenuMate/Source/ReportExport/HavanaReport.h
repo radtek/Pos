@@ -5,9 +5,11 @@
 #include "DeviceRealTerminal.h"
 #include "MallExportOutputDBDriver.h"
 #include "ReportExport.h"
+#include "ReportExportInterface.h"
+#include "MallExportRegenerateReport.h"
 //---------------------------------------------------------------------------
 
-class THavanaReport : public TReportExport
+class THavanaReport : public TReportExportInterface
 {
     private :
     std::map<UnicodeString,UnicodeString> paymentTypes;
@@ -22,15 +24,16 @@ class THavanaReport : public TReportExport
 
     void CreateFileExportPath(UnicodeString &path);
 
+    void CreateDirectory(UnicodeString &path);
 
-    std::vector<UnicodeString> CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate,
-                                                    bool isAllTerminalSelected);
-    std::vector<UnicodeString> PrepareDataForExport(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate,
-                                                    bool isAllTerminalSelected);
+    void PrepareDataForCSVFile(TDateTime SDate, TDateTime EDate, UnicodeString reportExportPath, bool isAllTerminalSelected);
 
     public:
     THavanaReport();
     void PostDataToFile();
-    void PrepareDataForCSVFile(TDateTime SDate, TDateTime EDate, UnicodeString reportExportPath, bool isAllTerminalSelected);
+    std::vector<UnicodeString> CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate,
+                                                    bool isAllTerminalSelected);
+    std::vector<UnicodeString> PrepareDataForExport(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate,
+                                                    bool isAllTerminalSelected);
 };
 #endif

@@ -5,6 +5,8 @@
 
 #include "ManagerReportExport.h"
 #include "ReportExportFactory.h"
+#include "ReportExportInterface.h"
+#include "HavanaReport.h"
 
 //---------------------------------------------------------------------------
 
@@ -12,7 +14,7 @@
 
 void TManagerReportExport::ExportReport(int index)
 {
-    TReportExport* reportType = TReportExportFactory::GetReportType(index);
+    TReportExportInterface* reportType = TReportExportFactory::GetReportType(index);
     reportType->PostDataToFile();
 }
 //---------------------------------------------------------------------------------------------------------

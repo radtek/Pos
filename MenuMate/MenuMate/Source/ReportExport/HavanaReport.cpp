@@ -16,9 +16,47 @@ THavanaReport::THavanaReport()
 //-----------------------------------------------------------------------------
 void THavanaReport::PostDataToFile()
 {
-    
+    try
+    {
+
+        std::auto_ptr<TfrmMallExportRegenerateReport> MallExportRegenerateReport(TfrmMallExportRegenerateReport::Create<TfrmMallExportRegenerateReport>(Screen->ActiveForm));
+        MallExportRegenerateReport->btnGenerate->Visible = false;
+        MallExportRegenerateReport->btnLoadPath->Visible = false;
+        MallExportRegenerateReport->sbAllTerminals->Visible = true;
+        MallExportRegenerateReport->sbThisTerminal->Visible = true;
+        MallExportRegenerateReport->btnOk->Caption = "Generate Report";
+        MallExportRegenerateReport->Caption = "Generate Report";
+        TModalResult result = MallExportRegenerateReport->ShowModal();
+        TDateTime SDate = MallExportRegenerateReport->SDate;
+        TDateTime EDate = MallExportRegenerateReport->EDate;
+        bool isAllTerminalSelected = MallExportRegenerateReport->isAllTerminalsSelected;      //todo
+        UnicodeString reportExportPath = MallExportRegenerateReport->edLocationPath->Text;
+        if(result == mrOk)
+        {
+            CreateDirectory(reportExportPath);
+            PrepareDataForCSVFile(SDate, EDate, reportExportPath, isAllTerminalSelected);
+        }
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------
+void THavanaReport::CreateDirectory(UnicodeString &reportExportPath)
+{
+     UnicodeString Format = ".csv";
+     //Check if directory not exist than create it.
+    if (!DirectoryExists(reportExportPath))
+    {
+        CreateDir(reportExportPath);
+    }
+
+    //CSV will be created with Following Name
+    reportExportPath = reportExportPath + Now().FormatString("ddmmyyyyhhnnss") + Format;
+}
+//------------------------------------------------------------------------------------------
 std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate, bool isAllTerminalSelected)
 {
     std::vector<UnicodeString> DataToWrite;
