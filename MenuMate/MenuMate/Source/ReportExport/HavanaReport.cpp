@@ -12,6 +12,37 @@
 
 THavanaReport::THavanaReport()
 {
+    innerQuery = "INNER JOIN ARCHIVE DA ON AB.ARCBILL_KEY = DA.ARCBILL_KEY "
+                          "LEFT JOIN "
+                                "( "
+                                "   SELECT "
+                                "      a.ARCHIVE_KEY, "
+                                "      sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE, "
+                                "      a.DISCOUNT_GROUPNAME "
+                                "   FROM ARCORDERDISCOUNTS a  "
+                                "   GROUP BY a.ARCHIVE_KEY, a.DISCOUNT_GROUPNAME "
+                                ") AOD ON DA.ARCHIVE_KEY = AOD.ARCHIVE_KEY "
+                         " LEFT JOIN "
+                                "( "
+                                   "SELECT "
+                                     " ARCORDERTAXES.ARCHIVE_KEY, "
+                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS Tax, "
+                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
+                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceChargeTax, "
+                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 4 THEN ARCORDERTAXES.TAX_VALUE END) AS LocalTax, "
+                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 5 THEN ARCORDERTAXES.TAX_VALUE END) AS ProfitTax "
+                                   "FROM "
+                                      "( "
+                                        " SELECT "
+                                        "    a.ARCHIVE_KEY, "
+                                        "    a.TAX_TYPE,   "
+                                        "    CAST(SUM(COALESCE(a.TAX_VALUE,0) ) as Numeric(17,4)) TAX_VALUE "
+                                        " FROM ARCORDERTAXES a "
+                                        " GROUP BY a.TAX_TYPE, a.ARCHIVE_KEY "
+                                        " ORDER BY 1   "
+                                      ") ARCORDERTAXES "
+                                   "GROUP BY ARCORDERTAXES.ARCHIVE_KEY "
+                               " ) T ON DA.ARCHIVE_KEY = T.ARCHIVE_KEY ";
 }
 //-----------------------------------------------------------------------------
 void THavanaReport::PostDataToFile()
@@ -82,7 +113,7 @@ std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransa
                 store += itpaymentTypes->first + format;
             }
 
-            store += "Total" + format;
+            store += "Total,Rounding" + format;
 
             ////Get All Menus in selected time range
             menuNames = LoadAllMenus(dbTransaction, SDate, EDate, isAllTerminalSelected);
@@ -144,37 +175,9 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                             "CAST(SUM( CAST(DA.Qty * ABS(COALESCE(DA .BASE_PRICE,0)) as Numeric(17,4))) +SUM(COALESCE((T.ServiceCharge),0))+SUM(COALESCE((T.LocalTax),0))+ "
                             " SUM(COALESCE((T.ProfitTax),0)) + SUM(COALESCE(DA.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,2)) NetTotal "
                       "FROM ARCBILL AB "
-                      "INNER JOIN ARCHIVE DA ON AB.ARCBILL_KEY = DA.ARCBILL_KEY "
-                      "LEFT JOIN  "
-                            "(    "
-                              " SELECT            "
-                              "    a.ARCHIVE_KEY, "
-                              "    sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE, "
-                              "    a.DISCOUNT_GROUPNAME                      "
-                              " FROM ARCORDERDISCOUNTS a                     "
-                              " GROUP BY a.ARCHIVE_KEY, a.DISCOUNT_GROUPNAME "
-                            ") AOD ON DA.ARCHIVE_KEY = AOD.ARCHIVE_KEY       "
-                      "LEFT JOIN    "
-                            "(         "
-                               "SELECT "
-                                  "ARCORDERTAXES.ARCHIVE_KEY, "
-                                  "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS Tax,              "
-                                  "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge,    "
-                                  "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceChargeTax, "
-                                  "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 4 THEN ARCORDERTAXES.TAX_VALUE END) AS LocalTax,          "
-                                  "MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 5 THEN ARCORDERTAXES.TAX_VALUE END) AS ProfitTax          "
-                               "FROM "
-                                  "( "
-                                  "   SELECT "
-                                  "      a.ARCHIVE_KEY, "
-                                  "      a.TAX_TYPE,    "
-                                  "      CAST(SUM(COALESCE(a.TAX_VALUE,0) ) as Numeric(17,4)) TAX_VALUE "
-                                  "   FROM ARCORDERTAXES a               "
-                                  "   GROUP BY a.TAX_TYPE, a.ARCHIVE_KEY "
-                                  "   ORDER BY 1   "
-                                  ") ARCORDERTAXES "
-                               "GROUP BY ARCORDERTAXES.ARCHIVE_KEY  "
-                            ") T ON DA.ARCHIVE_KEY = T.ARCHIVE_KEY "
+
+                       + innerQuery +
+
                  "WHERE (COALESCE(AOD.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable' AND COALESCE(AOD.DISCOUNT_GROUPNAME,0) <> 'Complimentary' ) "
                         "AND AB.Time_Stamp >= :START_TIME and AB.Time_Stamp < :END_TIME ";
 
@@ -276,37 +279,9 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                                         "SUM(COALESCE((T.ProfitTax),0))+ SUM(COALESCE(DA.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,2)) GrossTotal, "
                                     "DA.MENU_NAME "
                         "FROM ARCBILL AB    "
-                        "INNER JOIN ARCHIVE DA ON AB.ARCBILL_KEY = DA.ARCBILL_KEY "
-                          "LEFT JOIN "
-                                "( "
-                                "   SELECT "
-                                "      a.ARCHIVE_KEY, "
-                                "      sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE, "
-                                "      a.DISCOUNT_GROUPNAME "
-                                "   FROM ARCORDERDISCOUNTS a  "
-                                "   GROUP BY a.ARCHIVE_KEY, a.DISCOUNT_GROUPNAME "
-                                ") AOD ON DA.ARCHIVE_KEY = AOD.ARCHIVE_KEY "
-                         " LEFT JOIN "
-                                "( "
-                                   "SELECT "
-                                     " ARCORDERTAXES.ARCHIVE_KEY, "
-                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 0 THEN ARCORDERTAXES.TAX_VALUE END) AS Tax, "
-                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 2 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceCharge, "
-                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 3 THEN ARCORDERTAXES.TAX_VALUE END) AS ServiceChargeTax, "
-                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 4 THEN ARCORDERTAXES.TAX_VALUE END) AS LocalTax, "
-                                     " MIN(CASE WHEN ARCORDERTAXES.TAX_TYPE = 5 THEN ARCORDERTAXES.TAX_VALUE END) AS ProfitTax "
-                                   "FROM "
-                                      "( "
-                                        " SELECT "
-                                        "    a.ARCHIVE_KEY, "
-                                        "    a.TAX_TYPE,   "
-                                        "    CAST(SUM(COALESCE(a.TAX_VALUE,0) ) as Numeric(17,4)) TAX_VALUE "
-                                        " FROM ARCORDERTAXES a "
-                                        " GROUP BY a.TAX_TYPE, a.ARCHIVE_KEY "
-                                        " ORDER BY 1   "
-                                      ") ARCORDERTAXES "
-                                   "GROUP BY ARCORDERTAXES.ARCHIVE_KEY "
-                               " ) T ON DA.ARCHIVE_KEY = T.ARCHIVE_KEY "
+
+                         + innerQuery +
+
                          "WHERE (COALESCE(AOD.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable' AND COALESCE(AOD.DISCOUNT_GROUPNAME,0) <> 'Complimentary' ) and "
                                 "EXTRACT (DAY FROM  AB.TIME_STAMP) = :DAY AND EXTRACT (MONTH FROM  AB.TIME_STAMP) = :MONTH "
                                             "AND EXTRACT (YEAR FROM  AB.TIME_STAMP) = :YEAR ";

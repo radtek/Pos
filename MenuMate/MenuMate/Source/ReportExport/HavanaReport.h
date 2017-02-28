@@ -12,6 +12,7 @@
 class THavanaReport : public TReportExportInterface
 {
     private :
+    UnicodeString innerQuery;
     std::map<UnicodeString,UnicodeString> paymentTypes;
     std::map<UnicodeString,UnicodeString> menuNames;
     std::map<UnicodeString,UnicodeString> LoadAllPaymentTypes(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate,
