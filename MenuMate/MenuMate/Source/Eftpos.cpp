@@ -157,7 +157,7 @@ bool TEftPos::WaitOnEftPosEvent(AnsiString ReferenceNumber)
 			{
                 if(!TGlobalSettings::Instance().EnableEftPosIngenico)
                 {
-                   Sleep(500);
+                    Sleep(500);
                 }
 				Application->ProcessMessages();
 				TDeviceRealTerminal::Instance().ProcessingController.SetPosition(::GetTickCount() - StartTime);
