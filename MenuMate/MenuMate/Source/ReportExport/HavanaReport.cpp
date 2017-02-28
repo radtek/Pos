@@ -229,7 +229,7 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                                 "CAST(SUM(ABP.SUBTOTAL)AS NUMERIC(17,4)) TOTAL "
                         "FROM ARCBILL AB INNER JOIN ARCBILLPAY ABP ON AB.ARCBILL_KEY = ABP.ARCBILL_KEY "
                         "WHERE EXTRACT (DAY FROM  AB.TIME_STAMP) = :DAY AND EXTRACT (MONTH FROM  AB.TIME_STAMP) = :MONTH "
-                                    "AND EXTRACT (YEAR FROM  AB.TIME_STAMP) = :YEAR ";
+                                    "AND EXTRACT (YEAR FROM  AB.TIME_STAMP) = :YEAR AND AB.Time_Stamp >= :START_TIME and AB.Time_Stamp < :END_TIME ";
 
                 if (!isAllTerminalSelected)
                 {
@@ -310,7 +310,7 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
 
                          "WHERE (COALESCE(AOD.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable' AND COALESCE(AOD.DISCOUNT_GROUPNAME,0) <> 'Complimentary' ) and "
                                 "EXTRACT (DAY FROM  AB.TIME_STAMP) = :DAY AND EXTRACT (MONTH FROM  AB.TIME_STAMP) = :MONTH "
-                                            "AND EXTRACT (YEAR FROM  AB.TIME_STAMP) = :YEAR ";
+                                "AND EXTRACT (YEAR FROM  AB.TIME_STAMP) = :YEAR AND AB.Time_Stamp >= :START_TIME and AB.Time_Stamp < :END_TIME ";
                 if (!isAllTerminalSelected)
                 {
                     menuTypeQuery->SQL->Text = menuTypeQuery->SQL->Text + " AND  AB.TERMINAL_NAME = :TERMINAL_NAME ";
