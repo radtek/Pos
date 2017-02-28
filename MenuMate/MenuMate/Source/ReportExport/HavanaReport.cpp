@@ -49,7 +49,7 @@ void THavanaReport::PostDataToFile()
 {
     try
     {
-
+        ///Use Existing Reportregenaration From
         std::auto_ptr<TfrmMallExportRegenerateReport> MallExportRegenerateReport(TfrmMallExportRegenerateReport::Create<TfrmMallExportRegenerateReport>(Screen->ActiveForm));
         MallExportRegenerateReport->btnGenerate->Visible = false;
         MallExportRegenerateReport->btnLoadPath->Visible = false;
@@ -60,18 +60,21 @@ void THavanaReport::PostDataToFile()
         TModalResult result = MallExportRegenerateReport->ShowModal();
         TDateTime SDate = MallExportRegenerateReport->SDate;
         TDateTime EDate = MallExportRegenerateReport->EDate;
-        bool isAllTerminalSelected = MallExportRegenerateReport->isAllTerminalsSelected;      //todo
+        bool isAllTerminalSelected = MallExportRegenerateReport->isAllTerminalsSelected;
         UnicodeString reportExportPath = MallExportRegenerateReport->edLocationPath->Text;
+
         if(result == mrOk)
         {
+            //Create Directory If not Exist
             CreateDirectory(reportExportPath);
+
+            //Prepare Data That will be written to file.
             PrepareDataForCSVFile(SDate, EDate, reportExportPath, isAllTerminalSelected);
         }
     }
-     catch(Exception &E)
+    catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
 	}
 }
 //-----------------------------------------------------------------------------------
@@ -85,7 +88,7 @@ void THavanaReport::CreateDirectory(UnicodeString &reportExportPath)
     }
 
     //CSV will be created with Following Name
-    reportExportPath = reportExportPath + Now().FormatString("ddmmyyyyhhnnss") + Format;
+    reportExportPath = reportExportPath +  "\\" + "Havana Combined Customized Daily Sales Format-" + Now().FormatString("ddmmyyyyhhnnss") + Format;
 }
 //------------------------------------------------------------------------------------------
 std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate, bool isAllTerminalSelected)
@@ -156,13 +159,14 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
         if(!CreateColumn.is_open())
         {
             UnicodeString day,netTotal, gst, grossTotal, rounding;
+            Currency netTotalSum = 0.00, gstSum = 0.00, grossTotalSum = 0.00;
             int  month, year;
 
-            ///Get All Payment Type for selected date Range
             TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
             TIBSQL *paymentTypeQuery = dbTransaction.Query(dbTransaction.AddQuery());
             TIBSQL *menuTypeQuery = dbTransaction.Query(dbTransaction.AddQuery());
 
+            ///Get All Payment Type for selected date Range
             ibInternalQuery->Close();
             ibInternalQuery->SQL->Text =
                         "SELECT "
@@ -203,8 +207,12 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                 day = ibInternalQuery->FieldByName("Bill_Day")->AsInteger;
                 month = ibInternalQuery->FieldByName("Bill_Month")->AsInteger;
                 year = ibInternalQuery->FieldByName("Bill_Year")->AsInteger;
+                netTotalSum += ibInternalQuery->FieldByName("NetTotal")->AsCurrency;
                 netTotal = ibInternalQuery->FieldByName("NetTotal")->AsCurrency;
+                ibInternalQuery->FieldByName("GST")->AsCurrency;
+                gstSum += ibInternalQuery->FieldByName("GST")->AsCurrency;
                 gst = ibInternalQuery->FieldByName("GST")->AsCurrency;
+                grossTotalSum += ibInternalQuery->FieldByName("GrossTotal")->AsCurrency;
                 grossTotal = ibInternalQuery->FieldByName("GrossTotal")->AsCurrency;
                 rounding = "";
 
@@ -249,25 +257,43 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                     paymentName = paymentTypeQuery->FieldByName("PAY_TYPE")->AsString;
                     paymentName = RemoveCommas(paymentName);
                     std::map<UnicodeString, UnicodeString>::iterator it = paymentTypes.find(paymentName);
+                    std::map<UnicodeString, UnicodeString>::iterator itp = paymentTypeTotal.find(paymentName);
 
+                    ////Load value Corresponding to payment type into map
                     if (it != paymentTypes.end())
                     {
                         it->second = paymentTypeQuery->FieldByName("TOTAL")->AsCurrency;
                         paymentTotal += StrToCurr(it->second);
                     }
 
+                    ////Load paymenttypetotal Corresponding to payment type into map
+                    if (itp != paymentTypeTotal.end())
+                    {
+                        if(itp->second!= "")
+                        {
+                            itp->second = StrToCurr(itp->second) + paymentTypeQuery->FieldByName("TOTAL")->AsCurrency;
+                        }
+                        else
+                        {
+                            itp->second = paymentTypeQuery->FieldByName("TOTAL")->AsCurrency;
+                        }
+                    }
+
                     paymentTypeQuery->Next();
                     paymentName = "";
                 }
 
+                //Append payment type values into payment type
                 for(std::map<UnicodeString,UnicodeString>::iterator itpaymentTypes = paymentTypes.begin(); itpaymentTypes != paymentTypes.end(); ++itpaymentTypes)
                 {
                     OutputValue += itpaymentTypes->second + format;
+                    itpaymentTypes->second = "";
                 }
 
                 OutputValue += paymentTotal;
                 OutputValue += format + rounding + format;
 
+                //Select All Menu Types during selected time range
                 menuTypeQuery->Close();
                 menuTypeQuery->SQL->Text =
                         "SELECT "
@@ -311,24 +337,49 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                     menuName = menuTypeQuery->FieldByName("MENU_NAME")->AsString;
                     menuName = RemoveCommas(menuName);
                     std::map<UnicodeString, UnicodeString>::iterator it = menuNames.find(menuName);
+                    std::map<UnicodeString, UnicodeString>::iterator itm = menuTotals.find(menuName);
 
-                    if (it != menuNames.end())
+                    ////Update map According to payment type
+                    if (it != menuNames.end() )
                     {
                         it->second = menuTypeQuery->FieldByName("GrossTotal")->AsCurrency;
                         menuTotal += StrToCurr(it->second);
+                    }
+
+                    ///Update MenuType Total According to menu type
+                    if (itm != menuTotals.end())
+                    {
+                        if(itm->second!= "")
+                        {
+                            itm->second = StrToCurr(itm->second) + menuTypeQuery->FieldByName("GrossTotal")->AsCurrency;
+                        }
+                        else
+                        {
+                            itm->second = menuTypeQuery->FieldByName("GrossTotal")->AsCurrency;
+                        }
                     }
 
                     menuTypeQuery->Next();
                     menuName = "";
                 }
 
+                //Append Menu type sale values in the string for writing to csv
                 for(std::map<UnicodeString,UnicodeString>::iterator itMenuTypes = menuNames.begin(); itMenuTypes != menuNames.end(); ++itMenuTypes)
                 {
                     OutputValue += itMenuTypes->second + format;
+                    itMenuTypes->second = "";
                 }
 
                 rounding = paymentTotal - menuTotal;
                 OutputValue += menuTotal ;
+
+                //Check Rounding value is Negative include Brackets As String
+               if(rounding < 0)
+               {
+                //rounding = rounding*-1;
+                rounding = "(" + rounding + ")";
+               }
+
                 OutputValue += format + rounding + newLine;
 
                 DataToWrite.push_back(OutputValue.t_str());
@@ -336,6 +387,52 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                 rounding = "";
 
                 ibInternalQuery->Next();
+            }
+
+            ///Write Total Row in the CSV
+            if(ibInternalQuery->RecordCount)
+            {
+                OutputValue = "";
+                OutputValue = "Total," + netTotalSum + format + gstSum + format + grossTotalSum + format + rounding + format;
+                Currency paymentTotal = 0.00;
+                Currency menuTotal = 0.00;
+                UnicodeString totalRounding = "";
+
+                ///Write All Payment Types
+                for(std::map<UnicodeString,UnicodeString>::iterator itpaymentTypes = paymentTypeTotal.begin(); itpaymentTypes != paymentTypeTotal.end(); ++itpaymentTypes)
+                {
+                    OutputValue += itpaymentTypes->second + format;
+
+                    if(itpaymentTypes->second != "")
+                        paymentTotal += StrToCurr(itpaymentTypes->second);
+                }
+
+                OutputValue += paymentTotal;
+                OutputValue += format + rounding + format;
+
+                //Write All Menu Types
+                for(std::map<UnicodeString,UnicodeString>::iterator itMenuTypes = menuTotals.begin(); itMenuTypes != menuTotals.end(); ++itMenuTypes)
+                {
+                    OutputValue += itMenuTypes->second + format;
+
+                    if(itMenuTypes->second != "")
+                         menuTotal += StrToCurr(itMenuTypes->second);
+                }
+
+                totalRounding = paymentTotal - menuTotal;
+
+                //Check Rounding value is Negative include Brackets As String
+                 if(totalRounding < 0)
+                 {
+                    //rounding = rounding*-1;
+                    totalRounding = "(" + totalRounding + ")";
+                 }
+
+                OutputValue += menuTotal ;
+                OutputValue += format + totalRounding + newLine;
+
+                DataToWrite.push_back(OutputValue.t_str());
+
             }
         }
         CreateColumn.close();
@@ -387,6 +484,7 @@ std::map<UnicodeString,UnicodeString> THavanaReport::LoadAllPaymentTypes(Databas
             paymentTypes.insert ( std::pair<UnicodeString,UnicodeString>(paymentType,"") );
             ibInternalQuery->Next();
         }
+        paymentTypeTotal = paymentTypes;
     }
     catch(Exception &E)
 	{
@@ -435,6 +533,7 @@ std::map<UnicodeString,UnicodeString> THavanaReport::LoadAllMenus(Database::TDBT
             menus.insert ( std::pair<UnicodeString,UnicodeString>(menuName,"") );
             ibInternalQuery->Next();
         }
+        menuTotals = menus;
     }
     catch(Exception &E)
 	{
