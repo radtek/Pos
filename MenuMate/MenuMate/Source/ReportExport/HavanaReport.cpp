@@ -243,6 +243,8 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                 paymentTypeQuery->ParamByName("DAY")->AsInteger = StrToInt(day);
                 paymentTypeQuery->ParamByName("MONTH")->AsInteger = month;
                 paymentTypeQuery->ParamByName("YEAR")->AsInteger = year;
+                paymentTypeQuery->ParamByName("START_TIME")->AsDateTime = SDate;
+                paymentTypeQuery->ParamByName("END_TIME")->AsDateTime = EDate;
 
                 if (!isAllTerminalSelected)
                 {
@@ -323,6 +325,8 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                 menuTypeQuery->ParamByName("DAY")->AsInteger = StrToInt(day);
                 menuTypeQuery->ParamByName("MONTH")->AsInteger = month;
                 menuTypeQuery->ParamByName("YEAR")->AsInteger = year;
+                menuTypeQuery->ParamByName("START_TIME")->AsDateTime = SDate;
+                menuTypeQuery->ParamByName("END_TIME")->AsDateTime = EDate;
 
                 if (!isAllTerminalSelected)
                 {
