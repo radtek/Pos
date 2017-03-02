@@ -3805,7 +3805,7 @@ std::vector<TXeroInvoiceDetail> TfrmAnalysis::CalculateAccountingSystemData(Data
 void TfrmAnalysis::GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiString terminalNamePredicate)
 {
     AnsiString fetchCategory =
-     " Select c.CATEGORY, Sum(a.PRICE * a.QTY) PRICE,Sum(a.BASE_PRICE * a.QTY) BASEPRICE, Sum(a.DISCOUNT ) DISCOUNT ,c.GL_CODE "
+     " Select Sum(a.PRICE * a.QTY) PRICE,Sum(a.BASE_PRICE * a.QTY) BASEPRICE, Sum(a.DISCOUNT ) DISCOUNT ,c.GL_CODE "
      " from  DAYARCHIVE a "
      " left join ARCCATEGORIES c on a.CATEGORY_KEY = c.CATEGORY_KEY "
      " where a.ARCBILL_KEY in (Select distinct a.ARCBILL_KEY from DAYARCBILL a left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
@@ -3816,7 +3816,7 @@ void TfrmAnalysis::GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiStr
      AnsiString ZeroTaxFilter =
      " and a.ARCHIVE_KEY in (Select distinct Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE = 0 group by Archive_Key) " ;
      AnsiString groupBy =
-     " group by c.CATEGORY ,c.GL_CODE ";
+     " group by c.GL_CODE ";
 
      Tax = fetchCategory + nonZeroTaxFilter + groupBy;
      zeroTax = fetchCategory + ZeroTaxFilter + groupBy;
@@ -3867,6 +3867,8 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
     try
     {
         std::vector<TMYOBInvoiceDetail> MYOBInvoiceDetails;
+        std::map<AnsiString, AnsiString> CategoryName;
+        std::map<AnsiString, AnsiString>::iterator ii;
         AnsiString jobCode = GetMYOBJobCode(DBTransaction);
         TDateTime preZTime = GetPrevZedTime(DBTransaction);
         TDateTime currentDate = Now();
@@ -3880,6 +3882,8 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
         TIBSQL *IBInternalQueryZeroTax = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBInternalQueryGenerator = DBTransaction.Query(DBTransaction.AddQuery());
+
+        GetCategoryNameAndGLCode(DBTransaction, CategoryName, TerminalName, preZTime, nextDay);
 
         if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
         {
@@ -3935,8 +3939,13 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
 
           for (; !IBInternalQueryTax->Eof; )
           {
-              AnsiString categoryName = IBInternalQueryTax->FieldByName("CATEGORY")->AsString;
+              AnsiString categoryName;// = IBInternalQueryTax->FieldByName("CATEGORY")->AsString;
               AnsiString glCode = IBInternalQueryTax->FieldByName("GL_CODE")->AsString;;
+              ii = CategoryName.find(glCode);
+              if(ii != CategoryName.end())
+              {
+                 categoryName = ii->second;
+              }
               AnsiString taxStatus = "NonZeroTax";
               double price = 0.0;
               catTotal += IBInternalQueryTax->FieldByName("PRICE")->AsFloat;
@@ -3970,8 +3979,13 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
 
           for (; !IBInternalQueryZeroTax->Eof; )
           {
-              AnsiString categoryName = IBInternalQueryZeroTax->FieldByName("CATEGORY")->AsString;
+              AnsiString categoryName;// = IBInternalQueryZeroTax->FieldByName("CATEGORY")->AsString;
               AnsiString glCode = IBInternalQueryZeroTax->FieldByName("GL_CODE")->AsString;
+              ii = CategoryName.find(glCode);
+              if(ii != CategoryName.end())
+              {
+                 categoryName = ii->second;
+              }
               AnsiString taxStatus = "ZeroTax";
               double taxRate = 0.0;
               double price = 0.0;
@@ -9568,4 +9582,41 @@ double TfrmAnalysis::GetCashWithdrawal(Database::TDBTransaction &DBTransaction)
     IBWithdrawalQuery->ExecQuery();
     cashWithdrawal = IBWithdrawalQuery->FieldByName("withdrawal")->AsDouble;
     return cashWithdrawal;
+}
+
+void TfrmAnalysis::GetCategoryNameAndGLCode(Database::TDBTransaction &DBTransaction, std::map<AnsiString, AnsiString>&CategoryName, AnsiString terminalName, TDateTime startTime, TDateTime endTime)
+{
+    AnsiString terminalNamePredicate = "";
+    std::map<AnsiString, AnsiString>::iterator ii;
+    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+    {
+        terminalNamePredicate = " and a.TERMINAL_NAME = :TERMINAL_NAME ";  // add terminal filter for xero invoice.
+    }
+    TIBSQL *IBInternalQueryCategory = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQueryCategory->Close();
+    IBInternalQueryCategory->SQL->Text = "Select c.CATEGORY, c.GL_CODE from  DAYARCHIVE a "
+                                   " left join ARCCATEGORIES c on a.CATEGORY_KEY = c.CATEGORY_KEY  "
+                                   " where a.ARCBILL_KEY in (Select distinct a.ARCBILL_KEY from DAYARCBILL a left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY   "
+                                   " where b.NOTE <> 'Total Change.' and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " + terminalNamePredicate + " ) " ;
+
+    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+    {
+        IBInternalQueryCategory->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
+    }
+    IBInternalQueryCategory->ParamByName("STARTTIME")->AsDateTime = startTime;
+    IBInternalQueryCategory->ParamByName("ENDTIME")->AsDateTime = endTime;
+    IBInternalQueryCategory->ExecQuery();
+    for (; !IBInternalQueryCategory->Eof; )
+    {
+         AnsiString glCode = IBInternalQueryCategory->FieldByName("GL_CODE")->AsString;
+         ii = CategoryName.find(glCode);
+         if(ii != CategoryName.end())
+         {
+             CategoryName[glCode] = "Sales";
+         }
+         else
+         {
+             CategoryName[glCode] = IBInternalQueryCategory->FieldByName("CATEGORY")->AsString;
+         }
+    }
 }
