@@ -3939,13 +3939,9 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
 
           for (; !IBInternalQueryTax->Eof; )
           {
-              AnsiString categoryName;// = IBInternalQueryTax->FieldByName("CATEGORY")->AsString;
+              AnsiString categoryName = IBInternalQueryTax->FieldByName("CATEGORY")->AsString;
               AnsiString glCode = IBInternalQueryTax->FieldByName("GL_CODE")->AsString;;
-              ii = CategoryName.find(glCode);
-              if(ii != CategoryName.end())
-              {
-                 categoryName = ii->second;
-              }
+
               AnsiString taxStatus = "NonZeroTax";
               double price = 0.0;
               catTotal += IBInternalQueryTax->FieldByName("PRICE")->AsFloat;
@@ -3979,13 +3975,9 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
 
           for (; !IBInternalQueryZeroTax->Eof; )
           {
-              AnsiString categoryName;// = IBInternalQueryZeroTax->FieldByName("CATEGORY")->AsString;
+              AnsiString categoryName = IBInternalQueryZeroTax->FieldByName("CATEGORY")->AsString;
               AnsiString glCode = IBInternalQueryZeroTax->FieldByName("GL_CODE")->AsString;
-              ii = CategoryName.find(glCode);
-              if(ii != CategoryName.end())
-              {
-                 categoryName = ii->second;
-              }
+
               AnsiString taxStatus = "ZeroTax";
               double taxRate = 0.0;
               double price = 0.0;
@@ -9599,24 +9591,5 @@ void TfrmAnalysis::GetCategoryNameAndGLCode(Database::TDBTransaction &DBTransact
                                    " where a.ARCBILL_KEY in (Select distinct a.ARCBILL_KEY from DAYARCBILL a left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY   "
                                    " where b.NOTE <> 'Total Change.' and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " + terminalNamePredicate + " ) " ;
 
-    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
-    {
-        IBInternalQueryCategory->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
-    }
-    IBInternalQueryCategory->ParamByName("STARTTIME")->AsDateTime = startTime;
-    IBInternalQueryCategory->ParamByName("ENDTIME")->AsDateTime = endTime;
-    IBInternalQueryCategory->ExecQuery();
-    for (; !IBInternalQueryCategory->Eof; )
-    {
-         AnsiString glCode = IBInternalQueryCategory->FieldByName("GL_CODE")->AsString;
-         ii = CategoryName.find(glCode);
-         if(ii != CategoryName.end())
-         {
-             CategoryName[glCode] = "Sales";
-         }
-         else
-         {
-             CategoryName[glCode] = IBInternalQueryCategory->FieldByName("CATEGORY")->AsString;
-         }
-    }
+
 }
