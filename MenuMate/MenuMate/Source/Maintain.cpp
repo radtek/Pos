@@ -3586,7 +3586,6 @@ void __fastcall TfrmMaintain::TouchBtnRunRateBoardMouseClick(TObject *Sender)
 	{
 		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 	}
-
 }
 //---------------------------------------------------------------------------
 void TfrmMaintain::SetupGLCodes()
@@ -3603,6 +3602,7 @@ void TfrmMaintain::SetupGLCodes()
   frmSetupGlCodes->FloatGLCode = TGlobalSettings::Instance().FloatGLCode;
   frmSetupGlCodes->EftPosTip = TGlobalSettings::Instance().EftPosTipGLCode;
   frmSetupGlCodes->CashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
+  frmSetupGlCodes->CashVariance = TGlobalSettings::Instance().CashVarianceGLCode;
   if(frmSetupGlCodes->ShowModal() == mrOk)
    {
         TGlobalSettings::Instance().PointsPurchasedGLCode = frmSetupGlCodes->PointsPurchased;
@@ -3616,6 +3616,7 @@ void TfrmMaintain::SetupGLCodes()
         TGlobalSettings::Instance().FloatGLCode = frmSetupGlCodes->FloatGLCode ;
         TGlobalSettings::Instance().EftPosTipGLCode = frmSetupGlCodes->EftPosTip;
         TGlobalSettings::Instance().CashWithdrawalGLCode = frmSetupGlCodes->CashWithdrawal;
+        TGlobalSettings::Instance().CashVarianceGLCode = frmSetupGlCodes->CashVariance;
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmPointsPurchasedGLCode, TGlobalSettings::Instance().PointsPurchasedGLCode );
@@ -3629,6 +3630,7 @@ void TfrmMaintain::SetupGLCodes()
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmFloatGLCode, TGlobalSettings::Instance().FloatGLCode );
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmEftPosTipGLCode, TGlobalSettings::Instance().EftPosTipGLCode);
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmCashWithdrawal, TGlobalSettings::Instance().CashWithdrawalGLCode);
+        TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmCashVariance, TGlobalSettings::Instance().CashVarianceGLCode);
         DBTransaction.Commit();
    }
    delete frmSetupGlCodes;

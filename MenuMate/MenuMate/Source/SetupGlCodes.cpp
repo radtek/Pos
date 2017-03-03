@@ -78,6 +78,7 @@ void __fastcall TfrmSetupGlCodes::FormShow(TObject *Sender)
   btnTabAmountRefunded->Caption = "Tab Deposit/Credit Refunded \r" + TabDepositCreditRefunded;
   btnFloatGlCode->Caption = "Float \r" + FloatGLCode;
   btnEftPosTip->Caption = "EftPos Tip \r" + EftPosTip;
+
   if(TGlobalSettings::Instance().FloatWithdrawFromCash)
   {
       btnCashWidthwral->Enabled = true;
@@ -87,6 +88,17 @@ void __fastcall TfrmSetupGlCodes::FormShow(TObject *Sender)
   {
       btnCashWidthwral->Enabled = false;
       btnCashWidthwral->Caption = "Cash Withdrawal \r";
+  }
+
+  if(TGlobalSettings::Instance().EnableBlindBalances)
+  {
+      btnCashVariance->Enabled = true;
+      btnCashVariance->Caption = "Cash Variance \r" + CashVariance;
+  }
+  else
+  {
+      btnCashVariance->Enabled = false;
+      btnCashVariance->Caption = "Cash Variance \r";
   }
 }
 //---------------------------------------------------------------------------
@@ -136,6 +148,12 @@ void __fastcall TfrmSetupGlCodes::btnCashWidthwralMouseClick(TObject *Sender)
 {
   ShowKeyBoard("Enter GL Code for Cash Withdrawal",CashWithdrawal);
   btnCashWidthwral->Caption = "Cash Withdrawal \r" + CashWithdrawal;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmSetupGlCodes::btnCashVarianceMouseClick(TObject *Sender)
+{
+  ShowKeyBoard("Enter GL Code for Cash Variance",CashVariance);
+  btnCashVariance->Caption = "Cash Variance \r" + CashVariance;
 }
 //---------------------------------------------------------------------------
 
