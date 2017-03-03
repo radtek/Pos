@@ -3867,7 +3867,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
     try
     {
         std::vector<TMYOBInvoiceDetail> MYOBInvoiceDetails;
-        std::map<AnsiString, AnsiString> CategoryName;
+        std::map<AnsiString, AnsiString> CollectCategoryName;
         std::map<AnsiString, AnsiString>::iterator ii;
         AnsiString jobCode = GetMYOBJobCode(DBTransaction);
         TDateTime preZTime = GetPrevZedTime(DBTransaction);
@@ -3883,7 +3883,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBInternalQueryGenerator = DBTransaction.Query(DBTransaction.AddQuery());
 
-        GetCategoryNameAndGLCode(DBTransaction, CategoryName, TerminalName, preZTime, nextDay);
+        GetCategoryNameAndGLCode(DBTransaction, CollectCategoryName, preZTime, nextDay);
 
         if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
         {
@@ -3939,9 +3939,13 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
 
           for (; !IBInternalQueryTax->Eof; )
           {
-              AnsiString categoryName = IBInternalQueryTax->FieldByName("CATEGORY")->AsString;
+              AnsiString categoryName; //= IBInternalQueryTax->FieldByName("CATEGORY")->AsString;
               AnsiString glCode = IBInternalQueryTax->FieldByName("GL_CODE")->AsString;;
-
+              ii = CollectCategoryName.find(glCode);
+              if(ii != CollectCategoryName.end())
+              {
+                 categoryName = ii->second;
+              }
               AnsiString taxStatus = "NonZeroTax";
               double price = 0.0;
               catTotal += IBInternalQueryTax->FieldByName("PRICE")->AsFloat;
@@ -3975,9 +3979,13 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
 
           for (; !IBInternalQueryZeroTax->Eof; )
           {
-              AnsiString categoryName = IBInternalQueryZeroTax->FieldByName("CATEGORY")->AsString;
+              AnsiString categoryName; ////IBInternalQueryZeroTax->FieldByName("CATEGORY")->AsString;
               AnsiString glCode = IBInternalQueryZeroTax->FieldByName("GL_CODE")->AsString;
-
+              ii = CollectCategoryName.find(glCode);
+              if(ii != CollectCategoryName.end())
+              {
+                 categoryName = ii->second;
+              }
               AnsiString taxStatus = "ZeroTax";
               double taxRate = 0.0;
               double price = 0.0;
@@ -9576,7 +9584,7 @@ double TfrmAnalysis::GetCashWithdrawal(Database::TDBTransaction &DBTransaction)
     return cashWithdrawal;
 }
 
-void TfrmAnalysis::GetCategoryNameAndGLCode(Database::TDBTransaction &DBTransaction, std::map<AnsiString, AnsiString>&CategoryName, AnsiString terminalName, TDateTime startTime, TDateTime endTime)
+void TfrmAnalysis::GetCategoryNameAndGLCode(Database::TDBTransaction &DBTransaction, std::map<AnsiString, AnsiString>&CollectCategoryName, TDateTime startTime, TDateTime endTime)
 {
     AnsiString terminalNamePredicate = "";
     std::map<AnsiString, AnsiString>::iterator ii;
@@ -9591,5 +9599,25 @@ void TfrmAnalysis::GetCategoryNameAndGLCode(Database::TDBTransaction &DBTransact
                                    " where a.ARCBILL_KEY in (Select distinct a.ARCBILL_KEY from DAYARCBILL a left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY   "
                                    " where b.NOTE <> 'Total Change.' and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " + terminalNamePredicate + " ) " ;
 
-
+    if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
+    {
+        IBInternalQueryCategory->ParamByName("TERMINAL_NAME")->AsString = GetTerminalName();
+    }
+    IBInternalQueryCategory->ParamByName("STARTTIME")->AsDateTime = startTime;
+    IBInternalQueryCategory->ParamByName("ENDTIME")->AsDateTime = endTime;
+    IBInternalQueryCategory->ExecQuery();
+    for (; !IBInternalQueryCategory->Eof; )
+    {
+         AnsiString glCode = IBInternalQueryCategory->FieldByName("GL_CODE")->AsString;
+         ii = CollectCategoryName.find(glCode);
+         if(ii != CollectCategoryName.end())
+         {
+             CollectCategoryName[glCode] = "Sales";
+         }
+         else
+         {
+             CollectCategoryName[glCode] = IBInternalQueryCategory->FieldByName("CATEGORY")->AsString;
+         }
+         IBInternalQueryCategory->Next();
+    }
 }
