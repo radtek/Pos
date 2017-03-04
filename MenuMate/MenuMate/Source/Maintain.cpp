@@ -3549,11 +3549,13 @@ void TfrmMaintain::SaveAccountingConfig(AccountingType accountingType)
             if(accountingType == eAccountingXero)
             {
                 TGlobalSettings::Instance().IsXeroEnabled = false;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsXeroEnabled, TGlobalSettings::Instance().IsXeroEnabled);
     			MessageBox("Failed to save Xero Integration configuration. " + TFolderManager::Instance().LastErrorMsg, "Error", MB_OK);
             }
             else
             {
                 TGlobalSettings::Instance().IsMYOBEnabled = false;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsMYOBEnabled);
                 MessageBox("Failed to save MYOB Integration configuration. " + TFolderManager::Instance().LastErrorMsg, "Error", MB_OK);
             }
         }

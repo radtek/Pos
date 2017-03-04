@@ -1104,7 +1104,7 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 	if (SecurePaymentAccess(Payment))
 	{
 		bool proceed = true;
-		if (((Payment->Properties & ePayTypeInvoiceExport) || (Payment->Properties & ePayTypeChargeToAccount)))
+		if (((Payment->Properties & ePayTypeInvoiceExport) || (Payment->Properties & ePayTypeChargeToAccount && TGlobalSettings::Instance().IsXeroEnabled)))
 		{
 			TDBContacts DBContacts;
 			std::auto_ptr <TfrmSelectMember> (frmSelectMember)(TfrmSelectMember::Create <TfrmSelectMember> (this));
