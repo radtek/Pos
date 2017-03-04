@@ -19,19 +19,27 @@ XBlindBalancesDetailsReportSection::~XBlindBalancesDetailsReportSection()
 
 void XBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    AddTitle(printOut, " Blind Balances");
-    printOut->PrintFormat->NewLine();
-    IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
-    if(reportSectionDisplayTraits)
+    try
     {
-        reportSectionDisplayTraits->ApplyTraits(printOut);
+        AddTitle(printOut, " Blind Balances");
+        printOut->PrintFormat->NewLine();
+        IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
+        if(reportSectionDisplayTraits)
+        {
+            reportSectionDisplayTraits->ApplyTraits(printOut);
+        }
+
+        IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
+
+        if (reportSectionDisplayStrategy)
+        {
+            //Call the strategy to build the section..
+            reportSectionDisplayStrategy->BuildSection(printOut);
+        }
     }
-
-    IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
-
-    if (reportSectionDisplayStrategy)
-	{
-		//Call the strategy to build the section..
-		reportSectionDisplayStrategy->BuildSection(printOut);
-	}
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }

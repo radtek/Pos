@@ -155,7 +155,10 @@ bool TEftPos::WaitOnEftPosEvent(AnsiString ReferenceNumber)
 						!TDeviceRealTerminal::Instance().ProcessingController.Cancelled()
 				  )
 			{
-                Sleep(500);
+                if(!TGlobalSettings::Instance().EnableEftPosIngenico)
+                {
+                    Sleep(500);
+                }
 				Application->ProcessMessages();
 				TDeviceRealTerminal::Instance().ProcessingController.SetPosition(::GetTickCount() - StartTime);
 				TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(ReferenceNumber);

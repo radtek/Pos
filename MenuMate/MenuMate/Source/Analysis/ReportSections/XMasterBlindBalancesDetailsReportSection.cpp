@@ -18,22 +18,30 @@ XMasterBlindBalancesDetailsReportSection::~XMasterBlindBalancesDetailsReportSect
 
 void XMasterBlindBalancesDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-    AddTitle(printOut, deviceName + " Blind Balances");
-
-    printOut->PrintFormat->NewLine();
-
-    IReportSectionDisplayTraits* reportSectionDisplayTrait = GetTextFormatDisplayTrait();
-    if(reportSectionDisplayTrait)
+    try
     {
-        reportSectionDisplayTrait->ApplyTraits(printOut);
+        AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+        AddTitle(printOut, deviceName + " Blind Balances");
+
+        printOut->PrintFormat->NewLine();
+
+        IReportSectionDisplayTraits* reportSectionDisplayTrait = GetTextFormatDisplayTrait();
+        if(reportSectionDisplayTrait)
+        {
+            reportSectionDisplayTrait->ApplyTraits(printOut);
+        }
+
+        IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
+
+        if (reportSectionDisplayStrategy)
+        {
+            //Call the strategy to build the section..
+            reportSectionDisplayStrategy->BuildSection(printOut);
+        }
     }
-
-    IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
-
-    if (reportSectionDisplayStrategy)
-	{
-		//Call the strategy to build the section..
-		reportSectionDisplayStrategy->BuildSection(printOut);
-	}
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }

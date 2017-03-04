@@ -791,6 +791,66 @@ void TManagerDockets::Archive(TReqPrintJob * Request)
    }
 }
 
+void TManagerDockets::Archive(Database::TDBTransaction &DBTransaction,TReqPrintJob * Request)
+{
+   try
+   {
+	  std::auto_ptr <TStringList> StringReceipt(new TStringList);
+	  for (int i = 0; i < Request->Printouts->Count; i++)
+	  {
+		 TPrintout *Printout = (TPrintout*)Request->Printouts->Items[i];
+		 int DocketNumber = StrToIntDef(Printout->PrintInfo["DocketNumber"], 0);
+
+		 if (DocketNumber != 0)
+		 {
+			UnicodeString ChitNumber = Printout->PrintInfo["ChitNumber"];
+			UnicodeString BarCode = Printout->PrintInfo["Barcode"];
+			int CurrentTimeKey = StrToIntDef(Printout->PrintInfo["CurrentTimeKey"], 0);
+
+			DocketToArchive->Clear();
+			StringReceipt->Clear();
+
+			Printout->PrintToStrings(StringReceipt.get());
+
+			DocketToArchive->Position = 0;
+			StringReceipt->SaveToStream(DocketToArchive);
+			DocketToArchive->Position = 0;
+
+			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_KITCHENDOCKETS, 1) FROM RDB$DATABASE";
+			IBInternalQuery->ExecQuery();
+			int Key = IBInternalQuery->Fields[0]->AsInteger;
+
+			IBInternalQuery->Close();
+			IBInternalQuery->SQL->Text =
+				"INSERT INTO KITCHENDOCKETS (" "DOCKETS_KEY, " "DOCKETS_NUMBER, " "NAME, " "BARCODE, " "CHITNUMBER, "
+				"TIME_STAMP, " "TIME_KEY, " "TERMINAL_NAME, " "DOCKET) " "VALUES (" ":DOCKETS_KEY, " ":DOCKETS_NUMBER, " ":NAME, "
+				":BARCODE, " ":CHITNUMBER, " ":TIME_STAMP, " ":TIME_KEY, " ":TERMINAL_NAME, " ":DOCKET) ";
+			IBInternalQuery->ParamByName("DOCKETS_KEY")->AsInteger = Key;
+			IBInternalQuery->ParamByName("DOCKETS_NUMBER")->AsInteger = DocketNumber;
+			IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = CurrentTimeKey;
+			IBInternalQuery->ParamByName("NAME")->AsString = "";
+			IBInternalQuery->ParamByName("BARCODE")->AsString = BarCode.SubString(1, 20);
+			IBInternalQuery->ParamByName("CHITNUMBER")->AsString = ChitNumber.SubString(1, 20);
+			IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+			IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TerminalName;
+			DocketToArchive->Position = 0;
+			IBInternalQuery->ParamByName("DOCKET")->LoadFromStream(DocketToArchive);
+			IBInternalQuery->ExecQuery();
+
+		 }
+	  }
+   }
+   catch(Exception & Err)
+   {
+	  Request->Header.ErrorMsg = Err.Message;
+	  Request->Header.Error = Err_ErrorMsg;
+	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "TManagerDockets::Archive " + Err.Message);
+   }
+}
+
 void TManagerDockets::getOrderInfo(Database::TDBTransaction &DBTransaction)
 {
 
