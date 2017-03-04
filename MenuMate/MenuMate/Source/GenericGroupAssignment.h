@@ -18,6 +18,7 @@
 //---------------------------------------------------------------------------
 class TfrmGenericGroupAssignment : public TZForm
 {
+  friend TZForm;
 __published:	// IDE-managed Components
 	TPanel *Panel9;
 	TPanel *Panel5;
@@ -49,7 +50,7 @@ __published:	// IDE-managed Components
 
 
 private:	// User declarations
-	std::vector<ContactGroup> vectorGroup;
+	    std::vector<ContactGroup> vectorGroup;
         std::vector<UnicodeString> vectorMembers;
         std::vector<ContactGroup> groupmembersVector;
         TGridButton *pGroupButton;
@@ -58,6 +59,7 @@ private:	// User declarations
 
 public:		// User declarations
 	__fastcall TfrmGenericGroupAssignment(TComponent* Owner);
+    __fastcall ~TfrmGenericGroupAssignment();
     virtual void DisplayGroups(){};
     virtual void DisplayTypes(){};
     virtual void DisplayItemsInGroups(int GroupKey){};

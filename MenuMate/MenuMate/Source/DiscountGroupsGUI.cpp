@@ -99,8 +99,9 @@ void TfrmDiscountGroupsGUI::DeleteGroup()
 //---------------------------------------------------------------------------
 void TfrmDiscountGroupsGUI::AssignGroups()
 {
-    std::auto_ptr <TfrmDiscountGroupsAssignment> DiscountGroupsAssignment(new TfrmDiscountGroupsAssignment(this));
+    TfrmDiscountGroupsAssignment* DiscountGroupsAssignment = new TfrmDiscountGroupsAssignment(this);
     DiscountGroupsAssignment->ShowModal();
+    delete DiscountGroupsAssignment;
 };
 //---------------------------------------------------------------------------
 void TfrmDiscountGroupsGUI::DisplayGroups()

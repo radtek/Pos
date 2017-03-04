@@ -18,53 +18,55 @@ __fastcall TfrmGenericGroupAssignment::TfrmGenericGroupAssignment(TComponent* Ow
 {
 }
 //---------------------------------------------------------------------------
+__fastcall TfrmGenericGroupAssignment::~TfrmGenericGroupAssignment()
+{
+   //
+}
+//---------------------------------------------------------------------------
 void __fastcall TfrmGenericGroupAssignment::FormShow(TObject *Sender)
 {
     FormResize(NULL);
     DisplayGroups();
     DisplayTypes();
 }
-
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmGenericGroupAssignment::GroupListMouseClick(TObject *Sender, TMouseButton Button,
           TShiftState Shift, TGridButton *GridButton)
 {
     GroupSelected(GridButton);
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmGenericGroupAssignment::MembersGridMouseClick(TObject *Sender,
           TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
 {
     TypeSelected(GridButton);
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmGenericGroupAssignment::GroupMembersMouseClick(TObject *Sender,
           TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
 {
     RemoveTypefromGroup(GridButton->Tag);
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmGenericGroupAssignment::btnCloseMouseClick(TObject *Sender)
 {
-    SaveAssignment();
-    CleanUpMemory();
-    Close();
+    try
+    {
+        SaveAssignment();
+        CleanUpMemory();
+        Close();
+    }
+    catch(Exception &E)
+    {
+    }
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmGenericGroupAssignment::btinGGA_CancelMouseClick(TObject *Sender)
 {
     CleanUpMemory();
     Close();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmGenericGroupAssignment::FormResize(TObject *Sender)
 {
     if (Tag != Screen->Width)
