@@ -45,6 +45,7 @@ class TManagerDockets : public TManager
 	void Print();
 	int GetNextDocketNumber();
 	void Archive(TReqPrintJob * Request);
+    void Archive(Database::TDBTransaction &DBTransaction,TReqPrintJob * Request);
 	__property TDateTime Date = { read = FSelectedDate ,write = SetCurrentDate};
 	std::vector<int> Array;
 	int ArrayIndex;

@@ -297,10 +297,16 @@ TPayment * TPaymentTransaction::PaymentFindByProperty(int ePayTypeProperty)
 
 void TPaymentTransaction::PaymentsClear()
 {
-	while(PaymentList->Count > 0)
-	{
-		PaymentDelete(PaymentGet(0));
-	}
+   try
+   {
+        while(PaymentList->Count > 0)
+        {
+            PaymentDelete(PaymentGet(0));
+        }
+   }
+   catch(Exception & Err)
+   {
+   }
 }
 
 TPayment *TPaymentTransaction::PaymentGet(int Index)
