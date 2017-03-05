@@ -228,7 +228,7 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                                 "ABP.PAY_TYPE, "
                                 "CAST(SUM(ABP.SUBTOTAL)AS NUMERIC(17,4)) TOTAL "
                         "FROM ARCBILL AB INNER JOIN ARCBILLPAY ABP ON AB.ARCBILL_KEY = ABP.ARCBILL_KEY "
-                        "INNER JOIN ARCHIVE ON AB.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
+                      //  "INNER JOIN ARCHIVE ON AB.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
                         "WHERE EXTRACT (DAY FROM  AB.TIME_STAMP) = :DAY AND EXTRACT (MONTH FROM  AB.TIME_STAMP) = :MONTH "
                                     "AND EXTRACT (YEAR FROM  AB.TIME_STAMP) = :YEAR AND AB.Time_Stamp >= :START_TIME and AB.Time_Stamp < :END_TIME ";
 
