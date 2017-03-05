@@ -230,7 +230,11 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                         "FROM ARCBILL AB INNER JOIN ARCBILLPAY ABP ON AB.ARCBILL_KEY = ABP.ARCBILL_KEY "
                       //  "INNER JOIN ARCHIVE ON AB.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
                         "WHERE EXTRACT (DAY FROM  AB.TIME_STAMP) = :DAY AND EXTRACT (MONTH FROM  AB.TIME_STAMP) = :MONTH "
-                                    "AND EXTRACT (YEAR FROM  AB.TIME_STAMP) = :YEAR AND AB.Time_Stamp >= :START_TIME and AB.Time_Stamp < :END_TIME ";
+                                    "AND EXTRACT (YEAR FROM  AB.TIME_STAMP) = :YEAR AND AB.Time_Stamp >= :START_TIME and AB.Time_Stamp < :END_TIME "
+                            "And ab.INVOICE_NUMBER not in (SELECT a.INVOICE_NUMBER  FROM POINTSTRANSACTIONS a "
+                                                           " where a.ADJUSTMENT_TYPE = 1 AND EXTRACT (DAY FROM  a.TIME_STAMP) = :DAY AND "
+                                                           "EXTRACT (MONTH FROM  a.TIME_STAMP) = :MONTH AND EXTRACT (YEAR FROM  a.TIME_STAMP) = :YEAR "
+                                                           "GROUP BY a.INVOICE_NUMBER) "  ;
 
                 if (!isAllTerminalSelected)
                 {
