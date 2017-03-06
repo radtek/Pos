@@ -58,18 +58,26 @@ TDateTime* BaseReportBuilder::GetEndTime()
 
 int BaseReportBuilder::AddReportSectionToReport(IReport* report, ReportSectionType reportSectionType, bool isEnabled)
 {
-    //Use the Factory to get the actual report section..
-    if(ValidateReportSection(reportSectionType))
+    try
     {
-       IReportSection* section = _reportSectionFactory->CreateReportSection(reportSectionType);
-
-        if (section)
+        //Use the Factory to get the actual report section..
+        if(ValidateReportSection(reportSectionType))
         {
-            section->SetIsEnabled(isEnabled);
-            int currentPosition = report->AddSection(section);
-            return currentPosition;
+           IReportSection* section = _reportSectionFactory->CreateReportSection(reportSectionType);
+
+            if (section)
+            {
+                section->SetIsEnabled(isEnabled);
+                int currentPosition = report->AddSection(section);
+                return currentPosition;
+            }
         }
     }
+    catch (Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
     return -1;
 }
 
