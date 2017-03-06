@@ -4092,7 +4092,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
                  else
                  {
 
-                    cashVariance = IBInternalQuery->FieldByName("Amount")->AsFloat - cashBlindBalance;
+                    cashVariance = cashBlindBalance - IBInternalQuery->FieldByName("Amount")->AsFloat;
                     amountValue = RoundTo(cashBlindBalance, -2);
                  }
               }
@@ -4119,16 +4119,16 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
          if(addFloatAdjustmentToPayments && TGlobalSettings::Instance().PostMoneyAsPayment)
            AddMYOBInvoiceItem(MYOBInvoiceDetail,cashGlCode,"Cash", ( payTotal + floatAmount) ,0.0,jobCode,"ZeroTax");
 
+         UnicodeString cashVarianceGLCode = TGlobalSettings::Instance().CashVarianceGLCode;
+
+         //if CashVariance Gl COde is Blank then it will post to default GL Code.
+         if(TGlobalSettings::Instance().CashVarianceGLCode == "" && TGlobalSettings::Instance().EnableBlindBalances)
+            cashVarianceGLCode = "6-3400";
+
           // If Cash Variance GL Code And Round GL Code both are same then adjust variance amount in to rounding.
-         if(TGlobalSettings::Instance().RoundingGLCode != TGlobalSettings::Instance().CashVarianceGLCode && TGlobalSettings::Instance().EnableBlindBalances)
+         if(TGlobalSettings::Instance().RoundingGLCode != cashVarianceGLCode && TGlobalSettings::Instance().EnableBlindBalances)
          {
-            payTotal += cashVariance;
-
-            UnicodeString cashVarianceGLCode = TGlobalSettings::Instance().CashVarianceGLCode;
-
-            //if CashVariance Gl COde is Blank then it will post to default GL Code.
-            if(TGlobalSettings::Instance().CashVarianceGLCode == "")
-                cashVarianceGLCode = "6-3400";
+            payTotal -= cashVariance;
 
             //If Rounding GL Code and  CashVarianceGLCode both are different cash variance roe will be created.
             AddMYOBInvoiceItem(MYOBInvoiceDetail,cashVarianceGLCode,"Cash Variance",-1 * RoundTo((cashVariance), -2),0.0,jobCode,"ZeroTax");
