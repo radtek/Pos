@@ -9895,7 +9895,8 @@ void TfrmAnalysis::GetCategoryNameAndGLCode(Database::TDBTransaction &DBTransact
         IBInternalQueryCategory->SQL->Text = "Select c.CATEGORY, c.GL_CODE from  DAYARCHIVE a "
                                        " left join ARCCATEGORIES c on a.CATEGORY_KEY = c.CATEGORY_KEY  "
                                        " where a.ARCBILL_KEY in (Select distinct a.ARCBILL_KEY from DAYARCBILL a left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY   "
-                                       " where b.NOTE <> 'Total Change.' and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " + terminalNamePredicate + " ) " ;
+                                       " where b.NOTE <> 'Total Change.' and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " + terminalNamePredicate + " ) "
+                                       " group by c.CATEGORY, c.GL_CODE ";
 
         if(!TGlobalSettings::Instance().EnableDepositBagNum) // check for master -slave terminal
         {
