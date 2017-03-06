@@ -70,6 +70,7 @@ void THavanaReport::PostDataToFile()
         MallExportRegenerateReport->EndMin = MallExportRegenerateReport->cbEndMin->ItemIndex;
         MallExportRegenerateReport->EndMin = "0" + MallExportRegenerateReport->EndMin;
         MallExportRegenerateReport->InitializeTimeSet(MallExportRegenerateReport->SDate, MallExportRegenerateReport->EDate);
+        MallExportRegenerateReport->isAllTerminalsSelected = true;
         TModalResult result = MallExportRegenerateReport->ShowModal();
         TDateTime SDate = MallExportRegenerateReport->SDate;
         TDateTime EDate = MallExportRegenerateReport->EDate;
