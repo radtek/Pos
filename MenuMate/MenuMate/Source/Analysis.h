@@ -282,6 +282,7 @@ private:
     void UpdateDLFMall();
     void UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransaction);
     UnicodeString CheckRegistered();
+    void GetCategoryNameAndGLCode(Database::TDBTransaction &DBTransaction, std::map<AnsiString, AnsiString>&CollectCategoryName, TDateTime startTime, TDateTime endTime);
 
 };
 
