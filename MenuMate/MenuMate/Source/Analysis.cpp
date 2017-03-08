@@ -4140,6 +4140,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
               if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString != "Cash")
               {
                 amountValue = -RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2);
+                payTotal += RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2);
               }
               else
               {
@@ -4153,8 +4154,8 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
                     cashVariance = IBInternalQuery->FieldByName("Amount")->AsFloat - cashBlindBalance;
                     amountValue = RoundTo(cashBlindBalance, -2);
                  }
+                 payTotal += RoundTo(amountValue, -2);
               }
-              payTotal += RoundTo(amountValue, -2);
 
               if(!addFloatAdjustmentToPayments && addEachPaymentNode)
               {
