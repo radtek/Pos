@@ -4150,7 +4150,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
                  else
                  {
 
-                    cashVariance = cashBlindBalance - IBInternalQuery->FieldByName("Amount")->AsFloat;
+                    cashVariance = IBInternalQuery->FieldByName("Amount")->AsFloat - cashBlindBalance;
                     amountValue = RoundTo(cashBlindBalance, -2);
                  }
               }
@@ -4186,16 +4186,22 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
           // If Cash Variance GL Code And Round GL Code both are same then adjust variance amount in to rounding.
          if(TGlobalSettings::Instance().RoundingGLCode != cashVarianceGLCode && TGlobalSettings::Instance().EnableBlindBalances)
          {
-            payTotal -= cashVariance;
+            payTotal += cashVariance;
 
             //If Rounding GL Code and  CashVarianceGLCode both are different cash variance roe will be created.
-            AddMYOBInvoiceItem(MYOBInvoiceDetail,cashVarianceGLCode,"Cash Variance",-1 * RoundTo((cashVariance), -2),0.0,jobCode,"ZeroTax");
+            if(RoundTo((cashVariance), -2) != 0)
+                AddMYOBInvoiceItem(MYOBInvoiceDetail,cashVarianceGLCode,"Cash Variance",-1 * RoundTo((cashVariance), -2),0.0,jobCode,"ZeroTax");
          }
 
           if(RoundTo((catTotal - payTotal), -2))
            {
               AnsiString accountCode = jobCode;
-              AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().RoundingGLCode,"ROUNDING",-1 * RoundTo((catTotal - payTotal), -2),0.0,jobCode,"ZeroTax");
+              UnicodeString varianceString = "";
+              if(RoundTo((catTotal - payTotal - cashVariance), -2) == 0)
+                   varianceString = "Cash Variance";
+              else
+                   varianceString = "Rounding";
+              AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().RoundingGLCode,varianceString,-1 * RoundTo((catTotal - payTotal), -2),0.0,jobCode,"ZeroTax");
            }
            AnsiString daystr = preZTime.FormatString("ddmmyy") + " " + Now().FormatString("HHMMss") ;
            AnsiString refName = TGlobalSettings::Instance().EnableDepositBagNum ? CompanyName : TerminalName ;
