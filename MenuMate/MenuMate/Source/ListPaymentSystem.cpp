@@ -270,7 +270,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			" TAX_RATE = :TAX_RATE, " " DEST_IP = :DEST_IP, " " DEST_PORT = :DEST_PORT, " " PRE_VOUCHER_CODE = :PRE_VOUCHER_CODE, "
 			" VOUCHER_MERCHANT_ID = :VOUCHER_MERCHANT_ID, INVOICE_EXPORT = :INVOICE_EXPORT, VOUCHER_URL = :VOUCHER_URL, "
 			" VOUCHER_USER = :VOUCHER_USER, VOUCHER_PASS = :VOUCHER_PASS, CSV_READ_LOCATION = :CSV_READ_LOCATION, "
-			" CSV_WRITE_LOCATION = :CSV_WRITE_LOCATION ,TABKEY = :TABKEY, GL_CODE = :GL_CODE "
+			" CSV_WRITE_LOCATION = :CSV_WRITE_LOCATION ,TABKEY = :TABKEY, GL_CODE = :GL_CODE, IS_AUTO_POPULATE_BLIND_BALANCE = :IS_AUTO_POPULATE_BLIND_BALANCE "
             " WHERE  PAYMENT_KEY = :PAYMENT_KEY  " ;
             if(Payment.Properties & ePayTypeElectronicTransaction)
             {
@@ -300,6 +300,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             IBInternalQuery->ParamByName("TABKEY")->AsInteger = Payment.TabKey;
             IBInternalQuery->ParamByName("GL_CODE")->AsString = Payment.GLCode;
 			IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = Payment.TaxRate;
+            IBInternalQuery->ParamByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString = Payment.AutoPopulateBlindBalance;
 
 			if (Payment.PaymentThirdPartyID != "")
 			{
@@ -435,6 +436,7 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 		NewPayment->CVSWriteLocation	=	IBInternalQuery->FieldByName("CSV_WRITE_LOCATION")->AsString;
         NewPayment->TabKey  =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
         NewPayment->GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
+        NewPayment->AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString;
 		CurrentDisplayOrder = NewPayment->DisplayOrder;
 
 		// load up the groups for this payment type

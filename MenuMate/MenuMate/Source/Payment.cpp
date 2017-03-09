@@ -57,6 +57,7 @@ TPayment::TPayment(TPaymentTransaction *inOwner) : Owner(inOwner)
    GLCode = "";
    _assignedPaymentGroups.clear();
    TipAmount = 0;
+   AutoPopulateBlindBalance = "";
 }
 
 void TPayment:: operator = (const TPayment & Data)
