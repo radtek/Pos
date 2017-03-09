@@ -1225,9 +1225,9 @@ object frmNewPaymentType: TfrmNewPaymentType
         end
         object GroupBox12: TGroupBox
           Left = 510
-          Top = 500
+          Top = 510
           Width = 240
-          Height = 50
+          Height = 70
           Caption = 'Blind Balance'
           Font.Charset = ANSI_CHARSET
           Font.Color = clWindowText

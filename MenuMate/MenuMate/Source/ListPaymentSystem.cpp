@@ -183,6 +183,7 @@ void TListPaymentSystem::PaymentLoad(Database::TDBTransaction &DBTransaction, in
 			Payment.CVSWriteLocation=	IBInternalQuery->FieldByName("CSV_WRITE_LOCATION")->AsString;
             Payment.TabKey =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
             Payment.GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
+            Payment.AutoPopulateBlindBalance =  IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString;
 		}
 	}
 	catch(Exception & E)
