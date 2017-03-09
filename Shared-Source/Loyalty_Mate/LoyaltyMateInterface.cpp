@@ -933,6 +933,7 @@ void TLoyaltyMateInterface::CreateVoucherPaymentType(Database::TDBTransaction &D
         NewPayment.GroupNumber = 0;
         NewPayment.Colour = clTeal;
         NewPayment.PaymentThirdPartyID = "10007242";
+        NewPayment.AutoPopulateBlindBalance = "T";
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentSave(DBTransaction, PaymentKey, NewPayment);
     }
     catch(Exception & E)
@@ -961,6 +962,7 @@ void TLoyaltyMateInterface::CreateGiftVoucherPaymentType(Database::TDBTransactio
         NewPayment.GroupNumber = 0;
         NewPayment.Colour = clTeal;
         NewPayment.PaymentThirdPartyID = "10007242";
+        NewPayment.AutoPopulateBlindBalance = "T";
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentSave(DBTransaction, PaymentKey, NewPayment);
     }
     catch(Exception & E)
