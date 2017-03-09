@@ -8,6 +8,7 @@
 #include "ListPaymentSystem.h"
 #include "MMLogging.h"
 #include "PaymentTypeGroupsGUI.h"
+#include "MMTouchKeyboard.h"
 #include "GlobalSettings.h"
 #include "StringTools.h"
 // ---------------------------------------------------------------------------
@@ -280,11 +281,11 @@ void __fastcall TfrmPaymentMaintenance::UpdateList()
       tgridContainerList->Buttons[i][0]->Tag = (int)PaymentList->Objects[i];
       if (tgridContainerList->Buttons[i][0]->Tag == PaymentKey)
       {
-	 tgridContainerList->Buttons[i][0]->Latched = true;
+	    tgridContainerList->Buttons[i][0]->Latched = true;
       }
       else
       {
-	 tgridContainerList->Buttons[i][0]->Latched = false;
+	    tgridContainerList->Buttons[i][0]->Latched = false;
       }
    }
 }
@@ -293,6 +294,8 @@ void __fastcall TfrmPaymentMaintenance::tgridContainerListMouseClick(TObject *Se
    TGridButton *GridButton)
 {
    PaymentKey = GridButton->Tag;
+   btnGlCode->Visible = (TGlobalSettings::Instance().LoyaltyMateEnabled  && (GridButton->Caption == "Gift Card" || GridButton->Caption == "Voucher" ));
+   btnGlCode->Caption = "GL Code\r" + GetGlCode(PaymentKey);;
    tbEditPaymentType->Enabled = !(TGlobalSettings::Instance().LoyaltyMateEnabled  && (GridButton->Caption == "Gift Card" || GridButton->Caption == "Voucher" ));
    tbDeletePaymentType->Enabled = !(TGlobalSettings::Instance().LoyaltyMateEnabled  && (GridButton->Caption == "Gift Card" || GridButton->Caption == "Voucher" ));
 }
@@ -319,3 +322,66 @@ bool TfrmPaymentMaintenance::IsPaymentExist(Database::TDBTransaction &DBTransact
     }
     return retVal;
 }
+
+AnsiString TfrmPaymentMaintenance::GetGlCode(int paymentKey)
+{
+    AnsiString retVal = "";
+    Database::TDBTransaction DBTransaction(DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL *IBInternalQuery = DBTransaction.Query( DBTransaction.AddQuery() );
+    IBInternalQuery->SQL->Text =  "SELECT GL_CODE FROM PAYMENTTYPES WHERE PAYMENT_KEY = :PAYMENT_KEY ";
+    IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = paymentKey;
+    IBInternalQuery->ExecQuery();
+    if(!IBInternalQuery->Eof)
+    {
+      retVal = IBInternalQuery->FieldByName("GL_CODE")->AsString;
+    }
+    DBTransaction.Commit();
+    return retVal;
+}
+
+void TfrmPaymentMaintenance::UpdateGlCode(AnsiString GlCode,int paymentKey)
+{
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   try
+   {
+        TIBSQL *IBInternalQuery = DBTransaction.Query( DBTransaction.AddQuery() );
+        IBInternalQuery->SQL->Text =  "UPDATE PAYMENTTYPES SET GL_CODE = :GL_CODE WHERE PAYMENT_KEY = :PAYMENT_KEY ";
+        IBInternalQuery->ParamByName("GL_CODE")->AsString = GlCode;
+        IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = paymentKey;
+        IBInternalQuery->ExecQuery();
+        DBTransaction.Commit();
+   }
+   catch(Exception & E)
+   {
+        DBTransaction.Rollback();
+   }
+}
+
+void __fastcall TfrmPaymentMaintenance::btnGlCodeMouseClick(TObject *Sender)
+{
+   if (PaymentKey != 0)
+   {
+
+        std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+        frmTouchKeyboard->MaxLength = 30;
+        frmTouchKeyboard->AllowCarriageReturn = false;
+        frmTouchKeyboard->StartWithShiftDown = false;
+        frmTouchKeyboard->KeyboardText = GetGlCode(PaymentKey);
+        frmTouchKeyboard->Caption = "Enter GL Code";
+        if (frmTouchKeyboard->ShowModal() == mrOk)
+        {
+           UpdateGlCode(frmTouchKeyboard->KeyboardText.Trim(),PaymentKey);
+           btnGlCode->Caption = "GL Code\r" + frmTouchKeyboard->KeyboardText.Trim();
+        }
+        UpdateList();
+   }
+   else
+   {
+      MessageBox("Please Select a Payment Type to work with.", "Error", MB_ICONWARNING + MB_OK);
+   }
+}
+
+//---------------------------------------------------------------------------
+
