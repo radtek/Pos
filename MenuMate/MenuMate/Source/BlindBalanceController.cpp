@@ -209,11 +209,21 @@ void TBlindBalanceController::PopulateListManager()
         std::vector<TPayment> Payments;
 		TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction,Payments);
 
+         ///Get Totalpayment done by every payment
+         std::map< AnsiString, Currency> payTypeTotal = LoadAutoBlindBalance(IsMaster);
+
 		  for (std::vector<TPayment>::const_iterator ptr = Payments.begin(); ptr != Payments.end(); std::advance(ptr,1))
 		  {
 			if(BlindBalances.find(ptr->Name) == BlindBalances.end())
 			{
                 Currency amount = 0;
+
+                ///Get Auto Populate Blind BAlance Value If AutoPopulate Setting is on
+                if(payTypeTotal.find(ptr->Name) != payTypeTotal.end() && ptr->AutoPopulateBlindBalance == "T")
+                {
+                    amount = payTypeTotal.find(ptr->Name)->second;
+                }
+
                 if(TGlobalSettings::Instance().CashDenominationEntry && ptr->Name.UpperCase() == "CASH")
                 {
                   TCashDenominations cashDenominations = TCashDenominationControllerInterface::Instance()->GetCashDenominations(IsMaster);
@@ -493,5 +503,45 @@ void TBlindBalance::operator = (TBlindBalance rhs)
 	SystemBalance = rhs.SystemBalance;
 //	return t;
 }
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+std::map< AnsiString, Currency> TBlindBalanceController::LoadAutoBlindBalance(bool IsMaster)
+{
+    std::map< AnsiString, Currency> payTypeTotal;
+    try
+    {
+        TIBSQL *ibInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text = "SELECT SUM(dabp.SUBTOTAL) TOTAL, dabp.PAY_TYPE "
+                                "       FROM DAYARCBILLPAY dabp "
+                                "            LEFT JOIN DAYARCBILL dab on "
+                                "                 dabp.arcbill_key = dab.arcbill_key ";
+
+        if (!TGlobalSettings::Instance().EnableDepositBagNum || IsMaster)
+        {
+            ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text +
+            "             WHERE dab.TERMINAL_NAME = :TERMINAL_NAME ";
+        }
+        ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + "       GROUP BY dabp.pay_type;";
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum || IsMaster)
+            ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+
+        ibInternalQuery->ExecQuery();
+
+        for(;!ibInternalQuery->Eof; ibInternalQuery->Next())
+        {
+            payTypeTotal.insert ( std::pair<AnsiString,Currency>(ibInternalQuery->FieldByName("PAY_TYPE")->AsString,
+                                                                            ibInternalQuery->FieldByName("TOTAL")->AsCurrency) );
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return payTypeTotal;
+}
+
+
 
 

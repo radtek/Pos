@@ -84,6 +84,7 @@ class TBlindBalanceController
 		void LoadBlindBalances(void);
 		void UpdateBlindBalances(AnsiString BagID);
         bool IsMaster;
+        std::map< AnsiString, Currency> LoadAutoBlindBalance(bool IsMaster);
    public :
 		TBlindBalances BlindBalances;
 		static TBlindBalances MasterBalance;

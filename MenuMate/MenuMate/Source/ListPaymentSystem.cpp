@@ -338,11 +338,11 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			"INSERT INTO PAYMENTTYPES (" "PAYMENT_KEY, " "PAYMENT_NAME, " "PROPERTIES, " "EXCHANGE_RATE, " "COLOUR, "
 			"DISPLAY_ORDER, " "PERCENT_ADJUST, " "AMOUNT_ADJUST, " "ROUNDTO, " "ADJUST_REASON, " "GROUP_NUMBER, " "THIRDPARTYCODES_KEY, "
 			"DEST_IP," "DEST_PORT," "TAX_RATE," "PRE_VOUCHER_CODE," "VOUCHER_MERCHANT_ID," "INVOICE_EXPORT,VOUCHER_URL,VOUCHER_USER, "
-			"VOUCHER_PASS," "CSV_READ_LOCATION," "CSV_WRITE_LOCATION," "TABKEY," "GL_CODE " ") " "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, "
+			"VOUCHER_PASS," "CSV_READ_LOCATION," "CSV_WRITE_LOCATION," "TABKEY," "GL_CODE, " "IS_AUTO_POPULATE_BLIND_BALANCE " ") " "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, "
 			":PROPERTIES, " ":EXCHANGE_RATE, " ":COLOUR, " ":DISPLAY_ORDER, " ":PERCENT_ADJUST, " ":AMOUNT_ADJUST, " ":ROUNDTO, "
 			":ADJUST_REASON, " ":GROUP_NUMBER, " ":THIRDPARTYCODES_KEY, " ":DEST_IP," ":DEST_PORT," ":TAX_RATE," ":PRE_VOUCHER_CODE,"
 			":VOUCHER_MERCHANT_ID, " ":INVOICE_EXPORT,:VOUCHER_URL,:VOUCHER_USER,:VOUCHER_PASS,"
-			":CSV_READ_LOCATION,:CSV_WRITE_LOCATION,:TABKEY,:GL_CODE ) ";
+			":CSV_READ_LOCATION,:CSV_WRITE_LOCATION,:TABKEY,:GL_CODE, :IS_AUTO_POPULATE_BLIND_BALANCE  ) ";
 
 			IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
             if(Payment.Properties & ePayTypeElectronicTransaction)
@@ -373,6 +373,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ParamByName("CSV_WRITE_LOCATION")->AsString = Payment.CVSWriteLocation.SubString(1,255);
             IBInternalQuery->ParamByName("TABKEY")->AsInteger = Payment.TabKey;
             IBInternalQuery->ParamByName("GL_CODE")->AsString = Payment.GLCode;
+            IBInternalQuery->ParamByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString = Payment.AutoPopulateBlindBalance;
 			if (Payment.PaymentThirdPartyID != "")
 			{
 				int ThirdPartyCodeKey = TDBThirdPartyCodes::SetThirdPartyCode(DBTransaction, Payment.PaymentThirdPartyID, "Payment Type Code",
@@ -629,6 +630,7 @@ void TListPaymentSystem::PaymentsLoadTypes(Database::TDBTransaction &DBTransacti
 		    NewPayment.CVSWriteLocation	=	IBInternalQuery->FieldByName("CSV_WRITE_LOCATION")->AsString;
             NewPayment.TabKey  =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
             NewPayment.GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
+            NewPayment.AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString;
     		Payments.push_back(NewPayment);
 	    }
 

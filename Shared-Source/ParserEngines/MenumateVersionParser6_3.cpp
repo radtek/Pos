@@ -1867,12 +1867,14 @@ void TApplyParser::Updatetable_PaymentTypes(TDBControl* const inDBControl)
     transaction.StartTransaction();
     try
     {
-        TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+        if ( fieldExists( "PAYMENTTYPES ", "IS_AUTO_POPULATE_BLIND_BALANCE ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
 
-        UpdateQuery->SQL->Text =  "UPDATE PAYMENTTYPES SET IS_AUTO_POPULATE_BLIND_BALANCE = 'T' "
-                                    "WHERE (PAYMENTTYPES.PAYMENT_NAME = 'Gift Card' OR PAYMENTTYPES.PAYMENT_NAME = 'Voucher') "
-                                        "AND PAYMENTTYPES.PROPERTIES = 10007242 ";
-        UpdateQuery->ExecQuery();
+            UpdateQuery->SQL->Text =  "UPDATE PAYMENTTYPES SET IS_AUTO_POPULATE_BLIND_BALANCE = 'T' "
+                                        "WHERE (PAYMENTTYPES.PAYMENT_NAME = 'Gift Card' OR PAYMENTTYPES.PAYMENT_NAME = 'Voucher') ";
+            UpdateQuery->ExecQuery();
+        }
 
         transaction.Commit();
     }
