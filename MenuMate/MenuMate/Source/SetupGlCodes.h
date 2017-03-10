@@ -29,6 +29,7 @@ __published:	// IDE-managed Components
     TTouchBtn *btnFloatGlCode;
     TTouchBtn *btnEftPosTip;
     TTouchBtn *btnCashWidthwral;
+    TTouchBtn *btnCashVariance;
     void __fastcall btnOkMouseClick(TObject *Sender);
     void __fastcall btnCancelMouseClick(TObject *Sender);
     void __fastcall btnPointPurchasedMouseClick(TObject *Sender);
@@ -43,7 +44,7 @@ __published:	// IDE-managed Components
     void __fastcall btnFloatGlCodeClick(TObject *Sender);
     void __fastcall btnEftPosTipMouseClick(TObject *Sender);
     void __fastcall btnCashWidthwralMouseClick(TObject *Sender);
-    //void __fastcall btnCashWidthwralMouseClick(TObject *Sender);
+    void __fastcall btnCashVarianceMouseClick(TObject *Sender);
 
 private:	// User declarations
    void ShowKeyBoard(AnsiString KeyBoardCaption,AnsiString& KeyBoardText);
@@ -60,6 +61,7 @@ public:		// User declarations
     AnsiString FloatGLCode;
     AnsiString EftPosTip;
     AnsiString CashWithdrawal;
+    AnsiString CashVariance;
 };
 //---------------------------------------------------------------------------
 //extern PACKAGE TfrmSetupGlCodes *frmSetupGlCodes;
