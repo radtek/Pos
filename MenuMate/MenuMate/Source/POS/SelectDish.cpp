@@ -3792,7 +3792,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                             Kitchen->GetPrintouts(DBTransaction, Request.get());
                             Request->Transaction = PrintTransaction.get();
                             Request->Printouts->Print(devPC);
-                            ManagerDockets->Archive(Request.get());
+                            ManagerDockets->Archive(DBTransaction,Request.get());
                             completeOrderToChefMate( PrintTransaction.get() );
 						}
 					}
@@ -3961,11 +3961,10 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Tab Data Type :" + IntToStr(TabType) + " Selected Tab Key " + IntToStr(SelectedTab) + "Tab Name :" + TabName);
 		PaymentComplete = false;
 	}
+
     if(PaymentComplete)
      {
         PaymentTransaction.PaymentsClear();
-    //    TGlobalSettings::Instance().TabPrintName = " ";
-   //     TGlobalSettings::Instance().TabPrintPhone = " ";
      }
     IsParkSalesEnable = false;
 	return PaymentComplete;
@@ -8379,6 +8378,8 @@ void __fastcall TfrmSelectDish::tgridSeatsMouseClick(TObject *Sender, TMouseButt
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 {
+  try
+  {
 	if (SelectedTable == 0)
 	{
 		if (CurrentTender != 0)
@@ -8474,13 +8475,13 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			}
 
  			if(TGlobalSettings::Instance().CaptureCustomerName)
-                          {
-                                TCustNameAndOrderType* CustNameAndOrderType = TCustNameAndOrderType::Instance();
-                                if(!CustNameAndOrderType->IsNameCaught)
-                                {
-                                    CustNameAndOrderType->CatchCustNameAndOrderType(DisplayNameKeypad(), DisplayCustomerTypeReasons(), SeatOrders);
-                                }
-                          }
+              {
+                    TCustNameAndOrderType* CustNameAndOrderType = TCustNameAndOrderType::Instance();
+                    if(!CustNameAndOrderType->IsNameCaught)
+                    {
+                        CustNameAndOrderType->CatchCustNameAndOrderType(DisplayNameKeypad(), DisplayCustomerTypeReasons(), SeatOrders);
+                    }
+              }
 
 			TSaveOrdersTo OrderContainer;
 
@@ -8508,8 +8509,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 				{
 
 					SetReceiptPreview(DBTransaction, frmConfirmOrder->ReceiptDisplay, OrderContainer.Location["TMMTabType"], OrderContainer.Location["ContainerName"],
-						OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
-						OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
+					OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
+					OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
 				}
 
 				if (frmConfirmOrder->ShowModal() != mrOk)
@@ -8709,6 +8710,12 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
 	}
 	RedrawItems();
+  }
+  catch(Exception & E)
+  {
+	 MessageBox(E.Message, "Error", MB_OK + MB_ICONERROR);
+	 TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+  }
 }
 // ---------------------------------------------------------------------------
 int TfrmSelectDish::GetCount(std::vector<TPatronType> patronTypes)
@@ -10871,6 +10878,8 @@ std::vector<TPatronType> TfrmSelectDish::GetPatronCount(Database::TDBTransaction
 
 void TfrmSelectDish::completeOrderToChefMate( TPaymentTransaction* inTransaction )
 {
+  try
+  {
     CMC_ERROR error = cmClientManager->SendCompleteOrder(inTransaction);
 	if( error == CMC_ERROR_FAILED )
 	{
@@ -10878,6 +10887,9 @@ void TfrmSelectDish::completeOrderToChefMate( TPaymentTransaction* inTransaction
 					"Chefmate",
 					MB_OK + MB_ICONWARNING);
 	}
+  }
+ catch(Exception & Err)
+   {}
 }
 //---------------------------------------------------------------------------
 void TfrmSelectDish::completeHeldOrdersToChefMate( TPaymentTransaction* inTransaction )

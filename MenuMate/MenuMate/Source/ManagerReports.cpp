@@ -1055,10 +1055,6 @@ void TManagerReports::PrintFloatAdjustments(Database::TDBTransaction &DBTransact
 			Printout->PrintFormat->AddLine();
 		}
 
-
-
-
-
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text = "select zeds.z_Key, zeds.initial_float, refloat_skim.amount, REFLOAT_SKIM.REASONS, REFLOAT_SKIM.TRANSACTION_TYPE, refloat_skim.staff, refloat_skim.time_stamp "
 									 "from zeds left join refloat_skim on zeds.z_key = REFLOAT_SKIM.Z_KEY "
@@ -1069,10 +1065,8 @@ void TManagerReports::PrintFloatAdjustments(Database::TDBTransaction &DBTransact
 		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
 		IBInternalQuery->ExecQuery();
 
-
 		if (IBInternalQuery->RecordCount)
 		 {
-
 			Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
 			Printout->PrintFormat->Line->ColCount = 1;
 			Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width;
@@ -1101,13 +1095,7 @@ void TManagerReports::PrintFloatAdjustments(Database::TDBTransaction &DBTransact
 			Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 			Printout->PrintFormat->AddLine();
 
-
-
-			Float total = 0;
-
-
-
-
+            Float total = 0;
 
 			for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
 			{

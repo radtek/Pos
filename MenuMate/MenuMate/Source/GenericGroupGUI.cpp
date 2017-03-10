@@ -10,18 +10,16 @@
 #pragma link "TouchBtn"
 #pragma link "TouchControls"
 #pragma resource "*.dfm"
-TfrmGenericGroupGUI *frmGenericGroupGUI;
-TForm * TfrmGenericGroupGUI::WinOwner = NULL;
+
 //---------------------------------------------------------------------------
 __fastcall TfrmGenericGroupGUI::TfrmGenericGroupGUI(TComponent* Owner)
     : TZForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
-TfrmGenericGroupGUI *TfrmGenericGroupGUI::Create(TForm* Owner)
+__fastcall TfrmGenericGroupGUI::~TfrmGenericGroupGUI()
 {
-   WinOwner = Owner;
-   return new TfrmGenericGroupGUI(Owner);
+   //
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmGenericGroupGUI::btnCloseMouseClick(TObject *Sender)
@@ -34,35 +32,27 @@ void __fastcall TfrmGenericGroupGUI::btnAddMouseClick(TObject *Sender)
     AddGroup();
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmGenericGroupGUI::btnEditMouseClick(TObject *Sender)
 {
     EditGroup();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmGenericGroupGUI::btnDeleteMouseClick(TObject *Sender)
 {
     DeleteGroup();
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmGenericGroupGUI::btnAssignMouseClick(TObject *Sender)
 {
     AssignGroups();
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmGenericGroupGUI::FormShow(TObject *Sender)
 {
     FormResize(NULL);
     DisplayGroups();
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmGenericGroupGUI::FormResize(TObject *Sender)
 {
     if (Tag != Screen->Width)
@@ -78,13 +68,11 @@ void __fastcall TfrmGenericGroupGUI::FormResize(TObject *Sender)
     Top = (Screen->Height - Height) / 2;
 }
 //---------------------------------------------------------------------------
-
 void __fastcall TfrmGenericGroupGUI::tgridGroupsClick(TObject *Sender)
 {
     ItemSelected();
 }
 //---------------------------------------------------------------------------
-
 void TfrmGenericGroupGUI::ButtonStatus(bool Status)
 {
     btnEdit->Enabled = Status;

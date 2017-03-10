@@ -69,6 +69,7 @@ Source: {#GetEnv('BASEDIR')}\Runtime\ChefMate.exe; DestDir: {app}; Flags: ignore
 Source: {#GetEnv('BASEDIR')}\Static Files\Office.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Office Version 5.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\ZSummaryReports.txt; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
+Source: {#GetEnv('BASEDIR')}\Static Files\Owner Details.txt; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Runtime\JoinMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\DBTrim.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\help\DB_Trim\DB_Trim_Help_Index.html; DestDir: {app}\help\DB_Trim\; Flags: ignoreversion

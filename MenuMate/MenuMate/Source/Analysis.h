@@ -197,7 +197,7 @@ private:	// User declarations
     bool checkPointEarned(Database::TDBTransaction &DBTransaction, int ContactKey); // MM 4579
     void PostToAccountingSystem();
     std::vector<TXeroInvoiceDetail> CalculateAccountingSystemData(Database::TDBTransaction &DBTransaction);
-    std::vector<TMYOBInvoiceDetail> CalculateMYOBData(Database::TDBTransaction &DBTransaction);
+    std::vector<TMYOBInvoiceDetail> CalculateMYOBData(Database::TDBTransaction &DBTransaction, TBlindBalances Balances);
     AnsiString GetJOBCode(AnsiString glCode);
     AnsiString GetCompanyName(Database::TDBTransaction &DBTransaction);
     void CreateXeroInvoiceAndSend(std::vector<TXeroInvoiceDetail>  &XeroInvoiceDetails);
@@ -223,6 +223,7 @@ private:	// User declarations
     TDateTime GetMinDayArchiveTime(Database::TDBTransaction &DBTransaction, TDateTime PrevZedTime);
     void UpdateZKeyForMallExportSales();
     double GetCashWithdrawal(Database::TDBTransaction &DBTransaction);
+    double GetCashBlindBalance(TBlindBalances Balances);
 public:		// User declarations
 	static TLoginSuccess AuthenticateReportsAccess(TReportSource);
 	static const TMMContactInfo &GetLastAuthenticatedUser();
@@ -281,6 +282,7 @@ private:
     void UpdateDLFMall();
     void UpdateContactTimeZedStatus(Database::TDBTransaction &DBTransaction);
     UnicodeString CheckRegistered();
+    void GetCategoryNameAndGLCode(Database::TDBTransaction &DBTransaction, std::map<AnsiString, AnsiString>&CollectCategoryName, TDateTime startTime, TDateTime endTime);
 
 };
 
