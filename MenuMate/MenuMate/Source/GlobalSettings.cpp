@@ -391,5 +391,6 @@ TGlobalSettings::TGlobalSettings()
     FloatWithdrawFromCash = false;
     IsPanasonicIntegrationEnabled = false;
     PanasonicServerIP = "";
+    CashVarianceGLCode = "";
 }
 

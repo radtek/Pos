@@ -39,6 +39,37 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       Font.Style = []
       ParentFont = False
     end
+    object sbAllTerminals: TSpeedButton
+      Left = 320
+      Top = 323
+      Width = 118
+      Height = 65
+      GroupIndex = 2
+      Down = True
+      Caption = 'All Terminals'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      OnClick = sbAllClick
+    end
+    object sbThisTerminal: TSpeedButton
+      Left = 448
+      Top = 323
+      Width = 118
+      Height = 65
+      GroupIndex = 2
+      Caption = 'This Terminal'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      OnClick = sbThisTerminalClick
+    end
     object gbRegenReport: TGroupBox
       Left = 16
       Top = 8

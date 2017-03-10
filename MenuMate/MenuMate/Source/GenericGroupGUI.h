@@ -15,6 +15,7 @@
 //---------------------------------------------------------------------------
 class TfrmGenericGroupGUI : public TZForm
 {
+  friend TZForm;
 __published:	// IDE-managed Components
 	TPanel *pnlMajor;
 	TPanel *pnlGroups;
@@ -36,24 +37,17 @@ __published:	// IDE-managed Components
     void __fastcall FormResize(TObject *Sender);
     void __fastcall tgridGroupsClick(TObject *Sender);
 
-
-
-private:	// User declarations
-	static TForm *WinOwner;
 public:		// User declarations
-	static TfrmGenericGroupGUI *Create(TForm* Owner);
+
     virtual void AddGroup(){};
     virtual void EditGroup(){};
     virtual void DeleteGroup(){};
     virtual void AssignGroups(){};
     virtual void DisplayGroups(){};
     virtual void ItemSelected(){};
-
     void ButtonStatus(bool Status);
-
     __fastcall TfrmGenericGroupGUI(TComponent* Owner);
+    _fastcall ~TfrmGenericGroupGUI();
 };
-//---------------------------------------------------------------------------
-//extern PACKAGE TfrmPaymentGroupGUI *frmPaymentGroupGUI;
-//---------------------------------------------------------------------------
+
 #endif

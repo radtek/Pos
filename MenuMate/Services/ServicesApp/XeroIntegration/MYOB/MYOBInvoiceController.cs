@@ -143,7 +143,12 @@ namespace AccountingIntegration.MYOB
                         decimal d = 0.0M;
                         Decimal.TryParse(item.UnitAmount, out d);
                         line.Amount = d;
-                        amountToBeRecievedIncash += d;   // comprises total amount in hand
+
+                        if (item.Description == "Rounding" || item.Description == "Cash Variance")
+                            amountToBeRecievedIncash += d < 0 ? d : d * (-1);
+                        else
+                            amountToBeRecievedIncash += d;   // comprises total amount in hand
+
                         for (int i = 0; i < Jobs.Count(); i++)
                         {
                             if (invoice.Jobcode == Jobs[i].Number)
