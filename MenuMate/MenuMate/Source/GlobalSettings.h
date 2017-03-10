@@ -480,6 +480,7 @@ public:
     bool FloatWithdrawFromCash;
     bool IsPanasonicIntegrationEnabled;
     UnicodeString PanasonicServerIP;
+    UnicodeString CashVarianceGLCode;
 };
 
 #endif

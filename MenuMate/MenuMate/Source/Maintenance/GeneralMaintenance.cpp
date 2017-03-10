@@ -450,6 +450,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
     cbUseMemberSubs->OnClick = cbUseMemberSubsClick;
     cbFloatWithdrawFromCash->Checked = TGlobalSettings::Instance().FloatWithdrawFromCash;
+    FormResize(this);
 }
 
 //---------------------------------------------------------------------------
@@ -473,6 +474,7 @@ void __fastcall TfrmGeneralMaintenance::FormResize(TObject *Sender)
 			ScaleBy(Screen->Width, Temp);
 	 }
   //	}
+    
     int TempHeight = ClientHeight;
 	pnlButtons->Top = Pages->Left;
 	pnlButtons->Left = ClientWidth - pnlButtons->Width - Pages->Left;
@@ -997,7 +999,7 @@ void __fastcall TfrmGeneralMaintenance::tbPOSClick(TObject *Sender)
 {
 	Pages->ActivePage = tsPointOfSale;
 	RedrawButtons(Sender);
-    //FormResize(this);
+    FormResize(this);
 }
 //---------------------------------------------------------------------------
 
@@ -1013,7 +1015,7 @@ void __fastcall TfrmGeneralMaintenance::tbMembershipClick(TObject *Sender)
 {
 	Pages->ActivePage = tsMembershipOptions;
     RedrawButtons(Sender);
-    //FormResize(this);
+    FormResize(this);
 }
 //---------------------------------------------------------------------------
 
@@ -1022,7 +1024,7 @@ void __fastcall TfrmGeneralMaintenance::tbEftposClick(TObject *Sender)
 {
 	Pages->ActivePage = tsEftPos;
 	RedrawButtons(Sender);
-    //FormResize(this);
+    FormResize(this);
 }
 //---------------------------------------------------------------------------
 
