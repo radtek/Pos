@@ -5228,9 +5228,10 @@ void __fastcall TfrmMenuEdit::btnSizesEditClick(TObject *Sender)
 				int NewIndex = EditSize(SizeName, lbAvailableSizes->ItemIndex);
                 if(NewIndex > -1)
                 {
+                   std::map<AnsiString, TAvailableMenuSize >::iterator it = AllSizesForMenu.find(OldSizeName);
                    AllSizesForMenu.erase(OldSizeName);
                    TAvailableMenuSize availablesize;
-                   availablesize.Key = NewIndex;
+                   availablesize.Key = it->second.Key;
                    AllSizesForMenu[SizeName] = availablesize;
                 }
 

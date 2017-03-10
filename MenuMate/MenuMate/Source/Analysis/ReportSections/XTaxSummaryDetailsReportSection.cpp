@@ -30,255 +30,278 @@ XTaxSummaryDetailsReportSection::~XTaxSummaryDetailsReportSection()
 
 void XTaxSummaryDetailsReportSection::GetOutput(TPrintout* printOut)
 {
-    AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-    ReportType reportType;
-
-    const Currency todays_earnings = 0;
-    Currency taxExemptSales = 0;
-    Currency salesTax = 0, serviceCharge = 0, serviceChargeTax = 0, localTax = 0, profitTax = 0, discountAndSurcharge = 0, zeroratedsales = 0, totaldiscount = 0, cashWithdrawal = 0;
-    sales_tax.clear();
-    if(IsConsolidatedZed)
+    try
     {
-        todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, *_startTime, *_endTime, true);
-        salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
-        serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName, *_startTime, *_endTime);
-        serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
-        localTax = reportCalculations->GetLocalTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
-        profitTax = reportCalculations->GetProfitTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
-        discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction, *_startTime, *_endTime);
-        zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName, *_startTime, *_endTime);
-        totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName, *_startTime, *_endTime);
-        GetDifferentTotalSalesTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
-        taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName, *_startTime, *_endTime), 0.01, _globalSettings->MidPointRoundsDown);
-    }
-    else
-    {
-        todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
-        salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName);
-        serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName);
-        serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName);
-        localTax = reportCalculations->GetLocalTax(*_dbTransaction, deviceName);
-        profitTax = reportCalculations->GetProfitTax(*_dbTransaction, deviceName);
-        discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction);
-        zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
-        totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName);
-        GetDifferentTotalSalesTax(*_dbTransaction, deviceName);
-        taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
-        TIBSQL *IBInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
-        cashWithdrawal = dataCalculationUtilities->CalculateCashWithdrawl(IBInternalQuery,deviceName);
-        if(todays_earnings == 0)
-            cashWithdrawal = 0;
-    }
+        AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+        ReportType reportType;
 
-    if(_globalSettings->ReCalculateTaxPostDiscount)
-    {
-        discountAndSurcharge = 0;
-    }
-    const Currency taxSales = 0;
-
-    if(_globalSettings->UseBIRFormatInXZReport)
-    {
-
-        taxSales = (((todays_earnings - cashWithdrawal - discountAndSurcharge) - (taxExemptSales -zeroratedsales)  - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax)) - zeroratedsales;
-    }
-    else
-    {
-       taxSales = (((todays_earnings - cashWithdrawal - discountAndSurcharge) - taxExemptSales - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax));
-    }
-
-
-    if(_globalSettings->ShowServiceChargeTaxWithSalesTax && !_globalSettings->ShowServiceChargeTaxWithServiceCharge)
-    {
-        salesTax += serviceChargeTax;
-    }
-
-    if(_globalSettings->UseBIRFormatInXZReport)
-    {
-
-        dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "";
-        printOut->PrintFormat->Line->Columns[1]->Text = "";
-        printOut->PrintFormat->Line->Columns[2]->Text = "";
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[1]->Text = "VATable Sales";
-        if(taxSales < 0)
+        const Currency todays_earnings = 0;
+        Currency taxExemptSales = 0;
+        Currency salesTax = 0, serviceCharge = 0, serviceChargeTax = 0, localTax = 0, profitTax = 0, discountAndSurcharge = 0, zeroratedsales = 0, totaldiscount = 0, cashWithdrawal = 0;
+        sales_tax.clear();
+        if(IsConsolidatedZed)
         {
-           printOut->PrintFormat->Line->Columns[2]->Text = "(" + CurrToStrF(fabs(taxSales), ffNumber, CurrencyDecimals) + ")";
+            todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, *_startTime, *_endTime, true);
+            salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+            serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName, *_startTime, *_endTime);
+            serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+            localTax = reportCalculations->GetLocalTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+            profitTax = reportCalculations->GetProfitTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+            discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction, *_startTime, *_endTime);
+            zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName, *_startTime, *_endTime);
+            totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName, *_startTime, *_endTime);
+            GetDifferentTotalSalesTax(*_dbTransaction, deviceName, *_startTime, *_endTime);
+            taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName, *_startTime, *_endTime), 0.01, _globalSettings->MidPointRoundsDown);
         }
         else
         {
-            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(taxSales, ffNumber, CurrencyDecimals);
+            todays_earnings = dataCalculationUtilities->GetTotalEarnings(*_dbTransaction, deviceName, true);
+            salesTax = reportCalculations->GetTotalSalesTax(*_dbTransaction, deviceName);
+            serviceCharge = reportCalculations->GetServiceCharge(*_dbTransaction, deviceName);
+            serviceChargeTax = reportCalculations->GetServiceChargeTax(*_dbTransaction, deviceName);
+            localTax = reportCalculations->GetLocalTax(*_dbTransaction, deviceName);
+            profitTax = reportCalculations->GetProfitTax(*_dbTransaction, deviceName);
+            discountAndSurcharge = reportCalculations->GetDiscountsAndSurcharges(*_dbTransaction);
+            zeroratedsales = reportCalculations->GetZeroRatedSales(*_dbTransaction, deviceName);
+            totaldiscount = reportCalculations->GetTotalDiscountValue(*_dbTransaction, deviceName);
+            GetDifferentTotalSalesTax(*_dbTransaction, deviceName);
+            taxExemptSales = RoundToNearest(reportCalculations->GetTaxExemptSales(*_dbTransaction, deviceName), 0.01, _globalSettings->MidPointRoundsDown);
+            TIBSQL *IBInternalQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
+            cashWithdrawal = dataCalculationUtilities->CalculateCashWithdrawl(IBInternalQuery,deviceName);
+            if(todays_earnings == 0)
+                cashWithdrawal = 0;
         }
-        printOut->PrintFormat->AddLine();
 
-        if(sales_tax.size() > 0)
+        if(_globalSettings->ReCalculateTaxPostDiscount)
         {
-            for (std::vector<TSalesTax>::iterator it = sales_tax.begin(); it != sales_tax.end(); it++)
+            discountAndSurcharge = 0;
+        }
+        const Currency taxSales = 0;
+
+        if(_globalSettings->UseBIRFormatInXZReport)
+        {
+
+            taxSales = (((todays_earnings - cashWithdrawal - discountAndSurcharge) - (taxExemptSales -zeroratedsales)  - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax)) - zeroratedsales;
+        }
+        else
+        {
+           taxSales = (((todays_earnings - cashWithdrawal - discountAndSurcharge) - taxExemptSales - serviceCharge - serviceChargeTax) - (salesTax + localTax + profitTax));
+        }
+
+
+        if(_globalSettings->ShowServiceChargeTaxWithSalesTax && !_globalSettings->ShowServiceChargeTaxWithServiceCharge)
+        {
+            salesTax += serviceChargeTax;
+        }
+
+        if(_globalSettings->UseBIRFormatInXZReport)
+        {
+
+            dataCalculationUtilities->PrinterFormatinTwoSections(printOut);
+
+            printOut->PrintFormat->Line->Columns[0]->Text = "";
+            printOut->PrintFormat->Line->Columns[1]->Text = "";
+            printOut->PrintFormat->Line->Columns[2]->Text = "";
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[1]->Text = "VATable Sales";
+            if(taxSales < 0)
             {
-                printOut->PrintFormat->Line->Columns[1]->Text = FloatToStr((it->Rate)) + "% VAT";
-                if(it->TaxSum < 0)
+               printOut->PrintFormat->Line->Columns[2]->Text = "(" + CurrToStrF(fabs(taxSales), ffNumber, CurrencyDecimals) + ")";
+            }
+            else
+            {
+                printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(taxSales, ffNumber, CurrencyDecimals);
+            }
+            printOut->PrintFormat->AddLine();
+
+            if(sales_tax.size() > 0)
+            {
+                for (std::vector<TSalesTax>::iterator it = sales_tax.begin(); it != sales_tax.end(); it++)
                 {
-                   printOut->PrintFormat->Line->Columns[2]->Text = "(" + CurrToStrF(abs(it->TaxSum), ffNumber, CurrencyDecimals) + ")";
+                    printOut->PrintFormat->Line->Columns[1]->Text = FloatToStr((it->Rate)) + "% VAT";
+                    if(it->TaxSum < 0)
+                    {
+                       printOut->PrintFormat->Line->Columns[2]->Text = "(" + CurrToStrF(abs(it->TaxSum), ffNumber, CurrencyDecimals) + ")";
+                    }
+                    else
+                    {
+                        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(it->TaxSum, ffNumber, CurrencyDecimals);
+                    }
+                    printOut->PrintFormat->AddLine();
                 }
-                else
-                {
-                    printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(it->TaxSum, ffNumber, CurrencyDecimals);
-                }
+            }
+            else
+            {
+                printOut->PrintFormat->Line->Columns[1]->Text = FloatToStr(0) + "% VAT";
+                printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(0.00);
                 printOut->PrintFormat->AddLine();
             }
-        }
-        else
-        {
-            printOut->PrintFormat->Line->Columns[1]->Text = FloatToStr(0) + "% VAT";
-            printOut->PrintFormat->Line->Columns[2]->Text = dataFormatUtilities->FormatMMReportCurrency(0.00);
+            printOut->PrintFormat->Line->Columns[1]->Text = "VAT Exempt Sales";
+            if((taxExemptSales - zeroratedsales) < 0)
+            {
+               printOut->PrintFormat->Line->Columns[2]->Text ="(" + CurrToStrF(fabs(taxExemptSales - zeroratedsales), ffNumber, CurrencyDecimals) + ")";
+            }
+            else
+            {
+                printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF((taxExemptSales - zeroratedsales), ffNumber, CurrencyDecimals);
+            }
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[1]->Text = "Zero Rated Sales";
+            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(zeroratedsales, ffNumber, CurrencyDecimals);
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[1]->Text = "Total Discount";
+            if(totaldiscount < 0)
+            {
+               printOut->PrintFormat->Line->Columns[2]->Text = "(" +CurrToStrF(fabs(totaldiscount), ffNumber, CurrencyDecimals) + ")";
+            }
+            else
+            {
+                printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(totaldiscount, ffNumber, CurrencyDecimals) ;
+            }
+            printOut->PrintFormat->AddLine();
+            printOut->PrintFormat->Line->Columns[1]->Text = "";
+            printOut->PrintFormat->Line->Columns[2]->Text = "";
+            printOut->PrintFormat->AddLine();
             printOut->PrintFormat->AddLine();
         }
-        printOut->PrintFormat->Line->Columns[1]->Text = "VAT Exempt Sales";
-        if((taxExemptSales - zeroratedsales) < 0)
-        {
-           printOut->PrintFormat->Line->Columns[2]->Text ="(" + CurrToStrF(fabs(taxExemptSales - zeroratedsales), ffNumber, CurrencyDecimals) + ")";
-        }
         else
         {
-            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF((taxExemptSales - zeroratedsales), ffNumber, CurrencyDecimals);
-        }
-        printOut->PrintFormat->AddLine();
+            AddTitle(printOut, "Tax Summary");
+            printOut->PrintFormat->NewLine();
 
-        printOut->PrintFormat->Line->Columns[1]->Text = "Zero Rated Sales";
-        printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(zeroratedsales, ffNumber, CurrencyDecimals);
-        printOut->PrintFormat->AddLine();
 
-        printOut->PrintFormat->Line->Columns[1]->Text = "Total Discount";
-        if(totaldiscount < 0)
-        {
-           printOut->PrintFormat->Line->Columns[2]->Text = "(" +CurrToStrF(fabs(totaldiscount), ffNumber, CurrencyDecimals) + ")";
+
+            IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
+
+            if(reportSectionDisplayTraits)
+            {
+                reportSectionDisplayTraits->ApplyTraits(printOut);
+            }
+
+            printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
+            printOut->PrintFormat->Line->FontInfo.Reset();
+
+            printOut->PrintFormat->Line->Columns[0]->Text = "Sales Tax Total:";
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[0]->Text = "Tax Exempt Sales Total";
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxExemptSales);
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[0]->Text = "Taxable Sales Total:";
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxSales);
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[0]->Text = "Local Tax Total:";
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(localTax);
+            printOut->PrintFormat->AddLine();
+
+            printOut->PrintFormat->Line->Columns[0]->Text = "Profit Tax Total:";
+            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(profitTax);
+            printOut->PrintFormat->AddLine();
+
         }
-        else
-        {
-            printOut->PrintFormat->Line->Columns[2]->Text = CurrToStrF(totaldiscount, ffNumber, CurrencyDecimals) ;
-        }
-        printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->Line->Columns[1]->Text = "";
-        printOut->PrintFormat->Line->Columns[2]->Text = "";
-        printOut->PrintFormat->AddLine();
-        printOut->PrintFormat->AddLine();
     }
-    else
+    catch(Exception &E)
     {
-        AddTitle(printOut, "Tax Summary");
-        printOut->PrintFormat->NewLine();
-
-
-
-        IReportSectionDisplayTraits* reportSectionDisplayTraits = GetTextFormatDisplayTrait();
-
-        if(reportSectionDisplayTraits)
-        {
-            reportSectionDisplayTraits->ApplyTraits(printOut);
-        }
-
-        printOut->PrintFormat->Line->Columns[1]->Width = printOut->PrintFormat->Width * 1 / 3;
-        printOut->PrintFormat->Line->FontInfo.Reset();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Sales Tax Total:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(salesTax);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Tax Exempt Sales Total";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxExemptSales);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Taxable Sales Total:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(taxSales);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Local Tax Total:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(localTax);
-        printOut->PrintFormat->AddLine();
-
-        printOut->PrintFormat->Line->Columns[0]->Text = "Profit Tax Total:";
-        printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency(profitTax);
-        printOut->PrintFormat->AddLine();
-
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
     }
 }
 
 void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName)
 {
-    TIBSQL *salesTaxQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    AnsiString terminalNamePredicate = "";
-    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    try
     {
-        terminalNamePredicate = "AND DAB.TERMINAL_NAME = :Terminal_Name ";
+        TIBSQL *salesTaxQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        AnsiString terminalNamePredicate = "";
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            terminalNamePredicate = "AND DAB.TERMINAL_NAME = :Terminal_Name ";
+        }
+
+
+        salesTaxQuery->SQL->Text = "SELECT "
+                                        "SUM(TAX_VALUE) AS TAXSUM, DTax.RATE "
+                                    "FROM DAYARCORDERTAXES DAOT "
+                                    "INNER JOIN DAYARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                                    "INNER JOIN DAYARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
+                                    "INNER JOIN TAXPROFILES DTax on DTax.TYPE = DAOT.TAX_TYPE "
+                                    "WHERE TAX_TYPE = '0' " + terminalNamePredicate + " and DAOT.TAX_NAME = DTax.NAME "
+                                    "group by "
+                                    "DTax.RATE, "
+                                    "DAOT.TAX_TYPE ";
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+           salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+        }
+
+        salesTaxQuery->ExecQuery();
+        while(!salesTaxQuery->Eof)
+        {
+            TSalesTax sales;
+            sales.Rate = salesTaxQuery->FieldByName("RATE")->AsDouble;
+            sales.TaxSum = salesTaxQuery->FieldByName("TAXSUM")->AsCurrency;
+            sales_tax.push_back(sales);
+            salesTaxQuery->Next();
+        }
+        salesTaxQuery->Close();
     }
-
-
-    salesTaxQuery->SQL->Text = "SELECT "
-                                    "SUM(TAX_VALUE) AS TAXSUM, DTax.RATE "
-                                "FROM DAYARCORDERTAXES DAOT "
-                                "INNER JOIN DAYARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
-                                "INNER JOIN DAYARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                                "INNER JOIN TAXPROFILES DTax on DTax.TYPE = DAOT.TAX_TYPE "
-                                "WHERE TAX_TYPE = '0' " + terminalNamePredicate + " and DAOT.TAX_NAME = DTax.NAME "
-                                "group by "
-                                "DTax.RATE, "
-                                "DAOT.TAX_TYPE ";
-
-    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    catch(Exception &E)
     {
-       salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
     }
-
-    salesTaxQuery->ExecQuery();
-    while(!salesTaxQuery->Eof)
-    {
-        TSalesTax sales;
-        sales.Rate = salesTaxQuery->FieldByName("RATE")->AsDouble;
-        sales.TaxSum = salesTaxQuery->FieldByName("TAXSUM")->AsCurrency;
-        sales_tax.push_back(sales);
-        salesTaxQuery->Next();
-    }
-    salesTaxQuery->Close();
 }
 
 void XTaxSummaryDetailsReportSection::GetDifferentTotalSalesTax(Database::TDBTransaction &DBTransaction, AnsiString deviceName, TDateTime &startTime, TDateTime &endTime)
 {
-    TIBSQL *salesTaxQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    AnsiString terminalNamePredicate = "";
-    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    try
     {
-        terminalNamePredicate = "AND DAB.TERMINAL_NAME = :Terminal_Name ";
+        TIBSQL *salesTaxQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        AnsiString terminalNamePredicate = "";
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+            terminalNamePredicate = "AND DAB.TERMINAL_NAME = :Terminal_Name ";
+        }
+
+        salesTaxQuery->SQL->Text = "SELECT "
+                                        "SUM(TAX_VALUE) AS TAXSUM, DTax.RATE "
+                                    "FROM ARCORDERTAXES DAOT "
+                                    "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
+                                    "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
+                                    "INNER JOIN TAXPROFILES DTax on DTax.TYPE = DAOT.TAX_TYPE "
+                                    "WHERE TAX_TYPE = '0' " + terminalNamePredicate + " and DAOT.TAX_NAME = DTax.NAME "
+                                    "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP <= :endTime "
+                                    "group by "
+                                    "DTax.RATE, "
+                                    "DAOT.TAX_TYPE ";
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+        {
+           salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+        }
+        salesTaxQuery->ParamByName("StartTime")->AsDateTime = startTime;
+        salesTaxQuery->ParamByName("EndTime")->AsDateTime = endTime;
+        salesTaxQuery->ExecQuery();
+        while(!salesTaxQuery->Eof)
+        {
+            TSalesTax sales;
+            sales.Rate = salesTaxQuery->FieldByName("RATE")->AsDouble;
+            sales.TaxSum = salesTaxQuery->FieldByName("TAXSUM")->AsCurrency;
+            sales_tax.push_back(sales);
+            salesTaxQuery->Next();
+        }
+        salesTaxQuery->Close();
     }
-
-
-    salesTaxQuery->SQL->Text = "SELECT "
-                                    "SUM(TAX_VALUE) AS TAXSUM, DTax.RATE "
-                                "FROM ARCORDERTAXES DAOT "
-                                "INNER JOIN ARCHIVE DA ON DAOT.ARCHIVE_KEY = DA.ARCHIVE_KEY "
-                                "INNER JOIN ARCBILL DAB ON DA.ARCBILL_KEY = DAB.ARCBILL_KEY "
-                                "INNER JOIN TAXPROFILES DTax on DTax.TYPE = DAOT.TAX_TYPE "
-                                "WHERE TAX_TYPE = '0' " + terminalNamePredicate + " and DAOT.TAX_NAME = DTax.NAME "
-                                "and DAB.TIME_STAMP >= :startTime and DAB.TIME_STAMP <= :endTime "
-                                "group by "
-                                "DTax.RATE, "
-                                "DAOT.TAX_TYPE ";
-
-    if(!TGlobalSettings::Instance().EnableDepositBagNum)
+    catch(Exception &E)
     {
-       salesTaxQuery->ParamByName("Terminal_Name")->AsString = deviceName;
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
     }
-    salesTaxQuery->ParamByName("StartTime")->AsDateTime = startTime;
-    salesTaxQuery->ParamByName("EndTime")->AsDateTime = endTime;
-    salesTaxQuery->ExecQuery();
-    while(!salesTaxQuery->Eof)
-    {
-        TSalesTax sales;
-        sales.Rate = salesTaxQuery->FieldByName("RATE")->AsDouble;
-        sales.TaxSum = salesTaxQuery->FieldByName("TAXSUM")->AsCurrency;
-        sales_tax.push_back(sales);
-        salesTaxQuery->Next();
-    }
-    salesTaxQuery->Close();
 }

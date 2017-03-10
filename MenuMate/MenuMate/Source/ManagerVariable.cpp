@@ -3187,6 +3187,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 					"Enter IP Address for Server.\r"
             	 	"Default is localhost\r",
 					 vmg3rdPartyInterface, "localhost");
+        SetVarStr( DBTransaction, vmCashVariance, "Cash Variance GLCode",
+                "Cash Variance GLCode."
+                "Default is 6-3400",
+                vmg3rdPartyInterface, "6-3400" );
 	}
 	catch(Exception &E)
 	{

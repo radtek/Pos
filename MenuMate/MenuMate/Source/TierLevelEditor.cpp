@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
-TfrmTierLevelEditor *frmTierLevelEditor;
+
 //---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 __fastcall TfrmTierLevelEditor::TfrmTierLevelEditor(TComponent* Owner, Database::TDBControl &inDBControl) :

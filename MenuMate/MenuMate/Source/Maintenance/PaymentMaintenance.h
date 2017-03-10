@@ -31,6 +31,7 @@ __published:	// IDE-managed Components
 	TStaticText *lbePartyName;
 	TTouchGrid *tgridContainerList;
     TTouchBtn *tbPaymentGroups;
+    TTouchBtn *btnGlCode;
         void __fastcall FormResize(TObject *Sender);
    void __fastcall imgExitClick(TObject *Sender);
    void __fastcall pnlAddClick(TObject *Sender);
@@ -41,6 +42,7 @@ __published:	// IDE-managed Components
 	void __fastcall pnlDefaultsClick(TObject *Sender);
 	void __fastcall tgridContainerListMouseClick(TObject *Sender,
 			 TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
+    void __fastcall btnGlCodeMouseClick(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPaymentMaintenance(TComponent* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem);
 	static TForm *WinOwner;
@@ -49,6 +51,8 @@ private:	// User declarations
 	Database::TDBControl &DBControl;
 	TListPaymentSystem *PaymentSystem;
 	int PaymentKey;
+    void UpdateGlCode(AnsiString GlCode,int paymentKey);
+    AnsiString GetGlCode(int paymentKey);
 public:		// User declarations
 	TfrmPaymentMaintenance static *Create(TForm* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem);
     bool IsPaymentExist(Database::TDBTransaction &DBTransaction,AnsiString PaymentName);
