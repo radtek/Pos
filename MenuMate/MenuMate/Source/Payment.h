@@ -117,7 +117,7 @@ public:
    TMMContactInfo InvoiceContact;
 
    Currency RoundTo; // Amount to Round To, 5c 10c etc.
-   UnicodeString AutoPopulateBlindBalance;
+   bool AutoPopulateBlindBalance;
 
    void Reset();
    void Failed();

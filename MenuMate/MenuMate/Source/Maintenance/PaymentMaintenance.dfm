@@ -270,5 +270,24 @@ object frmPaymentMaintenance: TfrmPaymentMaintenance
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbtnPaymentGroupClick
     end
+    object btnGlCode: TTouchBtn
+      Left = 8
+      Top = 451
+      Width = 249
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Visible = False
+      Caption = 'GL Code'
+      ButtonColor = 8487296
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnGlCodeMouseClick
+    end
   end
 end

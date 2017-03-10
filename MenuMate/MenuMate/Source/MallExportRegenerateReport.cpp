@@ -75,6 +75,9 @@ __fastcall TfrmMallExportRegenerateReport::TfrmMallExportRegenerateReport(TCompo
         edLocationPath->Enabled = false;
         edLocationPath->Color = clInactiveCaptionText;
     }
+
+    sbAllTerminals->Visible = false;
+    sbThisTerminal->Visible = false;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallExportRegenerateReport::btnOkMouseClick(TObject *Sender)
@@ -4272,3 +4275,12 @@ void TfrmMallExportRegenerateReport::RegenerateFederalLandExport()
     ResetMallExportValues();
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmMallExportRegenerateReport::sbAllClick(TObject *Sender)
+{
+    isAllTerminalsSelected = true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmMallExportRegenerateReport::sbThisTerminalClick(TObject *Sender)
+{
+    isAllTerminalsSelected = false;
+}

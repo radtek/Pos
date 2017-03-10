@@ -219,7 +219,7 @@ void TBlindBalanceController::PopulateListManager()
                 Currency amount = 0;
 
                 ///Get Auto Populate Blind BAlance Value If AutoPopulate Setting is on
-                if(payTypeTotal.find(ptr->Name) != payTypeTotal.end() && ptr->AutoPopulateBlindBalance == "T")
+                if(payTypeTotal.find(ptr->Name) != payTypeTotal.end() && ptr->AutoPopulateBlindBalance)
                 {
                     amount = payTypeTotal.find(ptr->Name)->second;
                 }

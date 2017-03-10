@@ -138,7 +138,6 @@ __published:	// IDE-managed Components
         void __fastcall tbRMSWriteLocationMouseClick(TObject *Sender);
         void __fastcall tbTabLinkMouseClick(TObject *Sender);
         void __fastcall tbGLCodeMouseClick(TObject *Sender);
-        //void __fastcall cbAutoPopulateBlindBalanceClick(TObject *Sender);
 
 private:	// User declarations
 	__fastcall TfrmNewPaymentType(TComponent* Owner,Database::TDBControl &inDBControl,TListPaymentSystem *inPaymentSystem,int inPaymentKey = 0);

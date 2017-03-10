@@ -183,7 +183,7 @@ void TListPaymentSystem::PaymentLoad(Database::TDBTransaction &DBTransaction, in
 			Payment.CVSWriteLocation=	IBInternalQuery->FieldByName("CSV_WRITE_LOCATION")->AsString;
             Payment.TabKey =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
             Payment.GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
-            Payment.AutoPopulateBlindBalance =  IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString;
+            Payment.AutoPopulateBlindBalance =  IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
 		}
 	}
 	catch(Exception & E)
@@ -301,7 +301,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             IBInternalQuery->ParamByName("TABKEY")->AsInteger = Payment.TabKey;
             IBInternalQuery->ParamByName("GL_CODE")->AsString = Payment.GLCode;
 			IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = Payment.TaxRate;
-            IBInternalQuery->ParamByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString = Payment.AutoPopulateBlindBalance;
+            IBInternalQuery->ParamByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString = Payment.AutoPopulateBlindBalance == true ? "T" : "F";
 
 			if (Payment.PaymentThirdPartyID != "")
 			{
@@ -373,7 +373,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ParamByName("CSV_WRITE_LOCATION")->AsString = Payment.CVSWriteLocation.SubString(1,255);
             IBInternalQuery->ParamByName("TABKEY")->AsInteger = Payment.TabKey;
             IBInternalQuery->ParamByName("GL_CODE")->AsString = Payment.GLCode;
-            IBInternalQuery->ParamByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString = Payment.AutoPopulateBlindBalance;
+            IBInternalQuery->ParamByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString = Payment.AutoPopulateBlindBalance == true ? "T" : "F";
 			if (Payment.PaymentThirdPartyID != "")
 			{
 				int ThirdPartyCodeKey = TDBThirdPartyCodes::SetThirdPartyCode(DBTransaction, Payment.PaymentThirdPartyID, "Payment Type Code",
@@ -438,7 +438,7 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 		NewPayment->CVSWriteLocation	=	IBInternalQuery->FieldByName("CSV_WRITE_LOCATION")->AsString;
         NewPayment->TabKey  =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
         NewPayment->GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
-        NewPayment->AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString;
+        NewPayment->AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
 		CurrentDisplayOrder = NewPayment->DisplayOrder;
 
 		// load up the groups for this payment type
@@ -630,7 +630,7 @@ void TListPaymentSystem::PaymentsLoadTypes(Database::TDBTransaction &DBTransacti
 		    NewPayment.CVSWriteLocation	=	IBInternalQuery->FieldByName("CSV_WRITE_LOCATION")->AsString;
             NewPayment.TabKey  =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
             NewPayment.GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
-            NewPayment.AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString;
+            NewPayment.AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
     		Payments.push_back(NewPayment);
 	    }
 
