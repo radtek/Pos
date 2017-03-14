@@ -188,6 +188,18 @@ object frmNewPaymentType: TfrmNewPaymentType
           Font.Style = [fsBold]
           ParentFont = False
         end
+        object ccgColour: TCColorGrid
+          Left = 264
+          Top = 48
+          Width = 576
+          Height = 168
+          ClickEnablesColor = True
+          GridOrdering = go8x2
+          ForegroundEnabled = False
+          BackgroundEnabled = False
+          TabOrder = 0
+          OnClick = ccgColourChange
+        end
         object tbExchange: TTouchBtn
           Left = 256
           Top = 224
