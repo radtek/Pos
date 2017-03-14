@@ -952,7 +952,7 @@ void TLoyaltyMateInterface::CreateGiftVoucherPaymentType(Database::TDBTransactio
         IBInternalQuery->ExecQuery();
         if(!IBInternalQuery->Eof)
         {
-          PaymentKey = IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger ;
+          PaymentKey = IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger ;
         }
         TPayment NewPayment;
         NewPayment.Name = "Gift Card";
@@ -967,6 +967,7 @@ void TLoyaltyMateInterface::CreateGiftVoucherPaymentType(Database::TDBTransactio
     }
     catch(Exception & E)
 	{
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
 
 }
