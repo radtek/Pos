@@ -923,7 +923,7 @@ void TLoyaltyMateInterface::CreateVoucherPaymentType(Database::TDBTransaction &D
         IBInternalQuery->ExecQuery();
         if(!IBInternalQuery->Eof)
         {
-          PaymentKey = IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger ;
+          PaymentKey = IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger ;
         }
         TPayment NewPayment;
         NewPayment.Name = "Voucher";
@@ -938,6 +938,7 @@ void TLoyaltyMateInterface::CreateVoucherPaymentType(Database::TDBTransaction &D
     }
     catch(Exception & E)
 	{
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
 }
 //---------------------------------------------------------------------------
