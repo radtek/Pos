@@ -78,6 +78,7 @@ __fastcall TfrmMallExportRegenerateReport::TfrmMallExportRegenerateReport(TCompo
 
     sbAllTerminals->Visible = false;
     sbThisTerminal->Visible = false;
+    ShowDateTimes();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallExportRegenerateReport::btnOkMouseClick(TObject *Sender)
@@ -99,6 +100,7 @@ void __fastcall TfrmMallExportRegenerateReport::mcStartDateClick(TObject *Sender
    StartDate = mcStartDate->Date;
    SetYear = StartDate.FormatString("yyyy");
    InitializeTimeSet(SDate, EDate);
+   ShowDateTimes();
 }
 //---------------------------------------------------------------------------
 
@@ -110,6 +112,7 @@ void __fastcall TfrmMallExportRegenerateReport::mcEndDateClick(TObject *Sender)
    }
    EndDate = mcEndDate->Date;
    InitializeTimeSet(SDate, EDate);
+   ShowDateTimes();
 }
 
 //---------------------------------------------------------------------------
@@ -174,14 +177,15 @@ void __fastcall TfrmMallExportRegenerateReport::cbStartHourChange(TObject *Sende
     StartHour = cbStartHour->ItemIndex;
     StartHour = FixTime(StartHour);
     InitializeTimeSet(SDate, EDate);
+    ShowDateTimes();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmMallExportRegenerateReport::cbStartMinChange(TObject *Sender)
 {
-
     StartMin = cbStartMin->ItemIndex;
     InitializeTimeSet(SDate, EDate);
+    ShowDateTimes();
 }
 //---------------------------------------------------------------------------
 
@@ -189,6 +193,7 @@ void __fastcall TfrmMallExportRegenerateReport::cbEndHourChange(TObject *Sender)
 {
     EndHour = cbEndHour->ItemIndex;
     InitializeTimeSet(SDate, EDate);
+    ShowDateTimes();
 }
 //---------------------------------------------------------------------------
 
@@ -196,6 +201,7 @@ void __fastcall TfrmMallExportRegenerateReport::cbEndMinChange(TObject *Sender)
 {
     EndMin = cbEndMin->ItemIndex;
     InitializeTimeSet(SDate, EDate);
+    ShowDateTimes();
 }
 //---------------------------------------------------------------------------
 
@@ -4283,4 +4289,10 @@ void __fastcall TfrmMallExportRegenerateReport::sbAllClick(TObject *Sender)
 void __fastcall TfrmMallExportRegenerateReport::sbThisTerminalClick(TObject *Sender)
 {
     isAllTerminalsSelected = false;
+}
+//-----------------------------------------------------------------------------
+void TfrmMallExportRegenerateReport::ShowDateTimes()
+{
+	lbFrom->Caption					= "From: " + mcStartDate->Date.FormatString("ddddd") + " at " + SDate.FormatString("HH:nn");
+	lbTo->Caption					= "To: " + mcEndDate->Date.FormatString("ddddd") + " at " + EDate.FormatString("HH:nn");
 }

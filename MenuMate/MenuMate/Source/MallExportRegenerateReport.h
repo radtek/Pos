@@ -58,6 +58,8 @@ __published:	// IDE-managed Components
     TGroupBox *gbRegenReport;
     TSpeedButton *sbAllTerminals;
     TSpeedButton *sbThisTerminal;
+    TLabel *lbFrom;
+    TLabel *lbTo;
     void __fastcall btnOkMouseClick(TObject *Sender);
     void __fastcall btnCancelMouseClick(TObject *Sender);
     void __fastcall mcStartDateClick(TObject *Sender);
@@ -162,6 +164,8 @@ public:		// User declarations
 
     //DLF Mall Export
     void RegenerateDLFMallExport();
+
+    void ShowDateTimes();
 
     UnicodeString MALLCODE;
     UnicodeString TENANT_NAME;

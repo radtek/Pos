@@ -481,6 +481,7 @@ public:
     bool IsPanasonicIntegrationEnabled;
     UnicodeString PanasonicServerIP;
     UnicodeString CashVarianceGLCode;
+    UnicodeString ReportExportPath;
 };
 
 #endif

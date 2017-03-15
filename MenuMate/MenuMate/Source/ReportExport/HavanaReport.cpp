@@ -57,8 +57,8 @@ void THavanaReport::PostDataToFile()
         MallExportRegenerateReport->sbThisTerminal->Visible = true;
         MallExportRegenerateReport->btnOk->Caption = "Generate Report";
         MallExportRegenerateReport->Caption = "Generate Report";
-        MallExportRegenerateReport->cbStartHour->ItemIndex = 0;
-        MallExportRegenerateReport->cbEndHour->ItemIndex = 0;
+        MallExportRegenerateReport->cbStartHour->ItemIndex = TGlobalSettings::Instance().EndOfDay;
+        MallExportRegenerateReport->cbEndHour->ItemIndex = TGlobalSettings::Instance().EndOfDay;
         MallExportRegenerateReport->cbStartMin->ItemIndex = 0;
         MallExportRegenerateReport->cbEndMin->ItemIndex = 0;
         MallExportRegenerateReport->StartHour = MallExportRegenerateReport->cbStartHour->ItemIndex;
@@ -70,7 +70,9 @@ void THavanaReport::PostDataToFile()
         MallExportRegenerateReport->EndMin = MallExportRegenerateReport->cbEndMin->ItemIndex;
         MallExportRegenerateReport->EndMin = "0" + MallExportRegenerateReport->EndMin;
         MallExportRegenerateReport->InitializeTimeSet(MallExportRegenerateReport->SDate, MallExportRegenerateReport->EDate);
+        MallExportRegenerateReport->ShowDateTimes();
         MallExportRegenerateReport->isAllTerminalsSelected = true;
+        MallExportRegenerateReport->edLocationPath->Text = TGlobalSettings::Instance().ReportExportPath;
         TModalResult result = MallExportRegenerateReport->ShowModal();
         TDateTime SDate = MallExportRegenerateReport->SDate;
         TDateTime EDate = MallExportRegenerateReport->EDate;
@@ -282,9 +284,9 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                                 "CAST(SUM( CASE WHEN (ABP.PAY_TYPE) = 'Cash' THEN (COALESCE(ABP.SUBTOTAL,0) + COALESCE(CashChange.Cashout,0)) "
                                                         "ELSE (COALESCE(ABP.SUBTOTAL,0)) END) AS NUMERIC(17,4)) TOTAL  "
                         "FROM ARCBILL AB INNER JOIN ARCBILLPAY ABP ON AB.ARCBILL_KEY = ABP.ARCBILL_KEY "
-                        "INNER JOIN(select A.ARCBILL_KEY from ARCHIVE A WHERE EXTRACT (DAY FROM  A.TIME_STAMP) = :DAY "
-                                        "AND EXTRACT (MONTH FROM  A.TIME_STAMP) = :MONTH AND EXTRACT (YEAR FROM  A.TIME_STAMP) = :YEAR "
-                                        "AND A.Time_Stamp >= :START_TIME and A.Time_Stamp < :END_TIME "
+                        "INNER JOIN(select A.ARCBILL_KEY from ARCHIVE A WHERE EXTRACT (DAY FROM  A.TIME_STAMP_BILLED) = :DAY "
+                                        "AND EXTRACT (MONTH FROM  A.TIME_STAMP_BILLED) = :MONTH AND EXTRACT (YEAR FROM  A.TIME_STAMP_BILLED) = :YEAR "
+                                        "AND A.TIME_STAMP_BILLED >= :START_TIME and A.TIME_STAMP_BILLED < :END_TIME "
                                         "GROUP BY 1)ARC ON AB.ARCBILL_KEY =  ARC.ARCBILL_KEY "
                         "LEFT JOIN (SELECT A.ARCBILL_KEY, MIN(CASE WHEN a.CASH_OUT = 'T' THEN COALESCE(a.SUBTOTAL,0) END) AS Cashout "
                                       "FROM ARCBILLPAY a  INNER JOIN ARCBILL AB ON A.ARCBILL_KEY = AB.ARCBILL_KEY WHERE EXTRACT (DAY FROM  AB.TIME_STAMP) = :DAY "
@@ -660,6 +662,12 @@ void THavanaReport::PrepareDataForCSVFile(TDateTime sDate, TDateTime eDate, Unic
 
     try
     {
+
+        if(reportExportPath != TGlobalSettings::Instance().ReportExportPath)
+        {
+            TGlobalSettings::Instance().ReportExportPath = reportExportPath;
+            TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmReportExportPath,TGlobalSettings::Instance().ReportExportPath);
+        }
          ///Register Query
         Database::TcpIBSQL ibInternalQuery(new TIBSQL(NULL));
         dbTransaction.RegisterQuery(ibInternalQuery);
