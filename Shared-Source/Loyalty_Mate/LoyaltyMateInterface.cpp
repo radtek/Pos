@@ -923,7 +923,7 @@ void TLoyaltyMateInterface::CreateVoucherPaymentType(Database::TDBTransaction &D
         IBInternalQuery->ExecQuery();
         if(!IBInternalQuery->Eof)
         {
-          PaymentKey = IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger ;
+          PaymentKey = IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger ;
         }
         TPayment NewPayment;
         NewPayment.Name = "Voucher";
@@ -933,10 +933,12 @@ void TLoyaltyMateInterface::CreateVoucherPaymentType(Database::TDBTransaction &D
         NewPayment.GroupNumber = 0;
         NewPayment.Colour = clTeal;
         NewPayment.PaymentThirdPartyID = "10007242";
+        NewPayment.AutoPopulateBlindBalance = true;
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentSave(DBTransaction, PaymentKey, NewPayment);
     }
     catch(Exception & E)
 	{
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
 }
 //---------------------------------------------------------------------------
@@ -951,7 +953,7 @@ void TLoyaltyMateInterface::CreateGiftVoucherPaymentType(Database::TDBTransactio
         IBInternalQuery->ExecQuery();
         if(!IBInternalQuery->Eof)
         {
-          PaymentKey = IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger ;
+          PaymentKey = IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger ;
         }
         TPayment NewPayment;
         NewPayment.Name = "Gift Card";
@@ -961,10 +963,12 @@ void TLoyaltyMateInterface::CreateGiftVoucherPaymentType(Database::TDBTransactio
         NewPayment.GroupNumber = 0;
         NewPayment.Colour = clTeal;
         NewPayment.PaymentThirdPartyID = "10007242";
+        NewPayment.AutoPopulateBlindBalance = true;
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentSave(DBTransaction, PaymentKey, NewPayment);
     }
     catch(Exception & E)
 	{
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
 
 }

@@ -92,6 +92,7 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
 	  Payment.CVSWriteLocation = CVSWriteLocation;
       Payment.TabKey  =TabKey;
       Payment.GLCode = GLCode;
+      Payment.AutoPopulateBlindBalance = cbAutoPopulateBlindBalance->Checked;
 	  if (cbIsTip->Checked)
 		 Payment.Properties |= ePayTypeCustomSurcharge;
 	  if (cbOpendrawer->Checked)
@@ -224,6 +225,7 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         UniPass = Payment.UniVoucherPass;
         TabKey  = Payment.TabKey;
         GLCode  = Payment.GLCode;
+        cbAutoPopulateBlindBalance->Checked = Payment.AutoPopulateBlindBalance;;
 
 
         if (Payment.PercentAdjust != 0)

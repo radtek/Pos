@@ -84,6 +84,7 @@ namespace MenumateVersionParser
             pv6_35,
             pv6_36,
             pv6_37,
+            pv6_38,
     };
 
     class TApplyParser
@@ -166,6 +167,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_35( TDBControl* const inDBControl );
         PARSER_ERROR apply6_36( TDBControl* const inDBControl );
         PARSER_ERROR apply6_37( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_38( TDBControl* const inDBControl );
        // Members
         TDBControl* _dbControl;
 
@@ -861,6 +863,11 @@ namespace MenumateVersionParser
         void CREATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );
         void POPULATEDSRPIVOTProcedure6_37( TDBControl* const inDBControl );
         void AlterTable6_37(TDBControl* const inDBControl);
+
+        void upgrade6_38Tables();
+        void update6_38Tables();
+        void AlterTable_PaymentTypes(TDBControl* const inDBControl);
+        void Updatetable_PaymentTypes(TDBControl* const inDBControl);
     }; // class
 } // namespace
 

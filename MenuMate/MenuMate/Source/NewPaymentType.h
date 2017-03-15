@@ -97,6 +97,7 @@ __published:	// IDE-managed Components
         TCheckBox *cbRMSInterface;
         TTouchBtn *tbTabLink;
         TTouchBtn *tbGLCode;
+        TCheckBox *cbAutoPopulateBlindBalance;
         void __fastcall pnlOkClick(TObject *Sender);
         void __fastcall Panel20Click(TObject *Sender);
         void __fastcall FormShow(TObject *Sender);
