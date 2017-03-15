@@ -29,12 +29,12 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
     object lbGenPath: TLabel
       Left = 16
       Top = 324
-      Width = 135
-      Height = 18
+      Width = 118
+      Height = 16
       Caption = 'Report Location Path'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
@@ -78,52 +78,52 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       TabOrder = 0
       object lbStartDate: TLabel
         Left = 27
-        Top = 16
-        Width = 67
-        Height = 18
-        Caption = 'Start Date'
+        Top = 19
+        Width = 111
+        Height = 16
+        Caption = 'Start Date/Time:'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -15
+        Font.Height = -13
         Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Style = [fsBold]
         ParentFont = False
       end
       object lbEndDate: TLabel
         Left = 304
         Top = 19
-        Width = 60
-        Height = 18
-        Caption = 'End Date'
+        Width = 100
+        Height = 16
+        Caption = 'End Date/Time:'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -15
+        Font.Height = -13
         Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Style = [fsBold]
         ParentFont = False
       end
       object lbStartHour: TLabel
         Left = 27
         Top = 240
-        Width = 31
-        Height = 18
+        Width = 27
+        Height = 16
         Caption = 'Hour'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -15
+        Font.Height = -13
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
       end
       object lbStartMin: TLabel
-        Left = 151
+        Left = 131
         Top = 240
-        Width = 50
-        Height = 18
+        Width = 44
+        Height = 16
         Caption = 'Minutes'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -15
+        Font.Height = -13
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
@@ -131,36 +131,62 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       object lbEndHour: TLabel
         Left = 304
         Top = 240
-        Width = 31
-        Height = 18
+        Width = 27
+        Height = 16
         Caption = 'Hour'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -15
+        Font.Height = -13
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
       end
       object lbEndMin: TLabel
-        Left = 432
+        Left = 408
         Top = 240
-        Width = 50
-        Height = 18
+        Width = 44
+        Height = 16
         Caption = 'Minutes'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -15
+        Font.Height = -13
         Font.Name = 'Tahoma'
         Font.Style = []
+        ParentFont = False
+      end
+      object lbFrom: TLabel
+        Left = 24
+        Top = 271
+        Width = 36
+        Height = 16
+        Caption = 'From:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object lbTo: TLabel
+        Left = 304
+        Top = 271
+        Width = 20
+        Height = 16
+        Caption = 'To:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
         ParentFont = False
       end
       object mcStartDate: TMonthCalendar
         Left = 27
         Top = 43
-        Width = 246
+        Width = 218
         Height = 183
         AutoSize = True
-        Date = 42200.818103009260000000
+        Date = 42200.913629918990000000
         DoubleBuffered = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -175,10 +201,11 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       object mcEndDate: TMonthCalendar
         Left = 304
         Top = 43
-        Width = 246
+        Width = 218
         Height = 183
         AutoSize = True
-        Date = 42200.818103009260000000
+        CalColors.TitleBackColor = clMaroon
+        Date = 42200.913629918990000000
         DoubleBuffered = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -191,36 +218,36 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
         OnClick = mcEndDateClick
       end
       object cbStartHour: TComboBox
-        Left = 27
-        Top = 264
-        Width = 122
+        Left = 65
+        Top = 239
+        Width = 60
         Height = 21
         Style = csDropDownList
         TabOrder = 2
         OnChange = cbStartHourChange
       end
       object cbStartMin: TComboBox
-        Left = 151
-        Top = 264
-        Width = 122
+        Left = 188
+        Top = 239
+        Width = 60
         Height = 21
         Style = csDropDownList
         TabOrder = 3
         OnChange = cbStartMinChange
       end
       object cbEndHour: TComboBox
-        Left = 304
-        Top = 264
-        Width = 122
+        Left = 342
+        Top = 239
+        Width = 60
         Height = 21
         Style = csDropDownList
         TabOrder = 4
         OnChange = cbEndHourChange
       end
       object cbEndMin: TComboBox
-        Left = 432
-        Top = 264
-        Width = 122
+        Left = 465
+        Top = 239
+        Width = 60
         Height = 21
         Style = csDropDownList
         TabOrder = 5
@@ -235,7 +262,7 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
       Font.Height = -19
-      Font.Name = 'MS Sans Serif'
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -262,7 +289,7 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
       Font.Height = -19
-      Font.Name = 'MS Sans Serif'
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -291,7 +318,7 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
       Font.Height = -19
-      Font.Name = 'MS Sans Serif'
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
       ParentColor = True
@@ -310,7 +337,7 @@ object frmMallExportRegenerateReport: TfrmMallExportRegenerateReport
       Font.Charset = ANSI_CHARSET
       Font.Color = clWhite
       Font.Height = -19
-      Font.Name = 'MS Sans Serif'
+      Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
       ParentColor = True

@@ -3191,6 +3191,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                 "Cash Variance GLCode."
                 "Default is 6-3400",
                 vmg3rdPartyInterface, "6-3400" );
+        SetVarStr(DBTransaction, vmReportExportPath, "Report Export Path",
+		            "Report Export Path Where Report Will be Exported",
+		            vmgPOS, "");
 	}
 	catch(Exception &E)
 	{
