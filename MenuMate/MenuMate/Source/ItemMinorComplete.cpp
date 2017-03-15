@@ -1445,7 +1445,7 @@ void TItemMinorComplete::SplitOrder(int WaysToSplit)
 	// The Price is the each Price so you no longer need to Split it down just change the QTY.
 	// FPrice.Value = RoundToNearest(FPrice.Value / WaysToSplit, MIN_CURRENCY_VALUE, TGlobalSettings::Instance().MidPointRoundsDown);
 	Qty = Qty / WaysToSplit;
-	Cost = RoundToNearest(Cost / WaysToSplit, MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
+	//Cost = RoundToNearest(Cost / WaysToSplit, MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
 	Redeemed = Redeemed / WaysToSplit;
 
 	for (std::vector<TDiscount>::iterator ptrDiscounts = Discounts.begin();
@@ -1480,7 +1480,7 @@ void TItemMinorComplete::SplitOrder(double quantityToSplit)
 		TItemCompleteSub *SubOrderImage = SubOrders->SubOrderGet(i);
 		SubOrderImage->SplitOrder(quantityToSplit);
 	}
-    Cost = RoundToNearest(Cost * quantityToSplit/ Qty, MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
+    //Cost = RoundToNearest(Cost * quantityToSplit/ Qty, MIN_CURRENCY_VALUE,TGlobalSettings::Instance().MidPointRoundsDown);
 	Redeemed = Redeemed * quantityToSplit / Qty;
     Qty = quantityToSplit;
 }
