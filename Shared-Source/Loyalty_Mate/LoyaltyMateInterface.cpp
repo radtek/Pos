@@ -917,13 +917,15 @@ void TLoyaltyMateInterface::CreateVoucherPaymentType(Database::TDBTransaction &D
     try
     {
         int PaymentKey = 0;
+        UnicodeString glCode = "";
         TIBSQL *IBInternalQuery = DBTransaction.Query( DBTransaction.AddQuery() );
-        IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE PAYMENT_NAME = :PAYMENT_NAME";
+        IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY,GL_CODE FROM PAYMENTTYPES WHERE PAYMENT_NAME = :PAYMENT_NAME";
         IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Voucher";
         IBInternalQuery->ExecQuery();
         if(!IBInternalQuery->Eof)
         {
           PaymentKey = IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger ;
+          glCode = IBInternalQuery->FieldByName("GL_CODE")->AsString ;
         }
         TPayment NewPayment;
         NewPayment.Name = "Voucher";
@@ -934,6 +936,7 @@ void TLoyaltyMateInterface::CreateVoucherPaymentType(Database::TDBTransaction &D
         NewPayment.Colour = clTeal;
         NewPayment.PaymentThirdPartyID = "10007242";
         NewPayment.AutoPopulateBlindBalance = true;
+        NewPayment.GLCode = glCode;
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentSave(DBTransaction, PaymentKey, NewPayment);
     }
     catch(Exception & E)
@@ -947,13 +950,15 @@ void TLoyaltyMateInterface::CreateGiftVoucherPaymentType(Database::TDBTransactio
     try
     {
         int PaymentKey = 0;
+        UnicodeString glCode = "";
         TIBSQL *IBInternalQuery = DBTransaction.Query( DBTransaction.AddQuery() );
-        IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE PAYMENT_NAME = :PAYMENT_NAME";
+        IBInternalQuery->SQL->Text =  "SELECT PAYMENT_KEY,GL_CODE FROM PAYMENTTYPES WHERE PAYMENT_NAME = :PAYMENT_NAME";
         IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Gift Card";
         IBInternalQuery->ExecQuery();
         if(!IBInternalQuery->Eof)
         {
           PaymentKey = IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger ;
+          glCode = IBInternalQuery->FieldByName("GL_CODE")->AsString ;
         }
         TPayment NewPayment;
         NewPayment.Name = "Gift Card";
@@ -964,6 +969,7 @@ void TLoyaltyMateInterface::CreateGiftVoucherPaymentType(Database::TDBTransactio
         NewPayment.Colour = clTeal;
         NewPayment.PaymentThirdPartyID = "10007242";
         NewPayment.AutoPopulateBlindBalance = true;
+        NewPayment.GLCode = glCode;
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentSave(DBTransaction, PaymentKey, NewPayment);
     }
     catch(Exception & E)
