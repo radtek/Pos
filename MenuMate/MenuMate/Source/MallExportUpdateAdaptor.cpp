@@ -6,7 +6,6 @@
 #include "MallExportUpdateAdaptor.h"
 #include "GlobalSettings.h"
 #include "ManagerPatron.h"
-#include "MMMessageBox.h"
 
 //---------------------------------------------------------------------------
 
@@ -617,17 +616,17 @@ Currency TMallExportUpdateAdaptor::extractTotalGrossSales()
 
             if( isRefundedOrder( order ) )
             {
-                MessageBox(order->BillCalcResult.FinalPrice + " "  order->BillCalcResult.TotalDiscount,"Refund",, MB_OK);
                 grossPrice += fabs(order->BillCalcResult.FinalPrice);
-
             }
             else if( order->OrderType == CanceledOrder )
             {
                 grossPrice += fabs(order->CancelledBillCalcResult.GrossPrice);
             }
 
-            grossPrice += fabs(order->BillCalcResult.TotalDiscount);
-            MessageBox(order->BillCalcResult.TotalDiscount,"discount", MB_OK);
+            if(order->BillCalcResult.FinalPrice > 0)
+            {
+               grossPrice += fabs(order->BillCalcResult.TotalDiscount);
+            }
         }
         else if(TGlobalSettings::Instance().MallIndex == POWERPLANTMALL)
         {

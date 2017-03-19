@@ -123,3 +123,12 @@ C:\Work\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\
 C:\Work\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\GenerateResource.write.1.tlog
 C:\Work\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.exe
 C:\Work\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.pdb
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\MenumateServices Config.exe
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\MenumateServices Config.pdb
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices.Config.MainForm.resources
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices_Config.Properties.Resources.resources
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.exe
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\MenumateServices Config\obj\x86\Debug\MenumateServices Config.pdb

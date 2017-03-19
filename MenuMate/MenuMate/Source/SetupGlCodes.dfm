@@ -234,6 +234,25 @@ object frmSetupGlCodes: TfrmSetupGlCodes
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnCashWidthwralMouseClick
     end
+    object btnCashVariance: TTouchBtn
+      Left = 359
+      Top = 390
+      Width = 300
+      Height = 60
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindow
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Cash Variance'
+      ButtonColor = clNavy
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnCashVarianceMouseClick
+    end
   end
   object Panel2: TPanel
     Left = 690

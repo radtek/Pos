@@ -20,30 +20,36 @@ XCurrentDateDetailsReportSection::~XCurrentDateDetailsReportSection()
 
 void XCurrentDateDetailsReportSection::GetOutput(TPrintout* printout)
 {
-    IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
-
-    if (reportSectionDisplayStrategy)
-	{
-		//Call the strategy to build the section..
-		reportSectionDisplayStrategy->BuildSection(printout);
-	}
-    if(!TGlobalSettings::Instance().ShowSessionDateInZed)
+    try
     {
-        AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
-        printout->PrintFormat->Line->Columns[0]->Text =deviceName ;
-        printout->PrintFormat->AddLine();
-        const TMMContactInfo &staff_member = TfrmAnalysis::GetLastAuthenticatedUser();
-        printout->PrintFormat->Line->Columns[0]->Text =staff_member.Name;
-        printout->PrintFormat->AddLine();
-        if(!IsConsolidatedZed)
+        IReportSectionDisplayStrategy* reportSectionDisplayStrategy = GetReportSectionStrategy();
+
+        if (reportSectionDisplayStrategy)
         {
-            DataCalculationUtilities* dataCalculationUtilities = new DataCalculationUtilities;
-            int value = dataCalculationUtilities->GetZedNumber(*_dbTransaction);
-            value += 1;
-            printout->PrintFormat->Line->Columns[0]->Text = "#" + IntToStr(value);
+            //Call the strategy to build the section..
+            reportSectionDisplayStrategy->BuildSection(printout);
+        }
+        if(!TGlobalSettings::Instance().ShowSessionDateInZed)
+        {
+            AnsiString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+            printout->PrintFormat->Line->Columns[0]->Text =deviceName ;
             printout->PrintFormat->AddLine();
+            const TMMContactInfo &staff_member = TfrmAnalysis::GetLastAuthenticatedUser();
+            printout->PrintFormat->Line->Columns[0]->Text =staff_member.Name;
+            printout->PrintFormat->AddLine();
+            if(!IsConsolidatedZed)
+            {
+                DataCalculationUtilities* dataCalculationUtilities = new DataCalculationUtilities;
+                int value = dataCalculationUtilities->GetZedNumber(*_dbTransaction);
+                value += 1;
+                printout->PrintFormat->Line->Columns[0]->Text = "#" + IntToStr(value);
+                printout->PrintFormat->AddLine();
+            }
         }
     }
-
-        
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
 }
