@@ -135,7 +135,7 @@ bool TXeroInvoiceBuilder::CreateXeroInvoice( TPaymentTransaction& inPaymentTrans
     }
     // same Items with similar properties should show in one node of XML
     // with quantity as total
-    MakeVectorForItems(FXeroInvoice,inPaymentTransaction);
+    CompressItemForInvoice(FXeroInvoice,inPaymentTransaction);
 
 	return FXeroInvoice->InvoiceItemCount > 0;
 }
@@ -275,7 +275,7 @@ void TXeroInvoiceBuilder::AddPaymentToXeroInvoice( TXeroInvoice* inXeroInvoice, 
 
 }
 // All items and sides are to be stored in vector
-void TXeroInvoiceBuilder::MakeVectorForItems(TXeroInvoice *FXeroInvoice,TPaymentTransaction& inPaymentTransaction)
+void TXeroInvoiceBuilder::CompressItemForInvoice(TXeroInvoice *FXeroInvoice,TPaymentTransaction& inPaymentTransaction)
 {
     std::vector<NodeItem> nodeItems;
     for( int i = 0; i < inPaymentTransaction.Orders->Count; i++ )
@@ -323,7 +323,7 @@ void TXeroInvoiceBuilder::MakeVectorForItems(TXeroInvoice *FXeroInvoice,TPayment
     }
 
     //Add Item To XML
-   AddItemToXML(FXeroInvoice , nodeItems) ;
+   AddItemToInvoiceXML(FXeroInvoice , nodeItems) ;
 }
 
 void TXeroInvoiceBuilder::CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDetail)
@@ -420,7 +420,7 @@ void TXeroInvoiceBuilder::AddItemToCollection(NodeItem xeroNodeItem, std::vector
     }
 }
 //----------------------------------------------------------------------------------------------------------
-void TXeroInvoiceBuilder::AddItemToXML(TXeroInvoice *FXeroInvoice, std::vector<NodeItem> nodeItems)
+void TXeroInvoiceBuilder::AddItemToInvoiceXML(TXeroInvoice *FXeroInvoice, std::vector<NodeItem> nodeItems)
 {
     for(std::vector<NodeItem>::iterator it = nodeItems.begin() ; it != nodeItems.end() ; ++it)
     {

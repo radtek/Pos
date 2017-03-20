@@ -89,12 +89,12 @@ class TXeroInvoiceBuilder
 		AnsiString CalcAsString(AnsiString inPrice, AnsiString inQty, AnsiString &inTax );
 		double GetTotalAmountToXero( TPayment* inXeroPayment );
 		double GetTotalAmount( TPaymentTransaction& inPaymentTransaction );
-        void MakeVectorForItems(TXeroInvoice *FXeroInvoice, TPaymentTransaction& inPaymentTransaction);
+        void CompressItemForInvoice(TXeroInvoice *FXeroInvoice, TPaymentTransaction& inPaymentTransaction);
         void AddPaymentToXeroInvoice( TXeroInvoice* inXeroInvoice, TXeroPayTypeDetail& PayTypeDetail );
 
     private:
         void AddItemToCollection(NodeItem xeroNodeItem, std::vector<NodeItem> &nodeItems);
-        void AddItemToXML(TXeroInvoice *FXeroInvoice, std::vector<NodeItem> nodeItems);
+        void AddItemToInvoiceXML(TXeroInvoice *FXeroInvoice, std::vector<NodeItem> nodeItems);
 };
 
 #endif
