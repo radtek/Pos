@@ -84,6 +84,9 @@ class TBlindBalanceController
 		void LoadBlindBalances(void);
 		void UpdateBlindBalances(AnsiString BagID);
         bool IsMaster;
+        Currency CalculateCashWithdrawl(TIBSQL *ibInternalQuery, UnicodeString deviceName);
+        std::map< AnsiString, Currency> LoadAutoBlindBalance(bool IsMaster);
+
    public :
 		TBlindBalances BlindBalances;
 		static TBlindBalances MasterBalance;

@@ -209,11 +209,21 @@ void TBlindBalanceController::PopulateListManager()
         std::vector<TPayment> Payments;
 		TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction,Payments);
 
+         ///Get Totalpayment done by every payment
+         std::map< AnsiString, Currency> payTypeTotal = LoadAutoBlindBalance(IsMaster);
+
 		  for (std::vector<TPayment>::const_iterator ptr = Payments.begin(); ptr != Payments.end(); std::advance(ptr,1))
 		  {
 			if(BlindBalances.find(ptr->Name) == BlindBalances.end())
 			{
                 Currency amount = 0;
+
+                ///Get Auto Populate Blind BAlance Value If AutoPopulate Setting is on
+                if(payTypeTotal.find(ptr->Name) != payTypeTotal.end() && ptr->AutoPopulateBlindBalance)
+                {
+                    amount = payTypeTotal.find(ptr->Name)->second;
+                }
+
                 if(TGlobalSettings::Instance().CashDenominationEntry && ptr->Name.UpperCase() == "CASH")
                 {
                   TCashDenominations cashDenominations = TCashDenominationControllerInterface::Instance()->GetCashDenominations(IsMaster);
@@ -493,5 +503,84 @@ void TBlindBalance::operator = (TBlindBalance rhs)
 	SystemBalance = rhs.SystemBalance;
 //	return t;
 }
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+std::map< AnsiString, Currency> TBlindBalanceController::LoadAutoBlindBalance(bool IsMaster)
+{
+    std::map< AnsiString, Currency> payTypeTotal;
+    UnicodeString deviceName = TDeviceRealTerminal::Instance().ID.Name;
+    try
+    {
+        TIBSQL *ibInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *cashWithdrawalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text = "SELECT SUM(dabp.SUBTOTAL) TOTAL, dabp.PAY_TYPE "
+                                "       FROM DAYARCBILLPAY dabp "
+                                "            LEFT JOIN DAYARCBILL dab on "
+                                "                 dabp.arcbill_key = dab.arcbill_key ";
+
+        if (!TGlobalSettings::Instance().EnableDepositBagNum || IsMaster)
+        {
+            ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text +
+            "             WHERE dab.TERMINAL_NAME = :TERMINAL_NAME ";
+        }
+        ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + "       GROUP BY dabp.pay_type;";
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum || IsMaster)
+            ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+
+        ibInternalQuery->ExecQuery();
+
+        for(;!ibInternalQuery->Eof; ibInternalQuery->Next())
+        {
+             Currency payTotal = 0.00;
+             payTotal = ibInternalQuery->FieldByName("TOTAL")->AsCurrency;
+
+             if(ibInternalQuery->FieldByName("PAY_TYPE")->AsString == "Cash")
+             {
+                payTotal += CalculateCashWithdrawl(cashWithdrawalQuery, deviceName);
+             }
+
+             payTypeTotal.insert ( std::pair<AnsiString,Currency>(ibInternalQuery->FieldByName("PAY_TYPE")->AsString, payTotal) );
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return payTypeTotal;
+}
+//---------------------------------------------------------------------------------------------------------
+Currency TBlindBalanceController::CalculateCashWithdrawl(TIBSQL *ibInternalQuery, UnicodeString deviceName)
+{
+    Currency cashWithdrawl = 0.00;
+    try
+    {
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =  "SELECT Refloat_skim.Transaction_Type, refloat_Skim.amount, refloat_skim.IS_FLOAT_WITHDRAWN_FROM_CASH FROM refloat_skim "
+                                        "Left join zeds on refloat_skim.z_key = zeds.z_key "
+                                        "WHERE zeds.TERMINAL_NAME = :TERMINAL_NAME AND zeds.TIME_STAMP IS NULL "
+                                        "and (refloat_skim.transaction_type = :transaction_type AND refloat_skim.IS_FLOAT_WITHDRAWN_FROM_CASH = :IS_FLOAT_WITHDRAWN_FROM_CASH)";
+
+        ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = deviceName;
+        ibInternalQuery->ParamByName("transaction_type")->AsString = "Withdrawal";
+        ibInternalQuery->ParamByName("IS_FLOAT_WITHDRAWN_FROM_CASH")->AsString = "T";
+        ibInternalQuery->ExecQuery();
+
+        for (; !ibInternalQuery->Eof; ibInternalQuery->Next())
+        {
+            cashWithdrawl += ibInternalQuery->FieldByName("amount")->AsCurrency;
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+    }
+    return cashWithdrawl;
+}
+
+
+
 
 

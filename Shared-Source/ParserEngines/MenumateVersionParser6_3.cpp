@@ -51,6 +51,11 @@ void TApplyParser::upgrade6_37Tables()
 {
 	update6_37Tables();
 }
+
+void TApplyParser::upgrade6_38Tables()
+{
+	update6_38Tables();
+}
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -1838,8 +1843,46 @@ void TApplyParser::UpdateContacts6_37( TDBControl* const inDBControl )
         transaction.Rollback();
     }
 }
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::update6_38Tables()
+{
+     AlterTable_PaymentTypes(_dbControl);
+     Updatetable_PaymentTypes(_dbControl);
+}
+//----------------------------------------------------------------------------------------------------------------
+void TApplyParser::AlterTable_PaymentTypes(TDBControl* const inDBControl)
+{
+     if ( !fieldExists( "PAYMENTTYPES ", "IS_AUTO_POPULATE_BLIND_BALANCE ", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE PAYMENTTYPES "
+        "ADD IS_AUTO_POPULATE_BLIND_BALANCE T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+    }
+}
+//--------------------------------------------------------------------------------------------------------------------------
+void TApplyParser::Updatetable_PaymentTypes(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        if ( fieldExists( "PAYMENTTYPES ", "IS_AUTO_POPULATE_BLIND_BALANCE ", _dbControl ) )
+        {
+            TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
 
+            UpdateQuery->SQL->Text =  "UPDATE PAYMENTTYPES SET IS_AUTO_POPULATE_BLIND_BALANCE = 'T' "
+                                        "WHERE (PAYMENTTYPES.PAYMENT_NAME = 'Gift Card' OR PAYMENTTYPES.PAYMENT_NAME = 'Voucher') ";
+            UpdateQuery->ExecQuery();
+        }
 
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
 }
 
 

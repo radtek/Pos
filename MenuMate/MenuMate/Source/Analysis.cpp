@@ -4107,9 +4107,9 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
                    AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Float Deposit", RoundTo((floatAmount),-2),0.0, jobCode, "ZeroTax");
                AddMYOBInvoiceItem(MYOBInvoiceDetail,TGlobalSettings::Instance().FloatGLCode,"Float Adjustment",-1 * RoundTo((floatAmount),-2),0.0, jobCode, "ZeroTax");
            }
+           double cashWithdrawal = 0;
            if(TGlobalSettings::Instance().FloatWithdrawFromCash)
            {
-              double cashWithdrawal = 0;
               cashWithdrawal = GetCashWithdrawal(DBTransaction);
               UnicodeString glCodecashWithdrawal = "";
 
@@ -4147,14 +4147,14 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
                  if(!TGlobalSettings::Instance().EnableBlindBalances)
                  {
                     amountValue = RoundTo(IBInternalQuery->FieldByName("Amount")->AsFloat, -2);
+                    payTotal += RoundTo(amountValue, -2);
                  }
                  else
                  {
-
-                    cashVariance = IBInternalQuery->FieldByName("Amount")->AsFloat - cashBlindBalance;
-                    amountValue = RoundTo(cashBlindBalance, -2);
+                    cashVariance = IBInternalQuery->FieldByName("Amount")->AsFloat - cashBlindBalance + cashWithdrawal;
+                    amountValue = RoundTo(cashBlindBalance , -2);
+                    payTotal += RoundTo(amountValue - cashWithdrawal, -2);
                  }
-                 payTotal += RoundTo(amountValue, -2);
               }
 
               if(!addFloatAdjustmentToPayments && addEachPaymentNode)
