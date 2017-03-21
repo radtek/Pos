@@ -142,7 +142,7 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	tbPHSInterface->Enabled = PhoenixHM->Registered;
     if(tbPHSInterface->Enabled)
     tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
-	if(PhoenixHM->Enabled)
+	if(/*PhoenixHM->Enabled ||*/ TGlobalSettings::Instance().PMSType != 0)
 	{
 		tbPHSInterface->Caption = "P.M.S Interface \r[Enabled]";
 		tbPHSInterface->ButtonColor = clGreen;
@@ -640,29 +640,184 @@ void __fastcall TfrmMaintain::tbtnLocationsClick(TObject *Sender)
 		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 	}
 }
+
+//---------------------------------------------------------------------------
+void TfrmMaintain::SelectPMSType()
+{
+    std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+    TVerticalSelection Item;
+    Item.Title = "Cancel";
+    Item.Properties["Color"] = IntToStr(clMaroon);
+    Item.CloseSelection = true;
+    SelectionForm->Items.push_back(Item);
+
+    TVerticalSelection Item1;
+    Item1.Title = "SiHot";
+    Item1.Properties["Action"] = IntToStr(1);
+    Item1.Properties["Color"] = IntToStr(clNavy);
+    Item1.CloseSelection = true;
+    SelectionForm->Items.push_back(Item1);
+
+
+    TVerticalSelection Item2;
+    Item2.Title = "Others";
+    Item2.Properties["Action"] = IntToStr(2);
+    Item2.Properties["Color"] = IntToStr(clNavy);
+    Item2.CloseSelection = true;
+    Item2.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
+    SelectionForm->Items.push_back(Item2);
+
+    SelectionForm->ShowModal();
+    TVerticalSelection SelectedItem;
+    if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+    {
+        int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+        switch(Action)
+        {
+			case 1 :
+            {
+               SetUpSiHot();
+               break;
+            }
+			case 2 :
+			{
+               SetUpPhoenix();
+               break;
+            }
+        }
+    }
+}
+//---------------------------------------------------------------------------
+bool TfrmMaintain::SetUpSiHot()
+{
+    // Phoenix System should be disabled before enabling SiHot
+	std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+    bool keepFormAlive = false;
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+	TVerticalSelection Item;
+	Item.Title = "Cancel";
+	Item.Properties["Color"] = "0x000098F5";
+	Item.Properties["FontColor"] = IntToStr(clWhite);
+	Item.CloseSelection = true;
+	SelectionForm->Items.push_back(Item);
+
+	TVerticalSelection Item1;
+	Item1.Title = UnicodeString("Enable/Disable \r") + UnicodeString(((TGlobalSettings::Instance().PMSType == 2) ? "Enabled" : "Disabled"));
+	Item1.Properties["Action"] = IntToStr(1);
+	if( TGlobalSettings::Instance().PMSType == 2)
+	{
+		Item1.Properties["Color"] = IntToStr(clGreen);
+	}
+	else
+	{
+		Item1.Properties["Color"] = IntToStr(clRed);
+	}
+	Item1.CloseSelection = true;
+	SelectionForm->Items.push_back(Item1);
+    SelectionForm->ShowModal();
+	TVerticalSelection SelectedItem;
+	if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+	{
+		int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+		switch(Action)
+		{
+		  case 1 :
+			{
+				std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+				TVerticalSelection Item;
+				Item.Title = "Cancel";
+				Item.Properties["Color"] = "0x000098F5";
+				Item.Properties["FontColor"] = IntToStr(clWhite);;
+				Item.CloseSelection = true;
+				SelectionForm1->Items.push_back(Item);
+
+				TVerticalSelection Item1;
+				Item1.Title = "Enable";
+				Item1.Properties["Action"] = IntToStr(1);
+				Item1.Properties["Color"] = IntToStr(clGreen);
+				Item1.CloseSelection = true;
+				SelectionForm1->Items.push_back(Item1);
+
+				TVerticalSelection Item2;
+				Item2.Title = "Disable";
+				Item2.Properties["Action"] = IntToStr(2);
+				Item2.Properties["Color"] = IntToStr(clRed);
+				Item2.CloseSelection = true;
+				SelectionForm1->Items.push_back(Item2);
+
+				SelectionForm1->ShowModal();
+				TVerticalSelection SelectedItem1;
+				if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+				{
+					int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+					switch(Action)
+					{
+					case 1 :
+                      {
+                        if(TGlobalSettings::Instance().PMSType != SiHot)
+                            MessageBox("Other PMS type will get Disabled now.", "Warning", MB_OK + MB_ICONINFORMATION);
+						TGlobalSettings::Instance().PMSType = SiHot;
+                        TManagerVariable::Instance().SetDeviceInt(dbTransaction,vmPMSType,TGlobalSettings::Instance().PMSType);
+                      }
+					  break;
+					case 2 :
+                      {
+                        TGlobalSettings::Instance().PMSType = 0;
+						TManagerVariable::Instance().SetDeviceInt(dbTransaction,vmPMSType,TGlobalSettings::Instance().PMSType);
+                      }
+					  break;
+					}
+				}
+			}  break;
+		}
+	}
+	else
+	  keepFormAlive = false;
+    dbTransaction.Commit();
+	return keepFormAlive;
+}
+//---------------------------------------------------------------------------
+bool TfrmMaintain::SetUpPhoenix()
+{
+    // todo:- Check If SiHot is enabled or not. Should be disabled to enable Phoenix
+    bool keepFormAlive = false;
+    std::auto_ptr<TfrmPHSConfiguration>(frmPHSConfiguration)(TfrmPHSConfiguration::Create<TfrmPHSConfiguration>(this));
+    frmPHSConfiguration->ShowModal();
+    if(PhoenixHM->Enabled)
+    {
+        tbPHSInterface->Caption = "P.M.S Interface \r[Enabled]";
+        tbPHSInterface->Color = clGreen;
+    }
+    else
+    {
+        tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
+        tbPHSInterface->Color = clMaroon;
+    }
+    return keepFormAlive;
+}
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::tbPHSInterfaceClick(TObject *Sender)
 {
-	TMMContactInfo TempUserInfo;
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-	TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
-	DBTransaction.Commit();
+    TLoginSuccess Result = VerifyUserAuthorization();
 	if (Result == lsAccepted)
 	{
-		std::auto_ptr<TfrmPHSConfiguration>(frmPHSConfiguration)(TfrmPHSConfiguration::Create<TfrmPHSConfiguration>(this));
-		frmPHSConfiguration->ShowModal();
-		if(PhoenixHM->Enabled)
-		{
-			tbPHSInterface->Caption = "P.M.S Interface \r[Enabled]";
-			tbPHSInterface->Color = clGreen;
-		}
-		else
-		{
-			tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
-			tbPHSInterface->Color = clMaroon;
-		}
+
+        SelectPMSType();
+//		std::auto_ptr<TfrmPHSConfiguration>(frmPHSConfiguration)(TfrmPHSConfiguration::Create<TfrmPHSConfiguration>(this));
+//		frmPHSConfiguration->ShowModal();
+//		if(PhoenixHM->Enabled)
+//		{
+//			tbPHSInterface->Caption = "P.M.S Interface \r[Enabled]";
+//			tbPHSInterface->Color = clGreen;
+//		}
+//		else
+//		{
+//			tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
+//			tbPHSInterface->Color = clMaroon;
+//		}
 	}
 	else if (Result == lsDenied)
 	{

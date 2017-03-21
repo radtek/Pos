@@ -109,6 +109,7 @@ void TfrmPHSConfiguration::UpdateGUI()
 
 void __fastcall TfrmPHSConfiguration::btnOkClick(TObject *Sender)
 {
+    MessageBox("Call to Intialize.", "Info", MB_OK);
 	PhoenixHM->Initialise();
 	MessageBox("Dont forget to create a PMS payment type.", "Info", MB_OK);
 	Close();

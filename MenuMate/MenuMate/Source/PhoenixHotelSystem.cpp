@@ -22,11 +22,11 @@
 
 TPhoenixHM *PhoenixHM;
 
-TPhoenixHM::TPhoenixHM(Database::TDBControl &inDBControl) : DBControl(inDBControl), fPhoenixNet(new TPhoenixNetTCPManager)
+TPhoenixHM::TPhoenixHM(Database::TDBControl &inDBControl) :TManagerPMS(inDBControl), DBControl(inDBControl), fPhoenixNet(new TPhoenixNetTCPManager)
 {
-	FTCPPort = 4444;
-	FTCPIPAddress = "";
-	FPOSID = 0;
+	TCPPort = 4444;
+	TCPIPAddress = "";
+	POSID = 0;
 	DefaultPaymentCategory = "";
 	DefaultItemCategory = "";
 	PointsCategory = "";
@@ -36,186 +36,189 @@ TPhoenixHM::TPhoenixHM(Database::TDBControl &inDBControl) : DBControl(inDBContro
 	Enabled = false;
 	Registered = false;
 }
+TPhoenixHM::~TPhoenixHM()
+{}
 
-void __fastcall TPhoenixHM::SetTCPPort(int value)
-{
-	if(FTCPPort != value)
-	{
-		FTCPPort = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmPMSTCPPort,FTCPPort);
-		DBTransaction.Commit();
-	}
-}
-int __fastcall TPhoenixHM::GetTCPPort()
-{
-	return FTCPPort;
-}
-
-void __fastcall TPhoenixHM::SetTCPIPAddress(AnsiString value)
-{
-	if(FTCPIPAddress != value) {
-		FTCPIPAddress = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSIPAddress,FTCPIPAddress);
-		DBTransaction.Commit();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetTCPIPAddress()
-{
-	return FTCPIPAddress;
-}
-
-void __fastcall TPhoenixHM::SetPOSID(int value)
-{
-	if(FPOSID != value) {
-		FPOSID = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmPMSPOSID,FPOSID);
-		DBTransaction.Commit();
-	}
-}
-int __fastcall TPhoenixHM::GetPOSID()
-{
-	return FPOSID;
-}
-
-void __fastcall TPhoenixHM::SetDefaultPaymentCategory(AnsiString value)
-{
-	if(FDefaultPaymentCategory != value)
-	{
-		if(TestCode(value))
-		{
-			FDefaultPaymentCategory = value;
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSPaymentCategory,FDefaultPaymentCategory);
-			DBTransaction.Commit();
-		}
-      ClearCodesTestedOk();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetDefaultPaymentCategory()
-{
-	return FDefaultPaymentCategory;
-}
-
-void __fastcall TPhoenixHM::SetDefaultItemCategory(AnsiString value)
-{
-	if(FDefaultItemCategory != value)
-	{
-		if(TestCode(value))
-		{
-			FDefaultItemCategory = value;
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSItemCategory,FDefaultItemCategory);
-			DBTransaction.Commit();
-		}
-      ClearCodesTestedOk();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetDefaultItemCategory()
-{
-	return FDefaultItemCategory;
-}
-
-void __fastcall TPhoenixHM::SetCreditCategory(AnsiString value)
-{
-	if(FCreditCategory != value)
-	{
-		if(TestCode(value))
-		{
-			FCreditCategory = value;
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSCreditCategory,FCreditCategory);
-			DBTransaction.Commit();
-		}
-      ClearCodesTestedOk();
-	}
-}
-
-void __fastcall TPhoenixHM::SetRoundingCategory(AnsiString value)
-{
-	if(FRoundingCategory != value) {
-		FRoundingCategory = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSDefaultRoundingAccount,FRoundingCategory);
-		DBTransaction.Commit();
-	}
-}
-
-AnsiString __fastcall TPhoenixHM::GetRoundingCategory()
-{
-	return FRoundingCategory;
-}
-
-AnsiString __fastcall TPhoenixHM::GetCreditCategory()
-{
-	return FCreditCategory;
-}
-
-void __fastcall TPhoenixHM::SetPointsCategory(AnsiString value)
-{
-	if(FPointsCategory != value)
-	{
-		if(TestCode(value))
-		{
-			FPointsCategory = value;
-			Database::TDBTransaction DBTransaction(DBControl);
-			DBTransaction.StartTransaction();
-			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSPointsCategory,FPointsCategory);
-			DBTransaction.Commit();
-		}
-      ClearCodesTestedOk();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetPointsCategory()
-{
-	return FPointsCategory;
-}
-
-void __fastcall TPhoenixHM::SetDefaultTransactionAccount(AnsiString value)
-{
-	if(FDefaultTransactionAccount != value) {
-		FDefaultTransactionAccount = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSDefaultAccount,FDefaultTransactionAccount);
-		DBTransaction.Commit();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetDefaultTransactionAccount()
-{
-	return FDefaultTransactionAccount;
-}
-
-void __fastcall TPhoenixHM::SetDefaultSurchargeAccount(AnsiString value)
-{
-	if(FDefaultSurchargeAccount != value) {
-		FDefaultSurchargeAccount = value;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSDefaultSurchargeAccount,FDefaultSurchargeAccount);
-		DBTransaction.Commit();
-	}
-}
-AnsiString __fastcall TPhoenixHM::GetDefaultSurchargeAccount()
-{
-	return FDefaultSurchargeAccount;
-}
+//void __fastcall TPhoenixHM::SetTCPPort(int value)
+//{
+//	if(FTCPPort != value)
+//	{
+//		FTCPPort = value;
+//		Database::TDBTransaction DBTransaction(DBControl);
+//		DBTransaction.StartTransaction();
+//		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmPMSTCPPort,FTCPPort);
+//		DBTransaction.Commit();
+//	}
+//}
+//int __fastcall TPhoenixHM::GetTCPPort()
+//{
+//	return FTCPPort;
+//}
+//
+//void __fastcall TPhoenixHM::SetTCPIPAddress(AnsiString value)
+//{
+//		MessageBox("TCP.\r","FTCPPort Inside Set", MB_OK + MB_ICONERROR);
+//	if(FTCPIPAddress != value) {
+//		FTCPIPAddress = value;
+//		Database::TDBTransaction DBTransaction(DBControl);
+//		DBTransaction.StartTransaction();
+//		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSIPAddress,FTCPIPAddress);
+//		DBTransaction.Commit();
+//	}
+//}
+//AnsiString __fastcall TPhoenixHM::GetTCPIPAddress()
+//{
+//	return FTCPIPAddress;
+//}
+//
+//void __fastcall TPhoenixHM::SetPOSID(int value)
+//{
+//	if(FPOSID != value) {
+//		FPOSID = value;
+//		Database::TDBTransaction DBTransaction(DBControl);
+//		DBTransaction.StartTransaction();
+//		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmPMSPOSID,FPOSID);
+//		DBTransaction.Commit();
+//	}
+//}
+//int __fastcall TPhoenixHM::GetPOSID()
+//{
+//	return FPOSID;
+//}
+//
+//void __fastcall TPhoenixHM::SetDefaultPaymentCategory(AnsiString value)
+//{
+//	if(FDefaultPaymentCategory != value)
+//	{
+//		if(TestCode(value))
+//		{
+//			FDefaultPaymentCategory = value;
+//			Database::TDBTransaction DBTransaction(DBControl);
+//			DBTransaction.StartTransaction();
+//			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSPaymentCategory,FDefaultPaymentCategory);
+//			DBTransaction.Commit();
+//		}
+//      ClearCodesTestedOk();
+//	}
+//}
+//AnsiString __fastcall TPhoenixHM::GetDefaultPaymentCategory()
+//{
+//	return FDefaultPaymentCategory;
+//}
+//
+//void __fastcall TPhoenixHM::SetDefaultItemCategory(AnsiString value)
+//{
+//	if(FDefaultItemCategory != value)
+//	{
+//		if(TestCode(value))
+//		{
+//			FDefaultItemCategory = value;
+//			Database::TDBTransaction DBTransaction(DBControl);
+//			DBTransaction.StartTransaction();
+//			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSItemCategory,FDefaultItemCategory);
+//			DBTransaction.Commit();
+//		}
+//      ClearCodesTestedOk();
+//	}
+//}
+//AnsiString __fastcall TPhoenixHM::GetDefaultItemCategory()
+//{
+//	return FDefaultItemCategory;
+//}
+//
+//void __fastcall TPhoenixHM::SetCreditCategory(AnsiString value)
+//{
+//	if(FCreditCategory != value)
+//	{
+//		if(TestCode(value))
+//		{
+//			FCreditCategory = value;
+//			Database::TDBTransaction DBTransaction(DBControl);
+//			DBTransaction.StartTransaction();
+//			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSCreditCategory,FCreditCategory);
+//			DBTransaction.Commit();
+//		}
+//      ClearCodesTestedOk();
+//	}
+//}
+//
+//void __fastcall TPhoenixHM::SetRoundingCategory(AnsiString value)
+//{
+//	if(FRoundingCategory != value) {
+//		FRoundingCategory = value;
+//		Database::TDBTransaction DBTransaction(DBControl);
+//		DBTransaction.StartTransaction();
+//		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSDefaultRoundingAccount,FRoundingCategory);
+//		DBTransaction.Commit();
+//	}
+//}
+//
+//AnsiString __fastcall TPhoenixHM::GetRoundingCategory()
+//{
+//	return FRoundingCategory;
+//}
+//
+//AnsiString __fastcall TPhoenixHM::GetCreditCategory()
+//{
+//	return FCreditCategory;
+//}
+//
+//void __fastcall TPhoenixHM::SetPointsCategory(AnsiString value)
+//{
+//	if(FPointsCategory != value)
+//	{
+//		if(TestCode(value))
+//		{
+//			FPointsCategory = value;
+//			Database::TDBTransaction DBTransaction(DBControl);
+//			DBTransaction.StartTransaction();
+//			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSPointsCategory,FPointsCategory);
+//			DBTransaction.Commit();
+//		}
+//      ClearCodesTestedOk();
+//	}
+//}
+//AnsiString __fastcall TPhoenixHM::GetPointsCategory()
+//{
+//	return FPointsCategory;
+//}
+//
+//void __fastcall TPhoenixHM::SetDefaultTransactionAccount(AnsiString value)
+//{
+//	if(FDefaultTransactionAccount != value) {
+//		FDefaultTransactionAccount = value;
+//		Database::TDBTransaction DBTransaction(DBControl);
+//		DBTransaction.StartTransaction();
+//		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSDefaultAccount,FDefaultTransactionAccount);
+//		DBTransaction.Commit();
+//	}
+//}
+//AnsiString __fastcall TPhoenixHM::GetDefaultTransactionAccount()
+//{
+//	return FDefaultTransactionAccount;
+//}
+//
+//void __fastcall TPhoenixHM::SetDefaultSurchargeAccount(AnsiString value)
+//{
+//	if(FDefaultSurchargeAccount != value) {
+//		FDefaultSurchargeAccount = value;
+//		Database::TDBTransaction DBTransaction(DBControl);
+//		DBTransaction.StartTransaction();
+//		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPMSDefaultSurchargeAccount,FDefaultSurchargeAccount);
+//		DBTransaction.Commit();
+//	}
+//}
+//AnsiString __fastcall TPhoenixHM::GetDefaultSurchargeAccount()
+//{
+//	return FDefaultSurchargeAccount;
+//}
 
 bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID)
 {
 	bool RetVal = false;
 
-   AnsiString PMSIPAddress = FTCPIPAddress;
-   int PMSPort = FTCPPort;
+   AnsiString PMSIPAddress = TCPIPAddress;
+   int PMSPort = TCPPort;
 
 	TPhoenixRoomCharge RoomCharge;
 	RoomCharge.AccountNumber = PaymentTransaction.Phoenix.AccountNumber;
@@ -518,7 +521,7 @@ void TPhoenixHM::ChargeRoom(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddre
 {
 	// Select the room number.
 	// Retrive the Room Folders.
-	if(RoomCharge.AccountNumber != "" && FTCPIPAddress != "")
+	if(RoomCharge.AccountNumber != "" && TCPIPAddress != "")
 	{
 		RoomCharge.POSID = POSID;
 		fPhoenixNet->SendAndFetch(RoomCharge,PMSIPAddress,PMSPort);
@@ -533,22 +536,48 @@ void TPhoenixHM::ChargeRoom(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddre
 
 void TPhoenixHM::Initialise()
 {
+//	Database::TDBTransaction DBTransaction(DBControl);
+//	DBTransaction.StartTransaction();
+//		MessageBox("Going to Set TCP.\r","FTCPPort Call", MB_OK + MB_ICONERROR);
+//	FTCPPort = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSTCPPort);
+//	FTCPIPAddress = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSIPAddress);
+//	FPOSID = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSPOSID);
+//
+//	FDefaultPaymentCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPaymentCategory);
+//	FDefaultItemCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSItemCategory);
+//	FCreditCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSCreditCategory);
+//	FPointsCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPointsCategory);
+//	FDefaultTransactionAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultAccount);
+//	FDefaultSurchargeAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultSurchargeAccount);
+//	FRoundingCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultRoundingAccount);
+//
+//	DBTransaction.Commit();
+//	if(Registered && FTCPIPAddress != "")
+//	{
+//		Enabled = true;
+//		Enabled = TestDefaultCodes();
+//	}
+//	else
+//	{
+//		Enabled = false;
+//	}
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
-	FTCPPort = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSTCPPort);
-	FTCPIPAddress = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSIPAddress);
-	FPOSID = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSPOSID);
+		MessageBox("Going to Set TCP.\r","FTCPPort Call", MB_OK + MB_ICONERROR);
+	TCPPort = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSTCPPort);
+	TCPIPAddress = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSIPAddress);
+	POSID = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSPOSID);
 
-	FDefaultPaymentCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPaymentCategory);
-	FDefaultItemCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSItemCategory);
-	FCreditCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSCreditCategory);
-	FPointsCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPointsCategory);
-	FDefaultTransactionAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultAccount);
-	FDefaultSurchargeAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultSurchargeAccount);
-	FRoundingCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultRoundingAccount);
+	DefaultPaymentCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPaymentCategory);
+	DefaultItemCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSItemCategory);
+	CreditCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSCreditCategory);
+	PointsCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSPointsCategory);
+	DefaultTransactionAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultAccount);
+	DefaultSurchargeAccount = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultSurchargeAccount);
+	RoundingCategory = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSDefaultRoundingAccount);
 
 	DBTransaction.Commit();
-	if(Registered && FTCPIPAddress != "")
+	if(Registered && TCPIPAddress != "")
 	{
 		Enabled = true;
 		Enabled = TestDefaultCodes();
@@ -557,6 +586,7 @@ void TPhoenixHM::Initialise()
 	{
 		Enabled = false;
 	}
+
 }
 
 bool TPhoenixHM::TestDefaultCodes()
@@ -598,7 +628,7 @@ bool TPhoenixHM::TestCode(AnsiString CodeToTest)
             RoomCharge.StaffID = 0;
             RoomCharge.Categories[CodeToTest] = 0;
 
-            ChargeRoom(RoomCharge,FTCPIPAddress,FTCPPort);
+            ChargeRoom(RoomCharge,TCPIPAddress,TCPPort);
             if(RoomCharge.Result != eAccepted)
             {
                RetVal = false;

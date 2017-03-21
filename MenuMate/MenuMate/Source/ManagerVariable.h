@@ -210,7 +210,8 @@ enum vmVariables
     vmCSVPath = 9500, vmIsEnabledPeachTree, vmCSVExportIP,
 
      //Panasonic Integration
-    vmIsPanasonicIntegrationEnabled = 9600, vmPanasonicServerIP
+    vmIsPanasonicIntegrationEnabled = 9600, vmPanasonicServerIP ,
+    vmPMSType
 };
 
 // ---------------------------------------------------------------------------

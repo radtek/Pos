@@ -3191,6 +3191,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                 "Cash Variance GLCode."
                 "Default is 6-3400",
                 vmg3rdPartyInterface, "6-3400" );
+		SetVarInt(DBTransaction,vmPMSType, "PMS Type",
+		"PMS Type.\r"
+		"Default is PMS Type none.",
+		vmg3rdPartyInterface, 0);
 	}
 	catch(Exception &E)
 	{

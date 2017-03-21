@@ -392,5 +392,6 @@ TGlobalSettings::TGlobalSettings()
     IsPanasonicIntegrationEnabled = false;
     PanasonicServerIP = "";
     CashVarianceGLCode = "";
+    MembershipType = 0;
 }
 

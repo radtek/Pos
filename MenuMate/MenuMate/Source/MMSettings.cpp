@@ -388,6 +388,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsPanasonicIntegrationEnabled, false);
         TGlobalSettings::Instance().PanasonicServerIP = TManagerVariable::Instance().GetStr(DBTransaction, vmPanasonicServerIP, "");
         TGlobalSettings::Instance().CashVarianceGLCode = TManagerVariable::Instance().GetStr(DBTransaction, vmCashVariance, "6-3400");
+        int DefaultPMSType = Phoenix;
+        TGlobalSettings::Instance().PMSType = TManagerVariable::Instance().GetInt(DBTransaction, vmPMSType, DefaultPMSType);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

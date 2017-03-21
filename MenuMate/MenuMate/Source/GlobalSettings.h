@@ -19,6 +19,10 @@ enum eMembershipType {
 	MembershipTypeExternal , MembershipTypeThor
 };
 
+enum ePMSType{
+    Phoenix = 1,SiHot
+};
+
 enum eSetFontSize {eSeven , eEight, eNine, eTenth, eEleven };
 
 class TGlobalSettings {
@@ -481,6 +485,7 @@ public:
     bool IsPanasonicIntegrationEnabled;
     UnicodeString PanasonicServerIP;
     UnicodeString CashVarianceGLCode;
+    ePMSType PMSType;
 };
 
 #endif
