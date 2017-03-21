@@ -3994,7 +3994,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
           for (; !IBInternalQueryTax->Eof; )
           {
               AnsiString categoryName;
-              AnsiString glCode = IBInternalQueryTax->FieldByName("GL_CODE")->AsString;;
+              AnsiString glCode = IBInternalQueryTax->FieldByName("GL_CODE")->AsString;
               ii = CollectCategoryName.find(glCode);
               if(ii != CollectCategoryName.end())
               {
@@ -4006,6 +4006,13 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
               double discount = 0.0;
               price = RoundTo(IBInternalQueryTax->FieldByName("PRICE")->AsFloat, -2);
               discount = RoundTo(IBInternalQueryTax->FieldByName("DISCOUNT")->AsFloat, -2);
+
+              //Check if category name is null then send "sales" in it.
+              if(categoryName == "" || categoryName == NULL)
+              {
+                categoryName = "Sales";
+              }
+
               if(TGlobalSettings::Instance().ReCalculateTaxPostDiscount)
               {
                   AddMYOBInvoiceItem(MYOBInvoiceDetail,glCode.Trim(),categoryName,price,0.0,jobCode,taxStatus);
@@ -4040,6 +4047,7 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
               {
                  categoryName = ii->second;
               }
+
               AnsiString taxStatus = "ZeroTax";
               double taxRate = 0.0;
               double price = 0.0;
@@ -4047,6 +4055,12 @@ std::vector<TMYOBInvoiceDetail> TfrmAnalysis::CalculateMYOBData(Database::TDBTra
 
               price = RoundTo(IBInternalQueryZeroTax->FieldByName("PRICE")->AsFloat, -2);
               catTotal += price;
+
+              //Check if category name is null then send "sales" in it.
+              if(categoryName == "" || categoryName == NULL)
+              {
+                categoryName = "Sales";
+              }
               AddMYOBInvoiceItem(MYOBInvoiceDetail,glCode.Trim(),categoryName,price,0.0,jobCode,taxStatus);
               IBInternalQueryZeroTax->Next();
           }
