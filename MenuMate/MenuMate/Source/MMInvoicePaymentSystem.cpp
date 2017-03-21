@@ -709,7 +709,8 @@ void TMMInvoicePaymentSystem::_distributePaymentOnTransactionSet( TPayment* paym
             TPayment* subPayment = new TPayment( &(*it) );
             *subPayment = *payment;   // using the assignment operator overload on TPayment class
 			subPayment->Reset();
-			subPayment->Properties = payment->Properties;
+			//subPayment->Properties = payment->Properties;
+            subPayment->AssignPaymentAttribute(*payment);
 			subPayment->SetPay( payedAmount );
 
 			// if the original payment had a cashout, add that as well, so it will adjust the change

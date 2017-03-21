@@ -157,10 +157,8 @@ public:		// User declarations
     int PaymentPos;
     int PaymentGroup;
     AnsiString PaymentThirdPartyID;
-    //AnsiString FixedVoucherCode;
     AnsiString VoucherMerchantID;
     AnsiString SecondaryPMSIPAddress;
-  //  AnsiString UniURL;
     AnsiString UniUser;
     AnsiString UniPass;
     int SecondaryPMSPortNumber;

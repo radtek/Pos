@@ -15,49 +15,49 @@
 
 TPayment::TPayment(TPaymentTransaction *inOwner) : Owner(inOwner)
 {
-   Result = eProcessing;
-   FPay = 0;
-   FPayRounding = 0;
-   FCashOut = 0;
-   FCashOutRounding = 0;
-   DisplayOrder = 0;
-   GroupNumber = 0;
-   RefundPointsVal = 0;
-   AdjustmentReason = "";
-   AmountAdjust = 0;
-   PercentAdjust = 0;
-   CSVNumber = 0;
-   Name = "";
-   NameOveride = "";
-   ReferenceNumber = "";
-   ExternalReferenceNumber = "";
-   VoucherCode = "";
-   FixedVoucherCode = "";
-   VoucherMerchantID = "";
-   SysNameOveride = "";
-   Properties = 0;
-   TabCreditKey = 0;
-   TaxRate = 0;
-   Colour = clWhite;
-   Visible = true;
-   CreditTransaction = false;
-   SuppressEftPosReceipt = false;
-   PaymentThirdPartyID = "";
-   SecondaryPMSIPAddress = "";
-   SecondaryPMSPortNumber = 0;
-   RoundTo = MIN_CURRENCY_VALUE;
-   UniVoucherURL = "";
-   UniVoucherUser = "";
-   UniVoucherPass = "";
-   UniVoucherToken = "";
-   CardType = "";
-   RefundPoints = false;
-   TabKey=0;
-   TabName="";
-   GLCode = "";
-   _assignedPaymentGroups.clear();
-   TipAmount = 0;
-   AutoPopulateBlindBalance = false;
+    Result = eProcessing;
+    FPay = 0;
+    FPayRounding = 0;
+    FCashOut = 0;
+    FCashOutRounding = 0;
+    DisplayOrder = 0;
+    GroupNumber = 0;
+    RefundPointsVal = 0;
+    AdjustmentReason = "";
+    AmountAdjust = 0;
+    PercentAdjust = 0;
+    CSVNumber = 0;
+    Name = "";
+    NameOveride = "";
+    ReferenceNumber = "";
+    ExternalReferenceNumber = "";
+    VoucherCode = "";
+    FixedVoucherCode = "";
+    VoucherMerchantID = "";
+    SysNameOveride = "";
+    TabCreditKey = 0;
+    TaxRate = 0;
+    Colour = clWhite;
+    Visible = true;
+    CreditTransaction = false;
+    SuppressEftPosReceipt = false;
+    PaymentThirdPartyID = "";
+    SecondaryPMSIPAddress = "";
+    SecondaryPMSPortNumber = 0;
+    RoundTo = MIN_CURRENCY_VALUE;
+    UniVoucherURL = "";
+    UniVoucherUser = "";
+    UniVoucherPass = "";
+    UniVoucherToken = "";
+    CardType = "";
+    RefundPoints = false;
+    TabKey=0;
+    TabName="";
+    GLCode = "";
+    TipAmount = 0;
+    AutoPopulateBlindBalance = false;
+    _assignedPaymentGroups.clear();
+    Properties.clear();
 }
 
 void TPayment:: operator = (const TPayment & Data)
@@ -84,7 +84,6 @@ void TPayment:: operator = (const TPayment & Data)
    VoucherMerchantID = Data.VoucherMerchantID;
    PaymentThirdPartyID = Data.PaymentThirdPartyID;
    PercentAdjust = Data.PercentAdjust;
-   Properties = Data.Properties;
    ReferenceNumber = Data.ReferenceNumber;
    ExternalReferenceNumber = Data.ExternalReferenceNumber;
    Result = Data.Result;
@@ -103,12 +102,13 @@ void TPayment:: operator = (const TPayment & Data)
    GLCode = Data.GLCode;
    TipAmount = Data.TipAmount;
    SetAssignedGroups( Data.GetAssignedGroups() );
+   Properties = Data.Properties;
 }
 
 void TPayment::Reset()
 {
    Result = eProcessing;
-   if (!(Properties & ePayTypeCredit))
+   if (!GetPaymentAttribute(ePayTypeCredit))
    {
 	  SetPay(0);
 	  SetChange(0);
@@ -184,8 +184,6 @@ void __fastcall TPayment::SetRefundPointsValue(Currency value)
 {
     RefundPointsVal = value;
 }
-
-// ---------------------------------------------------------------------------
 
 Currency __fastcall TPayment::GetPay()
 {
@@ -422,12 +420,47 @@ void TPayment::SetAssignedGroups( TPaymentTypeGroup group )
    _assignedPaymentGroups.push_back( group );
 }
 
+void TPayment::SetPaymentAttribute(ePaymentAttribute attributeIndex,bool attributeValue)
+{
+  if(attributeValue && (Properties.find(attributeIndex) != Properties.end()))
+    Properties.insert(attributeIndex);
+}
+
+void TPayment::AssignPaymentAttribute(TPayment &payment)
+{
+  Properties = payment.Properties;
+}
+
+void TPayment::ClearPaymentAttribute()
+{
+  Properties.clear();
+}
+
+bool TPayment::GetPaymentAttribute(ePaymentAttribute attributeIndex)
+{
+  bool retVal = false;
+  if(Properties.find(attributeIndex) != Properties.end())
+     retVal = true;
+  return false;
+}
+
+AnsiString TPayment::GetPropertyString()
+{
+   AnsiString propStr = "-";
+   for(std::set<int>::iterator it = Properties.begin() ; it != Properties.end() ;advance(it,1))
+   {
+        int attribute = *it;
+        propStr = propStr + IntToStr(attribute) + "-";
+   }
+   return propStr;
+}
+
 bool TPayment::IsLoyaltyVoucher()
 {
-   return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card" || Name == "Voucher" );
+   return GetPaymentAttribute(ePayTypeGetVoucherDetails) && (Name == "Gift Card" || Name == "Voucher" );
 }
 
 bool TPayment::IsLoyaltyGiftCard()
 {
-   return (Properties & ePayTypeGetVoucherDetails) && (Name == "Gift Card");
+   return GetPaymentAttribute(ePayTypeGetVoucherDetails) && (Name == "Gift Card");
 }

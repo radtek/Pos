@@ -90,7 +90,7 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
 				int ThirdPartyCode = StrToIntDef(Payment->PaymentThirdPartyID,UN_CODED);
 
 				/* points types should be ignored as they are handled though the membership system? */
-				if(Payment->Properties & ePayTypePoints)
+				if(Payment->GetPaymentAttribute(ePayTypePoints))
 				{
                    if(Payment->Name == "Comp")
                       ThirdPartyCode = CompPointsCode;

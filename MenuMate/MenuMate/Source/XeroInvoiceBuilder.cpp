@@ -61,7 +61,7 @@ bool TXeroInvoiceBuilder::ChargeToXero( TPaymentTransaction& inPaymentTransactio
 	{
 		FXeroPayment =  inPaymentTransaction.PaymentGet(i);
 
-		if((FXeroPayment->Properties & ePayTypeChargeToXero)  && FXeroPayment->GetPay() != 0)
+		if(FXeroPayment->GetPaymentAttribute(ePayTypeChargeToXero)  && FXeroPayment->GetPay() != 0)
 		{
 			 result = true;
 			 break;
@@ -264,8 +264,6 @@ void TXeroInvoiceBuilder::AddItemToXeroInvoice( TXeroInvoice* inXeroInvoice, TXe
 	FXeroInvoice->AddItem( itemCodeStr, PayTypeDetail.Description, unitAmountStr.ToDouble(), taxStr.ToDouble(), qtyStr.ToDouble() );
 }
 
-
-
 void TXeroInvoiceBuilder::AddPaymentToXeroInvoice( TXeroInvoice* inXeroInvoice, TXeroPayTypeDetail& PayTypeDetail )
 {
        AnsiString itemCodeStr    = PayTypeDetail.AccountCode;
@@ -298,7 +296,7 @@ void TXeroInvoiceBuilder::MakeVectorForItems(TXeroInvoice *FXeroInvoice,TPayment
            xeroNodeItem.TaxAmount = taxStr;
            xeroNodeItem.Qty = qtyStr;
            NodeItems.push_back(xeroNodeItem);
-            for( int j = 0; j < item->SubOrders->Count; j++ )
+           for( int j = 0; j < item->SubOrders->Count; j++ )
             {
                 TItemCompleteSub *SubOrderImage = item->SubOrders->SubOrderGet(j);
                 NodeItem xeroSubNodeItem;
@@ -318,10 +316,9 @@ void TXeroInvoiceBuilder::MakeVectorForItems(TXeroInvoice *FXeroInvoice,TPayment
                NodeItems.push_back(xeroSubNodeItem);
             }
     }
-    //The elements are to be modified in terms of quantity and Tax if same item
-    // exists more than once with similar quantity
    ModifyVector(FXeroInvoice , NodeItems) ;
 }
+
 void TXeroInvoiceBuilder::ModifyVector(TXeroInvoice *FXeroInvoice,std::vector<NodeItem> nodeItems)
 {
       bool erase = false;
@@ -333,56 +330,55 @@ void TXeroInvoiceBuilder::ModifyVector(TXeroInvoice *FXeroInvoice,std::vector<No
       for(int i = 0; i < nodeItems.size()  ; i++)
       {
 
-          totalTax=0;
-          int j = 0;
-           qty = 0;
-             if(storeIndex.Pos(i) == 0)
-             {
-          for(std::vector<NodeItem>::iterator it = nodeItems.begin() ; it != nodeItems.end() ; ++it)
-          {
-             if((nodeItems.at(i).ItemCode == it->ItemCode) &&(nodeItems.at(i).ItemName == it->ItemName) &&(nodeItems.at(i).UnitAmount == it->UnitAmount))
+        totalTax=0;
+        int j = 0;
+        qty = 0;
+        if(storeIndex.Pos(i) == 0)
+        {
+            for(std::vector<NodeItem>::iterator it = nodeItems.begin() ; it != nodeItems.end() ; ++it)
+            {
+                if((nodeItems.at(i).ItemCode == it->ItemCode) &&(nodeItems.at(i).ItemName == it->ItemName) &&(nodeItems.at(i).UnitAmount == it->UnitAmount))
+                {
+                    AnsiString tx= it->TaxAmount;
+                    qty +=  StrToFloat(it->Qty.c_str());
+                    nodeItems.at(i).Qty = qty;
+                    try
+                    {
+                        totalTax += StrToFloat(tx.c_str());
+                        nodeItems.at(i).TaxAmount = totalTax;
+                    }
+                    catch(Exception &e)
+                    {
 
-              {
-                  AnsiString tx= it->TaxAmount;
-                  qty +=  StrToFloat(it->Qty.c_str());
-                  nodeItems.at(i).Qty = qty;
-                  try
-                  {
-                      totalTax += StrToFloat(tx.c_str());
-                      nodeItems.at(i).TaxAmount = totalTax;
-                  }
-                  catch(Exception &e)
-                  {
+                    }
 
-                  }
-
-                  if(i != j)
-                  {
-                     // the indices which should be skipped while creating XML are stored
-                     // because the quantity of first occurrence has been modified
-                     storeIndex += ",";
-                     storeIndex += j ;
-                  }
-              }
-              j++;
-          }
-          }
+                    if(i != j)
+                    {
+                        // the indices which should be skipped while creating XML are stored
+                        // because the quantity of first occurrence has been modified
+                        storeIndex += ",";
+                        storeIndex += j ;
+                    }
+                }
+                j++;
+            }
+        }
       }
-           storeIndex += ",";
-           int index = 0;
-          for(std::vector<NodeItem>::iterator it = nodeItems.begin() ; it != nodeItems.end() ; ++it)
-          {
-             AnsiString checkIndex = "";
-             checkIndex = ",";
-             checkIndex += index;
-             checkIndex += ",";
-             if(storeIndex.Pos(checkIndex) == 0)
-             {
-                // Items are added to Invoice XML
-                FXeroInvoice->AddItem( it->ItemCode, it->ItemName, it->UnitAmount.ToDouble(), it->TaxAmount.ToDouble(), it->Qty.ToDouble() );
-             }
-             index ++;
-          }
+      storeIndex += ",";
+      int index = 0;
+      for(std::vector<NodeItem>::iterator it = nodeItems.begin() ; it != nodeItems.end() ; ++it)
+      {
+         AnsiString checkIndex = "";
+         checkIndex = ",";
+         checkIndex += index;
+         checkIndex += ",";
+         if(storeIndex.Pos(checkIndex) == 0)
+         {
+            // Items are added to Invoice XML
+            FXeroInvoice->AddItem( it->ItemCode, it->ItemName, it->UnitAmount.ToDouble(), it->TaxAmount.ToDouble(), it->Qty.ToDouble() );
+         }
+         index ++;
+      }
 }
 
 void TXeroInvoiceBuilder::CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDetail)

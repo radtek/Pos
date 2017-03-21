@@ -4296,7 +4296,7 @@ void TfrmAnalysis::GetPointsAndVoucherData(Database::TDBTransaction &DBTransacti
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction,Payments);
         for (std::vector <TPayment> ::iterator ptrPayment = Payments.begin(); ptrPayment != Payments.end(); ptrPayment++)
             {
-                if(ptrPayment->Properties & ePayTypeGetVoucherDetails)
+                if(ptrPayment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
                  {
                     IBInternalQuery->Close();
                     IBInternalQuery->SQL->Text =    "select cast(sum(f.SUBTOTAL) as numeric(17,2)) VoucherTotal from "

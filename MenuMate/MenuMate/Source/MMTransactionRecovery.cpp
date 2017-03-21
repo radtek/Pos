@@ -228,7 +228,7 @@ void TMMTransactionRecovery::savePaymentTypesInfoToFile( TPaymentTransaction &Pa
     for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
     {
          TPayment *Payment = PaymentTransaction.PaymentGet(i);
-         PaymentTypesCsv.Add(Payment->Name + "," + AnsiString(Payment->Properties) + "," + IntToStr(Payment->Colour) + "," + IntToStr
+         PaymentTypesCsv.Add(Payment->Name + "," + AnsiString(Payment->GetPropertyString()) + "," + IntToStr(Payment->Colour) + "," + IntToStr
              (Payment->DisplayOrder) + "," + FloatToStrF(Payment->PercentAdjust, ffGeneral, 15,
                 0) + "," + FloatToStrF(Payment->AmountAdjust, ffGeneral, 15, 0) + "," + Payment->AdjustmentReason + "," + IntToStr
              (Payment->GroupNumber) + "," + CurrToStr(Payment->GetPay()) + "," + CurrToStr(Payment->GetCashOut()) + "," + CurrToStr
@@ -322,7 +322,7 @@ void TMMTransactionRecovery::loadPaymentTypesInfoFromFile( TPaymentTransaction &
     {
         TPayment *Payment = new TPayment;
         Payment->Name = PaymentTypesCsv.Cells[0][i];
-        Payment->Properties = StrToInt(PaymentTypesCsv.Cells[1][i]);
+        //Payment->Properties = StrToInt(PaymentTypesCsv.Cells[1][i]);
         Payment->Colour = StrToInt(PaymentTypesCsv.Cells[2][i]);
         Payment->DisplayOrder = StrToInt(PaymentTypesCsv.Cells[3][i]);
         Payment->PercentAdjust = double(StrToFloat(PaymentTypesCsv.Cells[4][i]));
