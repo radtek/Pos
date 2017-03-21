@@ -3845,9 +3845,9 @@ void TfrmAnalysis::GetQueriesForMYOB(AnsiString &Tax,AnsiString &zeroTax,AnsiStr
          " where b.NOTE <> 'Total Change.' and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " + terminalNamePredicate + " ) " ;
 
          AnsiString nonZeroTaxFilter =
-         " and a.ARCHIVE_KEY in (Select distinct Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE <> 0 group by Archive_Key) " ;
+         " and a.ARCHIVE_KEY in (Select Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE <> 0 GROUP BY Archive_Key) " ;
          AnsiString ZeroTaxFilter =
-         " and a.ARCHIVE_KEY in (Select distinct Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE = 0 group by Archive_Key) " ;
+         " and a.ARCHIVE_KEY in (Select Archive_KEY FROM DAYARCORDERTAXES where TAX_VALUE = 0 GROUP BY Archive_Key) and a.PRICE <> 0 " ;
          AnsiString groupBy =
          " group by c.GL_CODE ";
 
@@ -3870,7 +3870,7 @@ void TfrmAnalysis::GetPaymentDetails(AnsiString &paymentDetails, AnsiString term
              " Left join DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
              " Left join PAYMENTTYPES c on b.PAY_TYPE = c.PAYMENT_NAME "
              " where "
-             " b.PAY_TYPE <> 'Credit' "
+             " b.PAY_TYPE <> 'Credit'  and b.SUBTOTAL <> 0 "
              " and a.TIME_STAMP > :STARTTIME and  a.TIME_STAMP <= :ENDTIME  " ;
 
         AnsiString optionalXero = " and b.CHARGED_TO_XERO <> 'T'" ;
