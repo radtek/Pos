@@ -269,6 +269,10 @@ private:	// User declarations
     void CheckClipAndTableCondition(Database::TDBTransaction &DBTransaction);
 
     bool CheckIfClipTransferringToAnotherLinkedGuest(Database::TDBTransaction &DBTransaction,int source_key, int DestTabKey, bool isTabSelected );
+    void SetGuestNameForTable(Database::TDBTransaction &DBTransaction, long DestTabKey, long SourceKey, bool isTabSelected, UnicodeString tabName);
+    void SetPartyNameForDetinationTable(Database::TDBTransaction &DBTransaction);
+    void SetPartyNameForSourceTable(Database::TDBTransaction &DBTransaction);
+
 
 public:		// User declarations
     __fastcall TfrmTransfer(TComponent* Owner,Database::TDBControl &inDBControl);
