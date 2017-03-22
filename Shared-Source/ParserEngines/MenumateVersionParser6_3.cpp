@@ -1947,7 +1947,7 @@ void TApplyParser::PopulateTable_PaymentAttributes(TDBControl* const inDBControl
                {
                     AttributeQuery->Close();
                     AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = FetchQuery->FieldByName("PAYMENT_KEY")->AsInteger;
-                    AttributeQuery->ParamByName("ATTRIBUTE_VALUE")->AsInteger = i;
+                    AttributeQuery->ParamByName("ATTRIBUTE_VALUE")->AsInteger = i+1;
                     AttributeQuery->ExecQuery();
                }
             }
@@ -2011,7 +2011,7 @@ void TApplyParser::PopulatePaymentProperties(TDBControl* const inDBControl)
             {
                if(properties & PaymentAttributes[i])
                {
-                  propStr = propStr + IntToStr(i) + "-";
+                  propStr = propStr + IntToStr(i+1) + "-";
                }
             }
 

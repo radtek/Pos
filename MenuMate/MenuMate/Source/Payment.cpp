@@ -102,7 +102,7 @@ void TPayment:: operator = (const TPayment & Data)
    GLCode = Data.GLCode;
    TipAmount = Data.TipAmount;
    SetAssignedGroups( Data.GetAssignedGroups() );
-   Properties = Data.Properties;
+   AssignPaymentAttribute(Data.Properties);
 }
 
 void TPayment::Reset()
@@ -426,9 +426,13 @@ void TPayment::SetPaymentAttribute(ePaymentAttribute attributeIndex,bool attribu
     Properties.insert(attributeIndex);
 }
 
-void TPayment::AssignPaymentAttribute(TPayment &payment)
+void TPayment::AssignPaymentAttribute(std::set<int> inProperties)
 {
-  Properties = payment.Properties;
+   for(std::set<int>::iterator it = inProperties.begin() ; it != inProperties.end() ;advance(it,1))
+   {
+        int attribute = *it;
+        SetPaymentAttribute(attribute);
+   }
 }
 
 void TPayment::ClearPaymentAttribute()
@@ -439,8 +443,12 @@ void TPayment::ClearPaymentAttribute()
 bool TPayment::GetPaymentAttribute(ePaymentAttribute attributeIndex)
 {
   bool retVal = false;
-  if(Properties.find(attributeIndex) != Properties.end())
-     retVal = true;
+  for(std::set<int>::iterator it = Properties.begin() ; it != Properties.end() ;advance(it,1))
+   {
+        int attribute = *it;
+        if(attribute == attributeIndex)
+          return true;
+   }
   return false;
 }
 
@@ -452,7 +460,7 @@ AnsiString TPayment::GetPropertyString()
         int attribute = *it;
         propStr = propStr + IntToStr(attribute) + "-";
    }
-   return propStr;
+   return (propStr != "-") ? propStr : AnsiString("");
 }
 
 bool TPayment::IsLoyaltyVoucher()

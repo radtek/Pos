@@ -19,7 +19,7 @@
 
 enum ePaymentAttribute
 {
-    ePayTypeOpensCashDrawer,
+    ePayTypeOpensCashDrawer = 1,
     ePayTypeAllowCashOut,
     ePayTypeElectronicTransaction,
     ePayTypeCheckAccepted,
@@ -158,7 +158,7 @@ public:
     std::vector<TPaymentTypeGroup> GetAssignedGroups() const;
     TPaymentTypeGroup GetFirstAssignedGroup();
     void SetPaymentAttribute(ePaymentAttribute attributeIndex,bool attributeValue = true);
-    void AssignPaymentAttribute(TPayment &payment);
+    void AssignPaymentAttribute(std::set<int> inProperties);
     void ClearPaymentAttribute();
     bool GetPaymentAttribute(ePaymentAttribute attributeIndex);
     AnsiString GetPropertyString();

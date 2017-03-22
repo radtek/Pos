@@ -120,6 +120,8 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
 {
    try
    {
+      int PayKey = 0;
+      AnsiString Properties = "";
       std::auto_ptr <TStringList> PaymentList(new TStringList);
       Database::TDBTransaction DBTransaction(DBControl);
       DBTransaction.StartTransaction();
@@ -130,30 +132,34 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
       IBInternalQuery->Close();
       IBInternalQuery->SQL->Text =
 	  "INSERT INTO PAYMENTTYPES (" "PAYMENT_KEY, " "PAYMENT_NAME, " "PROPERTIES, " "COLOUR, " "ROUNDTO," "TAX_RATE,"
-	  "DISPLAY_ORDER, INVOICE_EXPORT) " "VALUES (" "(SELECT GEN_ID(GEN_PAYMENTTYPES, 1) FROM RDB$DATABASE), " ":PAYMENT_NAME, " ":PROPERTIES, "
+	  "DISPLAY_ORDER, INVOICE_EXPORT) " "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, " ":PROPERTIES, "
 	  ":COLOUR, " ":ROUNDTO," ":TAX_RATE," ":DISPLAY_ORDER, :INVOICE_EXPORT)";
 
-      int Properties = 0;
       if(!IsPaymentExist(DBTransaction,CASH))
       {
+          PayKey = GeneratePaymentKey(DBTransaction);
+          Properties = "-" + IntToStr(ePayTypeOpensCashDrawer) + "-" + IntToStr(ePayTypeCash)  + "-";
+          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = CASH;
-          Properties |= ePayTypeOpensCashDrawer;
-          Properties |= ePayTypeCash;
-          IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clGreen;
           IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 0;
           IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = 0.10;
           IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
           IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
           IBInternalQuery->ExecQuery();
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeOpensCashDrawer);
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCash);
       }
 
       if(!IsPaymentExist(DBTransaction,"Cheque"))
       {
           IBInternalQuery->Close();
+          PayKey = GeneratePaymentKey(DBTransaction);
+          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Cheque";
-          Properties = 0;
-          IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+          Properties = "";
+          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clBlue;
           IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 1;
           IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
@@ -165,96 +171,108 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
       if(!IsPaymentExist(DBTransaction,"Eftpos"))
       {
           IBInternalQuery->Close();
+          PayKey = GeneratePaymentKey(DBTransaction);
+          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Eftpos";
-          Properties = 0;
-          Properties |= ePayTypeAllowCashOut;
-          Properties |= ePayTypeElectronicTransaction;
-          Properties |= ePayTypeCheckAccepted;
-          IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+          Properties = "-" + IntToStr(ePayTypeAllowCashOut) + "-" + IntToStr(ePayTypeElectronicTransaction)  + "-" + IntToStr(ePayTypeCheckAccepted) +"-";
+          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clTeal;
           IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 2;
           IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
           IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
           IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
           IBInternalQuery->ExecQuery();
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeAllowCashOut);
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
       }
       if(!IsPaymentExist(DBTransaction,"Amex"))
       {
           IBInternalQuery->Close();
+          PayKey = GeneratePaymentKey(DBTransaction);
+          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Amex";
-          Properties = 0;
-          Properties |= ePayTypeElectronicTransaction;
-          Properties |= ePayTypeCheckAccepted;
-          IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+          Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
+          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clAqua;
           IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 3;
           IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
           IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
           IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
           IBInternalQuery->ExecQuery();
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
       }
 
       if(!IsPaymentExist(DBTransaction,"Diners"))
       {
           IBInternalQuery->Close();
+          PayKey = GeneratePaymentKey(DBTransaction);
+          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Diners";
-          Properties = 0;
-          Properties |= ePayTypeElectronicTransaction;
-          Properties |= ePayTypeCheckAccepted;
-          IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+          Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
+          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clCream;
           IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 4;
           IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
           IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
           IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
           IBInternalQuery->ExecQuery();
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
       }
 
       if(!IsPaymentExist(DBTransaction,"Visa"))
       {
           IBInternalQuery->Close();
+          PayKey = GeneratePaymentKey(DBTransaction);
+          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Visa";
-          Properties = 0;
-          Properties |= ePayTypeElectronicTransaction;
-          Properties |= ePayTypeCheckAccepted;
-          IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+          Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
+          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clWhite;
           IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 5;
           IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
           IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
           IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
           IBInternalQuery->ExecQuery();
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
       }
 
       if(!IsPaymentExist(DBTransaction,"Master Card"))
       {
           IBInternalQuery->Close();
+          PayKey = GeneratePaymentKey(DBTransaction);
+          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Master Card";
-          Properties = 0;
-          Properties |= ePayTypeElectronicTransaction;
-          Properties |= ePayTypeCheckAccepted;
-          IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+          Properties = "-" + IntToStr(ePayTypeElectronicTransaction) + "-" + IntToStr(ePayTypeCheckAccepted)  + "-";
+          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clOlive;
           IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 6;
           IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
           IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
           IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
           IBInternalQuery->ExecQuery();
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeElectronicTransaction);
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCheckAccepted);
       }
 
       if(!IsPaymentExist(DBTransaction,"Tips"))
       {
           IBInternalQuery->Close();
+          PayKey = GeneratePaymentKey(DBTransaction);
+          IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Tips";
-          Properties = 0;
-          Properties |= ePayTypeCustomSurcharge;
-          IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Properties;
+          Properties = "-" + IntToStr(ePayTypeCustomSurcharge) + "-";
+          IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clGray;
           IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 7;
           IBInternalQuery->ParamByName("ROUNDTO")->AsCurrency = MIN_CURRENCY_VALUE;
           IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = 15;
           IBInternalQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
           IBInternalQuery->ExecQuery();
+          PaymentSystem->SetPaymentAttribute(DBTransaction,PayKey,ePayTypeCustomSurcharge);
       }
       DBTransaction.Commit();
       UpdateList();
@@ -264,6 +282,15 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
       MessageBox(E.Message, "Error", MB_OK + MB_ICONERROR);
       TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
    }
+}
+// ---------------------------------------------------------------------------
+int TfrmPaymentMaintenance::GeneratePaymentKey(Database::TDBTransaction &DBTransaction)
+{
+    TIBSQL *IBInternalQuery  = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_PAYMENTTYPES, 1) FROM RDB$DATABASE";
+    IBInternalQuery->ExecQuery();
+    return IBInternalQuery->Fields[0]->AsInteger;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentMaintenance::UpdateList()
