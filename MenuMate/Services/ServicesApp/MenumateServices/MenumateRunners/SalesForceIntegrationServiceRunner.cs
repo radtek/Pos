@@ -1,4 +1,6 @@
 ﻿using System.ServiceModel;
+using System.Diagnostics;
+using System;
 using MenumateServices.WCFServices;
 
 namespace MenumateServices.MenumateRunners
@@ -7,42 +9,93 @@ namespace MenumateServices.MenumateRunners
     {
         public SalesForceIntegrationServiceRunner()
         {
-            InitializeRunner();
+            try
+            {
+                InitializeRunner();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In SalesForceIntegrationServiceRunner SFRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 160, short.MaxValue);
+            }
         }
 
         public override void Start()
         {
-            WorkerThread.Start();
-            Paused = false;
+            try
+            {
+                WorkerThread.Start();
+                Paused = false;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Start SFRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 161, short.MaxValue);
+            }
         }
 
         public override void Stop()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Stop SFRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 162, short.MaxValue);
+            }
         }
 
         public override void Pause()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Pause SFRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 163, short.MaxValue);
+            }
         }
 
         public override void Resume()
         {
-            InitializeRunner();
-            Start();
+            try
+            {
+                InitializeRunner();
+                Start();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Resume SFRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 164, short.MaxValue);
+            }
         }
 
         protected override bool StartServiceTask()
         {
-            return StartRunner();
+            try
+            {
+                return StartRunner();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In StartServiceTask SFRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 165, short.MaxValue);
+            }
+            return false;
         }
 
 
         protected override ServiceHost CreateServiceHost()
         {
-            return new ServiceHost(typeof(SalesForceIntegrationWebService));
+            try
+            {
+                return new ServiceHost(typeof(SalesForceIntegrationWebService));
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In ServiceHost SFRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 166, short.MaxValue);
+            }
+            return null;
         }
 
         protected override bool StartRunner()

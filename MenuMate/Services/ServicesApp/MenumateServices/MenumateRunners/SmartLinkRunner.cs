@@ -1,15 +1,24 @@
 ﻿using System.ServiceModel;
+using System;
+using System.Diagnostics;
 using MenumateServices.WCFServices;
 
 namespace MenumateServices.MenumateRunners
 {
     public class SmartLinkRunner : MenumateWebServiceRunner
     {
-          #region PUBLIC
+        #region PUBLIC
 
         public SmartLinkRunner()
         {
-            InitializeRunner();
+            try
+            {
+                InitializeRunner();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In SmartLinkRunner SMARTlinkRUnner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 167, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -17,8 +26,15 @@ namespace MenumateServices.MenumateRunners
         /// </summary>
         public override void Start()
         {
-            WorkerThread.Start();
-            Paused = false;
+            try
+            {
+                WorkerThread.Start();
+                Paused = false;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Start Start", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 168, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -26,8 +42,15 @@ namespace MenumateServices.MenumateRunners
         /// </summary>
         public override void Stop()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Stop Start", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 169, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -35,8 +58,15 @@ namespace MenumateServices.MenumateRunners
         /// </summary>
         public override void Pause()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Pause Start", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 170, short.MaxValue);
+            }
         }
 
         /// <summary>
@@ -44,8 +74,15 @@ namespace MenumateServices.MenumateRunners
         /// </summary>
         public override void Resume()
         {
-            InitializeRunner();
-            Start();
+            try
+            {
+                InitializeRunner();
+                Start();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Resume Start", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 171, short.MaxValue);
+            }
         }
         #endregion
 
@@ -57,7 +94,15 @@ namespace MenumateServices.MenumateRunners
         /// <returns></returns>
         protected override bool StartServiceTask()
         {
-            return StartRunner();
+            try
+            {
+                return StartRunner();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In StartServiceTask Start", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 172, short.MaxValue);
+            }
+            return false;
         }
 
         /// <summary>
@@ -66,7 +111,15 @@ namespace MenumateServices.MenumateRunners
         /// <returns></returns>
         protected override ServiceHost CreateServiceHost()
         {
-            return new ServiceHost(typeof(WCFServiceSmartLink));
+            try
+            {
+                return new ServiceHost(typeof(WCFServiceSmartLink));
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In CreateServiceHost Start", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 173, short.MaxValue);
+            }
+            return null;
         }
 
         /// <summary>

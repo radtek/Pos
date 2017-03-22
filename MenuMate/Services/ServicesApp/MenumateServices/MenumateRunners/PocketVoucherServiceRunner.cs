@@ -1,4 +1,6 @@
 ﻿using System.ServiceModel;
+using System;
+using System.Diagnostics;
 using MenumateServices.WCFServices;
 
 namespace MenumateServices.MenumateRunners
@@ -7,42 +9,93 @@ namespace MenumateServices.MenumateRunners
     {
         public PocketVoucherServiceRunner()
         {
-            InitializeRunner();
+            try
+            {
+                InitializeRunner();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In PocketVoucherServiceRunner PVRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 153, short.MaxValue);
+            }
         }
 
         public override void Start()
         {
-            WorkerThread.Start();
-            Paused = false;
+            try
+            {
+                WorkerThread.Start();
+                Paused = false;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Start PVRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 154, short.MaxValue);
+            }
         }
 
         public override void Stop()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Start PVRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 155, short.MaxValue);
+            }
         }
 
         public override void Pause()
         {
-            StopRunner();
-            Paused = true;
+            try
+            {
+                StopRunner();
+                Paused = true;
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Pause PVRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 156, short.MaxValue);
+            }
         }
 
         public override void Resume()
         {
-            InitializeRunner();
-            Start();
+            try
+            {
+                InitializeRunner();
+                Start();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In Resume PVRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 157, short.MaxValue);
+            }
         }
 
         protected override bool StartServiceTask()
         {
-            return StartRunner();
+            try
+            {
+                return StartRunner();
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In StartServiceTask PVRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 158, short.MaxValue);
+            }
+            return false;
         }
 
-        
+
         protected override ServiceHost CreateServiceHost()
         {
-            return new ServiceHost(typeof(PocketVoucherWebService));
+            try
+            {
+                return new ServiceHost(typeof(PocketVoucherWebService));
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In StartServiceTask PVRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 159, short.MaxValue);
+            }
+            return null;
         }
 
         protected override bool StartRunner()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ServiceModel;
 using System.ServiceModel.Description;
+using System.Diagnostics;
 
 namespace MenumateServices.MenumateRunners
 {
@@ -14,7 +15,7 @@ namespace MenumateServices.MenumateRunners
 
             try
             {
-                ServiceHost = CreateServiceHost(); 
+                ServiceHost = CreateServiceHost();
                 ServiceHost.Open();
 
                 LogServiceInformation(ServiceHost);
@@ -23,10 +24,12 @@ namespace MenumateServices.MenumateRunners
             }
             catch (SystemException e)
             {
+                EventLog.WriteEntry("In OpenServiceHost WebServiceRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 148, short.MaxValue);
                 ServiceLogger.LogException(String.Format("{0} Service Host failed to open.", ServiceHost.Description.Name), e);
             }
             catch (Exception e)
             {
+                EventLog.WriteEntry("In OpenServiceHost WebServiceRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 149, short.MaxValue);
                 ServiceLogger.LogException(String.Format("{0} Service Host failed to open: {1}", ServiceHost.Description.Name, e.Message), e);
             }
             finally
@@ -37,7 +40,7 @@ namespace MenumateServices.MenumateRunners
             return result;
         }
 
-       public bool CloseServiceHost()
+        public bool CloseServiceHost()
         {
             bool result = false;
 
@@ -48,10 +51,12 @@ namespace MenumateServices.MenumateRunners
             }
             catch (SystemException e)
             {
+                EventLog.WriteEntry("In CloseServiceHost WebServiceRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 150, short.MaxValue);
                 ServiceLogger.LogException(String.Format("{0} Service Host failed to stop.", ServiceHost.Description.Name), e);
             }
             catch (Exception e)
             {
+                EventLog.WriteEntry("In CloseServiceHost WebServiceRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 151, short.MaxValue);
                 ServiceLogger.LogException(String.Format("{0} Service Host failed to stop: {1}", ServiceHost.Description.Name, e.Message), e);
             }
             finally
@@ -68,14 +73,21 @@ namespace MenumateServices.MenumateRunners
             return null;
         }
 
-        protected void LogServiceInformation<T>(T serviceHost) 
+        protected void LogServiceInformation<T>(T serviceHost)
             where T : ServiceHost
         {
-            LogBaseAddressesInformation(serviceHost);
-            LogEndPointsInformation(serviceHost);
+            try
+            {
+                LogBaseAddressesInformation(serviceHost);
+                LogEndPointsInformation(serviceHost);
+            }
+            catch (Exception e)
+            {
+                EventLog.WriteEntry("In LogServiceInformation WebServiceRunner", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 152, short.MaxValue);
+            }
         }
 
-        protected void LogBaseAddressesInformation<T>(T serviceHost) 
+        protected void LogBaseAddressesInformation<T>(T serviceHost)
             where T : ServiceHost
         {
             if (serviceHost.BaseAddresses.Count == 0)
@@ -91,7 +103,7 @@ namespace MenumateServices.MenumateRunners
             }
         }
 
-        protected void LogEndPointsInformation<T>(T serviceHost) 
+        protected void LogEndPointsInformation<T>(T serviceHost)
             where T : ServiceHost
         {
             if (serviceHost.Description.Endpoints.Count > 0)
