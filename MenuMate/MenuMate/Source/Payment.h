@@ -20,38 +20,38 @@
 enum ePaymentAttribute
 {
     ePayTypeOpensCashDrawer = 1,
-    ePayTypeAllowCashOut,
-    ePayTypeElectronicTransaction,
-    ePayTypeCheckAccepted,
-    ePayTypeGetVoucherDetails,
-    ePayTypeGetCardDetails,
-    ePayTypeCustomSurcharge,
-    ePayTypeSecure1,
-    ePayTypeSecure2,
-    ePayTypeSecure3,
-    ePayTypeTaxFree,
-    ePayTypeReqNote,
-    ePayTypeCash,
-    ePayTypeCSV,
-    ePayTypeSurcharge,
-    ePayTypeRoomInterface,
-    ePayTypePoints,
-    ePayTypeCredit,
-    ePayTypeIntegratedEFTPOS,
-    ePayTypeAllowReversal,
-    ePayTypeAllowMANPAN,
-    ePayTypeCheckSignature,
-    ePayTypeChequeVerify,
-    ePayTypePhoenixTransaction,
-    ePayTypeInvoiceExport,
-    ePayTypeSecondaryPMSExport,
-    ePayTypeDispPVMsg,
-    ePayTypePocketVoucher,
-    ePayTypeChargeToAccount,
-    ePayTypeChargeToXero,
-    ePayTypeRMSInterface,
-    ePayTypeAllowTips,
-    ePayTypeClipp,
+    ePayTypeAllowCashOut,          //2
+    ePayTypeElectronicTransaction, //3
+    ePayTypeCheckAccepted,         //4
+    ePayTypeGetVoucherDetails,     //5
+    ePayTypeGetCardDetails,        //6
+    ePayTypeCustomSurcharge,       //7
+    ePayTypeSecure1,               //8
+    ePayTypeSecure2,               //9
+    ePayTypeSecure3,               //10
+    ePayTypeTaxFree,               //11
+    ePayTypeReqNote,               //12
+    ePayTypeCash,                  //13
+    ePayTypeCSV,                   //14
+    ePayTypeSurcharge,             //15
+    ePayTypeRoomInterface,         //16
+    ePayTypePoints,                //17
+    ePayTypeCredit,                //18
+    ePayTypeIntegratedEFTPOS,      //19
+    ePayTypeAllowReversal,         //20
+    ePayTypeAllowMANPAN,           //21
+    ePayTypeCheckSignature,        //22
+    ePayTypeChequeVerify,          //23
+    ePayTypePhoenixTransaction,    //24
+    ePayTypeInvoiceExport,         //25
+    ePayTypeSecondaryPMSExport,    //26
+    ePayTypeDispPVMsg,             //27
+    ePayTypePocketVoucher,         //28
+    ePayTypeChargeToAccount,       //29
+    ePayTypeChargeToXero,          //30
+    ePayTypeRMSInterface,          //31
+    ePayTypeAllowTips,             //32
+    ePayTypeClipp,                 //33
 };
 
 class TPaymentTransaction;

@@ -5,7 +5,7 @@
 
 #include "ManagerPanasonic.h"
 #include "PanasonicModels.h"
-
+#include "StringTools.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -262,12 +262,12 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
              for(; !selectPaymentType->Eof; selectPaymentType->Next())
              {
                     //if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 4097)
-                    if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,4096,"))
+                    if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,13,"))
                     {
                         panasonicModel->TenderCash = selectPaymentType->FieldByName("SUBTOTAL")->AsCurrency;
                         panasonicModel->Cash = true;
                     }
-                    else if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,4,8,"))
+                    else if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,3,4,"))
                     //else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 13)
                     {
                         panasonicModel->CreditCard = true;
@@ -277,7 +277,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
                     {
                         panasonicModel->Cheque = true;
                     }
-                    else if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,2,4,8,"))
+                    else if(HasAllProperties(selectPaymentType->FieldByName("PROPERTIES")->AsString,"1,2,3,4,"))
                     //else if(selectPaymentType->FieldByName("PROPERTIES")->AsCurrency == 15)
                     {
                         panasonicModel->EFTPOS = true;
@@ -312,7 +312,7 @@ void TPanasonicThread::ConvertTransactionInfoToPanasonicInfo(Database::TDBTransa
 //----------------------------------------------------------------------------------------------------------------
 bool TPanasonicThread::HasAllProperties(AnsiString propertyString,AnsiString allProperties)
 {
-  return TDeviceRealTerminal::Instance().PaymentSystem->HasAllProperties(propertyString,allProperties);;
+  return TStringTools::Instance()->HasAllProperties(propertyString,allProperties);;
 }
 //----------------------------------------------------------------------------------------------------------------
 void TPanasonicThread::ConvertTransactionInfoToPanasonicItemList(TDBPanasonic &dbPanasonic, Database::TDBTransaction &dbTransaction, int arcBillKey)

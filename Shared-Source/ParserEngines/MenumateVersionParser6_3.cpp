@@ -2007,13 +2007,18 @@ void TApplyParser::PopulatePaymentProperties(TDBControl* const inDBControl)
             Currency propStrCurr = StrToCurr(propStrDb);
             int properties = (int)propStrCurr;
             AnsiString propStr = "-";
-            for(int i = 0 ; i < 33 ; i++)
+            if(properties != 0)
             {
-               if(properties & PaymentAttributes[i])
-               {
-                  propStr = propStr + IntToStr(i+1) + "-";
-               }
+               for(int i = 0 ; i < 33 ; i++)
+                {
+                   if(properties & PaymentAttributes[i])
+                   {
+                      propStr = propStr + IntToStr(i+1) + "-";
+                   }
+                }
             }
+            else
+              propStr = "-0-"
 
             for(int j = 0 ; j < 5 ; j++)
             {

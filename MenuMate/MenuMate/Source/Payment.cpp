@@ -460,7 +460,7 @@ AnsiString TPayment::GetPropertyString()
         int attribute = *it;
         propStr = propStr + IntToStr(attribute) + "-";
    }
-   return (propStr != "-") ? propStr : AnsiString("");
+   return (propStr != "-") ? propStr : AnsiString("-0-");
 }
 
 bool TPayment::IsLoyaltyVoucher()

@@ -291,32 +291,6 @@ void TListPaymentSystem::DeletePaymentAttribute(Database::TDBTransaction &DBTran
    AttributeQuery->ExecQuery();
 }
 
-//Method to check that payment have requested Properties
-//param - propertyString -> propertystring saved in DB
-//param - allProperties -> all properties need to be checked,
-//should be separeted by comman and ended by comma e.g to check 1 and 2 string should be "1,2,"
-bool TListPaymentSystem::HasAllProperties(AnsiString propertyString,AnsiString allProperties)
-{
-  bool retVal = false;
-  AnsiString searchString = "";
-  for(int i = 0 ; i < allProperties.Length();i++)
-  {
-     if(allProperties[i] == ',')
-     {
-         searchString = "-" + searchString + "-";
-         retVal = propertyString.Pos(searchString) > 0;
-         if(!retVal)
-           break;
-         searchString = "";
-     }
-     else
-     {
-        searchString += allProperties[i];
-     }
-  }
-  return retVal;
-}
-
 void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, int &PaymentKey, TPayment &Payment)
 {
 	try

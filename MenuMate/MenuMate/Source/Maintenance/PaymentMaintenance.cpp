@@ -158,7 +158,7 @@ void __fastcall TfrmPaymentMaintenance::pnlDefaultsClick(TObject *Sender)
           PayKey = GeneratePaymentKey(DBTransaction);
           IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PayKey;
           IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = "Cheque";
-          Properties = "";
+          Properties = "-0-";
           IBInternalQuery->ParamByName("PROPERTIES")->AsString = Properties;
           IBInternalQuery->ParamByName("COLOUR")->AsInteger = clBlue;
           IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = 1;
