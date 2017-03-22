@@ -3739,7 +3739,7 @@ void TfrmPaymentType::GetMemberByBarcode(Database::TDBTransaction &DBTransaction
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
-    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info,Barcode);
+    bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,info,Barcode,true);
 
 	if (info.Valid())
      {

@@ -1743,7 +1743,7 @@ void TfrmBillGroup::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,A
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
-    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info,Barcode);
+    bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,info,Barcode,true);
 
 	if (info.Valid())
      {
@@ -1752,6 +1752,19 @@ void TfrmBillGroup::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,A
 		ApplyMembership(DBTransaction, info);
 	}
 
+}
+// ---------------------------------------------------------------------------
+void TfrmBillGroup::GetLoyaltyMember(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info)
+{
+ 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
+    bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,Info,Info.MemberCode,false);
+
+	if (Info.Valid())
+     {
+        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+        ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Info);
+		ApplyMembership(DBTransaction, Info);
+	}
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
@@ -1795,7 +1808,14 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
                         if (Result == lsAccepted)
                         {
                             TGlobalSettings::Instance().IsDiscountSelected = false;
+                            if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+                            {
+                                GetLoyaltyMember(DBTransaction,TempUserInfo);
+                            }
+                            else
+                            {
                             ApplyMembership(DBTransaction, TempMembershipInfo);
+                            }
                             if(TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected)
                             {
                                 ProcessBillThorVouchers(DBTransaction);

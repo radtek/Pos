@@ -2600,7 +2600,7 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromEmail(TMMContactInfo &MMCo
    return MemberNotExist;
 }
 
-bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode)
+bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode,bool triggeredByCard)
 {
    bool addDefaultPoints = false;
    bool isCancel = false;
@@ -2608,7 +2608,13 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
    TMMContactInfo localContactInfo;
    TContactPoints pointsToSync;
    MemberMode memberMode = eInvalidMode;
-   bool existInLocalDb = TDBContacts::GetContactDetailsByCode(DBTransaction,localContactInfo,memberCardCode,memberMode);
+   bool existInLocalDb = !triggeredByCard;
+
+   if(triggeredByCard)
+   {
+      existInLocalDb = TDBContacts::GetContactDetailsByCode(DBTransaction,localContactInfo,memberCardCode,memberMode);
+   }
+
    if(existInLocalDb && TLoyaltyMateUtilities::HasPendingTransactions(DBTransaction,localContactInfo.ContactKey))
      {
         MessageBox("There are pending transaction to be sync. Please try again.", "Information", MB_OK + MB_ICONINFORMATION);

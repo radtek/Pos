@@ -80,7 +80,7 @@ public:
    virtual Currency GetValue(Database::TDBTransaction &DBTransaction, int inContactKey);
    TManagerMembershipSmartCards(Database::TDBControl &inDBControl, TModules &inModules);
    ~TManagerMembershipSmartCards();
-   bool MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode);
+   bool LoyaltyMemberSelected(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode,bool triggeredByCard);
    bool UpdateMemberCardCode(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode);
    bool GetMemberDetailFromBarcode(TMMContactInfo &MMContactInfo,AnsiString memberCode);
    bool GetMemberDetailFromEmail(TMMContactInfo &MMContactInfo);
