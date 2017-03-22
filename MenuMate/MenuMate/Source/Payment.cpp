@@ -422,7 +422,7 @@ void TPayment::SetAssignedGroups( TPaymentTypeGroup group )
 
 void TPayment::SetPaymentAttribute(ePaymentAttribute attributeIndex,bool attributeValue)
 {
-  if(attributeValue && (Properties.find(attributeIndex) != Properties.end()))
+  if(attributeValue && !(Properties.find(attributeIndex) != Properties.end()))
     Properties.insert(attributeIndex);
 }
 

@@ -282,14 +282,6 @@ void TListPaymentSystem::DeletePaymentAttribute(Database::TDBTransaction &DBTran
    AttributeQuery->ExecQuery();
 }
 
-void TListPaymentSystem::DeletePaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey)
-{
-   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
-   AttributeQuery->SQL->Text =  "DELETE FROM PAYMENT_ATTRIBUTES WHERE PAYMENT_KEY = :PAYMENT_KEY ";
-   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
-   AttributeQuery->ExecQuery();
-}
-
 void TListPaymentSystem::DeletePaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey,ePaymentAttribute inPaymentAttribute)
 {
    TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
@@ -2134,7 +2126,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		else
 		{
 			IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = -RoundToNearest(PaymentTransaction.Money.Change,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
-			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = 0;
+			IBInternalQuery->ParamByName("PROPERTIES")->AsString = "";
 			IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = 0;
 		}
 

@@ -2003,7 +2003,9 @@ void TApplyParser::PopulatePaymentProperties(TDBControl* const inDBControl)
 
         for (; !FetchQuery->Eof;)
         {
-            int properties = StrToInt(FetchQuery->FieldByName("PROPERTIES")->AsString);
+            AnsiString propStrDb = FetchQuery->FieldByName("PROPERTIES")->AsString;
+            Currency propStrCurr = StrToCurr(propStrDb);
+            int properties = (int)propStrCurr;
             AnsiString propStr = "-";
             for(int i = 0 ; i < 33 ; i++)
             {

@@ -322,6 +322,7 @@ void TMMTransactionRecovery::loadPaymentTypesInfoFromFile( TPaymentTransaction &
     {
         TPayment *Payment = new TPayment;
         Payment->Name = PaymentTypesCsv.Cells[0][i];
+        ExtractPaymentAttributes(*Payment,PaymentTypesCsv.Cells[1][i]);
         //Payment->Properties = StrToInt(PaymentTypesCsv.Cells[1][i]);
         Payment->Colour = StrToInt(PaymentTypesCsv.Cells[2][i]);
         Payment->DisplayOrder = StrToInt(PaymentTypesCsv.Cells[3][i]);
@@ -342,6 +343,28 @@ void TMMTransactionRecovery::loadPaymentTypesInfoFromFile( TPaymentTransaction &
         PaymentTransaction.PaymentAdd(Payment);
     }
 }
+
+void TMMTransactionRecovery::ExtractPaymentAttributes(TPayment &Payment,AnsiString properties)
+{
+  AnsiString searchString = "";
+  for(int i = 0 ; i < properties.Length();i++)
+  {
+     if(properties[i] == '-')
+     {
+        if(searchString != "")
+        {
+           Payment.SetPaymentAttribute(StrToInt(searchString));
+        }
+        searchString = "";
+     }
+     else
+     {
+        searchString += properties[i];
+     }
+  }
+}
+
+
 //---------------------------------------------------------------------------
 
 void TMMTransactionRecovery::loadOrdersInfoFromFile( TPaymentTransaction &PaymentTransaction )

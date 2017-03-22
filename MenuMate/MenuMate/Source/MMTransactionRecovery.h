@@ -44,6 +44,7 @@ class TMMTransactionRecovery
         int getStaffKeyFromTransactionFile();
 
         bool areAllRecoveryFilesPresent();
+        void ExtractPaymentAttributes(TPayment &Payment,AnsiString properties);
 };
 
 #endif
