@@ -297,10 +297,6 @@ void TfrmTransfer::UpdateSourceSeatDetails(Database::TDBTransaction &DBTransacti
                PopulateSourceDestTabDetails(DBTransaction, tabledata, tab_key, lbDisplayTransferfrom);
             }
 		 }
-         if(SelectedTabs.size() == 0)
-         {
-             SetPartyNameForDetinationTable(DBTransaction);
-         }
 	  }
       UpdateListBox(lbDisplayTransferfrom);
    }
@@ -423,11 +419,6 @@ void TfrmTransfer::UpdateDestSeatDetails(Database::TDBTransaction &DBTransaction
                int tab_key = *itTab;
                PopulateSourceDestTabDetails(DBTransaction, tabledata, tab_key, lbDisplayTransferto);
             }
-         }
-         if(SelectedTabs.size() == 0)
-         {
-             //SetPartyNameForTable(DBTransaction);
-             SetPartyNameForSourceTable(DBTransaction);
          }
 	  }
    }
@@ -2791,6 +2782,7 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
 
             int source_tabkey = 0;
             UnicodeString guestName = "";
+            UnicodeString partyName = "";
             // get guest name to transfer from destination to source....
             if(CurrentDestDisplayMode == eTables)
             {
@@ -2800,6 +2792,7 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
                     source_tabkey = item->TabKey;
                     guestName = TDBTab::GetTabName(*DBTransaction, source_tabkey);
                 }
+                partyName = TDBTables::GetPartyName(*DBTransaction, CurrentDestTable);
             }
 
             if (TDBOrder::CheckTransferCredit(*DBTransaction, OrdersList.get(), DestTabKey))
@@ -2812,7 +2805,16 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
 //                   ChefMateOrderList.pop_back();
                    CollectDataForChefmateTransfer(DestTabKey, OrdersList.get(), lbDisplayTransferto, true);
                 }
-                SetGuestNameForTable(*DBTransaction, DestTabKey, source_tabkey, isTabSelected, guestName);
+                if(CurrentDestDisplayMode == eTables)
+                {
+                     SetGuestNameForTable(*DBTransaction, DestTabKey, source_tabkey, guestName);
+                     std::set <__int64> SelectedTabs;
+                     TDBTables::GetTabKeys(*DBTransaction, CurrentDestTable, SelectedTabs);
+                     if(SelectedTabs.size() == 0)
+                     {
+                         SetPartyNameForSourceTable(*DBTransaction, partyName);
+                     }
+                }
             }
             else
             {
@@ -2947,7 +2949,7 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
             PrepareItemList(*DBTransaction, source_key, isTabSelected , OrdersList.get()) ;
             int identificationNumber = TDBOrder::GetOrderIdentificationNumberForTable(*DBTransaction,CurrentDestTable);
             //UpdateTablePartyName(*DBTransaction, DestTabKey, source_key, isTabSelected);
-            //.....restrict guest name as a party name when item and guest is transfer to a table
+            //.....restrict guest name as a party name when item or guest is transfer to a table
             if(CurrentSourceDisplayMode != eTables)
             {
                 UpdateTablePartyName(*DBTransaction, DestTabKey, source_key, isTabSelected);
@@ -2962,6 +2964,7 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
             // get guest name to transfer from source to destination.....
             int source_tabkey = 0;
             UnicodeString guestName = "";
+            UnicodeString partyName = "";
             if(CurrentSourceDisplayMode == eTables)
             {
                 if(OrdersList->Count > 0)
@@ -2970,6 +2973,7 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
                     source_tabkey = item->TabKey;
                     guestName = TDBTab::GetTabName(*DBTransaction, source_tabkey);
                 }
+                partyName = TDBTables::GetPartyName(*DBTransaction, CurrentSourceTable);
             }
 
             if (TDBOrder::CheckTransferCredit(*DBTransaction, OrdersList.get(), DestTabKey))
@@ -2980,7 +2984,16 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
                 {
                     CollectDataForChefmateTransfer(dest_tabkey, OrdersList.get(), lbDisplayTransferfrom);
                 }
-                SetGuestNameForTable(*DBTransaction, DestTabKey, source_tabkey, isTabSelected, guestName);
+                if(CurrentSourceDisplayMode == eTables)
+                {
+                     SetGuestNameForTable(*DBTransaction, DestTabKey, source_tabkey, guestName);
+                     std::set <__int64> SelectedTabs;
+                     TDBTables::GetTabKeys(*DBTransaction, CurrentSourceTable, SelectedTabs);
+                     if(SelectedTabs.size() == 0)
+                     {
+                         SetPartyNameForDetinationTable(*DBTransaction, partyName);
+                     }
+                }
             }
             else
             {
@@ -3170,6 +3183,7 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                        int identificationNumber = TDBOrder::GetOrderIdentificationNumberForTable(DBTransaction,CurrentDestTable);
                        std::set <__int64> SelectedTabs;
                        TDBTables::GetTabKeys(DBTransaction, CurrentSourceTable, SelectedTabs);
+                       UnicodeString partyName = TDBTables::GetPartyName(DBTransaction, CurrentSourceTable);
                        for (std::set <__int64> ::iterator itTab = SelectedTabs.begin(); itTab != SelectedTabs.end(); advance(itTab, 1))
                        {
                           if (TDBTab::GetTabExists(DBTransaction, *itTab))
@@ -3225,6 +3239,7 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
 
                                 //Shift table patron count to new table...
                                 TDBTables::ShiftPatronCountToNewTable(DBTransaction, CurrentSourceTable, CurrentDestTable);
+                                SetPartyNameForDetinationTable(DBTransaction, partyName);
                              }
                           }
                        }
@@ -4622,79 +4637,40 @@ bool TfrmTransfer::CheckIfClipTransferringToAnotherLinkedGuest(Database::TDBTran
 }
 
 //..................................................................................................................................
-void TfrmTransfer::SetGuestNameForTable(Database::TDBTransaction &DBTransaction, long DestTabKey, long SourceKey, bool isTabSelected, UnicodeString tabName)
+void TfrmTransfer::SetGuestNameForTable(Database::TDBTransaction &DBTransaction, long DestTabKey, long SourceKey, UnicodeString tabName)
 {
 
     if(CurrentDestDisplayMode == eTables && CurrentSourceDisplayMode == eTables)
     {
-         //if(CurrentDestDisplayMode == eTables)
-        // {
-
-             if(TDBTab::GetIsEmpty(DBTransaction, SourceKey))
-             {
-                 //tabName = TDBTab::GetTabName(DBTransaction, SourceKey);
-                 TDBTab::SetTabName(DBTransaction, DestTabKey, tabName);
-             }
-             /*if(isTabSelected)
-             {
-
-             }
-             else
-             {
-
-             }*/
-         //}
-    }
-
-    /*TTableSeat TableSeat;
-    int TableNo = 0;
-    UnicodeString TablePartyName = "";
-    if (TDBTables::GetTableSeat(DBTransaction,DestTabKey,&TableSeat))
-    {
-        TableNo = TableSeat.TableNo;
-        TablePartyName = TableSeat.PartyName;
-        if(TablePartyName == "")
-        {
-           UnicodeString PartyName = GetTabNameForTable(DBTransaction, SourceKey, isTabSelected);
-           TDBTables::SetPartyName(DBTransaction, TableNo, PartyName);
-        }
-
-    }*/
-}
-
-void TfrmTransfer::SetPartyNameForDetinationTable(Database::TDBTransaction &DBTransaction)
-{
-    if(CurrentDestDisplayMode == eTables && CurrentSourceDisplayMode == eTables)
-    {
-        if(CurrentDestDisplayMode == eTables)
-        {
-            UnicodeString partyname = TDBTables::GetPartyName(DBTransaction, CurrentDestTable);
-            if(partyname == "")
-            {
-               partyname = TDBTables::GetPartyName(DBTransaction, CurrentSourceTable);
-               TDBTables::SetPartyName(DBTransaction, CurrentDestTable, partyname);
-            }
-
-        }
-
-
+         if(TDBTab::GetIsEmpty(DBTransaction, SourceKey))
+         {
+             TDBTab::SetTabName(DBTransaction, DestTabKey, tabName);
+         }
     }
 }
 
-void TfrmTransfer::SetPartyNameForSourceTable(Database::TDBTransaction &DBTransaction)
+void TfrmTransfer::SetPartyNameForDetinationTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname)
 {
     if(CurrentDestDisplayMode == eTables && CurrentSourceDisplayMode == eTables)
     {
-        if(CurrentSourceDisplayMode == eTables)
+        UnicodeString destpartyname = TDBTables::GetPartyName(DBTransaction, CurrentDestTable);
+        if(destpartyname == "")
         {
-            UnicodeString partyname = TDBTables::GetPartyName(DBTransaction, CurrentSourceTable);//CurrentDestTable);
-            if(partyname == "")
-            {
-               partyname = TDBTables::GetPartyName(DBTransaction, CurrentDestTable);
-               TDBTables::SetPartyName(DBTransaction, CurrentSourceTable, partyname);
-            }
-
+           TDBTables::SetPartyName(DBTransaction, CurrentDestTable, partyname);
         }
+    }
+}
+
+void TfrmTransfer::SetPartyNameForSourceTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname)
+{
+    if(CurrentDestDisplayMode == eTables && CurrentSourceDisplayMode == eTables)
+    {
+        UnicodeString sourcepartyname = TDBTables::GetPartyName(DBTransaction, CurrentSourceTable);//CurrentDestTable);
+        if(sourcepartyname == "")
+        {
+           TDBTables::SetPartyName(DBTransaction, CurrentSourceTable, partyname);
+        }
+
     }
 }
 
