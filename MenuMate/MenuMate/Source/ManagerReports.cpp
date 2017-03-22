@@ -56,9 +56,10 @@ bool TSumPayments::GetPaymentAttribute(ePaymentAttribute attributeIndex)
 void TSumPayments::ExtractPaymentAttributes(AnsiString properties)
 {
   AnsiString searchString = "";
-  for(int i = 0 ; i < properties.Length();i++)
+  const char* line = properties.c_str();
+  for(int i = 0 ; i < line[i] != '\0' ; i++)
   {
-     if(properties[i] == '-')
+     if(line[i] == '-')
      {
         if(searchString != "")
         {
@@ -68,7 +69,7 @@ void TSumPayments::ExtractPaymentAttributes(AnsiString properties)
      }
      else
      {
-        searchString += properties[i];
+        searchString += line[i];
      }
   }
 }

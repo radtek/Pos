@@ -100,19 +100,20 @@ bool TStringTools::HasAllProperties(AnsiString propertyString,AnsiString allProp
 {
   bool retVal = false;
   AnsiString searchString = "";
-  for(int i = 0 ; i < allProperties.Length();i++)
+  const char* line = allProperties.c_str();
+  for(int i = 0 ; i < line[i] != '\0' ; i++)
   {
-     if(allProperties[i] == ',')
+     if(line[i] == ',')
      {
          searchString = "-" + searchString + "-";
-         retVal = propertyString.Pos(searchString) > 0;
+         retVal = propertyString.AnsiPos(searchString) > 0;
          if(!retVal)
            break;
          searchString = "";
      }
      else
      {
-        searchString += allProperties[i];
+        searchString += line[i];
      }
   }
   return retVal;

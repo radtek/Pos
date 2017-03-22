@@ -1963,11 +1963,11 @@ void TApplyParser::PopulateTable_PaymentAttributes(TDBControl* const inDBControl
 //------------------------------------------------------------------------------
 void TApplyParser::Updatetable_PaymentProperties(TDBControl* const inDBControl)
 {
-   executeQuery("ALTER TABLE ARCSURCHARGE ALTER PROPERTIES TYPE VARCHAR(256);",inDBControl);
-   executeQuery("ALTER TABLE ARCBILLPAY ALTER PROPERTIES TYPE VARCHAR(256);",inDBControl);
-   executeQuery("ALTER TABLE DAYARCSURCHARGE ALTER PROPERTIES TYPE VARCHAR(256);",inDBControl);
-   executeQuery("ALTER TABLE DAYARCBILLPAY ALTER PROPERTIES TYPE VARCHAR(256);",inDBControl);
-   executeQuery("ALTER TABLE PAYMENTTYPES ALTER PROPERTIES TYPE VARCHAR(256);",inDBControl);
+   executeQuery("ALTER TABLE ARCSURCHARGE ALTER PROPERTIES TYPE VARCHAR(150);",inDBControl);
+   executeQuery("ALTER TABLE ARCBILLPAY ALTER PROPERTIES TYPE VARCHAR(150);",inDBControl);
+   executeQuery("ALTER TABLE DAYARCSURCHARGE ALTER PROPERTIES TYPE VARCHAR(150);",inDBControl);
+   executeQuery("ALTER TABLE DAYARCBILLPAY ALTER PROPERTIES TYPE VARCHAR(150);",inDBControl);
+   executeQuery("ALTER TABLE PAYMENTTYPES ALTER PROPERTIES TYPE VARCHAR(150);",inDBControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::PopulatePaymentProperties(TDBControl* const inDBControl)
@@ -1998,7 +1998,6 @@ void TApplyParser::PopulatePaymentProperties(TDBControl* const inDBControl)
                                  "union all "
                                  "SELECT distinct(a.PROPERTIES) FROM PAYMENTTYPES a) ";;
 
-
         FetchQuery->ExecQuery();
 
         for (; !FetchQuery->Eof;)
@@ -2018,7 +2017,7 @@ void TApplyParser::PopulatePaymentProperties(TDBControl* const inDBControl)
                 }
             }
             else
-              propStr = "-0-"
+              propStr = "-0-";
 
             for(int j = 0 ; j < 5 ; j++)
             {
@@ -2030,6 +2029,7 @@ void TApplyParser::PopulatePaymentProperties(TDBControl* const inDBControl)
             }
             FetchQuery->Next();
         }
+
         transaction.Commit();
     }
     catch( Exception &E )

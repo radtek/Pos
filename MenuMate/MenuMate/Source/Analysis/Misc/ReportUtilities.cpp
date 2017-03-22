@@ -403,10 +403,7 @@ TTransactionInfo TTransactionInfoProcessor::GetBalanceInfo(TBlindBalances &balan
                // before = Now();    //arun
                 qrXArcPay->Close();
                 GetArcPayForNormalZed(qrXArcPay);
-                /*qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                                        "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
-                                        "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";*/
-                //}
+
                 qrXArcPay->ParamByName("ARCBILL_KEY")->AsInteger = qrXArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
                 qrXArcPay->ExecQuery();
 
@@ -882,19 +879,22 @@ void TTransactionInfoProcessor::LoadArcPointTransaction(TIBSQL *qXArcPoints1, TT
     {
         for (; !qXArcPoints1->Eof; qXArcPoints1->Next())
         {
+
             TSumPayments CurrentPayment;
             int GroupNumber = qXArcPoints1->FieldByName("GROUP_NUMBER")->AsInteger;
             // Summarise all points type payments.
             UnicodeString paymentName = "";
-            if (qXArcPoints1->FieldByName("PROPERTIES")->AsInteger & ePayTypePoints)
+            if (TStringTools::Instance()->HasAllProperties(qXArcPoints1->FieldByName("PROPERTIES")->AsString,"17,"))
             {
                 paymentName = "Points";
             }
-            else if (qXArcPoints1->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit && qXArcPoints1->FieldByName("SUBTOTAL")->AsCurrency < 0)
+            else if (TStringTools::Instance()->HasAllProperties(qXArcPoints1->FieldByName("PROPERTIES")->AsString,"18,") &&
+                     qXArcPoints1->FieldByName("SUBTOTAL")->AsCurrency < 0)
             {
                 paymentName = qXArcPoints1->FieldByName("PAY_TYPE")->AsString + " Purchased";
             }
-            else if (qrXArcPay->FieldByName("PROPERTIES")->AsInteger & ePayTypeCredit && qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency >= 0)
+            else if (TStringTools::Instance()->HasAllProperties(qXArcPoints1->FieldByName("PROPERTIES")->AsString,"18,") &&
+                     qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency >= 0)
             {
                 paymentName = qXArcPoints1->FieldByName("PAY_TYPE")->AsString + " Redeemed";
             }

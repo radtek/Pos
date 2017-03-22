@@ -8,6 +8,7 @@
 #include "PocketVoucherInterface.h"
 #include "SalesForceInterface.h"
 #include "StockInterface.h"
+#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -70,6 +71,7 @@ bool TSalesForceCommAtZed::CheckPocketVoucherPaymentType(Database::TDBTransactio
         PVFieldSalesForce = pvDetailsLocal.PocketVoucherField;
         std::vector<TPayment> Payments;
         TDeviceRealTerminal::Instance().PaymentSystem->PaymentsLoadTypes(DBTransaction,Payments);
+
         for(std::vector<TPayment>::iterator i = Payments.begin() ; i != Payments.end() ; ++i)
         {
             // Identifies the Payment type is Pocket Voucher Type
