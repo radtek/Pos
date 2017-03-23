@@ -2247,8 +2247,7 @@ bool TManagerMembershipSmartCards::createMemberOnLoyaltyMate(TSyndCode syndicate
 	if(!result)
 	  MessageBox(memberCreationThread->ErrorMessage,"Failed to create member", MB_ICONERROR + MB_OK);
     else
-      MessageBox("Member created. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
-
+      MessageBox("Member created. Please select member or re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
 	// cleanup
 	delete _lmOperationDialogBox;
 	delete memberCreationThread;
@@ -2614,6 +2613,10 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
    {
       existInLocalDb = TDBContacts::GetContactDetailsByCode(DBTransaction,localContactInfo,memberCardCode,memberMode);
    }
+   else
+   {
+      localContactInfo = UserInfo;
+   }
 
    if(existInLocalDb && TLoyaltyMateUtilities::HasPendingTransactions(DBTransaction,localContactInfo.ContactKey))
      {
@@ -2621,7 +2624,6 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
         TManagerLoyaltyMate::Instance()->TriggerPointSync();
         return false;
      }
-
 
    UserInfo = localContactInfo;
    if(TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(localContactInfo.CloudUUID))
@@ -2787,13 +2789,13 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
             }
          }
        }
-       else if(UserInfo.MemberCode != memberCardCode)
+       else if(memberCardCode != "" && UserInfo.MemberCode != memberCardCode)
        {
           UserInfo.MemberCode = memberCardCode;
           updateRequired = true;
        }
 
-       if(updateRequired && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
+       if(memberCardCode != "" && updateRequired && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
        {
           UpdateMemberCardCode(DBTransaction,UserInfo,memberCardCode);
        }
@@ -2810,7 +2812,7 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
 
    if(addDefaultPoints && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
    {
-     AddDefaultPoints(DBTransaction,pointsToSync,UserInfo.ContactKey);
+     AddDefaultPoints(DBTransaction,pointsToSync,UserInfo.ContactKey,triggeredByCard);
      TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- MemberCodeScanned");
    }
     DBTransaction.Commit();
@@ -2973,7 +2975,7 @@ void TManagerMembershipSmartCards::SaveTransactionInvoiceDetail(TPaymentTransact
     }
 }
 
-void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DBTransaction,TContactPoints &Points,int contactkey)
+void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DBTransaction,TContactPoints &Points,int contactkey,bool triggeredForCard)
 {
    TDateTime syncTime = Now();
    if(Points.getPointsBalance(ptstLoyalty) > 0)
@@ -2998,7 +3000,14 @@ void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DB
         TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
    }
    TManagerLoyaltyMate::Instance()->TriggerPointSync();
+   if(triggeredForCard)
+   {
    MessageBox("Points restored. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+   }
+   else
+   {
+      MessageBox("Points restored. Please select member again to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+   }
 }
 
 void TManagerMembershipSmartCards::RewardBirthdaybenefit(TPaymentTransaction &PaymentTransaction)

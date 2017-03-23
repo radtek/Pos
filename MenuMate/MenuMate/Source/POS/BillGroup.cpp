@@ -1808,14 +1808,7 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
                         if (Result == lsAccepted)
                         {
                             TGlobalSettings::Instance().IsDiscountSelected = false;
-                            if(TGlobalSettings::Instance().LoyaltyMateEnabled)
-                            {
-                                GetLoyaltyMember(DBTransaction,TempUserInfo);
-                            }
-                            else
-                            {
                             ApplyMembership(DBTransaction, TempMembershipInfo);
-                            }
                             if(TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected)
                             {
                                 ProcessBillThorVouchers(DBTransaction);
@@ -1840,6 +1833,10 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
                          {
                             RemoveMembership(DBTransaction);
                          }
+                         if(TGlobalSettings::Instance().LoyaltyMateEnabled && TempMembershipInfo.ContactKey != 0)
+                            {
+                                GetLoyaltyMember(DBTransaction,TempMembershipInfo);
+                            }
                          DBTransaction.Commit();
                          ShowReceipt();
 				}

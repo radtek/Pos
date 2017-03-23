@@ -31,7 +31,7 @@ public:
    void SaveContactInfoReassignedToSmartCard(TMMContactInfo &inContactInfo);
    bool SavePointsTransactionsToSmartCard(TContactPoints &Points,AnsiString inInvoiceNumber,bool PointsFromCloud = false);
    bool SavePointsTransactionsForBarcodeCard(TContactPoints &Points,TMMContactInfo &UserInfo,AnsiString inInvoiceNumber, bool PointsFromCloud = false);
-   void AddDefaultPoints(Database::TDBTransaction &DBTransaction,TContactPoints &Points,int contactkey);
+   void AddDefaultPoints(Database::TDBTransaction &DBTransaction,TContactPoints &Points,int contactkey,bool triggeredForCard = true);
    void BlockAllOfContactsSmartCards(Database::TDBTransaction &DBTransaction, int contactKey);
    void SetSmartCardRestorePoint(Database::TDBTransaction &DBTransaction, TMMContactInfo &MMContactInfo, TSmartCardBlock *RestorePoint,
 	  TSyndCode &SyndCode);

@@ -7990,15 +7990,7 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 	    		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	    		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 	    		DBTransaction.StartTransaction();
-                if(TGlobalSettings::Instance().LoyaltyMateEnabled)
-                {
-                    GetLoyaltyMember(DBTransaction,TempUserInfo);
-                }
-                else
-                {
 	        	ApplyMembership(DBTransaction, TempUserInfo);
-                }
-
 		    	DBTransaction.Commit();
 
 	    	}
@@ -8038,12 +8030,23 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
                    TDrinkCommandData::Instance().UpdateTimeStampToNull(cardId)  ;
                    dc_item_show = false;
                 }
-	        	ApplyMembership(DBTransaction, TempUserInfo);
-	              	DBTransaction.Commit();
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+                {
+                    ApplyMembership(DBTransaction, TempUserInfo,false);
+                    if(TempUserInfo.ContactKey != 0)
+                    GetLoyaltyMember(DBTransaction,TempUserInfo);
+                }
+                else
+                {
+                    ApplyMembership(DBTransaction, TempUserInfo);
+                }
+
+	            DBTransaction.Commit();
                 if (!TGlobalSettings::Instance().EnablePhoneOrders)
-                   {
-                      AutoLogOut();
-                   }
+                {
+                    AutoLogOut();
+                }
 
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
@@ -14081,7 +14084,7 @@ void TfrmSelectDish::RemoveMembership(Database::TDBTransaction &DBTransaction)
 }
 
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member)
+void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member,bool triggeredForCard)
 {
      customerDisp.HappyBirthDay = false;
      customerDisp.FirstVisit = false;
@@ -14224,8 +14227,11 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 			LastSale = 0;
 		}
 		TMembership *membershipSystem = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
+        if(triggeredForCard)
+        {
         customerDisp.HappyBirthDay = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->DisplayBirthDayNotification(DBTransaction,Member);
         customerDisp.FirstVisit=TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->DisplayFirstVisitNotification(DBTransaction,Member);
+        }
 		AnsiString ShowPoints = FloatToStr( Member.Points.getPointsBalance() );
         AnsiString name = Member.PoleDisplayName;
 		TDeviceRealTerminal::Instance().SecurityPort->SetData(Member.PoleDisplayName);
