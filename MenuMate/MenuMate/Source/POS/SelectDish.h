@@ -306,11 +306,11 @@ private: // User declarations
                        TItem* inItem,
                        bool  inSetMenuItem,
                        TItemSize* inItemSize = NULL,
-                       Currency  inPrice = 0 );
+                       Currency  inPrice = 0,  bool IsItemSearchedOrScan = false);
     TItemComplete* createItemComplete(Database::TDBTransaction& DBTransaction,
                                       TItem* Item,
                                       bool  SetMenuItem,
-                                      TItemSize* inItemSize );
+                                      TItemSize* inItemSize , bool IsItemSeaarchedOrScan);
 
     TCustomerOrder CustomerOrder; //Customer name, OrderType
     long LastEnabledStateSync;
@@ -673,6 +673,7 @@ public: // User declarations
     bool check;
     bool IsTextBoxFocused();
     void UpdateMenuItemsAfterLoginScreen();
+    int GetDefaultServingCourse(int item_key);
  };
 // ---------------------------------------------------------------------------
 

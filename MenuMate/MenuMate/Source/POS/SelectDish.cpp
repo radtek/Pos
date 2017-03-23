@@ -1194,7 +1194,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 				}
 
 				DBTransaction.StartTransaction();
-				AddItemToSeat(DBTransaction, Item, false, ItemSize,Price);
+				AddItemToSeat(DBTransaction, Item, false, ItemSize, Price, true);
 				DBTransaction.Commit();
 
 				AfterItemOrdered.Occured();
@@ -1223,7 +1223,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 				}
 
 				DBTransaction.StartTransaction();
-				AddItemToSeat(DBTransaction, Item, false, ItemSize);
+				AddItemToSeat(DBTransaction, Item, false, ItemSize, 0, true);
 				DBTransaction.Commit();
 				AfterItemOrdered.Occured();
 				if (AfterItemOrdered.EventsFailed)
@@ -1251,7 +1251,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 				else
 				{
 					DBTransaction.StartTransaction();
-					AddItemToSeat(DBTransaction, Item, false, ItemSize);
+					AddItemToSeat(DBTransaction, Item, false, ItemSize, 0, true);
 					DBTransaction.Commit();
 				}
 
@@ -12565,10 +12565,12 @@ bool  TfrmSelectDish::ShowTabCreditLimitExceedsMessage(Database::TDBTransaction 
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TItem* inItem,	bool  inSetMenuItem,
-								   TItemSize* inItemSize,Currency  inPrice )
+								   TItemSize* inItemSize,Currency  inPrice , bool IsItemSearchedOrScan)
 {
+
     CheckLastAddedItem(); // check any added item in list;
-	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize );
+
+	TItemComplete *Order = createItemComplete( inDBTransaction, inItem, inSetMenuItem, inItemSize, IsItemSearchedOrScan );
 
 	if (inPrice != 0)
 	{
@@ -12656,7 +12658,8 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 					Database::TDBTransaction& DBTransaction,
 									   TItem* Item,
 										bool  SetMenuItem,
-								   TItemSize* inItemSize )
+								   TItemSize* inItemSize,
+                                   bool IsItemSeaarchedOrScan )
 {
 	TItemComplete *itemComplete = new TItemComplete;
 	TItemSize *itemSize;
@@ -12683,8 +12686,14 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 	itemComplete->Note = "";
 	itemComplete->Course = Item->Course;
 	itemComplete->CourseKitchenName = Item->CourseKitchenName;
-	itemComplete->ServingCourse = CurrentServingCourse;
-
+    if(IsItemSeaarchedOrScan)   // get default serving course for scanned and serached items..
+    {
+        itemComplete->ServingCourse =  TDeviceRealTerminal::Instance().Menus->GetServingCourse(GetDefaultServingCourse(itemComplete->ItemKey));
+    }
+    else
+    {
+        itemComplete->ServingCourse = CurrentServingCourse;
+    }
 	itemComplete->ItemAppearanceOrder = Item->ItemAppearanceOrder;
 	itemComplete->FontInfo = Item->FontInfo;
 	itemComplete->Loyalty_Key = SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey;
@@ -14497,7 +14506,7 @@ void TfrmSelectDish:: OrderSearchedItem(std::pair<TItem*, TItemSize*> &itemAndSi
         {
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction.StartTransaction();
-            AddItemToSeat(DBTransaction, Item, false, ItemSize);
+            AddItemToSeat(DBTransaction, Item, false, ItemSize , 0, true);
             DBTransaction.Commit();
         }
 
@@ -14555,4 +14564,32 @@ void TfrmSelectDish::UpdateMenuItemsAfterLoginScreen()
     RedrawItems();
     RedrawItemSideCourses();
     RedrawSetMenuItems();
+}
+
+int TfrmSelectDish::GetDefaultServingCourse(int item_key)
+{
+    int retVal = 0;
+	try
+	{
+        Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
+        transaction.StartTransaction();
+		TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+			" Select a.SERVINGCOURSES_KEY FROM COURSE a inner join Item b on b.COURSE_KEY = a.COURSE_KEY where b.ITEM_KEY = :ITEM_KEY " ;
+		IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = item_key;
+		IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+        {
+             retVal	= IBInternalQuery->FieldByName("SERVINGCOURSES_KEY")->AsInteger;
+        }
+        transaction.Commit();
+	}
+	catch(Exception &Err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+		throw;
+	}
+   return retVal;
 }
