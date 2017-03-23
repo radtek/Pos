@@ -53,14 +53,7 @@ void TSmartCardVer4::UnlockCard(std::map <int, TSyndCode> SyndCodes)
 	for (ptrSyndCodes = SyndCodes.begin();ptrSyndCodes != SyndCodes.end() && !SyndCodeValidated ; advance(ptrSyndCodes,1))
 	{
       StreamGetContact(*ContactStream.get());
-#ifdef _DEBUG
-	  ContactStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedContactSteam.bin");
-#endif
       DecryptInPlace(*ContactStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
-#ifdef _DEBUG
-	  ContactStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedContactSteam.bin");
-#endif
-
 		ContactInfo.LoadFromStream(BlockData.Version,ContactStream.get());
         CRC = 0; CalcCRC = 0;
 		StreamRead(ContactStream.get(),CRC);
@@ -68,15 +61,7 @@ void TSmartCardVer4::UnlockCard(std::map <int, TSyndCode> SyndCodes)
         {
             std::auto_ptr<TMemoryStream> PointsStream(new TMemoryStream);
             StreamGetPoints(*PointsStream.get(), SMART_CARD_VERSION_FOUR);
-            #ifdef _DEBUG
-            PointsStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardEncryptedPointsStreamRead.bin");
-            #endif
-
             DecryptInPlace(*PointsStream.get(),ptrSyndCodes->second.DecryptedSyndCode);
-            #ifdef _DEBUG
-            PointsStream->SaveToFile(Now().FormatString(" yyyy-mmm-dd hh-nn-ss") + "MMCardDecryptedPointsStreamRead.bin");
-            #endif
-
             // TODO 1 -o Michael -c Descrespancy : Investiage the if this is a mistake?
             /* There is no version 4 LoadFromStream in contact points, posibly because the save was
             	broken in some way? This therefore does nothing. BYE BYE POINTS ON CARD!!!!*/
@@ -432,9 +417,6 @@ void TSmartCardVer4::Restore(TSmartCardBlock &RestorePoint)
    TMemoryStream &RestoreStream = RestorePoint.GetStreamRef();
 	lReturn = CardInfoWrite(V4_CARD_RESTORE_POINT_DATA_START,CARD_RESTORE_POINT_LENGTH,RestoreStream);
    RestoreStream.Position = 0;
-   #ifdef _DEBUG
-   RestoreStream.SaveToFile("MMRestoreToRestorePoint.bin");
-   #endif
    if (lReturn != SCARD_S_SUCCESS && lReturn != SCARD_M_CHECK_ERROR)
    {
 		TManagerLogs::Instance().Add(__FUNC__,SMARTCARDLOG,"Write Restore Point Failed. : " + AnsiString(IntToHex(int(lReturn),3)));

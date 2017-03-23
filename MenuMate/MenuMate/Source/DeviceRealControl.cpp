@@ -957,10 +957,6 @@ void TDeviceRealControl::RegisteredModule(bool *pModuleRegistered, eRegisteredMo
 	{
 		*pModuleRegistered = false;
 
-#ifdef _DEBUG
-		*pModuleRegistered = true;
-#endif
-
 		UnicodeString TerminalName = ID.Name;
 		if (TerminalName != "")
 		{

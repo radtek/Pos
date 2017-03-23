@@ -26,10 +26,6 @@ bool TDiscountGroupsDBDriver::AddDiscountGroups(TDiscountGroup* group)
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
     }
     return status;
 };
@@ -47,10 +43,6 @@ bool TDiscountGroupsDBDriver::UpdateDiscountGroups(TDiscountGroup* group)
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
     }
     return status;
 };
@@ -68,10 +60,6 @@ bool TDiscountGroupsDBDriver::DeleteDiscountGroups(int groupKey)
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
     }
     return status;
 };
@@ -88,10 +76,6 @@ void TDiscountGroupsDBDriver::LoadAssignedGroupsByType(int discountTypeKey, TLis
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
     }
 };
 //---------------------------------------------------------------------------
@@ -107,10 +91,7 @@ void TDiscountGroupsDBDriver::LoadAllDiscountGroups(TList* groups)
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
 };
 //---------------------------------------------------------------------------
@@ -172,10 +153,7 @@ bool TDiscountGroupsDBDriver::AssignTypesToDiscountGroups(int discountGroupKey, 
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
     return status;
 };
@@ -299,10 +277,7 @@ void TDiscountGroupsDBDriver::LoadAssignedTypesByGroups(int discountGroupKey,TLi
     }
     catch(Exception &ex)
     {
-        //todo: log exception
-        #ifdef _DEBUG
-            throw;
-        #endif
+
     }
 };
 //---------------------------------------------------------------------------

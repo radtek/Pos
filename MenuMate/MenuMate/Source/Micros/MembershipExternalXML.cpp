@@ -87,18 +87,12 @@ void TMSXMLBase::Parse()
       {
 	   	  Result = eMSFailed;
          ResultText = "Incorrect Responce Status : " + UpperCase(TransmissionStatus);
-#ifdef _DEBUG
-		  SaveToFile();
-#endif
       }
    }
    else
    {
 		Result = eMSFailed;
       ResultText = "Incorrect XML format ";
-#ifdef _DEBUG
-	   SaveToFile();
-#endif
    }
 }
 
@@ -141,9 +135,6 @@ TMSXMLEnquiry::TMSXMLEnquiry() : TMSXMLBase()
 
 void TMSXMLEnquiry::Parse()
 {
-#ifdef _DEBUG
-SaveToFile();
-#endif
 	TiXmlHandle hDoc(&ResultDoc);
 	TiXmlElement* pElement = NULL;
 	pElement = hDoc.FirstChild(_T("Response")).ToElement();
@@ -311,17 +302,11 @@ void TMSXMLTransaction::Parse()
 		{
 			Result = eMSFailed;
 			ResultText = "Incorrect Responce Status : " + UpperCase(TransmissionStatus);
-			#ifdef _DEBUG
-			SaveToFile();
-			#endif
 		}
 	}
 	else
 	{
 		Result = eMSFailed;
 		ResultText = "Incorrect XML format ";
-		#ifdef _DEBUG
-		SaveToFile();
-		#endif
 	}
 }
