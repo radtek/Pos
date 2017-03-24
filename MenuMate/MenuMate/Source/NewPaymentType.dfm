@@ -7,8 +7,8 @@ object frmNewPaymentType: TfrmNewPaymentType
   BorderStyle = bsNone
   BorderWidth = 5
   Caption = 'Payment Type'
-  ClientHeight = 618
-  ClientWidth = 955
+  ClientHeight = 748
+  ClientWidth = 1004
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,15 +24,15 @@ object frmNewPaymentType: TfrmNewPaymentType
   ExplicitWidth = 320
   ExplicitHeight = 240
   DesignSize = (
-    955
-    618)
+    1004
+    748)
   PixelsPerInch = 96
   TextHeight = 13
   object pnlButtons: TPanel
-    Left = 829
+    Left = 878
     Top = 0
     Width = 130
-    Height = 618
+    Height = 748
     Alignment = taRightJustify
     Anchors = [akTop, akRight, akBottom]
     BorderWidth = 5
@@ -137,7 +137,7 @@ object frmNewPaymentType: TfrmNewPaymentType
     Left = 0
     Top = 0
     Width = 884
-    Height = 618
+    Height = 748
     ActivePage = tsInterfaces
     Align = alLeft
     TabOrder = 1
@@ -151,7 +151,7 @@ object frmNewPaymentType: TfrmNewPaymentType
         Left = 0
         Top = 0
         Width = 876
-        Height = 608
+        Height = 738
         Align = alClient
         Color = 14342874
         Font.Charset = DEFAULT_CHARSET
@@ -520,7 +520,7 @@ object frmNewPaymentType: TfrmNewPaymentType
         Left = 0
         Top = 0
         Width = 876
-        Height = 608
+        Height = 738
         Align = alClient
         Color = 14342874
         Font.Charset = DEFAULT_CHARSET
@@ -642,7 +642,7 @@ object frmNewPaymentType: TfrmNewPaymentType
         Left = 0
         Top = 0
         Width = 876
-        Height = 608
+        Height = 738
         Align = alClient
         BevelOuter = bvNone
         Color = 14342874
@@ -1272,6 +1272,76 @@ object frmNewPaymentType: TfrmNewPaymentType
           DisabledButtonColor = clBtnFace
           LatchingProperties = [lkLatchColor, lkStayDown]
           OnMouseClick = tbTabLinkMouseClick
+        end
+        object grpPaymentWallet: TGroupBox
+          Left = 511
+          Top = 586
+          Width = 240
+          Height = 143
+          Caption = 'Wallet Interfaces'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentBackground = False
+          ParentFont = False
+          TabOrder = 9
+          object cbWalletPayments: TCheckBox
+            Left = 10
+            Top = 24
+            Width = 220
+            Height = 33
+            Caption = 'Enable Wallet Payments'
+            Color = clNavy
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentColor = False
+            ParentFont = False
+            TabOrder = 0
+            OnClick = cbWalletPaymentsClick
+          end
+          object btnWalletType: TTouchBtn
+            Left = 10
+            Top = 63
+            Width = 220
+            Height = 34
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ParentColor = True
+            Caption = 'Select Wallet Type'
+            ButtonColor = clNavy
+            LatchedColor = clBtnFace
+            DisabledButtonColor = 14342874
+            LatchingProperties = [lkLatchColor, lkStayDown]
+            OnMouseClick = btnWalletTypeMouseClick
+          end
+          object btnWalletConfig: TTouchBtn
+            Left = 10
+            Top = 103
+            Width = 220
+            Height = 32
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ParentColor = True
+            Caption = 'Merchent Details'
+            ButtonColor = clNavy
+            LatchedColor = clBtnFace
+            DisabledButtonColor = 14342874
+            LatchingProperties = [lkLatchColor, lkStayDown]
+            OnMouseClick = btnWalletConfigMouseClick
+          end
         end
       end
     end

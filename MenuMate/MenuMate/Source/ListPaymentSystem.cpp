@@ -58,7 +58,6 @@
 #include "DBTierLevel.h"
 #include "ManagerDelayedPayment.h"
 #include "DrinkCommandManager.h"
-//#include "DeviceRealTerminal.h"
 #include "InitializeDCSession.h"
 #include "MallExportRegenerateReport.h"
 #include "LoyaltyMateUtilities.h"
@@ -164,6 +163,7 @@ void TListPaymentSystem::PaymentLoad(Database::TDBTransaction &DBTransaction, in
 			Payment.Name = IBInternalQuery->FieldByName("PAYMENT_NAME")->AsString;
 			//Payment.Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
             GetPaymentAttributes(DBTransaction,PaymentKey,Payment);
+            GetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
 			Payment.DisplayOrder = IBInternalQuery->FieldByName("DISPLAY_ORDER")->AsInteger;
 			Payment.Colour = IBInternalQuery->FieldByName("COLOUR")->AsInteger;
 			Payment.AmountAdjust = IBInternalQuery->FieldByName("AMOUNT_ADJUST")->AsFloat;
@@ -291,6 +291,47 @@ void TListPaymentSystem::DeletePaymentAttribute(Database::TDBTransaction &DBTran
    AttributeQuery->ExecQuery();
 }
 
+void TListPaymentSystem::GetPaymentWalletAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment)
+{
+   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+   AttributeQuery->SQL->Text =  "SELECT * FROM PAYMENT_WALLET_ATTRIBUTES WHERE PAYMENT_KEY = :PAYMENT_KEY ";
+   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+   AttributeQuery->ExecQuery();
+   if (!AttributeQuery->Eof)
+   {
+        Payment.WalletType = AttributeQuery->FieldByName("WALLET_TYPE")->AsInteger;
+        Payment.MerchentId = AttributeQuery->FieldByName("MERCHENT_ID")->AsString;
+        Payment.TerminalId = AttributeQuery->FieldByName("TERMINAL_ID")->AsString;
+        Payment.WalletUserName = AttributeQuery->FieldByName("USER_NAME")->AsString;
+        Payment.WalletPassword = AttributeQuery->FieldByName("WALLET_PASSWORD")->AsString;
+        Payment.WalletSecurityToken = AttributeQuery->FieldByName("SECURITY_TOKEN")->AsString;
+   }
+}
+
+void TListPaymentSystem::SetPaymentWalletAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment)
+{
+   DeletePaymentWalletAttribute(DBTransaction,PaymentKey);
+   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+   AttributeQuery->SQL->Text = "INSERT INTO PAYMENT_WALLET_ATTRIBUTES (PAYMENT_KEY,WALLET_TYPE, MERCHENT_ID,TERMINAL_ID,USER_NAME,WALLET_PASSWORD,SECURITY_TOKEN) "
+                                "VALUES (:PAYMENT_KEY,:WALLET_TYPE,:MERCHENT_ID,:TERMINAL_ID,:USER_NAME,:WALLET_PASSWORD,:SECURITY_TOKEN)";
+   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+   AttributeQuery->ParamByName("WALLET_TYPE")->AsInteger = Payment.WalletType;
+   AttributeQuery->ParamByName("MERCHENT_ID")->AsString = Payment.MerchentId;
+   AttributeQuery->ParamByName("TERMINAL_ID")->AsString = Payment.TerminalId;
+   AttributeQuery->ParamByName("USER_NAME")->AsString = Payment.WalletUserName;
+   AttributeQuery->ParamByName("WALLET_PASSWORD")->AsString = Payment.WalletPassword;
+   AttributeQuery->ParamByName("SECURITY_TOKEN")->AsString = Payment.WalletSecurityToken;
+   AttributeQuery->ExecQuery();
+}
+
+void TListPaymentSystem::DeletePaymentWalletAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey)
+{
+   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+   AttributeQuery->SQL->Text =  "DELETE FROM PAYMENT_WALLET_ATTRIBUTES WHERE PAYMENT_KEY = :PAYMENT_KEY ";
+   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+   AttributeQuery->ExecQuery();
+}
+
 void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, int &PaymentKey, TPayment &Payment)
 {
 	try
@@ -367,6 +408,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
 			IBInternalQuery->ExecQuery();
             SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
+            SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
 		}
 		else
 		{
@@ -438,6 +480,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			}
 			IBInternalQuery->ExecQuery();
             SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
+            SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
 		}
 	}
 	catch(Exception & E)
@@ -491,6 +534,7 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 		CurrentDisplayOrder = NewPayment->DisplayOrder;
         //NewPayment->Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
         GetPaymentAttributes(PaymentTransaction.DBTransaction,IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,*NewPayment);
+        GetPaymentWalletAttributes(PaymentTransaction.DBTransaction,IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,*NewPayment);
 	    loadPaymentTypeGroupsForPaymentType(IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,*NewPayment );
 	    PaymentTransaction.PaymentAdd(NewPayment);
     }

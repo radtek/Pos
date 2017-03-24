@@ -80,6 +80,9 @@ class TListPaymentSystem : public TMMPaymentSystem
     void SetPaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey,ePaymentAttribute inPaymentAttribute);
     void DeletePaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey);
     void DeletePaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey,ePaymentAttribute inPaymentAttribute);
+    void GetPaymentWalletAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
+    void SetPaymentWalletAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
+    void DeletePaymentWalletAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey);
     void SaveToFileCSV(TPaymentTransaction &PaymentTransaction);
 	void Initialise(Database::TDBTransaction &DBTransaction);
 	void RemoveTabs(TPaymentTransaction &PaymentTransaction);

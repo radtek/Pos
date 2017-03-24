@@ -1898,6 +1898,7 @@ void TApplyParser::update6_39Tables()
      PopulateTable_PaymentAttributes(_dbControl);
      Updatetable_PaymentProperties(_dbControl);
      PopulatePaymentProperties(_dbControl);
+     CreateTable_PaymentWalletAttributes(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::CreateTable_PaymentAttributes(TDBControl* const inDBControl)
@@ -2037,6 +2038,30 @@ void TApplyParser::PopulatePaymentProperties(TDBControl* const inDBControl)
         transaction.Rollback();
     }
 }
+//------------------------------------------------------------------------------
+void TApplyParser::CreateTable_PaymentWalletAttributes(TDBControl* const inDBControl)
+{
+  if( !tableExists( "PAYMENT_WALLET_ATTRIBUTES", inDBControl ) )
+    {
+        executeQuery(
+                "CREATE TABLE PAYMENT_WALLET_ATTRIBUTES "
+                "( "
+
+                "   PAYMENT_KEY INTEGER, "
+                "   WALLET_TYPE INTEGER , "
+                "   MERCHENT_ID VARCHAR(25) , "
+                "   TERMINAL_ID VARCHAR(25) , "
+                "   USER_NAME VARCHAR(25) , "
+                "   WALLET_PASSWORD VARCHAR(50) , "
+                "   SECURITY_TOKEN VARCHAR(50),  "
+                "   foreign key(PAYMENT_KEY) references PAYMENTTYPES(PAYMENT_KEY) ON DELETE cascade"
+                ");",
+            inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+
+
 }
 
 

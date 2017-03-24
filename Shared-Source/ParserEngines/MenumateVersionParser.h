@@ -822,6 +822,7 @@ namespace MenumateVersionParser
         void PopulateTable_PaymentAttributes(TDBControl* const inDBControl);
         void Updatetable_PaymentProperties(TDBControl* const inDBControl);
         void PopulatePaymentProperties(TDBControl* const inDBControl);
+        void CreateTable_PaymentWalletAttributes(TDBControl* const inDBControl);
     }; // class
 } // namespace
 

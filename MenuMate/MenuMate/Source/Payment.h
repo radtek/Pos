@@ -52,7 +52,10 @@ enum ePaymentAttribute
     ePayTypeRMSInterface,          //31
     ePayTypeAllowTips,             //32
     ePayTypeClipp,                 //33
+    ePayTypeWallet,                //34
 };
+
+enum eWalletType{eNoWallet,eWeChat,eJio,};
 
 class TPaymentTransaction;
 
@@ -85,16 +88,13 @@ public:
     UnicodeString UniVoucherPass;
     UnicodeString UniVoucherToken;
     UnicodeString GLCode;
-    /* Used for the RMS room interface as the location to read and write csv files*/
     UnicodeString CVSReadLocation;
     UnicodeString CVSWriteLocation;
-    /*Holds the RMS Room Info*/
     TRMSRoom RMSRoom;
     TNewBookRoom NewBookRoom;
     AnsiString SecondaryPMSIPAddress;
     int SecondaryPMSPortNumber;
     int Colour;
-
     int DisplayOrder;
     int TabCreditKey;
     int GroupNumber;
@@ -120,6 +120,13 @@ public:
     WideString CardType; // when used an eftpos machine (specially dps) this property will be set to actual card type used. Visa, Mastercard, BankCard etc
     UnicodeString EftposTransactionID; // unique eftpos transaction id returned from the eftpos machine
     std::set<int> Properties;
+    eWalletType WalletType;
+    UnicodeString MerchentId;
+    UnicodeString TerminalId;
+    UnicodeString WalletUserName;
+    UnicodeString WalletPassword;
+    UnicodeString WalletSecurityToken;
+
     void Reset();
     void Failed();
     void SetAssignedGroups( std::vector<TPaymentTypeGroup> groups );
