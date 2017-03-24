@@ -363,7 +363,7 @@ private: // User declarations
     eBtnToDisplay GetModifyOptionSelected();
     void __fastcall CloseSidePanel();
     void __fastcall OpenSidePanel();
-    void ApplyMembership(Database::TDBTransaction &DBTransaction, TMMContactInfo & Membership,bool triggeredForCard = true);
+    void ApplyMembership(Database::TDBTransaction &DBTransaction, TMMContactInfo & Membership);
     bool StaffChanged(TMMContactInfo TempUserInfo);
     void RemoveMembership(Database::TDBTransaction &DBTransaction);
     bool TabPINOk(Database::TDBTransaction &DBTransaction, int inTabKey);

@@ -1756,15 +1756,28 @@ void TfrmBillGroup::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,A
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::GetLoyaltyMember(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info)
 {
- 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
-    bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,Info,Info.MemberCode,false);
+     eMemberSource MemberSource = emsManual;
+     TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, Info, MemberSource);
 
-	if (Info.Valid())
+     if (Result == lsAccountBlocked)
      {
-        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
-        ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Info);
-		ApplyMembership(DBTransaction, Info);
-	}
+            MessageBox("Account Blocked " + Info.Name + " " + Info.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
+     }
+     else if (Result == lsAccepted)
+     {
+          if(Info.ContactKey != 0)
+          {
+            TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
+            bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,Info,Info.MemberCode,false);
+
+            if (Info.Valid())
+             {
+                TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+                ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Info);
+                ApplyMembership(DBTransaction, Info);
+             }
+          }
+     }
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
@@ -1808,7 +1821,14 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
                         if (Result == lsAccepted)
                         {
                             TGlobalSettings::Instance().IsDiscountSelected = false;
-                            ApplyMembership(DBTransaction, TempMembershipInfo);
+                            if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+                            {
+                                GetLoyaltyMember(DBTransaction,TempMembershipInfo);
+                            }
+                            else
+                            {
+                                ApplyMembership(DBTransaction, TempMembershipInfo);
+                            }
                             if(TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected)
                             {
                                 ProcessBillThorVouchers(DBTransaction);
@@ -1833,10 +1853,6 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
                          {
                             RemoveMembership(DBTransaction);
                          }
-                         if(TGlobalSettings::Instance().LoyaltyMateEnabled && TempMembershipInfo.ContactKey != 0)
-                            {
-                                GetLoyaltyMember(DBTransaction,TempMembershipInfo);
-                            }
                          DBTransaction.Commit();
                          ShowReceipt();
 				}

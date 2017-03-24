@@ -8033,8 +8033,6 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 
                 if(TGlobalSettings::Instance().LoyaltyMateEnabled)
                 {
-                    ApplyMembership(DBTransaction, TempUserInfo,false);
-                    if(TempUserInfo.ContactKey != 0)
                     GetLoyaltyMember(DBTransaction,TempUserInfo);
                 }
                 else
@@ -14084,7 +14082,7 @@ void TfrmSelectDish::RemoveMembership(Database::TDBTransaction &DBTransaction)
 }
 
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member,bool triggeredForCard)
+void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TMMContactInfo &Member)
 {
      customerDisp.HappyBirthDay = false;
      customerDisp.FirstVisit = false;
@@ -14227,11 +14225,8 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 			LastSale = 0;
 		}
 		TMembership *membershipSystem = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get();
-        if(triggeredForCard)
-        {
         customerDisp.HappyBirthDay = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->DisplayBirthDayNotification(DBTransaction,Member);
         customerDisp.FirstVisit=TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->DisplayFirstVisitNotification(DBTransaction,Member);
-        }
 		AnsiString ShowPoints = FloatToStr( Member.Points.getPointsBalance() );
         AnsiString name = Member.PoleDisplayName;
 		TDeviceRealTerminal::Instance().SecurityPort->SetData(Member.PoleDisplayName);
@@ -14263,15 +14258,28 @@ void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::GetLoyaltyMember(Database::TDBTransaction &DBTransaction, TMMContactInfo &Info)
 {
- 	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
-    bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,Info,Info.MemberCode,false);
+     eMemberSource MemberSource = emsManual;
+     TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction, Info, MemberSource);
 
-	if (Info.Valid())
-     {
-        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
-        ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Info);
-		ApplyMembership(DBTransaction, Info);
-	}
+     if (Result == lsAccountBlocked)
+      {
+            MessageBox("Account Blocked " + Info.Name + " " + Info.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
+      }
+	 else if (Result == lsAccepted)
+	  {
+        if(Info.ContactKey != 0)
+        {
+            TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
+            bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,Info,Info.MemberCode,false);
+
+            if (Info.Valid())
+             {
+                TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+                ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Info);
+                ApplyMembership(DBTransaction, Info);
+             }
+         }
+     }
 
 }
 
