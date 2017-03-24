@@ -2256,17 +2256,17 @@ void  TfrmSetup::SetupNewMalls()
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
     cbNewMallLoc->Clear();
-    std::vector<UnicodeString> malllist;
+    std::vector<UnicodeString> mallList;
     cbNewMallLoc->AddItem("None",NULL);
 
-    malllist = TManagerMallSetup::LoadAllMalls(dbTransaction);
-    for (int index = 0; index < malllist.size() ; index++)
+    mallList = TManagerMallSetup::LoadAllMalls(dbTransaction);
+    for (int index = 0; index < mallList.size() ; index++)
     {
-        cbNewMallLoc->AddItem(malllist[index],NULL);
+        cbNewMallLoc->AddItem(mallList[index],NULL);
     }
     int mallIndex = TManagerMallSetup::CheckActiveMallExist(dbTransaction);
     cbNewMallLoc->ItemIndex = mallIndex;
-    if(cbNewMallLoc->ItemIndex != 0)
+    if(cbNewMallLoc->ItemIndex)
         LoadMallSettingInfo();
     else
     {
