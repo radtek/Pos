@@ -7,7 +7,7 @@
 //---------------------------------------------------------------------------
 class TMallExportSalesData
 {
-    private:
+private:
     int _mallExportSaleKey;
     int _mallKey;
     UnicodeString _field;
@@ -34,7 +34,7 @@ class TMallExportSalesData
     void SetDeviceKey(int deviceKey);
     void SetSalesBySalesType(std::map<int, Currency> saleBySalsType);
 
-    public:
+public:
     __property int MallExportSalesId = {read = _mallExportSaleKey, write = SetMallExportSalesKey};
     __property int MallKey = {read = _mallKey, write = SetMallKey};
     __property UnicodeString Field = {read = _field, write = SetField};

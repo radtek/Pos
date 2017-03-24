@@ -8,7 +8,7 @@
 
 class TMallFactory
 {
-    public:
+public:
     static TMallExport* GetMallType();
 };
 #endif

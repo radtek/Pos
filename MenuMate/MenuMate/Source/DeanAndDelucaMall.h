@@ -10,7 +10,7 @@
 class TDeanAndDelucaMallField;
 class TDeanAndDelucaMall : public TMallExport
 {
-    private:
+private:
 
     //For terminal condition
     AnsiString terminalCondition;
@@ -65,7 +65,7 @@ class TDeanAndDelucaMall : public TMallExport
     //get which type of file will be exported
     UnicodeString GetExportType();
 
-    public:
+public:
 
     //Constructor
     TDeanAndDelucaMall();
@@ -91,7 +91,7 @@ class TDeanAndDelucaMall : public TMallExport
 
 class TDeanAndDelucaMallField
 {
-    private:
+private:
     int _terminalNumber;
     UnicodeString _tenantCode;
     Currency _oldAccSalesTotal;
@@ -181,7 +181,7 @@ class TDeanAndDelucaMallField
     void SetNetSalesAmountNonVatable(Currency netSaleAmountNonVatable);
     void SetInvoiceNumber(UnicodeString invoiceNumber);
 
-    public:
+public:
     __property int TerminalNumber = {read = _terminalNumber, write = SetTerminalNumber};
     __property UnicodeString TenantCode = {read = _tenantCode, write = SetTenantCode};
 

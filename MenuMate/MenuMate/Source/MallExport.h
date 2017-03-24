@@ -9,16 +9,16 @@
 //---------------------------------------------------------------------------
 class TMallExport: public TMallExportInterface
 {
-    private:
+private:
     bool CheckTransactionDoneBeforeZed();
 
-    protected:
+protected:
     virtual std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey) = 0;
     virtual TMallExportPrepareData PrepareDataForExport(int zKey = 0) = 0;
     virtual IExporterInterface* CreateExportMedium() = 0;
     virtual bool InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , std::list<TMallExportSalesData> mallExportSalesData);
 
-    public:
+public:
     bool PushToDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
     bool Export();
     void RegenerateMallReport(TDateTime sDate, TDateTime eDate);

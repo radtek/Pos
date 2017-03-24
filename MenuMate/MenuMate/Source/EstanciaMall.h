@@ -31,7 +31,7 @@ struct TEstanciaDiscounts
 
 class TEstanciaMallField
 {
-    private:
+private:
     int _terminalNumber;
     UnicodeString _tenantCode;
     Currency _oldAccSalesVatable;
@@ -162,7 +162,7 @@ class TEstanciaMallField
     void SetNetSalesAmountNonVatable(Currency netSaleAmountNonVatable);
     void SetInvoiceNumber(UnicodeString invoiceNumber);
 
-    public:
+public:
     __property int TerminalNumber = {read = _terminalNumber, write = SetTerminalNumber};
     __property UnicodeString TenantCode = {read = _tenantCode, write = SetTenantCode};
     __property Currency OldAccumulatedSalesVatable = {read =  _oldAccSalesVatable, write = SetOldAccSalesVatable};
@@ -231,7 +231,7 @@ class TEstanciaMallField
 
 class TEstanciaMall : public TMallExport
 {
-    private:
+private:
 
     //For terminal condition
     AnsiString terminalCondition;
@@ -285,7 +285,7 @@ class TEstanciaMall : public TMallExport
     //insert field into list
     void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEstanciaMallField fieldData, int arcBillKey);
 
-    protected:
+protected:
 
     //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
     std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
@@ -299,7 +299,7 @@ class TEstanciaMall : public TMallExport
     //get which type of file will be exported
     UnicodeString GetExportType();
 
-    public:
+public:
 
     //Constructor
     TEstanciaMall();

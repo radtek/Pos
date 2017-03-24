@@ -2476,6 +2476,9 @@
 			<CppCompile Include="product-count-down\item_definition_factory.cpp">
 				<BuildOrder>448</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="product-count-down\i_item_definition_factory.cpp">
+				<BuildOrder>430</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="TaxManagement.cpp">
 				<BuildOrder>429</BuildOrder>
 			</CppCompile>
@@ -3310,22 +3313,22 @@
 				<DependentOn>ReportExport\HavanaReport.h</DependentOn>
 				<BuildOrder>753</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="DeanAndDelucaMall.cpp">
-				<DependentOn>DeanAndDelucaMall.h</DependentOn>
-				<BuildOrder>754</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="MallFactory.cpp">
 				<DependentOn>MallFactory.h</DependentOn>
+				<BuildOrder>754</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DeanAndDelucaMall.cpp">
+				<DependentOn>DeanAndDelucaMall.h</DependentOn>
 				<BuildOrder>755</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="MallSalesTypeAssignment.cpp">
-				<Form>Form2</Form>
+				<Form>frmMallSalesTypeAssignment</Form>
 				<DependentOn>MallSalesTypeAssignment.h</DependentOn>
-				<BuildOrder>755</BuildOrder>
+				<BuildOrder>756</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="DBSalesTypeAssignment.cpp">
 				<DependentOn>DBSalesTypeAssignment.h</DependentOn>
-				<BuildOrder>756</BuildOrder>
+				<BuildOrder>757</BuildOrder>
 			</CppCompile>
 			<FormResources Include="Maintenance\PrinterMaintenance.dfm"/>
 			<FormResources Include="DeskTop\VerticalSelect.dfm"/>

@@ -1892,12 +1892,27 @@ void TApplyParser::Updatetable_PaymentTypes(TDBControl* const inDBControl)
 //--------------------------------------------------------------------------------------------------
 void TApplyParser::update6_39Tables()
 {
-//     Insert6_39Malls(_dbControl, 2, "Dean & Deluca", "F");
-//     Insert6_39MallExport_Settings_Mapping(_dbControl);
-//        CreateGenerators6_39(_dbControl);
-//        create6_39TableForSalesTypeGroups(_dbControl);
+    AlterTable6_39_MallExport_Sales(_dbControl);
+    CreateGenerators6_39(_dbControl);
+    CreateTable6_39MallSalesType(_dbControl);
+    CreateTable6_39MallSalesTypeItemRelation(_dbControl);
+    CreateTable6_39MallSalesBySalesType(_dbControl);
+    Insert6_39Malls(_dbControl, 2, "Dean & Deluca", "F");
+    Insert6_39MallExport_Settings_Mapping(_dbControl);
 }
 //----------------------------------------------------------------------------------------------------------------
+void TApplyParser::AlterTable6_39_MallExport_Sales(TDBControl* const inDBControl)
+{
+     if ( fieldExists( "MALLEXPORT_SALES ", "ARCBILL_KEY ", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE MALLEXPORT_SALES "
+        "ADD FOREIGN KEY(ARCBILL_KEY) REFERENCES ARCBILL(ARCBILL_KEY) ON UPDATE CASCADE ON DELETE CASCADE, "
+        "ADD FOREIGN KEY(Z_KEY) REFERENCES ZEDS(Z_KEY) ON UPDATE CASCADE ON DELETE CASCADE ",
+        inDBControl);
+    }
+}
+//-------------------------------------------------------------------------------------------------------------
 void TApplyParser::Insert6_39Malls(TDBControl* const inDBControl, int mallKey, UnicodeString mallName, UnicodeString isActive)
 {
     TDBTransaction transaction( *_dbControl );
@@ -1959,20 +1974,20 @@ void TApplyParser::Insert6_39MallExport_Settings_Values(TDBControl* const inDBCo
     transaction.StartTransaction();
     try
     {
-         const int numberOfFields = 9;
+         const int numberOfFields = 10;
          UnicodeString fieldTypes[numberOfFields] =
          {
-            "UnicodeString", "UnicodeString", "int", "UnicodeString", "UnicodeString", "bool", "UnicodeString", "bool", "bool"
+            "UnicodeString", "UnicodeString", "int", "bool", "UnicodeString", "UnicodeString", "bool", "bool", "bool", "bool"
          };
 
          UnicodeString fieldValues[numberOfFields] =
          {
-            "", "", "", ".csv", "Z", "false", "SNNNNTTMMDDYYYY.B", "true", "true"
+            "", "", "", "true", ".txt", "Z", "false", "false", "true", "false"
          };
 
          int settingID[numberOfFields] =
          {
-            1, 2, 7, 16, 18, 20, 21, 24, 25
+            1, 2, 7, 9, 16, 18, 19, 20, 24, 25
          };
 
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
@@ -2008,18 +2023,28 @@ void TApplyParser::CreateGenerators6_39(TDBControl* const inDBControl)
         );
     }
 
-	if(!generatorExists("GEN_MALLSALES_TYPE_ITEMS_RELATION",_dbControl))
+	if(!generatorExists("GEN_MALLSALES_TYPE_ITEMS_REL",_dbControl))
 	{
 		executeQuery(
-		"CREATE GENERATOR GEN_MALLSALES_TYPE_ITEMS_RELATION;",inDBControl
+		"CREATE GENERATOR GEN_MALLSALES_TYPE_ITEMS_REL;",inDBControl
 		);
 		executeQuery(
-		"SET GENERATOR GEN_MALLSALES_TYPE_ITEMS_RELATION TO 0;",inDBControl
+		"SET GENERATOR GEN_MALLSALES_TYPE_ITEMS_REL TO 0;",inDBControl
+		);
+	}
+
+    if(!generatorExists("GEN_MALL_SALES_BY_TYPE",_dbControl))
+	{
+		executeQuery(
+		"CREATE GENERATOR GEN_MALL_SALES_BY_TYPE;",inDBControl
+		);
+		executeQuery(
+		"SET GENERATOR GEN_MALL_SALES_BY_TYPE TO 0;",inDBControl
 		);
 	}
 }
 //---------------------------------------------------------------------------
-void TApplyParser::create6_39TableForSalesTypeGroups( TDBControl* const inDBControl )
+void TApplyParser::CreateTable6_39MallSalesType( TDBControl* const inDBControl )
 {
 	if ( !tableExists( "MALL_SALES_TYPE", _dbControl ) )
 	{
@@ -2032,6 +2057,10 @@ void TApplyParser::create6_39TableForSalesTypeGroups( TDBControl* const inDBCont
 		");",
 		inDBControl );
 	}
+}
+//-------------------------------------------------------------------------------
+void TApplyParser::CreateTable6_39MallSalesTypeItemRelation( TDBControl* const inDBControl )
+{
 	if ( !tableExists( "MALL_SALES_TYPE_ITEMS_RELATION", _dbControl ) )
 	{
 		executeQuery(
@@ -2041,10 +2070,14 @@ void TApplyParser::create6_39TableForSalesTypeGroups( TDBControl* const inDBCont
 		"   ITEM_ID INTEGER,"
 		"   SALES_TYPE_ID INTEGER,"
 		"   FOREIGN KEY(ITEM_ID) REFERENCES ITEM(ITEM_KEY) ON UPDATE CASCADE ON DELETE CASCADE,"
-		"   FOREIGN KEY(SALES_TYPE_ID) REFERENCES SALES_TYPE(SALES_TYPE_ID) ON UPDATE CASCADE ON DELETE CASCADE"
+		"   FOREIGN KEY(SALES_TYPE_ID) REFERENCES MALL_SALES_TYPE(SALES_TYPE_ID) ON UPDATE CASCADE ON DELETE CASCADE"
 		");",
 		inDBControl );
 	}
+}
+//---------------------------------------------------------------------------------------
+void TApplyParser::CreateTable6_39MallSalesBySalesType( TDBControl* const inDBControl )
+{
     if ( !tableExists( "MALL_SALES_BY_SALES_TYPE", _dbControl ) )
 	{
 		executeQuery(
@@ -2053,9 +2086,9 @@ void TApplyParser::create6_39TableForSalesTypeGroups( TDBControl* const inDBCont
 		"   SALES_ID INTEGER PRIMARY KEY,"
 		"   ARCBILL_KEY INTEGER,"
 		"   SALES_TYPE_ID INTEGER,"
-        "   VALUE  NUMERIC(15,4),"
-		"   FOREIGN KEY(ARCBILL_KEY) REFERENCES MALLEXPORT_SALES(ARCBILL_KEY) ON UPDATE CASCADE ON DELETE CASCADE,"
-		"   FOREIGN KEY(SALES_TYPE_ID) REFERENCES MALL_SALES_TYPE(SALES_TYPE_ID) ON UPDATE CASCADE ON DELETE CASCADE"
+        "   SUBTOTAL  NUMERIC(15,4),"
+	   	"   FOREIGN KEY(ARCBILL_KEY) REFERENCES ARCBILL(ARCBILL_KEY) ON UPDATE CASCADE ON DELETE CASCADE, "
+		"   FOREIGN KEY(SALES_TYPE_ID) REFERENCES MALL_SALES_TYPE(SALES_TYPE_ID) ON UPDATE CASCADE ON DELETE CASCADE "
 		");",
 		inDBControl );
 	}

@@ -873,6 +873,11 @@ namespace MenumateVersionParser
 
         void upgrade6_39Tables();
         void update6_39Tables();
+        void CreateGenerators6_39(TDBControl* const inDBControl);
+        void CreateTable6_39MallSalesType(TDBControl* const inDBControl);
+        void CreateTable6_39MallSalesTypeItemRelation(TDBControl* const inDBControl);
+        void CreateTable6_39MallSalesBySalesType(TDBControl* const inDBControl);
+        void AlterTable6_39_MallExport_Sales(TDBControl* const inDBControl);
         void Insert6_39Malls(TDBControl* const inDBControl, int mallKey, UnicodeString mallName, UnicodeString isActive);
         void Insert6_39MallExport_Settings_Mapping(TDBControl* const inDBControl);
         void Insert6_39MallExport_Settings_Values(TDBControl* const inDBControl);
