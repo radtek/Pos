@@ -64,7 +64,10 @@ void TMallExportSalesData::SetDeviceKey(int deviceKey)
     _deviceKey = deviceKey;
 }
 //---------------------------------------------------------------------------
-
-
+void TMallExportSalesData::SetSalesBySalesType(std::map<int, Currency> saleBySalsType)
+{
+    _saleBySalsType = saleBySalsType;
+}
+//---------------------------------------------------------------------------
 
 

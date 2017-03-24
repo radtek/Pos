@@ -81,7 +81,6 @@ void __fastcall TfrmSetup::imgCloseClick(TObject *Sender)
         {
             MessageBox("Please Enter Tax Rate", "Error",MB_OK + MB_ICONERROR);
         }
-
     }
     else
     {
@@ -2402,6 +2401,11 @@ void __fastcall TfrmSetup::edTaxRateClick(TObject *Sender)
     {
         edTaxRate->Text = frmDiscount->PERCResult;
     }
+}
+//----------------------------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnAssignMallSalesTypeMouseClick(TObject *Sender)
+{
+    //Call New Form For Assigning Sales Type
 }
 
 

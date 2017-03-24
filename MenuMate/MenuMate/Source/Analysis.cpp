@@ -54,7 +54,7 @@
 #include "CashDenominationController.h"
 #include "ExportCSV.h"
 
-#include "EstanciaMall.h"
+#include "MallFactory.h"
 
 #include <string>
 #include <cassert>
@@ -3405,12 +3405,15 @@ Zed:
 			if(CompleteZed)
 			{
                 UpdateMallExportDetails();
+
+                //Method for mall Design According to newly pattern
                 UpdateZKeyForMallExportSales();
-                 if(TGlobalSettings::Instance().mallInfo.MallId == 1 && TGlobalSettings::Instance().mallInfo.IsActive != "F")
+                if(TGlobalSettings::Instance().mallInfo.MallId)
                 {
-                    //TODO: Instantiation will happen in a factory based on the active mall in database
-                    TMallExport* estanciaMall = new TEstanciaMall();
-                    estanciaMall->Export();
+                    //Instantiation is happenning in a factory based on the active mall in database
+                    TMallExport* mallExport = TMallFactory::GetMallType();
+                    mallExport->Export();
+                    delete mallExport;
                 }
             }
       }

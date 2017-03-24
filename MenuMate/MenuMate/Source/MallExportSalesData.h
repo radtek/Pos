@@ -3,6 +3,7 @@
 #ifndef MallExportSalesDataH
 #define MallExportSalesDataH
 #include <System.hpp>
+#include <map.h>
 //---------------------------------------------------------------------------
 class TMallExportSalesData
 {
@@ -18,6 +19,7 @@ class TMallExportSalesData
     int _arcBillKey;
     int _zKey;
     int _deviceKey;
+    std::map<int, Currency> _saleBySalsType;
 
     void SetMallExportSalesKey(int mallexportSalesId);
     void SetMallKey(int mallKey);
@@ -30,6 +32,7 @@ class TMallExportSalesData
     void SetArcBillKey(int arcBillKey);
     void SetZKey(int zKey);
     void SetDeviceKey(int deviceKey);
+    void SetSalesBySalesType(std::map<int, Currency> saleBySalsType);
 
     public:
     __property int MallExportSalesId = {read = _mallExportSaleKey, write = SetMallExportSalesKey};
@@ -43,5 +46,6 @@ class TMallExportSalesData
     __property int ArcBillKey = {read = _arcBillKey, write = SetArcBillKey};
     __property int ZKey = {read = _zKey, write = SetZKey};
     __property int DeviceKey = {read = _deviceKey, write = SetDeviceKey};
+    __property std::map<int, Currency> SaleBySalsType = {read = _saleBySalsType, write = SetSalesBySalesType};
 };
 #endif

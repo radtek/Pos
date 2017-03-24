@@ -139,6 +139,7 @@ USEFORM("Maintenance\NewUser.cpp", frmNewUser);
 USEFORM("Maintenance\TaxMaintenance.cpp", frmTaxMaintenance);
 USEFORM("MallExportResendReport.cpp", frmMallExportResendReport);
 USEFORM("SelectSizesAsList.cpp", frmSelectSizes);
+USEFORM("MallSalesTypeAssignment.cpp", frmMallSalesTypeAssignment);
 //---------------------------------------------------------------------------
 HANDLE Mutex;
 
@@ -187,7 +188,6 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		 Application->CreateForm(__classid(TfrmMain), &frmMain);
          Application->CreateForm(__classid(TfrmSelectCurrentMenu), &frmSelectCurrentMenu);
          Application->CreateForm(__classid(TfrmEJournal), &frmEJournal);
-         Application->CreateForm(__classid(TfrmRegenerateMallReport), &frmRegenerateMallReport);
          Application->CreateForm(__classid(TfrmRegenerateMallReport), &frmRegenerateMallReport);
          Application->Run();
 		}

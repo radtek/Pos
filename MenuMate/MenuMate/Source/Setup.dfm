@@ -42,7 +42,7 @@ object frmSetup: TfrmSetup
     Top = 1
     Width = 918
     Height = 726
-    ActivePage = tsApplications
+    ActivePage = tsMallSettings
     Anchors = [akLeft, akTop, akRight, akBottom]
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
@@ -535,6 +535,10 @@ object frmSetup: TfrmSetup
     object tsApplications: TTabSheet
       Caption = 'Applications Settings'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox4: TGroupBox
         Left = 8
         Top = 326
@@ -1413,6 +1417,7 @@ object frmSetup: TfrmSetup
           DisabledButtonColor = clBtnFace
           Enabled = False
           LatchingProperties = [lkLatchColor, lkStayDown]
+          OnMouseClick = btnAssignMallSalesTypeMouseClick
         end
         object edMallFTPServer: TEdit
           Left = 392

@@ -56,6 +56,12 @@ void TApplyParser::upgrade6_38Tables()
 {
 	update6_38Tables();
 }
+
+void TApplyParser::upgrade6_39Tables()
+{
+	update6_39Tables();
+}
+
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
 {
@@ -1882,6 +1888,177 @@ void TApplyParser::Updatetable_PaymentTypes(TDBControl* const inDBControl)
     {
         transaction.Rollback();
     }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::update6_39Tables()
+{
+//     Insert6_39Malls(_dbControl, 2, "Dean & Deluca", "F");
+//     Insert6_39MallExport_Settings_Mapping(_dbControl);
+//        CreateGenerators6_39(_dbControl);
+//        create6_39TableForSalesTypeGroups(_dbControl);
+}
+//----------------------------------------------------------------------------------------------------------------
+void TApplyParser::Insert6_39Malls(TDBControl* const inDBControl, int mallKey, UnicodeString mallName, UnicodeString isActive)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+
+        InsertQuery->Close();
+        InsertQuery->SQL->Text =
+                    "INSERT INTO MALLS VALUES (:MALL_ID, :MALL_NAME, :IS_ACTIVE) ";
+        InsertQuery->ParamByName("MALL_ID")->AsInteger = mallKey;
+        InsertQuery->ParamByName("MALL_NAME")->AsString = mallName;
+        InsertQuery->ParamByName("IS_ACTIVE")->AsString = isActive;
+        InsertQuery->ExecQuery();
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//--------------------------------------------------------------------------------------------------------------------------
+void TApplyParser::Insert6_39MallExport_Settings_Mapping(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+         const int numberOfFields = 12;
+        int settingID[numberOfFields] =
+        {
+            1, 2, 7, 9, 16, 18, 19, 20, 24, 25
+        };
+
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+
+        for(int index = 0; index < numberOfFields; index++)
+        {
+            InsertQuery->Close();
+            InsertQuery->SQL->Text =
+                        "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (:MAPPING_KEY, :SETTING_KEY, :MALL_KEY) ";
+            InsertQuery->ParamByName("MAPPING_KEY")->AsInteger = index + 13;
+            InsertQuery->ParamByName("SETTING_KEY")->AsString = settingID[index];
+            InsertQuery->ParamByName("MALL_KEY")->AsString = 2;
+            InsertQuery->ExecQuery();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//--------------------------------------------------------------------------------------------------
+void TApplyParser::Insert6_39MallExport_Settings_Values(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+         const int numberOfFields = 9;
+         UnicodeString fieldTypes[numberOfFields] =
+         {
+            "UnicodeString", "UnicodeString", "int", "UnicodeString", "UnicodeString", "bool", "UnicodeString", "bool", "bool"
+         };
+
+         UnicodeString fieldValues[numberOfFields] =
+         {
+            "", "", "", ".csv", "Z", "false", "SNNNNTTMMDDYYYY.B", "true", "true"
+         };
+
+         int settingID[numberOfFields] =
+         {
+            1, 2, 7, 16, 18, 20, 21, 24, 25
+         };
+
+        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+
+        for(int index = 0; index < numberOfFields; index++)
+        {
+            InsertQuery->Close();
+            InsertQuery->SQL->Text =
+                        "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (:SETTING_VALUE_KEY, :SETTING_KEY, :FIELD_VALUE, :FIELD_TYPE) ";
+            InsertQuery->ParamByName("SETTING_VALUE_KEY")->AsInteger = index + 78;
+            InsertQuery->ParamByName("SETTING_KEY")->AsInteger = settingID[index];
+            InsertQuery->ParamByName("FIELD_VALUE")->AsString = fieldValues[index];
+            InsertQuery->ParamByName("FIELD_TYPE")->AsString = fieldTypes[index];
+            InsertQuery->ExecQuery();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+void TApplyParser::CreateGenerators6_39(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_MALLSALES_TYPE", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_MALLSALES_TYPE;", inDBControl
+        );
+
+        executeQuery(
+            "SET GENERATOR GEN_MALLSALES_TYPE TO 0;", inDBControl
+        );
+    }
+
+	if(!generatorExists("GEN_MALLSALES_TYPE_ITEMS_RELATION",_dbControl))
+	{
+		executeQuery(
+		"CREATE GENERATOR GEN_MALLSALES_TYPE_ITEMS_RELATION;",inDBControl
+		);
+		executeQuery(
+		"SET GENERATOR GEN_MALLSALES_TYPE_ITEMS_RELATION TO 0;",inDBControl
+		);
+	}
+}
+//---------------------------------------------------------------------------
+void TApplyParser::create6_39TableForSalesTypeGroups( TDBControl* const inDBControl )
+{
+	if ( !tableExists( "MALL_SALES_TYPE", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE MALL_SALES_TYPE "
+		"( "
+		"   SALES_TYPE_ID INTEGER PRIMARY KEY,"
+        "   SALES_TYPE_CODE VARCHAR(5), "
+		"   SALES_TYPE_NAME VARCHAR(25) "
+		");",
+		inDBControl );
+	}
+	if ( !tableExists( "MALL_SALES_TYPE_ITEMS_RELATION", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE MALL_SALES_TYPE_ITEMS_RELATION "
+		"( "
+		"   STI_ID INTEGER PRIMARY KEY,"
+		"   ITEM_ID INTEGER,"
+		"   SALES_TYPE_ID INTEGER,"
+		"   FOREIGN KEY(ITEM_ID) REFERENCES ITEM(ITEM_KEY) ON UPDATE CASCADE ON DELETE CASCADE,"
+		"   FOREIGN KEY(SALES_TYPE_ID) REFERENCES SALES_TYPE(SALES_TYPE_ID) ON UPDATE CASCADE ON DELETE CASCADE"
+		");",
+		inDBControl );
+	}
+    if ( !tableExists( "MALL_SALES_BY_SALES_TYPE", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE MALL_SALES_BY_SALES_TYPE "
+		"( "
+		"   SALES_ID INTEGER PRIMARY KEY,"
+		"   ARCBILL_KEY INTEGER,"
+		"   SALES_TYPE_ID INTEGER,"
+        "   VALUE  NUMERIC(15,4),"
+		"   FOREIGN KEY(ARCBILL_KEY) REFERENCES MALLEXPORT_SALES(ARCBILL_KEY) ON UPDATE CASCADE ON DELETE CASCADE,"
+		"   FOREIGN KEY(SALES_TYPE_ID) REFERENCES MALL_SALES_TYPE(SALES_TYPE_ID) ON UPDATE CASCADE ON DELETE CASCADE"
+		");",
+		inDBControl );
+	}
 }
 }
 
