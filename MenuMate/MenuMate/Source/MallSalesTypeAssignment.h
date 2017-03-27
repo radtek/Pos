@@ -63,6 +63,8 @@ private:	// User declarations
         void DisplayGroupMembers(void);
         void InsertMemberToGroup(UnicodeString pMemberButton);
         std::map<int, std::map<int, UnicodeString> > assignedItems;
+        void DisplayItems();
+        void DisplaySalesTypes();
 
 public:		// User declarations
 	__fastcall TfrmMallSalesTypeAssignment(TComponent* Owner);

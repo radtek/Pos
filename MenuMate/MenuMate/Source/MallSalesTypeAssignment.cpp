@@ -5,6 +5,7 @@
 
 #include "MallSalesTypeAssignment.h"
 #include "MMMessageBox.h"
+#include "DBSalesTypeAssignment.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -29,6 +30,8 @@ __fastcall TfrmMallSalesTypeAssignment::~TfrmMallSalesTypeAssignment()
 void __fastcall TfrmMallSalesTypeAssignment::FormShow(TObject *Sender)
 {
     FormResize(NULL);
+    DisplaySalesTypes();
+    DisplayItems();
    // DisplayGroups();
    // DisplayTypes();
 }
@@ -110,4 +113,32 @@ void __fastcall TfrmMallSalesTypeAssignment::btnDeleteSalesTypeMouseClick(TObjec
     //RemoveAllItems();
 }
 //---------------------------------------------------------------------------
+void TfrmMallSalesTypeAssignment::DisplayItems()
+{
+    int index = 0;
+    std::map<int, UnicodeString> loadedItems = TDBSalesTypeAssignment::LoadAllItems();
+    MembersGrid->RowCount = loadedItems.size();
+
+    std::map<int, UnicodeString>::iterator itItems;
+    for (itItems = loadedItems.begin(); itItems != loadedItems.end(); ++itItems)
+    {
+        MembersGrid->Buttons[index][0]->Caption = itItems->second;
+        MembersGrid->Buttons[index][0]->Tag = itItems->first;
+        index++;
+    }
+}
+//----------------------------------------------------------------------------
+void TfrmMallSalesTypeAssignment::DisplaySalesTypes()
+{
+    int index = 0;
+    std::map<int, UnicodeString> salesTypes = TDBSalesTypeAssignment::LoadAllSalesTypes();
+    MembersGrid->RowCount = salesTypes.size();
+    std::map<int, UnicodeString>::iterator itSalesTypes;
+    for (itSalesTypes = salesTypes.begin(); itSalesTypes != salesTypes.end(); ++itSalesTypes)
+    {
+        GroupList->Buttons[index][0]->Caption = itSalesTypes->second;
+        GroupList->Buttons[index][0]->Tag = itSalesTypes->first;
+        index++;
+    }
+}
 
