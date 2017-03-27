@@ -86,7 +86,7 @@ TMall TManagerMallSetup::LoadActiveMallSettings(Database::TDBTransaction &dbTran
                                     "SELECT * FROM MALLEXPORT_SETTINGS a "
                                     "INNER JOIN MALLEXPORT_SETTINGS_MAPPING msp ON msp.MALLEXPORT_SETTING_ID = a.MALLEXPORT_SETTING_KEY "
                                     "LEFT JOIN MALLEXPORT_SETTINGS_VALUES msv    on msv.MALLEXPORTSETTING_ID  = a.MALLEXPORT_SETTING_KEY "
-                                    " WHERE msp.MALL_ID = :MALL_ID  and msv.DEVICE_KEY = :DEVICE_KEY ";
+                                    " WHERE msp.MALL_ID = :MALL_ID  AND msv.MALL_KEY = :MALL_ID AND msv.DEVICE_KEY = :DEVICE_KEY ";
 
             ibInternalQuery->ParamByName("MALL_ID")->AsInteger = mallProperties.MallId;
             ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = mallProperties.DeviceKey;
