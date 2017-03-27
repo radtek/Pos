@@ -37,7 +37,7 @@
 #include "TCPStreamPrepare.h"
 #include "PatronCount.h"
 #include "RunRateClient.h"
- #include "Tables_ChitNumbers.h"
+#include "Tables_ChitNumbers.h"
 #include "DBHeldOrder.h"
 #include "DBActiveChit.h"
 #include "ProcessWebOrder.h"
@@ -674,6 +674,7 @@ public: // User declarations
     bool IsTextBoxFocused();
     void UpdateMenuItemsAfterLoginScreen();
     int GetDefaultServingCourse(int item_key);
+    bool CheckForServingCoursePrompt(int item_key);
  };
 // ---------------------------------------------------------------------------
 
