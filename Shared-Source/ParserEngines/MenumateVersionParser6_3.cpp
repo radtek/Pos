@@ -1942,7 +1942,7 @@ void TApplyParser::Insert6_39MallExport_Settings_Mapping(TDBControl* const inDBC
     transaction.StartTransaction();
     try
     {
-         const int numberOfFields = 12;
+         const int numberOfFields = 10;
         int settingID[numberOfFields] =
         {
             1, 2, 7, 9, 16, 18, 19, 20, 24, 25
@@ -1968,48 +1968,7 @@ void TApplyParser::Insert6_39MallExport_Settings_Mapping(TDBControl* const inDBC
     }
 }
 //--------------------------------------------------------------------------------------------------
-void TApplyParser::Insert6_39MallExport_Settings_Values(TDBControl* const inDBControl)
-{
-    TDBTransaction transaction( *_dbControl );
-    transaction.StartTransaction();
-    try
-    {
-         const int numberOfFields = 10;
-         UnicodeString fieldTypes[numberOfFields] =
-         {
-            "UnicodeString", "UnicodeString", "int", "bool", "UnicodeString", "UnicodeString", "bool", "bool", "bool", "bool"
-         };
 
-         UnicodeString fieldValues[numberOfFields] =
-         {
-            "", "", "", "true", ".txt", "Z", "false", "false", "true", "false"
-         };
-
-         int settingID[numberOfFields] =
-         {
-            1, 2, 7, 9, 16, 18, 19, 20, 24, 25
-         };
-
-        TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
-
-        for(int index = 0; index < numberOfFields; index++)
-        {
-            InsertQuery->Close();
-            InsertQuery->SQL->Text =
-                        "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (:SETTING_VALUE_KEY, :SETTING_KEY, :FIELD_VALUE, :FIELD_TYPE) ";
-            InsertQuery->ParamByName("SETTING_VALUE_KEY")->AsInteger = index + 78;
-            InsertQuery->ParamByName("SETTING_KEY")->AsInteger = settingID[index];
-            InsertQuery->ParamByName("FIELD_VALUE")->AsString = fieldValues[index];
-            InsertQuery->ParamByName("FIELD_TYPE")->AsString = fieldTypes[index];
-            InsertQuery->ExecQuery();
-        }
-        transaction.Commit();
-    }
-    catch( Exception &E )
-    {
-        transaction.Rollback();
-    }
-}
 void TApplyParser::CreateGenerators6_39(TDBControl* const inDBControl)
 {
     if(!generatorExists("GEN_MALLSALES_TYPE", _dbControl))

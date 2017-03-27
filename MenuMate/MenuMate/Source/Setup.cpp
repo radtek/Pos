@@ -70,7 +70,12 @@ void __fastcall TfrmSetup::FormCreate(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::imgCloseClick(TObject *Sender)
 {
-    if(cbNewMallLoc->ItemIndex== 1)
+    if(cbNewMallLoc->ItemIndex > 1)
+    {
+        UpdateMallInfo();
+        Close();
+    }
+    else if(cbNewMallLoc->ItemIndex == 1)
     {
         if(edTaxRate->Text != "")
         {
@@ -101,18 +106,16 @@ void __fastcall TfrmSetup::FormClose(TObject *Sender, TCloseAction &Action)
    }
 }
 //---------------------------------------------------------------------------
-
-
 void __fastcall TfrmSetup::FormResize(TObject *Sender)
 {
 	if (Tag != Screen->Width)
    {
       int Temp = Tag;
-		Tag = Screen->Width;
-                if((double)Screen->Width / Screen->Height < 1.4)
-                {
+      Tag = Screen->Width;
+      if((double)Screen->Width / Screen->Height < 1.4)
+      {
    			ScaleBy(Screen->Width, Temp);
-        	}
+      }
 
    }
    Width = Screen->Width;
@@ -2281,6 +2284,11 @@ void TfrmSetup::LoadMallSettingInfo()
         Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
         TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
         dbTransaction.StartTransaction();
+
+        //First We have to Inactive Activated mall Since mall Index has been changed..
+        TManagerMallSetup::UpdateINActiveMall(dbTransaction);
+
+        //Now Active selected mall
         TManagerMallSetup::UpdateActiveMall(dbTransaction, cbNewMallLoc->ItemIndex);
 
         //load all mall settings info
