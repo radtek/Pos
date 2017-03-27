@@ -16,9 +16,6 @@ namespace MenumateServices.MenumateRunners
             InitializeRunner();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public override void Start()
         {
             // go ahead and start the worker thread
@@ -27,9 +24,6 @@ namespace MenumateServices.MenumateRunners
             Paused = false;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public override void Stop()
         {
             StopRunner();
@@ -37,9 +31,7 @@ namespace MenumateServices.MenumateRunners
             Paused = true;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+
         public override void Pause()
         {
             StopRunner();
@@ -47,9 +39,7 @@ namespace MenumateServices.MenumateRunners
             Paused = true;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+
         public override void Resume()
         {
             InitializeRunner();
