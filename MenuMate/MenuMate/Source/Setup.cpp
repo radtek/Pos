@@ -44,6 +44,7 @@
 #include "MallExportSalesTypeAssignment.h"
 #include "Mall.h"
 #include "GUIDiscount.h"
+#include "MallSalesTypeAssignment.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -2297,6 +2298,7 @@ void TfrmSetup::LoadMallSettingInfo()
         std::list<TMallExportSettings>::iterator it;
         TControl *ChildControl;
         TEdit* editBox;
+
         for(it = mallInfo.MallSettings.begin(); it != mallInfo.MallSettings.end(); it++)
         {
             for (int i = 0; i < gbMallsNew->ControlCount; i++)
@@ -2413,7 +2415,8 @@ void __fastcall TfrmSetup::edTaxRateClick(TObject *Sender)
 //----------------------------------------------------------------------------------------------
 void __fastcall TfrmSetup::btnAssignMallSalesTypeMouseClick(TObject *Sender)
 {
-    //Call New Form For Assigning Sales Type
+    std::auto_ptr <TfrmMallSalesTypeAssignment> mallSalesTypeAssignment(new TfrmMallSalesTypeAssignment(this));
+    mallSalesTypeAssignment->ShowModal();
 }
 
 

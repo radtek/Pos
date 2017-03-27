@@ -480,7 +480,6 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Font.Style = []
       Color = clLime
       ParentFont = False
-      Visible = False
       Caption = 'Assign All'
       ButtonColor = clMaroon
       LatchedColor = clBtnFace
@@ -499,7 +498,6 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Font.Style = []
       Color = clLime
       ParentFont = False
-      Visible = False
       Caption = 'Remove All'
       ButtonColor = clMaroon
       LatchedColor = clBtnFace
@@ -518,7 +516,6 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Font.Style = []
       Color = clLime
       ParentFont = False
-      Visible = False
       Caption = 'Add Sales Type'
       ButtonColor = clMaroon
       LatchedColor = clBtnFace
@@ -537,7 +534,6 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Font.Style = []
       Color = clLime
       ParentFont = False
-      Visible = False
       Caption = 'Edit Sales Type'
       ButtonColor = clMaroon
       LatchedColor = clBtnFace
@@ -556,7 +552,6 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Font.Style = []
       Color = clLime
       ParentFont = False
-      Visible = False
       Caption = 'Delete Sales Type'
       ButtonColor = clMaroon
       LatchedColor = clBtnFace

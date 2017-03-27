@@ -16,6 +16,9 @@
 //---------------------------------------------------------------------------
 __fastcall TfrmMallSalesTypeAssignment::TfrmMallSalesTypeAssignment(TComponent* Owner) : TZForm(Owner)
 {
+    Panel1->Caption = "Items";
+    Panel2->Caption = "Sales Types Items";
+    Panel12->Caption = "Sales Types";
 }
 //---------------------------------------------------------------------------
 __fastcall TfrmMallSalesTypeAssignment::~TfrmMallSalesTypeAssignment()
