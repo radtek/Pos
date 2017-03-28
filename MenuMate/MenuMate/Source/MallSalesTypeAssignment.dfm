@@ -481,7 +481,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Color = clLime
       ParentFont = False
       Caption = 'Assign All'
-      ButtonColor = clMaroon
+      ButtonColor = 9933970
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
@@ -499,7 +499,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Color = clLime
       ParentFont = False
       Caption = 'Remove All'
-      ButtonColor = clMaroon
+      ButtonColor = 9933970
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
@@ -517,7 +517,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Color = clLime
       ParentFont = False
       Caption = 'Add Sales Type'
-      ButtonColor = clMaroon
+      ButtonColor = 9933970
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
@@ -535,7 +535,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Color = clLime
       ParentFont = False
       Caption = 'Edit Sales Type'
-      ButtonColor = clMaroon
+      ButtonColor = 9933970
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
@@ -553,7 +553,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Color = clLime
       ParentFont = False
       Caption = 'Delete Sales Type'
-      ButtonColor = clMaroon
+      ButtonColor = 2200566
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
