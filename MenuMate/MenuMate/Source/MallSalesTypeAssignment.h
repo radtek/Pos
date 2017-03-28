@@ -65,6 +65,7 @@ private:	// User declarations
         std::map<int, std::vector<int> > assignedItems;
         void DisplayItems();
         void DisplaySalesTypes();
+        int SelectedGroup;
 
 public:		// User declarations
 	__fastcall TfrmMallSalesTypeAssignment(TComponent* Owner);

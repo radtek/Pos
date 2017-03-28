@@ -50,13 +50,12 @@ std::map<int, UnicodeString> TDBSalesTypeAssignment::LoadAllSalesTypes()
         dbTransaction.StartTransaction();
 
         TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
-        query->SQL->Text =  "SELECT MST.SALES_TYPE_KEY, MST.SALES_TYPE_NAME, MST.DEFAULT_SALES_TYPE "
-                            "FROM MALL_SALES_TYPE MST ";
+        query->SQL->Text =  "SELECT MST.SALES_TYPE_ID, MST.SALES_TYPE_NAME FROM MALL_SALES_TYPE MST ORDER BY 1 ASC ";
         query->ExecQuery();
 
         while(!query->Eof)
         {
-            salesTypeMap.insert( std::pair<int, UnicodeString >(query->FieldByName("SALES_TYPE_KEY")->AsInteger, query->FieldByName("SALES_TYPE_NAME")->AsString ));
+            salesTypeMap.insert( std::pair<int, UnicodeString >(query->FieldByName("SALES_TYPE_ID")->AsInteger, query->FieldByName("SALES_TYPE_NAME")->AsString ));
             query->Next();
         }
         dbTransaction.Commit();
@@ -131,4 +130,29 @@ bool TDBSalesTypeAssignment::IsSalesTypeCodeExist(UnicodeString code)
         dbTransaction.Rollback();
 	}
     return isPresent;
+}
+//----------------------------------------------------------------------------------------------------------------------
+void TDBSalesTypeAssignment::DeleteSalesType(int id)
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        TIBSQL* selectQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        selectQuery->Close();
+        selectQuery->SQL->Text =  "DELETE FROM MALL_SALES_TYPE a WHERE A.SALES_TYPE_ID = :SALES_TYPE_ID ";
+
+        selectQuery->ParamByName("SALES_TYPE_ID")->AsInteger = id;
+        selectQuery->ExecQuery();
+
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        dbTransaction.Rollback();
+	}
 }

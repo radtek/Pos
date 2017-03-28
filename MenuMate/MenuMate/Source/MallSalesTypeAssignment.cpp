@@ -37,6 +37,7 @@ void __fastcall TfrmMallSalesTypeAssignment::FormShow(TObject *Sender)
 void __fastcall TfrmMallSalesTypeAssignment::GroupListMouseClick(TObject *Sender, TMouseButton Button,
           TShiftState Shift, TGridButton *GridButton)
 {
+    SelectedGroup = GridButton->Tag;
     //GroupSelected(GridButton);
 }
 //---------------------------------------------------------------------------
@@ -100,16 +101,22 @@ void __fastcall TfrmMallSalesTypeAssignment::btnAddSalesTypeMouseClick(TObject *
 {
     std::auto_ptr <TfrmAddSalesType> addSalesType(new TfrmAddSalesType(this));
     addSalesType->ShowModal();
+    DisplaySalesTypes();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnEditSalesTypeMouseClick(TObject *Sender)
 {
    // RemoveAllItems();
+   DisplaySalesTypes();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnDeleteSalesTypeMouseClick(TObject *Sender)
 {
-    //RemoveAllItems();
+    if(SelectedGroup != 0)
+    {
+        TDBSalesTypeAssignment::DeleteSalesType(SelectedGroup);
+        DisplaySalesTypes();
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmMallSalesTypeAssignment::DisplayItems()
@@ -131,8 +138,8 @@ void TfrmMallSalesTypeAssignment::DisplaySalesTypes()
 {
     int index = 0;
     std::map<int, UnicodeString> salesTypes = TDBSalesTypeAssignment::LoadAllSalesTypes();
-    MembersGrid->RowCount = salesTypes.size();
     std::map<int, UnicodeString>::iterator itSalesTypes;
+    GroupList->RowCount= salesTypes.size();
     for (itSalesTypes = salesTypes.begin(); itSalesTypes != salesTypes.end(); ++itSalesTypes)
     {
         GroupList->Buttons[index][0]->Caption = itSalesTypes->second;
