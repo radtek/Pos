@@ -23,10 +23,7 @@ class THavanaReport : public TReportExportInterface
 
     UnicodeString RemoveCommas(UnicodeString value);
 
-
-    void CreateFileExportPath(UnicodeString &path);
-
-    void CreateDirectory(UnicodeString &path);
+    void CreateDirectory(UnicodeString &path, TDateTime SDate, TDateTime EDate);
 
     void PrepareDataForCSVFile(TDateTime SDate, TDateTime EDate, UnicodeString reportExportPath, bool isAllTerminalSelected);
 

@@ -5,7 +5,7 @@
 
 #include "HavanaReport.h"
 #include "MMLogging.h"
-
+#include "ExportCSV.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -57,20 +57,38 @@ void THavanaReport::PostDataToFile()
         MallExportRegenerateReport->sbThisTerminal->Visible = true;
         MallExportRegenerateReport->btnOk->Caption = "Generate Report";
         MallExportRegenerateReport->Caption = "Generate Report";
+        MallExportRegenerateReport->cbStartHour->ItemIndex = 0;
+        MallExportRegenerateReport->cbEndHour->ItemIndex = 0;
+        MallExportRegenerateReport->cbStartMin->ItemIndex = 0;
+        MallExportRegenerateReport->cbEndMin->ItemIndex = 0;
+        MallExportRegenerateReport->StartHour = MallExportRegenerateReport->cbStartHour->ItemIndex;
+        MallExportRegenerateReport->StartHour = "0" + MallExportRegenerateReport->StartHour;
+        MallExportRegenerateReport->EndHour = MallExportRegenerateReport->cbEndHour->ItemIndex;
+        MallExportRegenerateReport->EndHour = "0" + MallExportRegenerateReport->EndHour;
+        MallExportRegenerateReport->StartMin = MallExportRegenerateReport->cbStartMin->ItemIndex;
+        MallExportRegenerateReport->StartMin = "0" + MallExportRegenerateReport->StartMin;
+        MallExportRegenerateReport->EndMin = MallExportRegenerateReport->cbEndMin->ItemIndex;
+        MallExportRegenerateReport->EndMin = "0" + MallExportRegenerateReport->EndMin;
+        MallExportRegenerateReport->InitializeTimeSet(MallExportRegenerateReport->SDate, MallExportRegenerateReport->EDate);
         TModalResult result = MallExportRegenerateReport->ShowModal();
         TDateTime SDate = MallExportRegenerateReport->SDate;
         TDateTime EDate = MallExportRegenerateReport->EDate;
         bool isAllTerminalSelected = MallExportRegenerateReport->isAllTerminalsSelected;
         UnicodeString reportExportPath = MallExportRegenerateReport->edLocationPath->Text;
-
-        if(result == mrOk)
-        {
-            //Create Directory If not Exist
-            CreateDirectory(reportExportPath);
-
-            //Prepare Data That will be written to file.
-            PrepareDataForCSVFile(SDate, EDate, reportExportPath, isAllTerminalSelected);
+        if(result == mrOk && reportExportPath != "")
+        {    
+            if(EDate >= SDate)
+            {
+                //Prepare Data That will be written to file.
+                PrepareDataForCSVFile(SDate, EDate, reportExportPath, isAllTerminalSelected);
+            }
+            else
+            {
+                MessageBox( "End date is set prior to start date", "Invalid Date For File Generation", MB_OK );
+            }
         }
+        else if(reportExportPath == "" && result != mrCancel)
+            MessageBox( "Please Enter Report Export Path.", "No Export Path Specified", MB_OK );
     }
     catch(Exception &E)
 	{
@@ -78,17 +96,44 @@ void THavanaReport::PostDataToFile()
 	}
 }
 //-----------------------------------------------------------------------------------
-void THavanaReport::CreateDirectory(UnicodeString &reportExportPath)
+void THavanaReport::CreateDirectory(UnicodeString &reportExportPath, TDateTime SDate, TDateTime EDate)
 {
-     UnicodeString Format = ".csv";
-     //Check if directory not exist than create it.
-    if (!DirectoryExists(reportExportPath))
+    try
     {
-        CreateDir(reportExportPath);
-    }
+         UnicodeString Format = ".csv";
+         TSearchRec sr;
+         int iAttributes = faAnyFile;
 
-    //CSV will be created with Following Name
-    reportExportPath = reportExportPath +  "\\" + "Havana Combined Customized Daily Sales Format-" + Now().FormatString("ddmmyyyyhhnnss") + Format;
+         //Check if directory not exist than create it.
+        if (!DirectoryExists(reportExportPath))
+        {
+            CreateDir(reportExportPath);
+        }
+
+        reportExportPath = reportExportPath +  "\\";
+
+         TExportCSV exportCSV;
+         //Check any csv file exist on the path specified
+        if( FindFirst( reportExportPath + "*.CSV", iAttributes, sr ) == 0 )
+        {
+            do
+            {
+                if (sr.Attr & iAttributes)
+                {
+                    exportCSV.MoveCSVFile( reportExportPath + sr.Name, reportExportPath + "Archive CSV\\" );
+                }
+            }
+            while(FindNext(sr) == 0);
+        }
+
+        //CSV will be created with Following Name
+        reportExportPath = reportExportPath +  "Havana Combined Customized Daily Sales From " + SDate.FormatString("ddmmyyyy-hhnnss") + " To " + EDate.FormatString("ddmmyyyy-hhnnss") + Format;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+	}
 }
 //------------------------------------------------------------------------------------------
 std::vector<UnicodeString> THavanaReport::CreateHeaderFormat(Database::TDBTransaction &dbTransaction, TDateTime SDate, TDateTime EDate, bool isAllTerminalSelected)
@@ -226,12 +271,22 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
                                 "EXTRACT (MONTH FROM  AB.TIME_STAMP) Bill_Month, "
                                 "EXTRACT (YEAR FROM  AB.TIME_STAMP) Bill_Year , "
                                 "ABP.PAY_TYPE, "
-                                "CAST(SUM(ABP.SUBTOTAL)AS NUMERIC(17,4)) TOTAL "
+                                "CAST(SUM( CASE WHEN (ABP.PAY_TYPE) = 'Cash' THEN (COALESCE(ABP.SUBTOTAL,0) + COALESCE(CashChange.Cashout,0)) "
+                                                        "ELSE (COALESCE(ABP.SUBTOTAL,0)) END) AS NUMERIC(17,4)) TOTAL  "
                         "FROM ARCBILL AB INNER JOIN ARCBILLPAY ABP ON AB.ARCBILL_KEY = ABP.ARCBILL_KEY "
-                      //  "INNER JOIN ARCHIVE ON AB.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
+                        "INNER JOIN(select A.ARCBILL_KEY from ARCHIVE A WHERE EXTRACT (DAY FROM  A.TIME_STAMP) = :DAY "
+                                        "AND EXTRACT (MONTH FROM  A.TIME_STAMP) = :MONTH AND EXTRACT (YEAR FROM  A.TIME_STAMP) = :YEAR "
+                                        "AND A.Time_Stamp >= :START_TIME and A.Time_Stamp < :END_TIME "
+                                        "GROUP BY 1)ARC ON AB.ARCBILL_KEY =  ARC.ARCBILL_KEY "
+                        "LEFT JOIN (SELECT A.ARCBILL_KEY, MIN(CASE WHEN a.CASH_OUT = 'T' THEN COALESCE(a.SUBTOTAL,0) END) AS Cashout "
+                                      "FROM ARCBILLPAY a  INNER JOIN ARCBILL AB ON A.ARCBILL_KEY = AB.ARCBILL_KEY WHERE EXTRACT (DAY FROM  AB.TIME_STAMP) = :DAY "
+                                        "AND EXTRACT (MONTH FROM  AB.TIME_STAMP) = :MONTH AND EXTRACT (YEAR FROM  AB.TIME_STAMP) = :YEAR "
+                                        "AND AB.Time_Stamp >= :START_TIME and AB.Time_Stamp < :END_TIME "
+                                        "GROUP BY 1)CashChange ON AB.ARCBILL_KEY = CashChange.ARCBILL_KEY "
                         "WHERE EXTRACT (DAY FROM  AB.TIME_STAMP) = :DAY AND EXTRACT (MONTH FROM  AB.TIME_STAMP) = :MONTH "
                                     "AND EXTRACT (YEAR FROM  AB.TIME_STAMP) = :YEAR AND AB.Time_Stamp >= :START_TIME and AB.Time_Stamp < :END_TIME "
-                            "And ab.INVOICE_NUMBER not in (SELECT a.INVOICE_NUMBER  FROM POINTSTRANSACTIONS a "
+                                    "AND ABP.CASH_OUT <> 'T' AND  ABP.SUBTOTAL <> 0 "
+                                    "And ab.INVOICE_NUMBER not in (SELECT a.INVOICE_NUMBER  FROM POINTSTRANSACTIONS a "
                                                            " where a.ADJUSTMENT_TYPE = 1 AND EXTRACT (DAY FROM  a.TIME_STAMP) = :DAY AND "
                                                            "EXTRACT (MONTH FROM  a.TIME_STAMP) = :MONTH AND EXTRACT (YEAR FROM  a.TIME_STAMP) = :YEAR "
                                                            "GROUP BY a.INVOICE_NUMBER) "  ;
@@ -243,7 +298,22 @@ std::vector<UnicodeString> THavanaReport::PrepareDataForExport(Database::TDBTran
 
                 paymentTypeQuery->SQL->Text = paymentTypeQuery->SQL->Text +
                         "GROUP BY Bill_Year, Bill_Month, Bill_Day, ABP.PAY_TYPE "
-                        "ORDER BY PAY_TYPE ASC ";
+
+                 "UNION ALL "
+
+                "SELECT "
+                    "EXTRACT (DAY FROM  ARCBILL.TIME_STAMP) Bill_Day,     "
+                    "EXTRACT (MONTH FROM  ARCBILL.TIME_STAMP) Bill_Month, "
+                    "EXTRACT (YEAR FROM  ARCBILL.TIME_STAMP) Bill_Year ,  "
+                    "ARCBILLPAY.PAY_TYPE, "
+                    "CAST(((( COALESCE(sum(ARCBILLPAY.SUBTOTAL),0))/Sum(ARCBILL.TOTAL))*(ARCBILL.TOTAL - pt.ADJUSTMENT)) as numeric(17, 4)) AS TOTAL "
+                "FROM ARCBILLPAY "
+                "INNER JOIN ARCBILL on ARCBILL.ARCBILL_KEY=ARCBILLPAY.ARCBILL_KEY "
+                "INNER JOIN POINTSTRANSACTIONS pt on ARCBILL.INVOICE_NUMBER = pt.INVOICE_NUMBER "
+                "WHERE pt.ADJUSTMENT_TYPE = 1 and ARCBILLPAY.SUBTOTAL <> 0  AND EXTRACT (DAY FROM  ARCBILL.TIME_STAMP) = :DAY AND EXTRACT (MONTH FROM  ARCBILL.TIME_STAMP) = :MONTH "
+                                    "AND EXTRACT (YEAR FROM  ARCBILL.TIME_STAMP) = :YEAR AND ARCBILL.Time_Stamp >= :START_TIME and ARCBILL.Time_Stamp < :END_TIME "
+                "GROUP BY Bill_Year, Bill_Month, Bill_Day,ARCBILLPAY.PAY_TYPE ,ARCBILLPAY.ARCBILL_KEY,pt.ADJUSTMENT,ARCBILL.TOTAL, ARCBILLPAY.SUBTOTAL "
+                "ORDER BY 4 ASC ";
 
                 paymentTypeQuery->ParamByName("DAY")->AsInteger = StrToInt(day);
                 paymentTypeQuery->ParamByName("MONTH")->AsInteger = month;
@@ -463,9 +533,10 @@ std::map<UnicodeString,UnicodeString> THavanaReport::LoadAllPaymentTypes(Databas
         UnicodeString paymentType = "";
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
-        ibInternalQuery->SQL->Text = "SELECT ABP.PAY_TYPE PAY_TYPE "
+        ibInternalQuery->SQL->Text = "SELECT * FROM (SELECT CASE WHEN (ABP.PAY_TYPE != 'Credit') THEN (ABP.PAY_TYPE) "
+                                                  "WHEN (ABP.PAY_TYPE = 'Credit' AND ABP.SUBTOTAL > 0) THEN (ABP.PAY_TYPE) END PAY_TYPE "
                                      "FROM ARCBILL AB INNER JOIN ARCBILLPAY ABP ON AB.ARCBILL_KEY = ABP.ARCBILL_KEY "
-                                     "WHERE AB.TIME_STAMP >= :START_TIME AND AB.TIME_STAMP < :END_TIME ";
+                                     "WHERE AB.TIME_STAMP >= :START_TIME AND AB.TIME_STAMP < :END_TIME  ";
 
         if (!isAllTerminalSelected)
         {
@@ -473,8 +544,9 @@ std::map<UnicodeString,UnicodeString> THavanaReport::LoadAllPaymentTypes(Databas
         }
 
         ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text +
-                                    "GROUP BY ABP.PAY_TYPE "
-                                     "ORDER BY 1 ASC ";
+                                    "GROUP BY 1 "
+                                     "ORDER BY 1 ASC )ABP "
+                                     "WHERE ABP.PAY_TYPE != '' " ;
 
         ibInternalQuery->ParamByName("START_TIME")->AsDateTime = SDate;
         ibInternalQuery->ParamByName("END_TIME")->AsDateTime = EDate;
@@ -570,20 +642,7 @@ UnicodeString THavanaReport::RemoveCommas(UnicodeString str)
    return retVal;
 }
 //--------------------------------------------------------------------------------------------------------
-void THavanaReport::CreateFileExportPath(UnicodeString &reportExportPath)
-{
-    UnicodeString Format = ".csv";
-     //Check if directory not exist than create it.
-    if (!DirectoryExists(reportExportPath))
-    {
-        CreateDir(reportExportPath);
-    }
-
-    //CSV will be created with Following Name
-    reportExportPath = reportExportPath + Now().FormatString("ddmmyyyyhhnnss") + Format;
-}
-//--------------------------------------------------------------------------------------------------------
-void THavanaReport::PrepareDataForCSVFile(TDateTime SDate, TDateTime EDate, UnicodeString reportExportPath, bool isAllTerminalSelected)
+void THavanaReport::PrepareDataForCSVFile(TDateTime sDate, TDateTime eDate, UnicodeString reportExportPath, bool isAllTerminalSelected)
 {
     //Register the database transaction..
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -592,21 +651,57 @@ void THavanaReport::PrepareDataForCSVFile(TDateTime SDate, TDateTime EDate, Unic
 
     try
     {
-        std::vector<UnicodeString> dataToWrite;
-        dataToWrite =  CreateHeaderFormat(dbTransaction, SDate, EDate, isAllTerminalSelected);
+         ///Register Query
+        Database::TcpIBSQL ibInternalQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(ibInternalQuery);
 
-        //Use Federal Mall's Function of printing Header
-        TMallExportOutputDBDriver  exportCSV;
-        exportCSV.GenerateTXT(dataToWrite, reportExportPath, "ZTXTHEADER");
+         //Query for selecting data for invoice file
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =  "SELECT a.ARCBILL_KEY FROM ARCBILL a "
+                                        "WHERE a.Time_Stamp >= :START_TIME AND a.Time_Stamp < :END_TIME ";
 
-        //Clear DataToWrite Vector
-        dataToWrite.erase (dataToWrite.begin(),dataToWrite.end());
+         if (!isAllTerminalSelected)
+        {
+            ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + " AND  a.TERMINAL_NAME = :TERMINAL_NAME ";
+        }
 
-        //Load all data into vector
-        dataToWrite =  PrepareDataForExport(dbTransaction, SDate, EDate, isAllTerminalSelected);
+        ibInternalQuery->SQL->Text = ibInternalQuery->SQL->Text + "ORDER BY 1 ASC ";
 
-        //calling existing mall function for insert Data into CSV
-        exportCSV.GenerateTXT(dataToWrite, reportExportPath, "ZTXTDATA");
+        ibInternalQuery->ParamByName("START_TIME")->AsDateTime = sDate;
+        ibInternalQuery->ParamByName("END_TIME")->AsDateTime = eDate;
+        if(!isAllTerminalSelected)
+        {
+            ibInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+        }
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+        {
+            //Create Directory If not Exist
+            CreateDirectory(reportExportPath,sDate, eDate);
+
+            std::vector<UnicodeString> dataToWrite;
+            dataToWrite =  CreateHeaderFormat(dbTransaction, sDate, eDate, isAllTerminalSelected);
+
+            //Use Federal Mall's Function of printing Header
+            TMallExportOutputDBDriver  exportCSV;
+            exportCSV.GenerateTXT(dataToWrite, reportExportPath, "ZTXTHEADER");
+
+            //Clear DataToWrite Vector
+            dataToWrite.erase (dataToWrite.begin(),dataToWrite.end());
+
+            //Load all data into vector
+            dataToWrite =  PrepareDataForExport(dbTransaction, sDate, eDate, isAllTerminalSelected);
+
+            //calling existing mall function for insert Data into CSV
+            exportCSV.GenerateTXT(dataToWrite, reportExportPath, "ZTXTDATA");
+
+            MessageBox( "Generation of file Successful", "Gernerating File", MB_OK );
+        }
+        else
+        {
+            MessageBox( "No Data For This Time Period", "Gernerating File", MB_OK );
+        }
 
         //Commit the transaction as we have completed all the transactions
         dbTransaction.Commit();
@@ -618,3 +713,4 @@ void THavanaReport::PrepareDataForCSVFile(TDateTime SDate, TDateTime EDate, Unic
 		throw;
 	}
 }
+//--------------------------------------------------------------------------------------------------------------
