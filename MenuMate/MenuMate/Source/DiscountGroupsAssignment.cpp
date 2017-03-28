@@ -6,7 +6,7 @@
 #include "DiscountGroupsAssignment.h"
 #include "DiscountTypesManager.h"
 #include "DiscountGroupsManager.h"
-
+#pragma package(smart_init)
 //---------------------------------------------------------------------------
 __fastcall TfrmDiscountGroupsAssignment::TfrmDiscountGroupsAssignment(TComponent* Owner) : TfrmGenericGroupAssignment(Owner)
 {
@@ -197,4 +197,4 @@ void TfrmDiscountGroupsAssignment::clearDiscountTypes(DTMap* DiscountTypeMap)
     DiscountTypeMap->clear();
 }
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
+

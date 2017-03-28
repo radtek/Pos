@@ -113,45 +113,52 @@ std::vector<IReportSection*> BaseReport::DisabledSections()
 
 TPrintout* BaseReport::SetupPrintOutInstance()
 {
-    bool printerExists = true;
-
-    if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
-    {
-        printerExists = false;
-    }
-
     TPrintout* printOut = new TPrintout;
-
-    if (!printerExists)
+    try
     {
-        TPrinterPhysical defaultScreenPrinter;
-        defaultScreenPrinter.NormalCharPerLine = 40;
-        defaultScreenPrinter.BoldCharPerLine = 40;
+        bool printerExists = true;
 
-        printOut->Printer = defaultScreenPrinter;
-    }
-    else
-    {
-        printOut->Printer = TComms::Instance().ReceiptPrinter;
-    }
-
-    printOut->PrintFormat->Line->FontInfo.Height = fsDoubleSize;
-    printOut->PrintFormat->Line->ColCount = 1;
-    printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
-    printOut->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-
-    printOut->PrintFormat->DocumentName = GetReportName();
-
-    for(std::vector<IReportSection*>::iterator it = _sections.begin();
-        it != _sections.end();++it)
-    {
-       if((*it)->GetIsEnabled() && printOut->ContinuePrinting)
+        if (TComms::Instance().ReceiptPrinter.PhysicalPrinterKey == 0)
         {
-            (*it)->GetOutput(printOut);
+            printerExists = false;
+        }
+
+
+
+        if (!printerExists)
+        {
+            TPrinterPhysical defaultScreenPrinter;
+            defaultScreenPrinter.NormalCharPerLine = 40;
+            defaultScreenPrinter.BoldCharPerLine = 40;
+
+            printOut->Printer = defaultScreenPrinter;
+        }
+        else
+        {
+            printOut->Printer = TComms::Instance().ReceiptPrinter;
+        }
+
+        printOut->PrintFormat->Line->FontInfo.Height = fsDoubleSize;
+        printOut->PrintFormat->Line->ColCount = 1;
+        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
+        printOut->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+
+        printOut->PrintFormat->DocumentName = GetReportName();
+
+        for(std::vector<IReportSection*>::iterator it = _sections.begin();
+            it != _sections.end();++it)
+        {
+           if((*it)->GetIsEnabled() && printOut->ContinuePrinting)
+            {
+                (*it)->GetOutput(printOut);
+            }
         }
     }
-
-
+    catch (Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
     //ReportSections functor(printOut);
     //std::for_each(_sections.begin(), _sections.end(), functor);
     //std::bind2nd(std::mem_fun(&IReportSection::GetOutput), printOut));
