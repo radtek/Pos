@@ -47,7 +47,7 @@ void __fastcall TfrmAddSalesType::btnOkMouseClick(TObject *Sender)
             ModalResult = mrOk;
         }
         else if (!isCodeExist)
-        {   MessageBox("Code Exist", "Error", MB_OK + MB_ICONERROR);
+        {
             TDBSalesTypeAssignment::SaveSalesType(SalesTypeInfoPointers[0], SalesTypeInfoPointers[1]);
             ModalResult = mrOk;
         }
