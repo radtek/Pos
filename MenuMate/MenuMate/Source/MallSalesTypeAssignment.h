@@ -62,7 +62,7 @@ private:	// User declarations
         TGridButton *pGroupButton;
         void DisplayGroupMembers(void);
         void InsertMemberToGroup(UnicodeString pMemberButton);
-        std::map<int, std::map<int, UnicodeString> > assignedItems;
+        std::map<int, std::vector<int> > assignedItems;
         void DisplayItems();
         void DisplaySalesTypes();
 

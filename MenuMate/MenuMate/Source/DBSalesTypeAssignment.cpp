@@ -68,3 +68,37 @@ std::map<int, UnicodeString> TDBSalesTypeAssignment::LoadAllSalesTypes()
 
     return salesTypeMap;
 }
+//------------------------------------------------------------------------------------------------------------------------
+void TDBSalesTypeAssignment::SaveSalesType(UnicodeString name, UnicodeString code)
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        //Increment Generator for inserting date into db since it is primary key.
+        TIBSQL* incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
+        incrementGenerator->Close();
+        incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALLSALES_TYPE, 1) FROM RDB$DATABASE";
+        incrementGenerator->ExecQuery();
+
+        //insert new sales type into Db..
+        TIBSQL* insertQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        insertQuery->Close();
+        insertQuery->SQL->Text =  "INSERT INTO MALL_SALES_TYPE  VALUES(:SALES_TYPE_ID, :SALES_TYPE_CODE, :SALES_TYPE_NAME) ";
+
+        insertQuery->ParamByName("SALES_TYPE_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+        insertQuery->ParamByName("SALES_TYPE_CODE")->AsString = code;
+        insertQuery->ParamByName("SALES_TYPE_NAME")->AsString = name;
+        insertQuery->ExecQuery();
+
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        dbTransaction.Rollback();
+	}
+}

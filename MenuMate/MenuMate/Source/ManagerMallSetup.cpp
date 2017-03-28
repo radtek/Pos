@@ -336,7 +336,7 @@ void TManagerMallSetup::InsertSettingValuesForDeanAndDeluca(Database::TDBTransac
                 insertQuery->Close();
                 insertQuery->SQL->Text =
                             "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (:SETTING_VALUE_KEY, :SETTING_KEY, :FIELD_VALUE, :FIELD_TYPE, :DEVICE_KEY, :MALL_KEY) ";
-                insertQuery->ParamByName("SETTING_VALUE_KEY")->AsInteger = index + 78;
+                insertQuery->ParamByName("SETTING_VALUE_KEY")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
                 insertQuery->ParamByName("SETTING_KEY")->AsInteger = settingID[index];
                 insertQuery->ParamByName("FIELD_VALUE")->AsString = fieldValues[index];
                 insertQuery->ParamByName("FIELD_TYPE")->AsString = fieldTypes[index];

@@ -23,7 +23,7 @@ class TDBSalesTypeAssignment
     static void SaveAssignedItemsToSalesTYpeGroup(std::map<int, std::map<int, UnicodeString> >);
 
     //Add New Sales Type
-    static void AddSalesType(UnicodeString name, UnicodeString code);
+    static void SaveSalesType(UnicodeString name, UnicodeString code);
 
     //Edit Existing Sales Type
     static void EditSalesType(UnicodeString name, UnicodeString code);

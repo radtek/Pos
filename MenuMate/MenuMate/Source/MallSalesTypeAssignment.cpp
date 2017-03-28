@@ -5,7 +5,7 @@
 
 #include "MallSalesTypeAssignment.h"
 #include "MMMessageBox.h"
-#include "DBSalesTypeAssignment.h"
+#include "AddSalesType.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -32,8 +32,6 @@ void __fastcall TfrmMallSalesTypeAssignment::FormShow(TObject *Sender)
     FormResize(NULL);
     DisplaySalesTypes();
     DisplayItems();
-   // DisplayGroups();
-   // DisplayTypes();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::GroupListMouseClick(TObject *Sender, TMouseButton Button,
@@ -100,7 +98,8 @@ void __fastcall TfrmMallSalesTypeAssignment::btnRemoveAllMouseClick(TObject *Sen
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnAddSalesTypeMouseClick(TObject *Sender)
 {
-  //  RemoveAllItems();
+    std::auto_ptr <TfrmAddSalesType> addSalesType(new TfrmAddSalesType(this));
+    addSalesType->ShowModal();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnEditSalesTypeMouseClick(TObject *Sender)
