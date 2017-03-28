@@ -25,16 +25,28 @@ void __fastcall TfrmAddSalesType::FormShow(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmAddSalesType::btnOkMouseClick(TObject *Sender)
 {
-    if (SalesTypeInfoPointers[0].Trim() != "" && SalesTypeInfoPointers[1].Trim() != "")
+    SalesTypeInfoPointers[0] = SalesTypeInfoPointers[0].Trim();
+    SalesTypeInfoPointers[1] = SalesTypeInfoPointers[1].Trim();
+    if (SalesTypeInfoPointers[0] != "" && SalesTypeInfoPointers[1] != "")
     {
         ModalResult = mrOk;
-        TDBSalesTypeAssignment::SaveSalesType(SalesTypeInfoPointers[0], SalesTypeInfoPointers[1]);
+        bool isCodeExist = TDBSalesTypeAssignment::IsSalesTypeCodeExist(SalesTypeInfoPointers[1]);
+
+        if(!isCodeExist)
+        {
+            TDBSalesTypeAssignment::SaveSalesType(SalesTypeInfoPointers[0], SalesTypeInfoPointers[1]);
+            ModalResult = mrOk;
+        }
+        else
+        {
+            MessageBox("Entered Code Already Exist.", "Error", MB_OK + MB_ICONERROR);
+        }
     }
-    else if(SalesTypeInfoPointers[0].Trim() == "")
+    else if(SalesTypeInfoPointers[0] == "")
     {
         MessageBox("Please Enter Sales Type Name", "Error", MB_OK + MB_ICONERROR);
     }
-    else if(SalesTypeInfoPointers[1].Trim() == "")
+    else if(SalesTypeInfoPointers[1] == "")
     {
         MessageBox("Please Enter Sales Type Code", "Error", MB_OK + MB_ICONERROR);
     }

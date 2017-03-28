@@ -102,3 +102,33 @@ void TDBSalesTypeAssignment::SaveSalesType(UnicodeString name, UnicodeString cod
         dbTransaction.Rollback();
 	}
 }
+//-------------------------------------------------------------------------------------------------------------
+bool TDBSalesTypeAssignment::IsSalesTypeCodeExist(UnicodeString code)
+{
+    bool isPresent = false;
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        TIBSQL* selectQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        selectQuery->Close();
+        selectQuery->SQL->Text =  "SELECT A.SALES_TYPE_ID FROM MALL_SALES_TYPE A WHERE A.SALES_TYPE_CODE = :SALES_TYPE_CODE ";
+
+        selectQuery->ParamByName("SALES_TYPE_CODE")->AsString = code;
+        selectQuery->ExecQuery();
+
+        if(selectQuery->RecordCount)
+            isPresent = true;
+
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        dbTransaction.Rollback();
+	}
+    return isPresent;
+}

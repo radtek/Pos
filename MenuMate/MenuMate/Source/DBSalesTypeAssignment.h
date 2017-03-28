@@ -31,5 +31,8 @@ class TDBSalesTypeAssignment
     //Delete SalesType
     static void DeleteSalesType(UnicodeString name, UnicodeString code);
 
+    //Check Whether entered sales type code already exist.
+    static bool IsSalesTypeCodeExist(UnicodeString code);
+
 };
 #endif
