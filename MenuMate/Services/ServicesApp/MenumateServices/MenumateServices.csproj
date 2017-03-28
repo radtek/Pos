@@ -176,7 +176,7 @@
     <Compile Include="DTO\Thorlink\DTO_TMemberInfo.cs" />
     <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
-    <Compile Include="DTO\Wallet Payments\WalletTransactionResponse.cs" />
+    <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
     <Compile Include="DTO\Thorlink\DTO_RefundDetails.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorAuthCheck.cs" />
@@ -419,6 +419,10 @@
     <ProjectReference Include="..\SalesForceCommunication\SalesForceCommunication.csproj">
       <Project>{FD3662F2-D048-4ECA-86C6-A44611DE5B4B}</Project>
       <Name>SalesForceCommunication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WalletPaymets\WalletPaymets.csproj">
+      <Project>{843E831F-1B70-4238-AA55-96492F53AAE5}</Project>
+      <Name>WalletPaymets</Name>
     </ProjectReference>
     <ProjectReference Include="..\XeroIntegration\AccountingIntegration.csproj">
       <Project>{46E2DEBD-F1B9-41D1-BEEA-F1D903302B86}</Project>

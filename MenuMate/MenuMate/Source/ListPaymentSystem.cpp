@@ -66,6 +66,8 @@
 #include "PointsRulesSetUtils.h"
 #include "EstanciaMall.h"
 #include "ManagerPanasonic.h"
+#include "WalletPaymentsInterface.h"
+
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -3490,19 +3492,106 @@ void TListPaymentSystem::RemoveOrders(TPaymentTransaction &PaymentTransaction)
 bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTransaction, bool &RequestEFTPOSReceipt)
 {
 	bool RetVal = false;
-	bool PointsOk = true;
 	bool ChequesOk = true;
 	bool EftPosOk = true;
 	bool PhoenixHSOk = true;
 	bool DialogsOk = true;
 	bool InvoiceOk = true;
-	bool XMLExportOK = true;
 	bool PocketVoucher = true;
 	bool GeneralLedgerMate = true;
 	bool RMSCSVRoomExport = true;
     bool NewBookCSVRoomExport = true;
     bool LoyaltyVouchers = true;
-	if (PaymentTransaction.TransVerifyCheque())
+    bool WalletTransaction = true;
+
+    ChequesOk = ProcessChequePayment(PaymentTransaction);
+	if (!ChequesOk)
+	   return RetVal;
+
+    EftPosOk = ProcessEftPosPayment(PaymentTransaction,RequestEFTPOSReceipt);
+	if (!EftPosOk)
+	   return RetVal;
+
+    InvoiceOk = ProcessInvoicePayment(PaymentTransaction);
+	if (!InvoiceOk)
+	   return RetVal;
+
+	DialogsOk = ProcessComfirmationDialogs(PaymentTransaction);
+	if(!DialogsOk)
+	  return RetVal;
+
+	if (PhoenixHM->Enabled)
+	{
+		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+	}
+	if(!PhoenixHSOk)
+	   return RetVal;
+
+
+    PocketVoucher =  ProcessPocketVoucherPayment(PaymentTransaction);
+    if(!PocketVoucher)
+	   return RetVal;
+
+	if(TDeviceRealTerminal::Instance().ManagerGeneralLedger->EnabledFor(PaymentTransaction))
+	{
+		GeneralLedgerMate = TDeviceRealTerminal::Instance().ManagerGeneralLedger->ProcessTransaction(PaymentTransaction);
+		if(GeneralLedgerMate)
+		{
+			PaymentTransaction.References.push_back(
+			RefRefType(IntToStr(TDeviceRealTerminal::Instance().ManagerGeneralLedger->LastTransactionRef),
+			ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_GENERAL_LEDGER)));
+		}
+	}
+	else
+	{
+		GeneralLedgerMate = true;
+	}
+    if(!GeneralLedgerMate)
+	   return RetVal;
+
+
+	if(ProcessCSVRoomExport(PaymentTransaction))
+	{
+		RMSCSVRoomExport = true;
+	}
+	else
+	{
+		RMSCSVRoomExport = false;
+	}
+
+    if(!RMSCSVRoomExport)
+	   return RetVal;
+
+    if(TGlobalSettings::Instance().NewBook == 2)
+    {
+        if(ProcessCSVNewBookExport(PaymentTransaction))
+        {
+            NewBookCSVRoomExport = true;
+        }
+        else
+        {
+            NewBookCSVRoomExport = false;
+        }
+    }
+    if(!NewBookCSVRoomExport)
+	   return RetVal;
+
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled)
+       LoyaltyVouchers = ProcessLoyaltyVouchers(PaymentTransaction);
+    if(!LoyaltyVouchers)
+	   return RetVal;
+
+    WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
+
+	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PocketVoucher &&
+             GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction;
+	return RetVal;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessChequePayment(TPaymentTransaction &PaymentTransaction)
+{
+   bool paymentComplete = true;
+   if (PaymentTransaction.TransVerifyCheque())
 	{
 		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 		{
@@ -3514,16 +3603,19 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 				if (Payment->Result != eAccepted)
 				{
 					Payment->Failed();
-					ChequesOk = false;
+					paymentComplete = false;
+                    break;
 				}
 			}
 		}
 	}
-
-	if (!ChequesOk)
-	return RetVal;
-
-	if (PaymentTransaction.TransElectronicPayment())
+   return paymentComplete;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessEftPosPayment(TPaymentTransaction &PaymentTransaction,bool &RequestEFTPOSReceipt)
+{
+   bool paymentComplete = true;
+   if (PaymentTransaction.TransElectronicPayment())
 	{
 		if (PaymentTransaction.TransIntegratedEFTPOS())
 		{
@@ -3541,14 +3633,16 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 				{
                     transactionRecovery.ClearRecoveryInfo();
 					Payment->Failed();
-					EftPosOk = false;
+					paymentComplete = false;
+                    break;
 				}
 				else
 				{
 					if (Payment->ReferenceNumber != "")
 					{
-                        if(TGlobalSettings::Instance().EnableEftPosSmartPay && TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"]
-                           && EftPos->AcquirerRefSmartPay.Length() != 0)
+                        if(TGlobalSettings::Instance().EnableEftPosSmartPay &&
+                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                           EftPos->AcquirerRefSmartPay.Length() != 0)
                            Payment->ReferenceNumber = EftPos->AcquirerRefSmartPay;
 						PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
 						ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_EFTPOS)));
@@ -3561,53 +3655,13 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 			}
 		}
 	}
-
-	if (!EftPosOk)
-	return RetVal;
-
-	if (PaymentTransaction.TransInvoicePayment())
-	{
-		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
-		{
-			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if (((Payment->GetPaymentAttribute(ePayTypeInvoiceExport)) || (Payment->GetPaymentAttribute(ePayTypeChargeToAccount)))
-                 && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0) && (Payment->Result != eAccepted))
-			{
-				TransRetriveInvoiceResult(PaymentTransaction, Payment);
-				if (Payment->Result != eAccepted)
-				{
-					Payment->Failed();
-					InvoiceOk = false;
-				}
-				else
-				{
-					if( Payment->GetPaymentAttribute(ePayTypeChargeToXero))
-					{
-						// Creates and sends an invoice to Xero if there is a ChargeToXero Payment
-						CreateXeroInvoiceAndSend( PaymentTransaction );
-					}
-				}
-			}
-		}
-	}
-
-	if (!InvoiceOk)
-	return RetVal;
-
-	DialogsOk = ProcessComfirmationDialogs(PaymentTransaction);
-
-	if (!DialogsOk)
-	return RetVal;
-
-	if (PhoenixHM->Enabled)
-	{
-		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
-	}
-
-	if (!PhoenixHSOk)
-	return RetVal;
-
-	for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+     return paymentComplete;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessPocketVoucherPayment(TPaymentTransaction &PaymentTransaction)
+{
+    bool paymentComplete = true;
+    for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *Payment = PaymentTransaction.PaymentGet(i);
 		if ( (Payment->GetPaymentAttribute(ePayTypePocketVoucher)) &&
@@ -3620,7 +3674,8 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 				if (Payment->Result != eAccepted)
 				{
 					Payment->Failed();
-					PocketVoucher = false;
+					paymentComplete = false;
+                    break;
 				}
 				else
 				{
@@ -3633,48 +3688,62 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 				}
 		}
 	}
-
-	if(TDeviceRealTerminal::Instance().ManagerGeneralLedger->EnabledFor(PaymentTransaction))
+     return paymentComplete;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessInvoicePayment(TPaymentTransaction &PaymentTransaction)
+{
+    bool paymentComplete = true;
+	if (PaymentTransaction.TransInvoicePayment())
 	{
-		GeneralLedgerMate = TDeviceRealTerminal::Instance().ManagerGeneralLedger->ProcessTransaction(PaymentTransaction);
-		if(GeneralLedgerMate)
+		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 		{
-			PaymentTransaction.References.push_back(
-			RefRefType(IntToStr(TDeviceRealTerminal::Instance().ManagerGeneralLedger->LastTransactionRef),
-			ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_GENERAL_LEDGER)));
+			TPayment *Payment = PaymentTransaction.PaymentGet(i);
+			if (((Payment->GetPaymentAttribute(ePayTypeInvoiceExport)) || (Payment->GetPaymentAttribute(ePayTypeChargeToAccount)))
+                 && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0) && (Payment->Result != eAccepted))
+			{
+				TransRetriveInvoiceResult(PaymentTransaction, Payment);
+				if (Payment->Result != eAccepted)
+				{
+					Payment->Failed();
+					paymentComplete = false;
+                    break;
+				}
+				else
+				{
+					if( Payment->GetPaymentAttribute(ePayTypeChargeToXero))
+					{
+						// Creates and sends an invoice to Xero if there is a ChargeToXero Payment
+						CreateXeroInvoiceAndSend( PaymentTransaction );
+					}
+				}
+			}
 		}
 	}
-	else
-	{
-		GeneralLedgerMate = true;
-	}
-
-	if(ProcessCSVRoomExport(PaymentTransaction))
-	{
-		RMSCSVRoomExport = true;
-	}
-	else
-	{
-		RMSCSVRoomExport = false;
-	}
-    if(TGlobalSettings::Instance().NewBook==2)
-    {
-        if(ProcessCSVNewBookExport(PaymentTransaction))
-        {
-            NewBookCSVRoomExport = true;
-        }
-        else
-        {
-            NewBookCSVRoomExport = false;
-        }
-    }
-    if(TGlobalSettings::Instance().LoyaltyMateEnabled)
-       LoyaltyVouchers = ProcessLoyaltyVouchers(PaymentTransaction);
-
-	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PointsOk && PocketVoucher && GeneralLedgerMate && RMSCSVRoomExport && LoyaltyVouchers;
-	return RetVal;
+    return paymentComplete;
 }
-
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessWalletTransaction(TPaymentTransaction &PaymentTransaction)
+{
+    bool paymentComplete = true;
+    TWalletPaymentsInterface* WalletPaymentsInterface = new TWalletPaymentsInterface();
+	for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+	{
+		TPayment *Payment = PaymentTransaction.PaymentGet(i);
+		if (Payment->GetPaymentAttribute(ePayTypeWallet) && Payment->GetPay() != 0 && Payment->Result != eAccepted)
+		{
+           TWalletTransactionResponse response = WalletPaymentsInterface->DoTransaction(*Payment);
+           if(!response.IsSuccessful)
+           {
+              paymentComplete = false;
+              break;
+           }
+		}
+	}
+    delete WalletPaymentsInterface;
+    return paymentComplete;
+}
+//------------------------------------------------------------------------------
 bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction)
 {
   bool paymentComplete = true;

@@ -213,6 +213,11 @@ protected:
      void UpdateSubscriptionDetails( TPaymentTransaction &PaymentTransaction, double amount );
      void CheckSubscription(TPaymentTransaction &PaymentTransaction);
      UnicodeString PrepareLastReceiptDataForPanasonic(TStringList *_receipt);
+     bool ProcessWalletTransaction(TPaymentTransaction &PaymentTransaction);
+     bool ProcessInvoicePayment(TPaymentTransaction &PaymentTransaction);
+     bool ProcessPocketVoucherPayment(TPaymentTransaction &PaymentTransaction);
+     bool ProcessEftPosPayment(TPaymentTransaction &PaymentTransaction,bool &RequestEFTPOSReceipt);
+     bool ProcessChequePayment(TPaymentTransaction &PaymentTransaction);
 };
 
 #endif

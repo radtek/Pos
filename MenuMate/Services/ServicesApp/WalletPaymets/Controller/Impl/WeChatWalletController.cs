@@ -89,7 +89,7 @@ namespace WalletPayments.Controller.Impl
                 user_id = transactionModel.AccountInformation.UserId,
                 tname = transactionModel.AccountInformation.ShopName,
                 tprice = transactionModel.Amount,
-                auth_code = transactionModel.QrCode,
+                auth_code = transactionModel.ScannedCode,
                 platform = transactionModel.AccountInformation.Platform
             }));
             IDictionary<string, string> parameters = new Dictionary<string, string>();

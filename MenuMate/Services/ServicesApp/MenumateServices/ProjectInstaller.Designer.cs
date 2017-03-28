@@ -116,7 +116,6 @@ namespace MenumateServices
             // 
             // serviceInstallerWalletPayments
             // 
-            this.serviceInstallerWalletPayments.DelayedAutoStart = true;
             this.serviceInstallerWalletPayments.Description = "Menumate Wallet Payments Sevice";
             this.serviceInstallerWalletPayments.DisplayName = "Menumate Wallet Payments Sevice";
             this.serviceInstallerWalletPayments.ServiceName = "MenumateServiceWalletPayments";
