@@ -156,3 +156,63 @@ void TDBSalesTypeAssignment::DeleteSalesType(int id)
         dbTransaction.Rollback();
 	}
 }
+//----------------------------------------------------------------------------------------------------
+void TDBSalesTypeAssignment::LoadSelectedSalesType(int id, UnicodeString &code, UnicodeString &name)
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        TIBSQL* selectQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        selectQuery->Close();
+        selectQuery->SQL->Text =  "SELECT MST.SALES_TYPE_CODE, MST.SALES_TYPE_NAME FROM MALL_SALES_TYPE MST WHERE MST.SALES_TYPE_ID = :SALES_TYPE_ID ";
+
+        selectQuery->ParamByName("SALES_TYPE_ID")->AsInteger = id;
+        selectQuery->ExecQuery();
+
+        if(selectQuery->RecordCount)
+        {
+            code = selectQuery->FieldByName("SALES_TYPE_CODE")->AsString;
+            name = selectQuery->FieldByName("SALES_TYPE_NAME")->AsString;
+        }
+
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}
+//------------------------------------------------------------------------------------------------------------------
+void TDBSalesTypeAssignment::UpdateSalesType(int id, UnicodeString name, UnicodeString code)
+{
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        TIBSQL* selectQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        selectQuery->Close();
+        selectQuery->SQL->Text =  "UPDATE MALL_SALES_TYPE MST  SET SALES_TYPE_NAME = :SALES_TYPE_NAME, SALES_TYPE_CODE = :SALES_TYPE_CODE  "
+                                    "WHERE MST.SALES_TYPE_ID = :SALES_TYPE_ID ";
+
+        selectQuery->ParamByName("SALES_TYPE_ID")->AsInteger = id;
+        selectQuery->ParamByName("SALES_TYPE_NAME")->AsString = name;
+        selectQuery->ParamByName("SALES_TYPE_CODE")->AsString = code;
+        selectQuery->ExecQuery();
+
+        
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        dbTransaction.Rollback();
+	}
+}
+

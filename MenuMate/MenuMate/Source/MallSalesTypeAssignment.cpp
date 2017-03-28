@@ -99,15 +99,28 @@ void __fastcall TfrmMallSalesTypeAssignment::btnRemoveAllMouseClick(TObject *Sen
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnAddSalesTypeMouseClick(TObject *Sender)
 {
-    std::auto_ptr <TfrmAddSalesType> addSalesType(new TfrmAddSalesType(this));
-    addSalesType->ShowModal();
+    std::auto_ptr <TfrmAddSalesType> frmAddSalesType(new TfrmAddSalesType(this));
+    frmAddSalesType->Editing = false;
+    frmAddSalesType->Caption = "Add Sales Type";
+    frmAddSalesType->ShowModal();
     DisplaySalesTypes();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnEditSalesTypeMouseClick(TObject *Sender)
 {
-   // RemoveAllItems();
-   DisplaySalesTypes();
+    if (SelectedGroup != 0)
+	{
+        std::auto_ptr <TfrmAddSalesType> frmAddSalesType(new TfrmAddSalesType(this));
+        frmAddSalesType->Editing = true;
+        frmAddSalesType->Caption = "Edit Sales Type";
+        frmAddSalesType->SalesTypeId = SelectedGroup;
+        frmAddSalesType->ShowModal();
+        DisplaySalesTypes();
+    }
+    else
+    {
+        MessageBox("Please Select a sales type to edit.", "Select a sales type", MB_ICONINFORMATION + MB_OK);
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnDeleteSalesTypeMouseClick(TObject *Sender)

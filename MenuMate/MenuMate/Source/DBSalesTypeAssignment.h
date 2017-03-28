@@ -34,5 +34,11 @@ class TDBSalesTypeAssignment
     //Check Whether entered sales type code already exist.
     static bool IsSalesTypeCodeExist(UnicodeString code);
 
+    //Load Sales Type for Editing
+    static void LoadSelectedSalesType(int id, UnicodeString &code, UnicodeString &name);
+
+    //Update Existing sales type
+    static void UpdateSalesType(int id, UnicodeString name, UnicodeString code);
+
 };
 #endif

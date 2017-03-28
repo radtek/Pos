@@ -20,7 +20,16 @@ __fastcall TfrmAddSalesType::TfrmAddSalesType(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TfrmAddSalesType::FormShow(TObject *Sender)
 {
-    //Todo
+    if(Editing)
+    {
+        UnicodeString salesCode = "";
+        UnicodeString salesTypeName = "";
+        TDBSalesTypeAssignment::LoadSelectedSalesType(SalesTypeId, salesCode, salesTypeName);
+        SalesTypeInfoPointers[0] = salesTypeName;
+        SalesTypeInfoPointers[1] = salesCode;
+        btnName->Caption = btnName->Caption + " " + salesTypeName;
+        btnCode->Caption = btnCode->Caption + " " + salesCode;
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmAddSalesType::btnOkMouseClick(TObject *Sender)
@@ -32,8 +41,13 @@ void __fastcall TfrmAddSalesType::btnOkMouseClick(TObject *Sender)
         ModalResult = mrOk;
         bool isCodeExist = TDBSalesTypeAssignment::IsSalesTypeCodeExist(SalesTypeInfoPointers[1]);
 
-        if(!isCodeExist)
-        {
+        if(Editing)
+        {   MessageBox(SalesTypeId, "Error", MB_OK + MB_ICONERROR);
+            TDBSalesTypeAssignment::UpdateSalesType(SalesTypeId, SalesTypeInfoPointers[0], SalesTypeInfoPointers[1]);
+            ModalResult = mrOk;
+        }
+        else if (!isCodeExist)
+        {   MessageBox("Code Exist", "Error", MB_OK + MB_ICONERROR);
             TDBSalesTypeAssignment::SaveSalesType(SalesTypeInfoPointers[0], SalesTypeInfoPointers[1]);
             ModalResult = mrOk;
         }
@@ -72,15 +86,15 @@ void __fastcall TfrmAddSalesType::AddSalesTypeDetails(TObject *Sender)
 
 
      switch(btn->Tag)
-    {
+     {
         case 0:
             Caption = "Enter SalesType Name";
-            //frmTouchKeyboard->KeyboardText = Info.EMail;
+            frmTouchKeyboard->KeyboardText = SalesTypeInfoPointers[0];
             frmTouchKeyboard->MaxLength = 25;
             break;
         case 1:
             Caption = "Enter Sales Type Code";
-            //frmTouchKeyboard->KeyboardText = Info.Name;
+            frmTouchKeyboard->KeyboardText = SalesTypeInfoPointers[1];
             frmTouchKeyboard->MaxLength = 5;
             break;
         default:
@@ -90,14 +104,12 @@ void __fastcall TfrmAddSalesType::AddSalesTypeDetails(TObject *Sender)
     if (frmTouchKeyboard->ShowModal() == mrOk)
     {
          SalesTypeInfoPointers[btn->Tag] =  frmTouchKeyboard->KeyboardText;
-         //Info.EMail=  SalesTypeInfoPointers[0].Trim();
-        // Info.Name=  SalesTypeInfoPointers[1].Trim();
 		 DisplaySalesTypeInfoFromPointers();
 	}
 }
 //-----------------------------------------------------------------------------------------------------------
 void TfrmAddSalesType::DisplaySalesTypeInfoFromPointers()
 {
-     btnName->Caption = btnName->Caption + " " + SalesTypeInfoPointers[0].Trim();
-     btnCode->Caption = btnCode->Caption + " " + SalesTypeInfoPointers[1].Trim();
+     btnName->Caption = "Name: " + SalesTypeInfoPointers[0].Trim();
+     btnCode->Caption = "Code: " + SalesTypeInfoPointers[1].Trim();
 }

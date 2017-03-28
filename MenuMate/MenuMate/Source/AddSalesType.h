@@ -30,6 +30,8 @@ private:	// User declarations
     void DisplaySalesTypeInfoFromPointers();
 public:		// User declarations
     __fastcall TfrmAddSalesType(TComponent* Owner);
+    int SalesTypeId;
+	bool Editing;
 };
 //---------------------------------------------------------------------------
 #endif
