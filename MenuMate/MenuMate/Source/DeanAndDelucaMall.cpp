@@ -4,7 +4,9 @@
 #pragma hdrstop
 
 #include "DeanAndDelucaMall.h"
-
+#include "Comms.h"
+#include "DeviceRealTerminal.h"
+#include <Math.h>
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -40,9 +42,9 @@ void TDeanAndDelucaMallField::SetGrossSaleAmount(double grossSaleAmount)
     _nonTaxableSaleAmount = nonTaxableSaleAmount;
 }
 //------------------------------------------------------------------------------------------
- void TDeanAndDelucaMallField::SetSCDDiscount(double totalSCDAmount)
+ void TDeanAndDelucaMallField::SetSCDAndPWDDiscount(double totalSCDAndPWDAmount)
 {
-   _totalSCDAmount = totalSCDAmount;
+   _totalSCDAndPWDAmount = totalSCDAndPWDAmount;
 }
 //------------------------------------------------------------------------------------------
  void TDeanAndDelucaMallField::SetOtherDiscount(double totalOtherDiscount)
@@ -134,7 +136,106 @@ std::list<TMallExportSalesData> TDeanAndDelucaMall::PrepareDataForDatabase(TPaym
     std::list<TMallExportSalesData> mallExportSalesData;
     try
     {
-        //initilize each field of TDeanAndDelucaMallField 's class by iterating value from payment transaction
+        TDeanAndDelucaMallField fieldData;
+        int terminalNumber;
+        UnicodeString tenantCode;
+        Currency taxRate = 0.00;
+        std::list<TMallExportSettings>::iterator it;
+
+        for(it = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); it != TGlobalSettings::Instance().mallInfo.MallSettings.end(); it++)
+        {
+            if(it->ControlName == "edMallTenantNo")
+            {
+                fieldData.TenantCode = it->Value;
+            }
+            else if(it->ControlName == "edMallTerminalNo")
+            {
+                fieldData.TerminalNumber = StrToInt(it->Value);
+            }
+        }
+
+        for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
+        {
+                TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
+
+                //this will call all taxes and discount calculation inside it
+            //    PrepareItem(paymentTransaction.DBTransaction, Order, fieldData);
+
+                //For SubOrder
+                for (int i = 0; i < Order->SubOrders->Count; i++)
+				{
+					TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
+
+                    //this will call all taxes and discount calculation inside it
+                //    PrepareItem(paymentTransaction.DBTransaction, CurrentSubOrder, fieldData);
+                }
+        }
+
+        for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+		{
+			TPayment *SubPayment = paymentTransaction.PaymentGet(i);
+			if (SubPayment->GetPay() != 0)
+			{
+                 AnsiString payTypeName = "";
+                AnsiString cardType = SubPayment->CardType;
+                if( cardType != "" && cardType != NULL)
+                {
+                  payTypeName =  cardType;
+                }
+                else
+                {
+                    if (SubPayment->SysNameOveride != "")
+                    {
+                        payTypeName = SubPayment->SysNameOveride;
+                    }
+                    else
+                    {
+                        if (SubPayment->NameOveride == "")
+                        {
+                            payTypeName = SubPayment->Name;
+                        }
+                        else
+                        {
+                            payTypeName = SubPayment->NameOveride;
+                        }
+                    }
+                }
+
+                if (SubPayment->Properties & ePayTypeGetVoucherDetails)
+                {
+                    fieldData.TotalGCSales += (double)SubPayment->GetPayTendered();
+                }
+                else if(payTypeName == cardType)
+                {
+                     fieldData.TotalChargedSales += (double)SubPayment->GetPayTendered();
+                }
+                else
+                {
+                    fieldData.TotalCashSales +=  (double)SubPayment->GetPayTendered();
+                }
+            }
+        }
+
+        fieldData.TotalNetSaleAmount =  fieldData.TotalGCSales + fieldData.TotalChargedSales + fieldData.TotalCashSales;
+        fieldData.OldAccSalesTotal = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
+        fieldData.NewAccSalesTotal = fieldData.OldAccSalesTotal + fieldData.TotalNetSaleAmount;
+        fieldData.GrossSaleAmount = fieldData.TotalSCDAndPWDAmount + fieldData.TotalOtherDiscount + fieldData.TotalCashSales + fieldData.TotalChargedSales
+                                        + fieldData.TotalGCSales;
+        //fieldData.NonTaxableSaleAmount todo
+        fieldData.TotalRefundAmount = paymentTransaction.Money.FinalPrice > 0 ? 0 : paymentTransaction.Money.FinalPrice;
+       /// fieldData.TotalTax = //todo;
+        fieldData.ZKey = 0;
+        fieldData.SalesCount = (fieldData.TotalRefundAmount > 0 ? 0 : 1);
+
+
+        fieldData.SalesType = 1; //todo
+
+
+
+        fieldData.CustomerCount = GetPatronCount(paymentTransaction);
+
+        //call For inserting into list
+        InsertFieldInToList(paymentTransaction.DBTransaction, mallExportSalesData, fieldData, arcBillKey);
     }
     catch(Exception &E)
 	{
@@ -158,13 +259,59 @@ long TDeanAndDelucaMall::GenerateSaleKey(Database::TDBTransaction &dbTransaction
 //---------------------------------------------------------------------------------
 int TDeanAndDelucaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
 {
-    //Get customer count
+    int totalPatronCount = 0;
+    std::vector <TPatronType> ::iterator ptrPatronTypes;
+    for (ptrPatronTypes = paymentTransaction.Patrons.begin(); ptrPatronTypes != paymentTransaction.Patrons.end(); ptrPatronTypes++)
+    {
+        totalPatronCount += ptrPatronTypes->Count;
+    }
+    return totalPatronCount;
 }
 //---------------------------------------------------------------------------------
 double TDeanAndDelucaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
 {
-    //Get Old Accumulated Sales
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+    double oldAccumulatedSales = 0.00;
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY GROUP BY 1";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        IBInternalQuery->ExecQuery();
+        bool  recordPresent = false;
+
+        if(IBInternalQuery->RecordCount )
+           recordPresent = true;
+
+        if(recordPresent)
+        {
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+                                        "SELECT a.FIELD_INDEX, A.FIELD, A.FIELD_VALUE "
+                                        "FROM MALLEXPORT_SALES a "
+                                        "WHERE  a.MALLEXPORT_SALE_KEY = "
+                                            "(SELECT MAX(A.MALLEXPORT_SALE_KEY) FROM MALLEXPORT_SALES a WHERE A.FIELD_INDEX  = :FIELD_INDEX ) ";
+            IBInternalQuery->ParamByName("FIELD_INDEX")->AsString = fieldIndex;
+            IBInternalQuery->ExecQuery();
+
+            if(IBInternalQuery->RecordCount)
+                oldAccumulatedSales = IBInternalQuery->Fields[2]->AsCurrency;
+        }
+        else
+        {
+            oldAccumulatedSales = 0;
+        }
+    }
+     catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return oldAccumulatedSales;
 }
+//----------------------------------------------------------------------------------------------------------------
 void TDeanAndDelucaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
 {
     try
@@ -318,4 +465,94 @@ IExporterInterface* TDeanAndDelucaMall::CreateExportMedium()
     //return file export type
 }
 //----------------------------------------------------------------------------------------------------------------
+void TDeanAndDelucaMall::PrepareItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order, TDeanAndDelucaMallField &fieldData)
+{
+    //Create Taxes Object to collect all taxes details
+    TDeanAndDelucaTaxes taxes;
+
+    //Get all Taxes stored them in TEstanciaTaxes type structure
+    bool isVatable = IsItemVatable(order, taxes);
+
+    TDeanAndDelucaDiscount discounts = PrepareDiscounts(dbTransaction, order);
+
+    double grossAmount = order->GetQty() > 0.00 ? ((order->PriceEach_BillCalc()*order->GetQty()) + fabs(order->TotalAdjustment())) : 0;
+
+    fieldData.TotalSCDAndPWDAmount += discounts.scdDiscount + discounts.pwdDiscount;
+    fieldData.TotalOtherDiscount += discounts.otherDiscount;
+    fieldData.TotalTax += taxes.salesTax + taxes.localTax + taxes.serviceChargeTax;
+    fieldData.TotalServiceCharge += taxes.serviceCharge;
+
+    if(isVatable)
+    {
+        fieldData.GrossSaleAmount += discounts.scdDiscount + discounts.pwdDiscount + fieldData.TotalOtherDiscount + grossAmount;
+    }
+    else
+    {
+       fieldData.GrossSaleAmount += grossAmount;
+    }
+}
+//------------------------------------------------------------------------------------------------------------------
+TDeanAndDelucaDiscount TDeanAndDelucaMall::PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order)
+{
+    TDeanAndDelucaDiscount discount;
+    for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();std::advance(ptrDiscounts, 1))
+    {
+        if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
+            continue;
+
+        if(ptrDiscounts->DiscountGroupList.size())
+        {
+            if(ptrDiscounts->DiscountGroupList[0].Name == "Senior Citizen" )
+            {
+                discount.scdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+            else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
+            {
+                discount.pwdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+            else
+            {
+                discount.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            }
+        }
+        else
+        {
+            discount.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+        }
+    }
+}
+//--------------------------------------------------------------------------------------------------------------------------
+bool TDeanAndDelucaMall::IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &taxes)
+{
+    std::vector<BillCalculator::TTaxResult> taxInfomation = order->BillCalcResult.Tax;
+    bool isVatable = false;
+
+    ///load all taxes value seperate
+    for (std::vector<BillCalculator::TTaxResult>::iterator itTaxes = taxInfomation.begin(); itTaxes != taxInfomation.end(); itTaxes++)
+    {
+        switch( itTaxes->TaxType )
+        {
+            case TTaxType::ttSale:
+                isVatable = true;
+                taxes.salesTax += (double)itTaxes->Value;
+                break;
+            case TTaxType::ttLocal:
+                 taxes.localTax += (double)itTaxes->Value;
+                 break;
+        }
+    }
+    if (order->BillCalcResult.ServiceCharge.Percentage != 0)
+    {
+        taxes.serviceCharge += (double)order->BillCalcResult.ServiceCharge.Value;
+        if (order->BillCalcResult.ServiceCharge.TaxPercentage != 0)
+        {
+            taxes.serviceChargeTax += (double)order->BillCalcResult.ServiceCharge.TaxValue;
+        }
+    }
+    if(taxes.salesTax == 0.00)
+        isVatable = false;
+
+    return isVatable;
+}
+
 
