@@ -32,13 +32,14 @@ void __fastcall TfrmMallSalesTypeAssignment::FormShow(TObject *Sender)
     FormResize(NULL);
     DisplaySalesTypes();
     DisplayItems();
+    assignedItems = TDBSalesTypeAssignment::LoadAssignedItemsBySalesType();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::GroupListMouseClick(TObject *Sender, TMouseButton Button,
           TShiftState Shift, TGridButton *GridButton)
 {
     SelectedGroup = GridButton->Tag;
-    //GroupSelected(GridButton);
+    DisplayAssignedItemBySalesType(SelectedGroup);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::MembersGridMouseClick(TObject *Sender,
@@ -49,15 +50,16 @@ void __fastcall TfrmMallSalesTypeAssignment::MembersGridMouseClick(TObject *Send
         std::vector<int> itemsKeys;
         itemsKeys.push_back(GridButton->Tag);
 //todo
-        //assignedItems.insert( std::map<int, std::vector<int> >(SelectedGroup, itemsKeys));
-
+        assignedItems[SelectedGroup].insert(std::make_pair(GridButton->Tag, GridButton->Caption));
     }
+    DisplayAssignedItemBySalesType(SelectedGroup);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::GroupMembersMouseClick(TObject *Sender,
           TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
 {
     //RemoveTypefromGroup(GridButton->Tag);
+    RemoveTypefromGroup(GridButton->Tag);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnCloseMouseClick(TObject *Sender)
@@ -66,6 +68,7 @@ void __fastcall TfrmMallSalesTypeAssignment::btnCloseMouseClick(TObject *Sender)
     {
        // SaveAssignment();
        // CleanUpMemory();
+        TDBSalesTypeAssignment::SaveAssignedItemsToSalesTYpeGroup(assignedItems);
         Close();
     }
     catch(Exception &E)
@@ -97,11 +100,12 @@ void __fastcall TfrmMallSalesTypeAssignment::FormResize(TObject *Sender)
 void __fastcall TfrmMallSalesTypeAssignment::btnAssignAllMouseClick(TObject *Sender)
 {
    // AssignAllItems();
+   AssignAllItems();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnRemoveAllMouseClick(TObject *Sender)
 {
-   // RemoveAllItems();
+    RemoveAllItems();
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnAddSalesTypeMouseClick(TObject *Sender)
@@ -170,5 +174,146 @@ void TfrmMallSalesTypeAssignment::DisplaySalesTypes()
         GroupList->Buttons[index][0]->Tag = itSalesTypes->first;
         index++;
     }
+}
+
+//----------------------------------------------------------------------------
+void TfrmMallSalesTypeAssignment::DisplayAssignedItemBySalesType(int salesType)
+{
+    int index = 0;
+    std::map <int, std::map <int, UnicodeString> >::iterator outerit;
+    std::map <int, UnicodeString>::iterator innerit;
+
+    //MessageBox(salesType, "itemsizes", MB_ICONINFORMATION + MB_OK);
+    GroupMembers->RowCount = 0;
+    outerit = assignedItems.find(salesType);
+    if(outerit != assignedItems.end())
+    {
+        GroupMembers->RowCount = assignedItems[salesType].size();
+        for (innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit){
+                GroupMembers->Buttons[index][0]->Caption = innerit->second;
+                GroupMembers->Buttons[index][0]->Tag = innerit->first;
+                index++;
+            }
+    }
+    DisableSelectedTypesInGroup();
+}
+
+void TfrmMallSalesTypeAssignment::DisableSelectedTypesInGroup()
+{
+   std::map <int, std::map <int, UnicodeString> >::iterator outerit;
+   std::map <int, UnicodeString>::iterator innerit;
+
+    for(int i=0; i < MembersGrid->RowCount; i++)
+    {
+        //MessageBox(MembersGrid->RowCount, "MembersGrid->RowCount", MB_ICONINFORMATION + MB_OK);
+
+        for(int j = 0; j <  GroupList->RowCount; j++)
+        {
+            //MessageBox(GroupList->RowCount, "inner loop", MB_ICONINFORMATION + MB_OK);
+            outerit = assignedItems.find(GroupList->Buttons[j][0]->Tag);
+            if(outerit != assignedItems.end())
+            {
+                innerit = outerit->second.find(MembersGrid->Buttons[i][0]->Tag);
+                if(innerit != outerit->second.end())
+                {
+                    //MessageBox(GroupList->RowCount, "item fouund", MB_ICONINFORMATION + MB_OK);
+                    MembersGrid->Buttons[i][0]->Enabled = false;
+                    break;
+                }
+                else
+                {
+                    MembersGrid->Buttons[i][0]->Enabled = true;
+                }
+            }
+        }
+    }
+
+
+
+}
+
+void TfrmMallSalesTypeAssignment::RemoveTypefromGroup(int itemKey)
+{
+    std::map <int, std::map <int, UnicodeString> >::iterator outerit;
+    std::map <int, UnicodeString>::iterator innerit;
+    outerit = assignedItems.find(SelectedGroup);
+    if(outerit != assignedItems.end())
+    {
+        innerit = outerit->second.find(itemKey);
+        if(innerit != outerit->second.end())
+        {
+            outerit->second.erase(innerit);
+        }
+    }
+    DisplayAssignedItemBySalesType(SelectedGroup);
+    DisableSelectedTypesInGroup();
+}
+
+void TfrmMallSalesTypeAssignment::AssignAllItems()
+{
+    if(SelectedGroup != 0)
+    {
+        for(int i=0; i < MembersGrid->RowCount; i++)
+        {
+            if(!CheckItemAlreadyExists(MembersGrid->Buttons[i][0]->Tag))
+            {
+                assignedItems[SelectedGroup].insert(std::make_pair(MembersGrid->Buttons[i][0]->Tag, MembersGrid->Buttons[i][0]->Caption));
+            }
+        }
+        DisplayAssignedItemBySalesType(SelectedGroup);
+        DisableSelectedTypesInGroup();
+    }
+    else
+    {
+        MessageBox("Please Select a sales type to assign items.", "Select a sales type", MB_ICONINFORMATION + MB_OK);
+    }
+}
+void TfrmMallSalesTypeAssignment::RemoveAllItems()
+{
+    std::map <int, std::map <int, UnicodeString> >::iterator outerit;
+    std::map <int, UnicodeString>::iterator innerit;
+
+    if(SelectedGroup != 0)
+    {
+        outerit = assignedItems.find(SelectedGroup);
+        if(outerit != assignedItems.end())
+        {
+            for(int i=0; i < MembersGrid->RowCount; i++)
+            {
+                innerit = outerit->second.find(MembersGrid->Buttons[i][0]->Tag);
+                if(innerit != outerit->second.end())
+                {
+                    outerit->second.erase(innerit);
+                }
+            }
+        }
+        DisplayAssignedItemBySalesType(SelectedGroup);
+        DisableSelectedTypesInGroup();
+    }
+    else
+    {
+        MessageBox("Please Select a sales type to remove items.", "Select a sales type", MB_ICONINFORMATION + MB_OK);
+    }
+}
+
+bool TfrmMallSalesTypeAssignment::CheckItemAlreadyExists(int itemKey)
+{
+    bool itemFound = false;
+
+    std::map <int, std::map <int, UnicodeString> >::iterator outerit;
+    std::map <int, UnicodeString>::iterator innerit;
+    for(int j = 0; j <  GroupList->RowCount; j++)
+    {
+        outerit = assignedItems.find(GroupList->Buttons[j][0]->Tag);
+        if(outerit != assignedItems.end())
+        {
+            innerit = outerit->second.find(itemKey);
+            if(innerit != outerit->second.end())
+            {
+               itemFound = true;
+            }
+        }
+    }
+    return itemFound;
 }
 

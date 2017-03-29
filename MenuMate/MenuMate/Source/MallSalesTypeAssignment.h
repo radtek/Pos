@@ -62,10 +62,18 @@ private:	// User declarations
         TGridButton *pGroupButton;
         void DisplayGroupMembers(void);
         void InsertMemberToGroup(UnicodeString pMemberButton);
-        std::map<int, std::vector<int> > assignedItems;
+        //std::map<int, std::vector<int> > assignedItems;
+        std::map<int, std::map<int, UnicodeString> > assignedItems;
         void DisplayItems();
         void DisplaySalesTypes();
-        int SelectedGroup;
+        int SelectedGroup;    //displayassigneditembySalesType
+        void DisplayAssignedItemBySalesType(int salesType);
+        void DisableSelectedTypesInGroup();
+        void RemoveTypefromGroup(int itemKey);
+        void AssignAllItems();
+        void RemoveAllItems();
+        bool CheckItemAlreadyExists(int itemKey);
+
 
 public:		// User declarations
 	__fastcall TfrmMallSalesTypeAssignment(TComponent* Owner);

@@ -215,4 +215,76 @@ void TDBSalesTypeAssignment::UpdateSalesType(int id, UnicodeString name, Unicode
         dbTransaction.Rollback();
 	}
 }
+std::map<int, std::map<int, UnicodeString> > TDBSalesTypeAssignment::LoadAssignedItemsBySalesType()
+{
+    std::map<int, std::map<int, UnicodeString> > getAssignedsalesTypeItemsMap;
+    try
+    {
+        //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+
+        TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
+        query->SQL->Text =  " SELECT a.ITEM_ID, a.SALES_TYPE_ID, b.ITEM_NAME FROM MALL_SALES_TYPE_ITEMS_RELATION a inner join ITEM b  on a.ITEM_ID = b.ITEM_ID order by 2 ASC ";
+        query->ExecQuery();
+
+        while(!query->Eof)
+        {
+            getAssignedsalesTypeItemsMap[query->FieldByName("SALES_TYPE_ID")->AsInteger].insert(std::make_pair(query->FieldByName("ITEM_ID")->AsInteger, query->FieldByName("ITEM_NAME")->AsString));
+            query->Next();
+        }
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+    return getAssignedsalesTypeItemsMap;
+}
+
+void TDBSalesTypeAssignment::SaveAssignedItemsToSalesTYpeGroup(std::map<int, std::map<int, UnicodeString> > &assignedItems)
+{
+
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+
+    try
+    {
+        std::map <int, map <int, UnicodeString> >::iterator outerit;
+        std::map <int, UnicodeString>::iterator innerit;
+
+        //Register the database transaction..
+         dbTransaction.StartTransaction();
+
+        //Increment Generator for inserting date into db since it is primary key.
+        TIBSQL* incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
+        incrementGenerator->Close();
+        incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALLSALES_TYPE_ITEMS_REL, 1) FROM RDB$DATABASE";
+
+        //insert new items and sales type sales type into Db..
+        TIBSQL* insertQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        insertQuery->Close();
+        insertQuery->SQL->Text =  "INSERT INTO MALL_SALES_TYPE_ITEMS_RELATION  VALUES (:STI_ID, :ITEM_ID, :SALES_TYPE_ID) ";
+        //int size = assignedItems.size();
+
+        for (outerit = assignedItems.begin(); outerit != assignedItems.end(); ++outerit){
+            for (innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit){
+                 incrementGenerator->ExecQuery();
+                 insertQuery->ParamByName("STI_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+                 insertQuery->ParamByName("ITEM_ID")->AsInteger = innerit->first;
+                 insertQuery->ParamByName("SALES_TYPE_ID")->AsInteger = outerit->first;
+                 insertQuery->ExecQuery();
+                 incrementGenerator->Close();
+                 insertQuery->Close();
+            }
+        }
+        dbTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        dbTransaction.Rollback();
+	}
+}
 

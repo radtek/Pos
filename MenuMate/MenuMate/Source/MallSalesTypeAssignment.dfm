@@ -6,8 +6,8 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
   BorderStyle = bsNone
   BorderWidth = 5
   Caption = 'Manage PaymentGroup Types'
-  ClientHeight = 473
-  ClientWidth = 815
+  ClientHeight = 453
+  ClientWidth = 795
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,8 +26,8 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
     AlignWithMargins = True
     Left = 3
     Top = 0
-    Width = 679
-    Height = 473
+    Width = 659
+    Height = 453
     Margins.Top = 0
     Margins.Bottom = 0
     Align = alClient
@@ -43,7 +43,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Left = 3
       Top = 8
       Width = 279
-      Height = 455
+      Height = 435
       Margins.Top = 8
       Margins.Right = 8
       Margins.Bottom = 8
@@ -55,7 +55,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
         Left = 1
         Top = 46
         Width = 277
-        Height = 408
+        Height = 388
         Align = alClient
         BorderWidth = 0
         Font.Charset = DEFAULT_CHARSET
@@ -170,7 +170,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Left = 293
       Top = 8
       Width = 279
-      Height = 455
+      Height = 435
       Margins.Top = 8
       Margins.Right = 8
       Margins.Bottom = 8
@@ -198,7 +198,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
         Left = 1
         Top = 46
         Width = 277
-        Height = 408
+        Height = 388
         Align = alClient
         BorderWidth = 0
         Font.Charset = DEFAULT_CHARSET
@@ -293,10 +293,10 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
     end
     object Panel4: TPanel
       AlignWithMargins = True
-      Left = 390
+      Left = 370
       Top = 8
       Width = 279
-      Height = 455
+      Height = 435
       Margins.Top = 8
       Margins.Right = 8
       Margins.Bottom = 8
@@ -308,7 +308,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
         Left = 1
         Top = 46
         Width = 277
-        Height = 408
+        Height = 388
         Align = alClient
         BorderWidth = 0
         Font.Charset = DEFAULT_CHARSET
@@ -419,10 +419,10 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
     end
   end
   object Panel5: TPanel
-    Left = 685
+    Left = 665
     Top = 0
     Width = 130
-    Height = 473
+    Height = 453
     Align = alRight
     BevelInner = bvRaised
     BevelOuter = bvNone
@@ -431,7 +431,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
     TabOrder = 1
     DesignSize = (
       130
-      473)
+      453)
     object btnClose: TTouchBtn
       Left = 6
       Top = 14
@@ -452,7 +452,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
     end
     object btinGGA_Cancel: TTouchBtn
       Left = 6
-      Top = 406
+      Top = 386
       Width = 118
       Anchors = [akRight, akBottom]
       Font.Charset = ANSI_CHARSET

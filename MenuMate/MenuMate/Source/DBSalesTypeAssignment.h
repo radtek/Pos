@@ -17,10 +17,11 @@ class TDBSalesTypeAssignment
     static std::map<int, UnicodeString> LoadAllItems();
 
     //Load Items Which are assigned to sales Type
-    static std::map<int, UnicodeString> LoadAssignedItemsBySalesType();
+    //static std::map<int, UnicodeString> LoadAssignedItemsBySalesType();
+    static std::map<int, std::map<int, UnicodeString> > LoadAssignedItemsBySalesType();
 
     //Assign Items to Sales Type Group
-    static void SaveAssignedItemsToSalesTYpeGroup(std::map<int, std::map<int, UnicodeString> >);
+    static void SaveAssignedItemsToSalesTYpeGroup(std::map<int, std::map<int, UnicodeString> > &assignedItems);
 
     //Add New Sales Type
     static void SaveSalesType(UnicodeString name, UnicodeString code);
