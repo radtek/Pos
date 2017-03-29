@@ -3188,6 +3188,10 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                        {
                           if (TDBTab::GetTabExists(DBTransaction, *itTab))
                           {
+
+                             UnicodeString guestName = "";
+                             guestName = TDBTab::GetTabName(DBTransaction, *itTab);
+
                              TTableSeat Info;
                              TDBTables::GetTableSeat(DBTransaction, *itTab, &Info);
                              int SeatKey = TDBTables::GetOrCreateSeat(DBTransaction, CurrentDestTable, Info.SeatNo);
@@ -3231,6 +3235,7 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                                    {
                                         CollectDataForChefmateTransfer(0, OrdersList.get(), lbDisplayTransferfrom);
                                    }
+                                   SetGuestNameForTable(DBTransaction, DestTabKey, *itTab, guestName);
                                 }
                                 else
                                 {
