@@ -44,7 +44,14 @@ void __fastcall TfrmMallSalesTypeAssignment::GroupListMouseClick(TObject *Sender
 void __fastcall TfrmMallSalesTypeAssignment::MembersGridMouseClick(TObject *Sender,
           TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
 {
-    //TypeSelected(GridButton);
+    if(SelectedGroup !=0)
+    {
+        std::vector<int> itemsKeys;
+        itemsKeys.push_back(GridButton->Tag);
+//todo
+        //assignedItems.insert( std::map<int, std::vector<int> >(SelectedGroup, itemsKeys));
+
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::GroupMembersMouseClick(TObject *Sender,
@@ -129,6 +136,10 @@ void __fastcall TfrmMallSalesTypeAssignment::btnDeleteSalesTypeMouseClick(TObjec
     {
         TDBSalesTypeAssignment::DeleteSalesType(SelectedGroup);
         DisplaySalesTypes();
+    }
+    else
+    {
+        MessageBox("Please Select a sales type to delete.", "Select a sales type", MB_ICONINFORMATION + MB_OK);
     }
 }
 //---------------------------------------------------------------------------

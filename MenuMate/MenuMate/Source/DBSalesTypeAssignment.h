@@ -25,9 +25,6 @@ class TDBSalesTypeAssignment
     //Add New Sales Type
     static void SaveSalesType(UnicodeString name, UnicodeString code);
 
-    //Edit Existing Sales Type
-    static void EditSalesType(UnicodeString name, UnicodeString code);
-
     //Delete SalesType
     static void DeleteSalesType(int id);
 
