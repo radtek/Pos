@@ -240,7 +240,6 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
     TIBSQL *incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
     TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
 
-
     try
     {
         std::map<int, double>::iterator itSalesBySalesTypes;
