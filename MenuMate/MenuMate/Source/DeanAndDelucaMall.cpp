@@ -9,6 +9,119 @@
 
 #pragma package(smart_init)
 
+
+void TDeanAndDelucaMallField::SetTerminalNumber(int terminalNumber)
+{
+    _terminalNumber = terminalNumber;
+}
+//----------------------------------------------------------------------------------------
+void TDeanAndDelucaMallField::SetTenantCode(UnicodeString tenantCode)
+{
+    _tenantCode = tenantCode;
+}
+//----------------------------------------------------------------------------------------
+void TDeanAndDelucaMallField::SetOldAccSalesTotal(double oldAccSalesTotal)
+{
+    _oldAccSalesTotal = oldAccSalesTotal;
+}
+//----------------------------------------------------------------------------------------
+void TDeanAndDelucaMallField::SetNewAccSalesTotal(double newAccSalesTotal)
+{
+    _newAccSalesTotal = newAccSalesTotal;
+}
+//----------------------------------------------------------------------------------------
+void TDeanAndDelucaMallField::SetGrossSaleAmount(double grossSaleAmount)
+{
+    _grossSaleAmount = grossSaleAmount;
+}
+//----------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetNoNTaxableSaleAmount(double nonTaxableSaleAmount)
+{
+    _nonTaxableSaleAmount = nonTaxableSaleAmount;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetSCDDiscount(double totalSCDAmount)
+{
+   _totalSCDAmount = totalSCDAmount;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetOtherDiscount(double totalOtherDiscount)
+{
+    _totalOtherDiscount = totalOtherDiscount;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetRefundAmount(double totalRefundAmount)
+{
+    _totalRefundAmount = totalRefundAmount;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetTax(double totalTax)
+{
+    _totalTax = totalTax;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetServiceCharge(double totalServiceCharge)
+{
+    _totalServiceCharge = totalServiceCharge;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetNetSaleAmount(double totalNetSaleAmount)
+{
+    _totalNetSaleAmount = totalNetSaleAmount;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetCashSales(double totalCashSales)
+{
+    _totalCashSales = totalCashSales;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetTotalChargedSales(double totalChargedSales)
+{
+    _totalChargedSales = totalChargedSales;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetTotalGCSales(double totalGCSales)
+{
+    _totalGCSales = totalGCSales;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetVoidAmount(double totalVoidAmount)
+{
+    _totalVoidAmount = totalVoidAmount;
+}
+//------------------------------------------------------------------------------------------
+ void TDeanAndDelucaMallField::SetCustomerCount(int customerCount)
+{
+    _customerCount = customerCount;
+}
+//------------------------------------------------------------------------------------------
+void TDeanAndDelucaMallField::SetSalesCount(int salesCount)
+{
+    _salesCount = salesCount;
+}
+//------------------------------------------------------------------------------------------
+void TDeanAndDelucaMallField::SetSalesType(int salesType)
+{
+    _salesType = salesType;
+}
+//------------------------------------------------------------------------------------------
+void TDeanAndDelucaMallField::SetNetSaleAmountPerSalesType(double netSalesAmountPerSalesType)
+{
+    _netSalesAmountPerSalesType = netSalesAmountPerSalesType;
+}
+//------------------------------------------------------------------------------------------
+void TDeanAndDelucaMallField::SetHourCode(int hourCode)
+{
+    _hourCode = hourCode;
+}
+//------------------------------------------------------------------------------------------
+void TDeanAndDelucaMallField::SetZKey(int zKey)
+{
+    _zkey = zKey;
+}
+//------------------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------------------------------------------
 TDeanAndDelucaMall::TDeanAndDelucaMall()
 {
     terminalCondition = " AND a.DEVICE_KEY = :DEVICE_KEY ";
@@ -205,7 +318,4 @@ IExporterInterface* TDeanAndDelucaMall::CreateExportMedium()
     //return file export type
 }
 //----------------------------------------------------------------------------------------------------------------
-bool TDeanAndDelucaMall::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , std::list<TMallExportSalesData> mallExportSalesData)
-{
 
-}

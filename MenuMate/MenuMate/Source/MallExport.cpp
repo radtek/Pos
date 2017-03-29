@@ -111,6 +111,11 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = it->DeviceKey;
             IBInternalQuery->ExecQuery();
+
+            if(it->SaleBySalsType.size())
+            {
+                InsertInToMallSalesBySalesType(dbTransaction, it->SaleBySalsType, it->ArcBillKey);
+            }
         }
         isInserted = true;
     }
@@ -229,3 +234,47 @@ void TMallExport::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
 		throw;
 	}
 }
+//---------------------------------------------------------------------------------------------------------------------
+void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey)
+{
+    TIBSQL *incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
+    TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+
+    try
+    {
+        std::map<int, double>::iterator itSalesBySalesTypes;
+        for (itSalesBySalesTypes = salesBySalesType.begin(); itSalesBySalesTypes != salesBySalesType.end(); ++itSalesBySalesTypes)
+        {
+            incrementGenerator->Close();
+            incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALL_SALES_BY_TYPE, 1) FROM RDB$DATABASE";
+            incrementGenerator->ExecQuery();
+
+            ibInternalQuery->Close();
+            ibInternalQuery->SQL->Text =
+            "INSERT INTO MALL_SALES_BY_SALES_TYPE ( "
+                    "SALES_ID, "
+                    "ARCBILL_KEY, "
+                    "SALES_TYPE_ID, "
+                    "SUBTOTAL "
+                     ") "
+            "VALUES ( "
+                    ":SALES_ID, "
+                    ":ARCBILL_KEY, "
+                    ":SALES_TYPE_ID, "
+                    ":SUBTOTAL "
+                     ") ";
+
+            ibInternalQuery->ParamByName("SALES_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+            ibInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcBillKey;
+            ibInternalQuery->ParamByName("SALES_TYPE_ID")->AsInteger = itSalesBySalesTypes->first;
+            ibInternalQuery->ParamByName("SUBTOTAL")->AsDouble = itSalesBySalesTypes->second;
+            ibInternalQuery->ExecQuery();
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+
