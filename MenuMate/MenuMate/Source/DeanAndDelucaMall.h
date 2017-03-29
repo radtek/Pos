@@ -85,8 +85,6 @@ public:
     //Insert Array into set.
     std::set<int> InsertInToSet(int arr[], int size);
 
-    //Override MallExport Method
-    bool InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , std::list<TMallExportSalesData> mallExportSalesData);
 };
 
 class TDeanAndDelucaMallField

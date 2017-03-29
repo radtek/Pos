@@ -215,4 +215,6 @@ void TDBSalesTypeAssignment::UpdateSalesType(int id, UnicodeString name, Unicode
         dbTransaction.Rollback();
 	}
 }
+//-----------------------------------------------------------------------------------------------------------------
+
 

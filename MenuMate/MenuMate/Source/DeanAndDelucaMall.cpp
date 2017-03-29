@@ -205,7 +205,4 @@ IExporterInterface* TDeanAndDelucaMall::CreateExportMedium()
     //return file export type
 }
 //----------------------------------------------------------------------------------------------------------------
-bool TDeanAndDelucaMall::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , std::list<TMallExportSalesData> mallExportSalesData)
-{
 
-}

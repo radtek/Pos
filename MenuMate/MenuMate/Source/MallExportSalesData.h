@@ -19,7 +19,7 @@ private:
     int _arcBillKey;
     int _zKey;
     int _deviceKey;
-    std::map<int, Currency> _saleBySalsType;
+    std::map<int, double> _saleBySalsType;
 
     void SetMallExportSalesKey(int mallexportSalesId);
     void SetMallKey(int mallKey);
@@ -32,7 +32,7 @@ private:
     void SetArcBillKey(int arcBillKey);
     void SetZKey(int zKey);
     void SetDeviceKey(int deviceKey);
-    void SetSalesBySalesType(std::map<int, Currency> saleBySalsType);
+    void SetSalesBySalesType(std::map<int, double> saleBySalsType);
 
 public:
     __property int MallExportSalesId = {read = _mallExportSaleKey, write = SetMallExportSalesKey};
@@ -46,6 +46,6 @@ public:
     __property int ArcBillKey = {read = _arcBillKey, write = SetArcBillKey};
     __property int ZKey = {read = _zKey, write = SetZKey};
     __property int DeviceKey = {read = _deviceKey, write = SetDeviceKey};
-    __property std::map<int, Currency> SaleBySalsType = {read = _saleBySalsType, write = SetSalesBySalesType};
+    __property std::map<int, double> SaleBySalsType = {read = _saleBySalsType, write = SetSalesBySalesType};
 };
 #endif
