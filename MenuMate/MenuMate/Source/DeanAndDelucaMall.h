@@ -5,9 +5,24 @@
 #include "MallExport.h"
 #include "MallExportTextFile.h"
 #include <DateUtils.hpp>
-#include "DeviceRealTerminal.h"
 //---------------------------------------------------------------------------
 class TDeanAndDelucaMallField;
+
+struct TDeanAndDelucaTaxes
+{
+    double salesTax;
+    double serviceCharge;
+    double serviceChargeTax;
+    double localTax;
+};
+
+struct TDeanAndDelucaDiscount
+{
+    double scdDiscount;
+    double pwdDiscount;
+    double otherDiscount;
+};
+
 class TDeanAndDelucaMall : public TMallExport
 {
 private:
@@ -50,6 +65,13 @@ private:
 
     //insert field into list
     void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TDeanAndDelucaMallField fieldData, int arcBillKey);
+
+    //prepare SCD, PWD and others discount
+    TDeanAndDelucaDiscount PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order);
+
+    void PrepareItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TDeanAndDelucaMallField &fieldData);
+
+    bool IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &estanciaTaxes);
 
     protected:
 
@@ -96,7 +118,7 @@ private:
     double _newAccSalesTotal;
     double _grossSaleAmount;
     double _nonTaxableSaleAmount;
-    double _totalSCDAmount;
+    double _totalSCDAndPWDAmount;
     double _totalOtherDiscount;
     double _totalRefundAmount;
     double _totalTax;
@@ -120,7 +142,7 @@ private:
     void SetNewAccSalesTotal(double newAccSaleTotal);
     void SetGrossSaleAmount(double grossSaleAmount);
     void SetNoNTaxableSaleAmount(double nonTaxableSaleAmount);
-    void SetSCDDiscount(double scdDiscount);
+    void SetSCDAndPWDDiscount(double scdAndPWDDiscount);
     void SetOtherDiscount(double otherDiscount);
     void SetRefundAmount(double refundAmount);
     void SetTax(double tax);
@@ -142,8 +164,9 @@ public:
     __property UnicodeString TenantCode = {read = _tenantCode, write = SetTenantCode};
     __property double OldAccSalesTotal = {read = _oldAccSalesTotal, write = SetOldAccSalesTotal};
     __property double NewAccSalesTotal = {read = _newAccSalesTotal, write = SetNewAccSalesTotal};
+    __property double GrossSaleAmount = {read = _grossSaleAmount, write = SetGrossSaleAmount};
     __property double NonTaxableSaleAmount = {read = _nonTaxableSaleAmount, write = SetNoNTaxableSaleAmount};
-    __property double TotalSCDAmount = {read = _totalSCDAmount, write = SetSCDDiscount};
+    __property double TotalSCDAndPWDAmount = {read = _totalSCDAndPWDAmount, write = SetSCDAndPWDDiscount};
     __property double TotalOtherDiscount = {read = _totalOtherDiscount, write = SetOtherDiscount};
     __property double TotalRefundAmount = {read = _totalRefundAmount, write = SetRefundAmount};
     __property double TotalTax = {read = _totalTax, write = SetTax};
