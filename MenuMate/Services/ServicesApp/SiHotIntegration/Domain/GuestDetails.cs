@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
-namespace MenumateServices.DTO.SiHot
+namespace SiHotIntegration.Domain
 {
     [DataContract]
-    public class DTOGuestDetails
+    public class GuestDetails
     {
         [DataMember]
         public string FirstName
@@ -89,6 +87,12 @@ namespace MenumateServices.DTO.SiHot
         }
         [DataMember]
         public string FbRemark
+        {
+            get;
+            set;
+        }
+        [DataMember]
+        public string KitchenRemark
         {
             get;
             set;

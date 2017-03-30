@@ -1260,7 +1260,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 {
 	bool RetVal = true;
 
-	if (!PhoenixHM->Enabled)
+	if (!TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
 		Application->MessageBox(UnicodeString("Payment System is Configured to use the PMS Interface."
 		" The PMS Interface Software has not been installed or enabled correctly." " Please contact your MenuMate support agent.").w_str
@@ -1269,7 +1269,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 	}
 	else
 	{
-		if (!PhoenixHM->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
+		if (!TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
 		{
 			RetVal = false;
 			for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
@@ -1283,7 +1283,7 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 		}
 		else
 		{
-			AnsiString TransactionRef = PhoenixHM->GetLastTransactionRef();
+			AnsiString TransactionRef = TDeviceRealTerminal::Instance().BasePMS->GetLastTransactionRef();
 			PaymentTransaction.References.push_back(RefRefType(TransactionRef,
 			ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_PMS)));
 		}
@@ -3528,7 +3528,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	if (!DialogsOk)
 	return RetVal;
 
-	if (PhoenixHM->Enabled)
+	if (TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
 		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
 	}

@@ -291,6 +291,7 @@ void TPhoenixNetTCPManager::SendAndFetch(TPhoenixBasePacket &Packet, AnsiString 
 		{
 			// TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 			// TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+
 			if (fTCPClient->IOHandler)
 			{
 				AnsiString Dat = fTCPClient->IOHandler->ReadLn(Idglobal::LF, 10000, 255);

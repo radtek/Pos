@@ -12,6 +12,7 @@
 #include "TouchBtn.h"
 #include "TouchControls.h"
 //---------------------------------------------------------------------------
+enum ePMS { phoenix = 1, siHot};
 class TfrmPHSConfiguration : public TZForm
 {
 	friend TZForm;
@@ -46,8 +47,10 @@ __published:	// IDE-managed Components
    void __fastcall TouchBtn1MouseClick(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
-   void UpdateGUI();   
+   void UpdateGUI();
+   void InitializePMS();
 public:		// User declarations
+   ePMS PMSType;
 
 };
 //---------------------------------------------------------------------------

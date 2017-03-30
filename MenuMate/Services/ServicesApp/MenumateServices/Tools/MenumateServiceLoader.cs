@@ -50,6 +50,7 @@ namespace MenumateServices
             AddService(serviceList, MenumateServicesIdentifier.ThorLink);
             AddService(serviceList, MenumateServicesIdentifier.PocketVoucher);
             AddService(serviceList, MenumateServicesIdentifier.SalesForceIntegration);
+            AddService(serviceList, MenumateServicesIdentifier.SiHotIntegration);
             if (serviceList.Count == 0)
             {
                 ServiceLogger.Log(@"No Menumate Services to be loaded.");
@@ -161,6 +162,8 @@ namespace MenumateServices
                     return new MenumateServicePocketVoucher();
                 case MenumateServicesIdentifier.SalesForceIntegration:
                     return new MenumateServiceSalesForce();
+                case MenumateServicesIdentifier.SiHotIntegration:
+                    return new MenumateServiceSiHotIntegration();
                 default: throw new Exception(String.Format("Unknown Service: {0}", serviceIdentifier));
             }
         }

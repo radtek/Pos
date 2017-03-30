@@ -289,7 +289,7 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 		 int DCAO = 0;
 		 int SCOO = 0;
 
-		 PhoenixHM->ClearCodesTestedOk();
+		 TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
 
 		 enum TReading
 		 {
@@ -511,7 +511,7 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 					 NextWord = ReadCSVWord(Menu->Strings[i], Offset, ',', '"', '\\');
 					 AnsiString Description = NextWord;
 					 TDBThirdPartyCodes::SetThirdPartyCode(DBTransaction, Code, Description, tpItemSize);
-					 if (!PhoenixHM->TestCode(Code))
+					 if (!TDeviceRealTerminal::Instance().BasePMS->TestCode(Code))
 					 {
 						throw Exception("Unable to Import Menu " + NewMenuName + ". The Third Party Code : " + Code +
 						   " is not found in the PMS System");
@@ -797,7 +797,7 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 					 NextWord = ReadCSVWord(Menu->Strings[i], Offset, ',', '"', '\\');
 					 IBInternalQuery->ParamByName("THIRDPARTYCODES_KEY")->AsInteger = TDBThirdPartyCodes::SetThirdPartyCode(DBTransaction,
 						NextWord, "", tpItemSize);
-					 if (!PhoenixHM->TestCode(NextWord))
+					 if (!TDeviceRealTerminal::Instance().BasePMS->TestCode(NextWord))
 					 {
 						throw Exception("Unable to Import Menu " + NewMenuName + " Category " + NextWord + " is not found in PMS System");
 					 }
@@ -1012,7 +1012,7 @@ bool TManagerMenusPOS::LoadMenu(TIBDatabase *IBDatabase, TStringList *Menu, bool
 
 		 DBTransaction.Commit();
 
-		 PhoenixHM->ClearCodesTestedOk();
+		 TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
 	  }
 	  catch(Exception & E)
 	  {
@@ -1165,7 +1165,7 @@ bool TManagerMenusPOS::LoadMenus( TIBDatabase *IBDatabase, AnsiString inDirName 
 
 		frmProcessing->Close();
 
-		PhoenixHM->ClearCodesTestedOk();
+		TDeviceRealTerminal::Instance().BasePMS->ClearCodesTestedOk();
 
 	}
 	catch( Exception & E )  // Review this catch section.

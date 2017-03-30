@@ -166,11 +166,6 @@
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionResponse.cs" />
     <Compile Include="DTO\SalesForce\SalesForceCredentialFactory.cs" />
-    <Compile Include="DTO\SiHot1\DTOGuestDetails.cs" />
-    <Compile Include="DTO\SiHot1\DTORoomChargeDetails.cs" />
-    <Compile Include="DTO\SiHot1\DTORoomChargeResponse.cs" />
-    <Compile Include="DTO\SiHot1\DTORoomDetails.cs" />
-    <Compile Include="DTO\SiHot1\DTORoomRequest.cs" />
     <Compile Include="DTO\Thorlink\DTO_TPurchaseInfo.cs" />
     <Compile Include="DTO\Thorlink\DTO_TenderList.cs" />
     <Compile Include="DTO\Thorlink\DTO_TenderDetails.cs" />
@@ -184,6 +179,13 @@
     <Compile Include="Internal Classes\ThorlinkInternal\ThorAuthCheck.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkMember.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkPurchase.cs" />
+    <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
+    <Compile Include="MenumateServiceSiHotIntegration.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceSiHotIntegration.Designer.cs">
+      <DependentUpon>MenumateServiceSiHotIntegration.cs</DependentUpon>
+    </Compile>
     <Compile Include="MenumateRunners\PocketVoucherServiceRunner.cs" />
     <Compile Include="MenumateRunners\SalesForceIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\ThorlinkServiceRunner.cs" />
@@ -349,8 +351,10 @@
     <Compile Include="Tools\ServiceNameManager.cs" />
     <Compile Include="WCFServices\IPocketVoucherWebService.cs" />
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
+    <Compile Include="WCFServices\ISiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
+    <Compile Include="WCFServices\SiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />
     <Compile Include="WCFServices\WCFServiceThorlink.cs" />
     <Compile Include="WCFServices\ClippIntergrationWebService.cs" />
@@ -412,6 +416,10 @@
     <ProjectReference Include="..\SalesForceCommunication\SalesForceCommunication.csproj">
       <Project>{FD3662F2-D048-4ECA-86C6-A44611DE5B4B}</Project>
       <Name>SalesForceCommunication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiHotIntegration\SiHotIntegration.csproj">
+      <Project>{BE08BEA6-3A39-43C9-9E2A-94C2D89734C4}</Project>
+      <Name>SiHotIntegration</Name>
     </ProjectReference>
     <ProjectReference Include="..\XeroIntegration\AccountingIntegration.csproj">
       <Project>{46E2DEBD-F1B9-41D1-BEEA-F1D903302B86}</Project>

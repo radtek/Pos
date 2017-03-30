@@ -51,10 +51,15 @@ void TApplyParser::upgrade6_37Tables()
 {
 	update6_37Tables();
 }
-
+//6.38
 void TApplyParser::upgrade6_38Tables()
 {
 	update6_38Tables();
+}
+//6.39
+void TApplyParser::upgrade6_39Tables()
+{
+    update6_39Tables();
 }
 //::::::::::::::::::::::::Version 6.30:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_30Tables()
@@ -1883,6 +1888,24 @@ void TApplyParser::Updatetable_PaymentTypes(TDBControl* const inDBControl)
         transaction.Rollback();
     }
 }
+//-----------------------------------------------------------------------------
+void TApplyParser::update6_39Tables()
+{
+    Create6_39SiHotTransNumberGenerator(_dbControl);
 }
+//-----------------------------------------------------------------------------
+void TApplyParser::Create6_39SiHotTransNumberGenerator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_SIHOTTRANSNUMBER", _dbControl))
+    {
+        executeQuery(
+            "CREATE GENERATOR GEN_SIHOTTRANSNUMBER;", inDBControl
+        );
 
-
+        executeQuery(
+            "SET GENERATOR GEN_SIHOTTRANSNUMBER TO 0;", inDBControl
+        );
+    }
+}
+//-----------------------------------------------------------------------------
+}  // namespace

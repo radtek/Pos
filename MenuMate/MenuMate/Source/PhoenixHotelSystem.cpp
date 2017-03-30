@@ -9,7 +9,6 @@
 #include "MMLogging.h"
 #include "DBThirdPartyCodes.h"
 #include "ManagerPatron.h"
-
 #ifdef MenuMate
 #include "DeviceRealTerminal.h"
 #endif
@@ -20,9 +19,10 @@
 
 #pragma package(smart_init)
 
-TPhoenixHM *PhoenixHM;
+//TPhoenixHM *PhoenixHM;
 
-TPhoenixHM::TPhoenixHM(Database::TDBControl &inDBControl) :TManagerPMS(inDBControl), DBControl(inDBControl), fPhoenixNet(new TPhoenixNetTCPManager)
+//TPhoenixHM::TPhoenixHM(Database::TDBControl &inDBControl) :TBasePMS(inDBControl),DBControl(inDBControl), fPhoenixNet(new TPhoenixNetTCPManager)
+TPhoenixHM::TPhoenixHM() :TBasePMS(),fPhoenixNet(new TPhoenixNetTCPManager)
 {
 	TCPPort = 4444;
 	TCPIPAddress = "";
@@ -35,10 +35,13 @@ TPhoenixHM::TPhoenixHM(Database::TDBControl &inDBControl) :TManagerPMS(inDBContr
 	RoundingCategory = "";
 	Enabled = false;
 	Registered = false;
+    MessageBox("Inside Constructor of Phoenix","Notify",MB_OK);
 }
+//----------------------------------------------------------------------------
 TPhoenixHM::~TPhoenixHM()
-{}
-
+{
+}
+//----------------------------------------------------------------------------
 //void __fastcall TPhoenixHM::SetTCPPort(int value)
 //{
 //	if(FTCPPort != value)
@@ -212,7 +215,7 @@ TPhoenixHM::~TPhoenixHM()
 //{
 //	return FDefaultSurchargeAccount;
 //}
-
+//----------------------------------------------------------------------------
 bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID)
 {
 	bool RetVal = false;
@@ -437,6 +440,7 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 		else
 		{
 			TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,"PMS Export Failed.\r" + RoomCharge.ResultText);
+            MessageBox("PMS Export failed","After receiving repsonse",MB_OK);
 			MessageBox("PMS Export Failed.\r" + RoomCharge.ResultText,
 					  "PMS Hotel Export Error", MB_OK + MB_ICONERROR);
 		}
@@ -449,7 +453,7 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 	}
 	return RetVal;
 }
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::CheckCreditLimit(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddress,int PMSPort)
 {
 	TPhoenixRoomStatusExt RoomStatus;
@@ -474,10 +478,11 @@ void TPhoenixHM::CheckCreditLimit(TPhoenixRoomCharge &RoomCharge,AnsiString PMSI
 			AnsiString CreditLimit = CurrToStrF(RoomStatus.CreditLimit, ffCurrency, 2);
 			RoomCharge.Result = eDeclined;
 			RoomCharge.ResultText = "Credit Limit Exceeded\r Current Balance " + Balance + " Credit Limit " + CreditLimit;
+            MessageBox("caught 1","Inside CheckCreditLimit amount available < RoomCharge.Total",MB_OK);
 		}
 	}
 }
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::GetRoomStatus(TPhoenixRoomStatusExt &Status,AnsiString PMSIPAddress,int PMSPort)
 {
 	// Select the room number.
@@ -486,6 +491,11 @@ void TPhoenixHM::GetRoomStatus(TPhoenixRoomStatusExt &Status,AnsiString PMSIPAdd
 	{
 		Status.POSID = POSID;
 		fPhoenixNet->SendAndFetch(Status,PMSIPAddress,PMSPort);
+        MessageBox(Status.AccountNumber,"AccountNumber",MB_OK);
+        MessageBox(Status.Balance,"Balance",MB_OK);
+        MessageBox(Status.CreditLimit,"Credit Limit",MB_OK);
+        MessageBox(Status.Folders->Count,"Folder",MB_OK);
+        MessageBox((AnsiString)Status.Folders->operator [](),"content",MB_OK)
 	}
 	else
 	{ // Canceled by User.
@@ -494,10 +504,10 @@ void TPhoenixHM::GetRoomStatus(TPhoenixRoomStatusExt &Status,AnsiString PMSIPAdd
 		TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,"Invalid Account Number");
 	}
 }
-
+//----------------------------------------------------------------------------
 AnsiString TPhoenixHM::GetRefNumber()
 {
-	Database::TDBTransaction DBTransaction(DBControl);
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
 
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -507,16 +517,15 @@ AnsiString TPhoenixHM::GetRefNumber()
 	IBInternalQuery->ExecQuery();
 	int PhoenixRef = IBInternalQuery->Fields[0]->AsInteger;
 	DBTransaction.Commit();
-	
+
 	return "PMS" + IntToStr(PhoenixRef);
 }
-
+//----------------------------------------------------------------------------
 AnsiString TPhoenixHM::GetLastTransactionRef()
 {
 	return LastTransactionRef;
 }
-
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::ChargeRoom(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddress,int PMSPort)
 {
 	// Select the room number.
@@ -524,16 +533,17 @@ void TPhoenixHM::ChargeRoom(TPhoenixRoomCharge &RoomCharge,AnsiString PMSIPAddre
 	if(RoomCharge.AccountNumber != "" && TCPIPAddress != "")
 	{
 		RoomCharge.POSID = POSID;
+//        MessageBox("Caught 2","Inside Charge Room sending request",MB_OK);
 		fPhoenixNet->SendAndFetch(RoomCharge,PMSIPAddress,PMSPort);
 	}
 	else
 	{ // Canceled by User.
 		RoomCharge.Result = eFailed;
 		RoomCharge.ResultText = "Invalid Account Number";
-		TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,"Invalid Account Number");		
+		TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,"Invalid Account Number");
 	}
 }
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::Initialise()
 {
 //	Database::TDBTransaction DBTransaction(DBControl);
@@ -561,9 +571,8 @@ void TPhoenixHM::Initialise()
 //	{
 //		Enabled = false;
 //	}
-	Database::TDBTransaction DBTransaction(DBControl);
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
-		MessageBox("Going to Set TCP.\r","FTCPPort Call", MB_OK + MB_ICONERROR);
 	TCPPort = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSTCPPort);
 	TCPIPAddress = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSIPAddress);
 	POSID = TManagerVariable::Instance().GetInt(DBTransaction,vmPMSPOSID);
@@ -588,7 +597,7 @@ void TPhoenixHM::Initialise()
 	}
 
 }
-
+//----------------------------------------------------------------------------
 bool TPhoenixHM::TestDefaultCodes()
 {
 	bool Success = true;
@@ -607,12 +616,12 @@ bool TPhoenixHM::TestDefaultCodes()
    ClearCodesTestedOk();
 	return Success;
 }
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::ClearCodesTestedOk()
 {
    CodesTestedOk.clear();
 }
-
+//----------------------------------------------------------------------------
 bool TPhoenixHM::TestCode(AnsiString CodeToTest)
 {
 	bool RetVal = true;
@@ -652,13 +661,11 @@ bool TPhoenixHM::TestCode(AnsiString CodeToTest)
 	}
 	return RetVal;
 }
-
-
-
+//----------------------------------------------------------------------------
 void TPhoenixHM::FindAndReplaceCode(AnsiString SourceCode, AnsiString DestCode)
 {
-   
-	Database::TDBTransaction DBTransaction(DBControl);
+
+	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
    int ThirdPartyKey = TDBThirdPartyCodes::GetThirdPartyKeyByCode(DBTransaction,SourceCode,tpItemSize);
    if(ThirdPartyKey)
@@ -669,3 +676,4 @@ void TPhoenixHM::FindAndReplaceCode(AnsiString SourceCode, AnsiString DestCode)
    }
 	DBTransaction.Commit();
 }
+//----------------------------------------------------------------------------

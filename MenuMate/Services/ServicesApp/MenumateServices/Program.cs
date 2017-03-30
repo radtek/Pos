@@ -11,7 +11,7 @@ namespace MenumateServices
         /// <summary>
         /// Three menumate services: Accounting Integration, LoyaltyMate, WebMate, ChefMate, ClippIntegration, ThorLink, PocketVoucher, SalesForce
         /// </summary>
-        private const int ServiceCount = 9;
+        private const int ServiceCount = 10;
         static string _serviceConfigFileName = Properties.Settings.Default.ServiceConfigFilename;
 
         /// <summary>
@@ -223,7 +223,8 @@ namespace MenumateServices
                    (inServiceName == "MenumateServiceClippIntegration") ||
                    (inServiceName == "MenumateServiceThorlink") ||
                    (inServiceName == "MenumateServicePocketVoucher") ||
-                   (inServiceName == "MenumateServiceSalesForce");
+                   (inServiceName == "MenumateServiceSalesForce") ||
+                   (inServiceName == "MenumateServiceSiHotIntegration");
         }
 
         static ServiceController GetServiceEndPoint()

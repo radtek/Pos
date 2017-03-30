@@ -6,8 +6,8 @@
 #include "ManagerPMS.h"
 #include "Money.h"
 #include "PHSTCPIP.h"
-
-class TPhoenixHM:public TManagerPMS
+//--------------------------------------------------------------------------
+class TPhoenixHM : public TBasePMS
 {
 //	private:
 //	int FTCPPort;
@@ -103,15 +103,16 @@ class TPhoenixHM:public TManagerPMS
 //	AnsiString DefaultTransactionAccount;
 //	AnsiString DefaultSurchargeAccount;
 
-	Database::TDBControl &DBControl;
+//	Database::TDBControl &DBControl;
 
 	void __fastcall SetRoundingCategory(AnsiString value);
 	AnsiString __fastcall GetRoundingCategory();
    std::set<AnsiString> CodesTestedOk;
 	public :
-	bool Registered;
-	bool Enabled;
-	TPhoenixHM(Database::TDBControl &inDBControl);
+//	bool Registered;
+//	bool Enabled;
+	TPhoenixHM();
+//    TPhoenixHM(Database::TDBControl &inDBControl);
     ~TPhoenixHM();
 	void GetRoomStatus(TPhoenixRoomStatusExt &RoomStatus,AnsiString PMSIPAddress,int PMSPort);
 	bool ExportData(TPaymentTransaction &PaymentTransaction, int StaffID);
@@ -128,7 +129,7 @@ class TPhoenixHM:public TManagerPMS
 
 };
 
-extern TPhoenixHM *PhoenixHM;
+//extern TPhoenixHM *PhoenixHM;
 
 #endif
 

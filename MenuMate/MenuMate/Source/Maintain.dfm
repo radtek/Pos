@@ -713,7 +713,7 @@ object frmMaintain: TfrmMaintain
           end
           object tbtnPrinterMaintenance: TTouchBtn
             Left = 28
-            Top = 170
+            Top = 172
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16

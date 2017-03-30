@@ -50,6 +50,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.ThorLink: return "MenumateServiceThorlink";
                 case MenumateServicesIdentifier.PocketVoucher: return "PocketVoucherWebService";
                 case MenumateServicesIdentifier.SalesForceIntegration: return "SalesForceIntegrationWebService";
+                case MenumateServicesIdentifier.SiHotIntegration: return "SiHotIntegrationWebService";
                 default: return @"";
             }
         }
@@ -78,6 +79,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.ThorLink: return "Menumate Thor Link Integration";
                 case MenumateServicesIdentifier.PocketVoucher: return "Menumate Pocket Voucher Service";
                 case MenumateServicesIdentifier.SalesForceIntegration: return "Sales-Force Integration Service";
+                case MenumateServicesIdentifier.SiHotIntegration: return "Menumate SiHot Integration";
                 default: return @"";
             }
         }
@@ -105,6 +107,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.ThorLink: return "Menumate Thor Link server";
                 case MenumateServicesIdentifier.PocketVoucher: return "Menumate Pocket Voucher Service";
                 case MenumateServicesIdentifier.SalesForceIntegration: return "Sales-Force Integration Service";
+                case MenumateServicesIdentifier.SiHotIntegration: return "Menumate SiHot Integration Server";
 
                 default: return @"";
             }

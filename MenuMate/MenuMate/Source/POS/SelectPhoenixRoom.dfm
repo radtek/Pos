@@ -69,7 +69,7 @@ object frmPhoenixRoom: TfrmPhoenixRoom
       object lbeCaption: TLabel
         Left = 8
         Top = 276
-        Width = 149
+        Width = 150
         Height = 24
         Caption = 'Last Accessed'
         Font.Charset = DEFAULT_CHARSET

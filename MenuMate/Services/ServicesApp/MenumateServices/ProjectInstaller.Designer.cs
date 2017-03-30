@@ -40,6 +40,7 @@ namespace MenumateServices
             this.serviceInstallerThorLink = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerPocketVoucher = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSalesForceIntegration = new System.ServiceProcess.ServiceInstaller();
+            this.serviceInstallerSiHotIntegration = new System.ServiceProcess.ServiceInstaller();
             // 
             // serviceProcessInstaller
             // 
@@ -113,6 +114,13 @@ namespace MenumateServices
             this.serviceInstallerSalesForceIntegration.ServiceName = "MenumateServiceSalesForce";
             this.serviceInstallerSalesForceIntegration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
+            // serviceInstallerSiHotIntegration
+            // 
+            this.serviceInstallerSiHotIntegration.Description = "Menumate SiHot Integration ";
+            this.serviceInstallerSiHotIntegration.DisplayName = "MenumateServiceSiHotIntegration";
+            this.serviceInstallerSiHotIntegration.ServiceName = "MenumateServiceSiHotIntegration";
+            this.serviceInstallerSiHotIntegration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            // 
             // ProjectInstaller
             // 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
@@ -125,7 +133,8 @@ namespace MenumateServices
             this.serviceInstallerClippIntegration,
             this.serviceInstallerThorLink,
             this.serviceInstallerPocketVoucher,
-            this.serviceInstallerSalesForceIntegration});
+            this.serviceInstallerSalesForceIntegration,
+            this.serviceInstallerSiHotIntegration});
 
         }
 
@@ -171,5 +180,6 @@ namespace MenumateServices
         private ServiceInstaller serviceInstallerThorLink;
         private ServiceInstaller serviceInstallerPocketVoucher;
         private ServiceInstaller serviceInstallerSalesForceIntegration;
+        private ServiceInstaller serviceInstallerSiHotIntegration;
     }
 }

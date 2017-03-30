@@ -391,14 +391,12 @@ void __fastcall TfrmPhoenixRoom::edSearchKeyPress(TObject *Sender,
 	}
 }
 //---------------------------------------------------------------------------
-
-
 void TfrmPhoenixRoom::QuickSearch()
 {
 
 	SelectedRoom.Clear();
 	SelectedRoom.AccountNumber = edSearch->Text;
-	PhoenixHM->GetRoomStatus(SelectedRoom,PMSIPAddress,PMSPort);
+	TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SelectedRoom,PMSIPAddress,PMSPort);
 	if(SelectedRoom.Result != eAccepted)
 	{
 		MessageBox(SelectedRoom.ResultText,"PMS Hotel Error", MB_OK + MB_ICONERROR);
@@ -412,7 +410,7 @@ void TfrmPhoenixRoom::QuickSearch()
 		UnSelected->Color = clMaroon;
 	}
 }
-
+//---------------------------------------------------------------------------
 void __fastcall TfrmPhoenixRoom::tbtnSearchByNameClick(TObject *Sender)
 {
 	tbtnSearchByName->Color = clGreen;
@@ -475,11 +473,11 @@ void __fastcall TfrmPhoenixRoom::ListDrawCell(TObject *Sender,
 
    TRect CentredRect = DrawRegRect;
    int RowHeight = Rect.Bottom - Rect.Top;
-	if (RowHeight > TextHeight)
+   if (RowHeight > TextHeight)
    {
-   	CentredRect.Top += (RowHeight - TextHeight) / 2;
+   	    CentredRect.Top += (RowHeight - TextHeight) / 2;
 		CentredRect.Bottom = CentredRect.Top + TextHeight;
-	}
+   }
 	DrawTextExW(pCanvas->Handle, Caption.w_str(), Caption.Length(), &CentredRect, DT_WORDBREAK|DT_NOPREFIX, NULL);
 	pCanvas->Brush->Color = Color;
 	pCanvas->Brush->Style = Style;
@@ -741,20 +739,20 @@ int TfrmPhoenixRoom::SelectRoom(AnsiString inPMSIPAddress,int inPMSPort)
 	int RetVal = 0;
 	try
 	{
-      PMSIPAddress   = inPMSIPAddress;
-      PMSPort        = inPMSPort;
-		RetVal = ShowModal();
-		if(RetVal == mrOk)
-		{
-			if(find(LastAccessed.begin(),LastAccessed.end(),SelectedRoom.AccountNumber) == LastAccessed.end())
-			{
-				LastAccessed.insert(LastAccessed.begin(),SelectedRoom.AccountNumber);
-			}
-			while(LastAccessed.size() > MaxRemembered)
-			{
-				LastAccessed.pop_back();
-			}
-		}
+        PMSIPAddress   = inPMSIPAddress;
+        PMSPort        = inPMSPort;
+        RetVal = ShowModal();
+        if(RetVal == mrOk)
+        {
+            if(find(LastAccessed.begin(),LastAccessed.end(),SelectedRoom.AccountNumber) == LastAccessed.end())
+            {
+                LastAccessed.insert(LastAccessed.begin(),SelectedRoom.AccountNumber);
+            }
+            while(LastAccessed.size() > MaxRemembered)
+            {
+                LastAccessed.pop_back();
+            }
+        }
 	}
 	catch(Exception &E)
 	{

@@ -247,7 +247,7 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 	tbtnIPSettingsRefreshMouseClick(Sender);
 
     cbShowCustomerDisplay->Checked = TGlobalSettings::Instance().ShowCustomerDisplay;
-    if(PhoenixHM->Registered)
+    if(TDeviceRealTerminal::Instance().BasePMS->Registered)
     {
      cbNewbookType->Enabled  =true;
     }
