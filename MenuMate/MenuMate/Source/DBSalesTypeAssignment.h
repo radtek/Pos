@@ -17,7 +17,6 @@ class TDBSalesTypeAssignment
     static std::map<int, UnicodeString> LoadAllItems();
 
     //Load Items Which are assigned to sales Type
-    //static std::map<int, UnicodeString> LoadAssignedItemsBySalesType();
     static std::map<int, std::map<int, UnicodeString> > LoadAssignedItemsBySalesType();
 
     //Assign Items to Sales Type Group

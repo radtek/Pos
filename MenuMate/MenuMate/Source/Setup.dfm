@@ -535,10 +535,6 @@ object frmSetup: TfrmSetup
     object tsApplications: TTabSheet
       Caption = 'Applications Settings'
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object GroupBox4: TGroupBox
         Left = 8
         Top = 326
@@ -1400,7 +1396,7 @@ object frmSetup: TfrmSetup
           OnMouseClick = btnRegenMallReportMouseClick
         end
         object btnAssignMallSalesType: TTouchBtn
-          Left = 32
+          Left = 16
           Top = 569
           Width = 329
           Height = 30
