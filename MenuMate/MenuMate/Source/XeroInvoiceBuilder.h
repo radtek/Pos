@@ -70,12 +70,9 @@ class TXeroInvoiceBuilder
 		bool BuildXeroInvoice( TPaymentTransaction& inPaymentTransaction );
         bool BuildXeroInvoice( TXeroInvoiceDetail&  XeroInvoiceDetails);
         std::vector<TItemComplete *> itemComplete;
-        std::vector<NodeItem> NodeItems;
         void CheckRoundingAmount(TXeroInvoiceDetail& XeroInvoiceDetail);
         double roundAmount;
         bool CheckInvoiceTotal(double invoiceTotal);
-
-//        std::vector<TItemComplete *> itemCompleteModified;
 
 	protected:
 		TXeroInvoice* FXeroInvoice;
@@ -90,15 +87,14 @@ class TXeroInvoiceBuilder
 		void AddItemToXeroInvoice( TXeroInvoice* inXeroInvoice, TItemMinorComplete* inOrder );
         void AddItemToXeroInvoice( TXeroInvoice* inXeroInvoice, TXeroCategoryDetail& PayTypeDetail , bool isAddRounding = false);
 		AnsiString CalcAsString(AnsiString inPrice, AnsiString inQty, AnsiString &inTax );
-
 		double GetTotalAmountToXero( TPayment* inXeroPayment );
 		double GetTotalAmount( TPaymentTransaction& inPaymentTransaction );
-
-
+        void CompressItemForInvoice(TXeroInvoice *FXeroInvoice, TPaymentTransaction& inPaymentTransaction);
         void AddPaymentToXeroInvoice( TXeroInvoice* inXeroInvoice, TXeroPayTypeDetail& PayTypeDetail );
-//        void QuantityUpdate(TPaymentTransaction& inPaymentTransaction);
-        void MakeVectorForItems(TXeroInvoice *FXeroInvoice, TPaymentTransaction& inPaymentTransaction);
-        void ModifyVector(TXeroInvoice *FXeroInvoice,std::vector<NodeItem> nodeItems);
+
+    private:
+        void AddItemToCollection(NodeItem xeroNodeItem, std::vector<NodeItem> &nodeItems);
+        void AddItemToInvoiceXML(TXeroInvoice *FXeroInvoice, std::vector<NodeItem> nodeItems);
 };
 
 #endif

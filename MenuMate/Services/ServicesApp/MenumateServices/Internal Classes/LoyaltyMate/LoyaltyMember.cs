@@ -78,7 +78,7 @@ namespace MenumateServices.LoyaltyMate
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.UpdateMemberCardCode(inSyndicateCode, uniqueId, memberCardCode);
+                var response = loyaltymateService.UpdateMemberCardCode(inSyndicateCode, CreateUpdateCardCodeRequest(uniqueId, memberCardCode));
                 if (response)
                     return CreateResponseNoError();
                 else
@@ -93,6 +93,21 @@ namespace MenumateServices.LoyaltyMate
                             @"Failed to Authenticate",
                             ex.Message,
                             LoyaltyResponseCode.AuthenticationFailed);
+            }
+            catch (LoyaltymateOperationException ex)
+            {
+                if (ex.Message.Contains("Card Code"))
+                {
+                    return CreateResponseError(ex.Message,
+                            @"Card Code Already In Use.",
+                            LoyaltyResponseCode.UpdateMemberFailed);
+                }
+                else
+                {
+                    return CreateResponseError(ex.Message,
+                            @"Loyaltymate error.",
+                            LoyaltyResponseCode.UpdateMemberFailed);
+                }
             }
             catch (Exception ex)
             {
@@ -122,6 +137,23 @@ namespace MenumateServices.LoyaltyMate
                             ex.Message,
                             LoyaltyResponseCode.AuthenticationFailed,
                             inInfo);
+            }
+            catch (LoyaltymateOperationException ex)
+            {
+                if (ex.Message.Contains("Card Code"))
+                {
+                    return CreateMemberResponseError(ex.Message,
+                            @"Card Code Already In Use.",
+                            LoyaltyResponseCode.CreateMemberFailed,
+                            CreateMemberInfo(@""));
+                }
+                else
+                {
+                    return CreateMemberResponseError(ex.Message,
+                            @"Loyaltymate error.",
+                            LoyaltyResponseCode.CreateMemberFailed,
+                            CreateMemberInfo(@""));
+                }
             }
             catch (Exception exc)
             {
@@ -474,6 +506,16 @@ namespace MenumateServices.LoyaltyMate
                 SiteCode = requestInfo.SiteCode
             };
         }
+        ApiUpdateCardCodeRequestViewModel CreateUpdateCardCodeRequest(string uniqueId, string memberCardCode)
+        {
+            return new ApiUpdateCardCodeRequestViewModel()
+            {
+                UniqueId = uniqueId,
+                MemberCardCode = memberCardCode,
+            };
+        }
+
+
         #endregion
 
 

@@ -389,5 +389,9 @@ TGlobalSettings::TGlobalSettings()
     MembershipPaid = false;
     UseMemberSubs = false;
     FloatWithdrawFromCash = false;
+    IsPanasonicIntegrationEnabled = false;
+    PanasonicServerIP = "";
+    CashVarianceGLCode = "";
+    ReportExportPath = "";
 }
 

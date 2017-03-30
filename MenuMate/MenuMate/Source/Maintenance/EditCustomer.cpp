@@ -74,6 +74,7 @@ void __fastcall TfrmEditCustomer::FormShow(TObject *Sender)
 {
    FormResize(NULL);
    ClearAllCards = false;
+   IsProxCardChange = false;
    if (!Editing)
    {
 	std::vector<ContactGroup> temp;
@@ -98,19 +99,19 @@ void __fastcall TfrmEditCustomer::FormShow(TObject *Sender)
    {
      DateTimePicker1->Date = Now();
    }
-   //btnSwipe->Enabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
-   //tbProximity->Enabled = !TGlobalSettings::Instance().LoyaltyMateEnabled;
    cbNoEmail->Enabled = Info.EMail == "" || Info.EMail == NULL;
    edEmail->Enabled = Info.EMail == "" || Info.EMail == NULL;
    if(TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate || !TGlobalSettings::Instance().LoyaltyMateEnabled)
    {
         cbNoEmail->Visible = false;
    }
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
+   btnRemoveCard->Visible = !TGlobalSettings::Instance().LoyaltyMateEnabled;
+   tbtnClearAllCards->Visible = !TGlobalSettings::Instance().LoyaltyMateEnabled;
+   Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+   DBTransaction.StartTransaction();
    int GlobalProfileKey = TManagerVariable::Instance().GetProfile(DBTransaction, eSystemProfiles, "Globals");
    TManagerVariable::Instance().GetProfileBool(DBTransaction,  GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
-    DBTransaction.Commit();
+   DBTransaction.Commit();
 }
 // ---------------------------------------------------------------------------
 void TfrmEditCustomer::DrawContactDetails()
@@ -321,31 +322,6 @@ void __fastcall TfrmEditCustomer::btnCancelClick(TObject *Sender)
    ModalResult = mrCancel;
 }
 // ---------------------------------------------------------------------------
-void __fastcall TfrmEditCustomer::btnSwipeClick(TObject *Sender)
-{
-   std::auto_ptr <TfrmCardSwipe> frmCardSwipe(TfrmCardSwipe::Create <TfrmCardSwipe> (this));
-   frmCardSwipe->tbOtherOpt->Visible = false;
-   frmCardSwipe->ShowModal();
-   if (frmCardSwipe->ModalResult == mrOk)
-   {
-	  Info.CardsToAdd.insert(AnsiString(frmCardSwipe->SwipeString).SubString(1, 80));
-	  Info.CardStr = AnsiString(frmCardSwipe->SwipeString).SubString(1, 80);
-   }
-}
-// ---------------------------------------------------------------------------
-void __fastcall TfrmEditCustomer::btnRemoveCardClick(TObject *Sender)
-{
-   std::auto_ptr <TfrmCardSwipe> frmCardSwipe(TfrmCardSwipe::Create <TfrmCardSwipe> (this));
-   frmCardSwipe->tbOtherOpt->Visible = false;
-   frmCardSwipe->ShowModal();
-   if (frmCardSwipe->ModalResult == mrOk)
-   {
-	  Info.CardsToAdd.erase(AnsiString(frmCardSwipe->SwipeString).SubString(1, 80));
-	  Info.CardsToRemove.insert(AnsiString(frmCardSwipe->SwipeString).SubString(1, 80));
-	  Info.CardStr = "";
-   }
-}
-// ---------------------------------------------------------------------------
 void __fastcall TfrmEditCustomer::tbtnAllowedTabClick(TObject *Sender)
 {
    if (tbtnAllowedTab->Latched == false && Editing)
@@ -367,14 +343,6 @@ void __fastcall TfrmEditCustomer::tbtnAllowedTabClick(TObject *Sender)
      {
        tbtnAllowedTab->Caption = "Not Allowed Tab";
      }
-   }
-}
-// ---------------------------------------------------------------------------
-void __fastcall TfrmEditCustomer::tbtnClearAllCardsClick(TObject *Sender)
-{
-   if (MessageBox("This will Clear all swipe cards associate with this Member.", "Warning", MB_OKCANCEL + MB_ICONQUESTION) == IDOK)
-   {
-	  ClearAllCards = true;
    }
 }
 // ---------------------------------------------------------------------------
@@ -444,9 +412,9 @@ void TfrmEditCustomer::RedrawDiscounts()
    tgDiscounts->ColCount = 0;
    tgDiscounts->RowCount = 0;
 
+   tgDiscounts->RowCount = DiscountList->Count/3;
+   tgDiscounts->RowCount += 1;
    tgDiscounts->ColCount = 3;
-   tgDiscounts->RowCount = 8;
-
    for (int i = 0; i < tgDiscounts->RowCount; i++)
    {
 	  for (int j = 0; j < tgDiscounts->ColCount; j++)
@@ -819,8 +787,7 @@ void __fastcall TfrmEditCustomer::tbProximityMouseClick(TObject *Sender)
    bool duplicate_prox_detected = false;
 
 	frmCardSwipe->ShowModal();
-	if ((result = frmCardSwipe->ModalResult) != mrOk
-	    && result != mrAbort)
+	if ((result = frmCardSwipe->ModalResult) != mrOk  && result != mrAbort)
 		return;
 
 	new_prox_str = frmCardSwipe->SwipeString.SubString(1, 80);
@@ -830,36 +797,59 @@ void __fastcall TfrmEditCustomer::tbProximityMouseClick(TObject *Sender)
 
 	check_dup_prox_query->Close();
 	check_dup_prox_query->SQL->Add(
-	  "select name from contacts where prox_card = :new_prox_card"
-	  "                                and contacts_key <> :user_key;");
-
+	  "select name from contacts where prox_card = :new_prox_card and contacts_key <> :user_key;");
 	trans.StartTransaction();
 	check_dup_prox_query->ParamByName("new_prox_card")->AsString = new_prox_str;
 	check_dup_prox_query->ParamByName("user_key")->AsInteger = Info.ContactKey;
 	check_dup_prox_query->ExecQuery();
 
 	if (!(duplicate_prox_detected = check_dup_prox_query->RecordCount > 0))
+    {
 		Info.ProxStr = new_prox_str;
-	else {
-		switch (MessageBox(
-		          "This proximity card is current held by "
+        IsProxCardChange = true;
+    }
+	else
+    {
+        if(MessageBox("This proximity card is current held by "
 		          + check_dup_prox_query->FieldByName("name")->AsString
 		          + ". Would you like to transfer it to this user?",
-		          "Duplicate proximity card detected", MB_YESNO)) {
-		case IDYES:
-				Info.ProxStr = new_prox_str;
-			break;
-      case IDNO:
+		          "Duplicate proximity card detected", MB_YESNO) == IDYES)
+        {
+            Info.ProxStr = new_prox_str;
+            IsProxCardChange = true;
+        }
+        else
+        {
 			MessageBox("The proximity card has not been assigned to this user.",
 			           "Duplicate proximity card detected", MB_OK);
 			duplicate_prox_detected = false;
-			break;
-		}
+        }
    }
 
 	trans.Commit();
 }
-//---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+void __fastcall TfrmEditCustomer::btnRemoveCardClick(TObject *Sender)
+{
+   std::auto_ptr <TfrmCardSwipe> frmCardSwipe(TfrmCardSwipe::Create <TfrmCardSwipe> (this));
+   frmCardSwipe->tbOtherOpt->Visible = false;
+   frmCardSwipe->ShowModal();
+   if (frmCardSwipe->ModalResult == mrOk)
+   {
+	  Info.CardsToAdd.erase(AnsiString(frmCardSwipe->SwipeString).SubString(1, 80));
+	  Info.CardsToRemove.insert(AnsiString(frmCardSwipe->SwipeString).SubString(1, 80));
+	  Info.CardStr = "";
+   }
+}
+// ---------------------------------------------------------------------------
+void __fastcall TfrmEditCustomer::tbtnClearAllCardsClick(TObject *Sender)
+{
+   if (MessageBox("This will Clear all swipe cards associate with this Member.", "Warning", MB_OKCANCEL + MB_ICONQUESTION) == IDOK)
+   {
+	  ClearAllCards = true;
+   }
+}
+// ---------------------------------------------------------------------------
 void TfrmEditCustomer::SetupCustomerInfoPointers()
 {
     CustomerInfoPointers[0] = &Info.Name;

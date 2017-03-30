@@ -8,7 +8,6 @@
 #include "MMTouchKeyboard.h"
 #include "MMMessageBox.h"
 
-// #include "DiscountTypesManager.h"
 #include "DiscountGroupsManager.h"
 //---------------------------------------------------------------------------
 class TfrmDiscountGroupsGUI : public TfrmGenericGroupGUI

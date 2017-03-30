@@ -63,7 +63,8 @@
 #include "DocketManager.h"
 #include "VerticalSelect.h"
 #include "AddTab.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include "ListCourse.h"
 #include "ItemSize.h"
 #include "ItemRecipe.h"
@@ -128,6 +129,7 @@
 #include "MMMessageBox.h"
 #include "MMTouchNumpad.h"
 #include "PaySubsUtility.h"
+#include "ManagerReportExport.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -159,9 +161,7 @@ void TfrmSelectDish::RemoveSideItemFromItem(
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::ItemAlteredRefresh(Messages::TMessage &Message)
 {
-    RedrawItems();
-    RedrawItemSideCourses();
-    RedrawSetMenuItems();
+   UpdateMenuItemsAfterLoginScreen();
 }
 // ---------------------------------------------------------------------------
 __fastcall TfrmSelectDish::TfrmSelectDish(TComponent* Owner) : TZForm(Owner), ParkedSales(new TManagerParkedSales())
@@ -2017,7 +2017,6 @@ void __fastcall TfrmSelectDish::tmPosRefreshTimer(TObject *Sender)
 			TDeviceRealTerminal::Instance().Menus->UpdateSync[TDeviceRealTerminal::Instance().Menus->VisibleMenu->MenuKey] = TDeviceRealTerminal::Instance().Menus->VisibleMenu->EnabledStateSync;
 			RedrawMenu();
 		}
-
               // BarExachange barexchang;
 	}
 }
@@ -2038,7 +2037,6 @@ void __fastcall TfrmSelectDish::tiClockTimer(TObject *Sender)
 	TCHAR szTime[64];
 
 	int Length = GetTimeFormat(NULL, NULL, NULL, _T("h':'mm':'ss tt"), szTime, sizeof(szTime));
-
 	AnsiString TheTime = " ";
 	for (int i = 0; i < Length; i++)
 	{
@@ -3239,6 +3237,7 @@ void TfrmSelectDish::RedrawItems()
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::ListTimerTimer(TObject *Sender)
 {
+
 	if (lbDisplay->ItemIndex < 0)
 		return;
 
@@ -3794,7 +3793,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                             Kitchen->GetPrintouts(DBTransaction, Request.get());
                             Request->Transaction = PrintTransaction.get();
                             Request->Printouts->Print(devPC);
-                            ManagerDockets->Archive(Request.get());
+                            ManagerDockets->Archive(DBTransaction,Request.get());
                             completeOrderToChefMate( PrintTransaction.get() );
 						}
 					}
@@ -3963,11 +3962,10 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Tab Data Type :" + IntToStr(TabType) + " Selected Tab Key " + IntToStr(SelectedTab) + "Tab Name :" + TabName);
 		PaymentComplete = false;
 	}
+
     if(PaymentComplete)
      {
         PaymentTransaction.PaymentsClear();
-    //    TGlobalSettings::Instance().TabPrintName = " ";
-   //     TGlobalSettings::Instance().TabPrintPhone = " ";
      }
     IsParkSalesEnable = false;
 	return PaymentComplete;
@@ -4508,7 +4506,13 @@ void TfrmSelectDish::LockOutUser()
                         else
                         {
                             TManagerLogs::Instance().Add(__FUNC__, DEBUGLOG, "Staff not swapped out Contact ID's Match: " + IntToStr(TDeviceRealTerminal::Instance().User.ContactID));
+                            
                         }
+                        if (Result == lsAccepted)
+                        {
+                           UpdateMenuItemsAfterLoginScreen();
+                        }
+
                     }
                     else if (Result == lsDenied)
                     {
@@ -4548,6 +4552,7 @@ void TfrmSelectDish::LockOutUser()
       // tiChitDelay->Enabled = TGlobalSettings::Instance().NagUserToSelectChit
                               //&& Result == lsAccepted;
         InitializeQuickPaymentOptions();
+       
 	}
 }
 // ---------------------------------------------------------------------------
@@ -5366,6 +5371,10 @@ void __fastcall TfrmSelectDish::btngridModifyMouseClick(TObject *Sender, TMouseB
 			tbtnMemberDisplayPageUp->Visible = true;
 			tbtnMemberDisplayPageDown->Visible = true;
 			break;
+        case eBTDChangeBarcode:
+            AssignBarcodeToMember();
+            GridButton->Latched = false;
+            break;
 		default:
 			pcItemModify->ActivePage = tsOverview;
 		}
@@ -5376,7 +5385,7 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 {
 	if (lbDisplay->ItemIndex > -1)
 	{
-		const int MaxButtonCount = 6;
+		const int MaxButtonCount = 7;
 
 		TItemRedirector *ListItem = (TItemRedirector*)lbDisplay->Items->Objects[lbDisplay->ItemIndex];
 
@@ -5431,13 +5440,15 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 		else if (ListItem->ItemType.Contains(itMembershipDisplay) || ListItem->ItemType.Contains(itMembershipDisplayNote) ||
 					ListItem->ItemType.Contains(itEarntPts) || ListItem->ItemType.Contains(itLoadedPts))
 		{
-			ButtonsSet << eBTDMembership;
-			ButtonsSet << eBTDMemberPurchases;
-			ButtonsSet << eBTDMemberFavourites;
-			ButtonsSet << eBTDMemberPoints;
+            ButtonsSet << eBTDMembership;
+            ButtonsSet << eBTDMemberPurchases;
+            ButtonsSet << eBTDMemberFavourites;
+            ButtonsSet << eBTDMemberPoints;
             ButtonsSet << eBTDThorVouchers;
+            ButtonsSet << eBTDChangeBarcode;
+            ButtonsSet << eBTDRemove;
 
-			ButtonsSet << eBTDRemove;
+
 		}
 		else if (ListItem->ItemType.Contains(itServingCourseDisplay))
 		{
@@ -5498,12 +5509,24 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 		}
 
         if ((ButtonsSet.Contains(eBTDThorVouchers))
-            && (TGlobalSettings::Instance().IsThorlinkSelected || TGlobalSettings::Instance().LoyaltyMateEnabled))
+          && (TGlobalSettings::Instance().IsThorlinkSelected || TGlobalSettings::Instance().LoyaltyMateEnabled))
 		{
 			btngridModify->RowCount++;
 			AnsiString Caption = "Vouchers";
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Caption = Caption;
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Tag = int(eBTDThorVouchers);
+		}
+
+
+        if (ButtonsSet.Contains(eBTDChangeBarcode) &&
+            TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]  &&
+            TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate  &&
+            TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardInserted)
+		{
+			btngridModify->RowCount++;
+			AnsiString Caption = "Assign Barcode";
+			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Caption = Caption;
+			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Tag = int(eBTDChangeBarcode);
 		}
 
 		if (ButtonsSet.Contains(eBTDQty))
@@ -5561,6 +5584,9 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Caption = Caption;
 			btngridModify->Buttons[btngridModify->RowCount - 1][0]->Tag = int(eBTDDiscountDetails);
 		}
+
+
+
 
 		if (ButtonsSet.Contains(eBTDRemove))
 		{
@@ -7401,7 +7427,7 @@ void __fastcall TfrmSelectDish::tgridServingCourseMouseClick(TObject *Sender, TM
 void __fastcall TfrmSelectDish::tbtnUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
 	OnLockOutTimer(NULL);
-    CheckUpdateMenuSetting();
+    //CheckUpdateMenuSetting();
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnChitNumberMouseClick(TObject *)
@@ -7524,10 +7550,6 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
             case 13:
             {
                 OpenTransactionAuditScreen();
-			}break;
-            case 14:
-            {
-                AssignBarcodeToMember();
 			}break;
             case 15:
             {
@@ -7867,6 +7889,7 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
                 if(frmPOSMain->MenuEdited)
                 {
 
+                    WriteMenuUpdateSetting(true); /// update menu variable for multiple pos
                     RedrawMenu();
                     std::auto_ptr<TNetMessageMenuChanged> Request( new TNetMessageMenuChanged );
                     Request->Broadcast         = true;
@@ -7877,7 +7900,6 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
                         Request->Menu_Names[Menu->MenuName] = eMenuAddReplace;
                     }
                     TDeviceRealTerminal::Instance().ManagerNet->SendToAll(Request.get());
-                    WriteMenuUpdateSetting(true); /// update menu variable for multiple pos
                 }
             }
 		else if (frmPOSMain->SendHeldOrders)
@@ -8357,6 +8379,8 @@ void __fastcall TfrmSelectDish::tgridSeatsMouseClick(TObject *Sender, TMouseButt
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 {
+  try
+  {
 	if (SelectedTable == 0)
 	{
 		if (CurrentTender != 0)
@@ -8452,13 +8476,13 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			}
 
  			if(TGlobalSettings::Instance().CaptureCustomerName)
-                          {
-                                TCustNameAndOrderType* CustNameAndOrderType = TCustNameAndOrderType::Instance();
-                                if(!CustNameAndOrderType->IsNameCaught)
-                                {
-                                    CustNameAndOrderType->CatchCustNameAndOrderType(DisplayNameKeypad(), DisplayCustomerTypeReasons(), SeatOrders);
-                                }
-                          }
+              {
+                    TCustNameAndOrderType* CustNameAndOrderType = TCustNameAndOrderType::Instance();
+                    if(!CustNameAndOrderType->IsNameCaught)
+                    {
+                        CustNameAndOrderType->CatchCustNameAndOrderType(DisplayNameKeypad(), DisplayCustomerTypeReasons(), SeatOrders);
+                    }
+              }
 
 			TSaveOrdersTo OrderContainer;
 
@@ -8486,8 +8510,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 				{
 
 					SetReceiptPreview(DBTransaction, frmConfirmOrder->ReceiptDisplay, OrderContainer.Location["TMMTabType"], OrderContainer.Location["ContainerName"],
-						OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
-						OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
+					OrderContainer.Location["TabName"], OrderContainer.Location["PartyName"], OrderContainer.Location["TabKey"], OrderContainer.Location["SelectedTable"],
+					OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
 				}
 
 				if (frmConfirmOrder->ShowModal() != mrOk)
@@ -8687,6 +8711,12 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
 	}
 	RedrawItems();
+  }
+  catch(Exception & E)
+  {
+	 MessageBox(E.Message, "Error", MB_OK + MB_ICONERROR);
+	 TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+  }
 }
 // ---------------------------------------------------------------------------
 int TfrmSelectDish::GetCount(std::vector<TPatronType> patronTypes)
@@ -9243,6 +9273,11 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
 			{
                 std::auto_ptr<TManagerEJournal> managerEJournal(new TManagerEJournal());
                 managerEJournal->TriggerEJournal(true);
+			}break;
+        case 13: // Havana Report
+			{
+                std::auto_ptr<TManagerReportExport> managerReportExport(new TManagerReportExport());
+                managerReportExport->ExportReport(1);
 			}break;
 		}
 	}
@@ -10849,6 +10884,8 @@ std::vector<TPatronType> TfrmSelectDish::GetPatronCount(Database::TDBTransaction
 
 void TfrmSelectDish::completeOrderToChefMate( TPaymentTransaction* inTransaction )
 {
+  try
+  {
     CMC_ERROR error = cmClientManager->SendCompleteOrder(inTransaction);
 	if( error == CMC_ERROR_FAILED )
 	{
@@ -10856,6 +10893,9 @@ void TfrmSelectDish::completeOrderToChefMate( TPaymentTransaction* inTransaction
 					"Chefmate",
 					MB_OK + MB_ICONWARNING);
 	}
+  }
+ catch(Exception & Err)
+   {}
 }
 //---------------------------------------------------------------------------
 void TfrmSelectDish::completeHeldOrdersToChefMate( TPaymentTransaction* inTransaction )
@@ -12299,9 +12339,9 @@ void TfrmSelectDish::YesGoForSessionWithDC(int memPoints, AnsiString memberPoint
             Request->Menu_Names[Menu->MenuName] = eMenuAddReplace;
             TDeviceRealTerminal::Instance().Menus->UpdateMenuChanged(TDeviceRealTerminal::Instance().DBControl,Request.get() );
         }
-
         TDeviceRealTerminal::Instance().Menus->SwapInNewMenus();
-    }}// ---------------------------------------------------------------------------void TfrmSelectDish::HideSoldItems(Database::TDBTransaction &DBTransaction,TList *OrdersList){    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)         {
+    }
+}// ---------------------------------------------------------------------------void TfrmSelectDish::HideSoldItems(Database::TDBTransaction &DBTransaction,TList *OrdersList){    if(TGlobalSettings::Instance().DeleteItemSizeAfterSale)         {
             for (int i = 0; i < OrdersList->Count; i++)
             {
                 TItemComplete *Order = (TItemComplete*)OrdersList->Items[i];
@@ -12452,87 +12492,6 @@ void TfrmSelectDish::WriteMenuUpdateSetting(bool retVal)
     }
 }
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::UpdateMenuEditSetting()
-{
-    try
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-
-        IBInternalQuery->SQL->Text ="UPDATE VARSPROFILE a SET a.INTEGER_VAL =:INTEGER_VAL "
-        " where a.VARIABLES_KEY = 4135 and a.PROFILE_KEY= :PROFILE_KEY "  ;
-        IBInternalQuery->ParamByName("PROFILE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        IBInternalQuery->ParamByName("INTEGER_VAL")->AsInteger = 0;
-        IBInternalQuery->ExecQuery();
-        DBTransaction.Commit();
-    }
-    catch(Exception & E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        throw;
-    }
-}
-// ---------------------------------------------------------------------------
-void TfrmSelectDish::CheckUpdateMenuSetting()
-{
- try
-    {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        TGlobalSettings::Instance().UpdateMenu = ReadMenuUpdateSetting(DBTransaction);
-        if(TGlobalSettings::Instance().UpdateMenu)
-        {
-             UpdateMenuItem(true);
-             UpdateMenuEditSetting();
-        }
-        DBTransaction.Commit();
-    }
-    catch(Exception & E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        throw;
-    }
-}
-// ---------------------------------------------------------------------------
-bool TfrmSelectDish::ReadMenuUpdateSetting(Database::TDBTransaction &DBTransaction)
-{
-    try
-    {
-        bool retVal = false;
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();        IBInternalQuery->SQL->Text =
-                  "SELECT a.INTEGER_VAL FROM VARSPROFILE a where a.VARIABLES_KEY = 4135 and a.PROFILE_KEY= :PROFILE_KEY " ;
-
-        IBInternalQuery->ParamByName("PROFILE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        IBInternalQuery->ExecQuery();
-        if(IBInternalQuery->RecordCount)        {
-            for (;!IBInternalQuery->Eof; IBInternalQuery->Next())
-            {
-                int integral_value = IBInternalQuery->FieldByName("INTEGER_VAL")->AsInteger;
-                if (integral_value > 0)                {                     return retVal = true;                }            }
-        }        return retVal;
-    }
-    catch(Exception & E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        throw;
-    }
-}// ---------------------------------------------------------------------------
-void TfrmSelectDish::UpdateMenuItem(bool displaymessage)
-{
-    RedrawMenu();
-    std::auto_ptr<TNetMessageMenuChanged> Request( new TNetMessageMenuChanged );
-    Request->Broadcast         = false;
-    Request->CompareToDataBase = true;
-    for (int i = 0; i < TDeviceRealTerminal::Instance().Menus->Current->Count; i++)
-    {
-        TListMenu *Menu = TDeviceRealTerminal::Instance().Menus->Current->MenuGet(i);
-        Request->Menu_Names[Menu->MenuName] = eMenuAddReplace;
-    }
-    TDeviceRealTerminal::Instance().Menus->UpdateMenuChanged(TDeviceRealTerminal::Instance().DBControl,Request.get(), displaymessage);
-}
 //-----------------------------------------------------------------------------------------------------------------
 bool  TfrmSelectDish::CheckCreditLimitExceeds(Database::TDBTransaction &dBTransaction, int tabKey)
 {
@@ -12795,13 +12754,14 @@ TItemComplete * TfrmSelectDish::createItemComplete(
      if(isItemUsingPCD)
      {
 		itemComplete->ClaimAvailability();
+        
      }
-    int item_avilability = TDBOrder::CheckItemAvailability(dBTransaction, Item->ItemKey, itemSize->Name);
+    //int item_avilability = TDBOrder::CheckItemAvailability(dBTransaction, Item->ItemKey, itemSize->Name);
     dBTransaction.Commit();
-    if(item_avilability == 0)
+    /*if(item_avilability == 0)
     {
         WriteMenuUpdateSetting(true); /// update menu variable for multiple pos
-    }
+    }*/
 
 	itemComplete->SizeKitchenName = itemSize->SizeKitchenName;
     itemComplete->GSTPercent = itemSize->GSTPercent;
@@ -12988,7 +12948,6 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 
 	CurrentTimeKey = TDBSaleTimes::OpenSaleStartTime(DBTransaction, CurrentTimeKey);
 	itemComplete->TimeKey = CurrentTimeKey;
-
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	return itemComplete;
 
@@ -13971,12 +13930,14 @@ void TfrmSelectDish::AssignBarcodeToMember()
          if (frmCardSwipe->ModalResult == mrOk)
            {
               memberCardCode = AnsiString(frmCardSwipe->SwipeString).SubString(1, 50);
+              if(TDeviceRealTerminal::Instance().ManagerMembership->UpdateMemberCardCode(DBTransaction, TempUserInfo, memberCardCode))
+              {
+                TDBContacts::UpdateMemberCardCodeToDB(DBTransaction, TempUserInfo, memberCardCode);
+                TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->FormatCardToFactory();
+                MessageBox("Please Remove Card From Reader.", "Information", MB_OK);
+              }
            }
-         if(TDeviceRealTerminal::Instance().ManagerMembership->UpdateMemberCardCode(DBTransaction, TempUserInfo, memberCardCode))
-         {
-            TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->FormatCardToFactory();
-            MessageBox("Please Remove Card From Reader.", "Information", MB_OK);
-         }
+
          DBTransaction.Commit();
       }
       else
@@ -14588,4 +14549,10 @@ void TfrmSelectDish::SetPOSBackgroundColor()
         tbtnParkSales->ButtonColor = clWhite;
     }
 
+}
+void TfrmSelectDish::UpdateMenuItemsAfterLoginScreen()
+{
+    RedrawItems();
+    RedrawItemSideCourses();
+    RedrawSetMenuItems();
 }

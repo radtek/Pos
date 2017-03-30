@@ -12,7 +12,8 @@
 #endif
 
 #include "ManagerStock.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include "MMLogging.h"
 #include "ItemRecipe.h"
 #include "ListCourse.h"
@@ -569,20 +570,20 @@ void TManagerStock::GetCourseStockReport(Database::TDBTransaction &DBTransaction
 	{
 		if(!StockInterfaceEnabled)
       {
-         UnicodeString Temp = LoadStr(HTML_START);
+         UnicodeString Temp = HTML_START;
          Temp = AnsiReplaceStr(Temp, "%TITLE%", "Stock System Disabled.");
          html->Add(Temp);
          html->Add("Stock System Disabled.");
-         Temp = LoadStr(HTML_BODY_STOP);
+         Temp = HTML_BODY_STOP;
          html->Add(Temp);
       }
       else
       {
-         UnicodeString TempHeaderRow = LoadStr(CSREPORT_RECEIPE_HEADER_ROW);
-         UnicodeString Temp = LoadStr(CSREPORT_TOP);
+         UnicodeString TempHeaderRow = CSREPORT_RECEIPE_HEADER_ROW;
+         UnicodeString Temp = CSREPORT_TOP;
          html->Add(Temp);
          // Load and repalce Course Section.
-         Temp = LoadStr(CSREPORT_COURSE_ROW);
+         Temp = CSREPORT_COURSE_ROW;
          Temp = AnsiReplaceStr(Temp, "%COURSENAME%", Course->Course_Name);
          html->Add(Temp);
          html->Add(TempHeaderRow);
@@ -595,7 +596,7 @@ void TManagerStock::GetCourseStockReport(Database::TDBTransaction &DBTransaction
             {
                TItemSize *Size = Sizes->SizeGet(j);
                // Load and repalce Item Section and Size.
-               Temp = LoadStr(CSREPORT_ITEM_ROW);
+               Temp = CSREPORT_ITEM_ROW;
                Temp = AnsiReplaceStr(Temp, "%ITEMNAME%", Item->Item);
                Temp = AnsiReplaceStr(Temp, "%SIZENAME%", Size->Name);
                html->Add(Temp);
@@ -647,7 +648,7 @@ void TManagerStock::GetCourseStockReport(Database::TDBTransaction &DBTransaction
                }
             }
          }
-         Temp = LoadStr(CSREPORT_BOTTOM);
+         Temp = CSREPORT_BOTTOM;
          html->Add(Temp);
       }
 	}

@@ -61,9 +61,10 @@ void __fastcall TfrmTierLevel::FormResize(TObject *Sender)
 
 void __fastcall TfrmTierLevel::btnAddMouseClick(TObject *Sender)
 {
-    std::auto_ptr<TfrmTierLevelEditor>(frmTierLevelEditor)(TfrmTierLevelEditor::Create<TfrmTierLevelEditor>(this,TDeviceRealTerminal::Instance().DBControl));
+    TfrmTierLevelEditor*  frmTierLevelEditor = new TfrmTierLevelEditor(this,TDeviceRealTerminal::Instance().DBControl);
     frmTierLevelEditor->IsEditMode = false;
     frmTierLevelEditor->ShowModal();
+    delete  frmTierLevelEditor;
     PopulateTierLevels();
 }
 // --------------------------------------------------------------------------
@@ -72,10 +73,11 @@ void __fastcall TfrmTierLevel::btnEditMouseClick(TObject *Sender)
 {
   if(SelectedTierKey !=0)
    {
-        std::auto_ptr<TfrmTierLevelEditor>(frmTierLevelEditor)(TfrmTierLevelEditor::Create<TfrmTierLevelEditor>(this,TDeviceRealTerminal::Instance().DBControl));
+        TfrmTierLevelEditor*  frmTierLevelEditor = new TfrmTierLevelEditor(this,TDeviceRealTerminal::Instance().DBControl);
         frmTierLevelEditor->IsEditMode = true;
         frmTierLevelEditor->TierId = SelectedTierKey;
         frmTierLevelEditor->ShowModal();
+        delete  frmTierLevelEditor;
         PopulateTierLevels();
    }
    else

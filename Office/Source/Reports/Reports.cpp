@@ -5804,7 +5804,7 @@ void TfrmReports::PrintConsumption(TReportControl *ReportControl)
 				if (ReportType == rtExcel)
 				{
 					std::auto_ptr<TStringList> ExcelDataSetsList(new TStringList());
-					ExcelDataSetsList->AddObject("Consumption",(TObject *)dmMMReportData->qrConsumption);
+					ExcelDataSetsList->AddObject("Consumption",(TObject *)dmMMReportData->qrDayConsumption);
 					ExportToExcel( ExcelDataSetsList.get(),TreeView1->Selected->Text );
 				}
                 else
@@ -6615,7 +6615,7 @@ void TfrmReports::GetInvoiceFilter(TReportFilter *ReportFilter)
 
     SQL->Text =
         "SELECT DISTINCT "
-            "groups.name Name, contacts.name Contactname "
+            "groups.name Name, (contacts.Name ||' '|| contacts.LAST_NAME) ContactName "
         "from "
             "contactgroups "
             "left join groups on contactgroups.groups_key = groups.groups_key "

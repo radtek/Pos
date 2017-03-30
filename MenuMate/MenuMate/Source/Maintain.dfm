@@ -963,6 +963,23 @@ object frmMaintain: TfrmMaintain
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = TouchBtnThorlinkClick
           end
+          object TouchBtnSecurity: TTouchBtn
+            Left = 247
+            Top = 520
+            Font.Charset = THAI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ParentColor = True
+            Caption = 'Security'
+            ButtonColor = 6052441
+            LatchedColor = clBtnFace
+            DisabledButtonColor = clBtnFace
+            LatchingProperties = [lkLatchColor, lkStayDown]
+            OnMouseClick = TouchBtnSecurityMouseClick
+          end
         end
         object Panel16: TPanel
           Left = 1

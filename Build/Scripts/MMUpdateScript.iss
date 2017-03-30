@@ -88,6 +88,10 @@ Source: {#GetEnv('BASEDIR')}\Static Files\zip.exe; DestDir: {app}; Flags: ignore
 
 Source: {#GetEnv('BASEDIR')}\Static Files\Palm\MenuMate Bluetooth.prc; DestDir: {app}\Palm; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\CASMCARD.DLL; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\dac140.bpl; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\unidac140.bpl; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\msprovider140.bpl; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\tdsprovider140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\porttalk.sys; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\help\vncviewer.exe; DestDir: {app}\help; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\help\winvnc.exe; DestDir: {app}\help; Flags: ignoreversion

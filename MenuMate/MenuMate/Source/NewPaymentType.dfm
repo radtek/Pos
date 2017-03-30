@@ -1223,6 +1223,37 @@ object frmNewPaymentType: TfrmNewPaymentType
             OnClick = cbRMSInterfaceClick
           end
         end
+        object GroupBox12: TGroupBox
+          Left = 510
+          Top = 510
+          Width = 240
+          Height = 70
+          Caption = 'Blind Balance'
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentBackground = False
+          ParentFont = False
+          TabOrder = 7
+          object cbAutoPopulateBlindBalance: TCheckBox
+            Left = 10
+            Top = 24
+            Width = 220
+            Height = 33
+            Caption = 'Auto Populate Blind Balance'
+            Color = clNavy
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentColor = False
+            ParentFont = False
+            TabOrder = 0
+          end
+        end
         object tbTabLink: TTouchBtn
           Left = 757
           Top = 58

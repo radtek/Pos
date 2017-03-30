@@ -4,11 +4,6 @@
 #pragma hdrstop
 
 #include "EftposCadmusCronos.h"
-
-//---------------------------------------------------------------------------
-
-#pragma package(smart_init)
-#pragma link "CadmusEftposLib_OCX"
 #include "Enum.h"
 #include "Comms.h"
 #include "Printout.h"
@@ -17,12 +12,10 @@
 #include "DropDown.h"
 #include "DropDownVar.h"
 #include "CSV.h"
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-//                             TEftPosCadmus
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+#pragma package(smart_init)
+#pragma link "CadmusEftposLib_OCX"
+
 
 TStateResultMsg::TStateResultMsg()
 {

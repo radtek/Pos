@@ -92,6 +92,7 @@ void __fastcall TfrmNewPaymentType::pnlOkClick(TObject *Sender)
 	  Payment.CVSWriteLocation = CVSWriteLocation;
       Payment.TabKey  =TabKey;
       Payment.GLCode = GLCode;
+      Payment.AutoPopulateBlindBalance = cbAutoPopulateBlindBalance->Checked;
 	  if (cbIsTip->Checked)
 		 Payment.Properties |= ePayTypeCustomSurcharge;
 	  if (cbOpendrawer->Checked)
@@ -198,326 +199,333 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
    tbPayment->ButtonColor = clNavy;
    if (PaymentKey != 0)
    {
-	  Database::TDBTransaction DBTransaction(DBControl);
-	  DBTransaction.StartTransaction();
-	  PaymentSystem->PaymentLoad(DBTransaction, PaymentKey, Payment);
-	  DBTransaction.Commit();
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        PaymentSystem->PaymentLoad(DBTransaction, PaymentKey, Payment);
+        DBTransaction.Commit();
 
-	  btnName->Caption = Payment.Name;
-	  btnName->ButtonColor = static_cast <TColor> (Payment.Colour);
-	  PaymentPos = Payment.DisplayOrder;
-	  PaymentGroup = Payment.GroupNumber;
-	  ExchangeRate = 0.0;
-	  Reason = Payment.AdjustmentReason;
-	  PaymentThirdPartyID = Payment.PaymentThirdPartyID;
-	  //FixedVoucherCode = Payment.FixedVoucherCode;
-	  VoucherMerchantID = Payment.VoucherMerchantID;
-	  SecondaryPMSIPAddress = Payment.SecondaryPMSIPAddress;
-	  SecondaryPMSPortNumber = Payment.SecondaryPMSPortNumber;
-	  CVSReadLocation = Payment.CVSReadLocation;
-	  CVSWriteLocation = Payment.CVSWriteLocation;
-	  TaxRate = Payment.TaxRate;
-	  RoundTo = Payment.RoundTo;
-	  SurchargeIsAPercentAdjust = false;
-     // UniURL = Payment.UniVoucherURL;
-      UniUser = Payment.UniVoucherUser;
-      UniPass = Payment.UniVoucherPass;
-      TabKey  = Payment.TabKey;
-      GLCode  = Payment.GLCode;
+        btnName->Caption = Payment.Name;
+        btnName->ButtonColor = static_cast <TColor> (Payment.Colour);
+        PaymentPos = Payment.DisplayOrder;
+        PaymentGroup = Payment.GroupNumber;
+        ExchangeRate = 0.0;
+        Reason = Payment.AdjustmentReason;
+        PaymentThirdPartyID = Payment.PaymentThirdPartyID;
+        //FixedVoucherCode = Payment.FixedVoucherCode;
+        VoucherMerchantID = Payment.VoucherMerchantID;
+        SecondaryPMSIPAddress = Payment.SecondaryPMSIPAddress;
+        SecondaryPMSPortNumber = Payment.SecondaryPMSPortNumber;
+        CVSReadLocation = Payment.CVSReadLocation;
+        CVSWriteLocation = Payment.CVSWriteLocation;
+        TaxRate = Payment.TaxRate;
+        RoundTo = Payment.RoundTo;
+        SurchargeIsAPercentAdjust = false;
+        // UniURL = Payment.UniVoucherURL;
+        UniUser = Payment.UniVoucherUser;
+        UniPass = Payment.UniVoucherPass;
+        TabKey  = Payment.TabKey;
+        GLCode  = Payment.GLCode;
+        cbAutoPopulateBlindBalance->Checked = Payment.AutoPopulateBlindBalance;;
 
 
-	  if (Payment.PercentAdjust != 0)
-	  {
-		 SurchargeIsAPercentAdjust = true;
-		 SurchargeAmount = Payment.PercentAdjust;
-	  }
-	  else if (Payment.AmountAdjust != 0)
-	  {
-		 SurchargeAmount = Payment.AmountAdjust;
-	  }
+        if (Payment.PercentAdjust != 0)
+        {
+            SurchargeIsAPercentAdjust = true;
+            SurchargeAmount = Payment.PercentAdjust;
+        }
+        else if (Payment.AmountAdjust != 0)
+        {
+            SurchargeAmount = Payment.AmountAdjust;
+        }
 
-	  if (Reason != "")
-	  {
-		 if (SurchargeIsAPercentAdjust)
-		 {
-			if (SurchargeAmount > 0)
-			{
-			   cbSurcharge->Caption = Reason + "\rDiscount " + FloatToStrF(fabs(SurchargeAmount), ffGeneral, 15, 2) + "%";
-			}
-			else
-			{
-			   cbSurcharge->Caption = Reason + "\rSurcharge " + FloatToStrF(fabs(SurchargeAmount), ffGeneral, 15, 2) + "%";
-			}
-		 }
-		 else
-		 {
-			if (SurchargeAmount > 0)
-			{
-			   cbSurcharge->Caption = Reason + "\rDiscount " + FloatToStrF(fabs(SurchargeAmount), ffCurrency, 15, 2);
-			}
-			else
-			{
-			   cbSurcharge->Caption = Reason + "\rSurcharge " + FloatToStrF(fabs(SurchargeAmount), ffCurrency, 15, 2);
-			}
-		 }
-	  }
-	  else
-	  {
-		 cbSurcharge->Caption = "Payment type Surcharge";
-	  }
+        if (Reason != "")
+        {
+            if (SurchargeIsAPercentAdjust)
+            {
+                if (SurchargeAmount > 0)
+                {
+                    cbSurcharge->Caption = Reason + "\rDiscount " + FloatToStrF(fabs(SurchargeAmount), ffGeneral, 15, 2) + "%";
+                }
+                else
+                {
+                    cbSurcharge->Caption = Reason + "\rSurcharge " + FloatToStrF(fabs(SurchargeAmount), ffGeneral, 15, 2) + "%";
+                }
+            }
+            else
+            {
+                if (SurchargeAmount > 0)
+                {
+                    cbSurcharge->Caption = Reason + "\rDiscount " + FloatToStrF(fabs(SurchargeAmount), ffCurrency, 15, 2);
+                }
+                else
+                {
+                    cbSurcharge->Caption = Reason + "\rSurcharge " + FloatToStrF(fabs(SurchargeAmount), ffCurrency, 15, 2);
+                }
+            }
+        }
+        else
+        {
+            cbSurcharge->Caption = "Payment type Surcharge";
+        }
 
-	  tbExchange->Caption = "Exchange Rate \r" + FloatToStrF(ExchangeRate, ffGeneral, 5, 4);
-	  tbPosition->Caption = "Position  \r" + IntToStr(PaymentPos);
-	  tbGroupNumber->Caption = "Group Number\r" + IntToStr(PaymentGroup);
-	  tbThirdPartyID->Caption = "Third Party Payment ID\r" + PaymentThirdPartyID;
-	  //tbtnFixedVoucherCode->Caption = "Fixed Voucher Code\r" + FixedVoucherCode;
-	  tbtnVoucherMerchant->Caption = "Voucher Merchant ID\r" + VoucherMerchantID;
-	  tbtnSecondaryIPAddress->Caption = "Seconday PMS IP Address\r" + SecondaryPMSIPAddress;
-	  tbtnSecondaryPMSPort->Caption = "Secondary PMS Port\r" + IntToStr(SecondaryPMSPortNumber);
-	  tbSurchargeTaxRate->Caption = "Surcharge Tax Rate \r" + FloatToStrF(fabs(TaxRate), ffGeneral, 15, 2) + "%";
-	  tbRounding->Caption = "Round To\r" + FormatFloat("$0.00", RoundTo);
-     if(GLCode == "")
-           tbGLCode->Caption = "GL Code";
-      else
-          tbGLCode->Caption = "GL Code\r" +  GLCode;
-      DBTransaction.StartTransaction();
-      TabName   = TDBTab::GetTabName(DBTransaction,TabKey);
-      DBTransaction.Commit();
-      if(TabName == "")
-          tbTabLink->Caption = "Tab Link";
-      else
-          tbTabLink->Caption = "Tab Link \r" + TabName;
-	  double R, G, B; // input RGB values
-	  R = GetRValue(btnName->Color);
-	  G = GetGValue(btnName->Color);
-	  B = GetBValue(btnName->Color);
-	  double L = (0.2126 * R) + (0.7152 * G) + (0.0722 * B);
-	  if (L > 128)
-	  {
-		 btnName->Font->Color = clBlack;
-	  }
-	  else
-	  {
-		 btnName->Font->Color = clWhite;
-	  }
+        tbExchange->Caption = "Exchange Rate \r" + FloatToStrF(ExchangeRate, ffGeneral, 5, 4);
+        tbPosition->Caption = "Position  \r" + IntToStr(PaymentPos);
+        tbGroupNumber->Caption = "Group Number\r" + IntToStr(PaymentGroup);
+        tbThirdPartyID->Caption = "Third Party Payment ID\r" + PaymentThirdPartyID;
+        //tbtnFixedVoucherCode->Caption = "Fixed Voucher Code\r" + FixedVoucherCode;
+        tbtnVoucherMerchant->Caption = "Voucher Merchant ID\r" + VoucherMerchantID;
+        tbtnSecondaryIPAddress->Caption = "Seconday PMS IP Address\r" + SecondaryPMSIPAddress;
+        tbtnSecondaryPMSPort->Caption = "Secondary PMS Port\r" + IntToStr(SecondaryPMSPortNumber);
+        tbSurchargeTaxRate->Caption = "Surcharge Tax Rate \r" + FloatToStrF(fabs(TaxRate), ffGeneral, 15, 2) + "%";
+        tbRounding->Caption = "Round To\r" + FormatFloat("$0.00", RoundTo);
 
-	  int Properties = Payment.Properties;
+        if(GLCode == "")
+            tbGLCode->Caption = "GL Code";
+        else
+            tbGLCode->Caption = "GL Code\r" +  GLCode;
 
-	  if (Properties & ePayTypeSurcharge)
-	  {
-		 cbSurcharge->OnClick = NULL;
-		 cbSurcharge->Checked = true;
-		 cbSurcharge->OnClick = cbSurchargeClick;
-	  }
-	  else
-	  {
-		 cbSurcharge->Checked = false;
-	  }
+        DBTransaction.StartTransaction();
+        TabName   = TDBTab::GetTabName(DBTransaction,TabKey);
+        DBTransaction.Commit();
 
-	  if (Properties & ePayTypeOpensCashDrawer)
-		 cbOpendrawer->Checked = true;
-	  else
-		 cbOpendrawer->Checked = false;
-	  cbIsTip->OnClick = NULL;
-	  if (Properties & ePayTypeCustomSurcharge)
-		 cbIsTip->Checked = true;
-	  else
-		 cbIsTip->Checked = false;
-	  cbIsTip->OnClick = cbIsTipClick;
-	  if (Properties & ePayTypeAllowCashOut)
-		 cbCashOut->Checked = true;
-	  else
-		 cbCashOut->Checked = false;
-	  if (Properties & ePayTypeCash)
-		{
-        cbIsCash->Checked = true;
-          tbTabLink->Enabled=false;
-      }
-	  else
-      {
-		 cbIsCash->Checked = false;
-         tbTabLink->Enabled=true;
-       }
-	  if (Properties & ePayTypeElectronicTransaction)
-		 cbElectronicTransaction->Checked = true;
-	  else
-		 cbElectronicTransaction->Checked = false;
-	  if (Properties & ePayTypeCheckAccepted)
-		 cbCheckAccepted->Checked = true;
-	  else
-		 cbCheckAccepted->Checked = false;
-	  if (Properties & ePayTypeGetVoucherDetails)
-		 cbGetVoucherDetails->Checked = true;
-	  else
-		 cbGetVoucherDetails->Checked = false;
-	  if (Properties & ePayTypeGetCardDetails)
-		 cbGetCardDetails->Checked = true;
-	  else
-		 cbGetCardDetails->Checked = false;
-	  if (Properties & ePayTypeTaxFree)
-	  {
-		 cbTaxFree->Checked = true;
-	  }
-	  else
-	  {
-		 cbTaxFree->Checked = false;
-	  }
-	  if (Properties & ePayTypeReqNote)
-	  {
-		 cbReqNote->Checked = true;
-	  }
-	  else
-	  {
-		 cbReqNote->Checked = false;
-	  }
-	  if (Properties & ePayTypeSecure1)
-	  {
-		 cbSec1->Checked = true;
-	  }
-	  else
-	  {
-		 cbSec1->Checked = false;
-	  }
-	  if (Properties & ePayTypeSecure2)
-	  {
-		 cbSec2->Checked = true;
-	  }
-	  else
-	  {
-		 cbSec2->Checked = false;
-	  }
-	  if (Properties & ePayTypeSecure3)
-	  {
-		 cbSec3->Checked = true;
-	  }
-	  else
-	  {
-		 cbSec3->Checked = false;
-	  }
-	  if (Properties & ePayTypeCSV)
-	  {
-		 cbCSVPaymentType->Checked = true;
-	  }
-	  else
-	  {
-		 cbCSVPaymentType->Checked = false;
-	  }
-	  if (Properties & ePayTypePocketVoucher)
-	  {
-		 cbPocketVoucher->Checked = true;
-	  }
-	  else
-	  {
-		 cbPocketVoucher->Checked = false;
-	  }
-	  if (Properties & ePayTypeRoomInterface)
-	  {
-		 tbRoomPayment->Checked = true;
-	  }
-	  else
-	  {
-		 tbRoomPayment->Checked = false;
-	  }
+        if(TabName == "")
+            tbTabLink->Caption = "Tab Link";
+        else
+            tbTabLink->Caption = "Tab Link \r" + TabName;
 
-	  if (Properties & ePayTypeIntegratedEFTPOS)
-	  {
-		 cbIntegrated->Checked = true;
-	  }
-	  else
-	  {
-		 cbIntegrated->Checked = false;
-	  }
-	  if (Properties & ePayTypeAllowReversal)
-	  {
-		 cbAllowReversal->Checked = true;
-	  }
-	  else
-	  {
-		 cbAllowReversal->Checked = false;
-	  }
-	  if (Properties & ePayTypeAllowMANPAN)
-	  {
-		 cbAllowManPan->Checked = true;
-	  }
-	  else
-	  {
-		 cbAllowManPan->Checked = false;
-	  }
-	  if (Properties & ePayTypeCheckSignature)
-	  {
-		 cbCheckSig->Checked = true;
-	  }
-	  else
-	  {
-		 cbCheckSig->Checked = false;
-	  }
-	  if (Properties & ePayTypeChequeVerify)
-	  {
-		 tbChequeVerify->Checked = true;
-	  }
-	  else
-	  {
-		 tbChequeVerify->Checked = false;
-	  }
-	  if (Properties & ePayTypeInvoiceExport)
-	  {
-		 tbInvoiceInterface->Checked = true;
-	  }
-	  else
-	  {
-		 tbInvoiceInterface->Checked = false;
-	  }
-	  if (Properties & ePayTypeDispPVMsg)
-	  {
-		 cbPVAcceptedMsg->Checked = true;
-	  }
-	  else
-	  {
-		 cbPVAcceptedMsg->Checked = false;
-	  }
-      if(TGlobalSettings::Instance().IsXeroEnabled)
-      {
-          if (Properties & ePayTypeChargeToAccount)
-          {
-            CheckBoxExport->Checked = true;
-          }
-          else
-          {
+        double R, G, B; // input RGB values
+        R = GetRValue(btnName->Color);
+        G = GetGValue(btnName->Color);
+        B = GetBValue(btnName->Color);
+        double L = (0.2126 * R) + (0.7152 * G) + (0.0722 * B);
+        if (L > 128)
+        {
+            btnName->Font->Color = clBlack;
+        }
+        else
+        {
+            btnName->Font->Color = clWhite;
+        }
+
+        int Properties = Payment.Properties;
+
+        if (Properties & ePayTypeSurcharge)
+        {
+            cbSurcharge->OnClick = NULL;
+            cbSurcharge->Checked = true;
+            cbSurcharge->OnClick = cbSurchargeClick;
+        }
+        else
+        {
+            cbSurcharge->Checked = false;
+        }
+
+        if (Properties & ePayTypeOpensCashDrawer)
+            cbOpendrawer->Checked = true;
+        else
+            cbOpendrawer->Checked = false;
+        cbIsTip->OnClick = NULL;
+        if (Properties & ePayTypeCustomSurcharge)
+            cbIsTip->Checked = true;
+        else
+            cbIsTip->Checked = false;
+        cbIsTip->OnClick = cbIsTipClick;
+        if (Properties & ePayTypeAllowCashOut)
+            cbCashOut->Checked = true;
+        else
+            cbCashOut->Checked = false;
+        if (Properties & ePayTypeCash)
+        {
+            cbIsCash->Checked = true;
+            tbTabLink->Enabled=false;
+        }
+        else
+        {
+            cbIsCash->Checked = false;
+            tbTabLink->Enabled=true;
+        }
+        if (Properties & ePayTypeElectronicTransaction)
+            cbElectronicTransaction->Checked = true;
+        else
+            cbElectronicTransaction->Checked = false;
+        if (Properties & ePayTypeCheckAccepted)
+            cbCheckAccepted->Checked = true;
+        else
+            cbCheckAccepted->Checked = false;
+        if (Properties & ePayTypeGetVoucherDetails)
+            cbGetVoucherDetails->Checked = true;
+        else
+            cbGetVoucherDetails->Checked = false;
+        if (Properties & ePayTypeGetCardDetails)
+            cbGetCardDetails->Checked = true;
+        else
+            cbGetCardDetails->Checked = false;
+        if (Properties & ePayTypeTaxFree)
+        {
+            cbTaxFree->Checked = true;
+        }
+        else
+        {
+            cbTaxFree->Checked = false;
+        }
+        if (Properties & ePayTypeReqNote)
+        {
+            cbReqNote->Checked = true;
+        }
+        else
+        {
+            cbReqNote->Checked = false;
+        }
+        if (Properties & ePayTypeSecure1)
+        {
+            cbSec1->Checked = true;
+        }
+        else
+        {
+            cbSec1->Checked = false;
+        }
+        if (Properties & ePayTypeSecure2)
+        {
+            cbSec2->Checked = true;
+        }
+        else
+        {
+            cbSec2->Checked = false;
+        }
+        if (Properties & ePayTypeSecure3)
+        {
+            cbSec3->Checked = true;
+        }
+        else
+        {
+            cbSec3->Checked = false;
+        }
+        if (Properties & ePayTypeCSV)
+        {
+            cbCSVPaymentType->Checked = true;
+        }
+        else
+        {
+            cbCSVPaymentType->Checked = false;
+        }
+        if (Properties & ePayTypePocketVoucher)
+        {
+            cbPocketVoucher->Checked = true;
+        }
+        else
+        {
+            cbPocketVoucher->Checked = false;
+        }
+        if (Properties & ePayTypeRoomInterface)
+        {
+            tbRoomPayment->Checked = true;
+        }
+        else
+        {
+            tbRoomPayment->Checked = false;
+        }
+
+        if (Properties & ePayTypeIntegratedEFTPOS)
+        {
+            cbIntegrated->Checked = true;
+        }
+        else
+        {
+            cbIntegrated->Checked = false;
+        }
+        if (Properties & ePayTypeAllowReversal)
+        {
+            cbAllowReversal->Checked = true;
+        }
+        else
+        {
+            cbAllowReversal->Checked = false;
+        }
+        if (Properties & ePayTypeAllowMANPAN)
+        {
+            cbAllowManPan->Checked = true;
+        }
+        else
+        {
+            cbAllowManPan->Checked = false;
+        }
+        if (Properties & ePayTypeCheckSignature)
+        {
+            cbCheckSig->Checked = true;
+        }
+        else
+        {
+            cbCheckSig->Checked = false;
+        }
+        if (Properties & ePayTypeChequeVerify)
+        {
+            tbChequeVerify->Checked = true;
+        }
+        else
+        {
+            tbChequeVerify->Checked = false;
+        }
+        if (Properties & ePayTypeInvoiceExport)
+        {
+            tbInvoiceInterface->Checked = true;
+        }
+        else
+        {
+            tbInvoiceInterface->Checked = false;
+        }
+        if (Properties & ePayTypeDispPVMsg)
+        {
+            cbPVAcceptedMsg->Checked = true;
+        }
+        else
+        {
+            cbPVAcceptedMsg->Checked = false;
+        }
+        if(TGlobalSettings::Instance().IsXeroEnabled)
+        {
+            if (Properties & ePayTypeChargeToAccount)
+            {
+                CheckBoxExport->Checked = true;
+            }
+            else
+            {
+                CheckBoxExport->Checked = false;
+            }
+        }
+        else
+        {
+            CheckBoxExport->Enabled = false;
             CheckBoxExport->Checked = false;
-          }
-      }
-      else
-      {
-        CheckBoxExport->Enabled = false;
-      }
+        }
 
 
-      if(TGlobalSettings::Instance().IsXeroEnabled)
-      {
-          if(Properties & ePayTypeChargeToXero)
-          {
-            tbChargeToXero->Checked = true;
-          }
-          else
-          {
+        if(TGlobalSettings::Instance().IsXeroEnabled)
+        {
+            if(Properties & ePayTypeChargeToXero)
+            {
+                tbChargeToXero->Checked = true;
+            }
+            else
+            {
+                tbChargeToXero->Checked = false;
+            }
+        }
+        else
+        {
+            tbChargeToXero->Enabled = false;
             tbChargeToXero->Checked = false;
-          }
-      }
-      else
-      {
-        tbChargeToXero->Enabled = false;
-      }
+        }
 
-	 if(Payment.Properties & ePayTypeRMSInterface)
-	 {
-		 cbRMSInterface->Checked = true;
-	 }
-	 else
-	 {
-		cbRMSInterface->Checked = false;
-	 }
+        if(Payment.Properties & ePayTypeRMSInterface)
+        {
+            cbRMSInterface->Checked = true;
+        }
+        else
+        {
+            cbRMSInterface->Checked = false;
+        }
 
-	 cbAllowTips->Checked = Payment.Properties & ePayTypeAllowTips ? true : false;
+	  cbAllowTips->Checked = Payment.Properties & ePayTypeAllowTips ? true : false;
 	  tbtnUniUser->Caption = "Universal User\r" + UniUser;
 	  tbtnUniPass->Caption = "Universal Password\r" + UniPass;
    }
@@ -529,6 +537,8 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
 	  cbCashOut->Checked = false;
 	  RoundTo = MIN_CURRENCY_VALUE;
 	  tbRounding->Caption = "Round To\r" + FormatFloat("$0.00", RoundTo);
+      tbChargeToXero->Enabled =  TGlobalSettings::Instance().IsXeroEnabled;
+      CheckBoxExport->Enabled =  TGlobalSettings::Instance().IsXeroEnabled;
    }
 }
 

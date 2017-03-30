@@ -12,7 +12,7 @@
 #include "DeviceWeb.h"
 #include "FileCtrl.hpp"
 #ifdef MenuMate
-#include "DeviceRealTerminal.h"
+//#include "DeviceRealTerminal.h"
 
 #endif
 #ifdef  PalmMate
@@ -55,6 +55,7 @@
 #include "DBTables.h"
 #include "GroupGUI.h"
 #include "DBGroups.h"
+#include "ManagerPanasonic.h"
 
 //#include "VerticalSelect.h"
 #include "ManagerPatron.h"
@@ -3548,11 +3549,13 @@ void TfrmMaintain::SaveAccountingConfig(AccountingType accountingType)
             if(accountingType == eAccountingXero)
             {
                 TGlobalSettings::Instance().IsXeroEnabled = false;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsXeroEnabled, TGlobalSettings::Instance().IsXeroEnabled);
     			MessageBox("Failed to save Xero Integration configuration. " + TFolderManager::Instance().LastErrorMsg, "Error", MB_OK);
             }
             else
             {
                 TGlobalSettings::Instance().IsMYOBEnabled = false;
+                TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsMYOBEnabled);
                 MessageBox("Failed to save MYOB Integration configuration. " + TFolderManager::Instance().LastErrorMsg, "Error", MB_OK);
             }
         }
@@ -3585,7 +3588,6 @@ void __fastcall TfrmMaintain::TouchBtnRunRateBoardMouseClick(TObject *Sender)
 	{
 		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 	}
-
 }
 //---------------------------------------------------------------------------
 void TfrmMaintain::SetupGLCodes()
@@ -3602,6 +3604,7 @@ void TfrmMaintain::SetupGLCodes()
   frmSetupGlCodes->FloatGLCode = TGlobalSettings::Instance().FloatGLCode;
   frmSetupGlCodes->EftPosTip = TGlobalSettings::Instance().EftPosTipGLCode;
   frmSetupGlCodes->CashWithdrawal = TGlobalSettings::Instance().CashWithdrawalGLCode;
+  frmSetupGlCodes->CashVariance = TGlobalSettings::Instance().CashVarianceGLCode;
   if(frmSetupGlCodes->ShowModal() == mrOk)
    {
         TGlobalSettings::Instance().PointsPurchasedGLCode = frmSetupGlCodes->PointsPurchased;
@@ -3615,6 +3618,7 @@ void TfrmMaintain::SetupGLCodes()
         TGlobalSettings::Instance().FloatGLCode = frmSetupGlCodes->FloatGLCode ;
         TGlobalSettings::Instance().EftPosTipGLCode = frmSetupGlCodes->EftPosTip;
         TGlobalSettings::Instance().CashWithdrawalGLCode = frmSetupGlCodes->CashWithdrawal;
+        TGlobalSettings::Instance().CashVarianceGLCode = frmSetupGlCodes->CashVariance;
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmPointsPurchasedGLCode, TGlobalSettings::Instance().PointsPurchasedGLCode );
@@ -3628,6 +3632,7 @@ void TfrmMaintain::SetupGLCodes()
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmFloatGLCode, TGlobalSettings::Instance().FloatGLCode );
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmEftPosTipGLCode, TGlobalSettings::Instance().EftPosTipGLCode);
         TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmCashWithdrawal, TGlobalSettings::Instance().CashWithdrawalGLCode);
+        TManagerVariable::Instance().SetDeviceStr( DBTransaction, vmCashVariance, TGlobalSettings::Instance().CashVarianceGLCode);
         DBTransaction.Commit();
    }
    delete frmSetupGlCodes;
@@ -3766,5 +3771,181 @@ void TfrmMaintain::PeachTreeSettings()
     }
 }
 //------------------------------------------------------------------------------------------
+void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
+{
+    std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+    TVerticalSelection Item;
+    Item.Title = "Cancel";
+    Item.Properties["Color"] = "0x000098F5";
+    Item.Properties["FontColor"] = IntToStr(clWhite);;
+    Item.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item);
+
+
+    TVerticalSelection Item1;
+    Item1.Title = "Panasonic ";
+    Item1.Properties["Action"] = IntToStr(1);
+    Item1.Properties["Color"] = IntToStr(clGreen);
+    Item1.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
+    Item1.CloseSelection = true;
+    SelectionForm1->Items.push_back(Item1);
+
+    SelectionForm1->ShowModal();
+    TVerticalSelection SelectedItem1;
+    if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+    {
+        int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+        switch(Action)
+        {
+            case 1 :
+                EnablePanasonicIntegration();
+                break;
+        }
+    }
+
+    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+            TManagerPanasonic::Instance()->TriggerTransactionSync();
+}
+//-------------------------------------------------------------------------------------
+
+void TfrmMaintain::EnablePanasonicIntegration()
+{
+    bool keepFormAlive = true;
+    while(keepFormAlive)
+    {
+        //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+
+         std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.Properties["FontColor"] = IntToStr(clWhite);;
+        Item.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item);
+
+        TVerticalSelection Item1;
+        Item1.Title = UnicodeString("Enable/Disable \r") + UnicodeString((TGlobalSettings::Instance().IsRunRateBoardEnabled? "Enabled" : "Disabled"));
+        Item1.Properties["Action"] = IntToStr(1);
+
+        if( TGlobalSettings::Instance().IsPanasonicIntegrationEnabled )
+        {
+            Item1.Properties["Color"] = IntToStr(clGreen);
+        }
+        else
+        {
+            Item1.Properties["Color"] = IntToStr(clRed);
+        }
+
+        Item1.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item1);
+
+        TVerticalSelection Item2;
+        Item2.Title = "Server IP \r" + TGlobalSettings::Instance().PanasonicServerIP;
+        Item2.Properties["Action"] = IntToStr(2);
+        Item2.Properties["Color"] = IntToStr(clNavy);
+        Item2.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item2);
+
+        SelectionForm1->ShowModal();
+        TVerticalSelection SelectedItem1;
+        if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+            switch(Action)
+            {
+                case 1 :
+                    SaveEnabledState(dbTransaction);
+                    break;
+                case 2 :
+                    SaveServerIp(dbTransaction);
+            }
+            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
+        }
+        else
+        {
+            keepFormAlive = false;
+            if((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP == "") )
+            {
+                TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
+                TGlobalSettings::Instance().PanasonicServerIP = "";
+            }
+            TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmPanasonicServerIP,TGlobalSettings::Instance().PanasonicServerIP);
+            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
+        }
+        dbTransaction.Commit();
+    }
+}
+//-------------------------------------------------------------------------------------------------------
+void TfrmMaintain::SaveServerIp(Database::TDBTransaction &dbTransaction)
+{
+    std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+    frmTouchKeyboard->MaxLength = 200;
+    frmTouchKeyboard->AllowCarriageReturn = false;
+    frmTouchKeyboard->StartWithShiftDown = false;
+    frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().PanasonicServerIP;
+    frmTouchKeyboard->Caption = "Panasonic Server IP Address";
+    if (frmTouchKeyboard->ShowModal() == mrOk)
+    {
+        TGlobalSettings::Instance().PanasonicServerIP = frmTouchKeyboard->KeyboardText;
+        TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmPanasonicServerIP,TGlobalSettings::Instance().PanasonicServerIP);
+    }
+}
+//-----------------------------------------------------------------------------------------------------------
+void TfrmMaintain::SaveEnabledState(Database::TDBTransaction &dbTransaction)
+{
+    if(TGlobalSettings::Instance().PanasonicServerIP != "")
+    {
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.Properties["FontColor"] = IntToStr(clWhite);;
+        Item.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item);
+
+        TVerticalSelection Item1;
+        Item1.Title = "Enable";
+        Item1.Properties["Action"] = IntToStr(1);
+        Item1.Properties["Color"] = IntToStr(clGreen);
+        Item1.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item1);
+
+        TVerticalSelection Item2;
+        Item2.Title = "Disable";
+        Item2.Properties["Action"] = IntToStr(2);
+        Item2.Properties["Color"] = IntToStr(clRed);
+        Item2.CloseSelection = true;
+        SelectionForm1->Items.push_back(Item2);
+
+        SelectionForm1->ShowModal();
+        TVerticalSelection SelectedItem1;
+
+         if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+            switch(Action)
+            {
+                case 1 :
+
+                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = true;
+                    break;
+                case 2 :
+                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
+                    break;
+            }
+            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
+        }
+    }
+    else
+    {
+        MessageBox("Please Set Server IP First.", "Error", MB_OK + MB_ICONERROR);
+    }
+}
 
 

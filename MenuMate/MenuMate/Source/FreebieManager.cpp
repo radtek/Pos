@@ -6,7 +6,8 @@
 #include "MMMessageBox.h"
 #include <Memory>
 
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include <StrUtils.hpp>
 
 #include "DBSecurity.h"
@@ -144,7 +145,9 @@ void TManagerFreebie::MakeFree(Database::TDBTransaction & DBTransaction, TItemMi
 		RewardDiscount.Name = "Member Reward";
 		RewardDiscount.Source = dsMMMembershipReward;
 		RewardDiscount.Mode = DiscModePercent;
+        RewardDiscount.AppliedMode = DiscModePercent;
 		RewardDiscount.PercentAmount = Item->MemberFreeSaleDiscount;
+        RewardDiscount.OriginalAmount = Item->MemberFreeSaleDiscount;
 		RewardDiscount.Rounding = MIN_CURRENCY_VALUE;
 		Item->DiscountAdd(RewardDiscount);
 
@@ -172,7 +175,9 @@ void TManagerFreebie::MakeFree(Database::TDBTransaction & DBTransaction, TItemMi
 		RewardDiscount.Name = "Location Reward";
 		RewardDiscount.Source = dsMMLocationReward;
 		RewardDiscount.Mode = DiscModePercent;
+        RewardDiscount.AppliedMode = DiscModePercent;
 		RewardDiscount.PercentAmount = Item->LocationFreeSaleDiscount;
+        RewardDiscount.OriginalAmount = Item->LocationFreeSaleDiscount;
 		RewardDiscount.Rounding = MIN_CURRENCY_VALUE;
 		Item->DiscountAdd(RewardDiscount);
 
@@ -534,16 +539,16 @@ void TManagerFreebie::GetReportMemberInfo(Database::TDBTransaction &DBTransactio
 		{
 			// Add the Freebie Block.
 			Report->Add("<br>");
-			AnsiString Temp = LoadStr(TABLE_START);
+			AnsiString Temp = TABLE_START;
 			Report->Add(Temp);
-			Temp = LoadStr(TABLE_ROW6_HEADER);
+			Temp = TABLE_ROW6_HEADER;
 			Temp = AnsiReplaceStr(Temp, "%TABLETITLE%", "Rewards Count");
 			Temp = AnsiReplaceStr(Temp, "%TABLEHEADER%", "All Items Alphabetical");
 			Report->Add(Temp);
 
 			for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
 			{
-				AnsiString TempRow = LoadStr(TABLE_ROW6);
+				AnsiString TempRow = TABLE_ROW6;
 				TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE1%", "Item :");
 				TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT1%", IBInternalQuery->FieldByName("ITEM_NAME")->AsString);
 				TempRow = AnsiReplaceStr(TempRow, "%ROWTITLE2%", "Size :");
@@ -552,7 +557,7 @@ void TManagerFreebie::GetReportMemberInfo(Database::TDBTransaction &DBTransactio
 				TempRow = AnsiReplaceStr(TempRow, "%ROWCONTENT3%", IBInternalQuery->FieldByName("ITEM_COUNT")->AsString + "/" + IBInternalQuery->FieldByName("MAX_COUNT")->AsString);
 				Report->Add(TempRow);
 			}
-			Temp = LoadStr(TABLE_STOP);
+			Temp = TABLE_STOP;
 			Report->Add(Temp);
 		}
 	}

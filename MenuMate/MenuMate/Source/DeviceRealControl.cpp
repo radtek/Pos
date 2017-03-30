@@ -16,7 +16,8 @@
 #include "Printing.h"
 #include "Locations.h"
 #include "MMTouchNumpad.h"
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include "DBContacts.h"
 #include "split.h"
 //---------------------------------------------------------------------------
@@ -1250,13 +1251,13 @@ void TDeviceRealControl::StatusReport(TStringList *html)
 {
 	try
 	{
-		UnicodeString Temp = LoadStr(STATUSREPORT_TOP);
+		UnicodeString Temp = STATUSREPORT_TOP;
 		html->Add(Temp);
 		// Load and repalce Course Section.
 		TModType::iterator ptrMods = Modules.Status.begin();
 		for (; ptrMods != Modules.Status.end(); ptrMods++)
 		{
-			Temp = LoadStr(STATUSREPORT_MOD_ROW);
+			Temp = STATUSREPORT_MOD_ROW;
 			UnicodeString ModName = "<Unknown>";
 			switch(ptrMods->first)
 			{
@@ -1297,14 +1298,14 @@ void TDeviceRealControl::StatusReport(TStringList *html)
 			std::map <UnicodeString, Variant> ::iterator ptrSettings = ptrMods->second.begin();
 			for (; ptrSettings != ptrMods->second.end(); ptrSettings++)
 			{
-				Temp = LoadStr(STATUSREPORT_VAL_ROW);
+				Temp = STATUSREPORT_VAL_ROW;
 				Temp = AnsiReplaceStr(Temp, "%VARNAME%", ptrSettings->first);
 				Temp = AnsiReplaceStr(Temp, "%VAR_VALUE%", ptrSettings->second);
 				html->Add(Temp);
 			}
 		}
 
-		Temp = LoadStr(CSREPORT_BOTTOM);
+		Temp = CSREPORT_BOTTOM;
 		html->Add(Temp);
 	}
 	catch(Exception & E)

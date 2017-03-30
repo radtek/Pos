@@ -39,7 +39,8 @@
 #include "ManagerNet.h"
 
 #include <StrUtils.hpp>
-#include "StringTableRes.h"
+//#include "StringTableRes.h"
+#include "StringTableVariables.h"
 #include "OpSys.h"
 
 #ifdef  PalmMate

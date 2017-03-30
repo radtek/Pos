@@ -74,6 +74,10 @@ Source: {#GetEnv('BASEDIR')}\Static Files\UnzDLL.dll; DestDir: {app}; Flags: ign
 Source: {#GetEnv('BASEDIR')}\Static Files\ZipDll.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\dbexpint.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\CASMCARD.DLL; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\dac140.bpl; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\unidac140.bpl; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\msprovider140.bpl; DestDir: {app}; Flags: ignoreversion
+Source: {#GetEnv('BASEDIR')}\Static Files\tdsprovider140.bpl; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\ZSummaryReports.txt; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Static Files\Owner Details.txt; DestDir: {app}; Flags: ignoreversion onlyifdoesntexist
 Source: {#GetEnv('BASEDIR')}\Static Files\porttalk.sys; DestDir: {app}; Flags: ignoreversion

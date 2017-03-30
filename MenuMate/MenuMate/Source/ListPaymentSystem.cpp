@@ -58,7 +58,7 @@
 #include "DBTierLevel.h"
 #include "ManagerDelayedPayment.h"
 #include "DrinkCommandManager.h"
-#include "DeviceRealTerminal.h"
+//#include "DeviceRealTerminal.h"
 #include "InitializeDCSession.h"
 #include "MallExportRegenerateReport.h"
 #include "LoyaltyMateUtilities.h"
@@ -66,6 +66,7 @@
 #include "StringTools.h"
 #include "PointsRulesSetUtils.h"
 #include "EstanciaMall.h"
+#include "ManagerPanasonic.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -182,6 +183,7 @@ void TListPaymentSystem::PaymentLoad(Database::TDBTransaction &DBTransaction, in
 			Payment.CVSWriteLocation=	IBInternalQuery->FieldByName("CSV_WRITE_LOCATION")->AsString;
             Payment.TabKey =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
             Payment.GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
+            Payment.AutoPopulateBlindBalance =  IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
 		}
 	}
 	catch(Exception & E)
@@ -269,7 +271,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			" TAX_RATE = :TAX_RATE, " " DEST_IP = :DEST_IP, " " DEST_PORT = :DEST_PORT, " " PRE_VOUCHER_CODE = :PRE_VOUCHER_CODE, "
 			" VOUCHER_MERCHANT_ID = :VOUCHER_MERCHANT_ID, INVOICE_EXPORT = :INVOICE_EXPORT, VOUCHER_URL = :VOUCHER_URL, "
 			" VOUCHER_USER = :VOUCHER_USER, VOUCHER_PASS = :VOUCHER_PASS, CSV_READ_LOCATION = :CSV_READ_LOCATION, "
-			" CSV_WRITE_LOCATION = :CSV_WRITE_LOCATION ,TABKEY = :TABKEY, GL_CODE = :GL_CODE "
+			" CSV_WRITE_LOCATION = :CSV_WRITE_LOCATION ,TABKEY = :TABKEY, GL_CODE = :GL_CODE, IS_AUTO_POPULATE_BLIND_BALANCE = :IS_AUTO_POPULATE_BLIND_BALANCE "
             " WHERE  PAYMENT_KEY = :PAYMENT_KEY  " ;
             if(Payment.Properties & ePayTypeElectronicTransaction)
             {
@@ -299,6 +301,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             IBInternalQuery->ParamByName("TABKEY")->AsInteger = Payment.TabKey;
             IBInternalQuery->ParamByName("GL_CODE")->AsString = Payment.GLCode;
 			IBInternalQuery->ParamByName("TAX_RATE")->AsCurrency = Payment.TaxRate;
+            IBInternalQuery->ParamByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString = Payment.AutoPopulateBlindBalance == true ? "T" : "F";
 
 			if (Payment.PaymentThirdPartyID != "")
 			{
@@ -335,11 +338,11 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			"INSERT INTO PAYMENTTYPES (" "PAYMENT_KEY, " "PAYMENT_NAME, " "PROPERTIES, " "EXCHANGE_RATE, " "COLOUR, "
 			"DISPLAY_ORDER, " "PERCENT_ADJUST, " "AMOUNT_ADJUST, " "ROUNDTO, " "ADJUST_REASON, " "GROUP_NUMBER, " "THIRDPARTYCODES_KEY, "
 			"DEST_IP," "DEST_PORT," "TAX_RATE," "PRE_VOUCHER_CODE," "VOUCHER_MERCHANT_ID," "INVOICE_EXPORT,VOUCHER_URL,VOUCHER_USER, "
-			"VOUCHER_PASS," "CSV_READ_LOCATION," "CSV_WRITE_LOCATION," "TABKEY," "GL_CODE " ") " "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, "
+			"VOUCHER_PASS," "CSV_READ_LOCATION," "CSV_WRITE_LOCATION," "TABKEY," "GL_CODE, " "IS_AUTO_POPULATE_BLIND_BALANCE " ") " "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, "
 			":PROPERTIES, " ":EXCHANGE_RATE, " ":COLOUR, " ":DISPLAY_ORDER, " ":PERCENT_ADJUST, " ":AMOUNT_ADJUST, " ":ROUNDTO, "
 			":ADJUST_REASON, " ":GROUP_NUMBER, " ":THIRDPARTYCODES_KEY, " ":DEST_IP," ":DEST_PORT," ":TAX_RATE," ":PRE_VOUCHER_CODE,"
 			":VOUCHER_MERCHANT_ID, " ":INVOICE_EXPORT,:VOUCHER_URL,:VOUCHER_USER,:VOUCHER_PASS,"
-			":CSV_READ_LOCATION,:CSV_WRITE_LOCATION,:TABKEY,:GL_CODE ) ";
+			":CSV_READ_LOCATION,:CSV_WRITE_LOCATION,:TABKEY,:GL_CODE, :IS_AUTO_POPULATE_BLIND_BALANCE  ) ";
 
 			IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
             if(Payment.Properties & ePayTypeElectronicTransaction)
@@ -370,6 +373,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			IBInternalQuery->ParamByName("CSV_WRITE_LOCATION")->AsString = Payment.CVSWriteLocation.SubString(1,255);
             IBInternalQuery->ParamByName("TABKEY")->AsInteger = Payment.TabKey;
             IBInternalQuery->ParamByName("GL_CODE")->AsString = Payment.GLCode;
+            IBInternalQuery->ParamByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString = Payment.AutoPopulateBlindBalance == true ? "T" : "F";
 			if (Payment.PaymentThirdPartyID != "")
 			{
 				int ThirdPartyCodeKey = TDBThirdPartyCodes::SetThirdPartyCode(DBTransaction, Payment.PaymentThirdPartyID, "Payment Type Code",
@@ -434,6 +438,7 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 		NewPayment->CVSWriteLocation	=	IBInternalQuery->FieldByName("CSV_WRITE_LOCATION")->AsString;
         NewPayment->TabKey  =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
         NewPayment->GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
+        NewPayment->AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
 		CurrentDisplayOrder = NewPayment->DisplayOrder;
 
 		// load up the groups for this payment type
@@ -625,6 +630,7 @@ void TListPaymentSystem::PaymentsLoadTypes(Database::TDBTransaction &DBTransacti
 		    NewPayment.CVSWriteLocation	=	IBInternalQuery->FieldByName("CSV_WRITE_LOCATION")->AsString;
             NewPayment.TabKey  =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
             NewPayment.GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
+            NewPayment.AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
     		Payments.push_back(NewPayment);
 	    }
 
@@ -888,6 +894,11 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 	}
 
 	Busy = false;
+
+    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+    {
+        TManagerPanasonic::Instance()->TriggerTransactionSync();
+    }
 	return PaymentComplete;
 }
 
@@ -5980,4 +5991,14 @@ void TListPaymentSystem::CheckSubscription( TPaymentTransaction &PaymentTransact
            UpdateSubscriptionDetails(PaymentTransaction,amount);
         }
     }
+}
+//-------------------------------------------------------------------------------------
+UnicodeString TListPaymentSystem::PrepareLastReceiptDataForPanasonic(TStringList *_receipt)
+{
+    UnicodeString _lastreceipt = "";
+    for(int i = 0; i < _receipt->Count; i++)
+    {
+       _lastreceipt += _receipt->Strings[i] + '\n';
+    }
+    return _lastreceipt;
 }

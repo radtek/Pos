@@ -48,9 +48,10 @@ void TManagerLoyaltyMate::SyncMemberDetailsWithCloud(TSyndCode syndicateCode, TM
     StartLoyaltyThread();
 }
 //---------------------------------------------------------------------------
-bool TManagerLoyaltyMate::CreateMemberOnCloud(TSyndCode syndicateCode,TMMContactInfo &info)
+TaskResult TManagerLoyaltyMate::CreateMemberOnCloud(TSyndCode syndicateCode,TMMContactInfo &info)
 {
-    bool result = false;
+    TaskResult result;
+    result.OperationSuccussful = false;
     try
     {
         TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
@@ -59,15 +60,16 @@ bool TManagerLoyaltyMate::CreateMemberOnCloud(TSyndCode syndicateCode,TMMContact
         {
             info.CloudUUID = createResponse.UUID;
             info.MemberCode = createResponse.MemberCode;
-            result = true;
+            result.OperationSuccussful = true;
         }
         else
         {
-            throw Exception(createResponse.Message);
+            result.ErrorMessage = createResponse.Message;
         }
     }
     catch(Exception &E)
     {
+        result.ErrorMessage = E.Message ;
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
 
@@ -454,12 +456,13 @@ void TLoyaltyMateCreateMemberThread::CreateMemberOnCloud()
 			return;
         }
 
-		OperationSuccessful = TManagerLoyaltyMate::Instance()->CreateMemberOnCloud(_syndicateCode, *_memberInfo);
+        TaskResult result =  TManagerLoyaltyMate::Instance()->CreateMemberOnCloud(_syndicateCode, *_memberInfo);
+		OperationSuccessful = result.OperationSuccussful;
 
 		if(!OperationSuccessful)
 		{
-            ErrorMessage = "Failed to create member on the server";
-            TGlobalSettings::Instance().IsPOSOffline=true;
+            ErrorMessage = result.ErrorMessage;
+            TGlobalSettings::Instance().IsPOSOffline = true;
             throw new Exception(ErrorMessage);
         }
         else
@@ -469,6 +472,7 @@ void TLoyaltyMateCreateMemberThread::CreateMemberOnCloud()
     {
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 		ErrorMessage = E.Message;
+        TGlobalSettings::Instance().IsPOSOffline = true;
 	}
 }
 //---------------------------------------------------------------------------
@@ -588,7 +592,7 @@ void TLoyaltyMateUpdateCardThread::UpdateMemberCardCodeOnCloud()
         }
         else
         {
-            if(createResponse.Description == "Card code already in use.")
+            if(createResponse.Description == "Card Code Already In Use.")
               ErrorMessage = "Card Code Already In Use.";
             else
               ErrorMessage = "Failed to update member information.";

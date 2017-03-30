@@ -191,7 +191,13 @@ _groupingForArcbill =
                                                 "Security.Terminal_Name,                                  "
                                                 "Security.From_Val ,                                      "
                                                 "ArcBillPay.Note,                                      "
-                                              " ab.TABLE_NAME, ab.price, ArcBillPAY.PAY_TYPE, ArcBillPAY.TIP_AMOUNT "; 
+                                              " ab.TABLE_NAME, ab.price, ArcBillPAY.PAY_TYPE, ArcBillPAY.TIP_AMOUNT ";
+
+////Query For Getting Total Points..
+
+_pointsTransactionQuery =       "Inner join(SELECT  SUM(ADJUSTMENT) TOTAL, a.CONTACTS_KEY "
+                                "FROM POINTSTRANSACTIONS a  "
+                                "GROUP BY CONTACTS_KEY)PT ON CONTACTS.CONTACTS_KEY = PT.CONTACTS_KEY ";
 
 }
 //---------------------------------------------------------------------------
@@ -922,6 +928,7 @@ void TdmMMReportData::SetupCashupReconciliation(TDateTime StartTime, TDateTime E
 	qrCashupRecon->ParamByName("EndDateTime")->AsDateTime		= EndTime;
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTime, TStrings *Locations, bool GroupByLocation)
 {
 	qrCategoryAnalysis->Close();
@@ -958,11 +965,10 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
 		"FROM ARCORDERDISCOUNTS a "
 		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
-		"Where "
+		"Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0 and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime) and  "
            " ((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
 		     " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'     "
 		     ") ) and "
-		 " ARCHIVE.PRICE<>0 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
 			"Archive.TIME_STAMP_BILLED < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -1016,11 +1022,10 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
 		"FROM DAYARCORDERDISCOUNTS a "
 		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		"DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-		"Where "
+		"Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DayArchive where DayArchive.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DayArchive left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
            " ((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
 		     " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'     "
 		     "  )  ) and "
-		 "DAYARCHIVE.PRICE<>0 and "
 			"DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and "
 			"DAYARCHIVE.TIME_STAMP_BILLED < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -1070,9 +1075,7 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
 				"Orders.Category_Key = ArcCategories.Category_Key "
 			"Left Join CategoryGroups on "
 				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
-		"Where "
-			"(Orders.Order_Type = 3 or "
-			"Orders.Order_Type = 0) and "
+		"Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime )and "
 			"Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -1114,11 +1117,10 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
 			"Security Left Join Archive on "
 				"Security.Security_Ref = Archive.Security_Ref "
 		      "left join ARCORDERDISCOUNTS on ARCORDERDISCOUNTS.ARCHIVE_KEY = Archive.ARCHIVE_KEY "
-		"Where "
+		"Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0 and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime) and  "
 		    " ((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
 		    " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'    "
 		    "  )  ) and  "
-		 " ARCHIVE.PRICE<>0 and "
 			"ARCHIVE.TIME_STAMP_BILLED >= :StartTime and "
 			"ARCHIVE.TIME_STAMP_BILLED < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -1151,11 +1153,10 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
 		"FROM DAYARCORDERDISCOUNTS a "
 		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		"DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-		"Where "
+		" Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DayArchive where DayArchive.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DayArchive left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
 		    " ((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
 		    " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME ,0)<> 'Non-Chargeable'    "
 		    "  )  ) and  "
-			 "DAYARCHIVE.PRICE<>0 and "
 			"DayArchive.TIME_STAMP_BILLED >= :StartTime and "
 			"DayArchive.TIME_STAMP_BILLED < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -1184,9 +1185,7 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
 		"From "
 			"Security Left Join Orders on "
 				"Security.Security_Ref = Orders.Security_Ref "
-		"Where "
-			"(Orders.Order_Type = 3 or "
-			"Orders.Order_Type = 0) and "
+		" Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime )and "
 			"Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -1214,6 +1213,298 @@ void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTi
 
 
 }
+/*void TdmMMReportData::SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTime, TStrings *Locations, bool GroupByLocation)
+{
+	qrCategoryAnalysis->Close();
+	qrCategoryAnalysis->SQL->Text =
+		"Select ";
+	if (GroupByLocation)
+	{
+		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"Archive.Order_Location Location,";
+	}
+	else
+	{
+		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"Cast('All Locations' As Varchar(25)) Location,";
+	}
+	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"CategoryGroups.Name Category_Group,"
+			"ArcCategories.Category,"
+			" cast(SUM (Archive.QTY) as numeric(17,4)) Item_Count,"
+
+	    	"Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) )+Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"      //sales excl
+			"CAST(Sum((abs(Archive.Qty) * Archive.Price  ))+Sum(Archive.Discount) AS NUMERIC(17,4)) PriceInc,"
+			"CAST(Sum(abs(Archive.Qty) * Archive.Cost) AS NUMERIC(17,4)) Cost,"
+
+            "CAST(Sum(((cast(Archive.Qty * Archive.Price AS NUMERIC(17,4))) + Archive.Discount)) AS NUMERIC(17,4)) - Sum(Archive.Cost) Profit   "
+		"From "
+			"Security Left Join Archive on "
+				"Security.Security_Ref = Archive.Security_Ref "
+			"Left Join ArcCategories on "
+				"Archive.Category_Key = ArcCategories.Category_Key "
+			"Left Join CategoryGroups on "
+				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
+         " LEFT JOIN  (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
+		"FROM ARCORDERDISCOUNTS a "
+		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
+		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
+		"Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "
+           " ((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
+		     " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'     "
+		     ") ) and "
+		 //" ARCHIVE.PRICE<>0 and "
+			"Archive.TIME_STAMP_BILLED >= :StartTime and "
+			"Archive.TIME_STAMP_BILLED < :EndTime and "
+			"Security.Security_Event = 'Ordered By' ";
+	if (Locations && Locations->Count > 0)
+	{
+		qrCategoryAnalysis->SQL->Text	=	qrCategoryAnalysis->SQL->Text + "and (" +
+													ParamString(Locations->Count, "Archive.Order_Location", "LocationParam") + ")";
+	}
+	qrCategoryAnalysis->SQL->Text		=	qrCategoryAnalysis->SQL->Text +
+		"Group By ";
+	if (GroupByLocation)
+	{
+		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"Archive.Order_Location,";
+	}
+	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"CategoryGroups.Name,"
+			"ArcCategories.Category "
+
+		"Union All "
+
+		"Select ";
+	if (GroupByLocation)
+	{
+		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"DayArchive.Order_Location Location,";
+	}
+	else
+	{
+		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"Cast('All Locations' As Varchar(25)) Location,";
+	}
+	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"CategoryGroups.Name Category_Group,"
+			"ArcCategories.Category,"
+			"cast(SUM (DayArchive.QTY) as numeric(17,4)) Item_Count,"
+           	"Cast(Sum((abs(DayArchive.Qty )* DAYARCHIVE.BASE_PRICE  )  ) +Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		//sales excl
+			"CAST(Sum((DayArchive.Qty * DayArchive.Price)  )+Sum(DayArchive.Discount) AS NUMERIC(17,4)) PriceInc,"
+			"CAST(Sum(abs(DayArchive.Qty) * DayArchive.Cost) AS NUMERIC(17,4)) Cost,"
+
+            "CAST(Sum(((CAST(DayArchive.Qty * DayArchive.Price as Numeric(17,4))) + DayArchive.Discount) ) AS NUMERIC(17,4)) - Sum(DayArchive.Cost) Profit "
+
+		"From "
+			"Security Left Join DayArchive on "
+				"Security.Security_Ref = DayArchive.Security_Ref "
+			"Left Join ArcCategories on "
+				"DayArchive.Category_Key = ArcCategories.Category_Key "
+			"Left Join CategoryGroups on "
+				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
+		          "Left join (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
+		"FROM DAYARCORDERDISCOUNTS a "
+		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
+		"DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+		"Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and "
+           " ((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
+		     " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'     "
+		     "  )  ) and "
+		// "DAYARCHIVE.PRICE<>0 and "
+			"DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and "
+			"DAYARCHIVE.TIME_STAMP_BILLED < :EndTime and "
+			"Security.Security_Event = 'Ordered By' ";
+	if (Locations && Locations->Count > 0)
+	{
+		qrCategoryAnalysis->SQL->Text	=	qrCategoryAnalysis->SQL->Text + "and (" +
+													ParamString(Locations->Count, "DayArchive.Order_Location", "LocationParam") + ")";
+	}
+	qrCategoryAnalysis->SQL->Text		=	qrCategoryAnalysis->SQL->Text +
+		"Group By ";
+	if (GroupByLocation)
+	{
+		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"DayArchive.Order_Location,";
+	}
+	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"CategoryGroups.Name,"
+			"ArcCategories.Category "
+
+		"Union All "
+
+		"Select ";
+	if (GroupByLocation)
+	{
+		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"Orders.Order_Location Location,";
+	}
+	else
+	{
+		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"Cast('All Locations' As Varchar(25)) Location,";
+	}
+	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"CategoryGroups.Name Category_Group,"
+			"ArcCategories.Category,"
+			" cast(SUM (Orders.QTY) as numeric(17,4)) Item_Count,"
+
+       " Cast(Sum((Orders.Qty * Orders.BASE_PRICE ) ) +Sum(Orders.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc ,    "
+			"CAST(Sum((Orders.Qty * Orders.Price)  )+Sum(Orders.Discount) AS NUMERIC(17,4)) PriceInc,"
+			"CAST(Sum(abs(Orders.Qty) * Orders.Cost) AS NUMERIC(17,4)) Cost,"
+
+                "CAST (CAST(Sum(caST(((CAST(Orders.Qty * Orders.Price AS NUMERIC(17,4))) + Orders.Discount) AS NUMERIC(17,4))) AS NUMERIC(17,4)) - Sum(Orders.Cost) AS NUMERIC(17,4) ) Profit 	 "
+		"From "
+			"Security Left Join Orders on "
+				"Security.Security_Ref = Orders.Security_Ref "
+			"Left Join ArcCategories on "
+				"Orders.Category_Key = ArcCategories.Category_Key "
+			"Left Join CategoryGroups on "
+				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
+		"Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
+		   	//"(Orders.Order_Type = 3 or "
+			//"Orders.Order_Type = 0) and "
+			"Orders.Time_Stamp >= :StartTime and "
+			"Orders.Time_Stamp < :EndTime and "
+			"Security.Security_Event = 'Ordered By' ";
+	if (Locations && Locations->Count > 0)
+	{
+		qrCategoryAnalysis->SQL->Text	=	qrCategoryAnalysis->SQL->Text + "and (" +
+													ParamString(Locations->Count, "Orders.Order_Location", "LocationParam") + ")";
+	}
+	qrCategoryAnalysis->SQL->Text		=	qrCategoryAnalysis->SQL->Text +
+		"Group By ";
+	if (GroupByLocation)
+	{
+		qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"Orders.Order_Location,";
+	}
+	qrCategoryAnalysis->SQL->Text = qrCategoryAnalysis->SQL->Text +
+			"CategoryGroups.Name,"
+			"ArcCategories.Category "
+
+		"Order By "
+			"1, 2, 3";
+
+	qrCatLocTotal->Close();
+	qrCatLocTotal->SQL->Text =
+		"Select ";
+	if (GroupByLocation)
+	{
+		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+			"Archive.Order_Location Location,";
+	}
+	else
+	{
+		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+			"Cast('All Locations' As Varchar(25)) Location,";
+	}
+	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+			"CAST(Sum((Archive.Qty * Archive.Price) + Archive.Discount) AS NUMERIC(17,4)) PriceInc "
+		"From "
+			"Security Left Join Archive on "
+				"Security.Security_Ref = Archive.Security_Ref "
+		      "left join ARCORDERDISCOUNTS on ARCORDERDISCOUNTS.ARCHIVE_KEY = Archive.ARCHIVE_KEY "
+		"Where  ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "
+		    " ((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
+		    " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable'    "
+		    "  )  ) and  "
+		 //" ARCHIVE.PRICE<>0 and "
+			"ARCHIVE.TIME_STAMP_BILLED >= :StartTime and "
+			"ARCHIVE.TIME_STAMP_BILLED < :EndTime and "
+			"Security.Security_Event = 'Ordered By' ";
+	if (GroupByLocation)
+	{
+		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+		"Group By "
+			"Archive.Order_Location ";
+	}
+	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+		"Union All "
+
+		"Select ";
+	if (GroupByLocation)
+	{
+		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+			"DayArchive.Order_Location Location,";
+	}
+	else
+	{
+		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+			"Cast('All Locations' As Varchar(25)) Location,";
+	}
+	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+			"CAST(Sum((abs(DayArchive.Qty) * DayArchive.Price) + DayArchive.Discount) AS NUMERIC(17,4)) PriceInc "
+		"From "
+			"Security Left Join DayArchive on "
+				"Security.Security_Ref = DayArchive.Security_Ref "
+		    "Left join (SELECT  a.ARCHIVE_KEY,sum(a.DISCOUNTED_VALUE) DISCOUNTED_VALUE,  a.DISCOUNT_GROUPNAME "
+		"FROM DAYARCORDERDISCOUNTS a "
+		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
+		"DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
+		"Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and "
+		    " ((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
+		    " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME ,0)<> 'Non-Chargeable'    "
+		    "  )  ) and  "
+			 //"DAYARCHIVE.PRICE<>0 and "
+			"DayArchive.TIME_STAMP_BILLED >= :StartTime and "
+			"DayArchive.TIME_STAMP_BILLED < :EndTime and "
+			"Security.Security_Event = 'Ordered By' ";
+	if (GroupByLocation)
+	{
+		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+		"Group By "
+			"DayArchive.Order_Location ";
+	}
+	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+		"Union All "
+
+		"Select ";
+	if (GroupByLocation)
+	{
+		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+			"Orders.Order_Location Location,";
+	}
+	else
+	{
+		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+			"Cast('All Locations' As Varchar(25)) Location,";
+	}
+	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+			"CAST(Sum((Orders.Qty * Orders.Price) + Orders.Discount) AS NUMERIC(17,4)) PriceInc "
+		"From "
+			"Security Left Join Orders on "
+				"Security.Security_Ref = Orders.Security_Ref "
+		"Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
+			//"(Orders.Order_Type = 3 or "
+			//"Orders.Order_Type = 0) and "
+			"Orders.Time_Stamp >= :StartTime and "
+			"Orders.Time_Stamp < :EndTime and "
+			"Security.Security_Event = 'Ordered By' ";
+	if (GroupByLocation)
+	{
+		qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+		"Group By "
+			"Orders.Order_Location ";
+	}
+	qrCatLocTotal->SQL->Text = qrCatLocTotal->SQL->Text +
+		"Order By "
+			"1 ";
+
+	qrCategoryAnalysis->ParamByName("StartTime")->AsDateTime	= StartTime;
+	qrCategoryAnalysis->ParamByName("EndTime")->AsDateTime	= EndTime;
+	qrCatLocTotal->ParamByName("StartTime")->AsDateTime		= StartTime;
+	qrCatLocTotal->ParamByName("EndTime")->AsDateTime			= EndTime;
+	if (Locations)
+	{
+		for (int i=0; i<Locations->Count; i++)
+		{
+			qrCategoryAnalysis->ParamByName("LocationParam" + IntToStr(i))->AsString = Locations->Strings[i];
+		}
+	}
+
+
+}*/
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupCategoryBreakdown(TDateTime StartTime, TDateTime EndTime, TStrings *Locations, bool GroupByLocation)
 {
@@ -1233,9 +1524,9 @@ qrCategoryBreakdown->Close();
 	qrCategoryBreakdown->SQL->Text = qrCategoryBreakdown->SQL->Text +
 			"CategoryGroups.Name Category_Group,"
 			"ArcCategories.Category,"
-			"Sum(Archive.Qty) Item_Count,"
+			"cast(SUM (Archive.QTY) as numeric(17,4)) Item_Count,"
 
-              "Sum(CAST(Archive.BASE_PRICE As Numeric(17,2)) * CAST(abs(Archive.Qty) As Numeric(17,4)) ) PriceExc ,   "
+              "Sum(CAST(Archive.BASE_PRICE As Numeric(17,4)) * CAST(abs(Archive.Qty) As Numeric(17,4)) ) PriceExc ,   "
 			" Sum(CAST(Archive.Price As Numeric(17,4)) * CAST( Archive.Qty As Numeric(17,4))+ Archive.Discount ) PriceInc,   "
 			" Sum(CAST(Archive.Cost As Numeric(17,4)) * Archive.Qty ) Cost   "
 
@@ -1249,12 +1540,12 @@ qrCategoryBreakdown->Close();
 			"Left Join CategoryGroups on "
 				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
 			"left join ARCORDERDISCOUNTS on ARCORDERDISCOUNTS.ARCHIVE_KEY = Archive.ARCHIVE_KEY	"
-		   "Where "
+		   "Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0 and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime) and  "
 		     "((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
 		     "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'NonChargable' and  "
 		     "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_KEY,0) > 0) or Archive.DISCOUNT = 0) and "
-			"(Archive.Order_Type = 3 or "
-			"Archive.Order_Type = 0) and "
+		   //	"(Archive.Order_Type = 3 or "
+		   //	"Archive.Order_Type = 0) and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
 			"Archive.TIME_STAMP_BILLED < :EndTime and "
 			"(Security.Security_Event = 'Ordered By') ";
@@ -1293,8 +1584,8 @@ qrCategoryBreakdown->Close();
 	qrCategoryBreakdown->SQL->Text = qrCategoryBreakdown->SQL->Text +
 			"CategoryGroups.Name Category_Group,"
 			"ArcCategories.Category,"
-			"Sum(DayArchive.Qty) Item_Count,"
-		 "Sum(CAST(DayArchive.BASE_PRICE As Numeric(17,2)) * CAST(abs(DayArchive.Qty) As Numeric(17,4)) ) PriceExc ,    "
+			"cast(SUM (DayArchive.QTY) as numeric(17,4)) Item_Count,"
+		 "Sum(CAST(DayArchive.BASE_PRICE As Numeric(17,4)) * CAST(abs(DayArchive.Qty) As Numeric(17,4)) ) PriceExc ,    "
 			" Sum(CAST(DayArchive.Price As Numeric(17,4)) * CAST( DayArchive.Qty As Numeric(17,4))+ DayArchive.Discount ) PriceInc,   "
 			" Sum(CAST(DayArchive.Cost As Numeric(17,4)) * DayArchive.Qty ) Cost   "
 		"From "
@@ -1307,12 +1598,13 @@ qrCategoryBreakdown->Close();
 			"Left Join CategoryGroups on "
 				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
 			"left join DAYARCORDERDISCOUNTS on DAYARCORDERDISCOUNTS.ARCHIVE_KEY = DayArchive.ARCHIVE_KEY	"
-		   "Where "
+		   /// "Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+           "Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DayArchive where DayArchive.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DayArchive left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
 		     "((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
 		     "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'NonChargable' and  "
 		     "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_KEY,0) > 0) or DayArchive.DISCOUNT = 0) and "
-			"(DayArchive.Order_Type = 3 or "
-			"DayArchive.Order_Type = 0) and "
+			//"(DayArchive.Order_Type = 3 or "
+			//"DayArchive.Order_Type = 0) and "
 			"DayArchive.TIME_STAMP_BILLED >= :StartTime and "
 			"DayArchive.TIME_STAMP_BILLED < :EndTime and "
 			"(Security.Security_Event = 'Ordered By') ";
@@ -1351,9 +1643,9 @@ qrCategoryBreakdown->Close();
 	qrCategoryBreakdown->SQL->Text = qrCategoryBreakdown->SQL->Text +
 			"CategoryGroups.Name Category_Group,"
 			"ArcCategories.Category,"
-			"Sum(Orders.Qty) Item_Count,"
+			"cast(SUM (Orders.QTY) as numeric(17,4)) Item_Count,"
 
-              "Sum(CAST(Orders.BASE_PRICE As Numeric(17,2)) * CAST(abs(Orders.Qty) As Numeric(17,4)) ) PriceExc ,     "
+              "Sum(CAST(Orders.BASE_PRICE As Numeric(17,4)) * CAST(abs(Orders.Qty) As Numeric(17,4)) ) PriceExc ,     "
 			" Sum(CAST(Orders.Price As Numeric(17,4)) * CAST( Orders.Qty As Numeric(17,4))+ Orders.Discount ) PriceInc,    "
 			" Sum(CAST(Orders.Cost As Numeric(17,4)) * Orders.Qty ) Cost   "
 
@@ -1366,7 +1658,8 @@ qrCategoryBreakdown->Close();
 				"OrderCategory.Category_Key = ArcCategories.Category_Key "
 			"Left Join CategoryGroups on "
 				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
-		"Where "
+	   //	"Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
+       "Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime )and "
 			"Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
 			"(Security.Security_Event = 'Ordered By') ";
@@ -3093,8 +3386,8 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
                 " ((   "
                 " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
                 " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
-                "(DayArchive.Order_Type = 3 or "
-                "DayArchive.Order_Type = 0) and "
+                //"(DayArchive.Order_Type = 3 or "
+                //"DayArchive.Order_Type = 0) and "
                 "DayArchive.TIME_STAMP >= :StartTime and "
                 "DayArchive.TIME_STAMP < :EndTime and "
                 "Security.Security_Event = 'Ordered By' ";
@@ -3517,11 +3810,12 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
 												"ArcCategories.Category_Key ";
 	}
 	qrUserSales->SQL->Text = qrUserSales->SQL->Text +
-		"Where "
+		//"Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "
+        "Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0 and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime) and  "
 		    " ((  "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
-		 " ARCHIVE.PRICE<>0 and "
+		 //" ARCHIVE.PRICE<>0 and "
 			"Archive.TIME_STAMP_BILLED >= :StartTime and "
 			"Archive.TIME_STAMP_BILLED < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -3587,11 +3881,12 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
 												"ArcCategories.Category_Key ";
 	}
 	qrUserSales->SQL->Text = qrUserSales->SQL->Text +
-		"Where "
+		//"Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        "Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DayArchive where DayArchive.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DayArchive left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
 		    " ((  "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
-		 "DAYARCHIVE.PRICE<>0 and "
+		 //"DAYARCHIVE.PRICE<>0 and "
 			"DayArchive.TIME_STAMP_BILLED >= :StartTime and "
 			"DayArchive.TIME_STAMP_BILLED < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -3641,7 +3936,8 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
 												"ArcCategories.Category_Key ";
 	}
 	qrUserSales->SQL->Text = qrUserSales->SQL->Text +
-		"Where "
+		//"Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and  "
+        	"Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime )and "
 			"Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -3689,10 +3985,10 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
          "NAME,"
          "GROUP_NAME,"
          "COURSE_NAME,"
-         "cast(sum(ITEM_COUNT) as Numeric(15,2)) ITEM_COUNT,"
-         "cast(sum(Price) as Numeric(15,2)) PRICE,"
-         "cast(sum(COST) as Numeric(15,2)) COST, "
-         "cast(sum(SalesIncl) as Numeric(15,2)) SalesIncl "
+         "cast(sum(ITEM_COUNT) as numeric(17,4))  ITEM_COUNT,"
+         "cast(sum(Price) as Numeric(17,4)) PRICE,"
+         "cast(sum(COST) as Numeric(17,4)) COST, "
+         "cast(sum(SalesIncl) as Numeric(17,4)) SalesIncl "
         "From "
         "("
 
@@ -3731,11 +4027,12 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
 		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
     "Left Join Contacts On "
             "Security.User_Key = Contacts.Contacts_Key "
-      "Where "
+      //"Where  ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "
+      "Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0 and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime) and  "
 		    " (( "
           " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
           " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary')) and "
-         " ARCHIVE.PRICE<>0 and "
+         //" ARCHIVE.PRICE<>0 and "
          "ARCHIVE.TIME_STAMP_BILLED >= :StartTime and "
          "ARCHIVE.TIME_STAMP_BILLED < :EndTime and "
          "Security.Security_Event = 'Ordered By' ";
@@ -3758,7 +4055,7 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
          "Contacts.Name,"
          "CategoryGroups.Name Group_Name,"
          "ArcCategories.Category Course_Name,"
-         "Sum(DayArchive.Qty) Item_Count,"
+         "cast(Sum(DayArchive.Qty) as numeric(17,4))   Item_Count,"
          "Cast(Sum((abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  ) )  +  Sum(DayArchive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"
          "Sum(DayArchive.Cost * DayArchive.Qty) Cost, "
          "Cast(Sum(abs(DayArchive.QTY ) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
@@ -3789,11 +4086,13 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
 
 	  "Left Join Contacts On "
             "Security.User_Key = Contacts.Contacts_Key "
-      "Where "
+     // "Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+
+     "Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DayArchive where DayArchive.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DayArchive left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
 		    " ((  "
           " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
           " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary')) and "
-        "DAYARCHIVE.PRICE<>0 and "
+        //"DAYARCHIVE.PRICE<>0 and "
          "DayArchive.TIME_STAMP_BILLED >= :StartTime and "
          "DayArchive.TIME_STAMP_BILLED < :EndTime and "
          "Security.Security_Event = 'Ordered By' ";
@@ -3816,7 +4115,7 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
          "Contacts.Name,"
          "CategoryGroups.Name Group_Name,"
          "ArcCategories.Category Course_Name,"
-         "Sum(Orders.Qty) Item_Count,"
+         "cast(Sum(Orders.Qty) as numeric(17,4)) Item_Count,"
         "Cast(Sum((Orders.Qty * Orders.BASE_PRICE ) )  +  Sum(Orders.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExc,"		 //sales excl
          "Sum(Orders.Cost * Orders.Qty) Cost, "
         +  _selectSalesIncl + //For Selecting salesIncl column
@@ -3830,7 +4129,8 @@ void TdmMMReportData::SetupUserSalesByCategory(TDateTime StartTime, TDateTime En
             "ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
          "Left Join Contacts On "
             "Security.User_Key = Contacts.Contacts_Key "
-      "Where "
+     // "Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and  "
+     "Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime )and "
          "Orders.Time_Stamp >= :StartTime and "
          "Orders.Time_Stamp < :EndTime and "
          "Security.Security_Event = 'Ordered By' ";
@@ -3879,11 +4179,11 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
 	qrUserSales->SQL->Text =
    	"Select "
          "Contacts.Name,"
-         "cast(Sum(Archive.Qty) as Numeric(15,2)) Item_Count,"
+         "cast(Sum(Archive.Qty) as numeric(17,4))  Item_Count,"
         "cast(Sum((Archive.Price * Archive.Qty + Archive.Discount)) as Numeric(15,2)) Price,"
         "Cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE  ) ) + Sum(Archive.DISCOUNT_WITHOUT_TAX) as Numeric(17,4)) PriceExcl,"	   //sales excl
-        "cast(Sum(Archive.Cost * Archive.Qty) as Numeric(15,2)) Cost,"
-		"cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE + Archive.DISCOUNT_WITHOUT_TAX) )  - Sum(Archive.Cost) as Numeric(15,2)) Profit, "
+        "cast(Sum(Archive.Cost * Archive.Qty) as Numeric(17,4)) Cost,"
+		"cast(Sum((abs(Archive.Qty) * Archive.BASE_PRICE + Archive.DISCOUNT_WITHOUT_TAX) )  - Sum(Archive.Cost) as Numeric(17,4)) Profit, "
         "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
      "From "
          "Archive  Left Join Security On "
@@ -3907,11 +4207,14 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
 		            "ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
          "Left Join Contacts On "
             "Security.User_Key = Contacts.Contacts_Key "
-      "Where "
+      //"Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "
+
+      "Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0 and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime) and  "
+      
 		    " (( "
           " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
           " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
-        "ARCHIVE.PRICE<>0 and "
+        //"ARCHIVE.PRICE<>0 and "
          "Archive.TIME_STAMP_BILLED >= :StartTime and "
          "Archive.TIME_STAMP_BILLED < :EndTime and "
          "Security.Security_Event = 'Ordered By' ";
@@ -3930,11 +4233,11 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
 
    	"Select "
          "Contacts.Name,"
-         "cast(Sum(DayArchive.Qty) as Numeric(15,2)) Item_Count,"
-        "cast(Sum((DayArchive.Price + DayArchive.Discount) * DayArchive.Qty) as Numeric(15,2)) Price,"
+         "cast(Sum(DayArchive.Qty) as numeric(17,4))   Item_Count,"
+        "cast(Sum((DayArchive.Price + DayArchive.Discount) * DayArchive.Qty) as Numeric(17,4)) Price,"
          "Cast(Sum((abs(DayArchive.Qty ) * DAYARCHIVE.BASE_PRICE  ) ) + Sum(DayArchive.DISCOUNT_WITHOUT_TAX)  as Numeric(17,4)) PriceExcl,"		  //sales excl
-         "cast(Sum(DayArchive.Cost * DayArchive.Qty) as Numeric(15,2)) Cost,"
-		 "cast(Sum((abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  + DayArchive.DISCOUNT_WITHOUT_TAX) ) - Sum(DayArchive.Cost) as Numeric(15,2)) Profit, "
+         "cast(Sum(DayArchive.Cost * DayArchive.Qty) as Numeric(17,4)) Cost,"
+		 "cast(Sum((abs(DayArchive.Qty) * DAYARCHIVE.BASE_PRICE  + DayArchive.DISCOUNT_WITHOUT_TAX) ) - Sum(DayArchive.Cost) as Numeric(17,4)) Profit, "
           "Cast(Sum(abs(DayArchive.QTY) * DayArchive.BASE_PRICE  + COALESCE(DayArchive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) SalesIncl "
 
       "From "
@@ -3959,11 +4262,12 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
 		            "DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
          "Left Join Contacts On "
             "Security.User_Key = Contacts.Contacts_Key "
-      "Where "
+      //"Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+      "Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DayArchive where DayArchive.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DayArchive left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
 		    " (( "
           " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
           " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
-     "DAYARCHIVE.PRICE<>0 and "
+     //"DAYARCHIVE.PRICE<>0 and "
          "DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and "
          "DAYARCHIVE.TIME_STAMP_BILLED < :EndTime and "
          "Security.Security_Event = 'Ordered By' ";
@@ -3982,11 +4286,11 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
 
    	"Select "
          "Contacts.Name,"
-         "cast(Sum(Orders.Qty) as Numeric(15,2)) Item_Count,"
-         "cast(Sum((Orders.Price ) * Orders.Qty) + Sum(Orders.Discount)  as Numeric(15,2)) Price,"
+         "cast(Sum(Orders.Qty) as numeric(17,4))  Item_Count,"
+         "cast(Sum((Orders.Price ) * Orders.Qty) + Sum(Orders.Discount)  as Numeric(17,4)) Price,"
          "Cast(Sum((Orders.Qty * Orders.BASE_PRICE + Orders.DISCOUNT_WITHOUT_TAX) ) as Numeric(17,4)) PriceExcl,"
-         "cast(Sum(Orders.Qty * Orders.Cost) as Numeric(15,2)) Cost,"
-		 "cast(Sum((Orders.Qty * Orders.BASE_PRICE+ Orders.Discount) ) - Sum(Orders.Cost) as Numeric(15,2)) Profit, "
+         "cast(Sum(Orders.Qty * Orders.Cost) as Numeric(17,4)) Cost,"
+		 "cast(Sum((Orders.Qty * Orders.BASE_PRICE+ Orders.Discount) ) - Sum(Orders.Cost) as Numeric(17,4)) Profit, "
           +  _selectSalesIncl + //For Selecting salesIncl column
       "From "
          "Orders  Left Join Security On "
@@ -3994,7 +4298,8 @@ void TdmMMReportData::SetupUserSalesSummary(TDateTime StartTime, TDateTime EndTi
          "Left Join Contacts On "
             "Security.User_Key = Contacts.Contacts_Key "
          + _taxJoins + ///For selecting tax
-      "Where "
+      //"Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and  "
+      "Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime )and "
          "Orders.Time_Stamp >= :StartTime and "
          "Orders.Time_Stamp < :EndTime and "
          "Security.Security_Event = 'Ordered By' ";
@@ -4829,7 +5134,9 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 
     qrInvoice->SQL->Text =
         "select "
-            "groups.name Name, contacts.name ContactName, invoices.TOTAL_INC, "
+            "groups.name Name, "
+            "(contacts.Name ||'  '|| contacts.LAST_NAME) ContactName, "
+            "invoices.TOTAL_INC, "
             "INVOICES.INVOICE_NUMBER, DAYARCBILL.TIME_STAMP, DAYARCBILL.STAFF_NAME, "
             "contacts.member_number "
         "from "
@@ -4846,7 +5153,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 	if (Members->Count)
 	{
 		qrInvoice->SQL->Text =	qrInvoice->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	if (Groups->Count > 0)
 	{
@@ -4857,7 +5164,9 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 
 		"Union All "
         "select "
-            "groups.name Name, contacts.name ContactName, invoices.TOTAL_INC, "
+            "groups.name Name, "
+             "(contacts.Name ||'  '|| contacts.LAST_NAME) ContactName, "
+            "invoices.TOTAL_INC, "
             "INVOICES.INVOICE_NUMBER, ARCBILL.TIME_STAMP, ARCBILL.STAFF_NAME, "
             "contacts.member_number "
         "from "
@@ -4873,7 +5182,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 	if (Members->Count)
 	{
 		qrInvoice->SQL->Text =	qrInvoice->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	if (Groups->Count > 0)
 	{
@@ -4910,7 +5219,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
             "contacts.member_number, "
-            "CONTACTS.name, "
+            "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "INVOICES.CLOSED "
         "from ARCBILL "
             "left join ARCHIVE on ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
@@ -4926,7 +5235,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
@@ -4942,7 +5251,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "dayARCHIVE.QTY, "
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
-            "CONTACTS.name, "
+            "(contacts.Name ||'  '|| contacts.LAST_NAME) name, "
             "contacts.member_number, "
             "INVOICES.CLOSED "
         "from dayARCBILL "
@@ -4959,7 +5268,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
@@ -4974,7 +5283,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
             "ORDERS.QTY, "
             "INVOICES.INVOICE_NUMBER, "
             "INVOICES.CONTACTS_KEY, "
-            "CONTACTS.NAME, "
+            "(CONTACTS.Name ||'  '|| CONTACTS.LAST_NAME) name, "
             "contacts.member_number, "
             "INVOICES.CLOSED "
         "from INVOICES "
@@ -4989,7 +5298,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
-											ParamString(Members->Count, "Contacts.Name", "MembersParam") + ")";
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
 
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
@@ -8005,10 +8314,11 @@ void TdmMMReportData::SetupLoyaltyPoints(TStrings *Customers)
             "Earnt_Points,"
             "Loaded_Points,"
 			"Cast(0 As Numeric(17,4)) Points_Redeemed,"
-			"Total_Spent Points_Remaining,"
+			"PT.Total Points_Remaining,"
 			"DateOfBirth \"Birthday\" "
 		"From "
 			"Contacts "
+              +  _pointsTransactionQuery +    ////For Selecting points of a member
 		"Where "
 			"Contact_Type in (2,4) ";
 	if (Customers->Count > 0)
@@ -8905,12 +9215,15 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"Archive.Order_Location,"
 			"Contacts.Name,"
 			"cast('' as varchar(10)) ItemName,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"Sum(Archive.Price * archive.qty) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
 			"Sum(Archive.Redeemed) Total_Points_Redeemed "
 		"From "
 			"Archive Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
+
+              +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime And ";
@@ -8930,7 +9243,7 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"Archive.Order_Location,"
 			"Archive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Union All "
 
@@ -8938,12 +9251,15 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"Archive.Order_Location,"
 			"Contacts.Name,"
 			"cast('VIP Credit' as varchar(10)) ItemName,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"Sum(Archive.Qty * Archive.Price) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
 			"Sum(Archive.Redeemed) Total_Points_Redeemed "
 		"From "
 			"Archive Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime And ";
@@ -8963,7 +9279,7 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"Archive.Order_Location,"
 			"Archive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Union All "
 
@@ -8971,12 +9287,15 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"DayArchive.Order_Location,"
 			"Contacts.Name,"
 			"cast('' as varchar(10)) ItemName,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"Sum(DayArchive.Qty * DayArchive.Price) Total_Spent,"
 			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
 			"Sum(DayArchive.Redeemed) Total_Points_Redeemed "
 		"From "
 			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"DayArchive.Time_Stamp_Billed > :StartTime And "
 			"DayArchive.Time_Stamp_Billed < :EndTime And ";
@@ -8996,7 +9315,7 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"DayArchive.Order_Location,"
 			"DayArchive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total  "
 
 		"Union All "
 
@@ -9004,12 +9323,15 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"DayArchive.Order_Location,"
 			"Contacts.Name,"
 			"cast('VIP Credit' as varchar(10)) ItemName,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total  Total_Points,"
 			"Sum(DayArchive.Qty * DayArchive.Price) Total_Spent,"
 			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
 			"Sum(DayArchive.Redeemed) Total_Points_Redeemed "
 		"From "
 			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+            
 		"Where "
 			"DayArchive.Time_Stamp_Billed > :StartTime And "
 			"DayArchive.Time_Stamp_Billed < :EndTime And "
@@ -9029,7 +9351,7 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"DayArchive.Order_Location,"
 			"DayArchive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total  "
 
 		"Order By "
 			"1,2";
@@ -9082,13 +9404,16 @@ void TdmMMReportData::SetupLoyaltyHistoryLocation(TDateTime StartTime, TDateTime
 		"Select "
 			"cast(Archive.Order_Location as varchar(25)) Order_Location,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"cast(Sum(Archive.Price * Archive.Qty) as numeric(17,4)) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
 			"Sum(Archive.Redeemed) Total_Points_Redeemed, "
 			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
 		"From "
 			"Archive Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
+
+              +  _pointsTransactionQuery +    ////For Selecting points of a member
+              
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime  ";
@@ -9107,45 +9432,13 @@ void TdmMMReportData::SetupLoyaltyHistoryLocation(TDateTime StartTime, TDateTime
 			"Archive.Order_Location,"
 			"Archive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
-
-		"Union All "
-
-		"Select "
-			"cast(DayArchive.Order_Location as varchar(25)) Order_Location,"
-			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
-			"cast(Sum(DayArchive.Price * DayArchive.Qty) as numeric(17,4)) Total_Spent,"
-			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
-			"Sum(DayArchive.Redeemed) Total_Points_Redeemed, "
-			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
-		"From "
-			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
-		"Where "
-			"DayArchive.Time_Stamp_Billed > :StartTime And "
-			"DayArchive.Time_Stamp_Billed < :EndTime  ";
-	if (Names && Names->Count > 0)
-	{
-		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
-	}
-	if (Locations->Count > 0)
-	{
-		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Locations->Count, "DayArchive.Order_Location", "LocationParam") + ")";
-	}
-	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
-		"Group By "
-			"DayArchive.Order_Location,"
-			"DayArchive.Loyalty_Key,"
-			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total  "
 
 		"Union All "
 
 		"Select "
 			"cast(ArcBill.Billed_Location as varchar(25)) Order_Location,"
-			"cast('Unknown' as varchar(50)) Name,"
+			"CT.NAME,"
 			"cast(0 as numeric(17, 4)) Total_Points,"
 			"cast(0 as numeric(17, 4)) Total_Spent,"
 			"cast(0 as numeric(17, 4))  Total_Points_Earned,"
@@ -9154,6 +9447,8 @@ void TdmMMReportData::SetupLoyaltyHistoryLocation(TDateTime StartTime, TDateTime
 		"From "
 			"ArcSurcharge Left Join ArcBill On "
 				"ArcSurcharge.Arcbill_Key = ArcBill.Arcbill_Key "
+             "INNER JOIN POINTSTRANSACTIONS PT on ArcBill.INVOICE_NUMBER = PT.INVOICE_NUMBER "
+			"INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
 			"Left Join Security On "
 				"ArcBill.Security_Ref = Security.Security_Ref "
 		"Where "
@@ -9163,31 +9458,7 @@ void TdmMMReportData::SetupLoyaltyHistoryLocation(TDateTime StartTime, TDateTime
 			"ArcSurcharge.Properties = 65536 ";
 	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
 		"Group By "
-			"ArcBill.Billed_Location " 
-
-		"Union All "
-
-		"Select "
-			"cast(DayArcBill.Billed_Location as varchar(25)) Order_Location,"
-			"cast('Unknown' as varchar(50)) Name,"
-			"cast(0 as numeric(17, 4)) Total_Points,"
-			"cast(0 as numeric(17, 4)) Total_Spent,"
-			"cast(0 as numeric(17, 4))  Total_Points_Earned,"
-			"cast(0 as numeric(17, 4))  Total_Points_Redeemed,"
-			"Sum(DayArcSurcharge.SubTotal) Total_Points_Loaded "
-		"From "
-			"DayArcSurcharge Left Join DayArcBill On "
-				"DayArcSurcharge.Arcbill_Key = DayArcBill.Arcbill_Key "
-			"Left Join Security On "
-				"DayArcBill.Security_Ref = Security.Security_Ref "
-		"Where "
-			"DayArcBill.Time_Stamp > :StartTime And "
-			"DayArcBill.Time_Stamp < :EndTime And "
-			"Security.Security_Event = 'Billed By' And "
-			"DayArcSurcharge.Properties = 65536 ";
-	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
-		"Group By "
-			"DayArcBill.Billed_Location "
+			"ArcBill.Billed_Location,CT.NAME "
 
 		"Order By "
 			"1,2";
@@ -9219,13 +9490,16 @@ void TdmMMReportData::SetupLoyaltyHistoryDates(TDateTime StartTime, TDateTime En
 			"cast(Archive.Order_Location as varchar(25)) Order_Location,"
             "cast(Archive.Time_Stamp as timestamp) TIME_STAMP, "
 			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points,"
 			"cast(Sum(Archive.Price * Archive.Qty) as numeric(17,4)) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
 			"Sum(Archive.Redeemed) Total_Points_Redeemed, "
 			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
 		"From "
 			"Archive Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
+
+              +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime ";
@@ -9240,37 +9514,7 @@ void TdmMMReportData::SetupLoyaltyHistoryDates(TDateTime StartTime, TDateTime En
             "Archive.Time_Stamp, "
 			"Archive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
-
-		"Union All "
-
-		"Select "
-			"cast(DayArchive.Order_Location as varchar(25)) Order_Location,"
-            "DayArchive.Time_Stamp TIME_STAMP, "
-			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
-			"cast(Sum(DayArchive.Price * DayArchive.Qty) as numeric(17,4)) Total_Spent,"
-			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
-			"Sum(DayArchive.Redeemed) Total_Points_Redeemed, "
-			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
-		"From "
-			"DayArchive Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
-		"Where "
-			"DayArchive.Time_Stamp_Billed > :StartTime And "
-			"DayArchive.Time_Stamp_Billed < :EndTime ";
-
-	if (Locations->Count > 0)
-	{
-		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Locations->Count, "DayArchive.Order_Location", "LocationParam") + ")";
-	}
-	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
-		"Group By "
-			"DayArchive.Order_Location,"
-            "DayArchive.Time_Stamp, "
-			"DayArchive.Loyalty_Key,"
-			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Order By "
 			"1,2";
@@ -9294,7 +9538,7 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 		"Select "
 			"cast(Archive.Order_Location as varchar(25)) Order_Location,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
+			"PT.Total Total_Points, "
 			"cast(Sum(Archive.Price * Archive.Qty) as numeric(17,4)) Total_Spent,"
 			"Sum(Archive.Points_Earned) Total_Points_Earned,"
 			"Sum(Archive.Redeemed) Total_Points_Redeemed, "
@@ -9302,6 +9546,9 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 		"From "
 			"Archive "
          "Inner Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+
         " Left join ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 			//"Inner Join Security On Archive.Security_Ref = Security.Security_Ref "
 		"Where "
@@ -9325,45 +9572,43 @@ void TdmMMReportData::SetupLoyaltyHistoryCustomer(TDateTime StartTime, TDateTime
 			"Archive.Order_Location,"
 			"Archive.Loyalty_Key,"
 			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"PT.Total "
 
 		"Union All "
 
-		"Select "
-			"cast(DayArchive.Order_Location as varchar(25)) Order_Location,"
-			"Contacts.Name,"
-			"Contacts.Total_Spent Total_Points,"
-			"cast(Sum(DayArchive.Price * DayArchive.Qty) as numeric(17,4)) Total_Spent,"
-			"Sum(DayArchive.Points_Earned) Total_Points_Earned,"
-			"Sum(DayArchive.Redeemed) Total_Points_Redeemed, "
-			"cast(0 as numeric(17, 4)) Total_Points_Loaded "
+    "Select "
+			"cast(ArcBill.Billed_Location as varchar(25)) Order_Location,"
+			"CT.NAME,"
+			"cast(0 as numeric(17, 4)) Total_Points,"
+			"cast(0 as numeric(17, 4)) Total_Spent,"
+			"cast(0 as numeric(17, 4))  Total_Points_Earned,"
+			"cast(0 as numeric(17, 4))  Total_Points_Redeemed,"
+			"Sum(ArcSurcharge.SubTotal) Total_Points_Loaded "
 		"From "
-			"DayArchive "
-         "Inner Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
-	   	" Left join DAYARCORDERDISCOUNTS on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
-			//"Inner Join Security On DayArchive.Security_Ref = Security.Security_Ref "
+			"ArcSurcharge Left Join ArcBill On "
+				"ArcSurcharge.Arcbill_Key = ArcBill.Arcbill_Key "
+             "INNER JOIN POINTSTRANSACTIONS PT on ArcBill.INVOICE_NUMBER = PT.INVOICE_NUMBER "
+			"INNER JOIN CONTACTS CT ON PT.CONTACTS_KEY = CT.CONTACTS_KEY "
+			"Left Join Security On "
+				"ArcBill.Security_Ref = Security.Security_Ref "
 		"Where "
-		    " ((DAYARCORDERDISCOUNTS.DISCOUNT_KEY>0 and "
-            " DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME<> 'Non-Chargeable' and "
-            " DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME<> 'Complimentary') or DAYArchive.DISCOUNT =0) and "
-			"DayArchive.Time_Stamp_Billed > :StartTime And "
-			"DayArchive.Time_Stamp_Billed < :EndTime  " ;
+			"ArcBill.Time_Stamp > :StartTime And "
+			"ArcBill.Time_Stamp < :EndTime And "
+			"Security.Security_Event = 'Billed By' And "
+			"ArcSurcharge.Properties = 65536 ";
 	if (Names && Names->Count > 0)
 	{
 		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Names->Count, "Contacts.Name", "NamesParam") + ")";
+													ParamString(Names->Count, "CT.NAME", "NamesParam") + ")";
 	}
 	if (Locations->Count > 0)
 	{
 		qrLoyaltyHistory->SQL->Text	=	qrLoyaltyHistory->SQL->Text + "and (" +
-													ParamString(Locations->Count, "DayArchive.Order_Location", "LocationParam") + ")";
+													ParamString(Locations->Count, "ArcBill.Billed_Location", "LocationParam") + ")";
 	}
 	qrLoyaltyHistory->SQL->Text		=	qrLoyaltyHistory->SQL->Text +
 		"Group By "
-			"DayArchive.Order_Location,"
-			"DayArchive.Loyalty_Key,"
-			"Contacts.Name,"
-			"Contacts.Total_Spent "
+			"ArcBill.Billed_Location,CT.NAME "
 
 		"Order By "
 			"1,2";
@@ -9765,19 +10010,18 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"'' as  Name, "
 			"cast('Sales' as varchar(10)) ItemName, "
 			"Archive.Time_Stamp_Billed Time_Stamp, "
-			"cast(sum(Contacts.Total_Spent) as numeric(17, 4)) Total_Points,"
+			"cast(sum(PT.Total) as numeric(17, 4)) Total_Points,"
 			"cast(Sum(Archive.Qty * Archive.Price + Archive.Discount) as numeric(17, 4)) Total_Spent,"
 			"cast(Sum(Archive.Points_Earned) as numeric(17, 4)) Total_Points_Earned,"
 			"cast(Sum(Archive.Redeemed) as numeric(17, 4)) Total_Points_Redeemed "
 		"From "
 			"Archive Left Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
-			//"Inner Join Security On Archive.Security_Ref = Security.Security_Ref "
+
+              +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime And "
-			//"Security.Time_Stamp > :StartTime And "
-			//"Security.Time_Stamp < :EndTime And "
-			//"Security.Security_Event = 'Ordered By' and "
 			"Archive.Item_Name <> '" + CurrentConnection.VIPCreditName + "' "; //'VIP CREDIT' ";
 	if (Locations->Count > 0)
 	{
@@ -9795,19 +10039,18 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"'' as  Name, "
 			"cast('VIP Credit' as varchar(10)) ItemName,"
 			"Archive.Time_Stamp_Billed Time_Stamp, "
-			"cast(sum(Contacts.Total_Spent) as numeric(17, 4)) Total_Points,"
+			"cast(sum(PT.Total) as numeric(17, 4)) Total_Points,"
 			"cast(Sum(Archive.Qty * Archive.Price + Archive.Discount)  as numeric(17, 4)) Total_Spent,"
 			"cast(Sum(Archive.Points_Earned) as numeric(17, 4)) Total_Points_Earned,"
 			"cast(Sum(Archive.Redeemed) as numeric(17, 4)) Total_Points_Redeemed "
 		"From "
 			"Archive Left Join Contacts On Archive.Loyalty_Key = Contacts.Contacts_Key "
-			//"Inner Join Security On Archive.Security_Ref = Security.Security_Ref "
+
+             +  _pointsTransactionQuery +    ////For Selecting points of a member
+             
 		"Where "
 			"Archive.Time_Stamp_Billed > :StartTime And "
 			"Archive.Time_Stamp_Billed < :EndTime And "
-			//"Security.Time_Stamp > :StartTime And "
-			//"Security.Time_Stamp < :EndTime And "
-			//"Security.Security_Event = 'Ordered By' and "
 			"Archive.Item_Name = '" + CurrentConnection.VIPCreditName + "' ";
 	if (Locations->Count > 0)
 	{
@@ -9825,19 +10068,18 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"'' as  Name, "
 			"cast('Sales' as varchar(10)) ItemName,"
 			"DayArchive.Time_Stamp_Billed Time_Stamp,"
-			"cast(sum(Contacts.Total_Spent) as numeric(17, 4)) Total_Points,"
+			"cast(sum(PT.Total) as numeric(17, 4)) Total_Points,"
 			"cast(Sum(DayArchive.Qty * DayArchive.Price + DayArchive.Discount) as numeric(17, 4)) Total_Spent,"
 			"cast(Sum(DayArchive.Points_Earned) as numeric(17, 4)) Total_Points_Earned,"
 			"cast(Sum(DayArchive.Redeemed) as numeric(17, 4)) Total_Points_Redeemed "
 		"From "
 			"DayArchive Left Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
-			//"Inner Join Security On DayArchive.Security_Ref = Security.Security_Ref "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+            
 		"Where "
 			"DayArchive.Time_Stamp_Billed > :StartTime And "
 			"DayArchive.Time_Stamp_Billed < :EndTime And "
-			//"Security.Time_Stamp > :StartTime And "
-			//"Security.Time_Stamp < :EndTime And "
-			//"Security.Security_Event = 'Ordered By' and "
 			"DayArchive.Item_Name <> '" + CurrentConnection.VIPCreditName + "' ";
 	if (Locations->Count > 0)
 	{
@@ -9855,19 +10097,18 @@ void TdmMMReportData::SetupLoyaltyHistoryVIPCredit(TDateTime StartTime, TDateTim
 			"'' as  Name, "
 			"cast('VIP Credit' as varchar(10)) ItemName,"
 			"DayArchive.Time_Stamp_Billed Time_Stamp,"
-			"cast(sum(Contacts.Total_Spent) as numeric(17, 4)) Total_Points,"
+			"cast(sum(PT.Total) as numeric(17, 4)) Total_Points,"
 			"cast(Sum(DayArchive.Qty * DayArchive.Price + DayArchive.Discount) as numeric(17, 4)) Total_Spent,"
 			"cast(Sum(DayArchive.Points_Earned) as numeric(17, 4)) Total_Points_Earned,"
 			"cast(Sum(DayArchive.Redeemed) as numeric(17, 4)) Total_Points_Redeemed "
 		"From "
 			"DayArchive Left Join Contacts On DayArchive.Loyalty_Key = Contacts.Contacts_Key "
-			//"DayArchive Inner Join Security On DayArchive.Security_Ref = Security.Security_Ref "
+
+            +  _pointsTransactionQuery +    ////For Selecting points of a member
+
 		"Where "
 			"DayArchive.Time_Stamp_Billed > :StartTime And "
 			"DayArchive.Time_Stamp_Billed < :EndTime And "
-			//"Security.Time_Stamp > :StartTime And "
-			//"Security.Time_Stamp < :EndTime And "
-			//"Security.Security_Event = 'Ordered By' and "
 			"DayArchive.Item_Name = '" + CurrentConnection.VIPCreditName + "' ";
 	if (Locations->Count > 0)
 	{
@@ -9893,10 +10134,10 @@ void TdmMMReportData::SetupLoyaltyBirthdays(TStrings *Months)
 	qrLoyalty->Close();
 	qrLoyalty->SQL->Text =
 		"Select "
-			"Name,"
+			"(Name ||' '|| LAST_NAME) Name, "
 			"cast(Total_Spent as numeric(17, 4)) Points_Earnt,"
 			"Cast(0 As Numeric(17,4)) Points_Redeemed,"
-			"cast(Total_Spent as numeric(17, 4)) Points_Remaining,"
+			"cast((SELECT distinct SUM(ADJUSTMENT) TOTAL FROM POINTSTRANSACTIONS a WHERE CONTACTS_KEY = CONTACTS.CONTACTS_KEY) as numeric(17, 4)) Points_Remaining,"
 			"DateOfBirth \"Birthday\","
 			"DateOfBirth DOB_Month,"
 			"Extract(Month From DateOfBirth) Birthday_Month,"
@@ -9942,7 +10183,7 @@ void TdmMMReportData::SetupLoyaltyDetails(TStrings *Customers)
 	qrLoyalty->Close();
 	qrLoyalty->SQL->Text =
 		"Select "
-			"Name,"
+			"Name ||' '|| LAST_NAME as Name, "
 			"Title,"
 			"Sex,"
 			"DateOfBirth \"Birthday\","
@@ -9975,7 +10216,7 @@ void TdmMMReportData::SetupNewLoyaltyDetails(TDateTime StartTime, TDateTime EndT
 	qrLoyalty->Close();
 	qrLoyalty->SQL->Text =
 		"Select "
-			"Name,"
+			"Name ||' '|| LAST_NAME as Name,"
 			"Title,"
 			"Sex,"
 			"DateOfBirth \"Birthday\","
@@ -10002,7 +10243,7 @@ void TdmMMReportData::SetupAlteredLoyaltyDetails(TDateTime StartTime, TDateTime 
 	qrLoyalty->Close();
 	qrLoyalty->SQL->Text =
 		"Select "
-			"Name,"
+			"Name ||' '|| LAST_NAME as Name,"
 			"Title,"
 			"Sex,"
 			"DateOfBirth \"Birthday\","
@@ -10541,8 +10782,9 @@ void TdmMMReportData::SetupHappyHour(TDateTime StartTime, TDateTime EndTime, TSt
 			"Security Left Join Archive on "
 				"Security.Security_Ref = Archive.Security_Ref "
 
-		"Where "
-			"Archive.Order_Type in (0,3) and "
+		//"Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "
+        "Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0 and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime) and  "
+			//"Archive.Order_Type in (0,3) and "
 			"Archive.Happy_Hour = 'T' and "
 			"Security.Time_Stamp >= :StartTime and "
 			"Security.Time_Stamp < :EndTime and "
@@ -10591,8 +10833,9 @@ void TdmMMReportData::SetupHappyHour(TDateTime StartTime, TDateTime EndTime, TSt
 		"From "
 			"Security Left Join DayArchive on "
 				"Security.Security_Ref = DayArchive.Security_Ref "
-		"Where "
-			"DayArchive.Order_Type in (0,3) and "
+		//"Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DayArchive where DayArchive.PRICE=0) DayArchive left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "
+        "Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DayArchive where DayArchive.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DayArchive left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
+			//"DayArchive.Order_Type in (0,3) and "
 			"DayArchive.Happy_Hour = 'T' and "
 			"Security.Time_Stamp >= :StartTime and "
 			"Security.Time_Stamp < :EndTime and "
@@ -10642,7 +10885,8 @@ void TdmMMReportData::SetupHappyHour(TDateTime StartTime, TDateTime EndTime, TSt
 		"From "
 			"Security Left Join Orders on "
 				"Security.Security_Ref = Orders.Security_Ref "
-		"Where "
+	   //	"Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY')and "
+       "Where Security.SECURITY_REF not in(select Security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime )and "
 			"Orders.HappyHour = 'T' and "
 			"Security.Time_Stamp >= :StartTime and "
 			"Security.Time_Stamp < :EndTime and "
@@ -13899,8 +14143,8 @@ void TdmMMReportData::SetupSalesSummaryByLocation(TDateTime StartTime, TDateTime
 	qrSalesSummary->SQL->Text = qrSalesSummary->SQL->Text +
 			"CategoryGroups.Name Category_Group,"
 			"Sum(Archive.Qty) Item_Count,"
-           " Cast(Sum(Archive.QTY * Archive.BASE_PRICE+Archive.Qty ) as Numeric(17,4)) PriceExc ,  "
-             "   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) PriceInc , "
+           //" Cast(Sum(Archive.QTY * Archive.BASE_PRICE+Archive.Qty ) as Numeric(17,4)) PriceExc ,  "
+             "   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)) as Numeric(17,4)) Sales_Exc , "
              "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) Sales_Inc, "
 
 			"cast(Sum(Archive.Cost * Archive.Qty) as numeric(17, 4))  Cost "
@@ -14592,8 +14836,8 @@ void TdmMMReportData::BillTendersByTerminal(TDateTime StartTime, TDateTime EndTi
 			"CategoryGroups.Name Category_Group,"
 			"Sum(Archive.Qty) Item_Count,"
            " Cast(Sum(Archive.QTY * Archive.BASE_PRICE+Archive.Qty ) as Numeric(17,4)) PriceExc ,  "
-             "   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) PriceInc , "
-
+             "   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) Sales_Inc , "
+             
 			"cast(Sum(Archive.Cost * Archive.Qty) as numeric(17, 4))  Cost ,"
          "SECURITY.TERMINAL_NAME "
 		"From "
@@ -15029,7 +15273,8 @@ void TdmMMReportData::SalesSummaryLT(TDateTime StartTime, TDateTime EndTime,  TS
 			"CategoryGroups.Name Category_Group,"
 			"Sum(Archive.Qty) Item_Count,"
            " Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE+Archive.Qty ) as Numeric(17,4)) PriceExc ,  "
-             "   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) PriceInc , "
+             //"   Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE(AOT.VAT,0) + COALESCE(AOT.ServiceCharge,0) + COALESCE(AOT.OtherServiceCharge,0)) as Numeric(17,4)) PriceInc , "
+             "Cast(Sum(abs(Archive.QTY) * Archive.BASE_PRICE  + COALESCE(Archive.DISCOUNT_WITHOUT_TAX,0)+ COALESCE( (AOT.VAT),0)+COALESCE( (AOT.ServiceCharge),0) + COALESCE( (AOT.OtherServiceCharge),0)) as Numeric(17,4)) Sales_Inc, "
 
 			"cast(Sum(Archive.Cost * Archive.Qty) as numeric(17, 4))  Cost ,"
          "SECURITY.TERMINAL_NAME "
@@ -15106,7 +15351,7 @@ void TdmMMReportData::SalesSummaryLT(TDateTime StartTime, TDateTime EndTime,  TS
 		qrSalesSummary->ParamByName("TerminalParam" + IntToStr(i))->AsString = Terminals->Strings[i];
 	}
 }
-
+//---------------------------------------------------------------------------------------------------------------------------------
 //MM-2966
 void TdmMMReportData::SetupConsolidatedSalesByItem(TDateTime StartTime, TDateTime EndTime)
 {   try
@@ -15213,6 +15458,7 @@ void TdmMMReportData::SetupCheckRemoval(TDateTime StartTime, TDateTime EndTime) 
 
 
 }
+//---------------------------------------------------------------------------------------------------------------------------------
 //MM-4101
 
  void TdmMMReportData::SetupDSRSummary(TDateTime StartTime, TDateTime EndTime,TStrings *Menus)
@@ -15334,6 +15580,7 @@ void TdmMMReportData::SetupCheckRemoval(TDateTime StartTime, TDateTime EndTime) 
 
 
 }
+//---------------------------------------------------------------------------------------------------------------------------------
 void TdmMMReportData::SetupDSRSum(TDateTime StartTime, TDateTime EndTime)
 {    	qrDSRSum->Close();
 		qrDSRSum->SQL->Text =
@@ -15408,6 +15655,7 @@ void TdmMMReportData::SetupDSRSum(TDateTime StartTime, TDateTime EndTime)
 
 
 }
+//---------------------------------------------------------------------------------------------------------------------------------
 void TdmMMReportData::ResetPoints(TDateTime StartTime, TDateTime EndTime, int i) //MM-4579
 {
    qrResetPoints->Close();
@@ -15462,7 +15710,7 @@ void TdmMMReportData::ResetPoints(TDateTime StartTime, TDateTime EndTime, int i)
 	qrResetPoints->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrResetPoints->ParamByName("EndTime")->AsDateTime	= EndTime;
 }
-
+//---------------------------------------------------------------------------------------------------------------------------------
  void TdmMMReportData::SetupReprintOrder(TDateTime StartTime, TDateTime EndTime)   //MM-4766
 {
 	qrReprintOrder->Close();
@@ -15781,6 +16029,7 @@ void TdmMMReportData::SetupProfiltLoss(TDateTime StartTime, TDateTime EndTime, T
     qrProfiltLoss->ParamByName("EndTime")->AsDateTime		= EndTime;
 
 }
+//---------------------------------------------------------------------------------------------------------------------------------
 void TdmMMReportData::SetupPointSpend(TDateTime StartTime, TDateTime EndTime, TStrings *Categories, TStrings *payments)
 {
 	qrPointSpend->Close();
@@ -16034,14 +16283,10 @@ qrPointSpend->ParamByName("StartTime")->AsDateTime	= StartTime;
 qrPointSpend->ParamByName("EndTime")->AsDateTime	= EndTime;
 
 }
-
-
-
+//---------------------------------------------------------------------------------------
 
 void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDateTime EndTime, TStrings *Names)
-
 {
-
 	qrMembershipAuditPointsBreakdown->Close();
 	qrMembershipAuditPointsBreakdown->SQL->Text =
 		"select "
@@ -16256,16 +16501,9 @@ void TdmMMReportData::SetupLoyaltyMembershipAuditItem1(TDateTime StartTime, TDat
 		}
 	}
 
-
-
-
-        qrMembershipAuditPointsBreakdown->ParamByName("StartTime")->AsDateTime	= StartTime;
-	  qrMembershipAuditPointsBreakdown->ParamByName("EndTime")->AsDateTime	= EndTime;
-
+    qrMembershipAuditPointsBreakdown->ParamByName("StartTime")->AsDateTime	= StartTime;
+    qrMembershipAuditPointsBreakdown->ParamByName("EndTime")->AsDateTime	= EndTime;
 }
-
-
-
 
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupBreakdownCategory(TStrings *Menus)

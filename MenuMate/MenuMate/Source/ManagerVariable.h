@@ -120,6 +120,7 @@ enum vmVariables
     vmMergeSimilarItem,
     vmHideRoundingOnReceipt,
 	vmCashDenominationEntry,
+    vmReportExportPath,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
@@ -159,7 +160,7 @@ enum vmVariables
    //GlCodes
    vmPointsPurchasedGLCode,vmPointsSpentGLCode,
    vmVoucherPurchasedGLCode, vmServiceChargeGLCode, vmServiceChargeTaxGLCode,vmRoundingGLCode, vmTabDepositCreditReceivedGLCode,
-   vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal,
+   vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance,
     //Tax
     vmItemPriceIncludeTax = 8000, vmItemPriceIncludeServiceCharge, vmCalculateTaxPostDiscount, vmCalculateServiceChargePostDiscount,
     vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate,
@@ -207,7 +208,10 @@ enum vmVariables
     vmUseMemberSubs,
     vmFloatWithdrawFromCash,
     ///PechTree CSV
-    vmCSVPath = 9500, vmIsEnabledPeachTree, vmCSVExportIP
+    vmCSVPath = 9500, vmIsEnabledPeachTree, vmCSVExportIP,
+
+     //Panasonic Integration
+    vmIsPanasonicIntegrationEnabled = 9600, vmPanasonicServerIP
 };
 
 // ---------------------------------------------------------------------------
