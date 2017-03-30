@@ -169,6 +169,10 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
                 }
         }
 
+        fieldData.TotalGCSales = 0;
+        fieldData.TotalCashSales = 0;
+        fieldData.TotalChargedSales = 0;
+
         for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
 		{
 			TPayment *SubPayment = paymentTransaction.PaymentGet(i);
@@ -251,7 +255,27 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 void TDeanAndDelucaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData,
                                 TDeanAndDelucaMallField fieldData, int arcBillKey)
 {
-    ///Call Push Field into List Method for pushing every field into DB
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Tenant Code", "UnicodeString", fieldData.TenantCode, 1, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "POS Terminal Number", "int", fieldData.TerminalNumber, 2, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Date (mmddyyyy)", "TDateTime", Now().FormatString("mmddyyyy"), 3, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Old Accumulated Total", "double", fabs(fieldData.OldAccSalesTotal), 4, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "New Accumulated Total", "double", fabs(fieldData.NewAccSalesTotal), 5, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Gross Sales Amount", "double", fieldData.GrossSaleAmount, 6, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Non-Taxable Sales Amount", "double", fieldData.NonTaxableSaleAmount, 7, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Senior Citizen Discount", "double", fieldData.TotalSCDAndPWDAmount, 8, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Other Discount", "double", fieldData.TotalOtherDiscount, 9, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Refund Amount", "double", fieldData.TotalRefundAmount, 10, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total TAX/VAT Amount", "double", fieldData.TotalTax, 11, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total ServiceCharge Amount", "double", fieldData.TotalServiceCharge, 12, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Net Sales Amount", "double", fieldData.TotalNetSaleAmount, 13, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Cash Sales", "double", fieldData.TotalCashSales, 14, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Charge Sales", "double", fieldData.TotalChargedSales, 15, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total GC Sales", "double", fieldData.TotalGCSales, 16, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Void Amount", "double", fieldData.TotalVoidAmount, 17, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Customer Count", "int", fieldData.CustomerCount, 18, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Control Number", "int", fieldData.ZKey, 19, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Number Of Sales Transaction", "int", fieldData.SalesCount, 20, arcBillKey);
+    PushFieldsInToList(dbTransaction, mallExportSalesData, "Hour Code", "int", HourOf(Now()), 21, arcBillKey);
 }
 //-----------------------------------------------------------------------------------------------------------
 void TDeanAndDelucaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)

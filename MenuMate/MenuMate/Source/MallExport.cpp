@@ -66,6 +66,7 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
     try
     {
         std::list<TMallExportSalesData>::iterator it;
+        int arcBillKey;
         //Iterate mallExport Sales data for inserting into DB
         for(it = mallExportSalesData.SalesData.begin(); it != mallExportSalesData.SalesData.end(); it++)
         {
@@ -110,13 +111,14 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = it->ZKey;
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = it->DeviceKey;
+            arcBillKey = it->ArcBillKey;
             IBInternalQuery->ExecQuery();
         }
 
         //Insert sales total amount according to sales type.
         if(mallExportSalesData.SaleBySalsType.size())
         {
-            InsertInToMallSalesBySalesType(dbTransaction, mallExportSalesData.SaleBySalsType, 50);
+            InsertInToMallSalesBySalesType(dbTransaction, mallExportSalesData.SaleBySalsType, arcBillKey);
         }
 
         isInserted = true;
