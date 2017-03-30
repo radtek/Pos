@@ -1892,26 +1892,14 @@ void TApplyParser::Updatetable_PaymentTypes(TDBControl* const inDBControl)
 //--------------------------------------------------------------------------------------------------
 void TApplyParser::update6_39Tables()
 {
-    AlterTable6_39_MallExport_Sales(_dbControl);
-    CreateGenerators6_39(_dbControl);
+     CreateGenerators6_39(_dbControl);
     CreateTable6_39MallSalesType(_dbControl);
     CreateTable6_39MallSalesTypeItemRelation(_dbControl);
     CreateTable6_39MallSalesBySalesType(_dbControl);
     Insert6_39Malls(_dbControl, 2, "Dean & Deluca", "F");
     Insert6_39MallExport_Settings_Mapping(_dbControl);
 }
-//----------------------------------------------------------------------------------------------------------------
-void TApplyParser::AlterTable6_39_MallExport_Sales(TDBControl* const inDBControl)
-{
-     if ( fieldExists( "MALLEXPORT_SALES ", "ARCBILL_KEY ", _dbControl ) )
-    {
-        executeQuery (
-        "ALTER TABLE MALLEXPORT_SALES "
-        "ADD FOREIGN KEY(ARCBILL_KEY) REFERENCES ARCBILL(ARCBILL_KEY) ON UPDATE CASCADE ON DELETE CASCADE, "
-        "ADD FOREIGN KEY(Z_KEY) REFERENCES ZEDS(Z_KEY) ON UPDATE CASCADE ON DELETE CASCADE ",
-        inDBControl);
-    }
-}
+
 //-------------------------------------------------------------------------------------------------------------
 void TApplyParser::Insert6_39Malls(TDBControl* const inDBControl, int mallKey, UnicodeString mallName, UnicodeString isActive)
 {

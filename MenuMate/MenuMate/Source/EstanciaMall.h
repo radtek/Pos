@@ -288,7 +288,7 @@ private:
 protected:
 
     //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
-    std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
+    TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey);
 
     //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
     TMallExportPrepareData PrepareDataForExport(int zKey = 0);

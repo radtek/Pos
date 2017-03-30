@@ -17,7 +17,7 @@ bool TMallExport::PushToDatabase(TPaymentTransaction &paymentTransaction, int ar
     try
     {
         // Create TMallExportPrepareData object to store Preapared Data
-        std::list<TMallExportSalesData> salesData;
+        TMallExportSalesWrapper salesData;
 
         ///Prepare Data For Inserting Data Into DataBase
         salesData = PrepareDataForDatabase(paymentTransaction, arcBillKey);
@@ -58,7 +58,7 @@ bool TMallExport::Export()
     return true;
 }
 //----------------------------------------------------------
-bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , std::list<TMallExportSalesData> mallExportSalesData)
+bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportSalesWrapper mallExportSalesData)
 {
     Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
 	dbTransaction.RegisterQuery(IBInternalQuery);
@@ -67,7 +67,7 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
     {
         std::list<TMallExportSalesData>::iterator it;
         //Iterate mallExport Sales data for inserting into DB
-        for(it = mallExportSalesData.begin(); it != mallExportSalesData.end(); it++)
+        for(it = mallExportSalesData.SalesData.begin(); it != mallExportSalesData.SalesData.end(); it++)
         {
             // Inserting Each field of nall into Table
             IBInternalQuery->Close();
@@ -112,10 +112,10 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = it->DeviceKey;
             IBInternalQuery->ExecQuery();
 
-            if(it->SaleBySalsType.size())
-            {
-                InsertInToMallSalesBySalesType(dbTransaction, it->SaleBySalsType, it->ArcBillKey);
-            }
+//            if(it->SaleBySalsType.size())
+//            {
+//                InsertInToMallSalesBySalesType(dbTransaction, it->SaleBySalsType, it->ArcBillKey);
+//            }
         }
         isInserted = true;
     }

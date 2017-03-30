@@ -64,10 +64,14 @@ void TMallExportSalesData::SetDeviceKey(int deviceKey)
     _deviceKey = deviceKey;
 }
 //---------------------------------------------------------------------------
-void TMallExportSalesData::SetSalesBySalesType(std::map<int, double> saleBySalsType)
+void TMallExportSalesWrapper::SetMallExportSalesData(std::list<TMallExportSalesData> salesData)
+{
+    _mallExportSalesData = salesData;
+}
+//----------------------------------------------------------------------------
+void TMallExportSalesWrapper::SetSalesBySalesType(std::map<int, double> saleBySalsType)
 {
     _saleBySalsType = saleBySalsType;
 }
-//---------------------------------------------------------------------------
 
 
