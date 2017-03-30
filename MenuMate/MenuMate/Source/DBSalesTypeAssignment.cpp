@@ -253,9 +253,14 @@ void TDBSalesTypeAssignment::SaveAssignedItemsToSalesTYpeGroup(std::map<int, std
     {
         std::map <int, map <int, UnicodeString> >::iterator outerit;
         std::map <int, UnicodeString>::iterator innerit;
-
         //Register the database transaction..
          dbTransaction.StartTransaction();
+
+        TIBSQL* deleteQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        deleteQuery->Close();
+        deleteQuery->SQL->Text =  "DELETE FROM MALL_SALES_TYPE_ITEMS_RELATION ";
+
+        deleteQuery->ExecQuery();
 
         //Increment Generator for inserting date into db since it is primary key.
         TIBSQL* incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
