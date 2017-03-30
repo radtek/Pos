@@ -16,7 +16,7 @@ private:
 protected:
 
     //Prepare data for inserting into database according to mall type. child class will override it.
-    virtual std::list<TMallExportSalesData> PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey) = 0;
+    virtual TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey) = 0;
 
     //Prepare Data For Export it will be overriden by child class.
     virtual TMallExportPrepareData PrepareDataForExport(int zKey = 0) = 0;
@@ -25,7 +25,7 @@ protected:
     virtual IExporterInterface* CreateExportMedium() = 0;
 
     //Insert all data into mall_export_sales table in row based pattern.
-    virtual bool InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , std::list<TMallExportSalesData> mallExportSalesData);
+    virtual bool InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportSalesWrapper mallExportSalesData);
 
     //if sales type is assigned to items then sales total according to sales type will get stored in new table
     virtual void InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTransaction , std::map<int, double> salesBySalesType, int arcBillKey);

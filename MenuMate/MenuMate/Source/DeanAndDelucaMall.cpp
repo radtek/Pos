@@ -4,6 +4,9 @@
 #pragma hdrstop
 
 #include "DeanAndDelucaMall.h"
+#include "MallExportData.h"
+#include "GlobalSettings.h"
+#include "IBillCalculator.h"
 #include "Comms.h"
 #include "DeviceRealTerminal.h"
 #include <Math.h>
@@ -131,8 +134,9 @@ TDeanAndDelucaMall::TDeanAndDelucaMall()
     deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
 }
 //--------------------------------------------------------------------------------------------
-std::list<TMallExportSalesData> TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
+TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
 {
+    TMallExportSalesWrapper salesWrapper;
     std::list<TMallExportSalesData> mallExportSalesData;
     try
     {
@@ -236,6 +240,8 @@ std::list<TMallExportSalesData> TDeanAndDelucaMall::PrepareDataForDatabase(TPaym
 
         //call For inserting into list
         InsertFieldInToList(paymentTransaction.DBTransaction, mallExportSalesData, fieldData, arcBillKey);
+
+        salesWrapper.SalesData = mallExportSalesData;
     }
     catch(Exception &E)
 	{
@@ -243,7 +249,7 @@ std::list<TMallExportSalesData> TDeanAndDelucaMall::PrepareDataForDatabase(TPaym
 		throw;
 	}
 
-    return mallExportSalesData;
+    return salesWrapper;
 }
 //-----------------------------------------------------------------------------------------------------------
 void TDeanAndDelucaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData,
@@ -252,9 +258,51 @@ void TDeanAndDelucaMall::InsertFieldInToList(Database::TDBTransaction &dbTransac
     ///Call Push Field into List Method for pushing every field into DB
 }
 //-----------------------------------------------------------------------------------------------------------
+void TDeanAndDelucaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
+{
+    try
+    {
+        TMallExportSalesData salesData;
+        salesData.MallExportSalesId = GenerateSaleKey(dbTransaction);
+        salesData.MallKey = TGlobalSettings::Instance().mallInfo.MallId;
+        salesData.DataValue = fieldValue;
+        salesData.Field = field;
+        salesData.DataValueType = dataType;
+        salesData.FieldIndex = fieldIndex;
+        salesData.DateCreated = Now();
+        salesData.CreatedBy = TDeviceRealTerminal::Instance().User.Name;
+        salesData.ArcBillKey = arcBillKey;
+        salesData.ZKey = 0;
+        salesData.DeviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
+        mallExportSalesData.push_back(salesData);
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//--------------------------------------------------------------------------------------------------------
 long TDeanAndDelucaMall::GenerateSaleKey(Database::TDBTransaction &dbTransaction)
 {
-    //call Generator for generating sales key
+    Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	dbTransaction.RegisterQuery(IBInternalQuery);
+    long saleKey;
+    try
+    {
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_MALLEXPORT_SALE_KEY, 1) FROM RDB$DATABASE";
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount)
+            saleKey = IBInternalQuery->Fields[0]->AsInteger;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return saleKey;
 }
 //---------------------------------------------------------------------------------
 int TDeanAndDelucaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
@@ -312,19 +360,6 @@ double TDeanAndDelucaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTr
     return oldAccumulatedSales;
 }
 //----------------------------------------------------------------------------------------------------------------
-void TDeanAndDelucaMall::PushFieldsInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, UnicodeString field, UnicodeString dataType, UnicodeString fieldValue, int fieldIndex, int arcBillKey)
-{
-    try
-    {
-        //Push field into MallExportSalesData
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-//--------------------------------------------------------------------------------------------------------
 TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)
 {
     //Create TMallExportPrepareData  for returning prepared data

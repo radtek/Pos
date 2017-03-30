@@ -340,8 +340,9 @@ TEstanciaMall::TEstanciaMall()
     deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
 }
 //-------------------------------------------------------------------------------------------------------------
-std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
+TMallExportSalesWrapper TEstanciaMall::PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey)
 {
+    TMallExportSalesWrapper mallExportSalesWrapper;
     std::list<TMallExportSalesData> mallExportSalesData;
     try
     {
@@ -416,6 +417,9 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
 
         //call For inserting into list
         InsertFieldInToList(paymentTransaction.DBTransaction, mallExportSalesData, fieldData, arcBillKey);
+
+        //Assign
+        mallExportSalesWrapper.SalesData = mallExportSalesData;
     }
     catch(Exception &E)
 	{
@@ -423,7 +427,7 @@ std::list<TMallExportSalesData> TEstanciaMall::PrepareDataForDatabase(TPaymentTr
 		throw;
 	}
 
-    return mallExportSalesData;
+    return mallExportSalesWrapper;
 }
 //----------------------------------------------------------------------------------------------
 void TEstanciaMall::PrepareItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEstanciaMallField &fieldData)
