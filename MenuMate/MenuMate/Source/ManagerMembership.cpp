@@ -693,12 +693,12 @@ TLoginSuccess TManagerMembership::IsCard(Database::TDBTransaction &DBTransaction
    return LoginSuccess;
 }
 
-bool TManagerMembership::MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode)
+bool TManagerMembership::LoyaltyMemberSelected(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode,bool triggeredByCard)
 {
    bool memberExist = false;
    try
    {
-      memberExist = MembershipSystem->MemberCodeScanned(DBTransaction, UserInfo, memberCardCode);
+      memberExist = MembershipSystem->LoyaltyMemberSelected(DBTransaction, UserInfo, memberCardCode,triggeredByCard);
    }
    catch(Exception & E)
    {

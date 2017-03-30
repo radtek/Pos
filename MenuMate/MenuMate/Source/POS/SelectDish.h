@@ -420,6 +420,7 @@ private: // User declarations
     void CaptureDeliveryTime();
     int GetUpdatedPatronCount(Database::TDBTransaction &DBTransaction,int TableNumber,std::set<int> SeatCounter);
     void GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode);
+    void GetLoyaltyMember(Database::TDBTransaction &DBTransaction,TMMContactInfo & Info);
     void AssignBarcodeToMember();
     void ManageDiscounts();
     void HideSoldItems(Database::TDBTransaction &DBTransaction,TList *OrdersList);

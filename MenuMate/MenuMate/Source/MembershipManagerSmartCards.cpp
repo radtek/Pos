@@ -2247,8 +2247,7 @@ bool TManagerMembershipSmartCards::createMemberOnLoyaltyMate(TSyndCode syndicate
 	if(!result)
 	  MessageBox(memberCreationThread->ErrorMessage,"Failed to create member", MB_ICONERROR + MB_OK);
     else
-      MessageBox("Member created. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
-
+      MessageBox("Member created. Please select member or re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
 	// cleanup
 	delete _lmOperationDialogBox;
 	delete memberCreationThread;
@@ -2600,7 +2599,7 @@ bool TManagerMembershipSmartCards::GetMemberDetailFromEmail(TMMContactInfo &MMCo
    return MemberNotExist;
 }
 
-bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode)
+bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransaction &DBTransaction, TMMContactInfo &UserInfo,AnsiString memberCardCode,bool triggeredByCard)
 {
    bool addDefaultPoints = false;
    bool isCancel = false;
@@ -2608,14 +2607,23 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
    TMMContactInfo localContactInfo;
    TContactPoints pointsToSync;
    MemberMode memberMode = eInvalidMode;
-   bool existInLocalDb = TDBContacts::GetContactDetailsByCode(DBTransaction,localContactInfo,memberCardCode,memberMode);
+   bool existInLocalDb = !triggeredByCard;
+
+   if(triggeredByCard)
+   {
+      existInLocalDb = TDBContacts::GetContactDetailsByCode(DBTransaction,localContactInfo,memberCardCode,memberMode);
+   }
+   else
+   {
+      localContactInfo = UserInfo;
+   }
+
    if(existInLocalDb && TLoyaltyMateUtilities::HasPendingTransactions(DBTransaction,localContactInfo.ContactKey))
      {
         MessageBox("There are pending transaction to be sync. Please try again.", "Information", MB_OK + MB_ICONINFORMATION);
         TManagerLoyaltyMate::Instance()->TriggerPointSync();
         return false;
      }
-
 
    UserInfo = localContactInfo;
    if(TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(localContactInfo.CloudUUID))
@@ -2781,13 +2789,13 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
             }
          }
        }
-       else if(UserInfo.MemberCode != memberCardCode)
+       else if(memberCardCode != "" && UserInfo.MemberCode != memberCardCode)
        {
           UserInfo.MemberCode = memberCardCode;
           updateRequired = true;
        }
 
-       if(updateRequired && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
+       if(memberCardCode != "" && updateRequired && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
        {
           UpdateMemberCardCode(DBTransaction,UserInfo,memberCardCode);
        }
@@ -2804,7 +2812,7 @@ bool TManagerMembershipSmartCards::MemberCodeScanned(Database::TDBTransaction &D
 
    if(addDefaultPoints && TLoyaltyMateUtilities::IsLoyaltyMateEnabledGUID(UserInfo.CloudUUID))
    {
-     AddDefaultPoints(DBTransaction,pointsToSync,UserInfo.ContactKey);
+     AddDefaultPoints(DBTransaction,pointsToSync,UserInfo.ContactKey,triggeredByCard);
      TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, "Added Default Entry --- MemberCodeScanned");
    }
     DBTransaction.Commit();
@@ -2967,7 +2975,7 @@ void TManagerMembershipSmartCards::SaveTransactionInvoiceDetail(TPaymentTransact
     }
 }
 
-void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DBTransaction,TContactPoints &Points,int contactkey)
+void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DBTransaction,TContactPoints &Points,int contactkey,bool triggeredForCard)
 {
    TDateTime syncTime = Now();
    if(Points.getPointsBalance(ptstLoyalty) > 0)
@@ -2992,7 +3000,14 @@ void TManagerMembershipSmartCards::AddDefaultPoints(Database::TDBTransaction &DB
         TLoyaltyMateUtilities::SetTransaction(DBTransaction,transaction);
    }
    TManagerLoyaltyMate::Instance()->TriggerPointSync();
+   if(triggeredForCard)
+   {
    MessageBox("Points restored. Please re-insert card or scan member code to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+   }
+   else
+   {
+      MessageBox("Points restored. Please select member again to continue.","LoyaltyMate Operation", MB_ICONINFORMATION + MB_OK);
+   }
 }
 
 void TManagerMembershipSmartCards::RewardBirthdaybenefit(TPaymentTransaction &PaymentTransaction)
