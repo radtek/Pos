@@ -2032,8 +2032,7 @@ void TApplyParser::CreateTable6_39MallSalesBySalesType( TDBControl* const inDBCo
 		"   SALES_ID INTEGER PRIMARY KEY,"
 		"   ARCBILL_KEY INTEGER,"
 		"   SALES_TYPE_ID INTEGER,"
-        "   SUBTOTAL  NUMERIC(15,4),"
-        "   FOREIGN KEY(SALES_TYPE_ID) REFERENCES MALL_SALES_TYPE(SALES_TYPE_ID) ON UPDATE CASCADE ON DELETE CASCADE "
+        "   SUBTOTAL  NUMERIC(15,4) "
 		");",
 		inDBControl );
 	}
