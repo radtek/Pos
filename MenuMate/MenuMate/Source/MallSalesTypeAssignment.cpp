@@ -55,7 +55,7 @@ void __fastcall TfrmMallSalesTypeAssignment::MembersGridMouseClick(TObject *Send
 void __fastcall TfrmMallSalesTypeAssignment::GroupMembersMouseClick(TObject *Sender,
           TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
 {
-    RemoveTypefromGroup(GridButton->Tag);
+    RemoveItemsFromSalesTypeGroup(GridButton->Tag);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnCloseMouseClick(TObject *Sender)
@@ -227,7 +227,7 @@ void TfrmMallSalesTypeAssignment::DisableSelectedTypesInGroup()
     }
 }
 
-void TfrmMallSalesTypeAssignment::RemoveTypefromGroup(int itemKey)
+void TfrmMallSalesTypeAssignment::RemoveItemsFromSalesTypeGroup(int itemKey)
 {
     std::map <int, std::map <int, UnicodeString> >::iterator outerit;
     std::map <int, UnicodeString>::iterator innerit;
