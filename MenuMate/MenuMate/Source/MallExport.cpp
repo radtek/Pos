@@ -111,12 +111,14 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
             IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = it->ArcBillKey;
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = it->DeviceKey;
             IBInternalQuery->ExecQuery();
-
-//            if(it->SaleBySalsType.size())
-//            {
-//                InsertInToMallSalesBySalesType(dbTransaction, it->SaleBySalsType, it->ArcBillKey);
-//            }
         }
+
+        //Insert sales total amount according to sales type.
+        if(mallExportSalesData.SaleBySalsType.size())
+        {
+            InsertInToMallSalesBySalesType(dbTransaction, mallExportSalesData.SaleBySalsType, 50);
+        }
+
         isInserted = true;
     }
     catch(Exception &E)

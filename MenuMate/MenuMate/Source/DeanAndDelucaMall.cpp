@@ -105,16 +105,6 @@ void TDeanAndDelucaMallField::SetSalesCount(int salesCount)
     _salesCount = salesCount;
 }
 //------------------------------------------------------------------------------------------
-void TDeanAndDelucaMallField::SetSalesType(int salesType)
-{
-    _salesType = salesType;
-}
-//------------------------------------------------------------------------------------------
-void TDeanAndDelucaMallField::SetNetSaleAmountPerSalesType(double netSalesAmountPerSalesType)
-{
-    _netSalesAmountPerSalesType = netSalesAmountPerSalesType;
-}
-//------------------------------------------------------------------------------------------
 void TDeanAndDelucaMallField::SetHourCode(int hourCode)
 {
     _hourCode = hourCode;
@@ -125,6 +115,10 @@ void TDeanAndDelucaMallField::SetZKey(int zKey)
     _zkey = zKey;
 }
 //------------------------------------------------------------------------------------------
+void TDeanAndDelucaMallField::SetSalesBySalesType(std::map<int, double> salesBySalestype)
+{
+    _salesBysalesType = salesBySalestype;
+}
 
 //-----------------------------------------------------------------------------------------------------------------
 TDeanAndDelucaMall::TDeanAndDelucaMall()
@@ -162,16 +156,16 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         {
                 TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
 
-                //this will call all taxes and discount calculation inside it
-            //    PrepareItem(paymentTransaction.DBTransaction, Order, fieldData);
+                //todo
+                PrepareDataByItem(paymentTransaction.DBTransaction, Order, fieldData);
 
                 //For SubOrder
                 for (int i = 0; i < Order->SubOrders->Count; i++)
 				{
 					TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
 
-                    //this will call all taxes and discount calculation inside it
-                //    PrepareItem(paymentTransaction.DBTransaction, CurrentSubOrder, fieldData);
+                    //todo
+                    PrepareDataByItem(paymentTransaction.DBTransaction, CurrentSubOrder, fieldData);
                 }
         }
 
@@ -232,7 +226,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         fieldData.SalesCount = (fieldData.TotalRefundAmount > 0 ? 0 : 1);
 
 
-        fieldData.SalesType = 1; //todo
+        //fieldData.SalesType = 1; //todo
 
 
 
@@ -241,7 +235,9 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         //call For inserting into list
         InsertFieldInToList(paymentTransaction.DBTransaction, mallExportSalesData, fieldData, arcBillKey);
 
+        //Assign sales list to wrapper class
         salesWrapper.SalesData = mallExportSalesData;
+        salesWrapper.SaleBySalsType = fieldData.SalesBySalesType;
     }
     catch(Exception &E)
 	{
@@ -500,7 +496,7 @@ IExporterInterface* TDeanAndDelucaMall::CreateExportMedium()
     //return file export type
 }
 //----------------------------------------------------------------------------------------------------------------
-void TDeanAndDelucaMall::PrepareItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order, TDeanAndDelucaMallField &fieldData)
+void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order, TDeanAndDelucaMallField &fieldData)
 {
     //Create Taxes Object to collect all taxes details
     TDeanAndDelucaTaxes taxes;
@@ -525,6 +521,25 @@ void TDeanAndDelucaMall::PrepareItem(Database::TDBTransaction &dbTransaction, TI
     {
        fieldData.GrossSaleAmount += grossAmount;
     }
+
+    //Get Salestype Code. if item is assigned to any sales type then it will return code else "";
+    int salesTypeId = GetItemSalesId(dbTransaction, order->ItemKey);
+
+    //insert sales by salesType into map id already exist then update amount..
+    if(salesTypeId)
+    {
+        std::map <int, double> ::iterator isSumBySalesType = fieldData.SalesBySalesType.find(salesTypeId);
+
+        if(isSumBySalesType != fieldData.SalesBySalesType.end())
+        {
+            isSumBySalesType->second += grossAmount;
+        }
+        else
+        {
+            fieldData.SalesBySalesType.insert(std::pair<int, double >(salesTypeId, grossAmount));
+        }
+    }
+
 }
 //------------------------------------------------------------------------------------------------------------------
 TDeanAndDelucaDiscount TDeanAndDelucaMall::PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order)
@@ -588,6 +603,30 @@ bool TDeanAndDelucaMall::IsItemVatable(TItemMinorComplete *order, TDeanAndDeluca
         isVatable = false;
 
     return isVatable;
+}
+//-----------------------------------------------------------------------------------------------------------
+int TDeanAndDelucaMall::GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey)
+{
+    int salesTypeId = 0;
+    try
+    {
+        Database::TcpIBSQL ibInternalQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(ibInternalQuery);
+
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text = "SELECT a.STI_ID FROM MALL_SALES_TYPE_ITEMS_RELATION a "
+                                     "WHERE A.ITEM_ID = :ITEM_ID ";
+        ibInternalQuery->ParamByName("ITEM_ID")->AsInteger = itemKey;
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+            salesTypeId = ibInternalQuery->Fields[0]->AsInteger;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+    return salesTypeId;
 }
 
 

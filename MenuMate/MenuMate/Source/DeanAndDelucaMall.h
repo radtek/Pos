@@ -69,9 +69,14 @@ private:
     //prepare SCD, PWD and others discount
     TDeanAndDelucaDiscount PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order);
 
-    void PrepareItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TDeanAndDelucaMallField &fieldData);
+    //Prepare DataBy Item initilize mall field by item
+    void PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TDeanAndDelucaMallField &fieldData);
 
-    bool IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &estanciaTaxes);
+    //Check Whether Item is vatable
+    bool IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &delucaTaxes);
+
+    //Check whether item is assigned to any sales type..
+    int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
 
     protected:
 
@@ -130,10 +135,9 @@ private:
     double _totalVoidAmount;
     int _customerCount;
     int _salesCount;
-    int _salesType;
-    double _netSalesAmountPerSalesType;
     int _hourCode;
     int _zkey;
+    std::map<int, double> _salesBysalesType;
 
 
     void SetTerminalNumber(int terminalNumber);
@@ -154,10 +158,9 @@ private:
     void SetVoidAmount(double voidAmount);
     void SetCustomerCount(int customerCount);
     void SetSalesCount(int salesCount);
-    void SetSalesType(int salesType);
-    void SetNetSaleAmountPerSalesType(double netSalesAmountPerSalesType);
     void SetHourCode(int hourCode);
     void SetZKey(int zKey);
+    void SetSalesBySalesType(std::map<int, double> salesBySalestype);
 
 public:
     __property int TerminalNumber = {read = _terminalNumber, write = SetTerminalNumber};
@@ -178,9 +181,8 @@ public:
     __property double TotalVoidAmount = {read = _totalVoidAmount, write = SetVoidAmount};
     __property int CustomerCount = {read = _customerCount, write = SetCustomerCount};
     __property int SalesCount = {read = _salesCount, write = SetSalesCount};
-    __property int SalesType = {read = _salesType, write = SetSalesType};
-    __property double NetSalesAmountPerSalesType = {read = _netSalesAmountPerSalesType, write = SetNetSaleAmountPerSalesType};
     __property int HourCode = {read = _hourCode, write = SetHourCode};
     __property int ZKey = {read = _zkey, write = SetZKey};
+    __property std::map<int, double> SalesBySalesType = {read = _salesBysalesType, write =  SetSalesBySalesType};
 };
 #endif
