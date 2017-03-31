@@ -221,7 +221,7 @@ private:	// User declarations
     AnsiString GetCashGlCode(Database::TDBTransaction &DBTransaction);
     void CompleteDLFMallExport();
     TDateTime GetMinDayArchiveTime(Database::TDBTransaction &DBTransaction, TDateTime PrevZedTime);
-    void UpdateZKeyForMallExportSales();
+    void UpdateZKeyForMallExportSales(bool isMasterTerminal, int fieldIndex);
     double GetCashWithdrawal(Database::TDBTransaction &DBTransaction);
     double GetCashBlindBalance(TBlindBalances Balances);
 public:		// User declarations

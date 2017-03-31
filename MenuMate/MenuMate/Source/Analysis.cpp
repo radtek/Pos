@@ -3406,10 +3406,16 @@ Zed:
 			{
                 UpdateMallExportDetails();
 
+                bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
                 //Method for mall Design According to newly pattern
-                UpdateZKeyForMallExportSales();
+
                 if(TGlobalSettings::Instance().mallInfo.MallId)
                 {
+                    if(TGlobalSettings::Instance().mallInfo.MallId == 1)
+                        UpdateZKeyForMallExportSales(isMasterterminal, 33);
+                    else if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+                        UpdateZKeyForMallExportSales(isMasterterminal, 19);
+
                     //Instantiation is happenning in a factory based on the active mall in database
                     TMallExport* mallExport = TMallFactory::GetMallType();
                     mallExport->Export();
@@ -9840,7 +9846,7 @@ UnicodeString TfrmAnalysis::CheckRegistered()
     return emailSubject;
 }
 ///--------------------------------------------------------------------------------------------------
-void TfrmAnalysis::UpdateZKeyForMallExportSales()
+void TfrmAnalysis::UpdateZKeyForMallExportSales(bool isMasterTerminal, int fieldIndex)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
@@ -9852,7 +9858,7 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales()
         IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
         IBInternalQuery->ExecQuery();
         int ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
-        bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
+
         int deviceKey = TDeviceRealTerminal::Instance().ID.ProfileKey;
         AnsiString terminalCondition = " AND DEVICE_KEY = :DEVICE_KEY ";
 
@@ -9860,17 +9866,16 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales()
         IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.FIELD_VALUE = :Z_KEY WHERE MALLEXPORT_SALES.Z_KEY = :EXISTING_KEY "
                                         "AND  MALLEXPORT_SALES.FIELD_INDEX = :FIELD_INDEX ";
 
-        if(!isMasterterminal)
+        if(!isMasterTerminal)
 		{
 			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition ;
         }
 
-
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
         IBInternalQuery->ParamByName("EXISTING_KEY")->AsInteger = 0;
-        IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = 33;
+        IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = fieldIndex;
 
-        if(!isMasterterminal)
+        if(!isMasterTerminal)
 		{
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
         }
@@ -9880,7 +9885,7 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales()
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.Z_KEY = :Z_KEY WHERE MALLEXPORT_SALES.Z_KEY = :EXISTING_KEY ";
 
-        if(!isMasterterminal)
+        if(!isMasterTerminal)
 		{
 			IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition;
         }
@@ -9888,7 +9893,7 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales()
         IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
         IBInternalQuery->ParamByName("EXISTING_KEY")->AsInteger = 0;
 
-        if(!isMasterterminal)
+        if(!isMasterTerminal)
 		{
             IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
         }
