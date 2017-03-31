@@ -3003,7 +3003,7 @@ Zed:
                     }
                     else if(TGlobalSettings::Instance().mallInfo.MallId == 2)
                     {     
-                        isMasterterminal = false;
+                        isMasterterminal = true;
                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
                     }
 
