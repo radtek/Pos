@@ -4920,6 +4920,47 @@ void TdmMMReportData::SetupTurnAround(TDateTime StartTime, TDateTime EndTime)
 			"Order_Sale_Start_Time";
 	qrTurnAround->ParamByName("StartTime")->AsDateTime	= StartTime;
 	qrTurnAround->ParamByName("EndTime")->AsDateTime	= EndTime;
+
+    // add new query object to show turn around report in excel format...
+	qrTurnAroundExcel->Close();
+	qrTurnAroundExcel->SQL->Text =
+		"Select "
+            " (Sale_Day ||'.'||Sale_Month||'.'|| Sale_Year) Sale_Date, "
+            " Start_Time,  "
+            " End_Time,  "
+            " Sales_Qty, "
+            " substring(Average_Sale_Time from 12 for 8) Average_Sale_Time, "
+            " substring(Average_Make_Time from 12 for 8) Average_Make_Time, "
+            " substring(Average_Process_Time from 12 for 8) Average_Process_Time "
+            " from(  "
+            " select "
+            " Extract (Day From Order_Sale_Start_Time) Sale_Day, "
+            " Extract (Month From Order_Sale_Start_Time) Sale_Month, "
+            " Extract (Year From Order_Sale_Start_Time) Sale_Year, "
+            " (Extract(Hour From Order_Sale_Start_Time)) Start_Time, "
+            " (Extract(Hour From Order_Sale_Start_Time) + 1) End_Time, "
+            " count(CAST('12/30/1899' AS TIMESTAMP) + (Order_Sale_Finish_Time - Order_Sale_Start_Time)) Sales_Qty, "
+            " CAST('12/30/1899' AS TIMESTAMP) + avg((Bump_Time - Arrival_Time)) Average_Make_Time, "
+            " CAST('12/30/1899' AS TIMESTAMP) + avg((Order_Sale_Finish_Time - Order_Sale_Start_Time)) Average_Sale_Time, "
+            " CAST('12/30/1899' AS TIMESTAMP) + avg((Bump_Time - Arrival_Time) + (Order_Sale_Finish_Time - Order_Sale_Start_Time)) Average_Process_Time  "
+            " from ORDERS "
+            " where "
+  			" Order_Sale_Start_Time >= :StartTime and "
+			" Order_Sale_Start_Time < :EndTime and "
+            " Order_Sale_Start_Time Is Not Null And "
+            " Order_Sale_Finish_Time Is Not Null And "
+            " Arrival_Time Is Not Null And  "
+            " Bump_Time Is Not Null "
+            " group by Start_Time, End_Time, Sale_Day, Sale_Month, Sale_Year) "
+            " group by Start_Time, End_Time, Average_Make_Time, Average_Sale_Time, Average_Process_Time, Sales_Qty, Sale_Day, Sale_Month, Sale_Year "
+            " Order By "
+            " Sale_Date ";
+
+    qrTurnAroundExcel->ParamByName("StartTime")->AsDateTime	= StartTime;
+	qrTurnAroundExcel->ParamByName("EndTime")->AsDateTime	= EndTime;
+
+
+
 }
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupChronological(TDateTime StartTime, TDateTime EndTime, TStrings *Tables, TStrings *Tabs, TStrings *Terminals)

@@ -1,10 +1,10 @@
 object dmMMReportData: TdmMMReportData
   OldCreateOrder = False
   OnDestroy = DataModuleDestroy
-  Left = 65532
-  Top = 65532
-  Height = 715
-  Width = 1292
+  Left = 4
+  Top = 6
+  Height = 319
+  Width = 942
   object qrMenu: TIBQuery
     Database = dmMMData.dbMenuMate
     Transaction = MMTrans
@@ -4686,5 +4686,66 @@ object dmMMReportData: TdmMMReportData
       '')
     Left = 1221
     Top = 656
+  end
+  object qrTurnAroundExcel: TIBQuery
+    Database = dmChefMateData.dbChefMate
+    Transaction = ChefMateTrans
+    SQL.Strings = (
+      'Select'
+      #9'Extract (Minute From Order_Sale_Start_Time) Sale_Minute,'
+      #9'Extract (Hour From Order_Sale_Start_Time) Sale_Hour,'
+      #9'Extract (Day From Order_Sale_Start_Time) Sale_Day,'
+      #9'Extract (Month From Order_Sale_Start_Time) Slae_Month,'
+      #9'Extract (Year From Order_Sale_Start_Time) Sale_Year,'
+      ''
+      #9'CAST('#39'12/30/1899'#39' AS TIMESTAMP) + '
+      
+        #9'(Cast((Extract(Hour From Order_Sale_Start_Time)) As Double Prec' +
+        'ision) / 24 + .0000000001) Start_Time,'
+      ''
+      #9'CAST('#39'12/30/1899'#39' AS TIMESTAMP) + '
+      
+        #9'(Cast((Extract(Hour From Order_Sale_Start_Time) + 1) As Double ' +
+        'Precision) / 24 + .0000000001) End_Time,'
+      ''
+      #9'Order_Sale_Start_Time,'
+      #9'Order_Sale_Finish_Time,'
+      #9'Arrival_Time,'
+      #9'Bump_Time,'
+      ''
+      
+        #9'CAST('#39'12/30/1899'#39' AS TIMESTAMP) + (Order_Sale_Finish_Time - Ord' +
+        'er_Sale_Start_Time) Sale_Time,'
+      
+        #9'CAST('#39'12/30/1899'#39' AS TIMESTAMP) + (Bump_Time - Arrival_Time) Ma' +
+        'ke_Time,'
+      
+        #9'CAST('#39'12/30/1899'#39' AS TIMESTAMP) + (Bump_Time - Order_Sale_Start' +
+        '_Time) Process_Time '
+      'From '
+      #9'Orders Inner Join OrderTimesView '
+      #9'On Orders.Order_Key = OrderTimesView.Order_Key '
+      'Where '
+      #9'Order_Sale_Start_Time >= :StartTime and '
+      #9'Order_Sale_Start_Time < :EndTime and '
+      #9'Order_Sale_Start_Time Is Not Null And '
+      #9'Order_Sale_Finish_Time Is Not Null And '
+      #9'Arrival_Time Is Not Null And '
+      #9'Bump_Time Is Not Null '
+      'Order By'
+      #9'Order_Sale_Start_Time')
+    Left = 648
+    Top = 539
+    ParamData = <
+      item
+        DataType = ftUnknown
+        Name = 'StartTime'
+        ParamType = ptUnknown
+      end
+      item
+        DataType = ftUnknown
+        Name = 'EndTime'
+        ParamType = ptUnknown
+      end>
   end
 end
