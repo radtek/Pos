@@ -259,19 +259,22 @@ void TMallExport::InsertInToMallSalesBySalesType(Database::TDBTransaction &dbTra
                     "SALES_ID, "
                     "ARCBILL_KEY, "
                     "SALES_TYPE_ID, "
-                    "SUBTOTAL "
+                    "SUBTOTAL, "
+                    "DEVICE_KEY "
                      ") "
             "VALUES ( "
                     ":SALES_ID, "
                     ":ARCBILL_KEY, "
                     ":SALES_TYPE_ID, "
-                    ":SUBTOTAL "
+                    ":SUBTOTAL, "
+                    ":DEVICE_KEY "
                      ") ";
 
             ibInternalQuery->ParamByName("SALES_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
             ibInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcBillKey;
             ibInternalQuery->ParamByName("SALES_TYPE_ID")->AsInteger = itSalesBySalesTypes->first;
             ibInternalQuery->ParamByName("SUBTOTAL")->AsDouble = itSalesBySalesTypes->second;
+            ibInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
             ibInternalQuery->ExecQuery();
         }
     }

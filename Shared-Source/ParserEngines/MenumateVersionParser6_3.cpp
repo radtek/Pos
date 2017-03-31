@@ -2192,7 +2192,8 @@ void TApplyParser::CreateTable6_39MallSalesBySalesType( TDBControl* const inDBCo
 		"   SALES_ID INTEGER PRIMARY KEY,"
 		"   ARCBILL_KEY INTEGER,"
 		"   SALES_TYPE_ID INTEGER,"
-        "   SUBTOTAL  NUMERIC(15,4) "
+        "   SUBTOTAL  NUMERIC(15,4), "
+        "   DEVICE_KEY INTEGER "
 		");",
 		inDBControl );
 	}

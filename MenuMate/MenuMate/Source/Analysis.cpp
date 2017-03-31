@@ -1891,10 +1891,12 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
             if(TGlobalSettings::Instance().mallInfo.MallId)
             {
                 IBMallQuery->Close();
-                IBMallQuery->SQL->Text = "UPDATE MALLEXPORT_SALES a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY ";
+                IBMallQuery->SQL->Text = "UPDATE MALLEXPORT_SALES a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY "
+                                         "WHERE A.DEVICE_KEY = :DEVICE_KEY "    ;
 
                 IBMallSalesTypeQuery->Close();
-                IBMallSalesTypeQuery->SQL->Text = "UPDATE MALL_SALES_BY_SALES_TYPE a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY ";
+                IBMallSalesTypeQuery->SQL->Text = "UPDATE MALL_SALES_BY_SALES_TYPE a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY "
+                                                  "WHERE A.DEVICE_KEY = :DEVICE_KEY "  ;
             }
 
          	IBDayArcBill->ExecQuery();
@@ -2191,11 +2193,13 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                     IBMallQuery->Close();
                     IBMallQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
                     IBMallQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                    IBMallQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
                     IBMallQuery->ExecQuery();
 
                     IBMallSalesTypeQuery->Close();
                     IBMallSalesTypeQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
                     IBMallSalesTypeQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                    IBMallSalesTypeQuery->ParamByName("DEVICE_KEY")->AsInteger = TDeviceRealTerminal::Instance().ID.ProfileKey;
                     IBMallSalesTypeQuery->ExecQuery();
                 }
 			}
@@ -2988,15 +2992,20 @@ Zed:
 			{
                 UpdateMallExportDetails();
 
-                bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
                 //Method for mall Design According to newly pattern
 
                 if(TGlobalSettings::Instance().mallInfo.MallId)
                 {
+                    bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
                     if(TGlobalSettings::Instance().mallInfo.MallId == 1)
+                    {
                         UpdateZKeyForMallExportSales(isMasterterminal, 33);
+                    }
                     else if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+                    {     
+                        isMasterterminal = false;
                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
+                    }
 
                     //Instantiation is happenning in a factory based on the active mall in database
                     TMallExport* mallExport = TMallFactory::GetMallType();

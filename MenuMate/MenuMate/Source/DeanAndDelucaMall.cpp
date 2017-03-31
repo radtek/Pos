@@ -493,7 +493,31 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
         }
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-                        "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE, ARCHIVE.ARCHIVE_KEY ) DISCOUNT_BREAKUP "
+                        "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE, ARCHIVE.ARCHIVE_KEY "
+
+         "UNION "
+                            "SELECT A.ARCBILL_KEY, CASE WHEN AOD.NAME = 'Member Reward' THEN 'LP' "
+                                                "WHEN AOD.NAME = 'Location Reward' THEN 'PC' "
+                                                "ELSE  DISCOUNTS.DISCOUNT_ID END DISCOUNT_ID, "
+                            "AOD.NAME, AOD.DISCOUNTED_VALUE, DAYARCHIVE.ARCHIVE_KEY "
+                    "FROM MALLEXPORT_SALES a "
+                    "INNER JOIN DAYARCHIVE ON DAYARCHIVE.ARCBILL_KEY = A.ARCBILL_KEY "
+                    "INNER JOIN DAYARCORDERDISCOUNTS AOD ON DAYARCHIVE.ARCHIVE_KEY = AOD.ARCHIVE_KEY "
+                    "LEFT JOIN DISCOUNTS ON DISCOUNTS.DISCOUNT_KEY = AOD.DISCOUNT_KEY "
+                    "WHERE A.MALL_KEY = 2 AND AOD.DISCOUNT_GROUPNAME <> 'Complimentary' AND AOD.DISCOUNT_GROUPNAME <> 'Non-Chargeable' ";
+
+        if(zKey)
+        {
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY ) ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                        "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE, DAYARCHIVE.ARCHIVE_KEY "
+                        ") DISCOUNT_BREAKUP "
                 "GROUP BY 1,2 ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
@@ -800,9 +824,13 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                      "FROM MALLEXPORT_SALES a "
                      "WHERE a.FIELD_INDEX  = 5  "
                      "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = "
-                            "(SELECT MAX(ARCBILL_KEY)FROM MALLEXPORT_SALES A "
-                                 "WHERE a.Z_KEY = :MAX_ZKEY )"
-                      " GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
+                            "(SELECT MAX(AB.ARCBILL_KEY) FROM (SELECT MAX(ARCBILL_KEY) ARCBILL_KEY FROM MALLEXPORT_SALES A "
+                                 "WHERE (a.Z_KEY = :MAX_ZKEY ";
+
+        if(!zKey)
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " OR a.Z_KEY = :MIN_ZKEY ";
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " ))AB )GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
                                                                     "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA  "
             "GROUP BY 1,2,4 "
 
