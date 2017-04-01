@@ -445,17 +445,8 @@ TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)
         //Prepare Data For Hourly File
         PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, keyToCheck2, 13, preparedData, 2, zKey);
 
-        //indexes for selecting total Net sale, invoice number , status
-        int invoiceIndex[3] = {65, 67, 68};
-
-         //Clear the map because same map is used for many time insertion
-        keyToCheck.clear();
-
-        //insert these indexes into set.
-        keyToCheck = InsertInToSet(invoiceIndex, 3);
-
-        //Prepare Data For Invoice File
-        PrepareDataForDiscountFile(dbTransaction, keyToCheck, 65, preparedData, 3, zKey);
+        //Prepare Data For DiscountFile
+        PrepareDataForDiscountFile(dbTransaction, preparedData, 3, zKey);
 
        //Commit the transaction as we have completed all the transactions
         dbTransaction.Commit();
@@ -469,14 +460,92 @@ TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)
     return preparedData;
 }
 //---------------------------------------------------------------------------------------------------------------------------------
-void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int indexKey2,
-                                                    TMallExportPrepareData &prepareDataForInvoice, int index, int zKey)
+void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareDataForDiscount,
+                                int index, int zKey)
 {
     //Create List Of SalesData for invoice file
-    std::list<TMallExportSalesData> salesDataForISF;
+    std::list<TMallExportSalesData> salesDataForDISF;
     try
     {
-        ///Prepare Data For Invoice Sales file
+        ///Store First Letter of file name
+        UnicodeString fileName = "H";
+
+        ///Register Query
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        //Declare Set For storing index
+        std::set<int>keysToSelect;
+
+        //Create array for storing index by which file name will be prepared
+        int  fileNameKeys[3] = {1, 2, 19};
+
+        //Store keys into set
+        keysToSelect = InsertInToSet(fileNameKeys, 3);
+
+        //Get file name according to field index.
+        fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect, zKey);
+
+        //insert filename into map according to index and file type
+        prepareDataForDiscount.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
+
+         //insert indexes into array for fetching tenant code, date , terminal number
+        int hourIndexKeys[3] = {1, 2, 3};
+
+        //clear the map
+        keysToSelect.clear();
+
+        //Store keys into set
+        keysToSelect = InsertInToSet(hourIndexKeys, 3);
+
+        ///Load MallSetting For writing into file
+        LoadMallSettingsForFile(dBTransaction, prepareDataForDiscount, keysToSelect, index, zKey);
+
+        //Query for selecting data for hourly file
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+                "SELECT DISCOUNT_BREAKUP.ARCBILL_KEY, DISCOUNT_BREAKUP.DISCOUNT_ID, DISCOUNT_BREAKUP.NAME, "
+                "CAST (SUM(DISCOUNT_BREAKUP.DISCOUNTED_VALUE) AS NUMERIC(17,2)) DISC_AMOUNT "
+                "FROM "
+                    "(SELECT A.ARCBILL_KEY, DISCOUNTS.DISCOUNT_ID, AOD.NAME, AOD.DISCOUNTED_VALUE "
+                    "FROM MALLEXPORT_SALES a "
+                    "INNER JOIN ARCHIVE ON ARCHIVE.ARCBILL_KEY = A.ARCBILL_KEY "
+                    "INNER JOIN ARCORDERDISCOUNTS AOD ON ARCHIVE.ARCHIVE_KEY = AOD.ARCHIVE_KEY "
+                    "INNER JOIN DISCOUNTS ON DISCOUNTS.DISCOUNT_KEY = AOD.DISCOUNT_KEY "
+                    "WHERE A.MALL_KEY = :MALL_KEY ";
+        if(zKey == 0)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                        "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE ) DISCOUNT_BREAKUP "
+                "GROUP BY 1,2,3 ";
+
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        if(zKey != 0)
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        IBInternalQuery->ExecQuery();
+
+       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+          TMallExportSalesData salesData;
+          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
+          salesData.Field = IBInternalQuery->Fields[1]->AsString;
+
+          salesData.DataValue = IBInternalQuery->Fields[1]->AsString + "," + IBInternalQuery->Fields[2]->AsString + "," + IBInternalQuery->Fields[3]->AsCurrency;
+          salesData.DataValueType = "UnicodeString";
+          salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
+          salesDataForDISF.push_back(salesData);
+        }
+         //insert list into TMallExportPrepareData's map
+        prepareDataForDiscount.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, salesDataForDISF ));
     }
     catch(Exception &E)
 	{
@@ -589,7 +658,7 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
 
         IBInternalQuery->ExecQuery();
 
-       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
           TMallExportSalesData salesData;
           salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;

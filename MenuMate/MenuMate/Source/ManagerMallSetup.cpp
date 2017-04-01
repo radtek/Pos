@@ -316,7 +316,7 @@ void TManagerMallSetup::InsertSettingValuesForDeanAndDeluca(Database::TDBTransac
 
              UnicodeString fieldValues[numberOfFields] =
              {
-                "", "", "", "true", ".txt", "Z", "false", "false", "true", "false"
+                "", "", "", "true", ".txt", "Z", "false", "false", "true", "true"
              };
 
              int settingID[numberOfFields] =

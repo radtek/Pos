@@ -101,8 +101,7 @@ public:
     TDeanAndDelucaMall();
 
      //Prepare data for Invoice Sales File
-    void PrepareDataForDiscountFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int indexKey2, TMallExportPrepareData &prepareDataForInvoice,
-                                            int index, int zKey = 0);
+    void PrepareDataForDiscountFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareDataForDiscount, int index, int zKey = 0);
 
     //Fetch Data For Invoice Sales File writing
     void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2, int indexKey3,
