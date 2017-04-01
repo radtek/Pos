@@ -483,9 +483,6 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
         //Get file name according to field index.
         fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect, zKey);
 
-        //insert filename into map according to index and file type
-        prepareDataForDiscount.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
-
         //Query for selecting data for hourly file
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
@@ -529,8 +526,15 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
           salesData.MallExportSalesId = IBInternalQuery->Fields[0]->AsInteger;
           salesDataForDISF.push_back(salesData);
         }
-         //insert list into TMallExportPrepareData's map
-        prepareDataForDiscount.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, salesDataForDISF ));
+
+        if(salesDataForDISF.size())
+        {
+            //insert filename into map according to index and file type
+             prepareDataForDiscount.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
+
+             //insert list into TMallExportPrepareData's map
+             prepareDataForDiscount.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, salesDataForDISF ));
+        }
     }
     catch(Exception &E)
 	{
