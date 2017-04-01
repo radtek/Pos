@@ -926,8 +926,6 @@ void TDeanAndDelucaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTra
         if(zKey != 0)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
 
-        IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
-
         IBInternalQuery->ExecQuery();
 
         for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())

@@ -2204,6 +2204,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 		TIBSQL *IBWebArchive = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBZedQuery = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBMallQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBMallSalesTypeQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
 		UnicodeString ExportFile = StockMasterPath + "MMTR_" + FormatFloat("00000",TGlobalSettings::Instance().SiteID) + "_" + DeviceName + ".csv";
 		try
@@ -2324,6 +2325,9 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
             {
                 IBMallQuery->Close();
                 IBMallQuery->SQL->Text = "UPDATE MALLEXPORT_SALES a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY ";
+
+                IBMallSalesTypeQuery->Close();
+                IBMallSalesTypeQuery->SQL->Text = "UPDATE MALL_SALES_BY_SALES_TYPE a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY ";
             }
 
          	IBDayArcBill->ExecQuery();
@@ -2621,6 +2625,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                     IBMallQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
                     IBMallQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
                     IBMallQuery->ExecQuery();
+
+                    IBMallSalesTypeQuery->Close();
+                    IBMallSalesTypeQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                    IBMallSalesTypeQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                    IBMallSalesTypeQuery->ExecQuery();
                 }
 			}
 
