@@ -418,14 +418,13 @@ TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)
 
         //Indexes for which data will not selected
         int dailySalekeys[12] = {1, 2, 3,4, 5, 19, 21};
-        int dailySalekeys2[2] = {19,0};   ///todo
+        int dailySalekeys2 = 19;
 
         //insert these indexes into set.
         keyToCheck = InsertInToSet(dailySalekeys, 12);
-        keyToCheck2 = InsertInToSet(dailySalekeys2, 2);
 
         //Prepare Data For Daily Sales File
-        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, keyToCheck2, preparedData, 1, zKey);
+        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, dailySalekeys2, preparedData, 1, zKey);
 
        //indexes for selecting total Net sale, patron count, etc
         int  hourIndexkeys[3] = {18,20,21};
@@ -721,7 +720,7 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
 	}
 }
 //-----------------------------------------------------------------------------------------------------------------------
-void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2,
+void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int zIndex,
                                                    TMallExportPrepareData &prepareDataForDSF, int index, int zKey)
 {
     //Create List Of SalesData for hourly file
@@ -733,7 +732,6 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
 
         //Seperate key with commas in the form of string.
         UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
-        UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
 
         //Register Query
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
@@ -807,6 +805,25 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE  "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
                                     "GROUP BY 1,2,4,5 "
+
+         "UNION ALL "
+
+            "SELECT  LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS int) FIELD_VALUE, "
+                     "a.VALUE_TYPE, A.Z_KEY "
+             "FROM MALLEXPORT_SALES a "
+             "WHERE a.FIELD_INDEX  = 19  AND a.MALL_KEY = :MALL_KEY ";
+
+         if(zKey == 0)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES)";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY  ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+               "GROUP BY a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
 
         "UNION ALL "
 

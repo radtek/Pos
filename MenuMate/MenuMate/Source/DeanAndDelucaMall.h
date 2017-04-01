@@ -108,7 +108,7 @@ public:
                                         TMallExportPrepareData &prepareDataForHSF, int index, int zKey = 0);
 
     //Fetch Data For Daily Sales File writing
-    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2,
+    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int zIndex,
                                         TMallExportPrepareData &prepareDataForDSF, int index, int zKey = 0);
 
     //Insert Array into set.
