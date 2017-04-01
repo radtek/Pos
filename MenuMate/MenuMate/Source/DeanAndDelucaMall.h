@@ -64,7 +64,7 @@ private:
                                         int index, int zKey = 0);
 
     //insert field into list
-    void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TDeanAndDelucaMallField fieldData, int arcBillKey);
+    void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TDeanAndDelucaMallField &fieldData, int arcBillKey);
 
     //prepare SCD, PWD and others discount
     TDeanAndDelucaDiscount PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order);
@@ -91,6 +91,9 @@ private:
 
     //get which type of file will be exported
     UnicodeString GetExportType();
+
+    //Get month code in hex
+    UnicodeString GetMonthCode(int month);
 
 public:
 
@@ -184,5 +187,6 @@ public:
     __property int HourCode = {read = _hourCode, write = SetHourCode};
     __property int ZKey = {read = _zkey, write = SetZKey};
     __property std::map<int, double> SalesBySalesType = {read = _salesBysalesType, write =  SetSalesBySalesType};
+    TDeanAndDelucaMallField();
 };
 #endif

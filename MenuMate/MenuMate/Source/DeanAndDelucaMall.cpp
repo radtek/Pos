@@ -119,6 +119,28 @@ void TDeanAndDelucaMallField::SetSalesBySalesType(std::map<int, double> salesByS
 {
     _salesBysalesType = salesBySalestype;
 }
+//---------------------------------------------------------------------------------------------
+TDeanAndDelucaMallField::TDeanAndDelucaMallField()
+{
+   TerminalNumber = 0;
+   TenantCode = "";
+   OldAccSalesTotal = 0.00;
+   NewAccSalesTotal = 0.00;
+   GrossSaleAmount = 0.00;
+   NonTaxableSaleAmount = 0.00;
+   TotalSCDAndPWDAmount = 0.00;
+   TotalOtherDiscount = 0.00;
+   TotalRefundAmount = 0.00;
+   TotalTax = 0.00;
+   TotalServiceCharge = 0.00;
+   TotalNetSaleAmount = 0.00;
+   TotalCashSales = 0.00;
+   TotalChargedSales = 0.00;
+   TotalGCSales = 0.00;
+   TotalVoidAmount = 0.00;
+   CustomerCount = 0;
+   SalesCount = 0;
+}
 
 //-----------------------------------------------------------------------------------------------------------------
 TDeanAndDelucaMall::TDeanAndDelucaMall()
@@ -134,7 +156,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
     std::list<TMallExportSalesData> mallExportSalesData;
     try
     {
-        TDeanAndDelucaMallField fieldData;
+        TDeanAndDelucaMallField *fieldData = new TDeanAndDelucaMallField();
         int terminalNumber;
         UnicodeString tenantCode;
         Currency taxRate = 0.00;
@@ -144,11 +166,11 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         {
             if(it->ControlName == "edMallTenantNo")
             {
-                fieldData.TenantCode = it->Value;
+                fieldData->TenantCode = it->Value;
             }
             else if(it->ControlName == "edMallTerminalNo")
             {
-                fieldData.TerminalNumber = StrToInt(it->Value);
+                fieldData->TerminalNumber = StrToInt(it->Value);
             }
         }
 
@@ -157,7 +179,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
                 TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
 
                 //todo
-                PrepareDataByItem(paymentTransaction.DBTransaction, Order, fieldData);
+                PrepareDataByItem(paymentTransaction.DBTransaction, Order, *fieldData);
 
                 //For SubOrder
                 for (int i = 0; i < Order->SubOrders->Count; i++)
@@ -165,13 +187,13 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 					TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
 
                     //todo
-                    PrepareDataByItem(paymentTransaction.DBTransaction, CurrentSubOrder, fieldData);
+                    PrepareDataByItem(paymentTransaction.DBTransaction, CurrentSubOrder, *fieldData);
                 }
         }
 
-        fieldData.TotalGCSales = 0;
-        fieldData.TotalCashSales = 0;
-        fieldData.TotalChargedSales = 0;
+        fieldData->TotalGCSales = 0;
+        fieldData->TotalCashSales = 0;
+        fieldData->TotalChargedSales = 0;
 
         for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
 		{
@@ -205,43 +227,44 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 
                 if (SubPayment->Properties & ePayTypeGetVoucherDetails)
                 {
-                    fieldData.TotalGCSales += (double)SubPayment->GetPayTendered();
+                    fieldData->TotalGCSales += (double)SubPayment->GetPayTendered();
                 }
                 else if(payTypeName == cardType)
                 {
-                     fieldData.TotalChargedSales += (double)SubPayment->GetPayTendered();
+                     fieldData->TotalChargedSales += (double)SubPayment->GetPayTendered();
                 }
                 else
                 {
-                    fieldData.TotalCashSales +=  (double)SubPayment->GetPayTendered();
+                    fieldData->TotalCashSales +=  (double)SubPayment->GetPayTendered();
                 }
             }
         }
 
-        fieldData.TotalNetSaleAmount =  fieldData.TotalGCSales + fieldData.TotalChargedSales + fieldData.TotalCashSales;
-        fieldData.OldAccSalesTotal = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
-        fieldData.NewAccSalesTotal = fieldData.OldAccSalesTotal + fieldData.TotalNetSaleAmount;
-        fieldData.GrossSaleAmount = fieldData.TotalSCDAndPWDAmount + fieldData.TotalOtherDiscount + fieldData.TotalCashSales + fieldData.TotalChargedSales
-                                        + fieldData.TotalGCSales;
-        //fieldData.NonTaxableSaleAmount todo
-        fieldData.TotalRefundAmount = paymentTransaction.Money.FinalPrice > 0 ? 0 : paymentTransaction.Money.FinalPrice;
-       /// fieldData.TotalTax = //todo;
-        fieldData.ZKey = 0;
-        fieldData.SalesCount = (fieldData.TotalRefundAmount > 0 ? 0 : 1);
+        fieldData->TotalNetSaleAmount =  fieldData->TotalGCSales + fieldData->TotalChargedSales + fieldData->TotalCashSales;
+        fieldData->OldAccSalesTotal = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
+        fieldData->NewAccSalesTotal = fieldData->OldAccSalesTotal + fieldData->TotalNetSaleAmount;
+        fieldData->GrossSaleAmount = fieldData->TotalSCDAndPWDAmount + fieldData->TotalOtherDiscount + fieldData->TotalCashSales + fieldData->TotalChargedSales
+                                        + fieldData->TotalGCSales;
+        //fieldData->NonTaxableSaleAmount todo
+        fieldData->TotalRefundAmount = paymentTransaction.Money.FinalPrice > 0 ? 0 : paymentTransaction.Money.FinalPrice;
+       /// fieldData->TotalTax = //todo;
+        fieldData->ZKey = 0;
+        fieldData->SalesCount = (fieldData->TotalRefundAmount > 0 ? 0 : 1);
 
 
-        //fieldData.SalesType = 1; //todo
+        //fieldData->SalesType = 1; //todo
 
 
 
-        fieldData.CustomerCount = GetPatronCount(paymentTransaction);
+        fieldData->CustomerCount = GetPatronCount(paymentTransaction);
 
         //call For inserting into list
-        InsertFieldInToList(paymentTransaction.DBTransaction, mallExportSalesData, fieldData, arcBillKey);
+        InsertFieldInToList(paymentTransaction.DBTransaction, mallExportSalesData, *fieldData, arcBillKey);
 
         //Assign sales list to wrapper class
         salesWrapper.SalesData = mallExportSalesData;
-        salesWrapper.SaleBySalsType = fieldData.SalesBySalesType;
+        salesWrapper.SaleBySalsType = fieldData->SalesBySalesType;
+		delete fieldData;
     }
     catch(Exception &E)
 	{
@@ -253,7 +276,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 }
 //-----------------------------------------------------------------------------------------------------------
 void TDeanAndDelucaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData,
-                                TDeanAndDelucaMallField fieldData, int arcBillKey)
+                                TDeanAndDelucaMallField &fieldData, int arcBillKey)
 {
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Tenant Code", "UnicodeString", fieldData.TenantCode, 1, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "POS Terminal Number", "int", fieldData.TerminalNumber, 2, arcBillKey);
@@ -392,9 +415,49 @@ TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)
 
     try
     {
-        //todo call Methods which will Prepare date for daily, hourly, discount files
+       //Set for inserting index. these indexes will be used for fetching data
+        std::set<int> keyToCheck;
+        std::set<int> keyToCheck2;
 
-        //Commit the transaction as we have completed all the transactions
+        //Indexes for which data will not selected
+        int dailySalekeys[12] = {1, 2, 3,4, 5, 19, 21};
+        int dailySalekeys2[2] = {19,0};   ///todo
+
+        //insert these indexes into set.
+        keyToCheck = InsertInToSet(dailySalekeys, 12);
+        keyToCheck2 = InsertInToSet(dailySalekeys2, 2);
+
+        //Prepare Data For Daily Sales File
+        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, keyToCheck2, preparedData, 1, zKey);
+
+       //indexes for selecting total Net sale, patron count, etc
+        int  hourIndexkeys[3] = {18,20,21};
+        int hourIndexKeys2[3] = {13,20,18};
+
+        //Clear the map because same map is used for many time insertion
+        keyToCheck.clear();
+        keyToCheck2.clear();
+
+        //insert these indexes into set.
+        keyToCheck = InsertInToSet(hourIndexkeys, 3);
+        keyToCheck2 = InsertInToSet(hourIndexKeys2, 3);
+
+        //Prepare Data For Hourly File
+        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, keyToCheck2, 13, preparedData, 2, zKey);
+
+        //indexes for selecting total Net sale, invoice number , status
+        int invoiceIndex[3] = {65, 67, 68};
+
+         //Clear the map because same map is used for many time insertion
+        keyToCheck.clear();
+
+        //insert these indexes into set.
+        keyToCheck = InsertInToSet(invoiceIndex, 3);
+
+        //Prepare Data For Invoice File
+        PrepareDataForDiscountFile(dbTransaction, keyToCheck, 65, preparedData, 3, zKey);
+
+       //Commit the transaction as we have completed all the transactions
         dbTransaction.Commit();
     }
     catch(Exception &E)
@@ -429,7 +492,169 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
     std::list<TMallExportSalesData> prepareListForHSF;
     try
     {
-        // Prepare Data For Hourly Sales File
+        ///Store First Letter of file name
+        UnicodeString fileName = "H";
+
+        //Seperate key with commas in the form of string.
+        UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
+        UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
+
+        ///Register Query
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        //Declare Set For storing index
+        std::set<int>keysToSelect;
+
+        //Create array for storing index by which file name will be prepared
+        int  fileNameKeys[3] = {1, 2, 19};
+
+        //Store keys into set
+        keysToSelect = InsertInToSet(fileNameKeys, 3);
+
+        //Get file name according to field index.
+        fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect, zKey);
+
+        //insert filename into map according to index and file type
+        prepareDataForHSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
+
+         //insert indexes into array for fetching tenant code, date , terminal number
+        int hourIndexKeys[3] = {1, 2, 3};
+
+        //clear the map
+        keysToSelect.clear();
+
+        //Store keys into set
+        keysToSelect = InsertInToSet(hourIndexKeys, 3);
+
+        ///Load MallSetting For writing into file
+        LoadMallSettingsForFile(dBTransaction, prepareDataForHSF, keysToSelect, index, zKey);
+
+        //Query for selecting data for hourly file
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+                             "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 18) THEN 7  "
+                                            "WHEN (HOURLYDATA.FIELD_INDEX = 20) THEN 6 "
+                                            "WHEN (HOURLYDATA.FIELD_INDEX = 21) THEN 4 "
+                                            "ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
+                                    "HOURLYDATA.FIELD, "
+                                    "case when (HOURLYDATA.FIELD_INDEX = 21) then LPAD(HOURLYDATA.FIELD_VALUE,2,0) else SUM(HOURLYDATA.FIELD_VALUE) end FIELD_VALUE , "
+                                    "HOURLYDATA.VALUE_TYPE , "
+                                    "HOURLYDATA.Hour_code  "
+                            "FROM "
+                                "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS int) FIELD_VALUE, a.VALUE_TYPE, "
+                                                        "Extract (Hour From a.DATE_CREATED) Hour_code "
+                                 "FROM MALLEXPORT_SALES a "
+                                 "WHERE a.FIELD_INDEX IN(" + indexKeysList + ")  AND a.MALL_KEY = :MALL_KEY ";
+        if(zKey == 0)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
+                            "GROUP BY HOURLYDATA.FIELD_INDEX,HOURLYDATA.FIELD,HOURLYDATA.VALUE_TYPE , "
+                                    " HOURLYDATA.Hour_code, HOURLYDATA.FIELD_VALUE "
+
+       "UNION ALL "
+
+                            "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 13) THEN 5 ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
+                                    "HOURLYDATA.FIELD, CAST(SUM(HOURLYDATA.FIELD_VALUE)*100 AS INT ) FIELD_VALUE , HOURLYDATA.VALUE_TYPE, HOURLYDATA.Hour_code "
+                            "FROM "
+                                    "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE,  "
+                                            "Extract (Hour From a.DATE_CREATED) Hour_code "
+                                     "FROM MALLEXPORT_SALES a "
+                                    " WHERE a.FIELD_INDEX = :FIELD_INDEX AND a.MALL_KEY = :MALL_KEY ";
+        if(zKey == 0)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA "
+                            "GROUP BY 1,2,4 ,5 "
+                            "ORDER BY 5 ASC, 1 ASC ";
+
+        IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = indexKey3;
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        if(zKey != 0)
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        IBInternalQuery->ExecQuery();
+
+       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+          TMallExportSalesData salesData;
+          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
+          salesData.Field = IBInternalQuery->Fields[1]->AsString;
+          if(salesData.FieldIndex == 4)
+          {
+                salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsString;
+          }
+          else
+          {
+                 salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
+          }
+          salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
+          salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
+          prepareListForHSF.push_back(salesData);
+        }
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+                                "SELECT LPAD((CASE WHEN (HOURLYDATA.FIELD_INDEX = 20) THEN 9  "
+                                                  "WHEN (HOURLYDATA.FIELD_INDEX = 13) THEN 8 "
+                                                  "WHEN (HOURLYDATA.FIELD_INDEX = 18) THEN 10 "
+                                                  "ELSE (HOURLYDATA.FIELD_INDEX) END),2,0) FIELD_INDEX, "
+                                        "HOURLYDATA.FIELD, "
+                                        "CAST(SUM(CASE WHEN HOURLYDATA.FIELD_INDEX = 13 THEN (HOURLYDATA.FIELD_VALUE*100) ELSE (HOURLYDATA.FIELD_VALUE) END )  AS INT ) FIELD_VALUE, "
+                                         "HOURLYDATA.VALUE_TYPE "
+                                "FROM "
+                                "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE "
+                                "FROM MALLEXPORT_SALES a  "
+                                "WHERE a.FIELD_INDEX IN(" + indexKeysList2 + ")  AND a.MALL_KEY = :MALL_KEY  ";
+        if(zKey == 0)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA "
+                                "GROUP BY 1,2,4 "
+                                "ORDER BY 1 ASC ";
+
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        if(zKey != 0)
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        IBInternalQuery->ExecQuery();
+
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+           ///prepare sales data
+          TMallExportSalesData salesData;
+          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
+          salesData.Field = IBInternalQuery->Fields[1]->AsString;
+          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
+          salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
+
+          //insert prepared data into list
+          prepareListForHSF.push_back(salesData);
+        }
+
+        //insert list into TMallExportPrepareData's map
+        prepareDataForHSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForHSF ));
     }
     catch(Exception &E)
 	{
@@ -445,8 +670,158 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
     std::list<TMallExportSalesData> prepareListForDSF;
     try
     {
-       //Prepare Data For Daily Sales File
+        ///Store First Letter of file name ie; file type
+        UnicodeString fileName = "S";
 
+        //Seperate key with commas in the form of string.
+        UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
+        UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
+
+        //Register Query
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        Database::TcpIBSQL selectQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(selectQuery);
+
+        //Declare Set For storing index
+        std::set<int>keysToSelect;
+
+        //Create array for storing index by which file name will be prepared
+        int  fileNameKeys[3] = {1, 2, 19};
+
+         //Store keys into set
+        keysToSelect = InsertInToSet(fileNameKeys, 3);
+
+        //Get file name according to field index.
+        fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect, zKey);
+
+        //insert filename into map according to index and file type
+        prepareDataForDSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
+
+         //insert indexes into array for fetching tenant code, date , terminal number
+        int dailyIndexKeys[3] = {1, 2, 3};
+
+        //clear the map
+        keysToSelect.clear();
+
+        //Store keys into set
+        keysToSelect = InsertInToSet(dailyIndexKeys, 3);
+
+        ///Load MallSetting For writing into file
+        LoadMallSettingsForFile(dBTransaction, prepareDataForDSF, keysToSelect, index, zKey);
+
+        selectQuery->Close();
+        selectQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a "
+                                 "WHERE a.MALL_KEY = :MALL_KEY AND a.Z_KEY != :Z_KEY "
+                                  "GROUP BY 1";
+
+        selectQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+        selectQuery->ParamByName("Z_KEY")->AsInteger = 0;
+        selectQuery->ExecQuery();
+
+        bool  recordPresent = false;
+        while(!selectQuery->Eof)
+            selectQuery->Next();
+
+        if(selectQuery->RecordCount > 1)
+           recordPresent = true;
+
+        //Query for fetching data for writing into daily sales file.
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
+                                             " CAST( case when (DAILYDATA.FIELD_INDEX = 18 OR DAILYDATA.FIELD_INDEX = 20)  then SUM(DAILYDATA.FIELD_VALUE) else SUM(DAILYDATA.FIELD_VALUE)*100  end AS INT) FIELD_VALUE, "
+                                             "DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY "
+                                      "FROM "
+                                            "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY "
+                                             "FROM MALLEXPORT_SALES a "
+                                             "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ")  "
+                                             "AND a.MALL_KEY = :MALL_KEY ";
+        if(zKey == 0)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE  "
+                                             "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
+                                    "GROUP BY 1,2,4,5 "
+
+        "UNION ALL "
+
+            "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
+                      "CAST( case when (DAILYDATA.FIELD_INDEX = 5)  then SUM(DAILYDATA.FIELD_VALUE)*100 end AS INT) FIELD_VALUE, "
+                     "DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY "
+            "FROM "
+                    "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, "
+                                    "a.VALUE_TYPE, A.Z_KEY "
+                     "FROM MALLEXPORT_SALES a "
+                     "WHERE a.FIELD_INDEX  = 5  "
+                     "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = "
+                            "(SELECT MAX(ARCBILL_KEY)FROM MALLEXPORT_SALES A ";
+        if(zKey == 0)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "WHERE a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) )";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "WHERE a.Z_KEY = :Z_KEY ) ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
+                                                                    "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA  "
+                                                                    "GROUP BY 1,2,4,5 "
+        "UNION ALL "
+
+        "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
+                  "CAST( case when (DAILYDATA.FIELD_INDEX = 4)  then SUM(DAILYDATA.FIELD_VALUE)*100 end AS INT) FIELD_VALUE, "
+                 "DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY "
+          "FROM "
+                "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, "
+                    "a.VALUE_TYPE, A.Z_KEY "
+                 "FROM MALLEXPORT_SALES a  "
+                 "WHERE a.FIELD_INDEX  = 4 "
+                 "AND a.MALL_KEY = :MALL_KEY AND a.ARCBILL_KEY = (SELECT MAX(ARCBILL_KEY)FROM MALLEXPORT_SALES A ";
+        if(zKey == 0)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "WHERE A.Z_KEY = (SELECT MAX(A.Z_KEY) FROM MALLEXPORT_SALES A ) - 1) ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "WHERE a.Z_KEY = :Z_KEY - 1 ";
+        }
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
+                                                                    "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
+                                                                    "GROUP BY 1,2,4,5 "
+
+        "ORDER BY 1 ASC  ";
+
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        if(zKey != 0)
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        IBInternalQuery->ExecQuery();
+
+       for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+       {
+           ///prepare sales data
+          TMallExportSalesData salesData;
+          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
+          salesData.Field = IBInternalQuery->Fields[1]->AsString;
+          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
+          salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
+          salesData.ZKey = IBInternalQuery->Fields[4]->AsInteger;
+
+          //insert prepared data into list
+          prepareListForDSF.push_back(salesData);
+       }
+
+       //insert list into TMallExportPrepareData's map
+       prepareDataForDSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForDSF ));
     }
     catch(Exception &E)
 	{
@@ -460,7 +835,61 @@ void TDeanAndDelucaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTra
 {
     try
     {
-        //Load Mall Setting For File....
+        //Create List Of mallExportSetting
+        std::list<TMallExportSettings> mallSettings;
+
+        //Seperate key with commas in the form of string.
+        UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
+
+        //Register Query.
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        //Query for fetching setting for files according to file type and index keys.
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, "
+                                                "CASE WHEN(a.FIELD_INDEX = 1) THEN LPAD(a.FIELD_VALUE,5,0) "
+                                                "WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
+                                                "ELSE (a.FIELD_VALUE) END FIELD_VALUE, a.VALUE_TYPE "
+                                      "FROM MALLEXPORT_SALES a "
+                                      "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
+                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                      "AND a.MALL_KEY = :MALL_KEY ";
+        if(zKey == 0)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+
+		IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition + "GROUP BY 1,2,3,4 ";
+
+        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        if(zKey != 0)
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+
+        IBInternalQuery->ExecQuery();
+
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+          //Prepare Setting data
+          TMallExportSettings settings;
+          settings.Name =   IBInternalQuery->Fields[1]->AsString;
+          settings.Value  = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsString;
+          settings.ValueType = IBInternalQuery->Fields[3]->AsString;
+
+          //Insert setting data into list.
+          mallSettings.push_back(settings);
+        }
+
+        ////insert list into TMallExportPrepareData's setting map
+        prepareData.MallSettings.insert( std::pair<int,list<TMallExportSettings> >(index, mallSettings));
     }
     catch(Exception &E)
 	{
@@ -474,7 +903,52 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
     UnicodeString fileName = "";
     try
     {
-        //Get File Name According to file type
+        //create list of mallexportsetting
+        std::list<TMallExportSettings> mallSettings;
+
+        //seperate keys with comma in the form of string
+        UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
+
+        //Register Query.
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dBTransaction.RegisterQuery(IBInternalQuery);
+
+        //Query for fetching file name.
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, a.FIELD_VALUE, a.VALUE_TYPE , a.Z_KEY, a.DATE_CREATED  "
+                                    "FROM MALLEXPORT_SALES a "
+                                    "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND a.MALL_KEY = :MALL_KEY  ";
+        if(zKey == 0)
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+        }
+        else
+        {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+        }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4,5,6 "
+                                                                "ORDER BY 1 ASC ";
+
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        if(zKey != 0)
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        IBInternalQuery->ExecQuery();
+
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            fileName = fileName + "" + IBInternalQuery->Fields[2]->AsString;
+
+            if(IBInternalQuery->Fields[0]->AsInteger == 19)
+            {
+                TDateTime date = IBInternalQuery->Fields[5]->AsDateTime;
+                UnicodeString month = GetMonthCode(MonthOf(date));
+                int day = DayOf(date);
+                fileName = fileName + "." + month + IntToStr(day);
+            }
+        }
     }
     catch(Exception &E)
 	{
@@ -487,9 +961,30 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
 UnicodeString TDeanAndDelucaMall::GetExportType()
 {
     UnicodeString typeOfFile = "";
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
     try
     {
-        //Get Export Type
+        ///Register Query
+        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+        dbTransaction.RegisterQuery(IBInternalQuery);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT MES.NAME, MES.MALLEXPORT_SETTING_KEY, MSP.MALL_ID, MSV.FIELD_VALUE  "
+                                     "FROM MALLEXPORT_SETTINGS MES "
+                                     "INNER JOIN MALLEXPORT_SETTINGS_MAPPING MSP ON MES.MALLEXPORT_SETTING_KEY = MSP.MALLEXPORT_SETTING_ID "
+                                     "INNER JOIN MALLEXPORT_SETTINGS_VALUES MSV ON MES.MALLEXPORT_SETTING_KEY = MSV.MALLEXPORTSETTING_ID "
+                                     "WHERE MES.NAME = :NAME AND MSP.MALL_ID = :MALL_ID";
+
+        IBInternalQuery->ParamByName("NAME")->AsString = "TYPE_OF_FILE";
+        IBInternalQuery->ParamByName("MALL_ID")->AsInteger = 2;
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount)
+            typeOfFile = IBInternalQuery->Fields[3]->AsString;
     }
      catch(Exception &E)
 	{
@@ -513,17 +1008,38 @@ std::set<int> TDeanAndDelucaMall::InsertInToSet(int arr[], int size)
 UnicodeString TDeanAndDelucaMall::GetFieldIndexList(std::set<int> indexKeys)
 {
     //Seperate keys with commas and store in the form of string and return
+    std::set<int>::iterator indexKeysIt = indexKeys.begin();
+    UnicodeString indexKeyList = IntToStr(*indexKeysIt);
+    indexKeysIt++;
+    for(; indexKeysIt != indexKeys.end(); indexKeysIt++)
+    {
+        indexKeyList += ", " + IntToStr(*indexKeysIt);
+    }
+    return indexKeyList;
 }
 //----------------------------------------------------------------------------------------------------------------
 IExporterInterface* TDeanAndDelucaMall::CreateExportMedium()
 {
-    //return file export type
+    UnicodeString exportType = GetExportType();
+    if(exportType == ".txt")
+    {
+        return new TMallExportTextFile;
+    }
+    else
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,"Export Type not found");
+		throw;
+    }
 }
 //----------------------------------------------------------------------------------------------------------------
 void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order, TDeanAndDelucaMallField &fieldData)
 {
     //Create Taxes Object to collect all taxes details
     TDeanAndDelucaTaxes taxes;
+    taxes.salesTax = 0;
+    taxes.serviceCharge = 0;
+    taxes.serviceChargeTax = 0;
+    taxes.localTax = 0;
 
     //Get all Taxes stored them in TEstanciaTaxes type structure
     bool isVatable = IsItemVatable(order, taxes);
@@ -543,7 +1059,7 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     }
     else
     {
-       fieldData.GrossSaleAmount += grossAmount;
+       fieldData.GrossSaleAmount += (grossAmount - taxes.serviceCharge);
     }
 
     //Get Salestype Code. if item is assigned to any sales type then it will return code else "";
@@ -569,6 +1085,10 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
 TDeanAndDelucaDiscount TDeanAndDelucaMall::PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order)
 {
     TDeanAndDelucaDiscount discount;
+    discount.scdDiscount = 0;
+    discount.pwdDiscount = 0;
+    discount.otherDiscount = 0;
+
     for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();std::advance(ptrDiscounts, 1))
     {
         if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
@@ -584,7 +1104,7 @@ TDeanAndDelucaDiscount TDeanAndDelucaMall::PrepareDiscounts(Database::TDBTransac
             {
                 discount.pwdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
             }
-            else
+            else if(ptrDiscounts->DiscountGroupList[0].Name != "Complimentary" || ptrDiscounts->DiscountGroupList[0].Name != "Non-Chargeable")
             {
                 discount.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
             }
@@ -594,6 +1114,7 @@ TDeanAndDelucaDiscount TDeanAndDelucaMall::PrepareDiscounts(Database::TDBTransac
             discount.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
         }
     }
+    return discount;
 }
 //--------------------------------------------------------------------------------------------------------------------------
 bool TDeanAndDelucaMall::IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &taxes)
@@ -651,6 +1172,27 @@ int TDeanAndDelucaMall::GetItemSalesId(Database::TDBTransaction &dbTransaction, 
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
     return salesTypeId;
+}
+//--------------------------------------------------------------------------------------------------------
+UnicodeString TDeanAndDelucaMall::GetMonthCode(int month)
+{
+    UnicodeString code = "";
+
+    switch(month)
+    {
+        case 10:
+            code = "A";
+            break;
+        case 11:
+            code = "B";
+            break;
+        case 12:
+            code = "C";
+            break;
+        default:
+            code = IntToStr(month);
+    }
+    return code;
 }
 
 
