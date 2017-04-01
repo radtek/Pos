@@ -878,6 +878,58 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
           prepareListForDSF.push_back(salesData);
        }
 
+       // Now Fetch data Sales by Sales Type
+       IBInternalQuery->Close();
+       IBInternalQuery->SQL->Text = "SELECT  SALES_TYPE_REL.SALES_TYPE_CODE, SALES_TYPE_REL.Z_KEY, SUM(SALES_TYPE_REL.FIELD_VALUE)FIELD_VALUE  "
+                                    "FROM "
+                                        "(SELECT a.ARCBILL_KEY, CAST((MST.SUBTOTAL)*100 AS INT) FIELD_VALUE, "
+                                                    "A.Z_KEY, MS.SALES_TYPE_CODE "
+                                         "FROM MALLEXPORT_SALES a "
+                                         "INNER JOIN MALL_SALES_BY_SALES_TYPE MST ON A.ARCBILL_KEY = MST.ARCBILL_KEY "
+                                         "LEFT JOIN MALL_SALES_TYPE_ITEMS_RELATION MSIT ON MST.SALES_TYPE_ID = MSIT.STI_ID "
+                                         "LEFT JOIN MALL_SALES_TYPE MS ON MSIT.SALES_TYPE_ID = MS.SALES_TYPE_ID "
+                                         "WHERE   a.MALL_KEY = :MALL_KEY ";
+
+       if(zKey == 0)
+       {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+       }
+       else
+       {
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+       }
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                                         "GROUP BY a.ARCBILL_KEY,  FIELD_VALUE, A.Z_KEY , MS.SALES_TYPE_CODE "
+                                         "ORDER BY A.ARCBILL_KEY ) SALES_TYPE_REL "
+                                    "GROUP BY SALES_TYPE_REL.SALES_TYPE_CODE, SALES_TYPE_REL.Z_KEY ";
+
+        IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
+
+        if(zKey != 0)
+            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+
+        IBInternalQuery->ExecQuery();
+
+        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+       {
+           ///prepare sales data
+          TMallExportSalesData salesData;
+          salesData.FieldIndex  = 21;
+          salesData.Field = "Sales Type ";
+          salesData.DataValue = "21" + IBInternalQuery->Fields[0]->AsString;
+          salesData.DataValueType = "String";
+          salesData.ZKey = IBInternalQuery->Fields[1]->AsInteger;
+          prepareListForDSF.push_back(salesData);
+
+          salesData.FieldIndex  = 22;
+          salesData.Field = "Net Sale Amount(Per Sales Type) ";
+          salesData.DataValue = "22" + IBInternalQuery->Fields[2]->AsCurrency;
+          salesData.DataValueType = "double";
+          salesData.ZKey = IBInternalQuery->Fields[1]->AsInteger;
+          prepareListForDSF.push_back(salesData);
+       }
+
        //insert list into TMallExportPrepareData's map
        prepareDataForDSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForDSF ));
     }
