@@ -247,14 +247,11 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
                                         + fieldData->TotalGCSales;
         //fieldData->NonTaxableSaleAmount todo
         fieldData->TotalRefundAmount = paymentTransaction.Money.FinalPrice > 0 ? 0 : paymentTransaction.Money.FinalPrice;
-       /// fieldData->TotalTax = //todo;
+        /// fieldData->TotalTax = //todo;
         fieldData->ZKey = 0;
         fieldData->SalesCount = (fieldData->TotalRefundAmount > 0 ? 0 : 1);
 
-
         //fieldData->SalesType = 1; //todo
-
-
 
         fieldData->CustomerCount = GetPatronCount(paymentTransaction);
 
@@ -445,7 +442,7 @@ TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)
         //Prepare Data For Hourly File
         PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, keyToCheck2, 13, preparedData, 2, zKey);
 
-        //Prepare Data For DiscountFile
+        //Prepare Data For Discount File
         PrepareDataForDiscountFile(dbTransaction, preparedData, 3, zKey);
 
        //Commit the transaction as we have completed all the transactions
@@ -468,7 +465,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
     try
     {
         ///Store First Letter of file name
-        UnicodeString fileName = "H";
+        UnicodeString fileName = "D";
 
         ///Register Query
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
@@ -489,23 +486,11 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
         //insert filename into map according to index and file type
         prepareDataForDiscount.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
-         //insert indexes into array for fetching tenant code, date , terminal number
-        int hourIndexKeys[3] = {1, 2, 3};
-
-        //clear the map
-        keysToSelect.clear();
-
-        //Store keys into set
-        keysToSelect = InsertInToSet(hourIndexKeys, 3);
-
-        ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareDataForDiscount, keysToSelect, index, zKey);
-
         //Query for selecting data for hourly file
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
-                "SELECT DISCOUNT_BREAKUP.ARCBILL_KEY, DISCOUNT_BREAKUP.DISCOUNT_ID, DISCOUNT_BREAKUP.NAME, "
-                "CAST (SUM(DISCOUNT_BREAKUP.DISCOUNTED_VALUE) AS NUMERIC(17,2)) DISC_AMOUNT "
+                "SELECT DISCOUNT_BREAKUP.DISCOUNT_ID, DISCOUNT_BREAKUP.NAME, "
+                "CAST (SUM(ABS(DISCOUNT_BREAKUP.DISCOUNTED_VALUE)) AS NUMERIC(17,2)) DISC_AMOUNT "
                 "FROM "
                     "(SELECT A.ARCBILL_KEY, DISCOUNTS.DISCOUNT_ID, AOD.NAME, AOD.DISCOUNTED_VALUE "
                     "FROM MALLEXPORT_SALES a "
@@ -524,7 +509,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
                         "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE ) DISCOUNT_BREAKUP "
-                "GROUP BY 1,2,3 ";
+                "GROUP BY 1,2 ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
 
@@ -536,12 +521,12 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
           TMallExportSalesData salesData;
-          salesData.FieldIndex  = IBInternalQuery->Fields[0]->AsInteger;
-          salesData.Field = IBInternalQuery->Fields[1]->AsString;
+          salesData.FieldIndex  = 0;
+          salesData.Field = IBInternalQuery->Fields[0]->AsString;
 
-          salesData.DataValue = IBInternalQuery->Fields[1]->AsString + "," + IBInternalQuery->Fields[2]->AsString + "," + IBInternalQuery->Fields[3]->AsCurrency;
+          salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "," + IBInternalQuery->Fields[1]->AsString + "," + IBInternalQuery->Fields[2]->AsCurrency;
           salesData.DataValueType = "UnicodeString";
-          salesData.MallExportSalesId = IBInternalQuery->Fields[4]->AsInteger;
+          salesData.MallExportSalesId = IBInternalQuery->Fields[0]->AsInteger;
           salesDataForDISF.push_back(salesData);
         }
          //insert list into TMallExportPrepareData's map
@@ -917,12 +902,9 @@ void TDeanAndDelucaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTra
         //Query for fetching setting for files according to file type and index keys.
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, "
-                                                "CASE WHEN(a.FIELD_INDEX = 1) THEN LPAD(a.FIELD_VALUE,5,0) "
-                                                "WHEN(a.FIELD_INDEX = 2) THEN LPAD(a.FIELD_VALUE,2,0) "
-                                                "ELSE (a.FIELD_VALUE) END FIELD_VALUE, a.VALUE_TYPE "
+                                                "a.FIELD_VALUE, a.VALUE_TYPE "
                                       "FROM MALLEXPORT_SALES a "
-                                      "INNER JOIN MALLEXPORT_HEADER MEH ON A.FIELD_INDEX = MEH.MALLEXPORT_HEADER_ID "
-                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") AND meh.IS_ACTIVE = :IS_ACTIVE "
+                                      "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") "
                                       "AND a.MALL_KEY = :MALL_KEY ";
         if(zKey == 0)
         {
@@ -935,7 +917,6 @@ void TDeanAndDelucaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTra
 
 		IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition + "GROUP BY 1,2,3,4 ";
 
-        IBInternalQuery->ParamByName("IS_ACTIVE")->AsString = "T";
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
 
         if(zKey != 0)
@@ -984,7 +965,7 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
 
         //Query for fetching file name.
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, a.FIELD_VALUE, a.VALUE_TYPE , a.Z_KEY, a.DATE_CREATED  "
+        IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, a.FIELD_VALUE, a.VALUE_TYPE , a.Z_KEY, MAX(a.DATE_CREATED)   "
                                     "FROM MALLEXPORT_SALES a "
                                     "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND a.MALL_KEY = :MALL_KEY  ";
         if(zKey == 0)
@@ -996,7 +977,7 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
-        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4,5,6 "
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4,5 "
                                                                 "ORDER BY 1 ASC ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;

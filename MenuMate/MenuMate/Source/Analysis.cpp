@@ -2203,6 +2203,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 		TIBSQL *IBPatronCount = DBTransaction.Query(DBTransaction.AddQuery());
 		TIBSQL *IBWebArchive = DBTransaction.Query(DBTransaction.AddQuery());
         TIBSQL *IBZedQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        TIBSQL *IBMallQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
 		UnicodeString ExportFile = StockMasterPath + "MMTR_" + FormatFloat("00000",TGlobalSettings::Instance().SiteID) + "_" + DeviceName + ".csv";
 		try
@@ -2319,6 +2320,11 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			IBWebArchive->SQL->Text = "insert into \"ARCWEB \" "
 			"(\"WEBORDER_KEY\", \"ARCBILL_KEY\") values (:\"WEBORDER_KEY\", :\"ARCBILL_KEY\") ";
 
+            if(TGlobalSettings::Instance().mallInfo.MallId)
+            {
+                IBMallQuery->Close();
+                IBMallQuery->SQL->Text = "UPDATE MALLEXPORT_SALES a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY ";
+            }
 
          	IBDayArcBill->ExecQuery();
 			for (; !IBDayArcBill->Eof; IBDayArcBill->Next())
@@ -2607,6 +2613,15 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 						THIRDPARTYCODES_KEY + "," + (SetMunuItem ? "1" : "0") + "," + PRICE + "," + PLU);
 					}
 				}
+
+                //Update MallExport's arcbill key if zed is done..
+                if(TGlobalSettings::Instance().mallInfo.MallId)
+                {   
+                    IBMallQuery->Close();
+                    IBMallQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
+                    IBMallQuery->ParamByName("DAYARCBILL_KEY")->AsInteger = IBDayArcBill->FieldByName("ARCBILL_KEY")->AsInteger;
+                    IBMallQuery->ExecQuery();
+                }
 			}
 
 			IBInternalQuery->Close();
