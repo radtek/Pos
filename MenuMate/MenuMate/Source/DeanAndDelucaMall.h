@@ -78,6 +78,9 @@ private:
     //Check whether item is assigned to any sales type..
     int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
 
+    //Get Max Zed Key Present in mall Table..
+    int GetMaxZedKey(Database::TDBTransaction &dbTransaction, int zKey = 0);
+
     protected:
 
     //Override TMallExport class 's pure virtual function PrepareDataForDatabase(...............)
