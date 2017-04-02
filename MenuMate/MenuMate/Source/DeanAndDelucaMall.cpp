@@ -178,15 +178,13 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         {
                 TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
 
-                //todo
+                //prepare all fields per items
                 PrepareDataByItem(paymentTransaction.DBTransaction, Order, *fieldData);
 
                 //For SubOrder
                 for (int i = 0; i < Order->SubOrders->Count; i++)
 				{
 					TItemCompleteSub *CurrentSubOrder = (TItemCompleteSub*)Order->SubOrders->Items[i];
-
-                    //todo
                     PrepareDataByItem(paymentTransaction.DBTransaction, CurrentSubOrder, *fieldData);
                 }
         }
@@ -200,38 +198,13 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 			TPayment *SubPayment = paymentTransaction.PaymentGet(i);
 			if (SubPayment->GetPay() != 0)
 			{
-                 AnsiString payTypeName = "";
-                AnsiString cardType = SubPayment->CardType;
-                if( cardType != "" && cardType != NULL)
-                {
-                  payTypeName =  cardType;
-                }
-                else
-                {
-                    if (SubPayment->SysNameOveride != "")
-                    {
-                        payTypeName = SubPayment->SysNameOveride;
-                    }
-                    else
-                    {
-                        if (SubPayment->NameOveride == "")
-                        {
-                            payTypeName = SubPayment->Name;
-                        }
-                        else
-                        {
-                            payTypeName = SubPayment->NameOveride;
-                        }
-                    }
-                }
-
-                if (SubPayment->Properties & ePayTypeGetVoucherDetails)
-                {
-                    fieldData->TotalGCSales += (double)SubPayment->GetPayTendered();
-                }
-                else if(payTypeName == cardType)
+                if(SubPayment->Properties & ePayTypeElectronicTransaction)
                 {
                      fieldData->TotalChargedSales += (double)SubPayment->GetPayTendered();
+                }
+                else if ((SubPayment->Properties & ePayTypeGetVoucherDetails) || (SubPayment->Properties & ePayTypeGetVoucherDetails))
+                {
+                    fieldData->TotalGCSales += (double)SubPayment->GetPayTendered();
                 }
                 else
                 {
