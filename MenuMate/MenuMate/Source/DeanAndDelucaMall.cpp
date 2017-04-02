@@ -160,6 +160,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         int terminalNumber;
         UnicodeString tenantCode;
         Currency taxRate = 0.00;
+        double amount = 0;
         std::list<TMallExportSettings>::iterator it;
 
         for(it = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); it != TGlobalSettings::Instance().mallInfo.MallSettings.end(); it++)
@@ -198,17 +199,18 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 			TPayment *SubPayment = paymentTransaction.PaymentGet(i);
 			if (SubPayment->GetPay() != 0)
 			{
+                amount = (double)(SubPayment->GetPayTendered() - paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased());
                 if(SubPayment->Properties & ePayTypeElectronicTransaction)
                 {
-                     fieldData->TotalChargedSales += (double)SubPayment->GetPayTendered();
+                     fieldData->TotalChargedSales += amount;
                 }
                 else if ((SubPayment->Properties & ePayTypeGetVoucherDetails) || (SubPayment->Properties & ePayTypeGetVoucherDetails))
                 {
-                    fieldData->TotalGCSales += (double)SubPayment->GetPayTendered();
+                    fieldData->TotalGCSales += amount;
                 }
                 else
                 {
-                    fieldData->TotalCashSales +=  (double)SubPayment->GetPayTendered();
+                    fieldData->TotalCashSales +=  amount;
                 }
             }
         }
