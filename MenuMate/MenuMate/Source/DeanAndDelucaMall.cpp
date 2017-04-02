@@ -988,7 +988,7 @@ void TDeanAndDelucaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTra
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
 
-		IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + terminalCondition + "GROUP BY 1,2,3,4 ";
+		IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4 ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
 
