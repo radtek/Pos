@@ -218,7 +218,8 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         fieldData->TotalNetSaleAmount =  fieldData->TotalGCSales + fieldData->TotalChargedSales + fieldData->TotalCashSales;
         fieldData->OldAccSalesTotal = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
         fieldData->NewAccSalesTotal = fieldData->OldAccSalesTotal + fieldData->TotalNetSaleAmount;
-       // fieldData->GrossSaleAmount =  fieldData->TotalNetSaleAmount;
+        fieldData->GrossSaleAmount =  fieldData->TotalSCDAndPWDAmount + fieldData->TotalOtherDiscount + fieldData->TotalCashSales +
+                                        fieldData->TotalChargedSales + fieldData->TotalGCSales;
          
         fieldData->TotalRefundAmount = paymentTransaction.Money.FinalPrice > 0 ? 0 : fabs(paymentTransaction.Money.FinalPrice);
 
@@ -1113,7 +1114,8 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
 
     //For Cancel Items..
     TItemComplete *cancelOrder =   (TItemComplete*)order;
-    fieldData.TotalVoidAmount += (double)(cancelOrder->TabContainerName != "" && order->BillCalcResult.BasePrice == 0.00 ? order->PriceLevel0 : 0.00);
+    fieldData.TotalVoidAmount += (double)(cancelOrder->TabContainerName != "" && order->BillCalcResult.BasePrice == 0.00 ?
+                                            (order->GetQty()*order->PriceLevel0) : 0);
 
     if(isVatable)
     {
