@@ -1445,7 +1445,7 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
     if(isSCDOrPWDApplied)
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
 
-    if(TGlobalSettings::Instance().mallInfo.MallId)
+    if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
     {
         //Instantiation is happenning in a factory based on the active mall in database
         TMallExport* mall = TMallFactory::GetMallType();
