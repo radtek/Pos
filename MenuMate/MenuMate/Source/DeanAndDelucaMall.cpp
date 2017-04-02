@@ -326,7 +326,7 @@ int TDeanAndDelucaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
     {
         totalPatronCount += ptrPatronTypes->Count;
     }
-    return totalPatronCount;
+    return totalPatronCount != 0 ? totalPatronCount : 1;
 }
 //---------------------------------------------------------------------------------
 double TDeanAndDelucaMall::GetOldAccumulatedSales(Database::TDBTransaction &dbTransaction, int fieldIndex)
