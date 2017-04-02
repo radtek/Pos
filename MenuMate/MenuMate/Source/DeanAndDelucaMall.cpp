@@ -219,12 +219,10 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         fieldData->GrossSaleAmount = fieldData->TotalSCDAndPWDAmount + fieldData->TotalOtherDiscount + fieldData->TotalCashSales + fieldData->TotalChargedSales
                                         + fieldData->TotalGCSales;
         //fieldData->NonTaxableSaleAmount todo
-        fieldData->TotalRefundAmount = paymentTransaction.Money.FinalPrice > 0 ? 0 : paymentTransaction.Money.FinalPrice;
-        /// fieldData->TotalTax = //todo;
+        fieldData->TotalRefundAmount = paymentTransaction.Money.FinalPrice > 0 ? 0 : fabs(paymentTransaction.Money.FinalPrice);
+
         fieldData->ZKey = 0;
         fieldData->SalesCount = (fieldData->TotalRefundAmount > 0 ? 0 : 1);
-
-        //fieldData->SalesType = 1; //todo
 
         fieldData->CustomerCount = GetPatronCount(paymentTransaction);
 
