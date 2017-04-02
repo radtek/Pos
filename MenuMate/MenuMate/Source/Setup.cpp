@@ -2198,14 +2198,11 @@ UnicodeString TfrmSetup::RenameTenantNumber()
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::cbNewMallLocChange(TObject *Sender)
 {
-    if(cbNewMallLoc->ItemIndex != 0)
+    UpdateNoMallUI();
+    if(cbNewMallLoc->ItemIndex )
     {
         TManagerMallSetup::InsertInToMallExport_Settings_Values(cbNewMallLoc->ItemIndex);
         LoadMallSettingInfo();
-    }
-    else
-    {
-        UpdateNoMallUI();
     }
 }
 //------------------------------------------------------------------------------
