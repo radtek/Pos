@@ -1103,6 +1103,8 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
 
     double grossAmount = order->GetQty() > 0.00 ? ((order->PriceEach_BillCalc()*order->GetQty()) + fabs(order->TotalAdjustment())) : 0;
 
+    discounts.scdDiscount = fabs(discounts.scdDiscount);
+    discounts.pwdDiscount = fabs(discounts.pwdDiscount);
     fieldData.TotalSCDAndPWDAmount += discounts.scdDiscount + discounts.pwdDiscount;
     fieldData.TotalOtherDiscount += discounts.otherDiscount;
     fieldData.TotalTax += taxes.salesTax + taxes.localTax + taxes.serviceChargeTax;
@@ -1139,10 +1141,10 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
 //------------------------------------------------------------------------------------------------------------------
 TDeanAndDelucaDiscount TDeanAndDelucaMall::PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order)
 {
-    TDeanAndDelucaDiscount discount;
-    discount.scdDiscount = 0;
-    discount.pwdDiscount = 0;
-    discount.otherDiscount = 0;
+    TDeanAndDelucaDiscount discounts;
+    discounts.scdDiscount = 0;
+    discounts.pwdDiscount = 0;
+    discounts.otherDiscount = 0;
 
     for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();std::advance(ptrDiscounts, 1))
     {
@@ -1153,23 +1155,23 @@ TDeanAndDelucaDiscount TDeanAndDelucaMall::PrepareDiscounts(Database::TDBTransac
         {
             if(ptrDiscounts->DiscountGroupList[0].Name == "Senior Citizen" )
             {
-                discount.scdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+                discounts.scdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
             }
             else if(ptrDiscounts->DiscountGroupList[0].Name == "Person with Disability")
             {
-                discount.pwdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+                discounts.pwdDiscount += (double)Order->DiscountValue_BillCalc(ptrDiscounts);
             }
             else if(ptrDiscounts->DiscountGroupList[0].Name != "Complimentary" || ptrDiscounts->DiscountGroupList[0].Name != "Non-Chargeable")
             {
-                discount.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+                discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
             }
         }
         else
         {
-            discount.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
+            discounts.otherDiscount +=  (double)Order->DiscountValue_BillCalc(ptrDiscounts);
         }
     }
-    return discount;
+    return discounts;
 }
 //--------------------------------------------------------------------------------------------------------------------------
 bool TDeanAndDelucaMall::IsItemVatable(TItemMinorComplete *order, TDeanAndDelucaTaxes &taxes)
