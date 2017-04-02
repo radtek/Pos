@@ -216,9 +216,8 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         fieldData->TotalNetSaleAmount =  fieldData->TotalGCSales + fieldData->TotalChargedSales + fieldData->TotalCashSales;
         fieldData->OldAccSalesTotal = GetOldAccumulatedSales(paymentTransaction.DBTransaction, 5);
         fieldData->NewAccSalesTotal = fieldData->OldAccSalesTotal + fieldData->TotalNetSaleAmount;
-        fieldData->GrossSaleAmount = fieldData->TotalSCDAndPWDAmount + fieldData->TotalOtherDiscount + fieldData->TotalCashSales + fieldData->TotalChargedSales
-                                        + fieldData->TotalGCSales;
-        //fieldData->NonTaxableSaleAmount todo
+       // fieldData->GrossSaleAmount =  fieldData->TotalNetSaleAmount;
+         
         fieldData->TotalRefundAmount = paymentTransaction.Money.FinalPrice > 0 ? 0 : fabs(paymentTransaction.Money.FinalPrice);
 
         fieldData->ZKey = 0;
@@ -1099,14 +1098,20 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
 
     TDeanAndDelucaDiscount discounts = PrepareDiscounts(dbTransaction, order);
 
-    double grossAmount = order->GetQty() > 0.00 ? ((order->PriceEach_BillCalc()*order->GetQty()) + fabs(order->TotalAdjustment())) : 0;
+    double grossAmount = 0;
+    if(order->GetQty() > 0 )
+        grossAmount = (double)(order->PriceEach_BillCalc()*order->GetQty()) ;
 
     discounts.scdDiscount = fabs(discounts.scdDiscount);
     discounts.pwdDiscount = fabs(discounts.pwdDiscount);
     fieldData.TotalSCDAndPWDAmount += discounts.scdDiscount + discounts.pwdDiscount;
-    fieldData.TotalOtherDiscount += discounts.otherDiscount;
+    fieldData.TotalOtherDiscount += fabs(discounts.otherDiscount);
     fieldData.TotalTax += taxes.salesTax + taxes.localTax + taxes.serviceChargeTax;
     fieldData.TotalServiceCharge += taxes.serviceCharge;
+
+    //For Cancel Items..
+    TItemComplete *cancelOrder =   (TItemComplete*)order;
+    fieldData.TotalVoidAmount += (double)(cancelOrder->TabContainerName != "" && order->BillCalcResult.BasePrice == 0.00 ? order->PriceLevel0 : 0.00);
 
     if(isVatable)
     {
@@ -1114,7 +1119,7 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     }
     else
     {
-       fieldData.GrossSaleAmount += (grossAmount - taxes.serviceCharge);
+       fieldData.NonTaxableSaleAmount += (grossAmount - taxes.serviceCharge);
     }
 
     //Get Salestype Code. if item is assigned to any sales type then it will return code else "";
