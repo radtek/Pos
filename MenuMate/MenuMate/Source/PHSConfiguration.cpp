@@ -45,6 +45,8 @@ void __fastcall TfrmPHSConfiguration::tbPhoenixIPAddressClick(TObject *Sender)
             DBTransaction1.StartTransaction();
             TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSIPAddress,TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress);
             DBTransaction1.Commit();
+            if(PMSType == 2)
+                MessageBox("Please ensure POS ID should be other than 0 for SiHot .", "Info", MB_OK);
 		}
 	}
 }
@@ -126,8 +128,6 @@ void TfrmPHSConfiguration::UpdateGUI()
 	tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
 	tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
 	tbPhoenixID->Caption = "P.O.S ID\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
-	tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-	tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
 	tbPointCat->Caption = "Points Category\r" + TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
 	tbCreditCat->Caption = "Credit Category\r" + TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
     if(PMSType == siHot)
@@ -136,12 +136,17 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbTipAccount->Caption = "Tip Account\r" + TDeviceRealTerminal::Instance().BasePMS->TipAccount;
         tbExpensesAccount-> Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
         TouchBtn1->Enabled = false;
+        tbPaymentDefCat->Enabled = false;
+        tbItemDefCat->Enabled = false;
     }
     else
     {
 	    tbDefTransAccount->Caption = "Default Transaction Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
+        tbPaymentDefCat->Caption = "Default Payment Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
+        tbItemDefCat->Caption = "Default Item Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
         tbTipAccount->Enabled = false;
         tbExpensesAccount->Enabled = false;
+
     }
 	tbSurchargeCat->Caption = "Surcharge Category\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
 	tbRoundingCategory->Caption = "Rounding Category\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;

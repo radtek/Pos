@@ -70,7 +70,10 @@ bool TManagerSiHot::CheckIPAddressPort(AnsiString tcpIPAddress,int tcpPort)
     std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
     int transno = siHotDataProcessor->GetTransNumber();
     std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-    return siHotInterface->ValidateIPAddressPort(tcpIPAddress,tcpPort,transno);
+    bool value = siHotInterface->ValidateIPAddressPort(tcpIPAddress,tcpPort,transno);
+    if(!value)
+       MessageBox("SiHot could not get enabled.Please set correct SiHot IP Address and Port Number","Error", MB_OK + MB_ICONERROR);
+    return value;
 }
 //---------------------------------------------------------------------------
 void TManagerSiHot::GetRoomStatus(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString pmsIPAddress,int pmsPort)

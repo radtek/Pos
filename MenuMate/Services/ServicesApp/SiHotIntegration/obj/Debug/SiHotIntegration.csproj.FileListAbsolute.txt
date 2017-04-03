@@ -5,3 +5,5 @@ C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Deb
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\ResolveAssemblyReference.cache
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.dll
 C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.pdb
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\Newtonsoft.Json.dll
+C:\MM_Cloud_Git\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\bin\Debug\Newtonsoft.Json.xml

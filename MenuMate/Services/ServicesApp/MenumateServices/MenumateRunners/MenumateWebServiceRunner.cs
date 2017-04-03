@@ -14,6 +14,7 @@ namespace MenumateServices.MenumateRunners
 
             try
             {
+                ServiceLogger.LogError("going to call CreateServiceHost()");
                 ServiceHost = CreateServiceHost(); 
                 ServiceHost.Open();
 
@@ -86,6 +87,7 @@ namespace MenumateServices.MenumateRunners
             {
                 foreach (Uri uri in serviceHost.BaseAddresses)
                 {
+                    ServiceLogger.Log("inside foreach of LogBaseAddressesInformation");
                     ServiceLogger.Log(uri.ToString());
                 }
             }

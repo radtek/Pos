@@ -79,7 +79,8 @@ namespace MenumateServices.MenumateRunners
             //...........................................
 
             ServiceLogger.Log(@"Starting SiHot endpoint ...");
-            if (result = OpenServiceHost())
+            result = OpenServiceHost();
+            if (result)
             {
                 ServiceLogger.Log(@"SiHot endpoint is running ...");
 
