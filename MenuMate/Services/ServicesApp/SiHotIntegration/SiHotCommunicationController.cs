@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using SiHotIntegration.Domain;
@@ -25,6 +26,11 @@ namespace SiHotIntegration
             string uri = @"http://"+ ipAddress + @":" + portNumber + @"/RMS" + @"/accountbook" + @"/";
             return uri;
         }
+        public string URIValidate(string ipAddress, int portNumber)
+        {
+            string uri = @"http://" + ipAddress + @":" + portNumber + @"/RMS" + @"/paymenttype" + @"/";
+            return uri;
+        }
         public RoomDetails GetRoomDetails(RoomRequest roomRequest)
         {
                 SiHotSerializer serializer = new SiHotSerializer();
@@ -36,8 +42,18 @@ namespace SiHotIntegration
                     var request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
                     request.Method = WebRequestMethods.Http.Post;
                     request.ContentType = "text/plain"; 
-                    string content = serializer.GetRoomRequestContent(roomRequest);
-                    byte[] bytes = Encoding.UTF8.GetBytes(content);
+                    List<string> detailsList = serializer.GetRoomRequestContent(roomRequest);
+
+                    byte seperator = 29;
+                    var byteList = new List<byte>();
+                    for (int i = 0; i < detailsList.Count; i++)
+                    {
+                        var str = detailsList[i];
+                        byteList.AddRange(Encoding.UTF8.GetBytes(str).ToList<byte>());
+                        byteList.Add(seperator); 
+                    }
+                    var bytes = byteList.ToArray<byte>();
+                    
                     request.ContentLength = bytes.Length;
                     request.Timeout = 500000;
                     request.ContentType = "text/plain";
@@ -52,6 +68,7 @@ namespace SiHotIntegration
 	            }
             return roomDetails;
         }
+
         public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails)
         {
 		    RoomChargeResponse response = new RoomChargeResponse();
@@ -63,20 +80,50 @@ namespace SiHotIntegration
                 var request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
                 request.Method = WebRequestMethods.Http.Post;
                 request.ContentType = "text/plain";
-                string content = serializer.GetRoomChargeContent(roomChargeDetails);
-                byte[] bytes = Encoding.UTF8.GetBytes(content);
+                List<byte> bytesList = serializer.GetRoomChargeContent(roomChargeDetails);
+                byte[] bytes = bytesList.ToArray<byte>();
                 request.ContentLength = bytes.Length;
                 request.Timeout = 500000;
                 request.ContentType = "text/plain";
                 request.GetRequestStream().Write(bytes, 0, bytes.Length);
-                WebResponse wr = request.GetResponse();
-                var memberStream = new StreamReader(wr.GetResponseStream());
+                WebResponse webResponse = request.GetResponse();
+                var memberStream = new StreamReader(webResponse.GetResponseStream());
+                response = deserializer.DesrializeRoomPostResponse(memberStream.ReadToEnd());
             }
             catch (Exception ex)
             {
 		        ServiceLogger.Log("Exception in sending Room request" + ex.Message);
             }
             return response;
+        }
+
+        public bool ValidateCredentials(string address, int port, int transno)
+        {
+            bool value = false;
+            SiHotSerializer serializer = new SiHotSerializer();
+            SiHotDesrializer deserializer = new SiHotDesrializer();
+            try
+            {
+                string uri = URIValidate(address, port);
+                var request = (HttpWebRequest)WebRequest.Create(new Uri(uri));
+                request.Method = WebRequestMethods.Http.Post;
+                request.ContentType = "text/plain";
+                List<byte> bytesList = serializer.GetValidateContent(transno);
+                byte[] bytes = bytesList.ToArray<byte>();
+                request.ContentLength = bytes.Length;
+                request.Timeout = 500000;
+                request.ContentType = "text/plain";
+                request.GetRequestStream().Write(bytes, 0, bytes.Length);
+                WebResponse wr = request.GetResponse();
+                var memberStream = new StreamReader(wr.GetResponseStream());
+                value = deserializer.DeserializeValidateResponse(memberStream.ReadToEnd());
+                return value;
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in sending Room request" + ex.Message);
+            }
+            return value;
         }
     }
 }

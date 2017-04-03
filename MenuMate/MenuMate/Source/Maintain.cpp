@@ -142,8 +142,11 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	tbPHSInterface->Enabled = TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"] ? true : false;
 	if(TDeviceRealTerminal::Instance().BasePMS->Enabled && tbPHSInterface->Enabled)
 	{
-		tbPHSInterface->Caption = "P.M.S Interface \r[Enabled]";
-		tbPHSInterface->ButtonColor = clGreen;
+        if(TGlobalSettings::Instance().PMSType == 2)
+            tbPHSInterface->Caption = "P.M.S Interface\r[SiHot Enabled]";
+        else if(TGlobalSettings::Instance().PMSType == 1)
+            tbPHSInterface->Caption = "P.M.S Interface\r[P.M.S Enabled]";
+        tbPHSInterface->ButtonColor = clGreen;
 	}
 	else if(!TDeviceRealTerminal::Instance().BasePMS->Enabled && tbPHSInterface->Enabled)
 	{
@@ -645,20 +648,7 @@ void __fastcall TfrmMaintain::tbPHSInterfaceClick(TObject *Sender)
     TLoginSuccess Result = VerifyUserAuthorization();
 	if (Result == lsAccepted)
 	{
-
         SelectPMSType();
-//		std::auto_ptr<TfrmPHSConfiguration>(frmPHSConfiguration)(TfrmPHSConfiguration::Create<TfrmPHSConfiguration>(this));
-//		frmPHSConfiguration->ShowModal();
-//		if(PhoenixHM->Enabled)
-//		{
-//			tbPHSInterface->Caption = "P.M.S Interface \r[Enabled]";
-//			tbPHSInterface->Color = clGreen;
-//		}
-//		else
-//		{
-//			tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
-//			tbPHSInterface->Color = clMaroon;
-//		}
 	}
 	else if (Result == lsDenied)
 	{
@@ -3949,7 +3939,7 @@ void TfrmMaintain::SelectPMSType()
     std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
     TVerticalSelection Item;
     Item.Title = "Cancel";
-    Item.Properties["Color"] = IntToStr(clMaroon);
+    Item.Properties["Color"] = "0x000098F5";
     Item.CloseSelection = true;
     SelectionForm->Items.push_back(Item);
 
@@ -3987,11 +3977,14 @@ void TfrmMaintain::SelectPMSType()
                break;
             }
         }
-        TGlobalSettings::Instance().PMSType = Action;
-        Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction1.StartTransaction();
-        TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSType,TGlobalSettings::Instance().PMSType);
-        DBTransaction1.Commit();
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
+        {
+            TGlobalSettings::Instance().PMSType = Action;
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction1.StartTransaction();
+            TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSType,TGlobalSettings::Instance().PMSType);
+            DBTransaction1.Commit();
+        }
     }
 }
 //---------------------------------------------------------------------------
@@ -4002,10 +3995,10 @@ bool TfrmMaintain::SetUpSiHot()
     std::auto_ptr<TfrmPHSConfiguration>(frmPHSConfiguration)(TfrmPHSConfiguration::Create<TfrmPHSConfiguration>(this));
     frmPHSConfiguration->PMSType = 2;
     frmPHSConfiguration->ShowModal();
-//    if(PhoenixHM->Enabled)
+
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
     {
-        tbPHSInterface->Caption = "P.M.S Interface \r[Enabled]";
+        tbPHSInterface->Caption = "P.M.S Interface\r[SiHot Enabled]";
         tbPHSInterface->ButtonColor = clGreen;
     }
     else
@@ -4018,15 +4011,14 @@ bool TfrmMaintain::SetUpSiHot()
 //---------------------------------------------------------------------------
 bool TfrmMaintain::SetUpPhoenix()
 {
-    // todo:- Check If SiHot is enabled or not. Should be disabled to enable Phoenix
     bool keepFormAlive = false;
     std::auto_ptr<TfrmPHSConfiguration>(frmPHSConfiguration)(TfrmPHSConfiguration::Create<TfrmPHSConfiguration>(this));
     frmPHSConfiguration->PMSType = 1;
     frmPHSConfiguration->ShowModal();
-//    if(PhoenixHM->Enabled)
+
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled)
     {
-        tbPHSInterface->Caption = "P.M.S Interface \r[Enabled]";
+        tbPHSInterface->Caption = "P.M.S Interface\r[P.M.S Enabled]";
         tbPHSInterface->ButtonColor = clGreen;
     }
     else

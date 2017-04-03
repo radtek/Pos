@@ -70,7 +70,7 @@ class TManagerMembership
 
     void SetPhoneOrderFlowMemberSelection(bool value){ POFMemberSelectionEnabled = value;}
     bool IsPOFMemberSelectionEnabled(){ return POFMemberSelectionEnabled; }
-    virtual bool MemberCodeScanned(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode);
+    virtual bool LoyaltyMemberSelected(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode,bool triggeredByCard);
     virtual bool UpdateMemberCardCode(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode);
 };
 

@@ -672,7 +672,7 @@ void TfrmPaymentType::PopulateReceipt(TReqPrintJob *Receipt)
 	{
 		if (CurrentTransaction.Phoenix.AccountNumber != "" && CurrentTransaction.Phoenix.AccountNumber != 0)
 		{
-			Receipt->ExtraInfo->Add("Room Number # " + CurrentTransaction.Phoenix.AccountNumber);
+    		Receipt->ExtraInfo->Add("Room Number # " + CurrentTransaction.Phoenix.AccountNumber);
 			Receipt->ExtraInfo->Add("Guest " + CurrentTransaction.Phoenix.AccountName);
 		}
 		else
@@ -1731,10 +1731,14 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     std::auto_ptr <TfrmPhoenixRoom> frmPhoenixRoom(TfrmPhoenixRoom::Create <TfrmPhoenixRoom> (this));
                     if (frmPhoenixRoom->SelectRoom(PMSIPAddress, PMSPort) == mrOk)
                     {
+//                        MessageBox("Got OK","",MB_OK);
                         CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->SelectedRoom.AccountNumber;
+//                        MessageBox(CurrentTransaction.Phoenix.AccountNumber,"account Number",MB_OK);
                         CurrentTransaction.Phoenix.AccountName = frmPhoenixRoom->SelectedRoom.Folders->Strings
                         [frmPhoenixRoom->SelectedRoom.FolderNumber - 1];
+//                        MessageBox(CurrentTransaction.Phoenix.AccountName,"account Name",MB_OK);
                         CurrentTransaction.Phoenix.FolderNumber = frmPhoenixRoom->SelectedRoom.FolderNumber;
+//                        MessageBox(CurrentTransaction.Phoenix.FolderNumber,"Folder Number",MB_OK);
                         CurrentTransaction.SalesType = eRoomSale;
                         TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
                         RoomNumber = StrToIntDef(frmPhoenixRoom->SelectedRoom.AccountNumber, frmPhoenixRoom->SelectedRoom.FolderNumber);
@@ -3739,7 +3743,7 @@ void TfrmPaymentType::GetMemberByBarcode(Database::TDBTransaction &DBTransaction
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
-    bool memberExist = drt.ManagerMembership->MemberCodeScanned(DBTransaction,info,Barcode);
+    bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,info,Barcode,true);
 
 	if (info.Valid())
      {

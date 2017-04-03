@@ -10,9 +10,11 @@ namespace SiHotIntegration.Domain
         [DataMember]
         public string TransNo { get; set; }
         [DataMember]
-        public List<Items> ItemList { get; set; }
+        public string AccountNumber { get; set; }
         [DataMember]
-        public List<Payments> PaymentList { get; set; }
+        public List<SiHotService> ItemList { get; set; }
+        [DataMember]
+        public List<SiHotPayment> PaymentList { get; set; }
         [DataMember]
         public string Covers { get; set; }
         [DataMember]

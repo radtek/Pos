@@ -57,7 +57,7 @@ enum vmVariables
    vmPMSIPAddress = 2100, vmPMSTCPPort, vmPMSPOSID, vmPMSPaymentCategory, vmPMSItemCategory, vmPMSPointsCategory, vmPMSCreditCategory,
    vmPMSDefaultAccount, vmPMSDefaultSurchargeAccount, vmPMSDefaultRoundingAccount, vmIntaMateIPAddress, vmIntaMatePort,
    vmIntaMateTerminalID, vmIntaMateIPTimeOut, vmPocketVoucherURL, vmMembershipTillID,
-   vmWebMatePort, vmWebMateEnabled, vmMaxGamingID, vmIsClippIntegrationEnabled, vmClippTabStartIndex, vmClippTabEndIndex,
+   vmWebMatePort, vmWebMateEnabled, vmMaxGamingID, vmIsClippIntegrationEnabled, vmClippTabStartIndex, vmClippTabEndIndex,vmPMSTipAccount,vmPMSExpensesAccount,
 
 	// Stock Master ----------------------------------------------------------------
 	vm_PLACEHOLDER_UseStockMaster = 2200, vmStockMasterExportPath,

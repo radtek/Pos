@@ -3198,6 +3198,14 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"PMS Type.\r"
 		"Default is PMS Type none.",
 		vmg3rdPartyInterface, 0);
+		SetVarStr(DBTransaction,vmPMSTipAccount, "PMS Default Tip Account",
+		"The Category Menu Items will add against in the PMS system/r"
+		"Default is 2",
+		vmg3rdPartyInterface, "2");
+		SetVarStr(DBTransaction,vmPMSExpensesAccount, "PMS Default Expenses Account",
+		"The Category Menu Items will add against in the PMS system/r"
+		"Default is 32",
+		vmg3rdPartyInterface, "32");
 	}
 	catch(Exception &E)
 	{

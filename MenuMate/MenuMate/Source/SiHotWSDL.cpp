@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (30/03/2017 2:49:33 a.m. - - $Rev: 25127 $)
+// (2/04/2017 1:55:20 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -82,16 +82,16 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(RoomDetails), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"RoomDetails");
   /* GuestDetails */
   RemClassRegistry()->RegisterXSClass(__classid(GuestDetails), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"GuestDetails");
-  /* ArrayOfItems */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItems), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"ArrayOfItems");
-  /* ArrayOfPayments */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfPayments), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"ArrayOfPayments");
+  /* ArrayOfSiHotService */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSiHotService), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"ArrayOfSiHotService");
+  /* ArrayOfSiHotPayment */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSiHotPayment), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"ArrayOfSiHotPayment");
   /* RoomChargeDetails */
   RemClassRegistry()->RegisterXSClass(__classid(RoomChargeDetails), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"RoomChargeDetails");
-  /* Items */
-  RemClassRegistry()->RegisterXSClass(__classid(Items), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"Items");
-  /* Payments */
-  RemClassRegistry()->RegisterXSClass(__classid(Payments), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"Payments");
+  /* SiHotService */
+  RemClassRegistry()->RegisterXSClass(__classid(SiHotService), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"SiHotService");
+  /* SiHotPayment */
+  RemClassRegistry()->RegisterXSClass(__classid(SiHotPayment), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"SiHotPayment");
   /* RoomChargeResponse */
   RemClassRegistry()->RegisterXSClass(__classid(RoomChargeResponse), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"RoomChargeResponse");
   /* RoomRequest */
@@ -102,18 +102,18 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(GuestDetails2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"GuestDetails2", L"GuestDetails");
   /* RoomChargeDetails */
   RemClassRegistry()->RegisterXSClass(__classid(RoomChargeDetails2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"RoomChargeDetails2", L"RoomChargeDetails");
-  /* Items */
-  RemClassRegistry()->RegisterXSClass(__classid(Items2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"Items2", L"Items");
-  /* Payments */
-  RemClassRegistry()->RegisterXSClass(__classid(Payments2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"Payments2", L"Payments");
+  /* SiHotService */
+  RemClassRegistry()->RegisterXSClass(__classid(SiHotService2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"SiHotService2", L"SiHotService");
+  /* SiHotPayment */
+  RemClassRegistry()->RegisterXSClass(__classid(SiHotPayment2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"SiHotPayment2", L"SiHotPayment");
   /* RoomChargeResponse */
   RemClassRegistry()->RegisterXSClass(__classid(RoomChargeResponse2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"RoomChargeResponse2", L"RoomChargeResponse");
   /* ArrayOfGuestDetails */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfGuestDetails), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"ArrayOfGuestDetails");
-  /* ArrayOfPayments */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfPayments), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"ArrayOfPayments");
-  /* ArrayOfItems */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItems), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"ArrayOfItems");
+  /* ArrayOfSiHotPayment */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSiHotPayment), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"ArrayOfSiHotPayment");
+  /* ArrayOfSiHotService */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSiHotService), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"ArrayOfSiHotService");
 }
 #pragma startup RegTypes 32
 

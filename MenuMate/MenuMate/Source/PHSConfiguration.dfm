@@ -4,8 +4,8 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Property Management System Configuration'
-  ClientHeight = 617
-  ClientWidth = 531
+  ClientHeight = 718
+  ClientWidth = 525
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,7 +21,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 8
     Top = 8
     Width = 369
-    Height = 601
+    Height = 705
     Color = 10011108
     ParentBackground = False
     TabOrder = 0
@@ -228,12 +228,50 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbRoundingCategoryClick
     end
+    object tbTipAccount: TTouchBtn
+      Left = 16
+      Top = 591
+      Width = 345
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Tip Account'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbTipAccountClick
+    end
+    object tbExpensesAccount: TTouchBtn
+      Left = 16
+      Top = 646
+      Width = 345
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Expenses Account'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbExpensesAccountClick
+    end
   end
   object Panel2: TPanel
     Left = 384
     Top = 8
     Width = 137
-    Height = 601
+    Height = 705
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

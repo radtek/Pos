@@ -17,18 +17,39 @@ namespace MenumateServices.WCFServices
         public RoomDetails GetRoomDetails(RoomRequest roomRequest)
         {
             RoomDetails roomDetails = new RoomDetails();
-            SiHotCommunicationController siCommController = new SiHotCommunicationController();
-            roomDetails = siCommController.GetRoomDetails(roomRequest);
+            try
+            {
+                SiHotCommunicationController siCommController = new SiHotCommunicationController();
+                roomDetails = siCommController.GetRoomDetails(roomRequest);
+                return roomDetails;
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in getting Room Details" + ex.Message);
+            }
             return roomDetails;
 
         }
         public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails)
         {
             RoomChargeResponse roomChargeReponse = new RoomChargeResponse();
-            SiHotCommunicationController siCommController = new SiHotCommunicationController();
+            try
+            {
+                SiHotCommunicationController siCommController = new SiHotCommunicationController();
+                roomChargeReponse = siCommController.PostRoomCharge(roomChargeDetails);
+                return roomChargeReponse;
+            }
+            catch (Exception ex )
+            {
+                ServiceLogger.Log("Exception in Posting Room Charge" + ex.Message);
+            }
             return roomChargeReponse;
         }
-
+        public bool ValidateCreadentials(string address, int port, int transno)
+        {
+            SiHotCommunicationController siCommController = new SiHotCommunicationController();
+            return siCommController.ValidateCredentials(address, port, transno);
+        }
 
 
     }

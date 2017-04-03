@@ -15,6 +15,8 @@ namespace MenumateServices.WCFServices
         RoomDetails GetRoomDetails(RoomRequest roomRequest);
         [OperationContract]
         RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails);
+        [OperationContract]
+        bool ValidateCreadentials(string address, int port, int transno);
 
     }
 }

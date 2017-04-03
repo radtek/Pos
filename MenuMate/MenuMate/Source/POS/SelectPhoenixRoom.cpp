@@ -50,7 +50,7 @@ void __fastcall TfrmPhoenixRoom::FormDestroy(TObject *Sender)
 void __fastcall TfrmPhoenixRoom::FormShow(TObject *Sender)
 {
 	SelectedRoom.Clear();
-	DisplayData();	
+	DisplayData();
 	FormResize(this);
 	ShiftDown = StartWithShiftDown;
 	CapsDown = false;
@@ -396,19 +396,34 @@ void TfrmPhoenixRoom::QuickSearch()
 
 	SelectedRoom.Clear();
 	SelectedRoom.AccountNumber = edSearch->Text;
-	TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SelectedRoom,PMSIPAddress,PMSPort);
-	if(SelectedRoom.Result != eAccepted)
-	{
-		MessageBox(SelectedRoom.ResultText,"PMS Hotel Error", MB_OK + MB_ICONERROR);
-	}
+    if(TGlobalSettings::Instance().PMSType == 1)
+    {
+    	TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SelectedRoom,PMSIPAddress,PMSPort);
+        if(SelectedRoom.Result != eAccepted)
+        {
+            MessageBox(SelectedRoom.ResultText,"PMS Hotel Error", MB_OK + MB_ICONERROR);
+        }
 
-	ShowAccount();
+        ShowAccount();
 
-	for (int i=0; i<pnlLastPicked->ControlCount; i++)
-	{
-		TTouchBtn *UnSelected = (TTouchBtn * )pnlLastPicked->Controls[i];
-		UnSelected->Color = clMaroon;
-	}
+        for (int i=0; i<pnlLastPicked->ControlCount; i++)
+        {
+            TTouchBtn *UnSelected = (TTouchBtn * )pnlLastPicked->Controls[i];
+            UnSelected->Color = clMaroon;
+        }
+    }
+    else if(TGlobalSettings::Instance().PMSType == 2)
+    {
+        TSiHotAccounts siHotAccount;
+        siHotAccount.AccountNumber = edSearch->Text;
+        SiHotAccounts.push_back(siHotAccount);
+        TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SiHotAccounts,PMSIPAddress,PMSPort);
+        if(SiHotAccounts.size() == 0)
+        {
+           MessageBox("No Such Room","PMS Hotel Error", MB_OK + MB_ICONERROR);
+        }
+        ShowAccount();
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmPhoenixRoom::tbtnSearchByNameClick(TObject *Sender)
@@ -528,21 +543,36 @@ void __fastcall TfrmPhoenixRoom::CardSwipe(TMessage& Message)
 
 void TfrmPhoenixRoom::RefreshList()
 {
-	List->RowCount = SelectedRoom.Folders->Count;
-	List->Cells[0][0] = "";
+    if(TGlobalSettings::Instance().PMSType != 2)
+    {
 
-	bool CommitTransaction = false;
-	int Row = 0;
-	int SelectedRow = 0;
+        List->RowCount = SelectedRoom.Folders->Count;
+        List->Cells[0][0] = "";
 
-	List->Cols[0] = SelectedRoom.Folders;
-	List->Row = SelectedRow;
-	List->SetFocus();
+        bool CommitTransaction = false;
+        int Row = 0;
+        int SelectedRow = 0;
+
+        List->Cols[0] = SelectedRoom.Folders;
+        List->Row = SelectedRow;
+        List->SetFocus();
+    }
+    else
+    {
+        List->RowCount = SiHotAccounts.size();
+        List->Cells[0][0] = "";
+        bool CommitTransaction = false;
+        int Row = 0;
+        int SelectedRow = 0;
+        List->Cols[0] = SelectedRoom.Folders;
+        List->Row = SelectedRow;
+        List->SetFocus();
+    }
 }
 
 void TfrmPhoenixRoom::DisplayData()
 {
-	if(SelectedRoom.AccountNumber != 0)
+	if(SelectedRoom.AccountNumber != 0 && TGlobalSettings::Instance().PMSType == 1)
 	{
 		AnsiString Balance = CurrToStrF(SelectedRoom.Balance, ffCurrency, 2);
 		AnsiString CreditLimit = CurrToStrF(SelectedRoom.CreditLimit, ffCurrency, 2);
@@ -552,6 +582,29 @@ void TfrmPhoenixRoom::DisplayData()
 		memText->Lines->Add("Credit Limit : " + CreditLimit);
 		RefreshList();
 	}
+    else if(SiHotAccounts.size() != 0 && TGlobalSettings::Instance().PMSType == 2)
+    {
+          memText->Clear();
+          SelectedRoom.Folders->Clear();
+          for(std::vector<TSiHotAccounts>::iterator i = SiHotAccounts.begin();
+             i != SiHotAccounts.end() ; ++i)
+          {
+              for(std::vector<TAccountDetails>::iterator j = i->AccountDetails.begin();
+               j != i->AccountDetails.end() ;)
+              {
+                AnsiString Balance = j->Balance;
+                AnsiString CreditLimit = j->CreditLimit;
+                AnsiString RoomNumber = j->RoomNumber;
+                SelectedRoom.Folders->Add(j->FirstName + " " + j->LastName);
+                memText->Clear();
+                memText->Lines->Add("Room Number : " + RoomNumber);
+                memText->Lines->Add("Balance   : " + Balance);
+                memText->Lines->Add("Credit Limit : " + CreditLimit);
+                std::advance(j,1);
+              }
+          }
+          RefreshList();
+    }
 	else
 	{
 		memText->Clear();
@@ -717,13 +770,21 @@ void TfrmPhoenixRoom::ShowAccount()
 
 int TfrmPhoenixRoom::SetSelectedFolder(int FolderNumber)
 {
-	if(FolderNumber != -1)
+	if(FolderNumber != -1 && TGlobalSettings::Instance().PMSType != 2)
 	{
 		SelectedRoom.FolderNumber = FolderNumber;
 		tbtnOk->Enabled = true;
 		tbtnOk->Caption = "Select\r" + List->Cols[0]->Strings[FolderNumber-1];
 		SelectionVisible = true;
 	}
+    else if(FolderNumber != -1 && TGlobalSettings::Instance().PMSType == 2)
+    {
+        SelectedRoom.AccountNumber = SiHotAccounts[FolderNumber-1].AccountNumber;
+        SelectedRoom.FolderNumber = FolderNumber;
+		tbtnOk->Enabled = true;
+		tbtnOk->Caption = "Select\r" + List->Cols[0]->Strings[FolderNumber-1];
+		SelectionVisible = true;
+    }
 	else
 	{
 		tbtnOk->Caption = "Select\r";

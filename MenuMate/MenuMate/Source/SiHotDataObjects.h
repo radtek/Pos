@@ -14,7 +14,7 @@ struct TRoomRequest
     UnicodeString IPAddress;
     int PortNumber;
 };
-struct GuestDetails
+struct TGuestDetails
 {
     UnicodeString FirstName;
     UnicodeString LastName;
@@ -57,18 +57,77 @@ struct GuestDetails
 struct TRoomResponse
 {
     UnicodeString TransactionNumber;
-    std::vector<GuestDetails> GuestsInformation;
+    std::vector<TGuestDetails> GuestsInformation;
     bool IsSuccessful;
     UnicodeString ResponseMessage;
 };
+struct TSiHotService
+{
+    UnicodeString SuperCategory;
+    UnicodeString SuperCategory_Desc;
+    UnicodeString MiddleCategory;
+    UnicodeString MiddleCategory_Desc;
+    UnicodeString ArticleCategory;
+    UnicodeString ArticleCategory_Desc;
+    UnicodeString ArticleNo;
+    UnicodeString ArticleNo_Desc;
+    UnicodeString PricePerUnit;
+    UnicodeString Amount;
+    UnicodeString PriceTotal;
+    UnicodeString VATPercentage;
+    UnicodeString Billno;
+    UnicodeString Cashno;
+    UnicodeString Cashier;
+    UnicodeString Source;
+};
+struct TSiHotPayments
+{
+    UnicodeString Type;
+    UnicodeString Amount;
+    UnicodeString Billno;
+    UnicodeString Cashno;
+    UnicodeString Cashier;
+    UnicodeString Source;
+    UnicodeString Description;
+};
 struct TRoomCharge
 {
-
+    UnicodeString TransactionNumber;
+    UnicodeString AccountNumber;
+    std::vector<TSiHotService> SiHotServices;
+    std::vector<TSiHotPayments> SiHotPayments;
+    UnicodeString Covers;
+    UnicodeString CoverType;
+    UnicodeString CashNo;
+    UnicodeString LinkID;
+    UnicodeString LinkText;
+    UnicodeString Shift;
+    UnicodeString Date;
+    UnicodeString Time;
+    UnicodeString IPAddress;
+    int PortNumber;
 };
+
 struct TRoomChargeResponse
 {
-
+    bool IsSuccessful;
+    AnsiString ResponseMessage;
 };
+struct TAccountDetails
+{
+    UnicodeString Balance;
+    UnicodeString CreditLimit;
+    UnicodeString RoomNumber;
+    UnicodeString FirstName;
+    UnicodeString LastName;
+};
+struct TSiHotAccounts
+{
+    UnicodeString AccountNumber;
+
+    std::vector<TAccountDetails> AccountDetails;
+};
+
 
 
 #endif

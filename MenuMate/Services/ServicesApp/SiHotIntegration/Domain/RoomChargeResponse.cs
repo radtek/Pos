@@ -8,6 +8,8 @@ namespace SiHotIntegration.Domain
     public class RoomChargeResponse
     {
         [DataMember]
+        public bool IsSuccessful { get; set; }
+        [DataMember]
         public string Response { get; set; }
     }
 }

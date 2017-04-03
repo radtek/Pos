@@ -27,8 +27,7 @@ namespace SiHotIntegration.Utility
             {
                 if (response.Contains("block:guest"))
                 {
-                    string t = response.Substring(0, response.IndexOf(groupSeparator));
-                    t = t.Replace("transno:", "");
+                    //roomDetails.TransNo = response.Substring(0, response.IndexOf("accountblock")).Replace("transno:","");
                     string details = response.Substring(response.IndexOf("block:guest"), response.Length - response.IndexOf("block:guest"));
                     List<string> guestList = Regex.Split(details, "block:guest").ToList();
 
@@ -54,13 +53,56 @@ namespace SiHotIntegration.Utility
                         roomDetails.IsSuccessful = true;
                         roomDetails.ResponseMessage = "Successful";
                     }
+                    return roomDetails;
                 }
+                
             }
             catch (Exception ex)
             {
                 ServiceLogger.Log("Exception in Deserializing the response for room request" + ex.Message);
             }
             return roomDetails;
+        }
+        public RoomChargeResponse DesrializeRoomPostResponse(string response)
+        {
+            RoomChargeResponse roomPostResponse = new RoomChargeResponse();
+            try
+            {
+                if (response.Contains("notok"))
+                    roomPostResponse.IsSuccessful = false;
+                else
+                    roomPostResponse.IsSuccessful = true;
+                int i = response.Length;
+                List<string> stringList = new List<string>();
+                stringList = Regex.Split(response, groupSeparator).ToList();
+                stringList.RemoveAll(item => item == groupSeparator);
+                stringList.RemoveAll(item => item == fieldSeparator);
+                foreach (string stringvalue in stringList)
+                {
+                    roomPostResponse.Response += stringvalue;
+                    roomPostResponse.Response += "\r\n";
+                }
+                return roomPostResponse;
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in Deserializing the response for room post" + ex.Message);
+            }
+            return roomPostResponse;
+        }
+        public bool DeserializeValidateResponse(string response)
+        {
+            bool value = false;
+            try
+            {
+                if (response.Contains("block:paymenttype"))
+                    value = true;
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in Deserializing the response for validate" + ex.Message);
+            }
+            return value;
         }
     }
 }

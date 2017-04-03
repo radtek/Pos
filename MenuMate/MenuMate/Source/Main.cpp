@@ -301,8 +301,6 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		{
    			TDeviceRealTerminal::Instance().BasePMS->Registered = true;
 			TDeviceRealTerminal::Instance().BasePMS->Initialise();
-//            PhoenixHM->Registered = true;
-//            PhoenixHM->Initialise();
 			TRooms::Instance().Enabled = false;
 		}
 		if(TDeviceRealTerminal::Instance().Modules.Status[eRegKitchenScreen]["Registered"])

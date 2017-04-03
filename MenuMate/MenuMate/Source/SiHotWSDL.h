@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (30/03/2017 2:49:33 a.m. - - $Rev: 25127 $)
+// (2/04/2017 1:55:20 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   SiHotWSDLH
@@ -54,15 +54,15 @@ class SOAP_REMOTABLE_CLASS RoomRequest;
 class SOAP_REMOTABLE_CLASS RoomDetails;
 class SOAP_REMOTABLE_CLASS GuestDetails;
 class SOAP_REMOTABLE_CLASS RoomChargeDetails;
-class SOAP_REMOTABLE_CLASS Items;
-class SOAP_REMOTABLE_CLASS Payments;
+class SOAP_REMOTABLE_CLASS SiHotService;
+class SOAP_REMOTABLE_CLASS SiHotPayment;
 class SOAP_REMOTABLE_CLASS RoomChargeResponse;
 class SOAP_REMOTABLE_CLASS RoomRequest2;
 class SOAP_REMOTABLE_CLASS RoomDetails2;
 class SOAP_REMOTABLE_CLASS GuestDetails2;
 class SOAP_REMOTABLE_CLASS RoomChargeDetails2;
-class SOAP_REMOTABLE_CLASS Items2;
-class SOAP_REMOTABLE_CLASS Payments2;
+class SOAP_REMOTABLE_CLASS SiHotService2;
+class SOAP_REMOTABLE_CLASS SiHotPayment2;
 class SOAP_REMOTABLE_CLASS RoomChargeResponse2;
 
 
@@ -420,8 +420,8 @@ __published:
 };
 
 
-typedef DynamicArray<Items*>      ArrayOfItems;   /* "http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain"[GblCplx] */
-typedef DynamicArray<Payments*>   ArrayOfPayments; /* "http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain"[GblCplx] */
+typedef DynamicArray<SiHotService*> ArrayOfSiHotService; /* "http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain"[GblCplx] */
+typedef DynamicArray<SiHotPayment*> ArrayOfSiHotPayment; /* "http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain"[GblCplx] */
 
 
 // ************************************************************************ //
@@ -430,6 +430,8 @@ typedef DynamicArray<Payments*>   ArrayOfPayments; /* "http://schemas.datacontra
 // ************************************************************************ //
 class RoomChargeDetails : public TRemotable {
 private:
+  UnicodeString   FAccountNumber;
+  bool            FAccountNumber_Specified;
   UnicodeString   FCashNo;
   bool            FCashNo_Specified;
   UnicodeString   FCoverType;
@@ -440,13 +442,13 @@ private:
   bool            FDate_Specified;
   UnicodeString   FIPAddress;
   bool            FIPAddress_Specified;
-  ArrayOfItems    FItemList;
+  ArrayOfSiHotService FItemList;
   bool            FItemList_Specified;
   UnicodeString   FLinkID;
   bool            FLinkID_Specified;
   UnicodeString   FLinkText;
   bool            FLinkText_Specified;
-  ArrayOfPayments FPaymentList;
+  ArrayOfSiHotPayment FPaymentList;
   bool            FPaymentList_Specified;
   int             FPortNumber;
   bool            FPortNumber_Specified;
@@ -456,6 +458,10 @@ private:
   bool            FTime_Specified;
   UnicodeString   FTransNo;
   bool            FTransNo_Specified;
+  void __fastcall SetAccountNumber(int Index, UnicodeString _prop_val)
+  {  FAccountNumber = _prop_val; FAccountNumber_Specified = true;  }
+  bool __fastcall AccountNumber_Specified(int Index)
+  {  return FAccountNumber_Specified;  } 
   void __fastcall SetCashNo(int Index, UnicodeString _prop_val)
   {  FCashNo = _prop_val; FCashNo_Specified = true;  }
   bool __fastcall CashNo_Specified(int Index)
@@ -476,7 +482,7 @@ private:
   {  FIPAddress = _prop_val; FIPAddress_Specified = true;  }
   bool __fastcall IPAddress_Specified(int Index)
   {  return FIPAddress_Specified;  } 
-  void __fastcall SetItemList(int Index, ArrayOfItems _prop_val)
+  void __fastcall SetItemList(int Index, ArrayOfSiHotService _prop_val)
   {  FItemList = _prop_val; FItemList_Specified = true;  }
   bool __fastcall ItemList_Specified(int Index)
   {  return FItemList_Specified;  } 
@@ -488,7 +494,7 @@ private:
   {  FLinkText = _prop_val; FLinkText_Specified = true;  }
   bool __fastcall LinkText_Specified(int Index)
   {  return FLinkText_Specified;  } 
-  void __fastcall SetPaymentList(int Index, ArrayOfPayments _prop_val)
+  void __fastcall SetPaymentList(int Index, ArrayOfSiHotPayment _prop_val)
   {  FPaymentList = _prop_val; FPaymentList_Specified = true;  }
   bool __fastcall PaymentList_Specified(int Index)
   {  return FPaymentList_Specified;  } 
@@ -512,15 +518,16 @@ private:
 public:
   __fastcall ~RoomChargeDetails();
 __published:
+  __property UnicodeString AccountNumber = { index=(IS_OPTN|IS_NLBL), read=FAccountNumber, write=SetAccountNumber, stored = AccountNumber_Specified };
   __property UnicodeString     CashNo = { index=(IS_OPTN|IS_NLBL), read=FCashNo, write=SetCashNo, stored = CashNo_Specified };
   __property UnicodeString  CoverType = { index=(IS_OPTN|IS_NLBL), read=FCoverType, write=SetCoverType, stored = CoverType_Specified };
   __property UnicodeString     Covers = { index=(IS_OPTN|IS_NLBL), read=FCovers, write=SetCovers, stored = Covers_Specified };
   __property UnicodeString       Date = { index=(IS_OPTN|IS_NLBL), read=FDate, write=SetDate, stored = Date_Specified };
   __property UnicodeString  IPAddress = { index=(IS_OPTN|IS_NLBL), read=FIPAddress, write=SetIPAddress, stored = IPAddress_Specified };
-  __property ArrayOfItems   ItemList = { index=(IS_OPTN|IS_NLBL), read=FItemList, write=SetItemList, stored = ItemList_Specified };
+  __property ArrayOfSiHotService   ItemList = { index=(IS_OPTN|IS_NLBL), read=FItemList, write=SetItemList, stored = ItemList_Specified };
   __property UnicodeString     LinkID = { index=(IS_OPTN|IS_NLBL), read=FLinkID, write=SetLinkID, stored = LinkID_Specified };
   __property UnicodeString   LinkText = { index=(IS_OPTN|IS_NLBL), read=FLinkText, write=SetLinkText, stored = LinkText_Specified };
-  __property ArrayOfPayments PaymentList = { index=(IS_OPTN|IS_NLBL), read=FPaymentList, write=SetPaymentList, stored = PaymentList_Specified };
+  __property ArrayOfSiHotPayment PaymentList = { index=(IS_OPTN|IS_NLBL), read=FPaymentList, write=SetPaymentList, stored = PaymentList_Specified };
   __property int        PortNumber = { index=(IS_OPTN), read=FPortNumber, write=SetPortNumber, stored = PortNumber_Specified };
   __property UnicodeString      Shift = { index=(IS_OPTN|IS_NLBL), read=FShift, write=SetShift, stored = Shift_Specified };
   __property UnicodeString       Time = { index=(IS_OPTN|IS_NLBL), read=FTime, write=SetTime, stored = Time_Specified };
@@ -531,83 +538,83 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : Items, global, <complexType>
+// XML       : SiHotService, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain
 // ************************************************************************ //
-class Items : public TRemotable {
+class SiHotService : public TRemotable {
 private:
   UnicodeString   FAmount;
   bool            FAmount_Specified;
-  UnicodeString   FArticle;
-  bool            FArticle_Specified;
-  UnicodeString   FArticleCat;
-  bool            FArticleCat_Specified;
-  UnicodeString   FArticleCat_Desc;
-  bool            FArticleCat_Desc_Specified;
-  UnicodeString   FArticle_Desc;
-  bool            FArticle_Desc_Specified;
-  UnicodeString   FBillNo;
-  bool            FBillNo_Specified;
-  UnicodeString   FCashNo;
-  bool            FCashNo_Specified;
+  UnicodeString   FArticleCategory;
+  bool            FArticleCategory_Specified;
+  UnicodeString   FArticleCategory_Desc;
+  bool            FArticleCategory_Desc_Specified;
+  UnicodeString   FArticleNo;
+  bool            FArticleNo_Specified;
+  UnicodeString   FArticleNo_Desc;
+  bool            FArticleNo_Desc_Specified;
+  UnicodeString   FBillno;
+  bool            FBillno_Specified;
   UnicodeString   FCashier;
   bool            FCashier_Specified;
-  UnicodeString   FMiddleCat;
-  bool            FMiddleCat_Specified;
-  UnicodeString   FMiddleCat_Desc;
-  bool            FMiddleCat_Desc_Specified;
+  UnicodeString   FCashno;
+  bool            FCashno_Specified;
+  UnicodeString   FMiddleCategory;
+  bool            FMiddleCategory_Specified;
+  UnicodeString   FMiddleCategory_Desc;
+  bool            FMiddleCategory_Desc_Specified;
   UnicodeString   FPricePerUnit;
   bool            FPricePerUnit_Specified;
   UnicodeString   FPriceTotal;
   bool            FPriceTotal_Specified;
   UnicodeString   FSource;
   bool            FSource_Specified;
-  UnicodeString   FSuperCat;
-  bool            FSuperCat_Specified;
-  UnicodeString   FSuperCat_Desc;
-  bool            FSuperCat_Desc_Specified;
-  UnicodeString   FVatPercentage;
-  bool            FVatPercentage_Specified;
+  UnicodeString   FSuperCategory;
+  bool            FSuperCategory_Specified;
+  UnicodeString   FSuperCategory_Desc;
+  bool            FSuperCategory_Desc_Specified;
+  UnicodeString   FVATPercentage;
+  bool            FVATPercentage_Specified;
   void __fastcall SetAmount(int Index, UnicodeString _prop_val)
   {  FAmount = _prop_val; FAmount_Specified = true;  }
   bool __fastcall Amount_Specified(int Index)
   {  return FAmount_Specified;  } 
-  void __fastcall SetArticle(int Index, UnicodeString _prop_val)
-  {  FArticle = _prop_val; FArticle_Specified = true;  }
-  bool __fastcall Article_Specified(int Index)
-  {  return FArticle_Specified;  } 
-  void __fastcall SetArticleCat(int Index, UnicodeString _prop_val)
-  {  FArticleCat = _prop_val; FArticleCat_Specified = true;  }
-  bool __fastcall ArticleCat_Specified(int Index)
-  {  return FArticleCat_Specified;  } 
-  void __fastcall SetArticleCat_Desc(int Index, UnicodeString _prop_val)
-  {  FArticleCat_Desc = _prop_val; FArticleCat_Desc_Specified = true;  }
-  bool __fastcall ArticleCat_Desc_Specified(int Index)
-  {  return FArticleCat_Desc_Specified;  } 
-  void __fastcall SetArticle_Desc(int Index, UnicodeString _prop_val)
-  {  FArticle_Desc = _prop_val; FArticle_Desc_Specified = true;  }
-  bool __fastcall Article_Desc_Specified(int Index)
-  {  return FArticle_Desc_Specified;  } 
-  void __fastcall SetBillNo(int Index, UnicodeString _prop_val)
-  {  FBillNo = _prop_val; FBillNo_Specified = true;  }
-  bool __fastcall BillNo_Specified(int Index)
-  {  return FBillNo_Specified;  } 
-  void __fastcall SetCashNo(int Index, UnicodeString _prop_val)
-  {  FCashNo = _prop_val; FCashNo_Specified = true;  }
-  bool __fastcall CashNo_Specified(int Index)
-  {  return FCashNo_Specified;  } 
+  void __fastcall SetArticleCategory(int Index, UnicodeString _prop_val)
+  {  FArticleCategory = _prop_val; FArticleCategory_Specified = true;  }
+  bool __fastcall ArticleCategory_Specified(int Index)
+  {  return FArticleCategory_Specified;  } 
+  void __fastcall SetArticleCategory_Desc(int Index, UnicodeString _prop_val)
+  {  FArticleCategory_Desc = _prop_val; FArticleCategory_Desc_Specified = true;  }
+  bool __fastcall ArticleCategory_Desc_Specified(int Index)
+  {  return FArticleCategory_Desc_Specified;  } 
+  void __fastcall SetArticleNo(int Index, UnicodeString _prop_val)
+  {  FArticleNo = _prop_val; FArticleNo_Specified = true;  }
+  bool __fastcall ArticleNo_Specified(int Index)
+  {  return FArticleNo_Specified;  } 
+  void __fastcall SetArticleNo_Desc(int Index, UnicodeString _prop_val)
+  {  FArticleNo_Desc = _prop_val; FArticleNo_Desc_Specified = true;  }
+  bool __fastcall ArticleNo_Desc_Specified(int Index)
+  {  return FArticleNo_Desc_Specified;  } 
+  void __fastcall SetBillno(int Index, UnicodeString _prop_val)
+  {  FBillno = _prop_val; FBillno_Specified = true;  }
+  bool __fastcall Billno_Specified(int Index)
+  {  return FBillno_Specified;  } 
   void __fastcall SetCashier(int Index, UnicodeString _prop_val)
   {  FCashier = _prop_val; FCashier_Specified = true;  }
   bool __fastcall Cashier_Specified(int Index)
   {  return FCashier_Specified;  } 
-  void __fastcall SetMiddleCat(int Index, UnicodeString _prop_val)
-  {  FMiddleCat = _prop_val; FMiddleCat_Specified = true;  }
-  bool __fastcall MiddleCat_Specified(int Index)
-  {  return FMiddleCat_Specified;  } 
-  void __fastcall SetMiddleCat_Desc(int Index, UnicodeString _prop_val)
-  {  FMiddleCat_Desc = _prop_val; FMiddleCat_Desc_Specified = true;  }
-  bool __fastcall MiddleCat_Desc_Specified(int Index)
-  {  return FMiddleCat_Desc_Specified;  } 
+  void __fastcall SetCashno(int Index, UnicodeString _prop_val)
+  {  FCashno = _prop_val; FCashno_Specified = true;  }
+  bool __fastcall Cashno_Specified(int Index)
+  {  return FCashno_Specified;  } 
+  void __fastcall SetMiddleCategory(int Index, UnicodeString _prop_val)
+  {  FMiddleCategory = _prop_val; FMiddleCategory_Specified = true;  }
+  bool __fastcall MiddleCategory_Specified(int Index)
+  {  return FMiddleCategory_Specified;  } 
+  void __fastcall SetMiddleCategory_Desc(int Index, UnicodeString _prop_val)
+  {  FMiddleCategory_Desc = _prop_val; FMiddleCategory_Desc_Specified = true;  }
+  bool __fastcall MiddleCategory_Desc_Specified(int Index)
+  {  return FMiddleCategory_Desc_Specified;  } 
   void __fastcall SetPricePerUnit(int Index, UnicodeString _prop_val)
   {  FPricePerUnit = _prop_val; FPricePerUnit_Specified = true;  }
   bool __fastcall PricePerUnit_Specified(int Index)
@@ -620,56 +627,56 @@ private:
   {  FSource = _prop_val; FSource_Specified = true;  }
   bool __fastcall Source_Specified(int Index)
   {  return FSource_Specified;  } 
-  void __fastcall SetSuperCat(int Index, UnicodeString _prop_val)
-  {  FSuperCat = _prop_val; FSuperCat_Specified = true;  }
-  bool __fastcall SuperCat_Specified(int Index)
-  {  return FSuperCat_Specified;  } 
-  void __fastcall SetSuperCat_Desc(int Index, UnicodeString _prop_val)
-  {  FSuperCat_Desc = _prop_val; FSuperCat_Desc_Specified = true;  }
-  bool __fastcall SuperCat_Desc_Specified(int Index)
-  {  return FSuperCat_Desc_Specified;  } 
-  void __fastcall SetVatPercentage(int Index, UnicodeString _prop_val)
-  {  FVatPercentage = _prop_val; FVatPercentage_Specified = true;  }
-  bool __fastcall VatPercentage_Specified(int Index)
-  {  return FVatPercentage_Specified;  } 
+  void __fastcall SetSuperCategory(int Index, UnicodeString _prop_val)
+  {  FSuperCategory = _prop_val; FSuperCategory_Specified = true;  }
+  bool __fastcall SuperCategory_Specified(int Index)
+  {  return FSuperCategory_Specified;  } 
+  void __fastcall SetSuperCategory_Desc(int Index, UnicodeString _prop_val)
+  {  FSuperCategory_Desc = _prop_val; FSuperCategory_Desc_Specified = true;  }
+  bool __fastcall SuperCategory_Desc_Specified(int Index)
+  {  return FSuperCategory_Desc_Specified;  } 
+  void __fastcall SetVATPercentage(int Index, UnicodeString _prop_val)
+  {  FVATPercentage = _prop_val; FVATPercentage_Specified = true;  }
+  bool __fastcall VATPercentage_Specified(int Index)
+  {  return FVATPercentage_Specified;  } 
 __published:
   __property UnicodeString     Amount = { index=(IS_OPTN|IS_NLBL), read=FAmount, write=SetAmount, stored = Amount_Specified };
-  __property UnicodeString    Article = { index=(IS_OPTN|IS_NLBL), read=FArticle, write=SetArticle, stored = Article_Specified };
-  __property UnicodeString ArticleCat = { index=(IS_OPTN|IS_NLBL), read=FArticleCat, write=SetArticleCat, stored = ArticleCat_Specified };
-  __property UnicodeString ArticleCat_Desc = { index=(IS_OPTN|IS_NLBL), read=FArticleCat_Desc, write=SetArticleCat_Desc, stored = ArticleCat_Desc_Specified };
-  __property UnicodeString Article_Desc = { index=(IS_OPTN|IS_NLBL), read=FArticle_Desc, write=SetArticle_Desc, stored = Article_Desc_Specified };
-  __property UnicodeString     BillNo = { index=(IS_OPTN|IS_NLBL), read=FBillNo, write=SetBillNo, stored = BillNo_Specified };
-  __property UnicodeString     CashNo = { index=(IS_OPTN|IS_NLBL), read=FCashNo, write=SetCashNo, stored = CashNo_Specified };
+  __property UnicodeString ArticleCategory = { index=(IS_OPTN|IS_NLBL), read=FArticleCategory, write=SetArticleCategory, stored = ArticleCategory_Specified };
+  __property UnicodeString ArticleCategory_Desc = { index=(IS_OPTN|IS_NLBL), read=FArticleCategory_Desc, write=SetArticleCategory_Desc, stored = ArticleCategory_Desc_Specified };
+  __property UnicodeString  ArticleNo = { index=(IS_OPTN|IS_NLBL), read=FArticleNo, write=SetArticleNo, stored = ArticleNo_Specified };
+  __property UnicodeString ArticleNo_Desc = { index=(IS_OPTN|IS_NLBL), read=FArticleNo_Desc, write=SetArticleNo_Desc, stored = ArticleNo_Desc_Specified };
+  __property UnicodeString     Billno = { index=(IS_OPTN|IS_NLBL), read=FBillno, write=SetBillno, stored = Billno_Specified };
   __property UnicodeString    Cashier = { index=(IS_OPTN|IS_NLBL), read=FCashier, write=SetCashier, stored = Cashier_Specified };
-  __property UnicodeString  MiddleCat = { index=(IS_OPTN|IS_NLBL), read=FMiddleCat, write=SetMiddleCat, stored = MiddleCat_Specified };
-  __property UnicodeString MiddleCat_Desc = { index=(IS_OPTN|IS_NLBL), read=FMiddleCat_Desc, write=SetMiddleCat_Desc, stored = MiddleCat_Desc_Specified };
+  __property UnicodeString     Cashno = { index=(IS_OPTN|IS_NLBL), read=FCashno, write=SetCashno, stored = Cashno_Specified };
+  __property UnicodeString MiddleCategory = { index=(IS_OPTN|IS_NLBL), read=FMiddleCategory, write=SetMiddleCategory, stored = MiddleCategory_Specified };
+  __property UnicodeString MiddleCategory_Desc = { index=(IS_OPTN|IS_NLBL), read=FMiddleCategory_Desc, write=SetMiddleCategory_Desc, stored = MiddleCategory_Desc_Specified };
   __property UnicodeString PricePerUnit = { index=(IS_OPTN|IS_NLBL), read=FPricePerUnit, write=SetPricePerUnit, stored = PricePerUnit_Specified };
   __property UnicodeString PriceTotal = { index=(IS_OPTN|IS_NLBL), read=FPriceTotal, write=SetPriceTotal, stored = PriceTotal_Specified };
   __property UnicodeString     Source = { index=(IS_OPTN|IS_NLBL), read=FSource, write=SetSource, stored = Source_Specified };
-  __property UnicodeString   SuperCat = { index=(IS_OPTN|IS_NLBL), read=FSuperCat, write=SetSuperCat, stored = SuperCat_Specified };
-  __property UnicodeString SuperCat_Desc = { index=(IS_OPTN|IS_NLBL), read=FSuperCat_Desc, write=SetSuperCat_Desc, stored = SuperCat_Desc_Specified };
-  __property UnicodeString VatPercentage = { index=(IS_OPTN|IS_NLBL), read=FVatPercentage, write=SetVatPercentage, stored = VatPercentage_Specified };
+  __property UnicodeString SuperCategory = { index=(IS_OPTN|IS_NLBL), read=FSuperCategory, write=SetSuperCategory, stored = SuperCategory_Specified };
+  __property UnicodeString SuperCategory_Desc = { index=(IS_OPTN|IS_NLBL), read=FSuperCategory_Desc, write=SetSuperCategory_Desc, stored = SuperCategory_Desc_Specified };
+  __property UnicodeString VATPercentage = { index=(IS_OPTN|IS_NLBL), read=FVATPercentage, write=SetVATPercentage, stored = VATPercentage_Specified };
 };
 
 
 
 
 // ************************************************************************ //
-// XML       : Payments, global, <complexType>
+// XML       : SiHotPayment, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain
 // ************************************************************************ //
-class Payments : public TRemotable {
+class SiHotPayment : public TRemotable {
 private:
   UnicodeString   FAmount;
   bool            FAmount_Specified;
-  UnicodeString   FBillNo;
-  bool            FBillNo_Specified;
-  UnicodeString   FCashNo;
-  bool            FCashNo_Specified;
+  UnicodeString   FBillno;
+  bool            FBillno_Specified;
   UnicodeString   FCashier;
   bool            FCashier_Specified;
-  UnicodeString   FPaymentDescription;
-  bool            FPaymentDescription_Specified;
+  UnicodeString   FCashno;
+  bool            FCashno_Specified;
+  UnicodeString   FDescription;
+  bool            FDescription_Specified;
   UnicodeString   FSource;
   bool            FSource_Specified;
   UnicodeString   FType;
@@ -678,22 +685,22 @@ private:
   {  FAmount = _prop_val; FAmount_Specified = true;  }
   bool __fastcall Amount_Specified(int Index)
   {  return FAmount_Specified;  } 
-  void __fastcall SetBillNo(int Index, UnicodeString _prop_val)
-  {  FBillNo = _prop_val; FBillNo_Specified = true;  }
-  bool __fastcall BillNo_Specified(int Index)
-  {  return FBillNo_Specified;  } 
-  void __fastcall SetCashNo(int Index, UnicodeString _prop_val)
-  {  FCashNo = _prop_val; FCashNo_Specified = true;  }
-  bool __fastcall CashNo_Specified(int Index)
-  {  return FCashNo_Specified;  } 
+  void __fastcall SetBillno(int Index, UnicodeString _prop_val)
+  {  FBillno = _prop_val; FBillno_Specified = true;  }
+  bool __fastcall Billno_Specified(int Index)
+  {  return FBillno_Specified;  } 
   void __fastcall SetCashier(int Index, UnicodeString _prop_val)
   {  FCashier = _prop_val; FCashier_Specified = true;  }
   bool __fastcall Cashier_Specified(int Index)
   {  return FCashier_Specified;  } 
-  void __fastcall SetPaymentDescription(int Index, UnicodeString _prop_val)
-  {  FPaymentDescription = _prop_val; FPaymentDescription_Specified = true;  }
-  bool __fastcall PaymentDescription_Specified(int Index)
-  {  return FPaymentDescription_Specified;  } 
+  void __fastcall SetCashno(int Index, UnicodeString _prop_val)
+  {  FCashno = _prop_val; FCashno_Specified = true;  }
+  bool __fastcall Cashno_Specified(int Index)
+  {  return FCashno_Specified;  } 
+  void __fastcall SetDescription(int Index, UnicodeString _prop_val)
+  {  FDescription = _prop_val; FDescription_Specified = true;  }
+  bool __fastcall Description_Specified(int Index)
+  {  return FDescription_Specified;  } 
   void __fastcall SetSource(int Index, UnicodeString _prop_val)
   {  FSource = _prop_val; FSource_Specified = true;  }
   bool __fastcall Source_Specified(int Index)
@@ -704,10 +711,10 @@ private:
   {  return FType_Specified;  } 
 __published:
   __property UnicodeString     Amount = { index=(IS_OPTN|IS_NLBL), read=FAmount, write=SetAmount, stored = Amount_Specified };
-  __property UnicodeString     BillNo = { index=(IS_OPTN|IS_NLBL), read=FBillNo, write=SetBillNo, stored = BillNo_Specified };
-  __property UnicodeString     CashNo = { index=(IS_OPTN|IS_NLBL), read=FCashNo, write=SetCashNo, stored = CashNo_Specified };
+  __property UnicodeString     Billno = { index=(IS_OPTN|IS_NLBL), read=FBillno, write=SetBillno, stored = Billno_Specified };
   __property UnicodeString    Cashier = { index=(IS_OPTN|IS_NLBL), read=FCashier, write=SetCashier, stored = Cashier_Specified };
-  __property UnicodeString PaymentDescription = { index=(IS_OPTN|IS_NLBL), read=FPaymentDescription, write=SetPaymentDescription, stored = PaymentDescription_Specified };
+  __property UnicodeString     Cashno = { index=(IS_OPTN|IS_NLBL), read=FCashno, write=SetCashno, stored = Cashno_Specified };
+  __property UnicodeString Description = { index=(IS_OPTN|IS_NLBL), read=FDescription, write=SetDescription, stored = Description_Specified };
   __property UnicodeString     Source = { index=(IS_OPTN|IS_NLBL), read=FSource, write=SetSource, stored = Source_Specified };
   __property UnicodeString       Type = { index=(IS_OPTN|IS_NLBL), read=FType, write=SetType, stored = Type_Specified };
 };
@@ -721,13 +728,20 @@ __published:
 // ************************************************************************ //
 class RoomChargeResponse : public TRemotable {
 private:
+  bool            FIsSuccessful;
+  bool            FIsSuccessful_Specified;
   UnicodeString   FResponse;
   bool            FResponse_Specified;
+  void __fastcall SetIsSuccessful(int Index, bool _prop_val)
+  {  FIsSuccessful = _prop_val; FIsSuccessful_Specified = true;  }
+  bool __fastcall IsSuccessful_Specified(int Index)
+  {  return FIsSuccessful_Specified;  } 
   void __fastcall SetResponse(int Index, UnicodeString _prop_val)
   {  FResponse = _prop_val; FResponse_Specified = true;  }
   bool __fastcall Response_Specified(int Index)
   {  return FResponse_Specified;  } 
 __published:
+  __property bool       IsSuccessful = { index=(IS_OPTN), read=FIsSuccessful, write=SetIsSuccessful, stored = IsSuccessful_Specified };
   __property UnicodeString   Response = { index=(IS_OPTN|IS_NLBL), read=FResponse, write=SetResponse, stored = Response_Specified };
 };
 
@@ -783,10 +797,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : Items, global, <element>
+// XML       : SiHotService, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain
 // ************************************************************************ //
-class Items2 : public Items {
+class SiHotService2 : public SiHotService {
 private:
 __published:
 };
@@ -795,10 +809,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : Payments, global, <element>
+// XML       : SiHotPayment, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain
 // ************************************************************************ //
-class Payments2 : public Payments {
+class SiHotPayment2 : public SiHotPayment {
 private:
 __published:
 };
@@ -832,6 +846,7 @@ __interface INTERFACE_UUID("{D882000E-B7D1-AD60-7B83-61CBF026BB1B}") ISiHotInteg
 public:
   virtual RoomDetails*    GetRoomDetails(const RoomRequest* roomRequest) = 0; 
   virtual RoomChargeResponse* PostRoomCharge(const RoomChargeDetails* roomChargeDetails) = 0; 
+  virtual bool            ValidateCreadentials(const UnicodeString address, const int port, const int transno) = 0; 
 };
 typedef DelphiInterface<ISiHotIntegrationWebService> _di_ISiHotIntegrationWebService;
 
