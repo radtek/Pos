@@ -44,7 +44,7 @@ private:
     static void InsertRecordInToDB(Database::TDBTransaction &dbTransaction, int saleTypeId, int itemId);
 
     // this will delete record from db. it will be called from SaveItemRelationWithSalesType function if enum 's status is removed.
-    static void DeleteRecordFromDB(Database::TDBTransaction &dbTransaction, int itemId);
+    static void DeleteRecordFromDB(Database::TDBTransaction &dbTransaction, int saleTypeId, int itemId);
 
 };
 #endif
