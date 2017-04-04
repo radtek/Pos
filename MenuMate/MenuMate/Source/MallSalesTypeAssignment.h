@@ -87,7 +87,6 @@ private:	// User declarations
     int SelectedSalesType;
     void DisplayAssignedItemBySalesType();
     void EnableDisableItemList();  //todo
-    void RemoveItemsFromAssignedItemsBySalesTypeList(int itemKey);
     void AssignAllItems();
     void RemoveAllItems();
 
