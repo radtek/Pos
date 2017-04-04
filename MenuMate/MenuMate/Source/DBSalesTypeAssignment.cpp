@@ -4,7 +4,6 @@
 #pragma hdrstop
 
 #include "DBSalesTypeAssignment.h"
-#include "DeviceRealTerminal.h"
 
 //---------------------------------------------------------------------------
 
@@ -253,38 +252,22 @@ void TDBSalesTypeAssignment::SaveItemRelationWithSalesType(std::map<int, std::ma
     try
     {
         std::map<int, std::map<int, TItemDetails> >::iterator outerit;
-        std::map <int, UnicodeString>::iterator innerit;
-
-     /*   TIBSQL* deleteQuery = dbTransaction.Query(dbTransaction.AddQuery());
-        deleteQuery->Close();
-        deleteQuery->SQL->Text =  "DELETE FROM MALL_SALES_TYPE_ITEMS_RELATION ";
-
-        deleteQuery->ExecQuery();  */
-
-        //Increment Generator for inserting date into db since it is primary key.
-      /*  TIBSQL* incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
-        incrementGenerator->Close();
-        incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALLSALES_TYPE_ITEMS_REL, 1) FROM RDB$DATABASE";
-
-        //insert new items and sales type sales type into Db..
-        TIBSQL* insertQuery = dbTransaction.Query(dbTransaction.AddQuery());
-        insertQuery->Close();
-        insertQuery->SQL->Text =  "INSERT INTO MALL_SALES_TYPE_ITEMS_RELATION  VALUES (:STI_ID, :ITEM_ID, :SALES_TYPE_ID) ";
-        //int size = assignedItems.size();
+        std::map <int, TItemDetails>::iterator innerit;
 
         for (outerit = modifieldItemsWithSalesType.begin(); outerit != modifieldItemsWithSalesType.end(); ++outerit)
         {
             for (innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit)
             {
-                 incrementGenerator->ExecQuery();
-                 insertQuery->ParamByName("STI_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
-                 insertQuery->ParamByName("ITEM_ID")->AsInteger = innerit->first;
-                 insertQuery->ParamByName("SALES_TYPE_ID")->AsInteger = outerit->first;
-                 insertQuery->ExecQuery();
-                 incrementGenerator->Close();
-                 insertQuery->Close();
+                if(innerit->second.ItemStatus == eAssigned)
+                {
+                    InsertRecordInToDB(dbTransaction, outerit->first, innerit->first);
+                }
+                else if(innerit->second.ItemStatus == eRemoved)
+                {
+                    DeleteRecordFromDB(dbTransaction, innerit->first);
+                }
             }
-        }                       */
+        }
         dbTransaction.Commit();
     }
     catch(Exception &E)
@@ -293,4 +276,48 @@ void TDBSalesTypeAssignment::SaveItemRelationWithSalesType(std::map<int, std::ma
         dbTransaction.Rollback();
 	}
 }
+//-----------------------------------------------------------------------------------------------------------
+void InsertRecordInToDB(Database::TDBTransaction &dbTransaction, int saleTypeId, int itemId)
+{
+    try
+    {
+        TIBSQL* incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
+        incrementGenerator->Close();
+        incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALLSALES_TYPE_ITEMS_REL, 1) FROM RDB$DATABASE";
+        incrementGenerator->ExecQuery();
+
+        TIBSQL* insertQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        insertQuery->Close();
+        insertQuery->SQL->Text =  "INSERT INTO MALL_SALES_TYPE_ITEMS_RELATION  VALUES (:STI_ID, :ITEM_ID, :SALES_TYPE_ID) ";
+
+        insertQuery->ParamByName("STI_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+        insertQuery->ParamByName("ITEM_ID")->AsInteger = itemId;
+        insertQuery->ParamByName("SALES_TYPE_ID")->AsInteger = saleTypeId;
+        insertQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+	}
+}
+//---------------------------------------------------------------------------------------------------------
+void DeleteRecordFromDB(Database::TDBTransaction &dbTransaction, int itemId)
+{
+    try
+    {
+        TIBSQL* deleteQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        deleteQuery->Close();
+        deleteQuery->SQL->Text =  "DELETE FROM MALL_SALES_TYPE_ITEMS_RELATION a WHERE a.ITEM_ID = :ITEM_ID ";
+
+        deleteQuery->ParamByName("ITEM_ID")->AsInteger = itemId;
+        deleteQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+	}
+}
+
 

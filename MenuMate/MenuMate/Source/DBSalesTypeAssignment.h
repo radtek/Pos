@@ -2,14 +2,13 @@
 
 #ifndef DBSalesTypeAssignmentH
 #define DBSalesTypeAssignmentH
-#include<map.h>
-#include<System.hpp>
+#include "DeviceRealTerminal.h"
 #include "SalesTypeItemDetails.h"
 //---------------------------------------------------------------------------
 
 class TDBSalesTypeAssignment
 {
-    public:
+public:
 
     //Load All Types Of Sales Group
     static std::map<int, UnicodeString> LoadAllSalesTypes();
@@ -38,6 +37,14 @@ class TDBSalesTypeAssignment
 
     //Update Existing sales type
     static void UpdateSalesType(int id, UnicodeString name, UnicodeString code);
+
+private:
+
+     // this will insert record into db. it will be called from SaveItemRelationWithSalesType function if enum 's status is added.
+    static void InsertRecordInToDB(Database::TDBTransaction &dbTransaction, int saleTypeId, int itemId);
+
+    // this will delete record from db. it will be called from SaveItemRelationWithSalesType function if enum 's status is removed.
+    static void DeleteRecordFromDB(Database::TDBTransaction &dbTransaction, int itemId);
 
 };
 #endif
