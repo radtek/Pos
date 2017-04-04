@@ -254,10 +254,12 @@ void TDBSalesTypeAssignment::SaveItemRelationWithSalesType(std::map<int, std::ma
         std::map<int, std::map<int, TItemDetails> >::iterator outerit;
         std::map <int, TItemDetails>::iterator innerit;
 
+        //outer loop is for sales id and inner is for item id
         for (outerit = modifieldItemsWithSalesType.begin(); outerit != modifieldItemsWithSalesType.end(); ++outerit)
         {
             for (innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit)
             {
+                //checking TITemDetails 's enum property..
                 if(innerit->second.ItemStatus == eAssigned)
                 {
                     InsertRecordInToDB(dbTransaction, outerit->first, innerit->first);
