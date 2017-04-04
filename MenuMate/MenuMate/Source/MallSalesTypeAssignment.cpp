@@ -237,11 +237,9 @@ void TfrmMallSalesTypeAssignment::DisplayAssignedItemBySalesType()
         ///if sale stype found
         if(currentOuterit != currentItemRelationsWithSalesType.end())
         {
-
             //first loop to iterate items list from assignedRemovedItemsBySalesType i.e second map..
             for(assignedinnerit = assignedouterit->second.begin(); assignedinnerit != assignedouterit->second.end(); ++assignedinnerit)
             {
-
                  currentInnerit = currentOuterit->second.find(assignedinnerit->first);
                  if(currentInnerit != currentOuterit->second.end())
                  {
@@ -252,7 +250,6 @@ void TfrmMallSalesTypeAssignment::DisplayAssignedItemBySalesType()
                      currentItemRelationsWithSalesType[SelectedSalesType].insert(std::make_pair(assignedinnerit->first, assignedinnerit->second.ItemName));
                  }
             }
-
        }
        else
        {
@@ -343,7 +340,7 @@ void TfrmMallSalesTypeAssignment::AssignAllItems()
                 {
                     ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
                     InsertIntoAssignedRemovedItemsBySalesTypeMap(itemList->Buttons[itemIndex][0]->Tag,
-                                                                        itemList->Buttons[itemIndex][0]->Caption, eRemoved);
+                                                                        itemList->Buttons[itemIndex][0]->Caption, eAssigned);
                     alreadyAssignedItems.insert(itemList->Buttons[itemIndex][0]->Tag);
                 }
             }
@@ -442,7 +439,7 @@ void __fastcall TfrmMallSalesTypeAssignment::assignedItemsBySalesTypeListMouseCl
         }
         else
         {
-                ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
+            ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
             InsertIntoAssignedRemovedItemsBySalesTypeMap(GridButton->Tag, GridButton->Caption, eRemoved);
         }
 
