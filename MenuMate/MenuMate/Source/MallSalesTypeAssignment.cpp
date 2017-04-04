@@ -54,11 +54,12 @@ void __fastcall TfrmMallSalesTypeAssignment::btnOkMouseClick(TObject *Sender)
 {
     try
     {
-        TDBSalesTypeAssignment::SaveItemRelationWithSalesType(assignedRemovedItemsBySalesType);
+       // TDBSalesTypeAssignment::SaveItemRelationWithSalesType(assignedRemovedItemsBySalesType);
         Close();
     }
     catch(Exception &E)
     {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
     }
 }
 //---------------------------------------------------------------------------
@@ -187,10 +188,10 @@ void TfrmMallSalesTypeAssignment::DisplayAssignedItemBySalesType()
     assignedItemsBySalesTypeList->RowCount = 0;
 
     outerit = assignedRemovedItemsBySalesType.find(SelectedSalesType);
-    if(outerit != assignedItemsDBState.end())
-    {
-
-    }
+//    if(outerit != assignedItemsDBState.end())
+//    {
+//
+//    }
 
 
 
@@ -269,11 +270,9 @@ void TfrmMallSalesTypeAssignment::AssignAllItems()
                 itemDetails.ItemStatus = eAssigned;
                 itemDetails.ItemName = itemList->Buttons[i][0]->Caption;
                 assignedRemovedItemsBySalesType[SelectedSalesType].insert(std::make_pair(itemList->Buttons[i][0]->Tag, itemDetails));
-                //MessageBox(itemList->Buttons[i][0]->Caption, "Select a sales type", MB_ICONINFORMATION + MB_OK);
             }
         }
         DisplayAssignedItemBySalesType();
-        //DisableSelectedTypesInGroup();
     }
     else
     {
@@ -283,25 +282,50 @@ void TfrmMallSalesTypeAssignment::AssignAllItems()
 //-------------------------------------------------------------------------------------
 void TfrmMallSalesTypeAssignment::RemoveAllItems()
 {
-    std::map <int, std::map <int, UnicodeString> >::iterator outerit;
-    std::map <int, UnicodeString>::iterator innerit;
+    std::map <int, std::map <int, TItemDetails> >::iterator outerit;
+    std::map <int, TItemDetails>::iterator innerit;
 
+    //Check wherther any sales type selected
     if(SelectedSalesType)
     {
-        outerit = assignedItemsDBState.find(SelectedSalesType);
-        if(outerit != assignedItemsDBState.end())
+        //finding selected sales type in assignedRemovedItemsBySalesType map
+        outerit = assignedRemovedItemsBySalesType.find(SelectedSalesType);
+
+        //if selected sales type exist..
+        if(outerit != assignedRemovedItemsBySalesType.end())
         {
-            for(int i=0; i < itemList->RowCount; i++)
+            //Loop for all items which are being removed from assignedItemsBySalesTypeList
+            for(int itemIndex = 0; itemIndex < assignedItemsBySalesTypeList->RowCount; ++itemIndex)
             {
-                innerit = outerit->second.find(itemList->Buttons[i][0]->Tag);
+                //find Item at itemIndex position with tag key as item key in assignedRemovedItemsBySalesType because it may also possible that item with state
+                //inserted  already exist or not
+                innerit = outerit->second.find(itemList->Buttons[itemIndex][0]->Tag);
+
+                //If already exist then remove it because now item is in initial state..
                 if(innerit != outerit->second.end())
                 {
                     outerit->second.erase(innerit);
                 }
+                else
+                {
+                    ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
+                    InsertIntoAssignedRemovedItemsBySalesTypeMap(assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Tag,
+                                                                    assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Caption, eRemoved);
+                }
             }
         }
+        else
+        {
+            for(int itemIndex = 0; itemIndex < assignedItemsBySalesTypeList->RowCount; ++itemIndex)
+            {
+                ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
+                InsertIntoAssignedRemovedItemsBySalesTypeMap(assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Tag,
+                                                                    assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Caption, eRemoved);
+            }
+        }
+
+        ///Display all item's current state according to selected sales type.
         DisplayAssignedItemBySalesType();
-        //DisableSelectedTypesInGroup();
     }
     else
     {
@@ -313,4 +337,13 @@ void __fastcall TfrmMallSalesTypeAssignment::assignedItemsBySalesTypeListMouseCl
 {
     //todo according to new design
 }
+//--------------------------------------------------------------------------------------------
+void TfrmMallSalesTypeAssignment::InsertIntoAssignedRemovedItemsBySalesTypeMap(int itemKey, UnicodeString itemName, int itemStatus)
+{
+    TItemDetails itemDetails;
+    itemDetails.ItemName = itemName;
+    itemDetails.ItemStatus = itemStatus;
+    assignedRemovedItemsBySalesType[SelectedSalesType].insert(std::make_pair(itemKey, itemDetails));
+}
+
 

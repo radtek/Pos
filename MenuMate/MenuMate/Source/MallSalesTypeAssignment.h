@@ -107,6 +107,9 @@ private:	// User declarations
     //set for storing items key which are used means assigned to any sales type..
     std::set<int> alreadyAssignedItems;
 
+    //   Insert in to assignedRemovedItemsBySalesType map according to item status
+    void InsertIntoAssignedRemovedItemsBySalesTypeMap(int itemId, UnicodeString itemName, int itemStatus);
+
 public:		// User declarations
 	__fastcall TfrmMallSalesTypeAssignment(TComponent* Owner);
     __fastcall ~TfrmMallSalesTypeAssignment();

@@ -225,7 +225,8 @@ std::map<int, std::map<int, UnicodeString> > TDBSalesTypeAssignment::LoadAssigne
         dbTransaction.StartTransaction();
 
         TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
-        query->SQL->Text =  " SELECT a.ITEM_ID, a.SALES_TYPE_ID, b.ITEM_NAME FROM MALL_SALES_TYPE_ITEMS_RELATION a inner join ITEM b  on a.ITEM_ID = b.ITEM_ID order by 2 ASC ";
+        query->SQL->Text =  " SELECT a.ITEM_ID, a.SALES_TYPE_ID, b.ITEM_NAME FROM MALL_SALES_TYPE_ITEMS_RELATION a INNER JOIN ITEM b "
+                             "ON a.ITEM_ID = b.ITEM_ID ORDER BY 2 ASC ";
         query->ExecQuery();
 
         while(!query->Eof)
