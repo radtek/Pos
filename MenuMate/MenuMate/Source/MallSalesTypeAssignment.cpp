@@ -80,10 +80,17 @@ void __fastcall TfrmMallSalesTypeAssignment::itemListMouseClick(TObject *Sender,
             InsertIntoAssignedRemovedItemsBySalesTypeMap(GridButton->Tag, GridButton->Caption, eAssigned);
         }
 
-//        //insert to set because this item is now assigned..
-//        alreadyAssignedItems.insert(GridButton->Tag);
+        //insert to set because this item is now assigned..
+        alreadyAssignedItems.insert(GridButton->Tag);
+
+        //Display Sales Type According to selected sales type
+        DisplayAssignedItemBySalesType();
     }
-    DisplayAssignedItemBySalesType();
+    else
+    {
+        MessageBox("Please Select a sales type to assign.", "Select a sales type", MB_ICONINFORMATION + MB_OK);
+    }
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMallSalesTypeAssignment::btnOkMouseClick(TObject *Sender)
@@ -317,23 +324,28 @@ void TfrmMallSalesTypeAssignment::AssignAllItems()
                     if(innerit != outerit->second.end())
                     {
                         outerit->second.erase(innerit);
+                        RemoveFromSet(itemList->Buttons[itemIndex][0]->Tag);
                     }
                     else
                     {
                        ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
                         InsertIntoAssignedRemovedItemsBySalesTypeMap(itemList->Buttons[itemIndex][0]->Tag, itemList->Buttons[itemIndex][0]->Caption, eAssigned);
+                        alreadyAssignedItems.insert(itemList->Buttons[itemIndex][0]->Tag);
                     }
                 }
             }
         }
         else
         {
-            for(int itemIndex = 0; itemIndex < assignedItemsBySalesTypeList->RowCount; ++itemIndex)
+            for(int itemIndex = 0; itemIndex < itemList->RowCount; itemIndex++)
             {
-                ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
-                InsertIntoAssignedRemovedItemsBySalesTypeMap(assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Tag,
-                                                                    assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Caption, eRemoved);
-                alreadyAssignedItems.insert(itemList->Buttons[itemIndex][0]->Tag);
+                if(itemList->Buttons[itemIndex][0]->Enabled)
+                {
+                    ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
+                    InsertIntoAssignedRemovedItemsBySalesTypeMap(itemList->Buttons[itemIndex][0]->Tag,
+                                                                        itemList->Buttons[itemIndex][0]->Caption, eRemoved);
+                    alreadyAssignedItems.insert(itemList->Buttons[itemIndex][0]->Tag);
+                }
             }
         }
 
@@ -377,6 +389,8 @@ void TfrmMallSalesTypeAssignment::RemoveAllItems()
                     InsertIntoAssignedRemovedItemsBySalesTypeMap(assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Tag,
                                                                     assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Caption, eRemoved);
                 }
+
+                RemoveFromSet(assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Tag);
             }
         }
         else
@@ -386,6 +400,8 @@ void TfrmMallSalesTypeAssignment::RemoveAllItems()
                 ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
                 InsertIntoAssignedRemovedItemsBySalesTypeMap(assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Tag,
                                                                     assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Caption, eRemoved);
+
+                RemoveFromSet(assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Tag);
             }
         }
 
@@ -429,11 +445,17 @@ void __fastcall TfrmMallSalesTypeAssignment::assignedItemsBySalesTypeListMouseCl
                 ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
             InsertIntoAssignedRemovedItemsBySalesTypeMap(GridButton->Tag, GridButton->Caption, eRemoved);
         }
+
+        //Erase from set
+        std::set<int>::iterator it = alreadyAssignedItems.find(GridButton->Tag);
+        if(it != alreadyAssignedItems.end())
+        {
+            alreadyAssignedItems.erase(it);
+        }
+
+        ///Display all item's current state according to selected sales type.
+        DisplayAssignedItemBySalesType();
     }
-    DisplayAssignedItemBySalesType();
-    //RemoveItemsFromAssignedItemsBySalesTypeList(GridButton->Tag);
-    ///Display all item's current state according to selected sales type.
-    DisplayAssignedItemBySalesType();
 }
 //--------------------------------------------------------------------------------------------
 void TfrmMallSalesTypeAssignment::InsertIntoAssignedRemovedItemsBySalesTypeMap(int itemKey, UnicodeString itemName, int itemStatus)
@@ -442,18 +464,17 @@ void TfrmMallSalesTypeAssignment::InsertIntoAssignedRemovedItemsBySalesTypeMap(i
     itemDetails.ItemName = itemName;
     itemDetails.ItemStatus = itemStatus;
     assignedRemovedItemsBySalesType[SelectedSalesType].insert(std::make_pair(itemKey, itemDetails));
-
+}
+//--------------------------------------------------------------------------------------------------
+void TfrmMallSalesTypeAssignment::RemoveFromSet(int itemId)
+{
     std::set<int>::iterator it;
 
     //find and erase element from set because now it is freed..
-    it = alreadyAssignedItems.find(itemKey);
+    it = alreadyAssignedItems.find(itemId);
     if(it != alreadyAssignedItems.end())
     {
         alreadyAssignedItems.erase(it);
-    }
-    else
-    {
-        alreadyAssignedItems.insert(itemKey);
     }
 }
 

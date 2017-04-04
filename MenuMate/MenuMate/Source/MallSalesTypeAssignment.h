@@ -109,6 +109,9 @@ private:	// User declarations
     //   Insert in to assignedRemovedItemsBySalesType map according to item status
     void InsertIntoAssignedRemovedItemsBySalesTypeMap(int itemId, UnicodeString itemName, int itemStatus);
 
+    //Insert Or Remove From map..
+    void RemoveFromSet(int itemId);
+
 public:		// User declarations
 	__fastcall TfrmMallSalesTypeAssignment(TComponent* Owner);
     __fastcall ~TfrmMallSalesTypeAssignment();
