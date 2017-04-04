@@ -447,11 +447,7 @@ void __fastcall TfrmMallSalesTypeAssignment::assignedItemsBySalesTypeListMouseCl
         }
 
         //Erase from set
-        std::set<int>::iterator it = alreadyAssignedItems.find(GridButton->Tag);
-        if(it != alreadyAssignedItems.end())
-        {
-            alreadyAssignedItems.erase(it);
-        }
+        RemoveFromSet(GridButton->Tag);
 
         ///Display all item's current state according to selected sales type.
         DisplayAssignedItemBySalesType();
