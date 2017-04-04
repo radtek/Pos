@@ -82,12 +82,26 @@ __published:	// IDE-managed Components
 
 
 private:	// User declarations
+
+    //Display all items which existed in database
     void DisplayItems();
+
+    //Display all sales types which existed in database
     void DisplaySalesTypes();
+
+    // it will store selected sales type id
     int SelectedSalesType;
+
+    //Display items details from currentItemRelationsWithSalesType map by merging assignedItemsDBState (Initial map) and assignedRemovedItemsBySalesType (delta) map
     void DisplayAssignedItemBySalesType();
-    void EnableDisableItemList();  //todo
+
+    //Enable unassigned items from item list and disable items from itemlist when item assigned to any sales types
+    void EnableDisableItemList();
+
+    //Assign all items to selected sales type and update into assignedRemovedItemsBySalesType map
     void AssignAllItems();
+
+    //Remove all items from selected sales type and update into assignedRemovedItemsBySalesType map
     void RemoveAllItems();
 
     //Multimap which will have all items relation with sales type. map will be loaded from db. first int param will be sales type id and inner map's first

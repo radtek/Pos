@@ -33,6 +33,8 @@ void __fastcall TfrmMallSalesTypeAssignment::FormShow(TObject *Sender)
     DisplaySalesTypes();
     DisplayItems();
     assignedItemsDBState = TDBSalesTypeAssignment::LoadAssignedItemsBySalesType();
+
+    //insert items into set which are assigned to any sales type ie; used items. Now it can't be assigned to others.
     for(std::map <int, std::map <int, UnicodeString> >::iterator outerit = assignedItemsDBState.begin(); outerit != assignedItemsDBState.end(); ++outerit)
     {
         for(std::map <int, UnicodeString>::iterator innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit)
@@ -153,6 +155,7 @@ void __fastcall TfrmMallSalesTypeAssignment::btnEditSalesTypeMouseClick(TObject 
 {
     if (SelectedSalesType)
 	{
+        //call same form of adding sales type by making editing variable as true. now it will be used as edit screen.
         std::auto_ptr <TfrmAddSalesType> frmAddSalesType(new TfrmAddSalesType(this));
         frmAddSalesType->Editing = true;
         frmAddSalesType->Caption = "Edit Sales Type";
@@ -252,15 +255,13 @@ void TfrmMallSalesTypeAssignment::DisplayAssignedItemBySalesType()
     std::map<int, std::map<int, UnicodeString> >::iterator currentOuterit;
     std::map <int, UnicodeString>::iterator currentInnerit;
 
-    std::map <int, std::map <int, TItemDetails> >::iterator assignedouterit;
-    std::map <int, TItemDetails>::iterator assignedinnerit;
-
+    std::map <int, std::map <int, TItemDetails> >::iterator assignedRemovedouterit;
+    std::map <int, TItemDetails>::iterator assignedRemovedinnerit;
 
     //find sales types in assignedRemovedItemsBySalesType maps.i.e. map2....
-    assignedouterit = assignedRemovedItemsBySalesType.find(SelectedSalesType);
-
+    assignedRemovedouterit = assignedRemovedItemsBySalesType.find(SelectedSalesType);
     // if sales types found in assignedRemovedItemsBySalesType maps
-    if(assignedouterit != assignedRemovedItemsBySalesType.end())
+    if(assignedRemovedouterit != assignedRemovedItemsBySalesType.end())
     {
         //find sales types in currentItemRelationsWithSalesType maps ...
         currentOuterit = currentItemRelationsWithSalesType.find(SelectedSalesType);
@@ -268,31 +269,31 @@ void TfrmMallSalesTypeAssignment::DisplayAssignedItemBySalesType()
         if(currentOuterit != currentItemRelationsWithSalesType.end())
         {
             //first loop to iterate items list from assignedRemovedItemsBySalesType i.e second map..
-            for(assignedinnerit = assignedouterit->second.begin(); assignedinnerit != assignedouterit->second.end(); ++assignedinnerit)
+            for(assignedRemovedinnerit = assignedRemovedouterit->second.begin(); assignedRemovedinnerit != assignedRemovedouterit->second.end(); ++assignedRemovedinnerit)
             {
-                 currentInnerit = currentOuterit->second.find(assignedinnerit->first);
+                 currentInnerit = currentOuterit->second.find(assignedRemovedinnerit->first);
                  if(currentInnerit != currentOuterit->second.end())
                  {
                      currentOuterit->second.erase(currentInnerit);
                  }
                  else
                  {
-                     currentItemRelationsWithSalesType[SelectedSalesType].insert(std::make_pair(assignedinnerit->first, assignedinnerit->second.ItemName));
+                     currentItemRelationsWithSalesType[SelectedSalesType].insert(std::make_pair(assignedRemovedinnerit->first, assignedRemovedinnerit->second.ItemName));
                  }
             }
        }
        else
        {
             // if sales types not found in currentItemRelationsWithSalesType maps then insert sales types and item details in currentItemRelationsWithSalesType maps
-            for(assignedinnerit = assignedouterit->second.begin(); assignedinnerit != assignedouterit->second.end(); ++assignedinnerit)
+            for(assignedRemovedinnerit = assignedRemovedouterit->second.begin(); assignedRemovedinnerit != assignedRemovedouterit->second.end(); ++assignedRemovedinnerit)
             {
-               currentItemRelationsWithSalesType[SelectedSalesType].insert(std::make_pair(assignedinnerit->first, assignedinnerit->second.ItemName));
+               currentItemRelationsWithSalesType[SelectedSalesType].insert(std::make_pair(assignedRemovedinnerit->first, assignedRemovedinnerit->second.ItemName));
             }
        }
     }
 
     // get all item details from currentItemRelationsWithSalesType details to show items details in assignedItemsBySalesTypeList list
-    // assign all  item details from  currentItemRelationsWithSalesType map to  assignedItemsBySalesTypeList list
+    // assign all  item details from  currentItemRelationsWithSalesType map to  assignedItemsBySalesTypeList
     currentOuterit = currentItemRelationsWithSalesType.find(SelectedSalesType);
     if(currentOuterit != currentItemRelationsWithSalesType.end())
     {
@@ -472,10 +473,8 @@ void __fastcall TfrmMallSalesTypeAssignment::assignedItemsBySalesTypeListMouseCl
             ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
             InsertIntoAssignedRemovedItemsBySalesTypeMap(GridButton->Tag, GridButton->Caption, eRemoved);
         }
-
         //Erase from set
         RemoveFromSet(GridButton->Tag);
-
         ///Display all item's current state according to selected sales type.
         DisplayAssignedItemBySalesType();
     }

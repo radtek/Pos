@@ -267,7 +267,7 @@ void TDBSalesTypeAssignment::SaveItemRelationWithSalesType(std::map<int, std::ma
                 }
                 else if(innerit->second.ItemStatus == eRemoved)
                 {
-                    DeleteRecordFromDB(dbTransaction, innerit->first);
+                    DeleteRecordFromDB(dbTransaction, outerit->first, innerit->first);
                 }
             }
         }
@@ -305,15 +305,16 @@ void TDBSalesTypeAssignment::InsertRecordInToDB(Database::TDBTransaction &dbTran
 	}
 }
 //---------------------------------------------------------------------------------------------------------
-void TDBSalesTypeAssignment::DeleteRecordFromDB(Database::TDBTransaction &dbTransaction, int itemId)
+void TDBSalesTypeAssignment::DeleteRecordFromDB(Database::TDBTransaction &dbTransaction, int saleTypeId, int itemId)
 {
     try
     {
         TIBSQL* deleteQuery = dbTransaction.Query(dbTransaction.AddQuery());
         deleteQuery->Close();
-        deleteQuery->SQL->Text =  "DELETE FROM MALL_SALES_TYPE_ITEMS_RELATION a WHERE a.ITEM_ID = :ITEM_ID ";
+        deleteQuery->SQL->Text =  "DELETE FROM MALL_SALES_TYPE_ITEMS_RELATION a WHERE a.ITEM_ID = :ITEM_ID  and a.SALES_TYPE_ID = :SALES_TYPE_ID ";
 
         deleteQuery->ParamByName("ITEM_ID")->AsInteger = itemId;
+        deleteQuery->ParamByName("SALES_TYPE_ID")->AsInteger = saleTypeId;
         deleteQuery->ExecQuery();
     }
     catch(Exception &E)
