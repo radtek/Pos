@@ -1892,12 +1892,13 @@ void TApplyParser::Updatetable_PaymentTypes(TDBControl* const inDBControl)
 //--------------------------------------------------------------------------------------------------
 void TApplyParser::update6_39Tables()
 {
-     CreateGenerators6_39(_dbControl);
+    CreateGenerators6_39(_dbControl);
     CreateTable6_39MallSalesType(_dbControl);
     CreateTable6_39MallSalesTypeItemRelation(_dbControl);
     CreateTable6_39MallSalesBySalesType(_dbControl);
     Insert6_39Malls(_dbControl, 2, "Dean & Deluca", "F");
-    Insert6_39MallExport_Settings_Mapping(_dbControl);
+    int settingID[10] = {1, 2, 7, 9, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 10, 2);
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -1924,28 +1925,23 @@ void TApplyParser::Insert6_39Malls(TDBControl* const inDBControl, int mallKey, U
     }
 }
 //--------------------------------------------------------------------------------------------------------------------------
-void TApplyParser::Insert6_39MallExport_Settings_Mapping(TDBControl* const inDBControl)
+void TApplyParser::InsertInTo_MallExport_Settings_Mapping(TDBControl* const inDBControl, int settingIds[], int arraySize, int mallIndex)
 {
     TDBTransaction transaction( *_dbControl );
     transaction.StartTransaction();
     try
     {
-         const int numberOfFields = 10;
-        int settingID[numberOfFields] =
-        {
-            1, 2, 7, 9, 16, 18, 19, 20, 24, 25
-        };
-
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
+        int mallExportSettingMapIndex = GetMallExportSettingsMappingIndex(inDBControl);
 
-        for(int index = 0; index < numberOfFields; index++)
+        for(int index = 0; index < arraySize; index++)
         {
             InsertQuery->Close();
             InsertQuery->SQL->Text =
                         "INSERT INTO MALLEXPORT_SETTINGS_MAPPING VALUES (:MAPPING_KEY, :SETTING_KEY, :MALL_KEY) ";
-            InsertQuery->ParamByName("MAPPING_KEY")->AsInteger = index + 13;
-            InsertQuery->ParamByName("SETTING_KEY")->AsString = settingID[index];
-            InsertQuery->ParamByName("MALL_KEY")->AsString = 2;
+            InsertQuery->ParamByName("MAPPING_KEY")->AsInteger = index + mallExportSettingMapIndex;
+            InsertQuery->ParamByName("SETTING_KEY")->AsString = settingIds[index];
+            InsertQuery->ParamByName("MALL_KEY")->AsString = mallIndex;
             InsertQuery->ExecQuery();
         }
         transaction.Commit();
@@ -1956,7 +1952,6 @@ void TApplyParser::Insert6_39MallExport_Settings_Mapping(TDBControl* const inDBC
     }
 }
 //--------------------------------------------------------------------------------------------------
-
 void TApplyParser::CreateGenerators6_39(TDBControl* const inDBControl)
 {
     if(!generatorExists("GEN_MALLSALES_TYPE", _dbControl))
@@ -2036,6 +2031,25 @@ void TApplyParser::CreateTable6_39MallSalesBySalesType( TDBControl* const inDBCo
 		");",
 		inDBControl );
 	}
+}
+//-------------------------------------------------------------------------------------------
+int TApplyParser::GetMallExportSettingsMappingIndex(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    int index = 0;
+
+    if ( tableExists( "MALLEXPORT_SETTINGS_MAPPING", _dbControl ) )
+	{
+        TIBSQL *selectQuery    = transaction.Query(transaction.AddQuery());
+		selectQuery->SQL->Text = "SELECT MAX(A.MALLEXPORT_SETTING_MAP_KEY) MALLEXPORT_SETTING_MAP_KEY FROM MALLEXPORT_SETTINGS_MAPPING a ";
+        selectQuery->ExecQuery();
+
+        if(selectQuery->RecordCount)
+            index = selectQuery->FieldByName("MALLEXPORT_SETTING_MAP_KEY")->AsInteger;
+	}
+
+    return index + 1;
 }
 }
 
