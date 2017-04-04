@@ -86,7 +86,7 @@ private:	// User declarations
     void DisplaySalesTypes();
     int SelectedSalesType;
     void DisplayAssignedItemBySalesType();
-    void DisableSelectedTypesInGroup();  //todo
+    void EnableDisableItemList();  //todo
     void RemoveItemsFromAssignedItemsBySalesTypeList(int itemKey);
     void AssignAllItems();
     void RemoveAllItems();
@@ -106,6 +106,9 @@ private:	// User declarations
 
     //set for storing items key which are used means assigned to any sales type..
     std::set<int> alreadyAssignedItems;
+
+    //   Insert in to assignedRemovedItemsBySalesType map according to item status
+    void InsertIntoAssignedRemovedItemsBySalesTypeMap(int itemId, UnicodeString itemName, int itemStatus);
 
 public:		// User declarations
 	__fastcall TfrmMallSalesTypeAssignment(TComponent* Owner);
