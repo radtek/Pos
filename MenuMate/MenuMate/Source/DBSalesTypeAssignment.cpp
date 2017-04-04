@@ -279,7 +279,7 @@ void TDBSalesTypeAssignment::SaveItemRelationWithSalesType(std::map<int, std::ma
 	}
 }
 //-----------------------------------------------------------------------------------------------------------
-void InsertRecordInToDB(Database::TDBTransaction &dbTransaction, int saleTypeId, int itemId)
+void TDBSalesTypeAssignment::InsertRecordInToDB(Database::TDBTransaction &dbTransaction, int saleTypeId, int itemId)
 {
     try
     {
@@ -304,7 +304,7 @@ void InsertRecordInToDB(Database::TDBTransaction &dbTransaction, int saleTypeId,
 	}
 }
 //---------------------------------------------------------------------------------------------------------
-void DeleteRecordFromDB(Database::TDBTransaction &dbTransaction, int itemId)
+void TDBSalesTypeAssignment::DeleteRecordFromDB(Database::TDBTransaction &dbTransaction, int itemId)
 {
     try
     {
