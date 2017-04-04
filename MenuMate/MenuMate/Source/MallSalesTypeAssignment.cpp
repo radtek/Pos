@@ -33,6 +33,8 @@ void __fastcall TfrmMallSalesTypeAssignment::FormShow(TObject *Sender)
     DisplaySalesTypes();
     DisplayItems();
     assignedItemsDBState = TDBSalesTypeAssignment::LoadAssignedItemsBySalesType();
+
+    //insert items into set which are assigned to any sales type ie; used items. Now it can't be assigned to others.
     for(std::map <int, std::map <int, UnicodeString> >::iterator outerit = assignedItemsDBState.begin(); outerit != assignedItemsDBState.end(); ++outerit)
     {
         for(std::map <int, UnicodeString>::iterator innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit)
@@ -153,6 +155,7 @@ void __fastcall TfrmMallSalesTypeAssignment::btnEditSalesTypeMouseClick(TObject 
 {
     if (SelectedSalesType)
 	{
+        //call same form of adding sales type by making editing variable as true. now it will be used as edit screen.
         std::auto_ptr <TfrmAddSalesType> frmAddSalesType(new TfrmAddSalesType(this));
         frmAddSalesType->Editing = true;
         frmAddSalesType->Caption = "Edit Sales Type";
@@ -445,7 +448,6 @@ void __fastcall TfrmMallSalesTypeAssignment::assignedItemsBySalesTypeListMouseCl
             ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
             InsertIntoAssignedRemovedItemsBySalesTypeMap(GridButton->Tag, GridButton->Caption, eRemoved);
         }
-
         //Erase from set
         RemoveFromSet(GridButton->Tag);
 
