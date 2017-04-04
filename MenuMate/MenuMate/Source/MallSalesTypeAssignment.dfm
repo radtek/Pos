@@ -51,7 +51,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Color = 14342874
       ParentBackground = False
       TabOrder = 0
-      object GroupList: TTouchGrid
+      object salesTypeList: TTouchGrid
         Left = 1
         Top = 46
         Width = 277
@@ -69,7 +69,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
         DefaultButtonLatchedColor = clBtnShadow
         LatchingType = ltRadioButton
         LatchingProperties = [lkLatchColor, lkStayDown]
-        OnMouseClick = GroupListMouseClick
+        OnMouseClick = salesTypeListMouseClick
         ParentGridColor = False
         GridColor = 14342874
         DefaultColWidth = 269
@@ -194,7 +194,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
         ParentFont = False
         TabOrder = 0
       end
-      object MembersGrid: TTouchGrid
+      object itemList: TTouchGrid
         Left = 1
         Top = 46
         Width = 277
@@ -211,7 +211,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
         DefaultButtonColor = clBtnFace
         DefaultButtonLatchedColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
-        OnMouseClick = MembersGridMouseClick
+        OnMouseClick = itemListMouseClick
         ParentGridColor = False
         GridColor = 14342874
         DefaultColWidth = 269
@@ -304,7 +304,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       Color = 14342874
       ParentBackground = False
       TabOrder = 2
-      object GroupMembers: TTouchGrid
+      object assignedItemsBySalesTypeList: TTouchGrid
         Left = 1
         Top = 46
         Width = 277
@@ -321,7 +321,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
         DefaultButtonColor = clBtnFace
         DefaultButtonLatchedColor = clBtnShadow
         LatchingProperties = [lkLatchColor, lkStayDown]
-        OnMouseClick = GroupMembersMouseClick
+        OnMouseClick = assignedItemsBySalesTypeListMouseClick
         ParentGridColor = False
         GridColor = 14342874
         DefaultColWidth = 269
@@ -432,7 +432,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
     DesignSize = (
       130
       473)
-    object btnClose: TTouchBtn
+    object btnOk: TTouchBtn
       Left = 6
       Top = 14
       Width = 118
@@ -448,9 +448,9 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
-      OnMouseClick = btnCloseMouseClick
+      OnMouseClick = btnOkMouseClick
     end
-    object btinGGA_Cancel: TTouchBtn
+    object btnCancel: TTouchBtn
       Left = 6
       Top = 406
       Width = 118
@@ -467,7 +467,7 @@ object frmMallSalesTypeAssignment: TfrmMallSalesTypeAssignment
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
-      OnMouseClick = btinGGA_CancelMouseClick
+      OnMouseClick = btnCancelMouseClick
     end
     object btnAssignAll: TTouchBtn
       Left = 6

@@ -4,6 +4,7 @@
 #define DBSalesTypeAssignmentH
 #include<map.h>
 #include<System.hpp>
+#include "SalesTypeItemDetails.h"
 //---------------------------------------------------------------------------
 
 class TDBSalesTypeAssignment
@@ -19,8 +20,9 @@ class TDBSalesTypeAssignment
     //Load Items Which are assigned to sales Type
     static std::map<int, std::map<int, UnicodeString> > LoadAssignedItemsBySalesType();
 
-    //Assign Items to Sales Type Group
-    static void SaveAssignedItemsToSalesTYpeGroup(std::map<int, std::map<int, UnicodeString> > &assignedItems);
+    //this function will receive only items which are eiether added to selected sales type or removed from selected sales type..
+    //it is added or removed can be find using enum' status which is property of TItemDetails structure.
+    static void SaveItemRelationWithSalesType(std::map<int, std::map<int, TItemDetails> > modifieldItemsWithSalesType);
 
     //Add New Sales Type
     static void SaveSalesType(UnicodeString name, UnicodeString code);

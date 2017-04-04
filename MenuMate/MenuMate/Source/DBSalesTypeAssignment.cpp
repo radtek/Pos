@@ -243,27 +243,26 @@ std::map<int, std::map<int, UnicodeString> > TDBSalesTypeAssignment::LoadAssigne
     return getAssignedsalesTypeItemsMap;
 }
 
-void TDBSalesTypeAssignment::SaveAssignedItemsToSalesTYpeGroup(std::map<int, std::map<int, UnicodeString> > &assignedItems)
+void TDBSalesTypeAssignment::SaveItemRelationWithSalesType(std::map<int, std::map<int, TItemDetails> > modifieldItemsWithSalesType)
 {
-
+    //Register the database transaction..
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
 
     try
     {
-        std::map <int, map <int, UnicodeString> >::iterator outerit;
+        std::map<int, std::map<int, TItemDetails> >::iterator outerit;
         std::map <int, UnicodeString>::iterator innerit;
-        //Register the database transaction..
-         dbTransaction.StartTransaction();
 
-        TIBSQL* deleteQuery = dbTransaction.Query(dbTransaction.AddQuery());
+     /*   TIBSQL* deleteQuery = dbTransaction.Query(dbTransaction.AddQuery());
         deleteQuery->Close();
         deleteQuery->SQL->Text =  "DELETE FROM MALL_SALES_TYPE_ITEMS_RELATION ";
 
-        deleteQuery->ExecQuery();
+        deleteQuery->ExecQuery();  */
 
         //Increment Generator for inserting date into db since it is primary key.
-        TIBSQL* incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
+      /*  TIBSQL* incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
         incrementGenerator->Close();
         incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALLSALES_TYPE_ITEMS_REL, 1) FROM RDB$DATABASE";
 
@@ -273,8 +272,10 @@ void TDBSalesTypeAssignment::SaveAssignedItemsToSalesTYpeGroup(std::map<int, std
         insertQuery->SQL->Text =  "INSERT INTO MALL_SALES_TYPE_ITEMS_RELATION  VALUES (:STI_ID, :ITEM_ID, :SALES_TYPE_ID) ";
         //int size = assignedItems.size();
 
-        for (outerit = assignedItems.begin(); outerit != assignedItems.end(); ++outerit){
-            for (innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit){
+        for (outerit = modifieldItemsWithSalesType.begin(); outerit != modifieldItemsWithSalesType.end(); ++outerit)
+        {
+            for (innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit)
+            {
                  incrementGenerator->ExecQuery();
                  insertQuery->ParamByName("STI_ID")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
                  insertQuery->ParamByName("ITEM_ID")->AsInteger = innerit->first;
@@ -283,7 +284,7 @@ void TDBSalesTypeAssignment::SaveAssignedItemsToSalesTYpeGroup(std::map<int, std
                  incrementGenerator->Close();
                  insertQuery->Close();
             }
-        }
+        }                       */
         dbTransaction.Commit();
     }
     catch(Exception &E)
