@@ -373,7 +373,7 @@ void TfrmMallSalesTypeAssignment::RemoveAllItems()
             {
                 //find Item at itemIndex position with tag key as item key in assignedRemovedItemsBySalesType because it may also possible that item with state
                 //inserted  already exist or not
-                innerit = outerit->second.find(itemList->Buttons[itemIndex][0]->Tag);
+                innerit = outerit->second.find(assignedItemsBySalesTypeList->Buttons[itemIndex][0]->Tag);
 
                 //If already exist then remove it because now item is in initial state..
                 if(innerit != outerit->second.end())
