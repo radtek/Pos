@@ -266,10 +266,8 @@ void TfrmMallSalesTypeAssignment::AssignAllItems()
         {
             if(itemList->Buttons[i][0]->Enabled)
             {
-                TItemDetails itemDetails;
-                itemDetails.ItemStatus = eAssigned;
-                itemDetails.ItemName = itemList->Buttons[i][0]->Caption;
-                assignedRemovedItemsBySalesType[SelectedSalesType].insert(std::make_pair(itemList->Buttons[i][0]->Tag, itemDetails));
+                ///insert all Items into assignedRemovedItemsBySalesType map..by adding status as removed..
+                InsertIntoAssignedRemovedItemsBySalesTypeMap(itemList->Buttons[itemIndex][0]->Tag, itemList->Buttons[itemIndex][0]->Caption, eAssigned);
             }
         }
         DisplayAssignedItemBySalesType();
