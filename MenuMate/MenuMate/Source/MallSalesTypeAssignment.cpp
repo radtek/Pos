@@ -175,21 +175,42 @@ void TfrmMallSalesTypeAssignment::DisplaySalesTypes()
 //----------------------------------------------------------------------------
 void TfrmMallSalesTypeAssignment::DisplayAssignedItemBySalesType()
 {
+
+    currentItemRelationsWithSalesType = assignedItemsDBState;
+    std::map<int, std::map<int, UnicodeString> >::iterator currentOuterit;
+    std::map <int, UnicodeString>::iterator currentInnerit;
+
     int index = 0;
-    std::map <int, std::map <int, UnicodeString> >::iterator outerit;
-    std::map <int, UnicodeString>::iterator innerit;
+
+    std::map <int, std::map <int, TItemDetails> >::iterator outerit;
+    std::map <int, TItemDetails>::iterator innerit;
     assignedItemsBySalesTypeList->RowCount = 0;
-    outerit = assignedItemsDBState.find(SelectedSalesType);
+
+    outerit = assignedRemovedItemsBySalesType.find(SelectedSalesType);
     if(outerit != assignedItemsDBState.end())
     {
-        assignedItemsBySalesTypeList->RowCount = assignedItemsDBState[SelectedSalesType].size();
-        for (innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit){
-                assignedItemsBySalesTypeList->Buttons[index][0]->Caption = innerit->second;
-                assignedItemsBySalesTypeList->Buttons[index][0]->Tag = innerit->first;
-                index++;
-            }
+
     }
-    DisableSelectedTypesInGroup();
+
+
+
+
+
+//    int index = 0;
+//    std::map <int, std::map <int, UnicodeString> >::iterator outerit;
+//    std::map <int, UnicodeString>::iterator innerit;
+//    assignedItemsBySalesTypeList->RowCount = 0;
+//    outerit = assignedItemsDBState.find(SelectedSalesType);
+//    if(outerit != assignedItemsDBState.end())
+//    {
+//        assignedItemsBySalesTypeList->RowCount = assignedItemsDBState[SelectedSalesType].size();
+//        for (innerit = outerit->second.begin(); innerit != outerit->second.end(); ++innerit){
+//                assignedItemsBySalesTypeList->Buttons[index][0]->Caption = innerit->second;
+//                assignedItemsBySalesTypeList->Buttons[index][0]->Tag = innerit->first;
+//                index++;
+//            }
+//    }
+//    DisableSelectedTypesInGroup();
 }
 //---------------------------------------------------------------------------
 void TfrmMallSalesTypeAssignment::DisableSelectedTypesInGroup()
@@ -242,13 +263,17 @@ void TfrmMallSalesTypeAssignment::AssignAllItems()
     {
         for(int i=0; i < itemList->RowCount; i++)
         {
-//            if(!CheckItemAlreadyExists(itemList->Buttons[i][0]->Tag))
-//            {
-//                assignedItems[SelectedSalesType].insert(std::make_pair(itemList->Buttons[i][0]->Tag, itemList->Buttons[i][0]->Caption));
-//            }
+            if(itemList->Buttons[i][0]->Enabled)
+            {
+                TItemDetails itemDetails;
+                itemDetails.ItemStatus = eAssigned;
+                itemDetails.ItemName = itemList->Buttons[i][0]->Caption;
+                assignedRemovedItemsBySalesType[SelectedSalesType].insert(std::make_pair(itemList->Buttons[i][0]->Tag, itemDetails));
+                //MessageBox(itemList->Buttons[i][0]->Caption, "Select a sales type", MB_ICONINFORMATION + MB_OK);
+            }
         }
         DisplayAssignedItemBySalesType();
-        DisableSelectedTypesInGroup();
+        //DisableSelectedTypesInGroup();
     }
     else
     {
@@ -276,7 +301,7 @@ void TfrmMallSalesTypeAssignment::RemoveAllItems()
             }
         }
         DisplayAssignedItemBySalesType();
-        DisableSelectedTypesInGroup();
+        //DisableSelectedTypesInGroup();
     }
     else
     {
