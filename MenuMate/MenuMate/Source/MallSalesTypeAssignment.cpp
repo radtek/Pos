@@ -90,7 +90,7 @@ void __fastcall TfrmMallSalesTypeAssignment::btnOkMouseClick(TObject *Sender)
 {
     try
     {
-       // TDBSalesTypeAssignment::SaveItemRelationWithSalesType(assignedRemovedItemsBySalesType);
+        TDBSalesTypeAssignment::SaveItemRelationWithSalesType(assignedRemovedItemsBySalesType);
         Close();
     }
     catch(Exception &E)
