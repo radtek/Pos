@@ -879,7 +879,7 @@ namespace MenumateVersionParser
         void CreateTable6_39MallSalesBySalesType(TDBControl* const inDBControl);
         void AlterTable6_39_MallExport_Sales(TDBControl* const inDBControl);
         void Insert6_39Malls(TDBControl* const inDBControl, int mallKey, UnicodeString mallName, UnicodeString isActive);
-        void InsertMallExport_Settings_Mapping(TDBControl* const inDBControl, int settingIds[], int arraySize, int mallIndex);
+        void InsertInTo_MallExport_Settings_Mapping(TDBControl* const inDBControl, int settingIds[], int arraySize, int mallIndex);
         void Insert6_39MallExport_Settings_Values(TDBControl* const inDBControl);
         int GetMallExportSettingsMappingIndex(TDBControl* const inDBControl);
 
