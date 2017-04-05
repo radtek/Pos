@@ -1240,14 +1240,14 @@ void __fastcall TfrmNewPaymentType::btnWalletTypeMouseClick(TObject *Sender)
     TVerticalSelection Item1;
     Item1.Title = "We Chat";
     Item1.Properties["Action"] = IntToStr(1);
-    Item1.Properties["Color"] = (Payment.WalletType == eWeChat) ? IntToStr(clGreen) : IntToStr(clNavy);
+    Item1.Properties["Color"] = (Payment.WalletType == eWeChatWallet) ? IntToStr(clGreen) : IntToStr(clNavy);
     Item1.CloseSelection = true;
     SelectionForm->Items.push_back(Item1);
 
     TVerticalSelection Item2;
     Item2.Title = "Jio";
     Item2.Properties["Action"] = IntToStr(2);
-    Item2.Properties["Color"] = (Payment.WalletType == eJio) ? IntToStr(clGreen) : IntToStr(clNavy);;
+    Item2.Properties["Color"] = (Payment.WalletType == eJioWallet) ? IntToStr(clGreen) : IntToStr(clNavy);;
     Item2.CloseSelection = true;
     SelectionForm->Items.push_back(Item2);
 
@@ -1259,10 +1259,10 @@ void __fastcall TfrmNewPaymentType::btnWalletTypeMouseClick(TObject *Sender)
         switch(Action)
         {
             case 1 :
-                Payment.WalletType = eWeChat;
+                Payment.WalletType = eWeChatWallet;
                 break;
             case 2 :
-                Payment.WalletType = eJio;
+                Payment.WalletType = eJioWallet;
                 break;
             default:
                 Payment.WalletType = eNoWallet;

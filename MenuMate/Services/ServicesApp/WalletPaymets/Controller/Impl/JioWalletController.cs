@@ -1,28 +1,29 @@
 ﻿using WalletPayments.Controller.Interface;
 using WalletPayments.Model;
+using WalletPaymets.Model;
 
 namespace WalletPayments.Controller.Impl
 {
     public class JioWalletController : IWalletController
     {
-        public void Login(LoginModel loginModel)
+        public WalletResponse Login(WalletAccountInfo inWalletAccountInfo)
         {
-            throw new System.NotImplementedException();
+            return new WalletResponse();
         }
 
-        public void DoPurchaseTransaction(TransactionModel transactionModel)
+        public WalletResponse DoPurchaseTransaction(WalletTransactionInfo inWalletTransactionInfo)
         {
-            throw new System.NotImplementedException();
+            return new WalletResponse(); 
         }
 
-        public void DoRefundTransaction(TransactionModel transactionModel)
+        public void DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo)
         {
-            throw new System.NotImplementedException();
+           // throw new System.NotImplementedException();
         }
 
-        public void DoTransactionEnquiry(TransactionModel transactionModel)
+        public void DoTransactionEnquiry(QueryOrderInfo inQueryOrderInfo)
         {
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
         }
     }
 }

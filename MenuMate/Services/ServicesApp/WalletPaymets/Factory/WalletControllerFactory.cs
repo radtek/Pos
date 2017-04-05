@@ -10,9 +10,9 @@ namespace WalletPayments.Factory
         {
             switch (inWalletType)
             {
-                case WalletType.Jio:
+                case WalletType.JioWallet:
                     return new JioWalletController();
-                case WalletType.WeChat:
+                case WalletType.WeChatWallet:
                     return new WeChatWalletController();
             }
             return null;

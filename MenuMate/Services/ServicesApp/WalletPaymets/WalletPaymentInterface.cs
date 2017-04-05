@@ -2,6 +2,7 @@
 using WalletPayments.Enums;
 using WalletPayments.Factory;
 using WalletPayments.Model;
+using WalletPaymets.Model;
 
 namespace WalletPayments
 {
@@ -10,26 +11,31 @@ namespace WalletPayments
         private WalletType _walletType;
 
         private readonly IWalletController _walletController;
+
         public WalletPaymentInterface(WalletType inWalletType)
         {
             _walletType = inWalletType;
             _walletController = new WalletControllerFactory().GetWalletController(inWalletType);
         }
-        public void Login()
+
+        public WalletResponse Login(WalletAccountInfo inWalletAccountInfo)
         {
-            _walletController.Login(new LoginModel());
+            return _walletController.Login(inWalletAccountInfo);
         }
-        public void DoPurchaseTransaction()
+
+        public WalletResponse DoPurchaseTransaction(WalletTransactionInfo inWalletTransactionInfo)
         {
-            _walletController.DoPurchaseTransaction(new TransactionModel());
+            return _walletController.DoPurchaseTransaction(inWalletTransactionInfo);
         }
-        public void DoRefundTransaction()
+
+        public void DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo)
         {
-            _walletController.DoRefundTransaction(new TransactionModel());
+            _walletController.DoRefundTransaction(inWalletTransactionInfo);
         }
-        public void DoTransactionEnquiry()
+
+        public void DoTransactionEnquiry(QueryOrderInfo inQueryOrderInfo)
         {
-            _walletController.DoTransactionEnquiry(new TransactionModel());
+            _walletController.DoTransactionEnquiry(inQueryOrderInfo);
         }
     }
 }

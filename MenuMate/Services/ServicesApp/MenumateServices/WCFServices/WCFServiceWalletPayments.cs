@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MenumateServices.DTO.Wallet_Payments;
+using MenumateServices.Internal_Classes.WalletPayments;
 
 namespace MenumateServices.WCFServices
 {
@@ -20,7 +21,7 @@ namespace MenumateServices.WCFServices
 
         public WalletActionResponse DoTransaction(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction)
         {
-            return new WalletActionResponse();
+            return WalletPaymentController.Instance.ProcessTransaction(inWalletAccount, inWalletTransaction);
         }
     }
 }

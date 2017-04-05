@@ -278,7 +278,12 @@ void TfrmPaymentType::Reset()
                 continue;
            }
 
-           if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && Payment->IsLoyaltyVoucher())
+           if(Payment->GetPaymentAttribute(ePayTypeWallet))
+           {
+              tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = !CurrentTransaction.CreditTransaction;
+              tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
+           }
+           else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && Payment->IsLoyaltyVoucher())
              {
                tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
                tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = Payment->IsLoyaltyGiftCard();
@@ -1810,6 +1815,12 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             MessageBox("Eftpos over limit exceeded.", "Eftpos Error.", MB_OK + MB_ICONERROR);
             Payment->SetPay(0);
         }
+
+        if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeWallet))
+        {
+           ProcessWalletTransaction(Payment);
+        }
+
         //apply changes here..
         if(CheckOnlinePaidOrNot())
         {
@@ -2281,6 +2292,46 @@ bool TfrmPaymentType::DoLoyaltyGiftCardValidation(AnsiString redeemedGiftCard,An
     }
     return retVal;
 }
+// ---------------------------------------------------------------------------
+void TfrmPaymentType::ProcessWalletTransaction(TPayment *Payment)
+{
+    if(ValidateWalletAccount(Payment))
+    {
+        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+        frmTouchKeyboard->MaxLength = 50;
+        frmTouchKeyboard->AllowCarriageReturn = false;
+        frmTouchKeyboard->StartWithShiftDown = false;
+        frmTouchKeyboard->MustHaveValue = true;
+        frmTouchKeyboard->KeyboardText = "";
+        frmTouchKeyboard->Caption = "Enter/Scan QrCode";
+        if (frmTouchKeyboard->ShowModal() == mrOk && frmTouchKeyboard->KeyboardText.Trim() != "")
+        {
+          Payment->WalletQrCode = frmTouchKeyboard->KeyboardText.Trim();
+          Payment->SetPay(wrkPayAmount);
+        }
+        else
+        {
+           Payment->WalletQrCode = "";
+           Payment->SetPay(0);
+        }
+    }
+    else
+    {
+       MessageBox("Wallet Account information is not set. Please set up account information to use this payment type.", "Error", MB_OK + MB_ICONINFORMATION);
+       Payment->WalletQrCode = "";
+       Payment->SetPay(0);
+    }
+}
+// ---------------------------------------------------------------------------
+bool TfrmPaymentType::ValidateWalletAccount(TPayment *Payment)
+{
+    bool retVal = true;
+    retVal = Payment->WalletUserName != "" && Payment->WalletPassword != "" && Payment->WalletSecurityToken != "";
+    if(Payment->WalletType == eJioWallet)
+        retVal = retVal && Payment->MerchentId != "" && Payment->TerminalId != "";
+    return retVal;
+}
+
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 {

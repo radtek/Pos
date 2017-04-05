@@ -21,6 +21,8 @@ object frmPaymentType: TfrmPaymentType
   OnCreate = FormCreate
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 22
   object Panel2: TPanel

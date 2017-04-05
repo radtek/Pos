@@ -3504,6 +3504,10 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
 
+    WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
+    if (!WalletTransaction)
+	   return RetVal;
+
     ChequesOk = ProcessChequePayment(PaymentTransaction);
 	if (!ChequesOk)
 	   return RetVal;
@@ -3578,10 +3582,6 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 
     if(TGlobalSettings::Instance().LoyaltyMateEnabled)
        LoyaltyVouchers = ProcessLoyaltyVouchers(PaymentTransaction);
-    if(!LoyaltyVouchers)
-	   return RetVal;
-
-    WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
 
 	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PocketVoucher &&
              GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction;
@@ -3741,6 +3741,7 @@ bool TListPaymentSystem::ProcessWalletTransaction(TPaymentTransaction &PaymentTr
 		}
 	}
     delete WalletPaymentsInterface;
+    MessageBox("TListPaymentSystem::Wallet Payment Finished", "Error", MB_OK + MB_ICONINFORMATION);
     return paymentComplete;
 }
 //------------------------------------------------------------------------------

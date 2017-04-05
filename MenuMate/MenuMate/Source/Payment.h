@@ -55,7 +55,7 @@ enum ePaymentAttribute
     ePayTypeWallet,                //34
 };
 
-enum eWalletType{eNoWallet,eWeChat,eJio,};
+enum eWalletType{eNoWallet,eWeChatWallet,eJioWallet,};
 
 class TPaymentTransaction;
 
@@ -126,7 +126,7 @@ public:
     UnicodeString WalletUserName;
     UnicodeString WalletPassword;
     UnicodeString WalletSecurityToken;
-
+    UnicodeString WalletQrCode;
     void Reset();
     void Failed();
     void SetAssignedGroups( std::vector<TPaymentTypeGroup> groups );

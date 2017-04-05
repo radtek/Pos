@@ -1,6 +1,6 @@
 ﻿namespace WalletPayments.Model
 {
-    public class TransactionModel
+    public class WalletTransactionInfo
     {
         public string ScannedCode { get; set; }
         public double Amount { get; set; }

@@ -45,7 +45,7 @@ namespace NS_WalletPaymentsWSDL {
 // The following types, referred to in the WSDL document are not being represented
 // in this file. They are either aliases[@] of other types represented or were referred
 // to but never[!] declared in the document. The types from the latter category
-// typically map to predefined/known XML or Embarcadero types; however, they could also 
+// typically map to predefined/known XML or Embarcadero types; however, they could also
 // indicate incorrect WSDL documents that failed to declare or import a schema type.
 // ************************************************************************ //
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
@@ -78,32 +78,39 @@ private:
   bool            FTerminalId_Specified;
   UnicodeString   FUserName;
   bool            FUserName_Specified;
+  int             FWalletType;
+  bool            FWalletType_Specified;
   void __fastcall SetMerchentId(int Index, UnicodeString _prop_val)
   {  FMerchentId = _prop_val; FMerchentId_Specified = true;  }
   bool __fastcall MerchentId_Specified(int Index)
-  {  return FMerchentId_Specified;  } 
+  {  return FMerchentId_Specified;  }
   void __fastcall SetPassword(int Index, UnicodeString _prop_val)
   {  FPassword = _prop_val; FPassword_Specified = true;  }
   bool __fastcall Password_Specified(int Index)
-  {  return FPassword_Specified;  } 
+  {  return FPassword_Specified;  }
   void __fastcall SetSignKey(int Index, UnicodeString _prop_val)
   {  FSignKey = _prop_val; FSignKey_Specified = true;  }
   bool __fastcall SignKey_Specified(int Index)
-  {  return FSignKey_Specified;  } 
+  {  return FSignKey_Specified;  }
   void __fastcall SetTerminalId(int Index, UnicodeString _prop_val)
   {  FTerminalId = _prop_val; FTerminalId_Specified = true;  }
   bool __fastcall TerminalId_Specified(int Index)
-  {  return FTerminalId_Specified;  } 
+  {  return FTerminalId_Specified;  }
   void __fastcall SetUserName(int Index, UnicodeString _prop_val)
   {  FUserName = _prop_val; FUserName_Specified = true;  }
   bool __fastcall UserName_Specified(int Index)
-  {  return FUserName_Specified;  } 
+  {  return FUserName_Specified;  }
+  void __fastcall SetWalletType(int Index, int _prop_val)
+  {  FWalletType = _prop_val; FWalletType_Specified = true;  }
+  bool __fastcall WalletType_Specified(int Index)
+  {  return FWalletType_Specified;  }
 __published:
   __property UnicodeString MerchentId = { index=(IS_OPTN|IS_NLBL), read=FMerchentId, write=SetMerchentId, stored = MerchentId_Specified };
   __property UnicodeString   Password = { index=(IS_OPTN|IS_NLBL), read=FPassword, write=SetPassword, stored = Password_Specified };
   __property UnicodeString    SignKey = { index=(IS_OPTN|IS_NLBL), read=FSignKey, write=SetSignKey, stored = SignKey_Specified };
   __property UnicodeString TerminalId = { index=(IS_OPTN|IS_NLBL), read=FTerminalId, write=SetTerminalId, stored = TerminalId_Specified };
   __property UnicodeString   UserName = { index=(IS_OPTN|IS_NLBL), read=FUserName, write=SetUserName, stored = UserName_Specified };
+  __property int        WalletType = { index=(IS_OPTN), read=FWalletType, write=SetWalletType, stored = WalletType_Specified };
 };
 
 
@@ -130,27 +137,27 @@ private:
   void __fastcall SetExpiresIn(int Index, int _prop_val)
   {  FExpiresIn = _prop_val; FExpiresIn_Specified = true;  }
   bool __fastcall ExpiresIn_Specified(int Index)
-  {  return FExpiresIn_Specified;  } 
+  {  return FExpiresIn_Specified;  }
   void __fastcall SetOrderId(int Index, UnicodeString _prop_val)
   {  FOrderId = _prop_val; FOrderId_Specified = true;  }
   bool __fastcall OrderId_Specified(int Index)
-  {  return FOrderId_Specified;  } 
+  {  return FOrderId_Specified;  }
   void __fastcall SetResponseMessage(int Index, UnicodeString _prop_val)
   {  FResponseMessage = _prop_val; FResponseMessage_Specified = true;  }
   bool __fastcall ResponseMessage_Specified(int Index)
-  {  return FResponseMessage_Specified;  } 
+  {  return FResponseMessage_Specified;  }
   void __fastcall SetResponseSuccessful(int Index, bool _prop_val)
   {  FResponseSuccessful = _prop_val; FResponseSuccessful_Specified = true;  }
   bool __fastcall ResponseSuccessful_Specified(int Index)
-  {  return FResponseSuccessful_Specified;  } 
+  {  return FResponseSuccessful_Specified;  }
   void __fastcall SetSecurityToken(int Index, UnicodeString _prop_val)
   {  FSecurityToken = _prop_val; FSecurityToken_Specified = true;  }
   bool __fastcall SecurityToken_Specified(int Index)
-  {  return FSecurityToken_Specified;  } 
+  {  return FSecurityToken_Specified;  }
   void __fastcall SetSignKey(int Index, UnicodeString _prop_val)
   {  FSignKey = _prop_val; FSignKey_Specified = true;  }
   bool __fastcall SignKey_Specified(int Index)
-  {  return FSignKey_Specified;  } 
+  {  return FSignKey_Specified;  }
 __published:
   __property int         ExpiresIn = { index=(IS_OPTN), read=FExpiresIn, write=SetExpiresIn, stored = ExpiresIn_Specified };
   __property UnicodeString    OrderId = { index=(IS_OPTN|IS_NLBL), read=FOrderId, write=SetOrderId, stored = OrderId_Specified };
@@ -161,7 +168,6 @@ __published:
 };
 
 
-typedef UnicodeString WalletType; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Wallet_Payments"[GblSmpl] */
 
 
 // ************************************************************************ //
@@ -176,29 +182,22 @@ private:
   bool            FReferenceNumber_Specified;
   UnicodeString   FScannedCode;
   bool            FScannedCode_Specified;
-  WalletType      FWalletType;
-  bool            FWalletType_Specified;
   void __fastcall SetAmount(int Index, double _prop_val)
   {  FAmount = _prop_val; FAmount_Specified = true;  }
   bool __fastcall Amount_Specified(int Index)
-  {  return FAmount_Specified;  } 
+  {  return FAmount_Specified;  }
   void __fastcall SetReferenceNumber(int Index, UnicodeString _prop_val)
   {  FReferenceNumber = _prop_val; FReferenceNumber_Specified = true;  }
   bool __fastcall ReferenceNumber_Specified(int Index)
-  {  return FReferenceNumber_Specified;  } 
+  {  return FReferenceNumber_Specified;  }
   void __fastcall SetScannedCode(int Index, UnicodeString _prop_val)
   {  FScannedCode = _prop_val; FScannedCode_Specified = true;  }
   bool __fastcall ScannedCode_Specified(int Index)
-  {  return FScannedCode_Specified;  } 
-  void __fastcall SetWalletType(int Index, WalletType _prop_val)
-  {  FWalletType = _prop_val; FWalletType_Specified = true;  }
-  bool __fastcall WalletType_Specified(int Index)
-  {  return FWalletType_Specified;  } 
+  {  return FScannedCode_Specified;  }
 __published:
   __property double         Amount = { index=(IS_OPTN), read=FAmount, write=SetAmount, stored = Amount_Specified };
   __property UnicodeString ReferenceNumber = { index=(IS_OPTN|IS_NLBL), read=FReferenceNumber, write=SetReferenceNumber, stored = ReferenceNumber_Specified };
   __property UnicodeString ScannedCode = { index=(IS_OPTN|IS_NLBL), read=FScannedCode, write=SetScannedCode, stored = ScannedCode_Specified };
-  __property WalletType WalletType = { index=(IS_OPTN), read=FWalletType, write=SetWalletType, stored = WalletType_Specified };
 };
 
 
@@ -247,13 +246,13 @@ __published:
 // binding   : basicHttpBinding_ServiceWalletPayments
 // service   : WCFServiceWalletPayments
 // port      : basicHttpBinding_ServiceWalletPayments
-// URL       : http://localhost:8742/MenumateServices/WalletPayments/
+// URL       : http://localhost:8743/MenumateServices/WalletPayments/
 // ************************************************************************ //
 __interface INTERFACE_UUID("{D80B471D-30EB-B244-9A18-19E59F601365}") IWCFServiceWalletPayments : public IInvokable
 {
 public:
-  virtual WalletActionResponse* Login(const WalletAccount* inWalletAccount) = 0; 
-  virtual WalletActionResponse* DoTransaction(const WalletAccount* inWalletAccount, const WalletTransaction* inWalletTransaction) = 0; 
+  virtual WalletActionResponse* Login(const WalletAccount* inWalletAccount) = 0;
+  virtual WalletActionResponse* DoTransaction(const WalletAccount* inWalletAccount, const WalletTransaction* inWalletTransaction) = 0;
 };
 typedef DelphiInterface<IWCFServiceWalletPayments> _di_IWCFServiceWalletPayments;
 

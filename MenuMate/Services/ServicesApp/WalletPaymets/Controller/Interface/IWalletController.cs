@@ -1,12 +1,13 @@
 ﻿using WalletPayments.Model;
+using WalletPaymets.Model;
 
 namespace WalletPayments.Controller.Interface
 {
     public interface IWalletController
     {
-        void Login(LoginModel loginModel);
-        void DoPurchaseTransaction(TransactionModel transactionModel);
-        void DoRefundTransaction(TransactionModel transactionModel);
-        void DoTransactionEnquiry(TransactionModel transactionModel);
+        WalletResponse Login(WalletAccountInfo inWalletAccountInfo);
+        WalletResponse DoPurchaseTransaction(WalletTransactionInfo inWalletTransactionInfo);
+        void DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo);
+        void DoTransactionEnquiry(QueryOrderInfo inQueryOrderInfo);
     }
 }

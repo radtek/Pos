@@ -1,11 +1,11 @@
 // ************************************************************************ //
 // The types declared in this file were generated from data read from the
 // WSDL File described below:
-// WSDL     : http://localhost:8742/MenumateServices/WalletPayments/?wsdl
-//  >Import : http://localhost:8742/MenumateServices/WalletPayments/?wsdl>0
-//  >Import : http://localhost:8742/MenumateServices/WalletPayments/?xsd=xsd0
-//  >Import : http://localhost:8742/MenumateServices/WalletPayments/?xsd=xsd2
-//  >Import : http://localhost:8742/MenumateServices/WalletPayments/?xsd=xsd1
+// WSDL     : http://localhost:8743/MenumateServices/WalletPayments/?wsdl
+//  >Import : http://localhost:8743/MenumateServices/WalletPayments/?wsdl>0
+//  >Import : http://localhost:8743/MenumateServices/WalletPayments/?xsd=xsd0
+//  >Import : http://localhost:8743/MenumateServices/WalletPayments/?xsd=xsd2
+//  >Import : http://localhost:8743/MenumateServices/WalletPayments/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
 // (28/03/2017 12:04:28 a.m. - - $Rev: 25127 $)
@@ -24,8 +24,8 @@ namespace NS_WalletPaymentsWSDL {
 
 _di_IWCFServiceWalletPayments GetIWCFServiceWalletPayments(bool useWSDL, AnsiString addr, THTTPRIO* HTTPRIO)
 {
-  static const char* defWSDL= "http://localhost:8742/MenumateServices/WalletPayments/?wsdl";
-  static const char* defURL = "http://localhost:8742/MenumateServices/WalletPayments/";
+  static const char* defWSDL= "http://localhost:8743/MenumateServices/WalletPayments/?wsdl";
+  static const char* defURL = "http://localhost:8743/MenumateServices/WalletPayments/";
   static const char* defSvc = "WCFServiceWalletPayments";
   static const char* defPrt = "basicHttpBinding_ServiceWalletPayments";
   if (addr=="")
@@ -73,4 +73,5 @@ static void RegTypes()
 #pragma startup RegTypes 32
 
 };     // NS__
+
 

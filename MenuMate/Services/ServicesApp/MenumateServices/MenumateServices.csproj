@@ -182,6 +182,7 @@
     <Compile Include="Internal Classes\ThorlinkInternal\ThorAuthCheck.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkMember.cs" />
     <Compile Include="Internal Classes\ThorlinkInternal\ThorlinkPurchase.cs" />
+    <Compile Include="Internal Classes\WalletPayments\WalletPaymentController.cs" />
     <Compile Include="MenumateRunners\PocketVoucherServiceRunner.cs" />
     <Compile Include="MenumateRunners\SalesForceIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\ThorlinkServiceRunner.cs" />

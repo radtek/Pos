@@ -1,6 +1,6 @@
 ﻿namespace WalletPayments.Model
 {
-    public class StatusEnquiryModel
+    public class QueryOrderInfo
     {
          
     }

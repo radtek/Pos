@@ -64,6 +64,7 @@ TPayment::TPayment(TPaymentTransaction *inOwner) : Owner(inOwner)
     WalletUserName = "";
     WalletPassword = "";
     WalletSecurityToken = "";
+    WalletQrCode = "";
 }
 
 void TPayment:: operator = (const TPayment & Data)
@@ -115,6 +116,7 @@ void TPayment:: operator = (const TPayment & Data)
     WalletUserName = Data.WalletUserName;
     WalletPassword = Data.WalletPassword;
     WalletSecurityToken = Data.WalletSecurityToken;
+    WalletQrCode = Data.WalletQrCode;
 }
 
 void TPayment::Reset()
@@ -135,6 +137,7 @@ void TPayment::Reset()
    CreditTransaction = false;
    SuppressEftPosReceipt = false;
    TipAmount = 0;
+   WalletQrCode = "";
 }
 
 void TPayment::Failed()

@@ -2,7 +2,7 @@
 {
     public enum WalletType
     {
-        Jio,
-        WeChat
+        WeChatWallet = 1,
+        JioWallet 
     }
 }

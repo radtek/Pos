@@ -62,9 +62,10 @@
     <Compile Include="Enums\WalletType.cs" />
     <Compile Include="Factory\WalletControllerFactory.cs" />
     <Compile Include="Model\AccountInformation.cs" />
-    <Compile Include="Model\LoginModel.cs" />
-    <Compile Include="Model\StatusEnquiryModel.cs" />
-    <Compile Include="Model\TransactionModel.cs" />
+    <Compile Include="Model\WalletAccountInfo.cs" />
+    <Compile Include="Model\QueryOrderInfo.cs" />
+    <Compile Include="Model\WalletResponse.cs" />
+    <Compile Include="Model\WalletTransactionInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WalletConstants.cs" />
     <Compile Include="WalletPaymentInterface.cs" />
