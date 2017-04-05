@@ -214,6 +214,7 @@ void TDBSalesTypeAssignment::UpdateSalesType(int id, UnicodeString name, Unicode
         dbTransaction.Rollback();
 	}
 }
+//----------------------------------------------------------------------------------------------------
 std::map<int, std::map<int, UnicodeString> > TDBSalesTypeAssignment::LoadAssignedItemsBySalesType()
 {
     std::map<int, std::map<int, UnicodeString> > getAssignedsalesTypeItemsMap;
@@ -242,7 +243,7 @@ std::map<int, std::map<int, UnicodeString> > TDBSalesTypeAssignment::LoadAssigne
 	}
     return getAssignedsalesTypeItemsMap;
 }
-
+//----------------------------------------------------------------------------------------------------
 void TDBSalesTypeAssignment::SaveItemRelationWithSalesType(std::map<int, std::map<int, TItemDetails> > modifieldItemsWithSalesType)
 {
     //Register the database transaction..

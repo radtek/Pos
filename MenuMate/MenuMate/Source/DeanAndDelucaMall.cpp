@@ -251,7 +251,15 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 void TDeanAndDelucaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData,
                                 TDeanAndDelucaMallField &fieldData, int arcBillKey)
 {
-    int hourCode = HourOf(Now()) != 0 ? hourCode : 24;
+    int hourCode;
+    if(HourOf(Now()))
+    {
+        hourCode= HourOf(Now());
+    }
+    else
+    {
+        hourCode = 24;
+    }
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Tenant Code", "UnicodeString", fieldData.TenantCode, 1, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "POS Terminal Number", "int", fieldData.TerminalNumber, 2, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Date (mmddyyyy)", "TDateTime", Now().FormatString("mmddyyyy"), 3, arcBillKey);
