@@ -178,6 +178,7 @@ void __fastcall TfrmMallSalesTypeAssignment::btnDeleteSalesTypeMouseClick(TObjec
         std::map <int, std::map <int, UnicodeString> >::iterator dbStateIt;
 
         TDBSalesTypeAssignment::DeleteSalesType(SelectedSalesType);
+        salesTypeList->RowCount = 0;
         DisplaySalesTypes();
 
         //find whether select sales type exist in assignedRemovedItemsBySalesType (delta) map.
@@ -234,7 +235,6 @@ void TfrmMallSalesTypeAssignment::DisplayItems()
 void TfrmMallSalesTypeAssignment::DisplaySalesTypes()
 {
     int index = 0;
-    salesTypeList->RowCount = 0;
     std::map<int, UnicodeString> salesTypes = TDBSalesTypeAssignment::LoadAllSalesTypes();
     std::map<int, UnicodeString>::iterator itSalesTypes;
     salesTypeList->RowCount= salesTypes.size();
