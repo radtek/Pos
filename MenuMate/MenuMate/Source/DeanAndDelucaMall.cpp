@@ -165,13 +165,16 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 
         for(it = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); it != TGlobalSettings::Instance().mallInfo.MallSettings.end(); it++)
         {
-            if(it->ControlName == "edMallTenantNo")
+            if(it->Value != "" )
             {
-                fieldData->TenantCode = it->Value;
-            }
-            else if(it->ControlName == "edMallTerminalNo")
-            {
-                fieldData->TerminalNumber = StrToInt(it->Value);
+                if(it->ControlName == "edMallTenantNo")
+                {
+                    fieldData->TenantCode = it->Value;
+                }
+                else if(it->ControlName == "edMallTerminalNo" )
+                {
+                    fieldData->TerminalNumber = StrToInt(it->Value);
+                }
             }
         }
 
