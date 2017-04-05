@@ -37,7 +37,7 @@
 #include "TCPStreamPrepare.h"
 #include "PatronCount.h"
 #include "RunRateClient.h"
- #include "Tables_ChitNumbers.h"
+#include "Tables_ChitNumbers.h"
 #include "DBHeldOrder.h"
 #include "DBActiveChit.h"
 #include "ProcessWebOrder.h"
@@ -306,11 +306,11 @@ private: // User declarations
                        TItem* inItem,
                        bool  inSetMenuItem,
                        TItemSize* inItemSize = NULL,
-                       Currency  inPrice = 0 );
+                       Currency  inPrice = 0,  bool IsItemSearchedOrScan = false);
     TItemComplete* createItemComplete(Database::TDBTransaction& DBTransaction,
                                       TItem* Item,
                                       bool  SetMenuItem,
-                                      TItemSize* inItemSize );
+                                      TItemSize* inItemSize , bool IsItemSeaarchedOrScan);
 
     TCustomerOrder CustomerOrder; //Customer name, OrderType
     long LastEnabledStateSync;
@@ -420,6 +420,7 @@ private: // User declarations
     void CaptureDeliveryTime();
     int GetUpdatedPatronCount(Database::TDBTransaction &DBTransaction,int TableNumber,std::set<int> SeatCounter);
     void GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode);
+    void GetLoyaltyMember(Database::TDBTransaction &DBTransaction,TMMContactInfo & Info);
     void AssignBarcodeToMember();
     void ManageDiscounts();
     void HideSoldItems(Database::TDBTransaction &DBTransaction,TList *OrdersList);
@@ -673,6 +674,8 @@ public: // User declarations
     bool check;
     bool IsTextBoxFocused();
     void UpdateMenuItemsAfterLoginScreen();
+    int GetDefaultServingCourse(int item_key);
+    bool CheckForServingCoursePrompt(int item_key);
  };
 // ---------------------------------------------------------------------------
 
