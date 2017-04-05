@@ -586,6 +586,7 @@ void TfrmPhoenixRoom::DisplayData()
     {
           memText->Clear();
           SelectedRoom.Folders->Clear();
+          bool displayed = false;
           for(std::vector<TSiHotAccounts>::iterator i = SiHotAccounts.begin();
              i != SiHotAccounts.end() ; ++i)
           {
@@ -596,10 +597,14 @@ void TfrmPhoenixRoom::DisplayData()
                 AnsiString CreditLimit = j->CreditLimit;
                 AnsiString RoomNumber = j->RoomNumber;
                 SelectedRoom.Folders->Add(j->FirstName + " " + j->LastName);
-                memText->Clear();
-                memText->Lines->Add("Room Number : " + RoomNumber);
-                memText->Lines->Add("Balance   : " + Balance);
-                memText->Lines->Add("Credit Limit : " + CreditLimit);
+                if(!displayed)
+                {
+                    memText->Clear();
+                    memText->Lines->Add("Room Number : " + RoomNumber);
+                    memText->Lines->Add("Balance   : " + Balance);
+                    memText->Lines->Add("Credit Limit : " + CreditLimit);
+                    displayed = true;
+                }
                 std::advance(j,1);
               }
           }
@@ -783,6 +788,11 @@ int TfrmPhoenixRoom::SetSelectedFolder(int FolderNumber)
         SelectedRoom.FolderNumber = FolderNumber;
 		tbtnOk->Enabled = true;
 		tbtnOk->Caption = "Select\r" + List->Cols[0]->Strings[FolderNumber-1];
+        AnsiString Balance = "0.0";
+        memText->Clear();
+        memText->Lines->Add("Room Number : " + SiHotAccounts[0].AccountDetails[0].RoomNumber);
+        memText->Lines->Add("Balance   : " + Balance);
+        memText->Lines->Add("Credit Limit : " + SiHotAccounts[0].AccountDetails[0].CreditLimit);
 		SelectionVisible = true;
     }
 	else

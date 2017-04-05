@@ -300,7 +300,6 @@ void TPhoenixHM::CheckCreditLimit(TPhoenixRoomCharge &RoomCharge,AnsiString PMSI
 			AnsiString CreditLimit = CurrToStrF(RoomStatus.CreditLimit, ffCurrency, 2);
 			RoomCharge.Result = eDeclined;
 			RoomCharge.ResultText = "Credit Limit Exceeded\r Current Balance " + Balance + " Credit Limit " + CreditLimit;
-            MessageBox("caught 1","Inside CheckCreditLimit amount available < RoomCharge.Total",MB_OK);
 		}
 	}
 }
