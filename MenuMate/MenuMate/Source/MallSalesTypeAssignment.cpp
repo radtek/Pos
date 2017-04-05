@@ -207,7 +207,6 @@ void __fastcall TfrmMallSalesTypeAssignment::btnDeleteSalesTypeMouseClick(TObjec
 
            assignedItemsDBState.erase(dbStateIt);
         }
-
         //Remove from map which has DB state..
         DisplayAssignedItemBySalesType();
     }
@@ -235,6 +234,7 @@ void TfrmMallSalesTypeAssignment::DisplayItems()
 void TfrmMallSalesTypeAssignment::DisplaySalesTypes()
 {
     int index = 0;
+    salesTypeList->RowCount = 0;
     std::map<int, UnicodeString> salesTypes = TDBSalesTypeAssignment::LoadAllSalesTypes();
     std::map<int, UnicodeString>::iterator itSalesTypes;
     salesTypeList->RowCount= salesTypes.size();
