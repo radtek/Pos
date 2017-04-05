@@ -470,7 +470,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
                     "INNER JOIN ARCHIVE ON ARCHIVE.ARCBILL_KEY = A.ARCBILL_KEY "
                     "INNER JOIN ARCORDERDISCOUNTS AOD ON ARCHIVE.ARCHIVE_KEY = AOD.ARCHIVE_KEY "
                     "LEFT JOIN DISCOUNTS ON DISCOUNTS.DISCOUNT_KEY = AOD.DISCOUNT_KEY "
-                    "WHERE A.MALL_KEY = :MALL_KEY ";
+                    "WHERE A.MALL_KEY = :MALL_KEY AND AOD.DISCOUNT_GROUPNAME <> 'Complimentary' AND AOD.DISCOUNT_GROUPNAME <> 'Non-Chargeable' ";
         if(zKey == 0)
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
