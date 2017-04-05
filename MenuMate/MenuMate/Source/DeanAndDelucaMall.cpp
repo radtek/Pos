@@ -462,11 +462,14 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
                 "SELECT DISCOUNT_BREAKUP.DISCOUNT_ID, DISCOUNT_BREAKUP.NAME, "
                 "CAST (SUM(ABS(DISCOUNT_BREAKUP.DISCOUNTED_VALUE)) AS NUMERIC(17,2)) DISC_AMOUNT "
                 "FROM "
-                    "(SELECT A.ARCBILL_KEY, DISCOUNTS.DISCOUNT_ID, AOD.NAME, AOD.DISCOUNTED_VALUE, ARCHIVE.ARCHIVE_KEY "
+                    "(SELECT A.ARCBILL_KEY, CASE WHEN AOD.NAME = 'Member Reward' THEN 'LP' "
+                                                "WHEN AOD.NAME = 'Location Reward' THEN 'PC' "
+                                                "ELSE  DISCOUNTS.DISCOUNT_ID END DISCOUNT_ID, "
+                           " AOD.NAME, AOD.DISCOUNTED_VALUE, ARCHIVE.ARCHIVE_KEY "
                     "FROM MALLEXPORT_SALES a "
                     "INNER JOIN ARCHIVE ON ARCHIVE.ARCBILL_KEY = A.ARCBILL_KEY "
                     "INNER JOIN ARCORDERDISCOUNTS AOD ON ARCHIVE.ARCHIVE_KEY = AOD.ARCHIVE_KEY "
-                    "INNER JOIN DISCOUNTS ON DISCOUNTS.DISCOUNT_KEY = AOD.DISCOUNT_KEY "
+                    "LEFT JOIN DISCOUNTS ON DISCOUNTS.DISCOUNT_KEY = AOD.DISCOUNT_KEY "
                     "WHERE A.MALL_KEY = :MALL_KEY ";
         if(zKey == 0)
         {
