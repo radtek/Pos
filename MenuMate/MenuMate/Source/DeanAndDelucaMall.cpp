@@ -482,13 +482,13 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
                     "INNER JOIN ARCORDERDISCOUNTS AOD ON ARCHIVE.ARCHIVE_KEY = AOD.ARCHIVE_KEY "
                     "LEFT JOIN DISCOUNTS ON DISCOUNTS.DISCOUNT_KEY = AOD.DISCOUNT_KEY "
                     "WHERE A.MALL_KEY = :MALL_KEY AND AOD.DISCOUNT_GROUPNAME <> 'Complimentary' AND AOD.DISCOUNT_GROUPNAME <> 'Non-Chargeable' ";
-        if(zKey == 0)
+        if(zKey)
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
         else
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY ) ";
         }
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
@@ -496,9 +496,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
                 "GROUP BY 1,2 ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
-
-        if(zKey != 0)
-            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -591,13 +589,13 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
                                                         "Extract (Hour From a.DATE_CREATED) Hour_code "
                                  "FROM MALLEXPORT_SALES a "
                                  "WHERE a.FIELD_INDEX IN(" + indexKeysList + ")  AND a.MALL_KEY = :MALL_KEY ";
-        if(zKey == 0)
+        if(zKey)
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
         else
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY) ";
         }
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA  "
@@ -613,13 +611,13 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
                                             "Extract (Hour From a.DATE_CREATED) Hour_code "
                                      "FROM MALLEXPORT_SALES a "
                                     " WHERE a.FIELD_INDEX = :FIELD_INDEX AND a.MALL_KEY = :MALL_KEY ";
-        if(zKey == 0)
+        if(zKey)
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
         else
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY) ";
         }
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA "
@@ -628,9 +626,7 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
 
         IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = indexKey3;
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
-
-        if(zKey != 0)
-            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -665,13 +661,13 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
                                 "(SELECT a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE "
                                 "FROM MALLEXPORT_SALES a  "
                                 "WHERE a.FIELD_INDEX IN(" + indexKeysList2 + ")  AND a.MALL_KEY = :MALL_KEY  ";
-        if(zKey == 0)
+        if(zKey)
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
         else
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND (a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) OR a.Z_KEY = :Z_KEY) ";
         }
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "ORDER BY A.MALLEXPORT_SALE_KEY ASC )HOURLYDATA "
@@ -679,9 +675,7 @@ void TDeanAndDelucaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction 
                                 "ORDER BY 1 ASC ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
-
-        if(zKey != 0)
-            IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
+        IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -766,30 +760,39 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
                                              " CAST( case when (DAILYDATA.FIELD_INDEX = 18 OR DAILYDATA.FIELD_INDEX = 20)  then SUM(DAILYDATA.FIELD_VALUE) else SUM(DAILYDATA.FIELD_VALUE)*100  end AS INT) FIELD_VALUE, "
-                                             "DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY "
+                                             "DAILYDATA.VALUE_TYPE "
                                       "FROM "
                                             "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, MAX(A.Z_KEY) Z_KEY "
                                              "FROM MALLEXPORT_SALES a "
                                              "WHERE a.FIELD_INDEX NOT IN(" + indexKeysList + ")  "
-                                             "AND a.MALL_KEY = :MALL_KEY AND a.Z_KEY = :MAX_ZKEY "
-                                              "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE  "
+                                             "AND a.MALL_KEY = :MALL_KEY AND (a.Z_KEY = :MAX_ZKEY ";
+        if(!zKey)
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " OR a.Z_KEY = :MIN_ZKEY ";
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                                              " ) GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE  "
                                              "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
-                                    "GROUP BY 1,2,4,5 "
+                                    "GROUP BY 1,2,4 "
 
          "UNION ALL "
 
             "SELECT  LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, a.FIELD, CAST((a.FIELD_VALUE) AS int) FIELD_VALUE, "
-                     "a.VALUE_TYPE, A.Z_KEY "
+                     "a.VALUE_TYPE "
              "FROM MALLEXPORT_SALES a "
              "WHERE a.FIELD_INDEX  = 19  AND a.MALL_KEY = :MALL_KEY "
-                     "AND a.Z_KEY = :MAX_ZKEY "
-              "GROUP BY a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
+                     "AND (a.Z_KEY = :MAX_ZKEY ";
+
+        if(!zKey)
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " OR a.Z_KEY = :MIN_ZKEY ";
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+              ") GROUP BY a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE "
 
         "UNION ALL "
 
             "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
                       "CAST( case when (DAILYDATA.FIELD_INDEX = 5)  then SUM(DAILYDATA.FIELD_VALUE)*100 end AS INT) FIELD_VALUE, "
-                     "DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY "
+                     "DAILYDATA.VALUE_TYPE "
             "FROM "
                     "(SELECT a.ARCBILL_KEY, a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, "
                                     "a.VALUE_TYPE, A.Z_KEY "
@@ -800,7 +803,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                                  "WHERE a.Z_KEY = :MAX_ZKEY )"
                       " GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
                                                                     "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA  "
-            "GROUP BY 1,2,4,5 "
+            "GROUP BY 1,2,4 "
 
         "UNION ALL ";
 
@@ -809,7 +812,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
                             "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, "
                                       "CAST( case when (DAILYDATA.FIELD_INDEX = 4)  then SUM(DAILYDATA.FIELD_VALUE)*100 end AS INT) FIELD_VALUE, "
-                                     "DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY "
+                                     "DAILYDATA.VALUE_TYPE "
                               "FROM "
                                     "(SELECT a.ARCBILL_KEY, CAST('Old Accumulated Total' as varchar(25)) FIELD, LPAD(4,2,0) FIELD_INDEX, "
                                             "CAST((a.FIELD_VALUE) AS NUMERIC(17,2)) FIELD_VALUE, a.VALUE_TYPE, A.Z_KEY "
@@ -819,7 +822,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                                                 "(SELECT MAX(ARCBILL_KEY)FROM MALLEXPORT_SALES A WHERE a.Z_KEY = :MAX_ZKEY2 ) "
                                       "GROUP BY a.ARCBILL_KEY, a.FIELD, a.FIELD_INDEX,  a.VALUE_TYPE, a.FIELD_VALUE, A.Z_KEY "
                                                                     "ORDER BY A.ARCBILL_KEY ASC )DAILYDATA "
-                                                                    "GROUP BY 1,2,4,5 ";
+                                                                    "GROUP BY 1,2,4";
         }
         else
         {
@@ -841,6 +844,9 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         if(maxZedKey2)
             IBInternalQuery->ParamByName("MAX_ZKEY2")->AsInteger = maxZedKey2;
 
+        if(!zKey)
+            IBInternalQuery->ParamByName("MIN_ZKEY")->AsInteger = zKey;
+
         IBInternalQuery->ExecQuery();
 
        for ( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
@@ -851,7 +857,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
           salesData.Field = IBInternalQuery->Fields[1]->AsString;
           salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "" + IBInternalQuery->Fields[2]->AsCurrency;
           salesData.DataValueType = IBInternalQuery->Fields[3]->AsString;
-          salesData.ZKey = IBInternalQuery->Fields[4]->AsInteger;
+          salesData.ZKey = 0;
 
           //insert prepared data into list
           prepareListForDSF.push_back(salesData);
@@ -867,13 +873,20 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
                                          "INNER JOIN MALL_SALES_BY_SALES_TYPE MST ON A.ARCBILL_KEY = MST.ARCBILL_KEY "
                                          "LEFT JOIN MALL_SALES_TYPE_ITEMS_RELATION MSIT ON MST.SALES_TYPE_ID = MSIT.STI_ID "
                                          "LEFT JOIN MALL_SALES_TYPE MS ON MSIT.SALES_TYPE_ID = MS.SALES_TYPE_ID "
-                                         "WHERE   a.MALL_KEY = :MALL_KEY AND a.Z_KEY = :MAX_ZKEY "
-                                         "GROUP BY a.ARCBILL_KEY,  FIELD_VALUE, A.Z_KEY , MS.SALES_TYPE_CODE "
+                                         "WHERE   a.MALL_KEY = :MALL_KEY AND (a.Z_KEY = :MAX_ZKEY ";
+
+        if(!zKey)
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + " OR a.Z_KEY = :MIN_ZKEY ";
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
+                                         ") GROUP BY a.ARCBILL_KEY,  FIELD_VALUE, A.Z_KEY , MS.SALES_TYPE_CODE "
                                          "ORDER BY A.ARCBILL_KEY ) SALES_TYPE_REL "
                                     "GROUP BY SALES_TYPE_REL.SALES_TYPE_CODE, SALES_TYPE_REL.Z_KEY ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
         IBInternalQuery->ParamByName("MAX_ZKEY")->AsInteger = maxZedKey;
+        if(!zKey)
+            IBInternalQuery->ParamByName("MIN_ZKEY")->AsInteger = zKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -885,14 +898,14 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
           salesData.Field = "Sales Type ";
           salesData.DataValue = "21" + IBInternalQuery->Fields[0]->AsString;
           salesData.DataValueType = "String";
-          salesData.ZKey = IBInternalQuery->Fields[1]->AsInteger;
+          salesData.ZKey = 0;
           prepareListForDSF.push_back(salesData);
 
           salesData.FieldIndex  = 22;
           salesData.Field = "Net Sale Amount(Per Sales Type) ";
           salesData.DataValue = "22" + IBInternalQuery->Fields[2]->AsCurrency;
           salesData.DataValueType = "double";
-          salesData.ZKey = IBInternalQuery->Fields[1]->AsInteger;
+          salesData.ZKey = 0;
           prepareListForDSF.push_back(salesData);
        }
 
@@ -928,20 +941,20 @@ void TDeanAndDelucaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTra
                                       "FROM MALLEXPORT_SALES a "
                                       "WHERE a.FIELD_INDEX IN(" + indexKeysList + ") "
                                       "AND a.MALL_KEY = :MALL_KEY ";
-        if(zKey == 0)
+        if(zKey)
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
         else
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
         }
 
 		IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4 ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
 
-        if(zKey != 0)
+        if(zKey)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
 
         IBInternalQuery->ExecQuery();
@@ -988,13 +1001,13 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
         IBInternalQuery->SQL->Text = "SELECT a.FIELD_INDEX, a.FIELD, a.FIELD_VALUE, a.VALUE_TYPE , a.Z_KEY, MAX(a.DATE_CREATED)   "
                                     "FROM MALLEXPORT_SALES a "
                                     "WHERE a.FIELD_INDEX IN(" + indexKeysList + " ) AND a.MALL_KEY = :MALL_KEY  ";
-        if(zKey == 0)
+        if(zKey)
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
         }
         else
         {
-            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = :Z_KEY ";
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.Z_KEY = (SELECT MAX(Z_KEY)FROM MALLEXPORT_SALES) ";
         }
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3,4,5 "
@@ -1002,7 +1015,7 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
 
-        if(zKey != 0)
+        if(zKey)
             IBInternalQuery->ParamByName("Z_KEY")->AsInteger = zKey;
 
         IBInternalQuery->ExecQuery();
