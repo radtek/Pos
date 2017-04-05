@@ -171,16 +171,17 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     siHotService.ArticleCategory = categoryCode;
     siHotService.ArticleCategory_Desc = "";
     siHotService.ArticleNo = categoryCode;
-    siHotService.ArticleNo_Desc = itemComplete->Item;
+    siHotService.ArticleNo_Desc = "";
     if(TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)
     {
-        siHotService.PricePerUnit = GetPriceTotal(itemComplete, true);
+
+        siHotService.PricePerUnit = GetPriceTotal(itemComplete, true)/(double)itemComplete->GetQty();
         siHotService.Amount = (double)itemComplete->GetQty();
         siHotService.PriceTotal = GetPriceTotal(itemComplete, true);
     }
     else
     {
-        siHotService.PricePerUnit = GetPriceTotal(itemComplete, false);
+        siHotService.PricePerUnit = GetPriceTotal(itemComplete, false)/(double)itemComplete->GetQty();
         siHotService.Amount = (double)itemComplete->GetQty();
         siHotService.PriceTotal = GetPriceTotal(itemComplete, false);
         AddDiscountPart = (double)itemComplete->BillCalcResult.TotalDiscount != 0.0 ? true : false;
@@ -265,7 +266,7 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
         siHotService.ArticleCategory = categoryCode;
         siHotService.ArticleCategory_Desc = "";
         siHotService.ArticleNo = categoryCode;
-        siHotService.ArticleNo_Desc = itemComplete->Item;
+        siHotService.ArticleNo_Desc = "";
         siHotService.PricePerUnit = fabs(itemComplete->BillCalcResult.TotalDiscount);
         if(itemComplete->GetQty() > 0.0)
         {
@@ -299,7 +300,8 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
 void TSiHotDataProcessor::AddSurchargeAndTip( TRoomCharge &_roomCharge, double surcharge,
                                               TPaymentTransaction _paymentTransaction, UnicodeString _billNo)
 {
-    double tipAmount = (double)_paymentTransaction.Money.Surcharge - surcharge;
+    double tipAmount = (double)_paymentTransaction.Money.Surcharge - surcharge -
+                       _paymentTransaction.Money.ProductSurcharge ;
     // Add Tip as service to Sihot
     if(tipAmount != 0)
     {
@@ -518,7 +520,6 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
             if(payment->Properties & ePayTypeCredit)
                siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
-//            _roomCharge.SiHotPayments.push_back(siHotPayment);
             std::map<UnicodeString, TSiHotPayments>::iterator iter;
             iter = paymentSiHot.find(siHotPayment.Type);
             if(iter == paymentSiHot.end())

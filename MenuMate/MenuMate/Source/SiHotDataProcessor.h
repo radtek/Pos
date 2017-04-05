@@ -30,6 +30,5 @@ class TSiHotDataProcessor
        void AddServiceChargeAsService(TRoomCharge &_roomcharge, UnicodeString billNo, TPaymentTransaction _paymentTransaction);
        void AddRoundingAsService(TRoomCharge &_roomcharge, UnicodeString billNo, TPaymentTransaction _paymentTransaction);
        void AddPaymentMethods(TRoomCharge &_roomcharge, UnicodeString billNo, TPaymentTransaction _paymentTransaction);
-       void InsertToServiceVector(TItemComplete *itemComplete);
 };
 #endif

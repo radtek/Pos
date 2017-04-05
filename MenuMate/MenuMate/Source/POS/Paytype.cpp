@@ -1103,6 +1103,7 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 {
 	if (SecurePaymentAccess(Payment))
 	{
+
 		bool proceed = true;
 		if (((Payment->Properties & ePayTypeInvoiceExport) || (Payment->Properties & ePayTypeChargeToAccount && TGlobalSettings::Instance().IsXeroEnabled)))
 		{
@@ -1714,6 +1715,11 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                 }
                 else if (!TRooms::Instance().Enabled && TDeviceRealTerminal::Instance().BasePMS->Enabled)
                 {
+                    if(TGlobalSettings::Instance().PMSType == 2 && CurrentTransaction.Membership.Member.Points.getCurrentPointsPurchased() > 0)
+                    {
+                        MessageBox("Points can not be purchased with Room Charge","Info",MB_OK);
+                        return;
+                    }
                     // Override the ipaddress and port.
                     AnsiString PMSIPAddress;
                     int PMSPort;
