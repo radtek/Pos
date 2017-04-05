@@ -1109,9 +1109,11 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
     TDeanAndDelucaDiscount discounts = PrepareDiscounts(dbTransaction, order);
 
     double grossAmount = 0;
+    double salesBySalesType = 0;
     if(order->GetQty() > 0 )
         grossAmount = (double)(order->PriceEach_BillCalc()*order->GetQty()) ;
 
+    salesBySalesType =  (double)(order->PriceEach_BillCalc()*order->GetQty());
     discounts.scdDiscount = fabs(discounts.scdDiscount);
     discounts.pwdDiscount = fabs(discounts.pwdDiscount);
     fieldData.TotalSCDAndPWDAmount += discounts.scdDiscount + discounts.pwdDiscount;
@@ -1143,11 +1145,11 @@ void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransacti
 
         if(isSumBySalesType != fieldData.SalesBySalesType.end())
         {
-            isSumBySalesType->second += grossAmount;
+            isSumBySalesType->second += salesBySalesType;
         }
         else
         {
-            fieldData.SalesBySalesType.insert(std::pair<int, double >(salesTypeId, grossAmount));
+            fieldData.SalesBySalesType.insert(std::pair<int, double >(salesTypeId, salesBySalesType));
         }
     }
 

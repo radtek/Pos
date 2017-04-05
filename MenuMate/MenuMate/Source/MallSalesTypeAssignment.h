@@ -113,10 +113,6 @@ private:	// User declarations
     // enum. status will be eiether assigned or removed..
     std::map<int, std::map<int, TItemDetails> > assignedRemovedItemsBySalesType;
 
-    //Multimap which will have all items relation with sales type. map will be loaded from db. first int param will be sales type id and inner map's first
-    //Parameter is for item Key and another is for item name..
-    std::map<int, std::map<int, UnicodeString> > currentItemRelationsWithSalesType;
-
     //set for storing items key which are used means assigned to any sales type..
     std::set<int> alreadyAssignedItems;
 

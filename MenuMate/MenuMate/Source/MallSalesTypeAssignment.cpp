@@ -251,6 +251,10 @@ void TfrmMallSalesTypeAssignment::DisplayAssignedItemBySalesType()
     int index = 0;
     assignedItemsBySalesTypeList->RowCount = 0;
 
+    //Multimap which will have all items relation with sales type. map will be loaded from db. first int param will be sales type id and inner map's first
+    //Parameter is for item Key and another is for item name..
+    std::map<int, std::map<int, UnicodeString> > currentItemRelationsWithSalesType;
+
     currentItemRelationsWithSalesType = assignedItemsDBState;
     std::map<int, std::map<int, UnicodeString> >::iterator currentOuterit;
     std::map <int, UnicodeString>::iterator currentInnerit;
@@ -260,6 +264,7 @@ void TfrmMallSalesTypeAssignment::DisplayAssignedItemBySalesType()
 
     //find sales types in assignedRemovedItemsBySalesType maps.i.e. map2....
     assignedRemovedouterit = assignedRemovedItemsBySalesType.find(SelectedSalesType);
+
     // if sales types found in assignedRemovedItemsBySalesType maps
     if(assignedRemovedouterit != assignedRemovedItemsBySalesType.end())
     {
