@@ -462,7 +462,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
                 "SELECT DISCOUNT_BREAKUP.DISCOUNT_ID, DISCOUNT_BREAKUP.NAME, "
                 "CAST (SUM(ABS(DISCOUNT_BREAKUP.DISCOUNTED_VALUE)) AS NUMERIC(17,2)) DISC_AMOUNT "
                 "FROM "
-                    "(SELECT A.ARCBILL_KEY, DISCOUNTS.DISCOUNT_ID, AOD.NAME, AOD.DISCOUNTED_VALUE "
+                    "(SELECT A.ARCBILL_KEY, DISCOUNTS.DISCOUNT_ID, AOD.NAME, AOD.DISCOUNTED_VALUE, ARCHIVE.ARCHIVE_KEY "
                     "FROM MALLEXPORT_SALES a "
                     "INNER JOIN ARCHIVE ON ARCHIVE.ARCBILL_KEY = A.ARCBILL_KEY "
                     "INNER JOIN ARCORDERDISCOUNTS AOD ON ARCHIVE.ARCHIVE_KEY = AOD.ARCHIVE_KEY "
@@ -478,7 +478,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
         }
 
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
-                        "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE ) DISCOUNT_BREAKUP "
+                        "GROUP BY A.ARCBILL_KEY, AOD.NAME, DISCOUNTS.DISCOUNT_ID, AOD.DISCOUNTED_VALUE, ARCHIVE.ARCHIVE_KEY ) DISCOUNT_BREAKUP "
                 "GROUP BY 1,2 ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
@@ -496,7 +496,7 @@ void TDeanAndDelucaMall::PrepareDataForDiscountFile(Database::TDBTransaction &dB
 
           salesData.DataValue = IBInternalQuery->Fields[0]->AsString + "," + IBInternalQuery->Fields[1]->AsString + "," + IBInternalQuery->Fields[2]->AsCurrency;
           salesData.DataValueType = "UnicodeString";
-          salesData.MallExportSalesId = IBInternalQuery->Fields[0]->AsInteger;
+          salesData.MallExportSalesId = 0;
           salesDataForDISF.push_back(salesData);
         }
 
