@@ -44,39 +44,10 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction _paymentTrans
         if(itemComplete->OrderType == CanceledOrder)
             continue;
 
-        UnicodeString categoryCode = itemComplete->ThirdPartyCode;
-        if(categoryCode == "")
-            categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+        bool AddDiscountPart = AddItemToSiHotService(itemComplete,billNo,_roomCharge);
+        if(AddDiscountPart)
+           AddDiscountPartToService(itemComplete,_roomCharge, _paymentTransaction, billNo);
 
-        std::map<UnicodeString,std::map<double,TSiHotService> >::iterator itOuter;
-        itOuter = servicesSiHot.find(categoryCode);
-
-        if(itOuter == servicesSiHot.end())
-        {
-            bool AddDiscountPart = AddItemToSiHotService(itemComplete,billNo,categoryCode);
-            if(AddDiscountPart)
-               AddDiscountPartToService(itemComplete,_roomCharge, _paymentTransaction, billNo);
-        }
-        else
-        {
-            std::map<double,TSiHotService >::iterator itInner;
-            itInner = itOuter->second.find(currentVAT);
-            if(itInner == itOuter->second.end())
-            {
-                bool AddDiscountPart = AddItemToSiHotService(itemComplete,billNo,categoryCode);
-                if(AddDiscountPart)
-                    AddDiscountPartToService(itemComplete,_roomCharge, _paymentTransaction, billNo);
-            }
-            else
-            {
-                double newPriceTotal = itemComplete->BillCalcResult.FinalPrice;
-                newPriceTotal += (double)StrToCurr(itOuter->second[currentVAT].PriceTotal);
-                double quantity = itemComplete->GetQty() + StrToCurr(itOuter->second[currentVAT].Amount);
-                itOuter->second[currentVAT].PricePerUnit = double(newPriceTotal/quantity);
-                itOuter->second[currentVAT].PriceTotal = newPriceTotal;
-                itOuter->second[currentVAT].Amount = quantity;
-            }
-        }
         // loop for subitems
         for(int j = 0; j < itemComplete->SubOrders->Count; j++)
         {
@@ -85,48 +56,10 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction _paymentTrans
             // Cancelled orders should not get posted
             if(subItemComplete->OrderType ==  CanceledOrder)
                continue;
-            UnicodeString categoryCodeSubItem = subItemComplete->ThirdPartyCode;
-            if(categoryCodeSubItem == "")
-                categoryCodeSubItem = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
-            double currentVAT = GetVATpercentage(subItemComplete);
 
-            std::map<UnicodeString,std::map<double,TSiHotService> >::iterator itOuterSub;
-            itOuterSub = servicesSiHot.find(categoryCodeSubItem);
-
-            if(itOuterSub == servicesSiHot.end())
-            {
-                bool AddDiscountPart = AddItemToSiHotService(subItemComplete,billNo,categoryCodeSubItem);
-                if(AddDiscountPart)
-                   AddDiscountPartToService(subItemComplete,_roomCharge, _paymentTransaction, billNo);
-            }
-            else
-            {
-                std::map<double,TSiHotService >::iterator itInnerSub;
-                itInnerSub = itOuterSub->second.find(currentVAT);
-                if(itInnerSub == itOuterSub->second.end())
-                {
-                    bool AddDiscountPart = AddItemToSiHotService(subItemComplete,billNo,categoryCodeSubItem);
-                    if(AddDiscountPart)
-                        AddDiscountPartToService(subItemComplete,_roomCharge, _paymentTransaction, billNo);
-                }
-                else
-                {
-                    double newPriceTotal = subItemComplete->BillCalcResult.FinalPrice;
-                    newPriceTotal += (double)StrToCurr(itOuterSub->second[currentVAT].PriceTotal);
-                    double quantity = subItemComplete->GetQty() + StrToCurr(itOuterSub->second[currentVAT].Amount);
-                    itOuterSub->second[currentVAT].PricePerUnit = double(newPriceTotal/quantity);
-                    itOuterSub->second[currentVAT].PriceTotal = newPriceTotal;
-                    itOuterSub->second[currentVAT].Amount = quantity;
-                }
-            }
-        }
-    }
-    // Populate Item Details
-    for(std::map<UnicodeString,std::map<double,TSiHotService> >::iterator serviceIt = servicesSiHot.begin(); serviceIt != servicesSiHot.end(); ++serviceIt)
-    {
-        for(std::map<double,TSiHotService>::iterator inner = serviceIt->second.begin(); inner != serviceIt->second.end(); ++inner)
-        {
-            _roomCharge.SiHotServices.push_back(inner->second);
+            bool AddDiscountPart = AddItemToSiHotService(subItemComplete,billNo,_roomCharge);
+            if(AddDiscountPart)
+               AddDiscountPartToService(subItemComplete,_roomCharge, _paymentTransaction, billNo);
         }
     }
     // Populate Discount Details in case of Tax on prediscounted price of items
@@ -158,11 +91,15 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction _paymentTrans
     _roomCharge.PortNumber = TDeviceRealTerminal::Instance().BasePMS->TCPPort;
 }
 //----------------------------------------------------------------------------
-bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,UnicodeString billNo,UnicodeString categoryCode)
+bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,UnicodeString billNo,
+                                                TRoomCharge &_roomCharge)
 {
     double discountValue = 0.0;
     bool AddDiscountPart = false;
     double taxPercentage = GetVATpercentage(itemComplete);
+    UnicodeString categoryCode = itemComplete->ThirdPartyCode;
+    if(categoryCode == "")
+        categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
     TSiHotService siHotService;
     siHotService.SuperCategory = categoryCode;
     siHotService.SuperCategory_Desc = "";
@@ -192,15 +129,7 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     siHotService.Cashno = TDeviceRealTerminal::Instance().BasePMS->POSID;
     siHotService.Cashier = TDeviceRealTerminal::Instance().User.Name;
     siHotService.Source = "Guest";
-    std::map<UnicodeString,std::map<double,TSiHotService> >::iterator itOuter;
-    itOuter = servicesSiHot.find(categoryCode);
-
-    if(itOuter == servicesSiHot.end())
-       servicesSiHot[categoryCode][taxPercentage] = siHotService;
-    else
-    {
-       itOuter->second[taxPercentage] = siHotService;
-    }
+    _roomCharge.SiHotServices.push_back(siHotService);
     return AddDiscountPart;
 }
 //----------------------------------------------------------------------------
@@ -298,10 +227,9 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
 }
 //----------------------------------------------------------------------------
 void TSiHotDataProcessor::AddSurchargeAndTip( TRoomCharge &_roomCharge, double surcharge,
-                                              TPaymentTransaction _paymentTransaction, UnicodeString _billNo)
+                          UnicodeString _billNo,double tip)
 {
-    double tipAmount = (double)_paymentTransaction.Money.Surcharge - surcharge -
-                       _paymentTransaction.Money.ProductSurcharge ;
+    double tipAmount = tip;
     // Add Tip as service to Sihot
     if(tipAmount != 0)
     {
@@ -503,23 +431,27 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
     double surcharge = 0.0;
     int indexcash = 0;
     double cashOutStore = 0.0;
+    double tip = 0.0;
     for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
     {
         TSiHotPayments siHotPayment;
         TPayment *payment = _paymentTransaction.PaymentGet(i);
-        if(payment->GetPayTendered() != 0)
+        if(payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
         {
-            surcharge += (double)payment->GetSurchargeTotal();
+            tip += (double)payment->GetAdjustment();
+        }
+        if(payment->GetPaymentAttribute(ePayTypeSurcharge))
+        {
+            surcharge = (double)payment->GetAdjustment();
         }
         if(((payment->GetPayTendered() != 0) || (payment->GetCashOut() != 0.0)) && !(payment->GetPaymentAttribute(ePayTypeRoomInterface)))
         {
+            tip += (double)payment->TipAmount;
             siHotPayment.Type = payment->PaymentThirdPartyID;
             if(siHotPayment.Type == "")
                 siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-//            if(payment->Properties & ePayTypePoints)
             if(payment->GetPaymentAttribute(ePayTypePoints))
                siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
-//            if(payment->Properties & ePayTypeCredit)
             if(payment->GetPaymentAttribute(ePayTypeCredit))
                siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
             std::map<UnicodeString, TSiHotPayments>::iterator iter;
@@ -542,7 +474,6 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                 iter->second.Amount = amount;
             }
 
-//            if(payment->Properties & ePayTypeCash)
             if(payment->GetPaymentAttribute(ePayTypeCash))
                 indexcash = i;
             cashOutStore += (double)payment->GetCashOut();
@@ -559,7 +490,6 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                 for(int k = 0; k < _paymentTransaction.PaymentsCount(); k++)
                 {
                     TPayment *payment1 = _paymentTransaction.PaymentGet(k);
-//                    if(!(payment1->Properties & ePayTypeCash))
                     if(!(payment1->GetPaymentAttribute(ePayTypeCash)))
                        continue;
                     siHotPaymentCash.Type = payment1->PaymentThirdPartyID;
@@ -573,15 +503,14 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                 }
             }
         }
-//        if((payment->Properties & ePayTypeRoomInterface) && payment->GetCashOut() != 0)
         if((payment->GetPaymentAttribute(ePayTypeRoomInterface)) && payment->GetCashOut() != 0)
         {
             AddExpensesToSiHotService(payment,_roomCharge,billNo);
         }
     }
-    if((surcharge != 0) || (_paymentTransaction.Money.Surcharge != 0))
+    if((surcharge != 0) /*|| (_paymentTransaction.Money.ProductSurcharge != 0)*/ || tip != 0)
     {
-        AddSurchargeAndTip(_roomCharge,surcharge,_paymentTransaction,billNo);
+        AddSurchargeAndTip(_roomCharge,surcharge,billNo,tip);
     }
 }
 //----------------------------------------------------------------------------

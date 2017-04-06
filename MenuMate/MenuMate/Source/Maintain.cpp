@@ -144,7 +144,7 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	{
         if(TGlobalSettings::Instance().PMSType == 2)
             tbPHSInterface->Caption = "P.M.S Interface\r[SiHot Enabled]";
-        else if(TGlobalSettings::Instance().PMSType == 1)
+        else
             tbPHSInterface->Caption = "P.M.S Interface\r[P.M.S Enabled]";
         tbPHSInterface->ButtonColor = clGreen;
 	}
