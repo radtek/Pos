@@ -278,24 +278,30 @@ void TfrmPaymentType::Reset()
                 continue;
            }
 
-           if(Payment->Properties & ePayTypeGetVoucherDetails && Payment->IsLoyaltyVoucher())
+           if(Payment->GetPaymentAttribute(ePayTypeWallet))
+           {
+              tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = !CurrentTransaction.CreditTransaction;
+              tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = false;
+           }
+           else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && Payment->IsLoyaltyVoucher())
              {
                tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
                tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = Payment->IsLoyaltyGiftCard();
                CopyPaymentColor(ButtonPos);
              }
-           else if (Payment->Properties & ePayTypeAllowCashOut || Payment->Properties & ePayTypePoints || (Payment->Properties & ePayTypeGetVoucherDetails && !Payment->IsLoyaltyVoucher()))
+           else if (Payment->GetPaymentAttribute(ePayTypeAllowCashOut) || Payment->GetPaymentAttribute(ePayTypePoints) ||
+                   (Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && !Payment->IsLoyaltyVoucher()))
             {
-                 if((Payment->Properties & ePayTypeGetVoucherDetails || Payment->Properties & ePayTypePoints))
+                 if((Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) || Payment->GetPaymentAttribute(ePayTypePoints)))
                  {
-                        if(Payment->Properties & ePayTypePoints)
+                        if(Payment->GetPaymentAttribute(ePayTypePoints))
                         {
                            purchaseButtonIndex = ButtonPos;
                         }
                         tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
                         tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = true;
                  }
-                else if(Payment->Properties & ePayTypeAllowCashOut)
+                else if(Payment->GetPaymentAttribute(ePayTypeAllowCashOut))
                  {
                     tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Cash Out";
                  }
@@ -303,7 +309,7 @@ void TfrmPaymentType::Reset()
                 tgPayments->Buttons[ButtonPos][ALTCOL]->Visible = true;
 
             }
-           else if(Payment->Properties & ePayTypeCash)
+           else if(Payment->GetPaymentAttribute(ePayTypeCash))
             {
                 if(refundPayment)
                 {
@@ -340,7 +346,7 @@ void TfrmPaymentType::Reset()
                  }
             }
 
-            if(Payment->Properties & ePayTypeGetVoucherDetails && Payment->IsLoyaltyVoucher())
+            if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && Payment->IsLoyaltyVoucher())
              {
                tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
                tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
@@ -425,7 +431,8 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
 		{
 			if (Payment->GetPay() == 0)
 			{
-				if (Payment->GetAdjustment() != 0 && !(Payment->Properties & ePayTypeGetVoucherDetails) && !(Payment->Properties & ePayTypePoints))
+				if (Payment->GetAdjustment() != 0 && !(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails)) &&
+                   !(Payment->GetPaymentAttribute(ePayTypePoints)))
 				{
 					tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + CurrToStrF(Payment->GetAdjustment(), ffNumber,
 					CurrencyDecimals);
@@ -441,7 +448,7 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
 				(Payment->GetPay() + Payment->GetAdjustment(), ffNumber, CurrencyDecimals);
 			}
 
-            if(Payment->Properties & ePayTypeGetVoucherDetails && Payment->IsLoyaltyGiftCard())
+            if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && Payment->IsLoyaltyGiftCard())
             {
                 if (Payment->GetAdjustment() == 0)
 				{
@@ -453,7 +460,7 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
 					CurrencyDecimals);
 				}
             }
-            else if ((Payment->Properties & ePayTypeGetVoucherDetails && ! Payment->IsLoyaltyVoucher()) || Payment->Properties & ePayTypePoints)
+            else if ((Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && ! Payment->IsLoyaltyVoucher()) || Payment->GetPaymentAttribute(ePayTypePoints))
 			{
 
 				if (Payment->GetAdjustment() == 0)
@@ -467,12 +474,13 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
 				}
 
 			}
-            else if(Payment->Properties & ePayTypeCash)
+            else if(Payment->GetPaymentAttribute(ePayTypeCash))
             {
                 TPayment* refundPayment = CurrentTransaction.GetRefundPointsPayment();
                 if(refundPayment)
                 {
-                   if ((Payment->Properties == 4112) && (refundPayment->GetRefundPointsValue() == 0))
+                   if (Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) &&  Payment->GetPaymentAttribute(ePayTypeCash) &&
+                      (refundPayment->GetRefundPointsValue() == 0))
                     {
 
                         tgPayments->Buttons[ButtonPos][ALTCOL]->Caption = "Purchase";
@@ -489,7 +497,7 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
 
                 }
             }
-			else if(Payment->Properties & ePayTypeAllowCashOut)
+			else if(Payment->GetPaymentAttribute(ePayTypeAllowCashOut))
 			{
 				if (Payment->GetCashOutTotal() == 0)
 				{
@@ -526,7 +534,7 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
               }
             }
 
-            if(Payment->Properties & ePayTypeGetVoucherDetails && Payment->IsLoyaltyVoucher())
+            if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) && Payment->IsLoyaltyVoucher())
             {
                 tgPayments->Buttons[ButtonPos][ALTCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
                 tgPayments->Buttons[ButtonPos][PAYCOL]->Enabled = TGlobalSettings::Instance().LoyaltyMateEnabled && ! CurrentTransaction.CreditTransaction;
@@ -1105,7 +1113,7 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 	{
 
 		bool proceed = true;
-		if (((Payment->Properties & ePayTypeInvoiceExport) || (Payment->Properties & ePayTypeChargeToAccount && TGlobalSettings::Instance().IsXeroEnabled)))
+		if (((Payment->GetPaymentAttribute(ePayTypeInvoiceExport)) || (Payment->GetPaymentAttribute(ePayTypeChargeToAccount) && TGlobalSettings::Instance().IsXeroEnabled)))
 		{
 			TDBContacts DBContacts;
 			std::auto_ptr <TfrmSelectMember> (frmSelectMember)(TfrmSelectMember::Create <TfrmSelectMember> (this));
@@ -1113,14 +1121,14 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 			DBTransaction.StartTransaction();
 
 			bool SelectMember = true;
-			if (Payment->Properties & ePayTypeChargeToAccount && CurrentTransaction.Membership.Member.Charges)
+			if (Payment->GetPaymentAttribute(ePayTypeChargeToAccount) && CurrentTransaction.Membership.Member.Charges)
 			{
 				SelectMember = false;
 			}
 
 			if(SelectMember)
 			{
-				if (Payment->Properties & ePayTypeChargeToAccount)
+				if (Payment->GetPaymentAttribute(ePayTypeChargeToAccount))
 				{
 					frmSelectMember->SetFilterlist(true);
 				}
@@ -1162,7 +1170,7 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 {
     Payment->CreditTransaction = true;
-    if (Payment->Properties & ePayTypeCustomSurcharge)
+    if (Payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
     {
         Payment->AdjustmentReason = Payment->Name;
         Payment->SetAdjustment(-wrkPayAmount);
@@ -1174,14 +1182,14 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
         Payment->Result = eProcessing;
         if (TDeviceRealTerminal::Instance().PaymentSystem->ForceTender && TDeviceRealTerminal::Instance().PaymentSystem->FTBypassElecTranTyp)
         {
-            if (Payment->Properties & ePayTypeElectronicTransaction && wrkPayAmount == 0.0)
+            if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && wrkPayAmount == 0.0)
             {
                wrkPayAmount = CurrentTransaction.Money.PaymentDue;
             }
         }
         // Warn user about Payment Surcharge.
         Currency Surcharge = 0;
-        if ((Payment->Properties & ePayTypeSurcharge) && wrkPayAmount > 0)
+        if ((Payment->GetPaymentAttribute(ePayTypeSurcharge)) && wrkPayAmount > 0)
         {
             bool IsPercent = false;
             if (Payment->PercentAdjust != 0)
@@ -1206,7 +1214,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
             Payment->SetAdjustment(0);
         }
 
-        if (Payment->Properties & ePayTypeCredit)
+        if (Payment->GetPaymentAttribute(ePayTypeCredit))
         {
             TTabCredit Credit = CurrentTransaction.TabCredit[Payment->TabCreditKey];
             if (wrkPayAmount > Credit.CurrentCredit)
@@ -1226,7 +1234,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
         }
         else if (fabs(wrkPayAmount) > fabs(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment()))
         {
-            if (!Payment->Properties & ePayTypeCash) // Change not allowed
+            if (!Payment->GetPaymentAttribute(ePayTypeCash)) // Change not allowed
             {
                 if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
                                     ffNumber, CurrencyDecimals) + " can be applied to the purchases. Continue?").c_str(), "Warning",
@@ -1247,7 +1255,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                 Payment->SetPay(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment());
             }
         }
-        else if ((Payment->Properties & ePayTypeSecondaryPMSExport) && fabs(wrkPayAmount) != fabs
+        else if ((Payment->GetPaymentAttribute(ePayTypeSecondaryPMSExport)) && fabs(wrkPayAmount) != fabs
                 (CurrentTransaction.Money.GrandTotal))
         {
             MessageBox(AnsiString("The total of the bill must be charged to the Room").c_str(), "Warning",
@@ -1262,7 +1270,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
             }
         }
         //Voucher
-        if (wrkPayAmount != 0 && (Payment->Properties & ePayTypeGetVoucherDetails))
+        if (wrkPayAmount != 0 && (Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails)))
         {
             if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
             {
@@ -1285,7 +1293,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
             }
         }
         //Pocket Voucher
-        if (wrkPayAmount != 0 && (Payment->Properties & ePayTypePocketVoucher))
+        if (wrkPayAmount != 0 && (Payment->GetPaymentAttribute(ePayTypePocketVoucher)))
         {
             std::auto_ptr <TfrmPocketVoucher> frmPocketVoucher(TfrmPocketVoucher::Create <TfrmPocketVoucher> (this));
             if (frmPocketVoucher->ShowModal() == mrOk)
@@ -1300,7 +1308,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
             // Set the System name in case it has been set by a Voucher Purchase attempt.
             Payment->SysNameOveride = Payment->Name;
         }
-        if (Payment->Properties & ePayTypePoints)
+        if (Payment->GetPaymentAttribute(ePayTypePoints))
         {
             if(TGlobalSettings::Instance().IsThorlinkSelected && ThorMemberIsUnregistered())
             {
@@ -1308,7 +1316,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                 return;
             }
         }
-        if (Payment->Properties & ePayTypeCSV)
+        if (Payment->GetPaymentAttribute(ePayTypeCSV))
         {
             Payment->CSVNumber = 0;
             do
@@ -1328,7 +1336,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
             while (Payment->CSVNumber == 0);
         }
 
-        if (Payment->Properties & ePayTypeRoomInterface)
+        if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))
         {
             bool GuestMasterOk = true;
             AnsiString TabName = "";
@@ -1414,7 +1422,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
             }
         }
 
-        if (Payment->Properties & ePayTypeRMSInterface)
+        if (Payment->GetPaymentAttribute(ePayTypeRMSInterface))
         {
             std::auto_ptr <TfrmRMSRoom> frmRoom(TfrmRMSRoom::Create <TfrmRMSRoom> (this));
             if (frmRoom->SelectRoom(Payment->CVSReadLocation) == mrOk)
@@ -1432,7 +1440,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
             }
         }
 
-        if ((Payment->Properties & ePayTypeIntegratedEFTPOS) && EftPos->CheckOverLimitExceeded
+        if ((Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS)) && EftPos->CheckOverLimitExceeded
                 (Payment->GetPayTendered() + Payment->GetCashOutTotal()))
         {
             MessageBox("Eftpos over limit exceeded.", "Eftpos Error.", MB_OK + MB_ICONERROR);
@@ -1472,7 +1480,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 {
     Payment->CreditTransaction = false;
-    if (Payment->Properties & ePayTypeCustomSurcharge)
+    if (Payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
     {
         Payment->AdjustmentReason = Payment->Name;
         Payment->SetAdjustment(wrkPayAmount);
@@ -1485,14 +1493,14 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 
         if (TDeviceRealTerminal::Instance().PaymentSystem->ForceTender  && TDeviceRealTerminal::Instance().PaymentSystem->FTBypassElecTranTyp)
         {
-            if (Payment->Properties & ePayTypeElectronicTransaction && wrkPayAmount == 0.0)
+            if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && wrkPayAmount == 0.0)
             {
                 wrkPayAmount = CurrentTransaction.Money.PaymentDue;
             }
         }
         // Warn user about Payment Surcharge.
         Currency Surcharge = 0;
-        if ((Payment->Properties & ePayTypeSurcharge) && wrkPayAmount > 0)
+        if ((Payment->GetPaymentAttribute(ePayTypeSurcharge)) && wrkPayAmount > 0)
         {
             bool IsPercent = false;
             if (Payment->PercentAdjust != 0)
@@ -1529,7 +1537,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 
 		Currency tempPaymentDue;
 
-        if (Payment->Properties & ePayTypePoints)
+        if (Payment->GetPaymentAttribute(ePayTypePoints))
         {
 
             if(TGlobalSettings::Instance().IsThorlinkSelected && ThorMemberIsUnregistered())
@@ -1549,7 +1557,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             }
             PayNotCash = true;  // add method for member's types...
         }
-        else if (Payment->Properties & ePayTypeCredit)
+        else if (Payment->GetPaymentAttribute(ePayTypeCredit))
         {
             TTabCredit Credit = CurrentTransaction.TabCredit[Payment->TabCreditKey];
             if (wrkPayAmount > Credit.CurrentCredit)
@@ -1569,7 +1577,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         }
         else if (wrkPayAmount > CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment())
         {
-            if (Payment->Properties & ePayTypeElectronicTransaction && (Payment->Properties & ePayTypeAllowCashOut))
+            if (Payment->GetPaymentAttribute(ePayTypeElectronicTransaction) && Payment->GetPaymentAttribute(ePayTypeAllowCashOut))
             {
                 if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
                                     ffNumber, CurrencyDecimals) +
@@ -1584,7 +1592,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     Payment->SetPay(CurrentTransaction.Money.PaymentDue);
                 }
             }
-            else if ((!(Payment->Properties & ePayTypeCash)) && (!(Payment->Properties & ePayTypeCredit)))
+            else if (!Payment->GetPaymentAttribute(ePayTypeCash) && !Payment->GetPaymentAttribute(ePayTypeCredit))
             {
                 if (MessageBox(AnsiString("Only " + CurrToStrF(CurrentTransaction.Money.PaymentDue + Payment->GetAdjustment(),
                                     ffNumber, CurrencyDecimals) + " can be applied to the purchases. Continue?").c_str(), "Warning",
@@ -1610,7 +1618,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                 }
             }
         }
-        else if ((Payment->Properties & ePayTypeSecondaryPMSExport) && wrkPayAmount != CurrentTransaction.Money.GrandTotal)
+        else if (Payment->GetPaymentAttribute(ePayTypeSecondaryPMSExport) && wrkPayAmount != CurrentTransaction.Money.GrandTotal)
         {
             MessageBox(AnsiString("The total of the bill must be charged to the Room").c_str(), "Warning",
             MB_OK + MB_ICONINFORMATION);
@@ -1621,7 +1629,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             Payment->SetPay(wrkPayAmount);
         }
 
-        if (wrkPayAmount != 0 && (Payment->Properties & ePayTypeGetVoucherDetails))
+        if (wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
         {
             if(Payment->IsLoyaltyVoucher() && TGlobalSettings::Instance().LoyaltyMateEnabled )
             {
@@ -1651,7 +1659,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             }
         }
 
-        if (wrkPayAmount != 0 && (Payment->Properties & ePayTypePocketVoucher))
+        if (wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypePocketVoucher))
         {
             std::auto_ptr <TfrmPocketVoucher> frmPocketVoucher(TfrmPocketVoucher::Create <TfrmPocketVoucher> (this));
 
@@ -1671,7 +1679,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             Payment->SysNameOveride = Payment->Name;
         }
 
-        if (Payment->Properties & ePayTypeCSV)
+        if (Payment->GetPaymentAttribute(ePayTypeCSV))
         {
             Payment->CSVNumber = 0;
             do
@@ -1691,7 +1699,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             while (Payment->CSVNumber == 0);
         }
 
-        if (Payment->Properties & ePayTypeRoomInterface)
+        if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))
         {
             bool GuestMasterOk = true;
             AnsiString TabName = "";
@@ -1788,7 +1796,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             }
         }
 
-        if (Payment->Properties & ePayTypeRMSInterface)
+        if (Payment->GetPaymentAttribute(ePayTypeRMSInterface))
         {
             std::auto_ptr <TfrmRMSRoom> frmRoom(TfrmRMSRoom::Create <TfrmRMSRoom> (this));
             if ( (TGlobalSettings::Instance().NewBook!=2)&&frmRoom->SelectRoom(Payment->CVSReadLocation) == mrOk)
@@ -1811,12 +1819,18 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
             }
         }
 
-        if ((Payment->Properties & ePayTypeIntegratedEFTPOS) && EftPos->CheckOverLimitExceeded
-                (Payment->GetPayTendered() + Payment->GetCashOutTotal()))
+        if(Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) &&
+           EftPos->CheckOverLimitExceeded(Payment->GetPayTendered() + Payment->GetCashOutTotal()))
         {
             MessageBox("Eftpos over limit exceeded.", "Eftpos Error.", MB_OK + MB_ICONERROR);
             Payment->SetPay(0);
         }
+
+        if(wrkPayAmount != 0 && Payment->GetPaymentAttribute(ePayTypeWallet))
+        {
+           ProcessWalletTransaction(Payment);
+        }
+
         //apply changes here..
         if(CheckOnlinePaidOrNot())
         {
@@ -2289,11 +2303,51 @@ bool TfrmPaymentType::DoLoyaltyGiftCardValidation(AnsiString redeemedGiftCard,An
     return retVal;
 }
 // ---------------------------------------------------------------------------
+void TfrmPaymentType::ProcessWalletTransaction(TPayment *Payment)
+{
+    if(ValidateWalletAccount(Payment))
+    {
+        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+        frmTouchKeyboard->MaxLength = 50;
+        frmTouchKeyboard->AllowCarriageReturn = false;
+        frmTouchKeyboard->StartWithShiftDown = false;
+        frmTouchKeyboard->MustHaveValue = true;
+        frmTouchKeyboard->KeyboardText = "";
+        frmTouchKeyboard->Caption = "Enter/Scan QrCode";
+        if (frmTouchKeyboard->ShowModal() == mrOk && frmTouchKeyboard->KeyboardText.Trim() != "")
+        {
+          Payment->WalletQrCode = frmTouchKeyboard->KeyboardText.Trim();
+          Payment->SetPay(wrkPayAmount);
+        }
+        else
+        {
+           Payment->WalletQrCode = "";
+           Payment->SetPay(0);
+        }
+    }
+    else
+    {
+       MessageBox("Wallet Account information is not set. Please set up account information to use this payment type.", "Error", MB_OK + MB_ICONINFORMATION);
+       Payment->WalletQrCode = "";
+       Payment->SetPay(0);
+    }
+}
+// ---------------------------------------------------------------------------
+bool TfrmPaymentType::ValidateWalletAccount(TPayment *Payment)
+{
+    bool retVal = true;
+    retVal = Payment->WalletUserName != "" && Payment->WalletPassword != "" && Payment->WalletSecurityToken != "";
+    if(Payment->WalletType == eJioWallet)
+        retVal = retVal && Payment->MerchentId != "" && Payment->TerminalId != "";
+    return retVal;
+}
+
+// ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 {
 	if (SecurePaymentAccess(Payment))
 	{
-		if ((Payment->Properties & ePayTypePoints) && !Payment->RefundPoints)
+		if(Payment->GetPaymentAttribute(ePayTypePoints) && !Payment->RefundPoints)
 		{
 			if (CurrentTransaction.Membership.Member.Points.PointsRules.Contains(eprNoPointsPurchases))
 			{
@@ -2314,7 +2368,7 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 				}
 			}
 		}
-        else if ((Payment->Properties & ePayTypePoints) && Payment->RefundPoints)
+        else if(Payment->GetPaymentAttribute(ePayTypePoints) && Payment->RefundPoints)
 		{
             if( TGlobalSettings::Instance().IsThorlinkSelected && ThorMemberIsUnregistered())
             {
@@ -2352,7 +2406,7 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
                 CurrentTransaction.CreditTransaction = true;
             }
         }
-		else if (Payment->Properties & ePayTypeGetVoucherDetails)
+		else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
 		{
 
            AnsiString voucherNumber = GetVoucherNumber(Payment->Name,Payment->ReferenceNumber,Payment->IsLoyaltyVoucher());
@@ -2423,7 +2477,7 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 			}
 			Payment->SetPay(0);
 		}
-		else if (Payment->Properties & ePayTypeIntegratedEFTPOS)
+		else if (Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
 		{
 			Payment->SetCashOut(wrkPayAmount);
 			if (EftPos->CheckOverLimitExceeded(Payment->GetCashOutTotal() + Payment->GetPayTendered()))
@@ -2455,7 +2509,7 @@ void TfrmPaymentType::DisableOtherElectronicPayments(TPayment *inPayment)
 	for (int i = 0; i < CurrentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *Payment = CurrentTransaction.PaymentGet(i);
-		if ((Payment != inPayment) && (Payment->Properties & ePayTypeIntegratedEFTPOS) && (Payment->GetCashOut() == 0) &&
+		if ((Payment != inPayment) && Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && (Payment->GetCashOut() == 0) &&
 				(Payment->GetPay() == 0))
 		{
 			int Index = CurrentTransaction.PaymentIndex(Payment);
@@ -2479,7 +2533,7 @@ void TfrmPaymentType::DisableCashOutElectronicPayments()
 	for (int i = 0; i < CurrentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *Payment = CurrentTransaction.PaymentGet(i);
-		if ((Payment->Properties & ePayTypeIntegratedEFTPOS))
+		if (Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
 		{
 			int Index = CurrentTransaction.PaymentIndex(Payment);
 			if (Index > -1)
@@ -2502,7 +2556,7 @@ void TfrmPaymentType::EnableCashOutElectronicPayments()
 	for (int i = 0; i < CurrentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *Payment = CurrentTransaction.PaymentGet(i);
-		if ((Payment->Properties & ePayTypeIntegratedEFTPOS))
+		if(Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
 		{
 			int Index = CurrentTransaction.PaymentIndex(Payment);
 			if (Index > -1)
@@ -2524,7 +2578,7 @@ void TfrmPaymentType::EnableElectronicPayments()
 	for (int i = 0; i < CurrentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *Payment = CurrentTransaction.PaymentGet(i);
-		if ((Payment->Properties & ePayTypeIntegratedEFTPOS))
+		if(Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
 		{
 			int Index = CurrentTransaction.PaymentIndex(Payment);
 			if (Index > -1)
@@ -2560,7 +2614,7 @@ bool TfrmPaymentType::NoElectronicPayments()
 	for (int i = 0; i < CurrentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *Payment = CurrentTransaction.PaymentGet(i);
-		if ((Payment->Properties & ePayTypeIntegratedEFTPOS))
+		if(Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
 		{
 			if (Payment->GetCashOut() != 0 || Payment->GetPay() != 0)
 			{
@@ -2602,22 +2656,22 @@ bool TfrmPaymentType::SecurePaymentAccess(TPayment * Payment)
 	std::auto_ptr <TContactStaff> Staff(new TContactStaff(CurrentTransaction.DBTransaction));
 
 	bool AccessGranted = false;
-	if ((Payment->Properties & ePayTypeSecure1) || (Payment->Properties & ePayTypeSecure2) || (Payment->Properties & ePayTypeSecure3))
+	if (Payment->GetPaymentAttribute(ePayTypeSecure1) || Payment->GetPaymentAttribute(ePayTypeSecure2) || Payment->GetPaymentAttribute(ePayTypeSecure3))
 	{
 		TMMContactInfo TempUserInfo;
 		TempUserInfo = TDeviceRealTerminal::Instance().User;
 
-		if (Payment->Properties & ePayTypeSecure1)
+		if (Payment->GetPaymentAttribute(ePayTypeSecure1))
 		{
 			AccessGranted = Staff->TestAccessLevel(TempUserInfo, CheckPaymentTypesSec1);
 		}
 
-		if ((Payment->Properties & ePayTypeSecure2) && !AccessGranted)
+		if(Payment->GetPaymentAttribute(ePayTypeSecure2) && !AccessGranted)
 		{
 			AccessGranted = Staff->TestAccessLevel(TempUserInfo, CheckPaymentTypesSec2);
 		}
 
-		if ((Payment->Properties & ePayTypeSecure3) && !AccessGranted)
+		if(Payment->GetPaymentAttribute(ePayTypeSecure3) && !AccessGranted)
 		{
 			AccessGranted = Staff->TestAccessLevel(TempUserInfo, CheckPaymentTypesSec3);
 		}
@@ -2632,15 +2686,15 @@ bool TfrmPaymentType::SecurePaymentAccess(TPayment * Payment)
 			{
 				MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 			}
-			else if (Payment->Properties & ePayTypeSecure1)
+			else if (Payment->GetPaymentAttribute(ePayTypeSecure1))
 			{
 				AccessGranted = Staff->TestAccessLevel(TempUserInfo, CheckPaymentTypesSec1);
 			}
-			else if ((Payment->Properties & ePayTypeSecure2) && !AccessGranted)
+			else if(Payment->GetPaymentAttribute(ePayTypeSecure2) && !AccessGranted)
 			{
 				AccessGranted = Staff->TestAccessLevel(TempUserInfo, CheckPaymentTypesSec2);
 			}
-			else if ((Payment->Properties & ePayTypeSecure3) && !AccessGranted)
+			else if(Payment->GetPaymentAttribute(ePayTypeSecure3) && !AccessGranted)
 			{
 				AccessGranted = Staff->TestAccessLevel(TempUserInfo, CheckPaymentTypesSec3);
 			}
@@ -2676,7 +2730,7 @@ bool TfrmPaymentType::SecurePaymentAccess(TPayment * Payment)
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::GetPaymentNote(TPayment * Payment)
 {
-	if ((Payment->Properties & ePayTypeReqNote))
+	if (Payment->GetPaymentAttribute(ePayTypeReqNote))
 	{
 		std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
 		frmTouchKeyboard->MaxLength = 50;
@@ -2737,7 +2791,7 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 			for (int i = 0; i < CurrentTransaction.PaymentsCount(); i++)
 			{
 				TPayment *Payment = CurrentTransaction.PaymentGet(i);
-				if ((Payment->Properties & ePayTypeIntegratedEFTPOS) && (Payment->GetCashOut() != 0) && (Payment->GetPay() != 0))
+				if(Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && (Payment->GetCashOut() != 0) && (Payment->GetPay() != 0))
 				{
 					DisableOtherElectronicPayments(Payment);
 				}
@@ -2830,14 +2884,14 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 					Order->Credit(WriteOffStock);
 					TSecurityReference *SecRef = new TSecurityReference;
 					SecRef->UserKey = TempUserInfo.ContactKey;
-                                        //Following if is used for differentiating between refund and writeoff in Menumate 
-                                        if(WriteOffStock == true)
-                                        {        SecRef->Event=   SecurityTypes[secWriteOff];
+                    //Following if is used for differentiating between refund and writeoff in Menumate
+                    if(WriteOffStock == true)
+                    {        SecRef->Event=   SecurityTypes[secWriteOff];
 
-                                        }
-                                        else
-                                        {         SecRef->Event = SecurityTypes[secCredit];
-                                        }
+                    }
+                    else
+                    {         SecRef->Event = SecurityTypes[secCredit];
+                    }
 
 					SecRef->From = "";
 					SecRef->To = "";
@@ -2856,10 +2910,8 @@ void __fastcall TfrmPaymentType::tbCreditClick(TObject *Sender)
 				}
 			}
 
-			if (MessageBox("Do you want to inform the chef?",
-						"Inform chef?",
-						MB_YESNO | MB_ICONQUESTION)
-					== IDYES) {
+			if (MessageBox("Do you want to inform the chef?","Inform chef?",MB_YESNO | MB_ICONQUESTION)== IDYES)
+            {
 
 				/*
 					The following fix to generate refeund orders print to kitchen can be re-done in an efficient way. I was trying to get a complete copy of
@@ -3042,7 +3094,7 @@ void __fastcall TfrmPaymentType::tgPaymentsMouseClick(TObject *Sender, TMouseBut
 	int  tabkey=    TDeviceRealTerminal::Instance().PaymentSystem->GetPaymentTabName(CurrentTransaction.DBTransaction,Payment->Name);
 	AnsiString  tabName   = TDBTab::GetTabName(CurrentTransaction.DBTransaction,tabkey);
     AnsiString str = Payment->Name;
-    if(Payment->Properties & ePayTypeOpensCashDrawer)
+    if(Payment->GetPaymentAttribute(ePayTypeOpensCashDrawer))
     {
         str += " true for Open Cash Drawer";
     }
@@ -3581,8 +3633,8 @@ void TfrmPaymentType::ShowWebOrderMembersPayment()
 		{
 			if (Payment->GetPay() == 0)
 			{
-				if (Payment->GetAdjustment() != 0 && !(Payment->Properties & ePayTypeGetVoucherDetails) && !
-						(Payment->Properties & ePayTypePoints))
+				if (Payment->GetAdjustment() != 0 && !Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails) &&
+                    !Payment->GetPaymentAttribute(ePayTypePoints))
 				{
 					tgPayments->Buttons[ButtonPos][PAYCOL]->Caption = Payment->Name + "\r" + CurrToStrF(Payment->GetAdjustment(), ffNumber,
 					CurrencyDecimals);

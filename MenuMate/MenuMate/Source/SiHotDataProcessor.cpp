@@ -13,7 +13,7 @@
 TRoomRequest TSiHotDataProcessor::CreateRoomRequest(std::vector<TSiHotAccounts> &siHotAccounts,AnsiString pmsIPAddress,int pmsPort)
 {
     TRoomRequest roomRequest;
-    roomRequest.TransactionNumber = GetTransNumber();
+    roomRequest.TransactionNumber = "PMS " + GetTransNumber();
     for(std::vector<TSiHotAccounts>::iterator i = siHotAccounts.begin();
           i != siHotAccounts.end() ; ++i)
     {
@@ -28,7 +28,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction _paymentTrans
 {
     bool AddDiscountPart = false;
     double discountValue = 0.0;
-    _roomCharge.TransactionNumber = GetTransNumber();
+    _roomCharge.TransactionNumber = "PMS " + GetTransNumber();
     _roomCharge.AccountNumber = _paymentTransaction.Phoenix.AccountNumber;
     UnicodeString billNo = GetInvoiceNumber(_paymentTransaction);
 
@@ -511,14 +511,16 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
         {
             surcharge += (double)payment->GetSurchargeTotal();
         }
-        if(((payment->GetPayTendered() != 0) || (payment->GetCashOut() != 0.0)) && !(payment->Properties & ePayTypeRoomInterface))
+        if(((payment->GetPayTendered() != 0) || (payment->GetCashOut() != 0.0)) && !(payment->GetPaymentAttribute(ePayTypeRoomInterface)))
         {
             siHotPayment.Type = payment->PaymentThirdPartyID;
             if(siHotPayment.Type == "")
                 siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory;
-            if(payment->Properties & ePayTypePoints)
+//            if(payment->Properties & ePayTypePoints)
+            if(payment->GetPaymentAttribute(ePayTypePoints))
                siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
-            if(payment->Properties & ePayTypeCredit)
+//            if(payment->Properties & ePayTypeCredit)
+            if(payment->GetPaymentAttribute(ePayTypeCredit))
                siHotPayment.Type = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
             std::map<UnicodeString, TSiHotPayments>::iterator iter;
             iter = paymentSiHot.find(siHotPayment.Type);
@@ -540,7 +542,8 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                 iter->second.Amount = amount;
             }
 
-            if(payment->Properties & ePayTypeCash)
+//            if(payment->Properties & ePayTypeCash)
+            if(payment->GetPaymentAttribute(ePayTypeCash))
                 indexcash = i;
             cashOutStore += (double)payment->GetCashOut();
         }
@@ -556,7 +559,8 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                 for(int k = 0; k < _paymentTransaction.PaymentsCount(); k++)
                 {
                     TPayment *payment1 = _paymentTransaction.PaymentGet(k);
-                    if(!(payment1->Properties & ePayTypeCash))
+//                    if(!(payment1->Properties & ePayTypeCash))
+                    if(!(payment1->GetPaymentAttribute(ePayTypeCash)))
                        continue;
                     siHotPaymentCash.Type = payment1->PaymentThirdPartyID;
                     siHotPaymentCash.Amount = cashOutStore;
@@ -569,7 +573,8 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                 }
             }
         }
-        if((payment->Properties & ePayTypeRoomInterface) && payment->GetCashOut() != 0)
+//        if((payment->Properties & ePayTypeRoomInterface) && payment->GetCashOut() != 0)
+        if((payment->GetPaymentAttribute(ePayTypeRoomInterface)) && payment->GetCashOut() != 0)
         {
             AddExpensesToSiHotService(payment,_roomCharge,billNo);
         }

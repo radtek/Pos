@@ -6425,21 +6425,21 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 			CurrencyDecimals).Length() + 1;
 			pPrinter->Line->Columns[0]->Width = pPrinter->Width - pPrinter->Line->Columns[1]->Width;
 
-			if (SubPayment->Properties & ePayTypeCSV)
+			if (SubPayment->GetPaymentAttribute(ePayTypeCSV))
 			{
 				pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
-			else if (SubPayment->Properties & ePayTypePocketVoucher)
+			else if (SubPayment->GetPaymentAttribute(ePayTypePocketVoucher))
 			{
 				pPrinter->Add(paymentName + " " + SubPayment->VoucherCode + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
-			else if (SubPayment->Properties & ePayTypePoints)
+			else if (SubPayment->GetPaymentAttribute(ePayTypePoints))
 			{
 				pPrinter->Add(paymentName + " Points Purchase" + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetCashOutTotal(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
@@ -6464,14 +6464,14 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 			CurrencyDecimals).Length() + 1;
 			pPrinter->Line->Columns[0]->Width = pPrinter->Width - pPrinter->Line->Columns[1]->Width;
 
-			if (SubPayment->Properties & ePayTypeCSV)
+			if (SubPayment->GetPaymentAttribute(ePayTypeCSV))
 			{
 				pPrinter->Add(paymentName + " " + IntToStr(SubPayment->CSVNumber) + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown),
 				ffNumber,
 				CurrencyDecimals));
 			}
-			else if (SubPayment->Properties & ePayTypePocketVoucher)
+			else if (SubPayment->GetPaymentAttribute(ePayTypePocketVoucher))
 			{
 				pPrinter->Add(paymentName + " " + SubPayment->VoucherCode + "|" + CurrToStrF(
 				RoundToNearest(SubPayment->GetPayTendered(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown ),

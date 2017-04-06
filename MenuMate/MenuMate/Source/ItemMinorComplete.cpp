@@ -1624,13 +1624,6 @@ Currency TItemMinorComplete::GrandTotal_BillCalc() const
 
 Currency TItemMinorComplete::GrandTotalExclGSTSides_BillCalc()const
 {
-#ifdef _DEBUG
-    Currency billCalcFinalPrice = BillCalcResult.FinalPrice;
-    Currency billCalcBasePrice = BillCalcResult.BasePrice * GetQty();
-    Currency billCalcTotalDiscount = BillCalcResult.TotalDiscount;
-    Currency billCalcTotalTax = BillCalcResult.TotalTax;
-#endif
-
 	Currency RetVal = 0;
 	Currency OrderTotal = GrandTotal_BillCalc();
 

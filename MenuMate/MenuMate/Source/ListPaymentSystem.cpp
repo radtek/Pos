@@ -58,7 +58,6 @@
 #include "DBTierLevel.h"
 #include "ManagerDelayedPayment.h"
 #include "DrinkCommandManager.h"
-//#include "DeviceRealTerminal.h"
 #include "InitializeDCSession.h"
 #include "MallExportRegenerateReport.h"
 #include "LoyaltyMateUtilities.h"
@@ -67,6 +66,8 @@
 #include "PointsRulesSetUtils.h"
 #include "EstanciaMall.h"
 #include "ManagerPanasonic.h"
+#include "WalletPaymentsInterface.h"
+
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -162,7 +163,9 @@ void TListPaymentSystem::PaymentLoad(Database::TDBTransaction &DBTransaction, in
 		for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
 		{
 			Payment.Name = IBInternalQuery->FieldByName("PAYMENT_NAME")->AsString;
-			Payment.Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
+			//Payment.Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
+            GetPaymentAttributes(DBTransaction,PaymentKey,Payment);
+            GetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
 			Payment.DisplayOrder = IBInternalQuery->FieldByName("DISPLAY_ORDER")->AsInteger;
 			Payment.Colour = IBInternalQuery->FieldByName("COLOUR")->AsInteger;
 			Payment.AmountAdjust = IBInternalQuery->FieldByName("AMOUNT_ADJUST")->AsFloat;
@@ -240,6 +243,97 @@ void TListPaymentSystem::PaymentDelete(Database::TDBTransaction &DBTransaction, 
 	}
 }
 
+void TListPaymentSystem::GetPaymentAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment)
+{
+   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+   AttributeQuery->SQL->Text =  "SELECT * FROM PAYMENT_ATTRIBUTES WHERE PAYMENT_KEY = :PAYMENT_KEY ";
+   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+   AttributeQuery->ExecQuery();
+   for (; !AttributeQuery->Eof;)
+   {
+     Payment.SetPaymentAttribute(AttributeQuery->FieldByName("ATTRIBUTE_VALUE")->AsInteger);
+     AttributeQuery->Next();
+   }
+}
+
+void TListPaymentSystem::SetPaymentAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment)
+{
+   DeletePaymentAttribute(DBTransaction,PaymentKey);
+   for(std::set<int>::iterator it = Payment.Properties.begin() ; it != Payment.Properties.end() ;advance(it,1))
+   {
+        int attribute = *it;
+        SetPaymentAttribute(DBTransaction,PaymentKey,attribute);
+   }
+}
+
+void TListPaymentSystem::SetPaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey,ePaymentAttribute inPaymentAttribute)
+{
+    TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+    AttributeQuery->SQL->Text = "INSERT INTO PAYMENT_ATTRIBUTES (PAYMENT_KEY, ATTRIBUTE_VALUE) "
+                                "VALUES (:PAYMENT_KEY, :ATTRIBUTE_VALUE)";
+    AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+    AttributeQuery->ParamByName("ATTRIBUTE_VALUE")->AsInteger = inPaymentAttribute;
+    AttributeQuery->ExecQuery();
+}
+
+void TListPaymentSystem::DeletePaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey)
+{
+   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+   AttributeQuery->SQL->Text =  "DELETE FROM PAYMENT_ATTRIBUTES WHERE PAYMENT_KEY = :PAYMENT_KEY ";
+   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+   AttributeQuery->ExecQuery();
+}
+
+void TListPaymentSystem::DeletePaymentAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey,ePaymentAttribute inPaymentAttribute)
+{
+   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+   AttributeQuery->SQL->Text =  "DELETE FROM PAYMENT_ATTRIBUTES WHERE PAYMENT_KEY = :PAYMENT_KEY AND ATTRIBUTE_VALUE = :ATTRIBUTE_VALUE ";
+   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+   AttributeQuery->ParamByName("ATTRIBUTE_VALUE")->AsInteger = inPaymentAttribute;
+   AttributeQuery->ExecQuery();
+}
+
+void TListPaymentSystem::GetPaymentWalletAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment)
+{
+   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+   AttributeQuery->SQL->Text =  "SELECT * FROM PAYMENT_WALLET_ATTRIBUTES WHERE PAYMENT_KEY = :PAYMENT_KEY ";
+   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+   AttributeQuery->ExecQuery();
+   if (!AttributeQuery->Eof)
+   {
+        Payment.WalletType = AttributeQuery->FieldByName("WALLET_TYPE")->AsInteger;
+        Payment.MerchentId = AttributeQuery->FieldByName("MERCHENT_ID")->AsString;
+        Payment.TerminalId = AttributeQuery->FieldByName("TERMINAL_ID")->AsString;
+        Payment.WalletUserName = AttributeQuery->FieldByName("USER_NAME")->AsString;
+        Payment.WalletPassword = AttributeQuery->FieldByName("WALLET_PASSWORD")->AsString;
+        Payment.WalletSecurityToken = AttributeQuery->FieldByName("SECURITY_TOKEN")->AsString;
+   }
+}
+
+void TListPaymentSystem::SetPaymentWalletAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment)
+{
+   DeletePaymentWalletAttribute(DBTransaction,PaymentKey);
+   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+   AttributeQuery->SQL->Text = "INSERT INTO PAYMENT_WALLET_ATTRIBUTES (PAYMENT_KEY,WALLET_TYPE, MERCHENT_ID,TERMINAL_ID,USER_NAME,WALLET_PASSWORD,SECURITY_TOKEN) "
+                                "VALUES (:PAYMENT_KEY,:WALLET_TYPE,:MERCHENT_ID,:TERMINAL_ID,:USER_NAME,:WALLET_PASSWORD,:SECURITY_TOKEN)";
+   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+   AttributeQuery->ParamByName("WALLET_TYPE")->AsInteger = Payment.WalletType;
+   AttributeQuery->ParamByName("MERCHENT_ID")->AsString = Payment.MerchentId;
+   AttributeQuery->ParamByName("TERMINAL_ID")->AsString = Payment.TerminalId;
+   AttributeQuery->ParamByName("USER_NAME")->AsString = Payment.WalletUserName;
+   AttributeQuery->ParamByName("WALLET_PASSWORD")->AsString = Payment.WalletPassword;
+   AttributeQuery->ParamByName("SECURITY_TOKEN")->AsString = Payment.WalletSecurityToken;
+   AttributeQuery->ExecQuery();
+}
+
+void TListPaymentSystem::DeletePaymentWalletAttribute(Database::TDBTransaction &DBTransaction,int PaymentKey)
+{
+   TIBSQL *AttributeQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+   AttributeQuery->SQL->Text =  "DELETE FROM PAYMENT_WALLET_ATTRIBUTES WHERE PAYMENT_KEY = :PAYMENT_KEY ";
+   AttributeQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
+   AttributeQuery->ExecQuery();
+}
+
 void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, int &PaymentKey, TPayment &Payment)
 {
 	try
@@ -273,7 +367,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			" VOUCHER_USER = :VOUCHER_USER, VOUCHER_PASS = :VOUCHER_PASS, CSV_READ_LOCATION = :CSV_READ_LOCATION, "
 			" CSV_WRITE_LOCATION = :CSV_WRITE_LOCATION ,TABKEY = :TABKEY, GL_CODE = :GL_CODE, IS_AUTO_POPULATE_BLIND_BALANCE = :IS_AUTO_POPULATE_BLIND_BALANCE "
             " WHERE  PAYMENT_KEY = :PAYMENT_KEY  " ;
-            if(Payment.Properties & ePayTypeElectronicTransaction)
+            if(Payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
             {
                IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
             }
@@ -281,7 +375,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             {
 			  IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
             }
-			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Payment.Properties;
+			IBInternalQuery->ParamByName("PROPERTIES")->AsString = Payment.GetPropertyString();
 			IBInternalQuery->ParamByName("EXCHANGE_RATE")->AsCurrency = 0.0;
 			IBInternalQuery->ParamByName("COLOUR")->AsInteger = Payment.Colour;
 			IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = Payment.DisplayOrder;
@@ -315,6 +409,8 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			}
 			IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
 			IBInternalQuery->ExecQuery();
+            SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
+            SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
 		}
 		else
 		{
@@ -345,7 +441,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 			":CSV_READ_LOCATION,:CSV_WRITE_LOCATION,:TABKEY,:GL_CODE, :IS_AUTO_POPULATE_BLIND_BALANCE  ) ";
 
 			IBInternalQuery->ParamByName("PAYMENT_KEY")->AsInteger = PaymentKey;
-            if(Payment.Properties & ePayTypeElectronicTransaction)
+            if(Payment.GetPaymentAttribute(ePayTypeElectronicTransaction))
             {
                IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = TStringTools::Instance()->UpperCaseWithNoSpace(Payment.Name);
             }
@@ -353,7 +449,7 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             {
 			  IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString = Payment.Name;
             }
-			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = Payment.Properties;
+			IBInternalQuery->ParamByName("PROPERTIES")->AsString = Payment.GetPropertyString();
 			IBInternalQuery->ParamByName("EXCHANGE_RATE")->AsCurrency = 0.0;
 			IBInternalQuery->ParamByName("COLOUR")->AsInteger = Payment.Colour;
 			IBInternalQuery->ParamByName("DISPLAY_ORDER")->AsInteger = Payment.DisplayOrder;
@@ -385,6 +481,8 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 				IBInternalQuery->ParamByName("THIRDPARTYCODES_KEY")->Clear();
 			}
 			IBInternalQuery->ExecQuery();
+            SetPaymentAttributes(DBTransaction,PaymentKey,Payment);
+            SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
 		}
 	}
 	catch(Exception & E)
@@ -414,8 +512,6 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 	{
 		TPayment *NewPayment = new TPayment;
 		NewPayment->Name = IBInternalQuery->FieldByName("PAYMENT_NAME")->AsString;
-
-		NewPayment->Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
 		NewPayment->DisplayOrder = IBInternalQuery->FieldByName("DISPLAY_ORDER")->AsInteger;
 		NewPayment->Colour = IBInternalQuery->FieldByName("COLOUR")->AsInteger;
 		NewPayment->AmountAdjust = IBInternalQuery->FieldByName("AMOUNT_ADJUST")->AsFloat;
@@ -427,11 +523,9 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 		NewPayment->SecondaryPMSIPAddress = IBInternalQuery->FieldByName("DEST_IP")->AsString;
 		NewPayment->SecondaryPMSPortNumber = IBInternalQuery->FieldByName("DEST_PORT")->AsInteger;
 		NewPayment->Export = IBInternalQuery->FieldByName("INVOICE_EXPORT")->AsInteger;
-		//NewPayment->FixedVoucherCode = IBInternalQuery->FieldByName("PRE_VOUCHER_CODE")->AsString;
 		NewPayment->VoucherMerchantID = IBInternalQuery->FieldByName("VOUCHER_MERCHANT_ID")->AsString;
 		NewPayment->PaymentThirdPartyID = TDBThirdPartyCodes::GetThirdPartyCodeByKey(PaymentTransaction.DBTransaction,
 		IBInternalQuery->FieldByName("THIRDPARTYCODES_KEY")->AsInteger);
-	 //	NewPayment->UniVoucherURL	=	IBInternalQuery->FieldByName("VOUCHER_URL")->AsString;
 		NewPayment->UniVoucherUser	=	IBInternalQuery->FieldByName("VOUCHER_USER")->AsString;
 		NewPayment->UniVoucherPass	=	IBInternalQuery->FieldByName("VOUCHER_PASS")->AsString;
 		NewPayment->CVSReadLocation	=	IBInternalQuery->FieldByName("CSV_READ_LOCATION")->AsString;
@@ -440,41 +534,30 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
         NewPayment->GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
         NewPayment->AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
 		CurrentDisplayOrder = NewPayment->DisplayOrder;
-
-		// load up the groups for this payment type
-
-		    loadPaymentTypeGroupsForPaymentType(
-	    	IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,
-    		*NewPayment );
-
-		    PaymentTransaction.PaymentAdd(NewPayment);
-
-        }
+        //NewPayment->Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
+        GetPaymentAttributes(PaymentTransaction.DBTransaction,IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,*NewPayment);
+        GetPaymentWalletAttributes(PaymentTransaction.DBTransaction,IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,*NewPayment);
+	    loadPaymentTypeGroupsForPaymentType(IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,*NewPayment );
+	    PaymentTransaction.PaymentAdd(NewPayment);
+    }
 
 
-        //if(TGlobalSettings::Instance().PointOnly = false)   //MM 4775
-        //{
-	        TPayment *CashPayment = PaymentTransaction.PaymentFind(CASH);
-        	if (CashPayment == NULL)
-	        {
-	    	    TPayment *NewPayment = new TPayment;
-    	    	NewPayment->Name = CASH;
-        		NewPayment->Properties |= ePayTypeOpensCashDrawer;
-        		NewPayment->Properties |= ePayTypeCash;
-    	    	NewPayment->DisplayOrder = -1;
-    		    NewPayment->Colour = clGreen;
 
-    	    	// load up the default cash payment group
-	    	    NewPayment->SetAssignedGroups(getDefaultCashPaymentGroup());
-
-                PaymentTransaction.PaymentAdd(NewPayment);
-            }
-	    //}
-    //}
-
+    TPayment *CashPayment = PaymentTransaction.PaymentFind(CASH);
+    if (CashPayment == NULL)
+    {
+        TPayment *NewPayment = new TPayment;
+        NewPayment->Name = CASH;
+        NewPayment->SetPaymentAttribute(ePayTypeOpensCashDrawer,true);
+        NewPayment->SetPaymentAttribute(ePayTypeCash,true);
+        NewPayment->DisplayOrder = -1;
+        NewPayment->Colour = clGreen;
+        // load up the default cash payment group
+        NewPayment->SetAssignedGroups(getDefaultCashPaymentGroup());
+        PaymentTransaction.PaymentAdd(NewPayment);
+    }
 
 	PaymentTransaction.ProcessPoints();
-
 	if (PaymentTransaction.Type == eTransCreditPurchase)
 	{
 		for (std::map <long, TTabCredit> ::iterator itTabCredit = PaymentTransaction.TabCredit.begin();
@@ -483,7 +566,7 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 			TPayment *NewPayment = new TPayment;
 			NewPayment->Name = TDBTab::GetTabName(PaymentTransaction.DBTransaction, itTabCredit->first).SubString(1, 15);
 			NewPayment->NameOveride = CREDIT;
-			NewPayment->Properties |= ePayTypeCredit;
+			NewPayment->SetPaymentAttribute(ePayTypeCredit,true);
 			NewPayment->DisplayOrder = -2;
 			NewPayment->Colour = clRed;
 			NewPayment->SetPay(itTabCredit->second.CreditRedeemed);
@@ -514,7 +597,7 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 				TPayment *NewPayment = new TPayment;
 				NewPayment->Name = TDBTab::GetTabName(PaymentTransaction.DBTransaction, *itTabs).SubString(1, 15);
 				NewPayment->NameOveride = CREDIT;
-				NewPayment->Properties |= ePayTypeCredit;
+				NewPayment->SetPaymentAttribute(ePayTypeCredit,true);
 				NewPayment->DisplayOrder = -2;
 				NewPayment->Colour = clRed;
 				NewPayment->SetPay(Credit.CreditRedeemed);
@@ -534,7 +617,7 @@ void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTran
     TPayment *NewPayment = new TPayment;
     NewPayment->Name = PaymentTransaction.Membership.Member.Name + "'s Points";
     NewPayment->SysNameOveride = "Points";
-    NewPayment->Properties |= ePayTypePoints;
+    NewPayment->SetPaymentAttribute(ePayTypePoints);
     NewPayment->DisplayOrder = 1;
     NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
     NewPayment->Colour = clTeal;
@@ -545,7 +628,7 @@ void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTran
         TPayment *NewPayment = new TPayment;
         NewPayment->Name = PaymentTransaction.Membership.Member.Name + "'s Grams";
         NewPayment->SysNameOveride = "Points";
-        NewPayment->Properties |= ePayTypePoints;
+        NewPayment->SetPaymentAttribute(ePayTypePoints);
         NewPayment->DisplayOrder = 1;
         NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
         NewPayment->Colour = clTeal;
@@ -558,7 +641,7 @@ void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTran
         TPayment *NewPayment = new TPayment;
         NewPayment->Name = "Refund Points";
         NewPayment->SysNameOveride = "Points";
-        NewPayment->Properties |= ePayTypePoints;
+        NewPayment->SetPaymentAttribute(ePayTypePoints);
         NewPayment->RefundPoints = true;
         NewPayment->DisplayOrder = 1;
         NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
@@ -572,7 +655,7 @@ void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTran
         TPayment *NewPayment = new TPayment;
         NewPayment->Name = "Comp";
         NewPayment->SysNameOveride = "Points";
-        NewPayment->Properties |= ePayTypePoints;
+        NewPayment->SetPaymentAttribute(ePayTypePoints);
         NewPayment->DisplayOrder = 1;
         NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
         NewPayment->Colour = clTeal;
@@ -582,7 +665,7 @@ void TListPaymentSystem::LoadMemberPaymentTypes(TPaymentTransaction &PaymentTran
         NewPayment = new TPayment;
         NewPayment->Name = "Dining";
         NewPayment->SysNameOveride = "Dining";
-        NewPayment->Properties |= ePayTypePoints;
+        NewPayment->SetPaymentAttribute(ePayTypePoints);
         NewPayment->DisplayOrder = 1;
         NewPayment->GroupNumber = TGlobalSettings::Instance().PointsPaymentGroupNumber;
         NewPayment->Colour = clTeal;
@@ -607,7 +690,6 @@ void TListPaymentSystem::PaymentsLoadTypes(Database::TDBTransaction &DBTransacti
     	{
 	    	TPayment NewPayment;
 		    NewPayment.Name = IBInternalQuery->FieldByName("PAYMENT_NAME")->AsString;
-    		NewPayment.Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
 	    	NewPayment.DisplayOrder = IBInternalQuery->FieldByName("DISPLAY_ORDER")->AsInteger;
 		    NewPayment.Colour = IBInternalQuery->FieldByName("COLOUR")->AsInteger;
     		NewPayment.AmountAdjust = IBInternalQuery->FieldByName("AMOUNT_ADJUST")->AsFloat;
@@ -619,11 +701,9 @@ void TListPaymentSystem::PaymentsLoadTypes(Database::TDBTransaction &DBTransacti
     		NewPayment.SecondaryPMSIPAddress = IBInternalQuery->FieldByName("DEST_IP")->AsString;
 	    	NewPayment.SecondaryPMSPortNumber = IBInternalQuery->FieldByName("DEST_PORT")->AsInteger;
 		    NewPayment.Export = IBInternalQuery->FieldByName("INVOICE_EXPORT")->AsInteger;
-    		//NewPayment.FixedVoucherCode = IBInternalQuery->FieldByName("PRE_VOUCHER_CODE")->AsString;
 	    	NewPayment.VoucherMerchantID = IBInternalQuery->FieldByName("VOUCHER_MERCHANT_ID")->AsString;
 		    NewPayment.PaymentThirdPartyID = TDBThirdPartyCodes::GetThirdPartyCodeByKey(DBTransaction,
     		IBInternalQuery->FieldByName("THIRDPARTYCODES_KEY")->AsInteger);
-	      //	NewPayment.UniVoucherURL		=	IBInternalQuery->FieldByName("VOUCHER_URL")->AsString;
 		    NewPayment.UniVoucherUser	=	IBInternalQuery->FieldByName("VOUCHER_USER")->AsString;
     		NewPayment.UniVoucherPass	=	IBInternalQuery->FieldByName("VOUCHER_PASS")->AsString;
 	    	NewPayment.CVSReadLocation	=	IBInternalQuery->FieldByName("CSV_READ_LOCATION")->AsString;
@@ -631,31 +711,24 @@ void TListPaymentSystem::PaymentsLoadTypes(Database::TDBTransaction &DBTransacti
             NewPayment.TabKey  =	IBInternalQuery->FieldByName("TabKey")->AsInteger;
             NewPayment.GLCode  =   IBInternalQuery->FieldByName("GL_CODE")->AsString;
             NewPayment.AutoPopulateBlindBalance = IBInternalQuery->FieldByName("IS_AUTO_POPULATE_BLIND_BALANCE")->AsString == "T" ? true : false;
+            //NewPayment.Properties = IBInternalQuery->FieldByName("PROPERTIES")->AsInteger;
+            GetPaymentAttributes(DBTransaction,IBInternalQuery->FieldByName("PAYMENT_KEY")->AsInteger,NewPayment);
     		Payments.push_back(NewPayment);
+            if(NewPayment.Name == CASH)
+              CashFound = true;
 	    }
 
 
-	    for (std::vector<TPayment>::const_iterator ptr = Payments.begin(); ptr != Payments.end(); std::advance(ptr,1))
-    	{
-	    	if (ptr->Name == CASH)
-    		{
-	    		CashFound = true;
-		    }
-    	}
-    //}
-    //if(!TGlobalSettings::Instance().PointOnly) // MM 4775
-    //{
 	    if(!CashFound)
     	{
 	    	TPayment NewPayment;
 		    NewPayment.Name = CASH;
-    		NewPayment.Properties |= ePayTypeOpensCashDrawer;
-	    	NewPayment.Properties |= ePayTypeCash;
+    		NewPayment.SetPaymentAttribute(ePayTypeOpensCashDrawer);
+	    	NewPayment.SetPaymentAttribute(ePayTypeCash);
   		    NewPayment.DisplayOrder = -1;
     		NewPayment.Colour = clGreen;
 	    	Payments.push_back(NewPayment);
         }
-    //}
 }
 
 void TListPaymentSystem::ReturnOrderedItemsToStock( TPaymentTransaction &transaction )
@@ -929,6 +1002,7 @@ bool TListPaymentSystem::CheckForCard(TPaymentTransaction &PaymentTransaction)
       throw Exception("Failed To Read Card. Either Re-insert card or remove member.");
     return retVal;
 }
+
 void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &PaymentTransaction )
 {
 	if (PaymentTransaction.Type == eTransQuickSale && PaymentTransaction.SalesType == eTab)
@@ -1021,7 +1095,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 	{ // If we are doing a rewards recovery all EFTPOS has already been accepted.
 		Payment->Result = eAccepted;
 	}
-	else if (Payment->Properties & ePayTypeIntegratedEFTPOS)
+	else if (Payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
 	{
 		if (!EftPos->Enabled)
 		{
@@ -1045,7 +1119,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 			AnsiString CardString = "";
 			int ExpiryMonth = -1;
 			int ExpiryYear = -1;
-			if ((Payment->Properties & ePayTypeAllowMANPAN) && (PaymentTransaction.Type != eTransEFTPOSRecovery))
+			if (Payment->GetPaymentAttribute(ePayTypeAllowMANPAN) && PaymentTransaction.Type != eTransEFTPOSRecovery)
 			{
 				PanSource = PANSource_Manual; // "K";
 				std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (Screen->ActiveForm));
@@ -1105,7 +1179,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 				}
 			}
 
-			if (!(Payment->Properties & ePayTypeAllowReversal) && Payment->CreditTransaction)
+			if (!Payment->GetPaymentAttribute(ePayTypeAllowReversal) && Payment->CreditTransaction)
 			{
 				MessageBox("The Payment type selected is not configured to allow Reversals.", "EFTPOS Configuration Error",
 				MB_OK + MB_ICONERROR);
@@ -1123,7 +1197,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 					Pay = Payment->GetPayTendered();
 					CashOut = Payment->GetCashOutTotal();
 				}
-				else if (Payment->Properties & ePayTypeAllowReversal && Payment->CreditTransaction)
+				else if (Payment->GetPaymentAttribute(ePayTypeAllowReversal) && Payment->CreditTransaction)
 				{
 					TransType = TransactionType_REFUND;
 					Pay = -Payment->GetPayTendered();
@@ -1149,7 +1223,7 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 					}
 
 					// inspect payment property and set the TransType if this allows tips. also check whether eftpos allows tips
-					if(Payment->Properties & ePayTypeAllowTips)
+					if(Payment->GetPaymentAttribute(ePayTypeAllowTips))
 					{
 						if(EftPos->AllowsTipsOnTransactions())
 						{
@@ -1298,7 +1372,7 @@ bool TListPaymentSystem::BuildXMLTransaction(TPaymentTransaction &PaymentTransac
 
 void TListPaymentSystem::GetChequeVerifyResult(TPayment *Payment)
 {
-	if (Payment->Properties & ePayTypeChequeVerify)
+	if (Payment->GetPaymentAttribute(ePayTypeChequeVerify))
 	{
 		if (!EftPos->Enabled)
 		{
@@ -1898,7 +1972,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 			{
                 paymentCounter++;
                 if(!changeIsChargerToXero)
-                  changeIsChargerToXero =  SubPayment->Properties & ePayTypeChargeToXero;
+                  changeIsChargerToXero =  SubPayment->GetPaymentAttribute(ePayTypeChargeToXero);
 
                 IBInternalQuery2->Close();
 				IBInternalQuery2->SQL->Text = "SELECT GEN_ID(GEN_DAYARCBILLPAY, 1) FROM RDB$DATABASE";
@@ -1935,7 +2009,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 
                 IBInternalQuery->ParamByName("PAY_TYPE")->AsString = payTypeName;
 
-				if (SubPayment->Properties & ePayTypeGetVoucherDetails)
+				if (SubPayment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
 				{
 					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
 				}
@@ -1965,7 +2039,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                 IBInternalQuery->ParamByName("TIP_AMOUNT")->AsCurrency = SubPayment->TipAmount;
 				IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = SubPayment->GetPayRounding();
 				IBInternalQuery->ParamByName("CASH_OUT")->AsString = "F";
-				if (SubPayment->Properties & ePayTypeTaxFree)
+				if (SubPayment->GetPaymentAttribute(ePayTypeTaxFree))
 				{
 					IBInternalQuery->ParamByName("TAX_FREE")->AsString = "T";
 				}
@@ -1975,7 +2049,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				}
 
 				IBInternalQuery->ParamByName("NOTE")->AsString = SubPayment->Note.SubString(1, 50);
-				IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = SubPayment->Properties;
+				IBInternalQuery->ParamByName("PROPERTIES")->AsString = SubPayment->GetPropertyString();
 				IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = SubPayment->GroupNumber;
 				IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = SubPayment->EftposTransactionID;
 				IBInternalQuery->ParamByName("PAYMENT_CARD_TYPE")->AsString = (UnicodeString)SubPayment->CardType;
@@ -2010,7 +2084,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				IBInternalQuery->ParamByName("DAYARCBILLPAY_KEY")->AsInteger = PaymentKey;
 				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = Retval;
 				IBInternalQuery->ParamByName("PAY_TYPE")->AsString = SubPayment->Name;
-				if (SubPayment->Properties & ePayTypeGetVoucherDetails)
+				if (SubPayment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
 				{
 					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
 				}
@@ -2022,7 +2096,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = SubPayment->GetCashOutRounding();
 				IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = SubPayment->ReferenceNumber;
 				IBInternalQuery->ParamByName("CASH_OUT")->AsString = "T";
-				if (SubPayment->Properties & ePayTypeTaxFree)
+				if (SubPayment->GetPaymentAttribute(ePayTypeTaxFree))
 				{
 					IBInternalQuery->ParamByName("TAX_FREE")->AsString = "T";
 				}
@@ -2032,9 +2106,9 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				}
 
 				IBInternalQuery->ParamByName("NOTE")->AsString = SubPayment->Note.SubString(1, 80);
-				IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = SubPayment->Properties;
+				IBInternalQuery->ParamByName("PROPERTIES")->AsString = SubPayment->GetPropertyString();
 				IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = SubPayment->GroupNumber;
-                IBInternalQuery->ParamByName("CHARGED_TO_XERO")->AsString = (SubPayment->Properties & ePayTypeChargeToXero) ? "T" :"F";
+                IBInternalQuery->ParamByName("CHARGED_TO_XERO")->AsString = (SubPayment->GetPaymentAttribute(ePayTypeChargeToXero)) ? "T" :"F";
 				IBInternalQuery->ExecQuery();
 			}
 		}
@@ -2066,13 +2140,13 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		if (CashPayment)
 		{
 			IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = -RoundToNearest(CashPayment->GetChange(),0.01,TGlobalSettings::Instance().MidPointRoundsDown);
-			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = CashPayment->Properties;
+			IBInternalQuery->ParamByName("PROPERTIES")->AsString = CashPayment->GetPropertyString();
 			IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = CashPayment->GroupNumber;
 		}
 		else
 		{
 			IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = -RoundToNearest(PaymentTransaction.Money.Change,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
-			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = 0;
+			IBInternalQuery->ParamByName("PROPERTIES")->AsString = "";
 			IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = 0;
 		}
 
@@ -2117,7 +2191,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = SubPayment->ReferenceNumber;
 				IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(Value,0.01,TGlobalSettings::Instance().MidPointRoundsDown);
 				IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = ValueRnd;
-				if (SubPayment->Properties & ePayTypeTaxFree)
+				if (SubPayment->GetPaymentAttribute(ePayTypeTaxFree))
 				{
 					IBInternalQuery->ParamByName("TAX_FREE")->AsString = "T";
 				}
@@ -2143,7 +2217,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				}
 
 				IBInternalQuery->ParamByName("NOTE")->AsString = SubPayment->Note.SubString(1, 50);
-				IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = SubPayment->Properties;
+				IBInternalQuery->ParamByName("PROPERTIES")->AsString = SubPayment->GetPropertyString();
                 if(isClippGroup)
                 {
                      IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = -999;
@@ -2754,7 +2828,6 @@ void TListPaymentSystem::ArchiveOrderTaxes(Database::TDBTransaction &DBTransacti
 	}
 }
 // ------------------------------------------------------------------------------
-
 void TListPaymentSystem::SaveToFileCSV(TPaymentTransaction &PaymentTransaction)
 {
 	try
@@ -2762,7 +2835,7 @@ void TListPaymentSystem::SaveToFileCSV(TPaymentTransaction &PaymentTransaction)
 		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 		{
 			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if ((Payment->Properties & ePayTypeCSV) && ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
+			if ((Payment->GetPaymentAttribute(ePayTypeCSV)) && ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
 			{
 				AnsiString File = ExtractFilePath(Application->ExeName) + Payment->Name + ".csv";
 
@@ -3147,8 +3220,8 @@ void TListPaymentSystem::PreparePayments(TPaymentTransaction &PaymentTransaction
     	{
 	    	TPayment *NewPayment = new TPayment;
 		    NewPayment->Name = CASH;
-    		NewPayment->Properties |= ePayTypeOpensCashDrawer;
-	    	NewPayment->Properties |= ePayTypeCash;
+    		NewPayment->SetPaymentAttribute(ePayTypeOpensCashDrawer,true);
+	    	NewPayment->SetPaymentAttribute(ePayTypeCash,true);
 		    NewPayment->DisplayOrder = -1;
     		NewPayment->Colour = clGreen;
 	    	PaymentTransaction.PaymentAdd(NewPayment);
@@ -3161,7 +3234,7 @@ void TListPaymentSystem::PreparePayments(TPaymentTransaction &PaymentTransaction
             {
                 TPayment *NewPayment = new TPayment;
                 NewPayment->Name = CLIPP;
-                NewPayment->Properties |= ePayTypeClipp;
+                NewPayment->SetPaymentAttribute(ePayTypeClipp,true);
                 NewPayment->DisplayOrder = -1;
                 NewPayment->Colour = clGreen;
                 PaymentTransaction.PaymentAdd(NewPayment);
@@ -3172,7 +3245,7 @@ void TListPaymentSystem::PreparePayments(TPaymentTransaction &PaymentTransaction
             {
                 TPayment *NewPayment = new TPayment;
                 NewPayment->Name = TIPS;
-                NewPayment->Properties |= ePayTypeAllowTips;
+                NewPayment->SetPaymentAttribute(ePayTypeAllowTips,true);
                 NewPayment->DisplayOrder = -1;
                 NewPayment->Colour = clGreen;
                 PaymentTransaction.PaymentAdd(NewPayment);
@@ -3419,149 +3492,49 @@ void TListPaymentSystem::RemoveOrders(TPaymentTransaction &PaymentTransaction)
 bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTransaction, bool &RequestEFTPOSReceipt)
 {
 	bool RetVal = false;
-	bool PointsOk = true;
 	bool ChequesOk = true;
 	bool EftPosOk = true;
 	bool PhoenixHSOk = true;
 	bool DialogsOk = true;
 	bool InvoiceOk = true;
-	bool XMLExportOK = true;
 	bool PocketVoucher = true;
 	bool GeneralLedgerMate = true;
 	bool RMSCSVRoomExport = true;
     bool NewBookCSVRoomExport = true;
     bool LoyaltyVouchers = true;
-	if (PaymentTransaction.TransVerifyCheque())
-	{
-		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
-		{
-			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if ((Payment->GetCashOut() != 0 || Payment->GetPay() != 0) && (Payment->Result != eAccepted)
-					&& Payment->Properties & ePayTypeChequeVerify)
-			{
-				GetChequeVerifyResult(Payment);
-				if (Payment->Result != eAccepted)
-				{
-					Payment->Failed();
-					ChequesOk = false;
-				}
-			}
-		}
-	}
+    bool WalletTransaction = true;
 
+    WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
+    if (!WalletTransaction)
+	   return RetVal;
+
+    ChequesOk = ProcessChequePayment(PaymentTransaction);
 	if (!ChequesOk)
-	return RetVal;
+	   return RetVal;
 
-	if (PaymentTransaction.TransElectronicPayment())
-	{
-		if (PaymentTransaction.TransIntegratedEFTPOS())
-		{
-			RequestEFTPOSReceipt = true;
-		}
-
-		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
-		{
-			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if ((Payment->Properties & ePayTypeElectronicTransaction) && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0) &&
-					(Payment->Result != eAccepted))
-			{
-				TransRetriveElectronicResult(PaymentTransaction, Payment);
-				if (Payment->Result != eAccepted)
-				{
-                    transactionRecovery.ClearRecoveryInfo();
-					Payment->Failed();
-					EftPosOk = false;
-				}
-				else
-				{
-					if (Payment->ReferenceNumber != "")
-					{
-                        if(TGlobalSettings::Instance().EnableEftPosSmartPay && TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"]
-                           && EftPos->AcquirerRefSmartPay.Length() != 0)
-                           Payment->ReferenceNumber = EftPos->AcquirerRefSmartPay;
-						PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
-						ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_EFTPOS)));
-					}
-				}
-				if (Payment->SuppressEftPosReceipt)
-				{
-					RequestEFTPOSReceipt = false;
-				}
-			}
-		}
-	}
-
+    EftPosOk = ProcessEftPosPayment(PaymentTransaction,RequestEFTPOSReceipt);
 	if (!EftPosOk)
-	return RetVal;
+	   return RetVal;
 
-	if (PaymentTransaction.TransInvoicePayment())
-	{
-		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
-		{
-			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if (((Payment->Properties & ePayTypeInvoiceExport) || (Payment->Properties & ePayTypeChargeToAccount))&& (Payment->GetCashOut() != 0 || Payment->GetPay() != 0) &&
-					(Payment->Result != eAccepted))
-			{
-				TransRetriveInvoiceResult(PaymentTransaction, Payment);
-				if (Payment->Result != eAccepted)
-				{
-					Payment->Failed();
-					InvoiceOk = false;
-				}
-				else
-				{
-					if( Payment->Properties & ePayTypeChargeToXero )
-					{
-						// Creates and sends an invoice to Xero if there is a ChargeToXero Payment
-						CreateXeroInvoiceAndSend( PaymentTransaction );
-					}
-				}
-			}
-		}
-	}
-
+    InvoiceOk = ProcessInvoicePayment(PaymentTransaction);
 	if (!InvoiceOk)
-	return RetVal;
+	   return RetVal;
 
 	DialogsOk = ProcessComfirmationDialogs(PaymentTransaction);
-
-	if (!DialogsOk)
-	return RetVal;
+	if(!DialogsOk)
+	  return RetVal;
 
 	if (TDeviceRealTerminal::Instance().BasePMS->Enabled)
 	{
 		PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
 	}
+	if(!PhoenixHSOk)
+	   return RetVal;
 
-	if (!PhoenixHSOk)
-	return RetVal;
 
-	for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
-	{
-		TPayment *Payment = PaymentTransaction.PaymentGet(i);
-		if ( (Payment->Properties & ePayTypePocketVoucher) &&
-				(Payment->GetCashOut() != 0 || Payment->GetPay() != 0) &&
-				(Payment->Result != eAccepted))
-		{
-				Payment->ReferenceNumber = ManagerReference->BuildReference(TGlobalSettings::Instance().SiteID,
-				TDeviceRealTerminal::Instance().ID.Name, REFTYPE_POCKETVOUCHER_CODE);
-                TDeviceRealTerminal::Instance().PocketVouchers->ProcessVoucher(PaymentTransaction, Payment);
-				if (Payment->Result != eAccepted)
-				{
-					Payment->Failed();
-					PocketVoucher = false;
-				}
-				else
-				{
-					PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
-					ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_POCKETVOUCHER_MMTRANS)));
-					PaymentTransaction.References.push_back(RefRefType(Payment->VoucherCode,
-					ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_POCKETVOUCHER_CODE)));
-					PaymentTransaction.References.push_back(RefRefType(Payment->ExternalReferenceNumber,
-					ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_POCKETVOUCHER_PVTRANS)));
-				}
-		}
-	}
+    PocketVoucher =  ProcessPocketVoucherPayment(PaymentTransaction);
+    if(!PocketVoucher)
+	   return RetVal;
 
 	if(TDeviceRealTerminal::Instance().ManagerGeneralLedger->EnabledFor(PaymentTransaction))
 	{
@@ -3577,6 +3550,9 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	{
 		GeneralLedgerMate = true;
 	}
+    if(!GeneralLedgerMate)
+	   return RetVal;
+
 
 	if(ProcessCSVRoomExport(PaymentTransaction))
 	{
@@ -3586,7 +3562,11 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	{
 		RMSCSVRoomExport = false;
 	}
-    if(TGlobalSettings::Instance().NewBook==2)
+
+    if(!RMSCSVRoomExport)
+	   return RetVal;
+
+    if(TGlobalSettings::Instance().NewBook == 2)
     {
         if(ProcessCSVNewBookExport(PaymentTransaction))
         {
@@ -3597,13 +3577,178 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
             NewBookCSVRoomExport = false;
         }
     }
+    if(!NewBookCSVRoomExport)
+	   return RetVal;
+
     if(TGlobalSettings::Instance().LoyaltyMateEnabled)
        LoyaltyVouchers = ProcessLoyaltyVouchers(PaymentTransaction);
 
-	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PointsOk && PocketVoucher && GeneralLedgerMate && RMSCSVRoomExport && LoyaltyVouchers;
+	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PocketVoucher &&
+             GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction;
 	return RetVal;
 }
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessChequePayment(TPaymentTransaction &PaymentTransaction)
+{
+   bool paymentComplete = true;
+   if (PaymentTransaction.TransVerifyCheque())
+	{
+		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+		{
+			TPayment *Payment = PaymentTransaction.PaymentGet(i);
+			if ((Payment->GetCashOut() != 0 || Payment->GetPay() != 0) && (Payment->Result != eAccepted)
+					&& Payment->GetPaymentAttribute(ePayTypeChequeVerify))
+			{
+				GetChequeVerifyResult(Payment);
+				if (Payment->Result != eAccepted)
+				{
+					Payment->Failed();
+					paymentComplete = false;
+                    break;
+				}
+			}
+		}
+	}
+   return paymentComplete;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessEftPosPayment(TPaymentTransaction &PaymentTransaction,bool &RequestEFTPOSReceipt)
+{
+   bool paymentComplete = true;
+   if (PaymentTransaction.TransElectronicPayment())
+	{
+		if (PaymentTransaction.TransIntegratedEFTPOS())
+		{
+			RequestEFTPOSReceipt = true;
+		}
 
+		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+		{
+			TPayment *Payment = PaymentTransaction.PaymentGet(i);
+			if ((Payment->GetPaymentAttribute(ePayTypeElectronicTransaction)) && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0) &&
+					(Payment->Result != eAccepted))
+			{
+				TransRetriveElectronicResult(PaymentTransaction, Payment);
+				if (Payment->Result != eAccepted)
+				{
+                    transactionRecovery.ClearRecoveryInfo();
+					Payment->Failed();
+					paymentComplete = false;
+                    break;
+				}
+				else
+				{
+					if (Payment->ReferenceNumber != "")
+					{
+                        if(TGlobalSettings::Instance().EnableEftPosSmartPay &&
+                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                           EftPos->AcquirerRefSmartPay.Length() != 0)
+                           Payment->ReferenceNumber = EftPos->AcquirerRefSmartPay;
+						PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
+						ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_EFTPOS)));
+					}
+				}
+				if (Payment->SuppressEftPosReceipt)
+				{
+					RequestEFTPOSReceipt = false;
+				}
+			}
+		}
+	}
+     return paymentComplete;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessPocketVoucherPayment(TPaymentTransaction &PaymentTransaction)
+{
+    bool paymentComplete = true;
+    for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+	{
+		TPayment *Payment = PaymentTransaction.PaymentGet(i);
+		if ( (Payment->GetPaymentAttribute(ePayTypePocketVoucher)) &&
+				(Payment->GetCashOut() != 0 || Payment->GetPay() != 0) &&
+				(Payment->Result != eAccepted))
+		{
+				Payment->ReferenceNumber = ManagerReference->BuildReference(TGlobalSettings::Instance().SiteID,
+				TDeviceRealTerminal::Instance().ID.Name, REFTYPE_POCKETVOUCHER_CODE);
+                TDeviceRealTerminal::Instance().PocketVouchers->ProcessVoucher(PaymentTransaction, Payment);
+				if (Payment->Result != eAccepted)
+				{
+					Payment->Failed();
+					paymentComplete = false;
+                    break;
+				}
+				else
+				{
+					PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,
+					ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_POCKETVOUCHER_MMTRANS)));
+					PaymentTransaction.References.push_back(RefRefType(Payment->VoucherCode,
+					ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_POCKETVOUCHER_CODE)));
+					PaymentTransaction.References.push_back(RefRefType(Payment->ExternalReferenceNumber,
+					ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_POCKETVOUCHER_PVTRANS)));
+				}
+		}
+	}
+     return paymentComplete;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessInvoicePayment(TPaymentTransaction &PaymentTransaction)
+{
+    bool paymentComplete = true;
+	if (PaymentTransaction.TransInvoicePayment())
+	{
+		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+		{
+			TPayment *Payment = PaymentTransaction.PaymentGet(i);
+			if (((Payment->GetPaymentAttribute(ePayTypeInvoiceExport)) || (Payment->GetPaymentAttribute(ePayTypeChargeToAccount)))
+                 && (Payment->GetCashOut() != 0 || Payment->GetPay() != 0) && (Payment->Result != eAccepted))
+			{
+				TransRetriveInvoiceResult(PaymentTransaction, Payment);
+				if (Payment->Result != eAccepted)
+				{
+					Payment->Failed();
+					paymentComplete = false;
+                    break;
+				}
+				else
+				{
+					if( Payment->GetPaymentAttribute(ePayTypeChargeToXero))
+					{
+						// Creates and sends an invoice to Xero if there is a ChargeToXero Payment
+						CreateXeroInvoiceAndSend( PaymentTransaction );
+					}
+				}
+			}
+		}
+	}
+    return paymentComplete;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::ProcessWalletTransaction(TPaymentTransaction &PaymentTransaction)
+{
+    bool paymentComplete = true;
+    TWalletPaymentsInterface* WalletPaymentsInterface = new TWalletPaymentsInterface();
+	for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+	{
+		TPayment *Payment = PaymentTransaction.PaymentGet(i);
+		if (Payment->GetPaymentAttribute(ePayTypeWallet) && Payment->GetPay() != 0 && Payment->Result != eAccepted)
+		{
+           TWalletTransactionResponse response = WalletPaymentsInterface->DoTransaction(*Payment);
+           if(!response.IsSuccessful)
+           {
+              MessageBox(response.ResponseMessage, "Error", MB_OK + MB_ICONINFORMATION);
+              paymentComplete = false;
+              break;
+           }
+           else
+           {
+              Payment->ReferenceNumber = response.OrderReference;
+           }
+		}
+	}
+    delete WalletPaymentsInterface;
+    return paymentComplete;
+}
+//------------------------------------------------------------------------------
 bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction)
 {
   bool paymentComplete = true;
@@ -3937,14 +4082,14 @@ bool TListPaymentSystem::ProcessComfirmationDialogs(TPaymentTransaction &Payment
 		if (Payment->GetCashOut() != 0 || Payment->GetPay() != 0)
 		{
 			std::auto_ptr <TfrmEftPos> frmEftPos(TfrmEftPos::Create <TfrmEftPos> (Screen->ActiveForm));
-			if ((Payment->Properties & ePayTypeCheckAccepted) && (frmEftPos->TransactionOk(Payment) == mrNo))
+			if ((Payment->GetPaymentAttribute(ePayTypeCheckAccepted)) && (frmEftPos->TransactionOk(Payment) == mrNo))
 			{
 				Payment->Result = eDeclined;
 				Payment->SetPay(0);
 				Payment->SetCashOut(0);
 				AllOk = false;
 			}
-			else if ((Payment->Properties & ePayTypeCheckSignature) && (frmEftPos->SignatureOk() == mrNo))
+			else if ((Payment->GetPaymentAttribute(ePayTypeCheckSignature)) && (frmEftPos->SignatureOk() == mrNo))
 			{
 				Payment->Result = eDeclined;
 				Payment->SetPay(0);
@@ -4082,10 +4227,9 @@ bool TListPaymentSystem::ProcessCSVRoomExport( TPaymentTransaction &PaymentTrans
 	{
 		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 		{
-//            ((TItemComplete*)PaymentTransaction.Orders->Items[0])->GetQty();
-//             ((TItemComplete*)PaymentTransaction.Orders->Items[0])->Item;
 			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if ((Payment->Properties & ePayTypeRMSInterface) && (Payment->RMSRoom.AccountNo != -1) && ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
+			if ((Payment->GetPaymentAttribute(ePayTypeRMSInterface)) && (Payment->RMSRoom.AccountNo != -1) &&
+               ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
 			{
 				AnsiString File = ExtractFilePath(Payment->CVSWriteLocation) + "SYSNET" + Now().FormatString("ddmmyy")+ ".csv";
 				TCsv Csv;
@@ -4131,7 +4275,7 @@ bool TListPaymentSystem::ProcessCSVNewBookExport( TPaymentTransaction &PaymentTr
 		for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 		{
 			TPayment *Payment = PaymentTransaction.PaymentGet(i);
-			if ((Payment->Properties & ePayTypeRMSInterface) && ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
+			if ((Payment->GetPaymentAttribute(ePayTypeRMSInterface)) && ((Payment->GetPay() != 0) || (Payment->GetCashOut() != 0)))
             {
                 ExtractFilePath(Payment->CVSWriteLocation);
                 File = Payment->CVSWriteLocation + "\\ROOM-" + Payment->NewBookRoom.RoomNo + ".csv";
@@ -4410,7 +4554,6 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
     }
 }
 //------------------------------------------------------------------------------
-
 void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &PaymentTransaction )
 {
 	// Tabs from which the orders come from
@@ -4589,7 +4732,6 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
 	}
 }
 //------------------------------------------------------------------------------
-
 void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction &PaymentTransaction )
 {
 	/* TODO :
@@ -4727,9 +4869,7 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
         }
 	}
 }
-
 //------------------------------------------------------------------------------
-
 void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentTransaction )
 {
         if( PaymentTransaction.PaymentsCount() == 0 )
@@ -4788,7 +4928,6 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
 
 }
 //------------------------------------------------------------------------------
-
 void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &PaymentTransaction )
 {
 	while (!PaymentComplete && !PaymentAborted)
@@ -4856,7 +4995,6 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
 	}
 }
 //------------------------------------------------------------------------------
-
 void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction &PaymentTransaction )
 {
 	if(PaymentTransaction.Orders == NULL)
@@ -4940,7 +5078,6 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
 	}
 }
 //------------------------------------------------------------------------------
-
 void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction &PaymentTransaction )
 {
 	if(PaymentTransaction.Orders == NULL)
@@ -5025,7 +5162,6 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 	}
 }
 //------------------------------------------------------------------------------
-
 TMMProcessingState TListPaymentSystem::_createProcessingStateMessage()
 {
 	TMMProcessingState State(Screen->ActiveForm, "Processing Bill", "Processing Bill");
@@ -5039,7 +5175,6 @@ TMMProcessingState TListPaymentSystem::_createProcessingStateMessage()
 	return State;
 }
 //------------------------------------------------------------------------------
-
 bool TListPaymentSystem::_isSmartCardPresent()
 {
 	TMMContactInfo TempUserInfo;
@@ -5047,8 +5182,6 @@ bool TListPaymentSystem::_isSmartCardPresent()
 	return TempUserInfo.Valid();
 }
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
 void TListPaymentSystem::loadPaymentTypeGroupsForPaymentType( int paymentDbKey, TPayment &payment )
 {
 	TPaymentTypeGroupsManager paymentGroupsManager;
@@ -5060,7 +5193,6 @@ void TListPaymentSystem::loadPaymentTypeGroupsForPaymentType( int paymentDbKey, 
 	payment.SetAssignedGroups( assignedGroups );
 }
 //------------------------------------------------------------------------------
-
 TPaymentTypeGroup TListPaymentSystem::getDefaultCashPaymentGroup()
 {
 	TPaymentTypeGroup group(-1);
@@ -5071,14 +5203,12 @@ TPaymentTypeGroup TListPaymentSystem::getDefaultCashPaymentGroup()
 	return group;
 }
 //------------------------------------------------------------------------------
-
 void TListPaymentSystem::exportTransactionInformation( TPaymentTransaction &paymentTransaction )
 {
 	updateMallExportTables( paymentTransaction );
 	generateTransactionExportFile();
 }
 //------------------------------------------------------------------------------
-
 void TListPaymentSystem::updateMallExportTables( TPaymentTransaction &paymentTransaction )
 {
 	TMallExportUpdateAdaptor exportUpdateAdaptor;
@@ -5126,7 +5256,6 @@ void TListPaymentSystem::updateMallExportTables( TPaymentTransaction &paymentTra
     }
 }
 //------------------------------------------------------------------------------
-
 void TListPaymentSystem::generateTransactionExportFile()
 {
 	if (TGlobalSettings::Instance().MallIndex != 0&&TGlobalSettings::Instance().MallIndex != 9)
@@ -5165,7 +5294,6 @@ int TListPaymentSystem::GetPaymentTabName(Database::TDBTransaction &DBTransactio
 	return RetVal;
 }
 //------------------------------------------------------------------------------
-
 bool TListPaymentSystem::IsAllItemSelected(TPaymentTransaction &PaymentTransaction)
 {
     bool AllSelected = true;
@@ -5254,7 +5382,7 @@ void TListPaymentSystem::LoadClippPaymentTypes(TPaymentTransaction &paymentTrans
     TPayment* clippPayment = new TPayment;
     clippPayment->Name = "Clipp";
     clippPayment->SysNameOveride = "Clipp";
-    clippPayment->Properties |= ePayTypeClipp;
+    clippPayment->SetPaymentAttribute(ePayTypeClipp);
     clippPayment->DisplayOrder = 1;
     clippPayment->GroupNumber = -999;
     clippPayment->Colour = clTeal;
@@ -5341,7 +5469,7 @@ bool TListPaymentSystem::PrepareThorPurchaseRequest(TPaymentTransaction &payment
     for(int i = 0 ; i < paymentTransaction.PaymentsCount() ; i++)
     {
         TPayment *payment = paymentTransaction.PaymentGet(i);
-        if((payment->Properties & ePayTypeCash) && ((payment->GetPayTendered()>0)))
+        if((payment->GetPaymentAttribute(ePayTypeCash)) && ((payment->GetPayTendered()>0)))
         {
             tenderDetails.tenderValue =0;
             tenderDetails.tenderType = eThorCash;
@@ -5351,7 +5479,7 @@ bool TListPaymentSystem::PrepareThorPurchaseRequest(TPaymentTransaction &payment
             tenderDetails.tenderValue = price;
             tenderDetailsList.push_back(tenderDetails);
         }
-        if((payment->Properties & ePayTypeElectronicTransaction) && (payment->GetPayTendered()>0))
+        if((payment->GetPaymentAttribute(ePayTypeElectronicTransaction)) && (payment->GetPayTendered()>0))
         {
             tenderDetails.tenderValue =0;
             tenderDetails.tenderType = eThorDebitCard;
@@ -5361,7 +5489,7 @@ bool TListPaymentSystem::PrepareThorPurchaseRequest(TPaymentTransaction &payment
             tenderDetails.tenderValue = price;
             tenderDetailsList.push_back(tenderDetails);
         }
-        if((payment->Properties & ePayTypeChequeVerify) && (payment->GetPayTendered()>0))
+        if((payment->GetPaymentAttribute(ePayTypeChequeVerify)) && (payment->GetPayTendered()>0))
         {
             tenderDetails.tenderValue =0;
             tenderDetails.tenderType = eThorCheque;
@@ -5436,7 +5564,7 @@ bool TListPaymentSystem::PrepareThorRefundRequest(TPaymentTransaction &paymentTr
         for(int i = 0 ; i < paymentTransaction.PaymentsCount() ; i++)
         {
             TPayment *payment = paymentTransaction.PaymentGet(i);
-            if((payment->Properties & ePayTypeCash) && ((payment->GetPayTendered() != 0)))
+            if((payment->GetPaymentAttribute(ePayTypeCash)) && ((payment->GetPayTendered() != 0)))
             {
                 refundTransaction.loyaltyValue = 0;
             }
@@ -5685,6 +5813,7 @@ void TListPaymentSystem::GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTran
 	}
 
 }
+
 void TListPaymentSystem::GetDLFMallCMDCodeFifth(TPaymentTransaction &PaymentTransaction)     //CMD_CODE_121  and 131
 {
     try

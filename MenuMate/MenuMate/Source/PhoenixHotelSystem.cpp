@@ -102,7 +102,8 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				Payment->PaymentThirdPartyID = DefaultPaymentCategory;
 				TManagerLogs::Instance().Add(__FUNC__,PHOENIXINTERFACELOG,Payment->Name + " Has No 3rdParty ID");
 			}
-			if(Payment->Properties & ePayTypeCredit)
+//			if(Payment->Properties & ePayTypeCredit)
+            if(Payment->GetPaymentAttribute(ePayTypeCredit))
 			{
 				RoomCharge.Categories[CreditCategory] += -Payment->GetPayTendered();
 				Total += -Payment->GetPayTendered();
@@ -110,7 +111,8 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				CreditCategory +
 				" Pay " + CurrToStrF(-Payment->GetPayTendered(), ffCurrency, 2));
 			}
-			else if(Payment->Properties & ePayTypePoints)
+//			else if(Payment->Properties & ePayTypePoints)
+            else if(Payment->GetPaymentAttribute(ePayTypePoints))
 			{
 				RoomCharge.Categories[PointsCategory] += -Payment->GetPayTendered();
 				Total += -Payment->GetPayTendered();
@@ -119,7 +121,8 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				" Pay " + CurrToStrF(-Payment->GetPayTendered(), ffCurrency, 2));
 
 			}
-			else if(Payment->Properties & ePayTypeCustomSurcharge )
+//			else if(Payment->Properties & ePayTypeCustomSurcharge )
+            else if(Payment->GetPaymentAttribute(ePayTypeCustomSurcharge))
 			{
 				RoomCharge.Categories[Payment->PaymentThirdPartyID] += Payment->GetSurcharge();
 				Total += Payment->GetAdjustment();
@@ -127,11 +130,13 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				Payment->PaymentThirdPartyID +
 				" Custom Surcharge " + CurrToStrF(Payment->GetAdjustment(), ffCurrency, 2));
 			}
-			else if(Payment->Properties & ePayTypeRoomInterface )
+//			else if(Payment->Properties & ePayTypeRoomInterface )
+            else if(Payment->GetPaymentAttribute(ePayTypeRoomInterface))
 			{
 				// Dont adjust total as its being charged to his room.
 			}
-			else if(Payment->Properties & ePayTypeGetVoucherDetails)
+//			else if(Payment->Properties & ePayTypeGetVoucherDetails)
+            else if(Payment->GetPaymentAttribute(ePayTypeGetVoucherDetails))
 			{
 				// If Voucher Purchase the amount is storedin the Surchage.
 				RoomCharge.Categories[Payment->PaymentThirdPartyID] += -Payment->GetPayTendered();
@@ -154,7 +159,8 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				" Pay " + CurrToStrF(-Payment->GetPayTendered(), ffCurrency, 2));
 			}
 
-			if(Payment->Properties & ePayTypeSurcharge )
+//			if(Payment->Properties & ePayTypeSurcharge )
+            if(Payment->GetPaymentAttribute(ePayTypeSurcharge))
 			{
 				RoomCharge.Categories[DefaultSurchargeAccount] += Payment->GetAdjustment(); // GetAdjustment() is positive, when a surcharge is present
 				Total += Payment->GetAdjustment();
@@ -166,7 +172,8 @@ bool TPhoenixHM::ExportData(TPaymentTransaction &PaymentTransaction, int StaffID
 				//Total += -Payment->Surcharge;
 			}
 
-			if(Payment->Properties & ePayTypeSecondaryPMSExport )
+//			if(Payment->Properties & ePayTypeSecondaryPMSExport )
+            if(Payment->GetPaymentAttribute(ePayTypeSecondaryPMSExport))
 			{
             // Override the ipaddress and port.
             PMSIPAddress = Payment->SecondaryPMSIPAddress;

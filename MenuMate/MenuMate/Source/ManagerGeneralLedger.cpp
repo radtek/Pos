@@ -90,7 +90,7 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
 				int ThirdPartyCode = StrToIntDef(Payment->PaymentThirdPartyID,UN_CODED);
 
 				/* points types should be ignored as they are handled though the membership system? */
-				if(Payment->Properties & ePayTypePoints)
+				if(Payment->GetPaymentAttribute(ePayTypePoints))
 				{
                    if(Payment->Name == "Comp")
                       ThirdPartyCode = CompPointsCode;
@@ -171,10 +171,6 @@ bool TManagerGeneralLedger::ProcessTransaction(TPaymentTransaction &PaymentTrans
                 __int64 Value = RoundToNearest(Cats->second, 0.01, false).Val / 100;
                 Transaction->AddPayment(Cats->first,Value);
             }
-    #ifdef _DEBUG
-            Transaction->Build();
-            Transaction->SaveToFile();
-    #endif
             MembershipGeneralLedgerTCP->Process(
                 TGlobalSettings::Instance().MembershipDatabaseIP,
                 TGlobalSettings::Instance().MembershipDatabasePort,

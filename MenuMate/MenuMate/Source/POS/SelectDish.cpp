@@ -11004,11 +11004,6 @@ void TfrmSelectDish::CheckDeals(Database::TDBTransaction &DBTransaction)
 	ManagerDiscount->ClearDiscount(SeatOrders[SelectedSeat]->Orders->List, DealDiscount);
 	MapItemsAndCategories(catItemMap, DealDiscount.MaximumValue);
 
-#ifdef _DEBUG
-    int catItemMapSize = catItemMap.size();
-    int dealCatKeysSize = dealCatKeys.size();
-#endif
-
 	for (std::vector<int>::iterator catIt = dealCatKeys.begin(); catIt != dealCatKeys.end(); catIt++)
 	{
 		itemsInCategory.clear();
@@ -11022,11 +11017,6 @@ void TfrmSelectDish::CheckDeals(Database::TDBTransaction &DBTransaction)
 		}
 		std::sort(itemsInCategory.begin(), itemsInCategory.end(), SortItemByPrice);
 		std::vector<TDealResult> deals = dealManager->GetDiscountedPrices(*catIt, Currency((int)itemsInCategory.size()));
-
-#ifdef _DEBUG
-    int dealsSize = deals.size();
-    int itemsInCategorySize = itemsInCategory.size();
-#endif
 
 		for (std::vector<TDealResult>::iterator dealsIt = deals.begin(); dealsIt != deals.end(); dealsIt++)
 		{

@@ -181,7 +181,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
             {
                 if (itCurrentPayment->second.Name.UpperCase() != UpperCase(CHANGE)
                     && itCurrentPayment->second.Name.UpperCase() != UpperCase(CREDIT)
-                    && !(itCurrentPayment->second.Properties & ePayTypeCredit)
+                    && !(itCurrentPayment->second.GetPaymentAttribute(ePayTypeCredit))
                     || itCurrentPayment->second.IsLoyaltyVoucher())
                 {
                     std::map <UnicodeString, TTransactionCount> TransactionsCount = transactionInfo.TransactionsCountGroups[itPayments->first];
@@ -378,7 +378,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
 
                 for (itCurrentPayment = PaymentValues.begin(); itCurrentPayment != PaymentValues.end(); itCurrentPayment++)
                 {
-                    if (itCurrentPayment->second.Properties & ePayTypeGetVoucherDetails &&
+                    if (itCurrentPayment->second.GetPaymentAttribute(ePayTypeGetVoucherDetails) &&
                         !itCurrentPayment->second.IsLoyaltyVoucher())
                     {
                         if (itCurrentPayment->second.Surcharge == 0)
@@ -398,7 +398,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                         }
                     }
 
-                    if (itCurrentPayment->second.Properties & ePayTypeCredit)
+                    if (itCurrentPayment->second.GetPaymentAttribute(ePayTypeCredit))
                     {
                         if (itCurrentPayment->second.Total < 0)
                         {
@@ -410,7 +410,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                         }
                     }
 
-                    if (itCurrentPayment->second.Properties & ePayTypePoints)
+                    if (itCurrentPayment->second.GetPaymentAttribute(ePayTypePoints))
                     {
                         PointsOut += itCurrentPayment->second.Total;
                         PointsIn += itCurrentPayment->second.Surcharge;

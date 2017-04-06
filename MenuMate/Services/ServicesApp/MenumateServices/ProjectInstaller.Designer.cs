@@ -41,6 +41,7 @@ namespace MenumateServices
             this.serviceInstallerPocketVoucher = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSalesForceIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerSiHotIntegration = new System.ServiceProcess.ServiceInstaller();
+            this.serviceInstallerWalletPayments = new System.ServiceProcess.ServiceInstaller();
             // 
             // serviceProcessInstaller
             // 
@@ -121,6 +122,13 @@ namespace MenumateServices
             this.serviceInstallerSiHotIntegration.ServiceName = "MenumateServiceSiHotIntegration";
             this.serviceInstallerSiHotIntegration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
+            // serviceInstallerWalletPayments
+            // 
+            this.serviceInstallerWalletPayments.Description = "Menumate Wallet Payments Sevice";
+            this.serviceInstallerWalletPayments.DisplayName = "Menumate Wallet Payments Sevice";
+            this.serviceInstallerWalletPayments.ServiceName = "MenumateServiceWalletPayments";
+            this.serviceInstallerWalletPayments.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            // 
             // ProjectInstaller
             // 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
@@ -134,7 +142,8 @@ namespace MenumateServices
             this.serviceInstallerThorLink,
             this.serviceInstallerPocketVoucher,
             this.serviceInstallerSalesForceIntegration,
-            this.serviceInstallerSiHotIntegration});
+            this.serviceInstallerSiHotIntegration,
+            this.serviceInstallerWalletPayments});
 
         }
 
@@ -181,5 +190,6 @@ namespace MenumateServices
         private ServiceInstaller serviceInstallerPocketVoucher;
         private ServiceInstaller serviceInstallerSalesForceIntegration;
         private ServiceInstaller serviceInstallerSiHotIntegration;
+        private ServiceInstaller serviceInstallerWalletPayments;
     }
 }
