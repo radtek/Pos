@@ -203,6 +203,7 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
 			if (SubPayment->GetPay() != 0)
 			{
                 amount = (double)(SubPayment->GetPayTendered() - paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased());
+
                 if(SubPayment->GetPaymentAttribute(ePayTypeElectronicTransaction))
                 {
                      fieldData->TotalChargedSales += amount;
@@ -828,7 +829,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         {
             IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
                             "SELECT DAILYDATA.FIELD_INDEX, DAILYDATA.FIELD, DAILYDATA.FIELD_VALUE, "
-                                    "DAILYDATA.VALUE_TYPE, DAILYDATA.Z_KEY "
+                                    "DAILYDATA.VALUE_TYPE "
                               "FROM "
                                     "(SELECT a.FIELD, LPAD(a.FIELD_INDEX,2,0) FIELD_INDEX, CAST(0  AS INT ) FIELD_VALUE, a.VALUE_TYPE, A.Z_KEY "
                                      "FROM MALLEXPORT_SALES a "
@@ -865,7 +866,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
 
        // Now Fetch data Sales by Sales Type
        IBInternalQuery->Close();
-       IBInternalQuery->SQL->Text = "SELECT  SALES_TYPE_REL.SALES_TYPE_CODE, SALES_TYPE_REL.Z_KEY, SUM(SALES_TYPE_REL.FIELD_VALUE)FIELD_VALUE  "
+       IBInternalQuery->SQL->Text = "SELECT  SALES_TYPE_REL.SALES_TYPE_CODE, SUM(SALES_TYPE_REL.FIELD_VALUE)FIELD_VALUE  "
                                     "FROM "
                                         "(SELECT a.ARCBILL_KEY, CAST((MST.SUBTOTAL)*100 AS INT) FIELD_VALUE, "
                                                     "A.Z_KEY, MS.SALES_TYPE_CODE "
@@ -881,7 +882,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
         IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text +
                                          ") GROUP BY a.ARCBILL_KEY,  FIELD_VALUE, A.Z_KEY , MS.SALES_TYPE_CODE "
                                          "ORDER BY A.ARCBILL_KEY ) SALES_TYPE_REL "
-                                    "GROUP BY SALES_TYPE_REL.SALES_TYPE_CODE, SALES_TYPE_REL.Z_KEY ";
+                                    "GROUP BY SALES_TYPE_REL.SALES_TYPE_CODE ";
 
         IBInternalQuery->ParamByName("MALL_KEY")->AsInteger = 2;
         IBInternalQuery->ParamByName("MAX_ZKEY")->AsInteger = maxZedKey;
@@ -903,7 +904,7 @@ void TDeanAndDelucaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &
 
           salesData.FieldIndex  = 22;
           salesData.Field = "Net Sale Amount(Per Sales Type) ";
-          salesData.DataValue = "22" + IBInternalQuery->Fields[2]->AsCurrency;
+          salesData.DataValue = "22" + IBInternalQuery->Fields[1]->AsCurrency;
           salesData.DataValueType = "double";
           salesData.ZKey = 0;
           prepareListForDSF.push_back(salesData);

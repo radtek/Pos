@@ -1894,12 +1894,12 @@ void TApplyParser::Updatetable_PaymentTypes(TDBControl* const inDBControl)
 //::::::::::::::::::::::::Version 6.39::::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_39Tables()
 {
-     CreateTable_PaymentAttributes(_dbControl);
-     PopulateTable_PaymentAttributes(_dbControl);
-     Updatetable_PaymentProperties(_dbControl);
-     PopulatePaymentProperties(_dbControl);
-     CreateTable_PaymentWalletAttributes(_dbControl);
-	CreateGenerators6_39(_dbControl);
+    CreateTable_PaymentAttributes(_dbControl);
+    PopulateTable_PaymentAttributes(_dbControl);
+    Updatetable_PaymentProperties(_dbControl);
+    PopulatePaymentProperties(_dbControl);
+    CreateTable_PaymentWalletAttributes(_dbControl);
+    CreateGenerators6_39(_dbControl);
     CreateTable6_39MallSalesType(_dbControl);
     CreateTable6_39MallSalesTypeItemRelation(_dbControl);
     CreateTable6_39MallSalesBySalesType(_dbControl);
@@ -2074,19 +2074,6 @@ void TApplyParser::Insert6_39Malls(TDBControl* const inDBControl, int mallKey, U
     try
     {
         TIBSQL *InsertQuery    = transaction.Query( transaction.AddQuery() );
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         InsertQuery->Close();
         InsertQuery->SQL->Text =
