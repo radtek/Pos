@@ -25,7 +25,6 @@ TWalletTransactionResponse TWalletPaymentsInterface::DoTransaction(TPayment &Pay
 {
     try
     {
-       MessageBox("Wallet Payment Initiated", "Error", MB_OK + MB_ICONINFORMATION);
        WalletActionResponse* walletActionResponse;
        CoInitialize(NULL);
        WalletAccount* walletAccount = new WalletAccount();
@@ -33,14 +32,16 @@ TWalletTransactionResponse TWalletPaymentsInterface::DoTransaction(TPayment &Pay
        CreateWalletAccountInfo(walletAccount,Payment);
        CreateWalletTransactionInfo(walletTransaction,Payment);
        walletActionResponse = walletPaymentsClient->DoTransaction(walletAccount, walletTransaction);
-       MessageBox("Wallet Payment Finished", "Error", MB_OK + MB_ICONINFORMATION);
        delete walletAccount;
        delete walletTransaction;
+       if(!walletActionResponse->ResponseSuccessful)
+       {
+         CreateErrorResponse(walletActionResponse->ResponseMessage);
+       }
        return CreateResponse(walletActionResponse);
     }
     catch( Exception& exc )
     {
-        MessageBox(AnsiString(exc.Message), "Error", MB_OK + MB_ICONINFORMATION);
         return CreateErrorResponse(exc.Message);
     }
 }

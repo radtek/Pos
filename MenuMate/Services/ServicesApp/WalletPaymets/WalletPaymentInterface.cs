@@ -28,9 +28,9 @@ namespace WalletPayments
             return _walletController.DoPurchaseTransaction(inWalletTransactionInfo);
         }
 
-        public void DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo)
+        public WalletResponse DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo)
         {
-            _walletController.DoRefundTransaction(inWalletTransactionInfo);
+            return _walletController.DoRefundTransaction(inWalletTransactionInfo);
         }
 
         public void DoTransactionEnquiry(QueryOrderInfo inQueryOrderInfo)

@@ -13,12 +13,12 @@ namespace WalletPayments.Controller.Impl
 
         public WalletResponse DoPurchaseTransaction(WalletTransactionInfo inWalletTransactionInfo)
         {
-            return new WalletResponse(); 
+            return new WalletResponse();
         }
 
-        public void DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo)
+        public WalletResponse DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo)
         {
-           // throw new System.NotImplementedException();
+            return new WalletResponse();
         }
 
         public void DoTransactionEnquiry(QueryOrderInfo inQueryOrderInfo)

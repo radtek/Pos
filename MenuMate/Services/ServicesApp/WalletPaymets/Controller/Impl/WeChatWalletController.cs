@@ -100,10 +100,10 @@ namespace WalletPayments.Controller.Impl
             }));
             IDictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("hashinfo", hash);
-            parameters.Add("pnzuid", Base64Encode(inWalletTransactionInfo.AccountInformation.UserName));
+            parameters.Add("pnzuid", Base64Encode(accountInfo.UserName));
             parameters.Add("ts", timestamp.ToString());
-            parameters.Add("access_token", Base64Encode(inWalletTransactionInfo.AccountInformation.Token));
-            string sign = MakeSign(parameters, inWalletTransactionInfo.AccountInformation.SignKey);
+            parameters.Add("access_token", Base64Encode(accountInfo.Token));
+            string sign = MakeSign(parameters, accountInfo.SignKey);
             parameters.Add("sign", sign);
             string postData = GetPostDate(parameters);
             string response = PostResponse(url, postData);
@@ -128,9 +128,56 @@ namespace WalletPayments.Controller.Impl
             return walletResponse;
         }
 
-        public void DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo)
+        public WalletResponse DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo)
         {
-            throw new System.NotImplementedException();
+            var walletResponse = new WalletResponse();
+            CheckToken(inWalletTransactionInfo);
+            var accountInfo = LoadAccountInfo();
+            string url = ApiUrl(string.Format("?c={0}&a={1}&do={2}", "cashier", "payment", "apply_refund"));
+            var timestamp = ConvertDateTimeInt(DateTime.Now);
+            var hash = Base64Encode(JsonConvert.SerializeObject(new
+            {
+                mid = accountInfo.MerchentId,
+                order_id = inWalletTransactionInfo.OrderRefernce,
+                refund_fee = inWalletTransactionInfo.RefundFee,
+                companyid = accountInfo.CompanyId,
+                user_id = accountInfo.UserId,
+                platform = accountInfo.Platform,
+                ts = timestamp
+            }));
+            IDictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("pnzuid", Base64Encode(accountInfo.UserName));
+            parameters.Add("hashinfo", hash);
+            parameters.Add("access_token", Base64Encode(accountInfo.Token));
+            parameters.Add("ts", timestamp.ToString());
+            string sign = MakeSign(parameters, accountInfo.SignKey);
+            parameters.Add("sign", sign);
+            string postData = GetPostDate(parameters);
+            string response = PostResponse(url, postData);
+            JObject jo = (JObject)JsonConvert.DeserializeObject(response);
+
+            if (jo["errno"] != null)
+            {
+                if (int.Parse(jo["errno"].ToString()) == 0)
+                {
+                    walletResponse.ResponseSuccessful = true;
+                    var results = jo["results"].ToString();
+                    var info = (JObject)JsonConvert.DeserializeObject(results);
+                    walletResponse.RefundTransactionId = info["transaction_id"].ToString();
+                    walletResponse.OrderNo = info["order_no"].ToString();
+                    walletResponse.RefundFee = info["refund_fee"].ToString();
+                    walletResponse.ApplyTime = info["apply_time"].ToString();
+                    walletResponse.OutRefundNo = info["out_refund_no"].ToString();
+                    walletResponse.RefundStatus = info["status"].ToString();
+                }
+                else
+                {
+                    walletResponse.ResponseSuccessful = false;
+                    walletResponse.ResponseMessage = jo["message"].ToString();
+                }
+
+            }
+            return walletResponse;
         }
 
         public void DoTransactionEnquiry(QueryOrderInfo inQueryOrderInfo)
@@ -274,7 +321,7 @@ namespace WalletPayments.Controller.Impl
         {
             if (url.StartsWith("https"))
                 System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
-
+            //ServicePointManager.ServerCertificateValidationCallback +=(sender, cert, chain, sslPolicyErrors) => true;
             HttpContent httpContent = new StringContent(postData, Encoding.UTF8);
             httpContent.Headers.ContentType = new MediaTypeHeaderValue(WalletConstants.MimeType);
             using (HttpClient httpClient = new HttpClient())

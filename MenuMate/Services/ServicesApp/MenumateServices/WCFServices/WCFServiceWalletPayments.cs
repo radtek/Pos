@@ -9,19 +9,14 @@ namespace MenumateServices.WCFServices
 {
     public class WCFServiceWalletPayments : IWCFServiceWalletPayments
     {
-        public WCFServiceWalletPayments()
+        public WalletActionResponse DoPurchaseTransaction(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction)
         {
-
+            return WalletPaymentController.Instance.ProcessPurchaseTransaction(inWalletAccount, inWalletTransaction);
         }
 
-        public WalletActionResponse Login(WalletAccount inWalletAccount)
+        public WalletActionResponse DoRefundTransaction(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction)
         {
-            return new WalletActionResponse();
-        }
-
-        public WalletActionResponse DoTransaction(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction)
-        {
-            return WalletPaymentController.Instance.ProcessTransaction(inWalletAccount, inWalletTransaction);
+            return WalletPaymentController.Instance.ProcessRefundTransaction(inWalletAccount, inWalletTransaction);
         }
     }
 }

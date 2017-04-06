@@ -14,6 +14,18 @@ namespace MenumateServices.DTO.Wallet_Payments
         [DataMember]
         public string ResponseMessage { get; set; }
         [DataMember]
+        public string RefundTransactionId { get; set; }
+        [DataMember]
+        public string OrderNo { get; set; }
+        [DataMember]
+        public string RefundFee { get; set; }
+        [DataMember]
+        public string ApplyTime { get; set; }
+        [DataMember]
+        public string OutRefundNo { get; set; }
+        [DataMember]
+        public string RefundStatus { get; set; }
+        [DataMember]
         public int ExpiresIn { get; set; }
         [DataMember]
         public string SecurityToken { get; set; }

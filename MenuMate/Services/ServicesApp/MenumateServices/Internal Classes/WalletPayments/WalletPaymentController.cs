@@ -39,7 +39,7 @@ namespace MenumateServices.Internal_Classes.WalletPayments
         }
 
 
-        internal WalletActionResponse ProcessTransaction(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction)
+        internal WalletActionResponse ProcessPurchaseTransaction(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction)
         {
             try
             {
@@ -53,11 +53,27 @@ namespace MenumateServices.Internal_Classes.WalletPayments
             }
         }
 
+        internal WalletActionResponse ProcessRefundTransaction(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction)
+        {
+            try
+            {
+                WalletPaymentInterface walletPaymentInterface = new WalletPaymentInterface((WalletType)inWalletAccount.WalletType);
+                var response = walletPaymentInterface.DoRefundTransaction(CreateWalletTransactionInfo(inWalletAccount, inWalletTransaction));
+                return CreateResponse(response);
+            }
+            catch (Exception ex)
+            {
+                return CreateErrorResponse(ex.Message);
+            }
+        }
+
         WalletTransactionInfo CreateWalletTransactionInfo(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction)
         {
             var walletTransactionInfo = new WalletTransactionInfo();
             walletTransactionInfo.ScannedCode = inWalletTransaction.ScannedCode;
             walletTransactionInfo.Amount = inWalletTransaction.Amount;
+            walletTransactionInfo.RefundFee = inWalletTransaction.RefundFee;
+            walletTransactionInfo.OrderRefernce = inWalletTransaction.ReferenceNumber;
             walletTransactionInfo.AccountInformation = new AccountInformation()
             {
                 UserName = inWalletAccount.UserName,
@@ -78,7 +94,13 @@ namespace MenumateServices.Internal_Classes.WalletPayments
                 OrderId = inWalletResponse.OrderId,
                 SignKey = inWalletResponse.SignKey,
                 SecurityToken = inWalletResponse.SecurityToken,
-                ExpiresIn = inWalletResponse.ExpiresIn
+                ExpiresIn = inWalletResponse.ExpiresIn,
+                RefundFee = inWalletResponse.RefundFee,
+                ApplyTime = inWalletResponse.ApplyTime,
+                OrderNo = inWalletResponse.OrderNo,
+                OutRefundNo = inWalletResponse.OutRefundNo,
+                RefundStatus = inWalletResponse.RefundStatus,
+                RefundTransactionId = inWalletResponse.RefundTransactionId
             };
         }
 

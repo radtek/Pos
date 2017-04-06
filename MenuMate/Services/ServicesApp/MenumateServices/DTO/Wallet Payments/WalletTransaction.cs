@@ -15,5 +15,7 @@ namespace MenumateServices.DTO.Wallet_Payments
         public double Amount { get; set; }
         [DataMember]
         public string ReferenceNumber { get; set; }
+        [DataMember]
+        public double RefundFee { get; set; }
     }
 }

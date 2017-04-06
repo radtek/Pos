@@ -11,8 +11,9 @@ namespace MenumateServices.WCFServices
     public interface IWCFServiceWalletPayments
     {
         [OperationContract]
-        WalletActionResponse Login(WalletAccount inWalletAccount);
+        WalletActionResponse DoPurchaseTransaction(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction);
+
         [OperationContract]
-        WalletActionResponse DoTransaction(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction);
+        WalletActionResponse DoRefundTransaction(WalletAccount inWalletAccount, WalletTransaction inWalletTransaction);
     }
 }

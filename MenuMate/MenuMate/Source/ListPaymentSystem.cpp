@@ -3735,13 +3735,17 @@ bool TListPaymentSystem::ProcessWalletTransaction(TPaymentTransaction &PaymentTr
            TWalletTransactionResponse response = WalletPaymentsInterface->DoTransaction(*Payment);
            if(!response.IsSuccessful)
            {
+              MessageBox(response.ResponseMessage, "Error", MB_OK + MB_ICONINFORMATION);
               paymentComplete = false;
               break;
+           }
+           else
+           {
+              Payment->ReferenceNumber = response.OrderReference;
            }
 		}
 	}
     delete WalletPaymentsInterface;
-    MessageBox("TListPaymentSystem::Wallet Payment Finished", "Error", MB_OK + MB_ICONINFORMATION);
     return paymentComplete;
 }
 //------------------------------------------------------------------------------

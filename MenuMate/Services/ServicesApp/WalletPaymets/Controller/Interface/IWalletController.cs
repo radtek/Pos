@@ -7,7 +7,7 @@ namespace WalletPayments.Controller.Interface
     {
         WalletResponse Login(WalletAccountInfo inWalletAccountInfo);
         WalletResponse DoPurchaseTransaction(WalletTransactionInfo inWalletTransactionInfo);
-        void DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo);
+        WalletResponse DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo);
         void DoTransactionEnquiry(QueryOrderInfo inQueryOrderInfo);
     }
 }
